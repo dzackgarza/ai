@@ -33,17 +33,16 @@
     "context7": {
       "type": "local",
       "command": [
-        "",
         "npx",
         "-y",
         "@upstash/context7-mcp"
       ]
     },
-    " cut-copy-paste-mcp": {
+    "cut-copy-paste-mcp": {
       "type": "local",
       "command": [
         "npx",
-        "",
+        "-y",
         "@fastmcp-me/cut-copy-paste-mcp"
       ]
     }
@@ -532,7 +531,7 @@
     }
   },
   "model": "opencode/minimax-m2.5-free",
-  "default_agent": "general",
+  "default_agent": "interactive",
   "plugin": [
     "opencode-antigravity-auth@latest",
     "opencode-qwencode-auth",
@@ -545,62 +544,62 @@
     "minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
-      "prompt": "{file:/home/dzack/agents/minimal.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/minimal.md}"
     },
-    "general": {
-      "description": "General-purpose coding assistant",
+    "interactive": {
+      "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
       "mode": "primary",
-      "prompt": "{file:/home/dzack/agents/general.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}"
     },
     "executor": {
       "description": "Executes plan with batch-first parallelism - spawns subagents for parallel implementation",
       "mode": "primary",
-      "prompt": "{file:/home/dzack/agents/executor.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/executor.md}"
     },
     "artifact-searcher": {
       "description": "Searches serena memories for relevant past work, patterns, and lessons learned",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/artifact-searcher.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/artifact-searcher.md}"
     },
     "code-compliance-reviewer": {
       "description": "Reviews generated code against project constraints and reports violations",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/code-compliance-reviewer.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-compliance-reviewer.md}"
     },
     "code-smell-detector": {
       "description": "Finds inconsistencies and anti-patterns in the codebase",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/code-smell-detector.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-smell-detector.md}"
     },
     "codebase-analyzer": {
       "description": "Explains HOW code works with file:line references",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/codebase-analyzer.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-analyzer.md}"
     },
     "implementer": {
       "description": "Implements ONE micro-task: creates ONE file and its test, verifies test passes",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/implementer.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/implementer.md}"
     },
     "pattern-finder": {
       "description": "Finds existing patterns and examples in the codebase to model after",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/pattern-finder.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/pattern-finder.md}"
     },
     "planner": {
       "description": "Creates micro-task implementation plans optimized for parallel execution",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/planner.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/planner.md}"
     },
     "project-initializer": {
       "description": "Rapidly analyzes project and generates ARCHITECTURE.md and CODE_STYLE.md",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/project-initializer.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
     "reviewer": {
       "description": "Reviews ONE micro-task: verifies file and test match the plan",
       "mode": "subagent",
-      "prompt": "{file:/home/dzack/agents/subagents/reviewer.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/reviewer.md}"
     }
   }
 }
