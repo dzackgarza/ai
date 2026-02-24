@@ -152,6 +152,100 @@ Each worker has `prompt.md` + `example_tasks/` showing autonomous work they can 
 | context7 | `npx -y @upstash/context7-mcp` | Documentation search (llms.txt) | https://github.com/upstash/context7 |
 | cut-copy-paste-mcp | `npx -y @fastmcp-me/cut-copy-paste-mcp` | Clipboard operations | https://github.com/fastmcp-me/cut-copy-paste-mcp |
 
+### Adding MCP Servers by Harness
+
+**Claude Code** ([docs](https://docs.anthropic.com/en/docs/claude-code/mcp)):
+```bash
+# HTTP server
+claude mcp add --transport http <name> <url>
+
+# Stdio server
+claude mcp add --transport stdio <name> -- <command> [args...]
+
+# List servers
+claude mcp list
+```
+Config files: `~/.claude.json` (user), `.mcp.json` (project)
+
+**OpenCode** ([docs](https://opencode.ai/docs/mcp-servers/)):
+Edit `opencode.json` directly (no CLI command):
+```json
+{
+  "mcp": {
+    "my-server": {
+      "type": "local",
+      "command": ["npx", "-y", "my-mcp-server"],
+      "enabled": true
+    },
+    "remote-server": {
+      "type": "remote",
+      "url": "https://mcp.example.com/mcp"
+    }
+  }
+}
+```
+Config files: `~/.config/opencode/opencode.json` (global), `opencode.json` (project)
+
+**Codex CLI** ([docs](https://developers.openai.com/codex/config-reference/)):
+Edit `~/.codex/config.toml`:
+```toml
+[mcp_servers.my-server]
+command = "npx"
+args = ["-y", "my-mcp-server"]
+env = { "API_KEY" = "value" }
+
+[mcp_servers.remote-server]
+url = "https://mcp.example.com/mcp"
+```
+Config file: `~/.codex/config.toml`
+
+**Gemini CLI** ([docs](https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html)):
+```bash
+# Add server
+gemini mcp add --transport http <name> <url>
+gemini mcp add -s user <name> -- <command> [args...]
+```
+Or edit `settings.json`:
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "command": "npx",
+      "args": ["-y", "my-mcp-server"]
+    },
+    "remote-server": {
+      "httpUrl": "https://mcp.example.com/mcp"
+    }
+  }
+}
+```
+Config files: `~/.gemini/settings.json` (user), `.gemini/settings.json` (project)
+
+**Qwen Code** ([docs](https://qwenlm.github.io/qwen-code-docs/)):
+Forked from Gemini CLI - same configuration pattern:
+```bash
+qwen mcp add --transport http <name> <url>
+```
+Config files: `~/.qwen/settings.json` (user), `.qwen/settings.json` (project)
+
+**Kilo**:
+Edit `~/.kilocode/cli/global/settings/mcp_settings.json`:
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "command": "npx",
+      "args": ["-y", "my-mcp-server"],
+      "env": {},
+      "disabled": false
+    }
+  }
+}
+```
+
+**Amp** ([docs](https://ampcode.com/manual)):
+Amp reads MCP config from multiple locations. Check `~/.config/amp/` or harness documentation for current format.
+
 ## OpenCode Plugins
 
 Config: `~/ai/opencode/opencode.json`
