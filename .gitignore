@@ -1,0 +1,83 @@
+# Secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+secrets/
+credentials/
+.secrets
+
+# API tokens and keys
+*token*
+*api_key*
+*apikey*
+*secret*
+*credential*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+.cache/
+
+# Test output
+test_results/
+*.csv
+!requirements.csv
+
+# MCP server cache
+.mcp/
+
+# Node modules (if any skills use JS)
+node_modules/
+
+# Build outputs
+*.js.map
+*.d.ts
+dist/
