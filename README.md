@@ -51,6 +51,47 @@
 - Uses `CLAUDE.md` at project root and parent directories
 - Skills via custom slash commands
 
+### Project-Local Configuration
+
+Each harness looks for configuration files in the project directory. Place these in your project root:
+
+| Harness | Context File | Skills Directory | Config File |
+|---------|-------------|------------------|-------------|
+| Claude | `CLAUDE.md` | `.claude/commands/` (slash commands) | — |
+| Codex | `AGENTS.md` | — | — |
+| Gemini | `GEMINI.md` | `.gemini/skills/` | `.gemini/settings.json` |
+| Qwen | `QWEN.md` | `.qwen/skills/` | `.qwen/settings.json` |
+| OpenCode | `AGENTS.md` | — | `opencode.json` |
+| Amp | `AGENTS.md` | `.agents/skills/` | — |
+
+**Precedence (workspace > user > built-in):**
+
+| Harness | Context Hierarchy | Skills Hierarchy |
+|---------|------------------|------------------|
+| Gemini | Project `.gemini/GEMINI.md` > `~/.gemini/GEMINI.md` > JIT | `.agents/skills/` > `.gemini/skills/` > `~/.gemini/skills/` |
+| Qwen | Project `.qwen/QWEN.md` > `~/.qwen/QWEN.md` | `.qwen/skills/` > `~/.qwen/skills/` |
+| Codex | Walks project root → cwd reading `AGENTS.md` | — |
+| Amp | cwd → parent dirs (to `$HOME`) → subtrees | `.agents/skills/` > `.claude/skills/` > `~/.claude/skills/` |
+| OpenCode | `AGENTS.md` in project root > `~/.config/opencode/AGENTS.md` | `~/.claude/skills/` (fallback only) |
+
+**Example project structure:**
+```
+my-project/
+├── AGENTS.md              # Context for Codex, OpenCode, Amp
+├── GEMINI.md              # Context for Gemini (or configure to read AGENTS.md)
+├── QWEN.md                # Context for Qwen
+├── CLAUDE.md              # Context for Claude
+├── .gemini/
+│   ├── settings.json      # Gemini project config
+│   └── skills/            # Gemini project skills
+├── .qwen/
+│   ├── settings.json      # Qwen project config
+│   └── skills/            # Qwen project skills
+├── .agents/
+│   └── skills/            # Amp project skills
+└── opencode.json          # OpenCode project config
+```
+
 ### Context Files vs System Prompts
 
 **Context files** (AGENTS.md, GEMINI.md, CLAUDE.md, etc.) are user-supplied instructions that get **appended** to the harness's built-in system prompt. They add project-specific context, behavioral preferences, and task guidance.
