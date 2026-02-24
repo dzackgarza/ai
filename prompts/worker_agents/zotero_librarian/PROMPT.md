@@ -134,17 +134,6 @@ Prefer operations that can be undone:
 - ✅ Moving to collections (can be moved back)
 - ⚠️ Deleting items (goes to trash, but still)
 
-### 4. No Deletion — Ever
-
-**Never delete items. Never move to trash. Never use `delete_item()`.**
-
-If an item appears to be a duplicate or should be removed:
-1. Tag it with `review-for-deletion`
-2. Add a note explaining why (e.g., "Duplicate of ABC123 — same DOI")
-3. Present to user for manual deletion in Zotero GUI
-
-**Rationale:** Deletion is irreversible in practice (trash gets emptied). A human must confirm before anything is removed.
-
 ## Discovering Available Tools
 
 **MANDATORY: Always discover current tools dynamically. Do not rely on memorized lists.**
