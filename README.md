@@ -51,6 +51,26 @@
 - Uses `CLAUDE.md` at project root and parent directories
 - Skills via custom slash commands
 
+### Context Files vs System Prompts
+
+**Context files** (AGENTS.md, GEMINI.md, CLAUDE.md, etc.) are user-supplied instructions that get **appended** to the harness's built-in system prompt. They add project-specific context, behavioral preferences, and task guidance.
+
+**System prompts** are the harness's built-in instructions ("You are a helpful assistant..."). Some harnesses allow **replacing** this entirely via environment variables:
+
+| Harness | Context File (appended) | System Prompt Override (replaces) |
+|---------|------------------------|-----------------------------------|
+| Gemini | GEMINI.md | `GEMINI_SYSTEM_MD` env var |
+| Qwen | QWEN.md | `QWEN_SYSTEM_MD` env var |
+| OpenCode | AGENTS.md | `prompt` field in agent config |
+| Claude | CLAUDE.md | — |
+| Codex | AGENTS.md | — |
+| Amp | AGENTS.md | — |
+
+**When to override the system prompt:**
+- You want complete control over agent behavior
+- The built-in prompt conflicts with your workflow
+- You're building a specialized tool on top of the harness
+
 ### System Prompt Override
 
 Some harnesses allow replacing their built-in system prompt entirely. This is different from context files (AGENTS.md, GEMINI.md) which are appended to the prompt.
@@ -59,18 +79,21 @@ Some harnesses allow replacing their built-in system prompt entirely. This is di
 
 Set `GEMINI_SYSTEM_MD` environment variable:
 ```bash
-# Use .gemini/system.md in project
+# Use .gemini/system.md in project (fixed path)
 GEMINI_SYSTEM_MD=true gemini
 
-# Use custom file
+# Use custom file (variable holds the path)
 GEMINI_SYSTEM_MD=/path/to/my-system.md gemini
-
-# Use file in home directory
-GEMINI_SYSTEM_MD=~/prompts/system.md gemini
 
 # Disable override (use built-in)
 GEMINI_SYSTEM_MD=false gemini
 ```
+
+| Value | Behavior |
+|-------|----------|
+| `true` or `1` | Uses `.gemini/system.md` in project |
+| `/path/to/file.md` | Uses that file |
+| `false` or `0` | Uses built-in system prompt |
 
 Can also persist in `.gemini/.env`:
 ```
@@ -85,6 +108,22 @@ Forked from Gemini CLI - same mechanism with `QWEN_SYSTEM_MD`:
 ```bash
 QWEN_SYSTEM_MD=/path/to/system.md qwen
 ```
+
+**OpenCode** ([docs](https://opencode.ai/docs/agents/)):
+
+OpenCode uses custom agents to replace the system prompt. Define an agent in `opencode.json`:
+```json
+{
+  "agent": {
+    "interactive": {
+      "prompt": "You are a helpful assistant...",
+      "model": "anthropic/claude-sonnet-4"
+    }
+  }
+}
+```
+
+The `prompt` field completely replaces the built-in system prompt for that agent.
 
 ## Prompts
 
