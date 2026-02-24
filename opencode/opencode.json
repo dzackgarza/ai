@@ -556,6 +556,31 @@
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/executor.md}"
     },
+    "autonomous": {
+      "description": "Autonomous execution engine - receives plans from interactive and executes without user interaction",
+      "mode": "primary",
+      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/autonomous.md}"
+    },
+    "repo_steward": {
+      "description": "Repo steward - autonomous repository maintenance and optimization",
+      "mode": "primary",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}"
+    },
+    "lattice_interface": {
+      "description": "Agent supervisor - multi-agent orchestration within lattice interface",
+      "mode": "primary",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/agent_supervisor/prompt.md}"
+    },
+    "documentation_specialist": {
+      "description": "Documentation specialist - generates and maintains documentation",
+      "mode": "primary",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/documentation_specialist/prompt.md}"
+    },
+    "zotero_librarian": {
+      "description": "Zotero librarian - manages and maintains Zotero reference libraries",
+      "mode": "primary",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}"
+    },
     "artifact-searcher": {
       "description": "Searches serena memories for relevant past work, patterns, and lessons learned",
       "mode": "subagent",
@@ -575,6 +600,11 @@
       "description": "Explains HOW code works with file:line references",
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-analyzer.md}"
+    },
+    "codebase-locator": {
+      "description": "Finds WHERE files are located in the codebase",
+      "mode": "subagent",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-locator.md}"
     },
     "implementer": {
       "description": "Implements ONE micro-task: creates ONE file and its test, verifies test passes",
@@ -600,6 +630,21 @@
       "description": "Reviews ONE micro-task: verifies file and test match the plan",
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/reviewer.md}"
+    },
+    "test_engineer": {
+      "description": "Designs test strategies and ensures test quality",
+      "mode": "subagent",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/test_engineer/prompt.md}"
+    },
+    "ops_engineer": {
+      "description": "Handles operational tasks and infrastructure",
+      "mode": "subagent",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/ops_engineer/prompt.md}"
+    },
+    "type_designer": {
+      "description": "Designs type systems and interface contracts",
+      "mode": "subagent",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
     }
   }
 }
