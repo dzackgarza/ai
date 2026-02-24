@@ -11,6 +11,31 @@ Your agents fail because your prompts suck. This skill fixes that.
 
 ---
 
+## Reference Files
+
+**Read these subdocs ALWAYS when writing prompts—every prompt is context engineering:**
+
+| Subdoc | When to Read |
+|--------|-------------|
+| `reference/context-patterns.md` | Always—for structuring ANY prompt's context (Pyramid, Select Don't Dump, Attention Anchoring, Grounding, etc.) |
+| `reference/research-findings.md` | When writing agent prompts, need research-backed techniques (rule-based prompting, parallel tool calling), or want to optimize tool use |
+
+### Templates
+
+| Template | When to Use |
+|----------|-------------|
+| `templates/builder-agent.md` | When prompting an agent to implement code/features |
+| `templates/research-agent.md` | When prompting an agent to research/gather information |
+| `templates/review-agent.md` | When prompting an agent to review code/specs |
+
+### Examples
+
+| Example | When to Read |
+|---------|-------------|
+| `examples/active-agents.md` | When tracking multiple running agents, need to maintain agent status |
+
+---
+
 ## The Core Problem
 
 You're not prompting. **You're praying.**
@@ -621,6 +646,10 @@ abstracts = fetch_abstracts([p.id for p in papers[:5]])
 
 ---
 
+**For detailed context patterns (Pyramid, Select Don't Dump, Isolate, Grounding, etc.), see:** `reference/context-patterns.md`
+
+---
+
 ### How To Apply This
 
 **Step 1: Identify Critical Actions**
@@ -700,9 +729,7 @@ You help users maintain high-quality Zotero libraries.
 
 ---
 
-**Sources:**
-- [arxiv:2509.00482](https://arxiv.org/abs/2509.00482) — Rule-based prompting (Sept 2025)
-- [arxiv:2602.07359](https://arxiv.org/abs/2602.07359) — Parallel tool calling (Feb 2026)
+**For research-backed findings and techniques, see:** `reference/research-findings.md`
 
 ---
 

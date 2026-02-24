@@ -134,14 +134,6 @@ Follow git commit guidelines from your environment's commit standards. Include:
 - Issue count and type breakdown
 - Example: `ledger: 2026-02-24 session — 7 new issues (2 regressions, 3 gaps, 2 opportunities)`
 
-## Output Format
-
-After each session, report:
-- Issues found: N
-- Issues by type: gap (N), inconsistency (N), etc.
-- Commit hash
-
-## Constraints
 
 - MUST spawn subagents before reasoning
 - MUST include a Repo Orientation Auditor as Subagent 1 every session
@@ -155,3 +147,131 @@ After each session, report:
 - If subagents find nothing: Spawn more subagents with different focus areas
 - If duplicate found: Skip and note in session summary
 - If blocked: Document as opportunity type in ledger
+
+## Trivial Tasks - DO NOT STOP AFTER FINDING ONLY THESE
+
+**You MUST continue scanning until you find substantive issues.** Trivial mechanical fixes alone do NOT constitute a proper ledger session.
+
+### Trivial Fixes (NOT standalone ledger items)
+
+These are mechanical fixes that take <5 minutes each. Finding only these means you have NOT scanned deeply enough:
+
+**Error Handling Wrappers**
+- Wrap X in try/except
+- Add null check before Y
+- Catch specific exception type
+
+**Test Tweaks**
+- Move shared state inside test function
+- Add missing assertion
+- Fix incorrect method name in test
+
+**Code Cleanup**
+- Extract 2-line duplicate code to helper
+- Move duplicate property to base class
+- Fix broken file path in docs
+
+**Configuration**
+- Add file to .gitignore
+- Update path reference
+
+### What Counts as Substantive
+
+**Substantive issues require thought or effort:**
+- Writing a new test suite (multiple files, coverage strategy)
+- Refactoring a 100+ line function (thoughtful decomposition)
+- Missing upstream documentation (research, download, organize)
+- Architectural gaps (design decisions, trade-offs)
+- Behavioral bugs (logic errors, not missing error handlers)
+
+### Rule
+
+**If your session finds only trivial fixes, you have NOT completed your task.** Spawn more subagents with different focus areas. Dig deeper into:
+- Interface contracts vs implementation gaps
+- Test coverage for untested modules
+- Documentation gaps in research/algorithm docs
+- Architectural inconsistencies
+
+**Minimum:** At least 3 substantive issues per session, or keep scanning.
+
+## Defensive Bloat - DO NOT SUGGEST UNNECESSARY ERROR HANDLING
+
+**Do NOT flag missing error handling for conditions that cannot occur or are hard requirements.** Adding defensive code for impossible states is bloat, not quality.
+
+### Questions to Ask Before Flagging "Missing Error Handling"
+
+1. **Is this a hard requirement or invariant?**
+   - If the code REQUIRES a git repo to function, crashing on non-repo is CORRECT behavior
+   - Don't suggest "handle InvalidGitRepositoryError" if the tool is git-specific
+
+2. **Has this error ever been observed?**
+   - No crash reports + no user complaints = likely not a real issue
+   - Don't add error paths for errors that don't occur
+
+3. **Would handling this error make the tool less correct?**
+   - Some errors SHOULD crash (corrupt state, violated invariants)
+   - Silent failure is often worse than explicit crash
+
+4. **Is the "error" actually a configuration mistake?**
+   - User sets wrong path → crash is appropriate feedback
+   - Don't suggest "handle gracefully" for user errors
+
+### Examples of Defensive Bloat (NOT issues)
+
+**Git Repository Checks**
+- "Add error handling for non-git directory" — Tool requires git repo; crash is correct
+- "Check if .git exists before operations" — Invariant, not optional
+
+**File Existence Checks**
+- "Handle missing config file" — Config is required; fail fast is correct
+- "Check if input file exists" — Pipeline requires input; crash tells user to fix
+
+**Type/Format Validation**
+- "Handle invalid event type from parser" — If schema is contract, invalid = bug, not runtime error
+- "Validate JSON structure" — Parser's job; malformed input should fail
+
+**Environment Variables**
+- "Handle missing required env var" — Required means required; crash is appropriate
+
+### What IS a Real Error Handling Issue
+
+**Real issues handle OBSERVED or LIKELY problems:**
+- Network requests that timeout (observed in logs)
+- User input that varies (file uploads, form data)
+- External API responses that change (third-party services)
+- Race conditions in concurrent code (documented bugs)
+- Resource exhaustion (disk full, memory limits)
+
+### Rule
+
+**Before flagging "missing error handling":**
+1. Check if the error has been observed in production/logs
+2. Ask: "Should this crash, or should it recover?"
+3. If crash is correct behavior → NOT an issue
+4. If the condition is a hard requirement → NOT an issue
+
+**Defensive code for impossible states is technical debt, not quality.**
+
+### Single Test Failures (NOT ledger items)
+
+**Do NOT document single failing tests as ledger issues.** A single test failure is trivial to verify and fix:
+
+```bash
+just test                          # Run test suite
+pytest tests/path/to/test.py -v    # Run specific test
+```
+
+**If a test fails:**
+1. Read the error message
+2. Fix the test (wrong assertion, outdated API, typo)
+3. Or delete it (obsolete test)
+
+**This is NOT steward work.** This is basic CI - run the test, read the output, fix it. Documenting a test failure without verifying it first is pointless - the entry could be wrong.
+
+**What IS steward work:**
+- Entire test modules missing (no tests for a module)
+- Missing coverage guards across test files
+- Systemic test quality issues (weak assertions everywhere)
+- Interface contracts not tested
+
+**Rule:** A single failing test = fix it, don't document it.

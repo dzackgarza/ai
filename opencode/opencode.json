@@ -549,6 +549,7 @@
   "default_agent": "interactive",
   "plugin": [
     "opencode-antigravity-auth@latest",
+    "opencode-anthropic-auth@latest",
     "opencode-qwencode-auth",
     "cc-safety-net",
     "@azumag/opencode-rate-limit-fallback",
