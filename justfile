@@ -13,6 +13,7 @@ install:
     @ln -sf {{repo}}/AGENTS.md ~/.config/opencode/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.config/amp/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.config/AGENTS.md
+    @ln -sf {{repo}}/opencode/opencode.json ~/.config/opencode/opencode.json
     @ln -sf {{repo}}/skills ~/.claude/skills
     @ln -sf {{repo}}/skills ~/.gemini/skills
     @ln -sf {{repo}}/skills ~/.agents/skills
