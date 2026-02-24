@@ -8,9 +8,9 @@
 | codex | `~/.codex/AGENTS.md` | `AGENTS.md` in project root | — | — | [docs](https://developers.openai.com/codex/guides/agents-md/) |
 | gemini | `~/.gemini/GEMINI.md` | `GEMINI.md` in workspace | `GEMINI_SYSTEM_MD` env var | `~/.gemini/skills/`, `~/.agents/skills/` | [context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/), [system](https://geminicli.com/docs/cli/system-prompt/) |
 | qwen | `~/.qwen/QWEN.md` | `QWEN.md` in workspace | `QWEN_SYSTEM_MD` env var | `~/.qwen/skills/` | [docs](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) |
-| opencode | `~/.config/opencode/AGENTS.md` | `AGENTS.md` in project root | — | `~/.claude/skills/` (fallback) | [docs](https://opencode.ai/docs/rules/) |
+| opencode | `~/.config/opencode/AGENTS.md` | `AGENTS.md` in project root | `prompt` field in agent config | `~/.claude/skills/` (fallback) | [docs](https://opencode.ai/docs/rules/) |
+| kilo | `~/.config/kilo/AGENTS.md` | `AGENTS.md` in project root | `prompt` field in agent config | `~/.kilocode/skills/` | [docs](https://kilo.ai/docs/agent-behavior/agents-md/), [skills](https://kilo.ai/docs/agent-behavior/skills) |
 | amp | `~/.config/amp/AGENTS.md`, `~/.config/AGENTS.md` | `AGENTS.md` in cwd, parent dirs, subtrees | — | `~/.config/agents/skills/`, `~/.config/amp/skills/`, `.agents/skills/`, `.claude/skills/`, `~/.claude/skills/` | [docs](https://ampcode.com/manual) |
-| kilo | `~/.kilocode/` | — | — | `~/.kilocode/skills/` | local (docs TBD) |
 
 **Master files (symlinked to all harnesses):**
 - Context file: `~/ai/AGENTS.md`
@@ -51,6 +51,13 @@
 - Uses `CLAUDE.md` at project root and parent directories
 - Skills via custom slash commands
 
+**Kilo** ([AGENTS.md](https://kilo.ai/docs/agent-behavior/agents-md/), [skills](https://kilo.ai/docs/agent-behavior/skills)):
+- Forked from OpenCode, uses similar configuration
+- Global: `~/.config/kilo/AGENTS.md`
+- Project: `AGENTS.md` in project root
+- Skills: `~/.kilocode/skills/` (global), `.kilocode/skills/` (project)
+- System prompt override: `prompt` field in agent config (same as OpenCode)
+
 ### Project-Local Configuration
 
 Each harness looks for configuration files in the project directory. Place these in your project root:
@@ -62,6 +69,7 @@ Each harness looks for configuration files in the project directory. Place these
 | Gemini | `GEMINI.md` | `.gemini/skills/` | `.gemini/settings.json` |
 | Qwen | `QWEN.md` | `.qwen/skills/` | `.qwen/settings.json` |
 | OpenCode | `AGENTS.md` | — | `opencode.json` |
+| Kilo | `AGENTS.md` | `.kilocode/skills/` | `.kilocode/launchConfig.json` |
 | Amp | `AGENTS.md` | `.agents/skills/` | — |
 
 **Precedence (workspace > user > built-in):**
@@ -71,13 +79,14 @@ Each harness looks for configuration files in the project directory. Place these
 | Gemini | Project `.gemini/GEMINI.md` > `~/.gemini/GEMINI.md` > JIT | `.agents/skills/` > `.gemini/skills/` > `~/.gemini/skills/` |
 | Qwen | Project `.qwen/QWEN.md` > `~/.qwen/QWEN.md` | `.qwen/skills/` > `~/.qwen/skills/` |
 | Codex | Walks project root → cwd reading `AGENTS.md` | — |
-| Amp | cwd → parent dirs (to `$HOME`) → subtrees | `.agents/skills/` > `.claude/skills/` > `~/.claude/skills/` |
 | OpenCode | `AGENTS.md` in project root > `~/.config/opencode/AGENTS.md` | `~/.claude/skills/` (fallback only) |
+| Kilo | `AGENTS.md` in project root > `~/.config/kilo/AGENTS.md` | `.kilocode/skills/` > `~/.kilocode/skills/` |
+| Amp | cwd → parent dirs (to `$HOME`) → subtrees | `.agents/skills/` > `.claude/skills/` > `~/.claude/skills/` |
 
 **Example project structure:**
 ```
 my-project/
-├── AGENTS.md              # Context for Codex, OpenCode, Amp
+├── AGENTS.md              # Context for Codex, OpenCode, Kilo, Amp
 ├── GEMINI.md              # Context for Gemini (or configure to read AGENTS.md)
 ├── QWEN.md                # Context for Qwen
 ├── CLAUDE.md              # Context for Claude
@@ -87,6 +96,9 @@ my-project/
 ├── .qwen/
 │   ├── settings.json      # Qwen project config
 │   └── skills/            # Qwen project skills
+├── .kilocode/
+│   ├── launchConfig.json  # Kilo project config
+│   └── skills/            # Kilo project skills
 ├── .agents/
 │   └── skills/            # Amp project skills
 └── opencode.json          # OpenCode project config
@@ -103,6 +115,7 @@ my-project/
 | Gemini | GEMINI.md | `GEMINI_SYSTEM_MD` env var |
 | Qwen | QWEN.md | `QWEN_SYSTEM_MD` env var |
 | OpenCode | AGENTS.md | `prompt` field in agent config |
+| Kilo | AGENTS.md | `prompt` field in agent config |
 | Claude | CLAUDE.md | — |
 | Codex | AGENTS.md | — |
 | Amp | AGENTS.md | — |
