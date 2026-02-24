@@ -45,6 +45,21 @@
         "-y",
         "@fastmcp-me/cut-copy-paste-mcp"
       ]
+    },
+    "morph-mcp": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@morphllm/morphmcp",
+        "--api-key",
+        "REDACTED_API_KEY"
+      ],
+      "enabled": true,
+      "environment": {
+        "MORPH_API_KEY": "REDACTED_API_KEY",
+        "ENABLED_TOOLS": "edit_file,warpgrep_codebase_search"
+      }
     }
   },
   "provider": {
@@ -535,10 +550,10 @@
   "plugin": [
     "opencode-antigravity-auth@latest",
     "opencode-qwencode-auth",
-    "opencode-openai-codex-auth",
     "cc-safety-net",
     "@azumag/opencode-rate-limit-fallback",
-    "@ramtinj95/opencode-tokenscope"
+    "@ramtinj95/opencode-tokenscope",
+    "opencode-openai-codex-auth"
   ],
   "agent": {
     "minimal": {

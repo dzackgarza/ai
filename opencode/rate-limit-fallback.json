@@ -1,5 +1,6 @@
 {
   "enabled": true,
+  "headlessOnRateLimit": "abort",
   "cooldownMs": 60000,
   "fallbackMode": "cycle",
   "maxSubagentDepth": 10,

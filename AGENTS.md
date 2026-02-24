@@ -188,9 +188,57 @@ Subagents have their own prompts, definitions, and output formats. Orchestrate t
 
 ## Web Search
 
-For knowledge-based tasks NOT strictly local (docs, capabilities, dependencies):
-- Use any available web search tool (e.g., `kindly`, `exa`, `tavily`)
-- Use `warpgrep_codebase_search` for code search
+**Use `kindly_web_search` for all web searches.** Never use `google_search`.
+
+- Use `kindly` for coding questions, documentation, tutorials
+- Use `kindly_get_content` to fetch specific URLs
+
+---
+
+## Context7 for Documentation
+
+**Use Context7 for ALL questions about libraries, frameworks, or APIs.**
+
+1. `context7_resolve-library-id` — Get library ID from package name
+2. `context7_query-docs` — Query docs with specific questions
+
+This applies to: any question about how to use a library, framework features, API methods, etc.
+
+---
+
+## Morph for Edits
+
+**Use `morph_edit` for all nontrivial file edits.** See `morph-edit` skill for detailed guidance.
+
+| Situation | Tool | Reason |
+|-----------|------|--------|
+| Small, exact replacement | `edit` | Fast, no API call |
+| Large file (500+ lines) | `morph_edit` | Handles partial snippets |
+| Multiple scattered changes | `morph_edit` | Batch efficiently |
+| Complex refactoring | `morph_edit` | AI understands context |
+
+---
+
+## WarpGrep for Code Search
+
+**Use `morph-mcp_warpgrep_codebase_search` for exploratory code searches.** See [Morph WarpGrep docs](https://docs.morphllm.com/sdk/components/warp-grep) for details.
+
+**Decision: Can you write the grep pattern?**
+- Yes → `grep` (fast, targeted)
+- No (natural language question) → `warpgrep` (exploratory)
+
+| Use WarpGrep When... | Use Grep When... |
+|---------------------|------------------|
+| "How does X work?" | Known function name |
+| "Where is auth handled?" | Specific pattern/regex |
+| Tracing code across files | Quick existence check |
+| Unknown location | Known file/directory |
+
+**Examples:**
+- WarpGrep: "How does the moderation appeals flow work?"
+- Grep: `pattern="fileAppeal"` or `pattern="class.*Service"`
+
+**Anti-patterns:** Don't use WarpGrep for quick lookups (5-10s latency) or known file reads.
 
 ---
 
@@ -210,17 +258,6 @@ Always favor mature dependencies. Don't reinvent wheels.
 4. **Recover lost content** — If unintentional, add it back
 
 See what you lost. If valuable, keep it.
-
----
-
-## morph_edit vs edit
-
-| Situation | Tool | Reason |
-|-----------|------|--------|
-| Small, exact replacement | `edit` | Fast, no API call |
-| Large file (500+ lines) | `morph_edit` | Handles partial snippets |
-| Multiple scattered changes | `morph_edit` | Batch efficiently |
-| Whitespace-sensitive | `morph_edit` | Forgiving with formatting |
 
 ---
 

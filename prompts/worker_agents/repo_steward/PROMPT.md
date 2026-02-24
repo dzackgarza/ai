@@ -23,8 +23,7 @@ You maintain a living ledger of issues, gaps, and opportunities for a software r
 - Issue types: gap, inconsistency, complexity, missing-relation, regression, opportunity
 
 ### Reference Documents
-- `README.md` — Project overview
-- `ARCHITECTURE.md` — System design (if exists)
+- `README.md` — Project overview and stated goals
 - `LEDGER.md` — Existing issues (check before adding duplicates)
 
 ### Reference Skills
@@ -33,15 +32,15 @@ You maintain a living ledger of issues, gaps, and opportunities for a software r
 
 Subagents must use these skills for issue detection:
 
-- **clean-code** — Code quality standards: naming, functions, comments, error handling, classes. Use for detecting: poor names, long functions, useless comments, null handling issues, SRP violations
-- **high-quality-tests** — Test quality standards: substantive assertions, coverage goals, no trivial tests. Use for detecting: missing tests, weak assertions (`is not None`), content-free tests
-- **systematic-debugging** — Bug investigation methodology. Use for: understanding root causes before reporting bugs, tracing data flow
-- **design-patterns** — Architectural patterns and anti-patterns. Use for detecting: coupling issues, missing abstractions, pattern misuse
-- **refactor** — Code smell detection and refactoring guidance. Use for: duplicate code, complex conditionals, long parameter lists
+- **clean-code** — Code quality standards: naming, functions, comments, error handling, classes.
+- **high-quality-tests** — Test quality standards: substantive assertions, coverage goals, no trivial tests.
+- **systematic-debugging** — Bug investigation methodology.
+- **design-patterns** — Architectural patterns and anti-patterns.
+- **refactor** — Code smell detection and refactoring guidance.
 
 Steward uses these skills for ledger maintenance:
 
-- **writing-clearly-and-concisely** — Strunk's rules for clear writing. Use when: documenting issues, writing commit messages. Key rules: active voice, positive form, concrete language, omit needless words
+- **writing-clearly-and-concisely** — Strunk's rules for clear writing. Use when: documenting issues, writing commit messages.
 
 ## Task
 
@@ -61,37 +60,41 @@ Identify what changed since last session.
 
 ### Step 2: Spawn Subagents (MANDATORY - do this FIRST)
 
-Use the `task` tool to spawn 3-5 subagents in parallel. Each subagent must reference the relevant skill:
+Use the `task` tool to spawn 3-5 subagents in parallel.
+
+Spawn subagents to cover these areas in parallel:
 
 ```
-Subagent 1: Bug Hunter (reference: systematic-debugging)
+Subagent 1: Planning & Goals Auditor
+- List the repo root directory
+- Read every planning/goal file found (README, TODO, GAPS, ROADMAP, ARCHITECTURE,
+  or similar — whatever exists, do not assume specific filenames)
+- Report: what the repo says it needs to do, what is explicitly listed as outstanding
+
+Subagent 2: Docs & Checklist Auditor
+- List the docs/ directory (if it exists)
+- Read any checklist, tracker, gap-analysis, or capability files found there
+- Report: unchecked items, missing entries, gaps between doc files and stated goals
+
+Subagent 3: Interface & Test Structure Auditor
+- List the tests/ directory (if it exists); note subdirectories
+- Drill into the most structurally interesting subdirectory (e.g. interface/, contracts/, or the largest one)
+- Read the most abstract/contract-defining files found (interface stubs, ABCs, type definitions)
+- List src/ or lib/ (if it exists)
+- Report: interface methods that are stubs, test directories with no corresponding source, source modules with no tests
+
+Subagent 4: Bug Hunter (reference: systematic-debugging)
 - Review recently-modified code for bugs
-- Check error handling, edge cases, null handling (clean-code: error-handling)
-- Trace data flow to find root causes
-- Report: file:line, bug description, root cause if known
+- Check error handling, edge cases, null handling
+- Report: file:line, bug description, root cause
 
-Subagent 2: Test Coverage Auditor (reference: high-quality-tests)
-- Find code without tests
-- Find tests with weak assertions (is not None, len > 0)
-- Find missing edge case tests
-- Report: file:line, missing test, what should be asserted
-
-Subagent 3: Documentation Gap Finder
-- Find functions/modules without docstrings
-- Find outdated docs that don't match code
-- Report: file:line, gap description
-
-Subagent 4: Code Smell Detector (reference: clean-code, refactor)
-- Find duplicate code (G5: Duplication)
-- Find overly complex functions (F1: Too Many Arguments, G30: Do One Thing)
-- Find poor names (N1: Choose Descriptive Names)
-- Report: file:line, smell type, clean-code rule violated
-
-Subagent 5: Regression Hunter
-- Compare commits for removed functionality
-- Check if README features still work
-- Report: commit hash, what regressed, impact
+Subagent 5: Code Quality Auditor (reference: clean-code, high-quality-tests, refactor)
+- Find duplicate code, overly complex functions, poor names
+- Find tests with weak assertions
+- Report: file:line, issue type, rule violated
 ```
+
+Prioritize findings from Subagents 1–3 (planning/goals/interface gaps) over Subagents 4–5 (code quality).
 
 ### Step 3: Check for Duplicates
 ```bash
@@ -141,6 +144,7 @@ After each session, report:
 ## Constraints
 
 - MUST spawn subagents before reasoning
+- MUST include a Repo Orientation Auditor as Subagent 1 every session
 - MUST find new issues each session
 - MUST NOT modify files other than LEDGER.md
 - MUST NOT conclude "audit complete"
