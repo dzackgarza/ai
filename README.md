@@ -2,15 +2,15 @@
 
 ## Harnesses
 
-| Harness | Global System Prompt | Project System Prompt | Skills Directories | Source |
-|---------|---------------------|----------------------|-------------------|--------|
-| claude | `~/.claude/CLAUDE.md` | `CLAUDE.md` in project root | custom slash commands | [docs](https://docs.anthropic.com/en/docs/claude-code/overview) |
-| codex | `~/.codex/AGENTS.md` | `AGENTS.md` in project root | — | [docs](https://developers.openai.com/codex/guides/agents-md/) |
-| gemini | `~/.gemini/GEMINI.md` | `GEMINI.md` in workspace | `~/.gemini/skills/`, `~/.agents/skills/` | [context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/) |
-| qwen | `~/.qwen/QWEN.md` | `QWEN.md` in workspace | `~/.qwen/skills/` | [docs](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) |
-| opencode | `~/.config/opencode/AGENTS.md` | `AGENTS.md` in project root | `~/.claude/skills/` (fallback) | [docs](https://opencode.ai/docs/rules/) |
-| amp | `~/.config/amp/AGENTS.md`, `~/.config/AGENTS.md` | `AGENTS.md` in cwd, parent dirs, subtrees | `~/.config/agents/skills/`, `~/.config/amp/skills/`, `.agents/skills/`, `.claude/skills/`, `~/.claude/skills/` | [docs](https://ampcode.com/manual) |
-| kilo | `~/.kilocode/` | — | `~/.kilocode/skills/` | local (docs TBD) |
+| Harness | Global System Prompt | Project System Prompt | System Prompt Override | Skills Directories | Source |
+|---------|---------------------|----------------------|----------------------|-------------------|--------|
+| claude | `~/.claude/CLAUDE.md` | `CLAUDE.md` in project root | — | custom slash commands | [docs](https://docs.anthropic.com/en/docs/claude-code/overview) |
+| codex | `~/.codex/AGENTS.md` | `AGENTS.md` in project root | — | — | [docs](https://developers.openai.com/codex/guides/agents-md/) |
+| gemini | `~/.gemini/GEMINI.md` | `GEMINI.md` in workspace | `GEMINI_SYSTEM_MD` env var | `~/.gemini/skills/`, `~/.agents/skills/` | [context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/), [system](https://geminicli.com/docs/cli/system-prompt/) |
+| qwen | `~/.qwen/QWEN.md` | `QWEN.md` in workspace | `QWEN_SYSTEM_MD` env var | `~/.qwen/skills/` | [docs](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) |
+| opencode | `~/.config/opencode/AGENTS.md` | `AGENTS.md` in project root | — | `~/.claude/skills/` (fallback) | [docs](https://opencode.ai/docs/rules/) |
+| amp | `~/.config/amp/AGENTS.md`, `~/.config/AGENTS.md` | `AGENTS.md` in cwd, parent dirs, subtrees | — | `~/.config/agents/skills/`, `~/.config/amp/skills/`, `.agents/skills/`, `.claude/skills/`, `~/.claude/skills/` | [docs](https://ampcode.com/manual) |
+| kilo | `~/.kilocode/` | — | — | `~/.kilocode/skills/` | local (docs TBD) |
 
 **Master files (symlinked to all harnesses):**
 - System prompt: `~/ai/AGENTS.md`
@@ -23,15 +23,20 @@
 - Project scope: Walks from project root to cwd, reading `AGENTS.md` or `AGENTS.override.md`
 - Fallback filenames configurable via `project_doc_fallback_filenames`
 
-**Gemini CLI** ([context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/)):
+**Gemini CLI** ([context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/), [system prompt](https://geminicli.com/docs/cli/system-prompt/)):
 - Context hierarchy: Global (`~/.gemini/GEMINI.md`) → Workspace → JIT (auto-scans when accessing dirs)
 - Custom filename via `context.fileName` setting: `{"context": {"fileName": ["AGENTS.md", "GEMINI.md"]}}`
 - Skills precedence: Workspace > User > Extension; `.agents/skills/` takes precedence over `.gemini/skills/`
+- **System prompt override**: Set `GEMINI_SYSTEM_MD` environment variable to replace built-in system prompt:
+  - `GEMINI_SYSTEM_MD=true` — Use `.gemini/system.md` in project
+  - `GEMINI_SYSTEM_MD=/path/to/file.md` — Use custom file
+  - `GEMINI_SYSTEM_MD=false` — Disable override, use built-in
 
 **Qwen Code** ([source](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/)):
 - Forked from Gemini CLI, uses similar context system
 - Default context file: `QWEN.md` (configurable via `context.fileName`)
 - Skills from `.qwen/skills/` (workspace) and `~/.qwen/skills/` (user)
+- **System prompt override**: Same as Gemini CLI, use `QWEN_SYSTEM_MD` environment variable
 
 **OpenCode** ([source](https://opencode.ai/docs/rules/)):
 - Global: `~/.config/opencode/AGENTS.md`
@@ -138,9 +143,7 @@ Each worker has `prompt.md` + `example_tasks/` showing autonomous work they can 
 
 ### System Prompts (`~/ai/prompts/system_prompts/`)
 
-| File | Description |
-|------|-------------|
-| system.md | General system prompt template |
+System prompts are merged into the interactive agent prompt. See `prompts/interactive_agents/interactive.md`.
 
 ## MCP Servers
 
