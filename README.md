@@ -2,7 +2,7 @@
 
 ## Harnesses
 
-| Harness | Global System Prompt | Project System Prompt | System Prompt Override | Skills Directories | Source |
+| Harness | Global Context File | Project Context File | System Prompt Override | Skills Directories | Source |
 |---------|---------------------|----------------------|----------------------|-------------------|--------|
 | claude | `~/.claude/CLAUDE.md` | `CLAUDE.md` in project root | — | custom slash commands | [docs](https://docs.anthropic.com/en/docs/claude-code/overview) |
 | codex | `~/.codex/AGENTS.md` | `AGENTS.md` in project root | — | — | [docs](https://developers.openai.com/codex/guides/agents-md/) |
@@ -13,7 +13,7 @@
 | kilo | `~/.kilocode/` | — | — | `~/.kilocode/skills/` | local (docs TBD) |
 
 **Master files (symlinked to all harnesses):**
-- System prompt: `~/ai/AGENTS.md`
+- Context file: `~/ai/AGENTS.md`
 - Skills: `~/ai/skills/` (29 skills)
 
 ### Verified Details
@@ -27,16 +27,13 @@
 - Context hierarchy: Global (`~/.gemini/GEMINI.md`) → Workspace → JIT (auto-scans when accessing dirs)
 - Custom filename via `context.fileName` setting: `{"context": {"fileName": ["AGENTS.md", "GEMINI.md"]}}`
 - Skills precedence: Workspace > User > Extension; `.agents/skills/` takes precedence over `.gemini/skills/`
-- **System prompt override**: Set `GEMINI_SYSTEM_MD` environment variable to replace built-in system prompt:
-  - `GEMINI_SYSTEM_MD=true` — Use `.gemini/system.md` in project
-  - `GEMINI_SYSTEM_MD=/path/to/file.md` — Use custom file
-  - `GEMINI_SYSTEM_MD=false` — Disable override, use built-in
+- System prompt override: See [System Prompt Override](#system-prompt-override) section
 
 **Qwen Code** ([source](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/)):
 - Forked from Gemini CLI, uses similar context system
 - Default context file: `QWEN.md` (configurable via `context.fileName`)
 - Skills from `.qwen/skills/` (workspace) and `~/.qwen/skills/` (user)
-- **System prompt override**: Same as Gemini CLI, use `QWEN_SYSTEM_MD` environment variable
+- System prompt override: See [System Prompt Override](#system-prompt-override) section
 
 **OpenCode** ([source](https://opencode.ai/docs/rules/)):
 - Global: `~/.config/opencode/AGENTS.md`
@@ -53,6 +50,41 @@
 **Claude Code** ([source](https://docs.anthropic.com/en/docs/claude-code/overview)):
 - Uses `CLAUDE.md` at project root and parent directories
 - Skills via custom slash commands
+
+### System Prompt Override
+
+Some harnesses allow replacing their built-in system prompt entirely. This is different from context files (AGENTS.md, GEMINI.md) which are appended to the prompt.
+
+**Gemini CLI** ([docs](https://geminicli.com/docs/cli/system-prompt/)):
+
+Set `GEMINI_SYSTEM_MD` environment variable:
+```bash
+# Use .gemini/system.md in project
+GEMINI_SYSTEM_MD=true gemini
+
+# Use custom file
+GEMINI_SYSTEM_MD=/path/to/my-system.md gemini
+
+# Use file in home directory
+GEMINI_SYSTEM_MD=~/prompts/system.md gemini
+
+# Disable override (use built-in)
+GEMINI_SYSTEM_MD=false gemini
+```
+
+Can also persist in `.gemini/.env`:
+```
+GEMINI_SYSTEM_MD=1
+```
+
+When active, Gemini shows `|⌐■_■|` indicator in the UI.
+
+**Qwen Code**:
+
+Forked from Gemini CLI - same mechanism with `QWEN_SYSTEM_MD`:
+```bash
+QWEN_SYSTEM_MD=/path/to/system.md qwen
+```
 
 ## Prompts
 
@@ -140,10 +172,6 @@ Workers are domain-specific agents that can be:
 | documentation_specialist | Plan docs structure | Generate missing docs |
 
 Each worker has `prompt.md` + `example_tasks/` showing autonomous work they can complete.
-
-### System Prompts (`~/ai/prompts/system_prompts/`)
-
-System prompts are merged into the interactive agent prompt. See `prompts/interactive_agents/interactive.md`.
 
 ## MCP Servers
 
