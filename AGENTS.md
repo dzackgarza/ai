@@ -2,6 +2,35 @@
 
 <!-- OTP: X7K9-MNPR-QW42 -->
 
+---
+
+## ⚠️ CRITICAL: NEVER USE `rm` - ALWAYS USE TRASH
+
+**NEVER use `rm` for file deletions.** Use trash utilities so deletions can always be undone.
+
+| DO | DON'T |
+|----|-------|
+| `trash <file>` | `rm <file>` |
+| `gio trash <file>` | `rm -rf <dir>` |
+| `mv <file> ~/.local/share/Trash/files/` | `rmdir <dir>` |
+
+**Why:**
+- `rm` is irreversible - one mistake loses data forever
+- Trash utilities allow recovery from mistakes
+- You WILL make mistakes - plan for them
+
+**If `trash` is not installed:**
+```bash
+# Install trash-cli
+pip install trash-cli
+# or
+sudo apt install trash-cli
+```
+
+**Before deleting anything, ask yourself: "Can this be recovered if I'm wrong?"**
+
+---
+
 ## Task Difficulty Calibration
 
 You vastly overestimate task difficulty. Your estimates are based on human timescales—and even then, are orders of magnitude off.
