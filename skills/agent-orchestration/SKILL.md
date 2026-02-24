@@ -427,12 +427,222 @@ The gap between "AI doesn't work for me" and exceptional results isn't intellige
 The model matches your level of rigor.
 
 - Vague inputs → generic outputs
-- Structured inputs → structured outputs  
+- Structured inputs → structured outputs
 - Clear thinking → clear results
 
 You don't need to be smarter. You need to be clearer.
 
 **Clarity is a system, not a talent.**
+
+---
+
+## Research-Backed Findings
+
+### ⚠️ Outdated: Single-Tool Rules
+
+The section below cites arxiv:2509.00482 (Sept 2025), which recommended single-shot tool calling.
+
+**This is already outdated.** A February 2026 study (arxiv:2602.07359) shows:
+
+| Approach | Accuracy | Latency | Cost |
+|----------|----------|---------|------|
+| Single tool/turn | 66% | Baseline | Baseline |
+| **Parallel 3 tools/turn** | **68-73%** | **-40%** | **-35%** |
+
+**Modern models handle parallel tool calls reliably.** The "single-shot" rule was for models with brittle tool-calling capabilities.
+
+**What still applies:**
+- Action-first (call before explain) ✓
+- Schema-exact (precise names) ✓
+- Rules over identity ✓
+
+**What's outdated:**
+- Single-shot constraint ✗ (parallel is better)
+
+---
+
+### What Actually Works: Rule-Based Prompting
+
+**Citation:** [arxiv:2509.00482](https://arxiv.org/abs/2509.00482) — Tested across 1,000+ agent turns
+
+**Finding:** Explicit behavioral rules outperform identity-based prompts by 10%.
+
+| Approach | Score |
+|----------|-------|
+| No role | 0.519 |
+| "You are a..." | 0.523 |
+| Detailed persona | 0.533 |
+| AI-optimized | 0.538 |
+| **Rule-based constraints** | **0.571** |
+
+**Conclusion:** Don't describe WHO the agent is. Encode WHAT the agent must DO.
+
+---
+
+### Rule-Based Prompting: The Basics
+
+**Traditional prompt (weak):**
+```markdown
+You are a helpful research assistant. You are thorough and detail-oriented.
+```
+
+**Rule-based prompt (10% better):**
+```markdown
+## Operating Rules (Hard Constraints)
+
+1. **Search before answering** — Call `search_papers()` before conclusions
+2. **One source per claim** — Each statement cites exactly one paper
+3. **Show query, then results** — Print search query before showing papers
+```
+
+---
+
+### Techniques That Still Work (2026)
+
+#### Technique 1: Action-First Rules
+
+**Rule:** Tool calls come BEFORE explanation.
+
+```python
+# CORRECT
+results = search_papers("transformers")
+print(f"Found {len(results)} papers")
+
+# WRONG
+print("Let me search for papers...")
+results = search_papers("transformers")
+```
+
+**Why:** Models that explain first often forget to execute.
+
+---
+
+#### Technique 2: Schema-Exact Rules
+
+**Rule:** Method/parameter names must match exactly.
+
+```python
+# CORRECT
+add_tags(item_key="ABC123", tags=["needs-pdf"])
+
+# WRONG
+add_tags("ABC123", ["needs-pdf"])      # Missing param names
+addTags("ABC123", ["needs-pdf"])       # Wrong case
+```
+
+**Why:** 71% of tool failures come from parameter name drift.
+
+---
+
+#### Technique 3: Parallel Tool Calling (NEW 2026)
+
+**Rule:** Make 2-3 tool calls per turn when gathering information.
+
+**Citation:** [arxiv:2602.07359](https://arxiv.org/abs/2602.07359) — "Scaling Parallel Tool Calling for Efficient Deep Research Agents"
+
+```python
+# CORRECT for modern models (2026+)
+papers = search_papers("transformers")
+citations = get_citations(papers[0].id)
+abstracts = fetch_abstracts([p.id for p in papers[:5]])
+
+# All three calls happen in parallel
+```
+
+**Why parallel works:**
+- Broader search scope → better sources
+- Cross-validation → catches hallucinations
+- Fewer turns → 40% latency reduction
+
+**Optimal strategy:**
+- Early turns: 3 parallel calls (explore)
+- Middle turns: 2 parallel calls
+- Late turns: 1 call (exploit/converge)
+
+---
+
+### How To Apply This
+
+**Step 1: Identify Critical Actions**
+
+What does your agent do most?
+
+```
+Example: Zotero Librarian
+- find_items_without_pdf()
+- add_tags(key, tags)
+- list_collections()
+```
+
+**Step 2: Write Hard Constraints**
+
+```markdown
+## Operating Rules
+
+1. **Find before fixing** — Call `find_*()` before `add_*()` or `remove_*()`
+2. **Show count before listing** — Print `len(items)` before individual items
+3. **Parallel for read operations** — Batch `get_item()` calls when fetching multiple items
+```
+
+**Step 3: Put Rules First**
+
+First 100 tokens matter most.
+
+```markdown
+# Agent Name
+
+## Operating Rules (Hard Constraints)
+1. Rule one
+2. Rule two
+3. Rule three
+
+## Role
+You are...
+```
+
+---
+
+### Before/After Example
+
+**Before (identity-based):**
+```markdown
+You are a Zotero Librarian Agent. You help users manage their bibliographic
+libraries. You are thorough, detail-oriented, and always provide complete
+information.
+```
+
+**After (rule-based):**
+```markdown
+# Zotero Librarian Agent
+
+## Operating Rules (Hard Constraints)
+1. **Call tools first** — Execute before any explanation
+2. **Parallel reads, single writes** — Batch `get_*()` calls, one `add_*()` per turn
+3. **Exact method names** — `find_items_without_pdf()` not `find_no_pdf()`
+
+## Role
+You help users maintain high-quality Zotero libraries.
+```
+
+---
+
+### Key Takeaways
+
+1. **Identity is decoration** — "You are a..." adds ~0.004 performance (nothing)
+
+2. **Rules drive behavior** — Explicit constraints add ~0.05 (10% improvement)
+
+3. **First 100 tokens matter most** — Put rules before context
+
+4. **Parallel is better (2026+)** — 2-3 tool calls per turn for read operations
+
+5. **Enforce, don't suggest** — "Must" and "Always" beat "Please try to"
+
+---
+
+**Sources:**
+- [arxiv:2509.00482](https://arxiv.org/abs/2509.00482) — Rule-based prompting (Sept 2025)
+- [arxiv:2602.07359](https://arxiv.org/abs/2602.07359) — Parallel tool calling (Feb 2026)
 
 ---
 
