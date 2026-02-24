@@ -230,7 +230,14 @@ Without explicit anchoring, the model assumes everything is mutable—including 
 ## The Complete Template
 
 ```markdown
-## Identity
+## Operating Rules (Hard Constraints)
+
+1. **[Rule 1]** — [Specific action required]
+2. **[Rule 2]** — [Specific action required]
+3. **[Rule 3]** — [Specific action required]
+
+## Role
+
 You are a [specific role] with [specific expertise].
 [Behavioral traits and style]
 
@@ -243,9 +250,8 @@ You are a [specific role] with [specific expertise].
 ### Current State
 - [Relevant background]
 
-### Reference Docs
-- [Doc 1]: [what it contains]
-- [Doc 2]: [what it contains]
+### Reference Skills
+- **skill-name** — [What it provides, when to use]
 
 ## Task
 [Specific, measurable objective]
@@ -257,10 +263,6 @@ You are a [specific role] with [specific expertise].
 4. Finally, [verification step]
 
 Show your reasoning at each step.
-
-## User Stories
-1. As [user], I want [goal], so that [benefit]
-2. As [user], I want [goal], so that [benefit]
 
 ## Output Format
 [Exact specification of deliverable]
@@ -280,6 +282,63 @@ Show your reasoning at each step.
 3. If not, iterate until it does
 4. Only then report complete
 ```
+
+---
+
+## BEFORE Writing: Skill Harmony Check
+
+**MANDATORY: Before writing ANY agent prompt, you MUST:**
+
+### 1. Search Existing Skills
+
+```bash
+ls ~/.kilocode/skills/
+```
+
+Ask:
+- Which skills contain standards the agent must follow?
+- Which skills define processes the agent must use?
+- Which skills contain constraints the agent must respect?
+
+### 2. Cross-Reference Skills in Prompt
+
+**Every agent prompt MUST include a Reference Skills section:**
+
+```markdown
+## Reference Skills
+
+This agent must follow these standards:
+- **clean-code** — Code quality standards (naming, functions, error handling)
+- **high-quality-tests** — Test quality standards (substantive assertions, coverage)
+- **systematic-debugging** — Bug investigation methodology (root cause first)
+```
+
+### 3. Avoid Conflicting Directives
+
+**NEVER restate skill content in prompts.**
+
+| Wrong | Right |
+|-------|-------|
+| "Write tests first, watch them fail" | "**REQUIRED:** Follow test-driven-development skill" |
+| "Find root cause before fixing" | "**REQUIRED:** Follow systematic-debugging skill" |
+| "Use descriptive names" | "Reference clean-code skill for naming standards" |
+
+**Why:**
+- Guidance in multiple places becomes stale
+- Skills are version-controlled, prompts should reference not copy
+- Centralized guidance = maintained guidance
+
+### 4. Topic Centralization (DRY)
+
+| Topic | Skill | Prompt Should |
+|-------|-------|---------------|
+| Code quality | `clean-code` | Reference for standards |
+| Test quality | `high-quality-tests` | Reference for standards |
+| Debugging | `systematic-debugging` | Reference for methodology |
+| TDD | `test-driven-development` | Reference for workflow |
+| Git commits | `writing-clearly-and-concisely` | Reference for messages |
+
+**One topic = One source of truth.** Never duplicate.
 
 ---
 
@@ -410,10 +469,11 @@ You explain your reasoning. You suggest specific improvements, not vague feedbac
 - [ ] Context labeled (rules/state/history)?
 - [ ] Task specific and measurable?
 - [ ] Process described (not just output)?
-- [ ] User stories defined?
 - [ ] Output format specified?
 - [ ] Constraints explicit?
 - [ ] Error handling included?
+- [ ] **Reference skills section included?**
+- [ ] **No duplicated guidance from skills?**
 - [ ] Added to tracking file?
 
 ---

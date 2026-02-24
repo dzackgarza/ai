@@ -58,6 +58,87 @@ The entire skill creation process follows RED-GREEN-REFACTOR.
 - Project-specific conventions (put in CLAUDE.md)
 - Mechanical constraints (if it's enforceable with regex/validation, automate it—save documentation for judgment calls)
 
+## BEFORE Writing: Skill Harmony Check
+
+**MANDATORY: Before writing ANY new skill, you MUST:**
+
+### 1. Search Existing Skills
+
+```bash
+# Check for related skills
+ls ~/.kilocode/skills/
+grep -r "keyword" ~/.kilocode/skills/*/SKILL.md
+```
+
+Ask:
+- Does a skill already cover this topic?
+- Does a skill cover a related topic that should be extended instead?
+- Would this new skill duplicate or conflict with existing guidance?
+
+### 2. Identify Cross-References
+
+List ALL skills that relate to your topic:
+- Skills that provide background concepts
+- Skills that provide related techniques
+- Skills that your new skill will reference
+
+**Example:** Writing a "repo-steward-maintenance" skill:
+- References: `clean-code` (code quality standards)
+- References: `high-quality-tests` (test standards)
+- References: `systematic-debugging` (bug investigation)
+- References: `design-patterns` (architectural patterns)
+
+### 3. Avoid Conflicting Directives
+
+**Check for conflicts with existing skills:**
+
+| Existing Skill Says | Your New Skill Must NOT |
+|---------------------|-------------------------|
+| "Always do X first" | "Start with Y" |
+| "Never use Z" | "Use Z for..." |
+| "Follow pattern A" | "Use pattern B" (unless explicitly contrasting) |
+
+**If conflict found:**
+1. Either extend the existing skill
+2. Or explicitly explain when to use which approach
+3. NEVER let agents discover conflicting guidance
+
+### 4. Centralize Topic Directives (DRY)
+
+**One topic = One source of truth**
+
+| Topic | Skill |
+|-------|-------|
+| Code quality standards | `clean-code` |
+| Test quality standards | `high-quality-tests` |
+| Bug investigation | `systematic-debugging` |
+| Refactoring patterns | `refactor` |
+| TDD methodology | `test-driven-development` |
+
+**When writing about a topic:**
+- If topic has a dedicated skill → reference it, don't restate
+- If your skill needs that guidance → `**See: skill-name**`
+- NEVER copy-paste guidance from one skill to another
+
+**Why this matters:**
+- Guidance in multiple places becomes stale
+- Agents see conflicting versions
+- Updates must be made in N places
+- Centralized = version-controlled = maintained
+
+### 5. Cross-Reference Format
+
+```markdown
+## Reference Skills
+
+This skill builds on:
+- **clean-code** — Code quality standards (use for detecting code smells)
+- **high-quality-tests** — Test quality standards (use for test audits)
+- **systematic-debugging** — Bug investigation methodology
+
+**REQUIRED BACKGROUND:** Load `systematic-debugging` before using this skill.
+```
+
 ## Skill Types
 
 ### Technique
