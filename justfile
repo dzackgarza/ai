@@ -5,7 +5,7 @@ repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 
 # Install all symlinks and environment variables
 install:
-    @mkdir -p ~/.claude ~/.codex ~/.gemini ~/.qwen ~/.config/opencode ~/.config/kilo ~/.config/amp ~/.config ~/.agents ~/.kilocode
+    @mkdir -p ~/.claude ~/.codex ~/.gemini ~/.qwen ~/.config/opencode ~/.config/kilo ~/.config/amp ~/.config ~/.agents ~/.kilocode ~/.opencode
     @ln -sf {{repo}}/AGENTS.md ~/.claude/CLAUDE.md
     @ln -sf {{repo}}/AGENTS.md ~/.codex/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.gemini/GEMINI.md
@@ -15,6 +15,7 @@ install:
     @ln -sf {{repo}}/AGENTS.md ~/.config/amp/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.config/AGENTS.md
     @ln -sf {{repo}}/opencode/opencode.json ~/.config/opencode/opencode.json
+    @ln -sf {{repo}}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
     @ln -sf {{repo}}/skills ~/.claude/skills
     @ln -sf {{repo}}/skills ~/.gemini/skills
     @ln -sf {{repo}}/skills ~/.agents/skills
@@ -32,3 +33,4 @@ install:
     @echo "Skills:           {{repo}}/skills → all harnesses"
     @echo "System prompts:   interactive.md → .gemini/system.md, .qwen/system.md"
     @echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
+    @echo "OpenCode:         opencode.json, rate-limit-fallback.json"

@@ -1,0 +1,53 @@
+{
+  "enabled": true,
+  "cooldownMs": 60000,
+  "fallbackMode": "cycle",
+  "maxSubagentDepth": 10,
+  "enableSubagentFallback": true,
+  "fallbackModels": [
+    { "providerID": "opencode", "modelID": "minimax-m2.5-free" },
+    { "providerID": "opencode", "modelID": "glm-5-free" },
+    { "providerID": "opencode", "modelID": "big-pickle" },
+    { "providerID": "opencode", "modelID": "trinity-large-preview-free" },
+    { "providerID": "openrouter", "modelID": "arcee-ai/trinity-large-preview:free" },
+    { "providerID": "openrouter", "modelID": "stepfun/step-3.5-flash:free" },
+    { "providerID": "openrouter", "modelID": "nvidia/nemotron-3-nano-30b-a3b:free" },
+    { "providerID": "openrouter", "modelID": "openai/gpt-oss-120b:free" },
+    { "providerID": "openrouter", "modelID": "z-ai/glm-4.5-air:free" },
+    { "providerID": "google", "modelID": "antigravity-claude-opus-4-6-thinking" },
+    { "providerID": "google", "modelID": "antigravity-claude-sonnet-4-6" },
+    { "providerID": "google", "modelID": "antigravity-gemini-3.1-pro" },
+    { "providerID": "google", "modelID": "antigravity-gemini-3-pro" },
+    { "providerID": "google", "modelID": "antigravity-gemini-3-flash" }
+  ],
+  "retryPolicy": {
+    "maxRetries": 10,
+    "strategy": "exponential",
+    "baseDelayMs": 1000,
+    "maxDelayMs": 30000,
+    "jitterEnabled": true,
+    "jitterFactor": 0.1,
+    "timeoutMs": 60000
+  },
+  "metrics": {
+    "enabled": true,
+    "output": {
+      "console": true,
+      "format": "pretty"
+    },
+    "resetInterval": "daily"
+  },
+  "circuitBreaker": {
+    "enabled": true,
+    "failureThreshold": 5,
+    "recoveryTimeoutMs": 60000,
+    "halfOpenMaxCalls": 1,
+    "successThreshold": 2
+  },
+  "configReload": {
+    "enabled": true,
+    "watchFile": true,
+    "debounceMs": 1000,
+    "notifyOnReload": true
+  }
+}
