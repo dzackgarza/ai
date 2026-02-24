@@ -12,20 +12,11 @@
 |----|-------|
 | `trash <file>` | `rm <file>` |
 | `gio trash <file>` | `rm -rf <dir>` |
-| `mv <file> ~/.local/share/Trash/files/` | `rmdir <dir>` |
 
 **Why:**
 - `rm` is irreversible - one mistake loses data forever
 - Trash utilities allow recovery from mistakes
 - You WILL make mistakes - plan for them
-
-**If `trash` is not installed:**
-```bash
-# Install trash-cli
-pip install trash-cli
-# or
-sudo apt install trash-cli
-```
 
 **Before deleting anything, ask yourself: "Can this be recovered if I'm wrong?"**
 
