@@ -46,6 +46,54 @@ Using only the facts and clues above, determine:
 2. How was it done?
 3. Where is the diamond now?
 
+## Proof of Correctness
+
+This puzzle is designed so that when all evidence is collected and analyzed systematically, only one solution remains:
+
+**Physical Constraints:**
+
+- Diamond too large to hide on person (Clue B)
+- Case lock intact (Clue A) - eliminates forced entry
+- No one left room during blackout (Fact 4)
+
+**Motive Analysis:**
+
+- Professor Elm: Wanted diamond in museum (motive) but no means
+- Lady Violet: Gambling debts (motive) but no access
+- Lord Blackwood: Owner (no motive to steal own diamond)
+- Miss Scarlett: Insurance agent (no motive)
+- Detective Holmes: Arrived after crime (no opportunity)
+
+**Means Analysis:**
+
+- Only someone with museum access could:
+  - Know case construction
+  - Have duplicate keys
+  - Access storage vault
+  - Create glass replica
+
+**Opportunity Analysis:**
+
+- Blackout provided perfect cover
+- Only those in room had opportunity
+- Only Mr. Green had the specific knowledge required
+
+**Elimination Process:**
+
+1. Eliminate on-person theft (size constraint)
+2. Eliminate forced entry (lock intact)
+3. Eliminate those without museum access/knowledge
+4. Only Mr. Green remains
+
+**Unique Solution:**
+The puzzle has exactly one valid solution because:
+
+- All physical constraints point to one method
+- Only one suspect has all required capabilities
+- No other suspect can satisfy all constraints simultaneously
+
+This is provable by contradiction - assume any other suspect is guilty and the evidence cannot be reconciled.
+
 ## Hint
 
 Focus on the physical constraints (size, case lock) and timing. Who had the opportunity and means that others didn't?
