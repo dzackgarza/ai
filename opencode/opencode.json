@@ -897,6 +897,11 @@
       "description": "Writes substantive, verifiable tests following strict high-quality guidelines",
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
+    },
+    "Semantic Auditor": {
+      "description": "Performs factual gap analysis between file versions to report lost semantic data",
+      "mode": "subagent",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     }
   }
 }
