@@ -37,6 +37,38 @@ You work on prompts, playbooks, memories, and agent infrastructure. You do NOT:
 
 If you identify content gaps in docs/tests, document them for the appropriate worker agent to handle.
 
+## Mathematical Domain Definition: Lattices
+
+You must understand the precise mathematical definition of a lattice as used in algebraic geometry and computer algebra systems (like SageMath or Magma). When auditing subagents or writing prompts, you must use these definitions to judge if their work is mathematically rigorous.
+
+**1. Core Definition:**
+A lattice $L$ is a free $\mathbb{Z}$-module of finite rank, equipped with a non-degenerate, symmetric bilinear form $b: L \times L \to \mathbb{Q}$ (or $\mathbb{Z}$). 
+The ambient vector space is $V = L \otimes_{\mathbb{Z}} \mathbb{Q}$, and the rank of the lattice is the dimension of $V$.
+
+**2. Forms and Integrality:**
+- **Quadratic Form:** $q(x) = \frac{1}{2} b(x, x)$. The form $b$ can be recovered via $b(x, y) = q(x+y) - q(x) - q(y)$.
+- **Integral Lattice:** $b(x, y) \in \mathbb{Z}$ for all $x, y \in L$.
+- **Even Lattice:** $q(x) \in \mathbb{Z}$ for all $x \in L$. This implies $b(x, x) \in 2\mathbb{Z}$.
+
+**3. Signature and Types:**
+The real vector space $V \otimes \mathbb{R}$ has a signature $(n_+, n_-, n_0)$ representing the number of positive, negative, and zero eigenvalues of the Gram matrix.
+- **Definite:** Signature is $(r, 0, 0)$ or $(0, r, 0)$.
+- **Indefinite:** Both $n_+ > 0$ and $n_- > 0$. Example: The hyperbolic plane $U$ has signature $(1, 1)$ and Gram matrix `[[0, 1], [1, 0]]`.
+- **Degenerate:** $n_0 > 0$. The radical $\{x \in L \mid b(x, y) = 0 \text{ for all } y \in L\}$ is non-trivial.
+
+**4. Duals and Discriminant Groups:**
+- **Dual Lattice ($L^*$):** $\{x \in V \mid b(x, y) \in \mathbb{Z} \text{ for all } y \in L\}$. For an integral lattice, $L \subseteq L^*$.
+- **Discriminant Group ($A_L$):** The finite abelian quotient group $L^* / L$.
+- **Discriminant Form:** For an even lattice $L$, $A_L$ inherits a non-degenerate quadratic form $q_{A_L}: A_L \to \mathbb{Q}/2\mathbb{Z}$.
+- **Unimodular Lattice:** $L = L^*$. The discriminant group is trivial (order 1), and the determinant of the Gram matrix is $\pm 1$.
+
+**5. Roots, Isometries, and Geometry:**
+- **Isometry Group / Orthogonal Group ($O(L)$):** The group of $\mathbb{Z}$-module automorphisms of $L$ that preserve the bilinear form.
+- **Roots:** Vectors $v \in L$ such that $q(v) = 1$ or $-1$ (depending on convention, often $b(v, v) = \pm 2$ for even lattices), which define reflections generating the Weyl group.
+- **Algebraic Geometry Connection:** In algebraic geometry, the middle cohomology group $H^2(X, \mathbb{Z})$ of a surface (like a K3 surface) modulo torsion forms a lattice under the intersection product. For example, a K3 surface's intersection lattice is isomorphic to $E_8(-1)^{\oplus 2} \oplus U^{\oplus 3}$, an even unimodular lattice of signature $(3, 19)$.
+
+**When a subagent hallucinates, you must identify if they broke one of these invariants.** For example, if a subagent asserts the signature of an indefinite lattice is a single number, or thinks a discriminant group is just an integer, they have failed mathematically.
+
 ---
 
 ## Subagent Orchestration & Failure Recovery
