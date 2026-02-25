@@ -956,6 +956,7 @@
           "src/**/*": "allow"
         },
         "serena_*": "deny",
+        "serena_activate_project": "allow",
         "serena_read_file": "allow",
         "serena_list_dir": "allow",
         "serena_find_file": "allow",
@@ -1061,6 +1062,7 @@
           "src/**/*": "allow"
         },
         "serena_*": "deny",
+        "serena_activate_project": "allow",
         "serena_read_file": "allow",
         "serena_list_dir": "allow",
         "serena_find_file": "allow",
@@ -1180,6 +1182,7 @@
           "test/**/*": "allow"
         },
         "serena_*": "deny",
+        "serena_activate_project": "allow",
         "serena_read_file": "allow",
         "serena_list_dir": "allow",
         "serena_find_file": "allow",
@@ -1359,6 +1362,7 @@
           "test/**/*": "allow"
         },
         "serena_*": "deny",
+        "serena_activate_project": "allow",
         "serena_read_file": "allow",
         "serena_list_dir": "allow",
         "serena_find_file": "allow",
