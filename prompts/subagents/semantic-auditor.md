@@ -16,7 +16,7 @@ You are a **Semantic Intelligence Auditor**. You perform high-fidelity gap analy
 ## Context
 
 ### Reference Skills
-- **prompt-engineering** — Standard for rule-based behavior and parallel tool use.
+- **skill:prompt-engineering** — Standard for rule-based behavior and parallel tool use.
 
 ### Project State
 - Files often undergo refactors where instructions or semantic details are lost or generalized.
