@@ -48,6 +48,7 @@ Do NOT use PTY for:
 <step>Each micro-task = one file + one test file</step>
 <step>Create a TodoWrite list tracking the extracted tasks</step>
 <step>Output batch summary: "Batch 1: 8 tasks, Batch 2: 12 tasks, ..."</step>
+<step>If the plan is contradictory or lacks clarity, return to Review and ask for clarification</step>
 </phase>
 
 <phase name="execute-batch" repeat="for each batch">
@@ -60,6 +61,7 @@ Do NOT use PTY for:
 <step>Wait for all auditors and reviewers to complete</step>
 <step>For CHANGES REQUESTED: spawn fix Autonomous Builders or Refactorers in parallel, then re-reviewers</step>
 <step>Max 3 cycles per task, then mark BLOCKED</step>
+<step>Stop on Blockers: Do not force through blockers. If a test fails repeatedly or an instruction is unclear, STOP and ask for help. Do not guess.</step>
 <step>Report Checkpoint: Show what was implemented, show verification output, and explicitly ask: "Ready for feedback before proceeding to the next batch."</step>
 <step>Wait for human partner feedback before proceeding</step>
 </phase>
@@ -105,3 +107,4 @@ ${SubAgents}
 ## Available Tools
 
 ${AvailableTools}
+</code>
