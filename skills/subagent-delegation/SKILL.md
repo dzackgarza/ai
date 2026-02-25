@@ -55,6 +55,19 @@ Never accept implementation without independent verification:
 - **Middle turn (Build)**: 1-2 targets.
 - **Late turn (Verify)**: Single call.
 
+### Parallel Dispatch Strategy (Concurrency)
+When facing multiple independent tasks or failures (e.g., different test files, different subsystems without shared state):
+1. **Identify Independent Domains**: Group tasks by what is broken/needed. (e.g., File A tests vs File B tests).
+2. **Dispatch in Parallel**: Send one focused agent per independent problem domain concurrently.
+3. **Agent Prompt Structure**:
+   - **Focused**: One clear problem domain.
+   - **Self-contained**: Provide all context needed (e.g., specific error messages).
+   - **Constraints**: "Fix tests only" or "Do not change unrelated files".
+4. **When NOT to use Parallel Dispatch**:
+   - Failures are related (fixing one might fix others).
+   - Agents would interfere with each other (editing the same shared state/files).
+   - Exploratory debugging (you don't know what's broken yet).
+
 ---
 
 ## 3. Red Flags - STOP and Redirect
