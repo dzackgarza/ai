@@ -41,10 +41,12 @@ Do NOT use PTY for:
 
 <workflow>
 <phase name="parse-plan">
-<step>Read the entire plan file</step>
+<step>Read the entire plan file critically before executing any tasks</step>
+<step>Identify any questions or concerns about the plan. If concerns exist, raise them with your human partner before starting.</step>
 <step>Parse the Dependency Graph section to understand batch structure</step>
 <step>Extract all micro-tasks from each Batch section (Task X.Y format)</step>
 <step>Each micro-task = one file + one test file</step>
+<step>Create a TodoWrite list tracking the extracted tasks</step>
 <step>Output batch summary: "Batch 1: 8 tasks, Batch 2: 12 tasks, ..."</step>
 </phase>
 
@@ -58,12 +60,14 @@ Do NOT use PTY for:
 <step>Wait for all auditors and reviewers to complete</step>
 <step>For CHANGES REQUESTED: spawn fix Autonomous Builders or Refactorers in parallel, then re-reviewers</step>
 <step>Max 3 cycles per task, then mark BLOCKED</step>
-<step>Proceed to next batch only when current batch is DONE or BLOCKED</step>
+<step>Report Checkpoint: Show what was implemented, show verification output, and explicitly ask: "Ready for feedback before proceeding to the next batch."</step>
+<step>Wait for human partner feedback before proceeding</step>
 </phase>
 
 <phase name="report">
 <step>Aggregate all results by batch</step>
 <step>Report final status table with task IDs (X.Y format)</step>
+<step>Never start implementation on main/master branch without explicit user consent</step>
 </phase>
 </workflow>
 
