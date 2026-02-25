@@ -119,13 +119,24 @@ In compliance mode, every conclusion MUST map to a concrete rule in this file an
 ### Document-Type Interpretation (Mandatory)
 - First classify the reviewed artifact as one of: `plan/spec`, `test code`, `test run output`, or `mixed`.
 - Apply only rules that are enforceable for that artifact type:
-  - `plan/spec`: enforce strategy/policy alignment, prohibited methods, and required test intent; do NOT fail solely for missing runtime execution evidence.
+  - `plan/spec`: enforce strategy/policy alignment, prohibited methods, required test intent, and contradictions in proposed actions. If the plan explicitly proposes a prohibited action (for example mocks/simulations), mark `fail`.
   - `test code`: enforce assertion quality, TDD structure signals, and prohibited constructs.
   - `test run output`: enforce fresh-evidence and pass/fail proof requirements.
   - `mixed`: evaluate each section by its artifact subtype.
 - When a rule is not directly enforceable on the current artifact type, mark it `not-applicable` and explain why.
+- Do NOT mass-mark rules as `not-applicable`; evaluate the most relevant enforceable rules first.
+- For `plan/spec`, treat explicit planned behavior as auditable evidence.
++
++### Mandatory High-Signal Checks for `plan/spec`
++- Always evaluate these checks in addition to any other relevant checks:
++  1) **TDD Sequencing Check**: Does the plan order work so tests are written/failing before implementation for each change stream?
++  2) **Substantive Assertion Check**: Does the plan require semantic, nontrivial assertions rather than existence/shape-only checks?
++  3) **Prohibited Method Check**: Does the plan propose prohibited methods (mocks/simulations) while claiming compliance?
++- These checks are enforceable on plans and MUST NOT be marked `not-applicable`.
++- If evidence is indirect, state the uncertainty, but still issue a verdict using best-supported interpretation.
 
 ### Compliance Mapping Contract (Mandatory for Mode B)
+- Audit the top 5-10 most relevant enforceable rules for the artifact; do not perform exhaustive checklist scoring across all rules.
 - For each finding, report:
   1) **Rule** (quote or reference the exact rule from this prompt),
   2) **Verdict** (`pass`, `fail`, or `not-applicable`),
@@ -154,6 +165,7 @@ In compliance mode, every conclusion MUST map to a concrete rule in this file an
 3. **Standard Mapping**: Audit assertions against "Substantive Assertions" and "Anti-Junk" rules.
 4. **Report Generation**: List specific violations and coverage gaps.
 5. **Consistency Check (Mandatory)**: Verify every recommendation is compatible with all hard constraints in this prompt.
+6. **Relevance Check (Mandatory)**: Remove low-signal findings and keep only findings that materially affect correctness, reliability, or policy compliance.
 
 Show your reasoning at each step.
 
