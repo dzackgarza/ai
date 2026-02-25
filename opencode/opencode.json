@@ -887,6 +887,11 @@
       "description": "Finds weak or missing mathematical oracles in lattice-related tests (report-only)",
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_math_test_oracle_auditor/prompt.md}"
+    },
+    "Test Writer": {
+      "description": "Writes substantive, verifiable tests following strict high-quality guidelines",
+      "mode": "subagent",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
     }
   }
 }
