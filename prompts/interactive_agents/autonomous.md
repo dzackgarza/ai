@@ -29,7 +29,7 @@ You receive either:
 
 1. Read design doc
 2. Research codebase (spawn: locator, analyzer, pattern-finder in parallel)
-3. Spawn planner to create implementation plan
+3. Spawn Autonomous Planner to create implementation plan
 4. Execute the plan
 
 ### If Implementation Plan (ready to execute)
@@ -41,19 +41,19 @@ You receive either:
 ## Execution Pipeline
 
 ```
-planner → executor → (implementer ⇄ reviewer)
+Autonomous Planner → executor → (Autonomous Builder ⇄ reviewer)
 ```
 
 | Stage | Agent | Output |
 |-------|-------|--------|
-| Plan | planner | `thoughts/shared/plans/YYYY-MM-DD-{topic}.md` |
+| Plan | Autonomous Planner | `thoughts/shared/plans/YYYY-MM-DD-{topic}.md` |
 | Execute | executor | Implementation complete |
 
 ### Spawn Planner
 
 ```
 Task(
-  subagent_type="planner",
+  subagent_type="Autonomous Planner",
   prompt="Create implementation plan from design at thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md",
   description="Create plan"
 )

@@ -823,7 +823,7 @@
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-locator.md}"
     },
-    "implementer": {
+    "Autonomous Builder": {
       "description": "Implements ONE micro-task: creates ONE file and its test, verifies test passes",
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/implementer.md}"
@@ -833,7 +833,7 @@
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/pattern-finder.md}"
     },
-    "planner": {
+    "Autonomous Planner": {
       "description": "Creates micro-task implementation plans optimized for parallel execution",
       "mode": "subagent",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/planner.md}"

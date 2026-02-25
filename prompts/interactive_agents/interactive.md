@@ -160,7 +160,7 @@ Task(
 
 Complex tasks benefit from:
 - **autonomous** makes decisions without asking
-- **autonomous** runs the full planner → executor pipeline
+- **autonomous** runs the full Autonomous Planner → executor pipeline
 - **autonomous** keeps you out of the implementation weeds
 
 You stay at the design level. autonomous handles execution.
