@@ -762,8 +762,16 @@
         "morph-mcp_*": "deny",
         "cut-copy-paste-mcp_*": "deny",
         "serena_execute_shell_command": "deny",
-        "serena_create_text_file": "deny",
-        "serena_replace_content": "deny",
+        "serena_create_text_file": {
+          "*": "deny",
+          ".serena/plans/**/*.md": "allow",
+          "/home/dzack/ai/.serena/plans/**/*.md": "allow"
+        },
+        "serena_replace_content": {
+          "*": "deny",
+          ".serena/plans/**/*.md": "allow",
+          "/home/dzack/ai/.serena/plans/**/*.md": "allow"
+        },
         "serena_replace_symbol_body": "deny",
         "serena_insert_after_symbol": "deny",
         "serena_insert_before_symbol": "deny",
@@ -797,7 +805,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}"
     },
@@ -806,7 +817,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/minimal.md}"
     },
@@ -815,7 +829,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}"
     },
@@ -824,7 +841,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}"
     },
@@ -833,7 +853,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/agent_supervisor/prompt.md}"
     },
@@ -842,7 +865,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/documentation_specialist/prompt.md}"
     },
@@ -851,7 +877,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}"
     },
@@ -860,7 +889,10 @@
       "mode": "primary",
       "permission": {
         "task": "allow",
-        "question": "allow"
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}"
     },
@@ -895,7 +927,7 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-locator.md}"
     },
     "general_code_writer": {
-      "description": "For writing non-Python code and implementing features. Use when you need to generate code in languages other than Python. Pass task descriptions and target file paths, asking 'Implement [feature] in [language]' or 'Write a function that [description]'. File paths must be in **/src/** directory.",
+      "description": "For writing non-Python code and implementing features. Use when you need to generate code in languages other than Python. Pass task descriptions and target file paths, asking 'Implement [feature] in [language]' or 'Write a function that [description]'. File paths must be in src/ directory.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
@@ -916,12 +948,12 @@
         },
         "edit": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "patch": "allow",
         "apply_patch": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_*": "deny",
         "serena_read_file": "allow",
@@ -933,39 +965,61 @@
         "serena_find_referencing_symbols": "allow",
         "serena_replace_content": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
+        "serena_delete_lines": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_onboarding": "allow",
+        "serena_prepare_for_new_conversation": "allow",
+        "serena_summarize_changes": "allow",
+        "serena_restart_language_server": "allow",
+        "serena_get_current_config": "allow",
+        "serena_initial_instructions": "allow",
+        "serena_think_about_collected_information": "allow",
+        "serena_think_about_task_adherence": "allow",
+        "serena_think_about_whether_you_are_done": "allow",
+        "serena_check_onboarding_performed": "allow",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "cut-copy-paste-mcp_*": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
     },
     "python_code_writer": {
-      "description": "For writing Python code and implementing Python features. Use when you need to generate Python-specific implementations. Pass Python task descriptions and target file paths, asking 'Write Python code for [feature]' or 'Implement [algorithm] in Python'. File paths must be in **/src/** directory.",
+      "description": "For writing Python code and implementing Python features. Use when you need to generate Python-specific implementations. Pass Python task descriptions and target file paths, asking 'Write Python code for [feature]' or 'Implement [algorithm] in Python'. File paths must be in src/ directory.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
@@ -986,12 +1040,12 @@
         },
         "edit": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "patch": "allow",
         "apply_patch": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_*": "deny",
         "serena_read_file": "allow",
@@ -1003,32 +1057,54 @@
         "serena_find_referencing_symbols": "allow",
         "serena_replace_content": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
+        "serena_delete_lines": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_onboarding": "allow",
+        "serena_prepare_for_new_conversation": "allow",
+        "serena_summarize_changes": "allow",
+        "serena_restart_language_server": "allow",
+        "serena_get_current_config": "allow",
+        "serena_initial_instructions": "allow",
+        "serena_think_about_collected_information": "allow",
+        "serena_think_about_task_adherence": "allow",
+        "serena_think_about_whether_you_are_done": "allow",
+        "serena_check_onboarding_performed": "allow",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "**/src/**": "allow"
+          "src/**/*": "allow"
         },
         "cut-copy-paste-mcp_*": "deny"
       },
@@ -1047,7 +1123,7 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
     },
     "test_engineer": {
-      "description": "For designing test strategies and ensuring test quality. Use when you need to create or improve tests. Pass existing test files or test creation requirements, asking 'Design a test strategy for [feature]' or 'Review and improve these tests for quality and coverage'. Can write/edit tests in **/tests/** and **/test/** only.",
+      "description": "For designing test strategies and ensuring test quality. Use when you need to create or improve tests. Pass existing test files or test creation requirements, asking 'Design a test strategy for [feature]' or 'Review and improve these tests for quality and coverage'. Can write/edit tests in tests/ and test/ directories only.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
@@ -1068,14 +1144,14 @@
         },
         "edit": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "patch": "deny",
         "apply_patch": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_*": "deny",
         "serena_read_file": "allow",
@@ -1087,39 +1163,64 @@
         "serena_find_referencing_symbols": "allow",
         "serena_replace_content": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
+        "serena_delete_lines": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_onboarding": "allow",
+        "serena_prepare_for_new_conversation": "allow",
+        "serena_summarize_changes": "allow",
+        "serena_restart_language_server": "allow",
+        "serena_get_current_config": "allow",
+        "serena_initial_instructions": "allow",
+        "serena_think_about_collected_information": "allow",
+        "serena_think_about_task_adherence": "allow",
+        "serena_think_about_whether_you_are_done": "allow",
+        "serena_check_onboarding_performed": "allow",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "cut-copy-paste-mcp_*": "deny"
       },
@@ -1193,7 +1294,7 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
     },
     "test-writer": {
-      "description": "Verification architect for engineering substantive tests. Use when you need to write new tests following TDD. Pass implementation or requirements, asking 'Write a test for [feature]'. Can write/edit tests in **/tests/** and **/test/** only.",
+      "description": "Verification architect for engineering substantive tests. Use when you need to write new tests following TDD. Pass implementation or requirements, asking 'Write a test for [feature]'. Can write/edit tests in tests/ and test/ directories only.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
@@ -1215,8 +1316,8 @@
         },
         "edit": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_*": "deny",
         "serena_read_file": "allow",
@@ -1228,18 +1329,63 @@
         "serena_find_referencing_symbols": "allow",
         "serena_create_text_file": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
         "serena_replace_content": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         },
+        "serena_delete_lines": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_onboarding": "allow",
+        "serena_prepare_for_new_conversation": "allow",
+        "serena_summarize_changes": "allow",
+        "serena_restart_language_server": "allow",
+        "serena_get_current_config": "allow",
+        "serena_initial_instructions": "allow",
+        "serena_think_about_collected_information": "allow",
+        "serena_think_about_task_adherence": "allow",
+        "serena_think_about_whether_you_are_done": "allow",
+        "serena_check_onboarding_performed": "allow",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
         }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
