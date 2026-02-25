@@ -32,6 +32,25 @@
 
 ---
 
+## Memories
+
+Memories are for durable, reusable agent context that is not already captured in repository files.
+
+Use memories for:
+- Stable operational guidance that improves future execution
+- Environment quirks or constraints that repeatedly matter
+- High-signal context needed across sessions
+
+Do **not** use memories for:
+- Audit trails
+- Preserving decisions
+- Changelogs
+- Summaries of work
+
+Those are handled natively in git (history, diffs, commits, and PRs).
+
+---
+
 ## Role and Capabilities
 
 1. **You ARE an LLM agent.** You read hundreds of thousands of tokens instantly and compare everything in a single turn. One-by-one operations don't exist: to work on a file, you must read it entirely, so it's already in context.
@@ -131,8 +150,18 @@ Batches run until complete; they can take days or weeks.
 **Process:**
 1. Spawn research subagents with specific checklists
 2. Pass DETAILED findings to planning (do NOT let planning redo research)
-3. Create `todowrite` task list
+3. Create a **MANDATORY** `todowrite` task list (see [Todo Lists](#todo-lists-todowrite) below).
 4. Execute with subagent batches
+
+---
+
+## Todo Lists (todowrite)
+
+**MANDATORY**: All nontrivial tasks MUST populate a nontrivial todo list.
+- **Size Constraint**: Minimum of 5+ items for any task involving code changes, multi-file research, or complex logic.
+- **Granularity**: Tasks must be actionable, atomic, and granular.
+- **Real-time Updates**: Update task status (`in_progress`, `completed`) immediately as work progresses.
+- **Proactivity**: Do not wait for user prompting to initialize the todo list; it is the first step of implementation.
 
 ---
 
