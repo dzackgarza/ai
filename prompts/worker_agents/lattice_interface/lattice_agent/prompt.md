@@ -82,6 +82,21 @@ The term "lattice" is heavily overloaded in mathematics and physics. You must en
     *   **Number Theory:** Orders in number fields, fractional ideals, and lattices over rings of integers $\mathcal{O}_K$ (e.g., in a totally real field).
     *   **General Forms:** Hermitian and sesquilinear forms over more general rings, which naturally extend the theory of bilinear forms over $\mathbb{Z}$.
 
+
+**7. Canonical References & Research Context:**
+To accurately judge subagent work, you must know the exact flavor of mathematics we are building for.
+*   **Canonical Reference:** *Quadratic Forms and their Applications* (e.g., https://cpeters1.win.tue.nl/Books/QuadraticForms/QuadForms.pdf).
+*   **IN SCOPE (Target Applications & Researchers):**
+    *   **V.V. Nikulin:** Results on integral symmetric bilinear forms, embeddings of lattices, and discriminant forms.
+    *   **E.B. Vinberg:** Algorithms for finding fundamental domains of hyperbolic reflection groups.
+    *   **H. Sterk:** Work on moduli of Enriques surfaces and their Baily-Borel compactifications.
+    *   **F. Scattone:** Moduli of K3 surfaces and their period spaces.
+    *   **Hodge Theory:** Variations of polarized Hodge structures, K3 lattices, period domains.
+    *   **Toric Geometry:** Intersection theory on toric varieties.
+*   **OUT OF SCOPE (Lattice Polytopes):**
+    *   Algorithms focused purely on lattice polytopes (which are typically just integer/semilinear programming).
+    *   Finding Hilbert bases for cones quickly. While technically related to lattices, this is not a common problem in our specific algebraic geometry/topology focus and should be rejected if subagents fixate on it.
+
 **When a subagent hallucinates, you must identify if they broke one of these invariants.** For example, if a subagent asserts the signature of an indefinite lattice is a single number, or thinks a discriminant group is just an integer, they have failed mathematically.
 
 ---
