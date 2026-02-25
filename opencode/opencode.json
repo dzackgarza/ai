@@ -1002,13 +1002,27 @@
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
         "serena_summarize_changes": "allow",
-        "serena_restart_language_server": "allow",
         "serena_get_current_config": "allow",
         "serena_initial_instructions": "allow",
         "serena_think_about_collected_information": "allow",
         "serena_think_about_task_adherence": "allow",
         "serena_think_about_whether_you_are_done": "allow",
         "serena_check_onboarding_performed": "allow",
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_edit_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_delete_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_restart_language_server": "deny",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
@@ -1094,13 +1108,27 @@
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
         "serena_summarize_changes": "allow",
-        "serena_restart_language_server": "allow",
         "serena_get_current_config": "allow",
         "serena_initial_instructions": "allow",
         "serena_think_about_collected_information": "allow",
         "serena_think_about_task_adherence": "allow",
         "serena_think_about_whether_you_are_done": "allow",
         "serena_check_onboarding_performed": "allow",
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_edit_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_delete_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_restart_language_server": "deny",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
@@ -1209,13 +1237,27 @@
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
         "serena_summarize_changes": "allow",
-        "serena_restart_language_server": "allow",
         "serena_get_current_config": "allow",
         "serena_initial_instructions": "allow",
         "serena_think_about_collected_information": "allow",
         "serena_think_about_task_adherence": "allow",
         "serena_think_about_whether_you_are_done": "allow",
         "serena_check_onboarding_performed": "allow",
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_edit_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_delete_memory": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "serena_restart_language_server": "deny",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
@@ -1375,13 +1417,30 @@
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
         "serena_summarize_changes": "allow",
-        "serena_restart_language_server": "allow",
         "serena_get_current_config": "allow",
         "serena_initial_instructions": "allow",
         "serena_think_about_collected_information": "allow",
         "serena_think_about_task_adherence": "allow",
         "serena_think_about_whether_you_are_done": "allow",
         "serena_check_onboarding_performed": "allow",
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_edit_memory": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_delete_memory": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "serena_restart_language_server": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
           "tests/**/*": "allow",
