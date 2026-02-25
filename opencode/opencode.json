@@ -1014,7 +1014,11 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_*": "allow",
+        "morph-mcp_warpgrep_codebase_search": "allow",
+        "morph-mcp_edit_file": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "src/**/*": "allow"
@@ -1118,7 +1122,11 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_*": "allow",
+        "morph-mcp_warpgrep_codebase_search": "allow",
+        "morph-mcp_edit_file": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "src/**/*": "allow"
@@ -1245,7 +1253,12 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_*": "allow",
+        "morph-mcp_warpgrep_codebase_search": "allow",
+        "morph-mcp_edit_file": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "tests/**/*": "allow",
@@ -1425,7 +1438,12 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_*": "allow",
+        "morph-mcp_warpgrep_codebase_search": "allow",
+        "morph-mcp_edit_file": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "tests/**/*": "allow",
