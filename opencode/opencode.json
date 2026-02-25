@@ -948,7 +948,22 @@
         "bash": {
           "*": "deny",
           "just": "allow",
-          "just *": "allow"
+          "just *": "allow",
+          "git add*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git branch*": "allow",
+          "git show*": "allow",
+          "ls*": "allow",
+          "tree*": "allow",
+          "find * -type f*": "allow",
+          "find * -type d*": "allow",
+          "find * -maxdepth*": "allow",
+          "wc*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "cat*": "allow"
         },
         "edit": {
           "*": "deny",
@@ -1060,7 +1075,22 @@
         "bash": {
           "*": "deny",
           "just": "allow",
-          "just *": "allow"
+          "just *": "allow",
+          "git add*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git branch*": "allow",
+          "git show*": "allow",
+          "ls*": "allow",
+          "tree*": "allow",
+          "find * -type f*": "allow",
+          "find * -type d*": "allow",
+          "find * -maxdepth*": "allow",
+          "wc*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "cat*": "allow"
         },
         "edit": {
           "*": "deny",
@@ -1184,7 +1214,22 @@
         "bash": {
           "*": "deny",
           "just": "allow",
-          "just *": "allow"
+          "just *": "allow",
+          "git add*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git branch*": "allow",
+          "git show*": "allow",
+          "ls*": "allow",
+          "tree*": "allow",
+          "find * -type f*": "allow",
+          "find * -type d*": "allow",
+          "find * -maxdepth*": "allow",
+          "wc*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "cat*": "allow"
         },
         "edit": {
           "*": "deny",
@@ -1379,7 +1424,22 @@
           "*": "deny",
           "just": "allow",
           "just *": "allow",
-          "pytest*": "allow"
+          "pytest*": "allow",
+          "git add*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git branch*": "allow",
+          "git show*": "allow",
+          "ls*": "allow",
+          "tree*": "allow",
+          "find * -type f*": "allow",
+          "find * -type d*": "allow",
+          "find * -maxdepth*": "allow",
+          "wc*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "cat*": "allow"
         },
         "edit": {
           "*": "deny",
