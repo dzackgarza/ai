@@ -747,7 +747,7 @@
     }
   },
   "model": "opencode/minimax-m2.5-free",
-  "default_agent": "interactive",
+  "default_agent": "Interactive",
   "plugin": [
     "opencode-antigravity-auth@latest",
     "opencode-anthropic-auth@latest",
@@ -758,42 +758,42 @@
     "opencode-openai-codex-auth"
   ],
   "agent": {
-    "minimal": {
+    "Minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/minimal.md}"
     },
-    "interactive": {
+    "Interactive": {
       "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}"
     },
-    "executor": {
+    "Executor": {
       "description": "Executes plan with batch-first parallelism - spawns subagents for parallel implementation",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/executor.md}"
     },
-    "autonomous": {
+    "Autonomous": {
       "description": "Autonomous execution engine - receives plans from interactive and executes without user interaction",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/autonomous.md}"
     },
-    "repo_steward": {
+    "Repository Steward": {
       "description": "Repo steward - autonomous repository maintenance and optimization",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}"
     },
-    "lattice_interface": {
+    "Lattice Interface Developer": {
       "description": "Agent supervisor - multi-agent orchestration within lattice interface",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/agent_supervisor/prompt.md}"
     },
-    "documentation_specialist": {
+    "Lattice Documentor": {
       "description": "Documentation specialist - generates and maintains documentation",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/documentation_specialist/prompt.md}"
     },
-    "zotero_librarian": {
+    "Zotero Librarian": {
       "description": "Zotero librarian - manages and maintains Zotero reference libraries",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}"
