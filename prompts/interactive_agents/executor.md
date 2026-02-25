@@ -10,11 +10,11 @@ Target: 10-20 subagents running concurrently per batch.
 </purpose>
 
 <subagent-tools>
-CRITICAL: You MUST use the Task tool to spawn Autonomous Builders, Test Writers, and reviewers.
+CRITICAL: You MUST use the Task tool to spawn Autonomous Builders, Test Guidelines agents, and reviewers.
 DO NOT do the implementation work yourself - delegate to subagents.
 
 Task(agent, prompt, description) - Spawns a subagent synchronously.
-  - agent: The agent type ("Autonomous Builder", "Test Writer", "reviewer")
+  - agent: The agent type ("Autonomous Builder", "Test Guidelines", "reviewer")
   - prompt: Full instructions for the agent
   - description: Short task description
 
@@ -49,10 +49,10 @@ Do NOT use PTY for:
 </phase>
 
 <phase name="execute-batch" repeat="for each batch">
-<step>Spawn ALL Autonomous Builders and Test Writers for this batch in ONE message (10-20 parallel)</step>
+<step>Spawn ALL Autonomous Builders and Test Guidelines agents for this batch in ONE message (10-20 parallel)</step>
 <step>Each Autonomous Builder gets: file path, test path, complete code from plan</step>
-<step>Each Test Writer gets: implementation context, high-quality guidelines, test target</step>
-<step>Wait for all builders and writers to complete</step>
+<step>Each Test Guidelines agent gets: implementation context, high-quality guidelines, test target</step>
+<step>Wait for all builders and guidelines agents to complete</step>
 <step>Spawn ALL reviewers for this batch in ONE message (10-20 parallel)</step>
 <step>Wait for all reviewers to complete</step>
 <step>For CHANGES REQUESTED: spawn fix Autonomous Builders in parallel, then re-reviewers</step>
