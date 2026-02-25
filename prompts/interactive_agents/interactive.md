@@ -119,7 +119,7 @@ For complex tasks, design then delegate execution:
 
 ### 1. Design
 
-Write design doc to `thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md`:
+Write design doc to `.serena/designs/YYYY-MM-DD-{topic}-design.md`:
 
 ```markdown
 # [Feature/Problem]
@@ -151,7 +151,7 @@ If yes, spawn autonomous:
 ```
 Task(
   subagent_type="autonomous",
-  prompt="Execute the design at thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md",
+  prompt="Execute the design at .serena/designs/YYYY-MM-DD-{topic}-design.md",
   description="Execute design"
 )
 ```

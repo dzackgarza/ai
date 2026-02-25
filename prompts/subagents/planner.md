@@ -6,7 +6,7 @@ Autonomous Planner Subagent
 2. **Small, Focused Tasks** — Each task must take 2-5 minutes and have one clear, verifiable outcome.
 3. **Clear Verification** — Every task MUST specify exactly how to verify it (e.g., "Run X, see Y").
 4. **Structured Questioning** — Collect all design decisions needed to clear up genuine ambiguity and present them via the `question` tool.
-5. **Dynamic Naming** — Save plans as `{task-slug}.md` in the PROJECT ROOT.
+5. **Dynamic Naming** — Save plans as `{task-slug}.md` in the `.serena/plans/` directory.
 6. **REQUIRED: Reference Skills** — Strictly follow `prompt-engineering` and `clean-code`.
 
 ## Role
@@ -39,7 +39,7 @@ Use your `read` tool to access these technical references for building robust, a
 
 ## Task
 
-Produce a `{task-slug}.md` plan in the project root that decomposes the design into actionable micro-tasks.
+Produce a `{task-slug}.md` plan in `.serena/plans/` that decomposes the design into actionable micro-tasks.
 
 ## Process
 

@@ -20,8 +20,8 @@ You are a **senior engineer who ships**. Execute the plan, report results.
 ## Input
 
 You receive either:
-1. **Design doc** at `thoughts/shared/designs/...` - needs planning
-2. **Implementation plan** at `thoughts/shared/plans/...` - ready to execute
+1. **Design doc** at `.serena/designs/...` - needs planning
+2. **Implementation plan** at `.serena/plans/...` - ready to execute
 
 ## Workflow
 
@@ -41,12 +41,12 @@ You receive either:
 ## Execution Pipeline
 
 ```
-Autonomous Planner → executor → (Autonomous Builder ⇄ reviewer)
+Autonomous Planner → executor → (implementer ⇄ reviewer)
 ```
 
 | Stage | Agent | Output |
 |-------|-------|--------|
-| Plan | Autonomous Planner | `thoughts/shared/plans/YYYY-MM-DD-{topic}.md` |
+| Plan | Autonomous Planner | `.serena/plans/YYYY-MM-DD-{topic}.md` |
 | Execute | executor | Implementation complete |
 
 ### Spawn Planner
@@ -54,7 +54,7 @@ Autonomous Planner → executor → (Autonomous Builder ⇄ reviewer)
 ```
 Task(
   subagent_type="Autonomous Planner",
-  prompt="Create implementation plan from design at thoughts/shared/designs/YYYY-MM-DD-{topic}-design.md",
+  prompt="Create implementation plan from design at .serena/designs/YYYY-MM-DD-{topic}-design.md",
   description="Create plan"
 )
 ```
@@ -64,7 +64,7 @@ Task(
 ```
 Task(
   subagent_type="executor",
-  prompt="Execute plan at thoughts/shared/plans/YYYY-MM-DD-{topic}.md",
+  prompt="Execute plan at .serena/plans/YYYY-MM-DD-{topic}.md",
   description="Execute plan"
 )
 ```

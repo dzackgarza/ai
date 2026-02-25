@@ -33,7 +33,7 @@ This skill provides a framework for breaking down work into clear, actionable ta
 - **Phase X: Verification is always LAST**
 
 ### 4. Dynamic Naming in Project Root
-- Plan files are saved as `{task-slug}.md` in the PROJECT ROOT
+- Plan files are saved as `{task-slug}.md` in the `.serena/plans/` directory.
 - Name derived from task (e.g., "add auth" → `auth-feature.md`)
 - **NEVER** inside `.claude/`, `docs/`, or temp folders
 
