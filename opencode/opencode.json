@@ -82,31 +82,6 @@
     },
     "google": {
       "models": {
-        "antigravity-gemini-3-pro": {
-          "name": "Gemini 3 Pro (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
-          }
-        },
         "antigravity-gemini-3.1-pro": {
           "name": "Gemini 3.1 Pro (Antigravity)",
           "limit": {
@@ -147,20 +122,6 @@
             "output": [
               "text"
             ]
-          },
-          "variants": {
-            "minimal": {
-              "thinkingLevel": "minimal"
-            },
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "medium": {
-              "thinkingLevel": "medium"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
           }
         },
         "antigravity-claude-sonnet-4-6": {
@@ -806,101 +767,121 @@
     "artifact-searcher": {
       "description": "Searches serena memories for relevant past work, patterns, and lessons learned",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/artifact-searcher.md}"
     },
     "code-compliance-reviewer": {
       "description": "Reviews generated code against project constraints and reports violations",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-compliance-reviewer.md}"
     },
     "code-smell-detector": {
       "description": "Finds inconsistencies and anti-patterns in the codebase",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-smell-detector.md}"
     },
     "codebase-analyzer": {
       "description": "Explains HOW code works with file:line references",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-analyzer.md}"
     },
     "codebase-locator": {
       "description": "Finds WHERE files are located in the codebase",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-locator.md}"
     },
     "Autonomous Builder": {
       "description": "Implements ONE micro-task: creates ONE file and its test, verifies test passes",
       "mode": "subagent",
+      "model": "opencode/trinity-large-preview-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/implementer.md}"
     },
     "pattern-finder": {
       "description": "Finds existing patterns and examples in the codebase to model after",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/pattern-finder.md}"
     },
     "Autonomous Planner": {
       "description": "Creates micro-task implementation plans optimized for parallel execution",
       "mode": "subagent",
+      "model": "opencode/trinity-large-preview-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/planner.md}"
     },
     "project-initializer": {
       "description": "Rapidly analyzes project and generates ARCHITECTURE.md and CODE_STYLE.md",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
     "reviewer": {
       "description": "Reviews ONE micro-task: verifies file and test match the plan",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/reviewer.md}"
     },
     "test_engineer": {
       "description": "Designs test strategies and ensures test quality",
       "mode": "subagent",
+      "model": "opencode/trinity-large-preview-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/test_engineer/prompt.md}"
     },
     "ops_engineer": {
       "description": "Handles operational tasks and infrastructure",
       "mode": "subagent",
+      "model": "opencode/trinity-large-preview-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/ops_engineer/prompt.md}"
     },
     "type_designer": {
       "description": "Designs type systems and interface contracts",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
     },
     "lattice_goal_orienter": {
       "description": "Extracts the repo’s mathematical goal and selects substantive work (report-only)",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_goal_orienter/prompt.md}"
     },
     "lattice_upstream_provenance_auditor": {
       "description": "Finds missing upstream doc snapshots that block source-backed lattice contracts (report-only)",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_upstream_provenance_auditor/prompt.md}"
     },
     "lattice_checklist_gap_finder": {
       "description": "Finds methods present upstream but missing from methods checklists (report-only)",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_gap_finder/prompt.md}"
     },
     "lattice_contract_fidelity_auditor": {
       "description": "Finds missing types/assumptions/citations in lattice method docs (report-only)",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_contract_fidelity_auditor/prompt.md}"
     },
     "lattice_math_test_oracle_auditor": {
       "description": "Finds weak or missing mathematical oracles in lattice-related tests (report-only)",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_math_test_oracle_auditor/prompt.md}"
     },
     "Test Writer": {
       "description": "Writes substantive, verifiable tests following strict high-quality guidelines",
       "mode": "subagent",
+      "model": "opencode/trinity-large-preview-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
     },
     "Semantic Auditor": {
       "description": "Performs factual gap analysis between file versions to report lost semantic data",
       "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     }
   }
