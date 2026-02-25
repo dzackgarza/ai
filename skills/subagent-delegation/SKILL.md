@@ -15,39 +15,41 @@ This skill provides the unified framework for managing, tracking, and coordinati
 ## 1. Operational Lifecycle
 
 ### Agent Tracking (No Orphans)
-Every spawned agent MUST be tracked to maintain visibility and prevent context pollution. Maintain `notes/areas/active-agents.md` with:
-- **Label**: Unique identifier for the agent.
-- **Task**: Short description of the objective.
-- **Status**: Running, Completed, or Blocked.
+Every spawned agent MUST be tracked in `notes/areas/active-agents.md` with:
+- **Label**: Unique ID for the session.
+- **Task**: Actionable goal.
+- **Expected**: Estimated runtime (if relevant to operation).
+- **Status**: 🏃 Running, ✅ Complete, ❌ Blocked.
 
-### Heartbeat Checks
-Periodically audit active sessions to catch stalled or crashed agents:
+### Heartbeat Checks (Stall Prevention)
+Periodically audit active sessions:
 1. Run `sessions_list --activeMinutes 120`.
-2. Compare to tracking file.
-3. Resolve missing or stalled sessions.
+2. Compare output to tracking file.
+3. Log completions and lessons learned to `LEARNINGS.md`.
 
-### Ralph Mode (Resilience)
-For complex builds where first attempts may fail:
-1. **Debug & Understand** before retry.
-2. **Try New Approach** rather than repeating errors.
-3. **Research** alternatives if stuck.
+### Ralph Mode (Building for Failure)
+For complex tasks where first attempts often fail:
+1. **Debug & Understand**: Don't repeat identical errors.
+2. **Research**: Find how others solved similar blocks.
+3. **Attempt Limit**: You have [N] attempts before escalation.
 
 ---
 
 ## 2. Delegation Workflow
 
-### Core Principle: Fresh Context Per Task
+### Core Principle: Context Isolation
 Always dispatch a fresh subagent per task to prevent context switch fatigue and token pollution.
 
-### The Two-Stage Review Process
-Never accept implementation without a two-stage quality gate:
-1. **Spec Compliance Review**: Verify implementation matches the requirements exactly (no under/over-building).
-2. **Code Quality Review**: Verify code meets the "Code Quality" agent standards (cleanliness, patterns).
+### Two-Stage Review Cycle
+Never accept implementation without independent verification:
+1. **Spec Compliance**: Dispatch reviewer to confirm code matches the design (no gaps, no extras).
+2. **Code Quality**: Dispatch **Code Quality** subagent to verify standards.
+3. **Fix Loop**: If review fails, the original subagent (or a fix subagent) iterates until ✅.
 
-### Coordination Strategy
-- **Exploration (Early)**: High parallelism (3+ agents) for broad research.
-- **Execution (Middle)**: Target focus (1-2 agents) for implementation.
-- **Convergence (Late)**: Single-agent verification and integration.
+### Parallelism Strategy
+- **Early turn (Explore)**: 2-3 parallel calls/agents.
+- **Middle turn (Build)**: 1-2 targets.
+- **Late turn (Verify)**: Single call.
 
 ---
 
