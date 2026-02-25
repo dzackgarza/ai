@@ -9,6 +9,10 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
+## Reference Skills
+- **prompt-engineering** — REQUIRED: Use for all subagent prompt templates (`implementer-prompt.md`, etc.).
+- **agent-orchestration** — Use for tracking and coordinating the subagents dispatched during this workflow.
+
 ## When to Use
 
 ```dot
@@ -232,8 +236,8 @@ Done!
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
 - **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:requesting-code-review** - Code review template for reviewer subagents
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
+- **prompt-engineering** - REQUIRED: Use for all subagent prompt engineering
 
 **Subagents should use:**
 - **superpowers:test-driven-development** - Subagents follow TDD for each task
