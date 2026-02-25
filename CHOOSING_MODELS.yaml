@@ -4,12 +4,15 @@ scoring_target: agentic capabilities (0-100)
 testing_command: |
   opencode run --attach http://127.0.0.1:4096 --dir /home/dzack/lattice_interface -m <model_slug> --thinking --print-logs "Say hello and exit."
 notes: |
-  Score-band guide (agentic capabilities):
-  - 90-100: Top-tier prompt adherence, reasoning, planning, and debugging; strongest for complex autonomous workflows.
-  - 80-89: Capable for general agentic work, but more likely to need explicit reminders and tighter supervision.
-  - 70-79: Usable, but common issues include reflexive edits, weaker literal instruction-following, and coherence drift.
-  - 60-69: Frequent directive misses; keep tasks narrow and add verification checkpoints.
-  - 30: Provisional low/default for models not explicitly validated in this rubric (or intentionally de-prioritized).
+  Score-band guide (agentic capabilities), calibrated against SWE-bench:
+  - 90-100: Elite frontier coders (Claude Opus 4.x, GPT-5.x) — best for complex real-world tasks and refactors
+  - 82-89: S+ SWE-bench (70%+) — GLM 5, Kimi K2.5, MiniMax M2.1, DeepSeek V3.2; strong agentic performers
+  - 72-81: S SWE-bench (60-70%) — MiniMax M2, DeepSeek V3.1, Qwen3.5; capable with some supervision
+  - 62-71: A+ SWE-bench (50-60%) — Mistral Large, Nemotron Ultra; solid alternatives
+  - 52-61: A SWE-bench (40-50%) — Nemotron Nano, Qwen Coder, Gemma 3; good for targeted tasks
+  - 42-51: A- SWE-bench (35-40%) — Llama 3.3 70B; lightweight or constrained infra
+  - 35-41: B+ SWE-bench (30-35%) — Ministral, Mixtral; code completion on limited infra
+  - 25-34: B/C SWE-bench (<30%) — R1 Distill, Phi, Gemma 2; minimal agentic capability
 models:
 - id: google/antigravity-claude-opus-4-6-thinking
   score: 98
@@ -84,10 +87,10 @@ models:
   score: 87
   verified_working: false
 - id: ollama-cloud/glm-4.7
-  score: 87
+  score: 83
   verified_working: false
 - id: ollama-cloud/glm-5
-  score: 87
+  score: 86
   verified_working: false
 - id: openrouter-free/z-ai/glm-4.5-air:free
   score: 87
@@ -96,7 +99,7 @@ models:
   score: 85
   verified_working: false
 - id: ollama-cloud/kimi-k2:1t
-  score: 85
+  score: 74
   verified_working: false
 - id: anthropic/claude-opus-4-0
   score: 84
@@ -117,7 +120,7 @@ models:
   score: 84
   verified_working: false
 - id: ollama-cloud/minimax-m2
-  score: 84
+  score: 78
   verified_working: false
 - id: ollama-cloud/minimax-m2.1
   score: 84
@@ -150,7 +153,7 @@ models:
   score: 76
   verified_working: false
 - id: ollama-cloud/nemotron-3-nano:30b
-  score: 75
+  score: 66
   verified_working: false
 - id: openai/codex-mini-latest
   score: 75
@@ -174,7 +177,7 @@ models:
   score: 75
   verified_working: false
 - id: ollama-cloud/qwen3.5:397b
-  score: 74
+  score: 76
   verified_working: false
 - id: google/antigravity-gemini-3-flash
   score: 73
@@ -208,16 +211,16 @@ models:
   score: 66
   verified_working: false
 - id: ollama-cloud/qwen3-coder:480b
-  score: 66
+  score: 56
   verified_working: false
 - id: ollama-cloud/qwen3-next:80b
   score: 66
   verified_working: false
 - id: ollama-cloud/qwen3-vl:235b
-  score: 66
+  score: 64
   verified_working: false
 - id: ollama-cloud/qwen3-vl:235b-instruct
-  score: 66
+  score: 64
   verified_working: false
 - id: openrouter-free/qwen/qwen3-4b:free
   score: 66
@@ -277,10 +280,10 @@ models:
   score: 65
   verified_working: false
 - id: ollama-cloud/deepseek-v3.1:671b
-  score: 64
+  score: 76
   verified_working: false
 - id: ollama-cloud/deepseek-v3.2
-  score: 64
+  score: 82
   verified_working: false
 - id: openrouter-free/openrouter/free
   score: 62
@@ -319,31 +322,31 @@ models:
   score: 30
   verified_working: false
 - id: ollama-cloud/gemma3:12b
-  score: 30
+  score: 54
   verified_working: false
 - id: ollama-cloud/gemma3:27b
-  score: 30
+  score: 54
   verified_working: false
 - id: ollama-cloud/gemma3:4b
-  score: 30
+  score: 54
   verified_working: false
 - id: ollama-cloud/gpt-oss:120b
-  score: 30
+  score: 70
   verified_working: false
 - id: ollama-cloud/gpt-oss:20b
-  score: 30
+  score: 70
   verified_working: false
 - id: ollama-cloud/ministral-3:14b
-  score: 30
+  score: 38
   verified_working: false
 - id: ollama-cloud/ministral-3:3b
-  score: 30
+  score: 36
   verified_working: false
 - id: ollama-cloud/ministral-3:8b
-  score: 30
+  score: 36
   verified_working: false
 - id: ollama-cloud/mistral-large-3:675b
-  score: 30
+  score: 68
   verified_working: false
 - id: ollama-cloud/rnj-1:8b
   score: 30
@@ -352,10 +355,10 @@ models:
   score: 30
   verified_working: false
 - id: openrouter-free/google/gemma-3-27b-it:free
-  score: 30
+  score: 22
   verified_working: false
 - id: openrouter-free/meta-llama/llama-3.3-70b-instruct:free
-  score: 30
+  score: 48
   verified_working: false
 - id: openrouter-free/mistralai/mistral-small-3.1-24b-instruct:free
   score: 30

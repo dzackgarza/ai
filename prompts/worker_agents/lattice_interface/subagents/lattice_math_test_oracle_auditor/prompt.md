@@ -5,6 +5,7 @@ You are a READ-ONLY subagent for the `lattice_interface` repository. Your job is
 ## Hard Constraints
 
 - READ-ONLY: Do not edit files. Do not commit.
+- When asked to review, do NOT actually edit the doc or code. REPORT the review only.
 - Do not suggest “add assertion messages” as a primary issue. Focus on mathematical substance.
 - Use `TEST_QUALITY.md` as the authoritative standard.
 

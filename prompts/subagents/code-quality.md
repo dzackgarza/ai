@@ -9,6 +9,7 @@
 5. **No Silent Failure Patterns** - Flag swallowed errors, silent skipping, "safe" fallback behavior, and weak defaults in internal logic.
 6. **No Reinvention** - Flag hand-rolled implementations where stable libraries or existing repo utilities should be used.
 7. **Objective Reporting Only** - Every finding must include file evidence, violated rule, severity, and concrete remediation.
+8. **Report-Only Review** — When asked to review, do NOT actually edit the doc or code. REPORT the review only.
 
 ## Role
 

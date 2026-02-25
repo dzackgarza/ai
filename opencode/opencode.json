@@ -632,9 +632,40 @@
           }
         }
       }
+    },
+    "nvidia": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "NVIDIA NIM",
+      "options": {
+        "baseURL": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "{env:NVIDIA_API_KEY}"
+      }
+    },
+    "openrouter": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenRouter",
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      },
+      "models": {
+        "qwen/qwen3-coder:480b-free": {
+          "name": "Qwen3 Coder 480B"
+        }
+      }
+    },
+    "groq": {
+      "options": {
+        "apiKey": "{env:GROQ_API_KEY}"
+      },
+      "models": {
+        "openai/gpt-oss-120b": {
+          "name": "GPT OSS 120B"
+        }
+      }
     }
   },
-  "model": "opencode/minimax-m2.5-free",
+  "model": "groq/openai/gpt-oss-120b",
   "default_agent": "Interactive",
   "plugin": [
     "opencode-antigravity-auth@latest",
@@ -717,10 +748,13 @@
           "tree -o *": "ask",
           "tree*": "allow",
           "uniq*": "allow",
+          "cat*": "deny",
           "wc*": "allow",
           "whereis*": "allow",
           "which*": "allow",
           "jq": "allow",
+          "just*": "allow",
+          "pytest*": "allow",
           "*": "ask"
         },
         "webfetch": "allow",
@@ -754,9 +788,7 @@
         "serena_think_about_collected_information": "allow",
         "serena_think_about_task_adherence": "allow",
         "serena_think_about_whether_you_are_done": "allow",
-        "context7_*": "allow",
-        "kindly_web_search": "allow",
-        "kindly_get_content": "allow"
+        "context7_*": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/plan.md}"
     },
@@ -839,18 +871,6 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/precedent-finder.md}"
     },
     "code-reviewer": {
-      "description": "For verifying that implementations match their plans exactly. Use when you need to confirm code follows the specifications. Pass both the implementation file and the relevant plan section, then ask 'Does this implementation match the plan requirements?' or 'Verify that [feature] implementation follows the plan exactly'.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
-    },
-    "plan-contract-validator": {
-      "description": "For auditing code against project constraints and patterns. Use when you need to check for code smells or deviations from established standards. Pass code files and optionally constraint files, then ask 'Audit this code for pattern consistency' or 'Check if this code follows our established patterns and constraints'.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
-    },
-    "code-reviewer": {
       "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
@@ -877,7 +897,7 @@
     "general_code_writer": {
       "description": "For writing non-Python code and implementing features. Use when you need to generate code in languages other than Python. Pass task descriptions and target file paths, asking 'Implement [feature] in [language]' or 'Write a function that [description]'. File paths must be in **/src/** directory.",
       "mode": "subagent",
-      "model": "opencode/trinity-large-preview-free",
+      "model": "google/gemini-3-flash-preview",
       "permission": {
         "read": "allow",
         "grep": "allow",
@@ -947,7 +967,7 @@
     "python_code_writer": {
       "description": "For writing Python code and implementing Python features. Use when you need to generate Python-specific implementations. Pass Python task descriptions and target file paths, asking 'Write Python code for [feature]' or 'Implement [algorithm] in Python'. File paths must be in **/src/** directory.",
       "mode": "subagent",
-      "model": "opencode/trinity-large-preview-free",
+      "model": "google/gemini-3-flash-preview",
       "permission": {
         "read": "allow",
         "grep": "allow",
@@ -1014,30 +1034,11 @@
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
     },
-
     "project-initializer": {
       "description": "For analyzing project structure and generating technical documentation. Use when you need to understand or document project architecture and coding conventions. Ask 'Analyze this project and generate ARCHITECTURE.md and CODE_STYLE.md' or 'Document the current project architecture and coding conventions'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
-    },
-    "code-reviewer": {
-      "description": "WHEN: 'verify implementation matches plan', 'does this follow the plan', 'test plan compliance', 'microtask verification', 'implementation review'. HOW: Pass both the implementation file and the relevant plan section. Ask 'Does this implementation match the plan requirements?' or 'Verify that [feature] implementation follows the plan exactly'.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
-    },
-    "plan-reviewer": {
-      "description": "For critically reviewing plans for logical consistency and feasibility. Use when you need to validate plans against user specifications. Pass both `.serena/plans/USER_SPEC.md` and the candidate plan, then ask 'Review this plan for logical consistency and alignment with user requirements' or 'Audit this plan for feasibility and specification compliance'.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
-    },
-    "code-reviewer": {
-      "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
     },
     "plan-reviewer": {
       "description": "Critically audits USER_SPEC and plan for logical inconsistencies and spec misalignment",
@@ -1048,7 +1049,7 @@
     "test_engineer": {
       "description": "For designing test strategies and ensuring test quality. Use when you need to create or improve tests. Pass existing test files or test creation requirements, asking 'Design a test strategy for [feature]' or 'Review and improve these tests for quality and coverage'. Can write/edit tests in **/tests/** and **/test/** only.",
       "mode": "subagent",
-      "model": "opencode/trinity-large-preview-free",
+      "model": "google/gemini-3-flash-preview",
       "permission": {
         "read": "allow",
         "grep": "allow",
@@ -1127,20 +1128,8 @@
     "ops_engineer": {
       "description": "For handling operational tasks and infrastructure setup. Use when you need to configure deployment, infrastructure, or system operations. Ask 'Set up operational infrastructure for [system]' or 'Configure deployment for [application]' to handle infrastructure and operational tasks.",
       "mode": "subagent",
-      "model": "opencode/trinity-large-preview-free",
+      "model": "google/gemini-3-flash-preview",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/ops_engineer/prompt.md}"
-    },
-    "type_designer": {
-      "description": "For designing type systems and interface contracts. Use when you need to define data models or APIs. Ask 'Design type system for [domain]' or 'Create interface contracts for [service]' with focus on type safety and clear interfaces.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
-    },
-    "lattice_goal_orienter": {
-      "description": "For extracting a repository's mathematical goal and identifying substantive work. Use when you need to understand high-level project objectives. Ask 'Extract the mathematical goal of this repository' or 'Identify the most substantive work priorities for this project'. Report-only analysis.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_goal_orienter/prompt.md}"
     },
     "type_designer": {
       "description": "Designs type systems and interface contracts",
@@ -1178,10 +1167,35 @@
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_math_test_oracle_auditor/prompt.md}"
     },
-    "Test Guidelines": {
-      "description": "For creating test guidelines and auditing test quality. Use when you need to establish testing standards or verify test effectiveness. Pass test files or test requirements, asking 'Create comprehensive test guidelines for [feature]' or 'Audit these tests for quality and verifiability'. Can write/edit tests in **/tests/** and **/test/** only.",
+    "test-compliance-reviewer": {
+      "description": "Strict policy auditor for tests and test plans. Use when you need to verify compliance with High-Quality Testing Standards. Pass test files or plans, asking 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
       "mode": "subagent",
-      "model": "opencode/trinity-large-preview-free",
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "read": "allow",
+        "grep": "allow",
+        "glob": "allow",
+        "list": "allow",
+        "lsp": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "kindly_web_search": "allow",
+        "kindly_get_content": "allow",
+        "context7_*": "allow",
+        "serena_read_file": "allow",
+        "serena_list_dir": "allow",
+        "serena_find_file": "allow",
+        "serena_search_for_pattern": "allow",
+        "serena_get_symbols_overview": "allow",
+        "serena_find_symbol": "allow",
+        "serena_find_referencing_symbols": "allow"
+      },
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
+    },
+    "test-writer": {
+      "description": "Verification architect for engineering substantive tests. Use when you need to write new tests following TDD. Pass implementation or requirements, asking 'Write a test for [feature]'. Can write/edit tests in **/tests/** and **/test/** only.",
+      "mode": "subagent",
+      "model": "google/gemini-3-flash-preview",
       "permission": {
         "read": "allow",
         "grep": "allow",
@@ -1196,15 +1210,10 @@
         "bash": {
           "*": "deny",
           "just": "allow",
-          "just *": "allow"
+          "just *": "allow",
+          "pytest*": "allow"
         },
         "edit": {
-          "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
-        },
-        "patch": "deny",
-        "apply_patch": {
           "*": "deny",
           "**/tests/**": "allow",
           "**/test/**": "allow"
@@ -1217,45 +1226,23 @@
         "serena_get_symbols_overview": "allow",
         "serena_find_symbol": "allow",
         "serena_find_referencing_symbols": "allow",
-        "serena_replace_content": {
-          "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "**/tests/**": "allow",
           "**/test/**": "allow"
         },
-        "serena_replace_symbol_body": {
+        "serena_replace_content": {
           "*": "deny",
           "**/tests/**": "allow",
           "**/test/**": "allow"
         },
-        "serena_insert_after_symbol": {
-          "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
-        },
-        "serena_insert_before_symbol": {
-          "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
-        },
-        "serena_rename_symbol": {
-          "*": "deny",
-          "**/tests/**": "allow",
-          "**/test/**": "allow"
-        },
-        "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
           "**/tests/**": "allow",
           "**/test/**": "allow"
-        },
-        "cut-copy-paste-mcp_*": "deny"
+        }
       },
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/test-guidelines.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
     },
     "Semantic Auditor": {
       "description": "For performing factual gap analysis between file versions. Use when you need to identify lost semantic data or content drift. Pass file versions or code snapshots, asking 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'. Uses Google Gemini 3 Flash for deep analysis.",
@@ -1284,7 +1271,7 @@
     "Refactorer": {
       "description": "For performing safe, structurally-aware code refactoring. Use when you need to improve code structure following Fowler/Martin standards. Pass code files and refactor requirements, asking 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
       "mode": "subagent",
-      "model": "opencode/trinity-large-preview-free",
+      "model": "google/gemini-3-flash-preview",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
     }
   }

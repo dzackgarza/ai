@@ -188,6 +188,14 @@ Use websearch to find this information. Do not use kindly_get_content or any too
 
 ---
 
+## Folder Tasks
+
+Some tests require a restricted workspace where the model can only read a specific subdirectory.
+
+- `model-strength-testing/folder-tasks/whodunnit-heart-of-empire/README.md`
+- `model-strength-testing/folder-tasks/workflow-adherence-git-checkpoints/README.md`
+- `model-strength-testing/folder-tasks/arxiv-proof-fidelity-2312-03638/README.md`
+
 ## Adding Tasks
 
 1. Add task above with:

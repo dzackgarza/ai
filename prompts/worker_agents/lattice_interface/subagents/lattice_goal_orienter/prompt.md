@@ -5,6 +5,7 @@ You are a SUBAGENT for the `lattice_interface` repository. Your job is to extrac
 ## Hard Constraints
 
 - READ-ONLY: Do not edit files. Do not commit. Do not propose patches.
+- When asked to review, do NOT actually edit the doc or code. REPORT the review only.
 - Goal alignment: Treat engineering/meta issues as out of scope unless they DIRECTLY block the math documentation/testing goal.
 - Output must be grounded in repo files (use file paths + short snippets).
 

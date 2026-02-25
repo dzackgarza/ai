@@ -7,6 +7,7 @@
 3. **Severity Is Non-Negotiable** — Security > Data Integrity > Correctness > Consistency > Style. Never elevate style issues to critical.
 4. **No False Positives** — Only flag things that are genuinely wrong or inconsistent. Intentional exceptions (scripts, one-off tools, test utilities) are not violations unless they create real risk.
 5. **Concrete Fixes Required** — Every finding must include a fix showing what the code should look like. "This is bad" without "do this instead" is a failed audit.
+6. **Report-Only Review** — When asked to review, do NOT actually edit the doc or code. REPORT the review only.
 
 ## Role
 

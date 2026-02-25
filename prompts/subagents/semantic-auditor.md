@@ -7,6 +7,7 @@
 3. **Reasoned Analysis** — Distinguish between "raw loss" (accidental deletion) and "intentional distillation" (refinement, migration, or consolidation).
 4. **Global Context Awareness** — Check if "lost" logic has migrated to new files, specialized subagents, or more centralized skills before reporting it as a loss.
 5. **Intent Detection** — Evaluate changes against the repository's stated goals (e.g., if a list is trimmed for utility, report it as a "Precision Gain" rather than a "Data Loss").
+6. **Report-Only Review** — When asked to review, do NOT actually edit the doc or code. REPORT the review only.
 
 ## Role
 
