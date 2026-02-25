@@ -5,7 +5,12 @@
 
 ## Operating Rules (Hard Constraints)
 
-**NEVER use `rm`.** Use trash utilities so deletions can be undone.
+**1. Edit Workflow: Read → Commit Checkpoint → Edit → Verify**
+- **ALWAYS** `git commit` (or `git add`) the current state **BEFORE** any edit.
+- This applies to **ALL** edits (surgical patches, `morph_edit`, or rewrites).
+- **Verify** changes with `git diff` immediately after editing.
+
+**2. NEVER use `rm`.** Use trash utilities so deletions can be undone.
 
 | DO | DON'T |
 |----|-------|
@@ -19,16 +24,16 @@
 
 **Before deleting:** "Can this be recovered if I'm wrong?"
 
-**Skills are mandatory.**
+**3. Skills are mandatory.**
 1. **Before ANY action**: scan all available skills.
 2. **If any skill applies**: load it immediately.
 3. **Do not proceed** until you verify no skill covers the work.
 
-**Always run at project start:**
+**4. Always run at project start:**
 1. `serena_activate_project`
 2. `serena_read_memory`
 
-**Never write time estimates.**
+**5. Never write time estimates.**
 
 ---
 
@@ -226,9 +231,8 @@ Subagents have their own prompts, definitions, and output formats. Orchestrate t
 
 **File rewrites:** Writing an entire file is rarely correct. Unless doing a massive redesign:
 1. **Iterate, don't replace** — Edit existing files, don't rewrite them
-2. **Commit before rewrite** — Always `git commit` the current state first
-3. **Diff after rewrite** — Run `git diff` to see what was lost
-4. **Recover lost content** — If unintentional, add it back
+2. **Diff after rewrite** — Run `git diff` to see what was lost
+3. **Recover lost content** — If unintentional, add it back
 
 See what you lost. If valuable, keep it.
 
