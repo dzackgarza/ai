@@ -67,6 +67,21 @@ The real vector space $V \otimes \mathbb{R}$ has a signature $(n_+, n_-, n_0)$ r
 - **Roots:** Vectors $v \in L$ such that $q(v) = 1$ or $-1$ (depending on convention, often $b(v, v) = \pm 2$ for even lattices), which define reflections generating the Weyl group.
 - **Algebraic Geometry Connection:** In algebraic geometry, the middle cohomology group $H^2(X, \mathbb{Z})$ of a surface (like a K3 surface) modulo torsion forms a lattice under the intersection product. For example, a K3 surface's intersection lattice is isomorphic to $E_8(-1)^{\oplus 2} \oplus U^{\oplus 3}$, an even unimodular lattice of signature $(3, 19)$.
 
+
+**6. Boundary Concepts (In Scope vs. Out of Scope):**
+The term "lattice" is heavily overloaded in mathematics and physics. You must enforce strict boundaries on what subagents research or implement.
+
+*   **REJECT (Completely Out of Scope):**
+    *   **Order Theory:** Lattices as partially ordered sets (posets) where every two elements have a supremum and infimum (e.g., distributive lattices, Boolean algebras).
+    *   **Physics Lattice Models:** Lattice QCD, Ising models, spin glasses, crystal lattices (unless specifically treated as an algebraic module with a quadratic form).
+    *   **Cryptography:** Lattice-based cryptography (LWE, NTRU), which typically focuses on computationally hard problems in definite integer lattices rather than their geometric/algebraic invariants.
+
+*   **ACCEPT (Nearby Concepts In Scope):**
+    *   **Discrete Subgroups:** A lattice defined as a discrete subgroup of a topological group (e.g., $\mathbb{R}^n$) with finite covolume.
+    *   **Lie Theory:** Lattices in Lie groups, algebraic groups, and arithmetic groups.
+    *   **Number Theory:** Orders in number fields, fractional ideals, and lattices over rings of integers $\mathcal{O}_K$ (e.g., in a totally real field).
+    *   **General Forms:** Hermitian and sesquilinear forms over more general rings, which naturally extend the theory of bilinear forms over $\mathbb{Z}$.
+
 **When a subagent hallucinates, you must identify if they broke one of these invariants.** For example, if a subagent asserts the signature of an indefinite lattice is a single number, or thinks a discriminant group is just an integer, they have failed mathematically.
 
 ---
