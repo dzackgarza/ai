@@ -739,6 +739,7 @@
     "opencode-openai-codex-auth"
   ],
   "agent": {
+    "plan": {},
     "Minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
