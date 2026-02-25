@@ -960,7 +960,11 @@
           "wc*": "allow",
           "head*": "allow",
           "tail*": "allow",
-          "cat*": "allow"
+          "cat*": "allow",
+          "rg*": "allow",
+          "kpsewhich*": "allow",
+          "command -v *": "allow",
+          "uv*": "allow"
         },
         "edit": {
           "*": "deny",
@@ -1084,7 +1088,11 @@
           "wc*": "allow",
           "head*": "allow",
           "tail*": "allow",
-          "cat*": "allow"
+          "cat*": "allow",
+          "rg*": "allow",
+          "kpsewhich*": "allow",
+          "command -v *": "allow",
+          "uv*": "allow"
         },
         "edit": {
           "*": "deny",
@@ -1220,7 +1228,11 @@
           "wc*": "allow",
           "head*": "allow",
           "tail*": "allow",
-          "cat*": "allow"
+          "cat*": "allow",
+          "rg*": "allow",
+          "kpsewhich*": "allow",
+          "command -v *": "allow",
+          "uv*": "allow"
         },
         "edit": {
           "*": "deny",
@@ -1427,7 +1439,11 @@
           "wc*": "allow",
           "head*": "allow",
           "tail*": "allow",
-          "cat*": "allow"
+          "cat*": "allow",
+          "rg*": "allow",
+          "kpsewhich*": "allow",
+          "command -v *": "allow",
+          "uv*": "allow"
         },
         "edit": {
           "*": "deny",
