@@ -833,10 +833,22 @@
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}"
     },
     "precedent-finder": {
-      "description": "Searches memories and codebase for precedent, past decisions, and existing patterns",
+      "description": "WHEN: 'how have we done this before', 'existing patterns', 'past decisions', 'lessons learned', 'precedent', 'memory search'. HOW: Ask 'Search for precedent on [topic]' or 'How have we handled [similar problem] before?'. Pass specific technical keywords and context for best results.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/precedent-finder.md}"
+    },
+    "code-reviewer": {
+      "description": "WHEN: 'verify implementation matches plan', 'does this follow the plan', 'test plan compliance', 'microtask verification', 'implementation review'. HOW: Pass both the implementation file and the relevant plan section. Ask 'Does this implementation match the plan requirements?' or 'Verify that [feature] implementation follows the plan exactly'.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
+    },
+    "plan-contract-validator": {
+      "description": "WHEN: 'code smells', 'constraint compliance', 'pattern consistency', 'audit code quality', 'deviations from standards'. HOW: Pass code files and optionally constraint files. Ask 'Audit this code for pattern consistency' or 'Check if this code follows our established patterns and constraints'.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
     },
     "code-reviewer": {
       "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
@@ -851,19 +863,19 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
     },
     "codebase-analyzer": {
-      "description": "Explains HOW code works by tracing data flow, control flow, and side effects with file:line references",
+      "description": "WHEN: 'how does this work', 'trace data flow', 'control flow analysis', 'side effects', 'code behavior', 'understand system'. HOW: Pass entry point files (routes, main functions, API endpoints). Ask 'Trace how [function] processes data from start to finish' or 'Explain the data flow through this system'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-analyzer.md}"
     },
     "codebase-locator": {
-      "description": "Finds WHERE files are located in the codebase",
+      "description": "WHEN: 'find files', 'locate code', 'where is', 'find implementation', 'file search'. HOW: Ask 'Find files related to [feature]' or 'Where is the [component] implementation located?'. Be specific about function names, classes, or features you're looking for.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-locator.md}"
     },
     "general_code_writer": {
-      "description": "Handles delegated non-Python code-writing tasks; write/edit tools restricted to **/src/** only",
+      "description": "WHEN: 'write code', 'implement feature', 'create function', 'generate code', 'non-Python implementation'. HOW: Pass task description and target file paths. Ask 'Implement [feature] in [language]' or 'Write a function that [description]'. Specify file paths in **/src/** directory.",
       "mode": "subagent",
       "model": "opencode/trinity-large-preview-free",
       "permission": {
@@ -933,7 +945,7 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
     },
     "python_code_writer": {
-      "description": "Handles delegated Python code-writing tasks; write/edit tools restricted to **/src/** only",
+      "description": "WHEN: 'Python code', 'write python', 'python implementation', 'create function', 'python script'. HOW: Pass Python-specific task descriptions and target file paths. Ask 'Write Python code for [feature]' or 'Implement [algorithm] in Python'. Specify file paths in **/src/** directory.",
       "mode": "subagent",
       "model": "opencode/trinity-large-preview-free",
       "permission": {
@@ -1004,10 +1016,22 @@
     },
 
     "project-initializer": {
-      "description": "Rapidly analyzes project and generates ARCHITECTURE.md and CODE_STYLE.md",
+      "description": "WHEN: 'new project', 'architecture analysis', 'code style', 'project structure', 'technical documentation'. HOW: Ask 'Analyze this project and generate ARCHITECTURE.md and CODE_STYLE.md' or 'Document the current project architecture and coding conventions'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
+    },
+    "code-reviewer": {
+      "description": "WHEN: 'verify implementation matches plan', 'does this follow the plan', 'test plan compliance', 'microtask verification', 'implementation review'. HOW: Pass both the implementation file and the relevant plan section. Ask 'Does this implementation match the plan requirements?' or 'Verify that [feature] implementation follows the plan exactly'.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
+    },
+    "plan-reviewer": {
+      "description": "WHEN: 'plan review', 'spec audit', 'logical consistency', 'check feasibility', 'validate plan', 'USER_SPEC compliance'. HOW: Pass both `.serena/plans/USER_SPEC.md` and the candidate plan. Ask 'Review this plan for logical consistency and alignment with user requirements' or 'Audit this plan for feasibility and specification compliance'.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
     },
     "code-reviewer": {
       "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
@@ -1022,7 +1046,7 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
     },
     "test_engineer": {
-      "description": "Designs test strategies and ensures test quality; write/edit tools restricted to **/tests/** and **/test/** only",
+      "description": "WHEN: 'test strategy', 'test quality', 'testing approach', 'test coverage', 'test design'. HOW: Pass existing test files or test creation requirements. Ask 'Design a test strategy for [feature]' or 'Review and improve these tests for quality and coverage'. Can write/edit tests in **/tests/** and **/test/** only.",
       "mode": "subagent",
       "model": "opencode/trinity-large-preview-free",
       "permission": {
@@ -1101,10 +1125,22 @@
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/test_engineer/prompt.md}"
     },
     "ops_engineer": {
-      "description": "Handles operational tasks and infrastructure",
+      "description": "WHEN: 'infrastructure', 'deployment', 'devops', 'operational setup', 'system configuration'. HOW: Ask 'Set up operational infrastructure for [system]' or 'Configure deployment for [application]'. Handles infrastructure and operational tasks.",
       "mode": "subagent",
       "model": "opencode/trinity-large-preview-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/ops_engineer/prompt.md}"
+    },
+    "type_designer": {
+      "description": "WHEN: 'type system', 'interface contracts', 'API design', 'data modeling', 'schema design'. HOW: Ask 'Design type system for [domain]' or 'Create interface contracts for [service]'. Focus on type safety and clear interfaces.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
+    },
+    "lattice_goal_orienter": {
+      "description": "WHEN: 'mathematical goal', 'repo analysis', 'core purpose', 'identify substantive work', 'high-level objectives'. HOW: Ask 'Extract the mathematical goal of this repository' or 'Identify the most substantive work priorities for this project'. Report-only analysis.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_goal_orienter/prompt.md}"
     },
     "type_designer": {
       "description": "Designs type systems and interface contracts",
@@ -1119,31 +1155,31 @@
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_goal_orienter/prompt.md}"
     },
     "lattice_upstream_provenance_auditor": {
-      "description": "Finds missing upstream doc snapshots that block source-backed lattice contracts (report-only)",
+      "description": "WHEN: 'upstream docs', 'provenance', 'source-backed contracts', 'documentation gaps', 'lattice compliance'. HOW: Ask 'Check for missing upstream doc snapshots that block lattice contracts' or 'Audit upstream documentation for completeness'. Report-only analysis.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_upstream_provenance_auditor/prompt.md}"
     },
     "lattice_checklist_gap_finder": {
-      "description": "Finds methods present upstream but missing from methods checklists (report-only)",
+      "description": "WHEN: 'checklist completeness', 'method verification', 'upstream sync', 'implementation gaps', 'feature completeness'. HOW: Ask 'Find missing methods from upstream that should be in checklists' or 'Verify checklist completeness against upstream implementations'. Report-only analysis.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_gap_finder/prompt.md}"
     },
     "lattice_contract_fidelity_auditor": {
-      "description": "Finds missing types/assumptions/citations in lattice method docs (report-only)",
+      "description": "WHEN: 'contract fidelity', 'type safety', 'assumption validation', 'citation completeness', 'documentation accuracy'. HOW: Ask 'Audit lattice method docs for missing types/assumptions/citations' or 'Verify contract documentation completeness and accuracy'. Report-only analysis.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_contract_fidelity_auditor/prompt.md}"
     },
     "lattice_math_test_oracle_auditor": {
-      "description": "Finds weak or missing mathematical oracles in lattice-related tests (report-only)",
+      "description": "WHEN: 'mathematical oracles', 'test verification', 'lattice math', 'correctness proofs', 'oracle testing'. HOW: Ask 'Find weak or missing mathematical oracles in lattice tests' or 'Verify mathematical correctness of lattice implementations'. Report-only analysis.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_math_test_oracle_auditor/prompt.md}"
     },
     "Test Guidelines": {
-      "description": "Writes and audits substantive, verifiable tests; write/edit tools restricted to **/tests/** and **/test/** only",
+      "description": "WHEN: 'test guidelines', 'test quality', 'testing standards', 'verifiable tests', 'test audit'. HOW: Pass test files or test requirements. Ask 'Create comprehensive test guidelines for [feature]' or 'Audit these tests for quality and verifiability'. Can write/edit tests in **/tests/** and **/test/** only.",
       "mode": "subagent",
       "model": "opencode/trinity-large-preview-free",
       "permission": {
@@ -1222,31 +1258,31 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-guidelines.md}"
     },
     "Semantic Auditor": {
-      "description": "Performs factual gap analysis between file versions to report lost semantic data",
+      "description": "WHEN: 'semantic analysis', 'version comparison', 'data loss', 'factual gaps', 'content drift'. HOW: Pass file versions or code snapshots. Ask 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'. Uses Google Gemini 3 Flash for deep analysis.",
       "mode": "subagent",
       "model": "google/antigravity-gemini-3-flash",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     },
     "Code Quality": {
-      "description": "Audits code against Clean Code and Design Pattern standards",
+      "description": "WHEN: 'code quality', 'clean code', 'design patterns', 'refactoring', 'code standards'. HOW: Pass code files and optionally specific standards. Ask 'Audit this code for Clean Code violations' or 'Review design patterns in [component]' or 'Suggest refactoring improvements for [codebase]'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-quality.md}"
     },
     "Repo Explorer": {
-      "description": "Performs structural and semantic codebase mapping using WarpGrep and ast-grep",
+      "description": "WHEN: 'codebase mapping', 'structural analysis', 'dependencies', 'architecture overview', 'WarpGrep search'. HOW: Ask 'Map the structural dependencies of this repository' or 'Perform semantic codebase analysis using WarpGrep' or 'Explain the overall architecture of this codebase'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/repo-explorer.md}"
     },
     "Researcher": {
-      "description": "Synthesizes internal code and external documentation (llms.txt, web)",
+      "description": "WHEN: 'documentation research', 'external docs', 'internal code synthesis', 'llms.txt analysis', 'web research'. HOW: Ask 'Research documentation for [topic]' or 'Synthesize information from internal code and external sources' or 'Find documentation about [technology]'. Combines internal code analysis with web research.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/researcher.md}"
     },
     "Refactorer": {
-      "description": "Performs safe, structurally-aware code refactors using Fowler/Martin standards",
+      "description": "WHEN: 'refactoring', 'code improvement', 'structural changes', ' Fowler/Martin standards', 'clean architecture'. HOW: Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
       "mode": "subagent",
       "model": "opencode/trinity-large-preview-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
