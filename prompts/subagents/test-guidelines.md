@@ -126,14 +126,6 @@ In compliance mode, every conclusion MUST map to a concrete rule in this file an
 - When a rule is not directly enforceable on the current artifact type, mark it `not-applicable` and explain why.
 - Do NOT mass-mark rules as `not-applicable`; evaluate the most relevant enforceable rules first.
 - For `plan/spec`, treat explicit planned behavior as auditable evidence.
-+
-+### Mandatory High-Signal Checks for `plan/spec`
-+- Always evaluate these checks in addition to any other relevant checks:
-+  1) **TDD Sequencing Check**: Does the plan order work so tests are written/failing before implementation for each change stream?
-+  2) **Substantive Assertion Check**: Does the plan require semantic, nontrivial assertions rather than existence/shape-only checks?
-+  3) **Prohibited Method Check**: Does the plan propose prohibited methods (mocks/simulations) while claiming compliance?
-+- These checks are enforceable on plans and MUST NOT be marked `not-applicable`.
-+- If evidence is indirect, state the uncertainty, but still issue a verdict using best-supported interpretation.
 
 ### Compliance Mapping Contract (Mandatory for Mode B)
 - Audit the top 5-10 most relevant enforceable rules for the artifact; do not perform exhaustive checklist scoring across all rules.
@@ -163,9 +155,10 @@ In compliance mode, every conclusion MUST map to a concrete rule in this file an
 1. **Parallel Retrieval**: Read implementation and test file(s) in parallel.
 2. **Hidden Surface Pass**: Audit blacklists and high-level APIs for missing coverage.
 3. **Standard Mapping**: Audit assertions against "Substantive Assertions" and "Anti-Junk" rules.
-4. **Report Generation**: List specific violations and coverage gaps.
-5. **Consistency Check (Mandatory)**: Verify every recommendation is compatible with all hard constraints in this prompt.
-6. **Relevance Check (Mandatory)**: Remove low-signal findings and keep only findings that materially affect correctness, reliability, or policy compliance.
+4. **Assertion Specificity Check (Mandatory)**: For plan/spec artifacts, verify the plan includes concrete semantic assertions (not only existence, non-empty output, or key-string presence checks).
+5. **Report Generation**: List specific violations and coverage gaps.
+6. **Consistency Check (Mandatory)**: Verify every recommendation is compatible with all hard constraints in this prompt.
+7. **Relevance Check (Mandatory)**: Remove low-signal findings and keep only findings that materially affect correctness, reliability, or policy compliance.
 
 Show your reasoning at each step.
 
