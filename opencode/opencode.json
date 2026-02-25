@@ -1022,7 +1022,6 @@
           "*": "deny",
           "src/**/*": "allow"
         },
-        "serena_restart_language_server": "deny",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
@@ -1128,7 +1127,6 @@
           "*": "deny",
           "src/**/*": "allow"
         },
-        "serena_restart_language_server": "deny",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
@@ -1257,7 +1255,6 @@
           "*": "deny",
           "src/**/*": "allow"
         },
-        "serena_restart_language_server": "deny",
         "morph-mcp_*": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
@@ -1440,7 +1437,6 @@
           "tests/**/*": "allow",
           "test/**/*": "allow"
         },
-        "serena_restart_language_server": "deny",
         "morph-mcp_edit_file": {
           "*": "deny",
           "tests/**/*": "allow",
