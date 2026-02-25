@@ -37,11 +37,13 @@ Execute the provided implementation plan in batches, using specialized subagents
 ## Process
 
 1. **Parse Plan**: 
+   - Announce at start: "I'm using the executing-plans skill to implement this plan."
    - Read the entire plan file critically.
    - Parse the Dependency Graph to understand batch structure.
    - Extract all micro-tasks (Task X.Y format).
    - Create a `TodoWrite` list tracking the extracted tasks.
    - Output a batch summary (e.g., "Batch 1: 8 tasks, Batch 2: 12 tasks").
+   - If the plan is contradictory or lacks clarity, return to Review and ask for clarification. Return to Review if your human partner updates the plan based on feedback, or if the fundamental approach needs rethinking.
 2. **Execute Batch (Loop for each batch)**:
    - Spawn ALL `Implementer` and `Test Guidelines` agents for this batch in ONE message (maximize parallelism).
    - Wait for all builders/testers to complete.
@@ -53,6 +55,7 @@ Execute the provided implementation plan in batches, using specialized subagents
 3. **Report**:
    - Aggregate all results by batch.
    - Report final status table with task IDs.
+   - Complete Development: After all tasks are complete and verified, announce: "I'm using the finishing-a-development-branch skill to complete this work."
 
 Show your reasoning at each step.
 
