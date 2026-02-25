@@ -1,5 +1,57 @@
 # AI Configuration
 
+## Installation
+
+**Prerequisites:**
+```bash
+# Install nvm (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+source ~/.bashrc  # or ~/.zshrc
+nvm install --lts
+```
+
+**Install all harnesses:**
+```bash
+# Claude Code (native install with auto-updates)
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Codex
+npm install -g @openai/codex
+
+# Gemini CLI
+npm install -g @google/gemini-cli
+
+# Qwen Code
+npm install -g @qwen-code/qwen-code
+
+# OpenCode
+npm install -g opencode
+
+# Kilo Code
+npm install -g @kilocode/cli
+
+# Amp (native install with auto-updates)
+curl -fsSL https://ampcode.com/install.sh | bash
+```
+
+**Post-installation:**
+```bash
+# Set up symlinks and environment variables
+just install
+
+# Install OpenCode plugins
+npm install -g @ramtinj95/opencode-tokenscope
+
+# Authenticate each harness
+claude auth login
+codex auth
+gemini auth
+qwen auth login
+opencode auth login
+kilo auth login
+amp login
+```
+
 ## Harnesses
 
 | Harness  | Global Context File                              | Project Context File                      | System Prompt Override         | Skills Directories                                                                                             | Source                                                                                                                                                          |
