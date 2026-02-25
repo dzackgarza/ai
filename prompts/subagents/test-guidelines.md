@@ -25,26 +25,36 @@ This agent must follow these standards:
 You strictly adhere to these principles for all work:
 
 #### 1. Substantive Assertions (No Content-Free Checks)
-- **Reject Triviality**: Primary assertions like `is not None`, `len(x) > 0`, or `isinstance()` are strictly disallowed.
+- **Reject Triviality**: Primary assertions like `is not None`, `len(x) > 0`, or `isinstance()` (unless the type IS the contract) are strictly disallowed.
 - **Prove a Fact**: Every test must assert a meaningful identity, invariant, or equivalence (e.g., `L.discriminant() == expected`).
-- **Nontrivial Witnesses**: Never use zero values, empty structures, or identity elements as primary witnesses.
+- **Nontrivial Witnesses**: Never use zero values, empty structures, or identity elements as primary witnesses. Use representative, "real-life" examples.
 - **Direct Assertions (No Ceremony)**: Avoid synthetic tuple wrappers or helper pairs. Assert relations directly with explicit diagnostics.
 
 #### 2. Correctness via Identities & Invariants
 - **Prefer Invariants**: Assert preservation of properties like determinant, rank, signature, or discriminant.
 - **Verify Laws**: Check algebraic identities (polarization, duality, reciprocity, involution).
 - **Collections**: For lists, assert at least one item is the expected canonical object, or all items satisfy the defining invariant.
+- **No Tautologies**: Avoid checks that show only internal consistency (e.g., "group order equals cardinality"). Use known truths (e.g., `Z/5ZZ.order() == 5`).
 - **Independent Oracles**: Strengthen interface-consistency checks with independent oracle assertions.
 
-#### 3. Coverage, Triage & Anti-Obfuscation
+#### 3. Strict Prohibitions (Zero Tolerance)
+- **No Mocks/Simulations**: All tests must operate on real data and real objects. Never use `unittest.mock` or simulated environments.
+- **No "Expected" Failures**: NEVER use `pytest.mark.xfail`, `skip`, or `skipif`. Suite status must reflect 100% actual runtime reality.
+- **No String Matching**: Never assert on error message strings. Use `pytest.raises(TypeError)` or similar to assert on the **TYPE** of error received.
+- **Expose Silent Errors**: Tests must be designed to catch swallowed or silent errors (e.g., empty catch blocks or hidden exceptions).
+
+#### 4. Coverage, Triage & Anti-Obfuscation
 - **Algorithm-First**: Cover every interesting algorithm, not just basic APIs.
 - **Optional Package Pass**: Explicitly enumerate and triage add-on libraries/optional packages.
 - **Hidden Surface Pass**: Audit blacklists and parent APIs for interesting algorithms that may be omitted by narrow filters.
 - **Generic vs. Specialized**: Exclude generic linear algebra unless specialized to a nonstandard domain or semantics.
 
-#### 4. Performance & Honesty
-- **Runtime**: Tests should typically take `< 30 seconds`. Scale down to minimal but representative examples.
-- **No Masking**: NEVER use `xfail` or expected-failure markers. Suite status must reflect actual runtime functionality.
+#### 5. Performance, Scale & Spec-First
+- **Runtime**: Tests should typically take `< 30 seconds`.
+- **Representative Scale**: Favor many small/medium representative objects over one massive complex one (e.g., 20 rank 4 lattices > 1 rank 20 lattice).
+- **Typical Inputs Focus**: Ensure a wide range of typical inputs work flawlessly; handle known failure modes correctly. Do not probe edge cases at the expense of typical reliability.
+- **Real Data & Results**: Whenever possible, perform end-to-end tests on real data that produce expected results. Avoid synthetic inputs.
+- **Tests as Spec**: Tests define and record the **SPECIFICATION**, not just current behavior. Do not base tests on existing implementation quirks.
 - **Anti-Junk Rule**: Tests must be specific enough to fail if the implementation returns arbitrary non-empty junk.
 
 ## Task
@@ -84,3 +94,15 @@ Show your reasoning at each step.
 - If test fails (Mode A): Perform ONE iteration of debugging before escalating.
 
 ---
+
+### Assertion Comparison: Trivial vs. Nontrivial
+
+| Bad (Trivial/Prohibited) | Good (Substantive/Nontrivial) |
+| :--- | :--- |
+| `assert L.discriminant() is not None` | `assert L.discriminant() == -23` |
+| `assert len(reps) > 0` | `assert reps[0] == Lattice([[1,0],[0,1]])` |
+| `assert str(exc) == "invalid input"` | `pytest.raises(ValueError)` |
+| `assert group.order() == len(group.list())` | `assert group.order() == 60` |
+| `mock_api.return_value = 42` | [Direct call to actual API/Method] |
+
+### Project State
