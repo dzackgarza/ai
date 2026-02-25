@@ -17,12 +17,39 @@ opencode serve &
 opencode run --attach http://localhost:4096 --thinking --print-logs "Your prompt"
 ```
 
-**Required flags for agent calls:**
-- `--attach http://localhost:4096` - Connect to background server
-- `--thinking` - Enable reasoning output  
+**Common flags for scripted agent calls:**
+- `--thinking` - Enable reasoning output
 - `--print-logs` - Show logs for debugging
+- `--attach http://localhost:4096` - Use a warm background server for much faster runs
 
 **First run is slow** (MCP warmup). Subsequent runs are fast.
+
+## Known Bug: `run --attach` + `--agent`
+
+Issue: https://github.com/anomalyco/opencode/issues/8094
+
+### Symptom
+
+```bash
+opencode run --attach http://127.0.0.1:4096 --agent plan "test"
+# instance: No context found for instance
+```
+
+### Notes
+
+- Reported as a bug in OpenCode (`#8094`), with related fixes discussed upstream.
+- `--attach` is still useful and typically works.
+- The problematic case is selecting a specific non-default agent with `--agent` while attached.
+
+### Workarounds
+
+```bash
+# 1) Fast path: use --attach and rely on server/default agent
+opencode run --attach http://localhost:4096 --thinking --print-logs "Your prompt"
+
+# 2) If you need a specific non-default agent, run without --attach
+opencode run --agent <agent> --thinking --print-logs "Your prompt"
+```
 
 ## Core Commands
 
