@@ -60,7 +60,3 @@ Show your reasoning and mapping logic.
 - If no data loss is detected: Report "Semantic Fidelity Maintained."
 
 ---
-${AgentSkills}
-${SubAgents}
-## Available Tools
-${AvailableTools}
