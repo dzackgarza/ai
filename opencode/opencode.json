@@ -952,12 +952,12 @@
         },
         "edit": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "patch": "allow",
         "apply_patch": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_*": "deny",
         "serena_activate_project": "allow",
@@ -970,39 +970,39 @@
         "serena_find_referencing_symbols": "allow",
         "serena_replace_content": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_delete_lines": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_insert_at_line": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_replace_lines": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
@@ -1021,19 +1021,19 @@
         "morph-mcp_warpgrep_codebase_search": "allow",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "cut-copy-paste-mcp_copy": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
@@ -1064,12 +1064,12 @@
         },
         "edit": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "patch": "allow",
         "apply_patch": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_*": "deny",
         "serena_activate_project": "allow",
@@ -1082,39 +1082,39 @@
         "serena_find_referencing_symbols": "allow",
         "serena_replace_content": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_delete_lines": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_insert_at_line": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_replace_lines": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
@@ -1133,19 +1133,19 @@
         "morph-mcp_warpgrep_codebase_search": "allow",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "cut-copy-paste-mcp_copy": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny",
-          "src/**/*": "allow"
+          "src/**": "allow"
         }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
@@ -1188,14 +1188,14 @@
         },
         "edit": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "patch": "deny",
         "apply_patch": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_*": "deny",
         "serena_activate_project": "allow",
@@ -1208,48 +1208,48 @@
         "serena_find_referencing_symbols": "allow",
         "serena_replace_content": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_delete_lines": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_insert_at_line": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_replace_lines": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
@@ -1268,23 +1268,23 @@
         "morph-mcp_warpgrep_codebase_search": "allow",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "cut-copy-paste-mcp_copy": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         }
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/test_engineer/prompt.md}"
@@ -1383,8 +1383,8 @@
         },
         "edit": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_*": "deny",
         "serena_activate_project": "allow",
@@ -1397,48 +1397,48 @@
         "serena_find_referencing_symbols": "allow",
         "serena_create_text_file": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_replace_content": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_delete_lines": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_insert_at_line": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_replace_lines": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "serena_onboarding": "allow",
         "serena_prepare_for_new_conversation": "allow",
@@ -1457,23 +1457,23 @@
         "morph-mcp_warpgrep_codebase_search": "allow",
         "morph-mcp_edit_file": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "cut-copy-paste-mcp_copy": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny",
-          "tests/**/*": "allow",
-          "test/**/*": "allow"
+          "tests/**": "allow",
+          "test/**": "allow"
         }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
