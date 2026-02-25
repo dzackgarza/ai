@@ -80,7 +80,8 @@ The term "lattice" is heavily overloaded in mathematics and physics. You must en
 
 - **ACCEPT (Nearby Concepts In Scope):**
   - **Discrete Subgroups:** A lattice defined as a discrete subgroup of a topological group (e.g., $\mathbb{R}^n$) with finite covolume.
-  - **Lie Theory & Root Systems:** HIGHLY relevant. Lattices in Lie groups, algebraic groups, and arithmetic groups. Root systems, Weyl groups, and Coxeter groups are central to the workflows (e.g., Vinberg's algorithm for hyperbolic reflection groups).
+  - **Root Lattices & Coxeter Theory:** CENTRAL importance. Root lattices (A_n, D_n, E_n, etc.) are the fundamental building blocks of the theory. All related objects are in-scope and priority: Dynkin diagrams, Coxeter diagrams/graphs, Coxeter polytopes (spherical, Euclidean, and especially hyperbolic), and their associated reflection groups.
+  - **Lie Theory & Root Systems:** HIGHLY relevant. Lattices in Lie groups, algebraic groups, and arithmetic groups. Root systems and Weyl groups are the primary mechanisms for understanding lattice automorphisms and reflections.
   - **Integral-Affine Structures:** HIGHLY relevant, specifically regarding their appearance in Kulikov models of K3 and Enriques surfaces.
   - **SVP & Lattice Reduction:** Foundational algorithms like LLL, BKZ, and SVP (e.g., g6k, flatter) are expected on a lattice interface. They support the broader lattice workflows and are solidly in-scope.
   - **Crystallographic Groups & Hyperbolic Tesselations:** Highly relevant to tilings. Hyperbolic tesselations occur via actions of reflection groups on hyperbolic space and are explicitly in scope.
