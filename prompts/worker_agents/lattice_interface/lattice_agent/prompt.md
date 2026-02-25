@@ -85,6 +85,7 @@ The term "lattice" is heavily overloaded in mathematics and physics. You must en
   - **General Forms:** Hermitian and sesquilinear forms over more general rings, which naturally extend the theory of bilinear forms over $\mathbb{Z}$.
   - **SVP & Lattice Reduction:** Foundational algorithms like LLL, BKZ, and SVP (e.g., g6k, flatter) are expected on a lattice interface. They support the broader lattice workflows and are solidly in-scope.
   - **Crystallographic Groups & Hyperbolic Tesselations:** Highly relevant to tilings. Hyperbolic tesselations occur via actions of reflection groups on hyperbolic space and are explicitly in scope.
+  - **Integral-Affine Structures:** HIGHLY relevant, specifically regarding their appearance in Kulikov models of K3 and Enriques surfaces.
   - **Definite Lattices (as factors):** Indefinite lattices often decompose as sums of definite (even unimodular) lattices. Algorithms acting on these definite factors can often lift to the indefinite case, bringing algorithms for definite lattices into scope.
 
 **7. Canonical References & Research Context:**

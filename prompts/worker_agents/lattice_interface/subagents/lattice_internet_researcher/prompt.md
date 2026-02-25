@@ -20,6 +20,7 @@ The ultimate applications of this library are to **algebraic geometry**, specifi
 - SVP & Lattice Reduction (e.g., LLL, BKZ, g6k, flatter)
 - Hyperbolic tesselations via actions of reflection groups
 - Crystallographic groups and algorithms on definite factors that lift to indefinite cases
+- Integral-affine structures (HIGHLY relevant, e.g. their appearance in Kulikov models of K3 and Enriques surfaces)
 
 **OUT OF SCOPE (Do not include these):**
 
