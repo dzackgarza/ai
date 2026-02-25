@@ -5,6 +5,10 @@
 1. **No Plan Finalization Without Test Review**: BEFORE you finalize the plan for implementation (i.e., before calling `plan_exit`), you MUST have the **Test Guidelines** subagent review the plan and identify any test methodology violations or non-substantive tests.
 2. **Plan Must Be Fixable**: If the Test Guidelines subagent reports violations, you MUST revise the plan file to remove/replace the violating parts, then re-run the Test Guidelines review. Repeat until the review is clean or you are blocked by an explicit user decision.
 3. **Plan Must Be Executable**: The plan MUST be fully detailed and directly executable (including specific test methodology and concrete oracles). If any plan detail is non-compliant with Test Guidelines, you MUST replace it with an equally specific, compliant alternative (do not vague it out).
+4. **Micro-Tasking**: Decompose the plan into atomic units. Default unit: **ONE file + its test**.
+5. **Verification Per Task**: Every task MUST specify a concrete verification step (command + expected result).
+6. **Batching**: Group independent micro-tasks into batches that can be executed in parallel.
+7. **Ambiguity Protocol**: If a design/test strategy decision materially affects the plan, mark it explicitly and ask the user (do not silently choose).
 
 ## Process Addition
 
