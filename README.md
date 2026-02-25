@@ -42,14 +42,14 @@ just install
 # Install OpenCode plugins
 npm install -g @ramtinj95/opencode-tokenscope
 
-# Authenticate each harness
-claude auth login
-codex auth
-gemini auth
-qwen auth login
-opencode auth login
-kilo auth login
-amp login
+# Authenticate each harness (run once, opens browser/login prompt)
+claude
+codex
+gemini
+qwen
+opencode
+kilo
+amp
 ```
 
 ## Harnesses
