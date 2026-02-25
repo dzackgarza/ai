@@ -140,17 +140,19 @@ Batches run until complete; they can take days or weeks.
 ### 1. Research → 2. Plan → 3. Implement
 
 **Research subagents:**
-- `codebase-locator` — Find files by glob
+- `Repo Explorer` — Structural and semantic mapping (ast-grep, WarpGrep)
+- `Researcher` — Internal/External documentation synthesis
 - `codebase-analyzer` — Deep code analysis
-- `pattern-finder` — Search for keywords, functions
-- `brainstormer` — Design exploration
 - `artifact-searcher` — Search past work
 
 **Implementation subagents:**
-- `planner` — Create implementation plans
-- `executor` — Orchestrate implement→review
-- `implementer` — Execute tasks
-- `reviewer` — Check correctness
+- `Autonomous Planner` — Create implementation plans
+- `Executor` — Orchestrate implement→review
+- `Autonomous Builder` — Execute code tasks
+- `Refactorer` — Structural transformations
+- `Test Guidelines` — Verification and auditing
+- `Code Quality` — Clean Code and Design Pattern audits
+- `reviewer` — Final correctness check
 
 **Process:**
 1. Spawn research subagents with specific checklists
@@ -181,7 +183,7 @@ Subagents have their own prompts, definitions, and output formats. Orchestrate t
 
 **Subagents are synchronous and blocking.** If you can ask "is a subagent still working?", it has already completed.
 
-**Prompt design:** Follow the `agent-orchestration` skill and its reference docs. Do not restate skill guidance.
+**Prompt design:** Follow the `prompt-engineering` and `subagent-delegation` skills. Do not restate skill guidance.
 
 ---
 
@@ -247,4 +249,4 @@ See what you lost. If valuable, keep it.
 
 ---
 
-See `agent-orchestration` skill for detailed prompting patterns.
+See `subagent-delegation` skill for detailed prompting and tracking patterns.

@@ -83,10 +83,10 @@ List ALL skills that relate to your topic:
 - Skills that your new skill will reference
 
 **Example:** Writing a "repo-steward-maintenance" skill:
-- References: `clean-code` (code quality standards)
-- References: `high-quality-tests` (test standards)
+- References: `Code Quality` (code quality standards)
+- References: `Test Guidelines` (test standards)
 - References: `systematic-debugging` (bug investigation)
-- References: `design-patterns` (architectural patterns)
+- References: `Repo Explorer` (architectural patterns search)
 
 ### 3. Avoid Conflicting Directives
 
@@ -109,10 +109,10 @@ List ALL skills that relate to your topic:
 
 | Topic | Skill |
 |-------|-------|
-| Code quality standards | `clean-code` |
-| Test quality standards | `high-quality-tests` |
+| Code quality standards | `Code Quality` |
+| Test quality standards | `Test Guidelines` |
 | Bug investigation | `systematic-debugging` |
-| Refactoring patterns | `refactor` |
+| Refactoring patterns | `Refactorer` |
 | TDD methodology | **Test Guidelines standards** |
 
 **When writing about a topic:**
@@ -132,9 +132,10 @@ List ALL skills that relate to your topic:
 ## Reference Skills
 
 This skill builds on:
-- **clean-code** — Code quality standards (use for detecting code smells)
-- **high-quality-tests** — Test quality standards (use for test audits)
+- **Code Quality** — Code quality standards (use for detecting code smells)
+- **Test Guidelines** — Test quality standards (use for test audits)
 - **systematic-debugging** — Bug investigation methodology
+- **subagent-delegation** — Multi-agent orchestration
 
 **REQUIRED BACKGROUND:** Load `systematic-debugging` before using this skill.
 ```
@@ -318,7 +319,7 @@ When searching, dispatch subagent with template...
 [20 lines of repeated instructions]
 
 # ✅ GOOD: Reference other skill
-Always use subagents (50-100x context savings). REQUIRED: Use [other-skill-name] for workflow.
+Always use subagents (50-100x context savings). REQUIRED: Use `subagent-delegation` for workflow.
 ```
 
 **Compress examples:**
@@ -479,7 +480,7 @@ Different skill types need different test approaches:
 
 ### Discipline-Enforcing Skills (rules/requirements)
 
-**Examples:** TDD, Verification Evidence, designing-before-coding
+**Examples:** TDD, Verification Evidence, Code Quality audits
 
 **Test with:**
 - Academic questions: Do they understand the rules?

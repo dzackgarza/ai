@@ -285,6 +285,7 @@ These techniques are part of systematic debugging and available in this director
 
 **Related standards:**
 - **Test Guidelines** - For creating failing test cases (Phase 4, Step 1) and verifying success
+- **subagent-delegation** - For orchestrating fix and review cycles
 
 ## Real-World Impact
 

@@ -883,6 +883,30 @@
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
+    },
+    "Code Quality": {
+      "description": "Audits code against Clean Code and Design Pattern standards",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-quality.md}"
+    },
+    "Repo Explorer": {
+      "description": "Performs structural and semantic codebase mapping using WarpGrep and ast-grep",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/repo-explorer.md}"
+    },
+    "Researcher": {
+      "description": "Synthesizes internal code and external documentation (llms.txt, web)",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/researcher.md}"
+    },
+    "Refactorer": {
+      "description": "Performs safe, structurally-aware code refactors using Fowler/Martin standards",
+      "mode": "subagent",
+      "model": "opencode/trinity-large-preview-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
     }
   }
 }
