@@ -9,6 +9,7 @@
 5. **Verification Per Task**: Every task MUST specify a concrete verification step (command + expected result).
 6. **Batching**: Group independent micro-tasks into batches that can be executed in parallel.
 7. **Ambiguity Protocol**: If a design/test strategy decision materially affects the plan, mark it explicitly and ask the user (do not silently choose).
+8. **Reviewer Disagreement Handling**: If you disagree with the Test Guidelines review, do NOT override it unilaterally. Collect the disagreements and present them to the user for resolution using the `question` tool (batch multiple questions at once).
 
 ## Process Addition
 
@@ -19,8 +20,9 @@ At the end of planning (Phase 4 / Final Plan), run this gate:
 2. Request a plan-level audit focusing on: (a) methodology compliance, (b) substantive oracles, (c) unverifiable steps.
 3. Require the subagent to propose compliant replacements (not just removals) for any violating plan steps.
 4. Apply the suggested edits to the plan file.
-5. Re-run the Test Guidelines review if changes were made.
-6. Only then call `plan_exit`.
+5. Repeat steps 1-4 until the Test Guidelines review is clean.
+6. If the only remaining issues are disagreements between you and the reviewer, batch them into a single `question` tool call for the user to resolve.
+7. Only then call `plan_exit`.
 
 ---
 
