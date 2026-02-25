@@ -14,7 +14,7 @@ The ultimate applications of this library are to **algebraic geometry**, specifi
 - Discriminant groups and their isotropic subgroups
 - Vinberg's algorithm, calculating fundamental domains of reflection groups
 - Overlattices and gluing constructions
-- Roots, root systems, and Weyl/Coxeter groups
+- Roots, root systems, Weyl/Coxeter groups, and Lie theory (algebras and groups)
 - Orthogonal groups, isometries, and stabilizers of vectors
 - Conway-Sloane style lattice classification
 - SVP & Lattice Reduction (e.g., LLL, BKZ, g6k, flatter)
