@@ -7,6 +7,21 @@ description: Use when writing or refactoring system prompts, subagent instructio
 
 A prompt is not a request. **A prompt is a contract.** This skill defines the standards for engineering robust agent instructions.
 
+## Reference Files
+
+| Subdoc | When to Read |
+|--------|-------------|
+| `reference/context-patterns.md` | Always—for structuring ANY prompt's context (Pyramid, Select Don't Dump, Attention Anchoring, Grounding, etc.) |
+| `reference/research-findings.md` | When writing agent prompts, need research-backed techniques (rule-based prompting, parallel tool calling), or want to optimize tool use |
+
+### Templates
+
+| Template | When to Use |
+|----------|-------------|
+| `templates/builder-agent.md` | When prompting an agent to implement code/features |
+| `templates/research-agent.md` | When prompting an agent to research/gather information |
+| `templates/review-agent.md` | When prompting an agent to review code/specs |
+
 ## 1. The 5-Layer Architecture
 
 Effective prompts must follow this structure to ground the model in reality:
