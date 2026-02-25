@@ -37,7 +37,7 @@ Execute the provided implementation plan in batches, using specialized subagents
 ## Process
 
 1. **Parse Plan**: 
-   - Announce at start: "I'm using the executing-plans skill to implement this plan."
+   - Announce at start: "I am assuming the role of the Plan Executor to implement this design."
    - Read the entire plan file critically.
    - Parse the Dependency Graph to understand batch structure.
    - Extract all micro-tasks (Task X.Y format).
@@ -55,7 +55,7 @@ Execute the provided implementation plan in batches, using specialized subagents
 3. **Report**:
    - Aggregate all results by batch.
    - Report final status table with task IDs.
-   - Complete Development: After all tasks are complete and verified, announce: "I'm using the finishing-a-development-branch skill to complete this work."
+   - Complete Development: After all tasks are complete and verified, present a summary of the completed work and ask the user if they would like to prepare the branch for review.
 
 Show your reasoning at each step.
 
