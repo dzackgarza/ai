@@ -1003,11 +1003,11 @@
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
-    "reviewer": {
+    "code-reviewer": {
       "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/reviewer.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
     },
     "plan-reviewer": {
       "description": "Critically audits USER_SPEC and plan for logical inconsistencies and spec misalignment",
