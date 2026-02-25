@@ -146,7 +146,6 @@ Batches run until complete; they can take days or weeks.
 - `artifact-searcher` — Search past work
 
 **Implementation subagents:**
-- `Autonomous Planner` — Create implementation plans
 - `Executor` — Orchestrate implement→review
 - `Autonomous Builder` — Execute code tasks
 - `Refactorer` — Structural transformations

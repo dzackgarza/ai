@@ -29,8 +29,9 @@ You receive either:
 
 1. Read design doc
 2. Research codebase (spawn: locator, analyzer, pattern-finder in parallel)
-3. Spawn Autonomous Planner to create implementation plan
-4. Execute the plan
+3. Switch to the built-in `plan` agent and create an implementation plan at the system-provided plan file path
+4. Use `plan_exit` after Test Guidelines has reviewed and fixed the plan (per the plan addendum)
+5. Switch to the build/executor flow and execute the approved plan
 
 ### If Implementation Plan (ready to execute)
 
@@ -41,32 +42,7 @@ You receive either:
 ## Execution Pipeline
 
 ```
-Autonomous Planner → executor → (implementer ⇄ reviewer)
-```
-
-| Stage | Agent | Output |
-|-------|-------|--------|
-| Plan | Autonomous Planner | `.serena/plans/YYYY-MM-DD-{topic}.md` |
-| Execute | executor | Implementation complete |
-
-### Spawn Planner
-
-```
-Task(
-  subagent_type="Autonomous Planner",
-  prompt="Create implementation plan from design at .serena/designs/YYYY-MM-DD-{topic}-design.md",
-  description="Create plan"
-)
-```
-
-### Spawn Executor
-
-```
-Task(
-  subagent_type="executor",
-  prompt="Execute plan at .serena/plans/YYYY-MM-DD-{topic}.md",
-  description="Execute plan"
-)
+plan → build/executor → (implementer ⇄ reviewer)
 ```
 
 ## Research Subagents

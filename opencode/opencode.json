@@ -832,12 +832,6 @@
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/pattern-finder.md}"
     },
-    "Autonomous Planner": {
-      "description": "Creates micro-task implementation plans optimized for parallel execution",
-      "mode": "subagent",
-      "model": "opencode/trinity-large-preview-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/planner.md}"
-    },
     "project-initializer": {
       "description": "Rapidly analyzes project and generates ARCHITECTURE.md and CODE_STYLE.md",
       "mode": "subagent",
