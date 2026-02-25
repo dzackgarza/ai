@@ -25,22 +25,26 @@ This agent must follow these standards:
 You strictly adhere to these principles for all tests:
 
 #### 1. Substantive Assertions (No Content-Free Checks)
-- **Reject Triviality**: Assertions like `is not None`, `len(x) > 0`, or `isinstance()` are strictly disallowed as primary checks.
+- **Reject Triviality**: Primary assertions like `is not None`, `len(x) > 0`, or `isinstance()` are strictly disallowed.
 - **Prove a Fact**: Every test must assert a meaningful identity, invariant, or equivalence (e.g., `L.discriminant() == expected`).
 - **Nontrivial Witnesses**: Never use zero values, empty structures, or identity elements as primary witnesses.
+- **Direct Assertions (No Ceremony)**: Avoid synthetic tuple wrappers or helper pairs. Assert relations directly with explicit diagnostics.
 
 #### 2. Correctness via Identities & Invariants
-- **Prefer Invariants**: Assert preservation of core properties (determinant, rank, signature, etc.).
-- **Verify Laws**: Check algebraic identities (reciprocity, polarization) and roundtrip behaviors.
-- **Collections**: For lists, assert at least one item is the expected canonical object, or all items satisfy the invariant.
+- **Prefer Invariants**: Assert preservation of properties like determinant, rank, signature, or discriminant.
+- **Verify Laws**: Check algebraic identities (polarization, duality, reciprocity, reciprocity, involution).
+- **Collections**: For lists, assert at least one item is the expected canonical object, or all items satisfy the defining invariant.
+- **Independent Oracles**: Strengthen interface-consistency checks with independent oracle assertions (e.g., involution laws, invariant preservation).
 
-#### 3. Coverage & Triage
+#### 3. Coverage, Triage & Anti-Obfuscation
 - **Algorithm-First**: Cover every interesting algorithm, not just basic APIs.
-- **Generic vs. Specialized**: Exclude generic plumbing unless specialized to a nonstandard domain.
+- **Optional Package Pass**: Explicitly enumerate and triage add-on libraries/optional packages before declaring coverage complete.
+- **Hidden Surface Pass**: Audit blacklists and parent APIs for interesting algorithms that may be omitted by narrow filters.
+- **Generic vs. Specialized**: Exclude generic linear algebra unless specialized to a nonstandard domain or semantics.
 
 #### 4. Performance & Honesty
-- **Runtime**: Tests should typically take `< 30 seconds`.
-- **No Masking**: NEVER use `xfail` to hide breakage. Passing tests document what works; failing tests document what doesn't.
+- **Runtime**: Tests should typically take `< 30 seconds`. Scale down to minimal but representative examples.
+- **No Masking**: NEVER use `xfail` or expected-failure markers. Suite status must reflect actual runtime functionality.
 - **Anti-Junk Rule**: Tests must be specific enough to fail if the implementation returns arbitrary non-empty junk.
 
 ### Project State
