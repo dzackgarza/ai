@@ -1,5 +1,19 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "formatter": {
+    "ruff-check": {
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
+    },
+    "ruff-format": {
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
+    },
+    "prettier": {
+      "command": ["npx", "prettier", "--write", "$FILE"],
+      "extensions": [".md", ".js", ".ts", ".jsx", ".tsx", ".html", ".css", ".json", ".yaml", ".yml"]
+    }
+  },
   "mcp": {
     "serena": {
       "command": [
@@ -881,7 +895,7 @@
     "Semantic Auditor": {
       "description": "Performs factual gap analysis between file versions to report lost semantic data",
       "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
+      "model": "google/antigravity-gemini-3-flash",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     },
     "Code Quality": {

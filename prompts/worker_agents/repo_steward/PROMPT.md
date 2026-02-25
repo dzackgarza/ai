@@ -64,39 +64,38 @@ Identify what changed since last session.
 
 Use the `task` tool to spawn 3-5 subagents in parallel.
 
+When calling the `task` tool:
+- Set `subagent_type` to the exact agent IDs listed below.
+- Keep the subagent `prompt` minimal (e.g., “Run your default workflow for this repo and report findings in your required format.”). The subagent prompt files define the workflow.
+- Spawn all 5 in parallel (5 `task` tool calls in a single tool-call batch).
+
 Spawn subagents to cover these areas in parallel:
 
 ```
-Subagent 1: Planning & Goals Auditor
-- List the repo root directory
-- Read every planning/goal file found (README, TODO, GAPS, ROADMAP, ARCHITECTURE,
-  or similar — whatever exists, do not assume specific filenames)
-- Report: what the repo says it needs to do, what is explicitly listed as outstanding
+Subagent 1: Goal Orienter (use subagent_type: lattice_goal_orienter)
+- Extract the repo’s MAIN mathematical goal from README
+- Convert it into an explicit rubric for “substantive vs trivial”
+- Report the top blockers from docs trackers (GAPS/TODO)
 
-Subagent 2: Docs & Checklist Auditor
-- List the docs/ directory (if it exists)
-- Read any checklist, tracker, gap-analysis, or capability files found there
-- Report: unchecked items, missing entries, gaps between doc files and stated goals
+Subagent 2: Upstream Provenance Auditor (use subagent_type: lattice_upstream_provenance_auditor)
+- Find missing local upstream doc snapshots under docs/**/upstream/
+- Focus only on provenance gaps that block source-backed math contracts
 
-Subagent 3: Interface & Test Structure Auditor
-- List the tests/ directory (if it exists); note subdirectories
-- Drill into the most structurally interesting subdirectory (e.g. interface/, contracts/, or the largest one)
-- Read the most abstract/contract-defining files found (interface stubs, ABCs, type definitions)
-- List src/ or lib/ (if it exists)
-- Report: interface methods that are stubs, test directories with no corresponding source, source modules with no tests
+Subagent 3: Checklist Gap Finder (use subagent_type: lattice_checklist_gap_finder)
+- Compare ONE upstream snapshot file vs the corresponding *_methods_checklist.md
+- Report methods present upstream but missing from the checklist
 
-Subagent 4: Bug Hunter (reference: systematic-debugging)
-- Review recently-modified code for bugs
-- Check error handling, edge cases, null handling
-- Report: file:line, bug description, root cause
+Subagent 4: Contract Fidelity Auditor (use subagent_type: lattice_contract_fidelity_auditor)
+- Find missing types/assumptions/definiteness constraints/citations in method docs
 
-Subagent 5: Code Quality Auditor (reference: clean-code, high-quality-tests, refactor)
-- Find duplicate code, overly complex functions, poor names
-- Find tests with weak assertions
-- Report: file:line, issue type, rule violated
+Subagent 5: Math Test Oracle Auditor (use subagent_type: lattice_math_test_oracle_auditor)
+- Find weak/content-free test assertions
+- Propose concrete mathematical invariants as oracles
 ```
 
-Prioritize findings from Subagents 1–3 (planning/goals/interface gaps) over Subagents 4–5 (code quality).
+Prioritize Subagents 1–3 (goal/provenance/checklist completeness) over Subagents 4–5 (contracts/tests).
+
+Only if all of the above return “NONE” or only low-impact items: spawn `codebase-analyzer` or `code-smell-detector` as a *secondary* pass, and treat generic engineering meta as non-substantive unless it blocks the repo’s stated goal.
 
 ### Step 3: Check for Duplicates
 ```bash
