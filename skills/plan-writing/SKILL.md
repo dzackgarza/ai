@@ -10,6 +10,10 @@ description: Use when implementing features, refactoring, or any multi-step work
 ## Overview
 This skill provides a framework for breaking down work into clear, actionable tasks with verification criteria.
 
+## Reference Skills
+- **prompt-engineering** — Use for writing rigorous instructions for subagents executing these tasks.
+- **agent-orchestration** — Use for tracking and coordinating subagents during execution.
+
 ## Task Breakdown Principles
 
 ### 1. Small, Focused Tasks
