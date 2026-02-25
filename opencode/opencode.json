@@ -739,7 +739,9 @@
     "opencode-openai-codex-auth"
   ],
   "agent": {
-    "plan": {},
+    "plan": {
+      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/plan.md}"
+    },
     "Minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
