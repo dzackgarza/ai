@@ -17,7 +17,7 @@ At the end of planning (Phase 4 / Final Plan), run this gate:
 
 0. Ensure the plan is written/updated at the exact plan file path provided by the plan-mode system reminder.
 1. Spawn **Test Guidelines** subagent with the plan file path and full plan contents.
-2. Request a plan-level audit focusing on: (a) methodology compliance, (b) substantive oracles, (c) unverifiable steps.
+2. Use a neutral subagent prompt, e.g.: "Audit this plan for guideline compliance and report findings." Then review: (a) methodology compliance, (b) substantive oracles, (c) unverifiable steps.
 3. Require the subagent to propose compliant replacements (not just removals) for any violating plan steps.
 4. Apply the suggested edits to the plan file.
 5. Repeat steps 1-4 until the Test Guidelines review is clean.
