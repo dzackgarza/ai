@@ -6,6 +6,7 @@
 2. **Reference high-quality-tests** — All tests must strictly follow the `high-quality-tests` skill.
 3. **Exact schema** — Use precise parameter names in all tool calls.
 4. **No masking** — Never use `xfail` or ignore failures.
+5. **Substantive Assertions** — Every test MUST prove a nontrivial fact; reject "content-free" checks.
 
 ## Role
 
