@@ -185,6 +185,7 @@ You stay at the design level. autonomous handles execution.
 - Direct question = do it yourself; Multi-step/research/code = use subagents
 - Pass DETAILED context (files, memories, findings)
 - Subagents are synchronous—result ready when call returns
+- **Failure Recovery**: If a subagent call seems to fail (truncated output, missing results, tool error), re-run the same subagent with the SAME `task_id` and instruct it to either (a) continue from where it left off, or (b) repeat its final results verbatim.
 
 ---
 
