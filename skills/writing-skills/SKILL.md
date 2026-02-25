@@ -15,7 +15,7 @@ You write test cases (pressure scenarios with subagents), watch them fail (basel
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** You MUST understand superpowers:test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.
+**REQUIRED BACKGROUND:** You MUST understand high-quality testing standards (Iron Law of TDD) before using this skill. This skill adapts TDD to documentation.
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 
@@ -113,7 +113,7 @@ List ALL skills that relate to your topic:
 | Test quality standards | `high-quality-tests` |
 | Bug investigation | `systematic-debugging` |
 | Refactoring patterns | `refactor` |
-| TDD methodology | `test-driven-development` |
+| TDD methodology | **Test Guidelines standards** |
 
 **When writing about a topic:**
 - If topic has a dedicated skill → reference it, don't restate
@@ -361,7 +361,7 @@ wc -w skills/path/SKILL.md
 **When writing documentation that references other skills:**
 
 Use skill name only, with explicit requirement markers:
-- ✅ Good: `**REQUIRED SUB-SKILL:** Use superpowers:test-driven-development`
+- ✅ Good: `**REQUIRED SUB-SKILL:** Use high-quality testing standards (TDD)`
 - ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand superpowers:systematic-debugging`
 - ❌ Bad: `See skills/testing/test-driven-development` (unclear if required)
 - ❌ Bad: `@skills/testing/test-driven-development/SKILL.md` (force-loads, burns context)
@@ -452,7 +452,7 @@ pptx/
 ```
 When: Reference material too large for inline
 
-## The Iron Law (Same as TDD)
+## The Iron Law (TDD)
 
 ```
 NO SKILL WITHOUT A FAILING TEST FIRST
@@ -471,7 +471,7 @@ Edit skill without testing? Same violation.
 - Don't "adapt" while running tests
 - Delete means delete
 
-**REQUIRED BACKGROUND:** The superpowers:test-driven-development skill explains why this matters. Same principles apply to documentation.
+**REQUIRED BACKGROUND:** The high-quality testing standards (Iron Law of TDD) explains why this matters. Same principles apply to documentation.
 
 ## Testing All Skill Types
 
@@ -479,7 +479,7 @@ Different skill types need different test approaches:
 
 ### Discipline-Enforcing Skills (rules/requirements)
 
-**Examples:** TDD, verification-before-completion, designing-before-coding
+**Examples:** TDD, Verification Evidence, designing-before-coding
 
 **Test with:**
 - Academic questions: Do they understand the rules?

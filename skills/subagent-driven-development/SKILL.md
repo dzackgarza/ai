@@ -238,9 +238,10 @@ Done!
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 - **prompt-engineering** - REQUIRED: Use for all subagent prompt engineering
+- **Test Guidelines standards** - REQUIRED: All subagents must follow high-quality testing guidelines
 
 **Subagents should use:**
-- **superpowers:test-driven-development** - Subagents follow TDD for each task
+- **high-quality-tests** - (Consolidated in Test Guidelines Agent) Subagents follow TDD for each task
 
 **Alternative workflow:**
 - **superpowers:executing-plans** - Use for parallel session instead of same-session execution
