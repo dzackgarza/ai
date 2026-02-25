@@ -1,0 +1,15 @@
+Ballroom Display Case Lock Audit
+
+Device: VLK-7 museum loaner case
+Mode: Keyed latch + electronic access log
+
+Recorded events (local buffer):
+- 19:42:11 LATCH_OPEN  key_id=SEC-1
+- 19:42:26 LATCH_CLOSE key_id=SEC-1
+- 19:58:46 LATCH_OPEN  key_id=GRN-1
+- 19:59:03 LATCH_CLOSE key_id=GRN-1
+
+Notes:
+- SEC-1 is the security chief's key (kept on a lanyard).
+- GRN-1 is the museum curator's key (issued to Mr. Green as part of the loan agreement).
+- The lock buffer timestamp source is internal and not tied to ballroom power.

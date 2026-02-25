@@ -832,26 +832,20 @@
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}"
     },
-    "artifact-searcher": {
-      "description": "Searches serena memories for relevant past work, patterns, and lessons learned",
+    "precedent-finder": {
+      "description": "Searches memories and codebase for precedent, past decisions, and existing patterns",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/artifact-searcher.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/precedent-finder.md}"
     },
-    "code-compliance-reviewer": {
-      "description": "Reviews generated code against project constraints and reports violations",
+    "code-auditor": {
+      "description": "Audits code against project constraints, dominant patterns, and code smells",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-compliance-reviewer.md}"
-    },
-    "code-smell-detector": {
-      "description": "Finds inconsistencies and anti-patterns in the codebase",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-smell-detector.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-auditor.md}"
     },
     "codebase-analyzer": {
-      "description": "Explains HOW code works with file:line references",
+      "description": "Explains HOW code works by tracing data flow, control flow, and side effects with file:line references",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-analyzer.md}"
@@ -1002,12 +996,7 @@
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
     },
-    "pattern-finder": {
-      "description": "Finds existing patterns and examples in the codebase to model after",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/pattern-finder.md}"
-    },
+
     "project-initializer": {
       "description": "Rapidly analyzes project and generates ARCHITECTURE.md and CODE_STYLE.md",
       "mode": "subagent",
@@ -1015,7 +1004,7 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
     "reviewer": {
-      "description": "Reviews ONE micro-task: verifies file and test match the plan",
+      "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/reviewer.md}"

@@ -111,7 +111,7 @@ For small/complex tasks, understand first:
 Spawn in parallel:
 - codebase-locator: Find WHERE
 - codebase-analyzer: Understand HOW
-- pattern-finder: Find patterns
+- precedent-finder: Search memories and codebase for past decisions and patterns
 ```
 
 Multiple Task calls in ONE message.

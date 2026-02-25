@@ -168,17 +168,16 @@ Batches run until complete; they can take days or weeks.
 
 - `Repo Explorer` — Structural and semantic mapping (ast-grep, WarpGrep)
 - `Researcher` — Internal/External documentation synthesis
-- `codebase-analyzer` — Deep code analysis
-- `artifact-searcher` — Search past work
+- `codebase-analyzer` — Deep code analysis (data flow, control flow, side effects)
+- `precedent-finder` — Search memories and codebase for past decisions and patterns
 
 **Implementation subagents:**
 
-- `Executor` — Orchestrate implement→review
-- `Autonomous Builder` — Execute code tasks
 - `Refactorer` — Structural transformations
 - `Test Guidelines` — Verification and auditing
 - `Code Quality` — Clean Code and Design Pattern audits
-- `reviewer` — Final correctness check
+- `code-auditor` — Constraint compliance, pattern consistency, and smell detection
+- `reviewer` — Post-implementation code review and plan compliance
 
 **Process:**
 

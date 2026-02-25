@@ -246,30 +246,28 @@ User → interactive
 
 **Research (spawned in parallel):**
 
-| Agent             | Purpose                   |
-| ----------------- | ------------------------- |
-| codebase-locator  | Find WHERE files are      |
-| codebase-analyzer | Understand HOW code works |
-| pattern-finder    | Find existing patterns    |
-| artifact-searcher | Search past work          |
+| Agent             | Purpose                                                      |
+| ----------------- | ------------------------------------------------------------ |
+| codebase-locator  | Find WHERE files are                                         |
+| codebase-analyzer | Understand HOW code works                                    |
+| precedent-finder  | Search memories and codebase for past decisions and patterns |
 
 **Execution (spawned sequentially):**
 
-| Agent               | Purpose                              |
-| ------------------- | ------------------------------------ |
-| planner             | Creates implementation plan          |
-| build               | Orchestrates code writers + reviewer |
-| general_code_writer | Writes delegated non-Python code     |
-| python_code_writer  | Writes delegated Python code         |
-| reviewer            | Verifies correctness                 |
+| Agent               | Purpose                                             |
+| ------------------- | --------------------------------------------------- |
+| planner             | Creates implementation plan                         |
+| build               | Orchestrates code writers + reviewer                |
+| general_code_writer | Writes delegated non-Python code                    |
+| python_code_writer  | Writes delegated Python code                        |
+| reviewer            | Post-implementation code review and plan compliance |
 
 **Utility:**
 
-| Agent                    | Description                    |
-| ------------------------ | ------------------------------ |
-| project-initializer      | Initializes new projects       |
-| code-compliance-reviewer | Reviews code against standards |
-| code-smell-detector      | Detects code smells            |
+| Agent               | Description                                                 |
+| ------------------- | ----------------------------------------------------------- |
+| project-initializer | Generates ARCHITECTURE.md and CODE_STYLE.md                 |
+| code-auditor        | Constraint compliance, pattern consistency, smell detection |
 
 ### Worker Agents (`~/ai/prompts/worker_agents/`)
 
