@@ -839,13 +839,13 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/precedent-finder.md}"
     },
     "code-reviewer": {
-      "description": "Audits code against project constraints, dominant patterns, and code smells",
+      "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
     },
     "plan-contract-validator": {
-      "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
+      "description": "Audits code against project constraints, dominant patterns, and code smells",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"

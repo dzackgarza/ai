@@ -176,8 +176,8 @@ Batches run until complete; they can take days or weeks.
 - `Refactorer` — Structural transformations
 - `Test Guidelines` — Verification and auditing
 - `Code Quality` — Clean Code and Design Pattern audits
-- `code-reviewer` — Constraint compliance, pattern consistency, and smell detection
-- `plan-contract-validator` — Post-implementation code review and plan compliance
+- `code-reviewer` — Post-implementation code review and plan compliance
+- `plan-contract-validator` — Constraint compliance, pattern consistency, and smell detection
 
 **Process:**
 
