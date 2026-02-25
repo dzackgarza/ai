@@ -1014,12 +1014,19 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_*": "deny",
-        "morph-mcp_edit_file": {
+        "morph-mcp_*": "allow",
+        "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "src/**/*": "allow"
         },
-        "cut-copy-paste-mcp_*": "deny"
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "src/**/*": "allow"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
     },
@@ -1111,12 +1118,19 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_*": "deny",
-        "morph-mcp_edit_file": {
+        "morph-mcp_*": "allow",
+        "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "src/**/*": "allow"
         },
-        "cut-copy-paste-mcp_*": "deny"
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "src/**/*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "src/**/*": "allow"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
     },
@@ -1231,13 +1245,22 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_*": "deny",
-        "morph-mcp_edit_file": {
+        "morph-mcp_*": "allow",
+        "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "tests/**/*": "allow",
           "test/**/*": "allow"
         },
-        "cut-copy-paste-mcp_*": "deny"
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/test_engineer/prompt.md}"
     },
@@ -1402,7 +1425,18 @@
         "serena_write_memory": "allow",
         "serena_edit_memory": "allow",
         "serena_delete_memory": "allow",
-        "morph-mcp_edit_file": {
+        "morph-mcp_*": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "tests/**/*": "allow",
+          "test/**/*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
           "*": "deny",
           "tests/**/*": "allow",
           "test/**/*": "allow"
