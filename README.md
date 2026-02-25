@@ -334,7 +334,7 @@ Workers are domain-specific agents that can be:
 | ------------------------ | ------------------------------ | ------------------------ |
 | librarian                | Careful work on Zotero library | Regular upkeep/audits    |
 | test_engineer            | Design test strategy with user | Run test coverage audits |
-| documentation_specialist | Plan docs structure            | Generate missing docs    |
+| lattice_documentor | Plan docs structure            | Generate missing docs    |
 
 Each worker has `prompt.md` + `example_tasks/` showing autonomous work they can complete.
 

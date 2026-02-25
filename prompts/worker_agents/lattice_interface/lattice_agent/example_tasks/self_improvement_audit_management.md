@@ -128,7 +128,7 @@ Ground proposed fixes in this research.
 Before editing management prompt/playbook:
 
 ```bash
-git log --oneline --follow -- ~/agents/lattice_interface/agent_supervisor/prompt.md
+git log --oneline --follow -- ~/agents/lattice_interface/lattice_agent/prompt.md
 ```
 
 Look for:

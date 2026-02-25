@@ -13,7 +13,7 @@ You work on files under `docs/` or `tests/` only. You do NOT modify:
 - `agent_runner/` — any source, config, or test file
 - Any file outside the `docs/` or `tests/` directory tree
 
-If you identify what appears to be a structural problem in a prompt, playbook, or example task, document it in `docs/TODO.md` for the agent_supervisor agent to handle.
+If you identify what appears to be a structural problem in a prompt, playbook, or example task, document it in `docs/TODO.md` for the LatticeAgent to handle.
 
 ## Scope
 

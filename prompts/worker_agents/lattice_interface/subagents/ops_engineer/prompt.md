@@ -77,4 +77,4 @@ A no-commit run is a failure if changes can be made to fix issues.
 You work on operational infrastructure. You do NOT modify:
 - `docs/` content
 - `tests/` content
-- Agent behavior/prompts (that's agent_supervisor's job)
+- Agent behavior/prompts (that's LatticeAgent's job)

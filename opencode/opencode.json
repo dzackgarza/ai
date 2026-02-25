@@ -6,15 +6,35 @@
   },
   "formatter": {
     "ruff-check": {
-      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "check",
+        "--fix",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "ruff-format": {
-      "command": ["uvx", "ruff", "format", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "prettier": {
-      "command": ["npx", "prettier", "--write", "$FILE"],
+      "command": [
+        "npx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
       "extensions": [
         ".md",
         ".js",
@@ -31,8 +51,15 @@
   },
   "lsp": {
     "texlab": {
-      "command": ["texlab"],
-      "extensions": [".tex", ".sty", ".cls", ".bib"]
+      "command": [
+        "texlab"
+      ],
+      "extensions": [
+        ".tex",
+        ".sty",
+        ".cls",
+        ".bib"
+      ]
     }
   },
   "mcp": {
@@ -59,11 +86,19 @@
     },
     "context7": {
       "type": "local",
-      "command": ["npx", "-y", "@upstash/context7-mcp"]
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp"
+      ]
     },
     "cut-copy-paste-mcp": {
       "type": "local",
-      "command": ["npx", "-y", "@fastmcp-me/cut-copy-paste-mcp"]
+      "command": [
+        "npx",
+        "-y",
+        "@fastmcp-me/cut-copy-paste-mcp"
+      ]
     },
     "morph-mcp": {
       "type": "local",
@@ -108,8 +143,14 @@
             "output": 65535
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -127,8 +168,14 @@
             "output": 65536
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         },
         "antigravity-claude-sonnet-4-6": {
@@ -138,8 +185,14 @@
             "output": 64000
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         },
         "antigravity-claude-opus-4-6-thinking": {
@@ -149,8 +202,14 @@
             "output": 64000
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -172,8 +231,14 @@
             "output": 65536
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         },
         "gemini-2.5-pro": {
@@ -183,8 +248,14 @@
             "output": 65536
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         },
         "gemini-3-flash-preview": {
@@ -194,8 +265,14 @@
             "output": 65536
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         },
         "gemini-3-pro-preview": {
@@ -205,8 +282,14 @@
             "output": 65535
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         },
         "gemini-3.1-pro-preview": {
@@ -216,8 +299,14 @@
             "output": 65535
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         },
         "gemini-3.1-pro-preview-customtools": {
@@ -227,8 +316,14 @@
             "output": 65535
           },
           "modalities": {
-            "input": ["text", "image", "pdf"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
           }
         }
       }
@@ -238,7 +333,9 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": ["reasoning.encrypted_content"],
+        "include": [
+          "reasoning.encrypted_content"
+        ],
         "store": false
       },
       "models": {
@@ -249,8 +346,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "none": {
@@ -287,8 +389,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -320,8 +427,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -353,8 +465,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -381,8 +498,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "medium": {
@@ -404,8 +526,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "none": {
@@ -639,6 +766,11 @@
       "options": {
         "baseURL": "https://integrate.api.nvidia.com/v1",
         "apiKey": "{env:NVIDIA_API_KEY}"
+      },
+      "models": {
+        "stepfun-ai/step-3.5-flash": {
+          "name": "Step 3.5 Flash"
+        }
       }
     },
     "openrouter": {
@@ -665,7 +797,7 @@
       }
     }
   },
-  "model": "groq/openai/gpt-oss-120b",
+  "model": "nvidia/stepfun-ai/step-3.5-flash",
   "default_agent": "Interactive",
   "plugin": [
     "opencode-antigravity-auth@latest",
@@ -847,30 +979,6 @@
         "todowrite": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}"
-    },
-    "Lattice Interface Developer": {
-      "description": "Agent supervisor - multi-agent orchestration within lattice interface",
-      "mode": "primary",
-      "permission": {
-        "task": "allow",
-        "question": "allow",
-        "todo*": "allow",
-        "todoread": "allow",
-        "todowrite": "allow"
-      },
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/agent_supervisor/prompt.md}"
-    },
-    "Lattice Documentor": {
-      "description": "Documentation specialist - generates and maintains documentation",
-      "mode": "primary",
-      "permission": {
-        "task": "allow",
-        "question": "allow",
-        "todo*": "allow",
-        "todoread": "allow",
-        "todowrite": "allow"
-      },
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/documentation_specialist/prompt.md}"
     },
     "Zotero Librarian": {
       "description": "Zotero librarian - manages and maintains Zotero reference libraries",
@@ -1358,36 +1466,6 @@
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
     },
-    "lattice_goal_orienter": {
-      "description": "Extracts the repo’s mathematical goal and selects substantive work (report-only)",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_goal_orienter/prompt.md}"
-    },
-    "lattice_upstream_provenance_auditor": {
-      "description": "For auditing upstream documentation completeness for lattice contracts. Use when you need to verify source-backed contract documentation. Ask 'Check for missing upstream doc snapshots that block lattice contracts' or 'Audit upstream documentation for completeness'. Report-only analysis.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_upstream_provenance_auditor/prompt.md}"
-    },
-    "lattice_checklist_gap_finder": {
-      "description": "For finding gaps between upstream methods and implementation checklists. Use when you need to verify checklist completeness. Ask 'Find missing methods from upstream that should be in checklists' or 'Verify checklist completeness against upstream implementations'. Report-only analysis.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_gap_finder/prompt.md}"
-    },
-    "lattice_contract_fidelity_auditor": {
-      "description": "For auditing lattice method documentation for completeness and accuracy. Use when you need to verify contract documentation quality. Ask 'Audit lattice method docs for missing types/assumptions/citations' or 'Verify contract documentation completeness and accuracy'. Report-only analysis.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_contract_fidelity_auditor/prompt.md}"
-    },
-    "lattice_math_test_oracle_auditor": {
-      "description": "For verifying mathematical correctness in lattice implementations and tests. Use when you need to validate mathematical oracles and proofs. Ask 'Find weak or missing mathematical oracles in lattice tests' or 'Verify mathematical correctness of lattice implementations'. Report-only analysis.",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_math_test_oracle_auditor/prompt.md}"
-    },
     "test-compliance-reviewer": {
       "description": "Strict policy auditor for tests and test plans. Use when you need to verify compliance with High-Quality Testing Standards. Pass test files or plans, asking 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
       "mode": "subagent",
@@ -1583,6 +1661,72 @@
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
+    },
+    "LatticeAgent": {
+      "description": "Top-level agent for managing all lattice-related work",
+      "mode": "primary",
+      "permission": {
+        "task": "allow",
+        "question": "allow",
+        "todo*": "allow",
+        "todoread": "allow",
+        "todowrite": "allow"
+      },
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}"
+    },
+    "lattice_internet_researcher": {
+      "description": "Internet researcher for obscure lattice algorithms and software (indefinite lattices focus). Scans arXiv and GitHub.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_internet_researcher/prompt.md}"
+    },
+    "lattice_documentation_librarian": {
+      "description": "Organizes docs folder, ensures local copies of upstream docs/source are available, fact checks against canonical sources.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_documentation_librarian/prompt.md}"
+    },
+    "lattice_checklist_completionist": {
+      "description": "Cross-references checklists against canonical source docs to ensure a complete account of all provably present methods.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_completionist/prompt.md}"
+    },
+    "lattice_test_coverage_auditor": {
+      "description": "Audits document-to-test coverage. Finds gaps, mismatches, and mathematically trivial tests.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_coverage_auditor/prompt.md}"
+    },
+    "lattice_test_method_writer": {
+      "description": "Closes docs-to-tests gaps by writing mathematically nontrivial tests for representative lattice objects.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_method_writer/prompt.md}"
+    },
+    "lattice_interface_designer": {
+      "description": "Constructs a union checklist of methods by collecting and deduplicating capabilities across all old checklists.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_designer/prompt.md}"
+    },
+    "lattice_interface_implementer": {
+      "description": "Translates the union checklist into a purely ABC Python design under src, handling various lattice types and concepts.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_implementer/prompt.md}"
+    },
+    "lattice_tdd_writer": {
+      "description": "Combines existing test methods into single new tests for the unified Lattice classes (TDD).",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_tdd_writer/prompt.md}"
+    },
+    "lattice_algorithm_porter": {
+      "description": "Determines algorithms used in existing implementations. Rewrites simple algorithms or natively wraps complex external objects.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_algorithm_porter/prompt.md}"
     }
   }
 }
