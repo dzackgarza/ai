@@ -838,11 +838,17 @@
       "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/subagents/precedent-finder.md}"
     },
-    "code-auditor": {
+    "code-reviewer": {
       "description": "Audits code against project constraints, dominant patterns, and code smells",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-auditor.md}"
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
+    },
+    "plan-contract-validator": {
+      "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
     },
     "codebase-analyzer": {
       "description": "Explains HOW code works by tracing data flow, control flow, and side effects with file:line references",

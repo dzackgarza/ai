@@ -95,7 +95,7 @@ Subagent 5: Math Test Oracle Auditor (use subagent_type: lattice_math_test_oracl
 
 Prioritize Subagents 1–3 (goal/provenance/checklist completeness) over Subagents 4–5 (contracts/tests).
 
-Only if all of the above return “NONE” or only low-impact items: spawn `codebase-analyzer` or `code-auditor` as a *secondary* pass, and treat generic engineering meta as non-substantive unless it blocks the repo’s stated goal.
+Only if all of the above return “NONE” or only low-impact items: spawn `codebase-analyzer` or `code-reviewer` as a *secondary* pass, and treat generic engineering meta as non-substantive unless it blocks the repo’s stated goal.
 
 ### Step 3: Check for Duplicates
 ```bash

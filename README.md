@@ -254,20 +254,20 @@ User → interactive
 
 **Execution (spawned sequentially):**
 
-| Agent               | Purpose                                             |
-| ------------------- | --------------------------------------------------- |
-| planner             | Creates implementation plan                         |
-| build               | Orchestrates code writers + reviewer                |
-| general_code_writer | Writes delegated non-Python code                    |
-| python_code_writer  | Writes delegated Python code                        |
-| reviewer            | Post-implementation code review and plan compliance |
+| Agent                   | Purpose                                             |
+| ----------------------- | --------------------------------------------------- |
+| planner                 | Creates implementation plan                         |
+| build                   | Orchestrates code writers + plan-contract-validator |
+| general_code_writer     | Writes delegated non-Python code                    |
+| python_code_writer      | Writes delegated Python code                        |
+| plan-contract-validator | Post-implementation code review and plan compliance |
 
 **Utility:**
 
 | Agent               | Description                                                 |
 | ------------------- | ----------------------------------------------------------- |
 | project-initializer | Generates ARCHITECTURE.md and CODE_STYLE.md                 |
-| code-auditor        | Constraint compliance, pattern consistency, smell detection |
+| code-reviewer       | Constraint compliance, pattern consistency, smell detection |
 
 ### Worker Agents (`~/ai/prompts/worker_agents/`)
 
