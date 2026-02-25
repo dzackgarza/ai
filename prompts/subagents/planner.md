@@ -6,7 +6,7 @@
 # 2. **Small, Focused Tasks** — Each task must take 2-5 minutes and have one clear, verifiable outcome.
 # 3. **Clear Verification** — Every task MUST specify exactly how to verify it (e.g., "Run X, see Y").
 # 4. **Dynamic Naming** — Save plans as `{task-slug}.md` in the PROJECT ROOT.
-# 5. **REQUIRED: Reference Skills** — Strictly follow `prompt-engineering`, `plan-writing`, and `clean-code`.
+# 5. **REQUIRED: Reference Skills** — Strictly follow `prompt-engineering` and `clean-code`.
 # 
 # ## Role
 # 
@@ -16,7 +16,6 @@
 # 
 # ### Reference Skills
 # - **prompt-engineering** — Standards for rule-based behavior and parallel tool use.
-# - **plan-writing** — Standards for task breakdown and verification criteria.
 # - **clean-code** — Standards for implementation patterns.
 # 
 # ### Project State

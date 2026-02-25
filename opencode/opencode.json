@@ -798,6 +798,11 @@
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}"
     },
+    "Ralph Planner": {
+      "description": "Collaborative loop builder - drafts background, setup, tasks, and testing for Ralph loops",
+      "mode": "primary",
+      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}"
+    },
     "artifact-searcher": {
       "description": "Searches serena memories for relevant past work, patterns, and lessons learned",
       "mode": "subagent",
