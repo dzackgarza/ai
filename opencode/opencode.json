@@ -704,6 +704,8 @@
         "nvidia/parakeet-tdt-0.6b-v2",
         "openai/whisper-large-v3",
         "meta/llama3-8b-instruct",
+        "meta/llama-3.2-1b-instruct",
+        "qwen/qwen2.5-coder-32b-instruct",
         "qwen/qwen2.5-coder-7b-instruct",
         "google/gemma-2-2b-it",
         "google/gemma-3-1b-it"
