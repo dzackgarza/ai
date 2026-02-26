@@ -1,36 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "disabled_providers": ["openrouter"],
   "formatter": {
     "ruff-check": {
-      "command": [
-        "uvx",
-        "ruff",
-        "check",
-        "--fix",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
     },
     "ruff-format": {
-      "command": [
-        "uvx",
-        "ruff",
-        "format",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
     },
     "prettier": {
-      "command": [
-        "npx",
-        "prettier",
-        "--write",
-        "$FILE"
-      ],
+      "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [
         ".md",
         ".js",
@@ -47,15 +28,8 @@
   },
   "lsp": {
     "texlab": {
-      "command": [
-        "texlab"
-      ],
-      "extensions": [
-        ".tex",
-        ".sty",
-        ".cls",
-        ".bib"
-      ]
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
     }
   },
   "mcp": {
@@ -82,19 +56,11 @@
     },
     "context7": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@upstash/context7-mcp"
-      ]
+      "command": ["npx", "-y", "@upstash/context7-mcp"]
     },
     "cut-copy-paste-mcp": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@fastmcp-me/cut-copy-paste-mcp"
-      ]
+      "command": ["npx", "-y", "@fastmcp-me/cut-copy-paste-mcp"]
     },
     "morph-mcp": {
       "type": "local",
@@ -139,14 +105,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -164,14 +124,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "antigravity-claude-sonnet-4-6": {
@@ -181,14 +135,8 @@
             "output": 64000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "antigravity-claude-opus-4-6-thinking": {
@@ -198,14 +146,8 @@
             "output": 64000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -227,14 +169,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-2.5-pro": {
@@ -244,14 +180,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3-flash-preview": {
@@ -261,14 +191,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3-pro-preview": {
@@ -278,14 +202,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3.1-pro-preview": {
@@ -295,14 +213,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3.1-pro-preview-customtools": {
@@ -312,14 +224,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         }
       }
@@ -329,9 +235,7 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ],
+        "include": ["reasoning.encrypted_content"],
         "store": false
       },
       "models": {
@@ -342,13 +246,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "none": {
@@ -385,13 +284,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -423,13 +317,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -461,13 +350,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -494,13 +378,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "medium": {
@@ -522,13 +401,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "none": {
@@ -559,7 +433,8 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "OpenRouter Free",
       "options": {
-        "baseURL": "https://openrouter.ai/api/v1"
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": "{env:OPENROUTER_API_KEY}"
       },
       "models": {
         "arcee-ai/trinity-mini:free": {
@@ -694,6 +569,9 @@
             "output": 262000
           }
         },
+        "qwen/qwen3-coder:480b-free": {
+          "name": "Qwen3 Coder 480B"
+        },
         "qwen/qwen3-next-80b-a3b-instruct:free": {
           "id": "qwen/qwen3-next-80b-a3b-instruct:free",
           "name": "Qwen: Qwen3 Next 80B A3B Instruct (free)",
@@ -766,19 +644,6 @@
       "models": {
         "stepfun-ai/step-3.5-flash": {
           "name": "Step 3.5 Flash"
-        }
-      }
-    },
-    "openrouter": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "OpenRouter",
-      "options": {
-        "baseURL": "https://openrouter.ai/api/v1",
-        "apiKey": "{env:OPENROUTER_API_KEY}"
-      },
-      "models": {
-        "qwen/qwen3-coder:480b-free": {
-          "name": "Qwen3 Coder 480B"
         }
       }
     },
