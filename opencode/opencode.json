@@ -109,7 +109,9 @@
         "gemini-2.5-pro-preview-tts",
         "gemini-2.5-flash-preview-04-17",
         "gemini-2.5-flash-preview-05-20",
-        "gemini-2.5-pro-preview-05-06"
+        "gemini-2.5-flash-preview-09-2025",
+        "gemini-2.5-pro-preview-05-06",
+        "gemini-2.5-pro-preview-06-05"
       ],
       "models": {
         "antigravity-gemini-3.1-pro": {
@@ -486,7 +488,8 @@
         "qwen3-vl:235b",
         "qwen3-vl:235b-instruct",
         "gpt-oss:20b",
-        "kimi-k2:1t"
+        "kimi-k2:1t",
+        "kimi-k2-thinking"
       ]
     },
     "openrouter-free": {
@@ -707,6 +710,7 @@
         "openai/whisper-large-v3",
         "moonshotai/kimi-k2-instruct",
         "moonshotai/kimi-k2-instruct-0905",
+        "moonshotai/kimi-k2-thinking",
         "deepseek-ai/deepseek-v3.1"
       ],
       "npm": "@ai-sdk/openai-compatible",
