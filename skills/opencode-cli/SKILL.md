@@ -109,6 +109,21 @@ If you're about to:
 
 **Avoid:** OpenRouter free models often have "No endpoints" - test before relying.
 
+## Plugins
+
+For creating and using OpenCode plugins with concrete examples:
+
+→ See [PLUGINS.md](./PLUGINS.md)
+
+Contains:
+
+- Plugin locations (local + npm)
+- Basic plugin structure
+- All events reference (session, tool, file, shell, TUI, etc.)
+- 7 copy-pasteable examples (notifications, env protection, custom tools, etc.)
+- TypeScript support
+- External dependencies
+
 ## Full Reference
 
 For comprehensive documentation including all commands, flags, tools, agents, configuration, permissions, MCP servers, skills, environment variables, and providers:
