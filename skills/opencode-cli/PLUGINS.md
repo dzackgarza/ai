@@ -62,6 +62,8 @@ export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
 
 - `message.updated`, `message.removed`, `message.part.updated`, `message.part.removed`
 
+**Note:** `message.part.updated` contains text in `event.properties.part.text` (NOT `event.message`).
+
 ### Shell Events
 
 - `shell.env` - Inject env vars into all shell execution
@@ -162,6 +164,30 @@ export const MyPlugin = async ({ client }) => {
     },
   });
   // Levels: debug, info, warn, error
+};
+```
+
+### 8. Log Message Parts (message.part.updated)
+
+```js
+// .opencode/plugins/message-logger.js
+export const MessageLogger = async ({ $, directory }) => {
+  return {
+    event: async ({ event }) => {
+      // message.part.updated contains actual text content
+      if (event.type !== "message.part.updated") return;
+
+      const part = event.properties?.part;
+      if (!part || part.type !== "text") return;
+
+      const text = part.text;
+      if (!text) return;
+
+      // Log to file
+      const logPath = `${directory}/.opencode/messages.log`;
+      await $`echo -e "[${new Date().toISOString()}] ${text}" >> ${logPath}`;
+    },
+  };
 };
 ```
 
