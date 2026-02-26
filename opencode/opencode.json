@@ -109,7 +109,11 @@
         "gemini-2.5-pro-preview-tts",
         "gemini-2.5-flash-preview-04-17",
         "gemini-2.5-flash-preview-05-20",
-        "gemini-2.5-pro-preview-05-06"
+        "gemini-2.5-pro-preview-05-06",
+        "gemma-2-2b-it",
+        "gemma-2-9b-it",
+        "gemma-3-1b-it",
+        "gemma-3-4b-it"
       ],
       "models": {
         "antigravity-gemini-3.1-pro": {
@@ -445,7 +449,7 @@
       }
     },
     "opencode": {
-      "blacklist": []
+      "blacklist": ["gpt-5-nano"]
     },
     "anthropic": {
       "blacklist": [
@@ -471,13 +475,25 @@
       "blacklist": ["mistral-embed"]
     },
     "cerebras": {
-      "blacklist": []
+      "blacklist": ["gpt-oss-120b", "llama3.1-8b"]
     },
     "ollama-cloud": {
-      "blacklist": ["qwen3-vl:235b", "qwen3-vl:235b-instruct", "gpt-oss:20b"]
+      "blacklist": [
+        "qwen3-vl:235b",
+        "qwen3-vl:235b-instruct",
+        "gpt-oss:20b",
+        "gpt-oss:120b",
+        "nemotron-3-nano:30b",
+        "gemma3:4b",
+        "gemma3:12b"
+      ]
     },
     "openrouter-free": {
-      "blacklist": ["openai/gpt-oss-20b:free"],
+      "blacklist": [
+        "openai/gpt-oss-20b:free",
+        "openai/gpt-oss-120b:free",
+        "qwen/qwen3-4b:free"
+      ],
       "npm": "@ai-sdk/openai-compatible",
       "name": "OpenRouter Free",
       "options": {
@@ -691,7 +707,16 @@
         "nvidia/llama-embed-nemotron-8b",
         "nvidia/nemoretriever-ocr-v1",
         "nvidia/parakeet-tdt-0.6b-v2",
-        "openai/whisper-large-v3"
+        "openai/whisper-large-v3",
+        "meta/llama3-8b-instruct",
+        "meta/llama-4-maverick-17b-128e-instruct",
+        "meta/llama-4-scout-17b-16e-instruct",
+        "meta/codellama-70b",
+        "openai/gpt-oss-120b",
+        "qwen/qwen2.5-coder-32b-instruct",
+        "qwen/qwen2.5-coder-7b-instruct",
+        "google/gemma-2-2b-it",
+        "google/gemma-3-1b-it"
       ],
       "npm": "@ai-sdk/openai-compatible",
       "name": "NVIDIA NIM",
@@ -706,7 +731,13 @@
       }
     },
     "groq": {
-      "blacklist": ["openai/gpt-oss-20b"],
+      "blacklist": [
+        "openai/gpt-oss-20b",
+        "llama-3.1-8b-instant",
+        "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "meta-llama/llama-4-scout-17b-16e-instruct",
+        "openai/gpt-oss-120b"
+      ],
       "options": {
         "apiKey": "{env:GROQ_API_KEY}"
       },
