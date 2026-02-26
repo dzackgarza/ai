@@ -1,14 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "disabled_providers": ["openrouter"],
-  "disabled_models": [
-    "*-vision-*",
-    "*-embedding-*",
-    "*-live*",
-    "*-tts*",
-    "*/gpt-3.5-*",
-    "google/gemini-1.0-*"
-  ],
   "formatter": {
     "ruff-check": {
       "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
@@ -105,6 +97,7 @@
       }
     },
     "google": {
+      "blacklist": [],
       "models": {
         "antigravity-gemini-3.1-pro": {
           "name": "Gemini 3.1 Pro (Antigravity)",
@@ -239,6 +232,7 @@
       }
     },
     "openai": {
+      "blacklist": [],
       "options": {
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
@@ -436,6 +430,12 @@
           }
         }
       }
+    },
+    "opencode": {
+      "blacklist": []
+    },
+    "anthropic": {
+      "blacklist": []
     },
     "openrouter-free": {
       "npm": "@ai-sdk/openai-compatible",
