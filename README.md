@@ -474,3 +474,22 @@ Config: `~/ai/opencode/opencode.json`
 | `cc-safety-net`                        | Safety net for destructive git/fs commands | https://github.com/kenryu42/claude-code-safety-net             |
 | `@azumag/opencode-rate-limit-fallback` | Auto fallback on rate limit (429)          | https://npmjs.com/package/@azumag/opencode-rate-limit-fallback |
 | `@ramtinj95/opencode-tokenscope`       | Token usage stats and cost tracking        | https://github.com/ramtinJ95/opencode-tokenscope               |
+
+## JSON Schemas and Validation
+
+This repository utilizes the following JSON configuration files:
+
+### `opencode.json`
+
+-   **Schema URL**: `https://opencode.ai/config.json`
+-   **Validation**: Add `"$schema": "https://opencode.ai/config.json"` to the top of your `opencode.json` file for IDE validation and autocompletion.
+
+### `.safety-net.json`
+
+-   **Source**: [kenryu42/claude-code-safety-net](https://github.com/kenryu42/claude-code-safety-net)
+-   **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.
+
+### `rate-limit-fallback.json`
+
+-   **Source**: [azumag/opencode-rate-limit-fallback](https://github.com/azumag/opencode-rate-limit-fallback)
+-   **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.

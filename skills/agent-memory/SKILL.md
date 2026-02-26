@@ -1,6 +1,6 @@
 ---
 name: agent-memory
-description: Use when deciding what belongs in agent memory, defining memory policy, or explaining memory purpose versus git history, changelogs, decision logs, and audit trails
+description: Use when deciding what belongs in agent memory, defining memory policy, explaining memory purpose versus git history/changelogs/audit trails, or converting historical notes into reusable operational rules
 ---
 
 # Agent Memory
@@ -24,13 +24,17 @@ Memory **is** for:
 - runbook-like guidance that prevents repeat mistakes
 - cross-session context needed to execute correctly
 
-## When to Use
+## The Three Buckets (Where Information Lives)
 
-Use this skill when:
-- a user asks what memory is for
-- you are deciding whether to write/read memory
-- you need a policy for what should or should not be persisted
-- you need to convert noisy historical notes into reusable rules
+| Information type | Correct location |
+|-----------------|-----------------|
+| What changed and why | Git commit message body |
+| Learned lessons, corrected workflows, calibration, common mistakes | Memory files |
+| Outstanding gaps, current bugs, future directions | Repo artifacts (e.g. LEDGER.md) |
+
+**Repo artifacts track current state + future work only.** Completed work, session findings, and historical summaries must never appear in repo documentation. They belong in commit messages (details) and memory (lessons).
+
+**Common violation:** adding a "2026-02-26 Session Findings" section to a ledger file. That is a changelog entry disguised as documentation. The fix: details go in the commit message; lessons go in memory; any *still-unresolved* issues become new ledger entries.
 
 ## Decision Test (Memory vs Git)
 

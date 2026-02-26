@@ -12,7 +12,7 @@ description: Use when creating new subagents or updating subagent descriptions i
 | **Top-level agent** (primary) | **Humans** (UI/autocomplete) | Help users choose which agent to invoke | Brief, user-facing: "Default collaborative agent — handles trivial to complex tasks" |
 | **Subagent** | **Agents** (delegation context) | Tell agents how to dispatch subagents with proper context | Delegation instructions: "Use when X. Pass Y. Ask 'Z'." |
 
-**Critical:** Subagent descriptions are **agent-facing prompts**, not user documentation. They follow **prompt engineering practices** (see `prompt-engineering` skill) and **skill description lessons** (see `writing-skills` skill for description writing principles).
+**Critical:** Subagent descriptions are **agent-facing prompts**, not user documentation. They follow **prompt engineering practices** (see `prompt-engineering` skill) and **skill description lessons** (see `creating-skills` skill for description writing principles).
 
 ## When to Create Top-Level Agents
 
@@ -221,7 +221,7 @@ Check that the description:
 ## Related Skills
 
 - **prompt-engineering** — REQUIRED: Writing effective prompts. Subagent descriptions ARE prompts that prime delegating agents. Apply principles: be concrete, provide examples, use placeholders for variables.
-- **writing-skills** — REQUIRED: Skill description writing lessons. The "Use when" trigger pattern comes from skill description best practices. Adapt TDD approach: watch agents fail to delegate properly, write descriptions that prevent those failures.
+- **creating-skills** — REQUIRED: Skill description writing lessons. The "Use when" trigger pattern comes from skill description best practices. Adapt TDD approach: watch agents fail to delegate properly, write descriptions that prevent those failures.
 - **model-selection** — REQUIRED: Selecting appropriate models for subagent tasks. Match task complexity to model tier (S/A/B/C), understand difficulty calibration, and optimize for token efficiency.
 - **subagent-delegation** — Operational lifecycle and review cycles for subagents.
 
@@ -230,7 +230,7 @@ Check that the description:
 | Skill | What It Teaches | Application to Subagent Descriptions |
 |-------|-----------------|-------------------------------------|
 | `prompt-engineering` | Concrete examples, variable placeholders, priming context | Description format with "Ask '[pattern]'" and `[placeholders]` |
-| `writing-skills` | Description writing for tool selection | "Use when" trigger pattern, scenario-based framing |
-| `writing-skills/anthropic-best-practices` | Description field guidelines | Keep descriptions concise but expository (1024 char max) |
+| `creating-skills` | Description writing for tool selection | "Use when" trigger pattern, scenario-based framing |
+| `creating-skills/anthropic-best-practices` | Description field guidelines | Keep descriptions concise but expository (1024 char max) |
 | `model-selection` | Model tier capabilities, difficulty calibration, task-to-tier matching | Match task complexity to S/A/B/C-tier models |
 | `subagent-delegation` | Review loops, checkpointing | Verify B/C-tier output, git checkpoint atomic work |

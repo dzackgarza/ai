@@ -14,9 +14,9 @@ install:
     @ln -sf {{repo}}/AGENTS.md ~/.config/kilo/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.config/amp/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.config/AGENTS.md
-    @ln -sf {{repo}}/opencode/opencode.json ~/.config/opencode/opencode.json
-    @ln -sf {{repo}}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
-    @ln -sf {{repo}}/opencode/cc-safety-net.json ~/.cc-safety-net/config.json
+    @ln -sf {{repo}}/.opencode ~/.config/opencode
+    @ln -sf {{repo}}/.opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
+    @ln -sf {{repo}}/.opencode/cc-safety-net.json ~/.cc-safety-net/config.json
     @mkdir -p ~/.cc-safety-net
     @ln -sf {{repo}}/skills ~/.claude/skills
     @ln -sf {{repo}}/skills ~/.gemini/skills
@@ -33,5 +33,5 @@ install:
     @echo "Skills:           {{repo}}/skills → all harnesses"
     @echo "System prompts:   GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → interactive.md (absolute path)"
     @echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
-    @echo "OpenCode:         opencode.json, rate-limit-fallback.json"
+    @echo "OpenCode:         .opencode/ → ~/.config/opencode"
     @echo "Safety Net:       cc-safety-net.json → ~/.cc-safety-net/config.json"
