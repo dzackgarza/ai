@@ -692,6 +692,7 @@
   "model": "openrouter-free/stepfun/step-3.5-flash:free",
   "default_agent": "Interactive",
   "plugin": [
+    "./.opencode/plugins/detailed-event-logger.js",
     "opencode-antigravity-auth@latest",
     "opencode-anthropic-auth@latest",
     "opencode-qwencode-auth",

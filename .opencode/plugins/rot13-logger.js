@@ -1,32 +1,55 @@
-// Hello world plugin - logs ROT13 of model responses
-export const Rot13Logger = async ({ $, directory }) => {
+// OTP Stop Hook - emulates Claude Code's Stop hook
+// On session.idle: scan last message for OTP, if found, prompt to repeat secret phrase
+export const OtpHook = async ({ client }) => {
+  let lastOtp = null;
+
   return {
     event: async ({ event }) => {
-      // message.part.updated contains the actual text parts
-      if (event.type !== "message.part.updated") return;
+      // session.idle fires after AI response is complete - this is our "stop" hook
+      if (event.type !== "session.idle") return;
 
-      const part = event.properties?.part;
-      if (!part || part.type !== "text") return;
+      const sessionId = event.properties?.info?.id;
+      if (!sessionId) return;
 
-      const text = part.text;
-      if (!text) return;
-
-      // Only log assistant (model) responses
-      const messageID = part.messageID;
-      // We need to check if this is an assistant message
-      // Let's also listen to message.updated to track roles
-
-      // For now, log everything and let user filter
-      const rot13 = text.replace(/[a-zA-Z]/g, (c) => {
-        const base = c <= "Z" ? 65 : 97;
-        return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base);
+      // Get the last message
+      const { data: messages } = await client.session.messages({
+        path: { id: sessionId },
       });
 
-      // Write to file
-      const logPath = `${directory}/.opencode/rot13-responses.log`;
-      const timestamp = new Date().toISOString();
+      const lastMsg = messages[messages.length - 1];
+      if (!lastMsg || lastMsg.info.role !== "assistant") return;
 
-      await $`echo -e "[${timestamp}]\n${text}\n→ ${rot13}\n" >> ${logPath}`;
+      // Extract text from message parts
+      const text = lastMsg.parts
+        ?.filter((p) => p.type === "text")
+        ?.map((p) => p.text)
+        ?.join("");
+
+      if (!text) return;
+
+      // Look for 6-digit OTP pattern
+      const otpMatch = text.match(/\b\d{6}\b/);
+      if (!otpMatch) return;
+
+      const otp = otpMatch[0];
+      // Avoid repeating for same OTP
+      if (otp === lastOtp) return;
+      lastOtp = otp;
+
+      console.log(`[OTP HOOK] Detected OTP: ${otp}`);
+
+      // Trigger new response with secret - this is the "stop hook" effect
+      await client.session.prompt({
+        path: { id: sessionId },
+        body: {
+          parts: [
+            {
+              type: "text",
+              text: `SECRET DETECTED: ${otp}. Reply to the user: "I saw your code - it's ${otp}! Don't share OTPs with me!"`,
+            },
+          ],
+        },
+      });
     },
   };
 };
