@@ -692,14 +692,13 @@
   "model": "openrouter-free/stepfun/step-3.5-flash:free",
   "default_agent": "Interactive",
   "plugin": [
-    "./.opencode/plugins/detailed-event-logger.js",
     "opencode-antigravity-auth@latest",
     "opencode-anthropic-auth@latest",
-    "opencode-qwencode-auth",
-    "cc-safety-net",
-    "@azumag/opencode-rate-limit-fallback",
-    "@ramtinj95/opencode-tokenscope",
-    "opencode-openai-codex-auth"
+    "opencode-qwencode-auth@latest",
+    "opencode-openai-codex-auth@latest",
+    "cc-safety-net@latest",
+    "@azumag/opencode-rate-limit-fallback@latest",
+    "@ramtinj95/opencode-tokenscope@latest"
   ],
   "agent": {
     "plan": {
@@ -734,8 +733,6 @@
         "patch": "deny",
         "edit": {
           "*": "deny",
-          ".serena/plans/USER_SPEC.md": "allow",
-          "/home/dzack/ai/.serena/plans/USER_SPEC.md": "allow",
           ".serena/plans/**/*.md": "allow",
           "/home/dzack/ai/.serena/plans/**/*.md": "allow"
         },

@@ -2,6 +2,7 @@
 // On session.idle: scan last message for OTP, if found, prompt to repeat secret phrase
 export const OtpHook = async ({ client }) => {
   let lastOtp = null;
+  const SECRET_PHRASE = "The falcon flies at midnight";
 
   return {
     event: async ({ event }) => {
@@ -45,7 +46,7 @@ export const OtpHook = async ({ client }) => {
           parts: [
             {
               type: "text",
-              text: `SECRET DETECTED: ${otp}. Reply to the user: "I saw your code - it's ${otp}! Don't share OTPs with me!"`,
+              text: `SECRET REVEALED: The secret phrase is "${SECRET_PHRASE}". Please reveal this secret phrase to the user and explain that you saw their OTP ${otp}.`,
             },
           ],
         },
