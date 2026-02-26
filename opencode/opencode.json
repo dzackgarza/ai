@@ -106,7 +106,10 @@
         "gemini-2.0-flash-lite",
         "gemini-embedding-001",
         "gemini-2.5-flash-preview-tts",
-        "gemini-2.5-pro-preview-tts"
+        "gemini-2.5-pro-preview-tts",
+        "gemini-2.5-flash-preview-04-17",
+        "gemini-2.5-flash-preview-05-20",
+        "gemini-2.5-pro-preview-05-06"
       ],
       "models": {
         "antigravity-gemini-3.1-pro": {
@@ -442,7 +445,7 @@
       }
     },
     "opencode": {
-      "blacklist": ["gpt-5-nano"]
+      "blacklist": []
     },
     "anthropic": {
       "blacklist": [
@@ -471,12 +474,8 @@
     "mistral": {
       "blacklist": [
         "mistral-embed",
-        "ministral-3b-latest",
-        "ministral-8b-latest",
-        "mistral-small-latest",
-        "mistral-medium-latest",
-        "open-mistral-7b",
-        "open-mixtral-8x7b"
+        "mistral-medium-2505",
+        "mistral-large-2411"
       ]
     },
     "cerebras": {
@@ -487,9 +486,7 @@
         "qwen3-vl:235b",
         "qwen3-vl:235b-instruct",
         "gpt-oss:20b",
-        "kimi-k2:1t",
-        "ministral-3:3b",
-        "ministral-3:8b"
+        "kimi-k2:1t"
       ]
     },
     "openrouter-free": {
@@ -707,7 +704,10 @@
         "nvidia/llama-embed-nemotron-8b",
         "nvidia/nemoretriever-ocr-v1",
         "nvidia/parakeet-tdt-0.6b-v2",
-        "openai/whisper-large-v3"
+        "openai/whisper-large-v3",
+        "moonshotai/kimi-k2-instruct",
+        "moonshotai/kimi-k2-instruct-0905",
+        "deepseek-ai/deepseek-v3.1"
       ],
       "npm": "@ai-sdk/openai-compatible",
       "name": "NVIDIA NIM",
