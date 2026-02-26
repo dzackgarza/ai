@@ -1,6 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "disabled_providers": ["openrouter"],
+  "disabled_models": [
+    "*-vision-*",
+    "*-embedding-*",
+    "*-live*",
+    "*-tts*",
+    "*/gpt-3.5-*",
+    "google/gemini-1.0-*"
+  ],
   "formatter": {
     "ruff-check": {
       "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
