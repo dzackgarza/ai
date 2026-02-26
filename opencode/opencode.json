@@ -1,9 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "google_search": "deny",
-    "task": "deny"
-  },
   "formatter": {
     "ruff-check": {
       "command": [
@@ -819,7 +815,7 @@
       "description": "Primary planning agent for executable implementation plans",
       "mode": "primary",
       "permission": {
-        "google_search": "deny",
+        "task": "allow",
         "apply_patch": "deny",
         "tokenscope": "allow",
         "kindly_web_search": "allow",
@@ -831,7 +827,6 @@
         "grep": "allow",
         "glob": "allow",
         "list": "allow",
-        "task": "allow",
         "skill": "allow",
         "todo*": "allow",
         "todoread": "allow",
@@ -1005,40 +1000,56 @@
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}"
     },
     "precedent-finder": {
-      "description": "For finding existing patterns and past decisions. Use when you need to understand how similar problems have been solved before. Ask 'Search for precedent on [topic]' or 'How have we handled [similar problem] before?' and provide specific technical context.",
+      "description": "Use when finding existing patterns and past decisions. Pass the topic or problem being solved. Ask 'Search for precedent on [topic]' or 'How have we handled [similar problem] before?' with specific technical context.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/precedent-finder.md}"
     },
     "code-reviewer": {
-      "description": "Post-implementation code reviewer: verifies code quality, plan compliance, and test substantiveness",
+      "description": "Use when reviewing code post-implementation. Pass the code files and spec/plan. Ask 'Review this code for correctness and spec compliance' or 'Flag non-substantive tests'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
     },
     "plan-contract-validator": {
-      "description": "Audits code against project constraints, dominant patterns, and code smells",
+      "description": "Use when auditing code against project constraints and dominant patterns. Pass the generated code and project rules. Ask 'Audit this code for constraint violations' or 'Find deviations from dominant patterns'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
     },
     "codebase-analyzer": {
-      "description": "For understanding how code works by tracing data flow and behavior. Use when you need to understand system internals. Pass entry point files (routes, main functions, API endpoints) and ask 'Trace how [function] processes data from start to finish' or 'Explain the data flow through this system'.",
+      "description": "Use when understanding how code works by tracing data flow. Pass entry point files (routes, main functions, API endpoints). Ask 'Trace how [function] processes data from start to finish' or 'Explain the data flow through this system'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-analyzer.md}"
     },
     "codebase-locator": {
-      "description": "For finding files and code locations in the codebase. Use when you need to locate specific implementations. Ask 'Find files related to [feature]' or 'Where is the [component] implementation located?' and be specific about what you're searching for.",
+      "description": "Use when finding WHERE files live in the codebase. Pass the feature or component being searched. Ask 'Find files related to [feature]' or 'Where is the [component] implementation located?' Be specific about what you're searching for.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-locator.md}"
     },
     "general_code_writer": {
-      "description": "For writing non-Python code and implementing features. Use when you need to generate code in languages other than Python. Pass task descriptions and target file paths, asking 'Implement [feature] in [language]' or 'Write a function that [description]'. File paths must be in src/ directory.",
+      "description": "Use when writing non-Python code. Pass task descriptions and target file paths in src/. Ask 'Implement [feature] in [language]' or 'Write a function that [description]'.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
+        "task": "deny",
         "read": "allow",
         "grep": "allow",
         "glob": "allow",
@@ -1166,10 +1177,11 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
     },
     "python_code_writer": {
-      "description": "For writing Python code and implementing Python features. Use when you need to generate Python-specific implementations. Pass Python task descriptions and target file paths, asking 'Write Python code for [feature]' or 'Implement [algorithm] in Python'. File paths must be in src/ directory.",
+      "description": "Use when writing Python code. Pass Python task descriptions and target file paths in src/. Ask 'Write Python code for [feature]' or 'Implement [algorithm] in Python'.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
+        "task": "deny",
         "read": "allow",
         "grep": "allow",
         "glob": "allow",
@@ -1297,22 +1309,29 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
     },
     "project-initializer": {
-      "description": "For analyzing project structure and generating technical documentation. Use when you need to understand or document project architecture and coding conventions. Ask 'Analyze this project and generate ARCHITECTURE.md and CODE_STYLE.md' or 'Document the current project architecture and coding conventions'.",
+      "description": "Use when analyzing project structure and generating technical documentation. Ask 'Analyze this project and generate ARCHITECTURE.md and CODE_STYLE.md' or 'Document the current project architecture and coding conventions'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
     "plan-reviewer": {
-      "description": "Critically audits USER_SPEC and plan for logical inconsistencies and spec misalignment",
+      "description": "Use when critically auditing USER_SPEC and plans. Pass the spec and plan documents. Ask 'Audit this plan for logical inconsistencies' or 'Check for spec misalignment'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
     },
     "test_engineer": {
-      "description": "For designing test strategies and ensuring test quality. Use when you need to create or improve tests. Pass existing test files or test creation requirements, asking 'Design a test strategy for [feature]' or 'Review and improve these tests for quality and coverage'. Can write/edit tests in tests/ and test/ directories only.",
+      "description": "Use when designing test strategies and ensuring test quality. Pass existing test files or test creation requirements. Ask 'Design a test strategy for [feature]' or 'Review and improve these tests for quality and coverage'. Can write/edit tests in tests/ and test/ directories only.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
+        "task": "deny",
         "read": "allow",
         "grep": "allow",
         "glob": "allow",
@@ -1455,22 +1474,29 @@
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/test_engineer/prompt.md}"
     },
     "ops_engineer": {
-      "description": "For handling operational tasks and infrastructure setup. Use when you need to configure deployment, infrastructure, or system operations. Ask 'Set up operational infrastructure for [system]' or 'Configure deployment for [application]' to handle infrastructure and operational tasks.",
-      "mode": "subagent",
-      "model": "google/gemini-3-flash-preview",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/ops_engineer/prompt.md}"
-    },
-    "type_designer": {
-      "description": "Designs type systems and interface contracts",
-      "mode": "subagent",
-      "model": "opencode/minimax-m2.5-free",
-      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
-    },
-    "test-compliance-reviewer": {
-      "description": "Strict policy auditor for tests and test plans. Use when you need to verify compliance with High-Quality Testing Standards. Pass test files or plans, asking 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
+      "description": "Use when handling operational tasks and infrastructure setup. Ask 'Set up operational infrastructure for [system]' or 'Configure deployment for [application]'.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
+        "task": "deny"
+      },
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/ops_engineer/prompt.md}"
+    },
+    "type_designer": {
+      "description": "Use when designing type systems and interface contracts. Pass the domain or feature requiring types. Ask 'Design type system for [domain]' or 'Define interface contracts for [feature]'.",
+      "mode": "subagent",
+      "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
+      "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
+    },
+    "test-compliance-reviewer": {
+      "description": "Use when auditing tests for compliance with High-Quality Testing Standards. Pass test files or plans. Ask 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
+      "mode": "subagent",
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "task": "deny",
         "read": "allow",
         "grep": "allow",
         "glob": "allow",
@@ -1492,10 +1518,11 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
     },
     "test-writer": {
-      "description": "Verification architect for engineering substantive tests. Use when you need to write new tests following TDD. Pass implementation or requirements, asking 'Write a test for [feature]'. Can write/edit tests in tests/ and test/ directories only.",
+      "description": "Use when writing new tests following TDD. Pass implementation or requirements. Ask 'Write a test for [feature]'. Can write/edit tests in tests/ and test/ directories only.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
+        "task": "deny",
         "read": "allow",
         "grep": "allow",
         "glob": "allow",
@@ -1633,33 +1660,48 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
     },
     "Semantic Auditor": {
-      "description": "For performing factual gap analysis between file versions. Use when you need to identify lost semantic data or content drift. Pass file versions or code snapshots, asking 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'. Uses Google Gemini 3 Flash for deep analysis.",
+      "description": "Use when performing factual gap analysis between file versions. Pass file versions or code snapshots. Ask 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'.",
       "mode": "subagent",
       "model": "google/antigravity-gemini-3-flash",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     },
     "Code Quality": {
-      "description": "For auditing code against Clean Code and Design Pattern standards. Use when you need to improve code quality or review design patterns. Pass code files and optionally specific standards, asking 'Audit this code for Clean Code violations' or 'Review design patterns in [component]' or 'Suggest refactoring improvements for [codebase]'.",
+      "description": "Use when auditing code against Clean Code and Design Pattern standards. Pass code files and optionally specific standards. Ask 'Audit this code for Clean Code violations' or 'Review design patterns in [component]' or 'Suggest refactoring improvements for [codebase]'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-quality.md}"
     },
     "Repo Explorer": {
-      "description": "For performing structural and semantic codebase mapping. Use when you need to understand repository architecture or dependencies. Ask 'Map the structural dependencies of this repository' or 'Perform semantic codebase analysis using WarpGrep' or 'Explain the overall architecture of this codebase'.",
+      "description": "Use when performing structural and semantic codebase mapping. Ask 'Map the structural dependencies of this repository' or 'Perform semantic codebase analysis using WarpGrep' or 'Explain the overall architecture of this codebase'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/repo-explorer.md}"
     },
     "Researcher": {
-      "description": "For synthesizing internal code and external documentation. Use when you need comprehensive research combining code analysis with web sources. Ask 'Research documentation for [topic]' or 'Synthesize information from internal code and external sources' or 'Find documentation about [technology]'.",
+      "description": "Use when synthesizing internal code and external documentation. Ask 'Research documentation for [topic]' or 'Synthesize information from internal code and external sources' or 'Find documentation about [technology]'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/researcher.md}"
     },
     "Refactorer": {
-      "description": "For performing safe, structurally-aware code refactoring. Use when you need to improve code structure following Fowler/Martin standards. Pass code files and refactor requirements, asking 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
+      "description": "Use when performing safe, structurally-aware code refactoring. Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
     },
     "LatticeAgent": {
@@ -1675,57 +1717,84 @@
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}"
     },
     "lattice_internet_researcher": {
-      "description": "Internet researcher for obscure lattice algorithms and software (indefinite lattices focus). Scans arXiv and GitHub.",
+      "description": "Use when researching obscure lattice algorithms and software (indefinite lattices focus). Ask 'Search arXiv and GitHub for [lattice algorithm]' or 'Find existing implementations of [lattice concept]'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_internet_researcher/prompt.md}"
     },
     "lattice_documentation_librarian": {
-      "description": "Organizes docs folder, ensures local copies of upstream docs/source are available, fact checks against canonical sources.",
+      "description": "Use when organizing documentation. Ask 'Organize docs folder for [project]' or 'Ensure local copies of upstream docs are available' or 'Fact-check [doc] against canonical sources'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_documentation_librarian/prompt.md}"
     },
     "lattice_checklist_completionist": {
-      "description": "Cross-references checklists against canonical source docs to ensure a complete account of all provably present methods.",
+      "description": "Use when cross-referencing checklists against canonical source docs. Ask 'Cross-reference [checklist] against [canonical doc]' or 'Ensure complete account of all provably present methods'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_completionist/prompt.md}"
     },
     "lattice_test_coverage_auditor": {
-      "description": "Audits document-to-test coverage. Finds gaps, mismatches, and mathematically trivial tests.",
+      "description": "Use when auditing document-to-test coverage. Ask 'Audit document-to-test coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_coverage_auditor/prompt.md}"
     },
     "lattice_test_method_writer": {
-      "description": "Closes docs-to-tests gaps by writing mathematically nontrivial tests for representative lattice objects.",
+      "description": "Use when closing docs-to-tests gaps. Ask 'Write mathematically nontrivial tests for [lattice object]' or 'Create tests for representative lattice objects'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_method_writer/prompt.md}"
     },
     "lattice_interface_designer": {
-      "description": "Constructs a union checklist of methods by collecting and deduplicating capabilities across all old checklists.",
+      "description": "Use when constructing union checklists. Ask 'Construct union checklist for [lattice interface]' or 'Collect and deduplicate capabilities across all old checklists'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_designer/prompt.md}"
     },
     "lattice_interface_implementer": {
-      "description": "Translates the union checklist into a purely ABC Python design under src, handling various lattice types and concepts.",
+      "description": "Use when translating union checklists into Python design. Ask 'Translate [union checklist] into ABC Python design' or 'Implement lattice types and concepts under src/'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_implementer/prompt.md}"
     },
     "lattice_tdd_writer": {
-      "description": "Combines existing test methods into single new tests for the unified Lattice classes (TDD).",
+      "description": "Use when combining existing test methods into unified tests. Ask 'Combine test methods into single new tests for unified Lattice classes' or 'Write TDD tests for [lattice feature]'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_tdd_writer/prompt.md}"
     },
     "lattice_algorithm_porter": {
-      "description": "Determines algorithms used in existing implementations. Rewrites simple algorithms or natively wraps complex external objects.",
+      "description": "Use when porting algorithms from existing implementations. Ask 'Determine algorithms used in [implementation]' or 'Rewrite [algorithm] or wrap complex external objects'.",
       "mode": "subagent",
       "model": "opencode/minimax-m2.5-free",
+      "permission": {
+        "task": "deny"
+      },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_algorithm_porter/prompt.md}"
     }
   }
