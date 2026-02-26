@@ -472,7 +472,27 @@
       ]
     },
     "mistral": {
-      "blacklist": ["mistral-embed"]
+      "blacklist": [
+        "mistral-embed",
+        "ministral-3b-latest",
+        "ministral-8b-latest",
+        "mistral-small-latest",
+        "mistral-small-2506",
+        "mistral-medium-latest",
+        "mistral-medium-2505",
+        "mistral-medium-2508",
+        "open-mistral-7b",
+        "open-mixtral-8x7b",
+        "open-mixtral-8x22b",
+        "pixtral-12b",
+        "devstral-small-2505",
+        "devstral-small-2507",
+        "devstral-medium-2507",
+        "devstral-medium-latest",
+        "labs-devstral-small-2512",
+        "magistral-small",
+        "magistral-medium-latest"
+      ]
     },
     "cerebras": {
       "blacklist": ["llama3.1-8b"]
@@ -484,11 +504,19 @@
         "gpt-oss:20b",
         "nemotron-3-nano:30b",
         "gemma3:4b",
-        "gemma3:12b"
+        "gemma3:12b",
+        "ministral-3:14b",
+        "ministral-3:3b",
+        "ministral-3:8b",
+        "devstral-small-2:24b"
       ]
     },
     "openrouter-free": {
-      "blacklist": ["openai/gpt-oss-20b:free", "qwen/qwen3-4b:free"],
+      "blacklist": [
+        "openai/gpt-oss-20b:free",
+        "qwen/qwen3-4b:free",
+        "mistralai/mistral-small-3.1-24b-instruct:free"
+      ],
       "npm": "@ai-sdk/openai-compatible",
       "name": "OpenRouter Free",
       "options": {
@@ -708,7 +736,10 @@
         "qwen/qwen2.5-coder-32b-instruct",
         "qwen/qwen2.5-coder-7b-instruct",
         "google/gemma-2-2b-it",
-        "google/gemma-3-1b-it"
+        "google/gemma-3-1b-it",
+        "mistralai/ministral-14b-instruct-2512",
+        "mistralai/mistral-small-3.1-24b-instruct-2503",
+        "mistralai/mamba-codestral-7b-v0.1"
       ],
       "npm": "@ai-sdk/openai-compatible",
       "name": "NVIDIA NIM",
