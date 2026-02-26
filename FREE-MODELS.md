@@ -14,13 +14,18 @@
 | **CodeStral** | Invalid API key | Regenerate key from Langdock/Mistral dashboard |
 | **Google AI** | Geo-blocked: "User location is not supported for the API use" | Use VPN or access from supported region |
 
-### ❌ NOT FREE - Payment Required Upfront (3/12)
+### ❌ NOT FREE - Payment Required Upfront (2/12)
 
 | Provider | The Catch | Reality |
 |----------|-----------|---------|
-| **Cerebras** | "Payment required to access this resource" | **Predatory:** Advertises "1M free tokens/day" but requires payment method first. Banks on users forgetting to cancel before overages. |
 | **DeepInfra** | "You need positive balance to do inference" | **Not free:** No free tier. Must add payment card upfront. "$5 credit" is a signup bonus, not free access. |
-| **SambaNova** | "Rate limit exceeded" on first call | **Suspicious:** Free tier should allow 40 RPM / 200K tokens/day. Either the key is inactive, account needs activation, or limits are even lower than advertised. |
+| **Cerebras** | "Payment required to access this resource" | **Payment method required:** Must add payment method before any usage. Claims "1M free tokens/day" but no evidence of predatory overages found - may be legitimate once setup complete. |
+
+### ❌ Account Activation Needed (1/12)
+
+| Provider | Issue | Fix |
+|----------|-------|-----|
+| **SambaNova** | Rate limit exceeded on first call | **Account not activated:** Free tier requires dashboard visit to activate account/generate working key. Sign up at cloud.sambanova.ai first. |
 
 ### ⚠️ Limited Free Tier (1/12)
 
@@ -95,9 +100,9 @@ curl -s https://api.tavily.com/search -H "Content-Type: application/json" -d "{\
 |---|----------|--------|-------------|
 | 1 | **CodeStral** | ❌ Broken | Invalid API key |
 | 2 | **Google AI** | ❌ Broken | Geo-blocked |
-| 3 | **Cerebras** | ❌ Payment Wall | "1M free tokens" requires payment method first. Predatory. |
-| 4 | **DeepInfra** | ❌ Payment Wall | No free tier. Must add card upfront. |
-| 5 | **SambaNova** | ❌ Rate Limited | Hit rate limit on FIRST call. Account may need activation. |
+| 3 | **DeepInfra** | ❌ Payment Wall | No free tier. Must add card upfront. |
+| 4 | **Cerebras** | ❌ Payment Setup | Payment method required first. "1M free tokens" may be legitimate after setup. |
+| 5 | **SambaNova** | ❌ Not Activated | Account needs dashboard activation before API works. |
 | 6 | **OpenRouter** | ⚠️ Free Models Only | Paid models return "Insufficient credits" |
 | 7 | **NVIDIA NIM** | ✅ Works | 1K free credits/month |
 | 8 | **Groq** | ✅ Works | Free tier, fast |
@@ -418,7 +423,7 @@ curl -X POST "https://api.groq.com/openai/v1/chat/completions" \
 
 ---
 
-### 4. Cerebras ❌ PAYMENT WALL
+### 4. Cerebras ❌ PAYMENT METHOD REQUIRED
 
 **Models Endpoint:** ✅ Working - Returns 4 models: `gpt-oss-120b`, `zai-glm-4.7`, `llama3.1-8b`, `qwen-3-235b-a22b-instruct-2507`
 
@@ -428,16 +433,16 @@ curl -X GET "https://api.cerebras.ai/v1/models" \
   -H "Authorization: Bearer $CEREBRAS_API_KEY"
 ```
 
-**Chat Completion Test:** ❌ **Payment required**
+**Chat Completion Test:** ❌ **Payment method required**
 ```json
 {"message":"Payment required to access this resource. Visit your billing tab.","type":"payment_required_error"}
 ```
 
-**⚠️ THE CATCH:** Advertises "1M free tokens/day" but **requires payment method first**. This is predatory pricing - they bank on users forgetting to cancel before hitting overages. **Not worth it** unless you need their speed.
+**⚠️ THE CATCH:** Must add payment method before any usage. Claims "1M free tokens/day" but API rejects calls until billing is setup. **No evidence found** of predatory overage charges - may be legitimate free tier once payment method is added.
 
 ---
 
-### 5. SambaNova ❌ RATE LIMITED (SUSPICIOUS)
+### 5. SambaNova ❌ ACCOUNT NOT ACTIVATED
 
 **Models Endpoint:** ❌ Returns empty response
 
@@ -447,7 +452,7 @@ curl -X GET "https://api.sambanova.ai/v1/models" \
   -H "Authorization: Bearer $SAMBANOVA_API_KEY"
 ```
 
-**Chat Completion Test:** ❌ **Rate limit exceeded on FIRST call**
+**Chat Completion Test:** ❌ **Rate limit exceeded on first call**
 ```bash
 curl -X POST "https://api.sambanova.ai/v1/chat/completions" \
   -H "Authorization: Bearer $SAMBANOVA_API_KEY" \
@@ -456,12 +461,9 @@ curl -X POST "https://api.sambanova.ai/v1/chat/completions" \
 
 **Response:** `{"error":{"message":"Rate limit exceeded"}}`
 
-**⚠️ THE CATCH:** Free tier should allow 40 RPM / 200K tokens/day for Llama-3.1-8B. Hitting rate limit on the **first ever call** means either:
-1. Account needs activation (visit dashboard first)
-2. Key is not properly activated
-3. Free tier limits are even lower than advertised
+**⚠️ THE REAL ISSUE:** Free tier requires **account activation via dashboard** before API access works. Sign up at cloud.sambanova.ai, verify email, generate API key from dashboard. The key in `.envrc` was likely generated before activation or is inactive.
 
-**Action needed:** Log into SambaNova Cloud dashboard, activate account, verify free tier status.
+**Action needed:** Visit SambaNova Cloud dashboard, complete account setup, regenerate API key.
 
 ---
 
@@ -610,12 +612,12 @@ curl -X POST "https://api.tavily.com/search" \
 ### ⚠️ Free Models Only (1/12)
 1. **OpenRouter** - Use `:free` suffix models only. Paid models fail.
 
-### ❌ Broken / Not Free (5/12)
+### ❌ Broken / Not Free / Needs Setup (5/12)
 1. **CodeStral** - Invalid API key (regenerate)
 2. **Google AI** - Geo-blocked (VPN needed)
-3. **Cerebras** - Payment wall (predatory "free" tier)
-4. **DeepInfra** - Payment wall (no free tier)
-5. **SambaNova** - Rate limited on first call (account issue)
+3. **DeepInfra** - Payment wall (no free tier)
+4. **Cerebras** - Payment method required (free tier may work after setup)
+5. **SambaNova** - Account not activated (visit dashboard first)
 
 ---
 

@@ -80,157 +80,23 @@ export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
 
 ---
 
-## Concrete Examples
+## Example Plugins
 
-### 1. Send Notifications (session.idle)
+Working examples in `.opencode/plugins/examples/`:
 
-```js
-// .opencode/plugins/notification.js
-export const NotificationPlugin = async ({ $, directory }) => {
-  return {
-    event: async ({ event }) => {
-      if (event.type === "session.idle") {
-        await $`osascript -e 'display notification "Session completed!" with title "opencode"'`;
-      }
-    },
-  };
-};
-```
+| File                | Description                             |
+| ------------------- | --------------------------------------- |
+| `rot13-logger.js`   | Logs ROT13 of all message parts to file |
+| `notification.js`   | Sends notification on session.idle      |
+| `env-protection.js` | Blocks reading .env files               |
+| `inject-env.js`     | Injects env vars into shell execution   |
+| `custom-tools.ts`   | Adds custom tools to OpenCode           |
+| `message-logger.js` | Logs message parts to file              |
 
-### 2. Block .env Access (tool.execute.before)
+To test an example:
 
-```js
-// .opencode/plugins/env-protection.js
-export const EnvProtection = async () => {
-  return {
-    "tool.execute.before": async (input, output) => {
-      if (input.tool === "read" && output.args.filePath?.includes(".env")) {
-        throw new Error("Do not read .env files");
-      }
-    },
-  };
-};
-```
-
-### 3. Inject Environment Variables (shell.env)
-
-```js
-// .opencode/plugins/inject-env.js
-export const InjectEnvPlugin = async () => {
-  return {
-    "shell.env": async (input, output) => {
-      output.env.MY_API_KEY = "secret";
-      output.env.PROJECT_ROOT = input.cwd;
-    },
-  };
-};
-```
-
-### 4. Custom Tools
-
-```ts
-// .opencode/plugins/custom-tools.ts
-import { type Plugin, tool } from "@opencode-ai/plugin";
-
-export const CustomToolsPlugin: Plugin = async (ctx) => {
-  return {
-    tool: {
-      mytool: tool({
-        description: "This is a custom tool",
-        args: {
-          foo: tool.schema.string(),
-        },
-        async execute(args, context) {
-          const { directory, worktree } = context;
-          return `Hello ${args.foo} from ${directory}`;
-        },
-      }),
-    },
-  };
-};
-```
-
-### 5. Logging
-
-```js
-// .opencode/plugins/my-plugin.js
-export const MyPlugin = async ({ client }) => {
-  await client.app.log({
-    body: {
-      service: "my-plugin",
-      level: "info",
-      message: "Plugin initialized",
-      extra: { foo: "bar" },
-    },
-  });
-  // Levels: debug, info, warn, error
-};
-```
-
-### 8. Log Message Parts (message.part.updated)
-
-```js
-// .opencode/plugins/message-logger.js
-export const MessageLogger = async ({ $, directory }) => {
-  return {
-    event: async ({ event }) => {
-      // message.part.updated contains actual text content
-      if (event.type !== "message.part.updated") return;
-
-      const part = event.properties?.part;
-      if (!part || part.type !== "text") return;
-
-      const text = part.text;
-      if (!text) return;
-
-      // Log to file
-      const logPath = `${directory}/.opencode/messages.log`;
-      await $`echo -e "[${new Date().toISOString()}] ${text}" >> ${logPath}`;
-    },
-  };
-};
-```
-
-### 6. Compaction Hooks (modify context)
-
-```ts
-// .opencode/plugins/compaction.ts
-import type { Plugin } from "@opencode-ai/plugin";
-
-export const CompactionPlugin: Plugin = async (ctx) => {
-  return {
-    "experimental.session.compacting": async (input, output) => {
-      // Inject additional context
-      output.context.push(`
-        ## Custom Context
-        - Current task status
-        - Important decisions made
-        - Files being actively worked on
-      `);
-    },
-  };
-};
-```
-
-### 7. Compaction Hooks (replace prompt)
-
-```ts
-// .opencode/plugins/custom-compaction.ts
-import type { Plugin } from "@opencode-ai/plugin";
-
-export const CustomCompactionPlugin: Plugin = async (ctx) => {
-  return {
-    "experimental.session.compacting": async (input, output) => {
-      // Replace entire prompt
-      output.prompt = `You are generating a continuation prompt...
-Summarize:
-1. Current task and status
-2. Files being modified
-3. Blockers or dependencies
-4. Next steps`;
-    },
-  };
-};
+```bash
+cp .opencode/plugins/examples/<name>.js .opencode/plugins/
 ```
 
 ---
