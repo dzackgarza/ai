@@ -442,7 +442,7 @@
       }
     },
     "opencode": {
-      "blacklist": []
+      "blacklist": ["gpt-5-nano"]
     },
     "anthropic": {
       "blacklist": [
@@ -469,16 +469,31 @@
       ]
     },
     "mistral": {
-      "blacklist": ["mistral-embed"]
+      "blacklist": [
+        "mistral-embed",
+        "ministral-3b-latest",
+        "ministral-8b-latest",
+        "mistral-small-latest",
+        "mistral-medium-latest",
+        "open-mistral-7b",
+        "open-mixtral-8x7b"
+      ]
     },
     "cerebras": {
       "blacklist": []
     },
     "ollama-cloud": {
-      "blacklist": ["qwen3-vl:235b", "qwen3-vl:235b-instruct"]
+      "blacklist": [
+        "qwen3-vl:235b",
+        "qwen3-vl:235b-instruct",
+        "gpt-oss:20b",
+        "kimi-k2:1t",
+        "ministral-3:3b",
+        "ministral-3:8b"
+      ]
     },
     "openrouter-free": {
-      "blacklist": [],
+      "blacklist": ["openai/gpt-oss-20b:free"],
       "npm": "@ai-sdk/openai-compatible",
       "name": "OpenRouter Free",
       "options": {
@@ -707,7 +722,7 @@
       }
     },
     "groq": {
-      "blacklist": [],
+      "blacklist": ["openai/gpt-oss-20b"],
       "options": {
         "apiKey": "{env:GROQ_API_KEY}"
       },
