@@ -105,8 +105,8 @@
         "gemini-2.0-flash",
         "gemini-2.0-flash-lite",
         "gemini-embedding-001",
-        "gemini-flash-latest",
-        "gemini-flash-lite-latest"
+        "gemini-2.5-flash-preview-tts",
+        "gemini-2.5-pro-preview-tts"
       ],
       "models": {
         "antigravity-gemini-3.1-pro": {
@@ -469,13 +469,13 @@
       ]
     },
     "mistral": {
-      "blacklist": []
+      "blacklist": ["mistral-embed"]
     },
     "cerebras": {
       "blacklist": []
     },
     "ollama-cloud": {
-      "blacklist": []
+      "blacklist": ["qwen3-vl:235b", "qwen3-vl:235b-instruct"]
     },
     "openrouter-free": {
       "blacklist": [],
@@ -684,7 +684,16 @@
       }
     },
     "nvidia": {
-      "blacklist": [],
+      "blacklist": [
+        "black-forest-labs/flux.1-dev",
+        "meta/llama-3.2-11b-vision-instruct",
+        "microsoft/phi-3-vision-128k-instruct",
+        "microsoft/phi-3.5-vision-instruct",
+        "nvidia/llama-embed-nemotron-8b",
+        "nvidia/nemoretriever-ocr-v1",
+        "nvidia/parakeet-tdt-0.6b-v2",
+        "openai/whisper-large-v3"
+      ],
       "npm": "@ai-sdk/openai-compatible",
       "name": "NVIDIA NIM",
       "options": {
