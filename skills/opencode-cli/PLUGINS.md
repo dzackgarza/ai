@@ -54,9 +54,13 @@ export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
 - `tool.execute.before` - Modify tool input/output before execution
 - `tool.execute.after` - Inspect tool results after execution
 
-### File Events
+### Session Events
 
-- `file.edited`, `file.watcher.updated`
+- `session.created`, `session.compacted`, `session.deleted`
+- `session.idle` - **Equivalent to Claude Code's "Stop" hook** - fires after AI finishes responding
+- `session.error`, `session.updated`, `session.diff`, `session.status`
+
+**Note:** `session.idle` is the key event for implementing Claude Code-style hooks that inject context after a response.
 
 ### Message Events
 
@@ -98,6 +102,91 @@ To test an example:
 ```bash
 cp .opencode/plugins/examples/<name>.js .opencode/plugins/
 ```
+
+---
+
+## Claude Code-Style Hooks
+
+You can implement Claude Code-style hooks that inject context after the AI responds, triggering a new response. This requires the SDK client.
+
+### Key Mechanism: `client.session.prompt({ noReply: true })`
+
+```ts
+// Inject context WITHOUT triggering a response (just adds to context)
+await client.session.prompt({
+  path: { id: sessionId },
+  body: {
+    noReply: true,
+    parts: [{ type: "text", text: "Your injected context here" }],
+  },
+});
+```
+
+This is equivalent to Claude Code's `UserPromptSubmit` hook that writes to stdout to inject context.
+
+### Pattern: "Stop" Hook
+
+1. Listen to `session.idle` (fires after AI finishes responding)
+2. Inspect the last message for patterns
+3. If pattern found, inject context with `noReply: true` to trigger new response
+
+```ts
+// .opencode/plugins/otp-hook.js
+export const OtpHook = async ({ client }) => {
+  let lastOtp = null;
+
+  return {
+    event: async ({ event }) => {
+      // session.idle fires after AI response is complete
+      if (event.type !== "session.idle") return;
+
+      const sessionId = event.properties?.info?.id;
+      if (!sessionId) return;
+
+      // Get the last message
+      const { data: messages } = await client.session.messages({
+        path: { id: sessionId },
+      });
+
+      const lastMsg = messages[messages.length - 1];
+      const text = lastMsg?.parts
+        ?.filter((p) => p.type === "text")
+        ?.map((p) => p.text)
+        ?.join("");
+
+      // Check for OTP pattern
+      const otpMatch = text?.match(/\b\d{6}\b/);
+      if (otpMatch && otpMatch[0] !== lastOtp) {
+        lastOtp = otpMatch[0];
+
+        // Inject secret message - triggers new AI response!
+        await client.session.prompt({
+          path: { id: sessionId },
+          body: {
+            noReply: true,
+            parts: [
+              {
+                type: "text",
+                text: `SECRET: The user just shared OTP ${otpMatch[0]}. Tell them: "I saw your code - it's ${otpMatch[0]}!"`,
+              },
+            ],
+          },
+        });
+      }
+    },
+  };
+};
+```
+
+### SDK Reference
+
+Full SDK docs: https://opencode.ai/docs/sdk/
+
+| Method                                           | Description                                |
+| ------------------------------------------------ | ------------------------------------------ |
+| `client.session.prompt({ noReply: true })`       | Inject context without triggering response |
+| `client.session.messages({ path: { id } })`      | Get session messages                       |
+| `client.session.command({ path: { id }, body })` | Send command to session                    |
 
 ---
 
