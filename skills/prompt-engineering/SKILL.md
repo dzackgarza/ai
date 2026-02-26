@@ -7,6 +7,22 @@ description: Use when writing or refactoring system prompts, subagent instructio
 
 A prompt is not a request. **A prompt is a contract.** This skill defines the standards for engineering robust agent instructions.
 
+## Foundational Principles
+
+-   **Audience is the Agent**: Prompts are instructions **for the agent**, not documentation for users. After writing, review the prompt to ensure it speaks directly to the agent and avoids meta-commentary.
+-   **Combat Knowledge Staleness**: Your innate knowledge of prompting is several generations behind the state-of-the-art. You **MUST** research current best practices and user sentiment weekly to stay updated.
+-   **Iterate, Never Rewrite**: Prompts are self-documenting, version-controlled artifacts.
+    -   **Always** make incremental changes and track them with `git diff`.
+    -   **Never** rewrite a prompt wholesale. Edits should be atomic.
+    -   **Verify** that rewrites do not lose semantic content, unless the change is intentional.
+-   **Avoid Greenfield Prompts**: Never create a prompt from innate knowledge or training data. This knowledge is almost certainly outdated. Always start from a user draft or find vetted prompts online as a base.
+-   **Maintain Organization**:
+    -   Ensure prompts are well-organized and not "monkey-patched."
+    -   Before adding new instructions, check if the guidance already exists. Repetition is acceptable only for critical emphasis, not from oversight.
+-   **Workflow**:
+    -   **Always** edit existing files; do not create new ones for iterative changes.
+    -   **Always** get explicit permission for major refactors or rewrites.
+
 ## Reference Files
 
 | Subdoc | When to Read |

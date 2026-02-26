@@ -18,6 +18,7 @@ opencode run --attach http://localhost:4096 --thinking --print-logs "Your prompt
 ```
 
 **Common flags for scripted agent calls:**
+
 - `--thinking` - Enable reasoning output
 - `--print-logs` - Show logs for debugging
 - `--attach http://localhost:4096` - Use a warm background server for much faster runs
@@ -53,18 +54,28 @@ opencode run --agent <agent> --thinking --print-logs "Your prompt"
 
 ## Core Commands
 
-| Command | Purpose |
-|---------|---------|
-| `opencode run "prompt"` | Non-interactive task |
-| `opencode run -c "prompt"` | Continue last session |
-| `opencode run -s <id> "prompt"` | Continue specific session |
-| `opencode run -m <model> "prompt"` | Use specific model |
-| `opencode run -f file "prompt"` | Attach file |
-| `opencode models` | List available models |
-| `opencode session list` | List sessions |
-| `opencode stats` | Token usage statistics |
-| `opencode auth login` | Configure API keys |
-| `opencode mcp list` | List MCP servers |
+| Command                            | Purpose                   |
+| ---------------------------------- | ------------------------- |
+| `opencode run "prompt"`            | Non-interactive task      |
+| `opencode run -c "prompt"`         | Continue last session     |
+| `opencode run -s <id> "prompt"`    | Continue specific session |
+| `opencode run -m <model> "prompt"` | Use specific model        |
+| `opencode run -f file "prompt"`    | Attach file               |
+| `opencode models`                  | List available models     |
+| `opencode session list`            | List sessions             |
+| `opencode stats`                   | Token usage statistics    |
+| `opencode auth login`              | Configure API keys        |
+| `opencode mcp list`                | List MCP servers          |
+
+### Exporting Readable Transcripts
+
+When agents need to read past session transcripts (e.g., for recovery or context analysis), use this one-liner to parse the JSON export into clean, human-readable markdown (stripping out massive tool inputs/outputs and system metadata):
+
+```bash
+opencode export ses_YOUR_ID_HERE | sed '1d' | jq -r '.messages[]? | "[\(.info.role | ascii_upcase)]\n" + (if .parts then (.parts[] | select(.type=="text") | .text) else "" end) + "\n\n---\n"' > transcript.md
+```
+
+_(Add `| tail -n 150` instead of `> file` to quickly read recent messages)._
 
 ## Model Format
 
@@ -72,15 +83,16 @@ Always `provider/model` (e.g., `openai/gpt-5.2`, `anthropic/claude-sonnet-4-5`)
 
 ## Common Mistakes
 
-| Tried | Error | Correct |
-|-------|-------|---------|
-| `opencode "prompt"` | "Failed to change directory" | `opencode run "prompt"` |
-| `--model claude-3.5-sonnet` | "Provider not found" | `-m openrouter/anthropic/claude-3.7-sonnet` |
-| `opencode --prompt "..."` | Launches TUI | `opencode run "..."` |
+| Tried                       | Error                        | Correct                                     |
+| --------------------------- | ---------------------------- | ------------------------------------------- |
+| `opencode "prompt"`         | "Failed to change directory" | `opencode run "prompt"`                     |
+| `--model claude-3.5-sonnet` | "Provider not found"         | `-m openrouter/anthropic/claude-3.7-sonnet` |
+| `opencode --prompt "..."`   | Launches TUI                 | `opencode run "..."`                        |
 
 ## Red Flags - STOP and Check Help
 
 If you're about to:
+
 - Query databases or guess file paths directly
 - Use flags or subcommands you haven't verified
 
@@ -88,12 +100,12 @@ If you're about to:
 
 ## Free Models (Verified Feb 2026)
 
-| Model | Provider | Notes |
-|-------|----------|-------|
-| `opencode/big-pickle` | OpenCode Zen | General reasoning |
-| `opencode/glm-5-free` | OpenCode Zen | General tasks |
-| `google/antigravity-gemini-3-flash` | Antigravity | Fast, capable |
-| `openai/gpt-5.2-codex` | OpenAI Codex | Frontier coding (via plugin) |
+| Model                               | Provider     | Notes                        |
+| ----------------------------------- | ------------ | ---------------------------- |
+| `opencode/big-pickle`               | OpenCode Zen | General reasoning            |
+| `opencode/glm-5-free`               | OpenCode Zen | General tasks                |
+| `google/antigravity-gemini-3-flash` | Antigravity  | Fast, capable                |
+| `openai/gpt-5.2-codex`              | OpenAI Codex | Frontier coding (via plugin) |
 
 **Avoid:** OpenRouter free models often have "No endpoints" - test before relying.
 
@@ -104,6 +116,7 @@ For comprehensive documentation including all commands, flags, tools, agents, co
 → See [REFERENCE.md](./REFERENCE.md)
 
 Contains:
+
 - All CLI commands with complete flag tables
 - 15 built-in tools with parameters
 - 7 built-in agents (primary + subagents)
