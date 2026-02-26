@@ -80,6 +80,7 @@
   },
   "provider": {
     "ollama": {
+      "blacklist": [],
       "models": {
         "minimax-m2.5:cloud": {
           "_launch": true,
@@ -437,7 +438,17 @@
     "anthropic": {
       "blacklist": []
     },
+    "mistral": {
+      "blacklist": []
+    },
+    "cerebras": {
+      "blacklist": []
+    },
+    "ollama-cloud": {
+      "blacklist": []
+    },
     "openrouter-free": {
+      "blacklist": [],
       "npm": "@ai-sdk/openai-compatible",
       "name": "OpenRouter Free",
       "options": {
@@ -643,6 +654,7 @@
       }
     },
     "nvidia": {
+      "blacklist": [],
       "npm": "@ai-sdk/openai-compatible",
       "name": "NVIDIA NIM",
       "options": {
@@ -656,6 +668,7 @@
       }
     },
     "groq": {
+      "blacklist": [],
       "options": {
         "apiKey": "{env:GROQ_API_KEY}"
       },
