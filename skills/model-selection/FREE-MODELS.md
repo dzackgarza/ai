@@ -4,14 +4,15 @@
 
 These providers offer meaningful free tiers without requiring payment info.
 
-| Provider                  | Base URL                                                   | API Key Env Var                                | Get Key                               | Notes                                         |
-| ------------------------- | ---------------------------------------------------------- | ---------------------------------------------- | ------------------------------------- | --------------------------------------------- |
-| **Groq**                  | `api.groq.com/openai/v1`                                   | `GROQ_API_KEY`                                 | console.groq.com/keys                 | Rate-limited but free, OpenAI-compatible      |
-| **NVIDIA NIM**            | `integrate.api.nvidia.com/v1`                              | `NVIDIA_API_KEY`                               | build.nvidia.com → Profile → API Keys | Free tier, OpenAI-compatible                  |
-| **Mistral**               | `api.mistral.ai/v1`                                        | `MISTRAL_API_KEY`                              | codestral.mistral.ai → API Keys       | Includes Codestral, phone required            |
-| **Cloudflare Workers AI** | `api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1` | `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` | dash.cloudflare.com → API Tokens      | 10k neurons/day free                          |
-| **OpenRouter**            | `openrouter.ai/api/v1`                                     | `OPENROUTER_API_KEY`                           | openrouter.ai/keys                    | `:free` models: 50 req/day, 20/min rate limit |
-| **SambaNova**             | `api.sambanova.ai/v1`                                      | `SAMBANOVA_API_KEY`                            | sambanova.ai/developers               | Free tier, requires `stream: true`            |
+| Provider                  | Base URL                                                   | API Key Env Var                                | Get Key                               | Notes                                           |
+| ------------------------- | ---------------------------------------------------------- | ---------------------------------------------- | ------------------------------------- | ----------------------------------------------- |
+| **Groq**                  | `api.groq.com/openai/v1`                                   | `GROQ_API_KEY`                                 | console.groq.com/keys                 | Rate-limited but free, OpenAI-compatible        |
+| **NVIDIA NIM**            | `integrate.api.nvidia.com/v1`                              | `NVIDIA_API_KEY`                               | build.nvidia.com → Profile → API Keys | Free tier, OpenAI-compatible                    |
+| **Mistral**               | `api.mistral.ai/v1`                                        | `MISTRAL_API_KEY`                              | codestral.mistral.ai → API Keys       | Includes Codestral, phone required              |
+| **Cloudflare Workers AI** | `api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1` | `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` | dash.cloudflare.com → API Tokens      | 10k neurons/day free                            |
+| **OpenRouter**            | `openrouter.ai/api/v1`                                     | `OPENROUTER_API_KEY`                           | openrouter.ai/keys                    | `:free` models: 50 req/day, 20/min rate limit   |
+| **SambaNova**             | `api.sambanova.ai/v1`                                      | `SAMBANOVA_API_KEY`                            | sambanova.ai/developers               | Free tier, requires `stream: true`              |
+| **Cerebras**              | `api.cerebras.ai/v1`                                       | `CEREBRAS_API_KEY`                             | cerebras.ai                           | Free tier: 1K RPM, 1M tokens/min (gpt-oss-120b) |
 
 ## Laughably Small Free Tiers (Effectively Not Free)
 
@@ -36,7 +37,6 @@ These are paid services with no meaningful free tier.
 | **Together AI** | `api.together.xyz/v1`    | `TOGETHER_API_KEY`    | api.together.ai/settings/api-keys | Credits vary, never been free |
 | **SiliconFlow** | `api.siliconflow.com/v1` | `SILICONFLOW_API_KEY` | cloud.siliconflow.cn/account/ak   | Quotas vary, unreliable       |
 | **DeepInfra**   | `api.deepinfra.com/v1`   | `DEEPINFRA_API_KEY`   | deepinfra.com/dashboard           | Free tier removed 2025        |
-| **Cerebras**    | `api.cerebras.ai/v1`     | `CEREBRAS_API_KEY`    | cerebras.ai                       | Payment method required       |
 
 ---
 
@@ -78,6 +78,12 @@ curl -s https://openrouter.ai/api/v1/chat/completions -H "Authorization: Bearer 
 
 ```bash
 curl -s https://api.sambanova.ai/v1/chat/completions -H "Authorization: Bearer $SAMBANOVA_API_KEY" -H "Content-Type: application/json" -d '{"stream":true,"model":"Qwen3-235B","messages":[{"role":"user","content":"Hello"}]}'
+```
+
+### Cerebras
+
+```bash
+curl -s https://api.cerebras.ai/v1/chat/completions -H "Authorization: Bearer $CEREBRAS_API_KEY" -H "Content-Type: application/json" -d '{"model":"gpt-oss-120b","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
 ```
 
 ### Replicate
