@@ -3,6 +3,7 @@
 ## Installation
 
 **Prerequisites:**
+
 ```bash
 # Install nvm (Node Version Manager)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -11,6 +12,7 @@ nvm install --lts
 ```
 
 **Install all harnesses:**
+
 ```bash
 # Claude Code (native install with auto-updates)
 curl -fsSL https://claude.ai/install.sh | bash
@@ -35,6 +37,7 @@ curl -fsSL https://ampcode.com/install.sh | bash
 ```
 
 **Post-installation:**
+
 ```bash
 # Set up symlinks and environment variables
 just install
@@ -67,7 +70,7 @@ amp
 **Master files (symlinked to all harnesses):**
 
 - Context file: `~/ai/AGENTS.md`
-- Skills: `~/ai/skills/` (29 skills)
+- Skills: `~/ai/skills/`
 
 ### Verified Details
 
@@ -330,10 +333,10 @@ Workers are domain-specific agents that can be:
 - **Loaded interactively** when user wants careful, hands-on work
 - **Used autonomously** for scheduled tasks, regular upkeep, or audits
 
-| Worker                   | Interactive Use                | Autonomous Use           |
-| ------------------------ | ------------------------------ | ------------------------ |
-| librarian                | Careful work on Zotero library | Regular upkeep/audits    |
-| test_engineer            | Design test strategy with user | Run test coverage audits |
+| Worker             | Interactive Use                | Autonomous Use           |
+| ------------------ | ------------------------------ | ------------------------ |
+| librarian          | Careful work on Zotero library | Regular upkeep/audits    |
+| test_engineer      | Design test strategy with user | Run test coverage audits |
 | lattice_documentor | Plan docs structure            | Generate missing docs    |
 
 Each worker has `prompt.md` + `example_tasks/` showing autonomous work they can complete.
@@ -481,15 +484,15 @@ This repository utilizes the following JSON configuration files:
 
 ### `opencode.json`
 
--   **Schema URL**: `https://opencode.ai/config.json`
--   **Validation**: Add `"$schema": "https://opencode.ai/config.json"` to the top of your `opencode.json` file for IDE validation and autocompletion.
+- **Schema URL**: `https://opencode.ai/config.json`
+- **Validation**: Add `"$schema": "https://opencode.ai/config.json"` to the top of your `opencode.json` file for IDE validation and autocompletion.
 
 ### `.safety-net.json`
 
--   **Source**: [kenryu42/claude-code-safety-net](https://github.com/kenryu42/claude-code-safety-net)
--   **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.
+- **Source**: [kenryu42/claude-code-safety-net](https://github.com/kenryu42/claude-code-safety-net)
+- **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.
 
 ### `rate-limit-fallback.json`
 
--   **Source**: [azumag/opencode-rate-limit-fallback](https://github.com/azumag/opencode-rate-limit-fallback)
--   **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.
+- **Source**: [azumag/opencode-rate-limit-fallback](https://github.com/azumag/opencode-rate-limit-fallback)
+- **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.

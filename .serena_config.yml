@@ -76,9 +76,15 @@ excluded_tools: []
 
 # list of optional tools (which are disabled by default) to be included
 included_optional_tools:
-- think_about_collected_information
-- think_about_task_adherence
-- think_about_whether_you_are_done
+  - think_about_collected_information
+  - think_about_task_adherence
+  - think_about_whether_you_are_done
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
 
 # fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
 # This cannot be combined with non-empty excluded_tools or included_optional_tools.
@@ -109,8 +115,8 @@ base_modes:
 # The full set of modes to be activated is base_modes + default_modes.
 # These modes can be overridden by the project configuration (project.yml) or through the CLI (--mode).
 default_modes:
-- interactive
-- editing
+  - interactive
+  - editing
 
 # Used as default for tools where the apply method has a default maximal answer length.
 # Even though the value of the max_answer_chars can be changed when calling the tool, it may make sense to adjust this default
@@ -140,8 +146,6 @@ symbol_info_budget: 10
 
 # the list of registered project paths (updated automatically).
 projects:
-- /home/dzack/ai
-- /home/dzack/ai/opencode
-- /home/dzack/lattice_interface
-- /home/dzack/opencode_parser
-- /home/dzack/opencode_parser_quality_triage
+  - /home/dzack/ai
+  - /home/dzack/lattice_interface
+  - /home/dzack/opencode_parser

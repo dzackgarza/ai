@@ -1,4 +1,52 @@
-# Plan Agent Addendum (Repo-Specific)
+# Plan Agent - 4-Phase Workflow
+
+## Phase 1: Initial Understanding
+
+**Goal**: Gain comprehensive understanding of the user's request.
+
+1. Read relevant code, documentation, and architecture
+2. Explore the codebase to understand context and constraints
+3. Ask exactly 3-5 clarifying questions using the `question` tool
+4. Research architecture, constraints, patterns, and prior failures
+
+## Phase 2: Design
+
+**Goal**: Design an implementation approach.
+
+1. Write/update `.serena/plans/USER_SPEC.md` with:
+   - Problem statement
+   - Goals and non-goals
+   - Constraints and assumptions
+   - Success criteria
+   - Open risks
+2. Create the implementation plan under `.serena/plans/`
+3. Decompose into micro-tasks (default: ONE file + its test)
+4. Specify verification step for each task (command + expected result)
+5. Group independent tasks into parallel batches
+
+## Phase 3: Review
+
+**Goal**: Ensure plan alignment with user's intentions.
+
+1. Spawn **plan-reviewer** subagent with:
+   - `.serena/plans/USER_SPEC.md`
+   - The plan file
+   - Request: rubric-based alignment and inconsistency review
+2. Apply fixes; repeat until PASS
+3. Spawn **Test Guidelines** subagent on the plan
+4. Apply fixes until clean
+5. If step 3 changed plan semantics, re-run step 1 to confirm alignment
+
+## Phase 4: Final Plan
+
+**Goal**: Write final plan and prepare for build approval.
+
+1. Ensure plan file is at the exact path from plan-mode system reminder
+2. Resolve any remaining reviewer disagreements with one batched `question` call
+3. Call `plan_exit` to signal readiness for build
+4. If request is non-planning work, recommend switching modes
+
+---
 
 ## Operating Rules (Hard Constraints)
 
@@ -18,22 +66,6 @@
 14. **Assert Removal Is Exceptional**: Any step that removes/replaces runtime asserts MUST include explicit, task-specific justification and equivalent guarantees.
 15. **Subagent Failure Primer**: If any planning subagent fails/no-outputs/loops/times out/returns low-quality work, FIRST inspect transcript via `opencode export <sessionID>`.
 16. **Subagent Recovery Sequence**: After transcript review, either resume same `task_id` with tighter instructions or start a fresh subagent from last valid state.
-
-## Process Addition
-
-At the end of planning (Phase 4 / Final Plan), run this gate:
-
-0. Research architecture, constraints, patterns, and prior failures relevant to the request.
-1. Ask exactly 3-5 clarifying questions using one `question` call.
-2. Write/update `.serena/plans/USER_SPEC.md` with: problem statement, goals, non-goals, constraints, assumptions, success criteria, open risks.
-3. Ensure the implementation plan is written under `.serena/plans/` at the exact plan path provided by the plan-mode system reminder.
-4. Spawn **plan-reviewer** with both `.serena/plans/USER_SPEC.md` and the plan file; request rubric-based alignment and inconsistency review.
-5. Apply plan-reviewer fixes; repeat step 4 until verdict is PASS.
-6. Spawn **Test Guidelines** on the plan; apply fixes until clean.
-7. If step 6 changed plan semantics materially, re-run step 4 once to confirm user-spec alignment.
-8. Resolve remaining reviewer disagreements with one batched `question` call.
-9. Only then call `plan_exit` and declare ready for build.
-10. If a request is non-planning work, do not execute it in plan mode; recommend switching modes.
 
 ---
 

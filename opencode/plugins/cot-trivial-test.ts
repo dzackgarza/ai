@@ -37,6 +37,8 @@ export const CotTrivialInterceptor: Plugin = async ({ client }) => {
 
   return {
     event: async ({ event }) => {
+      // Comment out to enable
+      return;
       // ── Track which partIDs are reasoning parts ───────────────────────────
       if (event.type === "message.part.updated") {
         const part = (event as any).properties?.part;

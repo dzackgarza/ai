@@ -17,10 +17,7 @@ import type { StopHookFn, MessageWithParts } from "./stop_hooks/types";
 import { otpChecker } from "./stop_hooks/otp-checker";
 import { reflexiveAgreementDetector } from "./stop_hooks/reflexive-agreement-detector";
 
-const STOP_HOOKS: StopHookFn[] = [
-  otpChecker,
-  reflexiveAgreementDetector,
-];
+const STOP_HOOKS: StopHookFn[] = [otpChecker, reflexiveAgreementDetector];
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MECHANISM — do not modify
@@ -38,11 +35,15 @@ export const StopHooks: Plugin = async ({ client }) => {
 
   return {
     event: async ({ event }) => {
+      // Comment out to enable
+      return;
       if (event.type !== "session.idle") return;
 
       const sessionId = event.properties.sessionID;
 
-      const { data: messages } = await client.session.messages({ path: { id: sessionId } });
+      const { data: messages } = await client.session.messages({
+        path: { id: sessionId },
+      });
       if (!messages || messages.length === 0) return;
 
       const lastMessage = messages[messages.length - 1];
@@ -53,7 +54,9 @@ export const StopHooks: Plugin = async ({ client }) => {
       lastSeenMessageId.set(sessionId, lastMessage.info.id);
 
       const lastText = extractText(lastMessage);
-      const lastUserMessage = [...messages].reverse().find((m) => m.info.role === "user") as
+      const lastUserMessage = [...messages]
+        .reverse()
+        .find((m) => m.info.role === "user") as
         | { info: UserMessage; parts: MessageWithParts["parts"] }
         | undefined;
 
@@ -61,7 +64,10 @@ export const StopHooks: Plugin = async ({ client }) => {
         sessionId,
         client,
         messages,
-        lastMessage: lastMessage as { info: AssistantMessage; parts: MessageWithParts["parts"] },
+        lastMessage: lastMessage as {
+          info: AssistantMessage;
+          parts: MessageWithParts["parts"];
+        },
         lastText,
         lastUserMessage,
       };

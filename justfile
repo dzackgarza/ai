@@ -14,10 +14,16 @@ install:
     @ln -sf {{repo}}/AGENTS.md ~/.config/kilo/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.config/amp/AGENTS.md
     @ln -sf {{repo}}/AGENTS.md ~/.config/AGENTS.md
-    @ln -sf {{repo}}/.opencode ~/.config/opencode
-    @ln -sf {{repo}}/.opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
-    @ln -sf {{repo}}/.opencode/cc-safety-net.json ~/.cc-safety-net/config.json
+    @ln -sf {{repo}}/opencode ~/.config/opencode
+    @ln -sf {{repo}}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
+    @ln -sf {{repo}}/opencode/cc-safety-net.json ~/.cc-safety-net/config.json
     @mkdir -p ~/.cc-safety-net
+    # Backup existing skills directories before creating symlinks
+    @for dir in ~/.claude/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do \
+        if [ -d "$$dir" ] && [ ! -L "$$dir" ]; then \
+            mv "$$dir" "$$dir.bak.$(date +%Y%m%d%H%M%S)"; \
+        fi; \
+    done
     @ln -sf {{repo}}/skills ~/.claude/skills
     @ln -sf {{repo}}/skills ~/.gemini/skills
     @ln -sf {{repo}}/skills ~/.agents/skills

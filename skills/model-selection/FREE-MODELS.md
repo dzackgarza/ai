@@ -6,13 +6,12 @@ These providers offer meaningful free tiers without requiring payment info.
 
 | Provider                  | Base URL                                                   | API Key Env Var                                | Get Key                               | Notes                                           |
 | ------------------------- | ---------------------------------------------------------- | ---------------------------------------------- | ------------------------------------- | ----------------------------------------------- |
-| **Groq**                  | `api.groq.com/openai/v1`                                   | `GROQ_API_KEY`                                 | console.groq.com/keys                 | Rate-limited but free, OpenAI-compatible        |
+| **Groq**                  | `api.groq.com/openai/v1`                                   | `GROQ_API_KEY`                                 | console.groq.com/keys                 | Rate-limited but free, OpenAI-compatible. Models unsuitable for agentic work (no reasoning, context too small for basic harnesses) |
 | **NVIDIA NIM**            | `integrate.api.nvidia.com/v1`                              | `NVIDIA_API_KEY`                               | build.nvidia.com → Profile → API Keys | Free tier, OpenAI-compatible                    |
-| **Mistral**               | `api.mistral.ai/v1`                                        | `MISTRAL_API_KEY`                              | codestral.mistral.ai → API Keys       | Includes Codestral, phone required              |
-| **Cloudflare Workers AI** | `api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1` | `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` | dash.cloudflare.com → API Tokens      | 10k neurons/day free                            |
+| **Mistral**               | `api.mistral.ai/v1`                                        | `MISTRAL_API_KEY`                              | codestral.mistral.ai → API Keys       | Includes Codestral, phone required. Free tier: 50k tokens/min (Standard pool) — can't fit modern 16k context (system + tools + skills + MCP) |
+| **Cloudflare Workers AI** | `api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1` | `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` | dash.cloudflare.com → API Tokens      | 10k neurons/day free. Broken in opencode: `sdk.languageModel` undefined |
 | **OpenRouter**            | `openrouter.ai/api/v1`                                     | `OPENROUTER_API_KEY`                           | openrouter.ai/keys                    | `:free` models: 50 req/day, 20/min rate limit   |
-| **SambaNova**             | `api.sambanova.ai/v1`                                      | `SAMBANOVA_API_KEY`                            | sambanova.ai/developers               | Free tier, requires `stream: true`              |
-| **Cerebras**              | `api.cerebras.ai/v1`                                       | `CEREBRAS_API_KEY`                             | cerebras.ai                           | Free tier: 1K RPM, 1M tokens/min (gpt-oss-120b) |
+| **SambaNova**             | `api.sambanova.ai/v1`                                      | `SAMBANOVA_API_KEY`                            | sambanova.ai/developers               | $5 free credits (trivial, no CC required)       |
 
 ## Laughably Small Free Tiers (Effectively Not Free)
 
@@ -32,6 +31,7 @@ These are paid services with no meaningful free tier.
 
 | Provider        | Base URL                 | API Key Env Var       | Get Key                           | Pricing Model                 |
 | --------------- | ------------------------ | --------------------- | --------------------------------- | ----------------------------- |
+| **Cerebras**    | `api.cerebras.ai/v1`     | `CEREBRAS_API_KEY`    | cerebras.ai                       | Billing setup required (predatory) |
 | **Replicate**   | `api.replicate.com/v1`   | `REPLICATE_API_TOKEN` | replicate.com/account/api-tokens  | Pay-per-prediction            |
 | **Perplexity**  | `api.perplexity.ai`      | `PERPLEXITY_API_KEY`  | perplexity.ai/settings/api        | Tiered by spend               |
 | **Together AI** | `api.together.xyz/v1`    | `TOGETHER_API_KEY`    | api.together.ai/settings/api-keys | Credits vary, never been free |

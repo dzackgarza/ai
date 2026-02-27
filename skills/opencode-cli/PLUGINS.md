@@ -46,6 +46,76 @@ export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
 
 ---
 
+## Compilation and Testing
+
+### Compiling Plugins
+
+Always compile before testing to catch type errors early:
+
+```bash
+cd ~/.config/opencode/plugins
+bun build --compile my-plugin.ts
+```
+
+This bundles dependencies and catches TypeScript errors.
+
+### Testing with One-Shots
+
+Use `opencode run` for fast one-shot testing:
+
+```bash
+cd ~/.config/opencode
+opencode run "Use my_tool to do something"
+```
+
+The plugin must be in `~/.config/opencode/plugins/` (global) or `.opencode/plugins/` (project).
+
+### Common Pitfalls
+
+**BunShell (`$`) context:**
+
+The `$` shell from `PluginInput` is NOT available in `ToolContext`. Capture it at plugin initialization:
+
+```ts
+// CORRECT: Capture $ from plugin context
+export const MyPlugin: Plugin = async (ctx) => {
+  const shell = ctx.$;  // Capture here
+
+  return {
+    tool: {
+      mytool: tool({
+        args: { ... },
+        async execute(args, context) {
+          await shell`command`;  // Use captured shell
+        },
+      }),
+    },
+  };
+};
+
+// WRONG: Try to get $ from execute context
+async execute(args, context) {
+  const shell = context.$;  // undefined! Doesn't exist in ToolContext
+}
+```
+
+**ToolContext available properties:**
+
+- `directory` - Current project directory
+- `worktree` - Git worktree root
+- `sessionID`, `messageID`, `agent`
+- `abort` - AbortSignal
+- `metadata()` - Set title/metadata
+
+**Shell escaping:** BunShell doesn't support heredocs. Use `printf` with proper escaping:
+
+```ts
+const escaped = args.content.replace(/'/g, "'\"'\"'");
+await shell`printf '%s' '${escaped}' > ${filepath}`;
+```
+
+---
+
 ## Events Reference
 
 ### Session Events
@@ -75,6 +145,7 @@ These use a **different handler signature** than `event` — they receive `(inpu
 **Note:** `message.part.updated` contains text in `event.properties.part.text` (NOT `event.message`).
 
 **`message.part.delta` payload shape:**
+
 ```ts
 {
   type: "message.part.delta",
@@ -100,6 +171,7 @@ The `event` hook receives `message.part.delta` events in real-time, including `r
 There are two ways to stop in-progress generation, and both leave the session alive for re-prompting:
 
 **1. Server-side cancel — preferred, no TUI required:**
+
 ```ts
 await client.session.abort({ path: { id: sessionID } });
 // Fires the AbortSignal on the LLM stream, sets session status to idle.
@@ -109,6 +181,7 @@ await client.session.abort({ path: { id: sessionID } });
 Despite the name, `session.abort()` does NOT destroy the session. Internally it calls `SessionPrompt.cancel()` which fires the stream's `AbortController`, removes the session from active in-memory state, and sets status to `idle`. The message history in the database is untouched.
 
 **2. TUI command — requires interactive mode:**
+
 ```ts
 await client.tui.executeCommand({ body: { command: "session.interrupt" } });
 // Equivalent to pressing Escape. Same effect as abort(), but routes through the TUI process.
@@ -130,20 +203,25 @@ event: async ({ event }) => {
     path: { id: sessionId },
     body: {
       noReply: false,
-      parts: [{ type: "text", text: "Your reasoning went wrong because X. Please reconsider and try again." }],
+      parts: [
+        {
+          type: "text",
+          text: "Your reasoning went wrong because X. Please reconsider and try again.",
+        },
+      ],
     },
   });
-}
+};
 ```
 
 **Practical patterns:**
 
-| Goal | Mechanism |
-| ---- | --------- |
-| Correct a finished response | `session.idle` + `client.session.prompt()` |
-| Prune bad CoT mid-stream, re-prompt | `message.part.delta` + `session.abort()` + `session.prompt()` |
-| Inject correction without re-prompting | `session.abort()` + `session.prompt({ noReply: true })` |
-| Inject mid-stream without halting | ❌ Not possible — model is not listening while generating |
+| Goal                                   | Mechanism                                                     |
+| -------------------------------------- | ------------------------------------------------------------- |
+| Correct a finished response            | `session.idle` + `client.session.prompt()`                    |
+| Prune bad CoT mid-stream, re-prompt    | `message.part.delta` + `session.abort()` + `session.prompt()` |
+| Inject correction without re-prompting | `session.abort()` + `session.prompt({ noReply: true })`       |
+| Inject mid-stream without halting      | ❌ Not possible — model is not listening while generating     |
 
 ### File Events
 
@@ -282,15 +360,25 @@ export const OtpHook = async ({ client }) => {
 
 ### Testing Plugins
 
-1. Use INTERACTIVE mode with a clean tmp dir:
-   ```bash
-   cd /tmp/my-plugin-test
-   echo "prompt that triggers your plugin" | opencode 2>&1 | head
-   ```
-2. Read the transcript using the **reading-transcripts skill**:
-   ```bash
-   python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
-   ```
+**Fastest: Use `opencode run`** (one-shot, no TUI):
+
+```bash
+cd ~/.config/opencode
+opencode run "prompt that triggers your plugin"
+```
+
+**For interactive debugging with stdin pipe:**
+
+```bash
+cd /tmp/my-plugin-test
+echo "prompt that triggers your plugin" | opencode 2>&1 | head
+```
+
+Then read the transcript using the **reading-transcripts skill**:
+
+```bash
+python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
+```
 
 ### SDK Reference
 
@@ -413,6 +501,7 @@ curl -s "https://api.github.com/repos/anomalyco/opencode/contents/packages/openc
 ```
 
 Key findings this revealed:
+
 - The glob is `{plugin,plugins}/*.{ts,js}` — **top-level files only**, subdirectories are not scanned
 - OpenCode automatically injects `@opencode-ai/plugin` into `package.json` and runs `bun install` — you never need to declare it
 - Local file plugins are passed as `file:///absolute/path.ts` to Bun's `import()` — all standard module resolution applies from there
@@ -456,10 +545,10 @@ grep -n -A5 "SessionMessagesResponses" \
 
 Documentation and source verified against:
 
-| Source | URL | What it confirmed |
-| ------ | --- | ----------------- |
-| Official plugin docs | https://opencode.ai/docs/plugins/ | Plugin locations, load order, TypeScript support, `package.json` for external deps, Bun runtime |
-| OpenCode plugin loader source | https://github.com/anomalyco/opencode/blob/main/packages/opencode/src/plugin/index.ts | How plugins are imported (`import()` via Bun), all exports loaded, deduplication |
-| OpenCode config source | https://github.com/anomalyco/opencode/blob/main/packages/opencode/src/config/config.ts | Glob pattern `{plugin,plugins}/*.{ts,js}` (top-level only), `@opencode-ai/plugin` auto-injected into `package.json`, `bun install` run on startup, `file://` URL format for local plugins |
-| `@opencode-ai/plugin` types | `node_modules/@opencode-ai/plugin/dist/index.d.ts` | `Plugin`, `PluginInput`, `Hooks` type shapes; `event` hook signature |
-| `@opencode-ai/sdk` types | `node_modules/@opencode-ai/sdk/dist/gen/types.gen.d.ts` | `Message`, `AssistantMessage`, `UserMessage`, `Part`, `TextPart`, `EventSessionIdle`, `SessionMessagesResponses`, `TextPartInput` |
+| Source                        | URL                                                                                    | What it confirmed                                                                                                                                                                         |
+| ----------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Official plugin docs          | https://opencode.ai/docs/plugins/                                                      | Plugin locations, load order, TypeScript support, `package.json` for external deps, Bun runtime                                                                                           |
+| OpenCode plugin loader source | https://github.com/anomalyco/opencode/blob/main/packages/opencode/src/plugin/index.ts  | How plugins are imported (`import()` via Bun), all exports loaded, deduplication                                                                                                          |
+| OpenCode config source        | https://github.com/anomalyco/opencode/blob/main/packages/opencode/src/config/config.ts | Glob pattern `{plugin,plugins}/*.{ts,js}` (top-level only), `@opencode-ai/plugin` auto-injected into `package.json`, `bun install` run on startup, `file://` URL format for local plugins |
+| `@opencode-ai/plugin` types   | `node_modules/@opencode-ai/plugin/dist/index.d.ts`                                     | `Plugin`, `PluginInput`, `Hooks` type shapes; `event` hook signature                                                                                                                      |
+| `@opencode-ai/sdk` types      | `node_modules/@opencode-ai/sdk/dist/gen/types.gen.d.ts`                                | `Message`, `AssistantMessage`, `UserMessage`, `Part`, `TextPart`, `EventSessionIdle`, `SessionMessagesResponses`, `TextPartInput`                                                         |
