@@ -50,5 +50,4 @@ logs/
 Thumbs.db
 
 # Project specific
-zoter_librarian/
-_dev/
+# (nothing to ignore here—all code is tracked)
