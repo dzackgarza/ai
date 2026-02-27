@@ -1,0 +1,25 @@
+[project]
+name = "zotero-librarian"
+version = "0.1.0"
+description = "Programmatic Zotero library management"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyzotero>=1.10.0",
+    "httpx>=0.25.0",
+]
+
+[project.optional-dependencies]
+arxiv = [
+    "arxiv>=2.1.0",
+    "python-dateutil>=2.8.2",
+    "pymupdf4llm>=0.0.17",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/zotero_librarian"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
