@@ -11,7 +11,11 @@ Quick reference for creating and using OpenCode plugins with concrete examples.
 | Project | `.opencode/plugins/`          |
 | Global  | `~/.config/opencode/plugins/` |
 
-**npm packages** are specified in `opencode.json`:
+**Local plugins are loaded AUTOMATICALLY** — simply place `.ts` files in these directories. **No registration in config is required.**
+
+**Always use TypeScript (`.ts`).** OpenCode runs plugins via Bun, which executes TypeScript natively — no compilation step, no build tooling. `.js` works but offers no benefit.
+
+**npm packages** require registration in `opencode.json`:
 
 ```json
 {
@@ -46,27 +50,104 @@ export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
 
 ### Session Events
 
-- `session.created`, `session.deleted`, `session.compacted`
-- `session.idle`, `session.error`, `session.updated`, `session.diff`, `session.status`
+- `session.created`, `session.compacted`, `session.deleted`
+- `session.idle` - **Equivalent to Claude Code's "Stop" hook** — fires after AI finishes responding
+- `session.error`, `session.updated`, `session.diff`, `session.status`
+- `experimental.session.compacting` - Fires before compaction; modify `output.context` (append) or `output.prompt` (replace entirely)
+
+**Note:** `session.idle` is the key event for stop hooks. In a typical one-shot, it fires once per AI response — so a stop hook that injects a follow-up prompt will trigger a second `session.idle`.
 
 ### Tool Events
 
-- `tool.execute.before` - Modify tool input/output before execution
-- `tool.execute.after` - Inspect tool results after execution
+These use a **different handler signature** than `event` — they receive `(input, output)` directly, not `{ event }`:
 
-### Session Events
-
-- `session.created`, `session.compacted`, `session.deleted`
-- `session.idle` - **Equivalent to Claude Code's "Stop" hook** - fires after AI finishes responding
-- `session.error`, `session.updated`, `session.diff`, `session.status`
-
-**Note:** `session.idle` is the key event for implementing Claude Code-style hooks that inject context after a response.
+- `tool.execute.before` - Intercept tool call before execution; can modify `output.args` or throw to block
+- `tool.execute.after` - Inspect result after execution
 
 ### Message Events
 
-- `message.updated`, `message.removed`, `message.part.updated`, `message.part.removed`
+- `message.part.delta` - **High-frequency streaming event** (~100× per response); fires as tokens stream in
+- `message.part.updated` - Fires when a part is finalized (much less frequent than delta)
+- `message.updated`, `message.removed`, `message.part.removed`
+
+**Observed frequencies (one-shot, single response):** `message.part.delta` × 102, `message.part.updated` × 14, `message.updated` × 12. Do not use `delta` for post-response logic — use `session.idle` instead.
 
 **Note:** `message.part.updated` contains text in `event.properties.part.text` (NOT `event.message`).
+
+**`message.part.delta` payload shape:**
+```ts
+{
+  type: "message.part.delta",
+  properties: {
+    sessionID: string,
+    messageID: string,
+    partID: string,   // links back to the Part being streamed
+    field: string,    // which field is being updated (e.g. "text")
+    delta: string,    // the incremental content appended
+  }
+}
+```
+
+**Part types available in the SDK** (`type` field on a Part):
+`text` | `reasoning` | `tool` | `file` | `subtask` | `agent` | `stepStart` | `stepFinish` | `snapshot` | `patch` | `retry` | `compaction`
+
+`reasoning` parts carry chain-of-thought content from thinking models. They stream exactly like `text` parts: created empty via `message.part.updated`, then filled token-by-token via `message.part.delta` with `field: "text"`.
+
+### Intercepting CoT / Mid-Stream Intervention
+
+The `event` hook receives `message.part.delta` events in real-time, including `reasoning` parts — so a plugin can observe CoT as it streams. However, **the `event` hook is read-only**: there is no way to modify or suppress a delta.
+
+There are two ways to stop in-progress generation, and both leave the session alive for re-prompting:
+
+**1. Server-side cancel — preferred, no TUI required:**
+```ts
+await client.session.abort({ path: { id: sessionID } });
+// Fires the AbortSignal on the LLM stream, sets session status to idle.
+// Session history is intact. You can re-prompt immediately.
+```
+
+Despite the name, `session.abort()` does NOT destroy the session. Internally it calls `SessionPrompt.cancel()` which fires the stream's `AbortController`, removes the session from active in-memory state, and sets status to `idle`. The message history in the database is untouched.
+
+**2. TUI command — requires interactive mode:**
+```ts
+await client.tui.executeCommand({ body: { command: "session.interrupt" } });
+// Equivalent to pressing Escape. Same effect as abort(), but routes through the TUI process.
+// Only works when a TUI is connected — not in headless/opencode run mode.
+```
+
+Both call the same underlying `SessionPrompt.cancel()`. Use `session.abort()` from plugins.
+
+**Branch-pruning pattern** — detect bad CoT and correct course immediately:
+
+```ts
+event: async ({ event }) => {
+  if (event.type !== "message.part.delta") return;
+  if (!isBadReasoning(event.properties.delta)) return;
+
+  const sessionId = event.properties.sessionID;
+  await client.session.abort({ path: { id: sessionId } });
+  await client.session.prompt({
+    path: { id: sessionId },
+    body: {
+      noReply: false,
+      parts: [{ type: "text", text: "Your reasoning went wrong because X. Please reconsider and try again." }],
+    },
+  });
+}
+```
+
+**Practical patterns:**
+
+| Goal | Mechanism |
+| ---- | --------- |
+| Correct a finished response | `session.idle` + `client.session.prompt()` |
+| Prune bad CoT mid-stream, re-prompt | `message.part.delta` + `session.abort()` + `session.prompt()` |
+| Inject correction without re-prompting | `session.abort()` + `session.prompt({ noReply: true })` |
+| Inject mid-stream without halting | ❌ Not possible — model is not listening while generating |
+
+### File Events
+
+- `file.edited`, `file.watcher.updated`
 
 ### Shell Events
 
@@ -130,6 +211,16 @@ This is equivalent to Claude Code's `UserPromptSubmit` hook that writes to stdou
 2. Inspect the last message for patterns
 3. If pattern found, inject context with `noReply: true` to trigger new response
 
+> **Note:** In one-shot `opencode run` mode, the session may exit before plugin-triggered responses complete. This works fully in INTERACTIVE mode.
+
+### Important: Session ID Path
+
+Use `event.properties?.sessionID` — NOT `event.properties?.info?.id`.
+
+### Important: Logging
+
+Use `client.app.log()` for structured logging. **Do NOT use `console.log()`** — it corrupts TUI state.
+
 ```ts
 // .opencode/plugins/otp-hook.js
 export const OtpHook = async ({ client }) => {
@@ -140,7 +231,8 @@ export const OtpHook = async ({ client }) => {
       // session.idle fires after AI response is complete
       if (event.type !== "session.idle") return;
 
-      const sessionId = event.properties?.info?.id;
+      // CORRECT: use properties.sessionID
+      const sessionId = event.properties?.sessionID;
       if (!sessionId) return;
 
       // Get the last message
@@ -159,11 +251,21 @@ export const OtpHook = async ({ client }) => {
       if (otpMatch && otpMatch[0] !== lastOtp) {
         lastOtp = otpMatch[0];
 
+        // Log using client.app.log() - NOT console.log()
+        await client.app.log({
+          body: {
+            service: "my-plugin",
+            level: "info",
+            message: `Detected OTP: ${otpMatch[0]}`,
+          },
+        });
+
         // Inject secret message - triggers new AI response!
+        // noReply: false = wait for response, noReply: true = don't wait
         await client.session.prompt({
           path: { id: sessionId },
           body: {
-            noReply: true,
+            noReply: false,
             parts: [
               {
                 type: "text",
@@ -177,6 +279,18 @@ export const OtpHook = async ({ client }) => {
   };
 };
 ```
+
+### Testing Plugins
+
+1. Use INTERACTIVE mode with a clean tmp dir:
+   ```bash
+   cd /tmp/my-plugin-test
+   echo "prompt that triggers your plugin" | opencode 2>&1 | head
+   ```
+2. Read the transcript using the **reading-transcripts skill**:
+   ```bash
+   python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
+   ```
 
 ### SDK Reference
 
@@ -192,19 +306,35 @@ Full SDK docs: https://opencode.ai/docs/sdk/
 
 ## TypeScript Support
 
+OpenCode loads plugins by calling Bun's native `import()` on each `.ts` file. No compilation, no tsconfig, no build step — Bun executes TypeScript directly.
+
+**Available types** (all provided by OpenCode, no installation needed):
+
 ```ts
-import type { Plugin } from "@opencode-ai/plugin";
+import type { Plugin, PluginInput, Hooks } from "@opencode-ai/plugin";
+// SDK types: Message, AssistantMessage, UserMessage, Part, TextPart, Event, etc.
+import type { AssistantMessage, TextPart } from "@opencode-ai/sdk";
 
 export const MyPlugin: Plugin = async (ctx) => {
-  // Full type safety
+  return {
+    event: async ({ event }) => {
+      if (event.type !== "session.idle") return;
+      // event is narrowed to EventSessionIdle here
+      // event.properties.sessionID is safe — no optional chaining needed
+    },
+  };
 };
 ```
+
+**How module resolution works:** Bun resolves imports relative to the plugin file's location. A plugin at `~/ai/opencode/plugins/my-plugin.ts` can import from `./helpers/utils.ts` — only the top-level plugin file needs to be in `plugins/`; subdirectories are resolved normally.
 
 ---
 
 ## External Dependencies
 
-Add `package.json` to `.opencode/` for external npm packages:
+`package.json` in the config directory (`~/ai/opencode/`) is **only for packages that are not part of OpenCode itself** — i.e., third-party libraries your plugin needs (e.g., `shescape`, `zod`, `axios`).
+
+**Do NOT add `@opencode-ai/plugin` or `@opencode-ai/sdk` here.** OpenCode injects `@opencode-ai/plugin` at the correct version automatically and runs `bun install`. Both packages are available to all plugins without any declaration.
 
 ```json
 {
@@ -233,6 +363,103 @@ Duplicate npm packages load once. Local + npm with same name load separately.
 
 ---
 
-## Full Docs
+## How to Research Plugin Internals
 
-→ https://opencode.ai/docs/plugins/
+When writing or debugging plugins, do not guess at types or APIs. Use these techniques to find ground truth.
+
+### 1. Read the installed type definitions directly
+
+The config directory has a `node_modules/` with full `.d.ts` files. These are the authoritative types for everything the plugin runtime exposes:
+
+```bash
+# What does @opencode-ai/plugin export?
+cat ~/ai/opencode/node_modules/@opencode-ai/plugin/dist/index.d.ts
+
+# What types does the SDK export?
+cat ~/ai/opencode/node_modules/@opencode-ai/sdk/dist/gen/types.gen.d.ts
+
+# Follow the export chain — index.d.ts re-exports client.d.ts which re-exports types.gen.d.ts
+cat ~/ai/opencode/node_modules/@opencode-ai/sdk/dist/client.d.ts
+```
+
+### 2. Search for a specific type or method
+
+```bash
+# Find where RequestResult is defined
+grep -n "RequestResult\|export type RequestResult" \
+  ~/ai/opencode/node_modules/@opencode-ai/sdk/dist/gen/client/types.gen.d.ts
+
+# Find all exported types matching a pattern
+grep -n "^export type" \
+  ~/ai/opencode/node_modules/@opencode-ai/sdk/dist/gen/types.gen.d.ts | grep -i "message\|part\|session"
+
+# Find a specific method signature
+grep -n "messages\b" \
+  ~/ai/opencode/node_modules/@opencode-ai/sdk/dist/gen/sdk.gen.d.ts
+```
+
+### 3. Read the OpenCode plugin loader source
+
+The glob pattern, load order, and module resolution are all in the source — not just the docs. Use the GitHub API to fetch it:
+
+```bash
+# Plugin loader — how import() is called, what exports are collected
+curl -s "https://api.github.com/repos/anomalyco/opencode/contents/packages/opencode/src/plugin/index.ts" \
+  | python3 -c "import json,sys,base64; d=json.load(sys.stdin); print(base64.b64decode(d['content']).decode())"
+
+# Config loader — glob pattern, waitForDependencies, package.json injection
+curl -s "https://api.github.com/repos/anomalyco/opencode/contents/packages/opencode/src/config/config.ts" \
+  | python3 -c "import json,sys,base64; d=json.load(sys.stdin); print(base64.b64decode(d['content']).decode())"
+```
+
+Key findings this revealed:
+- The glob is `{plugin,plugins}/*.{ts,js}` — **top-level files only**, subdirectories are not scanned
+- OpenCode automatically injects `@opencode-ai/plugin` into `package.json` and runs `bun install` — you never need to declare it
+- Local file plugins are passed as `file:///absolute/path.ts` to Bun's `import()` — all standard module resolution applies from there
+
+### 4. Browse the repo structure
+
+```bash
+# List a directory in the OpenCode source
+curl -s "https://api.github.com/repos/anomalyco/opencode/contents/packages/opencode/src/plugin" \
+  | python3 -c "import json,sys; [print(f['name']) for f in json.load(sys.stdin)]"
+```
+
+### 5. Fetch the official docs as plain text
+
+```bash
+w3m -dump "https://opencode.ai/docs/plugins" > /tmp/opencode-plugin-docs.txt
+# Then grep or read specific sections
+grep -n "package.json\|TypeScript\|Bun\|dependencies" /tmp/opencode-plugin-docs.txt
+```
+
+The docs give intended behavior; the source gives actual behavior. When they conflict, the source wins.
+
+### 6. Understand the SDK return types
+
+`client.session.messages()` returns a `RequestResult`. To understand what `.data` contains:
+
+```bash
+# Find RequestResult definition
+sed -n '68,90p' ~/ai/opencode/node_modules/@opencode-ai/sdk/dist/gen/client/types.gen.d.ts
+
+# Find SessionMessagesResponses (the 200 response shape)
+grep -n -A5 "SessionMessagesResponses" \
+  ~/ai/opencode/node_modules/@opencode-ai/sdk/dist/gen/types.gen.d.ts
+```
+
+`RequestResult` with default `ThrowOnError=false` returns `Promise<{ data: T } | { data: undefined; error: E }>` — always check for undefined.
+
+---
+
+## Sources
+
+Documentation and source verified against:
+
+| Source | URL | What it confirmed |
+| ------ | --- | ----------------- |
+| Official plugin docs | https://opencode.ai/docs/plugins/ | Plugin locations, load order, TypeScript support, `package.json` for external deps, Bun runtime |
+| OpenCode plugin loader source | https://github.com/anomalyco/opencode/blob/main/packages/opencode/src/plugin/index.ts | How plugins are imported (`import()` via Bun), all exports loaded, deduplication |
+| OpenCode config source | https://github.com/anomalyco/opencode/blob/main/packages/opencode/src/config/config.ts | Glob pattern `{plugin,plugins}/*.{ts,js}` (top-level only), `@opencode-ai/plugin` auto-injected into `package.json`, `bun install` run on startup, `file://` URL format for local plugins |
+| `@opencode-ai/plugin` types | `node_modules/@opencode-ai/plugin/dist/index.d.ts` | `Plugin`, `PluginInput`, `Hooks` type shapes; `event` hook signature |
+| `@opencode-ai/sdk` types | `node_modules/@opencode-ai/sdk/dist/gen/types.gen.d.ts` | `Message`, `AssistantMessage`, `UserMessage`, `Part`, `TextPart`, `EventSessionIdle`, `SessionMessagesResponses`, `TextPartInput` |

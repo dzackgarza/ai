@@ -7,6 +7,26 @@ description: Use when running OpenCode CLI commands, selecting models, managing 
 
 Terminal-based AI coding assistant for non-interactive tasks.
 
+## Global Config Directory (ALWAYS use this)
+
+The global OpenCode config lives at `~/ai/opencode`, which is symlinked to `~/.config/opencode`.
+
+**All configuration, plugins, and skills go here — not in a local `.opencode/` directory.**
+
+| Location                      | Purpose                                                         |
+| ----------------------------- | --------------------------------------------------------------- |
+| `~/ai/opencode/opencode.json` | Global config (models, MCP, permissions, etc.)                  |
+| `~/ai/opencode/plugins/`      | Global plugins (always loaded, regardless of working directory) |
+| `~/ai/opencode/skills/`       | Global agent skills                                             |
+
+**Never create a local `.opencode/` directory** unless you have a specific, deliberate reason to override global config for a single project. Almost every use case belongs in the global config.
+
+The reason: plugins, config, and skills in `~/ai/opencode/` are active in every OpenCode session. A local `.opencode/` only applies to sessions run from that project directory, which is almost never what you want.
+
+## Agents
+
+All agents are defined in `~/ai/opencode/opencode.json` with prompts loaded from text files in `~/ai/prompts/`. Primary agents (e.g., "Repository Steward", "Minimal", "Interactive") and subagents (e.g., "code-reviewer", "Refactorer", "Repo Explorer") are version-controlled there. Agent definitions include the prompt file path, permissions, and default model.
+
 ## Quick Start
 
 ```bash
@@ -51,6 +71,52 @@ opencode run --attach http://localhost:4096 --thinking --print-logs "Your prompt
 # 2) If you need a specific non-default agent, run without --attach
 opencode run --agent <agent> --thinking --print-logs "Your prompt"
 ```
+
+## Interactive Mode (Preferred for One-Shots)
+
+For one-shot tasks, use stdin pipe + transcript parsing. This is preferred because plugins are active, outputs are readable, logs are predictable, and session IDs are extractable.
+
+**Important:** `echo "..." | opencode` starts a real interactive session. It will **not** exit on its own — the process stays alive waiting for more input. You **must** wrap it in `timeout <N>` where N is your estimate of how long the model needs to complete the task (inference + any plugin-triggered follow-up responses). After the timeout kills the process, check `events.jsonl` to verify what happened.
+
+MCP warmup is at most ~10s and is never the bottleneck. If a session times out or produces unexpected results, the cause is almost always model connectivity, rate limits, or model behavior — not MCP. Debug those with `opencode run --thinking --print-logs` (no plugins, but fast feedback) and always read the actual transcript before drawing conclusions.
+
+```bash
+# Run prompt with timeout, suppress TUI, parse transcript
+mkdir -p /tmp/my-test && \
+  (cd /tmp/my-test && timeout 90 sh -c 'echo "Your prompt" | opencode') >/dev/null 2>&1; \
+  jq -r '[.properties.sessionID, .properties.part.sessionID, .properties.info.id] | map(select(. != null and startswith("ses_"))) | .[0]' /tmp/my-test/.opencode/events.jsonl | sort -u | \
+    while read sid; do
+      python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode "$sid" 2>/dev/null
+    done
+```
+
+**Why this approach:**
+
+- Plugins are active (unlike bare `opencode run`)
+- Readable transcript output via transcript skill
+- Predictable logs in `<dir>/.opencode/events.jsonl`
+- Session IDs extracted for later analysis
+- All post-response behavior (plugins, hooks) works
+
+**For quick testing** (skip transcript parsing):
+
+```bash
+mkdir -p /tmp/my-test && (cd /tmp/my-test && timeout 90 sh -c 'echo "prompt" | opencode') >/dev/null 2>&1
+# Then check logs and parse manually:
+jq -r '.type' /tmp/my-test/.opencode/events.jsonl | sort | uniq -c
+opencode export <session-id> | jq -r '.messages[]? | "[" + (.info.role | ascii_upcase) + "]\n" + (.parts[]? | select(.type=="text") | .text) + "\n---"'
+```
+
+## Limitations of `opencode run`
+
+One-shot `opencode run` has fundamental limitations:
+
+| Limitation                 | Description                                                                                                                                                            |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Exits on idle**          | `opencode run` exits immediately when the session goes idle. Any behavior that occurs after the AI responds — plugins, hooks, deferred tool calls — will not complete. |
+| **Post-response behavior** | Use INTERACTIVE mode for any workflow that depends on actions triggered after the AI finishes responding. Verify via events.jsonl.                                     |
+
+For workflows requiring post-response behavior, use INTERACTIVE mode.
 
 ## Core Commands
 
