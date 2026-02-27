@@ -35,13 +35,8 @@ These are paid services with no meaningful free tier.
 | **Perplexity**  | `api.perplexity.ai`      | `PERPLEXITY_API_KEY`  | perplexity.ai/settings/api        | Tiered by spend               |
 | **Together AI** | `api.together.xyz/v1`    | `TOGETHER_API_KEY`    | api.together.ai/settings/api-keys | Credits vary, never been free |
 | **SiliconFlow** | `api.siliconflow.com/v1` | `SILICONFLOW_API_KEY` | cloud.siliconflow.cn/account/ak   | Quotas vary, unreliable       |
-
-## Not Accessible / Removed
-
-| Provider      | Issue                   |
-| ------------- | ----------------------- |
-| **DeepInfra** | Free tier removed 2025  |
-| **Cerebras**  | Payment method required |
+| **DeepInfra**   | `api.deepinfra.com/v1`   | `DEEPINFRA_API_KEY`   | deepinfra.com/dashboard           | Free tier removed 2025        |
+| **Cerebras**    | `api.cerebras.ai/v1`     | `CEREBRAS_API_KEY`    | cerebras.ai                       | Payment method required       |
 
 ---
 
