@@ -48,7 +48,7 @@ usage *ARGS="":
     @python {{repo}}/usage-limits/claude_usage.py {{ARGS}}
 
 # Check Codex usage limits
-# Usage: just codex-usage [--json]
+# Usage: just codex-usage [--json] [--no-notify]
 codex-usage *ARGS="":
     @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
 

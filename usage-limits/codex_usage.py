@@ -76,8 +76,7 @@ class CodexChecker(UsageChecker):
 def main():
     parser = argparse.ArgumentParser(description="Codex usage limits checker")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification when exhausted")
-    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring idle windows")
+    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
     args = parser.parse_args()
 
     checker = CodexChecker()

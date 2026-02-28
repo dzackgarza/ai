@@ -43,7 +43,19 @@ python amp_usage.py --no-notify  # Disable auto-notification
 
 ## Decision Logic (Centralized)
 
-### Anchor Logic (Claude/Codex)
+### Fresh Window Notifications
+
+All three harnesses notify immediately when a fresh 5-hour window is available:
+
+| Harness | Trigger | Notification |
+|---------|---------|--------------|
+| Claude | 5h at 0% + anchored | "Window open - fresh 5h available" |
+| Codex | 5h at 0% (no reset) | "Window open - fresh 5h available" |
+| Amp | 0% used (full) | "Credits full - optimal time to run" |
+
+### Anchor Logic (Claude only)
+
+Claude anchors idle windows by running a minimal command:
 
 | 5h    | 7d    | Anchor? | Reason                          |
 |-------|-------|---------|---------------------------------|

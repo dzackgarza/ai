@@ -71,6 +71,11 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
             lines.push(parts.join("\n"));
           }
 
+          lines.push(
+            "",
+            "Tip: Use read_transcript with a session ID to read the full transcript.",
+          );
+
           return lines.join("\n\n");
         },
       }),
