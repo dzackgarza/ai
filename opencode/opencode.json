@@ -627,8 +627,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "OpenRouter Free",
       "options": {
-        "baseURL": "https://openrouter.ai/api/v1",
-        "apiKey": "{env:OPENROUTER_API_KEY}"
+        "baseURL": "https://openrouter.ai/api/v1"
       },
       "models": {
         "openrouter/free": {
