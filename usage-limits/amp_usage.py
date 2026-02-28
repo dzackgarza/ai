@@ -20,8 +20,8 @@ NTFY_SERVER = "http://localhost"
 NTFY_TOPIC = "usage-updates"
 
 
-def send_ntfy(title: str, message: str, at: str, tags: str = "white_check_mark,clock", notif_id: str = None) -> bool:
-    """Send scheduled ntfy notification."""
+def send_ntfy(title: str, message: str, at: str | None, tags: str = "white_check_mark,clock", notif_id: str = None) -> bool:
+    """Send ntfy notification (immediate if at=None, scheduled otherwise)."""
     url = f"{NTFY_SERVER}/{NTFY_TOPIC}"
     all_tags = tags
     if notif_id:
@@ -30,8 +30,9 @@ def send_ntfy(title: str, message: str, at: str, tags: str = "white_check_mark,c
         "Title": title.encode("latin-1", "ignore").decode("latin-1"),
         "Priority": "high",
         "Tags": all_tags,
-        "At": at,
     }
+    if at:
+        headers["At"] = at
     try:
         resp = requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=10)
         return resp.status_code == 200
@@ -152,8 +153,17 @@ def format_summary(usage: dict, schedule_notify: bool = False) -> None:
     console.print()
     console.print(table)
     
+    # Notify when full (optimal time to run tasks)
+    if schedule_notify and is_full:
+        message = f"Amp credits full!\n\n${remaining:.2f}/${total:.2f} - optimal time to run tasks"
+        
+        # Send immediately (no At header)
+        if send_ntfy("Amp Credits Full", message, at=None):
+            console.print("\n🔔 Full credits notification sent")
+        else:
+            console.print("\n✗ Failed to send notification")
     # Schedule notification for next top-up
-    if schedule_notify and not is_full:
+    elif schedule_notify and not is_full:
         notif_id = f"amp-topup-{int(topup_time.timestamp())}"
         
         if check_scheduled(notif_id):

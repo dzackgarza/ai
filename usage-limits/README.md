@@ -37,7 +37,9 @@ python amp_usage.py --no-notify  # Disable auto-notification
 
 - **Auth:** `~/.local/share/amp/secrets.json` (via `amp usage` CLI)
 - **Windows:** Continuous replenishment ($0.42/hr to $10 max)
-- **Notifications:** Scheduled for exact top-up hour
+- **Notifications:** 
+  - **Immediate** when credits are full (optimal time to run tasks)
+  - **Scheduled** for exact top-up hour when not full
 
 ## Decision Logic (Centralized)
 
