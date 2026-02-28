@@ -109,9 +109,14 @@ def main():
     if not args.no_anchor and checker.should_anchor(windows):
         if not args.json:
             print("🔓 Window idle — anchoring...")
-        # Codex doesn't have a CLI anchor command, just note the state
-        if not args.json:
-            print("✓ Window state noted\n")
+        if checker.anchor_window(checker.anchor_command()):
+            usage = checker.fetch_usage(token)
+            windows = checker.get_windows(usage)
+            if not args.json:
+                print("✓ Window anchored\n")
+        else:
+            if not args.json:
+                print("✗ Failed to anchor window\n")
 
     # Output
     if args.json:

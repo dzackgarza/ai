@@ -12,18 +12,21 @@ python claude_usage.py --no-anchor   # Disable auto-anchoring
 ```
 
 - **Auth:** `~/.claude/.credentials.json`
+- **Anchor:** `claude --setting-sources "" "Say hello"`
 - **State:** `~/.local/state/claude_usage/`
 - **Windows:** 5-hour session, 7-day weekly
 
 ## Codex
 
 ```bash
-python codex_usage.py            # Rich summary (auto-notify)
+python codex_usage.py            # Rich summary (auto-anchor + auto-notify)
 python codex_usage.py --json     # JSON output
 python codex_usage.py --no-notify    # Disable auto-notification
+python codex_usage.py --no-anchor    # Disable auto-anchoring
 ```
 
 - **Auth:** `~/.codex/auth.json`
+- **Anchor:** `codex exec -c project_doc_max_bytes=0 "Say hello"`
 - **State:** `~/.local/state/codex_usage/`
 - **Windows:** 5-hour session, 7-day weekly
 
@@ -53,9 +56,9 @@ All three harnesses notify immediately when a fresh 5-hour window is available:
 | Codex | 5h at 0% (no reset) | "Window open - fresh 5h available" |
 | Amp | 0% used (full) | "Credits full - optimal time to run" |
 
-### Anchor Logic (Claude only)
+### Anchor Logic (Claude + Codex)
 
-Claude anchors idle windows by running a minimal command:
+Both Claude and Codex anchor idle windows by running a minimal CLI command:
 
 | 5h    | 7d    | Anchor? | Reason                          |
 |-------|-------|---------|---------------------------------|
@@ -88,14 +91,16 @@ Amp replenishes continuously. `--notify` schedules for the exact hour when credi
 ## Justfile
 
 ```bash
-# All auto-notify by default; use --no-notify to disable
+# All auto-notify + auto-anchor by default; use --no-* to disable
 
 just usage              # Claude (auto-anchor + auto-notify)
 just usage --no-notify  # Disable notifications
+just usage --no-anchor  # Disable anchoring
 just usage --json       # JSON output
 
-just codex-usage        # Codex (auto-notify)
+just codex-usage        # Codex (auto-anchor + auto-notify)
 just codex-usage --no-notify  # Disable notifications
+just codex-usage --no-anchor  # Disable anchoring
 just codex-usage --json # JSON output
 
 just amp-usage          # Amp (auto-notify)

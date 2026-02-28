@@ -20,7 +20,7 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
     tool: {
       list_sessions: tool({
         description:
-          "Use when you need to list OpenCode sessions with their IDs, titles, timestamps, turns, models, tokens, and cost.",
+          "Use when you need to list OpenCode sessions with their IDs, titles, timestamps, turns, models, and tokens.",
         args: {
           limit: tool.schema.number().optional(),
         },
@@ -71,7 +71,6 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
 
                 // Aggregate token/cost stats from assistant messages
                 const models = new Set<string>();
-                let totalCost = 0;
                 let inputTokens = 0;
                 let outputTokens = 0;
                 let reasoningTokens = 0;
@@ -81,7 +80,6 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
                 for (const m of assistantMsgs) {
                   const info = m.info as AssistantMessage;
                   models.add(`${info.providerID}/${info.modelID}`);
-                  totalCost += info.cost ?? 0;
                   if (info.tokens) {
                     inputTokens += info.tokens.input;
                     outputTokens += info.tokens.output;
@@ -92,7 +90,6 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
                 }
 
                 parts.push(`  Models: ${[...models].join(", ")}`);
-                parts.push(`  Cost: $${totalCost.toFixed(4)}`);
                 const totalTokens =
                   inputTokens + outputTokens + reasoningTokens;
                 parts.push(
