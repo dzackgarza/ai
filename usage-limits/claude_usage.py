@@ -102,6 +102,15 @@ class ClaudeProvider(UsageProvider):
             return False
         return any(r.reset_at is None for r in rows)
 
+    def notify_always(self, rows: list[UsageRow]) -> None:
+        """Fire when the 5h window is fresh and the 7d window isn't exhausted."""
+        if self.should_anchor(rows):
+            self.send_ntfy(
+                "Claude Window Open",
+                "Claude Code 5h window open!\n\nFresh session available for work.",
+                tags="white_check_mark,rocket",
+            )
+
     def anchor_command(self) -> list[str]:
         return ["claude", "--setting-sources", "", "Say hello and do nothing else"]
 

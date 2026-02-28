@@ -22,9 +22,11 @@ class UsageProvider(ABC):
         fetch_raw()      — retrieve raw data from API or CLI
         to_rows()        — convert raw data to list[UsageRow]
         should_anchor()  — decide whether to anchor right now
+        notify_always()  — fire immediate "window newly ready" notifications
 
     Subclasses MAY override:
-        anchor_command() — shell command to run when anchoring; None = no subprocess
+        anchor_command()         — shell command to run when anchoring; None = no subprocess
+        _handle_notifications()  — scheduled reset notifications (base covers exhaustion case)
 
     Everything else (rendering, notifications, orchestration) is centralized here.
     """
@@ -62,6 +64,17 @@ class UsageProvider(ABC):
         when this returns True.
         """
 
+    @abstractmethod
+    def notify_always(self, rows: list[UsageRow]) -> None:
+        """Fire immediate "window newly available" notifications.
+
+        Called whenever a display run happens (not gated by --no-notify alone;
+        see run()). Each provider defines its own fresh-window condition:
+          Claude/Codex: 5h window idle and 7d not exhausted
+          Amp:          credits at $10 (reset_at is None)
+          Antigravity:  all models < 1% (background wakeup already fired)
+        """
+
     # ── OPTIONAL overrides ────────────────────────────────────────────────────
 
     def anchor_command(self) -> Optional[list[str]]:
@@ -96,6 +109,7 @@ class UsageProvider(ABC):
         self.render(rows)
 
         if not getattr(args, "no_notify", False):
+            self.notify_always(rows)
             self._handle_notifications(rows)
 
     # ── Rendering ─────────────────────────────────────────────────────────────

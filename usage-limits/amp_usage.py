@@ -60,43 +60,41 @@ class AmpProvider(UsageProvider):
 
     # anchor_command() returns None (inherited) — no subprocess to run.
 
-    def _handle_notifications(self, rows: list[UsageRow]) -> None:
-        """Override to handle Amp's fill-based notification logic."""
-        if not rows:
-            return
-        row = rows[0]
-
-        if row.reset_at is None:
-            # Credits are full — notify immediately
-            message = "Amp credits full!\n\nOptimal time to run tasks."
-            success, _ = self.send_ntfy("Amp Credits Full", message, tags="white_check_mark,rocket")
-            if success:
-                print("🔔 Full credits notification sent")
-            else:
-                print("✗ Failed to send notification")
-        else:
-            # Schedule notification for when credits will be full
-            topup_time = row.reset_at
-            notif_id = f"amp-topup-{int(topup_time.timestamp())}"
-
-            if self._notification_scheduled(notif_id):
-                print("ℹ️  Top-up notification already scheduled")
-                return
-
-            time_to_topup = topup_time - datetime.now(timezone.utc)
-            hours = math.ceil(time_to_topup.total_seconds() / 3600)
-            at_time = f"{hours} hour{'s' if hours != 1 else ''}"
-
-            success, _ = self.send_ntfy(
-                title="Amp Top-Up",
-                message="Amp credits topped up!\n\nFull credits available.",
-                tags=f"white_check_mark,clock,notif_id:{notif_id}",
-                at=at_time,
+    def notify_always(self, rows: list[UsageRow]) -> None:
+        """Fire immediately when credits are full ($10.00 available)."""
+        if rows and rows[0].reset_at is None:
+            self.send_ntfy(
+                "Amp Credits Full",
+                "Amp credits full!\n\nOptimal time to run tasks.",
+                tags="white_check_mark,rocket",
             )
-            if success:
-                print(f"🔔 Notification scheduled for {topup_time.astimezone().strftime('%Y-%m-%d %H:%M')}")
-            else:
-                print("✗ Failed to schedule notification")
+
+    def _handle_notifications(self, rows: list[UsageRow]) -> None:
+        """Schedule a notification for when credits will reach $10."""
+        if not rows or rows[0].reset_at is None:
+            return  # full: already handled by notify_always
+
+        topup_time = rows[0].reset_at
+        notif_id = f"amp-topup-{int(topup_time.timestamp())}"
+
+        if self._notification_scheduled(notif_id):
+            print("ℹ️  Top-up notification already scheduled")
+            return
+
+        time_to_topup = topup_time - datetime.now(timezone.utc)
+        hours = math.ceil(time_to_topup.total_seconds() / 3600)
+        at_time = f"{hours} hour{'s' if hours != 1 else ''}"
+
+        success, _ = self.send_ntfy(
+            title="Amp Top-Up",
+            message="Amp credits topped up!\n\nFull credits available.",
+            tags=f"white_check_mark,clock,notif_id:{notif_id}",
+            at=at_time,
+        )
+        if success:
+            print(f"🔔 Notification scheduled for {topup_time.astimezone().strftime('%Y-%m-%d %H:%M')}")
+        else:
+            print("✗ Failed to schedule notification")
 
 
 def _parse_amp_output(output: str) -> dict:

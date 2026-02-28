@@ -5,6 +5,7 @@ import argparse
 import json
 import subprocess
 import sys
+from datetime import datetime, timezone
 from typing import Any
 
 from usage_base import UsageProvider
@@ -14,13 +15,11 @@ from usage_table import UsageRow
 class AntigravityProvider(UsageProvider):
     """Antigravity usage checker.
 
-    Wraps `npx antigravity-usage quota --all-models --refresh --json`.
+    Wraps `antigravity-usage quota --all-models --refresh --json` (global install).
     Per-model quota is tracked individually; each model gets its own table row.
-    Anchoring semantics differ from Claude/Codex: anchor whenever ALL models
-    are at 0% usage (fresh quota just reset).
 
-    Note: The antigravity-usage CLI handles the actual "wakeup" scheduling via
-    system cron. This script only detects fresh quota and sends notifications.
+    Anchoring is handled entirely by the antigravity-usage npm package (wakeup cron).
+    This script detects fresh quota and sends notifications.
     """
 
     name = "Antigravity"
@@ -30,18 +29,18 @@ class AntigravityProvider(UsageProvider):
 
     def fetch_raw(self) -> dict:
         """Run antigravity-usage CLI and return parsed JSON."""
-        cmd = ["npx", "antigravity-usage", "quota", "--all-models", "--refresh", "--json"]
+        cmd = ["antigravity-usage", "quota", "--all-models", "--refresh", "--json"]
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             if result.returncode != 0:
                 if "not logged in" in result.stderr.lower():
-                    print("Error: Not logged in. Run: npx antigravity-usage login", file=sys.stderr)
+                    print("Error: Not logged in. Run: antigravity-usage login", file=sys.stderr)
                 else:
                     print(f"Error: {result.stderr}", file=sys.stderr)
                 sys.exit(1)
             return json.loads(result.stdout)
         except FileNotFoundError:
-            print("Error: npx not found. Install Node.js.", file=sys.stderr)
+            print("Error: antigravity-usage not found. Run: npm install -g antigravity-usage", file=sys.stderr)
             sys.exit(1)
         except json.JSONDecodeError as e:
             print(f"Error: Invalid JSON output: {e}", file=sys.stderr)
@@ -52,8 +51,6 @@ class AntigravityProvider(UsageProvider):
 
     def to_rows(self, raw: Any) -> list[UsageRow]:
         """Convert per-model quota data to UsageRow list."""
-        email = raw.get("email", "")
-        prefix = f"{email}: " if email else ""
         rows = []
 
         for model in raw.get("models", []):
@@ -71,7 +68,6 @@ class AntigravityProvider(UsageProvider):
 
             reset_at = None
             if reset_time:
-                from datetime import datetime, timezone
                 try:
                     reset_at = datetime.fromisoformat(
                         reset_time.replace("Z", "+00:00")
@@ -88,51 +84,26 @@ class AntigravityProvider(UsageProvider):
         return rows
 
     def should_anchor(self, rows: list[UsageRow]) -> bool:
-        """Anchor when ALL models are at 0% usage (fresh quota just became available)."""
-        return bool(rows) and all(r.pct_used == 0.0 for r in rows)
+        """Antigravity anchoring handled by the npm package — no action needed."""
+        return False
 
-    def anchor_command(self) -> list[str]:
-        """Trigger the antigravity wakeup to start the quota window."""
-        return ["npx", "antigravity-usage", "wakeup", "test"]
-
-    def _handle_notifications(self, rows: list[UsageRow]) -> None:
-        """Send immediate notification on fresh quota; schedule for exhausted windows."""
-        # Immediate: notify if all models fresh (0% used)
-        if rows and all(r.pct_used == 0.0 for r in rows):
-            message = "Antigravity quota fresh!\n\nAll models at 0% — optimal time to run tasks."
-            success, _ = self.send_ntfy(
-                "Antigravity Window Open", message, tags="white_check_mark,rocket"
+    def notify_always(self, rows: list[UsageRow]) -> None:
+        """Fire when all models are at < 1% — background wakeup already triggered."""
+        if rows and all(r.pct_used < 1.0 for r in rows):
+            self.send_ntfy(
+                "Antigravity Quota Fresh",
+                "All models at <1% — quota freshly available.",
+                tags="white_check_mark,rocket",
             )
-            if success:
-                print("🔔 Fresh quota notification sent")
 
-        # Scheduled: notify for blocking exhausted window
-        do_notify, blocking_reset = self.should_notify(rows)
-        if not do_notify or blocking_reset is None:
-            return
-
-        notif_id = self._notification_id(rows)
-        if self._notification_scheduled(notif_id):
-            print("ℹ️  Notification already scheduled")
-            return
-
-        success, msg = self._schedule_notification(
-            reset_dt=blocking_reset,
-            summary="Antigravity quota exhausted",
-            notif_id=notif_id,
-            title="Antigravity Quota Reset",
-        )
-        if success:
-            print(f"🔔 Notification scheduled for {msg}")
-        else:
-            print(f"✗ Failed to schedule: {msg}")
+    # _handle_notifications() not overridden — base class schedules notifications
+    # for the latest exhausted reset_at, which covers per-model quota exhaustion.
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Antigravity usage limits checker")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
-    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
+    parser.add_argument("--no-notify", action="store_true", help="Suppress all notifications (testing)")
     args = parser.parse_args()
 
     AntigravityProvider().run(args)

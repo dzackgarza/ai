@@ -21,11 +21,33 @@ Four scripts report quota across Claude, Codex, Amp, and Antigravity in a unifor
 
 ## Notification Logic
 
-`UsageProvider.should_notify()` fires when any row is exhausted (≥ 100%). It schedules the notification for the **latest** `reset_at` among all exhausted rows — the true blocking constraint.
+Two types fire on every non-JSON run (both suppressed by `--no-notify` for testing):
+
+| Type | Method | When |
+|------|--------|------|
+| **Immediate** | `notify_always(rows)` | Window newly available — fire right now |
+| **Scheduled** | `_handle_notifications(rows)` | Window exhausted — schedule for reset time |
+
+### Immediate notifications — `notify_always()` (abstract)
+
+Each provider defines when a "window newly ready" event fires:
+
+| Provider | Condition | Message |
+|----------|-----------|---------|
+| Claude | `should_anchor(rows)` — 5h idle, 7d not exhausted | "Claude 5h window open" |
+| Codex | `should_anchor(rows)` — same logic | "Codex 5h window open" |
+| Amp | credits full (`reset_at is None`) | "Amp credits full" |
+| Antigravity | all models `< 1%` | "Antigravity quota fresh" |
+
+### Scheduled notifications — `_handle_notifications()` (base or override)
+
+`UsageProvider._handle_notifications()` fires when any row is exhausted (≥ 100%). It schedules the notification for the **latest** `reset_at` among all exhausted rows — the true blocking constraint.
 
 `UsageProvider._handle_notifications()` calls `should_notify()`, deduplicates via ntfy scheduled-message lookup, then fires `_schedule_notification()`.
 
-### Standard truth table (Claude, Codex, Antigravity)
+Amp overrides this method to schedule for the credit topup time instead.
+
+### Exhaustion truth table (Claude, Codex, Antigravity base)
 
 | 5h     | 7d     | Notify? | Target     |
 |--------|--------|---------|------------|
@@ -36,12 +58,12 @@ Four scripts report quota across Claude, Codex, Amp, and Antigravity in a unifor
 
 ### Amp (override)
 
-Amp overrides `_handle_notifications()` entirely. It has no exhaustion concept.
+Amp overrides `_handle_notifications()` to only handle the not-full case. The full case is in `notify_always()`.
 
-| Credits     | Action |
-|-------------|--------|
-| Full (0% used) | Notify immediately |
-| Not full    | Schedule for exact hour credits reach $10 |
+| Credits     | Method | Action |
+|-------------|--------|--------|
+| Full (`reset_at is None`) | `notify_always` | Notify immediately |
+| Not full    | `_handle_notifications` | Schedule for exact topup hour |
 
 Deduplication key: `amp-topup-{unix_timestamp_of_topup_time}`
 
@@ -67,16 +89,10 @@ Anchor when any row has `reset_at = None` (window never started) **and** no row 
 | 0 < x < 100     | 100%            | No      | 7d exhausted — wasted     |
 | 100%            | any             | No      | 5h exhausted — wasted     |
 
-### Antigravity override — `AntigravityProvider.should_anchor()`
+### Antigravity — `AntigravityProvider.should_anchor()`
 
-Anchor when **all** models are at exactly 0% usage (fresh quota just became available).
-`anchor_command()` returns `["npx", "antigravity-usage", "wakeup", "test"]`, which sends
-a minimal prompt to start the quota window.
-
-| All models at 0% | Anchor? |
-|------------------|---------|
-| Yes              | Yes     |
-| No               | No      |
+Always returns `False`. The `antigravity-usage` npm package (globally installed) manages
+quota wakeup via its own cron scheduler. This script only detects and notifies.
 
 ### Amp — `AmpProvider.should_anchor()`
 
@@ -127,6 +143,12 @@ class MyProvider(UsageProvider):
         if any(r.is_exhausted for r in rows):
             return False
         return any(r.reset_at is None for r in rows)
+
+    def notify_always(self, rows: list[UsageRow]) -> None:
+        """Fire immediate notification when the window is newly available."""
+        # e.g. fire when should_anchor condition is met (5h idle, 7d not exhausted)
+        if self.should_anchor(rows):
+            self.send_ntfy("MyTool Window Open", "Fresh window available.", tags="white_check_mark,rocket")
 
 
 def main() -> None:

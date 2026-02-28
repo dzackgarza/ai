@@ -91,6 +91,15 @@ class CodexProvider(UsageProvider):
             return False
         return any(r.reset_at is None for r in rows)
 
+    def notify_always(self, rows: list[UsageRow]) -> None:
+        """Fire when the 5h window is fresh and the 7d window isn't exhausted."""
+        if self.should_anchor(rows):
+            self.send_ntfy(
+                "Codex Window Open",
+                "Codex 5h window open!\n\nFresh session available for work.",
+                tags="white_check_mark,rocket",
+            )
+
     def anchor_command(self) -> list[str]:
         return ["codex", "exec", "-c", "project_doc_max_bytes=0", "Say hello and do nothing else"]
 
