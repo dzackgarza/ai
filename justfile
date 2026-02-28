@@ -42,6 +42,14 @@ install:
     @echo "OpenCode:         .opencode/ → ~/.config/opencode"
     @echo "Safety Net:       cc-safety-net.json → ~/.cc-safety-net/config.json"
 
+# Check all usage limits
+# Usage: just all-usage
+all-usage:
+    @python {{repo}}/usage-limits/claude_usage.py --no-anchor
+    @python {{repo}}/usage-limits/codex_usage.py --no-anchor
+    @python {{repo}}/usage-limits/amp_usage.py
+    @python {{repo}}/usage-limits/antigravity_usage.py
+
 # Check Claude Code usage limits
 # Usage: just usage [--json]
 usage *ARGS="":
