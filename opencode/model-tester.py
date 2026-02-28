@@ -34,14 +34,14 @@ class TestResult(BaseModel):
     error: str | None = Field(None, description="Error message if test failed")
 
 
-class ModelTestReport(BaseModel):
-    """Complete test report for all models"""
+class ModelTestResults(BaseModel):
+    """Container for all model test results"""
 
     last_update_date: str = Field(..., description="ISO 8601 timestamp of report generation")
     models: list[TestResult] = Field(default_factory=list, description="List of model test results")
 
     def to_yaml(self) -> str:
-        """Convert report to YAML string"""
+        """Convert to YAML string"""
         return yaml.dump(
             self.model_dump(mode="json"),
             default_flow_style=False,
@@ -97,6 +97,11 @@ def extract_configured_models(config: dict[str, Any]) -> list[ModelConfig]:
 def test_model(model_config: ModelConfig, timeout: int = 20) -> TestResult:
     """
     Test a single model using opencode run command.
+
+    Timing expectations:
+    - opencode startup: <10s
+    - model response (1 turn): <3s
+    - Total timeout: 20s (allows buffer for slow startups)
 
     Args:
         model_config: Model configuration to test
@@ -175,17 +180,17 @@ def run_pipeline(
     config_path: Path = Path("opencode.json"),
     output_path: Path = Path("model-test-results.yaml"),
     timeout: int = 20,
-) -> ModelTestReport:
+) -> ModelTestResults:
     """
     Run the complete model testing pipeline.
 
     Args:
         config_path: Path to opencode.json
-        output_path: Path for output YAML report
+        output_path: Path for output YAML file
         timeout: Timeout per model test in seconds
 
     Returns:
-        Complete ModelTestReport
+        ModelTestResults container
     """
     print(f"Loading configuration from {config_path}...")
     config = load_opencode_config(config_path)
@@ -203,20 +208,20 @@ def run_pipeline(
         status = "✓" if result.working else "✗"
         print(f"  {status} {result.error or 'OK'}")
 
-    report = ModelTestReport(
+    output = ModelTestResults(
         last_update_date=datetime.now(timezone.utc).isoformat(),
         models=results,
     )
 
-    print(f"\nWriting report to {output_path}...")
+    print(f"\nWriting results to {output_path}...")
     with open(output_path, "w") as f:
-        f.write(report.to_yaml())
+        f.write(output.to_yaml())
 
     # Summary
     working_count = sum(1 for r in results if r.working)
     print(f"\nSummary: {working_count}/{len(results)} models working")
 
-    return report
+    return output
 
 
 if __name__ == "__main__":
