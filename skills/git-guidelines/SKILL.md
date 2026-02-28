@@ -37,20 +37,82 @@ Each file gets its own checkpoint. Bundling is not cleaner history — it's miss
 
 ## Commit Messages
 
+Commit messages are the canonical record of completed work. The body is mandatory for any nontrivial change. Write it for a reader who has the diff but not the context — they can see *what* changed, so tell them *why*, *how you decided*, and *what to expect*.
+
+### Format
+
 ```bash
 git commit -m "$(cat <<'EOF'
-Short imperative summary (under 70 chars)
+<type>: <imperative summary under 70 chars>
 
-Optional body explaining why, not what.
+Why: <problem or need that prompted this change>
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Changes:
+- <concrete change 1 and its rationale>
+- <concrete change 2 and its rationale>
+
+Decisions:
+- <tradeoff or alternative considered, and why this path was chosen>
+
+Expected outcome: <what should be different now, how to verify>
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 EOF
 )"
 ```
 
-- Imperative mood: "Add X", "Fix Y", "Remove Z"
-- Focus on *why*, not *what*
-- Always include `Co-Authored-By`
+### Rules
+
+- **Imperative mood** in summary: "Add X", "Fix Y", "Remove Z"
+- **Body is mandatory** for multi-file changes, refactors, and any change where rationale is not obvious from the diff.
+- **Why before what.** The diff shows what changed. The message explains why.
+- **Decisions section**: capture tradeoffs, rejected alternatives, and constraints that shaped the approach. A future reader should understand not just what you chose but what you ruled out.
+- **Expected outcome**: state the observable result. "Tests pass", "Endpoint returns 200", "File reduced from 315 to 174 lines."
+- **Always include `Co-Authored-By`.**
+
+### Commit Type Prefixes
+
+| Prefix | Use |
+|--------|-----|
+| `feat` | New capability |
+| `fix` | Bug fix |
+| `refactor` | Restructure without behavior change |
+| `docs` | Documentation only |
+| `test` | Test additions or fixes |
+| `chore` | Build, tooling, dependency changes |
+| `checkpoint` | Pre-edit safety snapshot |
+
+### Red / Green Examples
+
+**Red (insufficient):**
+```
+refactor: rewrite AGENTS.md
+```
+
+**Green (canonical record):**
+```
+refactor: rewrite AGENTS.md for concision and structural compliance
+
+Why: Post-mortem showed epistemic humility rules were violated despite
+38 lines of declarative guidance. Duplication across 3 sections diluted
+attention budget. File had grown to 315 lines organically.
+
+Changes:
+- Epistemic integrity: declarative "NEVER" rules → mandatory five-field
+  output format. The format makes step-skipping a structural violation.
+- Attention anchoring: epistemic rules at positions 2 and 8 (start/end).
+- Merged Role + Calibration, added task→operation mapping table.
+- Removed 5 instances of duplicated content.
+
+Decisions:
+- Chose process constraint over reinforced declarative rules because
+  the post-mortem proved declarative rules fail even with emphasis.
+- Kept tool routing in global file (user preference) rather than
+  moving to project-level files.
+
+Expected outcome: 174 lines (down from 315). All semantic content
+preserved. Epistemic violations should decrease due to required format.
+```
 
 ## Staging Discipline
 
@@ -82,16 +144,15 @@ git add .
 
 **NEVER** commit files that may contain secrets: `.env`, `credentials.json`, keys.
 
-## What Goes in the Commit Message
+## Commit Messages vs Memory vs Repo Artifacts
 
-Commit messages are the canonical record of completed work. Write them accordingly:
+| Information | Where it goes |
+|-------------|---------------|
+| What changed, why, tradeoffs, decisions | Commit message body |
+| Learned lessons, corrected workflows, calibration | Memory files |
+| Current state, outstanding gaps, future work | Repo artifacts (e.g. LEDGER.md) |
 
-- **Body**: explain *why* decisions were made, what tradeoffs were accepted
-- **Details of what changed**: belong here, not in repo docs or memory
-- Repo artifacts track *current state + future work*, never completed work history
-- Learned lessons and corrected workflows belong in **memory**, not the commit body
-
-**See: `agent-memory`** for the full decision test (memory vs git vs repo artifacts).
+Completed work history belongs in commits, never in repo docs. **See: `agent-memory`** for the full decision test.
 
 ## Common Rationalizations
 
