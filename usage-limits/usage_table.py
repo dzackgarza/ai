@@ -1,126 +1,103 @@
 #!/usr/bin/env python3
-"""Shared usage table rendering for all harnesses."""
+"""Shared usage table rendering for all providers."""
 
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 
+from pydantic import BaseModel, ConfigDict, computed_field
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress_bar import ProgressBar
 from rich.table import Table
 
 
-@dataclass
-class ModelRow:
-    """A single row in the usage table."""
-    family: str  # "Claude", "Gemini", "Amp", etc.
-    model: str   # "5h", "7d", model name, etc.
-    pct_used: float  # 0.0 to 100.0
-    reset_time: str  # "in 4h 59m", "now", etc.
-    is_exhausted: bool = False  # For coloring
+class UsageRow(BaseModel):
+    """A single row in the unified usage table."""
+
+    identifier: str          # e.g. "Claude (5h)", "Amp", "Antigravity: Claude Sonnet 4-5"
+    pct_used: float          # 0.0–100.0
+    reset_at: Optional[datetime] = None  # UTC datetime; None = not applicable / already full
+
+    model_config = ConfigDict(frozen=True)
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def is_exhausted(self) -> bool:
+        return self.pct_used >= 100.0
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def time_until_reset(self) -> str:
+        """Human-readable time until reset_at, or empty string if not set."""
+        if self.reset_at is None:
+            return ""
+        delta = self.reset_at - datetime.now(timezone.utc)
+        if delta.total_seconds() <= 0:
+            return "now"
+        total_hrs = int(delta.total_seconds() / 3600)
+        mins = int((delta.total_seconds() % 3600) / 60)
+        if total_hrs >= 24:
+            days = total_hrs // 24
+            hrs = total_hrs % 24
+            return f"in {days}d {hrs}h"
+        return f"in {total_hrs}h {mins}m"
 
 
 class UsageTable:
-    """Renders a uniform usage table across all harnesses."""
+    """Renders a uniform 4-column usage table for any provider."""
 
-    # Fixed column widths (calculated from format specs)
-    PCT_WIDTH = 5  # "XXX%"
-    TIME_WIDTH = 11  # "in XXXh XXm"
-    BAR_MIN_WIDTH = 20  # Minimum bar width
+    PCT_WIDTH = 5    # "100%"
+    TIME_WIDTH = 12  # "in 30d 12h"
+    BAR_MIN_WIDTH = 20
 
-    def __init__(self, console: Optional[Console] = None):
+    def __init__(self, console: Optional[Console] = None) -> None:
         self.console = console or Console()
 
-    def calculate_bar_width(self, max_label_len: int) -> int:
-        """Calculate bar width based on terminal width."""
-        # Total: label + pct + bar + time + padding
-        # Padding: 2 (left) + 1 (between cols) * 3 = 5
-        available = self.console.width - max_label_len - self.PCT_WIDTH - self.TIME_WIDTH - 6
-        return max(self.BAR_MIN_WIDTH, available)
-
-    def render(self, rows: list[ModelRow], title: str = "Usage Limits") -> None:
-        """Render the usage table."""
+    def render(self, rows: list[UsageRow], title: str = "Usage Limits") -> None:
+        """Render the usage table with header panel."""
         if not rows:
             self.console.print("[yellow]No data available[/yellow]")
             return
 
-        # Group by family
-        families: dict[str, list[ModelRow]] = {}
-        for row in rows:
-            if row.family not in families:
-                families[row.family] = []
-            families[row.family].append(row)
-
-        # Header panel
         self.console.print(Panel(f"[bold]{title}[/bold]", border_style="cyan"))
         self.console.print()
 
-        # Render each family
-        for family, family_rows in families.items():
-            self.console.print(f"[bold]{family}[/bold]")
-            self.console.print()
+        max_id_len = max(len(r.identifier) for r in rows)
+        bar_width = max(
+            self.BAR_MIN_WIDTH,
+            self.console.width - max_id_len - self.PCT_WIDTH - self.TIME_WIDTH - 8,
+        )
 
-            # Calculate column widths from data
-            max_label_len = max(len(r.model) for r in family_rows)
-            bar_width = self.calculate_bar_width(max_label_len)
+        table = Table(show_header=False, box=None, padding=(0, 1))
+        table.add_column("Identifier", style="bold", width=max_id_len, overflow="ellipsis")
+        table.add_column("Pct", width=self.PCT_WIDTH, justify="right")
+        table.add_column("Bar", width=bar_width)
+        table.add_column("Time", width=self.TIME_WIDTH)
 
-            # Create table with fixed width columns
-            table = Table(show_header=False, box=None, padding=(0, 1))
-            table.add_column("Model", style="bold", width=max_label_len, overflow="ellipsis")
-            table.add_column("Pct", width=self.PCT_WIDTH, justify="right")
-            table.add_column("Bar", width=bar_width)
-            table.add_column("Time", width=self.TIME_WIDTH)
+        for row in rows:
+            color = self._bar_color(row.pct_used)
+            bar = ProgressBar(
+                total=100,
+                completed=row.pct_used,
+                width=bar_width,
+                style="dim",
+                complete_style=color,
+                finished_style=color,
+            )
+            table.add_row(
+                row.identifier,
+                f"{int(row.pct_used):>4}%",
+                bar,
+                row.time_until_reset,
+            )
 
-            # Add rows
-            for row in family_rows:
-                bar_color = self._get_bar_color(row.pct_used)
-                progress = ProgressBar(
-                    total=100,
-                    completed=row.pct_used,
-                    width=bar_width,
-                    style="dim",
-                    complete_style=bar_color,
-                    finished_style=bar_color,
-                )
-                table.add_row(row.model, f"{int(row.pct_used):>4}%", progress, row.reset_time)
-
-            self.console.print(table)
-            self.console.print()
-
-    def _get_bar_color(self, pct: float) -> str:
-        """Get bar color based on usage percentage."""
-        if pct >= 100:
-            return "red"
-        elif pct >= 80:
-            return "yellow"
-        else:
-            return "green"
+        self.console.print(table)
+        self.console.print()
 
     @staticmethod
-    def format_reset_time(reset_at: str) -> str:
-        """Format reset timestamp as relative time string.
-        
-        Args:
-            reset_at: ISO 8601 timestamp string (must be valid)
-            
-        Returns:
-            Formatted string like "in 4h 59m", "in 1d 2h", or "now"
-            
-        Raises:
-            ValueError: If reset_at is not a valid ISO 8601 timestamp
-        """
-        if not reset_at:
-            raise ValueError("reset_at cannot be empty")
-        
-        reset_dt = datetime.fromisoformat(reset_at.replace("Z", "+00:00"))
-        delta = reset_dt - datetime.now(timezone.utc)
-        
-        if delta.total_seconds() <= 0:
-            return "now"
-        
-        total_hrs = int(delta.total_seconds() / 3600)
-        mins = int((delta.total_seconds() % 3600) / 60)
-        
-        # Format: "in XXh XXm" (consistent format, no days)
-        return f"in {total_hrs}h {mins}m"
+    def _bar_color(pct: float) -> str:
+        if pct >= 100:
+            return "red"
+        if pct >= 80:
+            return "yellow"
+        return "green"

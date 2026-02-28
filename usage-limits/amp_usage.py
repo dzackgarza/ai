@@ -1,207 +1,134 @@
 #!/usr/bin/env python3
-"""Amp CLI usage checker - mirrors Claude/Codex usage display."""
+"""Amp CLI usage checker."""
 
 import argparse
-import json
 import math
 import re
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
-import requests
-from rich.console import Console
-from rich.panel import Panel
-from rich.progress import BarColumn, Progress, TextColumn
-from rich.table import Table
+from usage_base import UsageProvider
+from usage_table import UsageRow
 
 
-NTFY_SERVER = "http://localhost"
-NTFY_TOPIC = "usage-updates"
+class AmpProvider(UsageProvider):
+    """Amp usage checker.
 
-
-def send_ntfy(title: str, message: str, at: str | None, tags: str = "white_check_mark,clock", notif_id: str = None) -> bool:
-    """Send ntfy notification (immediate if at=None, scheduled otherwise)."""
-    url = f"{NTFY_SERVER}/{NTFY_TOPIC}"
-    all_tags = tags
-    if notif_id:
-        all_tags = f"{tags},notif_id:{notif_id}"
-    headers = {
-        "Title": title.encode("latin-1", "ignore").decode("latin-1"),
-        "Priority": "high",
-        "Tags": all_tags,
-    }
-    if at:
-        headers["At"] = at
-    try:
-        resp = requests.post(url, data=message.encode("utf-8"), headers=headers, timeout=10)
-        return resp.status_code == 200
-    except requests.RequestException:
-        return False
-
-
-def check_scheduled(notif_id: str) -> bool:
-    """Check if notification already scheduled."""
-    url = f"{NTFY_SERVER}/{NTFY_TOPIC}/json"
-    try:
-        resp = requests.get(url, params={"poll": "1", "sched": "1"}, timeout=10)
-        for line in resp.text.strip().split("\n"):
-            if not line:
-                continue
-            try:
-                msg = json.loads(line)
-                if msg.get("event") == "message":
-                    tags = msg.get("tags", [])
-                    if f"notif_id:{notif_id}" in tags:
-                        return True
-            except json.JSONDecodeError:
-                continue
-    except requests.RequestException:
-        pass
-    return False
-
-
-def parse_amp_usage(output: str) -> dict:
-    """Parse amp usage CLI output."""
-    result = {}
-    
-    # Amp Free: $X.XX/$Y remaining (replenishes +$Z/hour)
-    free_match = re.search(r"Amp Free: \$(\d+\.?\d*)/\$(\d+\.?\d*) remaining \(replenishes \+\$(\d+\.?\d*)/hour\)", output)
-    if free_match:
-        result["remaining"] = float(free_match.group(1))
-        result["total"] = float(free_match.group(2))
-        result["rate_per_hour"] = float(free_match.group(3))
-    
-    return result
-
-
-def next_topup_time(remaining: float, total: float, rate_per_hour: float) -> tuple[datetime, int]:
-    """Calculate next top-up time and hours needed to full.
-    
-    Returns:
-        (next_topup_datetime, hours_needed)
+    Amp replenishes continuously at a fixed $/hour rate up to a $10 cap.
+    There is no anchor concept — credits fill automatically.
+    Notifications fire immediately when full, or are scheduled for the
+    exact hour credits will reach $10.
     """
+
+    name = "Amp"
+    state_dir = "amp_usage"
+    ntfy_topic = "usage-updates"
+    ntfy_server = "http://localhost"
+
+    def fetch_raw(self) -> dict:
+        """Run `amp usage` and parse the text output."""
+        result = subprocess.run(
+            ["amp", "usage"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if result.returncode != 0:
+            print("Error: Run 'amp login' first", file=sys.stderr)
+            sys.exit(1)
+        return _parse_amp_output(result.stdout)
+
+    def to_rows(self, raw: Any) -> list[UsageRow]:
+        """Single row: Amp credits, with reset_at = time credits will be full (None if already full)."""
+        remaining = raw.get("remaining", 0.0)
+        total = raw.get("total", 10.0)
+        rate = raw.get("rate_per_hour", 0.0)
+
+        used = total - remaining
+        pct_used = (used / total * 100) if total > 0 else 0.0
+
+        topup_dt, hours_needed = _next_topup_time(remaining, total, rate)
+        reset_at = None if hours_needed == 0 else topup_dt
+
+        return [UsageRow(identifier="Amp", pct_used=pct_used, reset_at=reset_at)]
+
+    # No anchor_command() — inherits None; Amp has no idle-window concept.
+
+    def _handle_notifications(self, rows: list[UsageRow]) -> None:
+        """Override to handle Amp's fill-based notification logic."""
+        if not rows:
+            return
+        row = rows[0]
+
+        if row.reset_at is None:
+            # Credits are full — notify immediately
+            message = "Amp credits full!\n\nOptimal time to run tasks."
+            success, _ = self.send_ntfy("Amp Credits Full", message, tags="white_check_mark,rocket")
+            if success:
+                print("🔔 Full credits notification sent")
+            else:
+                print("✗ Failed to send notification")
+        else:
+            # Schedule notification for when credits will be full
+            topup_time = row.reset_at
+            notif_id = f"amp-topup-{int(topup_time.timestamp())}"
+
+            if self._notification_scheduled(notif_id):
+                print("ℹ️  Top-up notification already scheduled")
+                return
+
+            time_to_topup = topup_time - datetime.now(timezone.utc)
+            hours = math.ceil(time_to_topup.total_seconds() / 3600)
+            at_time = f"{hours} hour{'s' if hours != 1 else ''}"
+
+            success, _ = self.send_ntfy(
+                title="Amp Top-Up",
+                message="Amp credits topped up!\n\nFull credits available.",
+                tags=f"white_check_mark,clock,notif_id:{notif_id}",
+                at=at_time,
+            )
+            if success:
+                print(f"🔔 Notification scheduled for {topup_time.astimezone().strftime('%Y-%m-%d %H:%M')}")
+            else:
+                print("✗ Failed to schedule notification")
+
+
+def _parse_amp_output(output: str) -> dict:
+    """Parse `amp usage` text output into structured dict."""
+    match = re.search(
+        r"Amp Free: \$(\d+\.?\d*)/\$(\d+\.?\d*) remaining \(replenishes \+\$(\d+\.?\d*)/hour\)",
+        output,
+    )
+    if not match:
+        return {}
+    return {
+        "remaining": float(match.group(1)),
+        "total": float(match.group(2)),
+        "rate_per_hour": float(match.group(3)),
+    }
+
+
+def _next_topup_time(remaining: float, total: float, rate: float) -> tuple[datetime, int]:
+    """Calculate when credits will be full and how many hours that takes."""
     needed = total - remaining
-    if needed <= 0 or rate_per_hour <= 0:
+    if needed <= 0 or rate <= 0:
         return datetime.now(timezone.utc), 0
-    
-    hours_needed = math.ceil(needed / rate_per_hour)
-    
+    hours_needed = math.ceil(needed / rate)
     now = datetime.now(timezone.utc)
     next_hour = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
-    
-    # First top-up at next_hour, then hourly after
-    # Return time of the top-up that will make us full
     topup_time = next_hour + timedelta(hours=hours_needed - 1)
     return topup_time, hours_needed
 
 
-def format_time(td: timedelta) -> str:
-    """Format timedelta."""
-    secs = int(td.total_seconds())
-    if secs <= 0:
-        return "now"
-    days, rem = divmod(secs, 86400)
-    hrs, rem = divmod(rem, 3600)
-    mins, _ = divmod(rem, 60)
-    if days > 0:
-        return f"in {days}d {hrs}h"
-    if hrs > 0:
-        return f"in {hrs}h {mins}m"
-    if mins > 0:
-        return f"in {mins}m"
-    return "now"
-
-
-def format_summary(usage: dict, schedule_notify: bool = False) -> None:
-    """Format usage like Claude/Codex - single status bar."""
-    console = Console()
-    
-    remaining = usage.get("remaining", 0)
-    total = usage.get("total", 10)
-    rate = usage.get("rate_per_hour", 0)
-    
-    used = total - remaining
-    pct = (used / total * 100) if total > 0 else 0
-    
-    # Status bar
-    bar_color = "green" if pct < 60 else "yellow" if pct < 100 else "red"
-    bar_width = 40
-    filled = int(bar_width * pct / 100)
-    if pct > 0 and filled == 0:
-        filled = 1
-    bar_str = "━" * filled + "─" * (bar_width - filled)
-    
-    # Next top-up time
-    topup_time, hours_needed = next_topup_time(remaining, total, rate)
-    is_full = hours_needed == 0
-    time_to_topup = topup_time - datetime.now(timezone.utc)
-    
-    table = Table(show_header=False, box=None, padding=(0, 1))
-    table.add_column("label", style="bold")
-    table.add_column("value")
-    
-    status_text = "full" if is_full else format_time(time_to_topup)
-    table.add_row(
-        f"🟢 Amp Free:",
-        f"[{bar_color}]{bar_str}[/{bar_color}] [bold]{pct:5.1f}%[/bold]"
-    )
-    table.add_row("", f"{status_text} ({topup_time.astimezone().strftime('%Y-%m-%d %H:%M')})")
-    table.add_row("", f"${remaining:.2f}/${total:.2f} (+${rate:.2f}/hr)")
-    
-    console.print(Panel(console.render_str("Amp Usage Limits"), border_style="cyan"))
-    console.print()
-    console.print(table)
-    
-    # Notify when full (optimal time to run tasks)
-    if schedule_notify and is_full:
-        message = f"Amp credits full!\n\n${remaining:.2f}/${total:.2f} - optimal time to run tasks"
-        
-        # Send immediately (no At header)
-        if send_ntfy("Amp Credits Full", message, at=None):
-            console.print("\n🔔 Full credits notification sent")
-        else:
-            console.print("\n✗ Failed to send notification")
-    # Schedule notification for next top-up
-    elif schedule_notify and not is_full:
-        notif_id = f"amp-topup-{int(topup_time.timestamp())}"
-        
-        if check_scheduled(notif_id):
-            console.print("\nℹ️  Top-up notification already scheduled")
-        else:
-            # Use relative time for ntfy (hours only, rounded up)
-            time_to_topup = topup_time - datetime.now(timezone.utc)
-            total_secs = int(time_to_topup.total_seconds())
-            hours = (total_secs + 3599) // 3600  # Round up
-            
-            at_time = f"{hours} hour{'s' if hours != 1 else ''}"
-            
-            message = f"Amp credits topped up!\n\n${remaining:.2f} → ${total:.2f}"
-            
-            if send_ntfy("Amp Top-Up", message, at_time, notif_id=notif_id):
-                console.print(f"\n🔔 Notification scheduled for {topup_time.astimezone().strftime('%Y-%m-%d %H:%M')}")
-            else:
-                console.print("\n✗ Failed to schedule notification")
-
-
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Amp usage checker")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
     parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
     args = parser.parse_args()
 
-    result = subprocess.run(["amp", "usage"], capture_output=True, text=True, timeout=30)
-    
-    if result.returncode != 0:
-        print("Error: Run 'amp login' first", file=sys.stderr)
-        sys.exit(1)
-
-    usage = parse_amp_usage(result.stdout)
-
-    if args.json:
-        print(json.dumps(usage, indent=2))
-    else:
-        format_summary(usage, schedule_notify=not args.no_notify)
+    AmpProvider().run(args)
 
 
 if __name__ == "__main__":
