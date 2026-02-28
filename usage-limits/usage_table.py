@@ -46,9 +46,9 @@ class UsageRow(BaseModel):
 class UsageTable:
     """Renders a uniform 4-column usage table for any provider."""
 
-    PCT_WIDTH = 5    # "100%"
+    PCT_WIDTH = 5    # " 99%" + leading space
     TIME_WIDTH = 12  # "in 30d 12h"
-    BAR_MIN_WIDTH = 20
+    PADDING = 8      # padding=(0,1) × 4 columns × 2 sides
 
     def __init__(self, console: Optional[Console] = None) -> None:
         self.console = console or Console()
@@ -63,33 +63,35 @@ class UsageTable:
         self.console.print()
 
         max_id_len = max(len(r.identifier) for r in rows)
+        # Let bar shrink to 0 rather than forcing a minimum and overflowing the terminal.
         bar_width = max(
-            self.BAR_MIN_WIDTH,
-            self.console.width - max_id_len - self.PCT_WIDTH - self.TIME_WIDTH - 8,
+            0,
+            self.console.width - max_id_len - self.PCT_WIDTH - self.TIME_WIDTH - self.PADDING,
         )
 
         table = Table(show_header=False, box=None, padding=(0, 1))
-        table.add_column("Identifier", style="bold", width=max_id_len, overflow="ellipsis")
-        table.add_column("Pct", width=self.PCT_WIDTH, justify="right")
-        table.add_column("Bar", width=bar_width)
-        table.add_column("Time", width=self.TIME_WIDTH)
+        # no_wrap=True ensures long identifiers get ellipsized, not wrapped to the next line.
+        table.add_column("Identifier", style="bold", width=max_id_len, overflow="ellipsis", no_wrap=True)
+        table.add_column("Pct", width=self.PCT_WIDTH, justify="right", no_wrap=True)
+        if bar_width:
+            table.add_column("Bar", width=bar_width, no_wrap=True)
+        table.add_column("Time", width=self.TIME_WIDTH, no_wrap=True)
 
         for row in rows:
             color = self._bar_color(row.pct_used)
-            bar = ProgressBar(
-                total=100,
-                completed=row.pct_used,
-                width=bar_width,
-                style="dim",
-                complete_style=color,
-                finished_style=color,
-            )
-            table.add_row(
-                row.identifier,
-                f"{int(row.pct_used):>4}%",
-                bar,
-                row.time_until_reset,
-            )
+            pct_str = f"{int(row.pct_used):>4}%"
+            if bar_width:
+                bar = ProgressBar(
+                    total=100,
+                    completed=row.pct_used,
+                    width=bar_width,
+                    style="dim",
+                    complete_style=color,
+                    finished_style=color,
+                )
+                table.add_row(row.identifier, pct_str, bar, row.time_until_reset)
+            else:
+                table.add_row(row.identifier, pct_str, row.time_until_reset)
 
         self.console.print(table)
         self.console.print()
