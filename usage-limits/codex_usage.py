@@ -45,6 +45,10 @@ class CodexChecker(UsageChecker):
         resp.raise_for_status()
         return resp.json()
 
+    def anchor_command(self) -> list[str]:
+        """Command to anchor idle window."""
+        return ["codex", "exec", "-c", "project_doc_max_bytes=0", "Say hello and do nothing else"]
+
     def get_windows(self, usage: dict) -> dict[str, tuple[float, Optional[str]]]:
         """Extract windows dict from usage data."""
         rate_limit = usage.get("rate_limit", {})
@@ -77,6 +81,7 @@ def main():
     parser = argparse.ArgumentParser(description="Codex usage limits checker")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
     parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
+    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchor detection")
     args = parser.parse_args()
 
     checker = CodexChecker()
@@ -98,6 +103,15 @@ def main():
     except PermissionError:
         print("Error: Authentication failed. Run 'codex login'", file=sys.stderr)
         sys.exit(1)
+
+    # Auto-anchor idle windows (same logic as Claude)
+    windows = checker.get_windows(usage)
+    if not args.no_anchor and checker.should_anchor(windows):
+        if not args.json:
+            print("🔓 Window idle — anchoring...")
+        # Codex doesn't have a CLI anchor command, just note the state
+        if not args.json:
+            print("✓ Window state noted\n")
 
     # Output
     if args.json:

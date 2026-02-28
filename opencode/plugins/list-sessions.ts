@@ -20,9 +20,8 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
     tool: {
       list_sessions: tool({
         description:
-          "Use when you need to list OpenCode sessions with their IDs, titles, timestamps, and stats. Set include_stats=true to also show turns, models, tokens, and cost per session (slower).",
+          "Use when you need to list OpenCode sessions with their IDs, titles, timestamps, turns, models, tokens, and cost.",
         args: {
-          include_stats: tool.schema.boolean().optional(),
           limit: tool.schema.number().optional(),
         },
         async execute(args) {
@@ -55,7 +54,7 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
               );
             }
 
-            if (args.include_stats) {
+            {
               const { data: messages } = await client.session.messages({
                 path: { id: s.id },
               });
