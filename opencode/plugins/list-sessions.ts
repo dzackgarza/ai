@@ -1,5 +1,6 @@
 // Custom tool: list_sessions - lists all sessions with metadata
 import { type Plugin, tool } from "@opencode-ai/plugin";
+import type { AssistantMessage } from "@opencode-ai/sdk";
 
 function formatTime(epoch: number): string {
   return new Date(epoch).toISOString();
@@ -19,9 +20,9 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
     tool: {
       list_sessions: tool({
         description:
-          "Use when you need to list OpenCode sessions with their IDs, titles, timestamps, and stats. Set include_turns=true to also count messages per session (slower).",
+          "Use when you need to list OpenCode sessions with their IDs, titles, timestamps, and stats. Set include_stats=true to also show turns, models, tokens, and cost per session (slower).",
         args: {
-          include_turns: tool.schema.boolean().optional(),
+          include_stats: tool.schema.boolean().optional(),
           limit: tool.schema.number().optional(),
         },
         async execute(args) {
@@ -54,18 +55,56 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
               );
             }
 
-            if (args.include_turns) {
+            if (args.include_stats) {
               const { data: messages } = await client.session.messages({
                 path: { id: s.id },
               });
-              const total = messages?.length ?? 0;
-              const userTurns =
-                messages?.filter((m) => m.info.role === "user").length ?? 0;
-              const assistantTurns =
-                messages?.filter((m) => m.info.role === "assistant").length ?? 0;
-              parts.push(
-                `  Turns: ${total} total (${userTurns} user, ${assistantTurns} assistant)`,
-              );
+              if (messages?.length) {
+                const userTurns = messages.filter(
+                  (m) => m.info.role === "user",
+                ).length;
+                const assistantMsgs = messages.filter(
+                  (m) => m.info.role === "assistant",
+                );
+                parts.push(
+                  `  Turns: ${messages.length} total (${userTurns} user, ${assistantMsgs.length} assistant)`,
+                );
+
+                // Aggregate token/cost stats from assistant messages
+                const models = new Set<string>();
+                let totalCost = 0;
+                let inputTokens = 0;
+                let outputTokens = 0;
+                let reasoningTokens = 0;
+                let cacheRead = 0;
+                let cacheWrite = 0;
+
+                for (const m of assistantMsgs) {
+                  const info = m.info as AssistantMessage;
+                  models.add(`${info.providerID}/${info.modelID}`);
+                  totalCost += info.cost ?? 0;
+                  if (info.tokens) {
+                    inputTokens += info.tokens.input;
+                    outputTokens += info.tokens.output;
+                    reasoningTokens += info.tokens.reasoning;
+                    cacheRead += info.tokens.cache.read;
+                    cacheWrite += info.tokens.cache.write;
+                  }
+                }
+
+                parts.push(`  Models: ${[...models].join(", ")}`);
+                parts.push(`  Cost: $${totalCost.toFixed(4)}`);
+                const totalTokens =
+                  inputTokens + outputTokens + reasoningTokens;
+                parts.push(
+                  `  Tokens: ${totalTokens.toLocaleString()} total (in: ${inputTokens.toLocaleString()}, out: ${outputTokens.toLocaleString()}, reasoning: ${reasoningTokens.toLocaleString()})`,
+                );
+                if (cacheRead || cacheWrite) {
+                  parts.push(
+                    `  Cache: read ${cacheRead.toLocaleString()}, write ${cacheWrite.toLocaleString()}`,
+                  );
+                }
+              }
             }
 
             lines.push(parts.join("\n"));

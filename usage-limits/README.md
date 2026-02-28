@@ -88,13 +88,17 @@ Amp replenishes continuously. `--notify` schedules for the exact hour when credi
 ## Justfile
 
 ```bash
-just usage              # Claude summary (auto-anchor + auto-notify)
+# All auto-notify by default; use --no-notify to disable
+
+just usage              # Claude (auto-anchor + auto-notify)
 just usage --no-notify  # Disable notifications
-just usage --json       # Claude JSON
-just codex-usage        # Codex summary (auto-notify)
+just usage --json       # JSON output
+
+just codex-usage        # Codex (auto-notify)
 just codex-usage --no-notify  # Disable notifications
-just codex-usage --json # Codex JSON
-just amp-usage          # Amp summary (auto-notify)
+just codex-usage --json # JSON output
+
+just amp-usage          # Amp (auto-notify)
 just amp-usage --no-notify    # Disable notifications
-just amp-usage --json   # Amp JSON
+just amp-usage --json   # JSON output
 ```
