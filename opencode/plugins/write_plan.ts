@@ -1,5 +1,7 @@
 // Custom tool: write_plan - writes a plan document to .serena/plans/
 import { type Plugin, tool } from "@opencode-ai/plugin";
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 
 function generateSlug(content: string): string {
   // Extract first meaningful word from content (skip markdown headers)
@@ -29,10 +31,7 @@ function formatDateTime(): string {
   return `${yyyy}-${mm}-${dd}-${hh}${min}${ss}`;
 }
 
-export const WritePlanPlugin: Plugin = async (ctx) => {
-  // Capture $ shell from plugin context
-  const shell = ctx.$;
-
+export const WritePlanPlugin: Plugin = async () => {
   return {
     tool: {
       write_plan: tool({
@@ -48,12 +47,8 @@ export const WritePlanPlugin: Plugin = async (ctx) => {
           const filename = `${slug}-${timestamp}.md`;
           const filepath = `${directory}/.serena/plans/${filename}`;
 
-          // Ensure directory exists using $ shell
-          await shell`mkdir -p ${directory}/.serena/plans`;
-
-          // Write file using printf to escape content properly
-          const escapedPlan = args.plan.replace(/'/g, "'\"'\"'");
-          await shell`printf '%s' '${escapedPlan}' > ${filepath}`;
+          await mkdir(dirname(filepath), { recursive: true });
+          await writeFile(filepath, args.plan, "utf-8");
 
           return `Plan written to: ${filepath}`;
         },

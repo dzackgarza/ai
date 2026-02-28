@@ -156,7 +156,19 @@ def format_summary(usage: dict, schedule_notify: bool = False) -> None:
         if check_scheduled(notif_id):
             console.print("\nℹ️  Top-up notification already scheduled")
         else:
-            at_time = str(int(topup_time.timestamp()))
+            # Use relative time for ntfy (format: "X hours Y minutes")
+            time_to_topup = topup_time - datetime.now(timezone.utc)
+            total_secs = int(time_to_topup.total_seconds())
+            hours = total_secs // 3600
+            mins = (total_secs % 3600) // 60
+            
+            if hours > 0:
+                at_time = f"{hours} hour{'s' if hours != 1 else ''}"
+                if mins > 0:
+                    at_time += f" {mins} minute{'s' if mins != 1 else ''}"
+            else:
+                at_time = f"{mins} minute{'s' if mins != 1 else ''}"
+            
             message = f"Amp credits topped up!\n\n${remaining:.2f} → ${total:.2f}"
             
             if send_ntfy("Amp Top-Up", message, at_time):
