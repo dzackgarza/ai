@@ -108,6 +108,13 @@ def main():
             windows = checker.get_windows(usage)
             if not args.json:
                 print("✓ Window anchored\n")
+            
+            # Notify that fresh window is available
+            if not args.no_notify:
+                message = "Claude Code session window open!\n\nFresh 5-hour window available for work."
+                if checker.send_ntfy_notification("Claude Window Open", message, at=None, tags="white_check_mark,rocket"):
+                    if not args.json:
+                        print("🔔 Fresh window notification sent")
         else:
             if not args.json:
                 print("✗ Failed to anchor window\n")
