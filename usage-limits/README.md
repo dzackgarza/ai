@@ -30,13 +30,14 @@ python codex_usage.py --no-notify    # Disable auto-notification
 ## Amp
 
 ```bash
-python amp_usage.py              # Rich summary
+python amp_usage.py              # Rich summary (auto-notify)
 python amp_usage.py --json       # JSON output
-python amp_usage.py --notify     # Schedule top-up notification
+python amp_usage.py --no-notify  # Disable auto-notification
 ```
 
 - **Auth:** `~/.local/share/amp/secrets.json` (via `amp usage` CLI)
 - **Windows:** Continuous replenishment ($0.42/hr to $10 max)
+- **Notifications:** Scheduled for exact top-up hour
 
 ## Decision Logic (Centralized)
 
@@ -73,10 +74,13 @@ Amp replenishes continuously. `--notify` schedules for the exact hour when credi
 ## Justfile
 
 ```bash
-just usage              # Claude summary
+just usage              # Claude summary (auto-anchor + auto-notify)
+just usage --no-notify  # Disable notifications
 just usage --json       # Claude JSON
-just codex-usage        # Codex summary
+just codex-usage        # Codex summary (auto-notify)
+just codex-usage --no-notify  # Disable notifications
 just codex-usage --json # Codex JSON
-just amp-usage          # Amp summary
+just amp-usage          # Amp summary (auto-notify)
+just amp-usage --no-notify    # Disable notifications
 just amp-usage --json   # Amp JSON
 ```

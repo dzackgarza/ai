@@ -12,7 +12,7 @@ export const ReadTranscriptPlugin: Plugin = async ({ $ }) => {
     tool: {
       read_transcript: tool({
         description:
-          "Use when you need to read a session transcript. Requires a session ID (use the introspection tool to get your own).",
+          "Use when you need to read a session transcript. Requires a session ID starting with \"ses_\" (use the introspection tool to get your own).",
         args: {
           session_id: tool.schema.string(),
         },

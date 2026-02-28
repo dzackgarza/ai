@@ -53,6 +53,6 @@ codex-usage *ARGS="":
     @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
 
 # Check Amp usage limits
-# Usage: just amp-usage [--json] [--notify]
+# Usage: just amp-usage [--json] [--no-notify]
 amp-usage *ARGS="":
     @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}

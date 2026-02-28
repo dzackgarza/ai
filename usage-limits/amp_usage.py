@@ -177,7 +177,7 @@ def format_summary(usage: dict, schedule_notify: bool = False) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Amp usage checker")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--notify", action="store_true", help="Schedule notification for next top-up")
+    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
     args = parser.parse_args()
 
     result = subprocess.run(["amp", "usage"], capture_output=True, text=True, timeout=30)
@@ -191,7 +191,7 @@ def main():
     if args.json:
         print(json.dumps(usage, indent=2))
     else:
-        format_summary(usage, schedule_notify=args.notify)
+        format_summary(usage, schedule_notify=not args.no_notify)
 
 
 if __name__ == "__main__":
