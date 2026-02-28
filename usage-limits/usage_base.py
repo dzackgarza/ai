@@ -19,12 +19,12 @@ class UsageProvider(ABC):
     """Abstract base for all usage-limit checkers.
 
     Subclasses MUST implement:
-        fetch_raw()  — retrieve raw data from API or CLI
-        to_rows()    — convert raw data to list[UsageRow]
+        fetch_raw()      — retrieve raw data from API or CLI
+        to_rows()        — convert raw data to list[UsageRow]
+        should_anchor()  — decide whether to anchor right now
 
     Subclasses MAY override:
-        anchor_command()  — return shell command for anchoring; None = no anchoring
-        should_anchor()   — anchoring decision logic (default: Claude/Codex idle-window rule)
+        anchor_command() — shell command to run when anchoring; None = no subprocess
 
     Everything else (rendering, notifications, orchestration) is centralized here.
     """
@@ -51,31 +51,22 @@ class UsageProvider(ABC):
     def to_rows(self, raw: Any) -> list[UsageRow]:
         """Convert raw data to a uniform list of UsageRow."""
 
+    # ── ABSTRACT — must implement ─────────────────────────────────────────────
+
+    @abstractmethod
+    def should_anchor(self, rows: list[UsageRow]) -> bool:
+        """Anchoring decision — every provider must define its own logic.
+
+        Return True when the provider's usage window should be started/refreshed.
+        The base run() calls this unconditionally; anchor_command() is only invoked
+        when this returns True.
+        """
+
     # ── OPTIONAL overrides ────────────────────────────────────────────────────
 
     def anchor_command(self) -> Optional[list[str]]:
-        """Return shell command to anchor an idle window, or None to skip anchoring."""
+        """Shell command to anchor an idle window. Return None if no subprocess is needed."""
         return None
-
-    def should_anchor(self, rows: list[UsageRow]) -> bool:
-        """Anchoring decision — default: Claude/Codex idle-window rule.
-
-        Anchor when ANY row has no reset_at (never started) AND none exhausted.
-
-        Truth table:
-        | 5h    | 7d    | Anchor? | Reason                      |
-        |-------|-------|---------|-----------------------------|
-        | 0     | 0     | ✅      | Both idle (no reset seen)   |
-        | 0     | 0<x   | ✅      | 7d active, 5h idle          |
-        | 0     | 100   | ❌      | 7d exhausted — wasted       |
-        | 0<x   | 0     | ✅      | 5h active, 7d never started |
-        | 0<x   | 0<x   | ❌      | Both active                 |
-        | 0<x   | 100   | ❌      | 7d exhausted — wasted       |
-        | 100   | *     | ❌      | 5h exhausted — wasted       |
-        """
-        if any(r.is_exhausted for r in rows):
-            return False
-        return any(r.reset_at is None for r in rows)
 
     # ── Orchestration entrypoint ──────────────────────────────────────────────
 
@@ -84,18 +75,19 @@ class UsageProvider(ABC):
         raw = self.fetch_raw()
         rows = self.to_rows(raw)
 
-        cmd = self.anchor_command()
-        if cmd and not getattr(args, "no_anchor", True) and self.should_anchor(rows):
-            if not getattr(args, "json", False):
-                print("🔓 Window idle — anchoring...")
-            if self._anchor_window(cmd):
-                raw = self.fetch_raw()
-                rows = self.to_rows(raw)
+        if not getattr(args, "no_anchor", False) and self.should_anchor(rows):
+            cmd = self.anchor_command()
+            if cmd:
                 if not getattr(args, "json", False):
-                    print("✓ Window anchored\n")
-            else:
-                if not getattr(args, "json", False):
-                    print("✗ Failed to anchor window\n")
+                    print("🔓 Window idle — anchoring...")
+                if self._anchor_window(cmd):
+                    raw = self.fetch_raw()
+                    rows = self.to_rows(raw)
+                    if not getattr(args, "json", False):
+                        print("✓ Window anchored\n")
+                else:
+                    if not getattr(args, "json", False):
+                        print("✗ Failed to anchor window\n")
 
         if getattr(args, "json", False):
             print(json.dumps(raw, indent=2))
@@ -103,7 +95,7 @@ class UsageProvider(ABC):
 
         self.render(rows)
 
-        if not getattr(args, "no_notify", True):
+        if not getattr(args, "no_notify", False):
             self._handle_notifications(rows)
 
     # ── Rendering ─────────────────────────────────────────────────────────────

@@ -82,6 +82,15 @@ class CodexProvider(UsageProvider):
             ))
         return rows
 
+    def should_anchor(self, rows: list[UsageRow]) -> bool:
+        """Anchor when any window has never started (no reset_at) and none are exhausted.
+
+        Same logic as Claude: both share the 5h/7d idle-window model.
+        """
+        if any(r.is_exhausted for r in rows):
+            return False
+        return any(r.reset_at is None for r in rows)
+
     def anchor_command(self) -> list[str]:
         return ["codex", "exec", "-c", "project_doc_max_bytes=0", "Say hello and do nothing else"]
 

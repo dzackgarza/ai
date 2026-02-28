@@ -54,7 +54,11 @@ class AmpProvider(UsageProvider):
 
         return [UsageRow(identifier="Amp", pct_used=pct_used, reset_at=reset_at)]
 
-    # No anchor_command() — inherits None; Amp has no idle-window concept.
+    def should_anchor(self, rows: list[UsageRow]) -> bool:
+        """Amp credits replenish automatically — no anchoring needed."""
+        return False
+
+    # anchor_command() returns None (inherited) — no subprocess to run.
 
     def _handle_notifications(self, rows: list[UsageRow]) -> None:
         """Override to handle Amp's fill-based notification logic."""

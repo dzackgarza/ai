@@ -89,11 +89,11 @@ class AntigravityProvider(UsageProvider):
 
     def should_anchor(self, rows: list[UsageRow]) -> bool:
         """Anchor when ALL models are at 0% usage (fresh quota just became available)."""
-        if not rows:
-            return False
-        return all(r.pct_used == 0.0 for r in rows)
+        return bool(rows) and all(r.pct_used == 0.0 for r in rows)
 
-    # anchor_command() returns None — Antigravity's own wakeup cron handles triggering.
+    def anchor_command(self) -> list[str]:
+        """Trigger the antigravity wakeup to start the quota window."""
+        return ["npx", "antigravity-usage", "wakeup", "test"]
 
     def _handle_notifications(self, rows: list[UsageRow]) -> None:
         """Send immediate notification on fresh quota; schedule for exhausted windows."""
@@ -132,6 +132,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Antigravity usage limits checker")
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
     parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
+    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
     args = parser.parse_args()
 
     AntigravityProvider().run(args)

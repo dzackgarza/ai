@@ -85,6 +85,23 @@ class ClaudeProvider(UsageProvider):
 
         return rows
 
+    def should_anchor(self, rows: list[UsageRow]) -> bool:
+        """Anchor when any window has never started (no reset_at) and none are exhausted.
+
+        | 5h          | 7d          | Anchor? |
+        |-------------|-------------|---------|
+        | no reset    | no reset    | Yes     |
+        | no reset    | active      | Yes     |
+        | no reset    | exhausted   | No      |
+        | active      | no reset    | Yes     |
+        | active      | active      | No      |
+        | active      | exhausted   | No      |
+        | exhausted   | any         | No      |
+        """
+        if any(r.is_exhausted for r in rows):
+            return False
+        return any(r.reset_at is None for r in rows)
+
     def anchor_command(self) -> list[str]:
         return ["claude", "--setting-sources", "", "Say hello and do nothing else"]
 

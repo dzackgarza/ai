@@ -12,10 +12,10 @@ Four scripts report quota across Claude, Codex, Amp, and Antigravity in a unifor
 |------|---------|
 | `usage_base.py` | `UsageProvider` ABC — orchestration, anchoring, notifications |
 | `usage_table.py` | `UsageRow` (Pydantic) + `UsageTable` (Rich renderer) |
-| `claude_usage.py` | Claude Code provider |
-| `codex_usage.py` | Codex CLI provider |
-| `amp_usage.py` | Amp provider (credit replenishment model) |
-| `antigravity_usage.py` | Antigravity provider (per-model quotas) |
+| `claude_usage.py` | Claude Code provider (5h/7d windows) |
+| `codex_usage.py` | Codex CLI provider (5h/7d windows) |
+| `amp_usage.py` | Amp provider (continuous credit replenishment) |
+| `antigravity_usage.py` | Antigravity provider (per-model quotas, wakeup trigger) |
 
 ---
 
@@ -69,16 +69,19 @@ Anchor when any row has `reset_at = None` (window never started) **and** no row 
 
 ### Antigravity override — `AntigravityProvider.should_anchor()`
 
-Anchor when **all** models are at exactly 0% usage (fresh quota just became available). Antigravity's own cron scheduler handles the actual wakeup trigger; this Python script only detects the condition and notifies.
+Anchor when **all** models are at exactly 0% usage (fresh quota just became available).
+`anchor_command()` returns `["npx", "antigravity-usage", "wakeup", "test"]`, which sends
+a minimal prompt to start the quota window.
 
 | All models at 0% | Anchor? |
 |------------------|---------|
 | Yes              | Yes     |
 | No               | No      |
 
-### Amp
+### Amp — `AmpProvider.should_anchor()`
 
-No anchoring. Credits replenish continuously; there is no idle window to start. `anchor_command()` returns `None`.
+Always returns `False`. Credits replenish automatically; there is no idle window to start.
+`anchor_command()` returns `None` (inherited default).
 
 ---
 
@@ -86,7 +89,7 @@ No anchoring. Credits replenish continuously; there is no idle window to start. 
 
 ### 1. Implement `UsageProvider`
 
-Create `{name}_usage.py`. Implement two abstract methods and set four class attributes:
+Create `{name}_usage.py`. Implement **three** abstract methods and set four class attributes:
 
 ```python
 import argparse
@@ -115,6 +118,15 @@ class MyProvider(UsageProvider):
                 reset_at=some_datetime_utc, # datetime | None; None = not applicable
             ),
         ]
+
+    def should_anchor(self, rows: list[UsageRow]) -> bool:
+        """Return True when the usage window should be started/refreshed.
+        Called unconditionally by run(). anchor_command() is only invoked when this returns True.
+        """
+        # e.g. for 5h/7d window model:
+        if any(r.is_exhausted for r in rows):
+            return False
+        return any(r.reset_at is None for r in rows)
 
 
 def main() -> None:
