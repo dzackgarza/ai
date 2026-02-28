@@ -74,6 +74,10 @@ test_results/
 # MCP server cache
 .mcp/
 
+# Claude Code credentials
+.claude/.credentials.json
+.claude-session-key
+
 # Node modules (if any skills use JS)
 node_modules/
 

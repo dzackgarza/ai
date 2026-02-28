@@ -16,8 +16,9 @@ import type { StopHookFn, MessageWithParts } from "./stop_hooks/types";
 
 import { otpChecker } from "./stop_hooks/otp-checker";
 import { reflexiveAgreementDetector } from "./stop_hooks/reflexive-agreement-detector";
+import { obviousQuestionDetector } from "./stop_hooks/obvious-question-detector";
 
-const STOP_HOOKS: StopHookFn[] = [otpChecker, reflexiveAgreementDetector];
+const STOP_HOOKS: StopHookFn[] = [otpChecker, reflexiveAgreementDetector, obviousQuestionDetector];
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MECHANISM — do not modify
@@ -35,8 +36,6 @@ export const StopHooks: Plugin = async ({ client }) => {
 
   return {
     event: async ({ event }) => {
-      // Comment out to enable
-      return;
       if (event.type !== "session.idle") return;
 
       const sessionId = event.properties.sessionID;

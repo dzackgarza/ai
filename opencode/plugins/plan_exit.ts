@@ -44,7 +44,7 @@ export const PlanExitPlugin: Plugin = async () => {
     tool: {
       plan_exit: tool({
         description:
-          "Signals completion of planning phase. Returns a verification checklist to ensure plan quality before exiting.",
+          "Use when about to exit plan mode. MUST be called before switching to editing or build mode. Do not skip even if the plan seems complete.",
         args: {},
         async execute() {
           return VERIFICATION_CHECKLIST;

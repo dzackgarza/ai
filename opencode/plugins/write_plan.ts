@@ -37,7 +37,7 @@ export const WritePlanPlugin: Plugin = async (ctx) => {
     tool: {
       write_plan: tool({
         description:
-          "Write a plan document to .serena/plans/ with timestamped filename",
+          "Use when the planning phase is complete and the plan must be committed to disk. MUST be called before plan_exit.",
         args: {
           plan: tool.schema.string(),
         },

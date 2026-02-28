@@ -61,14 +61,33 @@ This bundles dependencies and catches TypeScript errors.
 
 ### Testing with One-Shots
 
-Use `opencode run` for fast one-shot testing:
+**Use `opencode run` for most plugins** — it's fast and plugins are active:
 
 ```bash
 cd ~/.config/opencode
 opencode run "Use my_tool to do something"
 ```
 
-The plugin must be in `~/.config/opencode/plugins/` (global) or `.opencode/plugins/` (project).
+**Exception — any plugin with async work that completes after idle:**
+`opencode run` exits the instant the session goes idle. It does not wait. Any async work triggered during or by the idle event — re-prompting the model, long-running calls, deferred operations — fires into the void. You will see what the handler *started* in the transcript, but not what happened afterward.
+
+**To observe the full async cycle** (e.g., a re-prompt and its response, a deferred callback, a slow async side-effect), use the interactive trick and read the transcript:
+
+```bash
+mkdir -p /tmp/my-plugin-test
+(cd /tmp/my-plugin-test && timeout <N> sh -c 'echo "prompt that triggers your plugin" | opencode') >/dev/null 2>&1
+# Sessions are scoped to the working directory — list from the SAME dir:
+(cd /tmp/my-plugin-test && opencode session list)
+python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
+```
+
+Set `<N>` to cover: MCP warmup (~10s) + first model response + hook processing + second model response. 60–120s is usually sufficient.
+
+**Session scoping:** Sessions are associated with the working directory they were started in. Running `opencode session list` from a different directory will not show them. Always `cd` to the test directory before listing sessions.
+
+**Two-phase debugging workflow:**
+1. `opencode run "prompt"` — fast, confirms the hook fires (injected message appears in transcript)
+2. Interactive trick with timeout — confirms the model responds correctly after the hook fires
 
 ### Common Pitfalls
 
@@ -286,10 +305,10 @@ This is equivalent to Claude Code's `UserPromptSubmit` hook that writes to stdou
 ### Pattern: "Stop" Hook
 
 1. Listen to `session.idle` (fires after AI finishes responding)
-2. Inspect the last message for patterns
-3. If pattern found, inject context with `noReply: true` to trigger new response
+2. Inspect `lastText` — the **assistant's** response text — for patterns. `lastText` is NOT the user's message. A hook that scans for "should I" will only fire when the *model* outputs that phrase, not when the user does.
+3. If pattern found, inject feedback with `noReply: false` to trigger a new model response. (`noReply: true` injects silently without triggering a response — the opposite.)
 
-> **Note:** In one-shot `opencode run` mode, the session may exit before plugin-triggered responses complete. This works fully in INTERACTIVE mode.
+> **⚠ `opencode run` exits on idle and does not wait for async work.** The handler fires, but anything it does asynchronously — including the model response triggered by `session.prompt({ noReply: false })` — fires into the void. To verify the full cycle (hook fires → model responds → corrected behavior), use the interactive trick: `echo "prompt" | opencode` wrapped in `timeout <N>`, then read the transcript.
 
 ### Important: Session ID Path
 
@@ -374,7 +393,7 @@ cd /tmp/my-plugin-test
 echo "prompt that triggers your plugin" | opencode 2>&1 | head
 ```
 
-Then read the transcript using the **reading-transcripts skill**:
+Then read the transcript using the **reading-transcripts skill**. **Never hand-parse `opencode export` output with jq or Python** — use the provided script:
 
 ```bash
 python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
@@ -538,6 +557,14 @@ grep -n -A5 "SessionMessagesResponses" \
 ```
 
 `RequestResult` with default `ThrowOnError=false` returns `Promise<{ data: T } | { data: undefined; error: E }>` — always check for undefined.
+
+---
+
+## Async Injection & Background Tasks
+
+For firing background work from tools or event handlers and injecting results back into sessions — including `promptAsync()`, `ToolContext.sessionID`, mid-turn vs idle behavior, and the background task pattern:
+
+→ See [async-injection.md](./async-injection.md)
 
 ---
 

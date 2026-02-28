@@ -41,3 +41,18 @@ install:
     @echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
     @echo "OpenCode:         .opencode/ → ~/.config/opencode"
     @echo "Safety Net:       cc-safety-net.json → ~/.cc-safety-net/config.json"
+
+# Check Claude Code usage limits
+# Usage: just usage [--json]
+usage *ARGS="":
+    @python {{repo}}/usage-limits/claude_usage.py {{ARGS}}
+
+# Check Codex usage limits
+# Usage: just codex-usage [--json]
+codex-usage *ARGS="":
+    @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
+
+# Check Amp usage limits
+# Usage: just amp-usage [--json] [--notify]
+amp-usage *ARGS="":
+    @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}

@@ -30,20 +30,17 @@ All agents are defined in `~/ai/opencode/opencode.json` with prompts loaded from
 ## Quick Start
 
 ```bash
-# Start background server (once per session)
-opencode serve &
-
-# Run tasks (fast after MCP warmup)
-opencode run --attach http://localhost:4096 --thinking --print-logs "Your prompt"
+# Simple one-shot run (plugins active, exits on idle)
+opencode run --thinking --print-logs "Your prompt"
 ```
 
-**Common flags for scripted agent calls:**
+**Common flags:**
 
 - `--thinking` - Enable reasoning output
 - `--print-logs` - Show logs for debugging
-- `--attach http://localhost:4096` - Use a warm background server for much faster runs
+- `--attach http://localhost:4096` - Attach to a running `opencode serve` instance (skips MCP warmup only — no other behavioral difference)
 
-**First run is slow** (MCP warmup). Subsequent runs are fast.
+**`opencode serve` is purely a warmup cache.** Starting a background server with `opencode serve &` and using `--attach` makes subsequent `opencode run` calls faster by avoiding MCP server restarts. It has no effect on session persistence, plugin behavior, or async lifecycle. The first run is slow (MCP warmup ~10s); subsequent attached runs skip that.
 
 ## Known Bug: `run --attach` + `--agent`
 
@@ -109,14 +106,18 @@ opencode export <session-id> | jq -r '.messages[]? | "[" + (.info.role | ascii_u
 
 ## Limitations of `opencode run`
 
-One-shot `opencode run` has fundamental limitations:
+**`opencode run` exits the moment the session goes idle. It does not wait for anything.**
 
-| Limitation                 | Description                                                                                                                                                            |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Exits on idle**          | `opencode run` exits immediately when the session goes idle. Any behavior that occurs after the AI responds — plugins, hooks, deferred tool calls — will not complete. |
-| **Post-response behavior** | Use INTERACTIVE mode for any workflow that depends on actions triggered after the AI finishes responding. Verify via events.jsonl.                                     |
+The idle event fires and handlers begin executing — but `opencode run` does not wait for any async work to complete. Anything that happens asynchronously after the idle event fires into the void:
 
-For workflows requiring post-response behavior, use INTERACTIVE mode.
+- An idle handler that re-prompts the model → model response never arrives
+- An idle handler that starts a long async operation (notification, HTTP call, file write) → may never complete
+- Any plugin or tool that kicks off async work and expects a callback or result after idle → that result is lost
+- A tool that starts a long-running async process mid-session → if it hasn't returned before idle, it's cut off
+
+**The rule:** `opencode run` never waits longer than the idle event. Any async work — regardless of what triggered it or what type it is — that completes after idle is gone.
+
+**When you need async work to complete:** use the interactive trick — `echo "prompt" | opencode` wrapped in `timeout <N>` long enough to cover the full async cycle — then read the transcript.
 
 ## Core Commands
 

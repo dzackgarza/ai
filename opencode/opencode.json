@@ -108,9 +108,7 @@
       "command": [
         "npx",
         "-y",
-        "@morphllm/morphmcp",
-        "--api-key",
-        "REDACTED_API_KEY"
+        "@morphllm/morphmcp"
       ],
       "enabled": true,
       "environment": {
