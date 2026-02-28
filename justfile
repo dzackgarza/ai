@@ -56,3 +56,8 @@ codex-usage *ARGS="":
 # Usage: just amp-usage [--json] [--no-notify]
 amp-usage *ARGS="":
     @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}
+
+# Check Antigravity usage limits
+# Usage: just antigravity-usage [--json] [--no-notify]
+antigravity-usage *ARGS="":
+    @python {{repo}}/usage-limits/antigravity_usage.py {{ARGS}}

@@ -1,6 +1,6 @@
 # Usage Limits Checkers
 
-Three harnesses, unified interface. All auto-detect auth, all support JSON output.
+Four harnesses, unified interface. All auto-detect auth, all support JSON output.
 
 ## Claude Code
 
@@ -43,6 +43,20 @@ python amp_usage.py --no-notify  # Disable auto-notification
 - **Notifications:** 
   - **Immediate** when credits are full (optimal time to run tasks)
   - **Scheduled** for exact top-up hour when not full
+
+## Antigravity
+
+```bash
+python antigravity_usage.py      # Rich summary (auto-notify)
+python antigravity_usage.py --json  # JSON output
+python antigravity_usage.py --no-notify  # Disable auto-notification
+```
+
+- **Auth:** `npx antigravity-usage login` (one-time Google OAuth)
+- **Data source:** Wraps `antigravity-usage` CLI
+- **Windows:** Aggregated 5h/7d from per-model quotas
+- **Notifications:** Fresh window + exhausted quota (same as Claude/Codex)
+- **Note:** Requires Node.js for `npx`. Works without Antigravity desktop app.
 
 ## Decision Logic (Centralized)
 

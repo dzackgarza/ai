@@ -114,6 +114,13 @@ def main():
             windows = checker.get_windows(usage)
             if not args.json:
                 print("✓ Window anchored\n")
+            
+            # Notify that fresh window is available
+            if not args.no_notify:
+                message = "Codex session window open!\n\nFresh 5-hour window available for work."
+                if checker.send_ntfy_notification("Codex Window Open", message, at=None, tags="white_check_mark,rocket"):
+                    if not args.json:
+                        print("🔔 Fresh window notification sent")
         else:
             if not args.json:
                 print("✗ Failed to anchor window\n")
@@ -126,14 +133,6 @@ def main():
         windows = checker.get_windows(usage)
         checker.render_summary(usage)
 
-        # Notify when fresh window available (0% with no reset)
-        if not args.no_notify:
-            five_hour = windows.get("5h", (0, None))
-            if five_hour[0] == 0 and not five_hour[1]:
-                message = "Codex session window open!\n\nFresh 5-hour window available for work."
-                if checker.send_ntfy_notification("Codex Window Open", message, at=None, tags="white_check_mark,rocket"):
-                    print("\n🔔 Fresh window notification sent")
-        
         # Auto-schedule notification for blocking window
         if not args.no_notify:
             do_notify, blocking_reset = checker.should_notify(windows)

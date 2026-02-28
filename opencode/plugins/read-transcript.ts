@@ -7,7 +7,7 @@ const PARSER_SCRIPT =
 
 const PREVIEW_LINES = 30;
 
-export const ReadTranscriptPlugin: Plugin = async ({ $ }) => {
+export const ReadTranscriptPlugin: Plugin = async ({ $, client }) => {
   return {
     tool: {
       read_transcript: tool({
@@ -18,12 +18,38 @@ export const ReadTranscriptPlugin: Plugin = async ({ $ }) => {
         },
         async execute(args) {
           const { session_id } = args;
+
+          // Validate session exists before attempting export
+          const { data: session } = await client.session.get({
+            path: { id: session_id },
+          });
+          if (!session) {
+            return `Session not found: ${session_id}\nUse list_sessions to find valid session IDs.`;
+          }
+
           const outPath = `/tmp/transcript-${session_id}.txt`;
 
-          await $`opencode export ${session_id} | python ${PARSER_SCRIPT} - > ${outPath}`;
+          try {
+            await $`opencode export ${session_id} | python ${PARSER_SCRIPT} - > ${outPath}`.quiet();
+          } catch (err: any) {
+            const stderr = err?.stderr?.toString?.() ?? String(err);
+            await client.app.log({
+              body: {
+                service: "read-transcript",
+                level: "error",
+                message: `Export failed for session ${session_id}`,
+                extra: { stderr },
+              },
+            });
+            return `Failed to export session ${session_id}: ${stderr || err}`;
+          }
 
           const lines = (await $`wc -l < ${outPath}`.text()).trim();
           const totalLines = parseInt(lines, 10);
+
+          if (totalLines === 0) {
+            return `Export succeeded but produced no output for session ${session_id}.`;
+          }
 
           const head = (
             await $`head -n ${PREVIEW_LINES} ${outPath}`.text()

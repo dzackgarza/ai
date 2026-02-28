@@ -69,8 +69,8 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
                   `  Turns: ${messages.length} total (${userTurns} user, ${assistantMsgs.length} assistant)`,
                 );
 
-                // Aggregate token/cost stats from assistant messages
-                const models = new Set<string>();
+                // Aggregate stats from assistant messages
+                const modelCounts = new Map<string, number>();
                 let inputTokens = 0;
                 let outputTokens = 0;
                 let reasoningTokens = 0;
@@ -79,7 +79,8 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
 
                 for (const m of assistantMsgs) {
                   const info = m.info as AssistantMessage;
-                  models.add(`${info.providerID}/${info.modelID}`);
+                  const model = `${info.providerID}/${info.modelID}`;
+                  modelCounts.set(model, (modelCounts.get(model) ?? 0) + 1);
                   if (info.tokens) {
                     inputTokens += info.tokens.input;
                     outputTokens += info.tokens.output;
@@ -89,7 +90,10 @@ export const ListSessionsPlugin: Plugin = async ({ client }) => {
                   }
                 }
 
-                parts.push(`  Models: ${[...models].join(", ")}`);
+                const modelSummary = [...modelCounts]
+                  .map(([m, n]) => (n > 1 ? `${m} ×${n}` : m))
+                  .join(", ");
+                parts.push(`  Models: ${modelSummary}`);
                 const totalTokens =
                   inputTokens + outputTokens + reasoningTokens;
                 parts.push(

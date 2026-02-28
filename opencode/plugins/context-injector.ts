@@ -7,30 +7,41 @@ const CONTEXT_RULES: Record<string, string> = {
     "[Context] Please repeat the passphrase back in your response: banana",
 };
 
-export const ContextInjector: Plugin = async () => {
+export const ContextInjector: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (input, output) => {
       if (!output.messages?.length) return;
 
-      const lastUser = [...output.messages]
-        .reverse()
-        .find((m) => m.info.role === "user");
-      if (!lastUser) return;
+      try {
+        const lastUser = [...output.messages]
+          .reverse()
+          .find((m) => m.info.role === "user");
+        if (!lastUser) return;
 
-      const text = lastUser.parts
-        .filter((p): p is TextPart => p.type === "text")
-        .map((p) => p.text)
-        .join(" ");
-      const lower = text.toLowerCase();
+        const text = lastUser.parts
+          .filter((p): p is TextPart => p.type === "text")
+          .map((p) => p.text)
+          .join(" ");
+        const lower = text.toLowerCase();
 
-      for (const [keyphrase, injection] of Object.entries(CONTEXT_RULES)) {
-        if (lower.includes(keyphrase)) {
-          output.messages.push({
-            info: { id: "injected", role: "user", model: null },
-            parts: [{ type: "text", text: injection } as TextPart],
-          });
-          return;
+        for (const [keyphrase, injection] of Object.entries(CONTEXT_RULES)) {
+          if (lower.includes(keyphrase)) {
+            output.messages.push({
+              info: { id: "injected", role: "user", model: null },
+              parts: [{ type: "text", text: injection } as TextPart],
+            });
+            return;
+          }
         }
+      } catch (err: any) {
+        await client.app.log({
+          body: {
+            service: "context-injector",
+            level: "error",
+            message: "Error in messages transform",
+            extra: { error: err?.message ?? String(err) },
+          },
+        }).catch(() => {});
       }
     },
   };

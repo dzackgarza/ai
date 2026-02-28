@@ -40,60 +40,71 @@ export const StopHooks: Plugin = async ({ client }) => {
 
       const sessionId = event.properties.sessionID;
 
-      const { data: messages } = await client.session.messages({
-        path: { id: sessionId },
-      });
-      if (!messages || messages.length === 0) return;
+      try {
+        const { data: messages } = await client.session.messages({
+          path: { id: sessionId },
+        });
+        if (!messages || messages.length === 0) return;
 
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage.info.role !== "assistant") return;
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage.info.role !== "assistant") return;
 
-      // Deduplicate: skip if we already processed this message
-      if (lastSeenMessageId.get(sessionId) === lastMessage.info.id) return;
-      lastSeenMessageId.set(sessionId, lastMessage.info.id);
+        // Deduplicate: skip if we already processed this message
+        if (lastSeenMessageId.get(sessionId) === lastMessage.info.id) return;
+        lastSeenMessageId.set(sessionId, lastMessage.info.id);
 
-      const lastText = extractText(lastMessage);
-      const lastUserMessage = [...messages]
-        .reverse()
-        .find((m) => m.info.role === "user") as
-        | { info: UserMessage; parts: MessageWithParts["parts"] }
-        | undefined;
+        const lastText = extractText(lastMessage);
+        const lastUserMessage = [...messages]
+          .reverse()
+          .find((m) => m.info.role === "user") as
+          | { info: UserMessage; parts: MessageWithParts["parts"] }
+          | undefined;
 
-      const ctx = {
-        sessionId,
-        client,
-        messages,
-        lastMessage: lastMessage as {
-          info: AssistantMessage;
-          parts: MessageWithParts["parts"];
-        },
-        lastText,
-        lastUserMessage,
-      };
+        const ctx = {
+          sessionId,
+          client,
+          messages,
+          lastMessage: lastMessage as {
+            info: AssistantMessage;
+            parts: MessageWithParts["parts"];
+          },
+          lastText,
+          lastUserMessage,
+        };
 
-      const results = await Promise.all(STOP_HOOKS.map((fn) => fn(ctx)));
+        const results = await Promise.all(STOP_HOOKS.map((fn) => fn(ctx)));
 
-      if (!results.some((r) => r.force_stop)) return;
+        if (!results.some((r) => r.force_stop)) return;
 
-      const feedbackLines = results
-        .filter((r) => r.agent_feedback)
-        .map((r) => `• ${r.agent_feedback}`);
+        const feedbackLines = results
+          .filter((r) => r.agent_feedback)
+          .map((r) => `• ${r.agent_feedback}`);
 
-      const report = [
-        "**[Stop Hook Report]**",
-        "",
-        "One or more stop conditions were triggered:",
-        "",
-        ...feedbackLines,
-      ].join("\n");
+        const report = [
+          "**[Stop Hook Report]**",
+          "",
+          "One or more stop conditions were triggered:",
+          "",
+          ...feedbackLines,
+        ].join("\n");
 
-      await client.session.prompt({
-        path: { id: sessionId },
-        body: {
-          noReply: false,
-          parts: [{ type: "text", text: report }],
-        },
-      });
+        await client.session.prompt({
+          path: { id: sessionId },
+          body: {
+            noReply: false,
+            parts: [{ type: "text", text: report }],
+          },
+        });
+      } catch (err: any) {
+        await client.app.log({
+          body: {
+            service: "stop-hooks",
+            level: "error",
+            message: `Error in session ${sessionId}`,
+            extra: { error: err?.message ?? String(err) },
+          },
+        }).catch(() => {});
+      }
     },
   };
 };
