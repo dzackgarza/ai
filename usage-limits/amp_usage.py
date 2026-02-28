@@ -20,13 +20,16 @@ NTFY_SERVER = "http://localhost"
 NTFY_TOPIC = "usage-updates"
 
 
-def send_ntfy(title: str, message: str, at: str, tags: str = "white_check_mark,clock") -> bool:
+def send_ntfy(title: str, message: str, at: str, tags: str = "white_check_mark,clock", notif_id: str = None) -> bool:
     """Send scheduled ntfy notification."""
     url = f"{NTFY_SERVER}/{NTFY_TOPIC}"
+    all_tags = tags
+    if notif_id:
+        all_tags = f"{tags},notif_id:{notif_id}"
     headers = {
         "Title": title.encode("latin-1", "ignore").decode("latin-1"),
         "Priority": "high",
-        "Tags": tags,
+        "Tags": all_tags,
         "At": at,
     }
     try:
@@ -156,22 +159,16 @@ def format_summary(usage: dict, schedule_notify: bool = False) -> None:
         if check_scheduled(notif_id):
             console.print("\nℹ️  Top-up notification already scheduled")
         else:
-            # Use relative time for ntfy (format: "X hours Y minutes")
+            # Use relative time for ntfy (hours only, rounded up)
             time_to_topup = topup_time - datetime.now(timezone.utc)
             total_secs = int(time_to_topup.total_seconds())
-            hours = total_secs // 3600
-            mins = (total_secs % 3600) // 60
+            hours = (total_secs + 3599) // 3600  # Round up
             
-            if hours > 0:
-                at_time = f"{hours} hour{'s' if hours != 1 else ''}"
-                if mins > 0:
-                    at_time += f" {mins} minute{'s' if mins != 1 else ''}"
-            else:
-                at_time = f"{mins} minute{'s' if mins != 1 else ''}"
+            at_time = f"{hours} hour{'s' if hours != 1 else ''}"
             
             message = f"Amp credits topped up!\n\n${remaining:.2f} → ${total:.2f}"
             
-            if send_ntfy("Amp Top-Up", message, at_time):
+            if send_ntfy("Amp Top-Up", message, at_time, notif_id=notif_id):
                 console.print(f"\n🔔 Notification scheduled for {topup_time.astimezone().strftime('%Y-%m-%d %H:%M')}")
             else:
                 console.print("\n✗ Failed to schedule notification")
