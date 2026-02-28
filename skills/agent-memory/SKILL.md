@@ -5,90 +5,108 @@ description: Use when deciding what belongs in agent memory, defining memory pol
 
 # Agent Memory
 
-Memory is persistent execution context for future runs.
-It exists to improve future agent behavior, not to duplicate repository history.
+Memory is persistent execution context that improves future agent behavior. Every entry must make a future agent faster, more correct, or less likely to repeat a mistake.
 
-## Hard Boundary
+## Where Information Lives
 
-Memory is **not**:
-- an audit trail
-- a decision log
-- a changelog
-- a summary of work performed
+| Information | Location | Example |
+|-------------|----------|---------|
+| What changed, why, tradeoffs | Git commit message body | "Chose process constraint over declarative rules because post-mortem proved..." |
+| Reusable operational rules | Memory files | "Avoid unescaped `%` in crontab; build time strings in recipe/script" |
+| Current state, outstanding gaps | Repo artifacts (LEDGER.md) | "TODO: rate-limit headers still unverified" |
 
-Those belong in git history, diffs, commits, and PRs.
+Completed work belongs in commits. Lessons belong in memory. Current state belongs in repo artifacts. Never cross these boundaries.
 
-Memory **is** for:
-- reusable operational constraints
-- stable environment quirks that affect execution
-- runbook-like guidance that prevents repeat mistakes
-- cross-session context needed to execute correctly
+**Common violation:** Adding "2026-02-26 Session Findings" to a ledger file. That is a changelog disguised as documentation. Fix: details → commit message; lessons → memory; unresolved issues → new ledger entries.
 
-## The Three Buckets (Where Information Lives)
+## Decision Test
 
-| Information type | Correct location |
-|-----------------|-----------------|
-| What changed and why | Git commit message body |
-| Learned lessons, corrected workflows, calibration, common mistakes | Memory files |
-| Outstanding gaps, current bugs, future directions | Repo artifacts (e.g. LEDGER.md) |
+Before writing a memory entry, answer all four:
 
-**Repo artifacts track current state + future work only.** Completed work, session findings, and historical summaries must never appear in repo documentation. They belong in commit messages (details) and memory (lessons).
+1. **Will a future agent execute better with this?** If no → do not store.
+2. **Is it stable across sessions?** If no → do not store.
+3. **Is it already obvious from repo files?** If yes → do not duplicate.
+4. **Is it primarily "what changed"?** If yes → commit message, not memory.
 
-**Common violation:** adding a "2026-02-26 Session Findings" section to a ledger file. That is a changelog entry disguised as documentation. The fix: details go in the commit message; lessons go in memory; any *still-unresolved* issues become new ledger entries.
-
-## Decision Test (Memory vs Git)
-
-Use this test before writing memory:
-
-1. Is this primarily "what changed"?  
-   If yes, keep it in git artifacts, not memory.
-2. Will a future agent execute better with this information?  
-   If no, do not store it.
-3. Is the information stable and reusable across sessions?  
-   If no, do not store it.
-4. Is it already obvious from repo files/docs?  
-   If yes, link or rely on repo; do not duplicate.
-
-## What to Store
-
-Good memory content:
-- Trigger: when this guidance applies
-- Rule: what to do
-- Constraint: non-obvious limits/failure modes
-- Action: exact command/pattern when applicable
-- Verification: how to tell if it worked
-
-Bad memory content:
-- chronological timeline of events
-- narrative progress updates
-- broad retrospective summaries
-- commit-like change logs
-
-## Rewrite Pattern
-
-Convert historical notes into reusable policy:
-
-- Bad: "On Feb 25 we changed parser behavior and tried many fixes."
-- Good: "If stdout has no JSON and stderr contains API rate-limit marker, classify as RATE_LIMIT and send ntfy error notification."
-
-- Bad: "We edited cron commands several times."
-- Good: "Avoid `%` date formatting directly in crontab commands; place time construction in recipe/script."
+All four must pass. If any fails, the entry does not belong in memory.
 
 ## Entry Format
 
-Use this compact format for memory entries:
+Every memory entry uses this structure:
 
 ```markdown
-# <memory-name>
-- Trigger: <condition>
-- Rule: <required behavior>
-- Command/Pattern: <exact command or snippet>
+# <descriptive-kebab-name>
+- Trigger: <when this guidance applies>
+- Rule: <what to do>
+- Command/Pattern: <exact command or code snippet, if applicable>
 - Verify: <observable success condition>
-- Scope: <project|user|environment>
+- Scope: <project | user | environment>
 ```
 
-## Source Grounding
+**Each field is mandatory.** Entries without a trigger are unfindable. Entries without verification are unenforceable.
 
-When discussing why this policy exists, cite `references/source-notes.md`.
-For practical classification examples and transformations, use `references/memory-rubric.md`.
+## Transforming Notes into Memory
 
+Agents default to writing narrative. Memory requires policy. Convert timeline into trigger-rule-verify:
+
+| Narrative (wrong) | Policy (correct) |
+|-------------------|-----------------|
+| "On Feb 25 we changed parser behavior and tried many fixes." | "If stdout has no JSON and stderr contains rate-limit marker, classify as RATE_LIMIT and send ntfy error notification." |
+| "We edited cron commands several times." | "Avoid `%` date formatting directly in crontab commands; place time construction in recipe/script." |
+| "Spent 2h debugging the auth token refresh." | "Auth tokens expire after 3600s. Refresh proactively at 3000s, not on 401 response." |
+| "The test suite was flaky on CI." | "Rate limiter tests require Redis mock on CI. Real Redis connections cause intermittent timeouts." |
+
+**The pattern:** Strip the timeline. Extract the trigger condition. Write the rule. Add how to verify it worked.
+
+## Memory File Organization
+
+### MEMORY.md (always loaded into context)
+
+- Maximum 200 lines — every line costs attention budget.
+- Contains the highest-signal entries and links to topic files.
+- Organize by topic, not chronology. No dates in headers.
+
+### Topic files (loaded on demand)
+
+- Create when a topic accumulates 3+ related entries.
+- Name descriptively: `cron-quirks.md`, `api-rate-limits.md`, `ci-flakiness.md`.
+- Link from MEMORY.md: `See [cron-quirks.md](cron-quirks.md) for details.`
+
+### Sizing rules
+
+| Symptom | Action |
+|---------|--------|
+| MEMORY.md exceeds 200 lines | Extract topic clusters into separate files, keep summaries + links |
+| A topic file exceeds 100 lines | Split further or prune stale entries |
+| An entry hasn't been useful in 5+ sessions | Candidate for removal |
+
+## Maintaining Memory
+
+Memory rots just like code. Stale entries mislead future agents.
+
+- **Before writing:** Check if an existing entry covers the topic. Update it instead of creating a duplicate.
+- **After discovering an entry is wrong:** Correct or delete it immediately. Wrong memory is worse than no memory.
+- **After a workflow changes:** Update affected entries. A rule about a removed tool is noise.
+- **When entries contradict observed behavior:** Investigate. Either the entry is stale or the behavior is a bug. Resolve the contradiction — never leave both standing.
+
+## Quality Bar
+
+An entry is acceptable only if all four are true:
+
+- **Actionable** — contains a concrete behavior, command, or decision rule
+- **Durable** — likely useful in future sessions (not session-specific)
+- **Non-duplicative** — not already covered by git history, repo docs, or another entry
+- **Specific** — includes clear trigger and verification, not vague guidance
+
+| Candidate | Verdict | Why |
+|-----------|---------|-----|
+| "Commit abc changed parser logic" | Reject | Git tracks this |
+| "If API returns rate-limit in stderr with no JSON, classify as RATE_LIMIT" | Accept | Reusable failure-handling rule |
+| "Spent 2h debugging issue X" | Reject | Timeline, not policy |
+| "Topic mismatch is common; verify exact topic string before concluding delivery failure" | Accept | Reusable verification guardrail |
+| "PR #123 decided to rename module" | Reject | Decision log, belongs in commit |
+
+## Reference
+
+- `references/source-notes.md` — Research grounding for this policy (Reflexion, Voyager, MemGPT, Anthropic, OpenAI)
+- `references/memory-rubric.md` — Keep/drop matrix and transformation examples
