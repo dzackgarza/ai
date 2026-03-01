@@ -155,3 +155,9 @@ models:
     total_passed: 0
     cumulative_score: 0
     last_run: 2026-03-01T05:50:27.983Z
+  nvidia/mistralai/mistral-large-3-675b-instruct-2512:
+    total_runs: 1
+    total_cases: 12
+    total_passed: 12
+    cumulative_score: 1
+    last_run: 2026-03-01T06:08:43.447Z

@@ -34,14 +34,21 @@ const ClassificationSchema = z.object({
 //
 // Avoid thinking models here — their content field is empty until after the
 // reasoning budget is exhausted, making them slow and unreliable at max_tokens=200.
+//
+// mode: "JSON"    → response_format: json_object (default; fastest)
+// mode: "MD_JSON" → prompt-based JSON in markdown block; use when json_object
+//                   is unsupported (e.g. Mistral tokenizer on NVIDIA NIM)
 // ---------------------------------------------------------------------------
 
-const CLASSIFIER_MODELS = [
-  "groq/llama-3.3-70b-versatile",                           // Groq      — 12/12, 138-400ms   (tested 2026-03-01)
-  "groq/moonshotai/kimi-k2-instruct",                       // Groq      — 12/12, 151-1165ms  (tested 2026-03-01)
-  "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503",   // NVIDIA    — 12/12, 995-1630ms  (tested 2026-03-01)
-  "nvidia/meta/llama-3.3-70b-instruct",                     // NVIDIA    — 11/12, 546-2231ms  (tested 2026-03-01)
-  "arcee-ai/trinity-large-preview:free",                    // OpenRouter — 12/12, 200-500ms   (tested 2026-03-01) — last resort, 50/day cap
+interface ModelConfig { slug: string; mode: "JSON" | "MD_JSON"; maxTokens: number }
+
+const CLASSIFIER_MODELS: ModelConfig[] = [
+  { slug: "groq/llama-3.3-70b-versatile",                         mode: "JSON",    maxTokens: 200 }, // 12/12, 138-400ms
+  { slug: "groq/moonshotai/kimi-k2-instruct",                     mode: "JSON",    maxTokens: 200 }, // 12/12, 151-1165ms
+  { slug: "nvidia/mistralai/mistral-large-3-675b-instruct-2512",  mode: "MD_JSON", maxTokens: 400 }, // 12/12, 890-1688ms
+  { slug: "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503", mode: "JSON",    maxTokens: 200 }, // 12/12, 995-1630ms
+  { slug: "nvidia/meta/llama-3.3-70b-instruct",                   mode: "JSON",    maxTokens: 200 }, // 11/12, 546-2231ms
+  { slug: "arcee-ai/trinity-large-preview:free",                  mode: "JSON",    maxTokens: 200 }, // last resort — 50/day cap
 ];
 
 // ---------------------------------------------------------------------------
@@ -132,13 +139,13 @@ async function classify(text: string): Promise<{ tier: Tier; reasoning: string }
   }
 
   // 2. LLM classifier — try models in order, fail open if all fail
-  for (const model of CLASSIFIER_MODELS) {
-    const { baseURL, modelId, apiKey } = endpointFor(model);
+  for (const { slug, mode, maxTokens } of CLASSIFIER_MODELS) {
+    const { baseURL, modelId, apiKey } = endpointFor(slug);
     if (!apiKey) continue;
 
     try {
       const oai = new OpenAI({ baseURL, apiKey });
-      const client = Instructor({ client: oai, mode: "JSON" });
+      const client = Instructor({ client: oai, mode });
 
       const result = await client.chat.completions.create({
         model: modelId,
@@ -148,7 +155,7 @@ async function classify(text: string): Promise<{ tier: Tier; reasoning: string }
         ],
         response_model: { schema: ClassificationSchema, name: "Classification" },
         max_retries: 3,
-        max_tokens: 200,
+        max_tokens: maxTokens,
         temperature: 0,
       });
 

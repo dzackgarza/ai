@@ -140,7 +140,7 @@ async function classify(
   const { baseURL, modelId, apiKey } = endpointFor(model);
 
   const oai = new OpenAI({ baseURL, apiKey });
-  const client = Instructor({ client: oai, mode: "JSON" });
+  const client = Instructor({ client: oai, mode: instructorMode });
 
   try {
     const result: Classification = await client.chat.completions.create({
@@ -151,7 +151,7 @@ async function classify(
       ],
       response_model: { schema: ClassificationSchema, name: "Classification" },
       max_retries: MAX_RETRIES,
-      max_tokens: 200,
+      max_tokens: instructorMode === "MD_JSON" ? 400 : 200,
       temperature: 0,
     });
     return { tier: result.tier, reasoning: result.reasoning, latency_ms: Date.now() - t0 };
@@ -168,7 +168,12 @@ async function classify(
 // Main
 // ---------------------------------------------------------------------------
 
-const model = process.argv[2] ?? "arcee-ai/trinity-large-preview:free";
+// Optional --mode flag: bun run run.ts <slug> --mode MD_JSON
+const modeArg = process.argv.indexOf("--mode");
+const instructorMode = (modeArg !== -1 ? process.argv[modeArg + 1] : "JSON") as "JSON" | "MD_JSON";
+if (instructorMode === "MD_JSON") console.log(`Instructor mode: MD_JSON (no response_format header)\n`);
+
+const model = process.argv.find((a, i) => i >= 2 && !a.startsWith("--") && process.argv[i-1] !== "--mode") ?? "arcee-ai/trinity-large-preview:free";
 const { apiKey } = endpointFor(model);
 if (!model.startsWith("ollama/") && !apiKey) {
   console.error("API key not set for this provider"); process.exit(1);
