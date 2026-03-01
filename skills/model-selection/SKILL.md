@@ -157,6 +157,19 @@ From [APEX Testing](https://www.apex-testing.org/) — an agentic coding benchma
 
 ---
 
+## Local Models
+
+When considering local/deployed models (Ollama, llama.cpp, etc.), use **[llmfit](https://github.com/sweepai/llmfit)** to check compatibility and feasibility before committing to a model. `llmfit` benchmarks models against your hardware and estimates:
+
+- **Throughput** (tokens/second)
+- **Memory requirements**
+- **Time to first token** latency
+- **Whether the model can run at all** on your setup
+
+Don't guess — run `llmfit` to verify a local model will actually work for agentic tasks.
+
+---
+
 ## Related Skills
 
 - **creating-subagents** — When to create subagents; subagent descriptions are agent-facing delegation instructions (Use when/Pass/Ask format)
