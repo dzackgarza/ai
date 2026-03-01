@@ -37,10 +37,11 @@ const ClassificationSchema = z.object({
 // ---------------------------------------------------------------------------
 
 const CLASSIFIER_MODELS = [
-  "arcee-ai/trinity-large-preview:free",                  // OpenRouter — 12/12, 200-500ms (tested 2026-03-01)
-  "groq/llama-3.3-70b-versatile",                         // Groq — 12/12, 138-400ms (tested 2026-03-01)
-  "nvidia/meta/llama-3.3-70b-instruct",                   // NVIDIA NIM — 11/12, 546-2231ms (tested 2026-03-01)
-  "groq/meta-llama/llama-4-maverick-17b-128e-instruct",   // Groq — 11/12, 163-1081ms (tested 2026-03-01)
+  "groq/llama-3.3-70b-versatile",                           // Groq      — 12/12, 138-400ms   (tested 2026-03-01)
+  "groq/moonshotai/kimi-k2-instruct",                       // Groq      — 12/12, 151-1165ms  (tested 2026-03-01)
+  "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503",   // NVIDIA    — 12/12, 995-1630ms  (tested 2026-03-01)
+  "nvidia/meta/llama-3.3-70b-instruct",                     // NVIDIA    — 11/12, 546-2231ms  (tested 2026-03-01)
+  "arcee-ai/trinity-large-preview:free",                    // OpenRouter — 12/12, 200-500ms   (tested 2026-03-01) — last resort, 50/day cap
 ];
 
 // ---------------------------------------------------------------------------
