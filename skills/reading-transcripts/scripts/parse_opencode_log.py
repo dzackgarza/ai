@@ -1,21 +1,22 @@
 import json
 import sys
 
+
 def parse_opencode_json(file_path):
     if file_path == "-":
         content = sys.stdin.read()
-        
+
         # OpenCode prints "Exporting session: ses_..." to stdout before the JSON
         if content.startswith("Exporting"):
             try:
-                content = content[content.index("\n")+1:]
+                content = content[content.index("\n") + 1 :]
             except ValueError:
                 pass
-                
+
         if not content.strip():
             print("Error: No valid JSON found in stdin.")
             sys.exit(1)
-            
+
         try:
             data = json.loads(content)
         except json.JSONDecodeError as e:
@@ -24,17 +25,67 @@ def parse_opencode_json(file_path):
     else:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-    
+
     info = data.get("info", {})
-    print(f"=== OpenCode Transcript: {info.get('title', 'Unknown')} ({info.get('id', 'Unknown')}) ===\n")
+    print(
+        f"=== OpenCode Transcript: {info.get('title', 'Unknown')} ({info.get('id', 'Unknown')}) ===\n"
+    )
 
     for msg in data.get("messages", []):
-        role = msg.get("info", {}).get("role", "unknown").upper()
-        
-        # OpenCode often groups assistant actions over multiple messages,
-        # but for readability we'll just print the blocks.
-        print(f"\n[{role}]")
-        
+        msg_info = msg.get("info", {})
+        role = msg_info.get("role", "unknown").upper()
+
+        # Timing/model header — handle both native opencode format and langfuse-enriched format
+        meta_parts = []
+
+        # Timestamp: langfuse uses info.timestamp (ISO str), native uses info.time.created (ms epoch)
+        ts = msg_info.get("timestamp")
+        if not ts:
+            t = msg_info.get("time") or {}
+            if isinstance(t, dict) and t.get("created"):
+                from datetime import datetime, timezone as tz
+
+                ts = datetime.fromtimestamp(t["created"] / 1000, tz=tz.utc).strftime(
+                    "%Y-%m-%dT%H:%M:%SZ"
+                )
+        if ts:
+            meta_parts.append(ts)
+
+        # Model: langfuse uses a plain string, native uses a dict
+        model = msg_info.get("model")
+        if isinstance(model, dict):
+            model = model.get("modelID")
+        if model:
+            meta_parts.append(str(model))
+
+        # Latency fields — only present in langfuse-enriched format
+        if msg_info.get("latency_s") is not None:
+            meta_parts.append(f"llm {msg_info['latency_s']:.1f}s")
+        if msg_info.get("time_to_first_token_s") is not None:
+            meta_parts.append(f"first token {msg_info['time_to_first_token_s']:.1f}s")
+
+        # Native format latency from time.created / time.completed
+        if not msg_info.get("latency_s"):
+            t = msg_info.get("time") or {}
+            if isinstance(t, dict) and t.get("created") and t.get("completed"):
+                native_latency = (t["completed"] - t["created"]) / 1000
+                meta_parts.append(f"llm {native_latency:.1f}s")
+
+        tokens = msg_info.get("tokens", {})
+        if tokens.get("total"):
+            tok_parts = [f"in {tokens['input']:,}"]
+            if tokens.get("input_cached"):
+                tok_parts.append(f"{tokens['input_cached']:,} cached")
+            tok_parts.append(f"out {tokens['output']:,}")
+            if tokens.get("output_reasoning"):
+                tok_parts.append(f"{tokens['output_reasoning']:,} reasoning")
+            meta_parts.append("tokens: " + ", ".join(tok_parts))
+
+        header = f"\n[{role}]"
+        if meta_parts:
+            header += f"  // {' | '.join(meta_parts)}"
+        print(header)
+
         for part in msg.get("parts", []):
             ptype = part.get("type")
             if ptype == "text":
@@ -44,30 +95,63 @@ def parse_opencode_json(file_path):
             elif ptype == "tool":
                 tool_name = part.get("tool", "unknown_tool")
                 state = part.get("state", {})
+                timing = part.get("timing", {})
                 inputs = json.dumps(state.get("input", {}), indent=2)
-                print(f"🛠️  [Tool Use: {tool_name}]\n{inputs}")
-                
+                tool_header = f"🛠️  [Tool Use: {tool_name}]"
+                if timing.get("latency_s") is not None:
+                    tool_header += f"  (tool took {timing['latency_s']:.2f}s)"
+                print(f"{tool_header}\n{inputs}")
+
                 output = state.get("output", "")
                 status = state.get("status", "")
                 err_flag = "❌ ERROR" if status == "error" else "✅"
-                
+
                 if output:
                     res_content = str(output)
                     if len(res_content) > 500:
                         res_content = res_content[:500] + "\n...[truncated]..."
                     print(f"\n{err_flag} [Tool Result]\n{res_content.strip()}")
             elif ptype in ("step-start", "step-finish", "patch"):
-                # Ignore internal agent loop markers and internal state patches
                 continue
             else:
                 print(f"[{ptype} block]")
         print("-" * 60)
 
+    # Summary block (present when data comes from langfuse)
+    summary = data.get("summary")
+    if summary:
+        print("\n" + "=" * 60)
+        print("SESSION SUMMARY")
+        print("=" * 60)
+        if summary.get("started_at"):
+            print(f"  Started:         {summary['started_at']}")
+        if summary.get("ended_at"):
+            print(f"  Ended:           {summary['ended_at']}")
+        if summary.get("wall_clock_s") is not None:
+            print(f"  Wall clock:      {summary['wall_clock_s']}s")
+        if summary.get("total_llm_latency_s") is not None:
+            print(f"  LLM time:        {summary['total_llm_latency_s']}s")
+        if summary.get("llm_steps") is not None:
+            print(f"  LLM steps:       {summary['llm_steps']}")
+        if summary.get("models"):
+            print(f"  Models:          {', '.join(summary['models'])}")
+        tok = summary.get("tokens", {})
+        if tok.get("total"):
+            print(f"  Tokens total:    {tok['total']:,}")
+            print(f"    Input:         {tok.get('input', 0):,}")
+            print(f"    Output:        {tok.get('output', 0):,}")
+            if tok.get("input_cached"):
+                print(f"    Cached:        {tok['input_cached']:,}")
+            if tok.get("output_reasoning"):
+                print(f"    Reasoning:     {tok['output_reasoning']:,}")
+        print("=" * 60)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python parse_opencode_log.py <path-to-json-file | ->")
         sys.exit(1)
-    
+
     try:
         parse_opencode_json(sys.argv[1])
     except BrokenPipeError:

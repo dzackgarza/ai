@@ -1010,7 +1010,8 @@
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest",
-    "opencode-plugin-langfuse@latest"
+    "opencode-plugin-langfuse@latest",
+    "opencode-sync-plugin@latest"
   ],
   "agent": {
     "plan": {
