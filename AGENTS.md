@@ -169,6 +169,21 @@ Memories store durable, reusable agent context not captured in repository files.
 
 ---
 
+## Chat Responses After Completing Work
+
+Do not summarize what was done. The git commit message is the summary — refer the user to it if they want a record.
+
+**Chat output after a task should contain only:**
+- Items NOT completed and why
+- Gaps or open questions identified during the work
+- Errors or surprises that were skipped and need revisiting
+- Decisions made during the process that may need user review
+- Next actions, if any
+
+If none of the above apply, a one-line confirmation is sufficient. A changelog in chat is noise.
+
+---
+
 ## Anchor: Epistemic Integrity (Restated)
 
 When you find no evidence of something, you MUST use the five-field format from the Epistemic Integrity section above. Every negative finding requires: Searched, Found, Conclusion (labeled as inference), Confidence, Gaps. No exceptions.

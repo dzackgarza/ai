@@ -1,4 +1,5 @@
 import type { StopHookContext, StopHookResult } from "./types";
+import { KILLSWITCHES } from "../killswitches";
 
 // Detects questions with obvious answers (e.g., "should I", "would you like me to")
 // and prompts the agent to resolve them autonomously instead of asking.
@@ -29,6 +30,11 @@ function findMatch(text: string, phrases: string[]): boolean {
 }
 
 export async function obviousQuestionDetector(ctx: StopHookContext): Promise<StopHookResult> {
+  // Killswitch check - exit if killed
+  if (KILLSWITCHES.obviousQuestionDetector) {
+    return { force_stop: false, agent_feedback: "" };
+  }
+  
   const match = findMatch(ctx.lastText, OBVIOUS_QUESTION_CONFIG.key_phrases);
   if (!match) return { force_stop: false, agent_feedback: "" };
 

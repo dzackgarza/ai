@@ -1,6 +1,6 @@
 # Usage Limits — Agent Guide
 
-Four scripts report quota across Claude, Codex, Amp, and Antigravity in a uniform table:
+Five scripts report quota across Claude, Codex, Amp, Antigravity, and OpenRouter in a uniform table:
 
 ```
 | Identifier              | XX% | ████████░░░░ | in 4h 12m |
@@ -16,6 +16,8 @@ Four scripts report quota across Claude, Codex, Amp, and Antigravity in a unifor
 | `codex_usage.py` | Codex CLI provider (5h/7d windows) |
 | `amp_usage.py` | Amp provider (continuous credit replenishment) |
 | `antigravity_usage.py` | Antigravity provider (per-model quotas, wakeup trigger) |
+| `ollama_usage.py` | Ollama Cloud provider (5h/7d windows, cookie auth) |
+| `openrouter_usage.py` | OpenRouter provider (50 req/day free tier, via Langfuse Metrics API) |
 
 ---
 
@@ -38,6 +40,7 @@ Each provider defines when a "window newly ready" event fires:
 | Codex | `should_anchor(rows)` — same logic | "Codex 5h window open" |
 | Amp | credits full (`reset_at is None`) | "Amp credits full" |
 | Antigravity | all models `< 1%` | "Antigravity quota fresh" |
+| OpenRouter | daily usage at 0% (fresh reset) | "OpenRouter daily reset" |
 
 ### Scheduled notifications — `_handle_notifications()` (base or override)
 
@@ -98,6 +101,11 @@ quota wakeup via its own cron scheduler. This script only detects and notifies.
 
 Always returns `False`. Credits replenish automatically; there is no idle window to start.
 `anchor_command()` returns `None` (inherited default).
+
+### OpenRouter — `OpenRouterProvider.should_anchor()`
+
+Always returns `False`. The daily request counter (50 for free tier) resets automatically
+at UTC midnight — there is no idle window to anchor.
 
 ---
 

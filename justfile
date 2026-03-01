@@ -3,6 +3,11 @@
 
 repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 
+# Show available recipes
+# Usage: just
+default:
+    @just --list
+
 # Install all symlinks and environment variables
 install:
     @mkdir -p ~/.claude ~/.codex ~/.gemini ~/.qwen ~/.config/opencode ~/.config/kilo ~/.config/amp ~/.config ~/.agents ~/.kilocode ~/.opencode
@@ -48,17 +53,12 @@ install:
     @echo "Safety Net:       cc-safety-net.json → ~/.cc-safety-net/config.json"
 
 # Check all usage limits
-# Usage: just all-usage
-all-usage:
-    @python {{repo}}/usage-limits/claude_usage.py
-    @python {{repo}}/usage-limits/codex_usage.py
-    @python {{repo}}/usage-limits/amp_usage.py
-    @python {{repo}}/usage-limits/antigravity_usage.py
-
-# Check Claude Code usage limits
-# Usage: just usage [--json]
+# Usage: just usage [--json] [--no-notify]
 usage *ARGS="":
     @python {{repo}}/usage-limits/claude_usage.py {{ARGS}}
+    @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
+    @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}
+    @python {{repo}}/usage-limits/antigravity_usage.py {{ARGS}}
 
 # Check Codex usage limits
 # Usage: just codex-usage [--json] [--no-notify]

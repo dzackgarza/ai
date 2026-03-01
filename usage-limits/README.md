@@ -2,6 +2,31 @@
 
 Four harnesses, unified interface. All auto-detect auth, all support JSON output.
 
+## ⚠️ Obtaining Usage Data
+
+**None of this information is publicly documented.** Each provider required reverse-engineering:
+
+| Provider | How Auth Was Found |
+|----------|-------------------|
+| **Claude** | Inspected `~/.claude/.credentials.json` discovered by CLI; OAuth endpoint found via network tab + GitHub issues |
+| **Codex** | Located `~/.codex/auth.json` via filesystem search; WHAM API endpoint discovered in browser DevTools Network tab |
+| **Amp** | `amp usage` CLI command discovered via `amp --help`; output parsed with regex |
+| **Antigravity** | Global npm package `antigravity-usage` found via community Discord; `--json` flag discovered via source inspection |
+| **Ollama** | Session cookie extracted from browser DevTools → Application → Cookies; HTML scraping from `/settings` page |
+| **OpenRouter** | Free tier request count NOT exposed via API — tracked via Langfuse observability (OpenRouter Broadcast) |
+
+**OpenRouter does not expose free tier request counts** — the API only tracks credits. To monitor the 50 requests/day limit, traces are collected via OpenRouter Broadcast → Langfuse, then queried via Langfuse Metrics API.
+
+**To add a new provider, expect to:**
+
+1. Search GitHub issues, Reddit, Discord for existing community discoveries
+2. Inspect browser DevTools (Network tab, Application storage)
+3. Search filesystem for credential files (`~/.config/`, `~/.local/`, `~/.*`)
+4. Reverse-engineer CLI commands (`strace`, `--verbose` flags)
+5. Read package source code (npm, pip) when available
+
+There is no official documentation. Everything here was discovered through community effort.
+
 ## Claude Code
 
 ```bash
@@ -57,6 +82,23 @@ python antigravity_usage.py --no-notify  # Disable auto-notification
 - **Windows:** Aggregated 5h/7d from per-model quotas
 - **Notifications:** Fresh window + exhausted quota (same as Claude/Codex)
 - **Note:** Requires Node.js for `npx`. Works without Antigravity desktop app.
+
+## OpenRouter
+
+```bash
+python openrouter_usage.py         # Rich summary (via Langfuse)
+python openrouter_usage.py --json  # JSON output
+python openrouter_usage.py --no-notify  # Disable auto-notification
+```
+
+- **Auth:** `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` environment variables
+- **Setup:**
+  1. Create Langfuse account at https://cloud.langfuse.com (free tier: 50k units/month, no credit card)
+  2. Get API keys from Settings > API Keys
+  3. Enable OpenRouter Broadcast: OpenRouter Settings > Observability > Langfuse
+  4. Add keys to `~/.envrc`: `export LANGFUSE_PUBLIC_KEY=pk-lf-...` and `export LANGFUSE_SECRET_KEY=sk-lf-...`
+- **Limits:** 50 requests/day (free tier), resets at UTC midnight
+- **How it works:** OpenRouter sends traces to Langfuse via Broadcast; script queries Langfuse Metrics API for daily count of free model requests
 
 ## Decision Logic (Centralized)
 

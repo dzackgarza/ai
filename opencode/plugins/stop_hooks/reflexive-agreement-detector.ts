@@ -1,4 +1,5 @@
 import type { StopHookContext, StopHookResult } from "./types";
+import { KILLSWITCHES } from "../killswitches";
 
 // Detects reflexive agreement phrases (e.g., "you're right", "they are right") in
 // the assistant's response and injects a prompt asking for independent critical reasoning.
@@ -32,6 +33,11 @@ function findMatch(text: string, phrases: string[]): boolean {
 }
 
 export async function reflexiveAgreementDetector(ctx: StopHookContext): Promise<StopHookResult> {
+  // Killswitch check - exit if killed
+  if (KILLSWITCHES.reflexiveAgreementDetector) {
+    return { force_stop: false, agent_feedback: "" };
+  }
+  
   const match = findMatch(ctx.lastText, REFLEXIVE_AGREEMENT_CONFIG.key_phrases);
   if (!match) return { force_stop: false, agent_feedback: "" };
 
