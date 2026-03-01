@@ -2,8 +2,10 @@
 // true = KILL (disabled), false = allow.
 //
 // Two ways to toggle:
-//   1. Edit this file — takes effect on next message (no restart needed).
-//   2. Set an env var — overrides the code value for the session.
+//   1. Edit this file — the primary method for interactive sessions.
+//      Takes effect on the next message without restarting opencode.
+//   2. Env var — for one-shot CLI invocations only (e.g. run.sh).
+//      Has no effect on a running interactive session.
 //      Format: <SCREAMING_SNAKE>_ENABLED=true  → force enable
 //              <SCREAMING_SNAKE>_ENABLED=false → force kill
 //      Example: PROMPT_ROUTER_ENABLED=true opencode run "..."
