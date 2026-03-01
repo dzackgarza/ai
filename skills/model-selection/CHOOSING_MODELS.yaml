@@ -3,7 +3,9 @@
 # Categories:
 #   1. VERIFIED: Direct mappings to APEX-listed models (reliable)
 #   2. INFERRED: Estimated based on similar models (marked as estimate)
-#   3. EXCLUDED: Embedding models, irrelevant for coding tasks
+#
+# Note: opencode models list contains only chat/code models — no embedding
+#       models need to be filtered. :free suffixes map to base model.
 #
 # Tier Mapping:
 #   S+ (≥1870): 95-100
@@ -175,10 +177,3 @@ models:
 
   # Cosmos
   cosmos-nemotron-34b: 55 # ESTIMATED
-
-
-  # ===== EXCLUDED: Embedding/specialized models =====
-  # These are not relevant for coding tasks:
-  # - gemma3:27b (embedding model)
-  # - codegemma (embedding variants)
-  # - Various :free tier models (use base model score)
