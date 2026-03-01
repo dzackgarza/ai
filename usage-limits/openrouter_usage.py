@@ -69,12 +69,14 @@ class OpenRouterProvider(UsageProvider):
         return base64.b64encode(credentials.encode()).decode()
 
     def fetch_raw(self) -> dict:
-        """Fetch today's OpenRouter traces from Langfuse API.
+        """Fetch today's OpenRouter free model traces from Langfuse API.
 
         The traces endpoint has much higher rate limits (1000 req/min for Hobby)
         compared to the metrics endpoint (100 req/day).
 
-        Returns dict with 'count' key containing today's trace count.
+        Filters to only free tier models (model name contains ":free").
+
+        Returns dict with 'count' key containing today's free model request count.
         """
         auth_header = self.get_basic_auth()
 
@@ -101,12 +103,25 @@ class OpenRouterProvider(UsageProvider):
             resp.raise_for_status()
             data = resp.json()
 
-            # Count traces from today
+            # Count traces from today that use OpenRouter free tier models
             traces = data.get("data", [])
-            today_count = sum(
-                1 for t in traces
-                if t.get("timestamp", "") > today_start.isoformat().replace("+00:00", "Z")
-            )
+            today_count = 0
+            for t in traces:
+                timestamp = t.get("timestamp", "")
+                if timestamp <= today_start.isoformat().replace("+00:00", "Z"):
+                    continue
+
+                # Verify this is an OpenRouter trace (not just named that way)
+                metadata = t.get("metadata", {})
+                if metadata.get("openrouter.source") != "openrouter":
+                    continue
+
+                # Check if model is a free tier model
+                attributes = metadata.get("attributes", {})
+                model = attributes.get("gen_ai.request.model", "")
+
+                if ":free" in model.lower():
+                    today_count += 1
 
             return {"count": today_count}
         except requests.RequestException as e:
