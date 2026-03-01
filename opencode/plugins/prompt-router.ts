@@ -13,6 +13,8 @@
 import Instructor from "@instructor-ai/instructor";
 import OpenAI from "openai";
 import { z } from "zod";
+import { appendFileSync } from "fs";
+import { randomUUID } from "crypto";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart } from "@opencode-ai/sdk";
 import { KILLSWITCHES } from "./killswitches";
@@ -79,6 +81,28 @@ function endpointFor(model: string): { baseURL: string; modelId: string; apiKey:
     modelId: model,
     apiKey: process.env.OPENROUTER_API_KEY ?? "",
   };
+}
+
+// ---------------------------------------------------------------------------
+// Session identity — stable per process for log correlation
+// ---------------------------------------------------------------------------
+
+const SESSION_ID = process.env.OPENCODE_SESSION_ID ?? randomUUID();
+const LOG_PATH = "/var/sandbox/.prompt-router.log";
+
+function appendLog(entry: {
+  ts: string;
+  session_id: string;
+  prompt: string;
+  tier: string;
+  reasoning: string;
+  injected: boolean;
+}): void {
+  try {
+    appendFileSync(LOG_PATH, JSON.stringify(entry) + "\n");
+  } catch {
+    // Log directory may not exist in dev — silently skip
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -192,6 +216,15 @@ export const PromptRouter: Plugin = async ({ client }) => {
         output.messages.push({
           info: { id: `router-${Date.now()}`, role: "user", model: null },
           parts: [{ type: "text", text: instruction } as TextPart],
+        });
+
+        appendLog({
+          ts: new Date().toISOString(),
+          session_id: SESSION_ID,
+          prompt: text.slice(0, 500),
+          tier,
+          reasoning,
+          injected: true,
         });
 
         await client.app.log({
