@@ -1,0 +1,104 @@
+model: groq/llama-3.1-8b-instant
+timestamp: 2026-03-01T05:19:56.777Z
+playbook_file: classifier/playbook.md
+passed: 9
+total: 12
+score: 0.75
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user is asking about the AI's capabilities and instructions.
+    latency_ms: 164
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user is asking about the capabilities and instructions of the AI
+      itself.
+    latency_ms: 173
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The prompt requires knowledge of the current state of TypeScript releases.
+    latency_ms: 135
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The prompt requires knowledge of the current LTS version of Node.js,
+      which can be found through web data.
+    latency_ms: 140
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: C
+    pass: true
+    reasoning: This prompt requires a single file edit in 1-3 steps.
+    latency_ms: 157
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: This task is a simple direct edit of a single file, requiring only
+      one step.
+    latency_ms: 112
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: C
+    pass: false
+    reasoning: This task involves a simple direct operation on multiple files, which
+      can be completed in a few steps.
+    latency_ms: 204
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: This task requires per-item processing of multiple files, reading
+      each one individually to extract and summarize the first 5 lines.
+    latency_ms: 133
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: A
+    pass: true
+    reasoning: This task requires a deep analysis of the command-interceptor.ts file
+      to identify potential security vulnerabilities.
+    latency_ms: 97
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: B
+    pass: false
+    reasoning: This task requires per-item processing of multiple files,
+      specifically reviewing a single file for bugs and code quality issues.
+    latency_ms: 299
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: C
+    pass: false
+    reasoning: This task is a simple direct task that can be completed in 1-3 steps,
+      requiring a single file edit to implement the plugin.
+    latency_ms: 274
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: variant
+    expected: S
+    got: S
+    pass: true
+    reasoning: This task requires a system design and a plan before implementation,
+      as it involves architecting a caching layer for the OpenRouter API
+      responses.
+    latency_ms: 204

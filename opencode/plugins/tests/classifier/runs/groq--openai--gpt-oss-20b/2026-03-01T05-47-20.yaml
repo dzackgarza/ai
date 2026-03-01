@@ -1,0 +1,98 @@
+model: groq/openai/gpt-oss-20b
+timestamp: 2026-03-01T05:47:20.336Z
+playbook_file: classifier/playbook.md
+passed: 11
+total: 12
+score: 0.9166666666666666
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: User asks about the AI's own tools and capabilities.
+    latency_ms: 1470
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: User asks about the AI's capabilities.
+    latency_ms: 1404
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: User asks for current version of TypeScript.
+    latency_ms: 263
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: User asks for current LTS version of Node.js, a factual question.
+    latency_ms: 1131
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: C
+    pass: true
+    reasoning: Single file creation and deletion is a simple direct task.
+    latency_ms: 1480
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: It is a single file edit adding a blank line.
+    latency_ms: 1933
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: B
+    pass: true
+    reasoning: The prompt requires iterating over multiple .ts files and extracting
+      exported symbols from each, which is a per-item processing task across
+      several files.
+    latency_ms: 540
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: The prompt requires reading and summarizing multiple files, which is
+      a per-item processing task across several files.
+    latency_ms: 398
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: A
+    pass: true
+    reasoning: User requests a deep security audit of a single file.
+    latency_ms: 349
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: "ERROR: 400 Failed to validate JSON. Please adjust your prompt. See
+      'failed_generation' "
+    pass: false
+    reasoning: ""
+    latency_ms: 444
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: S
+    pass: true
+    reasoning: User requests design of a plugin, an architectural task.
+    latency_ms: 3065
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: variant
+    expected: S
+    got: S
+    pass: true
+    reasoning: User requests an architectural plan for a caching layer.
+    latency_ms: 280

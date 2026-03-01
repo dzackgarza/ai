@@ -1,0 +1,105 @@
+model: groq/openai/gpt-oss-120b
+timestamp: 2026-03-01T05:43:50.169Z
+playbook_file: classifier/playbook.md
+passed: 10
+total: 12
+score: 0.8333333333333334
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: User asks about the AI's tools and capabilities.
+    latency_ms: 391
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user asks about the AI's capabilities, which is a model-self inquiry.
+    latency_ms: 243
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The user asks for the current stable release version of TypeScript, a
+      factual question requiring up-to-date information.
+    latency_ms: 315
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The user asks for a factual, up-to-date detail about Node.js LTS
+      version, which requires current knowledge.
+    latency_ms: 304
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: C
+    pass: true
+    reasoning: The request is a straightforward, single-step file creation and
+      deletion task.
+    latency_ms: 330
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: Appending a blank line to a file is a simple direct task requiring
+      only a single edit step.
+    latency_ms: 241
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task involves processing multiple TypeScript files individually
+      to extract exported symbols, which fits the per-item multi-file processing
+      tier.
+    latency_ms: 600
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task requires processing multiple .json files individually to
+      read and summarize their contents.
+    latency_ms: 296
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: "ERROR: 400 Failed to validate JSON. Please adjust your prompt. See
+      'failed_generation' "
+    pass: false
+    reasoning: ""
+    latency_ms: 561
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: "ERROR: 400 Failed to validate JSON. Please adjust your prompt. See
+      'failed_generation' "
+    pass: false
+    reasoning: ""
+    latency_ms: 468
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: S
+    pass: true
+    reasoning: The request asks for a design of a plugin, which is an architectural
+      task requiring planning before implementation.
+    latency_ms: 257
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: variant
+    expected: S
+    got: S
+    pass: true
+    reasoning: The request asks for a design of a caching layer, which is an
+      architectural task requiring planning before implementation.
+    latency_ms: 538

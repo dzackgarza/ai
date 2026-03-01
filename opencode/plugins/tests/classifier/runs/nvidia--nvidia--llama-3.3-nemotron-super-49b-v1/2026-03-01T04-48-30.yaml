@@ -1,0 +1,103 @@
+model: nvidia/nvidia/llama-3.3-nemotron-super-49b-v1
+timestamp: 2026-03-01T04:48:30.140Z
+playbook_file: classifier/playbook.md
+passed: 11
+total: 12
+score: 0.9166666666666666
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: User is inquiring about the AI's own capabilities and tools.
+    latency_ms: 5741
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: User is inquiring about the capabilities of the AI itself.
+    latency_ms: 5531
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: User is asking for the latest stable release of TypeScript, which
+      requires current web data.
+    latency_ms: 5599
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: User is asking for a factual piece of information (current LTS
+      Node.js version) that requires up-to-date web data.
+    latency_ms: 6276
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: C
+    pass: true
+    reasoning: "Simple two-step task: create a file with specific content and then
+      delete it."
+    latency_ms: 6321
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: Appending a blank line to a single file (README.md) is a simple,
+      direct task completable in one step.
+    latency_ms: 10100
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: B
+    pass: true
+    reasoning: Task involves per-item processing of multiple files (.ts files)
+      across several steps (open, identify exported symbols, print)
+    latency_ms: 11204
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: Task involves per-item processing of multiple files (reading each
+      .json file individually across 3–10 steps)
+    latency_ms: 7364
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: A
+    pass: true
+    reasoning: Audit implies deep analysis for security vulnerabilities, requiring
+      thorough inspection across the file.
+    latency_ms: 5983
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: A
+    pass: true
+    reasoning: Reviewing a single file for bugs and code quality implies a thorough
+      inspection, fitting the 'Complex task' criteria.
+    latency_ms: 9353
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: A
+    pass: false
+    reasoning: Designing a plugin for tracking token usage per session requires deep
+      analysis of session management and token tracking mechanisms.
+    latency_ms: 10085
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: variant
+    expected: S
+    got: S
+    pass: true
+    reasoning: Designing a caching layer involves architectural planning.
+    latency_ms: 6688

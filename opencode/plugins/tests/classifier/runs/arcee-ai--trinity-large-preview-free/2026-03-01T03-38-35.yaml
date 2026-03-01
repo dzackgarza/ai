@@ -1,0 +1,110 @@
+model: arcee-ai/trinity-large-preview:free
+timestamp: 2026-03-01T03:38:35.318Z
+playbook_file: classifier/playbook.md
+passed: 12
+total: 12
+score: 1
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The prompt asks about the AI's own capabilities and tools, which is a
+      self-referential question about the model itself.
+    latency_ms: 299
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user is asking about the AI's capabilities, which is a question
+      about the model itself.
+    latency_ms: 206
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The question asks for current factual information about a software
+      version that requires up-to-date data.
+    latency_ms: 182
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The question asks for current factual information about Node.js
+      versions, which requires up-to-date data.
+    latency_ms: 94
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: C
+    pass: true
+    reasoning: "Simple two-step task: create a file with specific content, then
+      delete it."
+    latency_ms: 196
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: This is a simple direct task that can be completed in one step by
+      editing a single file.
+    latency_ms: 153
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task requires reading multiple .ts files and extracting exported
+      symbols from each, involving per-file processing across several steps.
+    latency_ms: 102
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task requires reading and summarizing the first 5 lines of
+      multiple .json files, which involves per-file processing across several
+      files.
+    latency_ms: 178
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: A
+    pass: true
+    reasoning: Auditing a specific file for security vulnerabilities requires
+      thorough analysis of code structure, logic, and potential attack vectors,
+      which is a complex security assessment task.
+    latency_ms: 159
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: A
+    pass: true
+    reasoning: This requires deep analysis and audit of a specific file for bugs and
+      code quality issues, which is a complex task involving thorough
+      inspection.
+    latency_ms: 442
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: S
+    pass: true
+    reasoning: This is an architectural task requiring system design for a new
+      plugin with session-based token tracking, which needs planning before
+      implementation.
+    latency_ms: 139
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: variant
+    expected: S
+    got: S
+    pass: true
+    reasoning: This is an architectural task requiring system design for a caching
+      layer, which involves planning before implementation.
+    latency_ms: 159

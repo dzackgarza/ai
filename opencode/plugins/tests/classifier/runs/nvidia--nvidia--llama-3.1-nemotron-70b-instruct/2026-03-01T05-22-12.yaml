@@ -1,0 +1,94 @@
+model: nvidia/nvidia/llama-3.1-nemotron-70b-instruct
+timestamp: 2026-03-01T05:22:12.692Z
+playbook_file: classifier/playbook.md
+passed: 0
+total: 12
+score: 0
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 211
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 75
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 67
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 65
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 55
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 55
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 68
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 67
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 67
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 77
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 67
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: variant
+    expected: S
+    got: "ERROR: 404 status code (no body)"
+    pass: false
+    reasoning: ""
+    latency_ms: 58
