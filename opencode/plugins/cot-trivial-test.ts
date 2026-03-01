@@ -38,8 +38,8 @@ export const CotTrivialInterceptor: Plugin = async ({ client }) => {
 
   return {
     event: async ({ event }) => {
-      // Killswitch check - no-op if disabled
-      if (!KILLSWITCHES.cotTrivialInterceptor) return;
+      // Killswitch check - exit if killed
+      if (KILLSWITCHES.cotTrivialInterceptor) return;
       // Comment out to enable
       return;
       // ── Track which partIDs are reasoning parts ───────────────────────────

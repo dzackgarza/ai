@@ -1,9 +1,9 @@
 // Centralized killswitches for prompt-injection plugins
-// Set to true to enable, false to disable
+// Set to true to KILL (disable), false to allow
 
 export const KILLSWITCHES = {
-  promptRouter: false,
-  commandInterceptor: false,
-  contextInjector: false,
-  cotTrivialInterceptor: false,
+  promptRouter: true,
+  commandInterceptor: true,
+  contextInjector: true,
+  cotTrivialInterceptor: true,
 };

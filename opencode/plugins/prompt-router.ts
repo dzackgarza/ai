@@ -166,8 +166,8 @@ async function classify(text: string): Promise<{ tier: Tier; reasoning: string }
 export const PromptRouter: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
-      // Killswitch check - no-op if disabled
-      if (!KILLSWITCHES.promptRouter) return;
+      // Killswitch check - exit if killed
+      if (KILLSWITCHES.promptRouter) return;
       if (!output.messages?.length) return;
 
       try {

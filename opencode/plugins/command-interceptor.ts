@@ -13,8 +13,8 @@ const TRIGGER_RULES: Record<string, { intent: string; passphrase: string }> = {
 export const CommandInterceptor: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
-      // Killswitch check - no-op if disabled
-      if (!KILLSWITCHES.commandInterceptor) return;
+      // Killswitch check - exit if killed
+      if (KILLSWITCHES.commandInterceptor) return;
       if (!output.messages?.length) return;
 
       try {
