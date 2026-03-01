@@ -1,0 +1,237 @@
+model: groq/llama-3.3-70b-versatile
+timestamp: 2026-03-01T06:35:20.670Z
+playbook_file: classifier/playbook.md
+passed: 24
+total: 28
+score: 0.8571428571428571
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The subject of the question is the AI, not the codebase or the world.
+    latency_ms: 507
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The subject of the question is the AI itself, inquiring about its
+      capabilities.
+    latency_ms: 265
+  - prompt: What's your system prompt?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The subject of the question is the AI itself, specifically its system
+      prompt.
+    latency_ms: 407
+  - prompt: Can you run shell commands?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The subject of the question is the AI's capabilities.
+    latency_ms: 353
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The correct answer lives outside this codebase and could have changed
+      since the model was trained, specifically the version of TypeScript is
+      temporally unstable.
+    latency_ms: 332
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The correct answer lives outside this codebase and could have changed
+      since the model was trained, specifically regarding ecosystem
+      compatibility and version numbers.
+    latency_ms: 330
+  - prompt: Is Bun compatible with Prisma?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The correct answer lives outside this codebase and could have changed
+      since the model was trained, specifically ecosystem compatibility.
+    latency_ms: 276
+  - prompt: What does the React 19 use() hook do?
+    label: boundary
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The correct answer lives outside this codebase and could have changed
+      since the model was trained, specifically regarding recent API changes in
+      React 19.
+    latency_ms: 344
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: C
+    pass: true
+    reasoning: The prompt prescribes a specific, bounded task that can be executed
+      immediately without investigation or judgment.
+    latency_ms: 2334
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: The task is a focused, bounded action that can be stated in one
+      sentence and requires no investigation.
+    latency_ms: 1313
+  - prompt: What version of React is this project using?
+    label: boundary
+    expected: C
+    got: C
+    pass: true
+    reasoning: The version of React can be determined by reading the local
+      package.json file.
+    latency_ms: 2404
+  - prompt: Add a null check before user.profile.name on line 88 of profile.ts.
+    label: boundary
+    expected: C
+    got: C
+    pass: true
+    reasoning: The user prescribed the exact fix, which is a specific and bounded
+      task that can be executed immediately.
+    latency_ms: 1495
+  - prompt: What does the parseConfig function return?
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: The answer can be determined by reading one function directly.
+    latency_ms: 2471
+  - prompt: Run the tests and tell me which ones fail.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: The task is action-ready, requiring only the execution of a test
+      suite to determine which tests fail.
+    latency_ms: 1370
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: A
+    pass: false
+    reasoning: The task requires the agent to read each file to determine the
+      exported symbols, which indicates a need for investigation before action.
+    latency_ms: 2310
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task involves a uniform action applied across a set of targets,
+      where the action is identical for every target.
+    latency_ms: 14396
+  - prompt: Find all TODO comments across the codebase and list them with their file
+      and line number.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task involves a uniform action of finding and listing TODO
+      comments across the codebase, which can be mechanically applied without
+      requiring individual judgment or investigation.
+    latency_ms: 1441
+  - prompt: Add a JSDoc comment to every exported function in utils.ts.
+    label: boundary
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task involves applying a uniform action to every exported
+      function in utils.ts, which is a mechanical and repetitive operation.
+    latency_ms: 2430
+  - prompt: Replace all var declarations with const or let throughout the codebase.
+    label: boundary
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task involves a uniform, mechanical replacement of var
+      declarations with const or let across the entire codebase, which aligns
+      with the characteristics of a B tier task.
+    latency_ms: 2467
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: A
+    pass: true
+    reasoning: The task requires investigation and judgment to identify potential
+      security vulnerabilities in the code.
+    latency_ms: 1342
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: A
+    pass: true
+    reasoning: The task requires investigation and judgment to identify bugs and
+      code quality issues in the prompt-router.ts file.
+    latency_ms: 2306
+  - prompt: Why is the auth test failing?
+    label: boundary
+    expected: A
+    got: A
+    pass: true
+    reasoning: The user reports a symptom, and the cause of the auth test failure is
+      unknown, requiring investigation.
+    latency_ms: 1387
+  - prompt: The signup flow is broken — figure out what's wrong.
+    label: boundary
+    expected: A
+    got: A
+    pass: true
+    reasoning: The user reports a symptom, not a prescribed fix, requiring
+      investigation to diagnose the cause.
+    latency_ms: 2388
+  - prompt: What would break if I removed the parseConfig function?
+    label: variant
+    expected: A
+    got: A
+    pass: true
+    reasoning: The agent cannot determine the impact without reading and analyzing
+      the relevant code.
+    latency_ms: 14575
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: S
+    pass: true
+    reasoning: The task requires inventing structure for a new plugin, which is a
+      generative task that needs design before implementation.
+    latency_ms: 13524
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: fixed
+    expected: S
+    got: "ERROR: 429 Rate limit reached for model `llama-3.3-70b-versatile` in
+      organization `org_"
+    pass: false
+    reasoning: ""
+    latency_ms: 2088
+  - prompt: Implement OAuth2 authentication for this application.
+    label: boundary
+    expected: S
+    got: "ERROR: 429 Rate limit reached for model `llama-3.3-70b-versatile` in
+      organization `org_"
+    pass: false
+    reasoning: ""
+    latency_ms: 36
+  - prompt: Add WebSocket support to this Express app.
+    label: boundary
+    expected: S
+    got: "ERROR: 429 Rate limit reached for model `llama-3.3-70b-versatile` in
+      organization `org_"
+    pass: false
+    reasoning: ""
+    latency_ms: 35

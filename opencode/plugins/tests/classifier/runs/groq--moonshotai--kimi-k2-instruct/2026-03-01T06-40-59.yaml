@@ -1,0 +1,231 @@
+model: groq/moonshotai/kimi-k2-instruct
+timestamp: 2026-03-01T06:41:00.000Z
+playbook_file: classifier/playbook.md
+passed: 28
+total: 28
+score: 1
+results:
+  - prompt: What tools and capabilities do you have?
+    label: fixed
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user is asking about the AI's own tools and capabilities, which
+      falls under self-knowledge about the agent.
+    latency_ms: 625
+  - prompt: What can you do?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user is asking about the AI's own capabilities and behavior,
+      which is the definition of the model-self tier.
+    latency_ms: 153
+  - prompt: What's your system prompt?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user is asking about the AI's own instructions and behavior, not
+      about external facts or the codebase.
+    latency_ms: 149
+  - prompt: Can you run shell commands?
+    label: variant
+    expected: model-self
+    got: model-self
+    pass: true
+    reasoning: The user is asking about the AI's capabilities directly.
+    latency_ms: 108
+  - prompt: What is the latest stable release of TypeScript?
+    label: fixed
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The answer is an external fact that changes over time and risks being
+      stale or hallucinated from training data.
+    latency_ms: 449
+  - prompt: What's the current LTS version of Node.js?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: Version number lives in the external world and could be stale since
+      training cut-off.
+    latency_ms: 282
+  - prompt: Is Bun compatible with Prisma?
+    label: variant
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: The answer lives in the external ecosystem (version compatibility)
+      and could change after training.
+    latency_ms: 171
+  - prompt: What does the React 19 use() hook do?
+    label: boundary
+    expected: knowledge
+    got: knowledge
+    pass: true
+    reasoning: Recent API details require fresh verification to avoid stale or
+      hallucinated answers.
+    latency_ms: 144
+  - prompt: "Create a file named router-poc-c.txt containing exactly:
+      poc-baseline-c, then delete it."
+    label: fixed
+    expected: C
+    got: C
+    pass: true
+    reasoning: The user explicitly prescribes the exact two-step action to perform.
+    latency_ms: 138
+  - prompt: Append a blank line to the end of README.md.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: The task is a single, explicit, atomic file edit with no
+      investigation required.
+    latency_ms: 271
+  - prompt: What version of React is this project using?
+    label: boundary
+    expected: C
+    got: C
+    pass: true
+    reasoning: The answer lives in package.json and can be obtained with a single
+      local read command.
+    latency_ms: 244
+  - prompt: Add a null check before user.profile.name on line 88 of profile.ts.
+    label: boundary
+    expected: C
+    got: C
+    pass: true
+    reasoning: User prescribed the exact fix, so it's a bounded action requiring no
+      investigation.
+    latency_ms: 201
+  - prompt: What does the parseConfig function return?
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: The user is asking for information about a specific function in the
+      codebase that can be answered by reading one file.
+    latency_ms: 146
+  - prompt: Run the tests and tell me which ones fail.
+    label: variant
+    expected: C
+    got: C
+    pass: true
+    reasoning: User prescribed the exact action (run tests) and answer is a direct
+      execution result.
+    latency_ms: 271
+  - prompt: For each .ts file in this directory, open it and print the name of every
+      exported symbol.
+    label: fixed
+    expected: B
+    got: B
+    pass: true
+    reasoning: Same uniform action applied to every file with no per-item variation
+      required.
+    latency_ms: 146
+  - prompt: Read the first 5 lines of every .json file here and summarize what each
+      contains.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: Same extraction operation applied uniformly across every .json file.
+    latency_ms: 130
+  - prompt: Find all TODO comments across the codebase and list them with their file
+      and line number.
+    label: variant
+    expected: B
+    got: B
+    pass: true
+    reasoning: The task is to apply the same extraction action uniformly across all
+      files to find all TODO comments, requiring no per-item judgment.
+    latency_ms: 338
+  - prompt: Add a JSDoc comment to every exported function in utils.ts.
+    label: boundary
+    expected: B
+    got: B
+    pass: true
+    reasoning: same mechanical action applied uniformly to every exported function
+      in a single file, no per-function judgment needed
+    latency_ms: 172
+  - prompt: Replace all var declarations with const or let throughout the codebase.
+    label: boundary
+    expected: B
+    got: B
+    pass: true
+    reasoning: The transformation is mechanical and uniform across every var
+      declaration, requiring no per-item judgment.
+    latency_ms: 122
+  - prompt: Audit command-interceptor.ts for security vulnerabilities.
+    label: fixed
+    expected: A
+    got: A
+    pass: true
+    reasoning: The agent must read and analyze the file to identify unknown security
+      issues before any action can be taken.
+    latency_ms: 232
+  - prompt: Review prompt-router.ts for bugs and code quality issues.
+    label: variant
+    expected: A
+    got: A
+    pass: true
+    reasoning: The task requires investigation to identify bugs and quality issues
+      before any action can be taken.
+    latency_ms: 137
+  - prompt: Why is the auth test failing?
+    label: boundary
+    expected: A
+    got: A
+    pass: true
+    reasoning: The user reports a symptom (test failure) without prescribing a fix,
+      so the agent must investigate to diagnose the root cause.
+    latency_ms: 162
+  - prompt: The signup flow is broken — figure out what's wrong.
+    label: boundary
+    expected: A
+    got: A
+    pass: true
+    reasoning: User reports a symptom (broken signup flow) without prescribing a
+      fix, requiring investigation to determine root cause.
+    latency_ms: 155
+  - prompt: What would break if I removed the parseConfig function?
+    label: variant
+    expected: A
+    got: A
+    pass: true
+    reasoning: Requires investigation to determine what depends on parseConfig
+      before knowing what would break.
+    latency_ms: 221
+  - prompt: Design a plugin for tracking token usage per session.
+    label: fixed
+    expected: S
+    got: S
+    pass: true
+    reasoning: The task requires inventing a new plugin structure that does not yet
+      exist, necessitating a design phase before implementation.
+    latency_ms: 222
+  - prompt: Plan a caching layer for OpenRouter API responses.
+    label: fixed
+    expected: S
+    got: S
+    pass: true
+    reasoning: The user is asking for the design of a new caching layer that doesn't
+      exist yet, requiring architectural planning before implementation.
+    latency_ms: 154
+  - prompt: Implement OAuth2 authentication for this application.
+    label: boundary
+    expected: S
+    got: S
+    pass: true
+    reasoning: The task requires designing a new authentication system that doesn't
+      exist yet.
+    latency_ms: 109
+  - prompt: Add WebSocket support to this Express app.
+    label: boundary
+    expected: S
+    got: S
+    pass: true
+    reasoning: Major new feature requiring architectural design before implementation.
+    latency_ms: 98

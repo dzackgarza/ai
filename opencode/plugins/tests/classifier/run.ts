@@ -173,7 +173,7 @@ const modeArg = process.argv.indexOf("--mode");
 const instructorMode = (modeArg !== -1 ? process.argv[modeArg + 1] : "JSON") as "JSON" | "MD_JSON";
 if (instructorMode === "MD_JSON") console.log(`Instructor mode: MD_JSON (no response_format header)\n`);
 
-const model = process.argv.find((a, i) => i >= 2 && !a.startsWith("--") && process.argv[i-1] !== "--mode") ?? "arcee-ai/trinity-large-preview:free";
+const model = process.argv.find((a, i) => i >= 2 && !a.startsWith("--") && process.argv[i-1] !== "--mode") ?? "groq/llama-3.3-70b-versatile";
 const { apiKey } = endpointFor(model);
 if (!model.startsWith("ollama/") && !apiKey) {
   console.error("API key not set for this provider"); process.exit(1);

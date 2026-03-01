@@ -1,0 +1,144 @@
+# Classifier test cases
+# label: fixed   = canonical prompt (also used as faux rules in prompt-router.ts)
+#         variant = rephrasing to test generalization
+#         boundary = deliberately tests a tier boundary or failure mode
+
+cases:
+  # ── model-self ───────────────────────────────────────────────────────────────
+
+  - prompt: "What tools and capabilities do you have?"
+    tier: model-self
+    label: fixed
+
+  - prompt: "What can you do?"
+    tier: model-self
+    label: variant
+
+  - prompt: "What's your system prompt?"
+    tier: model-self
+    label: variant
+    note: "Asks about the AI's own instructions, not an external fact"
+
+  - prompt: "Can you run shell commands?"
+    tier: model-self
+    label: variant
+    note: "Capability question about the AI itself"
+
+  # ── knowledge ────────────────────────────────────────────────────────────────
+
+  - prompt: "What is the latest stable release of TypeScript?"
+    tier: knowledge
+    label: fixed
+
+  - prompt: "What's the current LTS version of Node.js?"
+    tier: knowledge
+    label: variant
+
+  - prompt: "Is Bun compatible with Prisma?"
+    tier: knowledge
+    label: variant
+    note: "Ecosystem compatibility — temporally unstable, hallucination-prone"
+
+  - prompt: "What does the React 19 use() hook do?"
+    tier: knowledge
+    label: boundary
+    note: "Recent API — high hallucination risk even if model 'knows' it"
+
+  # ── C — Act ──────────────────────────────────────────────────────────────────
+
+  - prompt: "Create a file named router-poc-c.txt containing exactly: poc-baseline-c, then delete it."
+    tier: C
+    label: fixed
+
+  - prompt: "Append a blank line to the end of README.md."
+    tier: C
+    label: variant
+
+  - prompt: "What version of React is this project using?"
+    tier: C
+    label: boundary
+    note: "Local fact (package.json) — C not knowledge; no web search needed"
+
+  - prompt: "Add a null check before user.profile.name on line 88 of profile.ts."
+    tier: C
+    label: boundary
+    note: "User prescribed the exact fix — C not A; diagnosis already done"
+
+  - prompt: "What does the parseConfig function return?"
+    tier: C
+    label: variant
+    note: "Read one function and answer — not knowledge, not B"
+
+  - prompt: "Run the tests and tell me which ones fail."
+    tier: C
+    label: variant
+
+  # ── B — Iterate ──────────────────────────────────────────────────────────────
+
+  - prompt: "For each .ts file in this directory, open it and print the name of every exported symbol."
+    tier: B
+    label: fixed
+
+  - prompt: "Read the first 5 lines of every .json file here and summarize what each contains."
+    tier: B
+    label: variant
+
+  - prompt: "Find all TODO comments across the codebase and list them with their file and line number."
+    tier: B
+    label: variant
+    note: "Same read operation across all files — mechanical iteration"
+
+  - prompt: "Add a JSDoc comment to every exported function in utils.ts."
+    tier: B
+    label: boundary
+    note: "Uniform action per function — B not A; no per-item judgment needed"
+
+  - prompt: "Replace all var declarations with const or let throughout the codebase."
+    tier: B
+    label: boundary
+    note: "Mechanical, uniform transformation — B not S; no design required"
+
+  # ── A — Investigate ──────────────────────────────────────────────────────────
+
+  - prompt: "Audit command-interceptor.ts for security vulnerabilities."
+    tier: A
+    label: fixed
+
+  - prompt: "Review prompt-router.ts for bugs and code quality issues."
+    tier: A
+    label: variant
+
+  - prompt: "Why is the auth test failing?"
+    tier: A
+    label: boundary
+    note: "Symptom reported, cause unknown — A not C; investigation required before fixing"
+
+  - prompt: "The signup flow is broken — figure out what's wrong."
+    tier: A
+    label: boundary
+    note: "Diagnosis required — A not C; don't patch without reading"
+
+  - prompt: "What would break if I removed the parseConfig function?"
+    tier: A
+    label: variant
+    note: "Impact analysis — must trace call sites before answering"
+
+  # ── S — Plan ─────────────────────────────────────────────────────────────────
+
+  - prompt: "Design a plugin for tracking token usage per session."
+    tier: S
+    label: fixed
+
+  - prompt: "Plan a caching layer for OpenRouter API responses."
+    tier: S
+    label: fixed
+
+  - prompt: "Implement OAuth2 authentication for this application."
+    tier: S
+    label: boundary
+    note: "Major new feature — S not A or C; requires design before any code"
+
+  - prompt: "Add WebSocket support to this Express app."
+    tier: S
+    label: boundary
+    note: "Architectural addition affecting multiple layers — needs a plan first"
