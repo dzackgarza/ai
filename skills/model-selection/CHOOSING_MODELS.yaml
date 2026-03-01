@@ -1,39 +1,33 @@
-# Explicit model mapping: opencode slugs -> normalized names -> scores
-#
-# Structure:
-#   mappings: opencode slug -> normalized model name (explicit decision)
-#   scores: normalized model name -> score + source (verified/inferred/estimated)
+# Model Scores - Calibrated against APEX Testing ELO
+# Data from https://www.apex-testing.org/leaderboard
+# Score normalized: (ELO - 1000) / 10
 
 mappings:
-  # === OPENCODE MODELS -> NORMALIZED NAME ===
+  # === OPENCODE SLUG -> NORMALIZED NAME ===
 
-  # Claude (Anthropic)
+  # Claude
   anthropic/claude-opus-4-6: claude-opus-4-6
   anthropic/claude-opus-4-5: claude-opus-4-5
   anthropic/claude-opus-4-5-20251101: claude-opus-4-5
   anthropic/claude-sonnet-4-6: claude-sonnet-4-6
-  anthropic/claude-sonnet-4-5: claude-sonnet-4-5
-  anthropic/claude-sonnet-4-5-20250929: claude-sonnet-4-5
-  anthropic/claude-haiku-4-5: claude-haiku-4-5
-
-  # Claude via GitHub Copilot
+  anthropic/claude-sonnet-4-5: claude-sonnet-4.5
+  anthropic/claude-sonnet-4-5-20250929: claude-sonnet-4.5
+  anthropic/claude-haiku-4-5: claude-haiku-4.5
   github-copilot/claude-opus-4.6: claude-opus-4-6
   github-copilot/claude-opus-4.5: claude-opus-4-5
-  github-copilot/claude-opus-41: claude-opus-4-1
   github-copilot/claude-sonnet-4.6: claude-sonnet-4-6
-  github-copilot/claude-sonnet-4.5: claude-sonnet-4-5
+  github-copilot/claude-sonnet-4.5: claude-sonnet-4.5
+  github-copilot/claude-haiku-4.5: claude-haiku-4.5
+  github-copilot/claude-opus-41: claude-opus-4-1
   github-copilot/claude-sonnet-4: claude-sonnet-4
-  github-copilot/claude-haiku-4.5: claude-haiku-4-5
-
-  # Claude via Google Antigravity
   google/antigravity-claude-opus-4-6-thinking: claude-opus-4-6
   google/antigravity-claude-sonnet-4-6: claude-sonnet-4-6
 
-  # GPT (OpenAI)
+  # GPT
   openai/gpt-5.2: gpt-5.2
   openai/gpt-5.2-codex: gpt-5.2-codex
   openai/gpt-5.3-codex: gpt-5.3-codex
-  openai/gpt-5.3-codex-spark: gpt-5.3-codex-spark
+  openai/gpt-5.3-codex-spark: gpt-5.3-codex
   openai/gpt-5.1: gpt-5.1
   openai/gpt-5.1-codex: gpt-5.1-codex
   openai/gpt-5.1-codex-max: gpt-5.1-codex-max
@@ -41,11 +35,9 @@ mappings:
   openai/gpt-5: gpt-5
   openai/gpt-5-codex: gpt-5-codex
   openai/gpt-5-mini: gpt-5-mini
-  openai/codex-mini-latest: codex-mini
   openai/gpt-4.1: gpt-4.1
   openai/gpt-4o: gpt-4o
-
-  # GPT via GitHub Copilot
+  openai/codex-mini-latest: codex-mini
   github-copilot/gpt-5.2: gpt-5.2
   github-copilot/gpt-5.2-codex: gpt-5.2-codex
   github-copilot/gpt-5.1: gpt-5.1
@@ -56,13 +48,11 @@ mappings:
   github-copilot/gpt-5-mini: gpt-5-mini
   github-copilot/gpt-4.1: gpt-4.1
   github-copilot/gpt-4o: gpt-4o
-
-  # GPT-OSS
   nvidia/openai/gpt-oss-120b: gpt-oss-120b
   ollama-cloud/gpt-oss:120b: gpt-oss-120b
   openrouter-free/openai/gpt-oss-120b:free: gpt-oss-120b
 
-  # Gemini (Google)
+  # Gemini
   google/gemini-3-pro-preview: gemini-3-pro
   google/gemini-3-flash-preview: gemini-3-flash
   google/gemini-3.1-pro-preview: gemini-3.1-pro
@@ -71,27 +61,21 @@ mappings:
   google/gemini-2.5-pro-preview-06-05: gemini-2.5-pro
   google/gemini-2.5-flash: gemini-2.5-flash
   google/gemini-2.5-flash-preview-09-2025: gemini-2.5-flash
-  google/gemini-2.5-flash-image: gemini-2.5-flash-image
-  google/gemini-2.5-flash-image-preview: gemini-2.5-flash-image
+  google/gemini-2.5-flash-image: gemini-2.5-flash
+  google/gemini-2.5-flash-image-preview: gemini-2.5-flash
   google/gemini-2.5-flash-lite: gemini-2.5-flash-lite
   google/gemini-2.5-flash-lite-preview-06-17: gemini-2.5-flash-lite
   google/gemini-2.5-flash-lite-preview-09-2025: gemini-2.5-flash-lite
-  google/gemini-flash-latest: gemini-3-flash # ESTIMATED: latest maps to 3.x
+  google/gemini-flash-latest: gemini-3-flash
   google/gemini-flash-lite-latest: gemini-2.5-flash-lite
   google/gemini-live-2.5-flash: gemini-2.5-flash
   google/gemini-live-2.5-flash-preview-native-audio: gemini-2.5-flash
-
-  # Gemini via GitHub Copilot
+  google/antigravity-gemini-3-flash: gemini-3-flash
+  google/antigravity-gemini-3.1-pro: gemini-3.1-pro
   github-copilot/gemini-3-pro-preview: gemini-3-pro
   github-copilot/gemini-3-flash-preview: gemini-3-flash
   github-copilot/gemini-3.1-pro-preview: gemini-3.1-pro
   github-copilot/gemini-2.5-pro: gemini-2.5-pro
-
-  # Gemini via Antigravity (provider variant, strip prefix)
-  google/antigravity-gemini-3-flash: gemini-3-flash
-  google/antigravity-gemini-3.1-pro: gemini-3.1-pro
-
-  # Gemini via Ollama Cloud
   ollama-cloud/gemini-3-pro-preview: gemini-3-pro
   ollama-cloud/gemini-3-flash-preview: gemini-3-flash
 
@@ -99,33 +83,33 @@ mappings:
   nvidia/deepseek-ai/deepseek-v3.2: deepseek-v3.2
   ollama-cloud/deepseek-v3.2: deepseek-v3.2
   nvidia/deepseek-ai/deepseek-v3.1: deepseek-v3.1
-  nvidia/deepseek-ai/deepseek-v3.1-terminus: deepseek-v3.1-terminus
+  nvidia/deepseek-ai/deepseek-v3.1-terminus: deepseek-v3.1
   nvidia/deepseek-ai/deepseek-r1: deepseek-r1
   nvidia/deepseek-ai/deepseek-r1-0528: deepseek-r1-0528
   nvidia/deepseek-ai/deepseek-coder-6.7b-instruct: deepseek-coder-6.7b
   ollama-cloud/deepseek-v3.1:671b: deepseek-v3.1
 
   # Qwen
-  nvidia/qwen/qwen3-coder-480b-a35b-instruct: qwen3-coder-480b
-  ollama-cloud/qwen3-coder:480b: qwen3-coder-480b
-  nvidia/qwen/qwen3-next-80b-a3b-instruct: qwen3-next-80b
-  nvidia/qwen/qwen3-next-80b-a3b-thinking: qwen3-next-80b-thinking
-  nvidia/qwen/qwen3-235b-a22b: qwen3-235b
+  nvidia/qwen/qwen3-coder-480b-a35b-instruct: qwen3.5-397b-a17b
+  ollama-cloud/qwen3-coder:480b: qwen3.5-397b-a17b
+  nvidia/qwen/qwen3-next-80b-a3b-instruct: qwen3.5-122b-a10b
+  nvidia/qwen/qwen3-235b-a22b: qwen3.5-27b
   nvidia/qwen/qwq-32b: qwq-32b
   ollama-cloud/qwen3-coder-next: qwen3-coder-next
-  ollama-cloud/qwen3-next:80b: qwen3-next-80b
-  ollama-cloud/qwen3.5:397b: qwen3.5-397b
-  openrouter-free/qwen/qwen3-coder:free: qwen3-coder-480b
-  openrouter-free/qwen/qwen3-next-80b-a3b-instruct:free: qwen3-next-80b
+  ollama-cloud/qwen3-next:80b: qwen3.5-122b-a10b
+  ollama-cloud/qwen3.5:397b: qwen3.5-397b-a17b
+  openrouter-free/qwen/qwen3-coder:free: qwen3.5-27b
+  openrouter-free/qwen/qwen3-next-80b-a3b-instruct:free: qwen3.5-122b-a10b
+  nvidia/qwen/qwen3-next-80b-a3b-thinking: qwen3.5-thinking
 
-  # Kimi (Moonshot)
+  # Kimi
   nvidia/moonshotai/kimi-k2.5: kimi-k2.5
-  nvidia/moonshotai/kimi-k2-thinking: kimi-k2-thinking
-  nvidia/moonshotai/kimi-k2-instruct: kimi-k2-instruct
-  nvidia/moonshotai/kimi-k2-instruct-0905: kimi-k2-instruct
+  nvidia/moonshotai/kimi-k2-thinking: kimi-k2.5
+  nvidia/moonshotai/kimi-k2-instruct: kimi-k2
+  nvidia/moonshotai/kimi-k2-instruct-0905: kimi-k2
   ollama-cloud/kimi-k2.5: kimi-k2.5
-  ollama-cloud/kimi-k2-thinking: kimi-k2-thinking
-  ollama-cloud/kimi-k2:1t: kimi-k2-1t
+  ollama-cloud/kimi-k2-thinking: kimi-k2.5
+  ollama-cloud/kimi-k2:1t: kimi-k2
 
   # MiniMax
   nvidia/minimaxai/minimax-m2: minimax-m2
@@ -147,14 +131,14 @@ mappings:
   # Mistral
   nvidia/mistralai/mistral-large-3-675b-instruct-2512: mistral-large-3
   nvidia/mistralai/mistral-large-2-instruct: mistral-large-2
-  nvidia/mistralai/codestral-22b-instruct-v0.1: codestral-22b
+  nvidia/mistralai/codestral-22b-instruct-v0.1: codestral
   ollama-cloud/mistral-large-3:675b: mistral-large-3
 
   # Devstral
-  nvidia/mistralai/devstral-2-123b-instruct-2512: devstral-2-123b
-  ollama-cloud/devstral-2:123b: devstral-2-123b
+  nvidia/mistralai/devstral-2-123b-instruct-2512: devstral-2512
+  ollama-cloud/devstral-2:123b: devstral-2512
 
-  # Llama (Meta)
+  # Llama
   nvidia/meta/llama-4-maverick-17b-128e-instruct: llama-4-maverick
   nvidia/meta/llama-4-scout-17b-16e-instruct: llama-4-scout
   nvidia/meta/llama-3.3-70b-instruct: llama-3.3-70b
@@ -164,7 +148,7 @@ mappings:
   nvidia/meta/codellama-70b: codellama-70b
   openrouter-free/meta-llama/llama-3.3-70b-instruct:free: llama-3.3-70b
 
-  # Nemotron (NVIDIA)
+  # Nemotron
   nvidia/nvidia/llama-3.1-nemotron-ultra-253b-v1: llama-3.1-nemotron-ultra
   nvidia/nvidia/llama-3.3-nemotron-super-49b-v1: llama-3.3-nemotron-super
   nvidia/nvidia/llama-3.3-nemotron-super-49b-v1.5: llama-3.3-nemotron-super
@@ -177,7 +161,7 @@ mappings:
   openrouter-free/nvidia/nemotron-nano-9b-v2:free: nemotron-nano-9b
   openrouter-free/nvidia/nemotron-nano-12b-v2-vl:free: nemotron-nano-12b-vl
 
-  # Phi (Microsoft)
+  # Phi
   nvidia/microsoft/phi-4-mini-instruct: phi-4-mini
   nvidia/microsoft/phi-3-medium-128k-instruct: phi-3-medium
   nvidia/microsoft/phi-3-medium-4k-instruct: phi-3-medium
@@ -185,14 +169,14 @@ mappings:
   nvidia/microsoft/phi-3-small-8k-instruct: phi-3-small
   nvidia/microsoft/phi-3.5-moe-instruct: phi-3.5-moe
 
-  # Gemma (Google)
+  # Gemma
   nvidia/google/gemma-2-27b-it: gemma-2-27b
   nvidia/google/gemma-3-12b-it: gemma-3-12b
   nvidia/google/gemma-3-27b-it: gemma-3-27b
   nvidia/google/gemma-3n-e2b-it: gemma-3n-e2b
   nvidia/google/gemma-3n-e4b-it: gemma-3n-e4b
-  nvidia/google/codegemma-1.1-7b: codegemma-1.1-7b
-  nvidia/google/codegemma-7b: codegemma-7b
+  nvidia/google/codegemma-1.1-7b: codegemma
+  nvidia/google/codegemma-7b: codegemma
   openrouter-free/google/gemma-3-27b-it:free: gemma-3-27b
   ollama-cloud/gemma3:27b: gemma-3-27b
 
@@ -228,182 +212,147 @@ mappings:
   # Cogito
   ollama-cloud/cogito-2.1:671b: cogito-2.1
 
-  # OpenRouter Free
+  # OpenRouter Free - maps to a low score (random free model)
   openrouter-free/openrouter/free: free
 
-  # Big Pickle (unknown)
+  # Big Pickle
   opencode/big-pickle: big-pickle
 
 scores:
-  # ===== VERIFIED: On APEX leaderboard =====
-  claude-opus-4-6: { score: 100, source: verified, apex_elo: 1878 }
-  claude-sonnet-4-6: { score: 99, source: verified, apex_elo: 1874 }
-  gpt-5.2: { score: 97, source: verified, apex_elo: 1829 }
-  gpt-5.3-codex: { score: 96, source: verified, apex_elo: 1812 }
-  claude-opus-4-5: { score: 96, source: verified, apex_elo: 1815 }
-  claude-sonnet-4-5: { score: 95, source: verified, apex_elo: ~1800 }
-  gpt-5.1-codex: { score: 95, source: verified, apex_elo: ~1790 }
-  gpt-5.1: { score: 94, source: verified }
-  gemini-3-pro: { score: 94, source: verified, apex_elo: ~1780 }
-  claude-opus-4: { score: 93, source: verified }
-  claude-sonnet-4: { score: 92, source: verified }
-  deepseek-v3.2: { score: 93, source: verified }
-  qwen3-coder-480b: { score: 90, source: verified }
+  # ===== VERIFIED: Exact APEX ELO from apex-testing.org =====
+  # Score = (ELO - 1000) / 10, normalized to ~0-100 scale
 
-  gemini-3-flash: { score: 84, source: verified, apex_elo: ~1745 }
-  minimax-m2.1: { score: 83, source: verified }
-  kimi-k2.5: { score: 82, source: verified }
-  glm-5: { score: 81, source: verified }
-  kimi-k2-thinking: { score: 80, source: verified }
+  # Top Tier (ELO 1800+)
+  claude-opus-4-6: { score: 88, source: verified, apex_elo: 1878 }
+  claude-sonnet-4-6: { score: 87, source: verified, apex_elo: 1874 }
+  gpt-5.2: { score: 83, source: verified, apex_elo: 1829 }
+  claude-opus-4-5: { score: 82, source: verified, apex_elo: 1815 }
+  gpt-5.3-codex: { score: 81, source: verified, apex_elo: 1812 }
 
-  claude-haiku-4-5: { score: 74, source: verified }
-  gemini-2.5-pro: { score: 73, source: verified }
-  deepseek-v3.1: { score: 72, source: verified }
-  mistral-large-3: { score: 71, source: verified }
-  qwen3.5-397b: { score: 69, source: verified }
+  # Upper Mid (ELO 1700-1800)
+  gpt-5.1-codex-mini: { score: 78, source: verified, apex_elo: 1778 }
+  gpt-5.2-codex: { score: 73, source: verified, apex_elo: 1726 }
+  claude-sonnet-4.5: { score: 68, source: verified, apex_elo: 1676 }
+  gemini-3.1-pro: { score: 66, source: verified, apex_elo: 1657 }
+  gemini-3-pro: { score: 66, source: verified, apex_elo: 1656 }
 
-  gemini-2.5-flash: { score: 64, source: verified }
-  llama-4-maverick: { score: 63, source: verified }
-  gpt-4.1: { score: 61, source: verified }
+  # Mid Tier (ELO 1500-1700)
+  glm-5: { score: 59, source: verified, apex_elo: 1588 }
+  gemini-3-flash: { score: 58, source: verified, apex_elo: 1583 }
+  claude-haiku-4.5: { score: 58, source: verified, apex_elo: 1581 }
+  grok-4: { score: 58, source: verified, apex_elo: 1578 }
+  kimi-k2.5: { score: 57, source: verified, apex_elo: 1572 }
+  grok-4.1-fast: { score: 57, source: verified, apex_elo: 1571 }
+  glm-4.7: { score: 57, source: verified, apex_elo: 1566 }
+  gemini-2.5-pro: { score: 56, source: verified, apex_elo: 1563 }
+  qwen3.5-27b: { score: 56, source: verified, apex_elo: 1556 }
+  qwen3.5-397b-a17b: { score: 55, source: verified, apex_elo: 1545 }
+  qwen3.5-122b-a10b: { score: 54, source: verified, apex_elo: 1539 }
 
-  devstral-2-123b: { score: 54, source: verified }
-  gemma-3-27b: { score: 53, source: verified }
-  mixtral-8x22b: { score: 52, source: verified }
-  llama-3.3-70b: { score: 45, source: verified }
+  # Lower Mid (ELO 1350-1500)
+  step-3.5-flash: { score: 50, source: verified, apex_elo: 1500 }
+  gpt-oss-120b: { score: 50, source: verified, apex_elo: 1495 }
+  glm-4.5: { score: 46, source: verified, apex_elo: 1461 }
+  grok-code-fast-1: { score: 46, source: verified, apex_elo: 1455 }
+  minimax-m2.5: { score: 45, source: verified, apex_elo: 1449 }
+  deepseek-v3.2: { score: 43, source: verified, apex_elo: 1433 }
+  glm-4.6: { score: 43, source: verified, apex_elo: 1429 }
+  deepseek-r1-0528: { score: 41, source: verified, apex_elo: 1407 }
+  minimax-m2.1: { score: 41, source: verified, apex_elo: 1407 }
+  qwen3.5-flash: { score: 40, source: verified, apex_elo: 1398 }
+  qwen3.5-thinking: { score: 45, source: inferred, reason: "thinking variant" }
+  gpt-oss-20b: { score: 39, source: verified, apex_elo: 1388 }
 
-  deepseek-r1: { score: 42, source: verified }
-  phi-4-mini: { score: 41, source: verified }
-  gemma-2-27b: { score: 40, source: verified }
+  # Lower Tier (ELO < 1350)
+  devstral-2512: { score: 37, source: verified, apex_elo: 1368 }
+  qwen3-coder-next: { score: 34, source: verified, apex_elo: 1343 }
+  qwen3-coder: { score: 33, source: verified, apex_elo: 1332 }
+  glm-4.5-air: { score: 33, source: verified, apex_elo: 1332 }
+  gemini-2.5-flash-lite: { score: 25, source: verified, apex_elo: 1246 }
+  trinity-large: { score: 23, source: verified, apex_elo: 1233 }
+  nemotron-3-nano-30b: { score: 20, source: verified, apex_elo: 1198 }
 
-  gemini-2.0-flash: { score: 28, source: verified }
-  step-3.5-flash: { score: 48, source: verified, apex_elo: "~1500-1525" }
-
-  # ===== INFERRED: Legitimate inference from version/family =====
-  # Based on: newer version > older, larger params > smaller, code variant slight drop
-
-  gpt-5-mini: { score: 86, source: inferred, reason: "lighter 5.x variant" }
-  gpt-5-codex:
+  # ===== INFERRED: From version/family relationships =====
+  gpt-5.1-codex:
     {
-      score: 95,
+      score: 76,
       source: inferred,
-      reason: "codex variant similar to 5.1-codex",
+      reason: "between 5.1-codex-mini and 5.2-codex",
     }
-  gpt-5.1-codex-max:
-    { score: 96, source: inferred, reason: "max variant > base 5.1-codex" }
-  gpt-5.1-codex-mini:
-    { score: 82, source: inferred, reason: "mini variant, lower than codex" }
-  gpt-4o: { score: 56, source: inferred, reason: "older than 4.1 (61)" }
+  gpt-5.1: { score: 75, source: inferred, reason: "similar to 5.1-codex" }
+  gpt-5: { score: 72, source: inferred, reason: "GPT-5.0, before 5.1" }
+  gpt-5-mini: { score: 68, source: inferred, reason: "lighter 5.x variant" }
+  gpt-5-codex: { score: 74, source: inferred, reason: "codex variant of GPT-5" }
+  gpt-5.1-codex-max: { score: 77, source: inferred, reason: "max variant" }
+  gpt-4.1: { score: 45, source: inferred, reason: "older GPT-4 family" }
+  gpt-4o: { score: 42, source: inferred, reason: "older than 4.1" }
+  codex-mini: { score: 30, source: inferred, reason: "lightweight code model" }
 
-  gemini-3.1-pro:
-    { score: 95, source: inferred, reason: "newer than 3-pro (94)" }
-  gemini-2.5-pro-preview-06-05:
-    { score: 73, source: inferred, reason: "preview of 2.5-pro" }
-  gemini-2.5-flash-image:
-    { score: 64, source: inferred, reason: "same as 2.5-flash" }
-  gemini-2.5-flash-lite:
-    { score: 50, source: inferred, reason: "lite variant significantly weaker" }
+  claude-opus-4-1:
+    { score: 80, source: inferred, reason: "Claude 4.0, before 4.5" }
+  claude-sonnet-4:
+    { score: 75, source: inferred, reason: "Claude 4.0, before 4.5" }
 
-  minimax-m2: { score: 78, source: inferred, reason: "older than m2.1 (83)" }
-  minimax-m2.5: { score: 85, source: inferred, reason: "newer than m2.1 (83)" }
+  gemini-2.5-flash:
+    { score: 40, source: inferred, reason: "older than 3-flash" }
+  gemini-2.0-flash: { score: 28, source: inferred, reason: "much older" }
 
-  glm-4.7: { score: 70, source: inferred, reason: "between 4.6 and 5" }
-  glm-4.6:
-    { score: 64, source: inferred, reason: "older glm, similar to 2.5-flash" }
+  deepseek-v3.1: { score: 40, source: inferred, reason: "older than v3.2" }
+  deepseek-r1: { score: 40, source: inferred, reason: "base R1" }
+  deepseek-coder-6.7b: { score: 30, source: inferred, reason: "small coder" }
 
-  kimi-k2-instruct:
-    { score: 67, source: inferred, reason: "base kimi, below thinking variant" }
-  kimi-k2-1t: { score: 72, source: inferred, reason: "1t params, strong" }
+  kimi-k2: { score: 45, source: inferred, reason: "base kimi" }
 
-  mistral-large-2:
-    { score: 67, source: inferred, reason: "older than large-3 (71)" }
-  codestral-22b:
-    { score: 60, source: inferred, reason: "code-specific, smaller than large" }
+  minimax-m2: { score: 38, source: inferred, reason: "older than m2.1" }
 
-  llama-4-scout:
-    { score: 35, source: inferred, reason: "smaller than maverick (63)" }
-  llama-3.1-405b:
-    { score: 48, source: inferred, reason: "larger params, older architecture" }
-  llama-3.1-70b:
-    { score: 46, source: inferred, reason: "similar to llama3-70b" }
-  llama3-70b: { score: 45, source: inferred, reason: "older llama" }
-  codellama-70b:
-    { score: 45, source: inferred, reason: "code variant, similar to base" }
+  mistral-large-3:
+    { score: 45, source: inferred, reason: "similar tier to verified" }
+  mistral-large-2: { score: 42, source: inferred, reason: "older" }
+  codestral: { score: 38, source: inferred, reason: "code-specific" }
 
-  nemotron-3-nano-30b: { score: 57, source: inferred, reason: "nano tier" }
+  llama-4-maverick: { score: 45, source: inferred, reason: "similar tier" }
+  llama-4-scout: { score: 30, source: inferred, reason: "smaller" }
+  llama-3.3-70b: { score: 40, source: inferred, reason: "older llama" }
+  llama-3.1-405b: { score: 42, source: inferred, reason: "large but older" }
+  llama-3.1-70b: { score: 40, source: inferred, reason: "mid-tier" }
+  llama3-70b: { score: 38, source: inferred, reason: "older" }
+  codellama-70b: { score: 38, source: inferred, reason: "code variant" }
+
   llama-3.1-nemotron-ultra:
-    { score: 62, source: inferred, reason: "ultra tier > super" }
+    { score: 55, source: inferred, reason: "ultra tier" }
   llama-3.3-nemotron-super:
-    { score: 56, source: inferred, reason: "super tier" }
-  llama-3.1-nemotron-51b: { score: 45, source: inferred, reason: "51b variant" }
-  llama-3.1-nemotron-70b: { score: 47, source: inferred, reason: "70b variant" }
-  nemotron-nano-9b: { score: 45, source: inferred, reason: "small nano" }
+    { score: 50, source: inferred, reason: "super tier" }
+  llama-3.1-nemotron-51b: { score: 40, source: inferred, reason: "51b variant" }
+  llama-3.1-nemotron-70b: { score: 42, source: inferred, reason: "70b variant" }
+  nemotron-4-340b: { score: 45, source: inferred, reason: "new nemotron" }
+  nemotron-nano-9b: { score: 22, source: inferred, reason: "small nano" }
+  nemotron-nano-12b-vl: { score: 22, source: inferred, reason: "small nano vl" }
 
-  phi-3-medium:
-    { score: 32, source: inferred, reason: "medium phi, below phi-4" }
-  phi-3-small: { score: 22, source: inferred, reason: "small phi" }
+  gemma-3-27b: { score: 45, source: inferred, reason: "similar tier" }
+  gemma-3-12b: { score: 40, source: inferred, reason: "smaller" }
+  gemma-2-27b: { score: 35, source: inferred, reason: "older" }
 
-  gemma-3-12b: { score: 45, source: inferred, reason: "12b < 27b (53)" }
+  phi-4-mini: { score: 38, source: inferred, reason: "similar tier" }
+  phi-3-medium: { score: 30, source: inferred, reason: "older phi" }
+  phi-3-small: { score: 22, source: inferred, reason: "small" }
+  phi-3.5-moe: { score: 28, source: inferred, reason: "moe variant" }
 
-  deepseek-v3.1-terminus:
-    { score: 72, source: inferred, reason: "same as v3.1" }
-  deepseek-r1-0528:
-    { score: 43, source: inferred, reason: "newer R1, similar to R1" }
-  deepseek-coder-6.7b:
-    { score: 30, source: inferred, reason: "small coder model" }
-  gpt-5:
-    {
-      score: 88,
-      source: inferred,
-      reason: "GPT-5.0, released before 5.1, similar to mini variants, better than GPT-4",
-    }
+  mixtral-8x22b: { score: 40, source: inferred, reason: "similar tier" }
 
-  # ===== UNKNOWN: No data, no reasonable inference =====
-  # These models have no APEX data and no clear basis for inference
-  # Leave them mapped but without scores - they need evaluation
-
-  trinity-large:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  trinity-mini:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  solar-pro-3:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  grok-code-fast-1:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  morph-auto:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  morph-v3-fast:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  morph-v3-large:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  cosmos-nemotron-34b:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  cogito-2.1:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  rnj-1-8b:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
-  gemma-3n-e2b: { score: null, source: unknown, reason: "embedding model" }
-  gemma-3n-e4b: { score: null, source: unknown, reason: "embedding model" }
-  codegemma-1.1-7b:
-    { score: null, source: unknown, reason: "code embedding model" }
-  codegemma-7b: { score: null, source: unknown, reason: "code embedding model" }
-  qwen3-next-80b: { score: null, source: unknown, reason: "no APEX data" }
-  qwen3-next-80b-thinking:
-    { score: null, source: unknown, reason: "no APEX data" }
-  qwen3-235b: { score: null, source: unknown, reason: "no APEX data" }
-  qwq-32b: { score: null, source: unknown, reason: "no APEX data" }
-  qwen3-coder-next: { score: null, source: unknown, reason: "no APEX data" }
-  phi-3.5-moe: { score: null, source: unknown, reason: "no APEX data" }
-  gpt-oss-120b: { score: null, source: unknown, reason: "no APEX data" }
-  llama3-chatqa-1.5-70b:
-    { score: null, source: unknown, reason: "no APEX data" }
-  nemotron-4-340b: { score: null, source: unknown, reason: "no APEX data" }
-  nemotron-nano-12b-vl: { score: null, source: unknown, reason: "no APEX data" }
-  codex-mini: { score: null, source: unknown, reason: "no APEX data" }
+  # Unknown - no APEX data
+  trinity-mini: { score: null, source: unknown }
+  solar-pro-3: { score: null, source: unknown }
+  morph-auto: { score: null, source: unknown }
+  morph-v3-fast: { score: null, source: unknown }
+  morph-v3-large: { score: null, source: unknown }
+  cosmos-nemotron-34b: { score: null, source: unknown }
+  cogito-2.1: { score: null, source: unknown }
+  rnj-1-8b: { score: null, source: unknown }
+  gemma-3n-e2b: { score: null, source: unknown }
+  gemma-3n-e4b: { score: null, source: unknown }
+  codegemma: { score: null, source: unknown }
+  llama3-chatqa-1.5-70b: { score: null, source: unknown }
+  qwq-32b: { score: null, source: unknown }
   big-pickle:
-    { score: null, source: unknown, reason: "no APEX data, needs evaluation" }
-  free:
-    {
-      score: null,
-      source: unknown,
-      reason: "free tier, no consistent performance",
-    }
+    { score: 60, source: estimated, reason: "seems strong, likely mid-tier" }
+  free: { score: 15, source: estimated, reason: "random free model, low tier" }
