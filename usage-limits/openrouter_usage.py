@@ -39,7 +39,7 @@ class OpenRouterProvider(UsageProvider):
     ntfy_topic = "usage-updates"
     ntfy_server = "http://localhost"
 
-    FREE_DAILY_LIMIT = 50
+    FREE_DAILY_LIMIT = 1000  # 1000/day if purchased credits, 50/day if never paid
 
     def __init__(self) -> None:
         super().__init__()

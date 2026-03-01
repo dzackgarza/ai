@@ -38,6 +38,16 @@ export async function obviousQuestionDetector(ctx: StopHookContext): Promise<Sto
   const match = findMatch(ctx.lastText, OBVIOUS_QUESTION_CONFIG.key_phrases);
   if (!match) return { force_stop: false, agent_feedback: "" };
 
+  // Log for testing verification
+  await ctx.client.app.log({
+    body: {
+      service: "obvious-question-detector",
+      level: "info",
+      message: "TRIGGERED - detected obvious question",
+      extra: { matchedText: ctx.lastText.slice(0, 200) },
+    },
+  }).catch(() => {});
+
   return {
     force_stop: true,
     agent_feedback: OBVIOUS_QUESTION_CONFIG.response,

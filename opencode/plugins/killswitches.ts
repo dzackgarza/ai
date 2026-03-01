@@ -9,6 +9,6 @@ export const KILLSWITCHES = {
   cotTrivialInterceptor: true,
   // Stop hooks
   otpChecker: true,
-  obviousQuestionDetector: true,
+  obviousQuestionDetector: true,  // KILLED
   reflexiveAgreementDetector: true,
 };

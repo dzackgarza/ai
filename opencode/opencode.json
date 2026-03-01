@@ -999,6 +999,9 @@
   },
   "model": "openrouter-free/stepfun/step-3.5-flash:free",
   "default_agent": "Interactive",
+  "experimental": {
+    "openTelemetry": true
+  },
   "plugin": [
     "opencode-antigravity-auth@latest",
     "opencode-anthropic-auth@latest",
@@ -1006,7 +1009,8 @@
     "opencode-openai-codex-auth@latest",
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
-    "@ramtinj95/opencode-tokenscope@latest"
+    "@ramtinj95/opencode-tokenscope@latest",
+    "opencode-plugin-langfuse@latest"
   ],
   "agent": {
     "plan": {
