@@ -5,7 +5,10 @@ description: Use when asked to find, evaluate, or download new skills from skill
 
 # Finding or Downloading New Skills
 
-This skill covers using the **LobeHub Skills Marketplace** to automatically search for and install skills. The marketplace CLI handles authentication, download, and installation automatically.
+This skill covers two approaches:
+
+1. **LobeHub Marketplace** - Automatic search and install via CLI (100,000+ skills)
+2. **Manual Download** - For skills from GitHub or custom repositories (most skills)
 
 ## LobeHub Marketplace (Recommended)
 
@@ -101,32 +104,7 @@ npx -y @lobehub/market-cli skills install lobehub-pdf-tools --dir ~/my-skills
 1. Read `SKILL.md` inside the installed directory
 2. Follow its instructions to complete the task
 
-### Rating & Feedback
-
-Rate skills after use:
-
-```bash
-# Rate a skill (1-5)
-npx -y @lobehub/market-cli skills rate <identifier> --score <1-5>
-
-# Add a comment with rating
-npx -y @lobehub/market-cli skills comment <identifier> -c "Your feedback" --rating <1-5>
-
-# Read existing comments
-npx -y @lobehub/market-cli skills comments <identifier>
-```
-
-**Rating guide:**
-
-| Score | Meaning                                      |
-| ----- | -------------------------------------------- |
-| 5     | Excellent — solved the task perfectly        |
-| 4     | Good — worked well with minor issues         |
-| 3     | Okay — got the job done but could be clearer |
-| 2     | Poor — partially worked, confusing           |
-| 1     | Broken — didn't work, errors                 |
-
-## Legacy: Manual Download
+## Manual Download
 
 For skills not on LobeHub or custom repositories, use manual download:
 
