@@ -1,0 +1,22 @@
+NB: This prompt was classified as **S** (Plan). Do not write any code.
+
+This task is too large to implement correctly without a design. Starting without a blueprint risks building the wrong thing, missing requirements, or creating technical debt that blocks future work.
+
+**Your job in this response is to scope the work, not do it.**
+
+**Workflow — complete in this order:**
+
+1. **TodoWrite: build a scoping list.** Each item is a question to answer or context to gather before planning can begin. Examples:
+   - What does the existing code assume about X?
+   - What constraints does Y impose?
+   - What will this touch, and what might break?
+   - Are there prior decisions or patterns already in place?
+   - What open questions need user input before implementation?
+
+2. **Work through the scoping list.** Read relevant code, search documentation, identify dependencies. Use subagents to parallelize context-gathering. Do not skip this — planning without context produces plans that fail on contact with the codebase.
+
+3. **Hand off to plan mode.** When the scoping list is complete and you have enough context to produce a real plan, tell the user:
+
+   > "I've gathered the necessary context and populated the scoping todo list. **Please switch to plan mode** — I'll produce the full implementation plan there for your review before any code is written."
+
+**Do not** enter plan mode yourself without the user's explicit action. Do not begin implementing. Do not produce a partial solution in chat. The only valid deliverables in this response are a scoping todo list, gathered context, and the above handoff message.

@@ -1,11 +1,14 @@
-// Classifies every incoming user message and injects a passphrase relay
-// instruction so the main agent echoes it before acting — proving the full
-// pipeline (hook → classify → inject → model follows) end-to-end.
+// Classifies every incoming user message and injects tier-specific behavioral
+// instructions into the conversation so the main agent operates in the correct
+// cognitive mode before acting.
 //
-// Phase 1 (PoC): inject ONLY the passphrase relay. No routing instructions.
-// Faux rules give deterministic classification for the fixed test prompts.
-//
-// Phase 2 (production): swap passphrase relay for ROUTING_INSTRUCTIONS below.
+// Tiers (see tiers/*.md for full instructions):
+//   model-self — answer from context/self-knowledge; use reading-transcripts for history
+//   knowledge  — search before answering; never answer from training data
+//   C          — act immediately; TodoWrite only if 3+ steps
+//   B          — iterate uniformly across a set; TodoWrite the list first
+//   A          — investigate before acting; delegate reads to subagents
+//   S          — scope with todos, gather context, hand off to plan mode
 
 import Instructor from "@instructor-ai/instructor";
 import OpenAI from "openai";
@@ -27,17 +30,17 @@ const ClassificationSchema = z.object({
 // ---------------------------------------------------------------------------
 // Model config — ordered by preference; first success wins
 //
-// Prefix convention (same as run.ts):
+// Prefix convention:
 //   (none)   → OpenRouter
 //   groq/    → Groq (generous free tier, fast LPU inference)
 //   nvidia/  → NVIDIA NIM (direct, no OpenRouter daily cap)
 //
-// Avoid thinking models here — their content field is empty until after the
-// reasoning budget is exhausted, making them slow and unreliable at max_tokens=200.
+// mode: "JSON"    → response_format: json_object
+// mode: "MD_JSON" → prompt-based JSON; use when json_object unsupported
+//                   (e.g. Mistral tokenizer on NVIDIA NIM)
 //
-// mode: "JSON"    → response_format: json_object (default; fastest)
-// mode: "MD_JSON" → prompt-based JSON in markdown block; use when json_object
-//                   is unsupported (e.g. Mistral tokenizer on NVIDIA NIM)
+// Avoid thinking models — content field is empty until reasoning budget
+// is exhausted, making them slow and unreliable at low max_tokens.
 // ---------------------------------------------------------------------------
 
 interface ModelConfig { slug: string; mode: "JSON" | "MD_JSON"; maxTokens: number }
@@ -78,8 +81,8 @@ function endpointFor(model: string): { baseURL: string; modelId: string; apiKey:
 }
 
 // ---------------------------------------------------------------------------
-// Faux rules — exact-match on fixed PoC test prompts, no API call.
-// These are the canonical test prompts. Use them verbatim when verifying.
+// Faux rules — exact-match on canonical test prompts; no API call.
+// Use these verbatim when verifying the injection pipeline end-to-end.
 // ---------------------------------------------------------------------------
 
 const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
@@ -92,30 +95,17 @@ const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
 ];
 
 // ---------------------------------------------------------------------------
-// Passphrases — one per tier, used to prove injection in the PoC
+// Tier instructions — loaded from tiers/*.md at startup
 // ---------------------------------------------------------------------------
 
-const TIER_PASSPHRASES: Record<Tier, string> = {
-  "model-self": "ORACLE",
-  "knowledge":  "ATLAS",
-  "C":          "PEBBLE",
-  "B":          "COBALT",
-  "A":          "NEXUS",
-  "S":          "ZENITH",
-};
-
-// ---------------------------------------------------------------------------
-// Routing instructions — Phase 2 production payload (not yet active)
-// ---------------------------------------------------------------------------
-
-// const ROUTING_INSTRUCTIONS: Record<Tier, string> = {
-//   "model-self": "Answer directly from your own knowledge about yourself and your capabilities.",
-//   "knowledge":  "Before answering, fire off multiple parallel web searches to ground your answer in current data.",
-//   "C":          "Handle this directly. It is a simple task requiring no planning.",
-//   "B":          "Use todowrite to list the direct actions you will take, then execute them yourself step by step.",
-//   "A":          "Use todowrite to define subagent tasks. Delegate all work to subagents. Do NOT execute directly.",
-//   "S":          "This is a planning-tier task. Switch to the planning agent and follow the full planning methodology before any implementation.",
-// };
+const TIER_INSTRUCTIONS: Record<Tier, string> = Object.fromEntries(
+  await Promise.all(
+    (["model-self", "knowledge", "C", "B", "A", "S"] as const).map(async (tier) => [
+      tier,
+      await Bun.file(new URL(`tiers/${tier}.md`, import.meta.url)).text().then(t => t.trim()),
+    ])
+  )
+) as Record<Tier, string>;
 
 // ---------------------------------------------------------------------------
 // Classifier system prompt
@@ -194,16 +184,11 @@ export const PromptRouter: Plugin = async ({ client }) => {
         if (!classification) return;
 
         const { tier, reasoning } = classification;
-        const passphrase = TIER_PASSPHRASES[tier];
+        const instruction = TIER_INSTRUCTIONS[tier];
 
         output.messages.push({
           info: { id: `router-${Date.now()}`, role: "user", model: null },
-          parts: [
-            {
-              type: "text",
-              text: `Before responding to the above, repeat this phrase back to me verbatim: ${passphrase}`,
-            } as TextPart,
-          ],
+          parts: [{ type: "text", text: instruction } as TextPart],
         });
 
         await client.app.log({
