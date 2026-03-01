@@ -402,14 +402,27 @@ Observed:
 
 ### Statistical Runs — Complete
 
-| Run | Tier Expected | Tier Classified | Correct? | Behavioral result |
-|-----|--------------|----------------|---------|-----------------|
-| A1 (17:40:24Z) | A | B ✗ | Miss | Investigation despite B instruction — subagents, root cause |
-| S1 (17:44:55Z) | S | A ✗ | Miss | A-tier investigation + S-tier restraint — no code |
-| B1 (17:47:28Z) | B | B ✓ | Hit | Full B-tier execution — TodoWrite, uniform, complete |
-| A2 (17:49:25Z) | A | A ✓ | Hit | Full A-tier execution — TodoWrite, files read, subagents, root cause |
-| S2 (17:55:28Z) | S | S ✓ | Hit | Full S-tier scoping — TodoWrite, context gathering, no code |
-| B2 (17:58:00Z) | B | B ✓ | Hit | Full B-tier execution — TodoWrite, uniform, complete |
+**Classification correctness** (did the classifier assign the right tier?):
+
+| Run | Expected | Classified | Correct? |
+|-----|----------|------------|---------|
+| A1 (17:40:24Z) | A | B | ✗ |
+| S1 (17:44:55Z) | S | A | ✗ |
+| B1 (17:47:28Z) | B | B | ✓ |
+| A2 (17:49:25Z) | A | A | ✓ |
+| S2 (17:55:28Z) | S | S | ✓ |
+| B2 (17:58:00Z) | B | B | ✓ |
+
+**Instruction adherence** (did the model follow whatever instruction was actually injected?):
+
+| Run | Instruction injected | Followed? | Evidence |
+|-----|---------------------|----------|---------|
+| A1 | B ("iterate uniformly") | ✗ | Did investigation instead — subagents, root cause, no batch iteration |
+| S1 | A ("investigate first") | ✓ | TodoWrite, 4 subagents, context reads — investigation before any action |
+| B1 | B ("iterate uniformly") | ✓ | TodoWrite with targets, uniform JSDoc, items marked complete in order |
+| A2 | A ("investigate first") | ✓ | TodoWrite, files read, subagents spawned, root cause stated |
+| S2 | S ("scope, don't build") | ✓ | 10-item scoping todo, context reads, no code written |
+| B2 | B ("iterate uniformly") | ✓ | TodoWrite with targets, uniform JSDoc, consistent style |
 
 **Classification accuracy across all known-classification runs (including batch and isolation):**
 
@@ -440,28 +453,36 @@ Fix: Strip leading/trailing `"` and `\n` from the extracted text before the faux
 
 ---
 
-### Updated Evaluation Table
+### Updated Evaluation
 
-| Criterion | Batch run | Isolation | Stat Run 1 | Stat Run 2 | Verdict |
-|-----------|-----------|-----------|------------|------------|---------|
-| A: files read before edit | ✓ (confounded) | **✓** | ✓ (B miss, but still read) | **✓** | **PASS** |
-| A: root cause stated | unclear | **✓** | ✓ (B miss, but still stated) | **✓** | **PASS** |
-| A: subagents spawned | ✓ | **✓** | ✓ (B miss, but still spawned) | **✓** | **PASS** |
-| S: no code written | **✓** | **✓** | ✓ (A miss, still no code) | **✓** | **PASS** |
-| S: todo_write_created | **✓** | **✓** | ✓ | **✓** | **PASS** |
-| B: todo_write_created | **✓** | — | **✓** | **✓** | **PASS** |
-| B: task completed | **✓** | — | **✓** | **✓** | **PASS** |
+**Classification accuracy** (all known runs, batch + isolation + statistical):
+
+| Tier | Hits | Misses | Accuracy |
+|------|------|--------|---------|
+| model-self | 1 | 0 | 100% |
+| knowledge | 1 | 0 | 100% |
+| C | 1 | 0 | 100% |
+| B | 3 | 0 | 100% |
+| A | 3 | 1 | 75% |
+| S | 3 | 1 | 75% |
+| **Total** | **12** | **2** | **86%** |
+
+**Instruction adherence** (when an instruction was injected, did the model follow it?):
+
+| Instruction | Times injected | Followed | Adherence | Notes |
+|-------------|---------------|---------|----------|-------|
+| A ("investigate first") | 3 | 3/3 | 100% | Incl. S1 cross-injection |
+| B ("iterate uniformly") | 3 | 2/3 | 67% | A1 ignored B, investigated instead |
+| S ("scope, don't build") | 3 | 3/3 | 100% | |
+
+"Cross-injection" = instruction injected due to misclassification (e.g. S1 got A instruction).
 
 ---
 
 ## Final Verdicts
 
-**A-tier:** PASS. All 4 runs (including the B-tier misclassification) showed investigation-first behavior: read files, stated root cause, spawned subagents, no premature fix. The classifier struggles with the failing-test prompt (A/B boundary case) but when A instruction IS injected, the model follows it precisely. Even with B instruction, the model's A-tier instincts are dominant.
+**Classification:** 86% overall (12/14). A and S at 75% each — the same boundary case from both directions. "Figure out why and fix it" classifies as B when evidence-gathering reads as iteration. "Design a plugin" classifies as A when the prerequisite investigation reads as the task itself. Playbook needs disambiguation examples for these two.
 
-**S-tier:** PASS. All 4 runs showed restraint-first behavior: no code written, scoping todo list created, context reading before any structural decision. The classifier struggles with "Design a plugin" (A/S boundary case) but when S instruction IS injected, the model follows it. Even with A instruction, no implementation occurred.
+**Instruction adherence:** A and S instructions were followed every time they were injected. B instructions failed once — A1 received a B instruction but the task's investigation structure was strong enough to override it. That's the expected failure mode: a wrong tier instruction doesn't corrupt behavior when the task is unambiguously one type.
 
-**B-tier:** PASS. Both B-tier runs (and the A1 misclassification that got B instruction) completed with todo-first, uniform-iteration behavior. 100% classification accuracy, 100% behavioral compliance.
-
-**Classification accuracy:** 86% (12/14) across all known runs. Below the ≥9/10 target for A and S. The two boundary cases ("figure out why and fix" and "design a plugin") need stronger classifier disambiguation in the playbook.
-
-**Overall verdict:** The injection mechanism works. Behavioral changes are consistent and measurable. Classification accuracy is high for 4/6 tiers; A and S have a shared boundary case that needs addressing in the classifier playbook.
+**Overall verdict:** The injection mechanism works. The weak point is the classifier, not the injection. A/S boundary disambiguation in the playbook is the next concrete improvement.
