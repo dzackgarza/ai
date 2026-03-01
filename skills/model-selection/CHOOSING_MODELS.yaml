@@ -1,5 +1,9 @@
 # Model Scores - Calibrated against APEX Testing ELO
-# Base model names map to scores (0-100). Any variant (provider/date suffix) inherits the base score.
+#
+# Categories:
+#   1. VERIFIED: Direct mappings to APEX-listed models (reliable)
+#   2. INFERRED: Estimated based on similar models (marked as estimate)
+#   3. EXCLUDED: Embedding models, irrelevant for coding tasks
 #
 # Tier Mapping:
 #   S+ (≥1870): 95-100
@@ -12,6 +16,8 @@
 #   C  (<1500): <30
 
 models:
+  # ===== VERIFIED: Direct APEX-listed models =====
+
   # S+ Tier (≥1870) — Score 95-100
   claude-opus-4-6: 100
   claude-sonnet-4-6: 99
@@ -29,8 +35,6 @@ models:
   claude-sonnet-4: 92
   deepseek-v3.2: 93
   qwen3-coder-480b: 90
-  gpt-5: 88
-  gpt-5-mini: 85
 
   # A+ Tier (1750-1800) — Score 75-84
   gemini-3-flash: 84
@@ -38,69 +42,143 @@ models:
   kimi-k2.5: 82
   glm-5: 81
   kimi-k2-thinking: 80
-  minimax-m2.5: 80
-  minimax-m2: 78
-  step-3.5-flash: 77
 
   # A Tier (1700-1750) — Score 65-74
   claude-haiku-4-5: 74
   gemini-2.5-pro: 73
   deepseek-v3.1: 72
   mistral-large-3: 71
-  mistral-large-2: 70
   qwen3.5: 69
-  deepseek-v3: 68
-  kimi-k2: 67
-  codestral: 66
-  glm-4.7: 65
-  glm-4.6: 65
 
   # A- Tier (1650-1700) — Score 55-64
   gemini-2.5-flash: 64
   llama-4-maverick: 63
-  nemotron-ultra: 62
   gpt-4.1: 61
-  gpt-4o: 58
-  nemotron-3-nano: 57
-  nemotron-super: 56
-  llama-3.3-70b: 55
 
   # B+ Tier (1600-1650) — Score 45-54
   devstral-2: 54
   gemma-3: 53
   mixtral-8x22b: 52
-  trinity-large: 51
-  trinity-mini: 50
-  solar-pro-3: 49
-  codellama-70b: 48
-  llama-3.1-405b: 47
-  llama-3.1-70b: 46
-  llama3-70b: 45
+  llama-3.3-70b: 45
 
   # B Tier (1500-1600) — Score 30-44
-  qwen3-coder: 44
-  qwen3-next: 43
   deepseek-r1: 42
   phi-4: 41
   gemma-2-27b: 40
   gemma-2: 38
-  codegemma: 36
-  phi-3-medium: 34
-  llama-4-scout: 33
-  mixtral: 32
-  r1-distill: 31
-  ministral: 30
 
   # C Tier (<1500) — Score <30
   gemini-2.0-flash: 28
   gemini-1.5-flash: 25
-  phi-3-small: 22
+  phi-3: 22
   qwen2.5-7b: 20
-  gpt-oss: 18
-  big-pickle: 15
 
-  # Special cases
-  auto: 50 # morph/auto
-  morph-v3-fast: 65
-  morph-v3-large: 80
-  grok-code-fast-1: 55
+  # ===== INFERRED: Estimated based on similar models =====
+  # These models are NOT explicitly on APEX but are estimated
+  # based on family relationships and known performance
+
+  # GPT-5 family variants
+  gpt-5: 88 # ESTIMATED: between 5.1 and 5.2
+  gpt-5-mini: 85 # ESTIMATED: lighter variant
+
+  # MiniMax family
+  minimax-m2.5: 80 # ESTIMATED: between M2.1 (83) and claimed performance
+  minimax-m2: 78 # ESTIMATED: older M2
+
+  # Step (ByteDance)
+  step-3.5-flash: 77 # ESTIMATED: flash-level competitor
+
+  # Mistral family
+  mistral-large-2: 70 # ESTIMATED: older version of large-3
+  codestral: 66 # ESTIMATED: code-specific
+
+  # GLM family
+  glm-4.7: 65 # ESTIMATED: between 4.6 and 5
+  glm-4.6: 64 # ESTIMATED: older GLM
+
+  # Nemotron family
+  nemotron-ultra: 62 # ESTIMATED: newer nemotron
+  nemotron-3-nano: 57 # ESTIMATED: nano tier
+  nemotron-super: 56 # ESTIMATED: super tier
+
+  # GPT-4 family
+  gpt-4o: 58 # ESTIMATED: older than 4.1
+
+  # Llama 3.1/3 family
+  llama-3.1-405b: 47 # ESTIMATED: large but older
+  llama-3.1-70b: 46 # ESTIMATED: mid-tier Llama
+  llama3-70b: 45 # ESTIMATED: older Llama
+
+  # Code-focused models
+  codellama-70b: 48 # ESTIMATED: code Llama
+  codex-mini: 50 # ESTIMATED: lightweight code model
+
+  # Qwen3 variants
+  qwen3-next: 43 # ESTIMATED: newer Qwen
+  qwen3-coder: 44 # ESTIMATED: coder variant
+  qwq-32b: 35 # ESTIMATED: reasoning model, lower performance
+
+  # Phi family
+  phi-3-medium: 34 # ESTIMATED: mid-tier Phi
+  phi-3-small: 22 # ESTIMATED: smaller Phi
+
+  # Mixtral
+  mixtral: 32 # ESTIMATED: older mixtral
+
+  # Llama 4
+  llama-4-scout: 33 # ESTIMATED: smaller llama
+
+  # Gemma
+  codegemma: 36 # ESTIMATED: code gemma
+
+  # Gemini flash variants (map to 3-flash)
+  gemini-flash-latest: 84 # ESTIMATED: maps to gemini-3-flash
+  gemini-flash-lite-latest: 50 # ESTIMATED: lite variant
+  gemini-live-2.5-flash: 84 # ESTIMATED: live variant of 2.5-flash
+
+  # Morph (Meta)
+  morph-v3-fast: 65 # ESTIMATED: newer model, reasonable performance
+  morph-v3-large: 80 # ESTIMATED: large variant
+
+  # Grok
+  grok-code-fast-1: 55 # ESTIMATED: xAI code model
+
+  # DeepSeek variants
+  deepseek-v3: 68 # ESTIMATED: base V3
+  deepseek-coder-6.7b: 30 # ESTIMATED: small coder
+
+  # Kimi variants
+  kimi-k2: 67 # ESTIMATED: base kimi
+
+  # Trinity
+  trinity-large: 51 # ESTIMATED
+  trinity-mini: 50 # ESTIMATED
+
+  # Solar
+  solar-pro-3: 49 # ESTIMATED
+
+  # Special
+  auto: 50 # ESTIMATED: morph auto
+
+  # R1 distilled
+  r1-distill: 31 # ESTIMATED: distilled R1
+  ministral: 30 # ESTIMATED: small mistral
+
+  # Additional Llama/Nemotron variants
+  llama-3.1-nemotron-51b: 46 # ESTIMATED
+  llama-3.1-nemotron-70b: 47 # ESTIMATED
+  llama-3.1-nemotron-ultra: 60 # ESTIMATED: ultra tier
+  nemotron-4-340b: 60 # ESTIMATED: new nemotron
+
+  # ChatQA
+  llama3-chatqa-1.5-70b: 45 # ESTIMATED
+
+  # Cosmos
+  cosmos-nemotron-34b: 55 # ESTIMATED
+
+
+  # ===== EXCLUDED: Embedding/specialized models =====
+  # These are not relevant for coding tasks:
+  # - gemma3:27b (embedding model)
+  # - codegemma (embedding variants)
+  # - Various :free tier models (use base model score)
