@@ -11,6 +11,8 @@ const CONTEXT_RULES: Record<string, string> = {
 export const ContextInjector: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (input, output) => {
+      // Killswitch check - no-op if disabled
+      if (!KILLSWITCHES.contextInjector) return;
       if (!output.messages?.length) return;
 
       try {
