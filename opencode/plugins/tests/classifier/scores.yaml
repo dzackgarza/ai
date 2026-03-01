@@ -66,11 +66,11 @@ models:
     cumulative_score: 0
     last_run: 2026-03-01T04:25:20.942Z
   groq/llama-3.3-70b-versatile:
-    total_runs: 1
-    total_cases: 12
-    total_passed: 12
+    total_runs: 2
+    total_cases: 24
+    total_passed: 24
     cumulative_score: 1
-    last_run: 2026-03-01T04:42:52.258Z
+    last_run: 2026-03-01T05:53:35.355Z
   nvidia/meta/llama-3.3-70b-instruct:
     total_runs: 1
     total_cases: 12
