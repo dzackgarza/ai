@@ -66,6 +66,9 @@ Thumbs.db
 *.temp
 .cache/
 *.jsonl
+# Exceptions: behavioral test logs are test evidence, not build artifacts
+!opencode/plugins/tests/behavior/logs/*.log
+!opencode/plugins/tests/behavior/logs/*.jsonl
 
 # Test output
 test_results/

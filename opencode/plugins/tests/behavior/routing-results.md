@@ -217,3 +217,91 @@ the model produces more verbose intermediate output.
 2. Run A-tier in isolation with a clean sandbox to get uncontaminated A-tier routing data.
 3. Run S-tier again to verify the handoff message is produced; revise S.md if not.
 4. Consider running each tier 3x for statistical confidence before declaring success.
+
+---
+
+## Isolation Run Results (2026-03-01, 16:57–17:06 UTC)
+
+**Setup:** `/tmp/routing-runs-v2.sh` — per-tier sandbox reset (`git checkout HEAD -- . && git clean -fd`), runs A then S in the cron-idle window (minutes 40–59). Sandbox is now at `/var/sandbox/execa/` (subdir, not root). Both tiers classified correctly.
+
+### A-tier (clean sandbox)
+
+```
+Result file: results/A/2026-03-01T16-57-44Z.yaml
+Sandbox:     Clean reset — execa codebase, A-tier bug intact (failing test confirmed)
+Classified:  A (correct) — tier_classified=A ✓
+
+Observed:
+  - Created investigation plan (TodoWrite) first — correct A-tier initiation
+  - Read test/arguments/parser.test.js and lib/arguments/parser.js before any action
+  - Stated root cause explicitly: "parseArguments(['']) returns [''] instead of []
+    due to the single-arg special case (if trimmed.length > 1) that preserves empty
+    strings" — correct and specific
+  - Spawned 4 subagents to trace call sites and verify placeholder behavior before fixing
+  - Did NOT monkey-patch
+  - Did NOT attempt a fix before confirming scope of impact
+  - Timed out at 360s before completing fix — investigation was complete, fix was pending
+```
+
+**Signal strength: Strong.** With a clean sandbox, the model followed A-tier protocol
+precisely: plan first, read before acting, state root cause, delegate call-site research,
+no premature fix. The timeout prevented completion but this is a harness issue (subagent
+spawns consume additional wall-clock time); the investigative behavior was correct.
+
+**Gap:** Fix was not applied. Two options: (1) increase A-tier timeout to 480–600s to
+allow subagent round-trips; (2) discourage subagent spawning in A.md in favor of
+sequential self-investigation (faster but less thorough).
+
+---
+
+### S-tier (clean sandbox, revised S.md)
+
+```
+Result file: results/S/2026-03-01T17-03-47Z.yaml
+Sandbox:     Clean reset — execa codebase
+Classified:  S (correct) — tier_classified=S ✓
+S.md:        Revised — handoff message moved to top with "MUST end with" framing
+
+Observed:
+  - TodoWrite created: 2 calls (initial scoping list + update) — correct S-tier initiation
+  - No code written — correct
+  - Read package.json, README.md, index.d.ts, index.js for context — correct
+  - Tool sequence: serena_activate_project → serena_read_memory → todowrite × 2 →
+    serena_list_dir → glob × 2 → read × 4 (13 total)
+  - Timed out at 150s while still gathering context — never produced handoff message
+  - plan_mode_handoff: false
+```
+
+**Signal strength: Moderate.** The primary success criterion (no implementation) is met.
+The model correctly restrained from writing code and was building a scoping context.
+However, the explicit handoff message was not produced within the 150s timeout.
+
+**Root cause of timeout:** Serena initialization consumes ~30s of the budget (3 serena
+calls before any task work). With 13 total tool calls at 150s, each call averages ~11s
+including model thinking time. The model needs ~20+ tool calls to gather full context
+and produce the handoff — well beyond what 150s allows.
+
+**Options:**
+1. Increase S-tier timeout to 240s.
+2. Suppress serena in S.md: "Do not use serena or activate-project; read files directly."
+3. Make the handoff message the first output (before any tool calls), then continue
+   gathering context. This inverts the scoping workflow but guarantees the criterion is met.
+
+---
+
+## Updated Evaluation
+
+| Criterion | Target | Batch Run | A-isolation | S-isolation |
+|-----------|--------|-----------|-------------|-------------|
+| Classification accuracy | ≥ 9/10 | 6/6 ✓ | A ✓ | S ✓ |
+| A: read before acting | 1/1 | ✓ (confounded) | **✓ clean** | — |
+| A: root cause stated | 1/1 | unclear | **✓** | — |
+| A: no premature fix | 1/1 | ✓ | **✓** | — |
+| S: no code written | 1/1 | ✓ | — | **✓** |
+| S: handoff message | 1/1 | ✗ | — | **✗** |
+
+**A-tier verdict:** Investigation protocol is correct. Timeout prevents fix completion.
+Increase timeout or reduce subagent spawning.
+
+**S-tier verdict:** Restraint is working. Handoff message not produced due to timeout.
+Increase budget or restructure instruction to emit handoff earlier.
