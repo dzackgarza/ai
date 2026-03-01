@@ -1,0 +1,15 @@
+observed_behaviors:
+  code_written: null
+  files_read_before_edit: null
+  notes: ''
+  plan_mode_handoff: null
+  root_cause_stated: null
+  subagents_spawned: null
+  todo_write_created: null
+  total_tool_calls: null
+  web_search_made: null
+prompt: Describe every tool you have access to.
+reasoning: ''
+tier_classified: unknown
+tier_expected: model-self
+timestamp: 2026-03-01T11-34-04Z

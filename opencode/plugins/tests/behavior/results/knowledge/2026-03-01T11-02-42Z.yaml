@@ -1,0 +1,18 @@
+observed_behaviors:
+  code_written: null
+  files_read_before_edit: null
+  notes: ''
+  plan_mode_handoff: null
+  root_cause_stated: null
+  subagents_spawned: null
+  todo_write_created: null
+  total_tool_calls: null
+  web_search_made: null
+prompt: What is the latest stable release of Node.js, and does it support the Web
+  Crypto API natively without any flags?
+reasoning: ''
+session_id: ses_356ef4759ffeOgqBY06egZ0k4L
+tier_classified: unknown
+tier_expected: knowledge
+timestamp: 2026-03-01T11-02-42Z
+transcript: /home/dzack/ai/opencode/plugins/tests/behavior/results/knowledge/2026-03-01T11-02-42Z.md
