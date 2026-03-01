@@ -1,0 +1,21 @@
+observed_behaviors:
+  code_written: false
+  files_read_before_edit: false
+  notes: 'Made ~8 web searches (kindly_web_search + kindly_get_content + bash curl)
+    before attempting to answer. More thorough search effort than baseline (~4 calls).
+    Classifier correctly tagged as knowledge. The routing instruction reinforces "never
+    answer from training data, always search first" which the model was already doing
+    but now does even more aggressively. Completed within 150s timeout.'
+  plan_mode_handoff: false
+  root_cause_stated: null
+  subagents_spawned: false
+  todo_write_created: false
+  total_tool_calls: 9
+  web_search_made: true
+prompt: What is the latest stable release of Node.js, and does it support the Web
+  Crypto API natively without any flags?
+reasoning: The answer depends on external, time-sensitive version information and
+  API compatibility data that must be fetched, not inferred.
+tier_classified: knowledge
+tier_expected: knowledge
+timestamp: 2026-03-01T12-40-44Z
