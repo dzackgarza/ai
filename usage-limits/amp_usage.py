@@ -27,6 +27,10 @@ class AmpProvider(UsageProvider):
     ntfy_topic = "usage-updates"
     ntfy_server = "http://localhost"
 
+    def provider_name(self) -> str:
+        """Return the provider name."""
+        return "Amp"
+
     def fetch_raw(self) -> dict:
         """Run `amp usage` and parse the text output."""
         result = subprocess.run(
