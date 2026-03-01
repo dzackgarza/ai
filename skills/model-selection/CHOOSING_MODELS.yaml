@@ -89,11 +89,21 @@ mappings:
   nvidia/deepseek-ai/deepseek-coder-6.7b-instruct: deepseek-coder-6.7b
   ollama-cloud/deepseek-v3.1:671b: deepseek-v3.1
 
-  # Qwen
+  # Qwen - includes quantization variants
   nvidia/qwen/qwen3-coder-480b-a35b-instruct: qwen3.5-397b-a17b
   ollama-cloud/qwen3-coder:480b: qwen3.5-397b-a17b
   nvidia/qwen/qwen3-next-80b-a3b-instruct: qwen3.5-122b-a10b
   nvidia/qwen/qwen3-235b-a22b: qwen3.5-27b
+  nvidia/qwen/qwen3-27b-q4_k_m: qwen3.5-27b
+  nvidia/qwen/qwen3-122b-a10b-q4_k_xl: qwen3.5-122b-a10b
+  nvidia/qwen/qwen3-plus-02.15: qwen3.5-plus
+  nvidia/qwen/qwen3-35b-a3b: qwen3.5-35b-a3b
+  nvidia/qwen/qwen3-35b-a3b-q4_k_xl: qwen3.5-35b-a3b
+  nvidia/qwen/qwen3-flash-02.23: qwen3.5-flash
+  nvidia/qwen/qwen3-coder-plus: qwen3-coder-plus
+  nvidia/qwen/qwen3-coder-next-q4_k_xl: qwen3-coder-next
+  nvidia/qwen/qwen3-coder-flash: qwen3-coder-flash
+  nvidia/qwen/qwen3-coder-30b-q4_k_m: qwen3-coder-30b
   nvidia/qwen/qwq-32b: qwq-32b
   ollama-cloud/qwen3-coder-next: qwen3-coder-next
   ollama-cloud/qwen3-next:80b: qwen3.5-122b-a10b
@@ -114,6 +124,7 @@ mappings:
   # MiniMax
   nvidia/minimaxai/minimax-m2: minimax-m2
   nvidia/minimaxai/minimax-m2.1: minimax-m2.1
+  nvidia/minimaxai/minimax-m2.5-q4_k_xl: minimax-m2.5-q4_k_xl
   ollama-cloud/minimax-m2: minimax-m2
   ollama-cloud/minimax-m2.1: minimax-m2.1
   ollama-cloud/minimax-m2.5: minimax-m2.5
@@ -123,6 +134,8 @@ mappings:
   # GLM
   nvidia/z-ai/glm5: glm-5
   nvidia/z-ai/glm4.7: glm-4.7
+  nvidia/z-ai/glm-4.7-q4_k_xl: glm-4.7-q4_k_xl
+  nvidia/z-ai/glm-4.7-flash: glm-4.7-flash
   ollama-cloud/glm-5: glm-5
   ollama-cloud/glm-4.7: glm-4.7
   ollama-cloud/glm-4.6: glm-4.6
@@ -267,6 +280,14 @@ scores:
   devstral-2512: { score: 37, source: verified, apex_elo: 1368 }
   qwen3-coder-next: { score: 34, source: verified, apex_elo: 1343 }
   qwen3-coder: { score: 33, source: verified, apex_elo: 1332 }
+  qwen3-coder-plus: { score: 37, source: verified, apex_elo: 1370 }
+  qwen3-coder-flash: { score: 34, source: verified, apex_elo: 1338 }
+  qwen3-coder-30b: { score: 20, source: verified, apex_elo: 1201 }
+  qwen3.5-35b-a3b: { score: 39, source: verified, apex_elo: 1393 }
+  qwen3.5-plus: { score: 53, source: verified, apex_elo: 1529 }
+  glm-4.7-q4_k_xl: { score: 55, source: verified, apex_elo: 1546 }
+  glm-4.7-flash: { score: 30, source: verified, apex_elo: 1297 }
+  minimax-m2.5-q4_k_xl: { score: 43, source: verified, apex_elo: 1433 }
   glm-4.5-air: { score: 33, source: verified, apex_elo: 1332 }
   gemini-2.5-flash-lite: { score: 25, source: verified, apex_elo: 1246 }
   trinity-large: { score: 23, source: verified, apex_elo: 1233 }
