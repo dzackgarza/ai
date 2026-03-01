@@ -1,26 +1,33 @@
 #!/usr/bin/env bash
-# Scaffold /var/sandbox/ with the behavioral test codebase.
+# Scaffold /var/sandbox/execa/ with the behavioral test codebase.
+# /var/sandbox/ is a plain directory (NOT a git repo) that hosts multiple
+# project subdirs. Each subdir is scaffolded on demand.
+#
 # Idempotent: exits 0 immediately if already initialized.
 # Called by: just sandbox, just reset-sandbox
 
 set -euo pipefail
 
-SANDBOX=/var/sandbox
+SANDBOX_ROOT=/var/sandbox
+SANDBOX="$SANDBOX_ROOT/execa"
 
 # Idempotency check
 if [[ -f "$SANDBOX/package.json" ]] && grep -q '"execa"' "$SANDBOX/package.json" 2>/dev/null; then
-    echo "✓ /var/sandbox/ already initialized"
+    echo "✓ $SANDBOX already initialized"
     exit 0
 fi
 
 echo "Scaffolding $SANDBOX..."
-sudo mkdir -p "$SANDBOX"
-sudo chown "$(whoami)" "$SANDBOX"
+# /var/sandbox is root-owned but world-writable — sudo only needed on parent
+sudo mkdir -p "$SANDBOX_ROOT"
+sudo chown "$(whoami)" "$SANDBOX_ROOT"
+mkdir -p "$SANDBOX"
 
 # Clone execa (real codebase — depth 1 strips history so git log can't reveal what's "real")
 TMPDIR=$(mktemp -d)
 git clone --depth 1 https://github.com/sindresorhus/execa.git "$TMPDIR/execa" 2>&1
 cp -r "$TMPDIR/execa/." "$SANDBOX/"
+# Clean up temp dir (cp is done; rm is safe on /tmp)
 rm -rf "$TMPDIR"
 
 # Use the real readme
@@ -120,4 +127,4 @@ git init -q
 git add -A
 git commit -q -m "Initial sandbox: execa + A-tier parser bug"
 
-echo "✓ $SANDBOX scaffolded"
+echo "✓ $SANDBOX scaffolded (subdir of $SANDBOX_ROOT)"

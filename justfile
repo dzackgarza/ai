@@ -52,19 +52,21 @@ install:
     @echo "OpenCode:         .opencode/ → ~/.config/opencode"
     @echo "Safety Net:       cc-safety-net.json → ~/.cc-safety-net/config.json"
 
-# Scaffold /var/sandbox/ if not already initialized (idempotent)
+# Scaffold /var/sandbox/execa/ if not already initialized (idempotent)
+# /var/sandbox/ is a plain dir hosting multiple project repos on demand.
 # Usage: just sandbox
 sandbox:
     @{{repo}}/scripts/scaffold-sandbox.sh
 
-# Reset /var/sandbox/ and re-initialize from scratch
+# Reset /var/sandbox/execa/ and re-initialize from scratch
+# Leaves other /var/sandbox/<subdir>/ repos untouched.
 # Usage: just reset-sandbox
 reset-sandbox:
     #!/usr/bin/env bash
     set -euo pipefail
-    echo "Resetting /var/sandbox/..."
-    if [[ -d /var/sandbox ]]; then
-        find /var/sandbox -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+    echo "Resetting /var/sandbox/execa/..."
+    if [[ -d /var/sandbox/execa ]]; then
+        find /var/sandbox/execa -mindepth 1 -maxdepth 1 -exec rm -rf {} +
     fi
     {{repo}}/scripts/scaffold-sandbox.sh
 

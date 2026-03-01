@@ -75,7 +75,7 @@ echo "Timeout:   ${TIMEOUT}s"
 echo "Prompt:    $PROMPT"
 echo ""
 
-cd /var/sandbox
+cd /var/sandbox/execa
 
 # Exit code 124 = timeout (ok — model may still have completed).
 timeout "$TIMEOUT" opencode run "$PROMPT" 2>/dev/null || true
