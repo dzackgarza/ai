@@ -3,7 +3,7 @@
 
 export const KILLSWITCHES = {
   promptRouter: true,
-  commandInterceptor: true,
+  commandInterceptor: true,  // KILLED
   contextInjector: true,
   cotTrivialInterceptor: true,
 };
