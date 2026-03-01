@@ -281,7 +281,11 @@ scores:
   # Based on: newer version > older, larger params > smaller, code variant slight drop
 
   gpt-5:
-    { score: 95, source: inferred, reason: "between 5.1 (94) and 5.2 (97)" }
+    {
+      score: null,
+      source: unknown,
+      reason: "GPT-5.0 - unclear where it falls vs 5.1/5.2",
+    }
   gpt-5-mini: { score: 86, source: inferred, reason: "lighter 5.x variant" }
   gpt-5-codex:
     {
