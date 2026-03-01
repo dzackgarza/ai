@@ -15,6 +15,20 @@ user message → classify() → tier → load tiers/<tier>.md → inject as synt
 
 Killswitch: `KILLSWITCHES.promptRouter` in `killswitches.ts`. Set to `true` to disable entirely.
 
+## Killswitches
+
+All plugins are controlled via `killswitches.ts`. Changes take effect immediately — no session restart needed.
+
+```typescript
+// killswitches.ts
+export const KILLSWITCHES = {
+  promptRouter: false,  // false = active, true = killed
+  ...
+};
+```
+
+**Rule: every new plugin must register a killswitch in `killswitches.ts` before shipping.** Start it as `true` (killed) and enable deliberately. This prevents untested plugins from silently affecting sessions.
+
 ## File map
 
 ```

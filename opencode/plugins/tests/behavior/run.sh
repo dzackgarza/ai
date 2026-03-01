@@ -4,12 +4,11 @@
 # Usage:
 #   ./run.sh <tier>
 #
-# Arguments:
-#   tier    One of: model-self, knowledge, C, B, A, S
+# Tiers: model-self, knowledge, C, B, A, S
 #
-# For baseline runs (no injection): set KILLSWITCHES.promptRouter = true
-# in killswitches.ts before running. The classifier will NOT log in that case
-# (killswitch exits before classify() is called).
+# For baseline runs (no injection):
+#   Set KILLSWITCHES.promptRouter = true in killswitches.ts before running.
+#   The JSONL log will NOT be written (killswitch exits before classify()).
 #
 # Output: results/<tier>/<timestamp>.yaml
 
@@ -60,7 +59,6 @@ mkdir -p "$RESULTS_DIR"
 RESULT_FILE="$RESULTS_DIR/$TIMESTAMP.yaml"
 TRANSCRIPT_FILE="/tmp/opencode-transcript-$TIMESTAMP.txt"
 
-# Snapshot log before run to diff afterwards
 LOG_SNAPSHOT="/tmp/pr-log-before-$TIMESTAMP.txt"
 [[ -f /var/sandbox/.prompt-router.log ]] && cp /var/sandbox/.prompt-router.log "$LOG_SNAPSHOT"
 
@@ -71,13 +69,13 @@ echo "Prompt:  $PROMPT"
 echo ""
 
 cd /var/sandbox
-timeout "$TIMEOUT" opencode run "$PROMPT" 2>&1 | tee "$TRANSCRIPT_FILE" || true
+timeout "$TIMEOUT" opencode run --print-logs "$PROMPT" 2>&1 | tee "$TRANSCRIPT_FILE" || true
 
-# Extract the new log entry written during this run
+# Extract new log entry written during this run
 CLASSIFICATION_JSON=""
 if [[ -f /var/sandbox/.prompt-router.log ]]; then
   if [[ -f "$LOG_SNAPSHOT" ]]; then
-    CLASSIFICATION_JSON=$(comm -13 <(sort "$LOG_SNAPSHOT") <(sort /var/sandbox/.prompt-router.log) | tail -1)
+    CLASSIFICATION_JSON=$(diff "$LOG_SNAPSHOT" /var/sandbox/.prompt-router.log | grep '^>' | sed 's/^> //' | tail -1)
   else
     CLASSIFICATION_JSON=$(tail -1 /var/sandbox/.prompt-router.log)
   fi
@@ -86,7 +84,6 @@ fi
 TIER_CLASSIFIED=$(echo "$CLASSIFICATION_JSON" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('tier','unknown'))" 2>/dev/null || echo "unknown")
 REASONING=$(echo "$CLASSIFICATION_JSON" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('reasoning',''))" 2>/dev/null || echo "")
 
-# Write result YAML
 python3 - <<PYEOF
 import yaml
 
