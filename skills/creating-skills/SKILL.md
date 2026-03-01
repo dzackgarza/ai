@@ -66,11 +66,27 @@ The entire skill creation process follows RED-GREEN-REFACTOR.
 
 ### 1. Search Existing Skills
 
+**First, search locally:**
+
 ```bash
 # Check for related skills
 ls ~/ai/skills/
 grep -r "keyword" ~/ai/skills/*/SKILL.md
 ```
+
+**Then, search LobeHub Marketplace:**
+
+```bash
+npx -y @lobehub/market-cli skills search --q "your topic"
+```
+
+Look for:
+
+- Skills that already cover your topic (consider editing/extending instead)
+- Skills that cover related topics to build off of
+- Similar skills to use as a template
+
+**Building off existing skills is preferred over creating from scratch.**
 
 Ask:
 
