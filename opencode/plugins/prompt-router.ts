@@ -16,8 +16,8 @@ import { z } from "zod";
 import { appendFileSync } from "fs";
 import { randomUUID } from "crypto";
 import type { Plugin } from "@opencode-ai/plugin";
-import type { TextPart } from "@opencode-ai/sdk";
-import { KILLSWITCHES } from "./killswitches";
+import type { TextPart, UserMessage } from "@opencode-ai/sdk";
+import { ENABLED } from "./killswitches";
 
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
 
@@ -191,7 +191,7 @@ export const PromptRouter: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
       // Killswitch check - exit if killed
-      if (KILLSWITCHES.promptRouter) return;
+      if (!ENABLED.promptRouter) return;
       if (!output.messages?.length) return;
 
       try {
@@ -214,7 +214,7 @@ export const PromptRouter: Plugin = async ({ client }) => {
         const instruction = TIER_INSTRUCTIONS[tier];
 
         output.messages.push({
-          info: { id: `router-${Date.now()}`, role: "user", model: null },
+          info: { id: `router-${Date.now()}`, role: "user", sessionID: "", time: { created: Date.now() } } as UserMessage,
           parts: [{ type: "text", text: instruction } as TextPart],
         });
 

@@ -1,98 +1,156 @@
-# prompt-router plugin
+# OpenCode Plugins
 
-Classifies every incoming user message and injects a tier-specific behavioral
-instruction so the main agent operates in the correct cognitive mode before acting.
+Custom plugins for OpenCode, loaded globally from `~/.config/opencode/plugins/`.
 
-## How it works
+## Quick start
 
+```bash
+just check       # typecheck + unit tests + compile
+just typecheck   # tsc --noEmit
+just test        # bun test tests/unit/
+just compile     # bun build (crash = broken import)
+just behavior A  # run a behavioral test (routing ON)
+just baseline A  # run a behavioral test (routing OFF)
+just classifier  # run classifier test suite
 ```
-user message → classify() → tier → load tiers/<tier>.md → inject as synthetic user message
-```
 
-1. Faux-rules exact-match check (zero latency, for pipeline testing).
-2. LLM classifier using constitutional playbook → precedence-chain decision.
-3. Tier instruction appended as the last message before the agent generates.
+## Plugin inventory
 
-Killswitch: `KILLSWITCHES.promptRouter` in `killswitches.ts`. Set to `true` to disable entirely.
+| Plugin | File | Status | Env var to enable | Purpose |
+|--------|------|--------|-------------------|---------|
+| **Prompt Router** | `prompt-router.ts` | Production | `PROMPT_ROUTER_ENABLED=true` | Classifies user messages by cognitive tier and injects behavioral instructions before the agent responds |
+| **Stop Hooks** | `stop-hooks.ts` | Production | (per hook below) | Dispatcher: runs all registered stop hooks on `session.idle` |
+| ↳ OTP Checker | `stop_hooks/otp-checker.ts` | Demo | `OTP_CHECKER_ENABLED=true` | Detects a verification code in the assistant response and reveals a secret phrase |
+| ↳ Reflexive Agreement | `stop_hooks/reflexive-agreement-detector.ts` | Active | `REFLEXIVE_AGREEMENT_DETECTOR_ENABLED=true` | Intercepts "you're right" / "they are right" responses and prompts for independent reasoning |
+| ↳ Obvious Question | `stop_hooks/obvious-question-detector.ts` | Active | `OBVIOUS_QUESTION_DETECTOR_ENABLED=true` | Intercepts "should I..." questions and prompts the agent to resolve them autonomously |
+| **Command Interceptor** | `command-interceptor.ts` | Demo | `COMMAND_INTERCEPTOR_ENABLED=true` | Proof-of-concept: detects keyphrases ("intercept test", "plugin check") and injects a hidden passphrase the model must echo |
+| **Context Injector** | `context-injector.ts` | Demo | `CONTEXT_INJECTOR_ENABLED=true` | Proof-of-concept: injects additional context when a specific keyphrase appears in the user message |
+| **CoT Trivial Interceptor** | `cot-trivial-test.ts` | Dev (gated) | `COT_TRIVIAL_INTERCEPTOR_ENABLED=true` + remove `return;` at line 44 | Mid-stream CoT interceptor: detects "trivial" in reasoning and re-prompts. Requires manual gate removal to activate. |
+| **Write Plan** | `write_plan.ts` | Active | always on | Custom tool `write_plan`: writes a plan document to `.serena/plans/` |
+| **Plan Exit** | `plan_exit.ts` | Active | always on | Custom tool `plan_exit`: presents a verification checklist before exiting plan mode |
+| **Sleep** | `sleep.ts` | Active | always on | Custom tools `sleep` / `sleep_until`: real wall-clock waiting with a 60-minute safety cap |
+| **Async Command** | `async-command.ts` | Active | always on | Custom tool `async_command`: fires a background sleep and injects the result via `promptAsync` when done |
+| **Introspection** | `introspection.ts` | Active | always on | Custom tool `introspection`: returns the agent's own session ID, message ID, and agent name |
+| **List Sessions** | `list-sessions.ts` | Active | always on | Custom tool `list_sessions`: lists sessions with token counts, models, and duration |
+| **Read Transcript** | `read-transcript.ts` | Active | always on | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
 
 ## Killswitches
 
-All plugins are controlled via `killswitches.ts`. Changes take effect immediately — no session restart needed.
+All plugins that can interfere with normal use export their state through `ENABLED` in `killswitches.ts`. `true` = plugin runs, `false` = plugin is off. All default to `false`.
 
 ```typescript
 // killswitches.ts
-export const KILLSWITCHES = {
-  promptRouter: false,  // false = active, true = killed
+export const ENABLED = {
+  promptRouter: sw('PROMPT_ROUTER_ENABLED', false),  // false = off by default
   ...
 };
+
+// Usage in plugin:
+if (!ENABLED.promptRouter) return;
 ```
 
-**Rule: every new plugin must register a killswitch in `killswitches.ts` before shipping.** Start it as `true` (killed) and enable deliberately. This prevents untested plugins from silently affecting sessions.
+**Rule:** every new plugin that modifies messages or session behavior must register a switch in `killswitches.ts` before shipping.
 
 ## File map
 
 ```
 plugins/
-├── prompt-router.ts          # Plugin entry point — classify + inject
-├── killswitches.ts           # Centralized on/off switches (true = killed)
-├── tiers/
-│   ├── model-self.md         # Tier: answer from context, no tool calls
-│   ├── knowledge.md          # Tier: search before answering
-│   ├── C.md                  # Tier: act immediately, minimal overhead
-│   ├── B.md                  # Tier: iterate uniformly across a set
-│   ├── A.md                  # Tier: investigate before acting
-│   ├── S.md                  # Tier: scope, gather context, hand off to plan mode
-│   └── README.md             # Tier file authoring guide
+├── justfile                        # Dev recipes (just check, just test, etc.)
+├── tsconfig.json                   # TypeScript config for Bun ESM
+├── package.json                    # Dependencies (instructor, openai, opencode-ai/plugin, zod)
+├── killswitches.ts                 # ENABLED switches for all plugins
+│
+├── prompt-router.ts                # Classify → inject tier instruction
+├── stop-hooks.ts                   # Stop hook dispatcher
+├── stop_hooks/
+│   ├── types.ts                    # StopHookContext / StopHookResult types
+│   ├── otp-checker.ts
+│   ├── reflexive-agreement-detector.ts
+│   └── obvious-question-detector.ts
+│
+├── command-interceptor.ts          # Demo: keyphrase → passphrase injection
+├── context-injector.ts             # Demo: keyphrase → context injection
+├── cot-trivial-test.ts             # Dev: mid-stream CoT interceptor (gated)
+│
+├── write_plan.ts                   # Tool: write plan to .serena/plans/
+├── plan_exit.ts                    # Tool: plan exit verification checklist
+├── sleep.ts                        # Tool: sleep / sleep_until
+├── async-command.ts                # Tool: fire-and-forget background command
+├── introspection.ts                # Tool: session metadata self-report
+├── list-sessions.ts                # Tool: session list with token stats
+├── read-transcript.ts              # Tool: export + preview session transcript
+│
+├── tiers/                          # Tier instruction files (injected by prompt-router)
+│   ├── README.md
+│   ├── model-self.md
+│   ├── knowledge.md
+│   ├── C.md / B.md / A.md / S.md
+│
+├── examples/                       # Reference JS examples (not loaded as plugins)
+│
 └── tests/
-    └── classifier/
-        ├── run.ts            # Test harness
-        ├── playbook.md       # Constitutional classifier system prompt
-        ├── cases.yaml        # 12 labeled test cases
-        ├── scores.yaml       # Per-model accuracy records
-        └── README.md         # Classifier test docs
+    ├── unit/                       # bun test — pure logic tests
+    │   ├── killswitches.test.ts
+    │   ├── command-interceptor.test.ts
+    │   ├── stop-hooks.test.ts
+    │   └── prompt-router.test.ts
+    ├── classifier/                 # LLM classifier accuracy tests
+    │   ├── run.ts                  # bun run tests/classifier/run.ts [model]
+    │   ├── playbook.md             # Constitutional classifier system prompt
+    │   ├── cases.yaml              # 12 labeled test cases
+    │   ├── scores.yaml             # Per-model accuracy records
+    │   └── runs/                   # Per-model run results
+    └── behavior/                   # End-to-end behavioral tests
+        ├── run.sh                  # bash tests/behavior/run.sh <tier>
+        ├── observe.md              # Scoring rubric
+        ├── baseline.md             # Baseline run observations
+        ├── routing-results.md      # Routing run analysis
+        ├── tasks.yaml              # Tier task definitions
+        ├── logs/                   # Archived classification JSONL logs
+        └── results/                # Per-run YAML result files
+            └── <tier>/<timestamp>.yaml
 ```
 
-## Tier model
+## Prompt Router
 
-| Tier | What it means | When it fires |
-|------|--------------|---------------|
-| `model-self` | User is asking about the agent itself | "What tools do you have?", "What can you do?" |
-| `knowledge` | Requires current external information | Version numbers, recent events, live docs |
-| `C` | Focused, bounded task — act immediately | Single-file edit, one-liner, clear scope |
-| `B` | Same operation across a set of targets | "Add JSDoc to every exported function" |
-| `A` | Unknown root cause — investigate first | Debugging, auditing, tracing failures |
-| `S` | Too large to implement without a design | New features, architecture changes |
+Classifies every incoming user message into one of six cognitive tiers, then injects the corresponding instruction from `tiers/<tier>.md` as a synthetic user message before the agent responds.
 
-## Running the classifier test suite
-
-```bash
-cd plugins
-bun run tests/classifier/run.ts
-# Specific model:
-bun run tests/classifier/run.ts groq/llama-3.3-70b-versatile
-# MD_JSON mode (for models that reject json_object):
-bun run tests/classifier/run.ts nvidia/mistralai/mistral-large-3-675b-instruct-2512 --mode MD_JSON
+```
+user message → classify() → tier → load tiers/<tier>.md → inject → agent sees instruction → responds
 ```
 
-See `tests/classifier/README.md` for full harness docs and model compatibility table.
+**Classifier:** tries models in order — groq/llama-3.3-70b-versatile → kimi-k2 → nvidia/mistral-large → nvidia/mistral-small → nvidia/llama-3.3-70b. Falls back to faux exact-match for canonical test prompts. Fails open (message passes unmodified) if all classifiers fail.
 
-## Environment variables
+**Tiers:**
 
-| Variable | Provider | Required for |
-|----------|----------|--------------|
-| `GROQ_API_KEY` | Groq | Primary classifier (llama-3.3-70b-versatile, kimi-k2) |
-| `NVIDIA_API_KEY` | NVIDIA NIM | Fallback classifier (mistral-large, mistral-small, llama-3.3-70b) |
-| `OPENROUTER_API_KEY` | OpenRouter | Last-resort classifier (50 req/day cap — avoid for production) |
-| `OPENCODE_SESSION_ID` | — | Session correlation in JSONL log (auto-generated UUID if absent) |
+| Tier | When it fires | Instruction summary |
+|------|--------------|---------------------|
+| `model-self` | "What tools do you have?" | Answer from context; no tool calls |
+| `knowledge` | Version numbers, recent events | Search before answering; never use training data |
+| `C` | Single-file edit, clear scope | Act immediately; no TodoWrite unless 3+ steps |
+| `B` | Same action across a set | TodoWrite first; iterate uniformly |
+| `A` | Debugging, unknown root cause | Read before acting; delegate to subagents |
+| `S` | New feature, architecture design | Scope with todos; do not implement |
 
-## JSONL session log
+**Log:** every classification appends to `/var/sandbox/.prompt-router.log` (JSONL).
 
-Every classification (when killswitch is off) appends one line to
-`/var/sandbox/.prompt-router.log`:
+## Stop Hooks
 
-```jsonl
-{"ts":"2026-03-01T08:00:00.000Z","session_id":"abc-123","prompt":"What is...","tier":"knowledge","reasoning":"...","injected":true}
-```
+Runs on every `session.idle` event. Collects results from all registered hook functions and, if any return `force_stop: true`, injects a report back into the session as a new user message.
 
-Use this for behavioral testing: verify the classifier is working and confirm
-which tier instruction was injected for each user message.
+To add a hook: create `stop_hooks/my-hook.ts`, export one `async (ctx: StopHookContext) => Promise<StopHookResult>` function, import it in `stop-hooks.ts` and add to `STOP_HOOKS`.
+
+## Environment Variables
+
+| Variable | Plugin | Default |
+|----------|--------|---------|
+| `PROMPT_ROUTER_ENABLED` | prompt-router | `false` |
+| `COMMAND_INTERCEPTOR_ENABLED` | command-interceptor | `false` |
+| `CONTEXT_INJECTOR_ENABLED` | context-injector | `false` |
+| `COT_TRIVIAL_INTERCEPTOR_ENABLED` | cot-trivial-test | `false` |
+| `OTP_CHECKER_ENABLED` | otp-checker | `false` |
+| `OBVIOUS_QUESTION_DETECTOR_ENABLED` | obvious-question-detector | `false` |
+| `REFLEXIVE_AGREEMENT_DETECTOR_ENABLED` | reflexive-agreement-detector | `false` |
+| `GROQ_API_KEY` | prompt-router classifier | — |
+| `NVIDIA_API_KEY` | prompt-router classifier fallback | — |
+| `OPENROUTER_API_KEY` | prompt-router classifier last resort | — |

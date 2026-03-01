@@ -1,7 +1,7 @@
 // Injects context before agent processes user message
 import type { Plugin } from "@opencode-ai/plugin";
-import type { TextPart } from "@opencode-ai/sdk";
-import { KILLSWITCHES } from "./killswitches";
+import type { TextPart, UserMessage } from "@opencode-ai/sdk";
+import { ENABLED } from "./killswitches";
 
 const CONTEXT_RULES: Record<string, string> = {
   "verification code is 123456":
@@ -10,9 +10,9 @@ const CONTEXT_RULES: Record<string, string> = {
 
 export const ContextInjector: Plugin = async ({ client }) => {
   return {
-    "experimental.chat.messages.transform": async (input, output) => {
+    "experimental.chat.messages.transform": async (_input, output) => {
       // Killswitch check - exit if killed
-      if (KILLSWITCHES.contextInjector) return;
+      if (!ENABLED.contextInjector) return;
       if (!output.messages?.length) return;
 
       try {
@@ -30,7 +30,7 @@ export const ContextInjector: Plugin = async ({ client }) => {
         for (const [keyphrase, injection] of Object.entries(CONTEXT_RULES)) {
           if (lower.includes(keyphrase)) {
             output.messages.push({
-              info: { id: "injected", role: "user", model: null },
+              info: { id: "injected", role: "user", sessionID: "", time: { created: Date.now() } } as UserMessage,
               parts: [{ type: "text", text: injection } as TextPart],
             });
             return;

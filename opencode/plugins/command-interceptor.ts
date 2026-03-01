@@ -1,8 +1,8 @@
 // Intercepts user messages, detects intent via keyphrases, and injects hidden
 // context including a passphrase the model must echo — proving interception works.
 import type { Plugin } from "@opencode-ai/plugin";
-import type { TextPart } from "@opencode-ai/sdk";
-import { KILLSWITCHES } from "./killswitches";
+import type { TextPart, UserMessage } from "@opencode-ai/sdk";
+import { ENABLED } from "./killswitches";
 
 const TRIGGER_RULES: Record<string, { intent: string; passphrase: string }> = {
   "intercept test": { intent: "verification",   passphrase: "SWORDFISH" },
@@ -14,7 +14,7 @@ export const CommandInterceptor: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
       // Killswitch check - exit if killed
-      if (KILLSWITCHES.commandInterceptor) return;
+      if (!ENABLED.commandInterceptor) return;
       if (!output.messages?.length) return;
 
       try {
@@ -32,7 +32,7 @@ export const CommandInterceptor: Plugin = async ({ client }) => {
         for (const [keyphrase, { intent, passphrase }] of Object.entries(TRIGGER_RULES)) {
           if (text.includes(keyphrase)) {
             output.messages.push({
-              info: { id: `interceptor-${Date.now()}`, role: "user", model: null },
+              info: { id: `interceptor-${Date.now()}`, role: "user", sessionID: "", time: { created: Date.now() } } as UserMessage,
               parts: [
                 {
                   type: "text",

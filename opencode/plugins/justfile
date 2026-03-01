@@ -1,0 +1,50 @@
+# Plugin development recipes
+# Usage: just <recipe>
+
+# Show available recipes
+default:
+    @just --list
+
+# Type-check all plugins (no emit)
+typecheck:
+    bunx tsc --noEmit
+
+# Run unit tests
+test:
+    bun test tests/unit/
+
+# Compile all plugins (crash = broken import or syntax)
+compile:
+    bun build --target bun --outdir /tmp/plugin-check \
+        prompt-router.ts \
+        command-interceptor.ts \
+        context-injector.ts \
+        cot-trivial-test.ts \
+        stop-hooks.ts
+
+# Run classifier test suite against default model
+classifier:
+    bun run tests/classifier/run.ts
+
+# Run classifier against a specific model
+# Usage: just classifier-model groq/llama-3.3-70b-versatile
+classifier-model model:
+    bun run tests/classifier/run.ts {{model}}
+
+# Run classifier with MD_JSON mode (for models that reject json_object)
+# Usage: just classifier-mdjson nvidia/mistralai/mistral-large-3-675b-instruct-2512
+classifier-mdjson model:
+    bun run tests/classifier/run.ts {{model}} --mode MD_JSON
+
+# Run a single behavioral tier (routing on)
+# Usage: just behavior A
+behavior tier:
+    PROMPT_ROUTER_ENABLED=true bash tests/behavior/run.sh {{tier}}
+
+# Run a single behavioral tier (routing off — baseline)
+# Usage: just baseline A
+baseline tier:
+    PROMPT_ROUTER_ENABLED=false bash tests/behavior/run.sh {{tier}}
+
+# Run all checks: typecheck + test + compile
+check: typecheck test compile
