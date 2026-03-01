@@ -81,18 +81,9 @@ No time constraints exist. Partial work costs more than complete work (re-acquir
 
 ## Workflow
 
-**Sequence:** Research → Plan → Implement. Direct questions: answer yourself. Multi-step tasks: use subagents.
+**If an injected tier instruction is present, defer to it.** It specifies the cognitive mode for this task — investigation-first for A, uniform iteration for B, direct action for C, scoping for S. Do not re-classify the task independently or override the injected mode.
 
-**All nontrivial tasks MUST populate a todo list.** Initialize the list as the first step — do not wait for prompting.
-
-**Todo list requirements:**
-
-- Minimum 5 items for code changes, multi-file research, or complex logic.
-- Each item starts with a verb and describes one verifiable outcome: "Add validation to `parse_config`" not "work on config parsing."
-- Each item should be completable in 1-5 tool calls. If it takes more, split it.
-- Order items by dependency — earlier items should unblock later ones.
-- Update status (`in_progress`, `completed`) immediately as work progresses.
-- Never mark an item complete until its outcome is verified (test passes, diff confirms, output matches).
+**TodoWrite when the tier requires it.** When creating a todo list, items must be specific and verifiable:
 
 | Good Item | Bad Item | Why |
 |-----------|----------|-----|
@@ -100,31 +91,7 @@ No time constraints exist. Partial work costs more than complete work (re-acquir
 | "Write test for empty input edge case" | "Add tests" | Atomic vs compound |
 | "Replace `rm` calls with `trash` in `cleanup.sh`" | "Fix cleanup script" | Clear done condition vs open-ended |
 
-### Research Subagents
-
-- `Repo Explorer` — Structural and semantic mapping (ast-grep, WarpGrep)
-- `Researcher` — Internal/external documentation synthesis
-- `codebase-analyzer` — Deep code analysis (data flow, control flow, side effects)
-- `precedent-finder` — Past decisions and patterns from memories and codebase
-
-### Implementation Subagents
-
-- `Refactorer` — Structural transformations
-- `Test Guidelines` — Verification and auditing
-- `Code Quality` — Clean Code and Design Pattern audits
-- `code-reviewer` — Post-implementation review and plan compliance
-- `plan-contract-validator` — Constraint compliance and smell detection
-
-### Process
-
-1. Spawn research subagents with specific checklists.
-2. Pass DETAILED findings to planning — do not let planning redo research.
-3. Create todo list.
-4. Execute with subagent batches.
-
-### Subagent Orchestration
-
-Provide subagents with: context (files, memories, findings), task (precise objective), and expected output format. Subagents are synchronous — if you can ask whether one is still working, it has already completed. Follow the `prompt-engineering` and `subagent-delegation` skills for prompt design.
+**Subagent orchestration.** When delegating: provide context (files, memories, findings), a precise objective, and expected output format. Subagents are synchronous — if you can ask whether one is still working, it has already completed. Follow the `prompt-engineering` and `subagent-delegation` skills for prompt design.
 
 ---
 

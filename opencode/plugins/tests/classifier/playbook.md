@@ -140,6 +140,7 @@ B is safe to run without reading the items first. If you can write the transform
 **B vs. A — uniform action vs. per-item judgment:**
 - "Add a console.log at the start of every function in utils.ts" → B  *(same action, no judgment)*
 - "Improve the error handling in utils.ts" → A  *(each function needs different treatment)*
+- "The test `should handle empty input` is failing — figure out why and fix it" → A  *("figure out why" signals unknown root cause; the correct action cannot be stated before reading the code — not B, even though there is only one failing test)*
 
 **A vs. S — investigation vs. invention:**
 - "Find and fix the memory leak in the WebSocket handler" → A  *(investigate, then targeted fix)*
