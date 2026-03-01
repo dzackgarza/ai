@@ -1,231 +1,106 @@
-generated_from: live opencode models
-source_markdown: /home/dzack/ai/CHOOSING_MODELS.md
-scoring_target: agentic capabilities (0-100) - calibrated against APEX Testing ELO
-testing_command: |
-  opencode run --attach http://127.0.0.1:4096 --dir /home/dzack/lattice_interface -m <model_slug> --thinking --print-logs "Say hello and exit."
-notes: |
-  Score-band guide (agentic capabilities), calibrated against APEX Testing ELO:
-  - 95-100: S+ tier (ELO ≥1870) — Claude Opus 4.6, Sonnet 4.6, GPT 5.2; elite for complex real-world tasks
-  - 85-94: S tier (ELO 1800-1870) — Claude 4.5, GPT 5.1, Gemini 3 Pro; strong frontier coders
-  - 75-84: A+ tier (ELO 1750-1800) — Gemini 3 Flash, MiniMax M2.1, Kimi K2.5; excellent alternatives
-  - 65-74: A tier (ELO 1700-1750) — Claude 4 Haiku, Gemini 2.5 Pro, DeepSeek V3.1; solid performers
-  - 55-64: A- tier (ELO 1650-1700) — Gemini 2.5 Flash, Llama 4 Maverick; good for targeted tasks
-  - 45-54: B+ tier (ELO 1600-1650) — Devstral, Gemma 3, Mixtral; lightweight infra
-  - 30-44: B tier (ELO 1500-1600) — Qwen Coder, R1 Distill, Phi; minimal agentic capability
-  - <30: C tier (<1500 ELO) — Legacy models, basic code completion only
+# Model Scores - Calibrated against APEX Testing ELO
+# Base model names map to scores (0-100). Any variant (provider/date suffix) inherits the base score.
+#
+# Tier Mapping:
+#   S+ (≥1870): 95-100
+#   S  (1800-1870): 85-94
+#   A+ (1750-1800): 75-84
+#   A  (1700-1750): 65-74
+#   A- (1650-1700): 55-64
+#   B+ (1600-1650): 45-54
+#   B  (1500-1600): 30-44
+#   C  (<1500): <30
 
-  APEX Testing better reflects real-world capability than SWE-bench (which rates Gemini Flash 3 nearly equal to Opus 4.6).
 models:
-  # S+ Tier (ELO ≥1870)
-  - id: anthropic/claude-opus-4-6
-    score: 100
-    verified_working: false
-  - id: anthropic/claude-sonnet-4-6
-    score: 99
-    verified_working: false
-  - id: google/antigravity-claude-opus-4-6-thinking
-    score: 100
-    verified_working: false
-  - id: google/antigravity-claude-sonnet-4-6
-    score: 99
-    verified_working: false
-  - id: openai/gpt-5.2
-    score: 97
-    verified_working: false
-  - id: openai/gpt-5.2-codex
-    score: 97
-    verified_working: false
-  - id: openai/gpt-5.3-codex
-    score: 96
-    verified_working: false
-  - id: openai/gpt-5.3-codex-spark
-    score: 96
-    verified_working: false
+  # S+ Tier (≥1870) — Score 95-100
+  claude-opus-4-6: 100
+  claude-sonnet-4-6: 99
+  gpt-5.2: 97
+  gpt-5.3-codex: 96
+  gpt-5-codex: 95
 
-  # S Tier (ELO 1800-1870)
-  - id: anthropic/claude-opus-4-5
-    score: 96
-    verified_working: false
-  - id: anthropic/claude-opus-4-5-20251101
-    score: 96
-    verified_working: false
-  - id: anthropic/claude-sonnet-4-5
-    score: 95
-    verified_working: false
-  - id: anthropic/claude-sonnet-4-5-20250929
-    score: 95
-    verified_working: false
-  - id: openai/gpt-5.1-codex
-    score: 95
-    verified_working: false
-  - id: openai/gpt-5.1-codex-max
-    score: 94
-    verified_working: false
-  - id: google/gemini-3-pro-preview
-    score: 94
-    verified_working: false
-  - id: google/gemini-3.1-pro-preview
-    score: 94
-    verified_working: false
-  - id: anthropic/claude-opus-4-20250514
-    score: 93
-    verified_working: false
-  - id: anthropic/claude-sonnet-4-20250514
-    score: 92
-    verified_working: false
+  # S Tier (1800-1870) — Score 85-94
+  claude-opus-4-5: 96
+  claude-sonnet-4-5: 95
+  gpt-5.1-codex: 95
+  gpt-5.1: 94
+  gemini-3-pro: 94
+  claude-opus-4: 93
+  claude-sonnet-4: 92
+  deepseek-v3.2: 93
+  qwen3-coder-480b: 90
+  gpt-5: 88
+  gpt-5-mini: 85
 
-  # A+ Tier (ELO 1750-1800)
-  - id: google/antigravity-gemini-3-flash
-    score: 92
-    verified_working: true
-  - id: google/gemini-3-flash-preview
-    score: 92
-    verified_working: false
-  - id: google/gemini-3.1-pro-preview-customtools
-    score: 91
-    verified_working: false
-  - id: ollama-cloud/gemini-3-pro-preview
-    score: 91
-    verified_working: false
-  - id: ollama-cloud/gemini-3-flash-preview
-    score: 91
-    verified_working: false
-  - id: ollama-cloud/minimax-m2.1
-    score: 92
-    verified_working: false
-  - id: opencode/minimax-m2.5-free
-    score: 90
-    verified_working: true
-  - id: ollama-cloud/kimi-k2.5
-    score: 91
-    verified_working: false
-  - id: ollama-cloud/kimi-k2-thinking
-    score: 91
-    verified_working: false
-  - id: ollama-cloud/glm-5
-    score: 90
-    verified_working: false
+  # A+ Tier (1750-1800) — Score 75-84
+  gemini-3-flash: 84
+  minimax-m2.1: 83
+  kimi-k2.5: 82
+  glm-5: 81
+  kimi-k2-thinking: 80
+  minimax-m2.5: 80
+  minimax-m2: 78
+  step-3.5-flash: 77
 
-  # A Tier (ELO 1700-1750)
-  - id: anthropic/claude-haiku-4-5
-    score: 90
-    verified_working: false
-  - id: anthropic/claude-haiku-4-5-20251001
-    score: 90
-    verified_working: false
-  - id: google/gemini-2.5-pro
-    score: 89
-    verified_working: false
-  - id: google/gemini-2.5-pro-preview-05-06
-    score: 89
-    verified_working: false
-  - id: google/gemini-2.5-pro-preview-06-05
-    score: 89
-    verified_working: false
-  - id: ollama-cloud/deepseek-v3.2
-    score: 93
-    verified_working: false
-  - id: ollama-cloud/deepseek-v3.1:671b
-    score: 88
-    verified_working: false
-  - id: ollama-cloud/mistral-large-3:675b
-    score: 88
-    verified_working: false
-  - id: ollama-cloud/qwen3.5:397b
-    score: 87
-    verified_working: false
-  - id: opencode/trinity-large-preview-free
-    score: 88
-    verified_working: true
+  # A Tier (1700-1750) — Score 65-74
+  claude-haiku-4-5: 74
+  gemini-2.5-pro: 73
+  deepseek-v3.1: 72
+  mistral-large-3: 71
+  mistral-large-2: 70
+  qwen3.5: 69
+  deepseek-v3: 68
+  kimi-k2: 67
+  codestral: 66
+  glm-4.7: 65
+  glm-4.6: 65
 
-  # A- Tier (ELO 1650-1700)
-  - id: google/gemini-2.5-flash
-    score: 87
-    verified_working: false
-  - id: google/gemini-2.5-flash-preview-05-20
-    score: 87
-    verified_working: false
-  - id: google/gemini-2.5-flash-preview-09-2025
-    score: 87
-    verified_working: false
-  - id: google/gemini-live-2.5-flash
-    score: 86
-    verified_working: false
-  - id: ollama-cloud/llama-4-maverick
-    score: 86
-    verified_working: false
-  - id: ollama-cloud/llama-4-maverick-instruct
-    score: 86
-    verified_working: false
-  - id: openrouter-free/meta-llama/llama-3.3-70b-instruct:free
-    score: 83
-    verified_working: false
-  - id: ollama-cloud/nemotron-3-nano:30b
-    score: 82
-    verified_working: false
+  # A- Tier (1650-1700) — Score 55-64
+  gemini-2.5-flash: 64
+  llama-4-maverick: 63
+  nemotron-ultra: 62
+  gpt-4.1: 61
+  gpt-4o: 58
+  nemotron-3-nano: 57
+  nemotron-super: 56
+  llama-3.3-70b: 55
 
-  # B+ Tier (ELO 1600-1650)
-  - id: ollama-cloud/devstral-2:123b
-    score: 85
-    verified_working: false
-  - id: ollama-cloud/devstral-small-2:24b
-    score: 80
-    verified_working: false
-  - id: ollama-cloud/gemma3:27b
-    score: 84
-    verified_working: false
-  - id: ollama-cloud/gemma3:12b
-    score: 82
-    verified_working: false
-  - id: ollama-cloud/mixtral-8x22b
-    score: 83
-    verified_working: false
-  - id: openrouter-free/google/gemma-3-27b-it:free
-    score: 78
-    verified_working: false
+  # B+ Tier (1600-1650) — Score 45-54
+  devstral-2: 54
+  gemma-3: 53
+  mixtral-8x22b: 52
+  trinity-large: 51
+  trinity-mini: 50
+  solar-pro-3: 49
+  codellama-70b: 48
+  llama-3.1-405b: 47
+  llama-3.1-70b: 46
+  llama3-70b: 45
 
-  # B Tier (ELO 1500-1600)
-  - id: ollama-cloud/qwen3-coder:480b
-    score: 76
-    verified_working: false
-  - id: ollama-cloud/qwen3-next:80b
-    score: 75
-    verified_working: false
-  - id: openrouter-free/qwen/qwen3-next-80b-a3b-instruct:free
-    score: 75
-    verified_working: false
-  - id: openrouter-free/nvidia/nemotron-3-nano-30b-a3b:free
-    score: 74
-    verified_working: false
-  - id: openrouter-free/nvidia/nemotron-nano-9b-v2:free
-    score: 73
-    verified_working: false
-  - id: opencode/gpt-5-nano
-    score: 72
-    verified_working: false
+  # B Tier (1500-1600) — Score 30-44
+  qwen3-coder: 44
+  qwen3-next: 43
+  deepseek-r1: 42
+  phi-4: 41
+  gemma-2-27b: 40
+  gemma-2: 38
+  codegemma: 36
+  phi-3-medium: 34
+  llama-4-scout: 33
+  mixtral: 32
+  r1-distill: 31
+  ministral: 30
 
-  # C Tier (<1500 ELO)
-  - id: google/gemini-1.5-flash
-    score: 50
-    verified_working: false
-  - id: google/gemini-1.5-flash-8b
-    score: 48
-    verified_working: false
-  - id: google/gemini-2.0-flash
-    score: 52
-    verified_working: false
-  - id: google/gemini-2.0-flash-lite
-    score: 45
-    verified_working: false
-  - id: ollama-cloud/gpt-oss:120b
-    score: 55
-    verified_working: false
-  - id: ollama-cloud/gpt-oss:20b
-    score: 42
-    verified_working: false
-  - id: openrouter-free/openrouter/free
-    score: 35
-    verified_working: false
-  - id: opencode/big-pickle
-    score: 30
-    verified_working: false
+  # C Tier (<1500) — Score <30
+  gemini-2.0-flash: 28
+  gemini-1.5-flash: 25
+  phi-3-small: 22
+  qwen2.5-7b: 20
+  gpt-oss: 18
+  big-pickle: 15
+
+  # Special cases
+  auto: 50 # morph/auto
+  morph-v3-fast: 65
+  morph-v3-large: 80
+  grok-code-fast-1: 55
