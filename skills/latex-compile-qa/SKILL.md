@@ -27,9 +27,26 @@ This step is deterministic; if compilation fails, record actionable diagnostics 
 
 ## Workflow
 
-1. Run a LaTeX build (e.g., `latexmk`) if available.
-2. Fix missing packages, missing bib entries, and unresolved references.
-3. Record remaining issues in a build report.
+**Quick test** (for fast feedback during editing):
+
+```bash
+cd latex && pdflatex -interaction=nonstopmode main.tex
+```
+
+Quick and dirty - single pass, may have unresolved refs.
+
+**Full compilation** (for final output):
+
+```bash
+latexmk -xelatex -bibtex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+```
+
+Runs all passes (xelatex + bibtex + makeindex) until stable.
+
+1. For quick feedback: use `pdflatex` directly
+2. For final output: use `latexmk` (runs all passes)
+3. Fix missing packages, missing bib entries, and unresolved references.
+4. Record remaining issues in a build report.
 
 ## Quality checklist
 
@@ -54,7 +71,8 @@ This step is deterministic; if compilation fails, record actionable diagnostics 
 
 ### Notes
 
-- Uses `latexmk -xelatex -bibtex` when available.
+- **Quick test**: Use `pdflatex` directly for fast feedback during editing
+- **Full build**: Use `latexmk -xelatex -bibtex` for final output (runs all passes)
 - Always writes `output/LATEX_BUILD_REPORT.md` (success or failure).
 - Report includes page count + warning summary when available.
 
@@ -65,24 +83,30 @@ This step is deterministic; if compilation fails, record actionable diagnostics 
 #### Issue: `latexmk` not found
 
 **Symptom**:
+
 - Build report says “latexmk not found in PATH”.
 
 **Causes**:
+
 - LaTeX toolchain is not installed.
 
 **Solutions**:
+
 - Install a TeX distribution that includes `latexmk`.
 - If you can’t install tools, still use `latex-scaffold` to generate `latex/main.tex` and compile elsewhere.
 
 #### Issue: Build fails with bib/ref errors
 
 **Symptom**:
+
 - Report shows missing citations/refs or BibTeX errors.
 
 **Causes**:
+
 - `citations/ref.bib` missing/miswired, or draft contains invalid cite keys.
 
 **Solutions**:
+
 - Ensure `latex/main.tex` points to `../citations/ref.bib` (or the correct relative path).
 - Ensure all citation keys exist in `citations/ref.bib`.
 
