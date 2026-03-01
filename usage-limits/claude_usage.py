@@ -26,6 +26,9 @@ class ClaudeProvider(UsageProvider):
         super().__init__()
         self.cred_file = Path.home() / ".claude" / ".credentials.json"
 
+    def provider_name(self) -> str:
+        return "Claude"
+
     def get_credentials(self) -> dict:
         """Load OAuth credentials."""
         if not self.cred_file.exists():
@@ -126,6 +129,7 @@ def main() -> None:
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
     parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
     parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
+    parser.add_argument("--availability", "-a", action="store_true", help="Output availability data as JSON")
     args = parser.parse_args()
 
     ClaudeProvider().run(args)

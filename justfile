@@ -18,6 +18,11 @@ install:
     @ln -sf {{repo}}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
     @ln -sf {{repo}}/opencode/cc-safety-net.json ~/.cc-safety-net/config.json
     @mkdir -p ~/.cc-safety-net
+    # tmux config symlinks
+    @ln -sf {{repo}}/dotfiles/tmux.conf ~/.tmux.conf
+    @mkdir -p ~/.config/tmux-powerline/themes
+    @ln -sf {{repo}}/dotfiles/tmux-powerline/themes/my-theme.sh ~/.config/tmux-powerline/themes/my-theme.sh
+    @ln -sf {{repo}}/dotfiles/tmux-powerline/config.sh ~/.config/tmux-powerline/config.sh
     # Backup existing skills directories before creating symlinks
     @for dir in ~/.claude/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do \
         if [ -d "$$dir" ] && [ ! -L "$$dir" ]; then \
@@ -45,8 +50,8 @@ install:
 # Check all usage limits
 # Usage: just all-usage
 all-usage:
-    @python {{repo}}/usage-limits/claude_usage.py --no-anchor
-    @python {{repo}}/usage-limits/codex_usage.py --no-anchor
+    @python {{repo}}/usage-limits/claude_usage.py
+    @python {{repo}}/usage-limits/codex_usage.py
     @python {{repo}}/usage-limits/amp_usage.py
     @python {{repo}}/usage-limits/antigravity_usage.py
 

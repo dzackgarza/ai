@@ -1,0 +1,34 @@
+# Usage limits checker recipes
+
+# Run all availability checks and display as tab-separated tables
+availability:
+    @set -a && . ~/.envrc && set +a && echo "=== Claude ===" && \
+    python claude_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+    @echo
+    @set -a && . ~/.envrc && set +a && echo "=== Codex ===" && \
+    python codex_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+    @echo
+    @set -a && . ~/.envrc && set +a && echo "=== Ollama ===" && \
+    python ollama_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+    @echo
+    @echo "=== Antigravity ===" && \
+    python antigravity_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+
+# Run single provider availability
+availability-claude:
+    @python claude_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+
+availability-codex:
+    @python codex_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+
+availability-ollama:
+    @set -a && . ~/.envrc && set +a && python ollama_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+
+availability-antigravity:
+    @python antigravity_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+
+# Raw JSON output for all providers
+availability-json:
+    @set -a && . ~/.envrc && set +a && \
+    echo '{"claude":' && python claude_usage.py -a && echo ',"codex":' && python codex_usage.py -a && \
+    echo ',"ollama":' && python ollama_usage.py -a && echo ',"antigravity":' && python antigravity_usage.py -a && echo '}'

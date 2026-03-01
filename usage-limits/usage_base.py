@@ -12,7 +12,7 @@ from typing import Any, Optional
 
 import requests
 
-from usage_table import UsageRow, UsageTable
+from usage_table import UsageRow, UsageTable, ModelAvailability
 
 
 class UsageProvider(ABC):
@@ -53,6 +53,10 @@ class UsageProvider(ABC):
     def to_rows(self, raw: Any) -> list[UsageRow]:
         """Convert raw data to a uniform list of UsageRow."""
 
+    @abstractmethod
+    def provider_name(self) -> str:
+        """Return the provider name (e.g., 'Claude', 'Codex', 'Ollama')."""
+
     # ── ABSTRACT — must implement ─────────────────────────────────────────────
 
     @abstractmethod
@@ -81,12 +85,84 @@ class UsageProvider(ABC):
         """Shell command to anchor an idle window. Return None if no subprocess is needed."""
         return None
 
+    # ── ABC-level convenience methods ─────────────────────────────────────────
+
+    def _available_now(self, rows: list[UsageRow]) -> bool:
+        """Internal helper: check if 5h window is open and 7d is not exhausted.
+        
+        Default logic for 5h/7d window providers:
+        - 7d=100% always blocks
+        - 5h=100% blocks
+        - Otherwise available
+        """
+        five_hour = next((r for r in rows if "5h" in r.identifier), None)
+        seven_day = next((r for r in rows if "7d" in r.identifier), None)
+        
+        if seven_day and seven_day.is_exhausted:
+            return False
+        if five_hour and five_hour.is_exhausted:
+            return False
+        return True
+
+    def _available_when(self, rows: list[UsageRow]) -> datetime | None:
+        """Internal helper: get when the provider becomes available.
+        
+        Default logic for 5h/7d window providers:
+        - 7d=100% → return 7d reset
+        - 5h=100% → return 5h reset
+        - Otherwise → None (available now)
+        """
+        five_hour = next((r for r in rows if "5h" in r.identifier), None)
+        seven_day = next((r for r in rows if "7d" in r.identifier), None)
+        
+        if seven_day and seven_day.is_exhausted and seven_day.reset_at:
+            return seven_day.reset_at
+        if five_hour and five_hour.is_exhausted and five_hour.reset_at:
+            return five_hour.reset_at
+        return None
+
+    def availability(self, rows: list[UsageRow]) -> list[ModelAvailability]:
+        """Get availability for each model/provider.
+
+        Default implementation returns a single entry for the provider.
+        Subclasses with multiple models (e.g., Antigravity) should override.
+        
+        Returns a list of ModelAvailability with:
+        - name: provider name from provider_name()
+        - available_now: True if usable right now
+        - available_when: when it becomes available (None if available now)
+        """
+        available_now = self._available_now(rows)
+        available_when = None if available_now else self._available_when(rows)
+        
+        return [
+            ModelAvailability(
+                name=self.provider_name(),
+                available_now=available_now,
+                available_when=available_when,
+            )
+        ]
+
     # ── Orchestration entrypoint ──────────────────────────────────────────────
 
     def run(self, args: argparse.Namespace) -> None:
         """Standard entrypoint: fetch → anchor → display → notify."""
         raw = self.fetch_raw()
         rows = self.to_rows(raw)
+
+        # Handle --availability flag
+        if getattr(args, "availability", False):
+            avail_list = self.availability(rows)
+            output = [
+                {
+                    "name": a.name,
+                    "available_now": a.available_now,
+                    "available_when": a.available_when.isoformat() if a.available_when else None,
+                }
+                for a in avail_list
+            ]
+            print(json.dumps(output, indent=2))
+            return
 
         if not getattr(args, "no_anchor", False) and self.should_anchor(rows):
             cmd = self.anchor_command()

@@ -69,55 +69,35 @@ opencode run --attach http://localhost:4096 --thinking --print-logs "Your prompt
 opencode run --agent <agent> --thinking --print-logs "Your prompt"
 ```
 
-## Interactive Mode (Preferred for One-Shots)
+## One-Shot Testing
 
-For one-shot tasks, use stdin pipe + transcript parsing. This is preferred because plugins are active, outputs are readable, logs are predictable, and session IDs are extractable.
+### Simple case: just use `opencode run`
 
-**Important:** `echo "..." | opencode` starts a real interactive session. It will **not** exit on its own — the process stays alive waiting for more input. You **must** wrap it in `timeout <N>` where N is your estimate of how long the model needs to complete the task (inference + any plugin-triggered follow-up responses). After the timeout kills the process, check `events.jsonl` to verify what happened.
+**Default for all one-shot tests.** Plugins are active, output goes to stdout, session completes and exits cleanly. No parsing, no timeouts, no events.jsonl.
 
-MCP warmup is at most ~10s and is never the bottleneck. If a session times out or produces unexpected results, the cause is almost always model connectivity, rate limits, or model behavior — not MCP. Debug those with `opencode run --thinking --print-logs` (no plugins, but fast feedback) and always read the actual transcript before drawing conclusions.
+```bash
+opencode run "Your prompt here"
+```
+
+No output = model/connectivity issue (99% of cases). Check your model config or API key.
+
+### Interactive mode: only when you need post-idle async behavior
+
+`opencode run` exits the moment the session goes idle — any async work triggered *after* the idle event is cut off. This only matters if your plugin or tool does async work after the model finishes responding.
+
+**When you need async work to complete** (e.g., a stop-hook that re-prompts the model, or an idle handler that fires an HTTP call):
 
 ```bash
 # Run prompt with timeout, suppress TUI, parse transcript
 mkdir -p /tmp/my-test && \
   (cd /tmp/my-test && timeout 90 sh -c 'echo "Your prompt" | opencode') >/dev/null 2>&1; \
-  jq -r '[.properties.sessionID, .properties.part.sessionID, .properties.info.id] | map(select(. != null and startswith("ses_"))) | .[0]' /tmp/my-test/.opencode/events.jsonl | sort -u | \
-    while read sid; do
-      python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode "$sid" 2>/dev/null
-    done
+  grep -o 'ses_[a-zA-Z0-9]*' /tmp/my-test/.opencode/events.jsonl | head -1 | \
+    xargs -I{} python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode {}
 ```
 
-**Why this approach:**
+**Important:** `echo "..." | opencode` starts a real interactive session that will **not** exit on its own — you **must** wrap it in `timeout <N>`. After the timeout kills the process, parse the transcript with the reading-transcripts skill.
 
-- Plugins are active (unlike bare `opencode run`)
-- Readable transcript output via transcript skill
-- Predictable logs in `<dir>/.opencode/events.jsonl`
-- Session IDs extracted for later analysis
-- All post-response behavior (plugins, hooks) works
-
-**For quick testing** (skip transcript parsing):
-
-```bash
-mkdir -p /tmp/my-test && (cd /tmp/my-test && timeout 90 sh -c 'echo "prompt" | opencode') >/dev/null 2>&1
-# Then check logs and parse manually:
-jq -r '.type' /tmp/my-test/.opencode/events.jsonl | sort | uniq -c
-opencode export <session-id> | jq -r '.messages[]? | "[" + (.info.role | ascii_upcase) + "]\n" + (.parts[]? | select(.type=="text") | .text) + "\n---"'
-```
-
-## Limitations of `opencode run`
-
-**`opencode run` exits the moment the session goes idle. It does not wait for anything.**
-
-The idle event fires and handlers begin executing — but `opencode run` does not wait for any async work to complete. Anything that happens asynchronously after the idle event fires into the void:
-
-- An idle handler that re-prompts the model → model response never arrives
-- An idle handler that starts a long async operation (notification, HTTP call, file write) → may never complete
-- Any plugin or tool that kicks off async work and expects a callback or result after idle → that result is lost
-- A tool that starts a long-running async process mid-session → if it hasn't returned before idle, it's cut off
-
-**The rule:** `opencode run` never waits longer than the idle event. Any async work — regardless of what triggered it or what type it is — that completes after idle is gone.
-
-**When you need async work to complete:** use the interactive trick — `echo "prompt" | opencode` wrapped in `timeout <N>` long enough to cover the full async cycle — then read the transcript.
+MCP warmup is at most ~10s and is never the bottleneck. If a session times out or produces unexpected results, the cause is almost always model connectivity, rate limits, or model behavior — not MCP.
 
 ## Core Commands
 

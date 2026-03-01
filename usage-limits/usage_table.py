@@ -11,6 +11,16 @@ from rich.progress_bar import ProgressBar
 from rich.table import Table
 
 
+class ModelAvailability(BaseModel):
+    """Availability status for a single model or provider."""
+
+    name: str                # e.g. "Claude", "Codex", "Ollama", or "Antigravity: model-name"
+    available_now: bool      # Can be used right now
+    available_when: Optional[datetime] = None  # When it becomes available (None = available now)
+
+    model_config = ConfigDict(frozen=True)
+
+
 class UsageRow(BaseModel):
     """A single row in the unified usage table."""
 

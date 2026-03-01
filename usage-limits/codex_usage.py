@@ -25,6 +25,9 @@ class CodexProvider(UsageProvider):
         super().__init__()
         self.auth_file = Path.home() / ".codex" / "auth.json"
 
+    def provider_name(self) -> str:
+        return "Codex"
+
     def get_credentials(self) -> dict:
         """Load auth credentials."""
         if not self.auth_file.exists():
@@ -115,6 +118,7 @@ def main() -> None:
     parser.add_argument("--json", "-j", action="store_true", help="JSON output")
     parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
     parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
+    parser.add_argument("--availability", "-a", action="store_true", help="Output availability data as JSON")
     args = parser.parse_args()
 
     CodexProvider().run(args)

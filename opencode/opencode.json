@@ -112,7 +112,7 @@
       ],
       "enabled": true,
       "environment": {
-        "MORPH_API_KEY": "REDACTED_API_KEY",
+        "MORPH_API_KEY": "{env:MORPH_API_KEY}",
         "ENABLED_TOOLS": "edit_file,warpgrep_codebase_search"
       }
     }

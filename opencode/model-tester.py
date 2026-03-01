@@ -3,14 +3,16 @@
 Model Testing Pipeline for OpenCode
 
 Tests all configured models sequentially and generates a YAML report.
+Each model is tested with a simple math question (17 + 25 = 42) to verify
+meaningful computation, not just echo.
 """
 
 import json
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
 
 import yaml
 from pydantic import BaseModel, Field
@@ -19,26 +21,26 @@ from pydantic import BaseModel, Field
 class ModelConfig(BaseModel):
     """Represents a configured model from opencode.json"""
 
-    provider: str = Field(..., description="Provider name")
-    model_id: str = Field(..., description="Model identifier")
-    name: str | None = Field(None, description="Human-readable model name")
+    provider: str
+    model_id: str
+    name: str | None = None
 
 
 class TestResult(BaseModel):
     """Result of testing a single model"""
 
-    model_id: str = Field(..., description="Full model identifier (provider/model)")
-    working: bool = Field(..., description="Whether the model responded successfully")
-    assistant_message: str | None = Field(None, description="The model's response")
-    test_datetime: str = Field(..., description="ISO 8601 timestamp of the test")
-    error: str | None = Field(None, description="Error message if test failed")
+    model_id: str
+    working: bool
+    assistant_message: str | None
+    test_datetime: str
+    error: str | None = None
 
 
 class ModelTestResults(BaseModel):
     """Container for all model test results"""
 
-    last_update_date: str = Field(..., description="ISO 8601 timestamp of report generation")
-    models: list[TestResult] = Field(default_factory=list, description="List of model test results")
+    last_update_date: str
+    models: list[TestResult] = Field(default_factory=list)
 
     def to_yaml(self) -> str:
         """Convert to YAML string"""
@@ -50,35 +52,26 @@ class ModelTestResults(BaseModel):
         )
 
 
-def load_opencode_config(config_path: Path = Path("opencode.json")) -> dict[str, Any]:
-    """Load and parse opencode.json configuration"""
+def load_opencode_config(config_path: Path = Path("opencode.json")) -> dict:
+    """Load opencode.json configuration"""
     with open(config_path, "r") as f:
         return json.load(f)
 
 
-def extract_configured_models(config: dict[str, Any]) -> list[ModelConfig]:
-    """
-    Extract all configured models from opencode config.
-
-    Skips blacklisted models and disabled providers.
-    """
+def extract_configured_models(config: dict) -> list[ModelConfig]:
+    """Extract all configured models, filtering disabled/blacklisted"""
     models = []
     disabled_providers = set(config.get("disabled_providers", []))
-
     provider_configs = config.get("provider", {})
 
     for provider_name, provider_data in provider_configs.items():
-        # Skip disabled providers
         if provider_name in disabled_providers:
             continue
 
-        # Get provider-level blacklist
         provider_blacklist = set(provider_data.get("blacklist", []))
-
-        # Extract models from this provider
         models_dict = provider_data.get("models", {})
+
         for model_id, model_config in models_dict.items():
-            # Skip blacklisted models
             if model_id in provider_blacklist:
                 continue
 
@@ -96,117 +89,119 @@ def extract_configured_models(config: dict[str, Any]) -> list[ModelConfig]:
 
 def test_model(model_config: ModelConfig, timeout: int = 20) -> TestResult:
     """
-    Test a single model using opencode run command.
+    Test a single model with a math question.
 
-    Timing expectations:
+    Timing:
     - opencode startup: <10s
-    - model response (1 turn): <3s
-    - Total timeout: 20s (allows buffer for slow startups)
+    - model response: <3s
+    - Total timeout: 20s
 
-    Args:
-        model_config: Model configuration to test
-        timeout: Timeout in seconds for the entire run
-
-    Returns:
-        TestResult with success/failure status and response
+    Returns working=true only if response contains correct answer (42).
     """
     full_model_id = f"{model_config.provider}/{model_config.model_id}"
     test_datetime = datetime.now(timezone.utc).isoformat()
+    test_prompt = "What is 17 + 25? Respond with only the number."
 
-    try:
-        # Run opencode with JSON output format
-        result = subprocess.run(
-            [
-                "opencode",
-                "run",
-                "--model",
-                full_model_id,
-                "--format",
-                "json",
-                "Respond with exactly: WORKING",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
+    with tempfile.TemporaryDirectory() as tmpdir:
+        try:
+            result = subprocess.run(
+                ["sh", "-c", f'echo "{test_prompt}" | opencode -m {full_model_id}'],
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                cwd=tmpdir,
+            )
 
-        # Parse JSON output to extract assistant message
-        assistant_message = None
-        if result.stdout:
-            for line in result.stdout.strip().split("\n"):
-                if line:
-                    try:
-                        event = json.loads(line)
-                        if event.get("type") == "assistant" and "text" in event:
-                            assistant_message = event["text"]
-                            break
-                    except json.JSONDecodeError:
-                        continue
+            # Parse events.jsonl
+            events_path = Path(tmpdir) / ".opencode" / "events.jsonl"
+            assistant_message = None
+            error_message = None
 
-        # If no structured message found, use stdout as fallback
-        if not assistant_message and result.stdout:
-            assistant_message = result.stdout.strip()
+            if events_path.exists():
+                with open(events_path, "r") as f:
+                    for line in f:
+                        if line.strip():
+                            try:
+                                event = json.loads(line)
+                                if event.get("type") == "assistant":
+                                    parts = event.get("parts", [])
+                                    for part in parts:
+                                        if part.get("type") == "text":
+                                            assistant_message = part.get("text", "")
+                                            break
+                                elif event.get("type") == "error" or "error" in event:
+                                    error_message = event.get("error", {}).get("message") or str(event.get("error"))
+                            except json.JSONDecodeError:
+                                continue
 
-        # Consider successful if we got a response
-        working = result.returncode == 0 and (assistant_message or result.returncode == 0)
+            # Check stderr for API errors
+            if result.stderr:
+                for line in result.stderr.split("\n"):
+                    if "429" in line or "Too Many Requests" in line:
+                        error_message = "429 Too Many Requests (rate limit exceeded)"
+                    elif "API error" in line.lower() or "connection" in line.lower():
+                        error_message = error_message or line.strip()
 
-        return TestResult(
-            model_id=full_model_id,
-            working=working,
-            assistant_message=assistant_message,
-            test_datetime=test_datetime,
-            error=None if working else f"Exit code: {result.returncode}",
-        )
+            if not assistant_message and result.stdout:
+                assistant_message = result.stdout.strip()
 
-    except subprocess.TimeoutExpired:
-        return TestResult(
-            model_id=full_model_id,
-            working=False,
-            assistant_message=None,
-            test_datetime=test_datetime,
-            error=f"Timeout after {timeout}s",
-        )
-    except Exception as e:
-        return TestResult(
-            model_id=full_model_id,
-            working=False,
-            assistant_message=None,
-            test_datetime=test_datetime,
-            error=str(e),
-        )
+            # Validate response
+            working = False
+            final_error = error_message
+            if assistant_message and not error_message:
+                if "42" in assistant_message:
+                    working = True
+                else:
+                    final_error = f"Incorrect response: {assistant_message[:100]}"
+            elif not assistant_message and not final_error:
+                final_error = "No response received"
+
+            return TestResult(
+                model_id=full_model_id,
+                working=working,
+                assistant_message=assistant_message,
+                test_datetime=test_datetime,
+                error=final_error,
+            )
+
+        except subprocess.TimeoutExpired:
+            return TestResult(
+                model_id=full_model_id,
+                working=False,
+                assistant_message=None,
+                test_datetime=test_datetime,
+                error=f"Timeout after {timeout}s",
+            )
+        except Exception as e:
+            return TestResult(
+                model_id=full_model_id,
+                working=False,
+                assistant_message=None,
+                test_datetime=test_datetime,
+                error=str(e),
+            )
 
 
-def run_pipeline(
-    config_path: Path = Path("opencode.json"),
-    output_path: Path = Path("model-test-results.yaml"),
-    timeout: int = 20,
-) -> ModelTestResults:
-    """
-    Run the complete model testing pipeline.
-
-    Args:
-        config_path: Path to opencode.json
-        output_path: Path for output YAML file
-        timeout: Timeout per model test in seconds
-
-    Returns:
-        ModelTestResults container
-    """
+def run_pipeline(config_path: Path = Path("opencode.json"), output_path: Path = Path("model-test-results.yaml"), timeout: int = 20) -> ModelTestResults:
+    """Run the complete model testing pipeline"""
     print(f"Loading configuration from {config_path}...")
     config = load_opencode_config(config_path)
 
     print("Extracting configured models...")
     models = extract_configured_models(config)
-    print(f"Found {len(models)} configured models to test")
+    print(f"Found {len(models)} configured models to test\n")
 
     results = []
     for i, model_config in enumerate(models, 1):
         model_name = model_config.name or model_config.model_id
-        print(f"[{i}/{len(models)}] Testing {model_config.provider}/{model_config.model_id} ({model_name})...")
+        print(f"[{i}/{len(models)}] Testing {model_config.provider}/{model_config.model_id}...")
         result = test_model(model_config, timeout)
         results.append(result)
         status = "✓" if result.working else "✗"
-        print(f"  {status} {result.error or 'OK'}")
+        if result.working:
+            print(f"  {status} Response: {result.assistant_message[:50]}")
+        else:
+            print(f"  {status} Error: {result.error}")
 
     output = ModelTestResults(
         last_update_date=datetime.now(timezone.utc).isoformat(),
@@ -217,7 +212,6 @@ def run_pipeline(
     with open(output_path, "w") as f:
         f.write(output.to_yaml())
 
-    # Summary
     working_count = sum(1 for r in results if r.working)
     print(f"\nSummary: {working_count}/{len(results)} models working")
 
@@ -228,24 +222,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Test OpenCode models and generate YAML report")
-    parser.add_argument(
-        "--config",
-        type=Path,
-        default=Path("opencode.json"),
-        help="Path to opencode.json config file",
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=Path("model-test-results.yaml"),
-        help="Path for output YAML report",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        default=20,
-        help="Timeout per model test in seconds",
-    )
+    parser.add_argument("--config", type=Path, default=Path("opencode.json"), help="Path to opencode.json")
+    parser.add_argument("--output", type=Path, default=Path("model-test-results.yaml"), help="Path for output YAML")
+    parser.add_argument("--timeout", type=int, default=20, help="Timeout per model test in seconds")
 
     args = parser.parse_args()
     run_pipeline(config_path=args.config, output_path=args.output, timeout=args.timeout)

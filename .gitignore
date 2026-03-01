@@ -65,6 +65,7 @@ Thumbs.db
 *.tmp
 *.temp
 .cache/
+*.jsonl
 
 # Test output
 test_results/
@@ -85,3 +86,15 @@ node_modules/
 *.js.map
 *.d.ts
 dist/
+
+# Serena runtime data
+.serena/cache/
+.serena/plans/
+.serena/memories/
+.serena/*.tmp
+.serena/project.yml
+
+# Opencode runtime data
+opencode/events.jsonl
+.opencode/events.jsonl
+.opencode/opencode.json
