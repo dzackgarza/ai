@@ -2,6 +2,7 @@
 // context including a passphrase the model must echo — proving interception works.
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart } from "@opencode-ai/sdk";
+import { KILLSWITCHES } from "./killswitches";
 
 const TRIGGER_RULES: Record<string, { intent: string; passphrase: string }> = {
   "intercept test": { intent: "verification",   passphrase: "SWORDFISH" },
@@ -12,6 +13,8 @@ const TRIGGER_RULES: Record<string, { intent: string; passphrase: string }> = {
 export const CommandInterceptor: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
+      // Killswitch check - no-op if disabled
+      if (!KILLSWITCHES.commandInterceptor) return;
       if (!output.messages?.length) return;
 
       try {

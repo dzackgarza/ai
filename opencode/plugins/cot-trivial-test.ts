@@ -1,4 +1,5 @@
 import type { Plugin } from "@opencode-ai/plugin";
+import { KILLSWITCHES } from "./killswitches";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CoT Mid-Stream Interceptor — Test Plugin

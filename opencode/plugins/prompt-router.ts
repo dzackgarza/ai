@@ -15,6 +15,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart } from "@opencode-ai/sdk";
+import { KILLSWITCHES } from "./killswitches";
 
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
 
@@ -165,6 +166,8 @@ async function classify(text: string): Promise<{ tier: Tier; reasoning: string }
 export const PromptRouter: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
+      // Killswitch check - no-op if disabled
+      if (!KILLSWITCHES.promptRouter) return;
       if (!output.messages?.length) return;
 
       try {

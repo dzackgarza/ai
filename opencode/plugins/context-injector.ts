@@ -1,6 +1,7 @@
 // Injects context before agent processes user message
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart } from "@opencode-ai/sdk";
+import { KILLSWITCHES } from "./killswitches";
 
 const CONTEXT_RULES: Record<string, string> = {
   "verification code is 123456":
