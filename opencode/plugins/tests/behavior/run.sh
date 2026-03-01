@@ -2,13 +2,15 @@
 # Behavioral test runner for the prompt-router plugin.
 #
 # Usage:
-#   ./run.sh <tier>
+#   ./run.sh <tier>                          # routing run (injection ON)
+#   PROMPT_ROUTER_ENABLED=false ./run.sh <tier>  # baseline (classify-only)
 #
 # Tiers: model-self, knowledge, C, B, A, S
 #
-# For baseline runs (no injection):
-#   Set KILLSWITCHES.promptRouter = true in killswitches.ts before running.
-#   The JSONL log will NOT be written (killswitch exits before classify()).
+# PROMPT_ROUTER_ENABLED env var overrides killswitches.ts at runtime:
+#   true  → force enable (inject instruction)
+#   false → force kill  (classify and log, but do NOT inject)
+#   unset → use value in killswitches.ts
 #
 # Output: results/<tier>/<timestamp>.yaml
 

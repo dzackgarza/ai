@@ -1,22 +1,34 @@
 // Centralized killswitches for all prompt-injection plugins.
-// Set to true to KILL (disable), false to allow.
+// true = KILL (disabled), false = allow.
 //
-// Changes take effect immediately — no session restart needed.
-// This file is re-evaluated on each message transform.
+// Two ways to toggle:
+//   1. Edit this file — takes effect on next message (no restart needed).
+//   2. Set an env var — overrides the code value for the session.
+//      Format: <SCREAMING_SNAKE>_ENABLED=true  → force enable
+//              <SCREAMING_SNAKE>_ENABLED=false → force kill
+//      Example: PROMPT_ROUTER_ENABLED=true opencode run "..."
 //
 // ┌──────────────────────────────────────────────────────────────────────────┐
 // │ RULE: Every new plugin MUST register a killswitch here before shipping.  │
-// │ Format: <camelCasePluginName>: true  (start killed; enable deliberately) │
+// │ Format: <camelCaseName>: sw('PLUGIN_ENV_VAR_ENABLED', true)              │
 // └──────────────────────────────────────────────────────────────────────────┘
+
+// Returns true (killed) or false (allowed), with env var taking precedence.
+const sw = (envVar: string, defaultKilled: boolean): boolean => {
+  const val = process.env[envVar];
+  if (val === 'true')  return false; // env says enable
+  if (val === 'false') return true;  // env says kill
+  return defaultKilled;
+};
 
 export const KILLSWITCHES = {
   // Message transform plugins
-  promptRouter: true,
-  commandInterceptor: true,
-  contextInjector: true,
-  cotTrivialInterceptor: true,
+  promptRouter:            sw('PROMPT_ROUTER_ENABLED',            true),
+  commandInterceptor:      sw('COMMAND_INTERCEPTOR_ENABLED',      true),
+  contextInjector:         sw('CONTEXT_INJECTOR_ENABLED',         true),
+  cotTrivialInterceptor:   sw('COT_TRIVIAL_INTERCEPTOR_ENABLED',  true),
   // Stop hooks
-  otpChecker: true,
-  obviousQuestionDetector: true,
-  reflexiveAgreementDetector: true,
+  otpChecker:                  sw('OTP_CHECKER_ENABLED',                  true),
+  obviousQuestionDetector:     sw('OBVIOUS_QUESTION_DETECTOR_ENABLED',    true),
+  reflexiveAgreementDetector:  sw('REFLEXIVE_AGREEMENT_DETECTOR_ENABLED', true),
 };
