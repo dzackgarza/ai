@@ -276,16 +276,11 @@ scores:
   gemma-2-27b: { score: 40, source: verified }
 
   gemini-2.0-flash: { score: 28, source: verified }
+  step-3.5-flash: { score: 48, source: verified, apex_elo: "~1500-1525" }
 
   # ===== INFERRED: Legitimate inference from version/family =====
   # Based on: newer version > older, larger params > smaller, code variant slight drop
 
-  gpt-5:
-    {
-      score: null,
-      source: unknown,
-      reason: "GPT-5.0 - unclear where it falls vs 5.1/5.2",
-    }
   gpt-5-mini: { score: 86, source: inferred, reason: "lighter 5.x variant" }
   gpt-5-codex:
     {
@@ -355,13 +350,17 @@ scores:
     { score: 43, source: inferred, reason: "newer R1, similar to R1" }
   deepseek-coder-6.7b:
     { score: 30, source: inferred, reason: "small coder model" }
+  gpt-5:
+    {
+      score: 88,
+      source: inferred,
+      reason: "GPT-5.0, released before 5.1, similar to mini variants, better than GPT-4",
+    }
 
   # ===== UNKNOWN: No data, no reasonable inference =====
   # These models have no APEX data and no clear basis for inference
   # Leave them mapped but without scores - they need evaluation
 
-  step-3.5-flash:
-    { score: null, source: unknown, reason: "no APEX data, no similar model" }
   trinity-large:
     { score: null, source: unknown, reason: "no APEX data, no similar model" }
   trinity-mini:
