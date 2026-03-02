@@ -1,0 +1,9 @@
+{
+  "description": "Use when critically auditing USER_SPEC and plans. Pass the spec and plan documents. Ask 'Audit this plan for logical inconsistencies' or 'Check for spec misalignment'.",
+  "mode": "subagent",
+  "model": "opencode/minimax-m2.5-free",
+  "permission": {
+    "task": "deny"
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
+}

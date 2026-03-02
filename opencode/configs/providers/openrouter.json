@@ -1,0 +1,9 @@
+{
+  "name": "OpenRouter",
+  "whitelist": [".*:free$", "^openrouter/free$"],
+  "blacklist": [
+    "openai/gpt-oss-20b:free",
+    "qwen/qwen3-4b:free",
+    "mistralai/mistral-small-3.1-24b-instruct:free"
+  ]
+}

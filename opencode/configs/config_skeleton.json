@@ -1,0 +1,134 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "disabled_providers": [
+    "openrouter",
+    "groq",
+    "mistral",
+    "cloudflare-ai-gateway",
+    "cloudflare-workers-ai"
+  ],
+  "formatter": {
+    "ruff-check": {
+      "command": [
+        "uvx",
+        "ruff",
+        "check",
+        "--fix",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
+    },
+    "ruff-format": {
+      "command": [
+        "uvx",
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
+    },
+    "prettier": {
+      "command": [
+        "npx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
+      "extensions": [
+        ".md",
+        ".js",
+        ".ts",
+        ".jsx",
+        ".tsx",
+        ".html",
+        ".css",
+        ".json",
+        ".yaml",
+        ".yml"
+      ]
+    }
+  },
+  "lsp": {
+    "texlab": {
+      "command": [
+        "texlab"
+      ],
+      "extensions": [
+        ".tex",
+        ".sty",
+        ".cls",
+        ".bib"
+      ]
+    }
+  },
+  "mcp": {
+    "serena": {
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--project-from-cwd"
+      ],
+      "type": "local"
+    },
+    "kindly": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server",
+        "kindly-web-search-mcp-server",
+        "start-mcp-server"
+      ]
+    },
+    "context7": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp"
+      ]
+    },
+    "cut-copy-paste-mcp": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@fastmcp-me/cut-copy-paste-mcp"
+      ]
+    },
+    "morph-mcp": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@morphllm/morphmcp"
+      ],
+      "enabled": true,
+      "environment": {
+        "MORPH_API_KEY": "{env:MORPH_API_KEY}",
+        "ENABLED_TOOLS": "edit_file,warpgrep_codebase_search"
+      }
+    }
+  },
+  "model": "google/gemini-3-flash-preview",
+  "default_agent": "Interactive",
+  "experimental": {
+    "openTelemetry": true
+  },
+  "plugin": [
+    "opencode-antigravity-auth@latest",
+    "opencode-anthropic-auth@latest",
+    "opencode-qwencode-auth@latest",
+    "opencode-openai-codex-auth@latest",
+    "cc-safety-net@latest",
+    "@azumag/opencode-rate-limit-fallback@latest",
+    "@ramtinj95/opencode-tokenscope@latest"
+  ]
+}

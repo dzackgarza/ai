@@ -1,0 +1,9 @@
+{
+  "description": "Use when designing type systems and interface contracts. Pass the domain or feature requiring types. Ask 'Design type system for [domain]' or 'Define interface contracts for [feature]'.",
+  "mode": "subagent",
+  "model": "opencode/minimax-m2.5-free",
+  "permission": {
+    "task": "deny"
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/type_designer/prompt.md}"
+}

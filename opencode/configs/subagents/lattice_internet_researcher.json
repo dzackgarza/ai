@@ -1,0 +1,9 @@
+{
+  "description": "Use when researching obscure lattice algorithms and software (indefinite lattices focus). Ask 'Search arXiv and GitHub for [lattice algorithm]' or 'Find existing implementations of [lattice concept]'.",
+  "mode": "subagent",
+  "model": "opencode/minimax-m2.5-free",
+  "permission": {
+    "task": "deny"
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_internet_researcher/prompt.md}"
+}

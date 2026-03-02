@@ -1,0 +1,14 @@
+{
+  "blacklist": [
+    "qwen3-vl:235b",
+    "qwen3-vl:235b-instruct",
+    "gpt-oss:20b",
+    "nemotron-3-nano:30b",
+    "gemma3:4b",
+    "gemma3:12b",
+    "ministral-3:14b",
+    "ministral-3:3b",
+    "ministral-3:8b",
+    "devstral-small-2:24b"
+  ]
+}

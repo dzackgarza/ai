@@ -33,8 +33,12 @@ def main():
 
     try:
         if args.harness == "opencode":
-            cmd = f"python {scripts_dir}/parse_langfuse_opencode.py {args.identifier} | python {scripts_dir}/parse_opencode_log.py -"
-            subprocess.run(cmd, shell=True, check=True)
+            # OpenCode parser takes session ID directly
+            session_id = args.identifier
+            subprocess.run(
+                ["python", f"{scripts_dir}/parse_opencode_log.py", session_id],
+                check=True,
+            )
 
         elif args.harness == "amp":
             subprocess.run(["python", script_map["amp"], args.identifier], check=True)

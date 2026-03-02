@@ -1,0 +1,245 @@
+{
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "NVIDIA NIM",
+  "options": {
+    "baseURL": "https://integrate.api.nvidia.com/v1",
+    "apiKey": "{env:NVIDIA_API_KEY}"
+  },
+  "models": {
+    "stepfun-ai/step-3.5-flash": {
+      "name": "Step 3.5 Flash"
+    },
+    "deepseek-ai/deepseek-coder-6.7b-instruct": {
+      "name": "deepseek-coder-6.7b-instruct"
+    },
+    "deepseek-ai/deepseek-r1": {
+      "name": "deepseek-r1"
+    },
+    "deepseek-ai/deepseek-r1-0528": {
+      "name": "deepseek-r1-0528"
+    },
+    "deepseek-ai/deepseek-v3.1": {
+      "name": "deepseek-v3.1"
+    },
+    "deepseek-ai/deepseek-v3.1-terminus": {
+      "name": "deepseek-v3.1-terminus"
+    },
+    "deepseek-ai/deepseek-v3.2": {
+      "name": "deepseek-v3.2"
+    },
+    "google/codegemma-1.1-7b": {
+      "name": "codegemma-1.1-7b"
+    },
+    "google/codegemma-7b": {
+      "name": "codegemma-7b"
+    },
+    "google/gemma-2-27b-it": {
+      "name": "gemma-2-27b-it"
+    },
+    "google/gemma-3-12b-it": {
+      "name": "gemma-3-12b-it"
+    },
+    "google/gemma-3-27b-it": {
+      "name": "gemma-3-27b-it"
+    },
+    "google/gemma-3n-e2b-it": {
+      "name": "gemma-3n-e2b-it"
+    },
+    "google/gemma-3n-e4b-it": {
+      "name": "gemma-3n-e4b-it"
+    },
+    "meta/codellama-70b": {
+      "name": "codellama-70b"
+    },
+    "meta/llama-3.1-405b-instruct": {
+      "name": "llama-3.1-405b-instruct"
+    },
+    "meta/llama-3.1-70b-instruct": {
+      "name": "llama-3.1-70b-instruct"
+    },
+    "meta/llama-3.3-70b-instruct": {
+      "name": "llama-3.3-70b-instruct"
+    },
+    "meta/llama-4-maverick-17b-128e-instruct": {
+      "name": "llama-4-maverick-17b-128e-instruct"
+    },
+    "meta/llama-4-scout-17b-16e-instruct": {
+      "name": "llama-4-scout-17b-16e-instruct"
+    },
+    "meta/llama3-70b-instruct": {
+      "name": "llama3-70b-instruct"
+    },
+    "microsoft/phi-3-medium-128k-instruct": {
+      "name": "phi-3-medium-128k-instruct"
+    },
+    "microsoft/phi-3-medium-4k-instruct": {
+      "name": "phi-3-medium-4k-instruct"
+    },
+    "microsoft/phi-3-small-128k-instruct": {
+      "name": "phi-3-small-128k-instruct"
+    },
+    "microsoft/phi-3-small-8k-instruct": {
+      "name": "phi-3-small-8k-instruct"
+    },
+    "microsoft/phi-3.5-moe-instruct": {
+      "name": "phi-3.5-moe-instruct"
+    },
+    "microsoft/phi-4-mini-instruct": {
+      "name": "phi-4-mini-instruct"
+    },
+    "minimaxai/minimax-m2": {
+      "name": "minimax-m2"
+    },
+    "minimaxai/minimax-m2.1": {
+      "name": "minimax-m2.1"
+    },
+    "mistralai/codestral-22b-instruct-v0.1": {
+      "name": "codestral-22b-instruct-v0.1"
+    },
+    "mistralai/devstral-2-123b-instruct-2512": {
+      "name": "devstral-2-123b-instruct-2512"
+    },
+    "mistralai/mistral-large-2-instruct": {
+      "name": "mistral-large-2-instruct"
+    },
+    "mistralai/mistral-large-3-675b-instruct-2512": {
+      "name": "mistral-large-3-675b-instruct-2512"
+    },
+    "moonshotai/kimi-k2-instruct": {
+      "name": "kimi-k2-instruct"
+    },
+    "moonshotai/kimi-k2-instruct-0905": {
+      "name": "kimi-k2-instruct-0905"
+    },
+    "moonshotai/kimi-k2-thinking": {
+      "name": "kimi-k2-thinking"
+    },
+    "moonshotai/kimi-k2.5": {
+      "name": "kimi-k2.5"
+    },
+    "nvidia/cosmos-nemotron-34b": {
+      "name": "cosmos-nemotron-34b"
+    },
+    "nvidia/llama-3.1-nemotron-51b-instruct": {
+      "name": "llama-3.1-nemotron-51b-instruct"
+    },
+    "nvidia/llama-3.1-nemotron-70b-instruct": {
+      "name": "llama-3.1-nemotron-70b-instruct"
+    },
+    "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
+      "name": "llama-3.1-nemotron-ultra-253b-v1"
+    },
+    "nvidia/llama-3.3-nemotron-super-49b-v1": {
+      "name": "llama-3.3-nemotron-super-49b-v1"
+    },
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
+      "name": "llama-3.3-nemotron-super-49b-v1.5"
+    },
+    "nvidia/llama3-chatqa-1.5-70b": {
+      "name": "llama3-chatqa-1.5-70b"
+    },
+    "nvidia/nemotron-3-nano-30b-a3b": {
+      "name": "nemotron-3-nano-30b-a3b"
+    },
+    "nvidia/nemotron-4-340b-instruct": {
+      "name": "nemotron-4-340b-instruct"
+    },
+    "nvidia/nvidia-nemotron-nano-9b-v2": {
+      "name": "nvidia-nemotron-nano-9b-v2"
+    },
+    "openai/gpt-oss-120b": {
+      "name": "gpt-oss-120b"
+    },
+    "qwen/qwen3-235b-a22b": {
+      "name": "qwen3-235b-a22b"
+    },
+    "qwen/qwen3-coder-480b-a35b-instruct": {
+      "name": "qwen3-coder-480b-a35b-instruct"
+    },
+    "qwen/qwen3-next-80b-a3b-instruct": {
+      "name": "qwen3-next-80b-a3b-instruct"
+    },
+    "qwen/qwen3-next-80b-a3b-thinking": {
+      "name": "qwen3-next-80b-a3b-thinking"
+    },
+    "qwen/qwq-32b": {
+      "name": "qwq-32b"
+    },
+    "z-ai/glm4.7": {
+      "name": "glm4.7"
+    },
+    "z-ai/glm5": {
+      "name": "glm5"
+    },
+    "mistralai/ministral-14b-instruct-2512": {
+      "name": "mistral-14b-instruct-2512"
+    },
+    "nvidia/parakeet-tdt-0.6b-v2": {
+      "name": "parakeet-tdt-0.6b-v2"
+    },
+    "qwen/qwen2.5-coder-32b-instruct": {
+      "name": "qwen2.5-coder-32b-instruct"
+    },
+    "microsoft/phi-3-vision-128k-instruct": {
+      "name": "phi-3-vision-128k-instruct"
+    },
+    "meta/llama-3.2-1b-instruct": {
+      "name": "llama-3.2-1b-instruct"
+    },
+    "mistralai/mamba-codestral-7b-v0.1": {
+      "name": "mamba-codestral-7b-v0.1"
+    },
+    "meta/llama3-8b-instruct": {
+      "name": "llama3-8b-instruct"
+    },
+    "qwen/qwen2.5-coder-7b-instruct": {
+      "name": "qwen2.5-coder-7b-instruct"
+    },
+    "google/gemma-2-2b-it": {
+      "name": "gemma-2-2b-it"
+    },
+    "nvidia/llama-embed-nemotron-8b": {
+      "name": "llama-embed-nemotron-8b"
+    },
+    "nvidia/nemoretriever-ocr-v1": {
+      "name": "nemoretriever-ocr-v1"
+    },
+    "mistralai/mistral-small-3.1-24b-instruct-2503": {
+      "name": "mistral-small-3.1-24b-instruct-2503"
+    },
+    "openai/whisper-large-v3": {
+      "name": "whisper-large-v3"
+    },
+    "google/gemma-3-1b-it": {
+      "name": "gemma-3-1b-it"
+    },
+    "black-forest-labs/flux.1-dev": {
+      "name": "flux.1-dev"
+    },
+    "microsoft/phi-3.5-vision-instruct": {
+      "name": "phi-3.5-vision-instruct"
+    },
+    "meta/llama-3.2-11b-vision-instruct": {
+      "name": "llama-3.2-11b-vision-instruct"
+    }
+  },
+  "blacklist": [
+    "mistralai/ministral-14b-instruct-2512",
+    "nvidia/parakeet-tdt-0.6b-v2",
+    "qwen/qwen2.5-coder-32b-instruct",
+    "microsoft/phi-3-vision-128k-instruct",
+    "meta/llama-3.2-1b-instruct",
+    "mistralai/mamba-codestral-7b-v0.1",
+    "meta/llama3-8b-instruct",
+    "qwen/qwen2.5-coder-7b-instruct",
+    "google/gemma-2-2b-it",
+    "nvidia/llama-embed-nemotron-8b",
+    "nvidia/nemoretriever-ocr-v1",
+    "mistralai/mistral-small-3.1-24b-instruct-2503",
+    "openai/whisper-large-v3",
+    "google/gemma-3-1b-it",
+    "black-forest-labs/flux.1-dev",
+    "microsoft/phi-3.5-vision-instruct",
+    "meta/llama-3.2-11b-vision-instruct"
+  ]
+}

@@ -1,30 +1,15 @@
+import argparse
 import json
+import subprocess
 import sys
+import tempfile
+from datetime import datetime, timezone as tz
+from pathlib import Path
 
 
-def parse_opencode_json(file_path):
-    if file_path == "-":
-        content = sys.stdin.read()
-
-        # OpenCode prints "Exporting session: ses_..." to stdout before the JSON
-        if content.startswith("Exporting"):
-            try:
-                content = content[content.index("\n") + 1 :]
-            except ValueError:
-                pass
-
-        if not content.strip():
-            print("Error: No valid JSON found in stdin.")
-            sys.exit(1)
-
-        try:
-            data = json.loads(content)
-        except json.JSONDecodeError as e:
-            print(f"Error parsing JSON from stdin: {e}")
-            sys.exit(1)
-    else:
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+def parse_opencode_json(file_path: Path) -> None:
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
     info = data.get("info", {})
     print(
@@ -43,8 +28,6 @@ def parse_opencode_json(file_path):
         if not ts:
             t = msg_info.get("time") or {}
             if isinstance(t, dict) and t.get("created"):
-                from datetime import datetime, timezone as tz
-
                 ts = datetime.fromtimestamp(t["created"] / 1000, tz=tz.utc).strftime(
                     "%Y-%m-%dT%H:%M:%SZ"
                 )
@@ -101,7 +84,7 @@ def parse_opencode_json(file_path):
                 inputs = json.dumps(state.get("input", {}), indent=2)
                 tool_header = f"🛠️  [Tool Use: {tool_name}]"
                 if timing.get("latency_s") is not None:
-                    tool_header += f"  (tool took {timing['latency_s']:.2f}s)"
+                    tool_header += f" (tool took {timing['latency_s']:.2f}s)"
                 print(f"{tool_header}\n{inputs}")
 
                 output = state.get("output", "")
@@ -149,13 +132,50 @@ def parse_opencode_json(file_path):
         print("=" * 60)
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python parse_opencode_log.py <path-to-json-file | ->")
-        sys.exit(1)
+def export_session(session_id: str) -> Path:
+    """Export an OpenCode session to a temp file and return the file path."""
+    tmp_path = Path(tempfile.mktemp(suffix=".json"))
+    with open(tmp_path, "w", encoding="utf-8") as tmp:
+        result = subprocess.run(
+            ["opencode", "export", session_id],
+            stdout=tmp,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(f"Error exporting session: {result.stderr}", file=sys.stderr)
+            tmp_path.unlink(missing_ok=True)
+            sys.exit(1)
+    return tmp_path
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Parse and display an OpenCode session transcript"
+    )
+    parser.add_argument(
+        "session_id",
+        help="OpenCode session ID (e.g., ses_abc123)"
+    )
+    args = parser.parse_args()
+
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+        result = subprocess.run(
+            ["opencode", "export", args.session_id],
+            stdout=tmp,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(f"Error exporting session: {result.stderr}", file=sys.stderr)
+            sys.exit(1)
 
     try:
-        parse_opencode_json(sys.argv[1])
-    except BrokenPipeError:
-        # Ignore broken pipe errors from commands like `head` closing stdout
-        sys.exit(0)
+        parse_opencode_json(tmp_path)
+    finally:
+        tmp_path.unlink()
+
+
+if __name__ == "__main__":
+    main()

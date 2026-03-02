@@ -1,0 +1,127 @@
+{
+  "description": "Use when writing new tests following TDD. Pass implementation or requirements. Ask 'Write a test for [feature]'. Can write/edit tests in tests/ and test/ directories only.",
+  "mode": "subagent",
+  "model": "google/gemini-3-flash-preview",
+  "permission": {
+    "task": "deny",
+    "bash": {
+      "*": "deny",
+      "just": "allow",
+      "just *": "allow",
+      "pytest*": "allow",
+      "git add *": "allow",
+      "git status": "allow",
+      "git diff": "allow",
+      "git diff --stat": "allow",
+      "git commit -m *": "allow",
+      "git commit --amend *": "allow",
+      "ls*": "allow",
+      "tree*": "allow",
+      "find * -type f -maxdepth 3*": "allow",
+      "find * -type d -maxdepth 3*": "allow",
+      "wc*": "allow",
+      "head*": "allow",
+      "tail*": "allow",
+      "cat*": "allow",
+      "grep*": "allow",
+      "rg*": "allow",
+      "kpsewhich*": "allow",
+      "command -v *": "allow",
+      "uv*": "allow"
+    },
+    "edit": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_activate_project": "allow",
+    "serena_read_file": "allow",
+    "serena_list_dir": "allow",
+    "serena_find_file": "allow",
+    "serena_search_for_pattern": "allow",
+    "serena_get_symbols_overview": "allow",
+    "serena_find_symbol": "allow",
+    "serena_find_referencing_symbols": "allow",
+    "serena_onboarding": "allow",
+    "serena_prepare_for_new_conversation": "allow",
+    "serena_get_current_config": "allow",
+    "serena_initial_instructions": "allow",
+    "serena_think_about_collected_information": "allow",
+    "serena_think_about_task_adherence": "allow",
+    "serena_think_about_whether_you_are_done": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_write_memory": "allow",
+    "serena_edit_memory": "allow",
+    "serena_delete_memory": "allow",
+    "serena_*": "deny",
+    "serena_create_text_file": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_replace_content": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_delete_lines": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_insert_at_line": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_replace_lines": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_replace_symbol_body": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_insert_after_symbol": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_insert_before_symbol": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "serena_rename_symbol": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "morph-mcp_warpgrep_codebase_search": "allow",
+    "morph-mcp_edit_file": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "cut-copy-paste-mcp_cut": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "cut-copy-paste-mcp_copy": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    },
+    "cut-copy-paste-mcp_paste": {
+      "*": "deny",
+      "tests/**": "allow",
+      "test/**": "allow"
+    }
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
+}

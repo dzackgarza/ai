@@ -1,0 +1,5 @@
+{
+  "description": "Repo steward - autonomous repository maintenance and optimization",
+  "mode": "primary",
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}"
+}

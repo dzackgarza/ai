@@ -1,0 +1,5 @@
+{
+  "description": "Collaborative loop builder - drafts background, setup, tasks, and testing for Ralph loops",
+  "mode": "primary",
+  "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}"
+}

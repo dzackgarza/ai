@@ -1,0 +1,9 @@
+{
+  "description": "Use when porting algorithms from existing implementations. Ask 'Determine algorithms used in [implementation]' or 'Rewrite [algorithm] or wrap complex external objects'.",
+  "mode": "subagent",
+  "model": "opencode/minimax-m2.5-free",
+  "permission": {
+    "task": "deny"
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_algorithm_porter/prompt.md}"
+}

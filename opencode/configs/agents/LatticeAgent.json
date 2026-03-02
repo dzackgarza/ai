@@ -1,0 +1,5 @@
+{
+  "description": "Top-level agent for managing all lattice-related work",
+  "mode": "primary",
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}"
+}

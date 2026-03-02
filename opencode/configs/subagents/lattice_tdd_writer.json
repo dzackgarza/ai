@@ -1,0 +1,9 @@
+{
+  "description": "Use when combining existing test methods into unified tests. Ask 'Combine test methods into single new tests for unified Lattice classes' or 'Write TDD tests for [lattice feature]'.",
+  "mode": "subagent",
+  "model": "opencode/minimax-m2.5-free",
+  "permission": {
+    "task": "deny"
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_tdd_writer/prompt.md}"
+}

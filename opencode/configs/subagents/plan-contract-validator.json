@@ -1,0 +1,9 @@
+{
+  "description": "Use when auditing code against project constraints and dominant patterns. Pass the generated code and project rules. Ask 'Audit this code for constraint violations' or 'Find deviations from dominant patterns'.",
+  "mode": "subagent",
+  "model": "opencode/minimax-m2.5-free",
+  "permission": {
+    "task": "deny"
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
+}

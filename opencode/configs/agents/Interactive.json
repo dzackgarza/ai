@@ -1,0 +1,5 @@
+{
+  "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
+  "mode": "primary",
+  "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}"
+}

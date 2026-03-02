@@ -1,0 +1,5 @@
+{
+  "description": "Zotero librarian - manages and maintains Zotero reference libraries",
+  "mode": "primary",
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}"
+}
