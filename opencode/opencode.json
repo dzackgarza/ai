@@ -9,35 +9,15 @@
   ],
   "formatter": {
     "ruff-check": {
-      "command": [
-        "uvx",
-        "ruff",
-        "check",
-        "--fix",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
     },
     "ruff-format": {
-      "command": [
-        "uvx",
-        "ruff",
-        "format",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
     },
     "prettier": {
-      "command": [
-        "npx",
-        "prettier",
-        "--write",
-        "$FILE"
-      ],
+      "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [
         ".md",
         ".js",
@@ -54,15 +34,8 @@
   },
   "lsp": {
     "texlab": {
-      "command": [
-        "texlab"
-      ],
-      "extensions": [
-        ".tex",
-        ".sty",
-        ".cls",
-        ".bib"
-      ]
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
     }
   },
   "mcp": {
@@ -89,27 +62,15 @@
     },
     "context7": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@upstash/context7-mcp"
-      ]
+      "command": ["npx", "-y", "@upstash/context7-mcp"]
     },
     "cut-copy-paste-mcp": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@fastmcp-me/cut-copy-paste-mcp"
-      ]
+      "command": ["npx", "-y", "@fastmcp-me/cut-copy-paste-mcp"]
     },
     "morph-mcp": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@morphllm/morphmcp"
-      ],
+      "command": ["npx", "-y", "@morphllm/morphmcp"],
       "enabled": true,
       "environment": {
         "MORPH_API_KEY": "{env:MORPH_API_KEY}",
@@ -162,14 +123,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -187,14 +142,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "antigravity-claude-sonnet-4-6": {
@@ -204,14 +153,8 @@
             "output": 64000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "antigravity-claude-opus-4-6-thinking": {
@@ -221,14 +164,8 @@
             "output": 64000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -250,14 +187,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-2.5-pro": {
@@ -267,14 +198,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3-flash-preview": {
@@ -284,14 +209,8 @@
             "output": 65536
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3-pro-preview": {
@@ -301,14 +220,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3.1-pro-preview": {
@@ -318,14 +231,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         },
         "gemini-3.1-pro-preview-customtools": {
@@ -335,14 +242,8 @@
             "output": 65535
           },
           "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image", "pdf"],
+            "output": ["text"]
           }
         }
       }
@@ -353,9 +254,7 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ],
+        "include": ["reasoning.encrypted_content"],
         "store": false
       },
       "models": {
@@ -366,13 +265,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "none": {
@@ -409,13 +303,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -447,13 +336,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -485,13 +369,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -518,13 +397,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "medium": {
@@ -546,13 +420,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "none": {
@@ -580,9 +449,7 @@
       }
     },
     "opencode": {
-      "blacklist": [
-        "gpt-5-nano"
-      ]
+      "blacklist": ["gpt-5-nano"]
     },
     "anthropic": {
       "blacklist": [
@@ -1074,22 +941,6 @@
           "*": "ask"
         },
         "serena_*": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_read_file": "allow",
-        "serena_list_dir": "allow",
-        "serena_find_file": "allow",
-        "serena_search_for_pattern": "allow",
-        "serena_get_symbols_overview": "allow",
-        "serena_find_symbol": "allow",
-        "serena_find_referencing_symbols": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "morph-mcp_*": "deny",
         "cut-copy-paste-mcp_*": "deny",
         "serena_execute_shell_command": "deny",
@@ -1110,7 +961,23 @@
         "serena_write_memory": "deny",
         "serena_edit_memory": "deny",
         "serena_delete_memory": "deny",
-        "serena_rename_memory": "deny"
+        "serena_rename_memory": "deny",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_initial_instructions": "allow",
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_get_current_config": "allow",
+        "serena_read_file": "allow",
+        "serena_list_dir": "allow",
+        "serena_find_file": "allow",
+        "serena_search_for_pattern": "allow",
+        "serena_get_symbols_overview": "allow",
+        "serena_find_symbol": "allow",
+        "serena_find_referencing_symbols": "allow",
+        "serena_think_about_collected_information": "allow",
+        "serena_think_about_task_adherence": "allow",
+        "serena_think_about_whether_you_are_done": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/plan.md}"
     },
@@ -1605,7 +1472,14 @@
       "mode": "subagent",
       "model": "google/gemini-3-flash-preview",
       "permission": {
-        "task": "deny"
+        "task": "deny",
+        "serena_read_file": "allow",
+        "serena_list_dir": "allow",
+        "serena_find_file": "allow",
+        "serena_search_for_pattern": "allow",
+        "serena_get_symbols_overview": "allow",
+        "serena_find_symbol": "allow",
+        "serena_find_referencing_symbols": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
     },
