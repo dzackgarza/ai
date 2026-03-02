@@ -91,7 +91,9 @@ def parse_opencode_json(file_path):
             if ptype == "text":
                 print(part.get("text", "").strip())
             elif ptype == "reasoning":
-                print(f"🤔 [Thinking...]\n{part.get('text', '').strip()}")
+                print(
+                    f"🤔 [Thinking...]\n{part.get('text', '').strip()}\n[End of Thinking]"
+                )
             elif ptype == "tool":
                 tool_name = part.get("tool", "unknown_tool")
                 state = part.get("state", {})
