@@ -1,28 +1,15 @@
 #!/usr/bin/env python3
 """
-Reconstruct OpenCode transcripts from Langfuse session data via the Langfuse Python SDK.
-Reads LANGFUSE_BASE_URL, LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY from environment.
+Reconstruct OpenCode transcripts from Langfuse session data.
+
+Key insight: each OpenCode trace's GENERATION input accumulates the full
+conversation history. The LAST trace's GENERATION input IS the complete
+transcript. We just walk it and enrich each assistant turn with per-step
+metadata (timing, tokens, model) from the corresponding trace.
 
 Usage:
     python parse_langfuse_opencode.py <session-id>
     python parse_langfuse_opencode.py ses_abc123 | python parse_opencode_log.py -
-
-Architecture notes:
-    Each OpenCode agent step = one Langfuse trace with 3 observation types:
-      - SPAN:       full step wall-clock (use for step timing)
-      - GENERATION: LLM call — input=full history, output=gen_out dict, usage/TTFT
-      - TOOL:       one per tool call — has tool call ID, output, latency
-
-    Key invariant (how OpenCode instruments traces):
-      - gen_out (GENERATION output) contains tool_calls + text content for step N
-      - Reasoning blocks for step N appear in step N+1's GENERATION history as the
-        new assistant block at index N (0-based among assistant turns)
-      - The last step typically has gen_out=None (pure reasoning, no tool/text output)
-      - Trace 0 is always the title-generator; skip it
-
-    Lookahead pattern:
-      - Collect all real (non-title-gen) traces upfront
-      - For step i, grab reasoning from real_traces[i+1].history.assistant_blocks[i]
 """
 
 import json
@@ -32,259 +19,296 @@ from datetime import timezone
 from langfuse import get_client
 
 
-def fmt_ts(dt) -> str | None:
+def fmt_ts(dt):
     if dt is None:
         return None
     return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_history(trace) -> list:
-    gen = next((o for o in trace.observations if o.type == "GENERATION"), None)
+def _gen(trace):
+    return next((o for o in trace.observations if o.type == "GENERATION"), None)
+
+
+def _span(trace):
+    return next((o for o in trace.observations if o.type == "SPAN"), None)
+
+
+def is_title_gen(trace):
+    gen = _gen(trace)
     if not gen:
-        return []
-    return gen.input if isinstance(gen.input, list) else []
-
-
-def is_title_gen(trace) -> bool:
-    history = get_history(trace)
+        return True
+    history = gen.input if isinstance(gen.input, list) else []
     sys_prompt = next(
         (m.get("content", "") for m in history if m.get("role") == "system"), ""
     )
     return "title generator" in sys_prompt.lower()
 
 
-def assistant_blocks(history: list) -> list:
-    """Return list of content-block-lists, one per assistant turn in history."""
-    return [
-        (m.get("content") or []) if isinstance(m.get("content"), list) else []
-        for m in history
-        if m.get("role") == "assistant"
-    ]
+def extract_step_meta(trace):
+    """Timing/token/model metadata for one agent step."""
+    gen = _gen(trace)
+    span = _span(trace)
+    if not gen:
+        return {}
+    anchor = span or gen
+    s, e = anchor.start_time, anchor.end_time
+    latency = round((e - s).total_seconds(), 3) if s and e else None
+    usage = gen.usage_details or {}
+    out_tok = (usage.get("output") or 0) + (usage.get("output_reasoning_tokens") or 0)
+    tool_timings = {}
+    for obs in trace.observations:
+        if obs.type == "TOOL":
+            cid = (obs.metadata or {}).get("attributes", {}).get("ai.toolCall.id")
+            if cid:
+                tool_timings[cid] = obs.latency
+    return {
+        "timestamp": fmt_ts(s),
+        "latency_s": latency,
+        "time_to_first_token_s": gen.time_to_first_token,
+        "model": gen.model,
+        "tokens": {
+            "input": usage.get("input"),
+            "output": out_tok or None,
+            "input_cached": usage.get("input_cached_tokens"),
+            "output_reasoning": usage.get("output_reasoning_tokens"),
+            "total": (usage.get("input") or 0) + (out_tok or 0),
+        },
+        "tool_timings": tool_timings,
+    }
 
 
-def tool_results_map(trace) -> dict:
-    """Map toolCallId -> (output_str, is_error, latency_s) from TOOL observations."""
-    results = {}
+def tool_obs_map(trace):
+    """Map toolCallId -> (output_str, is_error, latency) from TOOL observations."""
+    result = {}
     for obs in trace.observations:
         if obs.type != "TOOL":
             continue
-        call_id = (obs.metadata or {}).get("attributes", {}).get("ai.toolCall.id")
-        if not call_id:
+        cid = (obs.metadata or {}).get("attributes", {}).get("ai.toolCall.id")
+        if not cid:
             continue
         out = obs.output or {}
-        output_str = out.get("output", "") if isinstance(out, dict) else str(out)
-        results[call_id] = (output_str, obs.level == "ERROR", obs.latency)
-    return results
-
-
-def parts_from_reasoning_blocks(blocks: list) -> list:
-    """Extract reasoning parts from an assistant history content block list."""
-    parts = []
-    for block in blocks:
-        if block.get("type") == "reasoning":
-            text = (block.get("text") or "").strip()
-            if text:
-                parts.append({"type": "reasoning", "text": text})
-    return parts
-
-
-def parts_from_gen_out(gen_out: dict, tool_results: dict) -> list:
-    """Extract text + tool parts from GENERATION output dict."""
-    parts = []
-    text = (gen_out.get("content") or "").strip()
-    if text:
-        parts.append({"type": "text", "text": text})
-
-    raw_tcs = gen_out.get("tool_calls", "[]")
-    if isinstance(raw_tcs, str):
-        try:
-            raw_tcs = json.loads(raw_tcs)
-        except json.JSONDecodeError:
-            raw_tcs = []
-
-    for tc in raw_tcs:
-        call_id = tc.get("toolCallId", "")
-        output_str, is_error, tool_latency = tool_results.get(
-            call_id, ("", False, None)
+        result[cid] = (
+            out.get("output", "") if isinstance(out, dict) else str(out),
+            obs.level == "ERROR",
+            obs.latency,
         )
-        parts.append(
-            {
-                "type": "tool",
-                "tool": tc.get("toolName", "unknown"),
-                "state": {
-                    "input": tc.get("input", {}),
-                    "output": output_str,
-                    "status": "error" if is_error else "success",
-                },
-                "timing": {"latency_s": tool_latency},
-            }
-        )
-    return parts
+    return result
 
 
-def reconstruct(session_id: str) -> dict:
-    lf = get_client()
-    session = lf.api.sessions.get(session_id)
+def content_blocks(msg):
+    c = msg.get("content", [])
+    if isinstance(c, str):
+        return [{"type": "text", "text": c}] if c.strip() else []
+    return c if isinstance(c, list) else []
 
-    # Fetch full traces (includes inline observations) and filter title-gen
-    all_traces = sorted(session.traces, key=lambda t: t.timestamp)
-    real_traces = []
-    for t_stub in all_traces:
-        trace = lf.api.trace.get(t_stub.id)
-        if not is_title_gen(trace):
-            real_traces.append(trace)
 
-    all_messages = []
-    total_tokens = {"input": 0, "output": 0, "input_cached": 0, "output_reasoning": 0}
-    models_used = set()
-    step_latencies = []
-    session_start = None
-    session_end = None
+def walk_history(history, step_metas):
+    """Walk conversation history, emit messages with per-step enrichment."""
+    messages = []
+    asst_idx = 0
+    i = 0
+    while i < len(history):
+        msg = history[i]
+        role = msg.get("role")
 
-    for step_idx, trace in enumerate(real_traces):
-        gen = next((o for o in trace.observations if o.type == "GENERATION"), None)
-        span = next((o for o in trace.observations if o.type == "SPAN"), None)
-        if not gen:
+        if role == "system":
+            i += 1
             continue
 
-        history = gen.input if isinstance(gen.input, list) else []
-        usage = gen.usage_details or {}
-        tool_results = tool_results_map(trace)
-
-        # Timing from SPAN (full step wall-clock)
-        anchor = span or gen
-        step_start = anchor.start_time
-        step_end = anchor.end_time
-        step_latency = (
-            round((step_end - step_start).total_seconds(), 3)
-            if step_start and step_end
-            else None
-        )
-
-        # Track session bounds
-        for obs in trace.observations:
-            if obs.start_time and (
-                session_start is None or obs.start_time < session_start
-            ):
-                session_start = obs.start_time
-            if obs.end_time and (session_end is None or obs.end_time > session_end):
-                session_end = obs.end_time
-
-        # Output tokens: sum output + reasoning to match native opencode total
-        out_tokens = (usage.get("output") or 0) + (
-            usage.get("output_reasoning_tokens") or 0
-        )
-        total_output_tokens = out_tokens or None
-
-        # ── New user message ──────────────────────────────────────────────────
-        # Last user msg in history not followed by an assistant reply
-        last_user = None
-        for msg in history:
-            if msg.get("role") == "user":
-                last_user = msg
-            elif msg.get("role") == "assistant":
-                last_user = None
-
-        if last_user is not None:
-            content = last_user.get("content", "")
-            if isinstance(content, list):
-                text = "\n".join(
-                    b.get("text", "")
-                    for b in content
-                    if isinstance(b, dict) and b.get("type") == "text"
-                )
-            else:
-                text = str(content)
-            text = text.strip()
+        if role == "user":
+            blocks = content_blocks(msg)
+            text = "\n".join(
+                b.get("text", "") for b in blocks if b.get("type") == "text"
+            ).strip()
             if text:
-                all_messages.append(
+                messages.append(
                     {
                         "info": {"role": "user"},
                         "parts": [{"type": "text", "text": text}],
                     }
                 )
+            i += 1
+            continue
 
-        # ── New assistant turn ────────────────────────────────────────────────
-        # Reasoning for step N is stored in step N+1's history at index step_idx
-        reasoning_parts = []
-        if step_idx + 1 < len(real_traces):
-            next_history = get_history(real_traces[step_idx + 1])
-            asst = assistant_blocks(next_history)
-            if step_idx < len(asst):
-                reasoning_parts = parts_from_reasoning_blocks(asst[step_idx])
+        if role == "assistant":
+            meta = step_metas[asst_idx] if asst_idx < len(step_metas) else {}
+            timings = meta.get("tool_timings", {})
+            parts = []
+            for b in content_blocks(msg):
+                bt = b.get("type")
+                if bt == "reasoning":
+                    t = (b.get("text") or "").strip()
+                    if t:
+                        parts.append({"type": "reasoning", "text": t})
+                elif bt == "text":
+                    t = (b.get("text") or "").strip()
+                    if t:
+                        parts.append({"type": "text", "text": t})
+                elif bt == "tool-call":
+                    parts.append(
+                        {
+                            "type": "tool",
+                            "tool": b.get("toolName", "unknown"),
+                            "state": {
+                                "input": b.get("input", {}),
+                                "output": "",
+                                "status": "pending",
+                            },
+                            "timing": {"latency_s": timings.get(b.get("toolCallId"))},
+                            "_call_id": b.get("toolCallId"),
+                        }
+                    )
 
-        # Content/tool parts from gen_out
-        gen_out = gen.output if isinstance(gen.output, dict) else {}
-        content_parts = parts_from_gen_out(gen_out, tool_results) if gen_out else []
+            # Look ahead for tool-result message and merge
+            if i + 1 < len(history) and history[i + 1].get("role") == "tool":
+                results = {}
+                for b in content_blocks(history[i + 1]):
+                    if b.get("type") == "tool-result":
+                        out = b.get("output", "")
+                        if isinstance(out, dict):
+                            out = out.get("value", str(out))
+                        results[b.get("toolCallId", "")] = (
+                            str(out),
+                            b.get("isError", False),
+                        )
+                for p in parts:
+                    if p["type"] == "tool" and p.get("_call_id") in results:
+                        out_str, is_err = results[p["_call_id"]]
+                        p["state"]["output"] = out_str
+                        p["state"]["status"] = "error" if is_err else "success"
+                i += 2
+            else:
+                i += 1
 
-        parts = reasoning_parts + content_parts
+            # Strip internal _call_id
+            for p in parts:
+                p.pop("_call_id", None)
 
-        if parts or total_output_tokens:
-            all_messages.append(
-                {
-                    "info": {
-                        "role": "assistant",
-                        "timestamp": fmt_ts(step_start),
-                        "latency_s": step_latency,
-                        "time_to_first_token_s": gen.time_to_first_token,
-                        "model": gen.model,
-                        "tokens": {
-                            "input": usage.get("input"),
-                            "output": total_output_tokens,
-                            "input_cached": usage.get("input_cached_tokens"),
-                            "output_reasoning": usage.get("output_reasoning_tokens"),
-                            "total": (usage.get("input") or 0)
-                            + (total_output_tokens or 0),
+            info = {"role": "assistant"}
+            info.update({k: v for k, v in meta.items() if k != "tool_timings"})
+            messages.append({"info": info, "parts": parts})
+            asst_idx += 1
+            continue
+
+        i += 1  # skip tool messages already consumed, or unknown roles
+
+    return messages
+
+
+def reconstruct(session_id: str) -> dict:
+    lf = get_client()
+    session = lf.api.sessions.get(session_id)
+    stubs = sorted(session.traces, key=lambda t: t.timestamp)
+
+    # Fetch full traces, separate title-gen from real
+    all_traces = [lf.api.trace.get(s.id) for s in stubs]
+    title_traces = [t for t in all_traces if is_title_gen(t)]
+    real_traces = [t for t in all_traces if not is_title_gen(t)]
+
+    if not real_traces:
+        return {
+            "info": {"id": session_id, "title": session_id, "source": "langfuse"},
+            "messages": [],
+            "summary": {},
+        }
+
+    # Title from title-gen trace output (a plain string)
+    title = session_id
+    for t in title_traces:
+        g = _gen(t)
+        if g and isinstance(g.output, str) and g.output.strip():
+            title = g.output.strip()
+            break
+
+    # Per-step metadata
+    step_metas = [extract_step_meta(t) for t in real_traces]
+
+    # Full conversation = last real trace's GENERATION input
+    last_gen = _gen(real_traces[-1])
+    history = last_gen.input if isinstance(last_gen.input, list) else []
+
+    messages = walk_history(history, step_metas)
+
+    # Append last trace's own output (not yet in history)
+    last_meta = step_metas[-1]
+    raw_out = last_gen.output
+    last_out = raw_out if isinstance(raw_out, dict) else None
+    last_out_str = raw_out.strip() if isinstance(raw_out, str) else None
+    has_tokens = (last_gen.usage_details or {}).get(
+        "output_reasoning_tokens", 0
+    ) > 0 or (last_gen.usage_details or {}).get("output", 0) > 0
+
+    if last_out or last_out_str or has_tokens:
+        parts = []
+        if last_out_str:
+            # Plain string output (e.g. final text-only response)
+            parts.append({"type": "text", "text": last_out_str})
+        elif last_out:
+            text = (last_out.get("content") or "").strip()
+            if text:
+                parts.append({"type": "text", "text": text})
+            tobs = tool_obs_map(real_traces[-1])
+            raw_tcs = last_out.get("tool_calls", "[]")
+            if isinstance(raw_tcs, str):
+                try:
+                    raw_tcs = json.loads(raw_tcs)
+                except json.JSONDecodeError:
+                    raw_tcs = []
+            for tc in raw_tcs:
+                cid = tc.get("toolCallId", "")
+                out_str, is_err, tlat = tobs.get(cid, ("", False, None))
+                parts.append(
+                    {
+                        "type": "tool",
+                        "tool": tc.get("toolName", "unknown"),
+                        "state": {
+                            "input": tc.get("input", {}),
+                            "output": out_str,
+                            "status": "error" if is_err else "success",
                         },
-                    },
-                    "parts": parts,
-                }
-            )
+                        "timing": {"latency_s": tlat},
+                    }
+                )
+        info = {"role": "assistant"}
+        info.update({k: v for k, v in last_meta.items() if k != "tool_timings"})
+        messages.append({"info": info, "parts": parts})
 
-        # Accumulate totals
-        total_tokens["input"] += usage.get("input") or 0
-        total_tokens["output"] += total_output_tokens or 0
-        total_tokens["input_cached"] += usage.get("input_cached_tokens") or 0
-        total_tokens["output_reasoning"] += usage.get("output_reasoning_tokens") or 0
-        if gen.model:
-            models_used.add(gen.model)
-        if step_latency is not None:
-            step_latencies.append(step_latency)
+    # Session bounds from ALL traces (including title-gen)
+    s_start = s_end = None
+    for t in all_traces:
+        for obs in t.observations:
+            if obs.start_time and (s_start is None or obs.start_time < s_start):
+                s_start = obs.start_time
+            if obs.end_time and (s_end is None or obs.end_time > s_end):
+                s_end = obs.end_time
 
-    wall_clock_s = (
-        round((session_end - session_start).total_seconds(), 1)
-        if session_start and session_end
-        else None
-    )
-
-    summary = {
-        "session_id": session_id,
-        "started_at": fmt_ts(session_start),
-        "ended_at": fmt_ts(session_end),
-        "wall_clock_s": wall_clock_s,
-        "total_step_latency_s": round(sum(step_latencies), 1)
-        if step_latencies
-        else None,
-        "llm_steps": len(step_latencies),
-        "models": sorted(models_used),
-        "tokens": {
-            "input": total_tokens["input"],
-            "output": total_tokens["output"],
-            "input_cached": total_tokens["input_cached"],
-            "output_reasoning": total_tokens["output_reasoning"],
-            "total": total_tokens["input"] + total_tokens["output"],
-        },
-    }
-
-    title = next(
-        (t.name for t in all_traces if not is_title_gen(lf.api.trace.get(t.id))),
-        session_id,
-    )
+    wall_s = round((s_end - s_start).total_seconds(), 1) if s_start and s_end else None
+    tok = {"input": 0, "output": 0, "input_cached": 0, "output_reasoning": 0}
+    models, lats = set(), []
+    for m in step_metas:
+        t = m.get("tokens", {})
+        tok["input"] += t.get("input") or 0
+        tok["output"] += t.get("output") or 0
+        tok["input_cached"] += t.get("input_cached") or 0
+        tok["output_reasoning"] += t.get("output_reasoning") or 0
+        if m.get("model"):
+            models.add(m["model"])
+        if m.get("latency_s") is not None:
+            lats.append(m["latency_s"])
 
     return {
         "info": {"id": session_id, "title": title, "source": "langfuse"},
-        "messages": all_messages,
-        "summary": summary,
+        "messages": messages,
+        "summary": {
+            "session_id": session_id,
+            "started_at": fmt_ts(s_start),
+            "ended_at": fmt_ts(s_end),
+            "wall_clock_s": wall_s,
+            "total_step_latency_s": round(sum(lats), 1) if lats else None,
+            "llm_steps": len(lats),
+            "models": sorted(models),
+            "tokens": {**tok, "total": tok["input"] + tok["output"]},
+        },
     }
 
 
@@ -292,8 +316,7 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python parse_langfuse_opencode.py <session-id>", file=sys.stderr)
         sys.exit(1)
-    transcript = reconstruct(sys.argv[1])
-    print(json.dumps(transcript, indent=2, ensure_ascii=False))
+    print(json.dumps(reconstruct(sys.argv[1]), indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":
