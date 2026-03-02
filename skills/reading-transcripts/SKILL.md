@@ -7,18 +7,19 @@ description: Use when asked about previous conversations, previous sessions, tra
 
 ## Overview
 
-Provides paths and parsing scripts for reading historical transcript logs from various CLI agent harnesses. 
+Provides paths and parsing scripts for reading historical transcript logs from various CLI agent harnesses.
 
 Intelligent agents can use this information to locate past conversations, list historical sessions, and extract plain-text transcripts from otherwise dense JSONL/database formats in order to answer user questions about past work.
 
 ## Quick Reference
 
-| Action | Command |
-|---|---|
-| **1. List ALL sessions** | `python ~/.agents/skills/reading-transcripts/scripts/list_all_sessions.py` |
+| Action                      | Command                                                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **1. List ALL sessions**    | `python ~/.agents/skills/reading-transcripts/scripts/list_all_sessions.py`                                 |
 | **2. Parse any transcript** | `python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness <harness> <identifier>` |
 
 **Example Workflow:**
+
 ```bash
 # 1. Find the most recent session
 python ~/.agents/skills/reading-transcripts/scripts/list_all_sessions.py
@@ -50,7 +51,8 @@ When an agent (especially in OpenCode or Claude Code) launches a subagent, the s
 Because the main agent doesn't see the subagent's actual transcript, it will often confidently hallucinate that the subagent completed all its work perfectly, even if the subagent failed or skipped steps.
 
 To verify what a subagent actually did:
-1. Look at the tool result for the subagent in the main transcript. 
+
+1. Look at the tool result for the subagent in the main transcript.
 2. Find its distinct session ID (e.g. `ses_<uuid>`) or file path (`rollout-*.jsonl`, `tasks/<uuid>.output`).
 3. Run the parser script specifically on that subagent's identifier to read its isolated workflow.
 
@@ -65,12 +67,12 @@ To verify what a subagent actually did:
 
 The wrapper scripts abstract away the locations of the underlying data. If the scripts break, you should attempt to read these directories to debug the schemas and fix the python parser scripts before reverting to manual scanning. These directories serve as the 100% provable source of truth.
 
-| Harness | Storage Architecture | Raw Path |
-|---------|----------------------|----------|
-| **Claude Code** | Flat JSONL per project | `~/.claude/projects/<slugified-project-name>/*.jsonl` |
-| **Qwen Code** | Flat JSONL per project | `~/.qwen/projects/<slugified-project-name>/chats/*.jsonl` |
-| **Codex CLI** | Hierarchical Date JSONL | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl` |
-| **Gemini CLI** | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json` |
-| **Kilocode** | Flat JSON Array per task | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json` |
-| **OpenCode** | SQLite Database | `~/.local/share/opencode/opencode.db` *(Exported via CLI)* |
-| **Amp CLI** | Abstracted Cloud/Local | Hidden *(Exported via CLI `amp threads markdown`)* |
+| Harness         | Storage Architecture        | Raw Path                                                                                                                                        |
+| --------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Claude Code** | Flat JSONL per project      | `~/.claude/projects/<slugified-project-name>/*.jsonl`                                                                                           |
+| **Qwen Code**   | Flat JSONL per project      | `~/.qwen/projects/<slugified-project-name>/chats/*.jsonl`                                                                                       |
+| **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                                                            |
+| **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                                                                     |
+| **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                                                           |
+| **OpenCode**    | Langfuse API                | Fetched via `parse_langfuse_opencode.py` using session ID. Requires `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` env vars. |
+| **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                                                              |
