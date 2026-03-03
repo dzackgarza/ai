@@ -1,3 +1,4 @@
+import { isPluginEnabled } from "./plugins_config";
 // Custom tool: read_transcript - exports and parses a session transcript to a file,
 // returning head/tail preview and the file path for full review.
 import { type Plugin, tool } from "@opencode-ai/plugin";
@@ -12,7 +13,7 @@ export const ReadTranscriptPlugin: Plugin = async ({ $, client }) => {
     tool: {
       read_transcript: tool({
         description:
-          "Use when you need to read a session transcript. Requires a session ID starting with \"ses_\" (use the introspection tool to get your own).",
+          'Use when you need to read a session transcript. Requires a session ID starting with "ses_" (use the introspection tool to get your own).',
         args: {
           session_id: tool.schema.string(),
         },
@@ -30,7 +31,7 @@ export const ReadTranscriptPlugin: Plugin = async ({ $, client }) => {
           const outPath = `/tmp/transcript-${session_id}.txt`;
 
           try {
-            await $`opencode export ${session_id} | python ${PARSER_SCRIPT} - > ${outPath}`.quiet();
+            await $`python ${PARSER_SCRIPT} ${session_id} > ${outPath}`.quiet();
           } catch (err: any) {
             const stderr = err?.stderr?.toString?.() ?? String(err);
             await client.app.log({

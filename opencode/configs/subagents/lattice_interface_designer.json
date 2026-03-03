@@ -1,9 +1,0 @@
-{
-  "description": "Use when constructing union checklists. Ask 'Construct union checklist for [lattice interface]' or 'Collect and deduplicate capabilities across all old checklists'.",
-  "mode": "subagent",
-  "model": "opencode/minimax-m2.5-free",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_designer/prompt.md}"
-}

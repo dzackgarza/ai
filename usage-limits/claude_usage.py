@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -53,6 +54,24 @@ class ClaudeProvider(UsageProvider):
             print("Error: Token missing 'user:profile' scope", file=sys.stderr)
             sys.exit(1)
 
+        try:
+            return self._fetch_usage(token)
+        except requests.exceptions.HTTPError as e:
+            if e.response is not None and e.response.status_code == 401:
+                # Token expired - re-initialize auth and retry
+                print("Warning: Token expired (401). Re-initializing auth...", file=sys.stderr)
+                subprocess.run(["timeout", "5", "claude"], capture_output=True)
+                # Reload credentials after auth re-init
+                creds = self.get_credentials()
+                token = creds.get("accessToken") if creds else None
+                if not token:
+                    print("Error: No access token after auth re-init", file=sys.stderr)
+                    sys.exit(1)
+                return self._fetch_usage(token)
+            raise
+
+    def _fetch_usage(self, token: str) -> dict:
+        """Make the actual API call."""
         resp = requests.get(
             "https://api.anthropic.com/api/oauth/usage",
             headers={

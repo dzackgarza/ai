@@ -1,0 +1,158 @@
+{
+  "description": "Top-level agent for managing all lattice-related work",
+  "mode": "primary",
+  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
+  "permission": {
+    "read": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "glob": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "grep": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "list": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "serena_read_file": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "serena_list_dir": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "serena_find_file": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "serena_search_for_pattern": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "serena_get_symbols_overview": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "serena_find_symbol": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "serena_find_referencing_symbols": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "morph-mcp_warpgrep_codebase_search": {
+      "*": "allow",
+      "*tests/*": "deny",
+      "*test/*": "deny",
+      "*tests*": "deny",
+      "*test*": "deny"
+    },
+    "edit": {
+      "*": "deny"
+    },
+    "apply_patch": {
+      "*": "deny"
+    },
+    "patch": {
+      "*": "deny"
+    },
+    "serena_create_text_file": {
+      "*": "deny"
+    },
+    "serena_replace_content": {
+      "*": "deny"
+    },
+    "serena_replace_symbol_body": {
+      "*": "deny"
+    },
+    "serena_insert_after_symbol": {
+      "*": "deny"
+    },
+    "serena_insert_before_symbol": {
+      "*": "deny"
+    },
+    "serena_rename_symbol": {
+      "*": "deny"
+    },
+    "serena_delete_lines": {
+      "*": "deny"
+    },
+    "serena_insert_at_line": {
+      "*": "deny"
+    },
+    "serena_replace_lines": {
+      "*": "deny"
+    },
+    "morph-mcp_edit_file": {
+      "*": "deny"
+    },
+    "cut-copy-paste-mcp_cut": {
+      "*": "deny"
+    },
+    "cut-copy-paste-mcp_copy": {
+      "*": "deny"
+    },
+    "cut-copy-paste-mcp_paste": {
+      "*": "deny"
+    },
+    "task": "allow",
+    "todoread": "allow",
+    "todowrite": "allow",
+    "webfetch": "deny",
+    "websearch": "deny",
+    "bash": {
+      "*": "ask"
+    },
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_initial_instructions": "allow",
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_get_current_config": "allow",
+    "serena_think_about_collected_information": "allow",
+    "serena_think_about_task_adherence": "allow",
+    "serena_think_about_whether_you_are_done": "allow",
+    "serena_execute_shell_command": "deny",
+    "serena_*": "deny"
+  }
+}

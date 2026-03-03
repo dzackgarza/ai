@@ -1,3 +1,4 @@
+import { isPluginEnabled } from "./plugins_config";
 // Custom tool: async_command - fires a background command without blocking the agent's current turn.
 //
 // When the command completes, it injects the result back via promptAsync():
@@ -47,6 +48,7 @@ async function runBackground(
 }
 
 export const AsyncCommandPlugin: Plugin = async ({ client }) => {
+  if (!isPluginEnabled("async-command")) return {};
   return {
     tool: {
       async_command: tool({

@@ -1,9 +1,0 @@
-{
-  "description": "Use when performing factual gap analysis between file versions. Pass file versions or code snapshots. Ask 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'.",
-  "mode": "subagent",
-  "model": "google/gemini-3-flash-preview",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
-}

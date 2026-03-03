@@ -1,3 +1,4 @@
+import { isPluginEnabled } from "./plugins_config";
 // Custom tool: write_plan - writes a plan document to .serena/plans/
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import { mkdir, writeFile } from "node:fs/promises";

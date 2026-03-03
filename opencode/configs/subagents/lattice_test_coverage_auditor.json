@@ -1,9 +1,0 @@
-{
-  "description": "Use when auditing document-to-test coverage. Ask 'Audit document-to-test coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.",
-  "mode": "subagent",
-  "model": "opencode/minimax-m2.5-free",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_coverage_auditor/prompt.md}"
-}

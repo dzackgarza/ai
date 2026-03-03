@@ -1,3 +1,4 @@
+import { isPluginEnabled } from "./plugins_config";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { AssistantMessage, UserMessage, TextPart } from "@opencode-ai/sdk";
 import type { StopHookFn, MessageWithParts } from "./stop_hooks/types";

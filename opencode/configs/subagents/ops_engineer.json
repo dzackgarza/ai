@@ -1,9 +1,0 @@
-{
-  "description": "Use when handling operational tasks and infrastructure setup. Ask 'Set up operational infrastructure for [system]' or 'Configure deployment for [application]'.",
-  "mode": "subagent",
-  "model": "google/gemini-3-flash-preview",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/ops_engineer/prompt.md}"
-}

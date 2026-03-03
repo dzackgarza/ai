@@ -1,9 +1,0 @@
-{
-  "description": "Use when performing safe, structurally-aware code refactoring. Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
-  "mode": "subagent",
-  "model": "google/gemini-3-flash-preview",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
-}

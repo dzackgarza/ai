@@ -1,53 +1,120 @@
-// Custom tool: plan_exit - signals completion of planning phase with verification checklist
+import { isPluginEnabled } from "./plugins_config";
+// Custom tool: build_handoff - signals completion of planning phase and spins up build session
 import { type Plugin, tool } from "@opencode-ai/plugin";
+import * as fs from "fs";
+import * as path from "path";
 
-const VERIFICATION_CHECKLIST = `# Plan Exit Verification
+const PLAN_STATE_DIR = ".serena";
+const PLAN_STATE_FILE = "plan_state.json";
 
-Before exiting plan mode, verify:
+function parseModel(
+  model?: string,
+): { providerID: string; modelID: string } | undefined {
+  if (!model) return undefined;
+  const [providerID, ...rest] = model.split("/");
+  if (!providerID || rest.length === 0) return undefined;
+  return { providerID, modelID: rest.join("/") };
+}
 
-## 1. Requirements Review
-- Have you re-read the user's original request?
-- Did you clarify ALL ambiguities with the user instead of assuming?
-- Did you ask the 3-5 clarifying questions in Phase 1?
+function ensurePlanExists(planPath: string): void {
+  if (!fs.existsSync(planPath)) {
+    throw new Error(`Plan file not found at ${planPath}`);
+  }
+}
 
-## 2. Documentation Review
-- Does USER_SPEC.md exist and capture EVERY detail from the user?
-- Did you review the spec to ensure nothing was missed?
-- Are all edge cases and variations documented?
+function writePlanState(
+  directory: string,
+  data: Record<string, unknown>,
+): void {
+  const dir = path.join(directory, PLAN_STATE_DIR);
+  const filePath = path.join(dir, PLAN_STATE_FILE);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+}
 
-## 3. Subagent Review
-- Did you spawn plan-reviewer to audit the plan?
-- Did you have Test Guidelines review the test strategy?
-- Did you iterate and address all feedback from reviewers?
+export const PlanExitPlugin: Plugin = async ({ client }) => {
+  if (!isPluginEnabled("plan_exit")) return {};
 
-## 4. Plan Quality
-- Is the plan decomposed into micro-tasks (one file + test per task)?
-- Does each task have a verification step with expected results?
-- Are all dependencies and prerequisites clear?
-
-## 5. Readiness Check
-If ALL of the above are true, present this to the user:
-
----
-**Plan is ready for build phase.**
-
-To proceed:
-1. Clear context (close any open file reads, memory reads)
-2. Switch to build mode: use \`serena_switch_modes(["editing", "interactive"])\` or ask the user to do so
----
-
-If ANY of the above are NOT complete, address them now before exiting.
-`;
-
-export const PlanExitPlugin: Plugin = async () => {
   return {
     tool: {
-      plan_exit: tool({
+      build_handoff: tool({
         description:
-          "Use when about to exit plan mode. MUST be called before switching to editing or build mode. Do not skip even if the plan seems complete.",
-        args: {},
-        async execute() {
-          return VERIFICATION_CHECKLIST;
+          "Use when the plan is ready and you want to start a fresh build session. MUST ensure the plan exists before calling.",
+        args: {
+          plan_path: tool.schema
+            .string()
+            .describe("Absolute path to the plan file on disk."),
+          build_agent: tool.schema
+            .string()
+            .optional()
+            .describe("Build agent to use for the new session."),
+          build_model: tool.schema
+            .string()
+            .optional()
+            .describe("Optional provider/model for the build session."),
+          session_title: tool.schema
+            .string()
+            .optional()
+            .describe("Optional title for the new build session."),
+        },
+        async execute(args, context) {
+          const { sessionID, directory } = context;
+          const buildAgent = args.build_agent ?? "Build";
+          const title =
+            args.session_title ??
+            `build:${path.basename(args.plan_path)}:${Date.now()}`;
+
+          ensurePlanExists(args.plan_path);
+
+          const { data: session } = await client.session.create({
+            body: { title, parentID: sessionID },
+          });
+
+          const buildSessionID = session?.id;
+          if (!buildSessionID) {
+            throw new Error("Failed to create build session.");
+          }
+
+          writePlanState(directory, {
+            plan_path: args.plan_path,
+            approved_from_session: sessionID,
+            build_session_id: buildSessionID,
+            build_session_title: title,
+            approved_at: new Date().toISOString(),
+          });
+
+          const modelSpec = parseModel(args.build_model);
+          if (args.build_model && !modelSpec) {
+            throw new Error(
+              "Invalid build_model. Use provider/model (e.g. opencode/big-pickle).",
+            );
+          }
+
+          await client.session.promptAsync({
+            path: { id: buildSessionID },
+            body: {
+              agent: buildAgent,
+              model: modelSpec,
+              parts: [
+                {
+                  type: "text",
+                  text: [
+                    "You are now in build mode.",
+                    `Review the plan at ${args.plan_path}.`,
+                    "Follow the plan exactly. If you need changes, request them before editing.",
+                  ].join("\n"),
+                },
+              ],
+            },
+          });
+
+          return [
+            "[build_handoff] Build session created.",
+            `Session ID: ${buildSessionID}`,
+            `Title: ${title}`,
+            `Plan: ${args.plan_path}`,
+            "Next: switch to the new session to continue build execution.",
+          ].join("\n");
         },
       }),
     },

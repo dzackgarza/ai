@@ -13,6 +13,9 @@ availability:
     @echo
     @echo "=== Antigravity ===" && \
     python antigravity_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+    @echo
+    @echo "=== Qwen ===" && \
+    python qwen_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
 
 # Run single provider availability
 availability-claude:
@@ -27,8 +30,12 @@ availability-ollama:
 availability-antigravity:
     @python antigravity_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
 
+availability-qwen:
+    @python qwen_usage.py -a | jq -r '.[] | [.name, (.available_now | tostring), (.available_when // "now")] | @tsv'
+
 # Raw JSON output for all providers
 availability-json:
     @set -a && . ~/.envrc && set +a && \
     echo '{"claude":' && python claude_usage.py -a && echo ',"codex":' && python codex_usage.py -a && \
-    echo ',"ollama":' && python ollama_usage.py -a && echo ',"antigravity":' && python antigravity_usage.py -a && echo '}'
+    echo ',"ollama":' && python ollama_usage.py -a && echo ',"antigravity":' && python antigravity_usage.py -a && \
+    echo ',"qwen":' && python qwen_usage.py -a && echo '}'

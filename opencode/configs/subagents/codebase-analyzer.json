@@ -1,9 +1,0 @@
-{
-  "description": "Use when understanding how code works by tracing data flow. Pass entry point files (routes, main functions, API endpoints). Ask 'Trace how [function] processes data from start to finish' or 'Explain the data flow through this system'.",
-  "mode": "subagent",
-  "model": "opencode/minimax-m2.5-free",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-analyzer.md}"
-}

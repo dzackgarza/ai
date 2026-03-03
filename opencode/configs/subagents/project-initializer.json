@@ -1,9 +1,0 @@
-{
-  "description": "Use when analyzing project structure and generating technical documentation. Ask 'Analyze this project and generate ARCHITECTURE.md and CODE_STYLE.md' or 'Document the current project architecture and coding conventions'.",
-  "mode": "subagent",
-  "model": "opencode/minimax-m2.5-free",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
-}

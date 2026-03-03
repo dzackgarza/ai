@@ -77,6 +77,7 @@ usage *ARGS="":
     @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
     @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}
     @python {{repo}}/usage-limits/antigravity_usage.py {{ARGS}}
+    @python {{repo}}/usage-limits/qwen_usage.py {{ARGS}}
 
 # Check Codex usage limits
 # Usage: just codex-usage [--json] [--no-notify]
@@ -92,3 +93,8 @@ amp-usage *ARGS="":
 # Usage: just antigravity-usage [--json] [--no-notify]
 antigravity-usage *ARGS="":
     @python {{repo}}/usage-limits/antigravity_usage.py {{ARGS}}
+
+# Check Qwen usage limits
+# Usage: just qwen-usage [--json] [--no-notify]
+qwen-usage *ARGS="":
+    @python {{repo}}/usage-limits/qwen_usage.py {{ARGS}}

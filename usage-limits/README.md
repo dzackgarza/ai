@@ -14,6 +14,7 @@ Four harnesses, unified interface. All auto-detect auth, all support JSON output
 | **Antigravity** | Global npm package `antigravity-usage` found via community Discord; `--json` flag discovered via source inspection |
 | **Ollama** | Session cookie extracted from browser DevTools → Application → Cookies; HTML scraping from `/settings` page |
 | **OpenRouter** | Free tier request count NOT exposed via API — tracked via Langfuse observability (OpenRouter Broadcast) |
+| **Qwen** | OpenAI logging feature discovered via CLI docs; request count from local log files in `~/qwen-logs/` |
 
 **OpenRouter does not expose free tier request counts** — the API only tracks credits. To monitor the 50 requests/day limit, traces are collected via OpenRouter Broadcast → Langfuse, then queried via Langfuse Metrics API.
 
@@ -100,6 +101,28 @@ python openrouter_usage.py --no-notify  # Disable auto-notification
 - **Limits:** 50 requests/day (free tier), resets at UTC midnight
 - **How it works:** OpenRouter sends traces to Langfuse via Broadcast; script queries Langfuse Metrics API for daily count of free model requests
 
+## Qwen Code
+
+```bash
+python qwen_usage.py             # Rich summary
+python qwen_usage.py --json      # JSON output
+python qwen_usage.py --no-notify # Disable auto-notification
+```
+
+- **Auth:** Auto-detected from Qwen CLI session
+- **Data source:** Local OpenAI logging files in `~/qwen-logs/`
+- **Setup:** Enable logging in `~/.qwen/settings.json`:
+  ```json
+  {
+    "model": {
+      "enableOpenAILogging": true,
+      "openAILoggingDir": "~/qwen-logs"
+    }
+  }
+  ```
+- **Limits:** 1000 requests/day (free tier), resets at UTC midnight
+- **How it works:** Counts log files created by Qwen CLI's OpenAI logging feature
+
 ## Decision Logic (Centralized)
 
 ### Fresh Window Notifications
@@ -149,17 +172,31 @@ Amp replenishes continuously. `--notify` schedules for the exact hour when credi
 ```bash
 # All auto-notify + auto-anchor by default; use --no-* to disable
 
-just usage              # Claude (auto-anchor + auto-notify)
-just usage --no-notify  # Disable notifications
-just usage --no-anchor  # Disable anchoring
-just usage --json       # JSON output
+just usage              # All providers
+just usage --json       # All providers in JSON
 
-just codex-usage        # Codex (auto-anchor + auto-notify)
-just codex-usage --no-notify  # Disable notifications
-just codex-usage --no-anchor  # Disable anchoring
-just codex-usage --json # JSON output
+just usage-claude       # Claude (auto-anchor + auto-notify)
+just usage-claude --no-notify  # Disable notifications
+just usage-claude --no-anchor  # Disable anchoring
 
-just amp-usage          # Amp (auto-notify)
-just amp-usage --no-notify    # Disable notifications
-just amp-usage --json   # JSON output
+just usage-codex        # Codex (auto-anchor + auto-notify)
+just usage-codex --no-notify  # Disable notifications
+just usage-codex --no-anchor  # Disable anchoring
+
+just usage-amp          # Amp (auto-notify)
+just usage-amp --no-notify    # Disable notifications
+
+just usage-antigravity  # Antigravity (auto-notify)
+just usage-antigravity --no-notify  # Disable notifications
+
+just usage-openrouter   # OpenRouter (auto-notify)
+just usage-openrouter --no-notify  # Disable notifications
+
+just usage-ollama       # Ollama (auto-notify)
+just usage-ollama --no-notify  # Disable notifications
+
+just usage-qwen         # Qwen (auto-notify)
+just usage-qwen --no-notify  # Disable notifications
 ```
+
+Recipes are in `~/ai/justfile`.

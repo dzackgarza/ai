@@ -28,10 +28,10 @@ Absence of evidence is not evidence of absence. This is the single most common a
 
 Omitting any field is a rule violation.
 
-| Wrong | Correct |
-|-------|---------|
-| "There's no endpoint for X" | "I found no documented endpoint for X in [sources]" |
-| "X doesn't exist" | "I found no evidence of X in [sources]" |
+| Wrong                           | Correct                                                 |
+| ------------------------------- | ------------------------------------------------------- |
+| "There's no endpoint for X"     | "I found no documented endpoint for X in [sources]"     |
+| "X doesn't exist"               | "I found no evidence of X in [sources]"                 |
 | "This feature is not supported" | "I found no documentation of this feature in [sources]" |
 
 **Self-check before every response containing a negative finding:**
@@ -47,25 +47,42 @@ Never skip from "I found nothing" to "nothing exists."
 
 ## Tools
 
-**Web search:** Use `kindly_web_search` (never `google_search`). Use `kindly_get_content` to fetch URLs.
+**Web search & browsing:**
+
+1. **Search** → use tavily (`tavily_search` or `tavily_research`)
+2. **Read pages** → use `read-and-fetch-webpages` skill (gh for GitHub, curl+w3m for others)
+
+**Always use `gh` for GitHub issues/PRs** - never browse github.com directly.
 
 **Context7:** Use for ALL library/framework/API questions. `context7_resolve-library-id` → `context7_query-docs`.
 
 **Edits:**
 
-| Situation | Tool |
-|-----------|------|
-| Small, exact replacement | `edit` |
+| Situation                                                       | Tool         |
+| --------------------------------------------------------------- | ------------ |
+| Small, exact replacement                                        | `edit`       |
 | Large file (500+ lines), scattered changes, complex refactoring | `morph_edit` |
 
 **Search:**
 
-| Question | Tool |
-|----------|------|
-| Can you write the grep pattern? | `grep` |
+| Question                        | Tool       |
+| ------------------------------- | ---------- |
+| Can you write the grep pattern? | `grep`     |
 | Natural language / exploratory? | `warpgrep` |
 
 WarpGrep examples: "How does the moderation appeals flow work?" Grep examples: `pattern="fileAppeal"`, `pattern="class.*Service"`. Do not use WarpGrep for quick lookups or known file reads.
+
+---
+
+## Research Before Action
+
+When there's a question of how anything works:
+
+1. **First** → online docs (Context7 for libraries/frameworks/APIs)
+2. **Then** → readmes, playbooks, examples, web docs, man pages
+3. **Last resort** → CLI args, testing commands, endpoint guesswork
+
+**Never touch a CLI, API, or SDK without thoroughly reading all available docs first.**
 
 ---
 
@@ -91,6 +108,7 @@ Memories store durable, reusable agent context not captured in repository files.
 Do not summarize what was done. The git commit message is the summary — refer the user to it if they want a record.
 
 **Chat output after a task should contain only:**
+
 - Items NOT completed and why
 - Gaps or open questions identified during the work
 - Errors or surprises that were skipped and need revisiting

@@ -1,9 +1,0 @@
-{
-  "description": "Use when auditing code against Clean Code and Design Pattern standards. Pass code files and optionally specific standards. Ask 'Audit this code for Clean Code violations' or 'Review design patterns in [component]' or 'Suggest refactoring improvements for [codebase]'.",
-  "mode": "subagent",
-  "model": "opencode/minimax-m2.5-free",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/code-quality.md}"
-}

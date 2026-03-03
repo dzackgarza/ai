@@ -1,0 +1,16 @@
+{
+  "blacklist": [
+    "vision-model"
+  ],
+  "models": {
+    "qwen3-coder-plus": {
+      "name": "Qwen3 Coder Plus"
+    },
+    "qwen3-coder-flash": {
+      "name": "Qwen3 Coder Flash"
+    },
+    "coder-model": {
+      "name": "Qwen Coder (Auto)"
+    }
+  }
+}

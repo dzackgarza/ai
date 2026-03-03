@@ -1,0 +1,44 @@
+{
+  "blacklist": [
+    "claude-opus-4.5",
+    "claude-opus-4.6-fast-mode-preview",
+    "claude-sonnet-4",
+    "claude-sonnet-4.5",
+    "gemini-2.5-pro",
+    "gemini-3-flash",
+    "gemini-3-pro",
+    "gemini-3.1-pro",
+    "gpt-4o",
+    "gpt-5.1",
+    "gpt-5.1-codex",
+    "gpt-5.1-codex-max",
+    "gpt-5.2",
+    "gpt-5.2-codex",
+    "gpt-5.3-codex",
+    "raptor-mini",
+    "goldeneye"
+  ],
+  "models": {
+    "claude-haiku-4.5": {
+      "name": "Claude Haiku 4.5 (0.33x)"
+    },
+    "claude-opus-4.6": {
+      "name": "Claude Opus 4.6 (3x)"
+    },
+    "claude-sonnet-4.6": {
+      "name": "Claude Sonnet 4.6 (1x)"
+    },
+    "gpt-4.1": {
+      "name": "GPT-4.1 (Free)"
+    },
+    "gpt-5-mini": {
+      "name": "GPT-5 Mini (Free)"
+    },
+    "gpt-5.1-codex-mini": {
+      "name": "GPT-5.1 Codex Mini (0.33x)"
+    },
+    "grok-code-fast-1": {
+      "name": "Grok Code Fast 1 (0.25x)"
+    }
+  }
+}

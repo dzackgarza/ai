@@ -1,9 +1,0 @@
-{
-  "description": "Use when reviewing code post-implementation. Pass the code files and spec/plan. Ask 'Review this code for correctness and spec compliance' or 'Flag non-substantive tests'.",
-  "mode": "subagent",
-  "model": "opencode/minimax-m2.5-free",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
-}

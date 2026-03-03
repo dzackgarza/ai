@@ -1,3 +1,4 @@
+import { isPluginEnabled } from "./plugins_config";
 // Custom tool: list_sessions - lists all sessions with metadata
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import type { AssistantMessage } from "@opencode-ai/sdk";
@@ -16,6 +17,7 @@ function duration(startMs: number, endMs: number): string {
 }
 
 export const ListSessionsPlugin: Plugin = async ({ client }) => {
+  if (!isPluginEnabled("list-sessions")) return {};
   return {
     tool: {
       list_sessions: tool({

@@ -1,0 +1,135 @@
+{
+  "description": "Use when auditing tests for compliance with High-Quality Testing Standards. Pass test files or plans. Ask 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
+  "mode": "subagent",
+  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "permission": {
+    "read": {
+      "*": "allow"
+    },
+    "glob": {
+      "*": "allow"
+    },
+    "grep": {
+      "*": "allow"
+    },
+    "list": {
+      "*": "allow"
+    },
+    "serena_read_file": {
+      "*": "allow"
+    },
+    "serena_list_dir": {
+      "*": "allow"
+    },
+    "serena_find_file": {
+      "*": "allow"
+    },
+    "serena_search_for_pattern": {
+      "*": "allow"
+    },
+    "serena_get_symbols_overview": {
+      "*": "allow"
+    },
+    "serena_find_symbol": {
+      "*": "allow"
+    },
+    "serena_find_referencing_symbols": {
+      "*": "allow"
+    },
+    "morph-mcp_warpgrep_codebase_search": {
+      "*": "allow"
+    },
+    "edit": {
+      "*": "deny"
+    },
+    "apply_patch": {
+      "*": "deny"
+    },
+    "patch": {
+      "*": "deny"
+    },
+    "serena_create_text_file": {
+      "*": "deny"
+    },
+    "serena_replace_content": {
+      "*": "deny"
+    },
+    "serena_replace_symbol_body": {
+      "*": "deny"
+    },
+    "serena_insert_after_symbol": {
+      "*": "deny"
+    },
+    "serena_insert_before_symbol": {
+      "*": "deny"
+    },
+    "serena_rename_symbol": {
+      "*": "deny"
+    },
+    "serena_delete_lines": {
+      "*": "deny"
+    },
+    "serena_insert_at_line": {
+      "*": "deny"
+    },
+    "serena_replace_lines": {
+      "*": "deny"
+    },
+    "morph-mcp_edit_file": {
+      "*": "deny"
+    },
+    "cut-copy-paste-mcp_cut": {
+      "*": "deny"
+    },
+    "cut-copy-paste-mcp_copy": {
+      "*": "deny"
+    },
+    "cut-copy-paste-mcp_paste": {
+      "*": "deny"
+    },
+    "task": "deny",
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_initial_instructions": "allow",
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_get_current_config": "allow",
+    "serena_think_about_collected_information": "allow",
+    "serena_think_about_task_adherence": "allow",
+    "serena_think_about_whether_you_are_done": "allow",
+    "serena_execute_shell_command": "deny",
+    "serena_*": "deny",
+    "bash": {
+      "cut*": "allow",
+      "diff*": "allow",
+      "du*": "allow",
+      "file *": "allow",
+      "find * -delete*": "ask",
+      "find * -exec*": "ask",
+      "find *": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git branch*": "allow",
+      "grep*": "allow",
+      "rg*": "allow",
+      "head*": "allow",
+      "tail*": "allow",
+      "less*": "allow",
+      "ls*": "allow",
+      "pwd*": "allow",
+      "sort*": "allow",
+      "stat*": "allow",
+      "tree*": "allow",
+      "wc*": "allow",
+      "jq": "allow",
+      "just*": "allow",
+      "pytest*": "allow",
+      "uv*": "allow",
+      "cat*": "deny",
+      "*": "deny"
+    }
+  },
+  "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
+}

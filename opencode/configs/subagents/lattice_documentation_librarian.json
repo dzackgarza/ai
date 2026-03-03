@@ -1,9 +1,0 @@
-{
-  "description": "Use when organizing documentation. Ask 'Organize docs folder for [project]' or 'Ensure local copies of upstream docs are available' or 'Fact-check [doc] against canonical sources'.",
-  "mode": "subagent",
-  "model": "opencode/minimax-m2.5-free",
-  "permission": {
-    "task": "deny"
-  },
-  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_documentation_librarian/prompt.md}"
-}

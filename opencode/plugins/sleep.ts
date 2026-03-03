@@ -1,3 +1,4 @@
+import { isPluginEnabled } from "./plugins_config";
 // Custom tools: sleep / sleep_until - real wall-clock waiting
 import { type Plugin, tool } from "@opencode-ai/plugin";
 
@@ -28,6 +29,7 @@ async function doSleep(seconds: number, force = false): Promise<string> {
 }
 
 export const SleepPlugin: Plugin = async () => {
+  if (!isPluginEnabled("sleep")) return {};
   return {
     tool: {
       sleep: tool({
