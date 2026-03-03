@@ -220,6 +220,26 @@ RESTRICTIVE_BASH = {
     }
 }
 
+BUILDER_BASH = {
+    "bash": {
+        "*": "deny",
+        "git add *": "allow",
+        "git status": "allow",
+        "git diff": "allow",
+        "git diff --stat": "allow",
+        "git diff --cached": "allow",
+        "git log *": "allow",
+        "git show *": "allow",
+        "git branch": "allow",
+        "git branch -v": "allow",
+        "git commit -m *": "allow",
+        "git commit --amend *": "allow",
+        "git commit --amend -m *": "allow",
+        "ls*": "allow",
+        "tree*": "allow",
+    }
+}
+
 PROFILES = {
     "builder": merge_perms(
         read_only_in(["*"], deny_globs=["*tests/*", "*test/*", "*tests*", "*test*"]),
@@ -232,7 +252,7 @@ PROFILES = {
             "websearch": "deny",
         },
         DENY_PLAN_EXIT,
-        {"bash": {"*": "ask"}},
+        BUILDER_BASH,
         ALLOW_STANDARD_CORE,
     ),
     "planning": merge_perms(
