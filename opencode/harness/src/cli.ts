@@ -537,6 +537,7 @@ async function cmdProbeLimitKnown(args: KV) {
       JSON.stringify(
         {
           ok: false,
+          available: false,
           code: "KNOWN_PATTERN_NOT_FOUND",
           providerKey,
           providerID: pattern.providerID,
@@ -556,6 +557,7 @@ async function cmdProbeLimitKnown(args: KV) {
     JSON.stringify(
       {
         ok: true,
+        available: false,
         providerKey,
         providerID: pattern.providerID,
         modelID: pattern.modelID,
@@ -567,6 +569,7 @@ async function cmdProbeLimitKnown(args: KV) {
       2,
     ),
   );
+  process.exitCode = 2;
 }
 
 async function cmdProbeLimitTrace(client: any, args: KV) {
