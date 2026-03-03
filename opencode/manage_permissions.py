@@ -143,6 +143,7 @@ def merge_perms(*perm_dicts):
 DENY_TASKS = {"task": "deny"}
 DENY_PLAN_EXIT = {"plan_exit": "deny"}
 ALLOW_PLAN_EXIT = {"plan_exit": "allow"}
+ALLOW_QUESTION = {"question": "allow"}
 
 ALLOW_STANDARD_CORE = {
     "serena_activate_project": "allow",
@@ -254,6 +255,7 @@ PROFILES = {
         DENY_PLAN_EXIT,
         BUILDER_BASH,
         ALLOW_STANDARD_CORE,
+        ALLOW_QUESTION,
     ),
     "planning": merge_perms(
         read_only_in(["*"]),
@@ -261,6 +263,7 @@ PROFILES = {
         ALLOW_PLAN_EXIT,
         ALLOW_STANDARD_CORE,
         ALLOW_STANDARD_BASH,
+        ALLOW_QUESTION,
     ),
     "src_writer": merge_perms(
         read_only_in(["*src*"]),
@@ -276,6 +279,7 @@ PROFILES = {
             "serena_edit_memory": "allow",
             "serena_delete_memory": "allow",
         },
+        ALLOW_QUESTION,
     ),
     "test_writer": merge_perms(
         read_only_in(["*tests*", "*test*"]),
@@ -291,6 +295,7 @@ PROFILES = {
             "serena_edit_memory": "allow",
             "serena_delete_memory": "allow",
         },
+        ALLOW_QUESTION,
     ),
     "readonly": merge_perms(
         read_only_in(["*"]),
@@ -299,11 +304,13 @@ PROFILES = {
         DENY_PLAN_EXIT,
         ALLOW_STANDARD_CORE,
         ALLOW_STANDARD_BASH,
+        ALLOW_QUESTION,
     ),
     "minimal": {
         "bash": "allow",
         "plan_exit": "deny",
         "external_directory": {"/tmp/opencode_test/*": "allow"},
+        "question": "allow",
     },
 }
 

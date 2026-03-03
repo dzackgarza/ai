@@ -157,7 +157,8 @@
     "serena_prepare_for_new_conversation": "allow",
     "serena_write_memory": "allow",
     "serena_edit_memory": "allow",
-    "serena_delete_memory": "allow"
+    "serena_delete_memory": "allow",
+    "question": "allow"
   },
   "prompt": "{file:/home/dzack/ai/prompts/subagents/typescript_code_writer.md}"
 }

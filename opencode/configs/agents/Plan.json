@@ -144,7 +144,8 @@
       "uv*": "allow",
       "cat*": "deny",
       "*": "deny"
-    }
+    },
+    "question": "allow"
   },
   "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/plan.md}"
 }

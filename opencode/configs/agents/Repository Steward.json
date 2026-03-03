@@ -145,6 +145,7 @@
       "uv*": "allow",
       "cat*": "deny",
       "*": "deny"
-    }
+    },
+    "question": "allow"
   }
 }

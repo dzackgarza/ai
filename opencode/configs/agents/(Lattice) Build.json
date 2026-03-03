@@ -168,6 +168,7 @@
     "serena_think_about_task_adherence": "allow",
     "serena_think_about_whether_you_are_done": "allow",
     "serena_execute_shell_command": "deny",
-    "serena_*": "deny"
+    "serena_*": "deny",
+    "question": "allow"
   }
 }
