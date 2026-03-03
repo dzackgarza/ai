@@ -50,6 +50,13 @@
       "reason": "Stage specific files explicitly; avoid sweeping adds."
     },
     {
+      "name": "block-git-add-interactive",
+      "command": "git",
+      "subcommand": "add",
+      "block_args": ["-i", "--interactive"],
+      "reason": "Interactive staging is blocked in this workflow."
+    },
+    {
       "name": "block-git-stash",
       "command": "git",
       "subcommand": "stash",

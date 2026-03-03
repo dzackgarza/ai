@@ -5,10 +5,9 @@
 ## Hard Rules
 
 1. **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing. Verify with `git diff` after.
-2. **Never use `rm`.** Use `trash` or `gio trash`. Deletions must be recoverable.
-3. **Load applicable skills before acting.** Scan all available skills. If one applies, load it. Do not proceed until verified.
-4. **Run at project start:** `serena_activate_project`, then `serena_read_memory`.
-5. **Never write time estimates.** Your calibration is off by orders of magnitude.
+2. **Load applicable skills before acting.** Scan all available skills. If one applies, load it. Do not proceed until verified.
+3. **Run at project start:** `serena_activate_project`, then `serena_read_memory`.
+4. **Never write time estimates.** Your calibration is off by orders of magnitude.
 
 ---
 

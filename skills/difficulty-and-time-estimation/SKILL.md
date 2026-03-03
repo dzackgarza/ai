@@ -32,6 +32,21 @@ This skill provides frameworks for calibrating task difficulty and making delega
 - **Turn count** (sequential dependencies)
 - **Risk of failure** (probability each step succeeds)
 
+### Fast Recalibration Cues
+
+Use these cues when a task feels larger than it is:
+
+- Human timescales do not apply to batch tool operations.
+- Repetitive scanning is usually trivial when it can be batched.
+- If a task feels hard because of file count alone, convert to atomic batched steps first.
+- One-by-one reads/edits are often a planning smell; prefer batched exploration then targeted edits.
+
+### Batch-First Operating Guidance
+
+- Start with batch discovery (`glob`, `rg`, parallel reads) before deeper reasoning.
+- Complete a batch once started; partial passes increase context churn and rework.
+- Measure complexity by step count, token burn, and failure risk, not elapsed time.
+
 ---
 
 ## Multi-Factor Difficulty Model

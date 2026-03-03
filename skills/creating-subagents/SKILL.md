@@ -222,7 +222,8 @@ Check that the description:
 
 - **prompt-engineering** — REQUIRED: Writing effective prompts. Subagent descriptions ARE prompts that prime delegating agents. Apply principles: be concrete, provide examples, use placeholders for variables.
 - **creating-skills** — REQUIRED: Skill description writing lessons. The "Use when" trigger pattern comes from skill description best practices. Adapt TDD approach: watch agents fail to delegate properly, write descriptions that prevent those failures.
-- **model-selection** — REQUIRED: Selecting appropriate models for subagent tasks. Match task complexity to model tier (S/A/B/C), understand difficulty calibration, and optimize for token efficiency.
+- **model-selection** — REQUIRED: Selecting appropriate models for subagent tasks. Match task complexity to model tier (S/A/B/C), and optimize for token efficiency.
+- **difficulty-and-time-estimation** — REQUIRED: Calibrating task difficulty without time-based thinking. Use multi-factor model (atomic steps, token burn, context pollution, success probability) to determine when subagent delegation is appropriate.
 - **subagent-delegation** — Operational lifecycle and review cycles for subagents.
 
 ## Cross-References
@@ -232,5 +233,6 @@ Check that the description:
 | `prompt-engineering` | Concrete examples, variable placeholders, priming context | Description format with "Ask '[pattern]'" and `[placeholders]` |
 | `creating-skills` | Description writing for tool selection | "Use when" trigger pattern, scenario-based framing |
 | `creating-skills/anthropic-best-practices` | Description field guidelines | Keep descriptions concise but expository (1024 char max) |
-| `model-selection` | Model tier capabilities, difficulty calibration, task-to-tier matching | Match task complexity to S/A/B/C-tier models |
+| `model-selection` | Model tier capabilities, task-to-tier matching | Match task complexity to S/A/B/C-tier models |
+| `difficulty-and-time-estimation` | Multi-factor difficulty model, avoiding time-based thinking | Calibrate when subagent overhead is justified |
 | `subagent-delegation` | Review loops, checkpointing | Verify B/C-tier output, git checkpoint atomic work |

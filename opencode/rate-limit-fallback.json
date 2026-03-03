@@ -1,57 +1,21 @@
 {
   "enabled": true,
   "headlessOnRateLimit": "abort",
-  "cooldownMs": 10000,
+  "cooldownMs": 1000,
   "fallbackMode": "cycle",
-  "maxSubagentDepth": 10,
-  "enableSubagentFallback": true,
+  "maxSubagentDepth": 0,
+  "enableSubagentFallback": false,
   "fallbackModels": [
-    {
-      "providerID": "anthropic",
-      "modelID": "claude-sonnet-4-5"
-    },
     {
       "providerID": "openai",
       "modelID": "gpt-5.3-codex"
-    },
-    {
-      "providerID": "github-copilot",
-      "modelID": "claude-sonnet-4.6"
-    },
-    {
-      "providerID": "opencode",
-      "modelID": "big-pickle"
-    },
-    {
-      "providerID": "nvidia",
-      "modelID": "z-ai/glm5"
-    },
-    {
-      "providerID": "ollama-cloud",
-      "modelID": "kimi-k2.5"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "qwen/qwen3-coder:free"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "openai/gpt-oss-120b:free"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "z-ai/glm-4.5-air:free"
-    },
-    {
-      "providerID": "github-copilot",
-      "modelID": "gpt-4.1"
     }
   ],
   "retryPolicy": {
-    "maxRetries": 10,
+    "maxRetries": 1,
     "strategy": "exponential",
     "baseDelayMs": 1000,
-    "maxDelayMs": 30000,
+    "maxDelayMs": 3000,
     "jitterEnabled": true,
     "jitterFactor": 0.1,
     "timeoutMs": 60000

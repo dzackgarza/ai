@@ -1,5 +1,5 @@
 import type { StopHookContext, StopHookResult } from "./types";
-import { ENABLED } from "../killswitches";
+import { ENABLED } from "./killswitches";
 
 // Detects a verification code in the last assistant response and reveals a
 // secret phrase. Replace VERIFY_CODE and SECRET_PHRASE with real values.
@@ -7,12 +7,14 @@ import { ENABLED } from "../killswitches";
 const VERIFY_CODE = "ABCDEFG";
 const SECRET_PHRASE = "PEANUT BUTTER";
 
-export async function otpChecker(ctx: StopHookContext): Promise<StopHookResult> {
+export async function otpChecker(
+  ctx: StopHookContext,
+): Promise<StopHookResult> {
   // Killswitch check - exit if killed
   if (!ENABLED.otpChecker) {
     return { force_stop: false, agent_feedback: "" };
   }
-  
+
   if (ctx.lastText.includes(VERIFY_CODE)) {
     return {
       force_stop: true,

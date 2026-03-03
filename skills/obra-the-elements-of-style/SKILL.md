@@ -9,8 +9,6 @@ description: Apply Strunk's timeless writing rules to ANY prose humans will read
 
 William Strunk Jr.'s *The Elements of Style* (1918) teaches you to write clearly and cut ruthlessly.
 
-**WARNING:** `elements-of-style.md` consumes ~12,000 tokens. Read it only when writing or editing prose.
-
 ## When to Use This Skill
 
 Use this skill whenever you write prose for humans:
@@ -22,13 +20,6 @@ Use this skill whenever you write prose for humans:
 - Editing to improve clarity
 
 **If you're writing sentences for a human to read, use this skill.**
-
-## Limited Context Strategy
-
-When context is tight:
-1. Write your draft using judgment
-2. Dispatch a subagent with your draft and `elements-of-style.md`
-3. Have the subagent copyedit and return the revision
 
 ## All Rules
 
@@ -59,4 +50,4 @@ Alphabetical reference for usage questions
 
 ## Bottom Line
 
-Writing for humans? Read `elements-of-style.md` and apply the rules. Low on tokens? Dispatch a subagent to copyedit with the guide.
+Writing for humans? Read `elements-of-style.md` and apply the rules.

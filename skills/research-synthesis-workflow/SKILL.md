@@ -1,8 +1,9 @@
-﻿---
-name: Research Synthesis Workflow
-description: A step-by-step guide to synthesizing research from multiple sources into a coherent summary.
 ---
-## Research synthesis workflow
+name: research-synthesis-workflow
+description: Use when combining multiple sources into a single evidence-linked synthesis with clear themes and citation checks.
+---
+
+# Research Synthesis Workflow
 
 Copy this checklist and track your progress:
 

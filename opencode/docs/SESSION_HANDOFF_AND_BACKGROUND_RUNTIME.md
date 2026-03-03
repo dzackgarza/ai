@@ -39,3 +39,11 @@
   - Fewer ad-hoc HTTP payload mistakes.
   - Easier event/subscription handling.
 - Use raw server API only when debugging protocol-level behavior or integrating from non-JS runtimes.
+
+### Service and harness artifacts
+
+- User service unit path: `~/.config/systemd/user/opencode-serve.service`
+- Service env file path: `~/.config/opencode/opencode-serve.env`
+- Harness location: `opencode/harness`
+- Harness command wrapper: `opencode/harness/opx`
+- Validation results: `opencode/harness/docs/VALIDATION_REPORT.md`

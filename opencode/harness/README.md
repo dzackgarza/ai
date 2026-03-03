@@ -48,10 +48,20 @@ Plugin probes:
 bun run opx probe-async-command --model opencode/big-pickle --agent Minimal
 bun run opx probe-async-subagent --model opencode/big-pickle --agent Minimal
 bun run opx probe-limit --model opencode/minimax-m2.5-free --agent Minimal
+bun run opx probe-limit-known --provider opencode-minimax
+bun run opx probe-limit-known --provider opencode-big-pickle
+bun run opx probe-limit-known --provider anthropic
 bun run opx probe-limit-trace --model opencode/minimax-m2.5-free --agent Minimal --timeout 45
 
 # SDK-native limit trace (no opencode run log scraping)
 bun run opx probe-limit-trace --model opencode/minimax-m2.5-free --agent Minimal --timeout 45
+
+# Strict known-pattern limit checks (authoritative for known cases)
+bun run opx probe-limit-known --provider anthropic
+
+Known-pattern mode is strict and deterministic: if provider phrasing changes,
+the command fails with `KNOWN_PATTERN_NOT_FOUND` and you must update
+`config/known_limit_patterns.json`.
 ```
 
 ## Notes

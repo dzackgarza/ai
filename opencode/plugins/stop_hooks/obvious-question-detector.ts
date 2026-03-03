@@ -1,5 +1,5 @@
 import type { StopHookContext, StopHookResult } from "./types";
-import { ENABLED } from "../killswitches";
+import { ENABLED } from "./killswitches";
 
 // Detects questions with obvious answers (e.g., "should I", "would you like me to")
 // and prompts the agent to resolve them autonomously instead of asking.
@@ -29,24 +29,28 @@ function findMatch(text: string, phrases: string[]): boolean {
   return phrases.some((phrase) => lowerText.includes(phrase.toLowerCase()));
 }
 
-export async function obviousQuestionDetector(ctx: StopHookContext): Promise<StopHookResult> {
+export async function obviousQuestionDetector(
+  ctx: StopHookContext,
+): Promise<StopHookResult> {
   // Killswitch check - exit if killed
   if (!ENABLED.obviousQuestionDetector) {
     return { force_stop: false, agent_feedback: "" };
   }
-  
+
   const match = findMatch(ctx.lastText, OBVIOUS_QUESTION_CONFIG.key_phrases);
   if (!match) return { force_stop: false, agent_feedback: "" };
 
   // Log for testing verification
-  await ctx.client.app.log({
-    body: {
-      service: "obvious-question-detector",
-      level: "info",
-      message: "TRIGGERED - detected obvious question",
-      extra: { matchedText: ctx.lastText.slice(0, 200) },
-    },
-  }).catch(() => {});
+  await ctx.client.app
+    .log({
+      body: {
+        service: "obvious-question-detector",
+        level: "info",
+        message: "TRIGGERED - detected obvious question",
+        extra: { matchedText: ctx.lastText.slice(0, 200) },
+      },
+    })
+    .catch(() => {});
 
   return {
     force_stop: true,
