@@ -60,6 +60,28 @@ To verify what a subagent actually did:
 
 - **Trusting subagent summaries blindly:** Main agents only receive the final summary message of a delegated task and will often confidently assume incomplete work was done perfectly. Always track down the subagent's actual session ID or output file if you need to verify its work.
 - **Reading from the top (head):** Sessions are long and often continued over days. The tasks at the beginning of the file may be completely unrelated to the current work. **Always start by piping the output to `tail -n 300`** to understand the most recent, relevant context before searching upward.
+- **Misunderstanding compaction blocks:** When you see a compaction marker/block in a transcript, **it is NOT a placeholder that omits text**. It literally just marks WHEN a compaction event HAPPENED. **The IMMEDIATELY NEXT message after the compaction marker is ALWAYS the compaction summary** containing all the important information from the compacted conversation. Never skip past compaction summaries—they contain the preserved context.
+
+---
+
+## Compaction Events
+
+**What compaction looks like in transcripts:**
+
+```
+[ASSISTANT]
+<compaction>  ← This is JUST a marker, NOT a placeholder
+
+[ASSISTANT]
+## Summary of Previous Conversation
+- Key decision: We chose approach X because...
+- Open issue: Need to verify Y...
+- Next step: Implement Z...  ← THIS is the actual compaction summary
+```
+
+**Critical:** The compaction marker itself contains NO content. **ALL the important information is in the summary that immediately follows.** Never skip compaction summaries thinking they're redundant—they are the ONLY preserved record of the compacted conversation.
+
+**Why this matters:** When reading transcripts, if you see a `<compaction>` marker, you MUST read the next message. That summary contains everything the agent remembered from the previous conversation. Skipping it means losing all context from before the compaction event.
 
 ---
 
