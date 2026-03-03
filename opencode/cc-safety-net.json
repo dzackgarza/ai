@@ -3,6 +3,18 @@
   "version": 1,
   "rules": [
     {
+      "name": "block-rm",
+      "command": "rm",
+      "block_args": ["rm", "-r", "-rf", "-fr", "-f"],
+      "reason": "Use recoverable deletion (`trash` or `gio trash`) instead of `rm`."
+    },
+    {
+      "name": "block-find-delete",
+      "command": "find",
+      "block_args": ["-delete"],
+      "reason": "Destructive deletion is blocked. Use recoverable deletion workflows."
+    },
+    {
       "name": "block-git-push",
       "command": "git",
       "subcommand": "push",
@@ -27,8 +39,15 @@
       "name": "block-git-branch",
       "command": "git",
       "subcommand": "branch",
-      "block_args": ["-m", "-M", "-d", "-D", "-c", "-C"],
+      "block_args": ["branch", "-m", "-M", "-d", "-D", "-c", "-C"],
       "reason": "Branch modifications can cause confusion. Create feature branches via PR workflow instead."
+    },
+    {
+      "name": "block-git-add-all",
+      "command": "git",
+      "subcommand": "add",
+      "block_args": [".", "-A", "--all"],
+      "reason": "Stage specific files explicitly; avoid sweeping adds."
     },
     {
       "name": "block-git-stash",
@@ -78,6 +97,20 @@
       "subcommand": "merge",
       "block_args": ["merge"],
       "reason": "Merge can introduce unwanted changes. Use PR workflow with code review instead."
+    },
+    {
+      "name": "block-git-commit-no-verify",
+      "command": "git",
+      "subcommand": "commit",
+      "block_args": ["--no-verify"],
+      "reason": "Skipping hooks is blocked."
+    },
+    {
+      "name": "block-git-commit-no-gpg-sign",
+      "command": "git",
+      "subcommand": "commit",
+      "block_args": ["--no-gpg-sign"],
+      "reason": "Bypassing signing is blocked."
     }
   ]
 }

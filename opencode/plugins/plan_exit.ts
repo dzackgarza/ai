@@ -1,5 +1,5 @@
 import { isPluginEnabled } from "./plugins_config";
-// Custom tool: build_handoff - signals completion of planning phase and spins up build session
+// Custom tool: plan_exit - signals completion of planning phase and spins up build session
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import * as fs from "fs";
 import * as path from "path";
@@ -37,7 +37,7 @@ export const PlanExitPlugin: Plugin = async ({ client }) => {
 
   return {
     tool: {
-      build_handoff: tool({
+      plan_exit: tool({
         description:
           "Use when the plan is ready and you want to start a fresh build session. MUST ensure the plan exists before calling.",
         args: {
@@ -109,7 +109,7 @@ export const PlanExitPlugin: Plugin = async ({ client }) => {
           });
 
           return [
-            "[build_handoff] Build session created.",
+            "[plan_exit] Build session created.",
             `Session ID: ${buildSessionID}`,
             `Title: ${title}`,
             `Plan: ${args.plan_path}`,

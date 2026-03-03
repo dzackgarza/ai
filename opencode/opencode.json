@@ -132,7 +132,7 @@
         "claude-sonnet-4-20250514"
       ]
     },
-    "copilot": {
+    "github-copilot": {
       "blacklist": [
         "claude-opus-4.5",
         "claude-opus-4.6-fast-mode-preview",
@@ -908,7 +908,7 @@
         "liquid/lfm-2.5-1.2b-thinking:free"
       ]
     },
-    "qwen": {
+    "qwen-code": {
       "blacklist": [
         "vision-model"
       ],
@@ -1068,6 +1068,7 @@
         "todowrite": "allow",
         "webfetch": "deny",
         "websearch": "deny",
+        "plan_exit": "deny",
         "bash": {
           "*": "ask"
         },
@@ -1226,6 +1227,7 @@
         "todowrite": "allow",
         "webfetch": "deny",
         "websearch": "deny",
+        "plan_exit": "deny",
         "bash": {
           "*": "ask"
         },
@@ -1248,6 +1250,7 @@
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
       "permission": {
         "bash": "allow",
+        "plan_exit": "deny",
         "external_directory": {
           "/tmp/opencode_test/*": "allow"
         }
@@ -1258,6 +1261,7 @@
       "mode": "primary",
       "permission": {
         "bash": "allow",
+        "plan_exit": "deny",
         "external_directory": {
           "/tmp/opencode_test/*": "allow"
         }
@@ -1368,6 +1372,7 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
+        "plan_exit": "allow",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -1518,6 +1523,7 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
+        "plan_exit": "allow",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -1667,6 +1673,7 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
+        "plan_exit": "allow",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -1801,6 +1808,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -1935,6 +1943,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -2070,6 +2079,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -2205,6 +2215,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -2340,6 +2351,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -2503,6 +2515,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -2665,6 +2678,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -2827,6 +2841,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -3017,6 +3032,7 @@
           "*test*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -3207,6 +3223,7 @@
           "*test*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -3341,6 +3358,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -3476,6 +3494,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -3611,6 +3630,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -3746,6 +3766,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -3881,6 +3902,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -4016,6 +4038,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -4151,6 +4174,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -4286,6 +4310,7 @@
           "*": "deny"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -4449,6 +4474,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -4611,6 +4637,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -4773,6 +4800,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -4935,6 +4963,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -5097,6 +5126,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -5287,6 +5317,7 @@
           "*test*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",
@@ -5449,6 +5480,7 @@
           "*src*": "allow"
         },
         "task": "deny",
+        "plan_exit": "deny",
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
         "serena_initial_instructions": "allow",

@@ -7,44 +7,44 @@
   "enableSubagentFallback": true,
   "fallbackModels": [
     {
-      "providerID": "nvidia",
-      "modelID": "qwen/qwen3-coder-480b-a35b-instruct"
+      "providerID": "anthropic",
+      "modelID": "claude-sonnet-4-5"
     },
     {
-      "providerID": "nvidia",
-      "modelID": "z-ai/glm5"
+      "providerID": "openai",
+      "modelID": "gpt-5.3-codex"
     },
     {
-      "providerID": "nvidia",
-      "modelID": "openai/gpt-oss-120b"
-    },
-    {
-      "providerID": "nvidia",
-      "modelID": "stepfun-ai/step-3.5-flash"
-    },
-    {
-      "providerID": "opencode",
-      "modelID": "trinity-large-preview-free"
-    },
-    {
-      "providerID": "opencode",
-      "modelID": "minimax-m2.5-free"
+      "providerID": "github-copilot",
+      "modelID": "claude-sonnet-4.6"
     },
     {
       "providerID": "opencode",
       "modelID": "big-pickle"
     },
     {
+      "providerID": "nvidia",
+      "modelID": "z-ai/glm5"
+    },
+    {
       "providerID": "ollama-cloud",
-      "modelID": "deepseek-v3.2"
+      "modelID": "kimi-k2.5"
+    },
+    {
+      "providerID": "openrouter",
+      "modelID": "qwen/qwen3-coder:free"
+    },
+    {
+      "providerID": "openrouter",
+      "modelID": "openai/gpt-oss-120b:free"
+    },
+    {
+      "providerID": "openrouter",
+      "modelID": "z-ai/glm-4.5-air:free"
     },
     {
       "providerID": "github-copilot",
-      "modelID": "gpt-5-mini"
-    },
-    {
-      "providerID": "github-copilot",
-      "modelID": "gpt-5.1-codex-mini"
+      "modelID": "gpt-4.1"
     }
   ],
   "retryPolicy": {

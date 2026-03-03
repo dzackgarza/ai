@@ -116,6 +116,7 @@
       "*src*": "allow"
     },
     "task": "deny",
+    "plan_exit": "deny",
     "serena_activate_project": "allow",
     "serena_check_onboarding_performed": "allow",
     "serena_initial_instructions": "allow",

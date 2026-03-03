@@ -141,6 +141,8 @@ def merge_perms(*perm_dicts):
 
 
 DENY_TASKS = {"task": "deny"}
+DENY_PLAN_EXIT = {"plan_exit": "deny"}
+ALLOW_PLAN_EXIT = {"plan_exit": "allow"}
 
 ALLOW_STANDARD_CORE = {
     "serena_activate_project": "allow",
@@ -229,12 +231,14 @@ PROFILES = {
             "webfetch": "deny",
             "websearch": "deny",
         },
+        DENY_PLAN_EXIT,
         {"bash": {"*": "ask"}},
         ALLOW_STANDARD_CORE,
     ),
     "planning": merge_perms(
         read_only_in(["*"]),
         write_only_in(["*.serena/plans*"]),
+        ALLOW_PLAN_EXIT,
         ALLOW_STANDARD_CORE,
         ALLOW_STANDARD_BASH,
     ),
@@ -242,6 +246,7 @@ PROFILES = {
         read_only_in(["*src*"]),
         write_only_in(["*src*"]),
         DENY_TASKS,
+        DENY_PLAN_EXIT,
         ALLOW_STANDARD_CORE,
         RESTRICTIVE_BASH,
         {
@@ -256,6 +261,7 @@ PROFILES = {
         read_only_in(["*tests*", "*test*"]),
         write_only_in(["*tests*", "*test*"]),
         DENY_TASKS,
+        DENY_PLAN_EXIT,
         ALLOW_STANDARD_CORE,
         RESTRICTIVE_BASH,
         {
@@ -270,11 +276,13 @@ PROFILES = {
         read_only_in(["*"]),
         write_only_in([]),
         DENY_TASKS,
+        DENY_PLAN_EXIT,
         ALLOW_STANDARD_CORE,
         ALLOW_STANDARD_BASH,
     ),
     "minimal": {
         "bash": "allow",
+        "plan_exit": "deny",
         "external_directory": {"/tmp/opencode_test/*": "allow"},
     },
 }
@@ -289,7 +297,6 @@ AGENT_MAPPING = {
     "Repository Steward": "planning",
     "(Lattice) Build": "builder",
     "Zotero Librarian": "readonly",
-    
     # Subagents - Writers
     "Writer: General Code": "src_writer",
     "Writer: Python": "src_writer",
@@ -298,19 +305,16 @@ AGENT_MAPPING = {
     "Writer: Tests": "test_writer",
     "Writer: Documentation": "src_writer",
     "Writer: Refactorer": "src_writer",
-    
     # Subagents - Reviewers
     "Reviewer: Code": "readonly",
     "Reviewer: Plans": "readonly",
     "Reviewer: Test Compliance": "readonly",
     "Reviewer: Semantic Audit": "readonly",
     "Reviewer: Plan Contract": "readonly",
-    
     # Subagents - Researchers
     "Researcher: Code Base": "readonly",
     "Researcher: Documentation": "readonly",
     "Researcher: Repo Explorer": "readonly",
-    
     # Subagents - Lattice
     "(Lattice) Researcher: Documentation": "readonly",
     "(Lattice) Reviewer: Documentation Librarian": "readonly",
@@ -320,8 +324,9 @@ AGENT_MAPPING = {
     "(Lattice) Writer: Interface Designer": "src_writer",
     "(Lattice) Writer: Interface Implementer": "src_writer",
     "(Lattice) Writer: TDD": "test_writer",
-    "(Lattice) Writer: Algorithm Porter": "src_writer"
+    "(Lattice) Writer: Algorithm Porter": "src_writer",
 }
+
 
 def apply_profiles():
     agents_dir = os.path.join(base_dir, "configs", "agents")

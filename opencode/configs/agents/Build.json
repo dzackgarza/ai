@@ -140,6 +140,7 @@
     "todowrite": "allow",
     "webfetch": "deny",
     "websearch": "deny",
+    "plan_exit": "deny",
     "bash": {
       "*": "ask"
     },
