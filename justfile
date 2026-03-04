@@ -29,12 +29,13 @@ install:
     @ln -sf {{repo}}/dotfiles/tmux-powerline/themes/my-theme.sh ~/.config/tmux-powerline/themes/my-theme.sh
     @ln -sf {{repo}}/dotfiles/tmux-powerline/config.sh ~/.config/tmux-powerline/config.sh
     # Backup existing skills directories before creating symlinks
-    @for dir in ~/.claude/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do \
+    @for dir in ~/.claude/skills ~/.codex/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do \
         if [ -d "$$dir" ] && [ ! -L "$$dir" ]; then \
             mv "$$dir" "$$dir.bak.$(date +%Y%m%d%H%M%S)"; \
         fi; \
     done
     @ln -sf {{repo}}/skills ~/.claude/skills
+    @ln -sf {{repo}}/skills ~/.codex/skills
     @ln -sf {{repo}}/skills ~/.gemini/skills
     @ln -sf {{repo}}/skills ~/.agents/skills
     @ln -sf {{repo}}/skills ~/.qwen/skills

@@ -625,13 +625,6 @@ async function cmdResume(client: any, args: KV): Promise<void> {
 // opx session <subcommand>
 // ---------------------------------------------------------------------------
 
-async function cmdSessionList(client: any) {
-  const result = await client.session.list({});
-  for (const s of result.data ?? []) {
-    console.log(`${s.id}\t${s.title ?? ""}\t${s.time?.updated ?? ""}`);
-  }
-}
-
 async function cmdSessionDelete(client: any, args: KV) {
   const session = getString(args, "session");
   if (!session) throw new Error("session delete requires --session");
@@ -1186,7 +1179,6 @@ function help() {
     "  resume --session <id> --prompt <text> [--model provider/model] [--agent <name>] [--linger <sec>] [--keep] [--timeout <sec>]",
     "",
     "SESSION COMMANDS:",
-    "  session list",
     "  session delete --session <id>",
     "  session messages --session <id>",
     "",
@@ -1204,6 +1196,8 @@ function help() {
     "  debug probe-async-command [--model provider/model] [--agent <name>]",
     "  debug probe-async-subagent [--model provider/model] [--agent <name>]",
     "",
+    "Run any command with --help for detailed usage.",
+    "",
     "EXIT CODES:",
     "  0 = success",
     "  1 = failure (error or timeout)",
@@ -1218,6 +1212,132 @@ function help() {
   console.log(text.join("\n"));
 }
 
+function helpRun() {
+  console.log(
+    [
+      "opx run — create a session, send a prompt, wait for idle, print transcript, delete session",
+      "",
+      "USAGE:",
+      "  opx run --prompt <text> [options]",
+      "",
+      "OPTIONS:",
+      "  --prompt <text>          (required) The prompt to send",
+      "  --model provider/model   Provider and model slug (e.g. github-copilot/claude-sonnet-4.6)",
+      "  --agent <name>           Agent name (e.g. Minimal). Defaults to server default.",
+      "  --linger <sec>           Wait N extra seconds after first idle before declaring done. Default: 0.",
+      "                           Use this when the agent may spawn async tools that start a second turn.",
+      "  --keep                   Do NOT delete the session after completion. Prints session ID to stderr.",
+      "  --timeout <sec>          Hard wall-clock timeout. Default: 180.",
+      "",
+      "OUTPUT:",
+      "  stdout: full session transcript (always)",
+      "  stderr: [opx] status lines (session kept, timeout warnings)",
+      "",
+      "EXIT CODES:",
+      "  0  success (agent completed without error)",
+      "  1  failure (agent error, or hard timeout)",
+      "  2  provider unavailable (rate limit / quota exhausted)",
+    ].join("\n"),
+  );
+}
+
+function helpResume() {
+  console.log(
+    [
+      "opx resume — send a follow-up prompt to an existing session, wait for idle, print transcript",
+      "",
+      "USAGE:",
+      "  opx resume --session <id> --prompt <text> [options]",
+      "",
+      "OPTIONS:",
+      "  --session <id>           (required) Session ID to resume",
+      "  --prompt <text>          (required) Follow-up prompt to send",
+      "  --model provider/model   Override model for this turn",
+      "  --agent <name>           Override agent for this turn",
+      "  --linger <sec>           Extra idle wait. Default: 0.",
+      "  --keep                   Do NOT delete the session after completion.",
+      "  --timeout <sec>          Hard wall-clock timeout. Default: 180.",
+      "",
+      "OUTPUT:",
+      "  stdout: full session transcript (always)",
+      "  stderr: [opx] status lines",
+      "",
+      "EXIT CODES: same as opx run",
+    ].join("\n"),
+  );
+}
+
+function helpSession() {
+  console.log(
+    [
+      "opx session — manage sessions created by opx",
+      "",
+      "SUBCOMMANDS:",
+      "  session delete   --session <id>   Delete a specific session",
+      "  session messages --session <id>   Dump all messages as JSON",
+      "",
+      "NOTE: Use `opencode session list` to browse sessions on the server.",
+    ].join("\n"),
+  );
+}
+
+function helpProvider() {
+  console.log(
+    [
+      "opx provider — inspect provider availability",
+      "",
+      "SUBCOMMANDS:",
+      "  provider list",
+      "    List providers seen in recent sessions (proxy — send a prompt first if empty).",
+      "",
+      "  provider health --provider <id> [--model provider/model]",
+      "    Fire a minimal probe prompt and report ok/fail + error kind.",
+      "    --provider <id>          e.g. github-copilot, anthropic",
+      "    --model provider/model   Optional override. Default: <provider>/claude-sonnet-4.6",
+      "",
+      "OUTPUT: JSON  { provider, model, ok, exitCode, errorKind }",
+      "EXIT CODES: 0 = reachable, 1 = error, 2 = rate-limited / quota",
+    ].join("\n"),
+  );
+}
+
+function helpDebug() {
+  console.log(
+    [
+      "opx debug — low-level inspection and provider probing",
+      "",
+      "SUBCOMMANDS:",
+      "",
+      "  trace --session <id> [--timeout <sec>] [--verbose] [--include-aborted] [--no-service-log]",
+      "    Stream session events interleaved with systemd service log lines.",
+      "    Useful for post-mortem on a --keep session.",
+      "",
+      "  errors --session <id>",
+      "    Dump all assistant error events as JSON.",
+      "",
+      "  limit-errors --session <id> [--verbose]",
+      "    Dump rate-limit / quota error events, classified and summarized.",
+      "    --verbose  include full error object",
+      "",
+      "  probe-limit --model provider/model [--agent <name>] [--prompt <text>]",
+      "    Send a prompt designed to trigger a rate-limit response. Reports error classification.",
+      "",
+      "  probe-limit-known --provider anthropic|opencode-minimax|opencode-big-pickle [--timeout <sec>]",
+      "    Strict deterministic probe: matches against known_limit_patterns.json.",
+      "    Fails with KNOWN_PATTERN_NOT_FOUND if provider phrasing has changed.",
+      "",
+      "  probe-limit-trace --model provider/model [--agent <name>] [--timeout <sec>] [--verbose] [--include-aborted]",
+      "    probe-limit + full event trace in one command.",
+      "",
+      "  probe-async-command [--model provider/model] [--agent <name>]",
+      "    Verify the async_command plugin tool is reachable and returns a result.",
+      "",
+      "  probe-async-subagent [--model provider/model] [--agent <name>]",
+      "    Verify the async_subagent plugin tool is reachable and returns a result.",
+    ].join("\n"),
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Main dispatcher
 // ---------------------------------------------------------------------------
@@ -1229,18 +1349,27 @@ async function main() {
   switch (command) {
     // Primary public API
     case "run":
+      if (hasFlag(args, "help")) {
+        helpRun();
+        break;
+      }
       await cmdRun(client, args);
       break;
     case "resume":
+      if (hasFlag(args, "help")) {
+        helpResume();
+        break;
+      }
       await cmdResume(client, args);
       break;
 
     // session subcommands
     case "session":
+      if (hasFlag(args, "help") || !subcommand) {
+        helpSession();
+        break;
+      }
       switch (subcommand) {
-        case "list":
-          await cmdSessionList(client);
-          break;
         case "delete":
           await cmdSessionDelete(client, args);
           break;
@@ -1249,13 +1378,17 @@ async function main() {
           break;
         default:
           console.error(`Unknown session subcommand: ${subcommand}`);
-          help();
+          helpSession();
           process.exitCode = 1;
       }
       break;
 
     // provider subcommands
     case "provider":
+      if (hasFlag(args, "help") || !subcommand) {
+        helpProvider();
+        break;
+      }
       switch (subcommand) {
         case "list":
           await cmdProviderList(client);
@@ -1265,13 +1398,17 @@ async function main() {
           break;
         default:
           console.error(`Unknown provider subcommand: ${subcommand}`);
-          help();
+          helpProvider();
           process.exitCode = 1;
       }
       break;
 
     // debug subcommands
     case "debug":
+      if (hasFlag(args, "help") || !subcommand) {
+        helpDebug();
+        break;
+      }
       switch (subcommand) {
         case "trace":
           await cmdTrace(client, args);
@@ -1299,7 +1436,7 @@ async function main() {
           break;
         default:
           console.error(`Unknown debug subcommand: ${subcommand}`);
-          help();
+          helpDebug();
           process.exitCode = 1;
       }
       break;

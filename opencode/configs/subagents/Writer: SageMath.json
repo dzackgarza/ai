@@ -1,7 +1,7 @@
 {
   "description": "Use when writing SageMath code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write SageMath code for [feature]' or 'Design type system for [domain]'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "deny",

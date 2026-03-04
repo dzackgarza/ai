@@ -1,7 +1,7 @@
 {
   "description": "Use when auditing document-to-test coverage. Ask 'Audit document-to-test coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "allow"

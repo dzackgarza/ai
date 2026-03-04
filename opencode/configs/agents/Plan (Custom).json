@@ -1,6 +1,7 @@
 {
   "description": "Primary planning agent for executable implementation plans",
   "mode": "primary",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "allow"

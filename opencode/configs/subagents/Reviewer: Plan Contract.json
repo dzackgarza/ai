@@ -1,7 +1,7 @@
 {
   "description": "Use when auditing code against project constraints and dominant patterns. Pass the generated code and project rules. Ask 'Audit this code for constraint violations' or 'Find deviations from dominant patterns'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "allow"

@@ -1,6 +1,7 @@
 {
   "description": "Matter-of-fact assistant",
   "mode": "primary",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "bash": "allow",
     "plan_exit": "deny",

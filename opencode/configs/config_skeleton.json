@@ -66,6 +66,7 @@
   },
   "mcp": {
     "serena": {
+      "type": "local",
       "command": [
         "uvx",
         "--from",
@@ -73,8 +74,7 @@
         "serena",
         "start-mcp-server",
         "--project-from-cwd"
-      ],
-      "type": "local"
+      ]
     },
     "context7": {
       "type": "local",
@@ -97,7 +97,7 @@
       "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
     }
   },
-  "model": "google/gemini-3-flash-preview",
+  "model": "opencode/minimax-m2.5-free",
   "default_agent": "Interactive",
   "experimental": {
     "openTelemetry": true

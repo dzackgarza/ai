@@ -1,7 +1,7 @@
 {
   "description": "Use when performing safe, structurally-aware code refactoring. Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "deny",

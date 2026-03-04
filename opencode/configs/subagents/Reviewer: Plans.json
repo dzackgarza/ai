@@ -1,7 +1,7 @@
 {
   "description": "Use when critically auditing USER_SPEC and plans. Pass the spec and plan documents. Ask 'Audit this plan for logical inconsistencies' or 'Check for spec misalignment'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "allow"

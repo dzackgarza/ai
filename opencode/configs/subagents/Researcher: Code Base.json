@@ -1,7 +1,7 @@
 {
   "description": "Use when you need to explore the codebase. Finds WHERE files live and HOW code works. Pass features, entry points, or components. Ask 'Find files related to [feature]' or 'Trace how [function] processes data'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "allow"

@@ -53,10 +53,11 @@ bun run opx resume --session ses_xxx --prompt "continue" --model github-copilot/
 ### Session management
 
 ```bash
-bun run opx session list
 bun run opx session delete --session ses_xxx
 bun run opx session messages --session ses_xxx
 ```
+
+Use `opencode session list` to browse all sessions on the server.
 
 ### Provider
 
@@ -91,12 +92,6 @@ bun run opx debug probe-limit-trace --model opencode/minimax-m2.5-free --agent M
 # Plugin probes
 bun run opx debug probe-async-command --model github-copilot/claude-sonnet-4.6
 bun run opx debug probe-async-subagent --model github-copilot/claude-sonnet-4.6
-```
-
-### Health check
-
-```bash
-bun run opx health
 ```
 
 ## Exit codes

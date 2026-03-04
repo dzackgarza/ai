@@ -1,7 +1,7 @@
 {
   "description": "Use when writing or updating documentation files. Ask 'Document the current project architecture' or 'Write a README for [feature]'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "deny",

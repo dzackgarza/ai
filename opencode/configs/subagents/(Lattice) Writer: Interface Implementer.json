@@ -1,7 +1,7 @@
 {
   "description": "Use when translating union checklists into Python design. Ask 'Translate [union checklist] into ABC Python design' or 'Implement lattice types and concepts under src/'.",
   "mode": "subagent",
-  "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+  "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
     "read": {
       "*": "deny",

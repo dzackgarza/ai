@@ -7,6 +7,12 @@ description: Use when managing the operational lifecycle of multiple agents, del
 
 This skill provides the unified framework for managing, tracking, and coordinating a team of autonomous subagents to execute complex plans with high fidelity.
 
+## Subagent Naming Rule
+
+Do not hardcode or name-drop specific subagent slugs in delegation guidance. OpenCode provides a live list of available subagents and descriptions at runtime.
+
+Always select by capability class from the live list (for example: implementation, research, spec-review, quality-review, audit) rather than assuming fixed names.
+
 ## Reference Skills
 
 - **prompt-engineering** — REQUIRED: Use for all subagent instruction design.
@@ -194,10 +200,10 @@ Always dispatch a fresh subagent per task + two-stage review (spec then quality)
 Never accept implementation without independent verification:
 
 1. **Spec Compliance**: Dispatch reviewer to confirm code matches the design (no gaps, no extras).
-2. **Code Quality**: Dispatch **Code Quality** subagent to verify standards.
+2. **Code Quality**: Dispatch a dedicated quality-review subagent (or equivalent reviewer type in the live list) to verify standards.
 3. **CRITICAL**: Never start code quality review before spec compliance is ✅.
 4. **Fix Loop**: If review fails, the original subagent (or a fix subagent) iterates until ✅.
-5. **Final Review**: Dispatch final code-reviewer for the entire implementation after all tasks are done.
+5. **Final Review**: Dispatch an independent final reviewer subagent for the entire implementation after all tasks are done.
 
 ### Parallelism Strategy
 
@@ -261,7 +267,7 @@ git diff  # review C's changes
   - Ignore subagent questions or failure reports
   - Accept "close enough" on spec compliance
   - Skip review loops (spec compliance → code quality → fix)
-  - Let general_code_writer self-review replace actual review
+  - Let an implementation-oriented subagent self-review replace independent review
   - Move to next task while either review has open issues
   - Dispatch implementation subagent without first populating **TodoWrite**
   - Trust agent success reports without fresh transcript + git verification

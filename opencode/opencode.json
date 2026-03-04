@@ -66,6 +66,7 @@
   },
   "mcp": {
     "serena": {
+      "type": "local",
       "command": [
         "uvx",
         "--from",
@@ -73,8 +74,7 @@
         "serena",
         "start-mcp-server",
         "--project-from-cwd"
-      ],
-      "type": "local"
+      ]
     },
     "context7": {
       "type": "local",
@@ -97,7 +97,7 @@
       "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
     }
   },
-  "model": "google/gemini-3-flash-preview",
+  "model": "opencode/minimax-m2.5-free",
   "default_agent": "Interactive",
   "experimental": {
     "openTelemetry": true
@@ -192,156 +192,46 @@
         "gemma-2-2b-it",
         "gemma-2-9b-it",
         "gemma-3-1b-it",
-        "gemma-3-4b-it"
+        "gemma-3-4b-it",
+        "antigravity-gemini-3-pro",
+        "antigravity-gemini-3.1-pro",
+        "antigravity-gemini-3-flash",
+        "antigravity-claude-sonnet-4-6",
+        "antigravity-claude-opus-4-6-thinking"
       ],
       "models": {
+        "gemini-3-flash": {
+          "name": "Gemini 3 Flash"
+        },
+        "gemini-3-pro": {
+          "name": "Gemini 3 Pro"
+        },
+        "gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro"
+        },
+        "claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6"
+        },
+        "claude-opus-4-6-thinking": {
+          "name": "Claude Opus 4.6 Thinking"
+        },
         "gemini-2.5-flash": {
-          "name": "Gemini 2.5 Flash (Gemini CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
+          "name": "Gemini 2.5 Flash"
         },
         "gemini-2.5-pro": {
-          "name": "Gemini 2.5 Pro (Gemini CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
+          "name": "Gemini 2.5 Pro"
         },
         "gemini-3-flash-preview": {
-          "name": "Gemini 3 Flash Preview (Gemini CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
+          "name": "Gemini 3 Flash Preview"
         },
         "gemini-3-pro-preview": {
-          "name": "Gemini 3 Pro Preview (Gemini CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
+          "name": "Gemini 3 Pro Preview"
         },
         "gemini-3.1-pro-preview": {
-          "name": "Gemini 3.1 Pro Preview (Gemini CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
+          "name": "Gemini 3.1 Pro Preview"
         },
         "gemini-3.1-pro-preview-customtools": {
-          "name": "Gemini 3.1 Pro Preview Custom Tools (Gemini CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "gemini-claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6 (via Google)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "gemini-claude-opus-4-6-thinking": {
-          "name": "Claude Opus 4.6 Thinking (via Google)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
+          "name": "Gemini 3.1 Pro Preview Custom Tools"
         }
       }
     },
@@ -353,17 +243,17 @@
         "apiKey": "{env:NVIDIA_API_KEY}"
       },
       "models": {
-        "stepfun-ai/step-3.5-flash": {
-          "name": "Step 3.5 Flash"
-        },
         "deepseek-ai/deepseek-r1-0528": {
           "name": "deepseek-r1-0528"
         },
         "deepseek-ai/deepseek-v3.2": {
           "name": "deepseek-v3.2"
         },
-        "google/gemma-3-27b-it": {
-          "name": "gemma-3-27b-it"
+        "google/gemma-2-27b-it": {
+          "name": "gemma-2-27b-it"
+        },
+        "meta/codellama-70b": {
+          "name": "codellama-70b"
         },
         "meta/llama-3.1-405b-instruct": {
           "name": "llama-3.1-405b-instruct"
@@ -373,9 +263,6 @@
         },
         "meta/llama-4-maverick-17b-128e-instruct": {
           "name": "llama-4-maverick-17b-128e-instruct"
-        },
-        "meta/llama-4-scout-17b-16e-instruct": {
-          "name": "llama-4-scout-17b-16e-instruct"
         },
         "minimaxai/minimax-m2.1": {
           "name": "minimax-m2.1"
@@ -389,8 +276,17 @@
         "moonshotai/kimi-k2.5": {
           "name": "kimi-k2.5"
         },
+        "nvidia/cosmos-nemotron-34b": {
+          "name": "cosmos-nemotron-34b"
+        },
+        "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
+          "name": "llama-3.1-nemotron-ultra-253b-v1"
+        },
         "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
           "name": "llama-3.3-nemotron-super-49b-v1.5"
+        },
+        "nvidia/nemotron-3-nano-30b-a3b": {
+          "name": "nemotron-3-nano-30b-a3b"
         },
         "nvidia/nemotron-4-340b-instruct": {
           "name": "nemotron-4-340b-instruct"
@@ -398,36 +294,71 @@
         "openai/gpt-oss-120b": {
           "name": "gpt-oss-120b"
         },
-        "qwen/qwen3-235b-a22b": {
-          "name": "qwen3-235b-a22b"
-        },
         "qwen/qwen3-coder-480b-a35b-instruct": {
           "name": "qwen3-coder-480b-a35b-instruct"
-        },
-        "qwen/qwen3-next-80b-a3b-instruct": {
-          "name": "qwen3-next-80b-a3b-instruct"
         },
         "qwen/qwen3-next-80b-a3b-thinking": {
           "name": "qwen3-next-80b-a3b-thinking"
         },
+        "stepfun-ai/step-3.5-flash": {
+          "name": "step-3.5-flash"
+        },
         "z-ai/glm5": {
           "name": "glm5"
-        },
-        "mistralai/mistral-small-3.1-24b-instruct-2503": {
-          "name": "mistral-small-3.1-24b-instruct-2503"
         }
       },
       "blacklist": [
         "black-forest-labs/flux.1-dev",
-        "google/gemma-2-27b-it",
+        "deepseek-ai/deepseek-coder-6.7b-instruct",
+        "deepseek-ai/deepseek-r1",
+        "deepseek-ai/deepseek-v3.1",
+        "deepseek-ai/deepseek-v3.1-terminus",
+        "google/codegemma-1.1-7b",
+        "google/codegemma-7b",
+        "google/gemma-2-2b-it",
         "google/gemma-3-12b-it",
+        "google/gemma-3-1b-it",
+        "google/gemma-3-27b-it",
+        "google/gemma-3n-e2b-it",
+        "google/gemma-3n-e4b-it",
+        "meta/llama-3.1-70b-instruct",
         "meta/llama-3.2-11b-vision-instruct",
+        "meta/llama-3.2-1b-instruct",
+        "meta/llama-4-scout-17b-16e-instruct",
+        "meta/llama3-70b-instruct",
+        "meta/llama3-8b-instruct",
         "microsoft/phi-3-medium-128k-instruct",
         "microsoft/phi-3-medium-4k-instruct",
+        "microsoft/phi-3-small-128k-instruct",
+        "microsoft/phi-3-small-8k-instruct",
         "microsoft/phi-3-vision-128k-instruct",
         "microsoft/phi-3.5-moe-instruct",
         "microsoft/phi-3.5-vision-instruct",
-        "openai/whisper-large-v3"
+        "microsoft/phi-4-mini-instruct",
+        "minimaxai/minimax-m2",
+        "mistralai/codestral-22b-instruct-v0.1",
+        "mistralai/mamba-codestral-7b-v0.1",
+        "mistralai/ministral-14b-instruct-2512",
+        "mistralai/mistral-large-2-instruct",
+        "mistralai/mistral-small-3.1-24b-instruct-2503",
+        "moonshotai/kimi-k2-instruct",
+        "moonshotai/kimi-k2-instruct-0905",
+        "moonshotai/kimi-k2-thinking",
+        "nvidia/llama-3.1-nemotron-51b-instruct",
+        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "nvidia/llama-3.3-nemotron-super-49b-v1",
+        "nvidia/llama-embed-nemotron-8b",
+        "nvidia/llama3-chatqa-1.5-70b",
+        "nvidia/nemoretriever-ocr-v1",
+        "nvidia/nvidia-nemotron-nano-9b-v2",
+        "nvidia/parakeet-tdt-0.6b-v2",
+        "openai/whisper-large-v3",
+        "qwen/qwen2.5-coder-32b-instruct",
+        "qwen/qwen2.5-coder-7b-instruct",
+        "qwen/qwen3-235b-a22b",
+        "qwen/qwen3-next-80b-a3b-instruct",
+        "qwen/qwq-32b",
+        "z-ai/glm4.7"
       ]
     },
     "ollama-cloud": {
@@ -441,8 +372,26 @@
         "ministral-3:14b",
         "ministral-3:3b",
         "ministral-3:8b",
-        "devstral-small-2:24b"
-      ]
+        "devstral-small-2:24b",
+        "kimi-k2-thinking:cloud",
+        "deepseek-v3.2:cloud",
+        "glm-4.6:cloud",
+        "minimax-m2:cloud",
+        "glm-4.7:cloud",
+        "qwen3.5:cloud",
+        "qwen3-coder-next:cloud"
+      ],
+      "models": {
+        "glm-5:cloud": {
+          "name": "GLM 5"
+        },
+        "minimax-m2.5:cloud": {
+          "name": "MiniMax M2.5"
+        },
+        "kimi-k2.5:cloud": {
+          "name": "Kimi K2.5"
+        }
+      }
     },
     "ollama": {
       "blacklist": [],
@@ -929,6 +878,7 @@
     "(Lattice) Build": {
       "description": "Top-level agent for managing all lattice-related work",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
       "permission": {
         "read": {
@@ -1121,6 +1071,7 @@
     "Build (Custom)": {
       "description": "Primary build orchestrator for approved plans",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}",
       "permission": {
         "read": {
@@ -1313,6 +1264,7 @@
     "Interactive": {
       "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
       "permission": {
         "bash": "allow",
@@ -1326,6 +1278,7 @@
     "Minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "bash": "allow",
         "plan_exit": "deny",
@@ -1339,6 +1292,7 @@
     "Plan (Custom)": {
       "description": "Primary planning agent for executable implementation plans",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -1493,6 +1447,7 @@
     "Ralph Planner": {
       "description": "Collaborative loop builder - drafts background, setup, tasks, and testing for Ralph loops",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}",
       "permission": {
         "read": {
@@ -1647,6 +1602,7 @@
     "Repository Steward": {
       "description": "Repo steward - autonomous repository maintenance and optimization",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
       "permission": {
         "read": {
@@ -1801,6 +1757,7 @@
     "Zotero Librarian": {
       "description": "Zotero librarian - manages and maintains Zotero reference libraries",
       "mode": "primary",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
       "permission": {
         "read": {
@@ -1938,15 +1895,26 @@
       }
     },
     "build": {
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "disable": true
     },
+    "compaction": {
+      "model": "nvidia/moonshotai/kimi-k2.5"
+    },
     "plan": {
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "disable": true
+    },
+    "summary": {
+      "model": "nvidia/moonshotai/kimi-k2.5"
+    },
+    "title": {
+      "model": "nvidia/moonshotai/kimi-k2.5"
     },
     "(Lattice) Researcher: Documentation": {
       "description": "Use when researching obscure lattice algorithms and software (indefinite lattices focus). Ask 'Search arXiv and GitHub for [lattice algorithm]' or 'Find existing implementations of [lattice concept]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -2086,7 +2054,7 @@
     "(Lattice) Reviewer: Checklist Completionist": {
       "description": "Use when cross-referencing checklists against canonical source docs. Ask 'Cross-reference [checklist] against [canonical doc]' or 'Ensure complete account of all provably present methods'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -2226,7 +2194,7 @@
     "(Lattice) Reviewer: Documentation Librarian": {
       "description": "Use when organizing documentation. Ask 'Organize docs folder for [project]' or 'Ensure local copies of upstream docs are available' or 'Fact-check [doc] against canonical sources'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -2366,7 +2334,7 @@
     "(Lattice) Reviewer: Test Coverage": {
       "description": "Use when auditing document-to-test coverage. Ask 'Audit document-to-test coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -2506,7 +2474,7 @@
     "(Lattice) Writer: Algorithm Porter": {
       "description": "Use when porting algorithms from existing implementations. Ask 'Determine algorithms used in [implementation]' or 'Rewrite [algorithm] or wrap complex external objects'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -2681,7 +2649,7 @@
     "(Lattice) Writer: Interface Designer": {
       "description": "Use when constructing union checklists. Ask 'Construct union checklist for [lattice interface]' or 'Collect and deduplicate capabilities across all old checklists'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -2856,7 +2824,7 @@
     "(Lattice) Writer: Interface Implementer": {
       "description": "Use when translating union checklists into Python design. Ask 'Translate [union checklist] into ABC Python design' or 'Implement lattice types and concepts under src/'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -3031,7 +2999,7 @@
     "(Lattice) Writer: TDD": {
       "description": "Use when combining existing test methods into unified tests. Ask 'Combine test methods into single new tests for unified Lattice classes' or 'Write TDD tests for [lattice feature]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -3234,7 +3202,7 @@
     "(Lattice) Writer: Test Methods": {
       "description": "Use when closing docs-to-tests gaps. Ask 'Write mathematically nontrivial tests for [lattice object]' or 'Create tests for representative lattice objects'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -3437,7 +3405,7 @@
     "Researcher: Code Base": {
       "description": "Use when you need to explore the codebase. Finds WHERE files live and HOW code works. Pass features, entry points, or components. Ask 'Find files related to [feature]' or 'Trace how [function] processes data'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -3577,7 +3545,7 @@
     "Researcher: Documentation": {
       "description": "Use when synthesizing internal code and external documentation. Ask 'Research documentation for [topic]' or 'Synthesize information from internal code and external sources' or 'Find documentation about [technology]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -3717,7 +3685,7 @@
     "Researcher: Repo Explorer": {
       "description": "Use when performing structural and semantic codebase mapping. Ask 'Map the structural dependencies of this repository' or 'Perform semantic codebase analysis using WarpGrep' or 'Explain the overall architecture of this codebase'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -3857,7 +3825,7 @@
     "Reviewer: Code": {
       "description": "Use when reviewing code post-implementation. Audits code against Clean Code standards, Design Patterns, correctness, and spec compliance. Flag non-substantive tests and suggest refactoring improvements.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -3997,7 +3965,7 @@
     "Reviewer: Plan Contract": {
       "description": "Use when auditing code against project constraints and dominant patterns. Pass the generated code and project rules. Ask 'Audit this code for constraint violations' or 'Find deviations from dominant patterns'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -4137,7 +4105,7 @@
     "Reviewer: Plans": {
       "description": "Use when critically auditing USER_SPEC and plans. Pass the spec and plan documents. Ask 'Audit this plan for logical inconsistencies' or 'Check for spec misalignment'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -4277,7 +4245,7 @@
     "Reviewer: Semantic Audit": {
       "description": "Use when performing factual gap analysis between file versions. Pass file versions or code snapshots. Ask 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -4417,7 +4385,7 @@
     "Reviewer: Test Compliance": {
       "description": "Use when auditing tests for compliance with High-Quality Testing Standards. Pass test files or plans. Ask 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "allow"
@@ -4557,7 +4525,7 @@
     "Writer: Documentation": {
       "description": "Use when writing or updating documentation files. Ask 'Document the current project architecture' or 'Write a README for [feature]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -4732,7 +4700,7 @@
     "Writer: General Code": {
       "description": "Use when writing non-Python code. Pass task descriptions and target file paths in src/. Ask 'Implement [feature] in [language]' or 'Write a function that [description]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -4907,7 +4875,7 @@
     "Writer: Python": {
       "description": "Use when writing Python code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write Python code for [feature]' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -5082,7 +5050,7 @@
     "Writer: Refactorer": {
       "description": "Use when performing safe, structurally-aware code refactoring. Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -5257,7 +5225,7 @@
     "Writer: SageMath": {
       "description": "Use when writing SageMath code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write SageMath code for [feature]' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -5432,7 +5400,7 @@
     "Writer: Tests": {
       "description": "Use when writing new tests following TDD or designing test strategies to improve existing coverage. Can write/edit tests in tests/ and test/ directories only.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -5635,7 +5603,7 @@
     "Writer: TypeScript": {
       "description": "Use when writing TypeScript code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Implement [feature] in TypeScript' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+      "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
         "read": {
           "*": "deny",
@@ -5806,6 +5774,110 @@
         "question": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/typescript_code_writer.md}"
+    },
+    "explore": {
+      "model": "nvidia/moonshotai/kimi-k2.5"
+    },
+    "general": {
+      "description": "Override builtin general subagent to use a stable free model.",
+      "mode": "subagent",
+      "model": "nvidia/moonshotai/kimi-k2.5",
+      "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
+        "read": {
+          "*": "allow"
+        },
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "serena_create_text_file": {
+          "*": "deny"
+        },
+        "serena_replace_content": {
+          "*": "deny"
+        },
+        "serena_replace_symbol_body": {
+          "*": "deny"
+        },
+        "serena_insert_after_symbol": {
+          "*": "deny"
+        },
+        "serena_insert_before_symbol": {
+          "*": "deny"
+        },
+        "serena_rename_symbol": {
+          "*": "deny"
+        },
+        "serena_delete_lines": {
+          "*": "deny"
+        },
+        "serena_insert_at_line": {
+          "*": "deny"
+        },
+        "serena_replace_lines": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
+        },
+        "serena_execute_shell_command": "deny",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
+      }
     }
   }
 }

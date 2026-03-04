@@ -110,3 +110,97 @@ subprocess.run(
     check=True
 )
 print("Refreshed opencode models")
+
+
+def list_runtime_provider_models(provider_id):
+    output = subprocess.check_output(["opencode", "models", provider_id], text=True)
+    prefix = f"{provider_id}/"
+    return {
+        line.strip()[len(prefix):]
+        for line in output.splitlines()
+        if line.strip().startswith(prefix)
+    }
+
+
+def list_upstream_provider_models(provider_id):
+    cache_root = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
+    models_cache_path = os.path.join(cache_root, "opencode", "models.json")
+    with open(models_cache_path, "r") as f:
+        models_cache = json.load(f)
+
+    provider = models_cache.get(provider_id)
+    if not provider:
+        raise RuntimeError(
+            f"Provider '{provider_id}' not found in upstream models cache at "
+            f"{models_cache_path}"
+        )
+
+    return set((provider.get("models") or {}).keys())
+
+
+def assert_provider_partition_matches_upstream(provider_id):
+    provider_cfg = config.get("provider", {}).get(provider_id)
+    if provider_cfg is None:
+        raise RuntimeError(
+            f"Provider '{provider_id}' must be explicitly shadowed in config/provider "
+            "for whitelist/blacklist partitioning."
+        )
+
+    model_overrides = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+    overlap = sorted(model_overrides & blacklist)
+    if overlap:
+        raise RuntimeError(
+            f"Provider '{provider_id}' has models present in both allowlist "
+            f"and blacklist: {overlap}"
+        )
+
+    covered = model_overrides | blacklist
+    upstream = list_upstream_provider_models(provider_id)
+
+    missing = sorted(upstream - covered)
+    blacklist_extra = sorted(blacklist - upstream)
+    if missing or blacklist_extra:
+        raise RuntimeError(
+            f"Provider '{provider_id}' partition mismatch. "
+            f"missing_from_partition={missing} "
+            f"blacklist_not_in_upstream={blacklist_extra}"
+        )
+
+    manual_additions = sorted(model_overrides - upstream)
+    if manual_additions:
+        print(
+            f"Provider '{provider_id}' manual allowlist additions not in "
+            f"upstream: {manual_additions}"
+        )
+
+    print(
+        f"Verified provider '{provider_id}' partition against upstream: "
+        f"upstream={len(upstream)} allow={len(model_overrides)} "
+        f"deny={len(blacklist)}"
+    )
+    return model_overrides
+
+
+def assert_runtime_whitelist_applied(provider_id, expected_models):
+    listed = list_runtime_provider_models(provider_id)
+    missing_from_runtime = sorted(expected_models - listed)
+    unexpected_in_runtime = sorted(listed - expected_models)
+    if missing_from_runtime or unexpected_in_runtime:
+        raise RuntimeError(
+            f"Provider '{provider_id}' runtime whitelist mismatch. "
+            f"missing_from_runtime={missing_from_runtime} "
+            f"unexpected_in_runtime={unexpected_in_runtime}"
+        )
+
+    print(
+        f"Verified provider '{provider_id}' runtime whitelist: "
+        f"runtime={len(listed)} expected={len(expected_models)}"
+    )
+
+
+# Guardrail order:
+# 1) Partition against upstream models catalog.
+# 2) Validate runtime list reflects whitelist after blacklist filtering.
+nvidia_whitelist = assert_provider_partition_matches_upstream("nvidia")
+assert_runtime_whitelist_applied("nvidia", nvidia_whitelist)

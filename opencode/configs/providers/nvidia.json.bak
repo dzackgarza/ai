@@ -64,7 +64,7 @@
       "name": "qwen3-next-80b-a3b-thinking"
     },
     "stepfun-ai/step-3.5-flash": {
-      "name": "step-3.5-flash"
+      "name": "Step 3.5 Flash"
     },
     "z-ai/glm5": {
       "name": "glm5"

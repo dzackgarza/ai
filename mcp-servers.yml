@@ -1,0 +1,83 @@
+# Centralized MCP Server Configuration
+# =====================================
+# This file is the single source of truth for all MCP server configurations.
+# Run `python3 sync_mcp_configs.py` to propagate changes to all harnesses.
+
+# MCP Servers that should be configured in ALL harnesses
+common:
+  serena:
+    description: "Semantic code editing and navigation"
+    command: "uvx"
+    args:
+      - "--from"
+      - "git+https://github.com/oraios/serena"
+      - "serena"
+      - "start-mcp-server"
+      - "--project-from-cwd"
+    enabled: true
+
+  context7:
+    description: "Library documentation via Context7"
+    command: "npx"
+    args:
+      - "-y"
+      - "@upstash/context7-mcp"
+    enabled: true
+
+  cut-copy-paste-mcp:
+    description: "Cross-session clipboard operations"
+    command: "npx"
+    args:
+      - "-y"
+      - "@fastmcp-me/cut-copy-paste-mcp"
+    enabled: true
+
+# Harness-specific MCP servers (optional)
+harness_specific:
+  opencode:
+    tavily-remote:
+      description: "Web search via Tavily API"
+      type: "remote"
+      url: "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
+      enabled: true
+
+  codex:
+    kindly:
+      description: "Web search via Kindly"
+      command: "uvx"
+      args:
+        - "--from"
+        - "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server"
+        - "kindly-web-search-mcp-server"
+        - "start-mcp-server"
+      enabled: true
+
+# Harnesses to sync (set enabled: false to skip a harness)
+harnesses:
+  opencode:
+    enabled: true
+    config_path: "~/ai/opencode/opencode.json"
+    format: "json"
+    json_path: "mcp"  # JSON path within the config
+    
+  codex:
+    enabled: true
+    config_path: "~/.codex/config.toml"
+    format: "toml"
+    toml_section: "mcp_servers"
+    
+  amp:
+    enabled: true
+    config_path: "~/.config/amp/settings.json"
+    format: "json"
+    json_path: "amp.mcpServers"
+    
+  claude:
+    enabled: false  # No MCP config file exists
+    config_path: "~/.claude/mcp.json"
+    format: "json"
+    
+  kilo:
+    enabled: false  # No MCP config file exists
+    config_path: "~/.config/kilo/mcp.json"
+    format: "json"
