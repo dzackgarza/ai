@@ -1925,6 +1925,12 @@
         "question": "allow"
       }
     },
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    },
     "(Lattice) Researcher: Documentation": {
       "description": "Use when researching obscure lattice algorithms and software (indefinite lattices focus). Ask 'Search arXiv and GitHub for [lattice algorithm]' or 'Find existing implementations of [lattice concept]'.",
       "mode": "subagent",
