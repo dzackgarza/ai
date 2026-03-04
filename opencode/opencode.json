@@ -1084,7 +1084,13 @@
           "git commit --amend *": "allow",
           "git commit --amend -m *": "allow",
           "ls*": "allow",
-          "tree*": "allow"
+          "tree*": "allow",
+          "grep*": "allow",
+          "rg*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "cat*": "allow",
+          "wc*": "allow"
         },
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",
@@ -1258,7 +1264,13 @@
           "git commit --amend *": "allow",
           "git commit --amend -m *": "allow",
           "ls*": "allow",
-          "tree*": "allow"
+          "tree*": "allow",
+          "grep*": "allow",
+          "rg*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "cat*": "allow",
+          "wc*": "allow"
         },
         "serena_activate_project": "allow",
         "serena_check_onboarding_performed": "allow",

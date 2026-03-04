@@ -238,6 +238,12 @@ BUILDER_BASH = {
         "git commit --amend -m *": "allow",
         "ls*": "allow",
         "tree*": "allow",
+        "grep*": "allow",
+        "rg*": "allow",
+        "head*": "allow",
+        "tail*": "allow",
+        "cat*": "allow",
+        "wc*": "allow",
     }
 }
 
