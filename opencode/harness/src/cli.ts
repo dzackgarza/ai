@@ -24,7 +24,11 @@ type KnownLimitPattern = {
 // Argument parsing
 // ---------------------------------------------------------------------------
 
-function parseArgs(argv: string[]): { command: string; subcommand: string; args: KV } {
+function parseArgs(argv: string[]): {
+  command: string;
+  subcommand: string;
+  args: KV;
+} {
   const [command = "help", maybeSubcommand = "", ...rest] = argv;
 
   // Commands that have subcommands: session, provider, debug
@@ -363,16 +367,20 @@ async function promptAsyncRequest(
 
 async function generateTranscript(sessionID: string): Promise<string> {
   return new Promise<string>((resolve) => {
-    const child = spawn(
-      "python3",
-      [OPX_TRANSCRIPT_SCRIPT, sessionID],
-      { env: process.env },
-    );
+    const child = spawn("python3", [OPX_TRANSCRIPT_SCRIPT, sessionID], {
+      env: process.env,
+    });
     let out = "";
-    child.stdout.on("data", (d) => { out += d.toString(); });
-    child.stderr.on("data", (d) => { out += d.toString(); });
+    child.stdout.on("data", (d) => {
+      out += d.toString();
+    });
+    child.stderr.on("data", (d) => {
+      out += d.toString();
+    });
     child.on("close", () => resolve(out));
-    child.on("error", () => resolve(`[transcript unavailable for ${sessionID}]`));
+    child.on("error", () =>
+      resolve(`[transcript unavailable for ${sessionID}]`),
+    );
   });
 }
 
@@ -405,8 +413,9 @@ async function waitForIdle(
   let lastExitCode = 0;
 
   // State machine: "running" | "idle1" | "running2" | "done"
+  // Box in an object so TS doesn't narrow the captured variable across closures.
   type State = "running" | "idle1" | "running2" | "done";
-  let state: State = "running";
+  const sm = { state: "running" as State };
   let lingerDeadlineMs = 0;
 
   // SSE-based idle detection via polling the messages endpoint is unreliable for
@@ -450,25 +459,25 @@ async function waitForIdle(
 
             // Completed assistant message signals end of a turn
             if (info.time?.completed) {
-              if (state === "running") {
-                state = "idle1";
+              if (sm.state === "running") {
+                sm.state = "idle1";
                 if (lingerSec > 0) {
                   lingerDeadlineMs = Date.now() + lingerSec * 1000;
                 } else {
-                  state = "done";
+                  sm.state = "done";
                   controller.abort();
                   return;
                 }
-              } else if (state === "running2") {
-                state = "done";
+              } else if (sm.state === "running2") {
+                sm.state = "done";
                 controller.abort();
                 return;
               }
             } else {
               // Active message (not yet completed) — we're in running state
-              if (state === "idle1") {
+              if (sm.state === "idle1") {
                 // Session resumed activity after reaching idle-1
-                state = "running2";
+                sm.state = "running2";
                 lingerDeadlineMs = 0; // cancel linger
               }
             }
@@ -482,7 +491,7 @@ async function waitForIdle(
           const kind = classifyError(evt.properties?.error);
           lastErrorKind = kind;
           lastExitCode = errorKindToExitCode(kind);
-          state = "done";
+          sm.state = "done";
           controller.abort();
           return;
         }
@@ -494,13 +503,13 @@ async function waitForIdle(
 
   // Linger/timeout watchdog
   const watchdog = (async () => {
-    while (state !== "done") {
+    while (sm.state !== "done") {
       await new Promise((r) => setTimeout(r, 200));
       if (Date.now() - startMs > timeoutMs) break;
 
-      if (state === "idle1" && lingerDeadlineMs > 0) {
+      if (sm.state === "idle1" && lingerDeadlineMs > 0) {
         if (Date.now() >= lingerDeadlineMs) {
-          state = "done";
+          sm.state = "done";
           controller.abort();
           break;
         }
@@ -512,7 +521,7 @@ async function waitForIdle(
   clearTimeout(hardTimer);
   controller.abort(); // ensure cleanup
 
-  const timedOut = Date.now() - startMs >= timeoutMs && state !== "done";
+  const timedOut = Date.now() - startMs >= timeoutMs && sm.state !== "done";
   if (timedOut) lastExitCode = 1;
 
   return { exitCode: lastExitCode, errorKind: lastErrorKind, timedOut };
@@ -678,10 +687,24 @@ async function cmdProviderHealth(client: any, args: KV) {
 
   try {
     await client.session.delete({ path: { id: sessionID } });
-  } catch { /* best-effort */ }
+  } catch {
+    /* best-effort */
+  }
 
   const ok = result.exitCode === 0;
-  console.log(JSON.stringify({ provider, model, ok, exitCode: result.exitCode, errorKind: result.errorKind }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        provider,
+        model,
+        ok,
+        exitCode: result.exitCode,
+        errorKind: result.errorKind,
+      },
+      null,
+      2,
+    ),
+  );
   process.exitCode = result.exitCode;
 }
 
