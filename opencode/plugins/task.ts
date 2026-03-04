@@ -15,6 +15,10 @@ const PROMPT_ASYNC_START_TIMEOUT_MS = 20_000;
 const MAX_ERROR_SUMMARY_CHARS = 500;
 const MAX_RESULT_CHARS = 6000;
 const MAX_MODEL_HINT_ITEMS = 25;
+const TASK_TOOL_DESCRIPTION_BASE =
+  "Delegate work to a subagent. Supports two modes: sync (default) and async. Sync mode is blocking and best for smaller sequential tasks where you need the result before continuing. Async mode is non-blocking: it starts the child task and returns immediately, then sends callback updates to the parent session (running/heartbeat and final completed/failed status). Both modes support timeout_seconds (default 1800 / 30m). On timeout, task attempts a clean child-session interrupt and reports a timeout status with transcript access guidance. In async mode, you can continue your own work and wait for callback messages from the subagent.";
+const DEFAULT_SUBAGENT_DESCRIPTION =
+  "This subagent should only be called manually by the user.";
 const RATE_LIMIT_FALLBACK_CONFIG_PATH = path.join(
   process.env.HOME ?? "",
   ".config",
@@ -366,11 +370,34 @@ async function sleep(ms: number): Promise<void> {
 
 type CachedSubagent = {
   name: string;
+  description?: string;
   model?: {
     providerID: string;
     modelID: string;
   };
 };
+
+function formatSubagentList(subagents: CachedSubagent[]): string {
+  if (subagents.length === 0) {
+    return "- (No subagents currently discoverable via client.app.agents())";
+  }
+
+  return subagents
+    .map(
+      (subagent) =>
+        `- ${subagent.name}: ${subagent.description ?? DEFAULT_SUBAGENT_DESCRIPTION}`,
+    )
+    .join("\n");
+}
+
+function buildTaskToolDescription(subagents: CachedSubagent[]): string {
+  return [
+    TASK_TOOL_DESCRIPTION_BASE,
+    "",
+    "Available subagent types and descriptions:",
+    formatSubagentList(subagents),
+  ].join("\n");
+}
 
 export const TaskPlugin: Plugin = async ({ client }) => {
   if (!isPluginEnabled("task-plugin")) return {};
@@ -379,6 +406,7 @@ export const TaskPlugin: Plugin = async ({ client }) => {
   let cachedAt = 0;
   let cachedModelKeys: Set<string> | undefined;
   let cachedFallbackModels: string[] | undefined;
+  let taskToolDescription = buildTaskToolDescription([]);
   const asyncMonitorControllers = new Map<string, AbortController>();
 
   const log = async (
@@ -457,6 +485,11 @@ export const TaskPlugin: Plugin = async ({ client }) => {
         .filter((agent) => agent.mode === "subagent")
         .map((agent) => ({
           name: agent.name,
+          description:
+            typeof agent.description === "string" &&
+            agent.description.trim().length > 0
+              ? agent.description
+              : undefined,
           model: agent.model ?? undefined,
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -484,6 +517,15 @@ export const TaskPlugin: Plugin = async ({ client }) => {
       });
       return cachedSubagents;
     }
+  };
+
+  const refreshTaskToolDescription = async (
+    reason: string,
+    force = false,
+  ): Promise<string> => {
+    const subagents = await fetchSubagents(reason, force);
+    taskToolDescription = buildTaskToolDescription(subagents);
+    return taskToolDescription;
   };
 
   const fetchAvailableModelKeys = async (
@@ -861,14 +903,20 @@ export const TaskPlugin: Plugin = async ({ client }) => {
     parentModelInheritanceDisabledByPolicy: true,
   });
 
-  void fetchSubagents("plugin_init_warmup", true);
+  void refreshTaskToolDescription("plugin_init_warmup", true);
   void fetchAvailableModelKeys("plugin_init_warmup", true);
 
   return {
+    "tool.definition": async (input, output) => {
+      if (input.toolID !== "task") return;
+      output.description = await refreshTaskToolDescription(
+        "tool_definition",
+        false,
+      );
+    },
     tool: {
       task: tool({
-        description:
-          "Delegate work to a subagent. Supports two modes: sync (default) and async. Sync mode is blocking and best for smaller sequential tasks where you need the result before continuing. Async mode is non-blocking: it starts the child task and returns immediately, then sends callback updates to the parent session (running/heartbeat and final completed/failed status). Both modes support timeout_seconds (default 1800 / 30m). On timeout, task attempts a clean child-session interrupt and reports a timeout status with transcript access guidance. In async mode, you can continue your own work and wait for callback messages from the subagent.",
+        description: taskToolDescription,
         args: {
           description: tool.schema
             .string()

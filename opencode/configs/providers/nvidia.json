@@ -30,11 +30,24 @@
     "minimaxai/minimax-m2.1": {
       "name": "minimax-m2.1"
     },
+    "minimaxai/minimax-m2.5": {
+      "name": "minimax-m2.5"
+    },
     "mistralai/devstral-2-123b-instruct-2512": {
       "name": "devstral-2-123b-instruct-2512"
     },
     "mistralai/mistral-large-3-675b-instruct-2512": {
       "name": "mistral-large-3-675b-instruct-2512"
+    },
+    "mistralai/mistral-medium-3-instruct": {
+      "name": "mistral-medium-3-instruct"
+    },
+    "mistralai/mistral-nemotron": {
+      "name": "mistral-nemotron"
+    },
+    "mistralai/mistral-small-24b-instruct": {
+      "name": "mistral-small-24b-instruct",
+      "tool_call": false
     },
     "moonshotai/kimi-k2.5": {
       "name": "kimi-k2.5"
