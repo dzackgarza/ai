@@ -193,6 +193,32 @@ ALLOW_STANDARD_BASH = {
     }
 }
 
+FILE_READING_BASH = {
+    "bash": {
+        "ls*": "allow",
+        "exa*": "allow",
+        "tree*": "allow",
+        "find *": "allow",
+        "du*": "allow",
+        "file *": "allow",
+        "stat*": "allow",
+        "pwd*": "allow",
+        "sort*": "allow",
+        "less*": "allow",
+        "diff*": "allow",
+        "cut*": "allow",
+        "jq": "allow",
+        "grep*": "allow",
+        "rg*": "allow",
+        "head*": "allow",
+        "tail*": "allow",
+        "cat*": "allow",
+        "wc*": "allow",
+        "command -v *": "allow",
+        "*": "deny",
+    }
+}
+
 RESTRICTIVE_BASH = {
     "bash": {
         "*": "deny",
@@ -205,30 +231,13 @@ RESTRICTIVE_BASH = {
         "git diff --stat": "allow",
         "git commit -m *": "allow",
         "git commit --amend *": "allow",
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
         "find * -type f -maxdepth 3*": "allow",
         "find * -type d -maxdepth 3*": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "wc*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
         "kpsewhich*": "allow",
-        "command -v *": "allow",
         "uv*": "allow",
-    }
+        # File-reading commands (merged with FILE_READING_BASH below)
+    },
+    **{k: v for k, v in FILE_READING_BASH.get("bash", {}).items() if k != "*"}
 }
 
 BUILDER_BASH = {
@@ -246,27 +255,9 @@ BUILDER_BASH = {
         "git commit -m *": "allow",
         "git commit --amend *": "allow",
         "git commit --amend -m *": "allow",
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "command -v *": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-    }
+        # File-reading commands (merged with FILE_READING_BASH below)
+    },
+    **{k: v for k, v in FILE_READING_BASH.get("bash", {}).items() if k != "*"}
 }
 
 PROFILES = {
