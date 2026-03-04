@@ -339,8 +339,8 @@ PROFILES = {
 AGENT_MAPPING = {
     # Primary Agents
     "Minimal": "minimal",
-    "Plan": "planning",
-    "Build": "builder",
+    "Plan (Custom)": "planning",
+    "Build (Custom)": "builder",
     "Interactive": "minimal",
     "Ralph Planner": "planning",
     "Repository Steward": "planning",

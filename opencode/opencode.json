@@ -1118,7 +1118,7 @@
         "question": "allow"
       }
     },
-    "Build": {
+    "Build (Custom)": {
       "description": "Primary build orchestrator for approved plans",
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}",
@@ -1336,7 +1336,7 @@
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/minimal.md}"
     },
-    "Plan": {
+    "Plan (Custom)": {
       "description": "Primary planning agent for executable implementation plans",
       "mode": "primary",
       "permission": {
