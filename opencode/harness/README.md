@@ -1,18 +1,18 @@
 # OpenCode Automation Harness (`opx`)
 
-SDK-first CLI for OpenCode session automation and plugin testing against a long-lived `opencode serve` instance.
+SDK-first CLI for OpenCode session automation against a long-lived `opencode serve` instance.
 
 ## Why this exists
 
-- Avoids fragile `opencode run --attach --agent ...` automation paths.
+- Avoids fragile `opencode run --attach` automation paths.
 - Keeps sessions alive independently of CLI idle/exit behavior.
-- Provides direct commands for session create/send/wait/tail/delete.
+- Provides a deterministic run→wait→transcript→cleanup cycle for testing.
 
 ## Prerequisites
 
 1. Running `opencode serve` instance (recommended via user systemd service).
-2. Bun installed.
-3. Optional auth env vars when server auth is enabled.
+2. Bun installed (`~/.bun/bin/bun`).
+3. Optional auth env vars when server password is enabled.
 
 ## Install and run
 
@@ -24,48 +24,91 @@ bun run opx --help
 
 ## Environment
 
-- `OPENCODE_BASE_URL` default: `http://127.0.0.1:4096`
-- `OPENCODE_SERVER_USERNAME` default: `opencode`
-- `OPENCODE_SERVER_PASSWORD` optional
+| Variable                   | Default                 | Description                         |
+| -------------------------- | ----------------------- | ----------------------------------- |
+| `OPENCODE_BASE_URL`        | `http://127.0.0.1:4096` | Server URL                          |
+| `OPENCODE_SERVER_USERNAME` | `opencode`              | Basic auth username                 |
+| `OPENCODE_SERVER_PASSWORD` | _(none)_                | Basic auth password                 |
+| `OPX_TRANSCRIPT_SCRIPT`    | _(bundled path)_        | Path to transcript generator script |
 
 ## Commands
 
+### Primary
+
+```bash
+# Run a one-shot prompt and print transcript when done
+bun run opx run --prompt "Reply with ONLY: OK" --model github-copilot/claude-sonnet-4.6
+
+# Resume an existing session with a new prompt
+bun run opx resume --session ses_xxx --prompt "continue" --model github-copilot/claude-sonnet-4.6
+
+# Options for run/resume:
+#   --model provider/model       (default: server default)
+#   --agent <name>               (default: server default)
+#   --linger <sec>               wait N extra seconds after first idle (default: 0)
+#   --keep                       keep session after transcript (default: delete)
+#   --timeout <sec>              hard timeout (default: 180)
+```
+
+### Session management
+
+```bash
+bun run opx session list
+bun run opx session delete --session ses_xxx
+bun run opx session messages --session ses_xxx
+```
+
+### Provider
+
+```bash
+bun run opx provider list
+bun run opx provider health --provider github-copilot --model github-copilot/claude-sonnet-4.6
+```
+
+### Debug / probes
+
+```bash
+# Tail session events with service log interleaving
+bun run opx debug trace --session ses_xxx --timeout 45
+
+# Show error events for a session
+bun run opx debug errors --session ses_xxx
+
+# Show rate-limit error events matched against known patterns
+bun run opx debug limit-errors --session ses_xxx
+
+# Probe a model for rate limit behavior
+bun run opx debug probe-limit --model opencode/minimax-m2.5-free --agent Minimal
+
+# Probe a known-pattern provider (strict, deterministic)
+bun run opx debug probe-limit-known --provider anthropic
+bun run opx debug probe-limit-known --provider opencode-minimax
+bun run opx debug probe-limit-known --provider opencode-big-pickle
+
+# Full limit trace with event stream
+bun run opx debug probe-limit-trace --model opencode/minimax-m2.5-free --agent Minimal --timeout 45
+
+# Plugin probes
+bun run opx debug probe-async-command --model github-copilot/claude-sonnet-4.6
+bun run opx debug probe-async-subagent --model github-copilot/claude-sonnet-4.6
+```
+
+### Health check
+
 ```bash
 bun run opx health
-bun run opx list
-bun run opx new --title test --prompt "hello" --agent Minimal --model opencode/big-pickle
-bun run opx send --session ses_xxx --prompt "continue" --agent Minimal --model opencode/big-pickle
-bun run opx tail --session ses_xxx --lines 60
-bun run opx limit-errors --session ses_xxx
-bun run opx trace --session ses_xxx --timeout 45
-bun run opx wait --session ses_xxx --contains CALLBACK_CONTINUED --timeout 120
-bun run opx delete --session ses_xxx
 ```
 
-Plugin probes:
+## Exit codes
 
-```bash
-bun run opx probe-async-command --model opencode/big-pickle --agent Minimal
-bun run opx probe-async-subagent --model opencode/big-pickle --agent Minimal
-bun run opx probe-limit --model opencode/minimax-m2.5-free --agent Minimal
-bun run opx probe-limit-known --provider opencode-minimax
-bun run opx probe-limit-known --provider opencode-big-pickle
-bun run opx probe-limit-known --provider anthropic
-bun run opx probe-limit-trace --model opencode/minimax-m2.5-free --agent Minimal --timeout 45
+| Code | Meaning                                   |
+| ---- | ----------------------------------------- |
+| `0`  | Success                                   |
+| `1`  | Failure (error or timeout)                |
+| `2`  | Provider unavailable (rate limit / quota) |
 
-# SDK-native limit trace (no opencode run log scraping)
-bun run opx probe-limit-trace --model opencode/minimax-m2.5-free --agent Minimal --timeout 45
+## Known-pattern mode
 
-# Strict known-pattern limit checks (authoritative for known cases)
-bun run opx probe-limit-known --provider anthropic
-
-Known-pattern mode is strict and deterministic: if provider phrasing changes,
-the command fails with `KNOWN_PATTERN_NOT_FOUND` and you must update
-`config/known_limit_patterns.json`.
-```
-
-## Notes
-
-- `plan_exit` currently returns build session ID/title for manual switching.
-- TUI auto-switch is technically available via SDK TUI APIs, but not enabled in this workflow.
-- For automation, prefer SDK/API calls with explicit `agent` and `model`.
+`probe-limit-known` is strict and deterministic: it matches error messages against
+`config/known_limit_patterns.json`. If provider phrasing changes, the command fails
+with `KNOWN_PATTERN_NOT_FOUND` — update the JSON file to fix it.

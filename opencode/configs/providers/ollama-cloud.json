@@ -9,6 +9,24 @@
     "ministral-3:14b",
     "ministral-3:3b",
     "ministral-3:8b",
-    "devstral-small-2:24b"
-  ]
+    "devstral-small-2:24b",
+    "kimi-k2-thinking:cloud",
+    "deepseek-v3.2:cloud",
+    "glm-4.6:cloud",
+    "minimax-m2:cloud",
+    "glm-4.7:cloud",
+    "qwen3.5:cloud",
+    "qwen3-coder-next:cloud"
+  ],
+  "models": {
+    "glm-5:cloud": {
+      "name": "GLM 5"
+    },
+    "minimax-m2.5:cloud": {
+      "name": "MiniMax M2.5"
+    },
+    "kimi-k2.5:cloud": {
+      "name": "Kimi K2.5"
+    }
+  }
 }

@@ -77,9 +77,17 @@
     "meta/llama-3.2-11b-vision-instruct",
     "microsoft/phi-3-medium-128k-instruct",
     "microsoft/phi-3-medium-4k-instruct",
+    "microsoft/phi-3-mini-128k-instruct",
+    "microsoft/phi-3-mini-4k-instruct",
+    "microsoft/phi-3-small-128k-instruct",
+    "microsoft/phi-3-small-8k-instruct",
     "microsoft/phi-3-vision-128k-instruct",
+    "microsoft/phi-3.5-mini-instruct",
     "microsoft/phi-3.5-moe-instruct",
     "microsoft/phi-3.5-vision-instruct",
+    "microsoft/phi-4-mini-flash-reasoning",
+    "microsoft/phi-4-mini-instruct",
+    "microsoft/phi-4-multimodal-instruct",
     "openai/whisper-large-v3"
   ]
 }

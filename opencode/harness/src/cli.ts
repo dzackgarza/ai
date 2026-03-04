@@ -433,9 +433,11 @@ async function waitForIdle(
   // 1. SSE event listener for message.updated / session.error
   // 2. Periodic poll to detect stable idle (no new messages for 2s)
 
+  // No directory filter — we filter by sessionID in the handler.
+  // Using process.cwd() would silently drop all events: the server defaults
+  // session directories to its own cwd (/home/dzack), not the caller's.
   const stream = await client.event.subscribe({
     signal: controller.signal,
-    query: { directory: process.cwd() },
   });
 
   const sseCollector = (async () => {
@@ -560,9 +562,8 @@ async function cmdRun(client: any, args: KV): Promise<void> {
   const transcript = await generateTranscript(sessionID);
   process.stdout.write(transcript);
 
-  // Session cleanup
-  const shouldDelete = !keep && result.exitCode !== 2;
-  if (shouldDelete) {
+  // Session cleanup — delete unless --keep was explicitly passed
+  if (!keep) {
     try {
       await client.session.delete({ path: { id: sessionID } });
     } catch {
@@ -602,8 +603,8 @@ async function cmdResume(client: any, args: KV): Promise<void> {
   const transcript = await generateTranscript(sessionID);
   process.stdout.write(transcript);
 
-  const shouldDelete = !keep && result.exitCode !== 2;
-  if (shouldDelete) {
+  // Session cleanup — delete unless --keep was explicitly passed
+  if (!keep) {
     try {
       await client.session.delete({ path: { id: sessionID } });
     } catch {
@@ -709,113 +710,8 @@ async function cmdProviderHealth(client: any, args: KV) {
 }
 
 // ---------------------------------------------------------------------------
-// Legacy / compat commands (flat)
+// Error inspection helpers (used by debug subcommands)
 // ---------------------------------------------------------------------------
-
-async function cmdHealth(client: any) {
-  const pathInfo = await client.path.get({});
-  const project = await client.project.current({});
-  console.log(
-    JSON.stringify(
-      { ok: true, path: pathInfo.data, project: project.data },
-      null,
-      2,
-    ),
-  );
-}
-
-async function cmdList(client: any) {
-  const result = await client.session.list({});
-  for (const s of result.data ?? []) {
-    console.log(`${s.id}\t${s.title ?? ""}\t${s.time?.updated ?? ""}`);
-  }
-}
-
-async function cmdNew(client: any, args: KV) {
-  const title = getString(args, "title") || `opx:${Date.now()}`;
-  const created = await client.session.create({ body: { title } });
-  const sessionID = created.data?.id;
-  if (!sessionID) throw new Error("Failed to create session");
-
-  const prompt = getString(args, "prompt");
-  const agent = getString(args, "agent");
-  const model = parseModel(getString(args, "model"));
-  const asyncMode = hasFlag(args, "async");
-
-  if (prompt) {
-    if (asyncMode) {
-      await promptAsyncRequest(sessionID, {
-        agent: agent || undefined,
-        model,
-        parts: [{ type: "text", text: prompt }],
-      });
-    } else {
-      await client.session.prompt({
-        timeout: REQUEST_TIMEOUT_MS,
-        path: { id: sessionID },
-        body: {
-          agent: agent || undefined,
-          model,
-          parts: [{ type: "text", text: prompt }],
-        },
-      });
-    }
-  }
-
-  console.log(sessionID);
-}
-
-async function cmdSend(client: any, args: KV) {
-  const session = getString(args, "session");
-  const prompt = getString(args, "prompt");
-  if (!session || !prompt) {
-    throw new Error("send requires --session and --prompt");
-  }
-
-  const agent = getString(args, "agent");
-  const model = parseModel(getString(args, "model"));
-  const asyncMode = hasFlag(args, "async");
-  const noReply = hasFlag(args, "no-reply");
-
-  if (asyncMode) {
-    await promptAsyncRequest(session, {
-      agent: agent || undefined,
-      model,
-      noReply,
-      parts: [{ type: "text", text: prompt }],
-    });
-    console.log(session);
-    return;
-  }
-
-  const res = await client.session.prompt({
-    timeout: REQUEST_TIMEOUT_MS,
-    path: { id: session },
-    body: {
-      agent: agent || undefined,
-      model,
-      noReply,
-      parts: [{ type: "text", text: prompt }],
-    },
-  });
-
-  console.log(flattenText(res.data?.parts ?? []) || session);
-}
-
-async function cmdMessages(client: any, args: KV) {
-  const session = getString(args, "session");
-  if (!session) throw new Error("messages requires --session");
-  const result = await client.session.messages({ path: { id: session } });
-  console.log(JSON.stringify(result.data ?? [], null, 2));
-}
-
-async function cmdTail(client: any, args: KV) {
-  const session = getString(args, "session");
-  if (!session) throw new Error("tail requires --session");
-  const lines = Number(getString(args, "lines", "30"));
-  const result = await client.session.messages({ path: { id: session } });
-  console.log(renderTranscript(result.data ?? [], lines));
-}
 
 async function cmdErrors(client: any, args: KV) {
   const session = getString(args, "session");
@@ -872,75 +768,6 @@ async function cmdLimitErrors(client: any, args: KV) {
         },
   );
   console.log(JSON.stringify(out, null, 2));
-}
-
-async function cmdStatus(client: any) {
-  const sessions = await client.session.list({});
-  const out = (sessions.data ?? []).map((s: any) => ({
-    id: s.id,
-    title: s.title,
-    updated: s.time?.updated,
-  }));
-  console.log(JSON.stringify(out, null, 2));
-}
-
-async function cmdWait(client: any, args: KV) {
-  const session = getString(args, "session");
-  if (!session) throw new Error("wait requires --session");
-  const contains = getString(args, "contains");
-  const timeout = Number(getString(args, "timeout", "120"));
-
-  const start = Date.now();
-  let stableCount = 0;
-  let previousLength = -1;
-
-  while ((Date.now() - start) / 1000 < timeout) {
-    const messages =
-      (
-        await client.session.messages({
-          timeout: REQUEST_TIMEOUT_MS,
-          path: { id: session },
-        })
-      ).data ?? [];
-    const assistantText = renderAssistantText(messages);
-
-    if (contains && assistantText.includes(contains)) {
-      console.log(`matched:${contains}`);
-      return;
-    }
-
-    if (!contains) {
-      if (messages.length === previousLength) {
-        stableCount += 1;
-      } else {
-        stableCount = 0;
-      }
-      previousLength = messages.length;
-
-      if (stableCount >= 3) {
-        console.log("idle");
-        return;
-      }
-    }
-
-    await new Promise((r) => setTimeout(r, 1000));
-  }
-
-  console.log("timeout");
-}
-
-async function cmdDelete(client: any, args: KV) {
-  const session = getString(args, "session");
-  if (!session) throw new Error("delete requires --session");
-  await client.session.delete({ path: { id: session } });
-  console.log(session);
-}
-
-async function cmdAbort(client: any, args: KV) {
-  const session = getString(args, "session");
-  if (!session) throw new Error("abort requires --session");
-  await client.session.abort({ path: { id: session } });
-  console.log(session);
 }
 
 // ---------------------------------------------------------------------------
@@ -1475,62 +1302,6 @@ async function main() {
           help();
           process.exitCode = 1;
       }
-      break;
-
-    // Legacy flat commands (backward compat)
-    case "health":
-      await cmdHealth(client);
-      break;
-    case "list":
-      await cmdList(client);
-      break;
-    case "new":
-      await cmdNew(client, args);
-      break;
-    case "send":
-      await cmdSend(client, args);
-      break;
-    case "messages":
-      await cmdMessages(client, args);
-      break;
-    case "tail":
-      await cmdTail(client, args);
-      break;
-    case "errors":
-      await cmdErrors(client, args);
-      break;
-    case "limit-errors":
-      await cmdLimitErrors(client, args);
-      break;
-    case "status":
-      await cmdStatus(client);
-      break;
-    case "wait":
-      await cmdWait(client, args);
-      break;
-    case "abort":
-      await cmdAbort(client, args);
-      break;
-    case "delete":
-      await cmdDelete(client, args);
-      break;
-    case "probe-async-command":
-      await cmdProbeAsyncCommand(client, args);
-      break;
-    case "probe-async-subagent":
-      await cmdProbeAsyncSubagent(client, args);
-      break;
-    case "probe-limit":
-      await cmdProbeLimit(client, args);
-      break;
-    case "probe-limit-known":
-      await cmdProbeLimitKnown(args);
-      break;
-    case "probe-limit-trace":
-      await cmdProbeLimitTrace(client, args);
-      break;
-    case "trace":
-      await cmdTrace(client, args);
       break;
 
     default:
