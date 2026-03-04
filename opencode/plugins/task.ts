@@ -14,9 +14,12 @@ const ASYNC_HEARTBEAT_INTERVAL_MS = 120_000;
 const PROMPT_ASYNC_START_TIMEOUT_MS = 20_000;
 const MAX_ERROR_SUMMARY_CHARS = 500;
 const MAX_RESULT_CHARS = 6000;
+const ASYNC_TRANSCRIPT_TAIL_LINES = 40;
 const MAX_MODEL_HINT_ITEMS = 25;
+const TRANSCRIPT_PARSER_SCRIPT =
+  "/home/dzack/.config/agents/skills/reading-transcripts/scripts/parse_opencode_log.py";
 const TASK_TOOL_DESCRIPTION_BASE =
-  "Delegate work to a subagent. Supports two modes: sync (default) and async. Sync mode is blocking and best for smaller sequential tasks where you need the result before continuing. Async mode is non-blocking: it starts the child task and returns immediately, then sends callback updates to the parent session (running/heartbeat and final completed/failed status). Both modes support timeout_seconds (default 1800 / 30m). On timeout, task attempts a clean child-session interrupt and reports a timeout status with transcript access guidance. In async mode, you can continue your own work and wait for callback messages from the subagent.";
+  "Delegate work to a subagent. Supports two modes: sync (default) and async. Sync mode is blocking and best for smaller sequential tasks where you need the result before continuing. Async mode is non-blocking: it starts the child task and returns a running status, then sends callback updates to the parent session (heartbeat and final completed/failed status). Both modes support timeout_seconds (default 1800 / 30m). On timeout, task attempts a clean child-session interrupt and reports a timeout status with transcript access guidance. In async mode, you can continue your own work and wait for callback messages from the subagent.";
 const DEFAULT_SUBAGENT_DESCRIPTION =
   "This subagent should only be called manually by the user.";
 const RATE_LIMIT_FALLBACK_CONFIG_PATH = path.join(
@@ -319,7 +322,7 @@ function buildAsyncCallback(input: {
   kind?: ErrorKind;
   errorName?: string;
   errorMessage?: string;
-  resultText?: string;
+  transcriptTail?: string;
   elapsedSeconds?: number;
   fallbackModels: string[];
 }): string {
@@ -338,9 +341,13 @@ function buildAsyncCallback(input: {
 
   if (input.status === "completed") {
     lines.push(`transcript_hint: Use read_transcript ${input.taskID}`);
-    lines.push("<task_result>");
-    lines.push(truncateText(input.resultText ?? "", MAX_RESULT_CHARS));
-    lines.push("</task_result>");
+    if (input.transcriptTail) {
+      lines.push(`<task_transcript_tail>`);
+      lines.push(input.transcriptTail);
+      lines.push("</task_transcript_tail>");
+    } else {
+      lines.push("task_transcript_tail: unavailable");
+    }
     return lines.join("\n");
   }
 
@@ -399,7 +406,7 @@ function buildTaskToolDescription(subagents: CachedSubagent[]): string {
   ].join("\n");
 }
 
-export const TaskPlugin: Plugin = async ({ client }) => {
+export const TaskPlugin: Plugin = async ({ client, $ }) => {
   if (!isPluginEnabled("task-plugin")) return {};
 
   let cachedSubagents: CachedSubagent[] = [];
@@ -709,6 +716,31 @@ export const TaskPlugin: Plugin = async ({ client }) => {
     }
   };
 
+  const getChildTranscriptTail = async (
+    childSessionID: string,
+  ): Promise<string | undefined> => {
+    const outPath = `/tmp/transcript-${childSessionID}-${Date.now()}.txt`;
+    try {
+      await $`python ${TRANSCRIPT_PARSER_SCRIPT} ${childSessionID} > ${outPath}`.quiet();
+    } catch {
+      return undefined;
+    }
+
+    try {
+      const content = fs.readFileSync(outPath, "utf-8").trimEnd();
+      if (!content) return undefined;
+      const lines = content.split("\n");
+      const tail = lines.slice(-ASYNC_TRANSCRIPT_TAIL_LINES).join("\n").trim();
+      return tail || undefined;
+    } catch {
+      return undefined;
+    } finally {
+      try {
+        fs.unlinkSync(outPath);
+      } catch {}
+    }
+  };
+
   const emitParentCallback = async (
     parentSessionID: string,
     text: string,
@@ -732,26 +764,7 @@ export const TaskPlugin: Plugin = async ({ client }) => {
     const startMs = Date.now();
     const timeoutMs = input.timeoutSeconds * 1000;
     const fallbackModels = getFallbackModels();
-    let lastHeartbeatAt = Date.now();
-
-    await emitParentCallback(
-      input.parentSessionID,
-      buildAsyncCallback({
-        status: "running",
-        taskID: input.childSessionID,
-        subagentType: input.subagentType,
-        timeoutSeconds: input.timeoutSeconds,
-        elapsedSeconds: 0,
-        fallbackModels,
-      }),
-      false,
-    ).catch(async (error) => {
-      await log("warn", "Failed to emit async start callback", {
-        parentSessionID: input.parentSessionID,
-        childSessionID: input.childSessionID,
-        error: stringifyUnknown(error),
-      });
-    });
+    let lastHeartbeatAt = startMs;
 
     while (Date.now() - startMs < timeoutMs) {
       const controller = asyncMonitorControllers.get(input.childSessionID);
@@ -786,6 +799,8 @@ export const TaskPlugin: Plugin = async ({ client }) => {
       }
 
       if (diagnostics.assistantText) {
+        const transcriptTail = await getChildTranscriptTail(input.childSessionID);
+
         await log("info", "Async task completed", {
           childSessionID: input.childSessionID,
           subagentType: input.subagentType,
@@ -799,7 +814,7 @@ export const TaskPlugin: Plugin = async ({ client }) => {
             taskID: input.childSessionID,
             subagentType: input.subagentType,
             timeoutSeconds: input.timeoutSeconds,
-            resultText: diagnostics.assistantText,
+            transcriptTail,
             elapsedSeconds,
             fallbackModels,
           }),
@@ -1224,11 +1239,11 @@ export const TaskPlugin: Plugin = async ({ client }) => {
 
             return [
               "task_mode: async",
-              "task_status: started",
+              "task_status: running",
               `task_id: ${childSessionID}`,
               `subagent_type: ${args.subagent_type}`,
               `timeout_seconds: ${timeoutSeconds}`,
-              "callback: parent session will receive running and terminal status updates automatically.",
+              "callback: parent session will receive heartbeat and terminal status updates automatically.",
               `transcript_hint: Use read_transcript ${childSessionID}`,
             ].join("\n");
           }
