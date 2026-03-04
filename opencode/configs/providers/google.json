@@ -1,6 +1,117 @@
 {
   "blacklist": [],
   "models": {
+    "antigravity-gemini-3-flash": {
+      "name": "Gemini 3 Flash",
+      "limit": {
+        "context": 1048576,
+        "output": 65536
+      },
+      "modalities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "variants": {
+        "minimal": {},
+        "low": {},
+        "medium": {},
+        "high": {}
+      }
+    },
+    "antigravity-gemini-3-pro": {
+      "name": "Gemini 3 Pro",
+      "limit": {
+        "context": 1048576,
+        "output": 65535
+      },
+      "modalities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "variants": {
+        "low": {},
+        "high": {}
+      }
+    },
+    "antigravity-gemini-3.1-pro": {
+      "name": "Gemini 3.1 Pro",
+      "limit": {
+        "context": 1048576,
+        "output": 65535
+      },
+      "modalities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "variants": {
+        "low": {},
+        "high": {}
+      }
+    },
+    "antigravity-claude-sonnet-4-6": {
+      "name": "Claude Sonnet 4.6",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "modalities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      }
+    },
+    "antigravity-claude-opus-4-6-thinking": {
+      "name": "Claude Opus 4.6 Thinking",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      },
+      "modalities": {
+        "input": [
+          "text",
+          "image",
+          "pdf"
+        ],
+        "output": [
+          "text"
+        ]
+      },
+      "variants": {
+        "low": {
+          "thinkingConfig": {
+            "thinkingBudget": 8192
+          }
+        },
+        "max": {
+          "thinkingConfig": {
+            "thinkingBudget": 32768
+          }
+        }
+      }
+    },
     "gemini-2.5-flash": {
       "name": "Gemini 2.5 Flash",
       "limit": {
@@ -101,52 +212,6 @@
         "output": [
           "text"
         ]
-      }
-    },
-    "gemini-claude-sonnet-4-6": {
-      "name": "Claude Sonnet 4.6",
-      "limit": {
-        "context": 200000,
-        "output": 64000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image",
-          "pdf"
-        ],
-        "output": [
-          "text"
-        ]
-      }
-    },
-    "gemini-claude-opus-4-6-thinking": {
-      "name": "Claude Opus 4.6 Thinking",
-      "limit": {
-        "context": 200000,
-        "output": 64000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image",
-          "pdf"
-        ],
-        "output": [
-          "text"
-        ]
-      },
-      "variants": {
-        "low": {
-          "thinkingConfig": {
-            "thinkingBudget": 8192
-          }
-        },
-        "max": {
-          "thinkingConfig": {
-            "thinkingBudget": 32768
-          }
-        }
       }
     }
   }
