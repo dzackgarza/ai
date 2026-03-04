@@ -110,3 +110,17 @@ except subprocess.CalledProcessError as e:
     print(f"Warning: Failed to restart opencode-serve: {e.stderr.strip()}")
 except FileNotFoundError:
     print("Warning: systemctl not found, skipping service restart")
+
+# Refresh models to pick up any provider changes
+try:
+    subprocess.run(
+        ["opencode", "models", "--refresh"],
+        check=True,
+        capture_output=True,
+        text=True
+    )
+    print("Refreshed opencode models")
+except subprocess.CalledProcessError as e:
+    print(f"Warning: Failed to refresh models: {e.stderr.strip()}")
+except FileNotFoundError:
+    print("Warning: opencode not found, skipping models refresh")
