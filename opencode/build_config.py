@@ -2,6 +2,7 @@
 import json
 import os
 import glob
+import subprocess
 import urllib.request
 import jsonschema
 
@@ -95,3 +96,17 @@ with open(output_path, "w") as f:
     f.write("\n")
 
 print(f"Successfully rebuilt and validated config at {output_path}")
+
+# Restart opencode-serve user service to pick up config changes
+try:
+    subprocess.run(
+        ["systemctl", "--user", "restart", "opencode-serve"],
+        check=True,
+        capture_output=True,
+        text=True
+    )
+    print("Restarted opencode-serve user service")
+except subprocess.CalledProcessError as e:
+    print(f"Warning: Failed to restart opencode-serve: {e.stderr.strip()}")
+except FileNotFoundError:
+    print("Warning: systemctl not found, skipping service restart")
