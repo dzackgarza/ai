@@ -144,6 +144,16 @@ Gate decision:
 - **PASS**: proceed to Phase 1
 - **FAIL**: Phase 1 blocked; Phase 0 parity defects must be fixed first
 
+### 4.6 Verification Record (2026-03-05)
+
+Human TUI verification result: **PASS**.
+
+Recorded outcome:
+
+1. Sync task metrics are live and non-zero when child work occurs.
+2. Tool-call activity is populated in the parent task display when child tools provide titles.
+3. Child session navigation/observability behavior is correct for Phase 0 parity.
+
 ---
 
 ## 5. Phase 1 (Session Management Parity) - 90%
@@ -402,3 +412,42 @@ Conclusion:
 
 1. Current plugin behavior is at upstream parity for this display characteristic.
 2. Fixing MCP named-current-operation display requires upstream/core change (or explicit title synthesis policy), not a session-linking fix in this plugin.
+
+### 10.8 Resumed Session Display Behavior (Observed)
+
+Observed in TUI:
+
+1. When a child session is resumed via another `task` invocation, each corresponding parent task component can reflect cumulative progress from the same child session.
+2. This means parent-task feed history may show repeated/cumulative child-session progress snapshots rather than isolated per-invocation deltas.
+
+Implication:
+
+1. Parent task cards should be treated as session-progress views, not strict per-invocation execution ledgers, when multiple task entries target one resumed child session.
+
+Mitigation adopted:
+
+1. Transcript export now includes an explicit **Invocation Result Snapshot** section for the current task call.
+2. This preserves top-level narrative reconstruction for delegation chains even when resumed-session UI cards are cumulative.
+
+## 11. Current Phase Status (Working Baseline)
+
+Status snapshot for current implementation:
+
+1. **Phase 0 (Upstream Shadowing): PASS (human verified previously)**
+   - Native task lifecycle contract preserved via core hooks:
+     - `context.metadata(... sessionId ...)`
+     - `tool.execute.after` metadata/title hydration
+   - Child session registration and TUI navigation behavior preserved.
+
+2. **Phase 1 (Async Session Management): IMPLEMENTED, pending human gate**
+   - Async pathway is non-blocking and reuses sync terminal summary construction.
+   - Sync pathway remains default and uses the same shared terminal summary builder.
+   - Timeout handling is unified for sync/async and returns explicit `status: timeout` summaries (not generic execution errors), with transcript+resume guidance.
+
+3. **Phase 2 (Parent Tool Part Display Refinements): NOT STARTED / BLOCKED BY GATE**
+   - No Phase 2-specific parent tool-part emulation logic should be added before Phase 1 gate pass.
+
+Operational guardrail now required:
+
+1. Only one active `task` plugin implementation may be loaded at runtime.
+2. Backup/reference files must not export a live `TaskPlugin` in `.ts` form.
