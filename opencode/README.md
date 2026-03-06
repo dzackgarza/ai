@@ -49,9 +49,7 @@ just harness run --help
 - `configs/subagents/`: active subagent definitions plus archived migration scripts
 - `plugins/`: runtime-loaded plugins and plugin tests
 - `harness/`: SDK-first session automation
-- `scripts/maintenance/`: neutral maintenance helpers
-- `archive/`: historical one-offs and runtime debris, not canonical workflows
-- `docs/`: stable documentation that is not owned by a narrower subtree
+- `archive/`: historical one-offs, repo notes, and runtime debris that are not canonical workflows
 
 ## Generated Outputs
 
@@ -66,7 +64,7 @@ If you hand-edit those outputs, the next build can overwrite your changes.
 1. Put shared permission behavior in reusable capability sets in `manage_permissions.py`.
 2. Add provider-specific maintenance under `configs/providers/scripts/`.
 3. Treat subagent migration helpers as historical unless they are part of an ongoing recipe.
-4. Keep one-off probes, logs, and abandoned migrations out of the root path.
+4. Keep one-off probes, logs, abandoned migrations, and repo notes out of the root path.
 5. Validate policy intent against `PERMISSION_SPEC.md` before applying or building config outputs.
 
 ## Review Checklist
