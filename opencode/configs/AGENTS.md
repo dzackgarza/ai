@@ -36,6 +36,16 @@ configs/
 4. Merges all `subagents/*.json` into `config["agent"]` (appended after primary agents)
 5. Writes the combined result to `opencode.json`
 
+## Permissions
+
+Permissions are **NOT generated or inherited**. Each agent/subagent file explicitly defines its own `permission` block.
+
+- `config_skeleton.json` — top-level permission defaults (used for top-level permissions)
+- `configs/agents/*.json` — each agent has its own `permission` block (completely defines what that agent can do)
+- `configs/subagents/*.json` — each subagent has its own `permission` block
+
+**There is no inheritance.** If you want an agent to have the same permissions as another, you must explicitly copy the permission block.
+
 ## Common Mistakes
 
 | Mistake | Why It's Wrong |
