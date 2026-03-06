@@ -1,13 +1,0 @@
-[youtube] Extracting URL: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-[youtube] dQw4w9WgXcQ: Downloading webpage
-[youtube] dQw4w9WgXcQ: Downloading android vr player API JSON
-[youtube] dQw4w9WgXcQ: Downloading web player API JSON
-[youtube] dQw4w9WgXcQ: Downloading web safari player API JSON
-[youtube] dQw4w9WgXcQ: Downloading player 9f4cc5e4-tv
-[youtube] [jsc:node] Solving JS challenges using node
-[youtube] dQw4w9WgXcQ: Downloading m3u8 information
-[info] dQw4w9WgXcQ: Downloading 1 format(s): 251
-[download] Destination: /tmp/youtube-whisper-fixture-I8YTMD/dQw4w9WgXcQ.webm
-[download]   0.0% of    3.27MiB at  Unknown B/s ETA Unknown[download]   0.1% of    3.27MiB at    2.25MiB/s ETA 00:01  [download]   0.2% of    3.27MiB at    3.71MiB/s ETA 00:00[download]   0.4% of    3.27MiB at    6.11MiB/s ETA 00:00[download]   0.9% of    3.27MiB at    2.05MiB/s ETA 00:01[download]   1.9% of    3.27MiB at    2.18MiB/s ETA 00:01[download]   3.8% of    3.27MiB at    2.97MiB/s ETA 00:01[download]   7.6% of    3.27MiB at    4.36MiB/s ETA 00:00[download]  15.2% of    3.27MiB at    6.97MiB/s ETA 00:00[download]  30.5% of    3.27MiB at   11.36MiB/s ETA 00:00[download]  61.0% of    3.27MiB at   19.60MiB/s ETA 00:00[download] 100.0% of    3.27MiB at   28.68MiB/s ETA 00:00[download] 100% of    3.27MiB in 00:00:00 at 17.13MiB/s  
-[ExtractAudio] Destination: /tmp/youtube-whisper-fixture-I8YTMD/dQw4w9WgXcQ.mp3
-Deleting original file /tmp/youtube-whisper-fixture-I8YTMD/dQw4w9WgXcQ.webm (pass -k to keep)

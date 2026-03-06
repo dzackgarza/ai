@@ -1,3 +1,0 @@
-Installed 41 packages in 772ms
-/home/dzack/.cache/uv/archive-v0/CAkjSmqUsginrSl9vC6Ek/lib/python3.13/site-packages/whisper/transcribe.py:132: UserWarning: FP16 is not supported on CPU; using FP32 instead
-  warnings.warn("FP16 is not supported on CPU; using FP32 instead")
