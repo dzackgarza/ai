@@ -6,8 +6,10 @@ Scope: current plugin workspace and active OpenCode wiring
 ## Remaining Gaps
 
 1. Human TUI verification is still required for task observability Phase 1/2 behavior (live child-session visibility, parent tool metrics, async polling display updates).
-2. Domain-specific `webfetch` handlers still need implementation planning beyond GitHub.
-3. API-viability checks (below) show several domains are only partial-replacement candidates (metadata parity but not full content parity).
+2. `webfetch` domain routing currently implemented for `github.com` and `reddit.com`; handlers for Stack Exchange, Wikipedia/Wikimedia, package registries, Hugging Face, and YouTube are still pending.
+3. Reddit route dependency is external (`apify` CLI + actor + proxy). Failure path is currently generic (`Failed to fetch URL`) and should be made explicitly actionable for missing actor/auth/proxy configuration.
+4. Cache lifecycle is lazy-expiration on read; there is no background cleanup/pruning pass for stale entries.
+5. API-viability checks (below) show several domains are only partial-replacement candidates (metadata parity but not full content parity).
 
 ## Domain Handler Viability (API vs Web Parity)
 
@@ -26,7 +28,7 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
 
 ### 2) Reddit
 
-- Status: `Partial` (likely viable for public thread text, but deployment risk is high without auth-aware handling).
+- Status: `Implemented (via Apify actor), still Partial for parity/risk`.
 - Evidence:
   - Reddit API docs show listing endpoints, pagination (`limit` max 100, `after`/`before`) and comments endpoints.
   - Live unauthenticated JSON access from this environment is currently blocked/challenged (`403 Blocked`) on:
@@ -35,6 +37,8 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
     - `https://api.reddit.com/...`
   - `datavorous/yars` test (README “scrape post details” path) was executed and returned `None` because upstream Reddit request returned `403`.
   - `yars` `search_reddit` and `scrape_user_data` also returned empty results due to `403`.
+  - Current plugin route uses `apify call spry_wholemeal/reddit-scraper` to fetch post + comments and renders a nested markdown comment tree.
+  - Current plugin route is covered by unit tests (`routes reddit posts through apify and renders nested markdown comments`).
 - Links:
   - https://www.reddit.com/dev/api/
   - https://github.com/datavorous/yars
@@ -125,3 +129,7 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
    - `tests/unit/searxng-search.test.ts` validates `webfetch` overflow behavior (save-to-`/tmp` when token count exceeds inline threshold).
    - `tests/unit/searxng-search.test.ts` asserts `context.ask` invocation for both `websearch` and `webfetch`.
    - `tests/unit/callback-integration.test.ts` validates consolidated callback semantics across `task` (async terminal callback), `sleep`, and `async_command`.
+6. Additional `webfetch` coverage now in `tests/unit/searxng-search.test.ts`:
+   - Reddit routed extraction with nested markdown comments (mocked Apify dataset output).
+   - Output-overflow spill-to-file behavior includes full report token gating.
+   - URL cache hit path (`Route: default/cache`) with TTL-backed cache storage.

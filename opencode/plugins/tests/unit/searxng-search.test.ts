@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { mkdtemp, rm } from "node:fs/promises";
+import { join } from "node:path";
 
 type AskInput = {
   permission: string;
@@ -56,8 +58,24 @@ function streamFromText(text: string): ReadableStream<Uint8Array> {
   });
 }
 
-async function loadPlugin(instanceUrl: string) {
+async function loadPlugin(
+  instanceUrl: string,
+  options?: {
+    webfetchCacheEnabled?: "0" | "1";
+    webfetchCacheDir?: string;
+    webfetchCacheTtlDays?: string;
+  },
+) {
   process.env.SEARXNG_INSTANCE_URL = instanceUrl;
+  process.env.WEBFETCH_CACHE_ENABLED = options?.webfetchCacheEnabled ?? "1";
+  process.env.WEBFETCH_CACHE_DIR =
+    options?.webfetchCacheDir ??
+    `/tmp/opencode-webfetch-test-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  if (options?.webfetchCacheTtlDays) {
+    process.env.WEBFETCH_CACHE_TTL_DAYS = options.webfetchCacheTtlDays;
+  } else {
+    delete process.env.WEBFETCH_CACHE_TTL_DAYS;
+  }
   const mod = await import(
     new URL(`../../searxng-search.ts?ts=${Date.now()}-${Math.random()}`, import.meta.url).href
   );
@@ -79,6 +97,10 @@ describe("searxng-search plugin", () => {
   const originalFetch = globalThis.fetch;
   const originalSpawn = Bun.spawn;
   const originalWrite = Bun.write;
+  const originalSearxngUrl = process.env.SEARXNG_INSTANCE_URL;
+  const originalCacheEnabled = process.env.WEBFETCH_CACHE_ENABLED;
+  const originalCacheDir = process.env.WEBFETCH_CACHE_DIR;
+  const originalCacheTtlDays = process.env.WEBFETCH_CACHE_TTL_DAYS;
 
   beforeEach(() => {
     globalThis.fetch = originalFetch;
@@ -90,6 +112,14 @@ describe("searxng-search plugin", () => {
     globalThis.fetch = originalFetch;
     (Bun as any).spawn = originalSpawn;
     (Bun as any).write = originalWrite;
+    if (originalSearxngUrl === undefined) delete process.env.SEARXNG_INSTANCE_URL;
+    else process.env.SEARXNG_INSTANCE_URL = originalSearxngUrl;
+    if (originalCacheEnabled === undefined) delete process.env.WEBFETCH_CACHE_ENABLED;
+    else process.env.WEBFETCH_CACHE_ENABLED = originalCacheEnabled;
+    if (originalCacheDir === undefined) delete process.env.WEBFETCH_CACHE_DIR;
+    else process.env.WEBFETCH_CACHE_DIR = originalCacheDir;
+    if (originalCacheTtlDays === undefined) delete process.env.WEBFETCH_CACHE_TTL_DAYS;
+    else process.env.WEBFETCH_CACHE_TTL_DAYS = originalCacheTtlDays;
   });
 
   it("formats batched websearch results with per-query pagination and separation", async () => {
@@ -266,15 +296,143 @@ describe("searxng-search plugin", () => {
     expect(context.metadatas).toHaveLength(1);
     expect(context.metadatas[0]?.title).toBe("Web fetch: example.com/big");
 
-    expect(writes).toHaveLength(1);
-    expect(writes[0]!.path.startsWith("/tmp/webfetch-")).toBe(true);
-    expect(writes[0]!.content).toBe(largeText);
+    expect(writes).toHaveLength(2);
+    const oversizedWrite = writes.find((item) => item.path.startsWith("/tmp/webfetch-"));
+    const cacheWrite = writes.find((item) => item.path.endsWith(".json"));
+    expect(oversizedWrite).toBeDefined();
+    expect(cacheWrite).toBeDefined();
+    expect(oversizedWrite!.content).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(oversizedWrite!.content).toContain(`Route: default`);
+    expect(oversizedWrite!.content).toContain("Source URL: https://example.com/big");
+    expect(oversizedWrite!.content).toContain(largeText);
 
     expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
     expect(output).toContain("Route: default");
-    expect(output).toContain("Content exceeds inline limit (20000 tokens).");
-    expect(output).toContain(`Saved full content: ${writes[0]!.path}`);
+    expect(output).toContain("Full report exceeds inline limit (20000 tokens).");
+    expect(output).toContain(`Saved full content: ${oversizedWrite!.path}`);
     expect(output).toContain("Token count:");
+  });
+
+  it("routes reddit posts through apify and renders nested markdown comments", async () => {
+    const apifyDataset = [
+      {
+        record_type: "post",
+        post_id: "abc123",
+        permalink: "/r/test/comments/abc123/sample_post/",
+        title: "Sample Post Title",
+        text: "Sample post body.",
+        author: "op_author",
+        subreddit: "test",
+        score: 42,
+        num_comments: 3,
+      },
+      {
+        record_type: "comment",
+        post_id: "abc123",
+        comment_id: "c1",
+        parent_id: "t3_abc123",
+        author: "top_level",
+        score: 10,
+        text: "Top level comment",
+      },
+      {
+        record_type: "comment",
+        post_id: "abc123",
+        comment_id: "c2",
+        parent_id: "t1_c1",
+        author: "nested_user",
+        score: 7,
+        text: "Nested reply",
+      },
+      {
+        record_type: "comment",
+        post_id: "abc123",
+        comment_id: "c3",
+        parent_id: "t3_abc123",
+        author: "second_top",
+        score: 5,
+        text: "Second top-level comment",
+      },
+    ];
+
+    (Bun as any).spawn = (args: string[]) => {
+      if (args[0] === "apify" && args[1] === "call") {
+        return {
+          stdout: streamFromText(JSON.stringify(apifyDataset)),
+          stderr: streamFromText(""),
+          exited: Promise.resolve(0),
+        };
+      }
+      return {
+        stdout: streamFromText(""),
+        stderr: streamFromText("unexpected command"),
+        exited: Promise.resolve(1),
+      };
+    };
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://www.reddit.com/r/test/comments/abc123/sample_post/",
+      },
+      context as any,
+    );
+
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Route: reddit");
+    expect(output).toContain("Source URL: /r/test/comments/abc123/sample_post/");
+    expect(output).toContain("# Reddit Post");
+    expect(output).toContain("## Comments (nested)");
+    expect(output).toContain("- u/top_level (score 10):");
+    expect(output).toContain("Top level comment");
+    expect(output).toContain("  - u/nested_user (score 7):");
+    expect(output).toContain("Nested reply");
+    expect(output).toContain("- u/second_top (score 5):");
+  });
+
+  it("uses webfetch cache on repeated URL requests with cache enabled", async () => {
+    const tempRoot = await mkdtemp("/tmp/opencode-webfetch-cache-test-");
+    const cacheDir = join(tempRoot, "cache");
+    const calls: string[][] = [];
+
+    try {
+      (Bun as any).spawn = (args: string[]) => {
+        calls.push(args);
+        return {
+          stdout: streamFromText("cached page content"),
+          stderr: streamFromText(""),
+          exited: Promise.resolve(0),
+        };
+      };
+
+      const { webfetch } = await loadPlugin("http://localhost/searxng", {
+        webfetchCacheEnabled: "1",
+        webfetchCacheDir: cacheDir,
+        webfetchCacheTtlDays: "90",
+      });
+      const context = buildContext();
+
+      const first = await webfetch.execute(
+        {
+          url: "https://example.com/cache-me",
+        },
+        context as any,
+      );
+      const second = await webfetch.execute(
+        {
+          url: "https://example.com/cache-me",
+        },
+        context as any,
+      );
+
+      expect(calls).toHaveLength(2);
+      expect(first).toContain("Route: default");
+      expect(second).toContain("Route: default/cache");
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
   });
 
   it("routes github URLs through gh handler commands", async () => {

@@ -258,3 +258,41 @@ To add a hook: create `src/stop_hooks/my-hook.ts`, export one `async (ctx: StopH
 | `GROQ_API_KEY` | prompt-router classifier | — |
 | `NVIDIA_API_KEY` | prompt-router classifier fallback | — |
 | `OPENROUTER_API_KEY` | prompt-router classifier last resort | — |
+
+## YouTube Processing Pipeline Dependencies
+
+The YouTube transcript pipeline has hard dependencies. These are not optional fallbacks.
+
+### Required runtime dependencies
+
+- `yt-dlp` with impersonation support (`curl-cffi`): use `yt-dlp[default,curl-cffi]`
+- JavaScript runtime for YouTube challenge solving: `bun`, `node`, or `deno`
+- yt-dlp remote challenge components: `--remote-components ejs:github`
+- Media tooling: `ffmpeg` and `ffprobe`
+- Speech transcription stage: `openai-whisper` (CLI `whisper`)
+
+### English-first processing path
+
+1. Enumerate available subtitles (`--list-subs`)
+2. Extract English subtitles (`--sub-langs "en,en-orig"`)
+3. If no usable English subtitles are available, run speech transcription with Whisper
+
+### Tested command shape
+
+```bash
+uvx --from 'yt-dlp[default,curl-cffi]' yt-dlp \
+  --remote-components ejs:github \
+  --js-runtimes bun --js-runtimes node \
+  --list-subs "<url>"
+
+uvx --from 'yt-dlp[default,curl-cffi]' yt-dlp \
+  --remote-components ejs:github \
+  --js-runtimes bun --js-runtimes node \
+  --skip-download --write-subs --write-auto-subs \
+  --sub-langs "en,en-orig" --sub-format vtt \
+  -o "<out>/%(id)s.%(ext)s" "<url>"
+
+uvx --from openai-whisper whisper \
+  --model tiny --language en --task transcribe \
+  --output_format txt --output_dir "<out>" "<audio-file>"
+```
