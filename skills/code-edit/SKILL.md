@@ -19,7 +19,7 @@ Prefer `edit_file` for modifications. Minimize full-file reads.
 
 ## Steps
 
-1. Locate the target file(s) (WarpGrep if needed).
+1. Locate the target file(s) (grep if needed).
 2. Read the smallest necessary snippet(s).
 3. Use `edit_file` with minimal context and `// ... existing code ...` placeholders.
 4. Re-run relevant checks (tests/build/lint) if available.

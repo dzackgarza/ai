@@ -36,6 +36,14 @@ npm install -g @kilocode/cli
 curl -fsSL https://ampcode.com/install.sh | bash
 ```
 
+**Cursor CLI** (required for Cursor ACP provider in OpenCode):
+
+```bash
+curl -fsSL https://cursor.com/install.sh | bash
+```
+
+See [Cursor CLI announcement](https://cursor.com/blog/cli) for details.
+
 **Post-installation:**
 
 ```bash
@@ -467,8 +475,10 @@ Config: `~/ai/opencode/opencode.json`
 | Plugin                             | Purpose                                               | Link                                                     |
 | ---------------------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
 | `opencode-antigravity-auth@latest` | Antigravity provider auth (Gemini, Claude via Google) | https://github.com/NoeFabris/opencode-antigravity-auth   |
+| `opencode-anthropic-auth@latest`   | Anthropic OAuth authentication                        | https://github.com/anomalyco/opencode-anthropic-auth     |
 | `opencode-qwencode-auth`           | Qwen OAuth authentication                             | https://github.com/anomalyco/opencode/issues/11557       |
 | `opencode-openai-codex-auth`       | OpenAI Codex auth (GPT-5.x Codex models)              | https://github.com/numman-ali/opencode-openai-codex-auth |
+| `@rama_nigg/open-cursor@latest`    | Cursor ACP provider (requires Cursor CLI)           | https://github.com/Nomadcxx/opencode-cursor              |
 
 ### Utility Plugins
 

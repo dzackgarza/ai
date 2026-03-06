@@ -6,10 +6,11 @@ Scope: current plugin workspace and active OpenCode wiring
 ## Remaining Gaps
 
 1. Human TUI verification is still required for task observability Phase 1/2 behavior (live child-session visibility, parent tool metrics, async polling display updates).
-2. `webfetch` domain routing currently implemented for `github.com`, `reddit.com`, and YouTube URLs; handlers for Stack Exchange, Wikipedia/Wikimedia, package registries, and Hugging Face are still pending.
-3. Reddit route dependency is external (`apify` CLI + actor + proxy). Failure path is currently generic (`Failed to fetch URL`) and should be made explicitly actionable for missing actor/auth/proxy configuration.
-4. Cache lifecycle is lazy-expiration on read; there is no background cleanup/pruning pass for stale entries.
-5. API-viability checks (below) show several domains are only partial-replacement candidates (metadata parity but not full content parity).
+2. `webfetch` domain routing is currently implemented for `github.com`, `reddit.com`, YouTube URLs, and `wikipedia.org`; handlers for Stack Exchange sites, package registries (`pypi.org` / `npmjs.com` / `crates.io`), and Hugging Face are still pending.
+3. Cache lifecycle is lazy-expiration on read; there is no background cleanup/pruning pass for stale entries.
+4. API-viability checks (below) show several domains are only partial-replacement candidates (metadata parity but not full content parity).
+5. Non-web unit suites (`prompt-router`, `command-interceptor`, `callback-integration`) still use synthetic test inputs and do not yet consume pinned real fixtures.
+6. Documentation-backed validation is incomplete outside the most recent GitHub issue fix; several remaining command/API assumptions still rely on inferred behavior plus mocks rather than direct doc+live verification.
 
 ## Domain Handler Viability (API vs Web Parity)
 
@@ -134,3 +135,17 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
    - Reddit routed extraction with nested markdown comments (mocked Apify dataset output).
    - Output-overflow spill-to-file behavior includes full report token gating.
    - URL cache hit path (`Route: default/cache`) with TTL-backed cache storage.
+7. GitHub issue routing now uses documented `gh issue view ... --json ...` usage (no silent fallback path), and this is covered by targeted unit assertions in both:
+   - `tests/unit/webfetch-handlers/handlers.test.ts`
+   - `tests/unit/searxng-search.test.ts`
+8. Additional correctness-contract coverage completed in this pass:
+   - GitHub command-plan matrix now frozen across scopes: `pull`, `blob`, `commit`, `releases`, `issues`, `pulls`, repo readme, and fallback repo search.
+   - Reddit markdown rendering now validated against a pinned actor-style fixture (`tests/fixtures/reddit-apify-post-details.json`) instead of ad hoc inline payload only.
+   - YouTube transcript pipeline now validates both caption-success and Whisper-success pathways.
+   - YouTube failure render branches are now frozen for subtitle-discovery and audio-download failure cases.
+   - Wikipedia handler now validates both accepted URL forms (`/wiki/<title>` and `/w/index.php?title=...`), canonical source URL normalization, unsupported URL shape rejection, parse error payload rejection, empty parse-html rejection, and converter-failure rejection.
+   - Websearch contract now validates invalid category/offset handling, non-200 backend responses, and malformed schema branches in addition to batching/pagination success path.
+9. Real-fixture migration completed for web tool tests:
+   - `tests/unit/webfetch-handlers/handlers.test.ts` now uses only pinned live fixtures under `tests/fixtures/real/`.
+   - `tests/unit/searxng-search.test.ts` websearch/webfetch external-path tests now consume pinned live fixtures (SearXNG, GitHub, Reddit/Apify, Wikipedia parse+conversion, yt-dlp/Whisper artifacts).
+   - Fixture provenance and capture commands are documented in `tests/fixtures/real/README.md`.

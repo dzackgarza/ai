@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
+"""manage_permissions.py -- Tag-based composable permission system for OpenCode agents.
+
+Architecture:
+    TAG_RULES (ordered layers)    ->  applied by tag membership
+  + CAPABILITIES (composable)     ->  small named functions returning perm dicts
+  + OVERRIDES (per-agent)         ->  explicit exceptions
+  + NON_OVERRIDABLE_DENIES        ->  safety floor, always last
+  = compiled permission dict
+"""
 import json
 import os
+import sys
 import argparse
+from dataclasses import dataclass, field
 
 base_dir = os.path.expanduser("~/.config/opencode")
 skeleton_path = os.path.join(base_dir, "configs", "config_skeleton.json")
@@ -28,19 +39,19 @@ Fix: You MUST use `"edit"` to control writing, editing, and patching files.
 
 2. MCP TOOLS CROSS-EVALUATION
 -------------------------------------------------------------------------------
-If you use custom MCP tools to modify files, they 
+If you use custom MCP tools to modify files, they
 require their own explicit permission blocks in the config.
 
 COMMON MISTAKE:
 Allowing the MCP tool, but setting `"edit": {"*": "deny"}` globally.
-Result: The MCP tool is BLOCKED. OpenCode's engine evaluates the global `edit` 
+Result: The MCP tool is BLOCKED. OpenCode's engine evaluates the global `edit`
 restriction against the file path first, before checking the MCP tool's rule.
-Fix: The allow/deny path patterns for `edit` and ALL file-modifying MCP tools 
+Fix: The allow/deny path patterns for `edit` and ALL file-modifying MCP tools
 MUST be perfectly synchronized to avoid contradictory evaluations.
 
 3. GLOBBING RULES (picomatch/minimatch quirks)
 -------------------------------------------------------------------------------
-OpenCode evaluates permissions against the ABSOLUTE file path 
+OpenCode evaluates permissions against the ABSOLUTE file path
 (e.g., `/home/dzack/ai/src/file.ts`).
 
 - `*` matches ANYTHING, including slashes `/`.
@@ -56,7 +67,7 @@ COMMON MISTAKE:
 Using `"src/*"`.
 Result: Fails to match because it doesn't account for `/home/dzack/ai/`.
 
-Fix: Use a trailing and leading asterisk to absorb the absolute path prefix 
+Fix: Use a trailing and leading asterisk to absorb the absolute path prefix
 and any nested subdirectories.
 Correct: `"*src*"`, `"*.serena/plans*"`, or `"*tests*"`
 
@@ -189,6 +200,10 @@ SERENA_DOCUMENTED_TOOLS = set(
 )
 
 
+# ---------------------------------------------------------------------------
+# Path Rule Builders
+# ---------------------------------------------------------------------------
+
 def make_path_rule(allow_globs, deny_globs=None):
     deny_globs = deny_globs or []
     rule = {}
@@ -244,26 +259,25 @@ def read_only_in(allow_globs, deny_globs=None):
     return perms
 
 
-def merge_perms(*perm_dicts):
+# ---------------------------------------------------------------------------
+# Merge
+# ---------------------------------------------------------------------------
+
+def deep_merge(*dicts):
+    """Merge dicts: nested sub-dicts are merged at the key level, flat values overwrite."""
     result = {}
-    for pd in perm_dicts:
-        result.update(pd)
+    for d in dicts:
+        for key, value in d.items():
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = {**result[key], **value}
+            else:
+                result[key] = value
     return result
 
 
-ALLOW_PURE_AGENT_COORDINATION_TOOLS = {
-    "task": "allow",
-    "todoread": "allow",
-    "todowrite": "allow",
-}
-DENY_SUBAGENT_COORDINATION_TOOLS = {
-    "task": "deny",
-    "todoread": "deny",
-    "todowrite": "deny",
-}
-DENY_PLAN_EXIT = {"plan_exit": "deny"}
-ALLOW_PLAN_EXIT = {"plan_exit": "allow"}
-ALLOW_QUESTION = {"question": "allow"}
+# ---------------------------------------------------------------------------
+# Core Permission Constants
+# ---------------------------------------------------------------------------
 
 ALLOW_STANDARD_CORE = {
     **{tool: "allow" for tool in SERENA_SESSION_META_TOOLS},
@@ -302,70 +316,13 @@ def validate_serena_routing():
 
 validate_serena_routing()
 
-BASELINE_PLUGIN_DENIES = {
-    "async_command": "deny",
-    "async_subagent": "deny",
-    "introspection": "deny",
-    "list_sessions": "deny",
-    "read_transcript": "deny",
-    "git_add": "deny",
-    "git_commit": "deny",
-    "write_plan": "deny",
-}
 
-ALLOW_PURE_AGENT_SESSION_TOOLS = {
-    "introspection": "allow",
-    "list_sessions": "allow",
-    "read_transcript": "allow",
-}
-
-DENY_SUBAGENT_SESSION_TOOLS = {
-    "introspection": "deny",
-    "list_sessions": "deny",
-    "read_transcript": "deny",
-}
-
-DENY_SUBAGENT_ASYNC_TOOLS = {
-    "async_command": "deny",
-    "async_subagent": "deny",
-}
-
-ALLOW_GIT_MUTATION_TOOLS = {
-    "git_add": "allow",
-    "git_commit": "allow",
-}
-
-# Layered baselines (see PERMISSION_SPEC.md section 6.A)
-ALL_AGENTS_BASELINE = merge_perms(
-    ALLOW_STANDARD_CORE,
-    ALLOW_QUESTION,
-    {"bash": "deny"},
-    BASELINE_PLUGIN_DENIES,
-)
-PURE_AGENTS_BASELINE = merge_perms(
-    ALLOW_PURE_AGENT_COORDINATION_TOOLS,
-    ALLOW_PURE_AGENT_SESSION_TOOLS,
-)
-SUBAGENTS_BASELINE = merge_perms(
-    PURE_AGENTS_BASELINE,
-    DENY_SUBAGENT_COORDINATION_TOOLS,
-    DENY_PLAN_EXIT,
-    DENY_SUBAGENT_SESSION_TOOLS,
-    DENY_SUBAGENT_ASYNC_TOOLS,
-)
-TOP_LEVEL_AGENTS_BASELINE = {"todoread": "allow", "todowrite": "allow"}
-
-
-def enforce_non_overridable_denies(perms):
-    return merge_perms(perms, NON_OVERRIDABLE_DENIES)
-
-
-GLOBAL_PERMISSION = enforce_non_overridable_denies(ALL_AGENTS_BASELINE)
+# ---------------------------------------------------------------------------
+# Bash Command Capabilities
+# ---------------------------------------------------------------------------
 
 def make_bash_rules(*command_blocks, default="deny", default_first=False):
-    """
-    Build a `{"bash": {...}}` permission block from reusable command fragments.
-    """
+    """Build a `{"bash": {...}}` permission block from reusable command fragments."""
     rules = {}
     if default_first:
         rules["*"] = default
@@ -429,154 +386,393 @@ ALLOW_STANDARD_BASH = make_bash_rules(
     {"cat*": "deny"},
 )
 
-PROFILES = {
-    # NOTE: Profile composition here should remain consistent with
-    # PERMISSION_SPEC.md (especially baseline layering and role intent).
-    "builder": merge_perms(
-        TOP_LEVEL_AGENTS_BASELINE,
-        read_only_in(["*"]),
-        write_only_in(["*"]),
-        {
-            "task": "allow",
-            "webfetch": "deny",
-            "websearch": "deny",
-            "write_plan": "deny",
-        },
-        DENY_PLAN_EXIT,
-        ALLOW_GIT_MUTATION_TOOLS,
-    ),
-    "planning": merge_perms(
-        TOP_LEVEL_AGENTS_BASELINE,
-        read_only_in(["*"]),
-        write_only_in(["*.serena/plans*"]),
-        {"task": "allow", "write_plan": "allow"},
-        ALLOW_PLAN_EXIT,
-    ),
-    "interactive_general": merge_perms(
-        TOP_LEVEL_AGENTS_BASELINE,
-        PURE_AGENTS_BASELINE,
-        read_only_in(["*"]),
-        write_only_in(["*src*", "*docs*", "*tests*", "*test*", "*.serena/plans*"]),
-        DENY_PLAN_EXIT,
-        ALLOW_STANDARD_BASH,
-    ),
-    "src_writer_strict": merge_perms(
-        SUBAGENTS_BASELINE,
-        read_only_in(
-            ["*src*", "*.serena/plans*"],
-            deny_globs=["*test*", "*tests*", "*docs*"],
-        ),
-        write_only_in(["*src*"]),
-        ALLOW_GIT_MUTATION_TOOLS,
-    ),
-    "test_writer_strict": merge_perms(
-        SUBAGENTS_BASELINE,
-        read_only_in(
-            ["*tests*", "*test*", "*.serena/plans*"],
-            deny_globs=["*src*", "*docs*"],
-        ),
-        write_only_in(["*tests*", "*test*"]),
-        ALLOW_GIT_MUTATION_TOOLS,
-    ),
-    "docs_writer_strict": merge_perms(
-        SUBAGENTS_BASELINE,
-        read_only_in(
-            ["*docs*", "*.serena/plans*"],
-            deny_globs=["*src*", "*test*", "*tests*"],
-        ),
-        write_only_in(["*docs*"]),
-        ALLOW_GIT_MUTATION_TOOLS,
-    ),
-    "pure_readonly": merge_perms(
-        PURE_AGENTS_BASELINE,
-        read_only_in(["*"]),
-        write_only_in([]),
-    ),
-    "readonly": merge_perms(
-        SUBAGENTS_BASELINE,
-        read_only_in(["*"]),
-        write_only_in([]),
-    ),
-    "minimal": {
-        "bash": "allow",
-        "task": "allow",
+
+# ---------------------------------------------------------------------------
+# Agent Definition
+# ---------------------------------------------------------------------------
+
+@dataclass
+class AgentDef:
+    """Defines an agent's permissions via tags, capabilities, and overrides.
+
+    tags:           Set of category labels (e.g. {"primary", "builder"}).
+                    TAG_RULES matching these tags are applied in order.
+    caps:           List of permission dicts (from capability functions).
+                    Applied after TAG_RULES.
+    overrides:      Per-agent exceptions applied after caps.
+    skip_tag_rules: If True, TAG_RULES are not applied (for unconstrained agents).
+    """
+    tags: set[str]
+    caps: list[dict]
+    overrides: dict = field(default_factory=dict)
+    skip_tag_rules: bool = False
+
+
+# ---------------------------------------------------------------------------
+# Capability Functions
+# ---------------------------------------------------------------------------
+
+def read_all():
+    """Allow reading all files."""
+    return read_only_in(["*"])
+
+
+def read_in(*globs, deny=None):
+    """Allow reading files matching globs, deny others."""
+    return read_only_in(list(globs), deny_globs=deny or [])
+
+
+def write_all():
+    """Allow writing all files."""
+    return write_only_in(["*"])
+
+
+def write_in(*globs):
+    """Allow writing files matching globs, deny others."""
+    return write_only_in(list(globs))
+
+
+def write_none():
+    """Deny all file writes."""
+    return write_only_in([])
+
+
+def src_read_write():
+    """Read src + plans (deny test/docs), write src."""
+    return deep_merge(
+        read_in("*src*", "*.serena/plans*", deny=["*test*", "*tests*", "*docs*"]),
+        write_in("*src*"),
+    )
+
+
+def test_read_write():
+    """Read tests + plans (deny src/docs), write tests."""
+    return deep_merge(
+        read_in("*tests*", "*test*", "*.serena/plans*", deny=["*src*", "*docs*"]),
+        write_in("*tests*", "*test*"),
+    )
+
+
+def docs_read_write():
+    """Read docs + plans (deny src/tests), write docs."""
+    return deep_merge(
+        read_in("*docs*", "*.serena/plans*", deny=["*src*", "*test*", "*tests*"]),
+        write_in("*docs*"),
+    )
+
+
+def allow_git():
+    """Allow git staging and commit tools."""
+    return {"git_add": "allow", "git_commit": "allow"}
+
+
+def allow_planning():
+    """Allow plan writing and plan-mode exit."""
+    return {"write_plan": "allow", "plan_exit": "allow"}
+
+
+def deny_plan_exit():
+    """Deny plan-mode exit."""
+    return {"plan_exit": "deny"}
+
+
+def allow_bash_standard():
+    """Allow standard bash commands (filesystem, text, find, test runners)."""
+    return ALLOW_STANDARD_BASH
+
+
+def allow_bash_unrestricted():
+    """Allow all bash commands."""
+    return {"bash": "allow"}
+
+
+def allow_coordination():
+    """Allow task dispatch, todo read/write."""
+    return {"task": "allow", "todoread": "allow", "todowrite": "allow"}
+
+
+def allow_session_tools():
+    """Allow introspection, session listing, transcript reading."""
+    return {"introspection": "allow", "list_sessions": "allow", "read_transcript": "allow"}
+
+
+def allow_external_directory(*paths):
+    """Allow access to external directories."""
+    return {"external_directory": {p: "allow" for p in paths}}
+
+
+# ---------------------------------------------------------------------------
+# Tag Rules -- applied in order to agents matching each tag
+# ---------------------------------------------------------------------------
+# Adding a universal deny: add to ("*", {...})
+# Adding a category rule: add a new (tag, {...}) entry
+
+TAG_RULES = [
+    ("primary", {
         "todoread": "allow",
         "todowrite": "allow",
+    }),
+    ("subagent", {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
         "plan_exit": "deny",
-        "external_directory": {"/tmp/opencode_test/*": "allow"},
-        "question": "allow",
-    },
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
+    }),
+]
+
+
+# ---------------------------------------------------------------------------
+# Global Permission (applied to config_skeleton.json)
+# ---------------------------------------------------------------------------
+
+BASELINE_PLUGIN_DENIES = {
+    "async_command": "deny",
+    "async_subagent": "deny",
+    "introspection": "deny",
+    "list_sessions": "deny",
+    "read_transcript": "deny",
+    "git_add": "deny",
+    "git_commit": "deny",
+    "write_plan": "deny",
 }
 
-# Apply non-overridable safety denies to every role profile so accidental
-# role-level allow rules cannot re-enable restricted tools.
-PROFILES = {
-    profile_name: enforce_non_overridable_denies(profile_perms)
-    for profile_name, profile_perms in PROFILES.items()
+GLOBAL_PERMISSION = deep_merge(
+    ALLOW_STANDARD_CORE,
+    {"question": "allow"},
+    {"bash": "deny"},
+    BASELINE_PLUGIN_DENIES,
+    NON_OVERRIDABLE_DENIES,
+)
+
+
+# ---------------------------------------------------------------------------
+# Agent Registry
+# ---------------------------------------------------------------------------
+
+AGENTS = {
+    # --- Primary Agents ---
+    "Interactive": AgentDef(
+        tags={"primary", "interactive"},
+        caps=[allow_coordination(), allow_session_tools(), read_all(),
+              write_in("*src*", "*docs*", "*tests*", "*test*", "*.serena/plans*"),
+              deny_plan_exit(), allow_bash_standard()],
+    ),
+    "Plan (Custom)": AgentDef(
+        tags={"primary", "planner"},
+        caps=[read_all(), write_in("*.serena/plans*"),
+              {"task": "allow", "write_plan": "allow"}, {"plan_exit": "allow"}],
+    ),
+    "plan": AgentDef(
+        tags={"primary", "planner"},
+        caps=[read_all(), write_in("*.serena/plans*"),
+              {"task": "allow", "write_plan": "allow"}, {"plan_exit": "allow"}],
+    ),
+    "Ralph Planner": AgentDef(
+        tags={"primary", "planner"},
+        caps=[read_all(), write_in("*.serena/plans*"),
+              {"task": "allow", "write_plan": "allow"}, {"plan_exit": "allow"}],
+    ),
+    "Repository Steward": AgentDef(
+        tags={"primary", "planner"},
+        caps=[read_all(), write_in("*.serena/plans*"),
+              {"task": "allow", "write_plan": "allow"}, {"plan_exit": "allow"}],
+    ),
+    "Build (Custom)": AgentDef(
+        tags={"primary", "builder"},
+        caps=[read_all(), write_all(), {"task": "allow"}, allow_git(), deny_plan_exit()],
+        overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
+    ),
+    "build": AgentDef(
+        tags={"primary", "builder"},
+        caps=[read_all(), write_all(), {"task": "allow"}, allow_git(), deny_plan_exit()],
+        overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
+    ),
+    "(Lattice) Build": AgentDef(
+        tags={"primary", "builder", "lattice"},
+        caps=[read_all(), write_all(), {"task": "allow"}, allow_git(), deny_plan_exit()],
+        overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
+    ),
+    "Zotero Librarian": AgentDef(
+        tags={"primary"},
+        caps=[allow_coordination(), allow_session_tools(), read_all(), write_none()],
+    ),
+    "Minimal": AgentDef(
+        tags={"primary", "minimal"},
+        caps=[allow_bash_unrestricted(), allow_coordination(), deny_plan_exit(),
+              allow_external_directory("/tmp/opencode_test/*"),
+              {"question": "allow"}],
+        skip_tag_rules=True,
+    ),
+    # --- Subagents: Writers ---
+    "Writer: General Code": AgentDef(
+        tags={"subagent", "writer", "src_scope"},
+        caps=[src_read_write(), allow_git()],
+    ),
+    "Writer: Python": AgentDef(
+        tags={"subagent", "writer", "src_scope"},
+        caps=[src_read_write(), allow_git()],
+    ),
+    "Writer: TypeScript": AgentDef(
+        tags={"subagent", "writer", "src_scope"},
+        caps=[src_read_write(), allow_git()],
+    ),
+    "Writer: SageMath": AgentDef(
+        tags={"subagent", "writer", "src_scope"},
+        caps=[src_read_write(), allow_git()],
+    ),
+    "Writer: Refactorer": AgentDef(
+        tags={"subagent", "writer", "src_scope"},
+        caps=[src_read_write(), allow_git()],
+    ),
+    "Writer: Tests": AgentDef(
+        tags={"subagent", "writer", "test_scope"},
+        caps=[test_read_write(), allow_git()],
+    ),
+    "Writer: Documentation": AgentDef(
+        tags={"subagent", "writer", "docs_scope"},
+        caps=[docs_read_write(), allow_git()],
+    ),
+    # --- Subagents: Reviewers ---
+    "Reviewer: Code": AgentDef(
+        tags={"subagent", "reviewer"},
+        caps=[read_all(), write_none()],
+    ),
+    "Reviewer: Plans": AgentDef(
+        tags={"subagent", "reviewer"},
+        caps=[read_all(), write_none()],
+    ),
+    "Reviewer: Test Compliance": AgentDef(
+        tags={"subagent", "reviewer"},
+        caps=[read_all(), write_none()],
+    ),
+    "Reviewer: Semantic Audit": AgentDef(
+        tags={"subagent", "reviewer"},
+        caps=[read_all(), write_none()],
+    ),
+    "Reviewer: Plan Contract": AgentDef(
+        tags={"subagent", "reviewer"},
+        caps=[read_all(), write_none()],
+    ),
+    # --- Subagents: Researchers ---
+    "Researcher: Code Base": AgentDef(
+        tags={"subagent", "researcher"},
+        caps=[read_all(), write_none()],
+    ),
+    "Researcher: Documentation": AgentDef(
+        tags={"subagent", "researcher"},
+        caps=[read_all(), write_none()],
+    ),
+    "Researcher: Repo Explorer": AgentDef(
+        tags={"subagent", "researcher"},
+        caps=[read_all(), write_none()],
+    ),
+    "general": AgentDef(
+        tags={"subagent", "researcher"},
+        caps=[read_all(), write_none()],
+    ),
+    # --- Subagents: Lattice ---
+    "(Lattice) Researcher: Documentation": AgentDef(
+        tags={"subagent", "researcher", "lattice"},
+        caps=[read_all(), write_none()],
+    ),
+    "(Lattice) Reviewer: Documentation Librarian": AgentDef(
+        tags={"subagent", "reviewer", "lattice"},
+        caps=[read_all(), write_none()],
+    ),
+    "(Lattice) Reviewer: Checklist Completionist": AgentDef(
+        tags={"subagent", "reviewer", "lattice"},
+        caps=[read_all(), write_none()],
+    ),
+    "(Lattice) Reviewer: Test Coverage": AgentDef(
+        tags={"subagent", "reviewer", "lattice"},
+        caps=[read_all(), write_none()],
+    ),
+    "(Lattice) Writer: Test Methods": AgentDef(
+        tags={"subagent", "writer", "test_scope", "lattice"},
+        caps=[test_read_write(), allow_git()],
+    ),
+    "(Lattice) Writer: Interface Designer": AgentDef(
+        tags={"subagent", "writer", "src_scope", "lattice"},
+        caps=[src_read_write(), allow_git()],
+    ),
+    "(Lattice) Writer: Interface Implementer": AgentDef(
+        tags={"subagent", "writer", "src_scope", "lattice"},
+        caps=[src_read_write(), allow_git()],
+    ),
+    "(Lattice) Writer: TDD": AgentDef(
+        tags={"subagent", "writer", "test_scope", "lattice"},
+        caps=[test_read_write(), allow_git()],
+    ),
+    "(Lattice) Writer: Algorithm Porter": AgentDef(
+        tags={"subagent", "writer", "src_scope", "lattice"},
+        caps=[src_read_write(), allow_git()],
+    ),
 }
 
+UNMANAGED_AGENTS = {"summary", "title", "compaction", "explore"}
 
-def validate_profile_serena_path_routing():
-    # minimal is intentionally unconstrained for explicit user-driven bypass tests.
-    exempt_profiles = {"minimal"}
+
+# ---------------------------------------------------------------------------
+# Compiler
+# ---------------------------------------------------------------------------
+
+def compile_agent(name, agent_def):
+    """Compile an AgentDef into a flat permission dict.
+
+    Order: TAG_RULES -> capabilities -> overrides -> NON_OVERRIDABLE_DENIES
+    """
+    layers = []
+
+    # 1. Apply matching TAG_RULES (unless skip_tag_rules)
+    if not agent_def.skip_tag_rules:
+        for tag, rules in TAG_RULES:
+            if tag == "*" or tag in agent_def.tags:
+                layers.append(rules)
+
+    # 2. Apply capabilities
+    layers.extend(agent_def.caps)
+
+    # 3. Apply overrides
+    if agent_def.overrides:
+        layers.append(agent_def.overrides)
+
+    # 4. NON_OVERRIDABLE_DENIES always last
+    layers.append(NON_OVERRIDABLE_DENIES)
+
+    return deep_merge(*layers)
+
+
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
+
+def validate_agent_serena_path_routing():
+    """Verify all non-minimal agents have Serena file tools properly path-scoped."""
     required = set(SERENA_FILE_READ_TOOLS + SERENA_FILE_WRITE_TOOLS)
-    for profile_name, profile_perms in PROFILES.items():
-        if profile_name in exempt_profiles:
+    for name, agent_def in AGENTS.items():
+        if agent_def.skip_tag_rules:
             continue
-        missing = sorted(required - set(profile_perms.keys()))
+        compiled = compile_agent(name, agent_def)
+        missing = sorted(required - set(compiled.keys()))
         if missing:
             raise ValueError(
-                f"Profile '{profile_name}' missing Serena path routing for: {missing}"
+                f"Agent '{name}' missing Serena path routing for: {missing}"
             )
 
 
-validate_profile_serena_path_routing()
-
-AGENT_MAPPING = {
-    # Primary Agents
-    "Minimal": "minimal",
-    "Plan (Custom)": "planning",
-    "plan": "planning",
-    "Build (Custom)": "builder",
-    "build": "builder",
-    "Interactive": "interactive_general",
-    "Ralph Planner": "planning",
-    "Repository Steward": "planning",
-    "(Lattice) Build": "builder",
-    "Zotero Librarian": "pure_readonly",
-    # Subagents - Writers
-    "Writer: General Code": "src_writer_strict",
-    "Writer: Python": "src_writer_strict",
-    "Writer: TypeScript": "src_writer_strict",
-    "Writer: SageMath": "src_writer_strict",
-    "Writer: Tests": "test_writer_strict",
-    "Writer: Documentation": "docs_writer_strict",
-    "Writer: Refactorer": "src_writer_strict",
-    # Subagents - Reviewers
-    "Reviewer: Code": "readonly",
-    "Reviewer: Plans": "readonly",
-    "Reviewer: Test Compliance": "readonly",
-    "Reviewer: Semantic Audit": "readonly",
-    "Reviewer: Plan Contract": "readonly",
-    # Subagents - Researchers
-    "Researcher: Code Base": "readonly",
-    "Researcher: Documentation": "readonly",
-    "Researcher: Repo Explorer": "readonly",
-    "general": "readonly",
-    # Subagents - Lattice
-    "(Lattice) Researcher: Documentation": "readonly",
-    "(Lattice) Reviewer: Documentation Librarian": "readonly",
-    "(Lattice) Reviewer: Checklist Completionist": "readonly",
-    "(Lattice) Reviewer: Test Coverage": "readonly",
-    "(Lattice) Writer: Test Methods": "test_writer_strict",
-    "(Lattice) Writer: Interface Designer": "src_writer_strict",
-    "(Lattice) Writer: Interface Implementer": "src_writer_strict",
-    "(Lattice) Writer: TDD": "test_writer_strict",
-    "(Lattice) Writer: Algorithm Porter": "src_writer_strict",
-}
+validate_agent_serena_path_routing()
 
 
-def apply_profiles():
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def apply_agents():
     agents_dir = os.path.join(base_dir, "configs", "agents")
     subagents_dir = os.path.join(base_dir, "configs", "subagents")
 
@@ -603,36 +799,84 @@ def apply_profiles():
                 continue
 
             agent_name = filename[:-5]
-            if agent_name in AGENT_MAPPING:
+            if agent_name in AGENTS:
                 filepath = os.path.join(directory, filename)
-                profile_name = AGENT_MAPPING[agent_name]
-                profile_perms = PROFILES[profile_name]
+                compiled = compile_agent(agent_name, AGENTS[agent_name])
 
                 with open(filepath, "r") as f:
                     data = json.load(f)
 
-                data["permission"] = profile_perms
+                data["permission"] = compiled
 
                 with open(filepath, "w") as f:
                     json.dump(data, f, indent=2)
 
-                print(f"Applied '{profile_name}' profile to '{agent_name}'")
+                tags = ",".join(sorted(AGENTS[agent_name].tags))
+                print(f"Applied [{tags}] to '{agent_name}'")
+            elif agent_name in UNMANAGED_AGENTS:
+                pass
             else:
-                print(f"Warning: '{agent_name}' has no profile mapped.")
+                print(f"Warning: '{agent_name}' has no AgentDef and is not in UNMANAGED_AGENTS.")
+
+
+def dump_agent(name):
+    """Print compiled permissions for a single agent."""
+    if name not in AGENTS:
+        print(f"Error: '{name}' not found. Available: {', '.join(sorted(AGENTS.keys()))}")
+        sys.exit(1)
+    compiled = compile_agent(name, AGENTS[name])
+    print(json.dumps(compiled, indent=2, sort_keys=True))
+
+
+def list_tags():
+    """Print tag -> agents mapping."""
+    tag_map = {}
+    for name, agent_def in AGENTS.items():
+        for tag in agent_def.tags:
+            tag_map.setdefault(tag, []).append(name)
+    for tag in sorted(tag_map.keys()):
+        print(f"\n{tag}:")
+        for name in sorted(tag_map[tag]):
+            print(f"  {name}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Manage OpenCode agent permissions.")
     parser.add_argument(
-        "--apply",
-        action="store_true",
-        help="Apply permission profiles to agent config files",
+        "--apply", action="store_true",
+        help="Apply compiled permissions to agent config files",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Compile and validate all agents without writing files",
+    )
+    parser.add_argument(
+        "--dump", metavar="AGENT",
+        help="Print compiled permissions for one agent",
+    )
+    parser.add_argument(
+        "--list-tags", action="store_true",
+        help="Show tag -> agents mapping",
     )
     args = parser.parse_args()
 
-    if args.apply:
-        apply_profiles()
+    if args.dump:
+        dump_agent(args.dump)
+    elif args.list_tags:
+        list_tags()
+    elif args.dry_run:
+        print("All agents compile and validate successfully.")
+        for name in sorted(AGENTS.keys()):
+            tags = ",".join(sorted(AGENTS[name].tags))
+            compiled = compile_agent(name, AGENTS[name])
+            print(f"  {name} [{tags}]: {len(compiled)} permission keys")
+    elif args.apply:
+        apply_agents()
         print("\nNow run build_config.py to compile these changes into opencode.json")
     else:
-        print("Run with --apply to enforce profiles across agents.")
-        print("Available profiles:", list(PROFILES.keys()))
+        print("Run with --apply to enforce permissions across agents.")
+        print("  --dry-run     Compile and validate without writes")
+        print("  --dump AGENT  Print one agent's compiled permissions")
+        print("  --list-tags   Show tag -> agents mapping")
+        print(f"\nManaged agents: {len(AGENTS)}")
+        print(f"Unmanaged agents: {', '.join(sorted(UNMANAGED_AGENTS))}")

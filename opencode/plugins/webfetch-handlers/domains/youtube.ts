@@ -1,4 +1,4 @@
-import { hostMatchesDomain, type RunCommand, type WebFetchHandlerResult } from "./types.ts";
+import { hostMatchesDomain, type RunCommand, type WebFetchHandlerResult } from "../types.ts";
 
 export const YOUTUBE_DOMAINS = [
   "youtube.com",

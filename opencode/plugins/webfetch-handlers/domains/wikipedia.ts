@@ -1,4 +1,4 @@
-import type { RunCommand, WebFetchHandlerResult } from "./types.ts";
+import type { RunCommand, WebFetchHandlerResult } from "../types.ts";
 
 export const WIKIPEDIA_DOMAINS = ["wikipedia.org"] as const;
 

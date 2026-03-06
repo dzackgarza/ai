@@ -1,4 +1,4 @@
-import type { CommandExecutionResult, RunCommand, WebFetchHandlerResult } from "./types.ts";
+import type { CommandExecutionResult, RunCommand, WebFetchHandlerResult } from "../types.ts";
 
 export const REDDIT_DOMAINS = ["reddit.com", "www.reddit.com", "old.reddit.com", "api.reddit.com"] as const;
 

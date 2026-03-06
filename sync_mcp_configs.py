@@ -10,6 +10,7 @@ Supports:
 - TOML configs (codex)
 
 Usage:
+    just sync-mcp-configs [--dry-run] [--harness <name>]
     python3 sync_mcp_configs.py [--dry-run] [--harness <name>]
 """
 
@@ -42,6 +43,7 @@ def expand_path(path: str) -> Path:
 
 
 ENV_TOKEN_PATTERN = re.compile(r"\{env:([^}]+)\}")
+RECOMMENDED_SYNC_RECIPE = "just sync-mcp-configs"
 
 
 def resolve_env_tokens(value: Any) -> Any:
@@ -74,6 +76,20 @@ def load_yaml_config(config_path: str) -> dict:
     """Load the centralized YAML configuration."""
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
+
+
+def ensure_required_sync_environment() -> None:
+    """Fail fast when the expected ~/.envrc-derived environment is missing."""
+    if os.environ.get("SEARXNG_SERVER_URL"):
+        return
+
+    print(
+        "Error: SEARXNG_SERVER_URL is not set.\n"
+        "This is a canary that ~/.envrc was not loaded before syncing MCP configs.\n"
+        f"Run this script via `{RECOMMENDED_SYNC_RECIPE}` so direnv loads the required environment.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 
 def build_mcp_config_for_harness(yaml_config: dict, harness_name: str, builder_func: callable) -> dict:
@@ -391,6 +407,8 @@ def main():
     parser.add_argument('--harness', type=str, help='Sync only this specific harness')
     parser.add_argument('--config', type=str, default='mcp-servers.yml', help='Path to YAML config file')
     args = parser.parse_args()
+
+    ensure_required_sync_environment()
     
     # Load YAML config
     config_path = Path(args.config)

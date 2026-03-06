@@ -1,5 +1,5 @@
 {
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "cursor-acp/auto",
   "disable": true,
   "permission": {
     "todoread": "allow",

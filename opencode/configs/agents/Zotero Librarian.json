@@ -1,7 +1,7 @@
 {
   "description": "Zotero librarian - manages and maintains Zotero reference libraries",
   "mode": "primary",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "cursor-acp/auto",
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
   "permission": {
     "task": "allow",

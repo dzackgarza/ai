@@ -71,6 +71,14 @@ reset-sandbox:
     fi
     {{repo}}/scripts/scaffold-sandbox.sh
 
+# Sync centralized MCP config with ~/.envrc loaded through direnv.
+# Usage: just sync-mcp-configs [--dry-run] [--harness codex]
+sync-mcp-configs *ARGS="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{repo}}"
+    direnv exec "$HOME" python3 sync_mcp_configs.py {{ARGS}}
+
 # Check all usage limits
 # Usage: just usage [--json] [--no-notify]
 usage *ARGS="":

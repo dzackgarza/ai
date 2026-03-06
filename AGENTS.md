@@ -9,6 +9,7 @@
 3. **Run at project start:** `serena_activate_project`, then `serena_read_memory`.
 4. **Never write time estimates.** Your calibration is off by orders of magnitude.
 5. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere. This includes documentation: never attempt restate a fact when you can point to the canonical source.
+6. **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed. Error-path work is useless, proof-of-correctness work is essential. And mocks are not going to help you prove anything. Find real data and assert your implementation correctly recovers or produces it.
 
 ---
 
@@ -61,22 +62,18 @@ Never skip from "I found nothing" to "nothing exists."
 
 **Edits:**
 
-| Situation                                                       | Tool         |
-| --------------------------------------------------------------- | ------------ |
-| Small, exact replacement                                        | `edit`       |
-| Large file (500+ lines), scattered changes, complex refactoring | `morph_edit` |
+Use `edit` for all code edits.
 
 **Search:**
 
-| Question                        | Tool       |
-| ------------------------------- | ---------- |
-| Can you write the grep pattern? | `grep`     |
-| Natural language / exploratory? | `warpgrep` |
-| AST pattern matching?           | `ast-grep` |
+| Question              | Tool       |
+| --------------------- | ---------- |
+| Text/grep pattern?    | `grep`     |
+| AST pattern matching? | `ast-grep` |
 
-WarpGrep examples: "How does the moderation appeals flow work?" Grep examples: `pattern="fileAppeal"`, `pattern="class.*Service"`. Do not use WarpGrep for quick lookups or known file reads.
+Grep examples: `pattern="fileAppeal"`, `pattern="class.*Service"`.
 
-**ast-grep:** Use for structural code patterns (function definitions, class hierarchies, import statements, etc.). Syntax: `sg -p "<pattern>" --lang <language> <path>`. All agents know ast-grep syntax—this is a 'use when' reminder.
+**ast-grep:** Use for structural code patterns (function definitions, class hierarchies, import statements, etc.).
 
 ---
 

@@ -1,0 +1,16 @@
+[youtube] Extracting URL: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+[youtube] dQw4w9WgXcQ: Downloading webpage
+[youtube] dQw4w9WgXcQ: Downloading android vr player API JSON
+[youtube] dQw4w9WgXcQ: Downloading web player API JSON
+[youtube] dQw4w9WgXcQ: Downloading web safari player API JSON
+[youtube] dQw4w9WgXcQ: Downloading player 9f4cc5e4-tv
+[youtube] [jsc:node] Solving JS challenges using node
+[youtube] dQw4w9WgXcQ: Downloading m3u8 information
+[info] dQw4w9WgXcQ: Downloading subtitles: en, en-orig
+[info] dQw4w9WgXcQ: Downloading 1 format(s): 401+251
+[info] Writing video subtitles to: /tmp/youtube-fixture-THnUZT/dQw4w9WgXcQ.en.vtt
+[download] Destination: /tmp/youtube-fixture-THnUZT/dQw4w9WgXcQ.en.vtt
+[download]    1.00KiB at  Unknown B/s (00:00:00)[download]    3.00KiB at    2.57MiB/s (00:00:00)[download]    4.16KiB at    2.42MiB/s (00:00:00)[download] 100% of    4.16KiB in 00:00:00 at 34.29KiB/s
+[info] Writing video subtitles to: /tmp/youtube-fixture-THnUZT/dQw4w9WgXcQ.en-orig.vtt
+[download] Destination: /tmp/youtube-fixture-THnUZT/dQw4w9WgXcQ.en-orig.vtt
+[download]    1.00KiB at  Unknown B/s (00:00:00)[download]    3.00KiB at    1.98MiB/s (00:00:00)[download]    7.00KiB at    3.14MiB/s (00:00:00)[download]   14.46KiB at    4.74MiB/s (00:00:00)[download] 100% of   14.46KiB in 00:00:00 at 125.95KiB/s

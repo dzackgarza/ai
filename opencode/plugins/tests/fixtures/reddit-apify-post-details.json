@@ -1,0 +1,40 @@
+[
+  {
+    "record_type": "post",
+    "post_id": "abc123",
+    "permalink": "/r/test/comments/abc123/sample_post/",
+    "title": "Sample Post Title",
+    "text": "Sample post body.",
+    "author": "op_author",
+    "subreddit": "test",
+    "score": 42,
+    "num_comments": 3
+  },
+  {
+    "record_type": "comment",
+    "post_id": "abc123",
+    "comment_id": "c1",
+    "parent_id": "t3_abc123",
+    "author": "top_level",
+    "score": 10,
+    "text": "Top level comment"
+  },
+  {
+    "record_type": "comment",
+    "post_id": "abc123",
+    "comment_id": "c2",
+    "parent_id": "t1_c1",
+    "author": "nested_user",
+    "score": 7,
+    "text": "Nested reply"
+  },
+  {
+    "record_type": "comment",
+    "post_id": "abc123",
+    "comment_id": "c3",
+    "parent_id": "t3_abc123",
+    "author": "second_top",
+    "score": 5,
+    "text": "Second top-level comment"
+  }
+]

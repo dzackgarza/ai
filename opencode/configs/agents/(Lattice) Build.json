@@ -1,7 +1,7 @@
 {
   "description": "Top-level agent for managing all lattice-related work",
   "mode": "primary",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "cursor-acp/auto",
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
   "permission": {
     "todoread": "allow",

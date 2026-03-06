@@ -1,7 +1,7 @@
 {
   "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
   "mode": "primary",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "cursor-acp/auto",
   "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
   "permission": {
     "todoread": "allow",

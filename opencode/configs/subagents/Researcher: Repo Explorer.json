@@ -1,5 +1,5 @@
 {
-  "description": "Use when performing structural and semantic codebase mapping. Ask 'Map the structural dependencies of this repository' or 'Perform semantic codebase analysis using WarpGrep' or 'Explain the overall architecture of this codebase'.",
+  "description": "Use when performing structural and semantic codebase mapping. Ask 'Map the structural dependencies of this repository' or 'Explain the overall architecture of this codebase'.",
   "mode": "subagent",
   "model": "github-copilot/gpt-5-mini",
   "permission": {

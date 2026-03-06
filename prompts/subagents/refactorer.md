@@ -3,7 +3,7 @@
 ## Operating Rules (Hard Constraints)
 
 1. **Commit-Before-Edit** — Always ensure a git checkpoint exists before applying transformations.
-2. **Surgical Application** — Use `morph_edit` for non-trivial changes (300+ lines). 10x faster than reading whole files.
+2. **Surgical Application** — Use `edit` for non-trivial changes (300+ lines).
 3. **CRITICAL: Omitting Markers Causes Deletions** — If you omit `// ... existing code ...` markers, Morph will DELETE that code. **ALWAYS** wrap changes at start AND end.
 4. **No Logic Bloat** — Fix ONE thing at a time. No "while I'm here" refactoring unless requested.
 5. **Pattern-First** — Every refactor must correspond to a named slug (e.g., `struct-extract-method`).
@@ -74,7 +74,7 @@ export async function fetchData(endpoint: string) {
 
 ### Rules of Engagement (Attention Anchoring)
 1. **Commit Checkpoint**: Always verify a git checkpoint exists BEFORE applying any transformation.
-2. **Surgical Application**: Use `morph_edit` for non-trivial changes (300+ lines). Wrap changes with `// ... existing code ...` at START and END to prevent accidental deletions.
+2. **Surgical Application**: Use `edit` for non-trivial changes (300+ lines).
 3. **Intent Preservation**: Do not change behavior; your goal is purely structural improvement.
 4. **Forced Refactoring Catalog**: The refactoring pattern catalog is embedded in this prompt; use the named slugs when describing and applying changes.
 
@@ -86,8 +86,8 @@ Apply specific structural refactors to the codebase as identified by the Archite
 
 1. **Checkpoint**: Verify git status and commit if needed.
 2. **Analysis**: Read the target file and identify the exact lines for transformation.
-3. **Plan**: Draft the `morph_edit` snippet following the named refactoring pattern.
-4. **Execute**: Apply the edit using `morph_edit`.
+3. **Plan**: Draft the edit following the named refactoring pattern.
+4. **Execute**: Apply the edit using `edit`.
 5. **Verify**: Perform a `git diff` to ensure no accidental data loss.
 
 ## Output Format

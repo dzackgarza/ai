@@ -24,6 +24,21 @@
     },
     "google/gemma-3-27b-it:free": {
       "name": "Google/Gemma-3-27B-It (Free)"
+    },
+    "nvidia/nemotron-3-nano-30b-a3b:free": {
+      "name": "Nemotron 3 Nano 30B A3B"
+    },
+    "openai/gpt-5.4-pro": {
+      "name": "Gpt 5.4 Pro"
+    },
+    "openai/gpt-5.4": {
+      "name": "Gpt 5.4"
+    },
+    "openai/gpt-5.3-codex": {
+      "name": "Gpt 5.3 Codex"
+    },
+    "arcee-ai/trinity-large-preview:free": {
+      "name": "Trinity Large Preview"
     }
   },
   "blacklist": [

@@ -95,20 +95,6 @@
     "deepwiki-mcp": {
       "type": "remote",
       "url": "https://mcp.deepwiki.com/mcp"
-    },
-    "tavily-remote": {
-      "type": "remote",
-      "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
-    },
-    "kindly": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "--from",
-        "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server",
-        "kindly-web-search-mcp-server",
-        "start-mcp-server"
-      ]
     }
   },
   "model": "opencode/minimax-m2.5-free",
@@ -121,6 +107,7 @@
     "opencode-anthropic-auth@latest",
     "opencode-qwencode-auth@latest",
     "opencode-openai-codex-auth@latest",
+    "@rama_nigg/open-cursor@latest",
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest"

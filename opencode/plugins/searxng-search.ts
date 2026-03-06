@@ -65,6 +65,8 @@ const WEBFETCH_CACHE_TTL_MS =
 const TOKEN_ENCODER = getEncoding("o200k_base");
 const PASSPHRASE_WEB_SEARCH = "PASS_WEB_SEARCH_SHADOW_20260305_6A9F";
 const PASSPHRASE_WEBFETCH = "PASS_WEBFETCH_SHADOW_20260305_C3D2";
+const ISSUE_REPORTING_HINT =
+  "If this looks like a technical tool-output issue, file it in ISSUES.md in this folder.";
 const REDDIT_APIFY_ACTOR = (process.env.REDDIT_APIFY_ACTOR ?? "spry_wholemeal/reddit-scraper").trim();
 const WIKIPEDIA_API_USER_AGENT = (
   process.env.WIKIPEDIA_API_USER_AGENT ?? "opencode-improved-webfetch/1.0 (plugin)"
@@ -325,6 +327,7 @@ async function formatWebFetchOutput(input: {
     `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
     `Route: ${input.routeName}`,
     `Source URL: ${input.sourceUrl}`,
+    ISSUE_REPORTING_HINT,
   ];
   if (!text) {
     return [...prefix, "", "No readable text content extracted from this page."].join("\n");
@@ -578,6 +581,7 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
           } catch {
             return [
               `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
+              ISSUE_REPORTING_HINT,
               `Invalid URL: ${JSON.stringify(args.url)}.`,
             ].join("\n");
           }
@@ -585,6 +589,7 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
           if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
             return [
               `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
+              ISSUE_REPORTING_HINT,
               `Unsupported URL protocol for webfetch: ${parsed.protocol}`,
             ].join("\n");
           }
@@ -685,8 +690,9 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
             });
             return [
               `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
+              ISSUE_REPORTING_HINT,
               "Failed to fetch URL.",
-              "If this persists, ask the user to check webfetch/plugin logs.",
+              "If this persists, ask the user to check webfetch/plugin logs and add a report in ISSUES.md.",
             ].join("\n");
           }
         },
@@ -723,6 +729,7 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
           if (!baseUrl) {
             return [
               `Tool passphrase: ${PASSPHRASE_WEB_SEARCH}`,
+              ISSUE_REPORTING_HINT,
               "Web search is unavailable in this environment. Ask the user to check plugin configuration.",
             ].join("\n");
           }
@@ -744,7 +751,11 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
                 ];
           const firstQuery = queries[0]?.q?.trim() ?? "";
           if (!firstQuery) {
-            return [`Tool passphrase: ${PASSPHRASE_WEB_SEARCH}`, "Invalid search_query: first query is empty."].join("\n");
+            return [
+              `Tool passphrase: ${PASSPHRASE_WEB_SEARCH}`,
+              ISSUE_REPORTING_HINT,
+              "Invalid search_query: first query is empty.",
+            ].join("\n");
           }
 
           await context.ask({
@@ -843,7 +854,7 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
                   blocks.push(
                     [
                       `Query ${index + 1}: search request failed (HTTP ${response.status}).`,
-                      "If this persists, ask the user to check search backend/plugin logs.",
+                      "If this persists, ask the user to check search backend/plugin logs and file details in ISSUES.md.",
                     ]
                       .filter(Boolean)
                       .join("\n"),
@@ -905,13 +916,18 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
               blocks.push(
                 [
                   `Query ${index + 1}: search request failed.`,
-                  "If this persists, ask the user to check search backend/plugin logs.",
+                  "If this persists, ask the user to check search backend/plugin logs and file details in ISSUES.md.",
                 ].join("\n"),
               );
             }
           }
 
-          return [`Tool passphrase: ${PASSPHRASE_WEB_SEARCH}`, "", blocks.join("\n\n---\n\n")].join("\n");
+          return [
+            `Tool passphrase: ${PASSPHRASE_WEB_SEARCH}`,
+            ISSUE_REPORTING_HINT,
+            "",
+            blocks.join("\n\n---\n\n"),
+          ].join("\n");
         },
       }),
     },

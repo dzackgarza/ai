@@ -1,4 +1,4 @@
-import type { RunCommand, WebFetchHandlerResult } from "./types.ts";
+import type { RunCommand, WebFetchHandlerResult } from "../types.ts";
 
 export const GITHUB_DOMAINS = ["github.com", "www.github.com"] as const;
 
@@ -26,7 +26,16 @@ export function buildGitHubCommandPlan(url: URL): GitHubCommandPlan {
 
     if (scope === "issues" && /^\d+$/.test(tail[0] ?? "")) {
       return {
-        args: ["gh", "issue", "view", tail[0]!, "--repo", repoRef, "--comments"],
+        args: [
+          "gh",
+          "issue",
+          "view",
+          tail[0]!,
+          "--repo",
+          repoRef,
+          "--json",
+          "number,title,body,author,comments,state,url,labels",
+        ],
         sourceUrl: `https://github.com/${repoRef}/issues/${tail[0]!}`,
       };
     }

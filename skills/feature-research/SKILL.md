@@ -9,7 +9,7 @@ metadata:
 
 # Feature Research
 
-Before implementing a complex feature, use WarpGrep to avoid duplicating patterns and to match existing conventions.
+Before implementing a complex feature, search the codebase to avoid duplicating patterns and to match existing conventions.
 
 ## When To Use
 
@@ -20,7 +20,7 @@ Before implementing a complex feature, use WarpGrep to avoid duplicating pattern
 ## Steps
 
 1. Identify the likely "shape" of the feature (routes, state, DB, background jobs, UI).
-2. Run `warpgrep_codebase_search` with a query that asks for similar features and related files.
+2. Run grep/ast-grep with a query that asks for similar features and related files.
 3. Extract:
    - Existing patterns to reuse
    - Integration points

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 type AskInput = {
@@ -57,6 +57,15 @@ function streamFromText(text: string): ReadableStream<Uint8Array> {
       controller.close();
     },
   });
+}
+
+function fixtureText(relativePath: string): string {
+  const path = new URL(`../fixtures/real/${relativePath}`, import.meta.url);
+  return readFileSync(path, "utf8");
+}
+
+function fixtureJson<T>(relativePath: string): T {
+  return JSON.parse(fixtureText(relativePath)) as T;
 }
 
 async function loadPlugin(
@@ -124,72 +133,26 @@ describe("searxng-search plugin", () => {
   });
 
   it("formats batched websearch results with per-query pagination and separation", async () => {
-    const responses = new Map<string, any>();
+    const pageOpenAI1 = fixtureJson<{
+      results: Array<Record<string, unknown>>;
+    }>("searxng/openai-page1.json");
+    const pageOpenAI2 = fixtureJson<{
+      results: Array<Record<string, unknown>>;
+    }>("searxng/openai-page2.json");
+    const pageArxiv1 = fixtureJson<{
+      results: Array<Record<string, unknown>>;
+    }>("searxng/arxiv-lattice-page1.json");
+    const responses = new Map<string, unknown>([
+      ["openai|1", pageOpenAI1 as unknown],
+      ["openai|2", pageOpenAI2 as unknown],
+      ["arxiv lattice|1", pageArxiv1 as unknown],
+    ]);
 
-    const q1 = "!news openai (site:example.com)";
-    const q2 = "!science arxiv lattice";
-
-    responses.set(`${q1}|1`, {
-      query: q1,
-      number_of_results: 10,
-      results: [
-        {
-          title: "Q1-R1",
-          url: "https://example.com/q1-r1",
-          content: "first result",
-          engine: "duckduckgo",
-          category: "news",
-          publishedDate: null,
-        },
-        {
-          title: "Q1-R2",
-          url: "https://example.com/q1-r2",
-          content: "second result",
-          engine: "duckduckgo",
-          category: "news",
-          publishedDate: "2026-03-06",
-        },
-      ],
-      answers: [],
-      suggestions: [],
-      unresponsive_engines: [],
-    });
-
-    responses.set(`${q1}|2`, {
-      query: q1,
-      number_of_results: 10,
-      results: [
-        {
-          title: "Q1-R3",
-          url: "https://example.com/q1-r3",
-          content: "third result",
-          engine: "duckduckgo",
-          category: "news",
-          publishedDate: null,
-        },
-      ],
-      answers: [],
-      suggestions: [],
-      unresponsive_engines: [],
-    });
-
-    responses.set(`${q2}|1`, {
-      query: q2,
-      number_of_results: 3,
-      results: [
-        {
-          title: "Q2-R1",
-          url: "https://example.org/q2-r1",
-          content: "science result",
-          engine: "duckduckgo",
-          category: "science",
-          publishedDate: null,
-        },
-      ],
-      answers: [],
-      suggestions: [],
-      unresponsive_engines: [],
-    });
+    const openAiExpectedWindow = [
+      ...pageOpenAI1.results,
+      ...pageOpenAI2.results,
+    ].slice(1, 3);
+    const arxivFirst = pageArxiv1.results[0]!;
 
     (globalThis as any).fetch = async (input: string | Request | URL) => {
       const url = new URL(String(input));
@@ -215,14 +178,11 @@ describe("searxng-search plugin", () => {
         search_query: [
           {
             q: "openai",
-            category: "news",
-            domains: ["example.com"],
             num_results: 2,
             offset: 1,
           },
           {
             q: "arxiv lattice",
-            category: "science",
             num_results: 1,
           },
         ],
@@ -252,16 +212,51 @@ describe("searxng-search plugin", () => {
 
     expect(output).toContain("Tool passphrase: PASS_WEB_SEARCH_SHADOW_20260305_6A9F");
     expect(output).toContain("Query 1:");
-    expect(output).toContain("Showing results: 2-3 of 10");
-    expect(output).toContain("https://example.com/q1-r2");
-    expect(output).toContain("https://example.com/q1-r3");
+    expect(output).toContain("Showing results: 2-3 of 0");
+    expect(output).toContain(String(openAiExpectedWindow[0]?.url ?? ""));
+    expect(output).toContain(String(openAiExpectedWindow[1]?.url ?? ""));
     expect(output).toContain("Query 2:");
-    expect(output).toContain("https://example.org/q2-r1");
+    expect(output).toContain(String(arxivFirst.url ?? ""));
     expect(output).toContain("\n\n---\n\n");
   });
 
+  it("returns per-query validation errors for invalid category and offset", async () => {
+    (globalThis as any).fetch = async () =>
+      new Response(
+        JSON.stringify({
+          query: "unused",
+          number_of_results: 0,
+          results: [],
+          answers: [],
+          suggestions: [],
+          unresponsive_engines: [],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+
+    const { websearch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await websearch.execute(
+      {
+        query: "unused",
+        search_query: [
+          { q: "query a", category: "invalid_category" },
+          { q: "query b", offset: -1 },
+        ],
+      },
+      context as any,
+    );
+
+    expect(output).toContain("Tool passphrase: PASS_WEB_SEARCH_SHADOW_20260305_6A9F");
+    expect(output).toContain(`Query 1: Invalid category: "invalid_category".`);
+    expect(output).toContain("Allowed categories: news, it, npm, pypi, st, gh, hf, ollama, hn, science, arx, cr, gos, se, aa, lg.");
+    expect(output).toContain("Query 2: Invalid offset: -1. Offset must be a non-negative integer.");
+  });
+
   it("writes oversized webfetch content to /tmp and reports saved path", async () => {
-    const largeText = Array.from({ length: 25_000 }, () => "token").join(" ");
+    const largeText = fixtureText("wikipedia/fourier-transform.converted.md");
+    const largePrefix = largeText.slice(0, 600).trim();
     const writes: Array<{ path: string; content: string }> = [];
 
     (Bun as any).spawn = () => ({
@@ -305,7 +300,7 @@ describe("searxng-search plugin", () => {
     expect(oversizedWrite!.content).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
     expect(oversizedWrite!.content).toContain(`Route: default`);
     expect(oversizedWrite!.content).toContain("Source URL: https://example.com/big");
-    expect(oversizedWrite!.content).toContain(largeText);
+    expect(oversizedWrite!.content).toContain(largePrefix);
 
     expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
     expect(output).toContain("Route: default");
@@ -315,46 +310,7 @@ describe("searxng-search plugin", () => {
   });
 
   it("routes reddit posts through apify and renders nested markdown comments", async () => {
-    const apifyDataset = [
-      {
-        record_type: "post",
-        post_id: "abc123",
-        permalink: "/r/test/comments/abc123/sample_post/",
-        title: "Sample Post Title",
-        text: "Sample post body.",
-        author: "op_author",
-        subreddit: "test",
-        score: 42,
-        num_comments: 3,
-      },
-      {
-        record_type: "comment",
-        post_id: "abc123",
-        comment_id: "c1",
-        parent_id: "t3_abc123",
-        author: "top_level",
-        score: 10,
-        text: "Top level comment",
-      },
-      {
-        record_type: "comment",
-        post_id: "abc123",
-        comment_id: "c2",
-        parent_id: "t1_c1",
-        author: "nested_user",
-        score: 7,
-        text: "Nested reply",
-      },
-      {
-        record_type: "comment",
-        post_id: "abc123",
-        comment_id: "c3",
-        parent_id: "t3_abc123",
-        author: "second_top",
-        score: 5,
-        text: "Second top-level comment",
-      },
-    ];
+    const apifyDataset = fixtureJson<Array<Record<string, unknown>>>("reddit/apify-search-openai.json");
 
     (Bun as any).spawn = (args: string[]) => {
       if (args[0] === "apify" && args[1] === "call") {
@@ -376,32 +332,32 @@ describe("searxng-search plugin", () => {
 
     const output = await webfetch.execute(
       {
-        url: "https://www.reddit.com/r/test/comments/abc123/sample_post/",
+        url: "https://www.reddit.com/r/OpenAI/comments/1hn44qh/anyone_else_excited_for_o3_mini_release/",
       },
       context as any,
     );
 
     expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
     expect(output).toContain("Route: reddit");
-    expect(output).toContain("Source URL: /r/test/comments/abc123/sample_post/");
+    expect(output).toContain("Source URL: https://www.reddit.com/r/OpenAI/comments/1hn44qh/anyone_else_excited_for_o3_mini_release/");
     expect(output).toContain("# Reddit Post");
     expect(output).toContain("## Comments (nested)");
-    expect(output).toContain("- u/top_level (score 10):");
-    expect(output).toContain("Top level comment");
-    expect(output).toContain("  - u/nested_user (score 7):");
-    expect(output).toContain("Nested reply");
-    expect(output).toContain("- u/second_top (score 5):");
+    expect(output).toContain("- u/The_GSingh (score 20):");
+    expect(output).toContain("When is it even coming out");
+    expect(output).toContain("  - u/Thinklikeachef (score 13):");
   });
 
   it("routes youtube URLs through transcript extraction pipeline", async () => {
     const calls: string[][] = [];
+    const listSubs = fixtureText("youtube/dQw4w9WgXcQ.list-subs.txt");
+    const vtt = fixtureText("youtube/dQw4w9WgXcQ.en.vtt");
 
     (Bun as any).spawn = (args: string[]) => {
       calls.push(args);
 
       if (args[0] === "uvx" && args.includes("yt-dlp") && args.includes("--list-subs")) {
         return {
-          stdout: streamFromText("[info] Available subtitles for abc123:\nLanguage Formats\nen vtt"),
+          stdout: streamFromText(listSubs),
           stderr: streamFromText(""),
           exited: Promise.resolve(0),
         };
@@ -413,14 +369,11 @@ describe("searxng-search plugin", () => {
         if (template) {
           const dir = dirname(template);
           mkdirSync(dir, { recursive: true });
-          writeFileSync(
-            join(dir, "mock.en.vtt"),
-            "WEBVTT\n\n00:00:00.000 --> 00:00:02.000\nHello from captions\n",
-          );
+          writeFileSync(join(dir, "dQw4w9WgXcQ.en.vtt"), vtt);
         }
         return {
-          stdout: streamFromText(""),
-          stderr: streamFromText(""),
+          stdout: streamFromText(fixtureText("youtube/dQw4w9WgXcQ.write-subs.out")),
+          stderr: streamFromText(fixtureText("youtube/dQw4w9WgXcQ.write-subs.err")),
           exited: Promise.resolve(0),
         };
       }
@@ -437,7 +390,7 @@ describe("searxng-search plugin", () => {
 
     const output = await webfetch.execute(
       {
-        url: "https://www.youtube.com/watch?v=abc123",
+        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       },
       context as any,
     );
@@ -448,12 +401,15 @@ describe("searxng-search plugin", () => {
     expect(output).toContain("Route: youtube");
     expect(output).toContain("# YouTube Transcript");
     expect(output).toContain("Source: English captions (yt-dlp)");
-    expect(output).toContain("Hello from captions");
+    expect(output).toContain("We're no strangers to");
   });
 
   it("routes wikipedia URLs through parse API and markdown conversion", async () => {
     const calls: string[][] = [];
     const fetchCalls: Array<{ url: string; userAgent?: string }> = [];
+    const parseFixture = fixtureJson<Record<string, unknown>>("wikipedia/parse-fourier-transform.json");
+    const converted = fixtureText("wikipedia/fourier-transform.converted.md");
+    const convertedShort = converted.split("\n").slice(0, 120).join("\n");
 
     (globalThis as any).fetch = async (input: string | Request | URL, init?: RequestInit) => {
       const url = String(input);
@@ -463,27 +419,16 @@ describe("searxng-search plugin", () => {
           (init?.headers as Record<string, string> | undefined)?.["User-Agent"] ??
           (init?.headers as Record<string, string> | undefined)?.["user-agent"],
       });
-      return new Response(
-        JSON.stringify({
-          parse: {
-            title: "Fourier transform",
-            displaytitle: "<span class=\"mw-page-title-main\">Fourier transform</span>",
-            text: "<p>In mathematics, the Fourier transform is useful.</p><p><img class='mwe-math-fallback-image-inline' alt='\\\\int f(x)dx' /></p>",
-          },
-        }),
-        {
-          status: 200,
-          headers: { "content-type": "application/json" },
-        },
-      );
+      return new Response(JSON.stringify(parseFixture), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
     };
 
     (Bun as any).spawn = (args: string[]) => {
       calls.push(args);
       return {
-        stdout: streamFromText(
-          "https://en.wikipedia.org/wiki/Fourier_transform\n\n# Fourier transform\n\nIn mathematics, the Fourier transform is useful.\n\n$\\int f(x)dx$",
-        ),
+        stdout: streamFromText(convertedShort),
         stderr: streamFromText(""),
         exited: Promise.resolve(0),
       };
@@ -515,7 +460,7 @@ describe("searxng-search plugin", () => {
     expect(output).toContain("Route: wikipedia");
     expect(output).toContain("Source URL: https://en.wikipedia.org/wiki/Fourier_transform");
     expect(output).toContain("# Fourier transform");
-    expect(output).toContain("$\\int f(x)dx$");
+    expect(output).toContain("In [mathematics](https://en.wikipedia.org/wiki/Mathematics");
   });
 
   it("uses webfetch cache on repeated URL requests with cache enabled", async () => {
@@ -563,11 +508,12 @@ describe("searxng-search plugin", () => {
 
   it("routes github URLs through gh handler commands", async () => {
     const calls: string[][] = [];
+    const issueFixture = fixtureText("github/issue-14460.json");
 
     (Bun as any).spawn = (args: string[]) => {
       calls.push(args);
       return {
-        stdout: streamFromText("github issue content"),
+        stdout: streamFromText(issueFixture),
         stderr: streamFromText(""),
         exited: Promise.resolve(0),
       };
@@ -591,13 +537,87 @@ describe("searxng-search plugin", () => {
       "8094",
       "--repo",
       "anomalyco/opencode",
-      "--comments",
+      "--json",
+      "number,title,body,author,comments,state,url,labels",
     ]);
 
     expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
     expect(output).toContain("Route: github");
     expect(output).toContain("Source URL: https://github.com/anomalyco/opencode/issues/8094");
-    expect(output).toContain("github issue content");
+    expect(output).toContain('"number":14460');
+    expect(output).toContain('"state":"OPEN"');
+  });
+
+  it("uses gh issue view --json path for issue URLs", async () => {
+    const calls: string[][] = [];
+    const issueFixture = fixtureText("github/issue-14460.json");
+
+    (Bun as any).spawn = (args: string[]) => {
+      calls.push(args);
+      return {
+        stdout: streamFromText(issueFixture),
+        stderr: streamFromText(""),
+        exited: Promise.resolve(0),
+      };
+    };
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng", {
+      webfetchCacheEnabled: "0",
+    });
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://github.com/anomalyco/opencode/issues/14460?case=gh-fail",
+      },
+      context as any,
+    );
+
+    expect(calls.some((args) => args[0] === "gh")).toBe(true);
+    expect(calls.some((args) => args[0] === "gh" && args[1] === "issue" && args[2] === "view")).toBe(true);
+    expect(calls.some((args) => args.includes("--json") && args.includes("number,title,body,author,comments,state,url,labels"))).toBe(true);
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Source URL: https://github.com/anomalyco/opencode/issues/14460");
+    expect(output).toContain('"number":14460');
+  });
+
+  it("includes issue logging guidance on invalid webfetch input", async () => {
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "not-a-url",
+      },
+      context as any,
+    );
+
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Invalid URL:");
+    expect(output).toContain("ISSUES.md");
+  });
+
+  it("includes issue logging guidance when github fetch fails", async () => {
+    const ghFailure = fixtureText("github/issue-view-missing.err");
+    (Bun as any).spawn = () => ({
+      stdout: streamFromText(""),
+      stderr: streamFromText(ghFailure),
+      exited: Promise.resolve(1),
+    });
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://github.com/anomalyco/opencode/issues/14460",
+      },
+      context as any,
+    );
+
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Failed to fetch URL.");
+    expect(output).toContain("ISSUES.md");
   });
 
   it("explains arxiv 429 as capacity-related", async () => {

@@ -1,0 +1,1 @@
+/home/dzack/.nvm/versions/node/v25.6.1/lib/node_modules/@rama_nigg/open-cursor/dist/plugin-entry.js

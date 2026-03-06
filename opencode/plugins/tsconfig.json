@@ -3,6 +3,11 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@webfetch-handlers": ["webfetch-handlers/index.ts"],
+      "@webfetch-handlers/*": ["webfetch-handlers/*"]
+    },
     "lib": ["ESNext"],
     "types": ["bun-types"],
     "strict": true,
