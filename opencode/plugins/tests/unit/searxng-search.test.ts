@@ -160,7 +160,7 @@ describe("searxng-search plugin", () => {
       unresponsive_engines: [],
     });
 
-    globalThis.fetch = async (input) => {
+    (globalThis as any).fetch = async (input: string | Request | URL) => {
       const url = new URL(String(input));
       const q = url.searchParams.get("q") ?? "";
       const page = Number(url.searchParams.get("pageno") ?? "1");
@@ -271,8 +271,126 @@ describe("searxng-search plugin", () => {
     expect(writes[0]!.content).toBe(largeText);
 
     expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Route: default");
     expect(output).toContain("Content exceeds inline limit (20000 tokens).");
     expect(output).toContain(`Saved full content: ${writes[0]!.path}`);
     expect(output).toContain("Token count:");
+  });
+
+  it("routes github URLs through gh handler commands", async () => {
+    const calls: string[][] = [];
+
+    (Bun as any).spawn = (args: string[]) => {
+      calls.push(args);
+      return {
+        stdout: streamFromText("github issue content"),
+        stderr: streamFromText(""),
+        exited: Promise.resolve(0),
+      };
+    };
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://github.com/anomalyco/opencode/issues/8094",
+      },
+      context as any,
+    );
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toEqual([
+      "gh",
+      "issue",
+      "view",
+      "8094",
+      "--repo",
+      "anomalyco/opencode",
+      "--comments",
+    ]);
+
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Route: github");
+    expect(output).toContain("Source URL: https://github.com/anomalyco/opencode/issues/8094");
+    expect(output).toContain("github issue content");
+  });
+
+  it("explains arxiv 429 as capacity-related", async () => {
+    (Bun as any).spawn = (args: string[]) => {
+      const script = args[2] ?? "";
+      if (script.includes("%{http_code}")) {
+        return {
+          stdout: streamFromText("429"),
+          stderr: streamFromText(""),
+          exited: Promise.resolve(0),
+        };
+      }
+      if (script.includes("https://arxiv.org/search/")) {
+        return {
+          stdout: streamFromText("ArXiv fallback search page content"),
+          stderr: streamFromText(""),
+          exited: Promise.resolve(0),
+        };
+      }
+      return {
+        stdout: streamFromText("Rate exceeded."),
+        stderr: streamFromText(""),
+        exited: Promise.resolve(0),
+      };
+    };
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://export.arxiv.org/api/query?search_query=all:electron&start=0&max_results=1",
+      },
+      context as any,
+    );
+
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Route: default");
+    expect(output).toContain("arXiv API case: `429 Rate exceeded`.");
+    expect(output).toContain("server capacity pressure");
+    expect(output).toContain("retry later with backoff");
+    expect(output).toContain("Fallback: loaded arXiv web page via w3m from https://arxiv.org/search/?query=all%3Aelectron&searchtype=all&source=header.");
+    expect(output).toContain("ArXiv fallback search page content");
+  });
+
+  it("explains arxiv 503 as excessive-use signal", async () => {
+    (Bun as any).spawn = (args: string[]) => {
+      const script = args[2] ?? "";
+      if (script.includes("%{http_code}")) {
+        return {
+          stdout: streamFromText("503"),
+          stderr: streamFromText(""),
+          exited: Promise.resolve(0),
+        };
+      }
+      return {
+        stdout: streamFromText("Service temporarily unavailable."),
+        stderr: streamFromText(""),
+        exited: Promise.resolve(0),
+      };
+    };
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://export.arxiv.org/api/query?search_query=all:quantum&start=0&max_results=1",
+      },
+      context as any,
+    );
+
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Route: default");
+    expect(output).toContain("arXiv API case: `503 Service Unavailable`.");
+    expect(output).toContain("excessive-use signal");
+    expect(output).toContain("reduce request frequency");
+    expect(output).not.toContain("Fallback: loaded arXiv web page via w3m from");
   });
 });

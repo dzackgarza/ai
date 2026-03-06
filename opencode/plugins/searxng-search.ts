@@ -1,5 +1,8 @@
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import { getEncoding } from "js-tiktoken";
+import { createHash } from "node:crypto";
+import { mkdir, unlink } from "node:fs/promises";
+import { join } from "node:path";
 
 type SearxngResult = {
   title: string;
@@ -29,16 +32,51 @@ type SearchQueryInput = {
   domains?: string[];
 };
 
+type CommandExecutionResult = {
+  stdoutText: string;
+  stderrText: string;
+  exitCode: number;
+};
+
+type WebFetchHandlerInput = {
+  url: URL;
+};
+
+type WebFetchHandlerResult = {
+  routeName: string;
+  sourceUrl: string;
+  content: string;
+};
+
+type WebFetchDomainHandler = {
+  name: string;
+  domains: readonly string[];
+  handle: (input: WebFetchHandlerInput) => Promise<WebFetchHandlerResult>;
+};
+
 const SEARXNG_INSTANCE_URL = (process.env.SEARXNG_INSTANCE_URL ?? "").trim();
 const DEFAULT_TIMEOUT_MS = 15_000;
+const WEBFETCH_COMMAND_TIMEOUT_MS = 30_000;
 const DEFAULT_LIMIT = 8;
 const MAX_LIMIT = 20;
 const MAX_OFFSET = 200;
 const MAX_PAGE_FETCHES = 20;
 const WEBFETCH_INLINE_TOKEN_LIMIT = 20_000;
+const WEBFETCH_CACHE_ENABLED = (process.env.WEBFETCH_CACHE_ENABLED ?? "1").trim() !== "0";
+const WEBFETCH_CACHE_DIR = (
+  process.env.WEBFETCH_CACHE_DIR ?? `${process.env.HOME ?? "/tmp"}/.cache/opencode-webfetch`
+).trim();
+const WEBFETCH_CACHE_TTL_DAYS = Number.parseInt(process.env.WEBFETCH_CACHE_TTL_DAYS ?? "90", 10);
+const WEBFETCH_CACHE_TTL_MS =
+  Number.isFinite(WEBFETCH_CACHE_TTL_DAYS) && WEBFETCH_CACHE_TTL_DAYS > 0
+    ? WEBFETCH_CACHE_TTL_DAYS * 24 * 60 * 60 * 1000
+    : 90 * 24 * 60 * 60 * 1000;
 const TOKEN_ENCODER = getEncoding("o200k_base");
 const PASSPHRASE_WEB_SEARCH = "PASS_WEB_SEARCH_SHADOW_20260305_6A9F";
 const PASSPHRASE_WEBFETCH = "PASS_WEBFETCH_SHADOW_20260305_C3D2";
+const GITHUB_DOMAINS = ["github.com", "www.github.com"] as const;
+const REDDIT_DOMAINS = ["reddit.com", "www.reddit.com", "old.reddit.com", "api.reddit.com"] as const;
+const REDDIT_APIFY_ACTOR = (process.env.REDDIT_APIFY_ACTOR ?? "spry_wholemeal/reddit-scraper").trim();
 
 const NARROWING_CATEGORIES = [
   "news",
@@ -94,6 +132,538 @@ function clampSnippet(text: string, maxLen = 280): string {
 
 function countTokens(text: string): number {
   return TOKEN_ENCODER.encode(text).length;
+}
+
+function hostMatchesDomain(hostname: string, domain: string): boolean {
+  return hostname === domain || hostname.endsWith(`.${domain}`);
+}
+
+type WebFetchCachePayload = {
+  url: string;
+  routeName: string;
+  sourceUrl: string;
+  content: string;
+  cachedAt: string;
+};
+
+function webFetchCachePath(url: string): string {
+  const digest = createHash("sha256").update(url).digest("hex");
+  return join(WEBFETCH_CACHE_DIR, `${digest}.json`);
+}
+
+async function readWebFetchCache(url: string): Promise<WebFetchHandlerResult | undefined> {
+  if (!WEBFETCH_CACHE_ENABLED) return undefined;
+  const path = webFetchCachePath(url);
+  const file = Bun.file(path);
+  if (!(await file.exists())) return undefined;
+  try {
+    const raw = await file.text();
+    const parsed = JSON.parse(raw) as Partial<WebFetchCachePayload>;
+    if (
+      parsed.url !== url ||
+      typeof parsed.routeName !== "string" ||
+      typeof parsed.sourceUrl !== "string" ||
+      typeof parsed.content !== "string" ||
+      typeof parsed.cachedAt !== "string"
+    ) {
+      return undefined;
+    }
+    const cachedAt = Date.parse(parsed.cachedAt);
+    if (!Number.isFinite(cachedAt) || Date.now() - cachedAt > WEBFETCH_CACHE_TTL_MS) {
+      await unlink(path).catch(() => {});
+      return undefined;
+    }
+    return {
+      routeName: parsed.routeName,
+      sourceUrl: parsed.sourceUrl,
+      content: parsed.content,
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+async function writeWebFetchCache(url: string, result: WebFetchHandlerResult): Promise<void> {
+  if (!WEBFETCH_CACHE_ENABLED) return;
+  if (!result.content.trim()) return;
+  await mkdir(WEBFETCH_CACHE_DIR, { recursive: true });
+  const payload: WebFetchCachePayload = {
+    url,
+    routeName: result.routeName,
+    sourceUrl: result.sourceUrl,
+    content: result.content,
+    cachedAt: new Date().toISOString(),
+  };
+  await Bun.write(webFetchCachePath(url), JSON.stringify(payload));
+}
+
+function findWebFetchHandler(
+  handlers: readonly WebFetchDomainHandler[],
+  url: URL,
+): WebFetchDomainHandler | undefined {
+  return handlers.find((handler) =>
+    handler.domains.some((domain) => hostMatchesDomain(url.hostname, domain)),
+  );
+}
+
+function normalizeGitHubRepo(repo: string): string {
+  return repo.replace(/\.git$/i, "");
+}
+
+type GitHubCommandPlan = {
+  args: string[];
+  sourceUrl: string;
+};
+
+function buildGitHubCommandPlan(url: URL): GitHubCommandPlan {
+  const rawSegments = url.pathname
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => decodeURIComponent(segment));
+
+  if (rawSegments.length >= 2) {
+    const owner = rawSegments[0]!;
+    const repo = normalizeGitHubRepo(rawSegments[1]!);
+    const repoRef = `${owner}/${repo}`;
+    const scope = rawSegments[2];
+    const tail = rawSegments.slice(3);
+
+    if (scope === "issues" && /^\d+$/.test(tail[0] ?? "")) {
+      return {
+        args: ["gh", "issue", "view", tail[0]!, "--repo", repoRef, "--comments"],
+        sourceUrl: `https://github.com/${repoRef}/issues/${tail[0]!}`,
+      };
+    }
+
+    if (scope === "pull" && /^\d+$/.test(tail[0] ?? "")) {
+      return {
+        args: ["gh", "pr", "view", tail[0]!, "--repo", repoRef, "--comments"],
+        sourceUrl: `https://github.com/${repoRef}/pull/${tail[0]!}`,
+      };
+    }
+
+    if (scope === "blob" && tail.length >= 2) {
+      const ref = tail[0]!;
+      const filePath = tail.slice(1).join("/");
+      return {
+        args: [
+          "gh",
+          "api",
+          `repos/${repoRef}/contents/${filePath}`,
+          "-f",
+          `ref=${ref}`,
+          "-H",
+          "Accept: application/vnd.github.raw+json",
+        ],
+        sourceUrl: `https://github.com/${repoRef}/blob/${ref}/${filePath}`,
+      };
+    }
+
+    if (scope === "commit" && tail.length >= 1) {
+      return {
+        args: ["gh", "api", `repos/${repoRef}/commits/${tail[0]!}`],
+        sourceUrl: `https://github.com/${repoRef}/commit/${tail[0]!}`,
+      };
+    }
+
+    if (scope === "releases") {
+      return {
+        args: ["gh", "release", "list", "--repo", repoRef, "--limit", "20"],
+        sourceUrl: `https://github.com/${repoRef}/releases`,
+      };
+    }
+
+    if (scope === "issues") {
+      return {
+        args: ["gh", "issue", "list", "--repo", repoRef, "--limit", "30"],
+        sourceUrl: `https://github.com/${repoRef}/issues`,
+      };
+    }
+
+    if (scope === "pulls") {
+      return {
+        args: ["gh", "pr", "list", "--repo", repoRef, "--limit", "30"],
+        sourceUrl: `https://github.com/${repoRef}/pulls`,
+      };
+    }
+
+    return {
+      args: ["gh", "repo", "view", repoRef, "--readme"],
+      sourceUrl: `https://github.com/${repoRef}`,
+    };
+  }
+
+  const fallbackQuery = rawSegments.join("/") || url.toString();
+  return {
+    args: ["gh", "search", "repos", fallbackQuery, "--limit", "20"],
+    sourceUrl: url.toString(),
+  };
+}
+
+async function runCommand(args: string[]): Promise<CommandExecutionResult> {
+  const proc = Bun.spawn(args, {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  const timeout = setTimeout(() => {
+    proc.kill();
+  }, WEBFETCH_COMMAND_TIMEOUT_MS);
+  try {
+    const [stdoutText, stderrText, exitCode] = await Promise.all([
+      new Response(proc.stdout).text(),
+      new Response(proc.stderr).text(),
+      proc.exited,
+    ]);
+    return { stdoutText, stderrText, exitCode };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchWebContentWithW3M(url: URL): Promise<CommandExecutionResult> {
+  return runCommand([
+    "sh",
+    "-lc",
+    `curl -sSL --compressed --max-time 30 ${JSON.stringify(url.toString())} | w3m -dump -T text/html`,
+  ]);
+}
+
+async function fetchHttpStatusCode(url: URL): Promise<number | undefined> {
+  const result = await runCommand([
+    "sh",
+    "-lc",
+    `curl -sSIL --compressed --max-time 30 -o /dev/null -w '%{http_code}' ${JSON.stringify(url.toString())}`,
+  ]);
+  if (result.exitCode !== 0) return undefined;
+  const code = Number.parseInt(result.stdoutText.trim(), 10);
+  if (!Number.isFinite(code)) return undefined;
+  if (code < 100 || code > 599) return undefined;
+  return code;
+}
+
+function formatArxivServiceMessage(input: {
+  url: URL;
+  statusCode?: number;
+  content: string;
+}): string | undefined {
+  if (!hostMatchesDomain(input.url.hostname, "arxiv.org")) return undefined;
+  const body = input.content.trim().toLowerCase();
+
+  if (input.statusCode === 429 || body === "rate exceeded." || body === "rate exceeded") {
+    return [
+      "arXiv API case: `429 Rate exceeded`.",
+      "Interpretation: this indicates arXiv server capacity pressure, not abusive request rate from your script.",
+      "Action: retry later with backoff; keep polite spacing (~3 seconds) between repeated API calls.",
+      "Reference: https://groups.google.com/a/arxiv.org/g/api/c/pNB3lnxf4mQ",
+    ].join("\n");
+  }
+
+  if (input.statusCode === 503) {
+    return [
+      "arXiv API case: `503 Service Unavailable`.",
+      "Interpretation: this is the excessive-use signal from arXiv API ops.",
+      "Action: reduce request frequency, use smaller slices/paging, and keep polite spacing (~3 seconds) between repeated calls.",
+      "Reference: https://groups.google.com/a/arxiv.org/g/api/c/pNB3lnxf4mQ",
+    ].join("\n");
+  }
+
+  return undefined;
+}
+
+function buildArxivFallbackUrl(url: URL): URL | undefined {
+  if (!hostMatchesDomain(url.hostname, "arxiv.org")) return undefined;
+  if (url.pathname !== "/api/query") return undefined;
+
+  const rawIdList = (url.searchParams.get("id_list") ?? "").trim();
+  if (rawIdList) {
+    const firstId = rawIdList
+      .split(",")
+      .map((item) => item.trim())
+      .find((item) => item.length > 0);
+    if (firstId) {
+      const normalizedId = firstId.replace(/^arxiv:/i, "");
+      const fallback = new URL("https://arxiv.org/");
+      fallback.pathname = `/abs/${normalizedId}`;
+      return fallback;
+    }
+  }
+
+  const rawSearch = (url.searchParams.get("search_query") ?? "").trim();
+  if (rawSearch) {
+    const fallback = new URL("https://arxiv.org/search/");
+    fallback.searchParams.set("query", rawSearch);
+    fallback.searchParams.set("searchtype", "all");
+    fallback.searchParams.set("source", "header");
+    return fallback;
+  }
+
+  return undefined;
+}
+
+function isLikelyArxivErrorBody(content: string): boolean {
+  const normalized = content.trim().toLowerCase();
+  return (
+    normalized === "rate exceeded." ||
+    normalized === "rate exceeded" ||
+    normalized === "service unavailable." ||
+    normalized === "service unavailable" ||
+    normalized === "service temporarily unavailable." ||
+    normalized === "service temporarily unavailable" ||
+    normalized.includes("service temporarily unavailable") ||
+    normalized.includes("too many requests")
+  );
+}
+
+async function formatWebFetchOutput(input: {
+  routeName: string;
+  sourceUrl: string;
+  content: string;
+}): Promise<string> {
+  const text = input.content.trim();
+  const prefix = [
+    `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
+    `Route: ${input.routeName}`,
+    `Source URL: ${input.sourceUrl}`,
+  ];
+  if (!text) {
+    return [...prefix, "", "No readable text content extracted from this page."].join("\n");
+  }
+
+  const inlineReport = [...prefix, "", text].join("\n");
+  const tokenCount = countTokens(inlineReport);
+  if (tokenCount > WEBFETCH_INLINE_TOKEN_LIMIT) {
+    const outputPath = `/tmp/webfetch-${Date.now()}-${crypto.randomUUID()}.txt`;
+    await Bun.write(outputPath, inlineReport);
+    return [
+      ...prefix,
+      `Token count: ${tokenCount}`,
+      `Saved full content: ${outputPath}`,
+      `Full report exceeds inline limit (${WEBFETCH_INLINE_TOKEN_LIMIT} tokens).`,
+      "Use your normal file-reading tools to inspect the saved file.",
+    ].join("\n");
+  }
+
+  return [...prefix, `Token count: ${tokenCount}`, "", text].join("\n");
+}
+
+type RedditPostRef = {
+  subreddit: string;
+  postId: string;
+  slug: string;
+};
+
+function extractRedditPostRef(url: URL): RedditPostRef | undefined {
+  const match = url.pathname.match(/^\/r\/([^/]+)\/comments\/([a-z0-9]+)(?:\/([^/?#]+))?/i);
+  if (!match) return undefined;
+  const subreddit = decodeURIComponent(match[1] ?? "").trim();
+  const postId = (match[2] ?? "").trim().toLowerCase();
+  const slug = decodeURIComponent((match[3] ?? "").replace(/[_-]+/g, " ")).trim();
+  if (!subreddit || !postId) return undefined;
+  return { subreddit, postId, slug };
+}
+
+type RedditRecord = Record<string, unknown>;
+
+function normalizeRedditId(raw: unknown): string {
+  return String(raw ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/^t[0-9]_/, "");
+}
+
+function redditText(raw: unknown): string {
+  return String(raw ?? "").trim();
+}
+
+function renderRedditCommentTree(comments: RedditRecord[], postId: string): string[] {
+  const byId = new Map<string, RedditRecord>();
+  const children = new Map<string, RedditRecord[]>();
+  for (const comment of comments) {
+    const commentId = normalizeRedditId(comment.comment_id);
+    if (!commentId) continue;
+    byId.set(commentId, comment);
+  }
+  for (const comment of comments) {
+    const commentId = normalizeRedditId(comment.comment_id);
+    if (!commentId) continue;
+    const parentId = normalizeRedditId(comment.parent_id);
+    const key = byId.has(parentId) ? parentId : postId;
+    const arr = children.get(key) ?? [];
+    arr.push(comment);
+    children.set(key, arr);
+  }
+
+  const sortByScoreThenTime = (a: RedditRecord, b: RedditRecord) => {
+    const sa = Number(a.score ?? 0);
+    const sb = Number(b.score ?? 0);
+    if (sb !== sa) return sb - sa;
+    const ta = Number(a.created_utc_ts ?? 0);
+    const tb = Number(b.created_utc_ts ?? 0);
+    return ta - tb;
+  };
+
+  const render = (parentId: string, depth: number, out: string[]) => {
+    const items = [...(children.get(parentId) ?? [])].sort(sortByScoreThenTime);
+    for (const comment of items) {
+      const commentId = normalizeRedditId(comment.comment_id);
+      if (!commentId) continue;
+      const indent = "  ".repeat(depth);
+      const author = String(comment.author ?? "[deleted]").trim() || "[deleted]";
+      const score = Number(comment.score ?? 0);
+      const body = redditText(comment.text);
+      out.push(`${indent}- u/${author} (score ${score}):`);
+      if (body) {
+        for (const line of body.split(/\r?\n/)) {
+          out.push(`${indent}  ${line}`);
+        }
+      } else {
+        out.push(`${indent}  [no text]`);
+      }
+      render(commentId, depth + 1, out);
+    }
+  };
+
+  const lines: string[] = [];
+  render(postId, 0, lines);
+  return lines;
+}
+
+function buildRedditSearchQuery(postRef: RedditPostRef): string {
+  if (postRef.slug) return postRef.slug;
+  return postRef.postId;
+}
+
+async function fetchRedditPostMarkdown(input: { url: URL }): Promise<WebFetchHandlerResult> {
+  const postRef = extractRedditPostRef(input.url);
+  if (!postRef) {
+    const fallback = await fetchWebContentWithW3M(input.url);
+    if (fallback.exitCode !== 0) {
+      throw new Error(`reddit fallback fetch failed (exit ${fallback.exitCode}): ${fallback.stderrText.trim()}`);
+    }
+    return {
+      routeName: "reddit",
+      sourceUrl: input.url.toString(),
+      content: fallback.stdoutText,
+    };
+  }
+
+  const actorInput = {
+    mode: "search",
+    search: {
+      queries: [buildRedditSearchQuery(postRef)],
+      sort: "relevance",
+      timeframe: "all",
+      maxPostsPerQuery: 25,
+      restrictToSubreddit: postRef.subreddit,
+      includeNsfw: false,
+      selfPostsOnly: false,
+      commentsMode: "all",
+      commentsMaxTopLevel: 100,
+      commentsMaxDepth: 3,
+      commentsHighEngagementMinScore: 10,
+      commentsHighEngagementMinComments: 5,
+      commentsHighEngagementFilterPosts: false,
+      overrides: [],
+      targets: [],
+    },
+    includeRaw: false,
+    proxyConfiguration: {
+      useApifyProxy: true,
+      apifyProxyGroups: ["RESIDENTIAL"],
+    },
+    proxyCountry: "US",
+    proxyRotationStrategy: "sticky_pool",
+    proxyPoolSize: 10,
+    requestDelayMs: 100,
+  };
+
+  const inputPath = `/tmp/reddit-apify-input-${Date.now()}-${crypto.randomUUID()}.json`;
+  await Bun.write(inputPath, JSON.stringify(actorInput));
+  try {
+    const result = await runCommand([
+      "apify",
+      "call",
+      REDDIT_APIFY_ACTOR,
+      "--silent",
+      "--output-dataset",
+      "--input-file",
+      inputPath,
+    ]);
+    if (result.exitCode !== 0) {
+      throw new Error(`apify call failed (exit ${result.exitCode}): ${result.stderrText.trim()}`);
+    }
+
+    let items: RedditRecord[];
+    try {
+      const parsed = JSON.parse(result.stdoutText);
+      if (!Array.isArray(parsed)) {
+        throw new Error("dataset output is not an array");
+      }
+      items = parsed as RedditRecord[];
+    } catch (error) {
+      throw new Error(
+        `apify output parse failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+
+    const postMatch = items
+      .filter((item) => item.record_type === "post")
+      .find((item) => String(item.permalink ?? "").includes(`/comments/${postRef.postId}/`));
+    if (!postMatch) {
+      throw new Error(`no Reddit post match for permalink id ${postRef.postId}`);
+    }
+
+    const targetPostId = normalizeRedditId(postMatch.post_id) || postRef.postId;
+    const comments = items.filter(
+      (item) => item.record_type === "comment" && normalizeRedditId(item.post_id) === targetPostId,
+    );
+
+    const title = redditText(postMatch.title) || "[untitled]";
+    const body = redditText(postMatch.text);
+    const author = String(postMatch.author ?? "[deleted]").trim() || "[deleted]";
+    const subreddit = String(postMatch.subreddit ?? postRef.subreddit).trim() || postRef.subreddit;
+    const permalink = redditText(postMatch.permalink) || input.url.toString();
+    const score = Number(postMatch.score ?? 0);
+    const numComments = Number(postMatch.num_comments ?? comments.length);
+
+    const lines: string[] = [
+      "# Reddit Post",
+      "",
+      `- URL: ${input.url.toString()}`,
+      `- Permalink: ${permalink}`,
+      `- Subreddit: r/${subreddit}`,
+      `- Author: u/${author}`,
+      `- Score: ${score}`,
+      `- Comments reported by post: ${numComments}`,
+      `- Comments extracted: ${comments.length}`,
+      "",
+      "## Title",
+      "",
+      title,
+      "",
+      "## Body",
+      "",
+      body || "[no post body]",
+      "",
+      "## Comments (nested)",
+      "",
+    ];
+
+    if (comments.length === 0) {
+      lines.push("[no comments extracted]");
+    } else {
+      lines.push(...renderRedditCommentTree(comments, targetPostId));
+    }
+
+    return {
+      routeName: "reddit",
+      sourceUrl: permalink,
+      content: lines.join("\n"),
+    };
+  } finally {
+    await unlink(inputPath).catch(() => {});
+  }
 }
 
 function augmentQueryWithDomains(query: string, domains: string[]): string {
@@ -267,6 +837,32 @@ function formatResults(input: {
 }
 
 export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
+  const webFetchDomainHandlers: readonly WebFetchDomainHandler[] = [
+    {
+      name: "reddit",
+      domains: REDDIT_DOMAINS,
+      handle: async ({ url }) => fetchRedditPostMarkdown({ url }),
+    },
+    {
+      name: "github",
+      domains: GITHUB_DOMAINS,
+      handle: async ({ url }) => {
+        const plan = buildGitHubCommandPlan(url);
+        const result = await runCommand(plan.args);
+        if (result.exitCode !== 0) {
+          throw new Error(
+            `gh command failed (exit ${result.exitCode}): ${result.stderrText.trim()}`,
+          );
+        }
+        return {
+          routeName: "github",
+          sourceUrl: plan.sourceUrl,
+          content: result.stdoutText,
+        };
+      },
+    },
+  ];
+
   return {
     tool: {
       webfetch: tool({
@@ -308,74 +904,73 @@ export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
           });
 
           try {
-            const proc = Bun.spawn(
-              [
-                "sh",
-                "-lc",
-                `curl -sSL --compressed --max-time 30 ${JSON.stringify(parsed.toString())} | w3m -dump -T text/html`,
-              ],
-              {
-                stderr: "pipe",
-                stdout: "pipe",
-              },
-            );
-
-            const [stdoutText, stderrText, exitCode] = await Promise.all([
-              new Response(proc.stdout).text(),
-              new Response(proc.stderr).text(),
-              proc.exited,
-            ]);
-
-            if (exitCode !== 0) {
-              await client.app.log({
-                body: {
-                  service: "web-search-plugin",
-                  level: "error",
-                  message: `webfetch failed: exit ${exitCode}`,
-                  extra: {
-                    url: parsed.toString(),
-                    stderr: stderrText.trim().slice(0, 2000),
-                  },
-                },
+            const cacheKey = parsed.toString();
+            const cached = await readWebFetchCache(cacheKey);
+            if (cached) {
+              return formatWebFetchOutput({
+                routeName: `${cached.routeName}/cache`,
+                sourceUrl: cached.sourceUrl,
+                content: cached.content,
               });
-              return [
-                `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
-                `Failed to fetch URL (exit ${exitCode}).`,
-                "If this persists, ask the user to check webfetch/plugin logs.",
-              ].join("\n");
             }
+            const handler = findWebFetchHandler(webFetchDomainHandlers, parsed);
+            const fetched = handler
+              ? await handler.handle({ url: parsed })
+              : await (async () => {
+                  const [statusCode, defaultResult] = await Promise.all([
+                    fetchHttpStatusCode(parsed),
+                    fetchWebContentWithW3M(parsed),
+                  ]);
+                  if (defaultResult.exitCode !== 0) {
+                    throw new Error(
+                      `default webfetch failed (exit ${defaultResult.exitCode}): ${defaultResult.stderrText.trim()}`,
+                    );
+                  }
+                  const serviceMessage = formatArxivServiceMessage({
+                    url: parsed,
+                    statusCode,
+                    content: defaultResult.stdoutText,
+                  });
+                  if (serviceMessage) {
+                    const fallbackUrl = buildArxivFallbackUrl(parsed);
+                    if (fallbackUrl) {
+                      const fallbackResult = await fetchWebContentWithW3M(fallbackUrl);
+                      if (
+                        fallbackResult.exitCode === 0 &&
+                        fallbackResult.stdoutText.trim().length > 0 &&
+                        !isLikelyArxivErrorBody(fallbackResult.stdoutText)
+                      ) {
+                        return {
+                          routeName: "default",
+                          sourceUrl: fallbackUrl.toString(),
+                          content: [
+                            serviceMessage,
+                            `Fallback: loaded arXiv web page via w3m from ${fallbackUrl.toString()}.`,
+                            "",
+                            fallbackResult.stdoutText,
+                          ].join("\n"),
+                        };
+                      }
+                    }
+                    return {
+                      routeName: "default",
+                      sourceUrl: parsed.toString(),
+                      content: serviceMessage,
+                    };
+                  }
+                  return {
+                    routeName: "default",
+                    sourceUrl: parsed.toString(),
+                    content: defaultResult.stdoutText,
+                  };
+                })();
+            await writeWebFetchCache(cacheKey, fetched);
 
-            const text = stdoutText.trim();
-            if (!text) {
-              return [
-                `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
-                `Source URL: ${parsed.toString()}`,
-                "",
-                "No readable text content extracted from this page.",
-              ].join("\n");
-            }
-
-            const tokenCount = countTokens(text);
-            if (tokenCount > WEBFETCH_INLINE_TOKEN_LIMIT) {
-              const outputPath = `/tmp/webfetch-${Date.now()}-${crypto.randomUUID()}.txt`;
-              await Bun.write(outputPath, text);
-              return [
-                `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
-                `Source URL: ${parsed.toString()}`,
-                `Token count: ${tokenCount}`,
-                `Saved full content: ${outputPath}`,
-                `Content exceeds inline limit (${WEBFETCH_INLINE_TOKEN_LIMIT} tokens).`,
-                "Use your normal file-reading tools to inspect the saved file.",
-              ].join("\n");
-            }
-
-            return [
-              `Tool passphrase: ${PASSPHRASE_WEBFETCH}`,
-              `Source URL: ${parsed.toString()}`,
-              `Token count: ${tokenCount}`,
-              "",
-              text,
-            ].join("\n");
+            return formatWebFetchOutput({
+              routeName: fetched.routeName,
+              sourceUrl: fetched.sourceUrl,
+              content: fetched.content,
+            });
           } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             await client.app.log({
