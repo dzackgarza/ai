@@ -11,5 +11,6 @@
   "stop-hooks": false,
   "write_plan": true,
   "plan_exit": true,
-  "async-subagent": true
+  "async-subagent": true,
+  "task-plugin": false
 }

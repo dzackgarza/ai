@@ -16,11 +16,15 @@ test:
 # Compile all plugins (crash = broken import or syntax)
 compile:
     bun build --target bun --outdir /tmp/plugin-check \
-        prompt-router.ts \
-        command-interceptor.ts \
-        context-injector.ts \
-        cot-trivial-test.ts \
-        stop-hooks.ts
+        write_plan.ts \
+        plan_exit.ts \
+        sleep.ts \
+        async-command.ts \
+        introspection.ts \
+        list-sessions.ts \
+        read-transcript.ts \
+        git-add.ts \
+        git-commit.ts
 
 # Run classifier test suite against default model
 classifier:
@@ -48,3 +52,101 @@ baseline tier:
 
 # Run all checks: typecheck + test + compile
 check: typecheck test compile
+
+# Session management harness
+# Usage: just session <command> [args]
+# Examples:
+#   just session list
+#   just session list --limit 10
+#   just session delete --older-than 7 --dry-run
+#   just session stats
+session *args:
+    bun run ../harness/session-harness.ts {{args}}
+
+# Isolated local-config harness for shadow-plugin validation
+shadow_test_dir := "/tmp/opencode-shadow-plugin-test"
+shadow_env_dir := "/home/dzack/ai/opencode/plugins"
+shadow_home_dir := "/tmp/opencode-shadow-plugin-test/home"
+shadow_xdg_config_dir := "/tmp/opencode-shadow-plugin-test/xdg-config"
+shadow_xdg_data_dir := "/tmp/opencode-shadow-plugin-test/xdg-data"
+shadow_plugin_file := "/home/dzack/ai/opencode/plugins/searxng-search.ts"
+shadow_model := "openrouter/stepfun/step-3.5-flash:free"
+shadow_agent := "LocalMinimalShadow"
+shadow_websearch_pass := "PASS_WEB_SEARCH_SHADOW_20260305_6A9F"
+shadow_webfetch_pass := "PASS_WEBFETCH_SHADOW_20260305_C3D2"
+
+# Create a local project config that explicitly loads the plugin via file://
+shadow-init:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p {{shadow_test_dir}} {{shadow_home_dir}} {{shadow_xdg_config_dir}} {{shadow_xdg_data_dir}}
+    jq -n \
+      --arg schema "https://opencode.ai/config.json" \
+      --arg model "{{shadow_model}}" \
+      --arg pluginPath "file://{{shadow_plugin_file}}" \
+      '{
+        "$schema": $schema,
+        model: $model,
+        default_agent: "{{shadow_agent}}",
+        mcp: {},
+        plugin: [$pluginPath],
+        agent: {
+          "{{shadow_agent}}": {
+            description: "Minimal test agent for plugin shadow checks",
+            mode: "primary",
+            model: $model,
+            prompt: "Follow instructions exactly. Use the requested tools. Keep answers terse.",
+            permission: {
+              webfetch: "allow",
+              websearch: "allow",
+              bash: "deny",
+              task: "deny",
+              todoread: "deny",
+              todowrite: "deny"
+            }
+          }
+        },
+        permission: {
+          webfetch: "allow",
+          websearch: "allow"
+        }
+      }' > {{shadow_test_dir}}/opencode.json
+    direnv allow {{shadow_env_dir}} >/dev/null 2>&1 || true
+    echo "Wrote local config: {{shadow_test_dir}}/opencode.json"
+
+# Validate that websearch is shadowed and returns the plugin passphrase
+shadow-test-websearch: shadow-init
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{shadow_test_dir}}
+    output="$(direnv exec {{shadow_env_dir}} env \
+      HOME={{shadow_home_dir}} \
+      XDG_CONFIG_HOME={{shadow_xdg_config_dir}} \
+      XDG_DATA_HOME={{shadow_xdg_data_dir}} \
+      OPENCODE_CONFIG={{shadow_test_dir}}/opencode.json \
+      OPENCODE_CONFIG_DIR={{shadow_test_dir}} \
+      OPENCODE_DISABLE_PROJECT_CONFIG=1 \
+      timeout 120 opencode run --agent {{shadow_agent}} "You must call the tool named websearch exactly once with query 'openai' and numResults 2. Then output only the passphrase token from the tool result." 2>&1)"
+    printf '%s\n' "$output"
+    last_line="$(printf '%s\n' "$output" | tr -d '\r' | awk 'NF{line=$0} END{print line}')"
+    test "$last_line" = "{{shadow_websearch_pass}}"
+
+# Validate that webfetch is shadowed and returns the plugin passphrase
+shadow-test-webfetch: shadow-init
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{shadow_test_dir}}
+    output="$(direnv exec {{shadow_env_dir}} env \
+      HOME={{shadow_home_dir}} \
+      XDG_CONFIG_HOME={{shadow_xdg_config_dir}} \
+      XDG_DATA_HOME={{shadow_xdg_data_dir}} \
+      OPENCODE_CONFIG={{shadow_test_dir}}/opencode.json \
+      OPENCODE_CONFIG_DIR={{shadow_test_dir}} \
+      OPENCODE_DISABLE_PROJECT_CONFIG=1 \
+      timeout 120 opencode run --agent {{shadow_agent}} "You must call the tool named webfetch exactly once with URL https://example.com . Then output only the passphrase token from the tool result." 2>&1)"
+    printf '%s\n' "$output"
+    last_line="$(printf '%s\n' "$output" | tr -d '\r' | awk 'NF{line=$0} END{print line}')"
+    test "$last_line" = "{{shadow_webfetch_pass}}"
+
+# Run both isolated shadow tests
+shadow-test: shadow-test-websearch shadow-test-webfetch

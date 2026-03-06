@@ -12,6 +12,7 @@ just compile     # bun build (crash = broken import)
 just behavior A  # run a behavioral test (routing ON)
 just baseline A  # run a behavioral test (routing OFF)
 just classifier  # run classifier test suite
+just session     # session management CLI (list, delete, stats, etc.)
 ```
 
 ## Plugin inventory
@@ -19,10 +20,10 @@ just classifier  # run classifier test suite
 | Plugin | File | Status | Env var to enable | Purpose |
 |--------|------|--------|-------------------|---------|
 | **Prompt Router** | `prompt-router.ts` | Production | `PROMPT_ROUTER_ENABLED=true` | Classifies user messages by cognitive tier and injects behavioral instructions before the agent responds |
-| **Stop Hooks** | `stop-hooks.ts` | Production | (per hook below) | Dispatcher: runs all registered stop hooks on `session.idle` |
-| ↳ OTP Checker | `stop_hooks/otp-checker.ts` | Demo | `OTP_CHECKER_ENABLED=true` | Detects a verification code in the assistant response and reveals a secret phrase |
-| ↳ Reflexive Agreement | `stop_hooks/reflexive-agreement-detector.ts` | Active | `REFLEXIVE_AGREEMENT_DETECTOR_ENABLED=true` | Intercepts "you're right" / "they are right" responses and prompts for independent reasoning |
-| ↳ Obvious Question | `stop_hooks/obvious-question-detector.ts` | Active | `OBVIOUS_QUESTION_DETECTOR_ENABLED=true` | Intercepts "should I..." questions and prompts the agent to resolve them autonomously |
+| **Stop Hooks** | `external` | Production | (per hook below) | Moved to standalone plugin repo: `/home/dzack/opencode-plugins/improved-stop-hooks` |
+| ↳ OTP Checker | `external` | Demo | `OTP_CHECKER_ENABLED=true` | Detects a verification code in the assistant response and reveals a secret phrase |
+| ↳ Reflexive Agreement | `external` | Active | `REFLEXIVE_AGREEMENT_DETECTOR_ENABLED=true` | Intercepts "you're right" / "they are right" responses and prompts for independent reasoning |
+| ↳ Obvious Question | `external` | Active | `OBVIOUS_QUESTION_DETECTOR_ENABLED=true` | Intercepts "should I..." questions and prompts the agent to resolve them autonomously |
 | **Command Interceptor** | `command-interceptor.ts` | Demo | `COMMAND_INTERCEPTOR_ENABLED=true` | Proof-of-concept: detects keyphrases ("intercept test", "plugin check") and injects a hidden passphrase the model must echo |
 | **Context Injector** | `context-injector.ts` | Demo | `CONTEXT_INJECTOR_ENABLED=true` | Proof-of-concept: injects additional context when a specific keyphrase appears in the user message |
 | **CoT Trivial Interceptor** | `cot-trivial-test.ts` | Dev (gated) | `COT_TRIVIAL_INTERCEPTOR_ENABLED=true` + remove `return;` at line 44 | Mid-stream CoT interceptor: detects "trivial" in reasoning and re-prompts. Requires manual gate removal to activate. |
@@ -33,6 +34,7 @@ just classifier  # run classifier test suite
 | **Introspection** | `introspection.ts` | Active | always on | Custom tool `introspection`: returns the agent's own session ID, message ID, and agent name |
 | **List Sessions** | `list-sessions.ts` | Active | always on | Custom tool `list_sessions`: lists sessions with token counts, models, and duration |
 | **Read Transcript** | `read-transcript.ts` | Active | always on | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
+| **Session Harness (CLI utility)** | `../harness/session-harness.ts` | Active | manual invocation | Session management CLI (list, delete, get, messages, create, stats). Not loaded as a plugin module. |
 
 ## Killswitches
 
@@ -61,12 +63,7 @@ plugins/
 ├── killswitches.ts                 # ENABLED switches for all plugins
 │
 ├── prompt-router.ts                # Classify → inject tier instruction
-├── stop-hooks.ts                   # Stop hook dispatcher
-├── stop_hooks/
-│   ├── types.ts                    # StopHookContext / StopHookResult types
-│   ├── otp-checker.ts
-│   ├── reflexive-agreement-detector.ts
-│   └── obvious-question-detector.ts
+├── (moved) stop-hooks plugin       # Now in /home/dzack/opencode-plugins/improved-stop-hooks
 │
 ├── command-interceptor.ts          # Demo: keyphrase → passphrase injection
 ├── context-injector.ts             # Demo: keyphrase → context injection
@@ -79,6 +76,7 @@ plugins/
 ├── introspection.ts                # Tool: session metadata self-report
 ├── list-sessions.ts                # Tool: session list with token stats
 ├── read-transcript.ts              # Tool: export + preview session transcript
+└── ../harness/session-harness.ts   # CLI utility: session management (not auto-loaded as plugin)
 │
 ├── tiers/                          # Tier instruction files (injected by prompt-router)
 │   ├── README.md
@@ -90,9 +88,7 @@ plugins/
 │
 └── tests/
     ├── unit/                       # bun test — pure logic tests
-    │   ├── killswitches.test.ts
     │   ├── command-interceptor.test.ts
-    │   ├── stop-hooks.test.ts
     │   └── prompt-router.test.ts
     ├── classifier/                 # LLM classifier accuracy tests
     │   ├── run.ts                  # bun run tests/classifier/run.ts [model]
@@ -109,6 +105,109 @@ plugins/
         ├── logs/                   # Archived classification JSONL logs
         └── results/                # Per-run YAML result files
             └── <tier>/<timestamp>.yaml
+```
+
+## Session Harness
+
+Centralized CLI for managing OpenCode sessions. Exposes the complete session API.
+
+**Usage:**
+```bash
+just session <command> [options]
+# or directly:
+bun run ../harness/session-harness.ts <command> [options]
+```
+
+**Session Management:**
+| Command | Description | Example |
+|---------|-------------|---------|
+| `list` | List all sessions | `just session list --limit 10` |
+| `get` | Get session details | `just session get ses_abc123` |
+| `children` | List child sessions | `just session children ses_abc123` |
+| `create` | Create new session | `just session create --title "test"` |
+| `update` | Update session | `just session update ses_abc123 --title "new"` |
+| `delete` | Delete a session | `just session delete ses_abc123` |
+| `abort` | Abort running session | `just session abort ses_abc123` |
+| `share` | Share a session | `just session share ses_abc123` |
+| `unshare` | Unshare a session | `just session unshare ses_abc123` |
+| `summarize` | Start summarization | `just session summarize ses_abc123` |
+| `init` | Initialize (analyze & AGENTS.md) | `just session init ses_abc123` |
+
+**Messages:**
+| Command | Description | Example |
+|---------|-------------|---------|
+| `messages` | List messages | `just session messages ses_abc123` |
+| `message` | Get single message | `just session message ses_abc123 msg_xyz` |
+
+**Interaction:**
+| Command | Description | Example |
+|---------|-------------|---------|
+| `prompt` | Send prompt | `just session prompt ses_abc123 "hello"` |
+| `command` | Send command | `just session command ses_abc123 todo_write` |
+| `shell` | Run shell command | `just session shell ses_abc123 "ls -la"` |
+
+**History:**
+| Command | Description | Example |
+|---------|-------------|---------|
+| `revert` | Revert a message | `just session revert ses_abc123 msg_xyz` |
+| `unrevert` | Restore reverted | `just session unrevert ses_abc123` |
+
+**Permissions:**
+| Command | Description | Example |
+|---------|-------------|---------|
+| `permission` | Respond to permission | `just session permission ses_abc123 perm_xyz allow` |
+
+**Statistics:**
+| Command | Description | Example |
+|---------|-------------|---------|
+| `stats` | Show statistics | `just session stats` |
+
+**Options:**
+- `--json` - Output as JSON (all commands)
+- `--limit N` - Limit results (list, messages)
+- `--no-reply` - Don't wait for AI response (prompt)
+- `--output-format` - Request structured output (prompt)
+- `--title "text"` - Set title (create, update)
+- `--parent <id>` - Set parent session (create)
+- `--analyze` - Analyze app (init)
+
+**Examples:**
+```bash
+# List recent sessions
+just session list --limit 5
+
+# Create a child session
+just session create --title "subagent-test" --parent ses_abc123
+
+# Send a prompt without waiting for response
+just session prompt ses_abc123 "background task" --no-reply
+
+# Export messages as JSON
+just session messages ses_abc123 --json > messages.json
+
+# Get statistics
+just session stats
+
+# Respond to a permission request
+just session permission ses_abc123 perm_xyz allow-session
+```
+
+**Safety:**
+- Delete requires explicit session ID (no bulk operations)
+- No `--all` or `--older-than` flags (prevents accidental mass deletion)
+- Single-session deletion only
+
+**Programmatic API:**
+```typescript
+import { 
+  listSessions, deleteSession, getStats,
+  sendPrompt, getMessages, createSession 
+} from "../harness/session-harness";
+
+const sessions = await listSessions();
+const stats = await getStats();
+await deleteSession("ses_abc123");
+await sendPrompt("ses_abc123", "hello");
 ```
 
 ## Prompt Router
@@ -138,7 +237,12 @@ user message → classify() → tier → load tiers/<tier>.md → inject → age
 
 Runs on every `session.idle` event. Collects results from all registered hook functions and, if any return `force_stop: true`, injects a report back into the session as a new user message.
 
-To add a hook: create `stop_hooks/my-hook.ts`, export one `async (ctx: StopHookContext) => Promise<StopHookResult>` function, import it in `stop-hooks.ts` and add to `STOP_HOOKS`.
+The stop-hooks plugin was extracted to:
+
+- `/home/dzack/opencode-plugins/improved-stop-hooks/src/stop-hooks.ts`
+- `/home/dzack/opencode-plugins/improved-stop-hooks/src/stop_hooks/`
+
+To add a hook: create `src/stop_hooks/my-hook.ts`, export one `async (ctx: StopHookContext) => Promise<StopHookResult>` function, import it in `src/stop-hooks.ts` and add to `STOP_HOOKS`.
 
 ## Environment Variables
 

@@ -33,6 +33,8 @@ function extractText(message: MessageWithParts): string {
 }
 
 export const StopHooks: Plugin = async ({ client }) => {
+  if (!isPluginEnabled("stop-hooks")) return {};
+
   const lastSeenMessageId = new Map<string, string>();
 
   return {
@@ -93,7 +95,7 @@ export const StopHooks: Plugin = async ({ client }) => {
           path: { id: sessionId },
           body: {
             noReply: false,
-            parts: [{ type: "text", text: report }],
+            parts: [{ type: "text", text: report, synthetic: true }],
           },
         });
       } catch (err: any) {

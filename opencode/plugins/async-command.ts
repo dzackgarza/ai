@@ -42,7 +42,7 @@ async function runBackground(
       // noReply: false — inject the result AND trigger a new model response.
       // If the session is currently busy, the server queues this until idle.
       noReply: false,
-      parts: [{ type: "text", text: result }],
+      parts: [{ type: "text", text: result, synthetic: true }],
     },
   });
 }
@@ -73,6 +73,7 @@ export const AsyncCommandPlugin: Plugin = async ({ client }) => {
                   {
                     type: "text",
                     text: `[async-command failed]\n  Error: ${err?.message ?? String(err)}`,
+                    synthetic: true,
                   },
                 ],
               },

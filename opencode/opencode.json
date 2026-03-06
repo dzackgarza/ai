@@ -92,9 +92,23 @@
         "@fastmcp-me/cut-copy-paste-mcp"
       ]
     },
+    "deepwiki-mcp": {
+      "type": "remote",
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
     "tavily-remote": {
       "type": "remote",
       "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
+    },
+    "kindly": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server",
+        "kindly-web-search-mcp-server",
+        "start-mcp-server"
+      ]
     }
   },
   "model": "opencode/minimax-m2.5-free",
@@ -109,8 +123,39 @@
     "opencode-openai-codex-auth@latest",
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
-    "@ramtinj95/opencode-tokenscope@latest"
+    "@ramtinj95/opencode-tokenscope@latest",
+    "file:///home/dzack/opencode-plugins/improved-stop-hooks/src/index.ts",
+    "file:///home/dzack/opencode-plugins/improved-task/src/index.ts"
   ],
+  "permission": {
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_get_current_config": "allow",
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_write_memory": "allow",
+    "serena_edit_memory": "allow",
+    "serena_delete_memory": "allow",
+    "serena_rename_memory": "allow",
+    "serena_*": "deny",
+    "question": "allow",
+    "bash": "deny",
+    "async_command": "deny",
+    "async_subagent": "deny",
+    "introspection": "deny",
+    "list_sessions": "deny",
+    "read_transcript": "deny",
+    "git_add": "deny",
+    "git_commit": "deny",
+    "write_plan": "deny",
+    "serena_execute_shell_command": "deny",
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny"
+  },
   "provider": {
     "anthropic": {
       "blacklist": [
@@ -267,11 +312,20 @@
         "minimaxai/minimax-m2.1": {
           "name": "minimax-m2.1"
         },
+        "minimaxai/minimax-m2.5": {
+          "name": "minimax-m2.5"
+        },
         "mistralai/devstral-2-123b-instruct-2512": {
           "name": "devstral-2-123b-instruct-2512"
         },
         "mistralai/mistral-large-3-675b-instruct-2512": {
           "name": "mistral-large-3-675b-instruct-2512"
+        },
+        "mistralai/mistral-medium-3-instruct": {
+          "name": "mistral-medium-3-instruct"
+        },
+        "mistralai/mistral-nemotron": {
+          "name": "mistral-nemotron"
         },
         "moonshotai/kimi-k2.5": {
           "name": "kimi-k2.5"
@@ -881,191 +935,100 @@
       "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
       "permission": {
-        "read": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "glob": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "grep": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "list": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_read_file": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_list_dir": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_find_file": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_search_for_pattern": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_get_symbols_overview": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_find_symbol": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_find_referencing_symbols": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
-        },
-        "serena_create_text_file": {
-          "*": "deny"
-        },
-        "serena_replace_content": {
-          "*": "deny"
-        },
-        "serena_replace_symbol_body": {
-          "*": "deny"
-        },
-        "serena_insert_after_symbol": {
-          "*": "deny"
-        },
-        "serena_insert_before_symbol": {
-          "*": "deny"
-        },
-        "serena_rename_symbol": {
-          "*": "deny"
-        },
-        "serena_delete_lines": {
-          "*": "deny"
-        },
-        "serena_insert_at_line": {
-          "*": "deny"
-        },
-        "serena_replace_lines": {
-          "*": "deny"
-        },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        },
-        "task": "allow",
         "todoread": "allow",
         "todowrite": "allow",
+        "read": {
+          "*": "allow"
+        },
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "allow"
+        },
+        "apply_patch": {
+          "*": "allow"
+        },
+        "patch": {
+          "*": "allow"
+        },
+        "serena_create_text_file": {
+          "*": "allow"
+        },
+        "serena_replace_content": {
+          "*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "allow"
+        },
+        "serena_delete_lines": {
+          "*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_cut": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "allow"
+        },
+        "task": "allow",
         "webfetch": "deny",
         "websearch": "deny",
+        "write_plan": "deny",
         "plan_exit": "deny",
-        "bash": {
-          "*": "deny",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git log *": "allow",
-          "git show *": "allow",
-          "git branch": "allow",
-          "git branch -v": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       }
     },
     "Build (Custom)": {
@@ -1074,218 +1037,324 @@
       "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}",
       "permission": {
-        "read": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "glob": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "grep": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "list": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_read_file": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_list_dir": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_find_file": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_search_for_pattern": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_get_symbols_overview": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_find_symbol": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "serena_find_referencing_symbols": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "allow",
-          "*tests/*": "deny",
-          "*test/*": "deny",
-          "*tests*": "deny",
-          "*test*": "deny"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
-        },
-        "serena_create_text_file": {
-          "*": "deny"
-        },
-        "serena_replace_content": {
-          "*": "deny"
-        },
-        "serena_replace_symbol_body": {
-          "*": "deny"
-        },
-        "serena_insert_after_symbol": {
-          "*": "deny"
-        },
-        "serena_insert_before_symbol": {
-          "*": "deny"
-        },
-        "serena_rename_symbol": {
-          "*": "deny"
-        },
-        "serena_delete_lines": {
-          "*": "deny"
-        },
-        "serena_insert_at_line": {
-          "*": "deny"
-        },
-        "serena_replace_lines": {
-          "*": "deny"
-        },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        },
-        "task": "allow",
         "todoread": "allow",
         "todowrite": "allow",
+        "read": {
+          "*": "allow"
+        },
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "allow"
+        },
+        "apply_patch": {
+          "*": "allow"
+        },
+        "patch": {
+          "*": "allow"
+        },
+        "serena_create_text_file": {
+          "*": "allow"
+        },
+        "serena_replace_content": {
+          "*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "allow"
+        },
+        "serena_delete_lines": {
+          "*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_cut": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "allow"
+        },
+        "task": "allow",
         "webfetch": "deny",
         "websearch": "deny",
+        "write_plan": "deny",
         "plan_exit": "deny",
-        "bash": {
-          "*": "deny",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git log *": "allow",
-          "git show *": "allow",
-          "git branch": "allow",
-          "git branch -v": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       }
     },
     "Interactive": {
       "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "opencode/minimax-m2.5-free",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
       "permission": {
-        "bash": "allow",
-        "plan_exit": "deny",
-        "external_directory": {
-          "/tmp/opencode_test/*": "allow"
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "introspection": "allow",
+        "list_sessions": "allow",
+        "read_transcript": "allow",
+        "read": {
+          "*": "allow"
         },
-        "question": "allow"
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_create_text_file": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_replace_content": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_delete_lines": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow",
+          "*docs*": "allow",
+          "*tests*": "allow",
+          "*test*": "allow",
+          "*.serena/plans*": "allow"
+        },
+        "plan_exit": "deny",
+        "bash": {
+          "du*": "allow",
+          "file *": "allow",
+          "ls*": "allow",
+          "pwd*": "allow",
+          "stat*": "allow",
+          "tree*": "allow",
+          "cut*": "allow",
+          "diff*": "allow",
+          "grep*": "allow",
+          "rg*": "allow",
+          "head*": "allow",
+          "tail*": "allow",
+          "less*": "allow",
+          "sort*": "allow",
+          "wc*": "allow",
+          "jq": "allow",
+          "find * -delete*": "ask",
+          "find * -exec*": "ask",
+          "find *": "allow",
+          "just*": "allow",
+          "pytest*": "allow",
+          "uv*": "allow",
+          "cat*": "deny",
+          "*": "deny"
+        },
+        "serena_execute_shell_command": "deny",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       }
     },
     "Minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "openrouter/stepfun/step-3.5-flash:free",
       "permission": {
         "bash": "allow",
+        "task": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
         "plan_exit": "deny",
         "external_directory": {
           "/tmp/opencode_test/*": "allow"
         },
-        "question": "allow"
+        "question": "allow",
+        "serena_execute_shell_command": "deny",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/minimal.md}"
     },
@@ -1294,6 +1363,8 @@
       "mode": "primary",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "todoread": "allow",
+        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1325,9 +1396,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -1378,10 +1446,6 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*.serena/plans*": "allow"
@@ -1394,53 +1458,16 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
+        "task": "allow",
+        "write_plan": "allow",
         "plan_exit": "allow",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/plan.md}"
     },
@@ -1450,6 +1477,8 @@
       "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}",
       "permission": {
+        "todoread": "allow",
+        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1481,9 +1510,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -1534,10 +1560,6 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*.serena/plans*": "allow"
@@ -1550,53 +1572,16 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
+        "task": "allow",
+        "write_plan": "allow",
         "plan_exit": "allow",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       }
     },
     "Repository Steward": {
@@ -1605,6 +1590,8 @@
       "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
       "permission": {
+        "todoread": "allow",
+        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1636,9 +1623,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -1689,10 +1673,6 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*.serena/plans*": "allow"
@@ -1705,53 +1685,16 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
+        "task": "allow",
+        "write_plan": "allow",
         "plan_exit": "allow",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       }
     },
     "Zotero Librarian": {
@@ -1760,6 +1703,12 @@
       "model": "nvidia/moonshotai/kimi-k2.5",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
       "permission": {
+        "task": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "introspection": "allow",
+        "list_sessions": "allow",
+        "read_transcript": "allow",
         "read": {
           "*": "allow"
         },
@@ -1791,9 +1740,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -1832,9 +1778,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -1844,66 +1787,228 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       }
     },
     "build": {
       "model": "nvidia/moonshotai/kimi-k2.5",
-      "disable": true
+      "disable": true,
+      "permission": {
+        "todoread": "allow",
+        "todowrite": "allow",
+        "read": {
+          "*": "allow"
+        },
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "allow"
+        },
+        "apply_patch": {
+          "*": "allow"
+        },
+        "patch": {
+          "*": "allow"
+        },
+        "serena_create_text_file": {
+          "*": "allow"
+        },
+        "serena_replace_content": {
+          "*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "allow"
+        },
+        "serena_delete_lines": {
+          "*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_cut": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "allow"
+        },
+        "task": "allow",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "write_plan": "deny",
+        "plan_exit": "deny",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "serena_execute_shell_command": "deny",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
+      }
     },
     "compaction": {
       "model": "nvidia/moonshotai/kimi-k2.5"
     },
     "plan": {
       "model": "nvidia/moonshotai/kimi-k2.5",
-      "disable": true
+      "disable": true,
+      "permission": {
+        "todoread": "allow",
+        "todowrite": "allow",
+        "read": {
+          "*": "allow"
+        },
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_create_text_file": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_replace_content": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_delete_lines": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "task": "allow",
+        "write_plan": "allow",
+        "plan_exit": "allow",
+        "serena_execute_shell_command": "deny",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
+      }
     },
     "summary": {
       "model": "nvidia/moonshotai/kimi-k2.5"
@@ -1916,6 +2021,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -1947,9 +2061,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -1988,9 +2099,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -2000,54 +2108,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_internet_researcher/prompt.md}"
     },
@@ -2056,6 +2123,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -2087,9 +2163,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -2128,9 +2201,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -2140,54 +2210,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_completionist/prompt.md}"
     },
@@ -2196,6 +2225,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -2227,9 +2265,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -2268,9 +2303,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -2280,54 +2312,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_documentation_librarian/prompt.md}"
     },
@@ -2336,6 +2327,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -2367,9 +2367,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -2408,9 +2405,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -2420,54 +2414,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_coverage_auditor/prompt.md}"
     },
@@ -2476,53 +2429,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -2572,10 +2574,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -2588,61 +2586,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_algorithm_porter/prompt.md}"
     },
@@ -2651,53 +2603,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -2747,10 +2748,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -2763,61 +2760,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_designer/prompt.md}"
     },
@@ -2826,53 +2777,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -2922,10 +2922,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -2938,61 +2934,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_implementer/prompt.md}"
     },
@@ -3001,65 +2951,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -3121,11 +3108,6 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*tests*": "allow",
@@ -3141,61 +3123,15 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_tdd_writer/prompt.md}"
     },
@@ -3204,65 +3140,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -3324,11 +3297,6 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*tests*": "allow",
@@ -3344,61 +3312,15 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_method_writer/prompt.md}"
     },
@@ -3407,6 +3329,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3438,9 +3369,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -3479,9 +3407,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -3491,54 +3416,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-explorer.md}"
     },
@@ -3547,6 +3431,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3578,9 +3471,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -3619,9 +3509,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -3631,54 +3518,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/researcher.md}"
     },
@@ -3687,6 +3533,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3718,9 +3573,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -3759,9 +3611,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -3771,54 +3620,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/repo-explorer.md}"
     },
@@ -3827,6 +3635,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3858,9 +3675,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -3899,9 +3713,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -3911,54 +3722,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
     },
@@ -3967,6 +3737,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3998,9 +3777,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -4039,9 +3815,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -4051,54 +3824,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
     },
@@ -4107,6 +3839,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -4138,9 +3879,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -4179,9 +3917,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -4191,54 +3926,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
     },
@@ -4247,6 +3941,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -4278,9 +3981,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -4319,9 +4019,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -4331,54 +4028,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     },
@@ -4387,6 +4043,15 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -4418,9 +4083,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
           "*": "allow"
         },
         "edit": {
@@ -4459,9 +4121,6 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny"
         },
@@ -4471,54 +4130,13 @@
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "cut*": "allow",
-          "diff*": "allow",
-          "du*": "allow",
-          "file *": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git diff --cached": "allow",
-          "git add *": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "git commit --amend -m *": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "sort*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
     },
@@ -4527,173 +4145,172 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*test*": "deny",
+          "*tests*": "deny"
         },
         "edit": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "apply_patch": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "patch": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_replace_content": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_replace_symbol_body": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_insert_after_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_insert_before_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_rename_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_delete_lines": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_insert_at_line": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "serena_replace_lines": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "cut-copy-paste-mcp_copy": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny",
-          "*src*": "allow"
+          "*docs*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
@@ -4702,53 +4319,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -4798,10 +4464,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -4814,61 +4476,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
     },
@@ -4877,53 +4493,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -4973,10 +4638,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -4989,61 +4650,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
     },
@@ -5052,53 +4667,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -5148,10 +4812,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -5164,61 +4824,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
     },
@@ -5227,53 +4841,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -5323,10 +4986,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -5339,61 +4998,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/sagemath_code_writer.md}"
     },
@@ -5402,65 +5015,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
           "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
+          "*test*": "allow",
+          "*.serena/plans*": "allow",
+          "*src*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -5522,11 +5172,6 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*tests*": "allow",
@@ -5542,61 +5187,15 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
     },
@@ -5605,53 +5204,102 @@
       "mode": "subagent",
       "model": "nvidia/moonshotai/kimi-k2.5",
       "permission": {
+        "task": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "introspection": "deny",
+        "list_sessions": "deny",
+        "read_transcript": "deny",
+        "plan_exit": "deny",
+        "async_command": "deny",
+        "async_subagent": "deny",
         "read": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "glob": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "grep": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "list": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_read_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_list_dir": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_file": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_search_for_pattern": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_get_symbols_overview": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_symbol": {
           "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "serena_find_referencing_symbols": {
           "*": "deny",
-          "*src*": "allow"
-        },
-        "morph-mcp_warpgrep_codebase_search": {
-          "*": "deny",
-          "*src*": "allow"
+          "*src*": "allow",
+          "*.serena/plans*": "allow",
+          "*test*": "deny",
+          "*tests*": "deny",
+          "*docs*": "deny"
         },
         "edit": {
           "*": "deny",
@@ -5701,10 +5349,6 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "morph-mcp_edit_file": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*src*": "allow"
@@ -5717,61 +5361,15 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "task": "deny",
-        "plan_exit": "deny",
-        "serena_activate_project": "allow",
-        "serena_check_onboarding_performed": "allow",
-        "serena_initial_instructions": "allow",
-        "serena_read_memory": "allow",
-        "serena_list_memories": "allow",
-        "serena_get_current_config": "allow",
-        "serena_think_about_collected_information": "allow",
-        "serena_think_about_task_adherence": "allow",
-        "serena_think_about_whether_you_are_done": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
-        "serena_*": "deny",
-        "bash": {
-          "*": "deny",
-          "just": "allow",
-          "just *": "allow",
-          "pytest*": "allow",
-          "git add *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git diff --stat": "allow",
-          "git commit -m *": "allow",
-          "git commit --amend *": "allow",
-          "find * -type f -maxdepth 3*": "allow",
-          "find * -type d -maxdepth 3*": "allow",
-          "kpsewhich*": "allow",
-          "uv*": "allow"
-        },
-        "ls*": "allow",
-        "exa*": "allow",
-        "tree*": "allow",
-        "find *": "allow",
-        "du*": "allow",
-        "file *": "allow",
-        "stat*": "allow",
-        "pwd*": "allow",
-        "sort*": "allow",
-        "less*": "allow",
-        "diff*": "allow",
-        "cut*": "allow",
-        "jq": "allow",
-        "grep*": "allow",
-        "rg*": "allow",
-        "head*": "allow",
-        "tail*": "allow",
-        "cat*": "allow",
-        "wc*": "allow",
-        "command -v *": "allow",
-        "serena_onboarding": "allow",
-        "serena_prepare_for_new_conversation": "allow",
-        "serena_write_memory": "allow",
-        "serena_edit_memory": "allow",
-        "serena_delete_memory": "allow",
-        "question": "allow"
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/typescript_code_writer.md}"
     },
