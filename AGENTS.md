@@ -72,8 +72,11 @@ Never skip from "I found nothing" to "nothing exists."
 | ------------------------------- | ---------- |
 | Can you write the grep pattern? | `grep`     |
 | Natural language / exploratory? | `warpgrep` |
+| AST pattern matching?           | `ast-grep` |
 
 WarpGrep examples: "How does the moderation appeals flow work?" Grep examples: `pattern="fileAppeal"`, `pattern="class.*Service"`. Do not use WarpGrep for quick lookups or known file reads.
+
+**ast-grep:** Use for structural code patterns (function definitions, class hierarchies, import statements, etc.). Syntax: `sg -p "<pattern>" --lang <language> <path>`. All agents know ast-grep syntax—this is a 'use when' reminder.
 
 ---
 
@@ -156,3 +159,10 @@ All work is done in **noisy git repos** with uncommitted changes from others.
 - **Always use `git add` and `git commit`** to create checkpoints of your specific changes.
 - Commits are **save-states**, not atomic units of work. It's fine if your commit includes others' uncommitted changes — the point is to checkpoint *your* work.
 - If you need to see what changed, use `git diff`. If you need to verify what's staged, use `git diff --cached`.
+
+---
+
+## Orientation
+
+- **Use basic orientation tools** like `ls`, `exa`, and `tree` when starting work.
+- **Read all READMEs and AGENTS.md files** encountered.
