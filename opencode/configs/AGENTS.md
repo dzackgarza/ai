@@ -2,12 +2,22 @@
 
 ## TL;DR
 
-**`opencode.json` is NOT the source of truth.** It's generated from files in `configs/` via `build_config.py`.
+**`opencode.json` is NOT the source of truth.** It's generated via two scripts:
+
+1. `manage_permissions.py` — compiles permission logic → `configs/agents/` and `configs/subagents/`
+2. `build_config.py` — merges configs → `opencode.json`
 
 To make config changes persist:
-1. Edit files in `configs/` (providers, agents, subagents, or config_skeleton.json)
-2. Run `python3 build_config.py` to regenerate `opencode.json`
-3. Commit the regenerated `opencode.json` along with the config changes
+
+### For permissions changes:
+1. Edit `opencode/manage_permissions.py` (AGENTS dict, TAG_RULES, capabilities)
+2. Run `python3 manage_permissions.py --apply`
+3. Run `python3 build_config.py`
+
+### For model/provider/other changes:
+1. Edit files in `configs/` (providers, agents, subagents, config_skeleton.json)
+2. Run `python3 build_config.py`
+3. Commit both the source configs AND the regenerated opencode.json
 
 ## Directory Structure
 
@@ -36,23 +46,48 @@ configs/
 4. Merges all `subagents/*.json` into `config["agent"]` (appended after primary agents)
 5. Writes the combined result to `opencode.json`
 
-## Permissions
+## Permissions: Two-Layer System
 
-Permissions are **NOT generated or inherited**. Each agent/subagent file explicitly defines its own `permission` block.
+Permissions are managed in TWO steps:
 
-- `config_skeleton.json` — top-level permission defaults (used for top-level permissions)
-- `configs/agents/*.json` — each agent has its own `permission` block (completely defines what that agent can do)
-- `configs/subagents/*.json` — each subagent has its own `permission` block
+### Step 1: manage_permissions.py (Source of Truth)
 
-**There is no inheritance.** If you want an agent to have the same permissions as another, you must explicitly copy the permission block.
+Located at `opencode/manage_permissions.py` — defines permission logic via:
+
+- **TAG_RULES**: Base permissions by agent type (primary, subagent)
+- **Capabilities**: Composable permission functions (`read_all()`, `write_in()`, etc.)
+- **AGENTS dict**: Maps agent name → tags + capabilities + overrides
+
+This is the SINGLE SOURCE OF TRUTH for permission logic.
+
+### Step 2: Apply and Build
+
+```bash
+# 1. Compile permissions from manage_permissions.py -> configs/
+python3 manage_permissions.py --apply
+
+# 2. Merge configs/ -> opencode.json
+python3 build_config.py
+```
+
+### What gets generated
+
+- `configs/config_skeleton.json` — gets GLOBAL_PERMISSION (baseline)
+- `configs/agents/*.json` — gets compiled permission block
+- `configs/subagents/*.json` — gets compiled permission block
+
+**Never edit permission blocks manually** — they're regenerated every time `manage_permissions.py --apply` runs. Edit the source in `manage_permissions.py` instead.
 
 ## Common Mistakes
 
 | Mistake | Why It's Wrong |
 |---------|----------------|
 | Editing opencode.json directly | Gets overwritten next time build_config.py runs |
+| Editing permissions in configs/*.json manually | Gets overwritten next time manage_permissions.py --apply runs |
+| Forgetting to run manage_permissions.py --apply | Permission changes don't appear in configs/ |
 | Forgetting to run build_config.py | Changes to configs/ don't appear in opencode.json |
 | Committing only opencode.json | Source configs aren't updated |
+| Running build_config.py but not manage_permissions.py | Permissions revert to old values |
 
 ## Model Provider IDs
 
