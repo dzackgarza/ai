@@ -2,7 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const configPath = path.join(os.homedir(), '.config', 'opencode', 'plugins.json');
+const configPath = path.join(
+  os.homedir(),
+  '.config',
+  'opencode',
+  'configs',
+  'local-plugins.json',
+);
 
 export function isPluginEnabled(pluginName: string): boolean {
   try {
@@ -12,7 +18,7 @@ export function isPluginEnabled(pluginName: string): boolean {
       return config[pluginName] === true;
     }
   } catch (err) {
-    console.error(`[Plugin Config] Failed to read plugins.json: ${err}`);
+    console.error(`[Plugin Config] Failed to read configs/local-plugins.json: ${err}`);
   }
   return false;
 }

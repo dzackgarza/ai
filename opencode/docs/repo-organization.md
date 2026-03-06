@@ -9,8 +9,6 @@ sprawl.
 - `AGENTS.md`
 - `justfile`
 - `opencode.json`
-- `plugins.json`
-- `config/`
 - `configs/`
 - `docs/`
 - `scripts/`
@@ -23,6 +21,7 @@ sprawl.
 - Provider operational notes belong in `configs/providers/notes/`
 - Provider-specific shims belong in `configs/providers/shims/`
 - Config-adjacent plugin support files like the safety-net config belong in `configs/`
+- Plugin toggle state belongs in `configs/local-plugins.json`
 - Global maintenance helpers belong in `scripts/`
 - Plugin-owned utilities belong under `plugins/utilities/`
 - Harness-specific operational notes belong in `plugins/utilities/harness/docs/`

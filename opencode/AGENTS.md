@@ -28,16 +28,15 @@ the owning subtrees instead of adding new root clutter.
 - Agent configs: `configs/agents/*.json`
 - Subagent configs: `configs/subagents/*.json`
 - Plugin code: `plugins/`
-- Plugin-local runtime config: `config/`
+- Plugin-local runtime config: `configs/local-plugins.json`
 
 ### Stable Paths
 
-- `config/`
 - `configs/`
 - `docs/`
 - `plugins/`
 - `opencode.json`
-- `plugins.json`
+- `configs/local-plugins.json`
 
 ### Canonical Pathways
 

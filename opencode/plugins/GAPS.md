@@ -121,7 +121,7 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
 ## Validation Status (Completed)
 
 1. `improved-task` is now wired in global plugin config (`file:///home/dzack/opencode-plugins/improved-task/src/index.ts`).
-2. Local `task-plugin` toggle is now disabled in `plugins.json` to match local source state (`task.ts` removed).
+2. Local `task-plugin` toggle is now disabled in `configs/local-plugins.json` to match local source state (`task.ts` removed).
 3. Hermetic shadow harness is green with local project config and explicit plugin loading:
    - `just shadow-test-websearch` passed.
    - `just shadow-test-webfetch` passed.
