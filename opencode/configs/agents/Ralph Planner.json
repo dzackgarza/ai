@@ -4,6 +4,8 @@
   "model": "nvidia/moonshotai/kimi-k2.5",
   "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}",
   "permission": {
+    "todoread": "allow",
+    "todowrite": "allow",
     "read": {
       "*": "allow"
     },
@@ -35,9 +37,6 @@
       "*": "allow"
     },
     "serena_find_referencing_symbols": {
-      "*": "allow"
-    },
-    "morph-mcp_warpgrep_codebase_search": {
       "*": "allow"
     },
     "edit": {
@@ -88,10 +87,6 @@
       "*": "deny",
       "*.serena/plans*": "allow"
     },
-    "morph-mcp_edit_file": {
-      "*": "deny",
-      "*.serena/plans*": "allow"
-    },
     "cut-copy-paste-mcp_cut": {
       "*": "deny",
       "*.serena/plans*": "allow"
@@ -104,52 +99,15 @@
       "*": "deny",
       "*.serena/plans*": "allow"
     },
+    "task": "allow",
+    "write_plan": "allow",
     "plan_exit": "allow",
-    "serena_activate_project": "allow",
-    "serena_check_onboarding_performed": "allow",
-    "serena_initial_instructions": "allow",
-    "serena_read_memory": "allow",
-    "serena_list_memories": "allow",
-    "serena_get_current_config": "allow",
-    "serena_think_about_collected_information": "allow",
-    "serena_think_about_task_adherence": "allow",
-    "serena_think_about_whether_you_are_done": "allow",
     "serena_execute_shell_command": "deny",
-    "serena_*": "deny",
-    "bash": {
-      "cut*": "allow",
-      "diff*": "allow",
-      "du*": "allow",
-      "file *": "allow",
-      "find * -delete*": "ask",
-      "find * -exec*": "ask",
-      "find *": "allow",
-      "git status": "allow",
-      "git diff": "allow",
-      "git diff --stat": "allow",
-      "git diff --cached": "allow",
-      "git add *": "allow",
-      "git commit -m *": "allow",
-      "git commit --amend *": "allow",
-      "git commit --amend -m *": "allow",
-      "grep*": "allow",
-      "rg*": "allow",
-      "head*": "allow",
-      "tail*": "allow",
-      "less*": "allow",
-      "ls*": "allow",
-      "pwd*": "allow",
-      "sort*": "allow",
-      "stat*": "allow",
-      "tree*": "allow",
-      "wc*": "allow",
-      "jq": "allow",
-      "just*": "allow",
-      "pytest*": "allow",
-      "uv*": "allow",
-      "cat*": "deny",
-      "*": "deny"
-    },
-    "question": "allow"
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny"
   }
 }

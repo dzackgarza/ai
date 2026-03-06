@@ -92,9 +92,23 @@
         "@fastmcp-me/cut-copy-paste-mcp"
       ]
     },
+    "deepwiki-mcp": {
+      "type": "remote",
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
     "tavily-remote": {
       "type": "remote",
       "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
+    },
+    "kindly": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server",
+        "kindly-web-search-mcp-server",
+        "start-mcp-server"
+      ]
     }
   },
   "model": "opencode/minimax-m2.5-free",
@@ -110,5 +124,34 @@
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest"
-  ]
+  ],
+  "permission": {
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_get_current_config": "allow",
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_write_memory": "allow",
+    "serena_edit_memory": "allow",
+    "serena_delete_memory": "allow",
+    "serena_rename_memory": "allow",
+    "serena_*": "deny",
+    "question": "allow",
+    "bash": "deny",
+    "async_command": "deny",
+    "async_subagent": "deny",
+    "introspection": "deny",
+    "list_sessions": "deny",
+    "read_transcript": "deny",
+    "git_add": "deny",
+    "git_commit": "deny",
+    "write_plan": "deny",
+    "serena_execute_shell_command": "deny",
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny"
+  }
 }

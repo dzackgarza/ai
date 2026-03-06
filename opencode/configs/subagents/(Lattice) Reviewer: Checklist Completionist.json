@@ -3,6 +3,15 @@
   "mode": "subagent",
   "model": "nvidia/moonshotai/kimi-k2.5",
   "permission": {
+    "task": "deny",
+    "todoread": "deny",
+    "todowrite": "deny",
+    "introspection": "deny",
+    "list_sessions": "deny",
+    "read_transcript": "deny",
+    "plan_exit": "deny",
+    "async_command": "deny",
+    "async_subagent": "deny",
     "read": {
       "*": "allow"
     },
@@ -34,9 +43,6 @@
       "*": "allow"
     },
     "serena_find_referencing_symbols": {
-      "*": "allow"
-    },
-    "morph-mcp_warpgrep_codebase_search": {
       "*": "allow"
     },
     "edit": {
@@ -75,9 +81,6 @@
     "serena_replace_lines": {
       "*": "deny"
     },
-    "morph-mcp_edit_file": {
-      "*": "deny"
-    },
     "cut-copy-paste-mcp_cut": {
       "*": "deny"
     },
@@ -87,54 +90,13 @@
     "cut-copy-paste-mcp_paste": {
       "*": "deny"
     },
-    "task": "deny",
-    "plan_exit": "deny",
-    "serena_activate_project": "allow",
-    "serena_check_onboarding_performed": "allow",
-    "serena_initial_instructions": "allow",
-    "serena_read_memory": "allow",
-    "serena_list_memories": "allow",
-    "serena_get_current_config": "allow",
-    "serena_think_about_collected_information": "allow",
-    "serena_think_about_task_adherence": "allow",
-    "serena_think_about_whether_you_are_done": "allow",
     "serena_execute_shell_command": "deny",
-    "serena_*": "deny",
-    "bash": {
-      "cut*": "allow",
-      "diff*": "allow",
-      "du*": "allow",
-      "file *": "allow",
-      "find * -delete*": "ask",
-      "find * -exec*": "ask",
-      "find *": "allow",
-      "git status": "allow",
-      "git diff": "allow",
-      "git diff --stat": "allow",
-      "git diff --cached": "allow",
-      "git add *": "allow",
-      "git commit -m *": "allow",
-      "git commit --amend *": "allow",
-      "git commit --amend -m *": "allow",
-      "grep*": "allow",
-      "rg*": "allow",
-      "head*": "allow",
-      "tail*": "allow",
-      "less*": "allow",
-      "ls*": "allow",
-      "pwd*": "allow",
-      "sort*": "allow",
-      "stat*": "allow",
-      "tree*": "allow",
-      "wc*": "allow",
-      "jq": "allow",
-      "just*": "allow",
-      "pytest*": "allow",
-      "uv*": "allow",
-      "cat*": "deny",
-      "*": "deny"
-    },
-    "question": "allow"
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny"
   },
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_completionist/prompt.md}"
 }

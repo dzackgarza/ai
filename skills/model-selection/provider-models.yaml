@@ -1,0 +1,2274 @@
+generated_at: "2026-03-05T10:01:29.008449+00:00"
+sources:
+  - "/home/dzack/.envrc"
+  - "https://models.dev/api.json"
+providers:
+  cloudflare:
+    status: "ok"
+    endpoint: "https://api.cloudflare.com/client/v4/accounts/6669d5b34c0390c4e888c3ca067dd399/ai/models/search"
+    model_count: 87
+    models:
+      - id: "@cf/pipecat-ai/smart-turn-v2"
+        name: "@cf/pipecat-ai/smart-turn-v2"
+        models_dev_matched: true
+        models_dev_id: "@cf/pipecat-ai/smart-turn-v2"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Pipecat Smart Turn v2"
+        models_dev_family: "smart-turn"
+        models_dev_context: 128000
+      - id: "@cf/openai/gpt-oss-120b"
+        name: "@cf/openai/gpt-oss-120b"
+        models_dev_matched: true
+        models_dev_id: "@cf/openai/gpt-oss-120b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "GPT OSS 120B"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "@cf/qwen/qwen1.5-0.5b-chat"
+        name: "@cf/qwen/qwen1.5-0.5b-chat"
+        models_dev_matched: false
+      - id: "@cf/baai/bge-m3"
+        name: "@cf/baai/bge-m3"
+        models_dev_matched: true
+        models_dev_id: "@cf/baai/bge-m3"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "BGE M3"
+        models_dev_family: "bge"
+        models_dev_context: 128000
+      - id: "@cf/huggingface/distilbert-sst-2-int8"
+        name: "@cf/huggingface/distilbert-sst-2-int8"
+        models_dev_matched: true
+        models_dev_id: "@cf/huggingface/distilbert-sst-2-int8"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "DistilBERT SST-2 INT8"
+        models_dev_family: "distilbert"
+        models_dev_context: 128000
+      - id: "@cf/google/gemma-2b-it-lora"
+        name: "@cf/google/gemma-2b-it-lora"
+        models_dev_matched: false
+      - id: "@hf/nexusflow/starling-lm-7b-beta"
+        name: "@hf/nexusflow/starling-lm-7b-beta"
+        models_dev_matched: false
+      - id: "@cf/black-forest-labs/flux-2-klein-9b"
+        name: "@cf/black-forest-labs/flux-2-klein-9b"
+        models_dev_matched: false
+      - id: "@cf/meta/llama-3-8b-instruct"
+        name: "@cf/meta/llama-3-8b-instruct"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3-8b-instruct"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3 8B Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/meta/llama-3.2-3b-instruct"
+        name: "@cf/meta/llama-3.2-3b-instruct"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3.2-3b-instruct"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3.2 3B Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@hf/thebloke/neural-chat-7b-v3-1-awq"
+        name: "@hf/thebloke/neural-chat-7b-v3-1-awq"
+        models_dev_matched: false
+      - id: "@cf/meta/llama-guard-3-8b"
+        name: "@cf/meta/llama-guard-3-8b"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-guard-3-8b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama Guard 3 8B"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/qwen/qwen3-embedding-0.6b"
+        name: "@cf/qwen/qwen3-embedding-0.6b"
+        models_dev_matched: true
+        models_dev_id: "@cf/qwen/qwen3-embedding-0.6b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Qwen3 Embedding 0.6B"
+        models_dev_family: "qwen"
+        models_dev_context: 128000
+      - id: "@cf/meta/llama-2-7b-chat-fp16"
+        name: "@cf/meta/llama-2-7b-chat-fp16"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-2-7b-chat-fp16"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 2 7B Chat FP16"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/mistral/mistral-7b-instruct-v0.1"
+        name: "@cf/mistral/mistral-7b-instruct-v0.1"
+        models_dev_matched: true
+        models_dev_id: "@cf/mistral/mistral-7b-instruct-v0.1"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Mistral 7B Instruct v0.1"
+        models_dev_family: "mistral"
+        models_dev_context: 128000
+      - id: "@cf/myshell-ai/melotts"
+        name: "@cf/myshell-ai/melotts"
+        models_dev_matched: true
+        models_dev_id: "@cf/myshell-ai/melotts"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "MyShell MeloTTS"
+        models_dev_family: "melotts"
+        models_dev_context: 128000
+      - id: "@cf/mistral/mistral-7b-instruct-v0.2-lora"
+        name: "@cf/mistral/mistral-7b-instruct-v0.2-lora"
+        models_dev_matched: false
+      - id: "@cf/deepgram/aura-2-es"
+        name: "@cf/deepgram/aura-2-es"
+        models_dev_matched: true
+        models_dev_id: "@cf/deepgram/aura-2-es"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Deepgram Aura 2 (ES)"
+        models_dev_family: "aura"
+        models_dev_context: 128000
+      - id: "@cf/openai/whisper"
+        name: "@cf/openai/whisper"
+        models_dev_matched: false
+      - id: "@cf/tinyllama/tinyllama-1.1b-chat-v1.0"
+        name: "@cf/tinyllama/tinyllama-1.1b-chat-v1.0"
+        models_dev_matched: false
+      - id: "@cf/pfnet/plamo-embedding-1b"
+        name: "@cf/pfnet/plamo-embedding-1b"
+        models_dev_matched: true
+        models_dev_id: "@cf/pfnet/plamo-embedding-1b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "PLaMo Embedding 1B"
+        models_dev_family: "plamo"
+        models_dev_context: 128000
+      - id: "@hf/mistral/mistral-7b-instruct-v0.2"
+        name: "@hf/mistral/mistral-7b-instruct-v0.2"
+        models_dev_matched: false
+      - id: "@cf/fblgit/una-cybertron-7b-v2-bf16"
+        name: "@cf/fblgit/una-cybertron-7b-v2-bf16"
+        models_dev_matched: false
+      - id: "@cf/llava-hf/llava-1.5-7b-hf"
+        name: "@cf/llava-hf/llava-1.5-7b-hf"
+        models_dev_matched: false
+      - id: "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
+        name: "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
+        models_dev_matched: true
+        models_dev_id: "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "DeepSeek R1 Distill Qwen 32B"
+        models_dev_family: "deepseek-thinking"
+        models_dev_context: 128000
+      - id: "@cf/runwayml/stable-diffusion-v1-5-inpainting"
+        name: "@cf/runwayml/stable-diffusion-v1-5-inpainting"
+        models_dev_matched: false
+      - id: "@cf/deepgram/flux"
+        name: "@cf/deepgram/flux"
+        models_dev_matched: false
+      - id: "@cf/deepgram/nova-3"
+        name: "@cf/deepgram/nova-3"
+        models_dev_matched: true
+        models_dev_id: "@cf/deepgram/nova-3"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Deepgram Nova 3"
+        models_dev_family: "nova"
+        models_dev_context: 128000
+      - id: "@cf/black-forest-labs/flux-1-schnell"
+        name: "@cf/black-forest-labs/flux-1-schnell"
+        models_dev_matched: false
+      - id: "@cf/thebloke/discolm-german-7b-v1-awq"
+        name: "@cf/thebloke/discolm-german-7b-v1-awq"
+        models_dev_matched: false
+      - id: "@cf/meta/llama-2-7b-chat-int8"
+        name: "@cf/meta/llama-2-7b-chat-int8"
+        models_dev_matched: false
+      - id: "@cf/meta/llama-3.1-8b-instruct-fp8"
+        name: "@cf/meta/llama-3.1-8b-instruct-fp8"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3.1-8b-instruct-fp8"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3.1 8B Instruct FP8"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@hf/thebloke/mistral-7b-instruct-v0.1-awq"
+        name: "@hf/thebloke/mistral-7b-instruct-v0.1-awq"
+        models_dev_matched: false
+      - id: "@cf/qwen/qwen1.5-7b-chat-awq"
+        name: "@cf/qwen/qwen1.5-7b-chat-awq"
+        models_dev_matched: false
+      - id: "@cf/meta/llama-3.2-1b-instruct"
+        name: "@cf/meta/llama-3.2-1b-instruct"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3.2-1b-instruct"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3.2 1B Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/zai-org/glm-4.7-flash"
+        name: "@cf/zai-org/glm-4.7-flash"
+        models_dev_matched: false
+      - id: "@hf/thebloke/llama-2-13b-chat-awq"
+        name: "@hf/thebloke/llama-2-13b-chat-awq"
+        models_dev_matched: false
+      - id: "@cf/microsoft/resnet-50"
+        name: "@cf/microsoft/resnet-50"
+        models_dev_matched: false
+      - id: "@cf/bytedance/stable-diffusion-xl-lightning"
+        name: "@cf/bytedance/stable-diffusion-xl-lightning"
+        models_dev_matched: false
+      - id: "@hf/thebloke/deepseek-coder-6.7b-base-awq"
+        name: "@hf/thebloke/deepseek-coder-6.7b-base-awq"
+        models_dev_matched: false
+      - id: "@cf/meta-llama/llama-2-7b-chat-hf-lora"
+        name: "@cf/meta-llama/llama-2-7b-chat-hf-lora"
+        models_dev_matched: false
+      - id: "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+        name: "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3.3 70B Instruct FP8 Fast"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/ibm-granite/granite-4.0-h-micro"
+        name: "@cf/ibm-granite/granite-4.0-h-micro"
+        models_dev_matched: true
+        models_dev_id: "@cf/ibm-granite/granite-4.0-h-micro"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "IBM Granite 4.0 H Micro"
+        models_dev_family: "granite"
+        models_dev_context: 128000
+      - id: "@cf/lykon/dreamshaper-8-lcm"
+        name: "@cf/lykon/dreamshaper-8-lcm"
+        models_dev_matched: false
+      - id: "@cf/leonardo/phoenix-1.0"
+        name: "@cf/leonardo/phoenix-1.0"
+        models_dev_matched: false
+      - id: "@cf/stabilityai/stable-diffusion-xl-base-1.0"
+        name: "@cf/stabilityai/stable-diffusion-xl-base-1.0"
+        models_dev_matched: false
+      - id: "@hf/thebloke/openhermes-2.5-mistral-7b-awq"
+        name: "@hf/thebloke/openhermes-2.5-mistral-7b-awq"
+        models_dev_matched: false
+      - id: "@cf/meta/m2m100-1.2b"
+        name: "@cf/meta/m2m100-1.2b"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/m2m100-1.2b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "M2M100 1.2B"
+        models_dev_family: "m2m"
+        models_dev_context: 128000
+      - id: "@cf/ai4bharat/indictrans2-en-indic-1B"
+        name: "@cf/ai4bharat/indictrans2-en-indic-1B"
+        models_dev_matched: true
+        models_dev_id: "@cf/ai4bharat/indictrans2-en-indic-1B"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "IndicTrans2 EN-Indic 1B"
+        models_dev_family: "indictrans"
+        models_dev_context: 128000
+      - id: "@hf/thebloke/deepseek-coder-6.7b-instruct-awq"
+        name: "@hf/thebloke/deepseek-coder-6.7b-instruct-awq"
+        models_dev_matched: false
+      - id: "@cf/black-forest-labs/flux-2-klein-4b"
+        name: "@cf/black-forest-labs/flux-2-klein-4b"
+        models_dev_matched: false
+      - id: "@cf/baai/bge-small-en-v1.5"
+        name: "@cf/baai/bge-small-en-v1.5"
+        models_dev_matched: true
+        models_dev_id: "@cf/baai/bge-small-en-v1.5"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "BGE Small EN v1.5"
+        models_dev_family: "bge"
+        models_dev_context: 128000
+      - id: "@cf/qwen/qwen2.5-coder-32b-instruct"
+        name: "@cf/qwen/qwen2.5-coder-32b-instruct"
+        models_dev_matched: true
+        models_dev_id: "@cf/qwen/qwen2.5-coder-32b-instruct"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Qwen 2.5 Coder 32B Instruct"
+        models_dev_family: "qwen"
+        models_dev_context: 128000
+      - id: "@cf/deepseek-ai/deepseek-math-7b-instruct"
+        name: "@cf/deepseek-ai/deepseek-math-7b-instruct"
+        models_dev_matched: false
+      - id: "@cf/tiiuae/falcon-7b-instruct"
+        name: "@cf/tiiuae/falcon-7b-instruct"
+        models_dev_matched: false
+      - id: "@hf/nousresearch/hermes-2-pro-mistral-7b"
+        name: "@hf/nousresearch/hermes-2-pro-mistral-7b"
+        models_dev_matched: false
+      - id: "@cf/baai/bge-base-en-v1.5"
+        name: "@cf/baai/bge-base-en-v1.5"
+        models_dev_matched: true
+        models_dev_id: "@cf/baai/bge-base-en-v1.5"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "BGE Base EN v1.5"
+        models_dev_family: "bge"
+        models_dev_context: 128000
+      - id: "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
+        name: "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
+        models_dev_matched: true
+        models_dev_id: "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Gemma SEA-LION v4 27B IT"
+        models_dev_family: "gemma"
+        models_dev_context: 128000
+      - id: "@cf/qwen/qwen3-30b-a3b-fp8"
+        name: "@cf/qwen/qwen3-30b-a3b-fp8"
+        models_dev_matched: true
+        models_dev_id: "@cf/qwen/qwen3-30b-a3b-fp8"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Qwen3 30B A3B FP8"
+        models_dev_family: "qwen"
+        models_dev_context: 128000
+      - id: "@cf/meta/llama-3.1-8b-instruct-awq"
+        name: "@cf/meta/llama-3.1-8b-instruct-awq"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3.1-8b-instruct-awq"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3.1 8B Instruct AWQ"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/unum/uform-gen2-qwen-500m"
+        name: "@cf/unum/uform-gen2-qwen-500m"
+        models_dev_matched: false
+      - id: "@cf/black-forest-labs/flux-2-dev"
+        name: "@cf/black-forest-labs/flux-2-dev"
+        models_dev_matched: false
+      - id: "@hf/thebloke/zephyr-7b-beta-awq"
+        name: "@hf/thebloke/zephyr-7b-beta-awq"
+        models_dev_matched: false
+      - id: "@cf/google/gemma-7b-it-lora"
+        name: "@cf/google/gemma-7b-it-lora"
+        models_dev_matched: false
+      - id: "@cf/qwen/qwen1.5-1.8b-chat"
+        name: "@cf/qwen/qwen1.5-1.8b-chat"
+        models_dev_matched: false
+      - id: "@cf/mistralai/mistral-small-3.1-24b-instruct"
+        name: "@cf/mistralai/mistral-small-3.1-24b-instruct"
+        models_dev_matched: true
+        models_dev_id: "@cf/mistralai/mistral-small-3.1-24b-instruct"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Mistral Small 3.1 24B Instruct"
+        models_dev_family: "mistral-small"
+        models_dev_context: 128000
+      - id: "@cf/meta/llama-3-8b-instruct-awq"
+        name: "@cf/meta/llama-3-8b-instruct-awq"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3-8b-instruct-awq"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3 8B Instruct AWQ"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/meta/llama-3.2-11b-vision-instruct"
+        name: "@cf/meta/llama-3.2-11b-vision-instruct"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-3.2-11b-vision-instruct"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 3.2 11B Vision Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/openai/whisper-tiny-en"
+        name: "@cf/openai/whisper-tiny-en"
+        models_dev_matched: false
+      - id: "@cf/openai/whisper-large-v3-turbo"
+        name: "@cf/openai/whisper-large-v3-turbo"
+        models_dev_matched: false
+      - id: "@cf/deepgram/aura-1"
+        name: "@cf/deepgram/aura-1"
+        models_dev_matched: false
+      - id: "@cf/defog/sqlcoder-7b-2"
+        name: "@cf/defog/sqlcoder-7b-2"
+        models_dev_matched: false
+      - id: "@cf/microsoft/phi-2"
+        name: "@cf/microsoft/phi-2"
+        models_dev_matched: false
+      - id: "@cf/facebook/bart-large-cnn"
+        name: "@cf/facebook/bart-large-cnn"
+        models_dev_matched: true
+        models_dev_id: "@cf/facebook/bart-large-cnn"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "BART Large CNN"
+        models_dev_family: "bart"
+        models_dev_context: 128000
+      - id: "@cf/runwayml/stable-diffusion-v1-5-img2img"
+        name: "@cf/runwayml/stable-diffusion-v1-5-img2img"
+        models_dev_matched: false
+      - id: "@cf/openai/gpt-oss-20b"
+        name: "@cf/openai/gpt-oss-20b"
+        models_dev_matched: true
+        models_dev_id: "@cf/openai/gpt-oss-20b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "GPT OSS 20B"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "@cf/google/embeddinggemma-300m"
+        name: "@cf/google/embeddinggemma-300m"
+        models_dev_matched: false
+      - id: "@cf/baai/bge-reranker-base"
+        name: "@cf/baai/bge-reranker-base"
+        models_dev_matched: true
+        models_dev_id: "@cf/baai/bge-reranker-base"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "BGE Reranker Base"
+        models_dev_family: "bge"
+        models_dev_context: 128000
+      - id: "@hf/google/gemma-7b-it"
+        name: "@hf/google/gemma-7b-it"
+        models_dev_matched: false
+      - id: "@cf/leonardo/lucid-origin"
+        name: "@cf/leonardo/lucid-origin"
+        models_dev_matched: false
+      - id: "@cf/qwen/qwen1.5-14b-chat-awq"
+        name: "@cf/qwen/qwen1.5-14b-chat-awq"
+        models_dev_matched: false
+      - id: "@cf/openchat/openchat-3.5-0106"
+        name: "@cf/openchat/openchat-3.5-0106"
+        models_dev_matched: false
+      - id: "@cf/meta/llama-4-scout-17b-16e-instruct"
+        name: "@cf/meta/llama-4-scout-17b-16e-instruct"
+        models_dev_matched: true
+        models_dev_id: "@cf/meta/llama-4-scout-17b-16e-instruct"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Llama 4 Scout 17B 16E Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "@cf/google/gemma-3-12b-it"
+        name: "@cf/google/gemma-3-12b-it"
+        models_dev_matched: true
+        models_dev_id: "@cf/google/gemma-3-12b-it"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Gemma 3 12B IT"
+        models_dev_family: "gemma"
+        models_dev_context: 128000
+      - id: "@cf/qwen/qwq-32b"
+        name: "@cf/qwen/qwq-32b"
+        models_dev_matched: true
+        models_dev_id: "@cf/qwen/qwq-32b"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "QwQ 32B"
+        models_dev_family: "qwen"
+        models_dev_context: 128000
+      - id: "@cf/baai/bge-large-en-v1.5"
+        name: "@cf/baai/bge-large-en-v1.5"
+        models_dev_matched: true
+        models_dev_id: "@cf/baai/bge-large-en-v1.5"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "BGE Large EN v1.5"
+        models_dev_family: "bge"
+        models_dev_context: 128000
+      - id: "@cf/deepgram/aura-2-en"
+        name: "@cf/deepgram/aura-2-en"
+        models_dev_matched: true
+        models_dev_id: "@cf/deepgram/aura-2-en"
+        models_dev_provider: "cloudflare-workers-ai"
+        models_dev_name: "Deepgram Aura 2 (EN)"
+        models_dev_family: "aura"
+        models_dev_context: 128000
+  groq:
+    status: "ok"
+    endpoint: "https://api.groq.com/openai/v1/models"
+    model_count: 20
+    models:
+      - id: "meta-llama/llama-prompt-guard-2-22m"
+        name: ""
+        context_length: 512
+        models_dev_matched: false
+      - id: "llama-3.1-8b-instant"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "llama-3.1-8b-instant"
+        models_dev_provider: "helicone"
+        models_dev_name: "Meta Llama 3.1 8B Instant"
+        models_dev_family: "llama"
+        models_dev_context: 131072
+      - id: "llama-3.3-70b-versatile"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "llama-3.3-70b-versatile"
+        models_dev_provider: "helicone"
+        models_dev_name: "Meta Llama 3.3 70B Versatile"
+        models_dev_family: "llama"
+        models_dev_context: 131072
+      - id: "openai/gpt-oss-120b"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-120b"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "GPT Oss 120b"
+        models_dev_family: "gpt"
+        models_dev_context: 128000
+      - id: "openai/gpt-oss-safeguard-20b"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-safeguard-20b"
+        models_dev_provider: "kilo"
+        models_dev_name: "OpenAI: gpt-oss-safeguard-20b"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "groq/compound"
+        name: ""
+        context_length: 131072
+        models_dev_matched: false
+      - id: "allam-2-7b"
+        name: ""
+        context_length: 4096
+        models_dev_matched: false
+      - id: "moonshotai/kimi-k2-instruct-0905"
+        name: ""
+        context_length: 262144
+        models_dev_matched: true
+        models_dev_id: "moonshotai/kimi-k2-instruct-0905"
+        models_dev_provider: "groq"
+        models_dev_name: "Kimi K2 Instruct 0905"
+        models_dev_family: "kimi"
+        models_dev_context: 262144
+      - id: "canopylabs/orpheus-arabic-saudi"
+        name: ""
+        context_length: 4000
+        models_dev_matched: false
+      - id: "meta-llama/llama-4-scout-17b-16e-instruct"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "meta-llama/llama-4-scout-17b-16e-instruct"
+        models_dev_provider: "groq"
+        models_dev_name: "Llama 4 Scout 17B"
+        models_dev_family: "llama"
+        models_dev_context: 131072
+      - id: "groq/compound-mini"
+        name: ""
+        context_length: 131072
+        models_dev_matched: false
+      - id: "qwen/qwen3-32b"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3-32b"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: Qwen3 32B"
+        models_dev_family: ""
+        models_dev_context: 40960
+      - id: "meta-llama/llama-prompt-guard-2-86m"
+        name: ""
+        context_length: 512
+        models_dev_matched: false
+      - id: "whisper-large-v3-turbo"
+        name: ""
+        context_length: 448
+        models_dev_matched: false
+      - id: "moonshotai/kimi-k2-instruct"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "moonshotai/kimi-k2-instruct"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Kimi K2 Instruct"
+        models_dev_family: "kimi"
+        models_dev_context: 131072
+      - id: "whisper-large-v3"
+        name: ""
+        context_length: 448
+        models_dev_matched: true
+        models_dev_id: "whisper-large-v3"
+        models_dev_provider: "privatemode-ai"
+        models_dev_name: "Whisper large-v3"
+        models_dev_family: "whisper"
+        models_dev_context: 0
+      - id: "openai/gpt-oss-20b"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-20b"
+        models_dev_provider: "chutes"
+        models_dev_name: "gpt oss 20b"
+        models_dev_family: "gpt-oss"
+        models_dev_context: 131072
+      - id: "meta-llama/llama-guard-4-12b"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "meta-llama/llama-guard-4-12b"
+        models_dev_provider: "kilo"
+        models_dev_name: "Meta: Llama Guard 4 12B"
+        models_dev_family: ""
+        models_dev_context: 163840
+      - id: "meta-llama/llama-4-maverick-17b-128e-instruct"
+        name: ""
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "meta-llama/llama-4-maverick-17b-128e-instruct"
+        models_dev_provider: "groq"
+        models_dev_name: "Llama 4 Maverick 17B"
+        models_dev_family: "llama"
+        models_dev_context: 131072
+      - id: "canopylabs/orpheus-v1-english"
+        name: ""
+        context_length: 4000
+        models_dev_matched: false
+  mistral:
+    status: "ok"
+    endpoint: "https://api.mistral.ai/v1/models"
+    model_count: 56
+    models:
+      - id: "mistral-medium-2505"
+        name: "mistral-medium-2505"
+        models_dev_matched: true
+        models_dev_id: "mistral-medium-2505"
+        models_dev_provider: "azure"
+        models_dev_name: "Mistral Medium 3"
+        models_dev_family: "mistral-medium"
+        models_dev_context: 128000
+      - id: "mistral-medium-2508"
+        name: "mistral-medium-2508"
+        models_dev_matched: true
+        models_dev_id: "mistral-medium-2508"
+        models_dev_provider: "mistral"
+        models_dev_name: "Mistral Medium 3.1"
+        models_dev_family: "mistral-medium"
+        models_dev_context: 262144
+      - id: "mistral-medium-latest"
+        name: "mistral-medium-2508"
+        models_dev_matched: true
+        models_dev_id: "mistral-medium-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Mistral Medium"
+        models_dev_family: "mistral-medium"
+        models_dev_context: 128000
+      - id: "mistral-medium"
+        name: "mistral-medium-2508"
+        models_dev_matched: false
+      - id: "mistral-vibe-cli-with-tools"
+        name: "mistral-medium-2508"
+        models_dev_matched: false
+      - id: "open-mistral-nemo"
+        name: "open-mistral-nemo"
+        models_dev_matched: false
+      - id: "open-mistral-nemo-2407"
+        name: "open-mistral-nemo"
+        models_dev_matched: false
+      - id: "mistral-tiny-2407"
+        name: "open-mistral-nemo"
+        models_dev_matched: false
+      - id: "mistral-tiny-latest"
+        name: "open-mistral-nemo"
+        models_dev_matched: false
+      - id: "mistral-large-2411"
+        name: "mistral-large-2411"
+        models_dev_matched: true
+        models_dev_id: "mistral-large-2411"
+        models_dev_provider: "azure"
+        models_dev_name: "Mistral Large 24.11"
+        models_dev_family: "mistral-large"
+        models_dev_context: 128000
+      - id: "pixtral-large-2411"
+        name: "pixtral-large-2411"
+        models_dev_matched: false
+      - id: "pixtral-large-latest"
+        name: "pixtral-large-2411"
+        models_dev_matched: true
+        models_dev_id: "pixtral-large-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Pixtral Large"
+        models_dev_family: "pixtral"
+        models_dev_context: 128000
+      - id: "mistral-large-pixtral-2411"
+        name: "pixtral-large-2411"
+        models_dev_matched: false
+      - id: "codestral-2508"
+        name: "codestral-2508"
+        models_dev_matched: false
+      - id: "codestral-latest"
+        name: "codestral-2508"
+        models_dev_matched: true
+        models_dev_id: "codestral-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Codestral"
+        models_dev_family: "codestral"
+        models_dev_context: 256000
+      - id: "devstral-small-2507"
+        name: "devstral-small-2507"
+        models_dev_matched: true
+        models_dev_id: "devstral-small-2507"
+        models_dev_provider: "mistral"
+        models_dev_name: "Devstral Small"
+        models_dev_family: "devstral"
+        models_dev_context: 128000
+      - id: "devstral-medium-2507"
+        name: "devstral-medium-2507"
+        models_dev_matched: true
+        models_dev_id: "devstral-medium-2507"
+        models_dev_provider: "mistral"
+        models_dev_name: "Devstral Medium"
+        models_dev_family: "devstral"
+        models_dev_context: 128000
+      - id: "devstral-2512"
+        name: "devstral-2512"
+        models_dev_matched: true
+        models_dev_id: "devstral-2512"
+        models_dev_provider: "cortecs"
+        models_dev_name: "Devstral 2 2512"
+        models_dev_family: ""
+        models_dev_context: 262000
+      - id: "mistral-vibe-cli-latest"
+        name: "devstral-2512"
+        models_dev_matched: false
+      - id: "devstral-medium-latest"
+        name: "devstral-2512"
+        models_dev_matched: true
+        models_dev_id: "devstral-medium-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Devstral 2"
+        models_dev_family: "devstral"
+        models_dev_context: 262144
+      - id: "devstral-latest"
+        name: "devstral-2512"
+        models_dev_matched: false
+      - id: "labs-devstral-small-2512"
+        name: "labs-devstral-small-2512"
+        models_dev_matched: true
+        models_dev_id: "labs-devstral-small-2512"
+        models_dev_provider: "mistral"
+        models_dev_name: "Devstral Small 2"
+        models_dev_family: "devstral"
+        models_dev_context: 256000
+      - id: "devstral-small-latest"
+        name: "labs-devstral-small-2512"
+        models_dev_matched: false
+      - id: "mistral-small-2506"
+        name: "mistral-small-2506"
+        models_dev_matched: true
+        models_dev_id: "mistral-small-2506"
+        models_dev_provider: "mistral"
+        models_dev_name: "Mistral Small 3.2"
+        models_dev_family: "mistral-small"
+        models_dev_context: 128000
+      - id: "mistral-small-latest"
+        name: "mistral-small-2506"
+        models_dev_matched: true
+        models_dev_id: "mistral-small-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Mistral Small"
+        models_dev_family: "mistral-small"
+        models_dev_context: 128000
+      - id: "labs-mistral-small-creative"
+        name: "labs-mistral-small-creative"
+        models_dev_matched: false
+      - id: "magistral-medium-2509"
+        name: "magistral-medium-2509"
+        models_dev_matched: false
+      - id: "magistral-medium-latest"
+        name: "magistral-medium-2509"
+        models_dev_matched: true
+        models_dev_id: "magistral-medium-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Magistral Medium"
+        models_dev_family: "magistral-medium"
+        models_dev_context: 128000
+      - id: "magistral-small-2509"
+        name: "magistral-small-2509"
+        models_dev_matched: false
+      - id: "magistral-small-latest"
+        name: "magistral-small-2509"
+        models_dev_matched: false
+      - id: "voxtral-mini-2507"
+        name: "voxtral-mini-2507"
+        models_dev_matched: false
+      - id: "voxtral-mini-latest"
+        name: "voxtral-mini-2507"
+        models_dev_matched: false
+      - id: "voxtral-small-2507"
+        name: "voxtral-small-2507"
+        models_dev_matched: false
+      - id: "voxtral-small-latest"
+        name: "voxtral-small-2507"
+        models_dev_matched: false
+      - id: "mistral-large-2512"
+        name: "mistral-large-2512"
+        models_dev_matched: true
+        models_dev_id: "mistral-large-2512"
+        models_dev_provider: "302ai"
+        models_dev_name: "mistral-large-2512"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "mistral-large-latest"
+        name: "mistral-large-2512"
+        models_dev_matched: true
+        models_dev_id: "mistral-large-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Mistral Large"
+        models_dev_family: "mistral-large"
+        models_dev_context: 262144
+      - id: "ministral-3b-2512"
+        name: "ministral-3b-2512"
+        models_dev_matched: false
+      - id: "ministral-3b-latest"
+        name: "ministral-3b-2512"
+        models_dev_matched: true
+        models_dev_id: "ministral-3b-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Ministral 3B"
+        models_dev_family: "ministral"
+        models_dev_context: 128000
+      - id: "ministral-8b-2512"
+        name: "ministral-8b-2512"
+        models_dev_matched: false
+      - id: "ministral-8b-latest"
+        name: "ministral-8b-2512"
+        models_dev_matched: true
+        models_dev_id: "ministral-8b-latest"
+        models_dev_provider: "mistral"
+        models_dev_name: "Ministral 8B"
+        models_dev_family: "ministral"
+        models_dev_context: 128000
+      - id: "ministral-14b-2512"
+        name: "ministral-14b-2512"
+        models_dev_matched: true
+        models_dev_id: "ministral-14b-2512"
+        models_dev_provider: "302ai"
+        models_dev_name: "ministral-14b-2512"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "ministral-14b-latest"
+        name: "ministral-14b-2512"
+        models_dev_matched: false
+      - id: "mistral-embed-2312"
+        name: "mistral-embed-2312"
+        models_dev_matched: false
+      - id: "mistral-embed"
+        name: "mistral-embed-2312"
+        models_dev_matched: true
+        models_dev_id: "mistral-embed"
+        models_dev_provider: "mistral"
+        models_dev_name: "Mistral Embed"
+        models_dev_family: "mistral-embed"
+        models_dev_context: 8000
+      - id: "codestral-embed"
+        name: "codestral-embed"
+        models_dev_matched: false
+      - id: "codestral-embed-2505"
+        name: "codestral-embed"
+        models_dev_matched: false
+      - id: "mistral-moderation-2411"
+        name: "mistral-moderation-2411"
+        models_dev_matched: false
+      - id: "mistral-moderation-latest"
+        name: "mistral-moderation-2411"
+        models_dev_matched: false
+      - id: "mistral-ocr-2512"
+        name: "mistral-ocr-2512"
+        models_dev_matched: false
+      - id: "mistral-ocr-latest"
+        name: "mistral-ocr-2512"
+        models_dev_matched: false
+      - id: "mistral-ocr-2505"
+        name: "mistral-ocr-2505"
+        models_dev_matched: false
+      - id: "mistral-ocr-2503"
+        name: "mistral-ocr-2503"
+        models_dev_matched: false
+      - id: "voxtral-mini-2602"
+        name: "voxtral-mini-2602"
+        models_dev_matched: false
+      - id: "voxtral-mini-latest"
+        name: "voxtral-mini-2602"
+        models_dev_matched: false
+      - id: "voxtral-mini-transcribe-2507"
+        name: "voxtral-mini-transcribe-2507"
+        models_dev_matched: false
+      - id: "voxtral-mini-2507"
+        name: "voxtral-mini-transcribe-2507"
+        models_dev_matched: false
+  nvidia:
+    status: "ok"
+    endpoint: "https://integrate.api.nvidia.com/v1/models"
+    model_count: 187
+    models:
+      - id: "01-ai/yi-large"
+        name: ""
+        models_dev_matched: false
+      - id: "abacusai/dracarys-llama-3.1-70b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "adept/fuyu-8b"
+        name: ""
+        models_dev_matched: false
+      - id: "ai21labs/jamba-1.5-large-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "ai21labs/jamba-1.5-mini-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "aisingapore/sea-lion-7b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "baai/bge-m3"
+        name: ""
+        models_dev_matched: false
+      - id: "baichuan-inc/baichuan2-13b-chat"
+        name: ""
+        models_dev_matched: false
+      - id: "bigcode/starcoder2-15b"
+        name: ""
+        models_dev_matched: false
+      - id: "bigcode/starcoder2-7b"
+        name: ""
+        models_dev_matched: false
+      - id: "bytedance/seed-oss-36b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "databricks/dbrx-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "deepseek-ai/deepseek-coder-6.7b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "deepseek-ai/deepseek-coder-6.7b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Deepseek Coder 6.7b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "deepseek-ai/deepseek-r1-distill-llama-8b"
+        name: ""
+        models_dev_matched: false
+      - id: "deepseek-ai/deepseek-r1-distill-qwen-14b"
+        name: ""
+        models_dev_matched: false
+      - id: "deepseek-ai/deepseek-r1-distill-qwen-32b"
+        name: ""
+        models_dev_matched: false
+      - id: "deepseek-ai/deepseek-r1-distill-qwen-7b"
+        name: ""
+        models_dev_matched: false
+      - id: "deepseek-ai/deepseek-v3.1"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "deepseek-ai/deepseek-v3.1"
+        models_dev_provider: "nvidia"
+        models_dev_name: "DeepSeek V3.1"
+        models_dev_family: "deepseek"
+        models_dev_context: 128000
+      - id: "deepseek-ai/deepseek-v3.1-terminus"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "deepseek-ai/deepseek-v3.1-terminus"
+        models_dev_provider: "nvidia"
+        models_dev_name: "DeepSeek V3.1 Terminus"
+        models_dev_family: "deepseek"
+        models_dev_context: 128000
+      - id: "deepseek-ai/deepseek-v3.2"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "deepseek-ai/deepseek-v3.2"
+        models_dev_provider: "nebius"
+        models_dev_name: "DeepSeek-V3.2"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "google/codegemma-1.1-7b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/codegemma-1.1-7b"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Codegemma 1.1 7b"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "google/codegemma-7b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/codegemma-7b"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Codegemma 7b"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "google/deplot"
+        name: ""
+        models_dev_matched: false
+      - id: "google/gemma-2-27b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-2-27b-it"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 2 27B"
+        models_dev_family: ""
+        models_dev_context: 8192
+      - id: "google/gemma-2-2b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-2-2b-it"
+        models_dev_provider: "nebius"
+        models_dev_name: "Gemma-2-2b-it"
+        models_dev_family: ""
+        models_dev_context: 8192
+      - id: "google/gemma-2-9b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-2-9b-it"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 2 9B"
+        models_dev_family: ""
+        models_dev_context: 8192
+      - id: "google/gemma-2b"
+        name: ""
+        models_dev_matched: false
+      - id: "google/gemma-3-12b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3-12b-it"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3 12B"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "google/gemma-3-1b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3-1b-it"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Gemma 3 1b It"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "google/gemma-3-27b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3-27b-it"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3 27B"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "google/gemma-3-4b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3-4b-it"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3 4B"
+        models_dev_family: ""
+        models_dev_context: 96000
+      - id: "google/gemma-3n-e2b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3n-e2b-it"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Gemma 3n E2b It"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "google/gemma-3n-e4b-it"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3n-e4b-it"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3n 4B"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "google/gemma-7b"
+        name: ""
+        models_dev_matched: false
+      - id: "google/paligemma"
+        name: ""
+        models_dev_matched: false
+      - id: "google/recurrentgemma-2b"
+        name: ""
+        models_dev_matched: false
+      - id: "google/shieldgemma-9b"
+        name: ""
+        models_dev_matched: false
+      - id: "gotocompany/gemma-2-9b-cpt-sahabatai-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "ibm/granite-3.0-3b-a800m-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "ibm/granite-3.0-8b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "ibm/granite-3.3-8b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "ibm/granite-34b-code-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "ibm/granite-8b-code-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "ibm/granite-guardian-3.0-8b"
+        name: ""
+        models_dev_matched: false
+      - id: "igenius/colosseum_355b_instruct_16k"
+        name: ""
+        models_dev_matched: false
+      - id: "igenius/italia_10b_instruct_16k"
+        name: ""
+        models_dev_matched: false
+      - id: "institute-of-science-tokyo/llama-3.1-swallow-70b-instruct-v0.1"
+        name: ""
+        models_dev_matched: false
+      - id: "institute-of-science-tokyo/llama-3.1-swallow-8b-instruct-v0.1"
+        name: ""
+        models_dev_matched: false
+      - id: "marin/marin-8b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "mediatek/breeze-7b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "meta/codellama-70b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/codellama-70b"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Codellama 70b"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "meta/llama-3.1-405b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.1-405b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama 3.1 405b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "meta/llama-3.1-70b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.1-70b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama 3.1 70b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "meta/llama-3.1-8b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.1-8b-instruct"
+        models_dev_provider: "inference"
+        models_dev_name: "Llama 3.1 8B Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 16000
+      - id: "meta/llama-3.2-11b-vision-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.2-11b-vision-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Llama-3.2-11B-Vision-Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "meta/llama-3.2-1b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.2-1b-instruct"
+        models_dev_provider: "inference"
+        models_dev_name: "Llama 3.2 1B Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 16000
+      - id: "meta/llama-3.2-3b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.2-3b-instruct"
+        models_dev_provider: "inference"
+        models_dev_name: "Llama 3.2 3B Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 16000
+      - id: "meta/llama-3.2-90b-vision-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.2-90b-vision-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Llama-3.2-90B-Vision-Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "meta/llama-3.3-70b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-3.3-70b-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Llama-3.3-70B-Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "meta/llama-4-maverick-17b-128e-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-4-maverick-17b-128e-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama 4 Maverick 17b 128e Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "meta/llama-4-scout-17b-16e-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama-4-scout-17b-16e-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Llama 4 Scout 17B 16E Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "meta/llama-guard-4-12b"
+        name: ""
+        models_dev_matched: false
+      - id: "meta/llama2-70b"
+        name: ""
+        models_dev_matched: false
+      - id: "meta/llama3-70b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama3-70b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama3 70b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "meta/llama3-8b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "meta/llama3-8b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama3 8b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "microsoft/kosmos-2"
+        name: ""
+        models_dev_matched: false
+      - id: "microsoft/phi-3-medium-128k-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3-medium-128k-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3-medium instruct (128k)"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "microsoft/phi-3-medium-4k-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3-medium-4k-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3-medium instruct (4k)"
+        models_dev_family: "phi"
+        models_dev_context: 4096
+      - id: "microsoft/phi-3-mini-128k-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3-mini-128k-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3-mini instruct (128k)"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "microsoft/phi-3-mini-4k-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3-mini-4k-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3-mini instruct (4k)"
+        models_dev_family: "phi"
+        models_dev_context: 4096
+      - id: "microsoft/phi-3-small-128k-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3-small-128k-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3-small instruct (128k)"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "microsoft/phi-3-small-8k-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3-small-8k-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3-small instruct (8k)"
+        models_dev_family: "phi"
+        models_dev_context: 8192
+      - id: "microsoft/phi-3-vision-128k-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3-vision-128k-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Phi 3 Vision 128k Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "microsoft/phi-3.5-mini-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3.5-mini-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3.5-mini instruct (128k)"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "microsoft/phi-3.5-moe-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3.5-moe-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3.5-MoE instruct (128k)"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "microsoft/phi-3.5-vision-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-3.5-vision-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-3.5-vision instruct (128k)"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "microsoft/phi-4-mini-flash-reasoning"
+        name: ""
+        models_dev_matched: false
+      - id: "microsoft/phi-4-mini-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-4-mini-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-4-mini-instruct"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "microsoft/phi-4-multimodal-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "microsoft/phi-4-multimodal-instruct"
+        models_dev_provider: "github-models"
+        models_dev_name: "Phi-4-multimodal-instruct"
+        models_dev_family: "phi"
+        models_dev_context: 128000
+      - id: "minimaxai/minimax-m2.1"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "minimaxai/minimax-m2.1"
+        models_dev_provider: "nvidia"
+        models_dev_name: "MiniMax-M2.1"
+        models_dev_family: "minimax"
+        models_dev_context: 204800
+      - id: "minimaxai/minimax-m2.5"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/codestral-22b-instruct-v0.1"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/codestral-22b-instruct-v0.1"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Codestral 22b Instruct V0.1"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "mistralai/devstral-2-123b-instruct-2512"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/devstral-2-123b-instruct-2512"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Devstral 2 123b Instruct 2512"
+        models_dev_family: "mistral"
+        models_dev_context: 131072
+      - id: "mistralai/magistral-small-2506"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/mamba-codestral-7b-v0.1"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/mamba-codestral-7b-v0.1"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Mamba Codestral 7b V0.1"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "mistralai/mathstral-7b-v0.1"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/ministral-14b-instruct-2512"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/ministral-14b-instruct-2512"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Ministral 14b Instruct 2512"
+        models_dev_family: "mistral"
+        models_dev_context: 131072
+      - id: "mistralai/mistral-7b-instruct-v0.2"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/mistral-7b-instruct-v0.3"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/mistral-7b-instruct-v0.3"
+        models_dev_provider: "kilo"
+        models_dev_name: "Mistral: Mistral 7B Instruct v0.3"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "mistralai/mistral-large"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/mistral-large"
+        models_dev_provider: "kilo"
+        models_dev_name: "Mistral Large"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "mistralai/mistral-large-2-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/mistral-large-2-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Mistral Large 2 Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "mistralai/mistral-large-3-675b-instruct-2512"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/mistral-large-3-675b-instruct-2512"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Mistral Large 3 675b Instruct 2512"
+        models_dev_family: "mistral"
+        models_dev_context: 131072
+      - id: "mistralai/mistral-medium-3-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/mistral-nemotron"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/mistral-small-24b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/mistral-small-3.1-24b-instruct-2503"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "mistralai/mistral-small-3.1-24b-instruct-2503"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Mistral Small 3.1 24b Instruct 2503"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "mistralai/mixtral-8x22b-instruct-v0.1"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/mixtral-8x22b-v0.1"
+        name: ""
+        models_dev_matched: false
+      - id: "mistralai/mixtral-8x7b-instruct-v0.1"
+        name: ""
+        models_dev_matched: false
+      - id: "moonshotai/kimi-k2-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "moonshotai/kimi-k2-instruct"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Kimi K2 Instruct"
+        models_dev_family: "kimi"
+        models_dev_context: 131072
+      - id: "moonshotai/kimi-k2-instruct-0905"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "moonshotai/kimi-k2-instruct-0905"
+        models_dev_provider: "groq"
+        models_dev_name: "Kimi K2 Instruct 0905"
+        models_dev_family: "kimi"
+        models_dev_context: 262144
+      - id: "moonshotai/kimi-k2-thinking"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "moonshotai/kimi-k2-thinking"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Kimi K2 Thinking"
+        models_dev_family: "kimi-thinking"
+        models_dev_context: 32768
+      - id: "moonshotai/kimi-k2.5"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "moonshotai/kimi-k2.5"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Kimi K2.5"
+        models_dev_family: "kimi"
+        models_dev_context: 256000
+      - id: "nv-mistralai/mistral-nemo-12b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/cosmos-reason2-8b"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/embed-qa-4"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/gliner-pii"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemoguard-8b-content-safety"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemoguard-8b-topic-control"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemotron-51b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/llama-3.1-nemotron-51b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama 3.1 Nemotron 51b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "nvidia/llama-3.1-nemotron-70b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/llama-3.1-nemotron-70b-instruct"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Llama 3.1 Nemotron 70B Instruct"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "nvidia/llama-3.1-nemotron-70b-reward"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemotron-nano-4b-v1.1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemotron-nano-8b-v1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemotron-nano-vl-8b-v1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemotron-safety-guard-8b-v3"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.1-nemotron-ultra-253b-v1"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/llama-3.1-nemotron-ultra-253b-v1"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Llama 3.1 Nemotron Ultra 253B v1"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.2-nemoretriever-300m-embed-v1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.2-nv-embedqa-1b-v1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.2-nv-embedqa-1b-v2"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-3.3-nemotron-super-49b-v1"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/llama-3.3-nemotron-super-49b-v1"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama 3.3 Nemotron Super 49b V1"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Llama 3.3 Nemotron Super 49B V1.5"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "nvidia/llama-nemotron-embed-1b-v2"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama-nemotron-embed-vl-1b-v2"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/llama3-chatqa-1.5-70b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/llama3-chatqa-1.5-70b"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Llama3 Chatqa 1.5 70b"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "nvidia/llama3-chatqa-1.5-8b"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/mistral-nemo-minitron-8b-8k-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/mistral-nemo-minitron-8b-base"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nemoretriever-parse"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nemotron-3-nano-30b-a3b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/nemotron-3-nano-30b-a3b"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Nemotron 3 Nano 30B A3B"
+        models_dev_family: ""
+        models_dev_context: 262144
+      - id: "nvidia/nemotron-4-340b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/nemotron-4-340b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Nemotron 4 340b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "nvidia/nemotron-4-340b-reward"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nemotron-4-mini-hindi-4b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nemotron-content-safety-reasoning-4b"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nemotron-mini-4b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nemotron-nano-12b-v2-vl"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/nemotron-nano-12b-v2-vl"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Nemotron Nano 12B 2 VL"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "nvidia/nemotron-nano-3-30b-a3b"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nemotron-parse"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/neva-22b"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nv-embed-v1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nv-embedcode-7b-v1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nv-embedqa-e5-v5"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nv-embedqa-mistral-7b-v2"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nvclip"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/nvidia-nemotron-nano-9b-v2"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "nvidia/nvidia-nemotron-nano-9b-v2"
+        models_dev_provider: "nvidia"
+        models_dev_name: "nvidia-nemotron-nano-9b-v2"
+        models_dev_family: "nemotron"
+        models_dev_context: 131072
+      - id: "nvidia/riva-translate-4b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/riva-translate-4b-instruct-v1.1"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/streampetr"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/usdcode-llama-3.1-70b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "nvidia/vila"
+        name: ""
+        models_dev_matched: false
+      - id: "openai/gpt-oss-120b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-120b"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "GPT Oss 120b"
+        models_dev_family: "gpt"
+        models_dev_context: 128000
+      - id: "openai/gpt-oss-120b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-120b"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "GPT Oss 120b"
+        models_dev_family: "gpt"
+        models_dev_context: 128000
+      - id: "openai/gpt-oss-20b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-20b"
+        models_dev_provider: "chutes"
+        models_dev_name: "gpt oss 20b"
+        models_dev_family: "gpt-oss"
+        models_dev_context: 131072
+      - id: "openai/gpt-oss-20b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-20b"
+        models_dev_provider: "chutes"
+        models_dev_name: "gpt oss 20b"
+        models_dev_family: "gpt-oss"
+        models_dev_context: 131072
+      - id: "opengpt-x/teuken-7b-instruct-commercial-v0.4"
+        name: ""
+        models_dev_matched: false
+      - id: "qwen/qwen2-7b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "qwen/qwen2.5-7b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen2.5-7b-instruct"
+        models_dev_provider: "novita-ai"
+        models_dev_name: "Qwen2.5 7B Instruct"
+        models_dev_family: ""
+        models_dev_context: 32000
+      - id: "qwen/qwen2.5-coder-32b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen2.5-coder-32b-instruct"
+        models_dev_provider: "nvidia"
+        models_dev_name: "Qwen2.5 Coder 32b Instruct"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "qwen/qwen2.5-coder-7b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen2.5-coder-7b-instruct"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: Qwen2.5 Coder 7B Instruct"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "qwen/qwen3-coder-480b-a35b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3-coder-480b-a35b-instruct"
+        models_dev_provider: "jiekou"
+        models_dev_name: "Qwen3 Coder 480B A35B Instruct"
+        models_dev_family: "qwen"
+        models_dev_context: 262144
+      - id: "qwen/qwen3-next-80b-a3b-instruct"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3-next-80b-a3b-instruct"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: Qwen3 Next 80B A3B Instruct"
+        models_dev_family: ""
+        models_dev_context: 262144
+      - id: "qwen/qwen3-next-80b-a3b-thinking"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3-next-80b-a3b-thinking"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: Qwen3 Next 80B A3B Thinking"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "qwen/qwen3.5-122b-a10b"
+        name: ""
+        models_dev_matched: false
+      - id: "qwen/qwen3.5-397b-a17b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3.5-397b-a17b"
+        models_dev_provider: "nano-gpt"
+        models_dev_name: "Qwen3.5 397B A17B"
+        models_dev_family: "qwen"
+        models_dev_context: 258000
+      - id: "qwen/qwq-32b"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "qwen/qwq-32b"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: QwQ 32B"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "rakuten/rakutenai-7b-chat"
+        name: ""
+        models_dev_matched: false
+      - id: "rakuten/rakutenai-7b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "sarvamai/sarvam-m"
+        name: ""
+        models_dev_matched: false
+      - id: "snowflake/arctic-embed-l"
+        name: ""
+        models_dev_matched: false
+      - id: "speakleash/bielik-11b-v2.3-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "speakleash/bielik-11b-v2.6-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "stepfun-ai/step-3.5-flash"
+        name: ""
+        models_dev_matched: false
+      - id: "stockmark/stockmark-2-100b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "thudm/chatglm3-6b"
+        name: ""
+        models_dev_matched: false
+      - id: "tiiuae/falcon3-7b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "tokyotech-llm/llama-3-swallow-70b-instruct-v0.1"
+        name: ""
+        models_dev_matched: false
+      - id: "upstage/solar-10.7b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "utter-project/eurollm-9b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "writer/palmyra-creative-122b"
+        name: ""
+        models_dev_matched: false
+      - id: "writer/palmyra-fin-70b-32k"
+        name: ""
+        models_dev_matched: false
+      - id: "writer/palmyra-med-70b"
+        name: ""
+        models_dev_matched: false
+      - id: "writer/palmyra-med-70b-32k"
+        name: ""
+        models_dev_matched: false
+      - id: "yentinglin/llama-3-taiwan-70b-instruct"
+        name: ""
+        models_dev_matched: false
+      - id: "z-ai/glm4.7"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "z-ai/glm4.7"
+        models_dev_provider: "nvidia"
+        models_dev_name: "GLM-4.7"
+        models_dev_family: "glm"
+        models_dev_context: 204800
+      - id: "z-ai/glm5"
+        name: ""
+        models_dev_matched: true
+        models_dev_id: "z-ai/glm5"
+        models_dev_provider: "nvidia"
+        models_dev_name: "GLM5"
+        models_dev_family: "glm"
+        models_dev_context: 202752
+      - id: "zyphra/zamba2-7b-instruct"
+        name: ""
+        models_dev_matched: false
+  ollama:
+    status: "ok"
+    endpoint: "http://localhost:11434/api/tags"
+    model_count: 11
+    models:
+      - id: "qwen3:4b"
+        name: "qwen3:4b"
+        models_dev_matched: false
+      - id: "kimi-k2-thinking:cloud"
+        name: "kimi-k2-thinking:cloud"
+        models_dev_matched: true
+        models_dev_id: "kimi-k2-thinking"
+        models_dev_provider: "alibaba-cn"
+        models_dev_name: "Moonshot Kimi K2 Thinking"
+        models_dev_family: "kimi"
+        models_dev_context: 262144
+      - id: "deepseek-v3.2:cloud"
+        name: "deepseek-v3.2:cloud"
+        models_dev_matched: true
+        models_dev_id: "deepseek-v3.2"
+        models_dev_provider: "azure"
+        models_dev_name: "DeepSeek-V3.2"
+        models_dev_family: "deepseek"
+        models_dev_context: 128000
+      - id: "glm-4.6:cloud"
+        name: "glm-4.6:cloud"
+        models_dev_matched: true
+        models_dev_id: "glm-4.6"
+        models_dev_provider: "helicone"
+        models_dev_name: "Zai GLM-4.6"
+        models_dev_family: "glm"
+        models_dev_context: 204800
+      - id: "minimax-m2:cloud"
+        name: "minimax-m2:cloud"
+        models_dev_matched: true
+        models_dev_id: "minimax-m2"
+        models_dev_provider: "cortecs"
+        models_dev_name: "MiniMax-M2"
+        models_dev_family: "minimax"
+        models_dev_context: 400000
+      - id: "glm-4.7:cloud"
+        name: "glm-4.7:cloud"
+        models_dev_matched: true
+        models_dev_id: "glm-4.7"
+        models_dev_provider: "zai-coding-plan"
+        models_dev_name: "GLM-4.7"
+        models_dev_family: "glm"
+        models_dev_context: 204800
+      - id: "qwen3.5:cloud"
+        name: "qwen3.5:cloud"
+        models_dev_matched: false
+      - id: "kimi-k2.5:cloud"
+        name: "kimi-k2.5:cloud"
+        models_dev_matched: true
+        models_dev_id: "kimi-k2.5"
+        models_dev_provider: "alibaba-cn"
+        models_dev_name: "Moonshot Kimi K2.5"
+        models_dev_family: "kimi"
+        models_dev_context: 262144
+      - id: "minimax-m2.5:cloud"
+        name: "minimax-m2.5:cloud"
+        models_dev_matched: true
+        models_dev_id: "minimax-m2.5"
+        models_dev_provider: "opencode-go"
+        models_dev_name: "MiniMax M2.5"
+        models_dev_family: "minimax"
+        models_dev_context: 204800
+      - id: "qwen3-coder-next:cloud"
+        name: "qwen3-coder-next:cloud"
+        models_dev_matched: true
+        models_dev_id: "qwen3-coder-next"
+        models_dev_provider: "ollama-cloud"
+        models_dev_name: "qwen3-coder-next"
+        models_dev_family: "qwen"
+        models_dev_context: 262144
+      - id: "glm-5:cloud"
+        name: "glm-5:cloud"
+        models_dev_matched: true
+        models_dev_id: "glm-5"
+        models_dev_provider: "opencode-go"
+        models_dev_name: "GLM-5"
+        models_dev_family: "glm"
+        models_dev_context: 204800
+  openrouter:
+    status: "ok"
+    endpoint: "https://openrouter.ai/api/v1/models"
+    free_only: true
+    model_count: 25
+    models:
+      - id: "openrouter/free"
+        name: "Free Models Router"
+        context_length: 200000
+        models_dev_matched: false
+      - id: "stepfun/step-3.5-flash:free"
+        name: "StepFun: Step 3.5 Flash (free)"
+        context_length: 256000
+        models_dev_matched: true
+        models_dev_id: "stepfun/step-3.5-flash:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "StepFun: Step 3.5 Flash (free)"
+        models_dev_family: ""
+        models_dev_context: 256000
+      - id: "arcee-ai/trinity-large-preview:free"
+        name: "Arcee AI: Trinity Large Preview (free)"
+        context_length: 131000
+        models_dev_matched: true
+        models_dev_id: "arcee-ai/trinity-large-preview:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Arcee AI: Trinity Large Preview (free)"
+        models_dev_family: ""
+        models_dev_context: 131000
+      - id: "liquid/lfm-2.5-1.2b-thinking:free"
+        name: "LiquidAI: LFM2.5-1.2B-Thinking (free)"
+        context_length: 32768
+        models_dev_matched: true
+        models_dev_id: "liquid/lfm-2.5-1.2b-thinking:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "LiquidAI: LFM2.5-1.2B-Thinking (free)"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "liquid/lfm-2.5-1.2b-instruct:free"
+        name: "LiquidAI: LFM2.5-1.2B-Instruct (free)"
+        context_length: 32768
+        models_dev_matched: true
+        models_dev_id: "liquid/lfm-2.5-1.2b-instruct:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "LiquidAI: LFM2.5-1.2B-Instruct (free)"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "nvidia/nemotron-3-nano-30b-a3b:free"
+        name: "NVIDIA: Nemotron 3 Nano 30B A3B (free)"
+        context_length: 256000
+        models_dev_matched: true
+        models_dev_id: "nvidia/nemotron-3-nano-30b-a3b:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Nemotron 3 Nano 30B A3B (free)"
+        models_dev_family: ""
+        models_dev_context: 256000
+      - id: "arcee-ai/trinity-mini:free"
+        name: "Arcee AI: Trinity Mini (free)"
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "arcee-ai/trinity-mini:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Arcee AI: Trinity Mini (free)"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "nvidia/nemotron-nano-12b-v2-vl:free"
+        name: "NVIDIA: Nemotron Nano 12B 2 VL (free)"
+        context_length: 128000
+        models_dev_matched: true
+        models_dev_id: "nvidia/nemotron-nano-12b-v2-vl:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Nemotron Nano 12B 2 VL (free)"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "qwen/qwen3-next-80b-a3b-instruct:free"
+        name: "Qwen: Qwen3 Next 80B A3B Instruct (free)"
+        context_length: 262144
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3-next-80b-a3b-instruct:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: Qwen3 Next 80B A3B Instruct (free)"
+        models_dev_family: ""
+        models_dev_context: 262144
+      - id: "nvidia/nemotron-nano-9b-v2:free"
+        name: "NVIDIA: Nemotron Nano 9B V2 (free)"
+        context_length: 128000
+        models_dev_matched: true
+        models_dev_id: "nvidia/nemotron-nano-9b-v2:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "NVIDIA: Nemotron Nano 9B V2 (free)"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "openai/gpt-oss-120b:free"
+        name: "OpenAI: gpt-oss-120b (free)"
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-120b:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "OpenAI: gpt-oss-120b (free)"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "openai/gpt-oss-20b:free"
+        name: "OpenAI: gpt-oss-20b (free)"
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "openai/gpt-oss-20b:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "OpenAI: gpt-oss-20b (free)"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "z-ai/glm-4.5-air:free"
+        name: "Z.ai: GLM 4.5 Air (free)"
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "z-ai/glm-4.5-air:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Z.ai: GLM 4.5 Air (free)"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "qwen/qwen3-coder:free"
+        name: "Qwen: Qwen3 Coder 480B A35B (free)"
+        context_length: 262000
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3-coder:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: Qwen3 Coder 480B A35B (free)"
+        models_dev_family: ""
+        models_dev_context: 262000
+      - id: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free"
+        name: "Venice: Uncensored (free)"
+        context_length: 32768
+        models_dev_matched: true
+        models_dev_id: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Venice: Uncensored (free)"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "google/gemma-3n-e2b-it:free"
+        name: "Google: Gemma 3n 2B (free)"
+        context_length: 8192
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3n-e2b-it:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3n 2B (free)"
+        models_dev_family: ""
+        models_dev_context: 8192
+      - id: "google/gemma-3n-e4b-it:free"
+        name: "Google: Gemma 3n 4B (free)"
+        context_length: 8192
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3n-e4b-it:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3n 4B (free)"
+        models_dev_family: ""
+        models_dev_context: 8192
+      - id: "qwen/qwen3-4b:free"
+        name: "Qwen: Qwen3 4B (free)"
+        context_length: 40960
+        models_dev_matched: true
+        models_dev_id: "qwen/qwen3-4b:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Qwen: Qwen3 4B (free)"
+        models_dev_family: ""
+        models_dev_context: 40960
+      - id: "mistralai/mistral-small-3.1-24b-instruct:free"
+        name: "Mistral: Mistral Small 3.1 24B (free)"
+        context_length: 128000
+        models_dev_matched: true
+        models_dev_id: "mistralai/mistral-small-3.1-24b-instruct:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Mistral: Mistral Small 3.1 24B (free)"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "google/gemma-3-4b-it:free"
+        name: "Google: Gemma 3 4B (free)"
+        context_length: 32768
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3-4b-it:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3 4B (free)"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "google/gemma-3-12b-it:free"
+        name: "Google: Gemma 3 12B (free)"
+        context_length: 32768
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3-12b-it:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3 12B (free)"
+        models_dev_family: ""
+        models_dev_context: 32768
+      - id: "google/gemma-3-27b-it:free"
+        name: "Google: Gemma 3 27B (free)"
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "google/gemma-3-27b-it:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Google: Gemma 3 27B (free)"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "meta-llama/llama-3.3-70b-instruct:free"
+        name: "Meta: Llama 3.3 70B Instruct (free)"
+        context_length: 128000
+        models_dev_matched: true
+        models_dev_id: "meta-llama/llama-3.3-70b-instruct:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Meta: Llama 3.3 70B Instruct (free)"
+        models_dev_family: ""
+        models_dev_context: 128000
+      - id: "meta-llama/llama-3.2-3b-instruct:free"
+        name: "Meta: Llama 3.2 3B Instruct (free)"
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "meta-llama/llama-3.2-3b-instruct:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Meta: Llama 3.2 3B Instruct (free)"
+        models_dev_family: ""
+        models_dev_context: 131072
+      - id: "nousresearch/hermes-3-llama-3.1-405b:free"
+        name: "Nous: Hermes 3 405B Instruct (free)"
+        context_length: 131072
+        models_dev_matched: true
+        models_dev_id: "nousresearch/hermes-3-llama-3.1-405b:free"
+        models_dev_provider: "kilo"
+        models_dev_name: "Nous: Hermes 3 405B Instruct (free)"
+        models_dev_family: ""
+        models_dev_context: 131072
+  replicate:
+    status: "ok"
+    endpoint: "https://api.replicate.com/v1/models"
+    model_count: 25
+    models:
+      - id: "ace-step-1.5"
+        name: "ace-step-1.5"
+        models_dev_matched: false
+      - id: "qwen-image-2-pro"
+        name: "qwen-image-2-pro"
+        models_dev_matched: false
+      - id: "qwen-image-2"
+        name: "qwen-image-2"
+        models_dev_matched: false
+      - id: "video-translate"
+        name: "video-translate"
+        models_dev_matched: false
+      - id: "kidstable-illustrator"
+        name: "kidstable-illustrator"
+        models_dev_matched: false
+      - id: "deepseek-v3"
+        name: "deepseek-v3"
+        models_dev_matched: true
+        models_dev_id: "deepseek-v3"
+        models_dev_provider: "alibaba-cn"
+        models_dev_name: "DeepSeek V3"
+        models_dev_family: "deepseek"
+        models_dev_context: 65536
+      - id: "avatar-iv"
+        name: "avatar-iv"
+        models_dev_matched: false
+      - id: "p-video"
+        name: "p-video"
+        models_dev_matched: false
+      - id: "gpt-oss-120b-fast"
+        name: "gpt-oss-120b-fast"
+        models_dev_matched: false
+      - id: "ultimate_rvc"
+        name: "ultimate_rvc"
+        models_dev_matched: false
+      - id: "qwenasr"
+        name: "qwenasr"
+        models_dev_matched: false
+      - id: "music-2.5"
+        name: "music-2.5"
+        models_dev_matched: false
+      - id: "deepseek-v3.1"
+        name: "deepseek-v3.1"
+        models_dev_matched: true
+        models_dev_id: "deepseek-v3.1"
+        models_dev_provider: "azure"
+        models_dev_name: "DeepSeek-V3.1"
+        models_dev_family: "deepseek"
+        models_dev_context: 131072
+      - id: "kimi-k2-thinking"
+        name: "kimi-k2-thinking"
+        models_dev_matched: true
+        models_dev_id: "kimi-k2-thinking"
+        models_dev_provider: "alibaba-cn"
+        models_dev_name: "Moonshot Kimi K2 Thinking"
+        models_dev_family: "kimi"
+        models_dev_context: 262144
+      - id: "gpt-oss-120b"
+        name: "gpt-oss-120b"
+        models_dev_matched: true
+        models_dev_id: "gpt-oss-120b"
+        models_dev_provider: "cortecs"
+        models_dev_name: "GPT Oss 120b"
+        models_dev_family: "gpt-oss"
+        models_dev_context: 128000
+      - id: "grok-4"
+        name: "grok-4"
+        models_dev_matched: true
+        models_dev_id: "grok-4"
+        models_dev_provider: "xai"
+        models_dev_name: "Grok 4"
+        models_dev_family: "grok"
+        models_dev_context: 256000
+      - id: "deepseek-r1"
+        name: "deepseek-r1"
+        models_dev_matched: true
+        models_dev_id: "deepseek-r1"
+        models_dev_provider: "alibaba-cn"
+        models_dev_name: "DeepSeek R1"
+        models_dev_family: "deepseek-thinking"
+        models_dev_context: 131072
+      - id: "llama-4-maverick-instruct"
+        name: "llama-4-maverick-instruct"
+        models_dev_matched: false
+      - id: "gpt-oss-20b"
+        name: "gpt-oss-20b"
+        models_dev_matched: true
+        models_dev_id: "gpt-oss-20b"
+        models_dev_provider: "helicone"
+        models_dev_name: "OpenAI GPT-OSS 20b"
+        models_dev_family: "gpt-oss"
+        models_dev_context: 131072
+      - id: "llama-4-scout-instruct"
+        name: "llama-4-scout-instruct"
+        models_dev_matched: false
+      - id: "meta-llama-3.1-405b-instruct"
+        name: "meta-llama-3.1-405b-instruct"
+        models_dev_matched: true
+        models_dev_id: "meta-llama-3.1-405b-instruct"
+        models_dev_provider: "azure"
+        models_dev_name: "Meta-Llama-3.1-405B-Instruct"
+        models_dev_family: "llama"
+        models_dev_context: 128000
+      - id: "qwen3-235b-a22b-instruct-2507"
+        name: "qwen3-235b-a22b-instruct-2507"
+        models_dev_matched: true
+        models_dev_id: "qwen3-235b-a22b-instruct-2507"
+        models_dev_provider: "venice"
+        models_dev_name: "Qwen 3 235B A22B Instruct 2507"
+        models_dev_family: "qwen"
+        models_dev_context: 128000
+      - id: "voice-cloning-create-dataset-public"
+        name: "voice-cloning-create-dataset-public"
+        models_dev_matched: false
+      - id: "map-anything-vggt-1b"
+        name: "map-anything-vggt-1b"
+        models_dev_matched: false
+      - id: "stable-diffusion"
+        name: "stable-diffusion"
+        models_dev_matched: false
+  tavily:
+    status: "unsupported"
+    reason: "No standard public model-list endpoint tied to this env key."
+    model_count: 0
+    models:

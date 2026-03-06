@@ -157,6 +157,33 @@ From [APEX Testing](https://www.apex-testing.org/) — an agentic coding benchma
 
 ---
 
+## Summarization Model Guidance
+
+When the task is summarization (papers, long markdown, search snippets, technical reports), prioritize:
+
+- **Context window headroom:** target at least 2x expected prompt size
+- **Stability under load:** prefer models with fewer transient 429s in your provider
+- **Output consistency:** prefer models that return direct `content` (not reasoning-only partials)
+- **Cost tier constraints:** if free-tier only, pin a concrete free model and live-ping it before use
+
+Recommended process:
+
+1. List candidate models for your provider/tier.
+2. Filter by context limit and pricing constraints.
+3. Live-ping each candidate with a trivial prompt.
+4. Run a small summarization smoke test.
+5. Run one realistic long-context test.
+6. Pin the winner in config (avoid router aliases for repeatable behavior).
+
+---
+
+## Provider Model Inventory Script
+
+Use `~/ai/skills/model-selection/scripts/fetch_provider_models.py` when you need a current provider-by-provider model inventory (cross-referenced with `models.dev`) from keys present in `~/.envrc`.
+For invocation and options, use the script help: `python3 ~/ai/skills/model-selection/scripts/fetch_provider_models.py --help`.
+
+---
+
 ## Local Models
 
 When considering local/deployed models (Ollama, llama.cpp, etc.), use **[llmfit](https://github.com/sweepai/llmfit)** to check compatibility and feasibility before committing to a model. `llmfit` benchmarks models against your hardware and estimates:

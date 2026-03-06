@@ -100,31 +100,48 @@ When using subagents, the main agent becomes a **coordinator**:
 
 ## 1. Operational Lifecycle
 
-### Subagents Are Synchronous (NOT Background Processes)
+### Subagents Support Sync and Async Task Modes
 
-**CRITICAL**: Subagent task calls in opencode are **blocking, synchronous operations** — NOT async background processes.
+**CRITICAL**: `task` supports both execution modes. Choose mode intentionally based on coordination needs.
 
-**Correct Workflow:**
+| Mode | Behavior | Use when |
+|------|----------|----------|
+| **sync** | Blocking call; returns after subagent finishes turn | You need result before proceeding |
+| **async** | Non-blocking call; returns immediately with running status + `task_id` | You want main agent work to continue while subagent runs |
 
-1. **Dispatch**: Call `task` with detailed prompt → **blocks until subagent completes**
-2. **Subagent returns**: Subagent enters idle state when it believes task is done
-3. **Review transcript**: Use `reading-transcripts` skill to read subagent session (`sessionID`)
-4. **Review work**: Use `git diff` to verify actual changes made
-5. **Decision point**:
-   - ✅ Work complete → Summarize, commit, mark todo complete
-   - ❌ Work insufficient → Resume same `task_id` with corrective instructions
-6. **Iterate**: Repeat review → resume cycle until satisfied
+**Common guarantees (both modes):**
+
+- Child session is registered in the normal session tree and is live-viewable from TUI session navigation (`Ctrl+X`).
+- Child transcript is the source of truth for what happened.
+- Same `task_id` can be resumed for corrective follow-up.
+- Final outcome is reviewed via transcript + git diff, not by trusting claims.
+
+**Sync Workflow (blocking):**
+
+1. Dispatch `task` in `sync` mode with detailed acceptance criteria.
+2. Wait for return payload and session completion.
+3. Review transcript and git diff.
+4. Decide: complete or resume same `task_id`.
+
+**Async Workflow (non-blocking):**
+
+1. Dispatch `task` in `async` mode; capture `task_id`.
+2. Continue coordinator work immediately.
+3. Monitor progress via:
+   - Child session in TUI navigation (`Ctrl+X`) for live details
+   - Parent-session callback updates (heartbeat + terminal completed/failed callback)
+4. On terminal callback, review transcript and git diff.
+5. Decide: complete or resume same `task_id`.
 
 **What This Means:**
 
-- **No fire-and-forget**: You cannot dispatch and forget. Each subagent requires explicit turn-by-turn review.
-- **No manual tracking files**: Don't log agents to `active-agents.md` or similar. The `task` tool handles session tracking.
-- **No background polling**: Don't periodically check `sessions_list`. Subagents block until done.
-- **Exception**: If `background_agent` tool exists, it has callbacks that notify you when done — but this is a different tool.
+- **No manual tracking files**: Do not maintain `active-agents.md` or similar ledgers for live task state.
+- **No custom session plumbing**: Use native session tree navigation and callback updates from `task`.
+- **No blind fire-and-forget**: Async removes blocking, not accountability. Every child still requires review at completion.
 
 ### Session Review Protocol
 
-After every subagent completion:
+After every subagent terminal event (sync return or async terminal callback):
 
 1. **Export transcript**: `opencode export <sessionID>` or use `reading-transcripts` skill
 2. **Read full output**: Understand what subagent attempted, what succeeded, what failed
@@ -233,13 +250,13 @@ Task A: Fix tests in module X
 Task B: Fix tests in module Y
 Task C: Update docs
 
-# Dispatch in parallel (if different providers/models)
-task(prompt="Fix tests in module X...")  # sessionID_A
-task(prompt="Fix tests in module Y...")  # sessionID_B
-task(prompt="Update docs...")            # sessionID_C
+# Dispatch in parallel with async mode (if different providers/models)
+task(mode="async", prompt="Fix tests in module X...")  # sessionID_A
+task(mode="async", prompt="Fix tests in module Y...")  # sessionID_B
+task(mode="async", prompt="Update docs...")            # sessionID_C
 
-# Wait for all to complete (blocking)
-# Then review each:
+# Continue coordinator work.
+# As terminal callbacks arrive, review each session:
 reading-transcripts(sessionID_A)
 git diff  # review A's changes
 reading-transcripts(sessionID_B)
@@ -255,12 +272,13 @@ git diff  # review C's changes
 ## 3. Red Flags - STOP and Redirect
 
 - **NEVER:**
-  - Treat subagents as async/background processes
+  - Assume `task` is always blocking; pick mode (`sync` or `async`) explicitly
+  - Treat async mode as "done automatically" without terminal review
   - Skip transcript review after subagent completion
   - Skip git diff verification of actual changes
   - Spawn new subagent instead of resuming same `task_id` when work is insufficient
   - Manually track agents in files (active-agents.md, etc.) — use `task` tool tracking
-  - Poll `sessions_list` for heartbeat checks — subagents block until done
+  - Build custom heartbeat plumbing when native callback + TUI session visibility is sufficient
   - Dispatch multiple implementation subagents in parallel (causes conflicts)
   - Make subagent read plan file (provide full text in prompt instead)
   - Skip scene-setting context in prompts

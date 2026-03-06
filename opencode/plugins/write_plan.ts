@@ -33,6 +33,8 @@ function formatDateTime(): string {
 }
 
 export const WritePlanPlugin: Plugin = async () => {
+  if (!isPluginEnabled("write_plan")) return {};
+
   return {
     tool: {
       write_plan: tool({

@@ -9,6 +9,8 @@ const PARSER_SCRIPT =
 const PREVIEW_LINES = 30;
 
 export const ReadTranscriptPlugin: Plugin = async ({ $, client }) => {
+  if (!isPluginEnabled("read-transcript")) return {};
+
   return {
     tool: {
       read_transcript: tool({

@@ -45,10 +45,6 @@
     "mistralai/mistral-nemotron": {
       "name": "mistral-nemotron"
     },
-    "mistralai/mistral-small-24b-instruct": {
-      "name": "mistral-small-24b-instruct",
-      "tool_call": false
-    },
     "moonshotai/kimi-k2.5": {
       "name": "kimi-k2.5"
     },

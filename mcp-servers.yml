@@ -32,25 +32,27 @@ common:
       - "@fastmcp-me/cut-copy-paste-mcp"
     enabled: true
 
-# Harness-specific MCP servers (optional)
-harness_specific:
-  opencode:
-    tavily-remote:
-      description: "Web search via Tavily API"
-      type: "remote"
-      url: "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
-      enabled: true
+  deepwiki-mcp:
+    description: "Fetch documentation from DeepWiki (official server)"
+    type: "remote"
+    url: "https://mcp.deepwiki.com/mcp"
+    enabled: true
 
-  codex:
-    kindly:
-      description: "Web search via Kindly"
-      command: "uvx"
-      args:
-        - "--from"
-        - "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server"
-        - "kindly-web-search-mcp-server"
-        - "start-mcp-server"
-      enabled: true
+  tavily-remote:
+    description: "Web search via Tavily API"
+    type: "remote"
+    url: "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
+    enabled: true
+
+  kindly:
+    description: "Web search via Kindly"
+    command: "uvx"
+    args:
+      - "--from"
+      - "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server"
+      - "kindly-web-search-mcp-server"
+      - "start-mcp-server"
+    enabled: true
 
 # Harnesses to sync (set enabled: false to skip a harness)
 harnesses:
@@ -59,25 +61,24 @@ harnesses:
     config_path: "~/ai/opencode/opencode.json"
     format: "json"
     json_path: "mcp"  # JSON path within the config
-    
+
   codex:
     enabled: true
     config_path: "~/.codex/config.toml"
     format: "toml"
     toml_section: "mcp_servers"
-    
+
   amp:
     enabled: true
     config_path: "~/.config/amp/settings.json"
     format: "json"
     json_path: "amp.mcpServers"
-    
+
   claude:
-    enabled: false  # No MCP config file exists
-    config_path: "~/.claude/mcp.json"
+    enabled: true
+    config_path: "~/.claude.json"
     format: "json"
-    
-  kilo:
-    enabled: false  # No MCP config file exists
-    config_path: "~/.config/kilo/mcp.json"
-    format: "json"
+    json_path: "mcpServers"
+
+# Kilo reads from ~/.opencode/opencode.json which is symlinked to ~/ai/opencode/opencode.json
+# No separate harness needed

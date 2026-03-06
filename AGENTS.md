@@ -116,6 +116,12 @@ Do not summarize what was done. The git commit message is the summary — refer 
 
 If none of the above apply, a one-line confirmation is sufficient. A changelog in chat is noise.
 
+## Lattices
+
+Note that `lattice` does NOT mean lattices related to cryptography in any meaningful sense.
+A lattice, by definition, is a free $R$-module of finite rank with a (usually nondegenerate) symmetric bilinear form.
+This may be definite or indefinite, and is NOT assumed to be positive-definite, embedding in a particular vector space, to have a "basis", to be unimodular, etc.
+
 ---
 
 ## Anchor: Epistemic Integrity (Restated)
