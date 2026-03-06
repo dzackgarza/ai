@@ -153,6 +153,4 @@ shadow-test: shadow-test-websearch shadow-test-webfetch
 
 # Consolidated callback interaction check across task + sleep + async_command
 callback-integration:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    direnv exec {{shadow_env_dir}} bash tests/oneshot/callback-integration.sh
+    bun test tests/unit/callback-integration.test.ts
