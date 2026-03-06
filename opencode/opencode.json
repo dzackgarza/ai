@@ -95,20 +95,6 @@
     "deepwiki-mcp": {
       "type": "remote",
       "url": "https://mcp.deepwiki.com/mcp"
-    },
-    "tavily-remote": {
-      "type": "remote",
-      "url": "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
-    },
-    "kindly": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "--from",
-        "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server",
-        "kindly-web-search-mcp-server",
-        "start-mcp-server"
-      ]
     }
   },
   "model": "opencode/minimax-m2.5-free",
@@ -121,11 +107,10 @@
     "opencode-anthropic-auth@latest",
     "opencode-qwencode-auth@latest",
     "opencode-openai-codex-auth@latest",
+    "@rama_nigg/open-cursor@latest",
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
-    "@ramtinj95/opencode-tokenscope@latest",
-    "file:///home/dzack/opencode-plugins/improved-stop-hooks/src/index.ts",
-    "file:///home/dzack/opencode-plugins/improved-task/src/index.ts"
+    "@ramtinj95/opencode-tokenscope@latest"
   ],
   "permission": {
     "serena_activate_project": "allow",
@@ -175,6 +160,58 @@
         "claude-opus-4-20250514",
         "claude-sonnet-4-0",
         "claude-sonnet-4-20250514"
+      ]
+    },
+    "cursor-acp": {
+      "name": "Cursor ACP",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:32124/v1"
+      },
+      "models": {
+        "auto": {
+          "name": "Cursor Auto"
+        }
+      },
+      "blacklist": [
+        "composer-1",
+        "composer-1.5",
+        "gemini-3.1-pro",
+        "gemini-3-flash",
+        "gemini-3-pro",
+        "gpt-5.1-codex-max",
+        "gpt-5.1-codex-max-high",
+        "gpt-5.1-codex-mini",
+        "gpt-5.1-high",
+        "gpt-5.2",
+        "gpt-5.2-codex",
+        "gpt-5.2-codex-fast",
+        "gpt-5.2-codex-high",
+        "gpt-5.2-codex-high-fast",
+        "gpt-5.2-codex-low",
+        "gpt-5.2-codex-low-fast",
+        "gpt-5.2-codex-xhigh",
+        "gpt-5.2-codex-xhigh-fast",
+        "gpt-5.2-high",
+        "gpt-5.3-codex",
+        "gpt-5.3-codex-fast",
+        "gpt-5.3-codex-high",
+        "gpt-5.3-codex-high-fast",
+        "gpt-5.3-codex-low",
+        "gpt-5.3-codex-low-fast",
+        "gpt-5.3-codex-spark-preview",
+        "gpt-5.3-codex-xhigh",
+        "gpt-5.3-codex-xhigh-fast",
+        "grok",
+        "kimi-k2.5",
+        "opus-4.5",
+        "opus-4.5-thinking",
+        "opus-4.6",
+        "opus-4.6-thinking",
+        "sonnet-4.5",
+        "sonnet-4.5-thinking",
+        "sonnet-4.6",
+        "sonnet-4.6-thinking"
       ]
     },
     "github-copilot": {
@@ -698,8 +735,47 @@
     },
     "opencode": {
       "blacklist": [
-        "gpt-5-nano"
-      ]
+        "claude-3-5-haiku",
+        "claude-haiku-4-5",
+        "claude-opus-4-1",
+        "claude-opus-4-5",
+        "claude-opus-4-6",
+        "claude-sonnet-4",
+        "claude-sonnet-4-5",
+        "claude-sonnet-4-6",
+        "gemini-3-flash",
+        "gemini-3-pro",
+        "gemini-3.1-pro",
+        "glm-4.6",
+        "glm-4.7",
+        "glm-5",
+        "gpt-5",
+        "gpt-5-codex",
+        "gpt-5.1",
+        "gpt-5.1-codex",
+        "gpt-5.1-codex-max",
+        "gpt-5.1-codex-mini",
+        "gpt-5.2",
+        "gpt-5.2-codex",
+        "gpt-5.3-codex",
+        "gpt-5.3-codex-spark",
+        "gpt-5.4",
+        "gpt-5.4-pro",
+        "kimi-k2.5",
+        "minimax-m2.1",
+        "minimax-m2.5"
+      ],
+      "models": {
+        "big-pickle": {
+          "name": "Big Pickle"
+        },
+        "gpt-5-nano": {
+          "name": "GPT-5 Nano"
+        },
+        "minimax-m2.5-free": {
+          "name": "MiniMax M2.5 Free"
+        }
+      }
     },
     "openrouter": {
       "name": "OpenRouter",
@@ -932,7 +1008,7 @@
     "(Lattice) Build": {
       "description": "Top-level agent for managing all lattice-related work",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
       "permission": {
         "todoread": "allow",
@@ -1034,7 +1110,7 @@
     "Build (Custom)": {
       "description": "Primary build orchestrator for approved plans",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}",
       "permission": {
         "todoread": "allow",
@@ -1136,7 +1212,7 @@
     "Interactive": {
       "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
       "mode": "primary",
-      "model": "opencode/minimax-m2.5-free",
+      "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
       "permission": {
         "todoread": "allow",
@@ -1337,7 +1413,7 @@
     "Minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
-      "model": "openrouter/stepfun/step-3.5-flash:free",
+      "model": "cursor-acp/auto",
       "permission": {
         "bash": "allow",
         "task": "allow",
@@ -1361,7 +1437,7 @@
     "Plan (Custom)": {
       "description": "Primary planning agent for executable implementation plans",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "permission": {
         "todoread": "allow",
         "todowrite": "allow",
@@ -1474,7 +1550,7 @@
     "Ralph Planner": {
       "description": "Collaborative loop builder - drafts background, setup, tasks, and testing for Ralph loops",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}",
       "permission": {
         "todoread": "allow",
@@ -1587,7 +1663,7 @@
     "Repository Steward": {
       "description": "Repo steward - autonomous repository maintenance and optimization",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
       "permission": {
         "todoread": "allow",
@@ -1700,7 +1776,7 @@
     "Zotero Librarian": {
       "description": "Zotero librarian - manages and maintains Zotero reference libraries",
       "mode": "primary",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
       "permission": {
         "task": "allow",
@@ -1797,7 +1873,7 @@
       }
     },
     "build": {
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "disable": true,
       "permission": {
         "todoread": "allow",
@@ -1897,10 +1973,10 @@
       }
     },
     "compaction": {
-      "model": "nvidia/moonshotai/kimi-k2.5"
+      "model": "cursor-acp/auto"
     },
     "plan": {
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "cursor-acp/auto",
       "disable": true,
       "permission": {
         "todoread": "allow",
@@ -2011,15 +2087,15 @@
       }
     },
     "summary": {
-      "model": "nvidia/moonshotai/kimi-k2.5"
+      "model": "cursor-acp/auto"
     },
     "title": {
-      "model": "nvidia/moonshotai/kimi-k2.5"
+      "model": "cursor-acp/auto"
     },
     "(Lattice) Researcher: Documentation": {
       "description": "Use when researching obscure lattice algorithms and software (indefinite lattices focus). Ask 'Search arXiv and GitHub for [lattice algorithm]' or 'Find existing implementations of [lattice concept]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -2121,7 +2197,7 @@
     "(Lattice) Reviewer: Checklist Completionist": {
       "description": "Use when cross-referencing checklists against canonical source docs. Ask 'Cross-reference [checklist] against [canonical doc]' or 'Ensure complete account of all provably present methods'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -2223,7 +2299,7 @@
     "(Lattice) Reviewer: Documentation Librarian": {
       "description": "Use when organizing documentation. Ask 'Organize docs folder for [project]' or 'Ensure local copies of upstream docs are available' or 'Fact-check [doc] against canonical sources'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -2325,7 +2401,7 @@
     "(Lattice) Reviewer: Test Coverage": {
       "description": "Use when auditing document-to-test coverage. Ask 'Audit document-to-test coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -2427,7 +2503,7 @@
     "(Lattice) Writer: Algorithm Porter": {
       "description": "Use when porting algorithms from existing implementations. Ask 'Determine algorithms used in [implementation]' or 'Rewrite [algorithm] or wrap complex external objects'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -2601,7 +2677,7 @@
     "(Lattice) Writer: Interface Designer": {
       "description": "Use when constructing union checklists. Ask 'Construct union checklist for [lattice interface]' or 'Collect and deduplicate capabilities across all old checklists'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -2775,7 +2851,7 @@
     "(Lattice) Writer: Interface Implementer": {
       "description": "Use when translating union checklists into Python design. Ask 'Translate [union checklist] into ABC Python design' or 'Implement lattice types and concepts under src/'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -2949,7 +3025,7 @@
     "(Lattice) Writer: TDD": {
       "description": "Use when combining existing test methods into unified tests. Ask 'Combine test methods into single new tests for unified Lattice classes' or 'Write TDD tests for [lattice feature]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3138,7 +3214,7 @@
     "(Lattice) Writer: Test Methods": {
       "description": "Use when closing docs-to-tests gaps. Ask 'Write mathematically nontrivial tests for [lattice object]' or 'Create tests for representative lattice objects'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3327,7 +3403,7 @@
     "Researcher: Code Base": {
       "description": "Use when you need to explore the codebase. Finds WHERE files live and HOW code works. Pass features, entry points, or components. Ask 'Find files related to [feature]' or 'Trace how [function] processes data'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3429,7 +3505,7 @@
     "Researcher: Documentation": {
       "description": "Use when synthesizing internal code and external documentation. Ask 'Research documentation for [topic]' or 'Synthesize information from internal code and external sources' or 'Find documentation about [technology]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3531,7 +3607,7 @@
     "Researcher: Repo Explorer": {
       "description": "Use when performing structural and semantic codebase mapping. Ask 'Map the structural dependencies of this repository' or 'Perform semantic codebase analysis using WarpGrep' or 'Explain the overall architecture of this codebase'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3633,7 +3709,7 @@
     "Reviewer: Code": {
       "description": "Use when reviewing code post-implementation. Audits code against Clean Code standards, Design Patterns, correctness, and spec compliance. Flag non-substantive tests and suggest refactoring improvements.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3735,7 +3811,7 @@
     "Reviewer: Plan Contract": {
       "description": "Use when auditing code against project constraints and dominant patterns. Pass the generated code and project rules. Ask 'Audit this code for constraint violations' or 'Find deviations from dominant patterns'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3837,7 +3913,7 @@
     "Reviewer: Plans": {
       "description": "Use when critically auditing USER_SPEC and plans. Pass the spec and plan documents. Ask 'Audit this plan for logical inconsistencies' or 'Check for spec misalignment'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -3939,7 +4015,7 @@
     "Reviewer: Semantic Audit": {
       "description": "Use when performing factual gap analysis between file versions. Pass file versions or code snapshots. Ask 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -4041,7 +4117,7 @@
     "Reviewer: Test Compliance": {
       "description": "Use when auditing tests for compliance with High-Quality Testing Standards. Pass test files or plans. Ask 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -4143,7 +4219,7 @@
     "Writer: Documentation": {
       "description": "Use when writing or updating documentation files. Ask 'Document the current project architecture' or 'Write a README for [feature]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -4317,7 +4393,7 @@
     "Writer: General Code": {
       "description": "Use when writing non-Python code. Pass task descriptions and target file paths in src/. Ask 'Implement [feature] in [language]' or 'Write a function that [description]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -4491,7 +4567,7 @@
     "Writer: Python": {
       "description": "Use when writing Python code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write Python code for [feature]' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -4665,7 +4741,7 @@
     "Writer: Refactorer": {
       "description": "Use when performing safe, structurally-aware code refactoring. Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -4839,7 +4915,7 @@
     "Writer: SageMath": {
       "description": "Use when writing SageMath code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write SageMath code for [feature]' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -5013,7 +5089,7 @@
     "Writer: Tests": {
       "description": "Use when writing new tests following TDD or designing test strategies to improve existing coverage. Can write/edit tests in tests/ and test/ directories only.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -5202,7 +5278,7 @@
     "Writer: TypeScript": {
       "description": "Use when writing TypeScript code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Implement [feature] in TypeScript' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
@@ -5374,12 +5450,12 @@
       "prompt": "{file:/home/dzack/ai/prompts/subagents/typescript_code_writer.md}"
     },
     "explore": {
-      "model": "nvidia/moonshotai/kimi-k2.5"
+      "model": "github-copilot/gpt-5-mini"
     },
     "general": {
       "description": "Override builtin general subagent to use a stable free model.",
       "mode": "subagent",
-      "model": "nvidia/moonshotai/kimi-k2.5",
+      "model": "github-copilot/gpt-5-mini",
       "permission": {
         "task": "deny",
         "todoread": "deny",
