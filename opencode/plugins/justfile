@@ -61,7 +61,7 @@ check: typecheck test compile
 #   just session delete --older-than 7 --dry-run
 #   just session stats
 session *args:
-    bun run ../harness/session-harness.ts {{args}}
+    bun run utilities/harness/session-harness.ts {{args}}
 
 # Isolated local-config harness for shadow-plugin validation
 shadow_test_dir := "/tmp/opencode-shadow-plugin-test"

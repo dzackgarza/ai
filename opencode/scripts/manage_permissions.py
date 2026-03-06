@@ -18,7 +18,7 @@ base_dir = os.path.expanduser("~/.config/opencode")
 skeleton_path = os.path.join(base_dir, "configs", "config_skeleton.json")
 #
 # IMPORTANT:
-# Keep this file aligned with PERMISSION_SPEC.md in this repository.
+# Keep this file aligned with docs/PERMISSION_SPEC.md in this repository.
 # Use the spec as the authority for role boundaries, inheritance layers,
 # recursion controls, and path-isolation rules.
 
@@ -872,7 +872,7 @@ if __name__ == "__main__":
             print(f"  {name} [{tags}]: {len(compiled)} permission keys")
     elif args.apply:
         apply_agents()
-        print("\nNow run build_config.py to compile these changes into opencode.json")
+        print("\nNow run scripts/build_config.py to compile these changes into opencode.json")
     else:
         print("Run with --apply to enforce permissions across agents.")
         print("  --dry-run     Compile and validate without writes")

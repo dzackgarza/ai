@@ -2,7 +2,7 @@
 
 ## Environment
 
-- Harness path: `/home/dzack/ai/opencode/harness`
+- Harness path: `/home/dzack/ai/opencode/plugins/utilities/harness`
 - SDK client mode: `createOpencodeClient(baseUrl)`
 - Test model: `opencode/big-pickle`
 

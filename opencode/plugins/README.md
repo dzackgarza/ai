@@ -34,7 +34,7 @@ just session     # session management CLI (list, delete, stats, etc.)
 | **Introspection** | `introspection.ts` | Active | always on | Custom tool `introspection`: returns the agent's own session ID, message ID, and agent name |
 | **List Sessions** | `list-sessions.ts` | Active | always on | Custom tool `list_sessions`: lists sessions with token counts, models, and duration |
 | **Read Transcript** | `read-transcript.ts` | Active | always on | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
-| **Session Harness (CLI utility)** | `../harness/session-harness.ts` | Active | manual invocation | Session management CLI (list, delete, get, messages, create, stats). Not loaded as a plugin module. |
+| **Session Harness (CLI utility)** | `utilities/harness/session-harness.ts` | Active | manual invocation | Session management CLI (list, delete, get, messages, create, stats). Not loaded as a plugin module. |
 
 ## Killswitches
 
@@ -76,7 +76,11 @@ plugins/
 ├── introspection.ts                # Tool: session metadata self-report
 ├── list-sessions.ts                # Tool: session list with token stats
 ├── read-transcript.ts              # Tool: export + preview session transcript
-└── ../harness/session-harness.ts   # CLI utility: session management (not auto-loaded as plugin)
+├── utilities/
+│   └── harness/
+│       ├── README.md
+│       ├── session-harness.ts      # CLI utility: session management (not auto-loaded as plugin)
+│       └── docs/
 │
 ├── tiers/                          # Tier instruction files (injected by prompt-router)
 │   ├── README.md
@@ -115,7 +119,7 @@ Centralized CLI for managing OpenCode sessions. Exposes the complete session API
 ```bash
 just session <command> [options]
 # or directly:
-bun run ../harness/session-harness.ts <command> [options]
+bun run utilities/harness/session-harness.ts <command> [options]
 ```
 
 **Session Management:**
@@ -202,7 +206,7 @@ just session permission ses_abc123 perm_xyz allow-session
 import { 
   listSessions, deleteSession, getStats,
   sendPrompt, getMessages, createSession 
-} from "../harness/session-harness";
+} from "./utilities/harness/session-harness";
 
 const sessions = await listSessions();
 const stats = await getStats();

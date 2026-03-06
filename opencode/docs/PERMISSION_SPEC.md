@@ -445,7 +445,7 @@ Reviewer output must include:
 
 Policy for changes:
 
-1. Add/modify shared permission behavior in top-level capability rule sets in `manage_permissions.py` (for example `BASH_CAP_*` blocks).
+1. Add/modify shared permission behavior in top-level capability rule sets in `scripts/manage_permissions.py` (for example `BASH_CAP_*` blocks).
 2. Define and compose baseline layers (`ALL_AGENTS_BASELINE`, `PURE_AGENTS_BASELINE`, `SUBAGENTS_BASELINE`, `TOP_LEVEL_AGENTS_BASELINE`).
 3. Compose role profiles from capabilities + baseline layers.
 4. Add path-isolated writer profiles (`src_writer_strict`, `test_writer_strict`, optional `docs_writer_strict`) and map agents by role.
@@ -455,8 +455,8 @@ Policy for changes:
 8. Apply profile updates using script workflow:
 
 ```bash
-python3 manage_permissions.py --apply
-python3 build_config.py
+python3 scripts/manage_permissions.py --apply
+python3 scripts/build_config.py
 ```
 
 Do not rely on direct edits to generated permission blocks in `configs/agents/*.json`, `configs/subagents/*.json`, or compiled `opencode.json`.

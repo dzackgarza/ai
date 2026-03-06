@@ -5,10 +5,10 @@ default:
     @just --list
 
 permissions-apply:
-    python3 manage_permissions.py --apply
+    python3 scripts/manage_permissions.py --apply
 
 config-build:
-    python3 build_config.py
+    python3 scripts/build_config.py
 
 rebuild: permissions-apply config-build
 
@@ -31,7 +31,7 @@ plugins-check:
     cd plugins && just check
 
 harness *args:
-    cd harness && bun run opx {{args}}
+    cd plugins/utilities/harness && bun run opx {{args}}
 
 snapshot-gc:
     bash scripts/maintenance/opencode_gc.sh

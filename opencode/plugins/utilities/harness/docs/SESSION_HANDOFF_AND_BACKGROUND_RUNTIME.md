@@ -44,6 +44,6 @@
 
 - User service unit path: `~/.config/systemd/user/opencode-serve.service`
 - Service env file path: `~/.config/opencode/opencode-serve.env`
-- Harness location: `opencode/harness`
-- Harness command wrapper: `opencode/harness/opx`
-- Validation results: `opencode/harness/docs/VALIDATION_REPORT.md`
+- Harness location: `opencode/plugins/utilities/harness`
+- Harness command wrapper: `opencode/plugins/utilities/harness/opx`
+- Validation results: `opencode/plugins/utilities/harness/docs/VALIDATION_REPORT.md`

@@ -17,7 +17,7 @@ SDK-first CLI for OpenCode session automation against a long-lived `opencode ser
 ## Install and run
 
 ```bash
-cd /home/dzack/ai/opencode/harness
+cd /home/dzack/ai/opencode/plugins/utilities/harness
 bun install
 bun run opx --help
 ```
