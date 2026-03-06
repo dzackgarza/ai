@@ -1,0 +1,31 @@
+# OpenCode workspace recipes
+# Usage: just <recipe>
+
+default:
+    @just --list
+
+permissions-apply:
+    python3 manage_permissions.py --apply
+
+config-build:
+    python3 build_config.py
+
+rebuild: permissions-apply config-build
+
+providers-validate *args="":
+    python3 configs/providers/scripts/validate_models_dev.py {{args}}
+
+openrouter-sync:
+    python3 configs/providers/scripts/sync_openrouter_models.py
+
+providers-debug provider="opencode":
+    python3 configs/providers/scripts/debug_models_dev_provider.py {{provider}}
+
+plugins-check:
+    cd plugins && just check
+
+harness *args:
+    cd harness && bun run opx {{args}}
+
+snapshot-gc:
+    bash scripts/maintenance/opencode_gc.sh

@@ -1,35 +1,33 @@
-# Google Provider Configuration (via Antigravity Auth)
+# Providers
 
-This directory configures the `google` provider, which is uniquely augmented by the `opencode-antigravity-auth` plugin to access internal Google IDE (Antigravity) endpoints alongside standard Gemini CLI developer preview endpoints.
+This directory is the source of truth for provider configs. Keep provider JSON
+files here, keep provider-specific notes beside them, and keep repeatable
+provider maintenance scripts in `scripts/`.
 
-## Model Slugs and Routing Behavior
+## Source Of Truth
 
-The `opencode-antigravity-auth` plugin performs complex quota rotation and model-name aliasing.
+- Provider definitions: `*.json`
+- Provider notes: `notes/`
+- Provider maintenance scripts: `scripts/`
 
-If you use the official plugin documentation, you might see "legacy" model slugs documented with the `antigravity-` prefix (e.g. `antigravity-gemini-3-flash`). To ensure strict adherence to the OpenCode `models.dev` JSON schema and to use the plugin's modern native routing engine, **this configuration deliberately avoids those legacy prefixes.**
+## Canonical Recipes
 
-Instead, we use standard slugs for Gemini and specific proxy slugs for Claude:
+From the repo root:
 
-### 1. Gemini Models
+```bash
+just providers-validate
+just providers-validate google
+just openrouter-sync
+just providers-debug opencode
+```
 
-Use standard schema slugs like `"google/gemini-3-flash-preview"` and `"google/gemini-3.1-pro-preview"`.
+## Placement Rules
 
-The plugin's internal resolver will automatically intercept these and default to routing them through the internal Antigravity endpoint. If your Antigravity quota is exhausted, the plugin automatically falls back to the public Gemini CLI endpoint.
+1. Put durable provider maintenance in `scripts/`.
+2. Put provider-specific operational notes in `notes/`.
+3. Archive ad hoc probes and superseded validation experiments outside this directory.
+4. Edit the provider JSON source files here, then rebuild from the repo root.
 
-### 2. Claude Models (via Google)
+## Special Cases
 
-Google's public API does not host Anthropic's Claude. However, the Antigravity proxy does.
-
-To trick OpenCode into routing a Claude request to the `google` provider, the plugin exposes specific "proxy" aliases prefixed with `gemini-claude-`.
-
-You must use these exact custom slugs:
-
-- `"google/gemini-claude-sonnet-4-6"`
-- `"google/gemini-claude-opus-4-6-thinking"`
-
-The plugin will intercept these, strip the `gemini-` compatibility prefix, and route the request to Claude using your Google credentials. Note: these specific proxy slugs must be injected into the JSON schema during the config build pipeline because they are non-standard.
-
-### Reference
-
-See the plugin's repository and source code for details on the routing fallback logic and the `MODEL_ALIASES` definitions:
-[https://github.com/NoeFabris/opencode-antigravity-auth#readme](https://github.com/NoeFabris/opencode-antigravity-auth#readme)
+- Google Antigravity routing details: `notes/google-provider.md`

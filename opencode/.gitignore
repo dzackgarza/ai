@@ -1,0 +1,12 @@
+node_modules
+package.json
+bun.lock
+.gitignore
+antigravity-accounts.json
+antigravity-accounts.json.*.tmp
+antigravity-signature-cache.json
+antigravity-logs/
+/__pycache__/
+/events.jsonl
+/gc.log
+/subagent.lock
