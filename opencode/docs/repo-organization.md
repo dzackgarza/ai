@@ -12,7 +12,6 @@ sprawl.
 - `PERMISSION_SPEC.md`
 - `opencode.json`
 - `plugins.json`
-- `cc-safety-net.json`
 - `rate-limit-fallback.json`
 - `configs/`
 - `plugins/`
@@ -24,6 +23,7 @@ sprawl.
 - Provider maintenance scripts belong in `configs/providers/scripts/`
 - Provider operational notes belong in `configs/providers/notes/`
 - Provider-specific shims belong in `configs/providers/shims/`
+- Config-adjacent plugin support files like the safety-net config belong in `configs/`
 - Historical subagent migration helpers belong in `configs/subagents/archive/migrations/`
 - Neutral maintenance helpers belong in `scripts/maintenance/`
 - Harness-specific operational notes belong in `harness/docs/`

@@ -21,7 +21,7 @@ install:
     @ln -sf {{repo}}/AGENTS.md ~/.config/AGENTS.md
     @ln -sf {{repo}}/opencode ~/.config/opencode
     @ln -sf {{repo}}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
-    @ln -sf {{repo}}/opencode/cc-safety-net.json ~/.cc-safety-net/config.json
+    @ln -sf {{repo}}/opencode/configs/cc-safety-net.json ~/.cc-safety-net/config.json
     @mkdir -p ~/.cc-safety-net
     # tmux config symlinks
     @ln -sf {{repo}}/dotfiles/tmux.conf ~/.tmux.conf
@@ -51,7 +51,7 @@ install:
     @echo "System prompts:   GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → interactive.md (absolute path)"
     @echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
     @echo "OpenCode:         .opencode/ → ~/.config/opencode"
-    @echo "Safety Net:       cc-safety-net.json → ~/.cc-safety-net/config.json"
+    @echo "Safety Net:       opencode/configs/cc-safety-net.json → ~/.cc-safety-net/config.json"
 
 # Scaffold /var/sandbox/execa/ if not already initialized (idempotent)
 # /var/sandbox/ is a plain dir hosting multiple project repos on demand.
