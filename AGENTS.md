@@ -8,14 +8,16 @@
 2. **Load applicable skills before acting.** Scan all available skills. If one applies, load it. Do not proceed until verified.
 3. **Run at project start:** `serena_activate_project`, then `serena_read_memory`.
 4. **Never write time estimates.** Your calibration is off by orders of magnitude.
+5. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere. This includes documentation: never attempt restate a fact when you can point to the canonical source.
 
 ---
 
 ## Epistemic Integrity
 
-Absence of evidence is not evidence of absence. This is the single most common agent failure mode.
+Absence of evidence is not evidence of absence. Do not extrapolate failures to find or know to assertions of impossibility or non-existence. E.g. integers exist, but you will never find them by throwing darts at the real line.
 
-**When reporting that something was not found, use this format:**
+
+**When reporting that something was _not_ found, use this format:**
 
 ```
 - Searched: [specific sources, URLs, docs, commands run]
@@ -24,6 +26,8 @@ Absence of evidence is not evidence of absence. This is the single most common a
 - Confidence: [High / Medium / Low]
 - Gaps: [what remains unsearched]
 ```
+
+When the search space is small and an epistemic conclusion is necessary, just be exhaustive and broad. 15 greps for specific (guessed) keywords can be less efficient than a simple 'ls' or 'tree'. use this as an aphorism for repeated depth-focused searches compared to fewer breadth-focused searches.
 
 Omitting any field is a rule violation.
 
@@ -127,3 +131,28 @@ This may be definite or indefinite, and is NOT assumed to be positive-definite, 
 ## Anchor: Epistemic Integrity (Restated)
 
 When you find no evidence of something, you MUST use the five-field format from the Epistemic Integrity section above. Every negative finding requires: Searched, Found, Conclusion (labeled as inference), Confidence, Gaps. No exceptions.
+
+---
+
+## Config File Handling
+
+- **Use `jq` for JSON and `yq` for YAML** when reading or querying config files. Never manually parse with grep/head/tail.
+
+- **Never edit JSON or YAML files directly** with edit/patch tools. Instead, use this pattern:
+  1. Read the file into a Python script
+  2. Parse as JSON/YAML
+  3. Modify the object in memory
+  4. Dump back as pretty-printed JSON/YAML
+
+  This prevents indentation issues and syntax errors entirely.
+
+---
+
+## Git Workflow
+
+All work is done in **noisy git repos** with uncommitted changes from others.
+
+- **Never use `git stash`, `git checkout`, or `git restore`.** These operations are destructive and conflict with checkpoint-based workflow.
+- **Always use `git add` and `git commit`** to create checkpoints of your specific changes.
+- Commits are **save-states**, not atomic units of work. It's fine if your commit includes others' uncommitted changes — the point is to checkpoint *your* work.
+- If you need to see what changed, use `git diff`. If you need to verify what's staged, use `git diff --cached`.
