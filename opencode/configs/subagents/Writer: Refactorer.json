@@ -1,7 +1,7 @@
 {
   "description": "Use when performing safe, structurally-aware code refactoring. Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

@@ -1,7 +1,7 @@
 {
   "description": "Use when writing Python code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write Python code for [feature]' or 'Design type system for [domain]'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

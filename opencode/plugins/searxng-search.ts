@@ -1,8 +1,20 @@
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import { getEncoding } from "js-tiktoken";
 import { createHash } from "node:crypto";
-import { mkdir, unlink } from "node:fs/promises";
-import { join } from "node:path";
+import {
+  fetchGitHubContent,
+  fetchRedditPostMarkdown,
+  fetchYoutubeTranscriptMarkdown,
+  fetchWikipediaMarkdown,
+  GITHUB_DOMAINS,
+  hostMatchesDomain,
+  REDDIT_DOMAINS,
+  type CommandExecutionResult,
+  type WebFetchDomainHandler,
+  type WebFetchHandlerResult,
+  WIKIPEDIA_DOMAINS,
+  YOUTUBE_DOMAINS,
+} from "./webfetch-handlers/index.ts";
 
 type SearxngResult = {
   title: string;
@@ -32,31 +44,10 @@ type SearchQueryInput = {
   domains?: string[];
 };
 
-type CommandExecutionResult = {
-  stdoutText: string;
-  stderrText: string;
-  exitCode: number;
-};
-
-type WebFetchHandlerInput = {
-  url: URL;
-};
-
-type WebFetchHandlerResult = {
-  routeName: string;
-  sourceUrl: string;
-  content: string;
-};
-
-type WebFetchDomainHandler = {
-  name: string;
-  domains: readonly string[];
-  handle: (input: WebFetchHandlerInput) => Promise<WebFetchHandlerResult>;
-};
-
 const SEARXNG_INSTANCE_URL = (process.env.SEARXNG_INSTANCE_URL ?? "").trim();
 const DEFAULT_TIMEOUT_MS = 15_000;
 const WEBFETCH_COMMAND_TIMEOUT_MS = 30_000;
+const WEBFETCH_WIKIPEDIA_CONVERT_TIMEOUT_MS = 120_000;
 const DEFAULT_LIMIT = 8;
 const MAX_LIMIT = 20;
 const MAX_OFFSET = 200;
@@ -74,9 +65,13 @@ const WEBFETCH_CACHE_TTL_MS =
 const TOKEN_ENCODER = getEncoding("o200k_base");
 const PASSPHRASE_WEB_SEARCH = "PASS_WEB_SEARCH_SHADOW_20260305_6A9F";
 const PASSPHRASE_WEBFETCH = "PASS_WEBFETCH_SHADOW_20260305_C3D2";
-const GITHUB_DOMAINS = ["github.com", "www.github.com"] as const;
-const REDDIT_DOMAINS = ["reddit.com", "www.reddit.com", "old.reddit.com", "api.reddit.com"] as const;
 const REDDIT_APIFY_ACTOR = (process.env.REDDIT_APIFY_ACTOR ?? "spry_wholemeal/reddit-scraper").trim();
+const WIKIPEDIA_API_USER_AGENT = (
+  process.env.WIKIPEDIA_API_USER_AGENT ?? "opencode-improved-webfetch/1.0 (plugin)"
+).trim();
+const WIKIPEDIA_CONVERTER_SCRIPT = decodeURIComponent(
+  new URL("./scripts/wikipedia_html_to_markdown.py", import.meta.url).pathname,
+);
 
 const NARROWING_CATEGORIES = [
   "news",
@@ -134,10 +129,6 @@ function countTokens(text: string): number {
   return TOKEN_ENCODER.encode(text).length;
 }
 
-function hostMatchesDomain(hostname: string, domain: string): boolean {
-  return hostname === domain || hostname.endsWith(`.${domain}`);
-}
-
 type WebFetchCachePayload = {
   url: string;
   routeName: string;
@@ -148,7 +139,7 @@ type WebFetchCachePayload = {
 
 function webFetchCachePath(url: string): string {
   const digest = createHash("sha256").update(url).digest("hex");
-  return join(WEBFETCH_CACHE_DIR, `${digest}.json`);
+  return `${WEBFETCH_CACHE_DIR}/${digest}.json`;
 }
 
 async function readWebFetchCache(url: string): Promise<WebFetchHandlerResult | undefined> {
@@ -170,7 +161,7 @@ async function readWebFetchCache(url: string): Promise<WebFetchHandlerResult | u
     }
     const cachedAt = Date.parse(parsed.cachedAt);
     if (!Number.isFinite(cachedAt) || Date.now() - cachedAt > WEBFETCH_CACHE_TTL_MS) {
-      await unlink(path).catch(() => {});
+      await Bun.$`rm -f ${path}`.quiet();
       return undefined;
     }
     return {
@@ -186,7 +177,7 @@ async function readWebFetchCache(url: string): Promise<WebFetchHandlerResult | u
 async function writeWebFetchCache(url: string, result: WebFetchHandlerResult): Promise<void> {
   if (!WEBFETCH_CACHE_ENABLED) return;
   if (!result.content.trim()) return;
-  await mkdir(WEBFETCH_CACHE_DIR, { recursive: true });
+  await Bun.$`mkdir -p ${WEBFETCH_CACHE_DIR}`.quiet();
   const payload: WebFetchCachePayload = {
     url,
     routeName: result.routeName,
@@ -206,101 +197,10 @@ function findWebFetchHandler(
   );
 }
 
-function normalizeGitHubRepo(repo: string): string {
-  return repo.replace(/\.git$/i, "");
-}
-
-type GitHubCommandPlan = {
-  args: string[];
-  sourceUrl: string;
-};
-
-function buildGitHubCommandPlan(url: URL): GitHubCommandPlan {
-  const rawSegments = url.pathname
-    .split("/")
-    .filter(Boolean)
-    .map((segment) => decodeURIComponent(segment));
-
-  if (rawSegments.length >= 2) {
-    const owner = rawSegments[0]!;
-    const repo = normalizeGitHubRepo(rawSegments[1]!);
-    const repoRef = `${owner}/${repo}`;
-    const scope = rawSegments[2];
-    const tail = rawSegments.slice(3);
-
-    if (scope === "issues" && /^\d+$/.test(tail[0] ?? "")) {
-      return {
-        args: ["gh", "issue", "view", tail[0]!, "--repo", repoRef, "--comments"],
-        sourceUrl: `https://github.com/${repoRef}/issues/${tail[0]!}`,
-      };
-    }
-
-    if (scope === "pull" && /^\d+$/.test(tail[0] ?? "")) {
-      return {
-        args: ["gh", "pr", "view", tail[0]!, "--repo", repoRef, "--comments"],
-        sourceUrl: `https://github.com/${repoRef}/pull/${tail[0]!}`,
-      };
-    }
-
-    if (scope === "blob" && tail.length >= 2) {
-      const ref = tail[0]!;
-      const filePath = tail.slice(1).join("/");
-      return {
-        args: [
-          "gh",
-          "api",
-          `repos/${repoRef}/contents/${filePath}`,
-          "-f",
-          `ref=${ref}`,
-          "-H",
-          "Accept: application/vnd.github.raw+json",
-        ],
-        sourceUrl: `https://github.com/${repoRef}/blob/${ref}/${filePath}`,
-      };
-    }
-
-    if (scope === "commit" && tail.length >= 1) {
-      return {
-        args: ["gh", "api", `repos/${repoRef}/commits/${tail[0]!}`],
-        sourceUrl: `https://github.com/${repoRef}/commit/${tail[0]!}`,
-      };
-    }
-
-    if (scope === "releases") {
-      return {
-        args: ["gh", "release", "list", "--repo", repoRef, "--limit", "20"],
-        sourceUrl: `https://github.com/${repoRef}/releases`,
-      };
-    }
-
-    if (scope === "issues") {
-      return {
-        args: ["gh", "issue", "list", "--repo", repoRef, "--limit", "30"],
-        sourceUrl: `https://github.com/${repoRef}/issues`,
-      };
-    }
-
-    if (scope === "pulls") {
-      return {
-        args: ["gh", "pr", "list", "--repo", repoRef, "--limit", "30"],
-        sourceUrl: `https://github.com/${repoRef}/pulls`,
-      };
-    }
-
-    return {
-      args: ["gh", "repo", "view", repoRef, "--readme"],
-      sourceUrl: `https://github.com/${repoRef}`,
-    };
-  }
-
-  const fallbackQuery = rawSegments.join("/") || url.toString();
-  return {
-    args: ["gh", "search", "repos", fallbackQuery, "--limit", "20"],
-    sourceUrl: url.toString(),
-  };
-}
-
-async function runCommand(args: string[]): Promise<CommandExecutionResult> {
+async function runCommand(
+  args: string[],
+  timeoutMs = WEBFETCH_COMMAND_TIMEOUT_MS,
+): Promise<CommandExecutionResult> {
   const proc = Bun.spawn(args, {
     stdout: "pipe",
     stderr: "pipe",
@@ -308,7 +208,7 @@ async function runCommand(args: string[]): Promise<CommandExecutionResult> {
 
   const timeout = setTimeout(() => {
     proc.kill();
-  }, WEBFETCH_COMMAND_TIMEOUT_MS);
+  }, timeoutMs);
   try {
     const [stdoutText, stderrText, exitCode] = await Promise.all([
       new Response(proc.stdout).text(),
@@ -445,225 +345,6 @@ async function formatWebFetchOutput(input: {
   }
 
   return [...prefix, `Token count: ${tokenCount}`, "", text].join("\n");
-}
-
-type RedditPostRef = {
-  subreddit: string;
-  postId: string;
-  slug: string;
-};
-
-function extractRedditPostRef(url: URL): RedditPostRef | undefined {
-  const match = url.pathname.match(/^\/r\/([^/]+)\/comments\/([a-z0-9]+)(?:\/([^/?#]+))?/i);
-  if (!match) return undefined;
-  const subreddit = decodeURIComponent(match[1] ?? "").trim();
-  const postId = (match[2] ?? "").trim().toLowerCase();
-  const slug = decodeURIComponent((match[3] ?? "").replace(/[_-]+/g, " ")).trim();
-  if (!subreddit || !postId) return undefined;
-  return { subreddit, postId, slug };
-}
-
-type RedditRecord = Record<string, unknown>;
-
-function normalizeRedditId(raw: unknown): string {
-  return String(raw ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/^t[0-9]_/, "");
-}
-
-function redditText(raw: unknown): string {
-  return String(raw ?? "").trim();
-}
-
-function renderRedditCommentTree(comments: RedditRecord[], postId: string): string[] {
-  const byId = new Map<string, RedditRecord>();
-  const children = new Map<string, RedditRecord[]>();
-  for (const comment of comments) {
-    const commentId = normalizeRedditId(comment.comment_id);
-    if (!commentId) continue;
-    byId.set(commentId, comment);
-  }
-  for (const comment of comments) {
-    const commentId = normalizeRedditId(comment.comment_id);
-    if (!commentId) continue;
-    const parentId = normalizeRedditId(comment.parent_id);
-    const key = byId.has(parentId) ? parentId : postId;
-    const arr = children.get(key) ?? [];
-    arr.push(comment);
-    children.set(key, arr);
-  }
-
-  const sortByScoreThenTime = (a: RedditRecord, b: RedditRecord) => {
-    const sa = Number(a.score ?? 0);
-    const sb = Number(b.score ?? 0);
-    if (sb !== sa) return sb - sa;
-    const ta = Number(a.created_utc_ts ?? 0);
-    const tb = Number(b.created_utc_ts ?? 0);
-    return ta - tb;
-  };
-
-  const render = (parentId: string, depth: number, out: string[]) => {
-    const items = [...(children.get(parentId) ?? [])].sort(sortByScoreThenTime);
-    for (const comment of items) {
-      const commentId = normalizeRedditId(comment.comment_id);
-      if (!commentId) continue;
-      const indent = "  ".repeat(depth);
-      const author = String(comment.author ?? "[deleted]").trim() || "[deleted]";
-      const score = Number(comment.score ?? 0);
-      const body = redditText(comment.text);
-      out.push(`${indent}- u/${author} (score ${score}):`);
-      if (body) {
-        for (const line of body.split(/\r?\n/)) {
-          out.push(`${indent}  ${line}`);
-        }
-      } else {
-        out.push(`${indent}  [no text]`);
-      }
-      render(commentId, depth + 1, out);
-    }
-  };
-
-  const lines: string[] = [];
-  render(postId, 0, lines);
-  return lines;
-}
-
-function buildRedditSearchQuery(postRef: RedditPostRef): string {
-  if (postRef.slug) return postRef.slug;
-  return postRef.postId;
-}
-
-async function fetchRedditPostMarkdown(input: { url: URL }): Promise<WebFetchHandlerResult> {
-  const postRef = extractRedditPostRef(input.url);
-  if (!postRef) {
-    const fallback = await fetchWebContentWithW3M(input.url);
-    if (fallback.exitCode !== 0) {
-      throw new Error(`reddit fallback fetch failed (exit ${fallback.exitCode}): ${fallback.stderrText.trim()}`);
-    }
-    return {
-      routeName: "reddit",
-      sourceUrl: input.url.toString(),
-      content: fallback.stdoutText,
-    };
-  }
-
-  const actorInput = {
-    mode: "search",
-    search: {
-      queries: [buildRedditSearchQuery(postRef)],
-      sort: "relevance",
-      timeframe: "all",
-      maxPostsPerQuery: 25,
-      restrictToSubreddit: postRef.subreddit,
-      includeNsfw: false,
-      selfPostsOnly: false,
-      commentsMode: "all",
-      commentsMaxTopLevel: 100,
-      commentsMaxDepth: 3,
-      commentsHighEngagementMinScore: 10,
-      commentsHighEngagementMinComments: 5,
-      commentsHighEngagementFilterPosts: false,
-      overrides: [],
-      targets: [],
-    },
-    includeRaw: false,
-    proxyConfiguration: {
-      useApifyProxy: true,
-      apifyProxyGroups: ["RESIDENTIAL"],
-    },
-    proxyCountry: "US",
-    proxyRotationStrategy: "sticky_pool",
-    proxyPoolSize: 10,
-    requestDelayMs: 100,
-  };
-
-  const inputPath = `/tmp/reddit-apify-input-${Date.now()}-${crypto.randomUUID()}.json`;
-  await Bun.write(inputPath, JSON.stringify(actorInput));
-  try {
-    const result = await runCommand([
-      "apify",
-      "call",
-      REDDIT_APIFY_ACTOR,
-      "--silent",
-      "--output-dataset",
-      "--input-file",
-      inputPath,
-    ]);
-    if (result.exitCode !== 0) {
-      throw new Error(`apify call failed (exit ${result.exitCode}): ${result.stderrText.trim()}`);
-    }
-
-    let items: RedditRecord[];
-    try {
-      const parsed = JSON.parse(result.stdoutText);
-      if (!Array.isArray(parsed)) {
-        throw new Error("dataset output is not an array");
-      }
-      items = parsed as RedditRecord[];
-    } catch (error) {
-      throw new Error(
-        `apify output parse failed: ${error instanceof Error ? error.message : String(error)}`,
-      );
-    }
-
-    const postMatch = items
-      .filter((item) => item.record_type === "post")
-      .find((item) => String(item.permalink ?? "").includes(`/comments/${postRef.postId}/`));
-    if (!postMatch) {
-      throw new Error(`no Reddit post match for permalink id ${postRef.postId}`);
-    }
-
-    const targetPostId = normalizeRedditId(postMatch.post_id) || postRef.postId;
-    const comments = items.filter(
-      (item) => item.record_type === "comment" && normalizeRedditId(item.post_id) === targetPostId,
-    );
-
-    const title = redditText(postMatch.title) || "[untitled]";
-    const body = redditText(postMatch.text);
-    const author = String(postMatch.author ?? "[deleted]").trim() || "[deleted]";
-    const subreddit = String(postMatch.subreddit ?? postRef.subreddit).trim() || postRef.subreddit;
-    const permalink = redditText(postMatch.permalink) || input.url.toString();
-    const score = Number(postMatch.score ?? 0);
-    const numComments = Number(postMatch.num_comments ?? comments.length);
-
-    const lines: string[] = [
-      "# Reddit Post",
-      "",
-      `- URL: ${input.url.toString()}`,
-      `- Permalink: ${permalink}`,
-      `- Subreddit: r/${subreddit}`,
-      `- Author: u/${author}`,
-      `- Score: ${score}`,
-      `- Comments reported by post: ${numComments}`,
-      `- Comments extracted: ${comments.length}`,
-      "",
-      "## Title",
-      "",
-      title,
-      "",
-      "## Body",
-      "",
-      body || "[no post body]",
-      "",
-      "## Comments (nested)",
-      "",
-    ];
-
-    if (comments.length === 0) {
-      lines.push("[no comments extracted]");
-    } else {
-      lines.push(...renderRedditCommentTree(comments, targetPostId));
-    }
-
-    return {
-      routeName: "reddit",
-      sourceUrl: permalink,
-      content: lines.join("\n"),
-    };
-  } finally {
-    await unlink(inputPath).catch(() => {});
-  }
 }
 
 function augmentQueryWithDomains(query: string, domains: string[]): string {
@@ -839,27 +520,45 @@ function formatResults(input: {
 export const ImprovedWebSearchPlugin: Plugin = async ({ client }) => {
   const webFetchDomainHandlers: readonly WebFetchDomainHandler[] = [
     {
+      name: "wikipedia",
+      domains: WIKIPEDIA_DOMAINS,
+      handle: async ({ url }) =>
+        fetchWikipediaMarkdown({
+          url,
+          runCommand,
+          converterScriptPath: WIKIPEDIA_CONVERTER_SCRIPT,
+          userAgent: WIKIPEDIA_API_USER_AGENT,
+          convertTimeoutMs: WEBFETCH_WIKIPEDIA_CONVERT_TIMEOUT_MS,
+        }),
+    },
+    {
+      name: "youtube",
+      domains: YOUTUBE_DOMAINS,
+      handle: async ({ url }) =>
+        fetchYoutubeTranscriptMarkdown({
+          url,
+          runCommand,
+        }),
+    },
+    {
       name: "reddit",
       domains: REDDIT_DOMAINS,
-      handle: async ({ url }) => fetchRedditPostMarkdown({ url }),
+      handle: async ({ url }) =>
+        fetchRedditPostMarkdown({
+          url,
+          runCommand,
+          fetchFallbackWithW3M: fetchWebContentWithW3M,
+          apifyActor: REDDIT_APIFY_ACTOR,
+        }),
     },
     {
       name: "github",
       domains: GITHUB_DOMAINS,
-      handle: async ({ url }) => {
-        const plan = buildGitHubCommandPlan(url);
-        const result = await runCommand(plan.args);
-        if (result.exitCode !== 0) {
-          throw new Error(
-            `gh command failed (exit ${result.exitCode}): ${result.stderrText.trim()}`,
-          );
-        }
-        return {
-          routeName: "github",
-          sourceUrl: plan.sourceUrl,
-          content: result.stdoutText,
-        };
-      },
+      handle: async ({ url }) =>
+        fetchGitHubContent({
+          url,
+          runCommand,
+        }),
     },
   ];
 

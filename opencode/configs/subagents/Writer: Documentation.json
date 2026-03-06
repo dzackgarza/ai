@@ -1,7 +1,7 @@
 {
   "description": "Use when writing or updating documentation files. Ask 'Document the current project architecture' or 'Write a README for [feature]'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

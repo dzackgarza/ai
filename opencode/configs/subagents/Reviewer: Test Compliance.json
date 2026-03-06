@@ -1,7 +1,7 @@
 {
   "description": "Use when auditing tests for compliance with High-Quality Testing Standards. Pass test files or plans. Ask 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

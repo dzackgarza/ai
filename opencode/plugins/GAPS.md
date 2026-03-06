@@ -6,7 +6,7 @@ Scope: current plugin workspace and active OpenCode wiring
 ## Remaining Gaps
 
 1. Human TUI verification is still required for task observability Phase 1/2 behavior (live child-session visibility, parent tool metrics, async polling display updates).
-2. `webfetch` domain routing currently implemented for `github.com` and `reddit.com`; handlers for Stack Exchange, Wikipedia/Wikimedia, package registries, Hugging Face, and YouTube are still pending.
+2. `webfetch` domain routing currently implemented for `github.com`, `reddit.com`, and YouTube URLs; handlers for Stack Exchange, Wikipedia/Wikimedia, package registries, and Hugging Face are still pending.
 3. Reddit route dependency is external (`apify` CLI + actor + proxy). Failure path is currently generic (`Failed to fetch URL`) and should be made explicitly actionable for missing actor/auth/proxy configuration.
 4. Cache lifecycle is lazy-expiration on read; there is no background cleanup/pruning pass for stale entries.
 5. API-viability checks (below) show several domains are only partial-replacement candidates (metadata parity but not full content parity).
@@ -106,8 +106,9 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
 
 ### 9) YouTube
 
-- Status: `Partial` for page-content parity.
+- Status: `Implemented (caption-first + Whisper pipeline), still Partial for page-content parity`.
 - Evidence:
+  - Current plugin route uses yt-dlp with impersonation/runtime dependencies to extract English captions first, then falls back to Whisper transcription when captions are unavailable.
   - Data API supports metadata/resources and comments endpoints.
   - Captions API supports listing/downloading caption tracks, but `captions.list` does not include caption text itself and download/auth constraints apply.
   - Not all videos have usable captions, so transcript parity vs web/video is not guaranteed.

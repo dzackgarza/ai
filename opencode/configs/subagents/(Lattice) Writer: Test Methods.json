@@ -1,7 +1,7 @@
 {
   "description": "Use when closing docs-to-tests gaps. Ask 'Write mathematically nontrivial tests for [lattice object]' or 'Create tests for representative lattice objects'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

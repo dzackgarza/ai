@@ -1,7 +1,7 @@
 {
   "description": "Use when writing new tests following TDD or designing test strategies to improve existing coverage. Can write/edit tests in tests/ and test/ directories only.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

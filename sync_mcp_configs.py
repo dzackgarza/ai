@@ -16,6 +16,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -40,6 +41,35 @@ def expand_path(path: str) -> Path:
     return Path(os.path.expandvars(os.path.expanduser(path)))
 
 
+ENV_TOKEN_PATTERN = re.compile(r"\{env:([^}]+)\}")
+
+
+def resolve_env_tokens(value: Any) -> Any:
+    """Resolve {env:VAR_NAME} placeholders in string values."""
+    if not isinstance(value, str):
+        return value
+
+    def replacer(match: re.Match[str]) -> str:
+        env_name = match.group(1).strip()
+        env_value = os.environ.get(env_name)
+        if env_value is None:
+            raise ValueError(f"Required environment variable is not set: {env_name}")
+        return env_value
+
+    return ENV_TOKEN_PATTERN.sub(replacer, value)
+
+
+def resolve_local_server_fields(config: dict) -> tuple[str, list[str], dict[str, str] | None]:
+    """Resolve command, args, and env for a local MCP server."""
+    command = resolve_env_tokens(config.get('command', ''))
+    args = [resolve_env_tokens(arg) for arg in config.get('args', [])]
+    env_config = config.get('env')
+    env = None if not env_config else {
+        key: resolve_env_tokens(value) for key, value in env_config.items()
+    }
+    return command, args, env
+
+
 def load_yaml_config(config_path: str) -> dict:
     """Load the centralized YAML configuration."""
     with open(config_path, 'r') as f:
@@ -48,7 +78,7 @@ def load_yaml_config(config_path: str) -> dict:
 
 def build_mcp_config_for_harness(yaml_config: dict, harness_name: str, builder_func: callable) -> dict:
     """Build the MCP configuration for a specific harness.
-    
+
     Args:
         yaml_config: The loaded YAML configuration
         harness_name: Name of the harness (for logging)
@@ -58,9 +88,19 @@ def build_mcp_config_for_harness(yaml_config: dict, harness_name: str, builder_f
 
     # Add all common servers (no harness-specific servers - all harnesses get the same tools)
     for name, server_config in yaml_config.get('common', {}).items():
-        if server_config.get('enabled', True):
-            server_type = server_config.get('type', 'local')
+        if not server_config.get('enabled', True):
+            continue
+        
+        # Check if this server should be excluded from this harness
+        exclude_harnesses = server_config.get('exclude_harnesses', [])
+        if harness_name in exclude_harnesses:
+            continue
+        
+        server_type = server_config.get('type', 'local')
+        try:
             mcp_servers[name] = builder_func(server_config, server_type)
+        except ValueError as exc:
+            raise ValueError(f"{harness_name}.{name}: {exc}") from exc
 
     return mcp_servers
 
@@ -70,12 +110,13 @@ def build_opencode_server_config(config: dict, server_type: str) -> dict:
     if server_type == 'remote':
         return {
             'type': 'remote',
-            'url': config.get('url', '')
+            'url': resolve_env_tokens(config.get('url', ''))
         }
     else:
+        command, args, _ = resolve_local_server_fields(config)
         return {
             'type': 'local',
-            'command': [config.get('command', '')] + config.get('args', [])
+            'command': [command] + args
         }
 
 
@@ -90,16 +131,19 @@ def build_claude_server_config(config: dict, server_type: str) -> dict:
     if server_type == 'remote':
         return {
             'type': 'http',
-            'url': config.get('url', '')
+            'url': resolve_env_tokens(config.get('url', ''))
         }
     else:
         # Claude expects command as a single string, args as separate array
-        cmd_args = config.get('args', [])
-        return {
+        command, cmd_args, env = resolve_local_server_fields(config)
+        server_config = {
             'type': 'stdio',
-            'command': config.get('command', ''),
+            'command': command,
             'args': cmd_args if cmd_args else []
         }
+        if env:
+            server_config['env'] = env
+        return server_config
 
 
 def build_amp_server_config(config: dict, server_type: str) -> dict:
@@ -113,13 +157,17 @@ def build_amp_server_config(config: dict, server_type: str) -> dict:
     """
     if server_type == 'remote':
         return {
-            'url': config.get('url', '')
+            'url': resolve_env_tokens(config.get('url', ''))
         }
     else:
-        return {
-            'command': config.get('command', ''),
-            'args': config.get('args', [])
+        command, args, env = resolve_local_server_fields(config)
+        server_config = {
+            'command': command,
+            'args': args
         }
+        if env:
+            server_config['env'] = env
+        return server_config
 
 
 def build_kilo_server_config(config: dict, server_type: str) -> dict:
@@ -133,28 +181,59 @@ def build_kilo_server_config(config: dict, server_type: str) -> dict:
     """
     if server_type == 'remote':
         return {
-            'url': config.get('url', '')
+            'url': resolve_env_tokens(config.get('url', ''))
         }
     else:
-        return {
-            'command': config.get('command', ''),
-            'args': config.get('args', [])
+        command, args, env = resolve_local_server_fields(config)
+        server_config = {
+            'command': command,
+            'args': args
         }
+        if env:
+            server_config['env'] = env
+        return server_config
+
+
+def build_gemini_server_config(config: dict, server_type: str) -> dict:
+    """Build a server configuration in Gemini/Qwen format.
+
+    Gemini/Qwen uses:
+    - No 'type' field for local servers
+    - command: string, args: array
+    - For remote: uses 'httpUrl' field (not 'url' or 'type')
+    """
+    if server_type == 'remote':
+        return {
+            'httpUrl': resolve_env_tokens(config.get('url', ''))
+        }
+    else:
+        command, args, env = resolve_local_server_fields(config)
+        server_config = {
+            'command': command,
+            'args': args
+        }
+        if env:
+            server_config['env'] = env
+        return server_config
 
 
 def build_codex_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Codex TOML format."""
     if server_type == 'remote':
         return {
-            'url': config.get('url', ''),
+            'url': resolve_env_tokens(config.get('url', '')),
             'enabled': True
         }
     else:
-        return {
-            'command': config.get('command', ''),
-            'args': config.get('args', []),
+        command, args, env = resolve_local_server_fields(config)
+        server_config = {
+            'command': command,
+            'args': args,
             'enabled': True
         }
+        if env:
+            server_config['env'] = env
+        return server_config
 
 
 def sync_opencode_harness(config_path: Path, mcp_servers: dict, dry_run: bool = False) -> bool:
@@ -346,12 +425,20 @@ def main():
             builder_func = build_kilo_server_config
         elif harness_name == 'codex':
             builder_func = build_codex_server_config
+        elif harness_name == 'gemini' or harness_name == 'qwen':
+            # Qwen is forked from Gemini, uses same format
+            builder_func = build_gemini_server_config
         else:
             # Default to OpenCode format for unknown harnesses
             builder_func = build_opencode_server_config
 
         # Build MCP config for this harness
-        mcp_servers = build_mcp_config_for_harness(yaml_config, harness_name, builder_func)
+        try:
+            mcp_servers = build_mcp_config_for_harness(yaml_config, harness_name, builder_func)
+        except ValueError as exc:
+            print(f"  ERROR: {exc}")
+            print()
+            continue
         
         # Get the config path
         config_file_path = expand_path(harness_config['config_path'])

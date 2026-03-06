@@ -1,7 +1,7 @@
 {
   "description": "Use when auditing document-to-test coverage. Ask 'Audit document-to-test coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

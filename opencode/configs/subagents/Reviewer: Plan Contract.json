@@ -1,7 +1,7 @@
 {
   "description": "Use when auditing code against project constraints and dominant patterns. Pass the generated code and project rules. Ask 'Audit this code for constraint violations' or 'Find deviations from dominant patterns'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

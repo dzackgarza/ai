@@ -1,7 +1,7 @@
 {
   "description": "Use when performing structural and semantic codebase mapping. Ask 'Map the structural dependencies of this repository' or 'Perform semantic codebase analysis using WarpGrep' or 'Explain the overall architecture of this codebase'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

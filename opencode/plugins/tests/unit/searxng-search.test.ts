@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 
 type AskInput = {
   permission: string;
@@ -390,6 +391,131 @@ describe("searxng-search plugin", () => {
     expect(output).toContain("  - u/nested_user (score 7):");
     expect(output).toContain("Nested reply");
     expect(output).toContain("- u/second_top (score 5):");
+  });
+
+  it("routes youtube URLs through transcript extraction pipeline", async () => {
+    const calls: string[][] = [];
+
+    (Bun as any).spawn = (args: string[]) => {
+      calls.push(args);
+
+      if (args[0] === "uvx" && args.includes("yt-dlp") && args.includes("--list-subs")) {
+        return {
+          stdout: streamFromText("[info] Available subtitles for abc123:\nLanguage Formats\nen vtt"),
+          stderr: streamFromText(""),
+          exited: Promise.resolve(0),
+        };
+      }
+
+      if (args[0] === "uvx" && args.includes("yt-dlp") && args.includes("--write-subs")) {
+        const outputIndex = args.indexOf("-o");
+        const template = outputIndex >= 0 ? args[outputIndex + 1] : undefined;
+        if (template) {
+          const dir = dirname(template);
+          mkdirSync(dir, { recursive: true });
+          writeFileSync(
+            join(dir, "mock.en.vtt"),
+            "WEBVTT\n\n00:00:00.000 --> 00:00:02.000\nHello from captions\n",
+          );
+        }
+        return {
+          stdout: streamFromText(""),
+          stderr: streamFromText(""),
+          exited: Promise.resolve(0),
+        };
+      }
+
+      return {
+        stdout: streamFromText(""),
+        stderr: streamFromText("unexpected command"),
+        exited: Promise.resolve(1),
+      };
+    };
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://www.youtube.com/watch?v=abc123",
+      },
+      context as any,
+    );
+
+    expect(calls.some((args) => args.includes("--list-subs"))).toBe(true);
+    expect(calls.some((args) => args.includes("--write-subs"))).toBe(true);
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Route: youtube");
+    expect(output).toContain("# YouTube Transcript");
+    expect(output).toContain("Source: English captions (yt-dlp)");
+    expect(output).toContain("Hello from captions");
+  });
+
+  it("routes wikipedia URLs through parse API and markdown conversion", async () => {
+    const calls: string[][] = [];
+    const fetchCalls: Array<{ url: string; userAgent?: string }> = [];
+
+    (globalThis as any).fetch = async (input: string | Request | URL, init?: RequestInit) => {
+      const url = String(input);
+      fetchCalls.push({
+        url,
+        userAgent:
+          (init?.headers as Record<string, string> | undefined)?.["User-Agent"] ??
+          (init?.headers as Record<string, string> | undefined)?.["user-agent"],
+      });
+      return new Response(
+        JSON.stringify({
+          parse: {
+            title: "Fourier transform",
+            displaytitle: "<span class=\"mw-page-title-main\">Fourier transform</span>",
+            text: "<p>In mathematics, the Fourier transform is useful.</p><p><img class='mwe-math-fallback-image-inline' alt='\\\\int f(x)dx' /></p>",
+          },
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    };
+
+    (Bun as any).spawn = (args: string[]) => {
+      calls.push(args);
+      return {
+        stdout: streamFromText(
+          "https://en.wikipedia.org/wiki/Fourier_transform\n\n# Fourier transform\n\nIn mathematics, the Fourier transform is useful.\n\n$\\int f(x)dx$",
+        ),
+        stderr: streamFromText(""),
+        exited: Promise.resolve(0),
+      };
+    };
+
+    const { webfetch } = await loadPlugin("http://localhost/searxng");
+    const context = buildContext();
+
+    const output = await webfetch.execute(
+      {
+        url: "https://en.wikipedia.org/wiki/Fourier_transform",
+      },
+      context as any,
+    );
+
+    expect(fetchCalls).toHaveLength(1);
+    expect(fetchCalls[0]?.url).toContain(
+      "https://en.wikipedia.org/w/api.php?action=parse&format=json&formatversion=2&prop=displaytitle%7Ctext&page=Fourier_transform",
+    );
+    expect(fetchCalls[0]?.userAgent).toBe("opencode-improved-webfetch/1.0 (plugin)");
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.[0]).toBe("uvx");
+    expect(calls[0]).toContain("beautifulsoup4");
+    expect(calls[0]).toContain("markdownify");
+    expect(calls[0]).toContain("python");
+
+    expect(output).toContain("Tool passphrase: PASS_WEBFETCH_SHADOW_20260305_C3D2");
+    expect(output).toContain("Route: wikipedia");
+    expect(output).toContain("Source URL: https://en.wikipedia.org/wiki/Fourier_transform");
+    expect(output).toContain("# Fourier transform");
+    expect(output).toContain("$\\int f(x)dx$");
   });
 
   it("uses webfetch cache on repeated URL requests with cache enabled", async () => {

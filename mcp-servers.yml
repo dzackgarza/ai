@@ -2,6 +2,14 @@
 # =====================================
 # This file is the single source of truth for all MCP server configurations.
 # Run `python3 sync_mcp_configs.py` to propagate changes to all harnesses.
+#
+# Quick Start with OpenCode:
+# 1. Configure OpenCode - Add the plugin and Cursor provider to your opencode.json:
+#    {
+#      "$schema": "https://opencode.ai/config.json",
+#      "plugin": ["yet-another-opencode-cursor-auth@latest"],
+#      "provider": {"cursor": {"name": "Cursor"}}
+#    }
 
 # MCP Servers that should be configured in ALL harnesses
 common:
@@ -38,21 +46,17 @@ common:
     url: "https://mcp.deepwiki.com/mcp"
     enabled: true
 
-  tavily-remote:
-    description: "Web search via Tavily API"
-    type: "remote"
-    url: "https://mcp.tavily.com/mcp/?tavilyApiKey={env:TAVILY_API_KEY}"
-    enabled: true
-
-  kindly:
-    description: "Web search via Kindly"
-    command: "uvx"
+  searxng-mcp:
+    description: "Web search via local SearXNG instance (uses SEARXNG_SERVER_URL from ~/.envrc)"
+    command: "npx"
     args:
-      - "--from"
-      - "git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server"
-      - "kindly-web-search-mcp-server"
-      - "start-mcp-server"
+      - "-y"
+      - "mcp-searxng"
+    env:
+      SEARXNG_URL: "{env:SEARXNG_SERVER_URL}"
     enabled: true
+    exclude_harnesses:
+      - opencode
 
 # Harnesses to sync (set enabled: false to skip a harness)
 harnesses:
@@ -77,6 +81,12 @@ harnesses:
   claude:
     enabled: true
     config_path: "~/.claude.json"
+    format: "json"
+    json_path: "mcpServers"
+
+  qwen:
+    enabled: true
+    config_path: "~/.qwen/settings.json"
     format: "json"
     json_path: "mcpServers"
 

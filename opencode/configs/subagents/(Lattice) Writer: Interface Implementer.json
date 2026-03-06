@@ -1,7 +1,7 @@
 {
   "description": "Use when translating union checklists into Python design. Ask 'Translate [union checklist] into ABC Python design' or 'Implement lattice types and concepts under src/'.",
   "mode": "subagent",
-  "model": "nvidia/moonshotai/kimi-k2.5",
+  "model": "github-copilot/gpt-5-mini",
   "permission": {
     "task": "deny",
     "todoread": "deny",

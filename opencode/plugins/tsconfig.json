@@ -15,6 +15,7 @@
   },
   "include": [
     "*.ts",
+    "webfetch-handlers/**/*.ts",
     "stop_hooks/*.ts",
     "tests/**/*.ts"
   ],
