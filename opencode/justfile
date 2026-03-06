@@ -34,4 +34,4 @@ harness *args:
     cd harness && bun run opx {{args}}
 
 snapshot-gc:
-    bash harness/scripts/opencode_gc.sh
+    bash scripts/maintenance/opencode_gc.sh
