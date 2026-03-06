@@ -18,6 +18,12 @@ providers-validate *args="":
 openrouter-sync:
     python3 configs/providers/scripts/sync_openrouter_models.py
 
+openrouter-probe-endpoints *args="":
+    python3 configs/providers/scripts/probe_openrouter_endpoints.py {{args}}
+
+openrouter-probe-tool-calling *args="":
+    python3 configs/providers/scripts/probe_openrouter_tool_calling.py {{args}}
+
 providers-debug provider="opencode":
     python3 configs/providers/scripts/debug_models_dev_provider.py {{provider}}
 

@@ -36,19 +36,22 @@ just config-build
 just rebuild
 just providers-validate
 just openrouter-sync
+just openrouter-probe-endpoints
+just openrouter-probe-tool-calling
 just plugins-check
 just harness run --help
 ```
 
 ## Layout
 
-- `configs/providers/`: provider source files, provider notes, provider maintenance scripts
+- `configs/providers/`: provider source files, notes, maintenance scripts, provider shims
 - `configs/agents/`: primary agent definitions
 - `configs/subagents/`: active subagent definitions plus archived migration scripts
 - `plugins/`: runtime-loaded plugins and plugin tests
 - `harness/`: SDK-first session automation
 - `scripts/maintenance/`: neutral maintenance helpers
 - `archive/`: historical one-offs and runtime debris, not canonical workflows
+- `docs/`: stable documentation that is not owned by a narrower subtree
 
 ## Generated Outputs
 

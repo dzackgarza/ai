@@ -6,7 +6,8 @@ antigravity-accounts.json
 antigravity-accounts.json.*.tmp
 antigravity-signature-cache.json
 antigravity-logs/
-/__pycache__/
+__pycache__/
 /events.jsonl
 /gc.log
 /subagent.lock
+/logs/

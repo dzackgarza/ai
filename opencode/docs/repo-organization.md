@@ -23,8 +23,10 @@ sprawl.
 
 - Provider maintenance scripts belong in `configs/providers/scripts/`
 - Provider operational notes belong in `configs/providers/notes/`
+- Provider-specific shims belong in `configs/providers/shims/`
 - Historical subagent migration helpers belong in `configs/subagents/archive/migrations/`
 - Neutral maintenance helpers belong in `scripts/maintenance/`
+- Harness-specific operational notes belong in `harness/docs/`
 
 ## Archive
 
