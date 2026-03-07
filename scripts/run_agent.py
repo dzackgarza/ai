@@ -10,52 +10,73 @@ import re
 from pathlib import Path
 from urllib.request import urlopen, Request
 import json
+from typing import Optional
 
 import yaml
 from jinja2 import Template
 import litellm
+from pydantic import BaseModel
 
 
-# Static provider list - litellm provider slugs to env vars
-# NOTE: one should restrict openrouter to free models only.
-# Keys are models.dev provider slugs, values are env var names
+class ProviderConfig(BaseModel):
+    """Configuration for a single LLM provider."""
+    env_var: str
+    models_dev_slug: Optional[str] = None  # None if not on models.dev
+    litellm_prefix: str
+    api_base: Optional[str] = None
+    drop_params: bool = False
+
+
+# Provider configurations - user-facing slug is the dict key
 PROVIDERS = {
-    'groq': 'GROQ_API_KEY',
-    'openrouter': 'OPENROUTER_API_KEY',
-    'mistral': 'MISTRAL_API_KEY',
-    'replicate': 'REPLICATE_API_TOKEN',  # Not on models.dev
-    'cloudflare-workers-ai': 'CLOUDFLARE_API_KEY',
-    'ollama-cloud': 'OLLAMA_API_KEY',
-    'nvidia': 'NVIDIA_API_KEY',
+    'groq': ProviderConfig(
+        env_var='GROQ_API_KEY',
+        models_dev_slug='groq',
+        litellm_prefix='groq',
+    ),
+    'openrouter': ProviderConfig(
+        env_var='OPENROUTER_API_KEY',
+        models_dev_slug='openrouter',
+        litellm_prefix='openrouter',
+    ),
+    'mistral': ProviderConfig(
+        env_var='MISTRAL_API_KEY',
+        models_dev_slug='mistral',
+        litellm_prefix='mistral',
+    ),
+    'replicate': ProviderConfig(
+        env_var='REPLICATE_API_TOKEN',
+        models_dev_slug=None,  # Not on models.dev
+        litellm_prefix='replicate',
+    ),
+    'cloudflare-workers-ai': ProviderConfig(
+        env_var='CLOUDFLARE_API_KEY',
+        models_dev_slug='cloudflare-workers-ai',
+        litellm_prefix='cloudflare',
+        drop_params=True,
+    ),
+    'ollama-cloud': ProviderConfig(
+        env_var='OLLAMA_API_KEY',
+        models_dev_slug='ollama-cloud',
+        litellm_prefix='ollama',
+        api_base='https://ollama.com',
+    ),
+    'nvidia': ProviderConfig(
+        env_var='NVIDIA_NIM_API_KEY',
+        models_dev_slug='nvidia',
+        litellm_prefix='nvidia_nim',
+    ),
 }
 
-API_KEYS = {p: os.environ.get(e) for p, e in PROVIDERS.items()}
 
-# Map models.dev provider slugs to litellm provider prefixes
-LITELLM_PROVIDER_PREFIX = {
-    'groq': 'groq',
-    'openrouter': 'openrouter',
-    'mistral': 'mistral',
-    'replicate': 'replicate',
-    'cloudflare-workers-ai': 'cloudflare',
-    'ollama-cloud': 'ollama',  # ollama-cloud uses ollama provider with different host
-    'nvidia': 'nvidia_nim',
-}
-
-# Provider-specific API base URLs
-PROVIDER_API_BASE = {
-    'ollama-cloud': 'https://ollama.com',
-}
-
-
-def fetch_models_dev():
+def fetch_models_dev() -> dict:
     """Fetch models.dev API data."""
     req = Request('https://models.dev/api.json', headers={'User-Agent': 'micro-agent-runner'})
     with urlopen(req) as resp:
         return json.loads(resp.read().decode())
 
 
-def validate_model(model_slug, models_dev):
+def validate_model(model_slug: str, models_dev: dict) -> None:
     """Validate model slug and API key. Exit on error."""
     if '/' not in model_slug:
         print(f"Error: Invalid model format '{model_slug}'. Expected: provider/model", file=sys.stderr)
@@ -68,33 +89,82 @@ def validate_model(model_slug, models_dev):
         print(f"Supported: {', '.join(PROVIDERS.keys())}", file=sys.stderr)
         sys.exit(1)
 
-    if not API_KEYS[provider]:
-        print(f"Error: {PROVIDERS[provider]} not set", file=sys.stderr)
-        print(f"Set: export {PROVIDERS[provider]}=your-key", file=sys.stderr)
+    config = PROVIDERS[provider]
+
+    if not os.environ.get(config.env_var):
+        print(f"Error: {config.env_var} not set", file=sys.stderr)
+        print(f"Set: export {config.env_var}=your-key", file=sys.stderr)
         sys.exit(1)
 
-    # replicate is not on models.dev - skip validation only for this provider
-    if provider == 'replicate':
+    # Skip models.dev validation for providers not listed there
+    if config.models_dev_slug is None:
         return
 
-    if provider not in models_dev:
-        print(f"Error: Provider '{provider}' not found in models.dev", file=sys.stderr)
+    if config.models_dev_slug not in models_dev:
+        print(f"Error: Provider '{config.models_dev_slug}' not found in models.dev", file=sys.stderr)
         sys.exit(1)
 
-    if model_id not in models_dev[provider]['models']:
+    if model_id not in models_dev[config.models_dev_slug]['models']:
         print(f"Error: Model '{model_slug}' not found", file=sys.stderr)
-        print(f"Available models for {provider}:", file=sys.stderr)
-        for m in models_dev[provider]['models']:
-            print(f"  {provider}/{m}", file=sys.stderr)
+        print(f"Available models for {config.models_dev_slug}:", file=sys.stderr)
+        for m in models_dev[config.models_dev_slug]['models']:
+            print(f"  {config.models_dev_slug}/{m}", file=sys.stderr)
         sys.exit(1)
 
 
-def parse_template(content):
+def parse_template(content: str) -> tuple[dict, str]:
     """Parse YAML frontmatter + template body."""
     match = re.match(r'^---\s*\n(.*?)\n---\s*\n(.*)$', content, re.DOTALL)
     if not match:
         return {}, content
     return yaml.safe_load(match.group(1)), match.group(2)
+
+
+def build_variables(file_args: list[str], var_args: list[str]) -> dict:
+    """Build variables from --file and --var arguments."""
+    variables = {}
+
+    for file_arg in file_args:
+        if '=' not in file_arg:
+            print(f"Error: Invalid --file format: {file_arg}", file=sys.stderr)
+            sys.exit(1)
+        key, path = file_arg.split('=', 1)
+        content = Path(path.strip()).expanduser().read_text()
+        variables[key.strip()] = variables.get(key, '') + ('\n\n===\n\n' if key in variables else '') + content
+
+    for var_arg in var_args:
+        if '=' not in var_arg:
+            print(f"Error: Invalid --var format: {var_arg}", file=sys.stderr)
+            sys.exit(1)
+        key, value = var_arg.split('=', 1)
+        variables[key.strip()] = value.strip()
+
+    return variables
+
+
+def get_completion(model: str, messages: list[dict], temperature: float, provider: str) -> str:
+    """Get completion from LLM provider."""
+    config = PROVIDERS[provider]
+
+    # Apply provider-specific settings
+    if config.drop_params:
+        litellm.drop_params = True
+
+    # Build litellm model string
+    litellm_model = f"{config.litellm_prefix}/{model.split('/', 1)[1]}"
+
+    # Build completion kwargs
+    completion_kwargs = {
+        'model': litellm_model,
+        'messages': messages,
+        'temperature': temperature,
+    }
+
+    if config.api_base:
+        completion_kwargs['api_base'] = config.api_base
+
+    response = litellm.completion(**completion_kwargs)
+    return response.choices[0].message.content
 
 
 def main():
@@ -104,12 +174,12 @@ def main():
     parser.add_argument('--var', '-v', action='append', default=[], help='Set variable: var=value')
     parser.add_argument('--model', '-m', help='Model slug (provider/model)')
     parser.add_argument('--temperature', '-t', type=float, help='Temperature')
-    parser.add_argument('--max-tokens', type=int, help='Max tokens')
     parser.add_argument('--output', '-o', default='-', help='Output file')
     parser.add_argument('--models', action='store_true', help='List available models')
-    
+
     args = parser.parse_args()
-    
+
+    # List models mode
     if args.models:
         models_dev = fetch_models_dev()
         try:
@@ -119,82 +189,48 @@ def main():
         except BrokenPipeError:
             pass
         sys.exit(0)
-    
+
     if not args.template:
         print("Error: template required", file=sys.stderr)
         sys.exit(1)
-    
+
     # Load and parse template
     template_file = Path(args.template).expanduser()
     if not template_file.exists():
         print(f"Error: Template not found: {template_file}", file=sys.stderr)
         sys.exit(1)
-    
+
     frontmatter, template_str = parse_template(template_file.read_text())
-    
+
     # Determine model (CLI override or template default)
     model = args.model or frontmatter.get('model')
     if not model:
         print("Error: --model required or 'model:' in template", file=sys.stderr)
         sys.exit(1)
-    
+
     # Fetch models.dev and validate
     models_dev = fetch_models_dev()
     validate_model(model, models_dev)
-    
+
     # Build variables
-    variables = {}
-    for file_arg in args.file:
-        if '=' not in file_arg:
-            print(f"Error: Invalid --file format: {file_arg}", file=sys.stderr)
-            sys.exit(1)
-        key, path = file_arg.split('=', 1)
-        content = Path(path.strip()).expanduser().read_text()
-        variables[key.strip()] = variables.get(key, '') + ('\n\n===\n\n' if key in variables else '') + content
-    
-    for var_arg in args.var:
-        if '=' not in var_arg:
-            print(f"Error: Invalid --var format: {var_arg}", file=sys.stderr)
-            sys.exit(1)
-        variables[var_arg.split('=', 1)[0].strip()] = var_arg.split('=', 1)[1].strip()
-    
-    # Render and execute
+    variables = build_variables(args.file, args.var)
+
+    # Render template
     template = Template(template_str)
     prompt = template.render(**variables)
 
+    # Build messages
     system_prompt = frontmatter.get('system')
     messages = [{"role": "user", "content": prompt}]
     if system_prompt:
         messages.insert(0, {"role": "system", "content": system_prompt})
 
-    # Convert models.dev provider slug to litellm provider prefix
-    provider, model_id = model.split('/', 1)
-    litellm_prefix = LITELLM_PROVIDER_PREFIX.get(provider, provider)
-    litellm_model = f"{litellm_prefix}/{model_id}"
+    # Get completion
+    provider = model.split('/', 1)[0]
+    temperature = args.temperature if args.temperature is not None else frontmatter.get('temperature', 0.0)
+    result = get_completion(model, messages, temperature, provider)
 
-    # Set litellm options for specific providers
-    if provider == 'cloudflare-workers-ai':
-        litellm.drop_params = True
-
-    # NVIDIA uses NVIDIA_API_KEY but litellm expects NVIDIA_NIM_API_KEY
-    if provider == 'nvidia' and 'NVIDIA_API_KEY' in os.environ and 'NVIDIA_NIM_API_KEY' not in os.environ:
-        os.environ['NVIDIA_NIM_API_KEY'] = os.environ['NVIDIA_API_KEY']
-
-    # Build completion kwargs
-    completion_kwargs = {
-        'model': litellm_model,
-        'messages': messages,
-        'temperature': args.temperature if args.temperature is not None else frontmatter.get('temperature', 0.0),
-        'max_tokens': args.max_tokens or frontmatter.get('max_tokens'),
-    }
-
-    # Add API base for providers that need it
-    if provider in PROVIDER_API_BASE:
-        completion_kwargs['api_base'] = PROVIDER_API_BASE[provider]
-
-    response = litellm.completion(**completion_kwargs)
-    result = response.choices[0].message.content
-
+    # Output result
     if args.output == '-':
         print(result)
     else:
