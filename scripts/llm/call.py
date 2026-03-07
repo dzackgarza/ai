@@ -17,6 +17,7 @@ from typing import Any, TypeVar
 
 from pydantic import BaseModel
 from pydantic_ai import Agent
+from pydantic_ai.exceptions import ModelHTTPError
 
 from scripts.llm.providers import make_model, resolve, api_key
 
@@ -62,7 +63,27 @@ async def call_llm(
         retries=retries,
     )
 
-    result = await agent.run(prompt)
+    try:
+        result = await agent.run(prompt)
+    except ModelHTTPError as exc:
+        status = exc.status_code
+        if status == 429:
+            raise RuntimeError(
+                f"Rate limit or quota exceeded for {model_slug} (HTTP 429). "
+                "Wait and retry, or choose a different model."
+            ) from exc
+        if status == 401 or status == 403:
+            raise RuntimeError(
+                f"Authentication failed for {model_slug} (HTTP {status}). "
+                f"Check that {cfg.env_var} is set and valid."
+            ) from exc
+        if status == 400:
+            raise RuntimeError(
+                f"Bad request to {model_slug} (HTTP 400): {exc.body}"
+            ) from exc
+        raise RuntimeError(
+            f"API error for {model_slug} (HTTP {status}): {exc.body}"
+        ) from exc
     return result.output
 
 

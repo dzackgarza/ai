@@ -179,9 +179,13 @@ def main() -> None:
 
     schema = agent.schema_class()
 
-    result = asyncio.run(
-        call_llm(model, messages, schema=schema, temperature=temperature)
-    )
+    try:
+        result = asyncio.run(
+            call_llm(model, messages, schema=schema, temperature=temperature)
+        )
+    except (RuntimeError, ValueError) as exc:
+        logger.error("%s", exc)
+        sys.exit(1)
 
     output: str
     if hasattr(result, "model_dump"):
