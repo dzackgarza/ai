@@ -13,10 +13,10 @@ Four harnesses, unified interface. All auto-detect auth, all support JSON output
 | **Amp** | `amp usage` CLI command discovered via `amp --help`; output parsed with regex |
 | **Antigravity** | Global npm package `antigravity-usage` found via community Discord; `--json` flag discovered via source inspection |
 | **Ollama** | Session cookie extracted from browser DevTools → Application → Cookies; HTML scraping from `/settings` page |
-| **OpenRouter** | Free tier request count NOT exposed via API — tracked via Langfuse observability (OpenRouter Broadcast) |
+| **OpenRouter** | Free tier request count not exposed via API — no tracking available |
 | **Qwen** | OpenAI logging feature discovered via CLI docs; request count from local log files in `~/qwen-logs/` |
 
-**OpenRouter does not expose free tier request counts** — the API only tracks credits. To monitor the 50 requests/day limit, traces are collected via OpenRouter Broadcast → Langfuse, then queried via Langfuse Metrics API.
+**OpenRouter does not expose free tier request counts** — the API only tracks credits. The 50 requests/day free tier limit cannot be queried programmatically.
 
 **To add a new provider, expect to:**
 
@@ -86,20 +86,10 @@ python antigravity_usage.py --no-notify  # Disable auto-notification
 
 ## OpenRouter
 
-```bash
-python openrouter_usage.py         # Rich summary (via Langfuse)
-python openrouter_usage.py --json  # JSON output
-python openrouter_usage.py --no-notify  # Disable auto-notification
-```
+> **Not yet implemented.** OpenRouter's free tier request count is not exposed via their API (only credits are tracked). A tracking mechanism needs to be developed that doesn't rely on third-party observability tools.
 
-- **Auth:** `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` environment variables
-- **Setup:**
-  1. Create Langfuse account at https://cloud.langfuse.com (free tier: 50k units/month, no credit card)
-  2. Get API keys from Settings > API Keys
-  3. Enable OpenRouter Broadcast: OpenRouter Settings > Observability > Langfuse
-  4. Add keys to `~/.envrc`: `export LANGFUSE_PUBLIC_KEY=pk-lf-...` and `export LANGFUSE_SECRET_KEY=sk-lf-...`
 - **Limits:** 50 requests/day (free tier), resets at UTC midnight
-- **How it works:** OpenRouter sends traces to Langfuse via Broadcast; script queries Langfuse Metrics API for daily count of free model requests
+- **Known constraint:** No programmatic way to query the daily request count directly from OpenRouter
 
 ## Qwen Code
 
@@ -188,9 +178,6 @@ just usage-amp --no-notify    # Disable notifications
 
 just usage-antigravity  # Antigravity (auto-notify)
 just usage-antigravity --no-notify  # Disable notifications
-
-just usage-openrouter   # OpenRouter (auto-notify)
-just usage-openrouter --no-notify  # Disable notifications
 
 just usage-ollama       # Ollama (auto-notify)
 just usage-ollama --no-notify  # Disable notifications

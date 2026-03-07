@@ -117,5 +117,5 @@ The wrapper scripts abstract away the locations of the underlying data. If the s
 | **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                                                            |
 | **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                                                                     |
 | **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                                                           |
-| **OpenCode**    | Langfuse API                | Fetched via `parse_langfuse_opencode.py` using session ID. Requires `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` env vars. |
+| **OpenCode**    | OpenCode CLI export         | Fetched via `opencode export <session_id>`. Use `parse_opencode_log.py` with a session ID. |
 | **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                                                              |

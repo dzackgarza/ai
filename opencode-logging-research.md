@@ -601,7 +601,7 @@
 2. **No Official Dashboard**: No built-in web UI for session/event browsing
 3. **No OTEL Integration**: No native OpenTelemetry support (only user POC)
 4. **Limited Structured Logging**: Plugins must implement their own event structure
-5. **No Built-in Observability**: Compared to LLM platforms (Helicone, Langfuse), OpenCode lacks native observability layer
+5. **No Built-in Observability**: Compared to LLM platforms like Helicone, OpenCode lacks a native observability layer
 6. **Session Search**: No full-text search across all sessions without custom tooling
 7. **Cost Allocation**: Multi-agent/tool cost attribution requires manual calculation
 

@@ -17,7 +17,7 @@ Five scripts report quota across Claude, Codex, Amp, Antigravity, and OpenRouter
 | `amp_usage.py` | Amp provider (continuous credit replenishment) |
 | `antigravity_usage.py` | Antigravity provider (per-model quotas, wakeup trigger) |
 | `ollama_usage.py` | Ollama Cloud provider (5h/7d windows, cookie auth) |
-| `openrouter_usage.py` | OpenRouter provider (50 req/day free tier, via Langfuse Metrics API) |
+| `openrouter_usage.py` | OpenRouter provider (50 req/day free tier) — **NOT IMPLEMENTED** |
 
 ---
 

@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@ai-sdk/openai-compatible": "^2.0.31",
-    "opencode-plugin-langfuse": "^0.1.8"
+    "@ai-sdk/openai-compatible": "^2.0.31"
   }
 }

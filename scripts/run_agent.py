@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
-General-purpose micro-agent runner.
-
-Supports PromptL-style templates with YAML frontmatter.
-Uses litellm for unified provider support.
+Micro-agent runner using Jinja2 templates with YAML frontmatter.
 """
 
 import sys
@@ -17,8 +14,8 @@ from jinja2 import Template
 import litellm
 
 
-def parse_promptl(content):
-    """Parse PromptL format: YAML frontmatter + template."""
+def parse_template(content):
+    """Parse YAML frontmatter + template body."""
     match = re.match(r'^---\s*\n(.*?)\n---\s*\n(.*)$', content, re.DOTALL)
     if not match:
         return {}, content
@@ -28,59 +25,27 @@ def parse_promptl(content):
     return frontmatter, template
 
 
-def load_template(template_path):
-    """Load a PromptL template."""
-    p = Path(template_path).expanduser()
-    if not p.exists():
-        prompt_dir = Path.home() / 'ai' / 'prompts' / 'micro_agents'
-        p = prompt_dir / template_path
-        if not p.exists():
-            p = prompt_dir / f'{template_path}.promptl'
-    
-    if not p.exists():
-        print(f"Error: Template not found: {template_path}", file=sys.stderr)
-        sys.exit(1)
-    
-    return parse_promptl(p.read_text()), p.parent
-
-
-def validate_inputs(frontmatter, provided_vars):
-    """Validate that required inputs are provided."""
-    inputs = frontmatter.get('inputs', [])
-    required = [inp['name'] for inp in inputs if inp.get('required', False)]
-    
-    missing = [name for name in required if name not in provided_vars]
-    if missing:
-        print(f"Error: Missing required inputs: {missing}", file=sys.stderr)
-        sys.exit(1)
-
-
 def run_agent(template_path, variables, model=None, temperature=None, max_tokens=None):
-    """Run a micro-agent with the given inputs."""
+    """Run a micro-agent."""
     
-    (frontmatter, template_str), _ = load_template(template_path)
-    
-    # Determine model
-    if model:
-        model_slug = model
-    else:
-        model_slug = frontmatter.get('model')
-    
-    if not model_slug:
-        print("Error: No model specified. Use --model or set 'model:' in template.", file=sys.stderr)
+    template_file = Path(template_path).expanduser()
+    if not template_file.exists():
+        print(f"Error: Template not found: {template_file}", file=sys.stderr)
         sys.exit(1)
     
-    # Validate inputs
-    validate_inputs(frontmatter, variables)
+    frontmatter, template_str = parse_template(template_file.read_text())
     
-    # Render template
+    model = model or frontmatter.get('model')
+    if not model:
+        print("Error: --model required or 'model:' in template", file=sys.stderr)
+        sys.exit(1)
+    
     template = Template(template_str)
     prompt = template.render(**variables)
     
-    # Call LLM via litellm
     try:
         response = litellm.completion(
-            model=model_slug,
+            model=model,
             messages=[
                 {"role": "system", "content": frontmatter.get('system', 'You are a helpful assistant.')},
                 {"role": "user", "content": prompt}
@@ -89,146 +54,88 @@ def run_agent(template_path, variables, model=None, temperature=None, max_tokens
             max_tokens=max_tokens if max_tokens else frontmatter.get('max_tokens')
         )
         return response.choices[0].message.content
-    except litellm.exceptions.AuthenticationError as e:
-        print(f"Error: Authentication failed for {model_slug}. Check API key.", file=sys.stderr)
-        print(f"Required env vars: {get_required_env_vars(model_slug)}", file=sys.stderr)
+    except litellm.exceptions.AuthenticationError:
+        provider = model.split('/')[0] if '/' in model else 'unknown'
+        env_var = f"{provider.upper()}_API_KEY"
+        print(f"Error: Authentication failed for {model}", file=sys.stderr)
+        print(f"Set: export {env_var}=your-key", file=sys.stderr)
         sys.exit(1)
-    except litellm.exceptions.NotFoundError as e:
-        print(f"Error: Model '{model_slug}' not found.", file=sys.stderr)
-        print(f"\nTip: Check model name or run 'python run_agent.py --models --model {model_slug.split('/')[0]}/'", file=sys.stderr)
-        sys.exit(1)
-    except litellm.exceptions.BadRequestError as e:
-        print(f"Error: Invalid request for {model_slug}: {e}", file=sys.stderr)
+    except litellm.exceptions.NotFoundError:
+        print(f"Error: Model '{model}' not found", file=sys.stderr)
+        provider = model.split('/')[0] if '/' in model else None
+        if provider:
+            print(f"List models: python run_agent.py --models --model {provider}/", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def get_required_env_vars(model_slug):
-    """Get required env vars for a model (litellm handles this)."""
-    provider = model_slug.split('/')[0] if '/' in model_slug else 'unknown'
-    env_map = {
-        'groq': 'GROQ_API_KEY',
-        'openai': 'OPENAI_API_KEY',
-        'anthropic': 'ANTHROPIC_API_KEY',
-        'azure': 'AZURE_API_KEY',
-        'cohere': 'COHERE_API_KEY',
-        'replicate': 'REPLICATE_API_TOKEN',
-        'huggingface': 'HUGGINGFACE_API_KEY',
-    }
-    return env_map.get(provider, f'{provider.upper()}_API_KEY')
-
-
 def list_models(provider):
     """List available models for a provider."""
-    try:
-        if provider == 'groq':
-            from groq import Groq
-            client = Groq(api_key=os.environ.get('GROQ_API_KEY'))
-            models = client.models.list()
-            print(f"Available models for {provider}:")
-            for m in models.data:
-                print(f"  - {provider}/{m.id}")
-        else:
-            print(f"Model listing not supported for {provider}. Check provider docs.", file=sys.stderr)
+    if provider == 'groq':
+        from groq import Groq
+        api_key = os.environ.get('GROQ_API_KEY')
+        if not api_key:
+            print("Error: GROQ_API_KEY not set", file=sys.stderr)
             sys.exit(1)
-    except Exception as e:
-        print(f"Error listing models: {e}", file=sys.stderr)
+        client = Groq(api_key=api_key)
+        models = client.models.list()
+        print(f"Available models for {provider}:")
+        for m in models.data:
+            print(f"  - {provider}/{m.id}")
+    else:
+        print(f"Model listing not supported for {provider}", file=sys.stderr)
         sys.exit(1)
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Run a PromptL micro-agent',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='''
-Examples:
-    python run_agent.py evaluator \\
-        --file request=prompt.txt \\
-        --file deliverable=output.txt \\
-        --file reference_materials=src1.txt \\
-        --file reference_materials=src2.txt
-
-    python run_agent.py evaluator \\
-        --var request="Evaluate this" \\
-        --file deliverable=output.txt \\
-        --model groq/llama-3.3-70b-versatile
-'''
-    )
+    parser = argparse.ArgumentParser(description='Run a micro-agent')
     
-    parser.add_argument('template', nargs='?', help='Template file or name')
+    parser.add_argument('template', help='Template file path')
     parser.add_argument('--file', '-f', action='append', default=[], 
                         help='Load variable from file: var_name=path')
     parser.add_argument('--var', '-v', action='append', default=[], 
                         help='Set variable: var_name=value')
     parser.add_argument('--model', '-m', help='Model slug (provider/model)')
-    parser.add_argument('--temperature', '-t', type=float, help='Override temperature')
-    parser.add_argument('--max-tokens', type=int, help='Override max tokens')
+    parser.add_argument('--temperature', '-t', type=float, help='Temperature')
+    parser.add_argument('--max-tokens', type=int, help='Max tokens')
     parser.add_argument('--output', '-o', default='-', help='Output file')
-    parser.add_argument('--list', action='store_true', help='List templates')
     parser.add_argument('--models', action='store_true', help='List models for provider')
     
     args = parser.parse_args()
     
-    # List templates
-    if args.list:
-        prompt_dir = Path.home() / 'ai' / 'prompts' / 'micro_agents'
-        if prompt_dir.exists():
-            print("Available templates:")
-            for p in sorted(prompt_dir.glob('*.promptl')):
-                print(f"  - {p.stem}")
-        sys.exit(0)
-    
-    # List models
     if args.models:
         if not args.model:
-            print("Error: --models requires --model with provider (e.g., --model groq/)", file=sys.stderr)
+            print("Error: --models requires --model", file=sys.stderr)
             sys.exit(1)
-        
-        provider = args.model.rstrip('/').split('/')[0]
+        provider = args.model.split('/')[0]
         list_models(provider)
         sys.exit(0)
     
-    # Build variables
     variables = {}
     for file_arg in args.file:
         if '=' not in file_arg:
-            print(f"Error: Invalid --file format: {file_arg}", file=sys.stderr)
+            print(f"Error: Invalid --file format: {file_arg} (expected var=path)", file=sys.stderr)
             sys.exit(1)
-        
         key, path = file_arg.split('=', 1)
-        key = key.strip()
-        path = Path(path.strip()).expanduser()
-        
-        if not path.exists():
-            print(f"Error: File not found: {path}", file=sys.stderr)
+        file_path = Path(path.strip()).expanduser()
+        if not file_path.exists():
+            print(f"Error: File not found: {file_path}", file=sys.stderr)
             sys.exit(1)
-        
-        content = path.read_text()
-        if key in variables:
-            variables[key] = variables[key] + '\n\n===\n\n' + content
-        else:
-            variables[key] = content
+        content = file_path.read_text()
+        variables[key.strip()] = variables.get(key, '') + ('\n\n===\n\n' if key in variables else '') + content
     
     for var_arg in args.var:
         if '=' not in var_arg:
-            print(f"Error: Invalid --var format: {var_arg}", file=sys.stderr)
+            print(f"Error: Invalid --var format: {var_arg} (expected var=value)", file=sys.stderr)
             sys.exit(1)
-        
         key, value = var_arg.split('=', 1)
         variables[key.strip()] = value.strip()
     
-    # Run agent
-    result = run_agent(
-        args.template,
-        variables,
-        model=args.model,
-        temperature=args.temperature,
-        max_tokens=args.max_tokens
-    )
+    result = run_agent(args.template, variables, model=args.model, 
+                       temperature=args.temperature, max_tokens=args.max_tokens)
     
-    # Write output
     if args.output == '-':
         print(result)
     else:
