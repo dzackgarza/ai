@@ -1,48 +1,48 @@
 #!/usr/bin/env python3
 """
-Micro-agent runner using Jinja2 templates with YAML frontmatter.
+Micro-agent runner — thin CLI wrapper over scripts.llm.
 
-Entry point for micro-agent execution. Delegates provider registry, model
-validation, and LLM calls to the scripts.llm package.
+Loads a micro-agent template, renders it with supplied variables, and runs it
+against the model declared in the template (or a CLI override). All provider
+resolution, API key validation, model listing, and LLM dispatch are handled by
+the scripts.llm package; this script only owns CLI parsing and I/O.
 
 Usage:
-    python scripts/run_micro_agent.py <template> [--model groq/llama-3.3-70b-versatile]
-    python scripts/run_micro_agent.py --models        # list all available models
+    python scripts/run_micro_agent.py <template> [--model provider/model]
+                                       [--file var=path] [--var var=value]
+                                       [--temperature T] [--output file]
+    python scripts/run_micro_agent.py --models [provider]   # list available models
 """
 
-import sys
-import argparse
+from __future__ import annotations
+
+import asyncio
 import logging
+import sys
 from pathlib import Path
 
-import litellm
-
 # Allow running from repo root without installing the package.
-# Must be set before the scripts.llm imports below.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from scripts.llm.providers import PROVIDERS, resolve, api_key  # noqa: E402
-from scripts.llm.templates import load_micro_agent  # noqa: E402
+from scripts.llm import call_llm, list_models, load_micro_agent, validate  # noqa: E402
+from scripts.llm.templates import MissingVariablesError  # noqa: E402
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Template parsing — delegated to scripts.llm.templates
+# CLI variable helpers
 # ---------------------------------------------------------------------------
-# load_micro_agent(path) returns a MicroAgent with .frontmatter, .system, .body
-# and .render(**variables). Used in main() below.
 
 
-def build_variables(file_args: list[str], var_args: list[str]) -> dict:
+def build_variables(file_args: list[str], var_args: list[str]) -> dict[str, str]:
     """Build variables dict from --file and --var arguments."""
     variables: dict[str, str] = {}
 
     for file_arg in file_args:
         if "=" not in file_arg:
-            logger.error("Invalid --file format: %s", file_arg)
+            logger.error("Invalid --file format %r — expected var=path", file_arg)
             sys.exit(1)
         key, path = file_arg.split("=", 1)
         content = Path(path.strip()).expanduser().read_text()
@@ -51,7 +51,7 @@ def build_variables(file_args: list[str], var_args: list[str]) -> dict:
 
     for var_arg in var_args:
         if "=" not in var_arg:
-            logger.error("Invalid --var format: %s", var_arg)
+            logger.error("Invalid --var format %r — expected var=value", var_arg)
             sys.exit(1)
         key, value = var_arg.split("=", 1)
         variables[key.strip()] = value.strip()
@@ -60,110 +60,83 @@ def build_variables(file_args: list[str], var_args: list[str]) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Completion (delegates to litellm using provider config from scripts.llm)
-# ---------------------------------------------------------------------------
-
-
-def validate_model(model_slug: str) -> None:
-    """Validate model slug and API key availability. Exits on error."""
-    if "/" not in model_slug:
-        logger.error("Invalid model format %r. Expected: provider/model", model_slug)
-        sys.exit(1)
-    provider_prefix = model_slug.split("/", 1)[0]
-    if provider_prefix not in PROVIDERS:
-        logger.error(
-            "Unsupported provider %r. Supported: %s",
-            provider_prefix,
-            ", ".join(PROVIDERS),
-        )
-        sys.exit(1)
-    cfg = PROVIDERS[provider_prefix]
-    key = api_key(cfg)
-    if not key and cfg.env_var is not None:
-        logger.error("%s not set. Run: export %s=your-key", cfg.env_var, cfg.env_var)
-        sys.exit(1)
-    available = cfg.get_models()
-    if not available:
-        logger.warning(
-            "Skipping model validation for %s (no model list available)",
-            provider_prefix,
-        )
-        return
-    model_id = model_slug.split("/", 1)[1]
-    if model_id not in available:
-        sample = available[:20]
-        lines = "\n  ".join(f"{provider_prefix}/{m}" for m in sample)
-        extra = f"\n  ... and {len(available) - 20} more" if len(available) > 20 else ""
-        logger.error("Model %r not found. Available:\n  %s%s", model_slug, lines, extra)
-        sys.exit(1)
-
-
-def get_completion(
-    model_slug: str,
-    messages: list[dict],
-    temperature: float,
-) -> str:
-    """Plain-text LLM completion via litellm."""
-    cfg, model_id = resolve(model_slug)
-    if cfg.drop_params:
-        litellm.drop_params = True
-    litellm_model = f"{cfg.litellm_prefix}/{model_id}"
-    logger.info("Calling %s with temperature=%s", litellm_model, temperature)
-    kwargs: dict = {
-        "model": litellm_model,
-        "messages": messages,
-        "temperature": temperature,
-    }
-    if cfg.base_url and cfg.litellm_prefix not in ("groq", "openrouter", "mistral"):
-        kwargs["api_base"] = cfg.base_url
-    response = litellm.completion(**kwargs)
-    return response.choices[0].message.content  # type: ignore[union-attr]
-
-
-# ---------------------------------------------------------------------------
-# list_all_models — mirrors old behaviour
-# ---------------------------------------------------------------------------
-
-
-def list_all_models() -> None:
-    for provider_name, cfg in PROVIDERS.items():
-        for model_id in cfg.get_models():
-            print(f"{provider_name}/{model_id}")
-
-
-# ---------------------------------------------------------------------------
-# main
+# Main
 # ---------------------------------------------------------------------------
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run a micro-agent")
-    parser.add_argument("template", nargs="?", help="Template file path")
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run a micro-agent template",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("template", nargs="?", help="Path to .md template file")
     parser.add_argument(
-        "--file", "-f", action="append", default=[], help="Load variable: var=path"
+        "--file",
+        "-f",
+        action="append",
+        default=[],
+        metavar="VAR=PATH",
+        help="Load a file into a template variable",
     )
     parser.add_argument(
-        "--var", "-v", action="append", default=[], help="Set variable: var=value"
+        "--var",
+        "-v",
+        action="append",
+        default=[],
+        metavar="VAR=VALUE",
+        help="Set a template variable inline",
     )
-    parser.add_argument("--model", "-m", help="Model slug (provider/model)")
-    parser.add_argument("--temperature", "-t", type=float, help="Temperature")
     parser.add_argument(
-        "--output", "-o", default="-", help="Output file (- for stdout)"
+        "--model",
+        "-m",
+        metavar="PROVIDER/MODEL",
+        help="Override the model declared in the template",
     )
     parser.add_argument(
-        "--models", action="store_true", help="List all available models and exit"
+        "--temperature",
+        "-t",
+        type=float,
+        help="Override the temperature declared in the template",
     )
-    parser.add_argument("--verbose", "-V", action="store_true", help="Verbose logging")
+    parser.add_argument(
+        "--output",
+        "-o",
+        default="-",
+        help="Output file (default: stdout)",
+    )
+    parser.add_argument(
+        "--models",
+        nargs="?",
+        const="__all__",
+        metavar="PROVIDER",
+        help="List available models (optionally for a specific provider) and exit",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-V",
+        action="store_true",
+        help="Enable debug logging",
+    )
     args = parser.parse_args()
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    if args.models:
-        list_all_models()
+    # --models listing
+    if args.models is not None:
+        provider = None if args.models == "__all__" else args.models
+        try:
+            for slug in list_models(provider):
+                print(slug)
+        except ValueError as exc:
+            logger.error("%s", exc)
+            sys.exit(1)
         sys.exit(0)
 
     if not args.template:
+        parser.print_usage(sys.stderr)
         logger.error("template argument required")
         sys.exit(1)
 
@@ -176,30 +149,52 @@ def main() -> None:
 
     model = args.model or agent.frontmatter.get("model")
     if not model:
-        logger.error("--model required or 'model:' field in template frontmatter")
+        logger.error("--model required or 'model:' must be set in template frontmatter")
         sys.exit(1)
 
-    validate_model(model)
+    try:
+        validate(model)
+    except ValueError as exc:
+        logger.error("%s", exc)
+        sys.exit(1)
 
     variables = build_variables(args.file, args.var)
-    prompt = agent.render(**variables)
 
-    messages: list[dict] = [{"role": "user", "content": prompt}]
+    try:
+        prompt = agent.render(**variables)
+    except MissingVariablesError as exc:
+        logger.error("%s", exc)
+        sys.exit(1)
+
+    messages: list[dict[str, str]] = []
     if agent.system:
-        messages.insert(0, {"role": "system", "content": agent.system})
+        messages.append({"role": "system", "content": agent.system})
+    messages.append({"role": "user", "content": prompt})
 
-    temperature = (
+    temperature: float = (
         args.temperature
         if args.temperature is not None
         else agent.frontmatter.get("temperature", 0.0)
     )
 
-    result = get_completion(model, messages, temperature)
+    schema = agent.schema_class()
+
+    result = asyncio.run(
+        call_llm(model, messages, schema=schema, temperature=temperature)
+    )
+
+    output: str
+    if hasattr(result, "model_dump"):
+        import json
+
+        output = json.dumps(result.model_dump(), indent=2)
+    else:
+        output = str(result)
 
     if args.output == "-":
-        print(result)
+        print(output)
     else:
-        Path(args.output).write_text(result)
+        Path(args.output).write_text(output)
         logger.info("Output written to %s", args.output)
 
 

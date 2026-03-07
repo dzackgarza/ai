@@ -37,3 +37,9 @@ harness *args:
 
 snapshot-gc:
     bash scripts/maintenance/opencode_gc.sh
+
+# Run a micro-agent template. Pass template path and optional --var/--file/--model flags.
+# Usage: just run-agent prompts/micro_agents/prompt_difficulty_classifier/prompt.md --var prompt="what does ls do"
+#        just run-agent --models [provider]   # list available models
+run-agent *args:
+    {{python}} ../scripts/run_micro_agent.py {{args}}

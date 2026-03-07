@@ -211,11 +211,25 @@ def make_model(
     return OpenAIChatModel(model_id, provider=provider, profile=profile)
 
 
+def list_models(provider: str | None = None) -> list[str]:
+    """Return all available model slugs, optionally filtered to one provider.
+
+    Each slug is in 'provider/model' form. Providers with no model list
+    (e.g. bare ollama) return an empty contribution.
+    """
+    if provider is not None:
+        cfg = PROVIDERS.get(provider)
+        if cfg is None:
+            raise ValueError(f"Unknown provider {provider!r}. Known: {list(PROVIDERS)}")
+        return [f"{provider}/{m}" for m in cfg.get_models()]
+    return [f"{name}/{m}" for name, cfg in PROVIDERS.items() for m in cfg.get_models()]
+
+
 def validate(slug: str) -> None:
     """Validate a model slug: provider registered, API key set, model known.
 
-    Raises ValueError with a descriptive message on failure. Used by run_micro_agent.py
-    before making a call. Skips model list validation if the provider has no list.
+    Raises ValueError with a descriptive message on failure.
+    Skips model list validation if the provider has no list.
     """
     if "/" not in slug:
         raise ValueError(f"Invalid model format {slug!r}. Expected: provider/model")
@@ -248,15 +262,15 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) == 1:
-        for name in PROVIDERS:
-            print(name)
+        for slug in list_models():
+            print(slug)
     elif len(sys.argv) == 2:
-        provider_name = sys.argv[1]
-        if provider_name not in PROVIDERS:
-            print(f"Unknown provider: {provider_name}", file=sys.stderr)
+        try:
+            for slug in list_models(sys.argv[1]):
+                print(slug)
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr)
             sys.exit(1)
-        for model_id in PROVIDERS[provider_name].get_models():
-            print(f"{provider_name}/{model_id}")
     else:
         print("Usage: python -m scripts.llm.providers [<provider>]", file=sys.stderr)
         sys.exit(1)

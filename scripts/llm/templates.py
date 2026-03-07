@@ -2,19 +2,43 @@
 Template loading and rendering for micro-agent prompts.
 
 Micro-agent templates (prompts/micro_agents/**/*.md) use YAML frontmatter.
-Use load_micro_agent(path) to parse them into {frontmatter, system, body}.
+Use load_micro_agent(path) to parse them into a MicroAgent.
 
-Supports Jinja2 rendering with keyword variables.
+Frontmatter fields:
+    model:       Default model slug (provider/model). Required unless --model passed.
+    temperature: Default temperature. Optional, default 0.0.
+    system:      System prompt (YAML block scalar). Optional.
+    schema:      Schema name from schemas.SCHEMAS for structured output. Optional.
+    inputs:      List of {name, description, required} input variable declarations.
+
+Variable validation:
+    MicroAgent.render(**variables) validates that all required inputs are provided
+    before rendering. Missing required variables raise MissingVariablesError.
+
+Schema resolution:
+    MicroAgent.schema_class() returns the pydantic BaseModel subclass registered
+    under the frontmatter 'schema:' name, or None if no schema is declared.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import yaml
 from jinja2 import Template
+
+if TYPE_CHECKING:
+    from pydantic import BaseModel
+
+
+class MissingVariablesError(ValueError):
+    """Raised when required template variables are not provided to render()."""
+
+    def __init__(self, missing: list[str]) -> None:
+        self.missing = missing
+        super().__init__(f"Missing required template variable(s): {', '.join(missing)}")
 
 
 def _split_frontmatter(content: str) -> tuple[dict, str]:
@@ -47,10 +71,38 @@ class MicroAgent:
     frontmatter: dict[str, Any]
     system: str | None
     body: str
+    _required_inputs: list[str] = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        inputs: list[dict] = self.frontmatter.get("inputs") or []
+        self._required_inputs = [
+            inp["name"] for inp in inputs if inp.get("required", False)
+        ]
 
     def render(self, **variables: str) -> str:
-        """Render the body as a Jinja2 template."""
+        """Render the body as a Jinja2 template.
+
+        Raises MissingVariablesError if any required inputs (declared in
+        frontmatter 'inputs:') are absent from variables.
+        """
+        missing = [k for k in self._required_inputs if k not in variables]
+        if missing:
+            raise MissingVariablesError(missing)
         return Template(self.body).render(**variables)
+
+    def schema_class(self) -> type[BaseModel] | None:
+        """Return the pydantic schema class declared in frontmatter, or None.
+
+        Resolves the 'schema:' key against scripts.llm.schemas.SCHEMAS.
+        Returns None if no schema is declared or the name is not registered.
+        """
+        schema_name: str | None = self.frontmatter.get("schema")
+        if not schema_name:
+            return None
+        # Import here to avoid circular import at module load time.
+        from scripts.llm.schemas import resolve_schema  # noqa: PLC0415
+
+        return resolve_schema(schema_name)
 
 
 def load_micro_agent(path: str | Path) -> MicroAgent:
