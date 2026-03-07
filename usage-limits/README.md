@@ -86,10 +86,16 @@ python antigravity_usage.py --no-notify  # Disable auto-notification
 
 ## OpenRouter
 
-> **Not yet implemented.** OpenRouter's free tier request count is not exposed via their API (only credits are tracked). A tracking mechanism needs to be developed that doesn't rely on third-party observability tools.
+> **Not yet implemented.** `fetch_raw()` raises `NotImplementedError`. A request-counting mechanism is needed that does not depend on third-party observability tooling.
 
-- **Limits:** 50 requests/day (free tier), resets at UTC midnight
-- **Known constraint:** No programmatic way to query the daily request count directly from OpenRouter
+```bash
+python openrouter_usage.py         # Rich summary (not yet functional)
+python openrouter_usage.py --json  # JSON output
+python openrouter_usage.py --no-notify  # Disable auto-notification
+```
+
+- **Limits:** 50 req/day if credits never purchased; 1000 req/day if credits were ever purchased. Resets at UTC midnight.
+- **Known constraint:** OpenRouter API only exposes credit balance, not request counts. The daily free-tier count cannot be queried directly.
 
 ## Qwen Code
 
@@ -178,6 +184,9 @@ just usage-amp --no-notify    # Disable notifications
 
 just usage-antigravity  # Antigravity (auto-notify)
 just usage-antigravity --no-notify  # Disable notifications
+
+just usage-openrouter   # OpenRouter (auto-notify) — not yet functional
+just usage-openrouter --no-notify  # Disable notifications
 
 just usage-ollama       # Ollama (auto-notify)
 just usage-ollama --no-notify  # Disable notifications

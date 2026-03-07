@@ -1,6 +1,6 @@
 # Usage Limits — Agent Guide
 
-Five scripts report quota across Claude, Codex, Amp, Antigravity, and OpenRouter in a uniform table:
+Six scripts report quota across Claude, Codex, Amp, Antigravity, Ollama, and OpenRouter in a uniform table (OpenRouter tracking is not yet implemented):
 
 ```
 | Identifier              | XX% | ████████░░░░ | in 4h 12m |
@@ -17,7 +17,7 @@ Five scripts report quota across Claude, Codex, Amp, Antigravity, and OpenRouter
 | `amp_usage.py` | Amp provider (continuous credit replenishment) |
 | `antigravity_usage.py` | Antigravity provider (per-model quotas, wakeup trigger) |
 | `ollama_usage.py` | Ollama Cloud provider (5h/7d windows, cookie auth) |
-| `openrouter_usage.py` | OpenRouter provider (50 req/day free tier) — **NOT IMPLEMENTED** |
+| `openrouter_usage.py` | OpenRouter provider (50–1000 req/day; `fetch_raw` not implemented) |
 
 ---
 
