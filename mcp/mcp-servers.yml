@@ -58,6 +58,17 @@ common:
     exclude_harnesses:
       - opencode
 
+  improved-webtools:
+    description: "Web search and fetching via improved-webtools MCP server"
+    command: "uv"
+    args:
+      - "run"
+      - "fastmcp"
+      - "run"
+      - "server.py"
+    cwd: "/home/dzack/opencode-plugins/improved-webtools/mcp-server"
+    enabled: true
+
 # Harnesses to sync (set enabled: false to skip a harness)
 harnesses:
   opencode:
