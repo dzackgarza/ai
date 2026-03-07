@@ -2,12 +2,12 @@
 Provider registry — single source of truth for all LLM providers.
 
 Supported providers (user-facing slugs):
-    groq/          → Groq (models.dev, bare IDs e.g. llama-3.3-70b-versatile)
-    openrouter/    → OpenRouter :free-tier models only
-    nvidia/        → NVIDIA NIM (live /v1/models fetch, vendor-prefixed IDs)
-    mistral/       → Mistral
-    cloudflare/    → Cloudflare Workers AI (account-ID URL, text models only)
-    ollama-cloud/  → Ollama Cloud (https://ollama.com/v1, models.dev)
+    groq/          → Groq (live /v1/models, chat models only)
+    openrouter/    → OpenRouter (live /v1/models, :free-tier models only)
+    nvidia/        → NVIDIA NIM (live /v1/models, vendor-prefixed IDs)
+    mistral/       → Mistral (live /v1/models, completion_chat capable only)
+    cloudflare/    → Cloudflare Workers AI (live models/search API, Text Generation only)
+    ollama-cloud/  → Ollama Cloud (live /v1/models)
     ollama/        → Local Ollama (http://localhost:11434/v1, :cloud suffix only)
 
 NOT supported:
@@ -42,7 +42,6 @@ from pydantic_ai.providers.groq import GroqProvider
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.providers.openrouter import OpenRouterProvider
 
-from scripts.llm.models_dev import fetcher as _models_dev
 
 logger = logging.getLogger(__name__)
 
@@ -69,9 +68,9 @@ class ProviderConfig(BaseModel):
 
 
 class GroqProviderConfig(ProviderConfig):
-    """Groq: fetches live model list from models.dev 'groq' slug.
+    """Groq: fetches live model list from /v1/models.
 
-    Groq bare model IDs (e.g. 'llama-3.3-70b-versatile') are returned as-is.
+    Filters out non-chat models (whisper, guard, orpheus, safeguard) by name.
     Groq rejects tool-calling for structured output, so output_mode='prompted'.
     """
 
@@ -79,26 +78,73 @@ class GroqProviderConfig(ProviderConfig):
     base_url: str = "https://api.groq.com/openai/v1"
     output_mode: str = "prompted"
 
+    _EXCLUDE = ("whisper", "guard", "orpheus", "safeguard")
+
     def get_models(self) -> list[str]:
-        models = _models_dev.get_models("groq")
-        logger.debug("Groq: %d models from models.dev", len(models))
-        return models
+        key = os.environ.get(self.env_var or "", "")
+        if not key:
+            logger.warning("%s not set, skipping Groq model fetch", self.env_var)
+            return []
+        try:
+            resp = httpx.get(
+                f"{self.base_url}/models",
+                headers={"Authorization": f"Bearer {key}"},
+                timeout=8.0,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            models = [
+                m["id"]
+                for m in data.get("data", [])
+                if not any(excl in m["id"].lower() for excl in self._EXCLUDE)
+            ]
+            logger.debug("Groq: %d chat models", len(models))
+            return models
+        except httpx.HTTPStatusError as exc:
+            logger.error(
+                "Groq /v1/models %d: %s",
+                exc.response.status_code,
+                exc.response.text[:200],
+            )
+            return []
+        except Exception as exc:
+            logger.error("Failed to fetch Groq models: %s", exc)
+            return []
 
 
 class OpenRouterProviderConfig(ProviderConfig):
-    """OpenRouter: only :free models from models.dev."""
+    """OpenRouter: fetches live :free models from /v1/models."""
 
     env_var: Optional[str] = "OPENROUTER_API_KEY"
     base_url: str = "https://openrouter.ai/api/v1"
     output_mode: str = "prompted"
 
     def get_models(self) -> list[str]:
-        all_models = _models_dev.get_models("openrouter")
-        free = [m for m in all_models if m.endswith(":free")]
-        logger.debug(
-            "OpenRouter: %d free models (of %d total)", len(free), len(all_models)
-        )
-        return free
+        key = os.environ.get(self.env_var or "", "")
+        if not key:
+            logger.warning("%s not set, skipping OpenRouter model fetch", self.env_var)
+            return []
+        try:
+            resp = httpx.get(
+                f"{self.base_url}/models",
+                headers={"Authorization": f"Bearer {key}"},
+                timeout=10.0,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            free = [m["id"] for m in data.get("data", []) if ":free" in m["id"]]
+            logger.debug("OpenRouter: %d free models", len(free))
+            return free
+        except httpx.HTTPStatusError as exc:
+            logger.error(
+                "OpenRouter /v1/models %d: %s",
+                exc.response.status_code,
+                exc.response.text[:200],
+            )
+            return []
+        except Exception as exc:
+            logger.error("Failed to fetch OpenRouter models: %s", exc)
+            return []
 
 
 class NvidiaProviderConfig(ProviderConfig):
@@ -170,53 +216,97 @@ class CloudflareProviderConfig(ProviderConfig):
         return f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1"
 
     def get_models(self) -> list[str]:
-        all_models = _models_dev.get_models("cloudflare-workers-ai")
-        # Filter to text/chat-capable models — exclude embeddings, rerankers,
-        # speech, image, and OCR models by well-known prefix/substring patterns.
-        _EXCLUDE = (
-            "bge-",
-            "whisper",
-            "reranker",
-            "stable-diffusion",
-            "unet",
-            "ocr",
-            "sql",
-            "embedding",
-            "image-classification",
-            "object-detection",
-            "translation",
-            "summarization",
-            "text-to-image",
-            "image-to-text",
-            "speech-recognition",
-        )
-        chat = [
-            m for m in all_models if not any(excl in m.lower() for excl in _EXCLUDE)
-        ]
-        logger.debug(
-            "Cloudflare: %d chat models (of %d total)", len(chat), len(all_models)
-        )
-        return chat
+        account_id = os.environ.get(self.account_id_env_var, "")
+        api_key = os.environ.get(self.env_var or "", "")
+        if not api_key or not account_id:
+            logger.warning(
+                "%s or %s not set, skipping Cloudflare model fetch",
+                self.env_var,
+                self.account_id_env_var,
+            )
+            return []
+        try:
+            models: list[str] = []
+            page = 1
+            while True:
+                resp = httpx.get(
+                    f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/models/search",
+                    params={"per_page": 100, "page": page},
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    timeout=10.0,
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                batch = data.get("result", [])
+                models.extend(
+                    m["name"]
+                    for m in batch
+                    if m.get("task", {}).get("name") == "Text Generation"
+                )
+                info = data.get("result_info", {})
+                if len(models) >= info.get("total_count", 0) or not batch:
+                    break
+                page += 1
+            logger.debug("Cloudflare: %d Text Generation models", len(models))
+            return models
+        except httpx.HTTPStatusError as exc:
+            logger.error(
+                "Cloudflare models %d: %s",
+                exc.response.status_code,
+                exc.response.text[:200],
+            )
+            return []
+        except Exception as exc:
+            logger.error("Failed to fetch Cloudflare models: %s", exc)
+            return []
 
 
 class MistralProviderConfig(ProviderConfig):
-    """Mistral: fetches live model list from models.dev 'mistral' slug."""
+    """Mistral: fetches live model list from /v1/models, filtered to chat-capable models.
+
+    Uses capabilities.completion_chat == True to exclude embed/OCR/moderation/audio models.
+    """
 
     env_var: Optional[str] = "MISTRAL_API_KEY"
     base_url: str = "https://api.mistral.ai/v1"
     output_mode: str = "tool"
 
     def get_models(self) -> list[str]:
-        models = _models_dev.get_models("mistral")
-        logger.debug("Mistral: %d models from models.dev", len(models))
-        return models
+        key = os.environ.get(self.env_var or "", "")
+        if not key:
+            logger.warning("%s not set, skipping Mistral model fetch", self.env_var)
+            return []
+        try:
+            resp = httpx.get(
+                f"{self.base_url}/models",
+                headers={"Authorization": f"Bearer {key}"},
+                timeout=8.0,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            models = [
+                m["id"]
+                for m in data.get("data", [])
+                if m.get("capabilities", {}).get("completion_chat")
+            ]
+            logger.debug("Mistral: %d chat models", len(models))
+            return models
+        except httpx.HTTPStatusError as exc:
+            logger.error(
+                "Mistral /v1/models %d: %s",
+                exc.response.status_code,
+                exc.response.text[:200],
+            )
+            return []
+        except Exception as exc:
+            logger.error("Failed to fetch Mistral models: %s", exc)
+            return []
 
 
 class OllamaCloudProviderConfig(ProviderConfig):
     """Ollama Cloud (https://ollama.com/v1).
 
-    User-facing slug: ollama-cloud/
-    Model IDs come from models.dev 'ollama-cloud' slug.
+    Fetches live model list from the OpenAI-compat /v1/models endpoint.
     """
 
     env_var: Optional[str] = "OLLAMA_API_KEY"
@@ -224,7 +314,33 @@ class OllamaCloudProviderConfig(ProviderConfig):
     output_mode: str = "prompted"
 
     def get_models(self) -> list[str]:
-        return _models_dev.get_models("ollama-cloud")
+        key = os.environ.get(self.env_var or "", "")
+        if not key:
+            logger.warning(
+                "%s not set, skipping Ollama Cloud model fetch", self.env_var
+            )
+            return []
+        try:
+            resp = httpx.get(
+                f"{self.base_url}/models",
+                headers={"Authorization": f"Bearer {key}"},
+                timeout=8.0,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            models = [m["id"] for m in data.get("data", [])]
+            logger.debug("Ollama Cloud: %d models", len(models))
+            return models
+        except httpx.HTTPStatusError as exc:
+            logger.error(
+                "Ollama Cloud /v1/models %d: %s",
+                exc.response.status_code,
+                exc.response.text[:200],
+            )
+            return []
+        except Exception as exc:
+            logger.error("Failed to fetch Ollama Cloud models: %s", exc)
+            return []
 
 
 class OllamaLocalProviderConfig(ProviderConfig):
@@ -273,16 +389,6 @@ PROVIDERS: dict[str, ProviderConfig] = {
     "ollama-cloud": OllamaCloudProviderConfig(),
     "ollama": OllamaLocalProviderConfig(),
 }
-
-# models.dev slugs for providers that use it (informational)
-_MODELS_DEV_SLUGS: dict[str, str] = {
-    "groq": "groq",
-    "openrouter": "openrouter",
-    "mistral": "mistral",
-    "cloudflare": "cloudflare-workers-ai",
-    "ollama-cloud": "ollama-cloud",
-}
-
 
 # ---------------------------------------------------------------------------
 # Resolution helpers
