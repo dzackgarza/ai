@@ -6,7 +6,7 @@ Records per-run YAML logs and cumulative accuracy in `scores.yaml`.
 ## Usage
 
 ```bash
-cd plugins/tests/classifier
+cd plugins/examples/prompt-router/tests/classifier
 
 # Default model (groq/llama-3.3-70b-versatile):
 bun run run.ts

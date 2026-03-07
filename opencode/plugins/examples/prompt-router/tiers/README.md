@@ -16,7 +16,7 @@ is classified into that tier.
 
 ## How they're loaded
 
-At plugin startup, `prompt-router.ts` loads all six files:
+At plugin startup, `../index.ts` loads all six files:
 
 ```typescript
 const TIER_INSTRUCTIONS: Record<Tier, string> = Object.fromEntries(
@@ -29,7 +29,7 @@ const TIER_INSTRUCTIONS: Record<Tier, string> = Object.fromEntries(
 ) as Record<Tier, string>;
 ```
 
-`import.meta.url` resolves relative to `prompt-router.ts`. Files are read once at
+`import.meta.url` resolves relative to `../index.ts`. Files are read once at
 startup and cached — no per-message disk I/O.
 
 ## How injection works
@@ -57,7 +57,7 @@ Placing it last maximizes attention — models attend strongly to recent content
    | `A` | `Audit command-interceptor.ts for security vulnerabilities.` |
    | `S` | `Design a plugin for tracking token usage per session.` |
 
-   See `FAUX_RULES` in `prompt-router.ts` for the full list.
+   See `FAUX_RULES` in `../index.ts` for the full list.
 
 4. Check the opencode session log for the injected instruction.
 

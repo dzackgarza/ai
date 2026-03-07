@@ -1,6 +1,6 @@
 import { describe, it, expect } from "bun:test";
 
-// Mirror faux rules from prompt-router.ts
+// Mirror faux rules from the prompt-router example.
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
 
 const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [

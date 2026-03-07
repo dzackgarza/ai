@@ -6,7 +6,7 @@
 # lib/arguments/parser.js module containing an A-tier bug).
 #
 # Faux-rules prompts (marked faux_rule: true) bypass the LLM classifier —
-# the tier is matched deterministically in FAUX_RULES in prompt-router.ts.
+# the tier is matched deterministically in FAUX_RULES in the prompt-router example.
 
 tasks:
 
