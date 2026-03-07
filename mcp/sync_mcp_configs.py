@@ -61,18 +61,15 @@ def resolve_env_tokens(value: Any) -> Any:
     return ENV_TOKEN_PATTERN.sub(replacer, value)
 
 
-def resolve_local_server_fields(config: dict) -> tuple[str, list[str], dict[str, str] | None, str | None]:
-    """Resolve command, args, env, and cwd for a local MCP server."""
+def resolve_local_server_fields(config: dict) -> tuple[str, list[str], dict[str, str] | None]:
+    """Resolve command, args, and env for a local MCP server."""
     command = resolve_env_tokens(config.get('command', ''))
     args = [resolve_env_tokens(arg) for arg in config.get('args', [])]
     env_config = config.get('env')
     env = None if not env_config else {
         key: resolve_env_tokens(value) for key, value in env_config.items()
     }
-    cwd = config.get('cwd')
-    if cwd:
-        cwd = resolve_env_tokens(cwd)
-    return command, args, env, cwd
+    return command, args, env
 
 
 def load_yaml_config(config_path: str) -> dict:
@@ -132,7 +129,7 @@ def build_opencode_server_config(config: dict, server_type: str) -> dict:
             'url': resolve_env_tokens(config.get('url', ''))
         }
     else:
-        command, args, _, _ = resolve_local_server_fields(config)
+        command, args, _ = resolve_local_server_fields(config)
         return {
             'type': 'local',
             'command': [command] + args
@@ -154,7 +151,7 @@ def build_claude_server_config(config: dict, server_type: str) -> dict:
         }
     else:
         # Claude expects command as a single string, args as separate array
-        command, cmd_args, env, cwd = resolve_local_server_fields(config)
+        command, cmd_args, env = resolve_local_server_fields(config)
         server_config = {
             'type': 'stdio',
             'command': command,
@@ -162,14 +159,12 @@ def build_claude_server_config(config: dict, server_type: str) -> dict:
         }
         if env:
             server_config['env'] = env
-        if cwd:
-            server_config['cwd'] = cwd
         return server_config
 
 
 def build_amp_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Amp format.
-
+    
     Amp uses:
     - No 'type' field
     - command: string (not array)
@@ -181,21 +176,19 @@ def build_amp_server_config(config: dict, server_type: str) -> dict:
             'url': resolve_env_tokens(config.get('url', ''))
         }
     else:
-        command, args, env, cwd = resolve_local_server_fields(config)
+        command, args, env = resolve_local_server_fields(config)
         server_config = {
             'command': command,
             'args': args
         }
         if env:
             server_config['env'] = env
-        if cwd:
-            server_config['cwd'] = cwd
         return server_config
 
 
 def build_kilo_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Kilo Code format.
-
+    
     Kilo uses (same as Cline/Roo Code):
     - No 'type' field
     - command: string (not array)
@@ -207,15 +200,13 @@ def build_kilo_server_config(config: dict, server_type: str) -> dict:
             'url': resolve_env_tokens(config.get('url', ''))
         }
     else:
-        command, args, env, cwd = resolve_local_server_fields(config)
+        command, args, env = resolve_local_server_fields(config)
         server_config = {
             'command': command,
             'args': args
         }
         if env:
             server_config['env'] = env
-        if cwd:
-            server_config['cwd'] = cwd
         return server_config
 
 
@@ -232,15 +223,13 @@ def build_gemini_server_config(config: dict, server_type: str) -> dict:
             'httpUrl': resolve_env_tokens(config.get('url', ''))
         }
     else:
-        command, args, env, cwd = resolve_local_server_fields(config)
+        command, args, env = resolve_local_server_fields(config)
         server_config = {
             'command': command,
             'args': args
         }
         if env:
             server_config['env'] = env
-        if cwd:
-            server_config['cwd'] = cwd
         return server_config
 
 
@@ -252,7 +241,7 @@ def build_codex_server_config(config: dict, server_type: str) -> dict:
             'enabled': True
         }
     else:
-        command, args, env, cwd = resolve_local_server_fields(config)
+        command, args, env = resolve_local_server_fields(config)
         server_config = {
             'command': command,
             'args': args,
@@ -260,8 +249,6 @@ def build_codex_server_config(config: dict, server_type: str) -> dict:
         }
         if env:
             server_config['env'] = env
-        if cwd:
-            server_config['cwd'] = cwd
         return server_config
 
 

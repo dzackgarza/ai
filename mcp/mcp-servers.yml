@@ -65,8 +65,7 @@ common:
       - "run"
       - "fastmcp"
       - "run"
-      - "server.py"
-    cwd: "/home/dzack/opencode-plugins/improved-webtools/mcp-server"
+      - "/home/dzack/opencode-plugins/improved-webtools/mcp-server/server.py"
     enabled: true
 
 # Harnesses to sync (set enabled: false to skip a harness)
