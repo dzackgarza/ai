@@ -242,3 +242,57 @@ export const MyPlugin: Plugin = async ({ client }) => {
 - The `event` hook is the single entry point for all event subscription in plugins
 - `client.session.abort()` can be called from within an event handler to stop mid-stream generation
 - Event types are generated from OpenAPI spec — `packages/sdk/js/src/gen/types.gen.ts` is authoritative
+
+---
+
+## 6. Authoritative Sources
+
+**Verified sources (I searched these and found information):**
+
+| Source | What it contains | Verified by |
+|--------|------------------|-------------|
+| `packages/plugin/src/index.ts` | `Hooks` interface — definitive plugin hook list | DeepWiki query |
+| `packages/sdk/js/src/gen/types.gen.ts` | Event union types — definitive event.type values | DeepWiki query |
+| `packages/opencode/src/session/message-v2.ts` | `Part` union, `ReasoningPart` definition | DeepWiki query |
+| `packages/web/src/content/docs/plugins.mdx` | Plugin examples, event list | DeepWiki + Context7 |
+| Context7 `/anomalyco/opencode` | Plugin hook examples | Direct query |
+| Context7 `/websites/opencode_ai_plugins` | Event type list | Direct query |
+| Context7 `/sst/opencode-sdk-js` | SDK streaming examples | Direct query |
+
+**Recommended search order for hook/event questions:**
+
+1. DeepWiki query on `anomalyco/opencode` for type definitions
+2. Context7 query on `/anomalyco/opencode` and `/websites/opencode_ai_plugins`
+3. Check `packages/plugin/src/index.ts` Hooks interface directly
+4. Check `packages/sdk/js/src/gen/types.gen.ts` for Event union types
+
+**For capability questions (e.g., "can I abort mid-stream?"):**
+
+1. Search for the method (`session.abort`) in source
+2. Search for example usage in tests
+3. Check if it's callable from event handlers
+
+**For type definitions:**
+
+1. Generated types: `packages/sdk/js/src/gen/types.gen.ts`
+2. Internal types: `packages/opencode/src/**/*.ts`
+3. Plugin types: `packages/plugin/src/index.ts`
+
+**What NOT to rely on:**
+
+- **Local experimental plugins** — Your own `plugins/dev/*.ts` files are untested experiments, not authoritative sources
+- **Incomplete Context7 results** — May not have full coverage; cross-reference with source
+
+**Epistemic integrity for negative findings:**
+
+When you don't find something, report:
+- Searched: [specific files, queries, tools]
+- Found: [what was or was not found]
+- Conclusion: [labeled as inference — "I believe", "based on searched sources"]
+- Confidence: [High / Medium / Low]
+- Gaps: [what remains unsearched]
+
+**Do NOT write:**
+- "X is not documented" → "I found no documentation of X in [sources]"
+- "There's no hook for Y" → "I found no hook for Y in [sources]"
+- "This feature doesn't exist" → "I found no evidence of this feature in [sources]"
