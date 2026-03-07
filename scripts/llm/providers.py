@@ -199,6 +199,19 @@ class CloudflareProviderConfig(ProviderConfig):
         return chat
 
 
+class MistralProviderConfig(ProviderConfig):
+    """Mistral: fetches live model list from models.dev 'mistral' slug."""
+
+    env_var: Optional[str] = "MISTRAL_API_KEY"
+    base_url: str = "https://api.mistral.ai/v1"
+    output_mode: str = "tool"
+
+    def get_models(self) -> list[str]:
+        models = _models_dev.get_models("mistral")
+        logger.debug("Mistral: %d models from models.dev", len(models))
+        return models
+
+
 class OllamaCloudProviderConfig(ProviderConfig):
     """Ollama Cloud (https://ollama.com/v1).
 
@@ -255,11 +268,7 @@ PROVIDERS: dict[str, ProviderConfig] = {
     "groq": GroqProviderConfig(),
     "openrouter": OpenRouterProviderConfig(),
     "nvidia": NvidiaProviderConfig(),
-    "mistral": ProviderConfig(
-        env_var="MISTRAL_API_KEY",
-        base_url="https://api.mistral.ai/v1",
-        output_mode="tool",
-    ),
+    "mistral": MistralProviderConfig(),
     "cloudflare": CloudflareProviderConfig(),
     "ollama-cloud": OllamaCloudProviderConfig(),
     "ollama": OllamaLocalProviderConfig(),
