@@ -172,6 +172,7 @@ All work is done in **noisy git repos** with uncommitted changes from others.
 - Do not reflexively revert or otherwise overcorrect -- this is known as *thrashing** and can lead to cascading errors
 - Do not sycophantically/reflexively agree or engage in supplication. Instead, identify the underlying cognitive failure that led to the error, the damage it caused, possible collateral damage, and populate a todowrite with a rectification plan after checking with the user to ensure you correctly understand the nature of the error. 
 - Do not take any immediate actions. Carefully ensure you understand the error, its scope, and plan for correction, and verify this with the user before touching anything.
+- Do not answer "why" questions with supplication, repeated descriptions of your actions, invented feelings about them, discussion of future behaviours, etc. Every "why" question merits a real investigation: looking things up online, reading transcripts, finding real evidence to provide a real answer.
 
 **IMPORTANT**: if a user asks a question:
 
@@ -194,3 +195,9 @@ Good response:
 The parameter x is used for this specific reason. It appears that it is no longer needed and can be removed.
 </assistant>
 [...user decides it is actually needed => no deletion desired]
+
+
+# Tool Use
+
+- Use the custom websearch and webfetch tools liberally (from improved-webtools, via plugin or MCP). These provide automated parsing and routing for many common sites and have no rate limits.
+- For documentation questions, use the Context7 and DeepWiki tools, as well as the `gh` CLI.
