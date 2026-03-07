@@ -32,7 +32,9 @@ import json
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import Any, TypeVar
+
 
 from pydantic import BaseModel
 from pydantic_ai import Agent
@@ -134,6 +136,28 @@ SCHEMAS: dict[str, type[BaseModel]] = {
 OutputT = TypeVar("OutputT", bound=BaseModel)
 
 # ---------------------------------------------------------------------------
+# Template registry
+#
+# Templates live in scripts/templates/ relative to this file.
+# Callers pass "classifier/playbook" or "tiers/A" — no extension needed.
+# ---------------------------------------------------------------------------
+
+_TEMPLATES_DIR = Path(__file__).parent / "templates"
+
+
+def load_template(name: str) -> str:
+    """Load a template by name (e.g. 'classifier/playbook', 'tiers/A').
+
+    Searches for <name>.md then <name>.yaml. Raises FileNotFoundError if not found.
+    """
+    for ext in (".md", ".yaml", ""):
+        p = _TEMPLATES_DIR / (name + ext)
+        if p.exists():
+            return p.read_text()
+    raise FileNotFoundError(f"Template {name!r} not found in {_TEMPLATES_DIR}")
+
+
+# ---------------------------------------------------------------------------
 # Core call
 # ---------------------------------------------------------------------------
 
@@ -222,6 +246,25 @@ async def _cli_main() -> None:
         print(json.dumps({"ok": False, "error": f"Invalid JSON input: {exc}"}))
         sys.exit(1)
 
+    # ------------------------------------------------------------------
+    # Action: load_template — returns template content as a string
+    # ------------------------------------------------------------------
+    if req.get("action") == "load_template":
+        template_name: str = req.get("template", "")
+        if not template_name:
+            print(json.dumps({"ok": False, "error": "No template name specified"}))
+            sys.exit(1)
+        try:
+            content = load_template(template_name)
+            print(json.dumps({"ok": True, "result": content}))
+        except FileNotFoundError as exc:
+            print(json.dumps({"ok": False, "error": str(exc)}))
+            sys.exit(1)
+        return
+
+    # ------------------------------------------------------------------
+    # Action: call (default) — LLM call with optional structured output
+    # ------------------------------------------------------------------
     models: list[str] = req.get("models", [])
     messages: list[dict[str, str]] = req.get("messages", [])
     schema_name: str | None = req.get("schema")
