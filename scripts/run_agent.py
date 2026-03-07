@@ -14,6 +14,39 @@ from jinja2 import Template
 import litellm
 
 
+# Provider configuration: provider -> API key env var
+PROVIDERS = {
+    'groq': 'GROQ_API_KEY',
+    'openai': 'OPENAI_API_KEY',
+    'anthropic': 'ANTHROPIC_API_KEY',
+    'azure': 'AZURE_API_KEY',
+    'cohere': 'COHERE_API_KEY',
+    'replicate': 'REPLICATE_API_TOKEN',
+    'huggingface': 'HUGGINGFACE_API_KEY',
+}
+
+# Load configured API keys at startup
+API_KEYS = {provider: os.environ.get(env_var) for provider, env_var in PROVIDERS.items()}
+
+
+def get_provider(model_slug):
+    """Extract provider from model slug."""
+    return model_slug.split('/')[0] if '/' in model_slug else None
+
+
+def check_api_key(model_slug):
+    """Check that API key is set for the provider."""
+    provider = get_provider(model_slug)
+    if not provider:
+        print(f"Error: Invalid model format '{model_slug}'. Expected: provider/model", file=sys.stderr)
+        sys.exit(1)
+    
+    if provider not in API_KEYS or not API_KEYS[provider]:
+        print(f"Error: {PROVIDERS.get(provider, 'UNKNOWN')} not set", file=sys.stderr)
+        print(f"Set: export {PROVIDERS.get(provider, 'UNKNOWN')}=your-key", file=sys.stderr)
+        sys.exit(1)
+
+
 def parse_template(content):
     """Parse YAML frontmatter + template body."""
     match = re.match(r'^---\s*\n(.*?)\n---\s*\n(.*)$', content, re.DOTALL)
@@ -40,6 +73,9 @@ def run_agent(template_path, variables, model=None, temperature=None, max_tokens
         print("Error: --model required or 'model:' in template", file=sys.stderr)
         sys.exit(1)
     
+    # Check API key before calling
+    check_api_key(model)
+    
     template = Template(template_str)
     prompt = template.render(**variables)
     
@@ -54,15 +90,9 @@ def run_agent(template_path, variables, model=None, temperature=None, max_tokens
             max_tokens=max_tokens if max_tokens else frontmatter.get('max_tokens')
         )
         return response.choices[0].message.content
-    except litellm.exceptions.AuthenticationError:
-        provider = model.split('/')[0] if '/' in model else 'unknown'
-        env_var = f"{provider.upper()}_API_KEY"
-        print(f"Error: Authentication failed for {model}", file=sys.stderr)
-        print(f"Set: export {env_var}=your-key", file=sys.stderr)
-        sys.exit(1)
     except litellm.exceptions.NotFoundError:
         print(f"Error: Model '{model}' not found", file=sys.stderr)
-        provider = model.split('/')[0] if '/' in model else None
+        provider = get_provider(model)
         if provider:
             print(f"List models: python run_agent.py --models --model {provider}/", file=sys.stderr)
         sys.exit(1)
@@ -71,28 +101,17 @@ def run_agent(template_path, variables, model=None, temperature=None, max_tokens
         sys.exit(1)
 
 
-def list_models(provider):
-    """List available models for a provider."""
-    if provider == 'groq':
-        from groq import Groq
-        api_key = os.environ.get('GROQ_API_KEY')
-        if not api_key:
-            print("Error: GROQ_API_KEY not set", file=sys.stderr)
-            sys.exit(1)
-        client = Groq(api_key=api_key)
-        models = client.models.list()
-        print(f"Available models for {provider}:")
-        for m in models.data:
-            print(f"  - {provider}/{m.id}")
-    else:
-        print(f"Model listing not supported for {provider}", file=sys.stderr)
-        sys.exit(1)
+def list_models():
+    """List available models."""
+    import litellm
+    for model in litellm.model_cost.keys():
+        print(model)
 
 
 def main():
     parser = argparse.ArgumentParser(description='Run a micro-agent')
     
-    parser.add_argument('template', help='Template file path')
+    parser.add_argument('template', nargs='?', help='Template file path')
     parser.add_argument('--file', '-f', action='append', default=[], 
                         help='Load variable from file: var_name=path')
     parser.add_argument('--var', '-v', action='append', default=[], 
@@ -101,17 +120,17 @@ def main():
     parser.add_argument('--temperature', '-t', type=float, help='Temperature')
     parser.add_argument('--max-tokens', type=int, help='Max tokens')
     parser.add_argument('--output', '-o', default='-', help='Output file')
-    parser.add_argument('--models', action='store_true', help='List models for provider')
+    parser.add_argument('--models', action='store_true', help='List available models')
     
     args = parser.parse_args()
     
     if args.models:
-        if not args.model:
-            print("Error: --models requires --model", file=sys.stderr)
-            sys.exit(1)
-        provider = args.model.split('/')[0]
-        list_models(provider)
+        list_models()
         sys.exit(0)
+    
+    if not args.template:
+        print("Error: template required", file=sys.stderr)
+        sys.exit(1)
     
     variables = {}
     for file_arg in args.file:
