@@ -8,15 +8,35 @@
   ],
   "formatter": {
     "ruff-check": {
-      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "check",
+        "--fix",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "ruff-format": {
-      "command": ["uvx", "ruff", "format", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "prettier": {
-      "command": ["npx", "prettier", "--write", "$FILE"],
+      "command": [
+        "npx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
       "extensions": [
         ".md",
         ".js",
@@ -33,8 +53,15 @@
   },
   "lsp": {
     "texlab": {
-      "command": ["texlab"],
-      "extensions": [".tex", ".sty", ".cls", ".bib"]
+      "command": [
+        "texlab"
+      ],
+      "extensions": [
+        ".tex",
+        ".sty",
+        ".cls",
+        ".bib"
+      ]
     }
   },
   "mcp": {
@@ -51,11 +78,19 @@
     },
     "context7": {
       "type": "local",
-      "command": ["npx", "-y", "@upstash/context7-mcp"]
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp"
+      ]
     },
     "cut-copy-paste-mcp": {
       "type": "local",
-      "command": ["npx", "-y", "@fastmcp-me/cut-copy-paste-mcp"]
+      "command": [
+        "npx",
+        "-y",
+        "@fastmcp-me/cut-copy-paste-mcp"
+      ]
     },
     "deepwiki-mcp": {
       "type": "remote",
@@ -75,6 +110,7 @@
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest",
     "file:///home/dzack/opencode-plugins/improved-task/src/index.ts",
+    "file:///home/dzack/opencode-plugins/improved-task/src/smoke.ts",
     "file:///home/dzack/opencode-plugins/improved-webtools/src/index.ts"
   ],
   "permission": {
