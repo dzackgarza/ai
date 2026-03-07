@@ -106,3 +106,139 @@ When writing `tool({ description: ... })` in any plugin:
 - NEVER expose internals — file paths, directories, return shapes, implementation details. Tools abstract these away on purpose. Details are provided JIT via return values (e.g. `write_plan` returns the written path when done; the description doesn't need to mention `.serena/plans/`). Leaking internals in the description breaks abstraction, pollutes context (reducing the chance the tool is used in the right circumstances), and encourages the model to manually bypass the tool entirely.
 - Use MUST/ALWAYS/NEVER for hard constraints
 - Keep it short — one or two sentences
+
+---
+
+## 5. CoT Hooking Mechanisms (Upstream OpenCode)
+
+**Source:** anomalyco/opencode upstream source code (DeepWiki analysis, packages/plugin/src/index.ts, packages/sdk/js/src/gen/types.gen.ts, packages/opencode/src/session/message-v2.ts)
+
+### Plugin Hooks for Observing/Intercepting Agent Actions
+
+**From `packages/plugin/src/index.ts` — `Hooks` interface:**
+
+| Hook | When it fires | Can modify? |
+|------|---------------|-------------|
+| `event` | Any event from internal event bus | Via side effects (abort, prompt) |
+| `chat.message` | New message received | No (read-only) |
+| `chat.params` | Before LLM call | Yes (temperature, topP, topK, etc.) |
+| `chat.headers` | Before LLM call | Yes (HTTP headers) |
+| `permission.ask` | Permission requested | Yes (set status: ask/deny/allow) |
+| `command.execute.before` | Before command execution | Yes |
+| `tool.execute.before` | Before any tool executes | Yes (modify args, throw to block) |
+| `tool.execute.after` | After any tool executes | Yes (modify output) |
+| `shell.env` | Before shell execution | Yes (inject env vars) |
+| `experimental.chat.messages.transform` | Before messages sent to LLM | Yes (modify message array) |
+| `experimental.chat.system.transform` | Before LLM call | Yes (modify system prompt) |
+| `experimental.session.compacting` | Before session compaction | Yes (modify compaction prompt) |
+| `experimental.text.complete` | Text completion | Yes |
+| `tool.definition` | Tool definitions sent to LLM | Yes (modify description/params) |
+
+### Event Types (from `packages/sdk/js/src/gen/types.gen.ts`)
+
+**Message Events:**
+- `message.updated`
+- `message.removed`
+- `message.part.updated` — part created/updated
+- `message.part.removed` — part removed
+- **`message.part.delta`** — streaming incremental updates (CoT tokens)
+
+**Session Events:**
+- `session.created`, `session.updated`, `session.deleted`
+- `session.diff`, `session.error`, `session.compacted`
+- `session.idle`, `session.status`
+
+**Tool Events:**
+- `tool.execute.before`, `tool.execute.after`
+
+**Other:** `command.executed`, `file.edited`, `file.watcher.updated`, `lsp.*`, `permission.*`, `shell.env`, `tui.*`, `todo.updated`, `server.*`, `pty.*`
+
+### Reasoning Parts (from `packages/opencode/src/session/message-v2.ts`)
+
+**`ReasoningPart`** is a defined part type in the `Part` union:
+```typescript
+type Part = TextPart | ReasoningPart | SubtaskPart | FilePart | ToolPart | 
+            StepStartPart | StepFinishPart | SnapshotPart | PatchPart | 
+            AgentPart | RetryPart | CompactionPart
+```
+
+**CoT streaming events:**
+- `reasoning-start` — creates new ReasoningPart
+- `reasoning-delta` — updates ReasoningPart.text field
+- These trigger `message.part.delta` events with `{ partID, messageID, sessionID, field: "text", delta: "..." }`
+
+### Mid-Stream CoT Observation Pattern
+
+The `event` hook receives `message.part.delta` events for reasoning parts:
+
+```typescript
+export const MyPlugin: Plugin = async ({ client }) => {
+  const reasoningPartSessions = new Map<string, string>();
+  const cotAccumulator = new Map<string, string>();
+  
+  return {
+    event: async ({ event }) => {
+      // Track reasoning parts
+      if (event.type === "message.part.updated") {
+        const part = event.properties.part;
+        if (part?.type === "reasoning" && part?.id && part?.sessionID) {
+          reasoningPartSessions.set(part.id, part.sessionID);
+        }
+      }
+      
+      // Accumulate and check CoT deltas
+      if (event.type === "message.part.delta") {
+        const { partID, sessionID, field, delta } = event.properties;
+        if (!reasoningPartSessions.has(partID) || field !== "text") return;
+        
+        const accumulated = (cotAccumulator.get(sessionID) ?? "") + delta;
+        cotAccumulator.set(sessionID, accumulated);
+        
+        // Detect trigger in reasoning
+        if (accumulated.toLowerCase().includes("trivial")) {
+          // Abort mid-stream
+          await client.session.abort({ path: { id: sessionID } });
+          
+          // Re-prompt with corrective instruction
+          await client.session.prompt({
+            path: { id: sessionID },
+            body: {
+              noReply: false,
+              parts: [{ type: "text", text: "Corrective prompt here" }],
+            },
+          });
+        }
+      }
+      
+      // Cleanup on session end
+      if (event.type === "session.deleted") {
+        const sessionID = event.properties.sessionID;
+        cotAccumulator.delete(sessionID);
+        reasoningPartSessions.clear();
+      }
+    },
+  };
+};
+```
+
+### Capabilities Summary
+
+| Capability | Mechanism |
+|------------|-----------|
+| Observe CoT in real-time | `event` hook + `message.part.delta` with ReasoningPart |
+| Accumulate reasoning text | Track deltas by sessionID across events |
+| Detect patterns in CoT | String matching on accumulated text |
+| Abort mid-generation | `client.session.abort({ path: { id: sessionID } })` |
+| Redirect agent thinking | Abort + `client.session.prompt()` with new instruction |
+| Block tool execution | `tool.execute.before` + throw Error |
+| Modify tool args | `tool.execute.before` + modify output.args |
+| Inject hidden instructions | `experimental.chat.messages.transform` + push synthetic message |
+| Persist context across compaction | `experimental.session.compacting` + output.context.push() |
+
+### Notes
+
+- `message.part.delta` is the authoritative streaming mechanism — emitted by `Session.updatePartDelta()` for reasoning parts
+- ReasoningPart text is streamed via `reasoning-delta` events internally, propagated as `message.part.delta`
+- The `event` hook is the single entry point for all event subscription in plugins
+- `client.session.abort()` can be called from within an event handler to stop mid-stream generation
+- Event types are generated from OpenAPI spec — `packages/sdk/js/src/gen/types.gen.ts` is authoritative
