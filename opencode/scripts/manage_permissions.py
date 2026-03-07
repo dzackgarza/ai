@@ -285,6 +285,9 @@ ALLOW_STANDARD_CORE = {
     "serena_*": "deny",
     "webfetch": "allow",
     "websearch": "allow",
+    "introspection": "allow",
+    "list_sessions": "allow",
+    "read_transcript": "allow",
 }
 
 NON_OVERRIDABLE_DENIES = {
@@ -561,7 +564,7 @@ AGENTS = {
     # --- Primary Agents ---
     "Interactive": AgentDef(
         tags={"primary", "interactive"},
-        caps=[allow_coordination(), allow_session_tools(), read_all(),
+        caps=[allow_coordination(), read_all(),
               write_all(), allow_bash_unrestricted()],
     ),
     "Plan (Custom)": AgentDef(
@@ -598,7 +601,7 @@ AGENTS = {
     ),
     "Zotero Librarian": AgentDef(
         tags={"primary"},
-        caps=[allow_coordination(), allow_session_tools(), read_all(), write_none()],
+        caps=[allow_coordination(), read_all(), write_none()],
     ),
     "Minimal": AgentDef(
         tags={"primary", "minimal"},
