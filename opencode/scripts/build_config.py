@@ -5,6 +5,20 @@ import glob
 import subprocess
 import urllib.request
 import jsonschema
+from rich import print
+from rich.console import Console
+from rich.theme import Theme
+
+console = Console(
+    theme=Theme(
+        {
+            "info": "cyan",
+            "warning": "yellow",
+            "error": "bold red",
+            "success": "green",
+        }
+    )
+)
 
 base_dir = os.path.expanduser("~/.config/opencode")
 skeleton_path = os.path.join(base_dir, "configs", "config_skeleton.json")
@@ -88,8 +102,12 @@ if "properties" in schema and "model" in schema["properties"]:
                 agent_props = schema["properties"]["agent"].get("properties", {})
                 for agent_name in agent_props:
                     agent_config = agent_props[agent_name]
-                    if "properties" in agent_config and "model" in agent_config["properties"]:
+                    if (
+                        "properties" in agent_config
+                        and "model" in agent_config["properties"]
+                    ):
                         agent_config["properties"]["model"]["$ref"] = "#/$defs/Model"
+
 
 # Validates config strictly
 # Note: We remove model enum validation since custom models (cursor-acp, etc.) aren't in upstream schemas
@@ -115,6 +133,7 @@ def remove_model_enum(schema_obj):
         for item in schema_obj:
             remove_model_enum(item)
 
+
 remove_model_enum(schema)
 jsonschema.validate(instance=config, schema=schema)
 
@@ -126,47 +145,45 @@ with open(output_path, "w") as f:
 print(f"Successfully rebuilt and validated config at {output_path}")
 
 # Restart opencode-serve user service to pick up config changes
-subprocess.run(
-    ["systemctl", "--user", "restart", "opencode-serve"],
-    check=True
-)
+subprocess.run(["systemctl", "--user", "restart", "opencode-serve"], check=True)
 print("Restarted opencode-serve user service")
 
 # Refresh models to pick up any provider changes
-subprocess.run(
-    ["opencode", "models", "--refresh"],
-    check=True
-)
+subprocess.run(["opencode", "models", "--refresh"], check=True)
 print("Refreshed opencode models")
 
 
-def list_runtime_provider_models(provider_id):
-    output = subprocess.check_output(["opencode", "models", provider_id], text=True)
-    prefix = f"{provider_id}/"
-    return {
-        line.strip()[len(prefix):]
-        for line in output.splitlines()
-        if line.strip().startswith(prefix)
-    }
+def list_runtime_provider_models(provider_id: str) -> set[str]:
+    """Query runtime provider models, cached after first call."""
+    global _runtime_models_cache
+    if _runtime_models_cache is None:
+        output = subprocess.check_output(["opencode", "models"], text=True)
+        _runtime_models_cache = {}
+        current_provider = None
+        for line in output.splitlines():
+            stripped = line.strip()
+            if not stripped:
+                continue
+            if "/" in stripped and not stripped.startswith(" "):
+                current_provider = stripped.rstrip("/")
+                _runtime_models_cache[current_provider] = []
+            elif current_provider and stripped.startswith("  "):
+                model_name = stripped.lstrip()
+                if model_name:
+                    _runtime_models_cache[current_provider].append(model_name)
+
+    return set(_runtime_models_cache.get(provider_id, []))
 
 
-# ANSI color codes for colorful output
-class Colors:
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    MAGENTA = '\033[95m'
-    CYAN = '\033[96m'
-    WHITE = '\033[97m'
-    BOLD = '\033[1m'
-    RESET = '\033[0m'
+_runtime_models_cache: dict[str, list[str]] | None = None
 
 
-def fetch_models_dev_api():
+def fetch_models_dev_api() -> dict:
     """Fetch canonical model data from models.dev API."""
     url = "https://models.dev/api.json"
-    req = urllib.request.Request(url, headers={"User-Agent": "opencode-config-builder/1.0"})
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "opencode-config-builder/1.0"}
+    )
     try:
         with urllib.request.urlopen(req, timeout=30) as response:
             return json.loads(response.read().decode())
@@ -175,21 +192,22 @@ def fetch_models_dev_api():
 
 
 # Cache for models.dev data
-_models_dev_cache = None
+_models_dev_cache: dict | None = None
 
-def get_models_dev_provider_models(provider_id):
+
+def get_models_dev_provider_models(provider_id: str) -> set[str] | None:
     """Get models for a provider from models.dev API (cached)."""
     global _models_dev_cache
     if _models_dev_cache is None:
         _models_dev_cache = fetch_models_dev_api()
-    
+
     provider = _models_dev_cache.get(provider_id)
     if not provider:
         return None  # Provider not in models.dev
     return set((provider.get("models") or {}).keys())
 
 
-def list_upstream_provider_models(provider_id):
+def list_upstream_provider_models(provider_id: str) -> set[str]:
     cache_root = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
     models_cache_path = os.path.join(cache_root, "opencode", "models.json")
     with open(models_cache_path, "r") as f:
@@ -205,25 +223,25 @@ def list_upstream_provider_models(provider_id):
     return set((provider.get("models") or {}).keys())
 
 
-def list_cursor_acp_upstream_models():
+def list_cursor_acp_upstream_models() -> set[str]:
     """Query Cursor ACP API directly for available models."""
-    import urllib.request
     try:
-        with urllib.request.urlopen("http://127.0.0.1:32124/v1/models", timeout=5) as response:
+        with urllib.request.urlopen(
+            "http://127.0.0.1:32124/v1/models", timeout=5
+        ) as response:
             data = json.loads(response.read().decode())
             return {m["id"] for m in data.get("data", [])}
     except Exception as e:
-        # Return None to signal API unavailable - guard will skip verification
-        return None
+        raise RuntimeError(f"Failed to query Cursor ACP API: {e}")
 
 
-def assert_provider_partition_matches_models_dev(provider_id):
+def assert_provider_partition_matches_models_dev(provider_id: str) -> set[str]:
     """Validate provider config against models.dev canonical source.
-    
+
     Reports symmetric difference between:
     - Models in local config (whitelist ∪ blacklist)
     - Models in models.dev API
-    
+
     With actionable guidance for resolving discrepancies.
     """
     provider_cfg = config.get("provider", {}).get(provider_id)
@@ -235,12 +253,12 @@ def assert_provider_partition_matches_models_dev(provider_id):
 
     whitelist = set((provider_cfg.get("models") or {}).keys())
     blacklist = set(provider_cfg.get("blacklist") or [])
-    
+
     # Check for overlap (hard error - config bug)
     overlap = sorted(whitelist & blacklist)
     if overlap:
         raise RuntimeError(
-            f"{Colors.RED}{Colors.BOLD}Error:{Colors.RESET} "
+            f"[bold red] "
             f"Provider '{provider_id}' has models in both whitelist and blacklist: {overlap}"
         )
 
@@ -251,73 +269,71 @@ def assert_provider_partition_matches_models_dev(provider_id):
 
     local_models = whitelist | blacklist
     models_dev_models = get_models_dev_provider_models(provider_id)
-    
+
     # Provider not in models.dev - skip validation but warn
     if models_dev_models is None:
         print(
-            f"{Colors.YELLOW}{Colors.BOLD}Warning:{Colors.RESET} "
+            f"[bold yellow] "
             f"Provider '{provider_id}' not found in models.dev API, skipping validation"
         )
         return whitelist
-    
+
     # Calculate symmetric difference
     in_local_not_dev = sorted(local_models - models_dev_models)
     in_dev_not_local = sorted(models_dev_models - local_models)
-    
+
     has_discrepancies = bool(in_local_not_dev or in_dev_not_local)
-    
+
     if has_discrepancies:
         print(
-            f"\n{Colors.YELLOW}{Colors.BOLD}⚠ Provider '{provider_id}' model discrepancy detected:{Colors.RESET}\n"
+            f"\n[bold yellow]⚠ Provider '{provider_id}' model discrepancy detected:[/]\n"
         )
-        
+
         if in_local_not_dev:
             print(
-                f"  {Colors.CYAN}Models in config but NOT in models.dev ({len(in_local_not_dev)}):{Colors.RESET}"
+                f"  [cyan]Models in config but NOT in models.dev ({len(in_local_not_dev)}):[/]"
             )
             for model in in_local_not_dev[:10]:  # Limit output
-                print(f"    {Colors.CYAN}• {model}{Colors.RESET}")
+                print(f"    [cyan]• {model}[/]")
             if len(in_local_not_dev) > 10:
-                print(f"    {Colors.CYAN}  ... and {len(in_local_not_dev) - 10} more{Colors.RESET}")
+                print(f"    [cyan]  ... and {len(in_local_not_dev) - 10} more[/]")
             print(
-                f"\n  {Colors.BLUE}→ Action: Verify these models exist in 'opencode models {provider_id}' "
-                f"and/or the provider's original API.{Colors.RESET}"
+                f"\n  [blue]→ Action: Verify these models exist in 'opencode models {provider_id}' "
+                f"and/or the provider's original API.[/]"
             )
-            print(
-                f"  {Colors.BLUE}  If confirmed, models.dev may be out of date.{Colors.RESET}\n"
-            )
-        
+            print("  [blue]  If confirmed, models.dev may be out of date.[/]\n")
+
         if in_dev_not_local:
             print(
-                f"  {Colors.MAGENTA}Models in models.dev but NOT in config ({len(in_dev_not_local)}):{Colors.RESET}"
+                f"  [magenta]Models in models.dev but NOT in config ({len(in_dev_not_local)}):[/]"
             )
             for model in in_dev_not_local[:10]:  # Limit output
-                print(f"    {Colors.MAGENTA}• {model}{Colors.RESET}")
+                print(f"    [magenta]• {model}[/]")
             if len(in_dev_not_local) > 10:
-                print(f"    {Colors.MAGENTA}  ... and {len(in_dev_not_local) - 10} more{Colors.RESET}")
+                print(f"    [magenta]  ... and {len(in_dev_not_local) - 10} more[/]")
             print(
-                f"\n  {Colors.BLUE}→ Action: Check 'opencode models {provider_id}' for these models.{Colors.RESET}"
+                f"\n  [blue]→ Action: Check 'opencode models {provider_id}' for these models.[/]"
             )
             print(
-                f"  {Colors.BLUE}  Add to whitelist (if free/usable) or blacklist in configs/providers/{provider_id}.json{Colors.RESET}\n"
+                f"  [blue]  Add to whitelist (if free/usable) or blacklist in configs/providers/{provider_id}.json[/]\n"
             )
-        
+
         # Show summary stats
         print(
-            f"  {Colors.BOLD}Summary:{Colors.RESET} "
+            f"  [bold]Summary:[/] "
             f"local={len(local_models)} models.dev={len(models_dev_models)} "
             f"symmetric_diff={len(in_local_not_dev) + len(in_dev_not_local)}"
         )
     else:
         print(
-            f"{Colors.GREEN}✓{Colors.RESET} Provider '{provider_id}' validated: "
+            f"[green]✓[/] Provider '{provider_id}' validated: "
             f"models.dev={len(models_dev_models)} whitelist={len(whitelist)} blacklist={len(blacklist)}"
         )
-    
+
     return whitelist
 
 
-def assert_cursor_acp_blacklist_matches_api(provider_id):
+def assert_cursor_acp_blacklist_matches_api(provider_id: str) -> set[str]:
     """Guard for cursor-acp: verify blacklist covers all API models except whitelisted."""
     provider_cfg = config.get("provider", {}).get(provider_id)
     if provider_cfg is None:
@@ -327,7 +343,7 @@ def assert_cursor_acp_blacklist_matches_api(provider_id):
 
     model_overrides = set((provider_cfg.get("models") or {}).keys())
     blacklist = set(provider_cfg.get("blacklist") or [])
-    
+
     # Check no overlap
     overlap = sorted(model_overrides & blacklist)
     if overlap:
@@ -337,25 +353,24 @@ def assert_cursor_acp_blacklist_matches_api(provider_id):
         )
 
     # Query API directly for upstream models
-    upstream = list_cursor_acp_upstream_models()
-    
-    # Skip verification if API is unavailable (service not running)
-    if upstream is None:
+    try:
+        upstream = list_cursor_acp_upstream_models()
+    except RuntimeError as e:
         print(
-            f"Provider '{provider_id}' warning: API unavailable, skipping blacklist verification"
+            f"Provider '{provider_id}' warning: API unavailable ({e}), skipping blacklist verification"
         )
         return model_overrides
-    
+
     # All upstream models must be either whitelisted or blacklisted
     covered = model_overrides | blacklist
     missing = sorted(upstream - covered)
     blacklist_extra = sorted(blacklist - upstream)
-    
+
     if missing:
         raise RuntimeError(
             f"Provider '{provider_id}' has models from API not covered by whitelist/blacklist: {missing}"
         )
-    
+
     if blacklist_extra:
         print(
             f"Provider '{provider_id}' warning: blacklist contains models not in API: {blacklist_extra}"
@@ -374,7 +389,9 @@ def assert_cursor_acp_blacklist_matches_api(provider_id):
     return model_overrides
 
 
-def assert_runtime_whitelist_applied(provider_id, expected_models):
+def assert_runtime_whitelist_applied(
+    provider_id: str, expected_models: set[str]
+) -> None:
     listed = list_runtime_provider_models(provider_id)
     missing_from_runtime = sorted(expected_models - listed)
     unexpected_in_runtime = sorted(listed - expected_models)
@@ -394,7 +411,7 @@ def assert_runtime_whitelist_applied(provider_id, expected_models):
 # Guardrail order:
 # 1) Validate against models.dev canonical source.
 # 2) Validate runtime list reflects whitelist after blacklist filtering.
-# 
+#
 # Note: We validate ALL providers, not just nvidia and cursor-acp, since we want
 # comprehensive coverage of all provider configs.
 
@@ -407,18 +424,15 @@ providers_to_validate = []  # Empty = validate all providers in config
 for provider_id in config.get("provider", {}).keys():
     # Skip ignored providers
     if provider_id in ignored_providers:
-        print(f"{Colors.YELLOW}{Colors.BOLD}⚠️  SKIPPING '{provider_id}' - not found in models.dev yet{Colors.RESET}")
+        print(
+            f"[yellow][bold]⚠️  SKIPPING '{provider_id}' - not found in models.dev yet[/]"
+        )
         continue
-        
+
     # Skip validation for specific providers if needed
     if providers_to_validate and provider_id not in providers_to_validate:
         continue
-        
-    try:
-        whitelist = assert_provider_partition_matches_models_dev(provider_id)
-        # Still validate runtime whitelist application
-        assert_runtime_whitelist_applied(provider_id, whitelist)
-    except Exception as e:
-        # Don't fail the entire build for validation issues
-        print(f"{Colors.RED}{Colors.BOLD}Validation failed for {provider_id}: {e}{Colors.RESET}")
-        continue
+
+    whitelist = assert_provider_partition_matches_models_dev(provider_id)
+    # Still validate runtime whitelist application
+    assert_runtime_whitelist_applied(provider_id, whitelist)
