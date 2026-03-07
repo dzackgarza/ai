@@ -538,9 +538,6 @@ TAG_RULES = [
 BASELINE_PLUGIN_DENIES = {
     "async_command": "deny",
     "async_subagent": "deny",
-    "introspection": "deny",
-    "list_sessions": "deny",
-    "read_transcript": "deny",
     "git_add": "deny",
     "git_commit": "deny",
     "write_plan": "deny",
