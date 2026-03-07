@@ -148,6 +148,9 @@ included_optional_tools:
 
 # fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
 # This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
 fixed_tools: []
 
 # list of mode names to that are always to be included in the set of active modes
@@ -194,7 +197,6 @@ projects:
 - /home/dzack/MinerU
 - /home/dzack/ai
 - /home/dzack/ai/opencode
-- /home/dzack/ai/opencode/harness
 - /home/dzack/ai/opencode/plugins
 - /home/dzack/lattice_interface
 - /home/dzack/opencode-plugins/improved-webtools
@@ -203,12 +205,6 @@ projects:
 - /var/sandbox/opencode_parser_test
 - /var/search/searxng
 
-# whether global memories (the "global" topic) are allowed to be deleted or edited by the agent.
-# Global memories are stored in ~/.serena/memories/global/ and shared across all projects.
-# Set to false to protect global memories from accidental modification by agents.
-# Note: We recommend tracking global memories with git.
-edit_global_memories: true
-
 # template for the location of the per-project .serena data folder (memories, caches, etc.).
 # Supports the following placeholders:
 #   $projectDir         - the absolute path to the project root directory
@@ -216,3 +212,8 @@ edit_global_memories: true
 # Default: "$projectDir/.serena" (data stored inside the project directory)
 # Example for a central location: "/projects-metadata/$projectFolderName/.serena"
 project_serena_folder_location: $projectDir/.serena
+
+# list of regex patterns which, when matched, mark a memory entry as read‑only.
+# For example, "global/.*" will mark all global memories as read-only.
+# You can extend the list on a per-project basis in the project.yml configuration file.
+read_only_memory_patterns: []
