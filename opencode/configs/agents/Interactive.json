@@ -43,124 +43,49 @@
       "*": "allow"
     },
     "edit": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "apply_patch": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "patch": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_create_text_file": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_replace_content": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_replace_symbol_body": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_insert_after_symbol": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_insert_before_symbol": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_rename_symbol": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_delete_lines": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_insert_at_line": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "serena_replace_lines": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "cut-copy-paste-mcp_cut": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "cut-copy-paste-mcp_copy": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "cut-copy-paste-mcp_paste": {
-      "*": "deny",
-      "*src*": "allow",
-      "*docs*": "allow",
-      "*tests*": "allow",
-      "*test*": "allow",
-      "*.serena/plans*": "allow"
+      "*": "allow"
     },
     "plan_exit": "deny",
     "bash": "allow",
