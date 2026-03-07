@@ -93,16 +93,22 @@ class MicroAgent:
     def schema_class(self) -> type[BaseModel] | None:
         """Return the pydantic schema class declared in frontmatter, or None.
 
-        Resolves the 'schema:' key against scripts.llm.schemas.SCHEMAS.
-        Returns None if no schema is declared or the name is not registered.
+        Handles two forms:
+          - String name: resolved against scripts.llm.schemas.SCHEMAS registry.
+          - Dict {field: type_str}: dynamically builds a pydantic model via
+            schemas.make_schema_from_dict(). The class is named "InlineSchema".
+
+        Returns None if no schema is declared.
         """
-        schema_name: str | None = self.frontmatter.get("schema")
-        if not schema_name:
+        schema_value = self.frontmatter.get("schema")
+        if not schema_value:
             return None
         # Import here to avoid circular import at module load time.
-        from scripts.llm.schemas import resolve_schema  # noqa: PLC0415
+        from scripts.llm.schemas import make_schema_from_dict, resolve_schema  # noqa: PLC0415
 
-        return resolve_schema(schema_name)
+        if isinstance(schema_value, dict):
+            return make_schema_from_dict("InlineSchema", schema_value)
+        return resolve_schema(str(schema_value))
 
 
 def load_micro_agent(path: str | Path) -> MicroAgent:
