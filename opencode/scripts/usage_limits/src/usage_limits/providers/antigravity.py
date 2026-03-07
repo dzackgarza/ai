@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import subprocess
 import sys
@@ -57,7 +58,7 @@ class AntigravityProvider(UsageProvider):
     def to_rows(self, raw: Any) -> list[UsageRow]:
         """Convert per-model quota data to UsageRow list.
 
-        remainingPercentage is 0.0–1.0 where 1.0 = 100% remaining (0% used).
+        remainingPercentage is 0.0-1.0 where 1.0 = 100% remaining (0% used).
         A null/missing remainingPercentage means exhausted (100% used).
         """
         rows: list[UsageRow] = []
@@ -75,12 +76,10 @@ class AntigravityProvider(UsageProvider):
 
             reset_at = None
             if reset_time:
-                try:
+                with contextlib.suppress(ValueError):
                     reset_at = datetime.fromisoformat(reset_time.replace("Z", "+00:00")).astimezone(
                         UTC
                     )
-                except ValueError:
-                    pass
 
             rows.append(
                 UsageRow(

@@ -81,7 +81,7 @@ class OpenRouterProvider(UsageProvider):
             return
         notif_id = f"openrouter-daily-{int(daily_row.reset_at.timestamp())}"
         if self._notification_scheduled(notif_id):
-            print("ℹ️  Notification already scheduled")
+            print("i  Notification already scheduled")
             return
         success, msg = self._schedule_notification(
             reset_dt=daily_row.reset_at,

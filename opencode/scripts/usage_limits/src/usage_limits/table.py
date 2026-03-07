@@ -39,7 +39,7 @@ class UsageRow(BaseModel):
     """Human label, e.g. 'Claude (5h)', 'Amp', 'Antigravity: Gemini 2.5 Pro'."""
 
     pct_used: float
-    """Percentage consumed, 0.0–100.0."""
+    """Percentage consumed, 0.0-100.0."""
 
     reset_at: datetime | None = None
     """UTC reset timestamp; None = not applicable or already at full capacity."""
@@ -75,7 +75,7 @@ class UsageTable:
 
     PCT_WIDTH = 5  # " 99%" + leading space
     TIME_WIDTH = 12  # "in 30d 12h"
-    PADDING = 8  # padding=(0,1) × 4 columns × 2 sides
+    PADDING = 8  # padding=(0,1) x 4 columns x 2 sides
 
     def __init__(self, console: Console | None = None) -> None:
         self.console = console or Console()

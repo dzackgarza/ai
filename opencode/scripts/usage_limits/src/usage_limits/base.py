@@ -84,9 +84,7 @@ class UsageProvider(ABC):
         seven_day = next((r for r in rows if "7d" in r.identifier), None)
         if seven_day and seven_day.is_exhausted:
             return False
-        if five_hour and five_hour.is_exhausted:
-            return False
-        return True
+        return not (five_hour and five_hour.is_exhausted)
 
     def _available_when(self, rows: list[UsageRow]) -> datetime | None:
         """Default next-available time for 5h/7d window providers."""
@@ -188,7 +186,7 @@ class UsageProvider(ABC):
 
         notif_id = self._notification_id(rows)
         if self._notification_scheduled(notif_id):
-            print("ℹ️  Notification already scheduled")
+            print("i  Notification already scheduled")
             return
 
         success, msg = self._schedule_notification(
@@ -297,9 +295,10 @@ class UsageProvider(ABC):
                     continue
                 try:
                     msg = json.loads(line)
-                    if msg.get("event") == "message":
-                        if f"notif_id:{notif_id}" in msg.get("tags", []):
-                            return True
+                    if msg.get("event") == "message" and f"notif_id:{notif_id}" in msg.get(
+                        "tags", []
+                    ):
+                        return True
                 except json.JSONDecodeError:
                     continue
         except requests.RequestException:

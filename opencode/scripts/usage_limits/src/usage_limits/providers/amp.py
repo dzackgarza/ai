@@ -83,7 +83,7 @@ class AmpProvider(UsageProvider):
         notif_id = f"amp-topup-{int(topup_time.timestamp())}"
 
         if self._notification_scheduled(notif_id):
-            print("ℹ️  Top-up notification already scheduled")
+            print("i  Top-up notification already scheduled")
             return
 
         time_to_topup = topup_time - datetime.now(UTC)

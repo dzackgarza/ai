@@ -100,7 +100,9 @@ class OllamaProvider(UsageProvider):
         }
 
         for label_text in ["Session usage", "Weekly usage"]:
-            label_elem = soup.find(string=lambda x: x and label_text.lower() in x.lower())
+            label_elem = soup.find(
+                string=lambda x, lt=label_text: bool(x and lt.lower() in x.lower())
+            )
             if not label_elem:
                 continue
 
