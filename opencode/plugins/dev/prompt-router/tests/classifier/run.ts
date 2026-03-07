@@ -11,21 +11,31 @@
 //   ollama/   → Ollama      (e.g. ollama/qwen3:4b)
 //
 // Defaults to groq/llama-3.3-70b-versatile.
-// Reads playbook from scripts/templates/classifier/playbook.md (via llm.py).
-// Reads cases from scripts/templates/classifier/cases.yaml (via llm.py).
+// Reads classifier prompt from prompts/micro_agents/prompt_difficulty_classifier/prompt.md.
+// Reads cases from prompts/micro_agents/prompt_difficulty_classifier/expected_classifications.yaml.
 // Writes per-run log to runs/{slug-safe}/{timestamp}.yaml.
 // Updates cumulative scores in scores.yaml.
 //
-// Structured output and retries handled by scripts/llm.py.
+// Structured output and retries handled by scripts/llm/bridge.py.
 
 import { parse, stringify } from "yaml";
-import { join, dirname } from "path";
+import { join, dirname, resolve } from "path";
 import { mkdirSync, writeFileSync } from "fs";
-import { callLLM, loadTemplate } from "../../../../utilities/shared/llm";
+import { callLLM, loadMicroAgent } from "../../../../utilities/shared/llm";
 
 const DIR = dirname(import.meta.path);
 const RUNS_DIR = join(DIR, "runs");
 const DELAY_MS = 10000;
+
+// Canonical micro-agent paths — relative to this file, up to ~/ai/
+const CLASSIFIER_PROMPT_PATH = resolve(
+  DIR,
+  "../../../../../../prompts/micro_agents/prompt_difficulty_classifier/prompt.md",
+);
+const EXPECTED_CLASSIFICATIONS_PATH = resolve(
+  DIR,
+  "../../../../../../prompts/micro_agents/prompt_difficulty_classifier/expected_classifications.yaml",
+);
 
 // ---------------------------------------------------------------------------
 // Types
@@ -125,11 +135,12 @@ const model =
   process.argv.find((a, i) => i >= 2 && !a.startsWith("--")) ??
   "groq/llama-3.3-70b-versatile";
 
-// Load templates via llm.py (canonical scripts/templates/ dir)
-const playbook = await loadTemplate("classifier/playbook");
-const { cases } = parse(await loadTemplate("classifier/cases")) as {
-  cases: Case[];
-};
+// Load classifier system prompt and test cases from canonical locations.
+const _classifierAgent = await loadMicroAgent(CLASSIFIER_PROMPT_PATH);
+const playbook = _classifierAgent.system ?? "";
+const { cases } = parse(
+  await Bun.file(EXPECTED_CLASSIFICATIONS_PATH).text(),
+) as { cases: Case[] };
 
 console.log(`Model:      ${model}`);
 console.log(`Cases:      ${cases.length}`);
@@ -172,7 +183,7 @@ console.log(
 const runLog: RunLog = {
   model,
   timestamp: new Date().toISOString(),
-  playbook_file: "classifier/playbook.md",
+  playbook_file: "prompts/micro_agents/prompt_difficulty_classifier/prompt.md",
   passed,
   total: cases.length,
   score,

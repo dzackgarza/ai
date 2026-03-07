@@ -43,7 +43,7 @@ from pydantic import BaseModel
 
 from scripts.llm.call import call_with_fallback
 from scripts.llm.schemas import SCHEMAS
-from scripts.llm.templates import load_template
+from scripts.llm.templates import load_micro_agent, load_template, render_body
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +102,27 @@ async def _main() -> None:
                 )
             )
         except FileNotFoundError as exc:
+            print(json.dumps({"ok": False, "error": str(exc)}))
+            sys.exit(1)
+        return
+
+    # ------------------------------------------------------------------
+    # Action: render_template
+    # ------------------------------------------------------------------
+    if req.get("action") == "render_template":
+        body: str = req.get("body", "")
+        variables: dict = req.get("variables", {})
+        if not body:
+            print(
+                json.dumps(
+                    {"ok": False, "error": "No body specified for render_template"}
+                )
+            )
+            sys.exit(1)
+        try:
+            rendered = render_body(body, **variables)
+            print(json.dumps({"ok": True, "result": rendered}))
+        except Exception as exc:
             print(json.dumps({"ok": False, "error": str(exc)}))
             sys.exit(1)
         return

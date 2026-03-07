@@ -2,7 +2,7 @@
 // instructions into the conversation so the main agent operates in the correct
 // cognitive mode before acting.
 //
-// Tiers (see scripts/templates/tiers/*.md for full instructions):
+// Tiers (see prompts/micro_agents/prompt_difficulty_classifier/):
 //   model-self — answer from context/self-knowledge; use reading-transcripts for history
 //   knowledge  — search before answering; never answer from training data
 //   C          — act immediately; TodoWrite only if 3+ steps
@@ -12,9 +12,28 @@
 
 import { appendFileSync } from "fs";
 import { randomUUID } from "crypto";
+import { fileURLToPath } from "url";
+import { resolve, dirname } from "path";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart, UserMessage } from "@opencode-ai/sdk";
-import { callLLM, loadTemplate } from "../../utilities/shared/llm";
+import {
+  callLLM,
+  loadMicroAgent,
+  renderTemplate,
+} from "../../utilities/shared/llm";
+
+const _dir = dirname(fileURLToPath(import.meta.url));
+
+// Canonical micro-agent prompts for the classifier.
+// ~/ai/prompts/micro_agents/prompt_difficulty_classifier/
+const CLASSIFIER_PROMPT_PATH = resolve(
+  _dir,
+  "../../../../../prompts/micro_agents/prompt_difficulty_classifier/prompt.md",
+);
+const RESPONSE_TEMPLATE_PATH = resolve(
+  _dir,
+  "../../../../../prompts/micro_agents/prompt_difficulty_classifier/response_template.md",
+);
 
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
 
@@ -87,19 +106,15 @@ const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
 ];
 
 // ---------------------------------------------------------------------------
-// Tier instructions + classifier system prompt — loaded from canonical
-// scripts/templates/ via llm.py at startup.
+// Classifier system prompt + response template — loaded from canonical
+// prompts/micro_agents/prompt_difficulty_classifier/ at startup.
 // ---------------------------------------------------------------------------
 
-const TIER_INSTRUCTIONS: Record<Tier, string> = Object.fromEntries(
-  await Promise.all(
-    (["model-self", "knowledge", "C", "B", "A", "S"] as const).map(
-      async (tier) => [tier, await loadTemplate(`tiers/${tier}`)],
-    ),
-  ),
-) as Record<Tier, string>;
+const _classifierAgent = await loadMicroAgent(CLASSIFIER_PROMPT_PATH);
+const SYSTEM_PROMPT = _classifierAgent.system ?? "";
 
-const SYSTEM_PROMPT = await loadTemplate("classifier/playbook");
+const _responseAgent = await loadMicroAgent(RESPONSE_TEMPLATE_PATH);
+const RESPONSE_TEMPLATE_BODY = _responseAgent.body;
 
 // ---------------------------------------------------------------------------
 // classify()
@@ -163,7 +178,9 @@ export const PromptRouter: Plugin = async ({ client }) => {
         if (!classification) return;
 
         const { tier, reasoning } = classification;
-        const instruction = TIER_INSTRUCTIONS[tier];
+        const instruction = await renderTemplate(RESPONSE_TEMPLATE_BODY, {
+          tier,
+        });
 
         output.messages.push({
           info: {

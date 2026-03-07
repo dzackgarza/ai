@@ -27,7 +27,8 @@ import { resolve, dirname } from "path";
 const _dir = dirname(fileURLToPath(import.meta.url));
 
 // Path to scripts/llm/bridge.py — canonical LLM dispatch module.
-const LLM_PY = resolve(_dir, "../../../scripts/llm/bridge.py");
+// scripts/llm/ lives at ~/ai/scripts/llm/, one level above opencode/.
+const LLM_PY = resolve(_dir, "../../../../scripts/llm/bridge.py");
 
 // Python binary: prefer the venv, fall back to system python3.
 const PYTHON = resolve(_dir, "../../../.venv/bin/python");
@@ -108,6 +109,33 @@ export interface MicroAgent {
 export async function loadMicroAgent(path: string): Promise<MicroAgent> {
   const res = _run<MicroAgent>({ action: "load_micro_agent", path } as any);
   if (!res.ok) throw new Error(`scripts.llm micro-agent error: ${res.error}`);
+  return res.result;
+}
+
+// ---------------------------------------------------------------------------
+// renderTemplate — render a Jinja2 template body string with variables
+// ---------------------------------------------------------------------------
+
+/**
+ * Render a Jinja2 template body string with the given variables.
+ *
+ * Used for local rendering (no LLM call) — e.g. the response_template.md
+ * for the prompt router, which takes { tier } and returns the instruction
+ * to inject into the conversation.
+ *
+ * Example:
+ *   const instruction = await renderTemplate(agent.body, { tier: "C" });
+ */
+export async function renderTemplate(
+  body: string,
+  variables: Record<string, string>,
+): Promise<string> {
+  const res = _run<string>({
+    action: "render_template",
+    body,
+    variables,
+  } as any);
+  if (!res.ok) throw new Error(`scripts.llm render error: ${res.error}`);
   return res.result;
 }
 

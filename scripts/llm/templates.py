@@ -76,6 +76,11 @@ def load_micro_agent(path: str | Path) -> MicroAgent:
     return MicroAgent(frontmatter=frontmatter, system=system, body=body)
 
 
+def render_body(body: str, **variables: str) -> str:
+    """Render a Jinja2 template body string with the given variables."""
+    return Template(body).render(**variables)
+
+
 def load_template(name: str, *, path: str | None = None) -> str:
     """Load a template by name or absolute path.
 
