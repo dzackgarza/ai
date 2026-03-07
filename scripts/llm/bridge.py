@@ -1,10 +1,10 @@
 """
 stdin/stdout JSON bridge for TypeScript subprocess callers.
 
-Reads a single JSON request from stdin, dispatches to call_with_fallback or
-load_template, and writes a single JSON response to stdout.
+Reads a single JSON request from stdin, dispatches to call_with_fallback,
+load_micro_agent, or render_template, and writes a single JSON response to stdout.
 
-Protocol (unchanged from the previous opencode/scripts/llm.py interface):
+Protocol:
 
   Request (call):
     {
@@ -16,13 +16,13 @@ Protocol (unchanged from the previous opencode/scripts/llm.py interface):
       "retries": 3                  // optional, default 3
     }
 
-  Request (load_template):
-    { "action": "load_template", "template": "classifier/playbook" }
-    { "action": "load_template", "path": "/abs/path/to/file.md" }
-
   Request (load_micro_agent):
     { "action": "load_micro_agent", "path": "/abs/path/to/prompt.md" }
     Response result: { "system": "...", "body": "...", "frontmatter": {...} }
+
+  Request (render_template):
+    { "action": "render_template", "body": "...", "variables": {"tier": "C"} }
+    Response result: "rendered string"
 
   Response (success):  { "ok": true, "result": ... }
   Response (error):    { "ok": false, "error": "..." }
@@ -43,7 +43,7 @@ from pydantic import BaseModel
 
 from scripts.llm.call import call_with_fallback
 from scripts.llm.schemas import SCHEMAS
-from scripts.llm.templates import load_micro_agent, load_template, render_body
+from scripts.llm.templates import load_micro_agent, render_body
 
 logger = logging.getLogger(__name__)
 
@@ -55,25 +55,6 @@ async def _main() -> None:
     except json.JSONDecodeError as exc:
         print(json.dumps({"ok": False, "error": f"Invalid JSON input: {exc}"}))
         sys.exit(1)
-
-    # ------------------------------------------------------------------
-    # Action: load_template
-    # ------------------------------------------------------------------
-    if req.get("action") == "load_template":
-        template_name: str = req.get("template", "")
-        template_path: str | None = req.get("path") or None
-        if not template_name and not template_path:
-            print(
-                json.dumps({"ok": False, "error": "No template name or path specified"})
-            )
-            sys.exit(1)
-        try:
-            content = load_template(template_name, path=template_path)
-            print(json.dumps({"ok": True, "result": content}))
-        except FileNotFoundError as exc:
-            print(json.dumps({"ok": False, "error": str(exc)}))
-            sys.exit(1)
-        return
 
     # ------------------------------------------------------------------
     # Action: load_micro_agent

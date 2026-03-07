@@ -4,7 +4,7 @@ scripts.llm — canonical LLM package for the ai/ workspace.
 Public API (import these; don't import submodules directly unless needed):
 
     from scripts.llm import call_llm, call_with_fallback
-    from scripts.llm import load_template, render_template
+    from scripts.llm import load_micro_agent, render_body
     from scripts.llm import PROVIDERS, SCHEMAS
     from scripts.llm import Classification   # convenience re-export
 
@@ -25,13 +25,13 @@ Subprocess bridge (for TypeScript callers):
 from scripts.llm.call import call_llm, call_with_fallback
 from scripts.llm.providers import PROVIDERS
 from scripts.llm.schemas import SCHEMAS, Classification
-from scripts.llm.templates import load_template, render_template
+from scripts.llm.templates import load_micro_agent, render_body
 
 __all__ = [
     "call_llm",
     "call_with_fallback",
-    "load_template",
-    "render_template",
+    "load_micro_agent",
+    "render_body",
     "PROVIDERS",
     "SCHEMAS",
     "Classification",

@@ -7,7 +7,7 @@
  * the Python bridge process, and deserialises the response.
  *
  * Usage:
- *   import { callLLM, loadTemplate, loadMicroAgent } from "../../utilities/shared/llm";
+ *   import { callLLM, loadMicroAgent, renderTemplate } from "../../utilities/shared/llm";
  *
  *   const result = await callLLM<{ tier: string; reasoning: string }>({
  *     models: ["groq/llama-3.3-70b-versatile"],
@@ -64,22 +64,6 @@ export type LLMResponse<T = unknown> =
 export async function callLLM<T = string>(req: LLMRequest): Promise<T> {
   const res = _run<T>(req);
   if (!res.ok) throw new Error(`scripts.llm error: ${res.error}`);
-  return res.result;
-}
-
-// ---------------------------------------------------------------------------
-// loadTemplate — fetch a raw template file by name (scripts/templates/)
-// ---------------------------------------------------------------------------
-
-/**
- * Load a raw template by name from the legacy scripts/templates/ directory.
- *
- * Examples:
- *   await loadTemplate("tiers/A")   // returns tiers/A.md contents
- */
-export async function loadTemplate(name: string): Promise<string> {
-  const res = _run<string>({ action: "load_template", template: name } as any);
-  if (!res.ok) throw new Error(`scripts.llm template error: ${res.error}`);
   return res.result;
 }
 

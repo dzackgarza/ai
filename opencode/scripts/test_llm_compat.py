@@ -25,7 +25,13 @@ from pathlib import Path
 # scripts.llm lives at ~/ai/scripts/llm/ so we need ~/ai on sys.path.
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from scripts.llm import PROVIDERS, Classification, call_llm, load_template  # noqa: E402
+from scripts.llm import PROVIDERS, Classification, call_llm, load_micro_agent  # noqa: E402
+
+# Canonical classifier prompt location
+_CLASSIFIER_PROMPT = (
+    Path(__file__).parent.parent.parent
+    / "prompts/micro_agents/prompt_difficulty_classifier/prompt.md"
+)
 
 # ---------------------------------------------------------------------------
 # Fixed test probe — consistent across all runs
@@ -77,7 +83,8 @@ async def probe(provider: str, slug: str, playbook: str) -> tuple[bool, str]:
 
 
 async def main() -> int:
-    playbook = load_template("classifier/playbook")
+    agent = load_micro_agent(_CLASSIFIER_PROMPT)
+    playbook = agent.system or agent.body
 
     # Respect env override
     if override := os.environ.get("SMOKE_MODEL"):
