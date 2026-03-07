@@ -107,7 +107,6 @@
     "opencode-anthropic-auth@latest",
     "opencode-qwencode-auth@latest",
     "opencode-openai-codex-auth@latest",
-    "@rama_nigg/open-cursor@latest",
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest",
@@ -164,58 +163,6 @@
         "claude-sonnet-4-20250514"
       ]
     },
-    "cursor-acp": {
-      "name": "Cursor ACP",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "http://127.0.0.1:32124/v1"
-      },
-      "models": {
-        "auto": {
-          "name": "Cursor Auto"
-        }
-      },
-      "blacklist": [
-        "composer-1",
-        "composer-1.5",
-        "gemini-3.1-pro",
-        "gemini-3-flash",
-        "gemini-3-pro",
-        "gpt-5.1-codex-max",
-        "gpt-5.1-codex-max-high",
-        "gpt-5.1-codex-mini",
-        "gpt-5.1-high",
-        "gpt-5.2",
-        "gpt-5.2-codex",
-        "gpt-5.2-codex-fast",
-        "gpt-5.2-codex-high",
-        "gpt-5.2-codex-high-fast",
-        "gpt-5.2-codex-low",
-        "gpt-5.2-codex-low-fast",
-        "gpt-5.2-codex-xhigh",
-        "gpt-5.2-codex-xhigh-fast",
-        "gpt-5.2-high",
-        "gpt-5.3-codex",
-        "gpt-5.3-codex-fast",
-        "gpt-5.3-codex-high",
-        "gpt-5.3-codex-high-fast",
-        "gpt-5.3-codex-low",
-        "gpt-5.3-codex-low-fast",
-        "gpt-5.3-codex-spark-preview",
-        "gpt-5.3-codex-xhigh",
-        "gpt-5.3-codex-xhigh-fast",
-        "grok",
-        "kimi-k2.5",
-        "opus-4.5",
-        "opus-4.5-thinking",
-        "opus-4.6",
-        "opus-4.6-thinking",
-        "sonnet-4.5",
-        "sonnet-4.5-thinking",
-        "sonnet-4.6",
-        "sonnet-4.6-thinking"
-      ]
-    },
     "github-copilot": {
       "blacklist": [
         "claude-opus-4.5",
@@ -257,73 +204,6 @@
         },
         "grok-code-fast-1": {
           "name": "Grok Code Fast 1 (0.25x)"
-        }
-      }
-    },
-    "google": {
-      "blacklist": [
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-8b",
-        "gemini-1.5-pro",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-lite",
-        "gemini-embedding-001",
-        "gemini-2.5-flash-preview-tts",
-        "gemini-2.5-pro-preview-tts",
-        "gemini-2.5-flash-preview-04-17",
-        "gemini-2.5-flash-preview-05-20",
-        "gemini-2.5-pro-preview-05-06",
-        "gemma-2-2b-it",
-        "gemma-2-9b-it",
-        "gemma-3-1b-it",
-        "gemma-3-4b-it",
-        "antigravity-gemini-3-pro",
-        "antigravity-gemini-3.1-pro",
-        "antigravity-gemini-3-flash",
-        "antigravity-claude-sonnet-4-6",
-        "antigravity-claude-opus-4-6-thinking",
-        "gemini-2.5-flash-image",
-        "gemini-2.5-flash-image-preview",
-        "gemini-2.5-flash-lite",
-        "gemini-2.5-flash-lite-preview-06-17",
-        "gemini-2.5-flash-lite-preview-09-2025",
-        "gemini-2.5-flash-preview-09-2025",
-        "gemini-2.5-pro-preview-06-05",
-        "gemini-2.5-pro-preview-05-06"
-      ],
-      "models": {
-        "gemini-3-flash": {
-          "name": "Gemini 3 Flash"
-        },
-        "gemini-3-pro": {
-          "name": "Gemini 3 Pro"
-        },
-        "gemini-3.1-pro": {
-          "name": "Gemini 3.1 Pro"
-        },
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6"
-        },
-        "claude-opus-4-6-thinking": {
-          "name": "Claude Opus 4.6 Thinking"
-        },
-        "gemini-2.5-flash": {
-          "name": "Gemini 2.5 Flash"
-        },
-        "gemini-2.5-pro": {
-          "name": "Gemini 2.5 Pro"
-        },
-        "gemini-3-flash-preview": {
-          "name": "Gemini 3 Flash Preview"
-        },
-        "gemini-3-pro-preview": {
-          "name": "Gemini 3 Pro Preview"
-        },
-        "gemini-3.1-pro-preview": {
-          "name": "Gemini 3.1 Pro Preview"
-        },
-        "gemini-3.1-pro-preview-customtools": {
-          "name": "Gemini 3.1 Pro Preview Custom Tools"
         }
       }
     },
@@ -1139,12 +1019,12 @@
           "*": "allow"
         },
         "task": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "plan_exit": "deny",
         "webfetch": "deny",
         "websearch": "deny",
         "write_plan": "deny",
-        "plan_exit": "deny",
-        "git_add": "allow",
-        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
         "serena_onboarding": "deny",
         "serena_prepare_for_new_conversation": "deny",
@@ -1241,12 +1121,12 @@
           "*": "allow"
         },
         "task": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "plan_exit": "deny",
         "webfetch": "deny",
         "websearch": "deny",
         "write_plan": "deny",
-        "plan_exit": "deny",
-        "git_add": "allow",
-        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
         "serena_onboarding": "deny",
         "serena_prepare_for_new_conversation": "deny",
@@ -1259,7 +1139,6 @@
     "Interactive": {
       "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
       "mode": "primary",
-      "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
       "permission": {
         "todoread": "allow",
@@ -1302,152 +1181,52 @@
           "*": "allow"
         },
         "edit": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "apply_patch": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "patch": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_create_text_file": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_replace_content": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_replace_symbol_body": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_insert_after_symbol": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_insert_before_symbol": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_rename_symbol": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_delete_lines": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_insert_at_line": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "serena_replace_lines": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow",
-          "*docs*": "allow",
-          "*tests*": "allow",
-          "*test*": "allow",
-          "*.serena/plans*": "allow"
+          "*": "allow"
         },
         "plan_exit": "deny",
-        "bash": {
-          "du*": "allow",
-          "file *": "allow",
-          "ls*": "allow",
-          "pwd*": "allow",
-          "stat*": "allow",
-          "tree*": "allow",
-          "cut*": "allow",
-          "diff*": "allow",
-          "grep*": "allow",
-          "rg*": "allow",
-          "head*": "allow",
-          "tail*": "allow",
-          "less*": "allow",
-          "sort*": "allow",
-          "wc*": "allow",
-          "jq": "allow",
-          "find * -delete*": "ask",
-          "find * -exec*": "ask",
-          "find *": "allow",
-          "just*": "allow",
-          "pytest*": "allow",
-          "uv*": "allow",
-          "cat*": "deny",
-          "*": "deny"
-        },
+        "bash": "allow",
         "serena_execute_shell_command": "deny",
         "serena_onboarding": "deny",
         "serena_prepare_for_new_conversation": "deny",
@@ -1826,9 +1605,9 @@
       "model": "cursor-acp/auto",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
       "permission": {
-        "task": "allow",
         "todoread": "allow",
         "todowrite": "allow",
+        "task": "allow",
         "introspection": "allow",
         "list_sessions": "allow",
         "read_transcript": "allow",
@@ -2004,12 +1783,12 @@
           "*": "allow"
         },
         "task": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "plan_exit": "deny",
         "webfetch": "deny",
         "websearch": "deny",
         "write_plan": "deny",
-        "plan_exit": "deny",
-        "git_add": "allow",
-        "git_commit": "allow",
         "serena_execute_shell_command": "deny",
         "serena_onboarding": "deny",
         "serena_prepare_for_new_conversation": "deny",
@@ -2147,10 +1926,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2249,10 +2028,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2351,10 +2130,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2453,10 +2232,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2555,10 +2334,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2729,10 +2508,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2903,10 +2682,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3077,10 +2856,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3266,10 +3045,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3455,10 +3234,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3557,10 +3336,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3659,10 +3438,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3761,10 +3540,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3863,10 +3642,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3965,10 +3744,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4067,10 +3846,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4169,10 +3948,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4271,10 +4050,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4445,10 +4224,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4619,10 +4398,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4793,10 +4572,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4967,10 +4746,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -5141,10 +4920,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -5330,10 +5109,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -5507,10 +5286,10 @@
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
+        "plan_exit": "deny",
         "introspection": "deny",
         "list_sessions": "deny",
         "read_transcript": "deny",
-        "plan_exit": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
