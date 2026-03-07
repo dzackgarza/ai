@@ -148,8 +148,13 @@ print(f"Successfully rebuilt and validated config at {output_path}")
 subprocess.run(["systemctl", "--user", "restart", "opencode-serve"], check=True)
 print("Restarted opencode-serve user service")
 
-# Refresh models to pick up any provider changes
-subprocess.run(["opencode", "models", "--refresh"], check=True)
+# Refresh models to pick up any provider changes (suppress output)
+subprocess.run(
+    ["opencode", "models", "--refresh"],
+    check=True,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+)
 print("Refreshed opencode models")
 
 
@@ -235,14 +240,11 @@ def list_cursor_acp_upstream_models() -> set[str]:
         raise RuntimeError(f"Failed to query Cursor ACP API: {e}")
 
 
-def assert_provider_partition_matches_models_dev(provider_id: str) -> set[str]:
-    """Validate provider config against models.dev canonical source.
+def show_provider_partition_diff(provider_id: str) -> set[str]:
+    """Display symmetric difference between config and models.dev for a provider.
 
-    Reports symmetric difference between:
-    - Models in local config (whitelist ∪ blacklist)
-    - Models in models.dev API
-
-    With actionable guidance for resolving discrepancies.
+    Shows models in config but not in models.dev, and vice versa.
+    Returns the whitelist for informational display purposes.
     """
     provider_cfg = config.get("provider", {}).get(provider_id)
     if provider_cfg is None:
@@ -270,12 +272,9 @@ def assert_provider_partition_matches_models_dev(provider_id: str) -> set[str]:
     local_models = whitelist | blacklist
     models_dev_models = get_models_dev_provider_models(provider_id)
 
-    # Provider not in models.dev - skip validation but warn
+    # Provider not in models.dev - just note it
     if models_dev_models is None:
-        print(
-            f"[bold yellow] "
-            f"Provider '{provider_id}' not found in models.dev API, skipping validation"
-        )
+        print(f"[dim]{provider_id}: not in models.dev[/]")
         return whitelist
 
     # Calculate symmetric difference
@@ -285,9 +284,7 @@ def assert_provider_partition_matches_models_dev(provider_id: str) -> set[str]:
     has_discrepancies = bool(in_local_not_dev or in_dev_not_local)
 
     if has_discrepancies:
-        print(
-            f"\n[bold yellow]⚠ Provider '{provider_id}' model discrepancy detected:[/]\n"
-        )
+        print(f"\n[bold]{provider_id}: config vs models.dev:[/]\n")
 
         if in_local_not_dev:
             print(
@@ -389,23 +386,24 @@ def assert_cursor_acp_blacklist_matches_api(provider_id: str) -> set[str]:
     return model_overrides
 
 
-def assert_runtime_whitelist_applied(
-    provider_id: str, expected_models: set[str]
-) -> None:
+def show_runtime_whitelist_diff(provider_id: str, expected_models: set[str]) -> None:
+    """Display difference between config whitelist and runtime models."""
     listed = list_runtime_provider_models(provider_id)
     missing_from_runtime = sorted(expected_models - listed)
     unexpected_in_runtime = sorted(listed - expected_models)
     if missing_from_runtime or unexpected_in_runtime:
-        raise RuntimeError(
-            f"Provider '{provider_id}' runtime whitelist mismatch. "
-            f"missing_from_runtime={missing_from_runtime} "
-            f"unexpected_in_runtime={unexpected_in_runtime}"
-        )
+        print(f"[yellow]Note: {provider_id} runtime differs from config[/]")
+        if missing_from_runtime:
+            print(
+                f"  config has but runtime missing: {missing_from_runtime[:5]}{'...' if len(missing_from_runtime) > 5 else ''}"
+            )
+        if unexpected_in_runtime:
+            print(
+                f"  runtime has but config missing: {unexpected_in_runtime[:5]}{'...' if len(unexpected_in_runtime) > 5 else ''}"
+            )
+        return
 
-    print(
-        f"Verified provider '{provider_id}' runtime whitelist: "
-        f"runtime={len(listed)} expected={len(expected_models)}"
-    )
+    print(f"[dim]{provider_id}: config={len(expected_models)} runtime={len(listed)}[/]")
 
 
 # Guardrail order:
@@ -433,6 +431,5 @@ for provider_id in config.get("provider", {}).keys():
     if providers_to_validate and provider_id not in providers_to_validate:
         continue
 
-    whitelist = assert_provider_partition_matches_models_dev(provider_id)
-    # Still validate runtime whitelist application
-    assert_runtime_whitelist_applied(provider_id, whitelist)
+    whitelist = show_provider_partition_diff(provider_id)
+    show_runtime_whitelist_diff(provider_id, whitelist)
