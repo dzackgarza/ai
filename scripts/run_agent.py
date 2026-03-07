@@ -17,16 +17,15 @@ import litellm
 
 
 # Static provider list - matches models.dev provider slugs to env vars
+# NOTE: one should restrict openrouter to free models only.
 PROVIDERS = {
     'groq': 'GROQ_API_KEY',
-    'openai': 'OPENAI_API_KEY',
     'openrouter': 'OPENROUTER_API_KEY',
     'mistral': 'MISTRAL_API_KEY',
     'replicate': 'REPLICATE_API_TOKEN',
     'cloudflare': 'CLOUDFLARE_API_KEY',
     'ollama': 'OLLAMA_API_KEY',
     'nvidia': 'NVIDIA_API_KEY',
-    'anthropic': 'ANTHROPIC_API_KEY',
 }
 
 API_KEYS = {p: os.environ.get(e) for p, e in PROVIDERS.items()}
@@ -92,9 +91,12 @@ def main():
     
     if args.models:
         models_dev = fetch_models_dev()
-        for prov in models_dev:
-            for model_id in models_dev[prov]['models']:
-                print(f"{prov}/{model_id}")
+        try:
+            for prov in models_dev:
+                for model_id in models_dev[prov]['models']:
+                    print(f"{prov}/{model_id}")
+        except BrokenPipeError:
+            pass
         sys.exit(0)
     
     if not args.template:
