@@ -65,6 +65,11 @@ check: typecheck test compile
 session *args:
     bun run utilities/harness/session-harness.ts {{args}}
 
+# E2E webtools validation (websearch + webfetch shadow tests) has moved to:
+#   /home/dzack/opencode-plugins/improved-webtools/
+#   just check            (typecheck + unit + E2E)
+#   bun run test:e2e      (E2E shadowing only)
+
 # Consolidated callback interaction check across task + sleep + async_command
 callback-integration:
     bun test tests/unit/callback-integration.test.ts
