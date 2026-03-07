@@ -2,16 +2,7 @@
 
 # Agent Guidelines
 
-## Hard Rules
-
-1. **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing. Verify with `git diff` after.
-2. **Load applicable skills before acting.** Scan all available skills. If one applies, load it. Do not proceed until verified.
-3. **Run at project start:** `serena_activate_project`, then `serena_read_memory`.
-4. **Never write time estimates.** Your calibration is off by orders of magnitude.
-5. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere. This includes documentation: never attempt restate a fact when you can point to the canonical source.
-6. **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed. Error-path work is useless, proof-of-correctness work is essential. And mocks are not going to help you prove anything. Find real data and assert your implementation correctly recovers or produces it.
-
----
+NEVER EDIT opencode.json directly! Read the justfile!
 
 ## OpenCode Workspace
 

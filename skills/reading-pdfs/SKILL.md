@@ -1,6 +1,6 @@
 ---
 name: reading-pdfs
-description: Convert PDFs to markdown using Mistral OCR, with local caching in ~/pdfs.
+description: Use when reading a PDF — converts to markdown via Mistral OCR with local caching.
 metadata:
   author: dzack
   version: "0.1.0"

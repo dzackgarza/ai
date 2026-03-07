@@ -1,6 +1,6 @@
 ---
 name: test-guidelines
-description: Use when writing, reviewing, or auditing tests. Apply when designing test strategy, validating TDD compliance, or when tests need to prove substantive correctness. Mandatory first read for all test work.
+description: "Use any and every time you interact with a test file, period."
 ---
 
 # HIGH-QUALITY TESTING STANDARDS (GUIDELINES)

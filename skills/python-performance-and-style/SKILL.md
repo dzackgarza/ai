@@ -1,6 +1,6 @@
 ---
 name: python
-description: Python 3.11+ performance optimization guidelines (formerly python-311). This skill should be used when writing, reviewing, or refactoring Python code to ensure optimal performance patterns. Triggers on tasks involving asyncio, data structures, memory management, concurrency, loops, strings, or Python idioms.
+description: Use when writing, reviewing, or refactoring Python code — especially asyncio, data structures, memory management, concurrency, loops, or string handling.
 ---
 
 # Python 3.11 Best Practices
@@ -10,6 +10,7 @@ Comprehensive performance optimization guide for Python 3.11+ applications. Cont
 ## When to Apply
 
 Reference these guidelines when:
+
 - Writing new Python async I/O code
 - Choosing data structures for collections
 - Optimizing memory usage in data-intensive applications
@@ -18,16 +19,16 @@ Reference these guidelines when:
 
 ## Rule Categories by Priority
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | I/O & Async Patterns | CRITICAL | `io-` |
-| 2 | Data Structure Selection | CRITICAL | `ds-` |
-| 3 | Memory Optimization | HIGH | `mem-` |
-| 4 | Concurrency & Parallelism | HIGH | `conc-` |
-| 5 | Loop & Iteration | MEDIUM | `loop-` |
-| 6 | String Operations | MEDIUM | `str-` |
-| 7 | Function & Call Overhead | LOW-MEDIUM | `func-` |
-| 8 | Python Idioms & Micro | LOW | `py-` |
+| Priority | Category                  | Impact     | Prefix  |
+| -------- | ------------------------- | ---------- | ------- |
+| 1        | I/O & Async Patterns      | CRITICAL   | `io-`   |
+| 2        | Data Structure Selection  | CRITICAL   | `ds-`   |
+| 3        | Memory Optimization       | HIGH       | `mem-`  |
+| 4        | Concurrency & Parallelism | HIGH       | `conc-` |
+| 5        | Loop & Iteration          | MEDIUM     | `loop-` |
+| 6        | String Operations         | MEDIUM     | `str-`  |
+| 7        | Function & Call Overhead  | LOW-MEDIUM | `func-` |
+| 8        | Python Idioms & Micro     | LOW        | `py-`   |
 
 ## Table of Contents
 
@@ -49,7 +50,7 @@ Reference these guidelines when:
 
 3. [Memory Optimization](references/_sections.md#3-memory-optimization) — **HIGH**
    - 3.1 [Intern Repeated Strings to Save Memory](references/mem-intern-strings.md) — HIGH (reduces duplicate string storage)
-   - 3.2 [Use __slots__ for Memory-Efficient Classes](references/mem-slots.md) — HIGH (20-50% memory reduction per instance)
+   - 3.2 [Use **slots** for Memory-Efficient Classes](references/mem-slots.md) — HIGH (20-50% memory reduction per instance)
    - 3.3 [Use array.array for Homogeneous Numeric Data](references/mem-array-for-numeric.md) — HIGH (4-8× memory reduction for numbers)
    - 3.4 [Use Generators for Large Sequences](references/mem-generators.md) — HIGH (100-1000× memory reduction)
    - 3.5 [Use weakref for Caches to Prevent Memory Leaks](references/mem-weak-references.md) — HIGH (prevents unbounded cache growth)

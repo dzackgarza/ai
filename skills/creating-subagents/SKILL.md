@@ -1,6 +1,6 @@
 ---
 name: creating-subagents
-description: Use when creating new subagents or updating subagent descriptions in opencode.json — ensures descriptions contain delegation instructions (when, what to pass, how to ask) and subagents are created for appropriate use cases.
+description: "Use when creating new subagents or updating subagent descriptions in opencode.json."
 ---
 
 # Creating Subagents

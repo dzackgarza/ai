@@ -1,6 +1,6 @@
 ---
 name: writing-documentation
-description: Produces concise, clear documentation by applying Elements of Style principles. Use when writing or improving any technical documentation (READMEs, guides, API docs, architecture docs). Not for code comments.
+description: "Use when writing or improving technical documentation — READMEs, guides, API docs, or architecture docs."
 ---
 
 # Writing Documentation Skill

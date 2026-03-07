@@ -48,9 +48,10 @@ common:
 
   improved-webtools:
     description: "Web search and fetching via improved-webtools MCP server"
-    command: "uv"
+    command: "uvx"
     args:
-      - "run"
+      - "--with"
+      - "fastmcp"
       - "fastmcp"
       - "run"
       - "/home/dzack/opencode-plugins/improved-webtools/mcp-server/server.py"

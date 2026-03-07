@@ -1,13 +1,13 @@
 ---
 name: writing-clearly-and-concisely
-description: Apply Strunk's timeless writing rules to ANY prose humans will read—documentation, commit messages, error messages, explanations, reports, or UI text. Makes your writing clearer, stronger, and more professional.
+description: Use when writing or editing any prose a human will read — docs, commit messages, error messages, explanations, or UI text.
 ---
 
 # Writing Clearly and Concisely
 
 ## Overview
 
-William Strunk Jr.'s *The Elements of Style* (1918) teaches you to write clearly and cut ruthlessly.
+William Strunk Jr.'s _The Elements of Style_ (1918) teaches you to write clearly and cut ruthlessly.
 
 ## When to Use This Skill
 
@@ -24,6 +24,7 @@ Use this skill whenever you write prose for humans:
 ## All Rules
 
 ### Elementary Rules of Usage (Grammar/Punctuation)
+
 1. Form possessive singular by adding 's
 2. Use comma after each term in series except last
 3. Enclose parenthetic expressions between commas
@@ -33,6 +34,7 @@ Use this skill whenever you write prose for humans:
 7. Participial phrase at beginning refers to grammatical subject
 
 ### Elementary Principles of Composition
+
 8. One paragraph per topic
 9. Begin paragraph with topic sentence
 10. **Use active voice**
@@ -46,6 +48,7 @@ Use this skill whenever you write prose for humans:
 18. **Place emphatic words at end of sentence**
 
 ### Section V: Words and Expressions Commonly Misused
+
 Alphabetical reference for usage questions
 
 ## Bottom Line

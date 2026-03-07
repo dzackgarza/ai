@@ -8,4 +8,4 @@ Scope: current plugin workspace and active OpenCode wiring
 3. No background cache pruning pass — cache expiry is lazy (on read only); stale entries accumulate indefinitely.
 4. In-repo unit suites (`prompt-router`, `command-interceptor`, `callback-integration`) use synthetic inputs, not pinned real fixtures.
 5. Several command/API assumptions in non-webtools plugins rely on mocks and inferred behavior rather than doc+live verification.
-6. `local-plugins.json` has `"async-subagent": true` but the file was retired to `examples/retired/`. Stale entry — nothing loads it.
+6. `improved-task` MCP server wrapper not yet implemented — planned in `MCP-WRAPPERS-PLAN.md` but never built. No MCP exposure for the task plugin yet.

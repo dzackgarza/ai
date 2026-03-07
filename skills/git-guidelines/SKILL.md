@@ -1,6 +1,6 @@
 ---
 name: git-guidelines
-description: Use when performing any git operation — staging, committing, branching, pushing, or deleting files. Required before any file edit to follow the checkpoint workflow, safe deletion rules, and commit format.
+description: "Use when performing any git operation — staging, committing, branching, pushing, or deleting files."
 ---
 
 # Git Guidelines

@@ -1,6 +1,6 @@
 ---
 name: difficulty-and-time-estimation
-description: Use when calibrating task complexity, estimating token costs, or deciding whether to delegate to a subagent. Provides frameworks for reasoning about task difficulty without falling into time-estimation traps.
+description: Use when calibrating task complexity, estimating token costs, or deciding whether to delegate to a subagent.
 ---
 
 # Difficulty and Time Estimation
@@ -13,11 +13,11 @@ This skill provides frameworks for calibrating task difficulty and making delega
 
 **LLMs are systematically biased toward time-based thinking** due to human-centered training data. This leads to catastrophic miscalibration:
 
-| Human Intuition | Reality | Error Factor |
-|-----------------|---------|--------------|
+| Human Intuition                          | Reality                     | Error Factor       |
+| ---------------------------------------- | --------------------------- | ------------------ |
 | "Read 100 files at 1 min/file = 100 min" | 2 turns (glob + batch read) | 3000x overestimate |
-| "Search codebase = 30 min" | 1 tool call | 1800x overestimate |
-| "Refactor 10 files = 5 hours" | 10-20 atomic turns | 15x overestimate |
+| "Search codebase = 30 min"               | 1 tool call                 | 1800x overestimate |
+| "Refactor 10 files = 5 hours"            | 10-20 atomic turns          | 15x overestimate   |
 
 **Why Time Fails:**
 
@@ -27,6 +27,7 @@ This skill provides frameworks for calibrating task difficulty and making delega
 - The bottleneck is **token budget and turn count**, not time
 
 **Never estimate in time.** Always think in:
+
 - **Atomic instructions** (tool calls, batch operations)
 - **Token burn** (context consumption, output generation)
 - **Turn count** (sequential dependencies)
@@ -55,21 +56,22 @@ Task difficulty is a **weighted combination of multiple factors** — no single 
 
 ### Primary Factors
 
-| Factor | What It Measures | Why It Matters |
-|--------|------------------|----------------|
-| **Atomic step count** | Number of discrete tool calls/operations | Each step adds latency and failure surface |
-| **Batchability** | Can steps be parallelized or batched? | Batched operations (glob, multi-read) cost 1 turn |
-| **Token estimate** | Total tokens consumed (input + output) | Context pollution, cost, and drift risk |
-| **Reasoning complexity per step** | How much inference/logic per operation | High-reasoning steps have higher failure rates |
-| **P(success) per step** | Probability each step produces correct output | Compound probability determines overall success |
-| **P(success) for sequence** | Probability entire sequence succeeds | Long chains degrade exponentially |
-| **Context pollution** | How much irrelevant info enters working context | Polluted context → degraded future performance |
-| **Reversibility** | Can mistakes be undone cheaply? | Irreversible steps require more caution |
-| **Verification cost** | How expensive is it to check correctness? | High verification cost → more turns |
+| Factor                            | What It Measures                                | Why It Matters                                    |
+| --------------------------------- | ----------------------------------------------- | ------------------------------------------------- |
+| **Atomic step count**             | Number of discrete tool calls/operations        | Each step adds latency and failure surface        |
+| **Batchability**                  | Can steps be parallelized or batched?           | Batched operations (glob, multi-read) cost 1 turn |
+| **Token estimate**                | Total tokens consumed (input + output)          | Context pollution, cost, and drift risk           |
+| **Reasoning complexity per step** | How much inference/logic per operation          | High-reasoning steps have higher failure rates    |
+| **P(success) per step**           | Probability each step produces correct output   | Compound probability determines overall success   |
+| **P(success) for sequence**       | Probability entire sequence succeeds            | Long chains degrade exponentially                 |
+| **Context pollution**             | How much irrelevant info enters working context | Polluted context → degraded future performance    |
+| **Reversibility**                 | Can mistakes be undone cheaply?                 | Irreversible steps require more caution           |
+| **Verification cost**             | How expensive is it to check correctness?       | High verification cost → more turns               |
 
 ### Example Calibration
 
 **Task A: "Find all files mentioning `authError`"**
+
 - Atomic steps: 1 (grep_search)
 - Batchability: N/A (single call)
 - Token estimate: ~5K output
@@ -79,6 +81,7 @@ Task difficulty is a **weighted combination of multiple factors** — no single 
 - **Verdict**: Trivial, do in main thread
 
 **Task B: "Read all 200 files in `src/`, identify which export a `UserService` class, extract those classes, and refactor to use a common interface"**
+
 - Atomic steps: 2 (glob + batch read) + N edits
 - Batchability: High (glob + read are batched)
 - Token estimate: 200 files × 5K avg = 1M tokens → **context pollution**
@@ -89,6 +92,7 @@ Task difficulty is a **weighted combination of multiple factors** — no single 
 - **Verdict**: Subagent (isolate pollution, fresh context for repetitive work)
 
 **Task C: "Debug why the login flow fails intermittently"**
+
 - Atomic steps: Unknown (exploratory)
 - Batchability: Low (each hypothesis requires separate test)
 - Token estimate: Highly variable

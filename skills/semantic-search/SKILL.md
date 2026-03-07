@@ -1,6 +1,6 @@
 ---
 name: semantic-search
-description: Run semantic search and ask questions over existing text/markdown collections with SemTools.
+description: Use when searching or querying over a local text or markdown collection by meaning rather than exact keywords.
 metadata:
   author: dzack
   version: "0.1.0"

@@ -5,7 +5,7 @@
     {
       "name": "block-rm",
       "command": "rm",
-      "block_args": ["rm", "-r", "-rf", "-fr", "-f"],
+      "block_args": ["-r", "-rf", "-fr", "-f"],
       "reason": "Use recoverable deletion (`trash` or `gio trash`) instead of `rm`."
     },
     {

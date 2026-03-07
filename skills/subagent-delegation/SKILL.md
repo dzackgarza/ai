@@ -1,6 +1,6 @@
 ---
 name: subagent-delegation
-description: Use when managing the operational lifecycle of multiple agents, delegating tasks to fresh subagent contexts, and coordinating multi-step review-driven workflows.
+description: "Use when managing multiple agents, delegating tasks to subagent contexts, or coordinating multi-step review-driven workflows."
 ---
 
 # Subagent Delegation

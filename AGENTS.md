@@ -11,6 +11,7 @@
 5. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere. This includes documentation: never attempt restate a fact when you can point to the canonical source.
 6. **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed. Error-path work is useless, proof-of-correctness work is essential. And mocks are not going to help you prove anything. Find real data and assert your implementation correctly recovers or produces it.
 7. **Never bury the lede**: do not produce volumes of text when there are critical issues, or bury failures in paragraphs or summaries of success. Focus on critical, oustanding issues, and clearly delineate and highlight them.
+8. **Never work around failures and hide them**. User requests are highly specific and can not be substituted with semantically similar or inferred different requests. If you attempt a task and are met with failure, never work around it if it means changing the entire task to something the user didn't ask for. If failures fundamentally block the request as stated, stop and report this to the user instead of attempting to work around it, pivot to another problem or task, etc.
 
 ---
 
@@ -200,4 +201,5 @@ The parameter x is used for this specific reason. It appears that it is no longe
 # Tool Use
 
 - Use the custom websearch and webfetch tools liberally (from improved-webtools, via plugin or MCP). These provide automated parsing and routing for many common sites and have no rate limits.
-- For documentation questions, use the Context7 and DeepWiki tools, as well as the `gh` CLI.
+- For documentation questions, use the Context7 and DeepWiki `ask` tools, as well as the `gh` CLI. Read readmes, upstream source code directly, and issues.
+- Never touch a config without reading online docs and examples first.

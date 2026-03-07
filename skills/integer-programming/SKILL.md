@@ -1,6 +1,6 @@
 ---
 name: integer-programming
-description: Solve integer programming and constraint satisfaction problems using OR-Tools CP-SAT, with focus on pure mathematics applications.
+description: Use when solving integer programming or constraint satisfaction problems, especially in pure mathematics contexts.
 metadata:
   author: dzack
   version: "0.1.0"

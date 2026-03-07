@@ -1,6 +1,6 @@
 ---
 name: programming-z3
-description: Use when building or reviewing Z3Py workflows and you need source-backed usage guidance from Programming Z3 across interfaces, theories, solver APIs, tactics, and optimization.
+description: "Use when building or reviewing Z3Py workflows and need source-backed guidance across interfaces, theories, solver APIs, tactics, or optimization."
 ---
 
 # Programming Z3 (Comprehensive)

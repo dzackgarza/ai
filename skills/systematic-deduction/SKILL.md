@@ -1,6 +1,6 @@
 ---
 name: systematic-deduction
-description: Use when solving complex problems with multiple unknowns, debugging elusive bugs, investigating root causes, or any situation requiring rigorous logical reasoning over many facts and hypotheses
+description: "Use when solving complex problems with multiple unknowns, debugging elusive bugs, or investigating root causes with rigorous logical reasoning."
 ---
 
 # Systematic Deduction

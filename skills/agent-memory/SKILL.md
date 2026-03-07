@@ -1,6 +1,6 @@
 ---
 name: agent-memory
-description: Use when deciding what belongs in agent memory, defining memory policy, explaining memory purpose versus git history/changelogs/audit trails, or converting historical notes into reusable operational rules
+description: "Use when deciding what belongs in agent memory, defining memory policy, or converting historical notes into reusable operational rules."
 ---
 
 # Agent Memory

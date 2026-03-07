@@ -1,6 +1,6 @@
 ---
 name: clean-code
-description: Use when writing, reviewing, or refactoring code. Apply when naming variables or functions, structuring classes, handling errors, writing tests, or when code feels complex or hard to understand. Based on Robert C. Martin's Clean Code.
+description: Use when writing, reviewing, or refactoring code — especially when naming, structuring classes, handling errors, or simplifying complex logic.
 ---
 
 # Clean Code
@@ -32,15 +32,15 @@ This skill provides an overview with quick references. For detailed guidance wit
 
 Names should reveal intent and be searchable.
 
-| Rule | Bad | Good |
-|------|-----|------|
-| Reveal intent | `d` | `elapsedTimeInDays` |
-| Avoid disinformation | `accountList` (not a List) | `accounts` |
-| Make distinctions | `a1, a2` | `source, destination` |
-| Pronounceable | `genymdhms` | `generationTimestamp` |
-| Searchable | `7` | `MAX_CLASSES_PER_STUDENT` |
-| Classes = nouns | `Process` | `Customer`, `Account` |
-| Methods = verbs | `data` | `postPayment()`, `save()` |
+| Rule                 | Bad                        | Good                      |
+| -------------------- | -------------------------- | ------------------------- |
+| Reveal intent        | `d`                        | `elapsedTimeInDays`       |
+| Avoid disinformation | `accountList` (not a List) | `accounts`                |
+| Make distinctions    | `a1, a2`                   | `source, destination`     |
+| Pronounceable        | `genymdhms`                | `generationTimestamp`     |
+| Searchable           | `7`                        | `MAX_CLASSES_PER_STUDENT` |
+| Classes = nouns      | `Process`                  | `Customer`, `Account`     |
+| Methods = verbs      | `data`                     | `postPayment()`, `save()` |
 
 **Avoid:** `Manager`, `Processor`, `Data`, `Info` in class names—they hint at unclear responsibilities.
 
@@ -49,19 +49,22 @@ Names should reveal intent and be searchable.
 ## Quick Reference: Functions
 
 ### Size and Scope
+
 - **Ideal:** 4-10 lines, rarely over 20
 - **Indent level:** Never more than one or two
 - **Do one thing** — if you can extract another function with a non-restating name, it's doing too much
 
 ### Arguments
-| Count | Guidance |
-|-------|----------|
-| 0 | Best |
-| 1 | Good |
-| 2 | Acceptable |
-| 3+ | Avoid—wrap in object |
+
+| Count | Guidance             |
+| ----- | -------------------- |
+| 0     | Best                 |
+| 1     | Good                 |
+| 2     | Acceptable           |
+| 3+    | Avoid—wrap in object |
 
 **Flag arguments (booleans) are ugly.** They proclaim the function does two things. Split it:
+
 ```python
 # Bad
 def render(is_suite: bool): ...
@@ -72,6 +75,7 @@ def render_for_single_test(): ...
 ```
 
 ### Key Rules
+
 - **Command Query Separation:** Do something OR answer something, not both
 - **No side effects:** If `checkPassword()` also initializes a session, it lies
 - **Prefer exceptions to error codes:** Separates happy path from error handling
@@ -82,6 +86,7 @@ def render_for_single_test(): ...
 > Comments are, at best, a necessary evil. The proper use of comments is to compensate for our failure to express ourselves in code.
 
 ### Delete These Comments
+
 - **Redundant** — restating what code says
 - **Journal/changelog** — use git
 - **Commented-out code** — an abomination, git remembers
@@ -89,6 +94,7 @@ def render_for_single_test(): ...
 - **Closing brace** — `} // end if` means too much nesting
 
 ### Acceptable Comments
+
 - Legal notices
 - Explanation of intent (why, not what)
 - Warning of consequences (`// takes 30 minutes`)
@@ -101,14 +107,14 @@ def render_for_single_test(): ...
 
 **Error handling is important, but if it obscures logic, it's wrong.**
 
-| Rule | Details |
-|------|---------|
-| Use exceptions over return codes | Separates algorithm from error handling |
-| Provide context | Include operation that failed and type of failure |
-| Wrap third-party APIs | Minimizes dependencies, enables mocking |
-| Use Special Case Pattern | Return object that handles special case (empty list, default values) |
-| **Don't return null** | Creates work, invites NullPointerException |
-| **Don't pass null** | Worse than returning null—forbid it by default |
+| Rule                             | Details                                                              |
+| -------------------------------- | -------------------------------------------------------------------- |
+| Use exceptions over return codes | Separates algorithm from error handling                              |
+| Provide context                  | Include operation that failed and type of failure                    |
+| Wrap third-party APIs            | Minimizes dependencies, enables mocking                              |
+| Use Special Case Pattern         | Return object that handles special case (empty list, default values) |
+| **Don't return null**            | Creates work, invites NullPointerException                           |
+| **Don't pass null**              | Worse than returning null—forbid it by default                       |
 
 ```python
 # Bad - null checks everywhere
@@ -124,19 +130,24 @@ for e in get_employees():  # Returns [] if none
 ## Quick Reference: Classes
 
 ### Single Responsibility Principle (SRP)
+
 > A class should have one, and only one, reason to change.
 
 **Tests:**
+
 - Can you derive a concise name? (Avoid `Manager`, `Processor`, `Super`)
 - Can you describe it in 25 words without "if," "and," "or," "but"?
 
 ### Cohesion
+
 Methods should use the class's instance variables. When methods cluster around certain variables but not others, the class should be split.
 
 ### Open-Closed Principle (OCP)
+
 Classes should be open for extension but closed for modification. Add new behavior via subclassing, not modifying existing code.
 
 ### Dependency Inversion Principle (DIP)
+
 Depend on abstractions, not concrete details. Inject dependencies for testability.
 
 ```python
@@ -154,11 +165,13 @@ class Portfolio:
 ## Quick Reference: Tests
 
 ### The Three Laws of TDD
+
 1. Don't write production code until you have a failing test
 2. Don't write more test than sufficient to fail
 3. Don't write more production code than sufficient to pass
 
 ### F.I.R.S.T. Principles
+
 - **Fast** — Run quickly so you run them often
 - **Independent** — Don't depend on each other
 - **Repeatable** — Same result in any environment
@@ -166,6 +179,7 @@ class Portfolio:
 - **Timely** — Written just before production code
 
 ### Clean Tests
+
 - **Readability** is paramount
 - Use **BUILD-OPERATE-CHECK** pattern
 - Create domain-specific testing language
@@ -175,21 +189,24 @@ class Portfolio:
 
 ## Objects vs Data Structures
 
-| Concept | Hides | Exposes | Easy to add... |
-|---------|-------|---------|----------------|
-| Objects | Data | Functions | New types |
-| Data Structures | Nothing | Data | New functions |
+| Concept         | Hides   | Exposes   | Easy to add... |
+| --------------- | ------- | --------- | -------------- |
+| Objects         | Data    | Functions | New types      |
+| Data Structures | Nothing | Data      | New functions  |
 
 **The idea that everything is an object is a myth.** Sometimes you want simple data structures with procedures operating on them.
 
 ### Law of Demeter
+
 A method should only call methods of:
+
 - The class itself
 - Objects it creates
 - Objects passed as arguments
 - Objects held in instance variables
 
 **Don't** call methods on objects returned by allowed functions (train wrecks):
+
 ```python
 # Bad
 output_dir = ctxt.get_options().get_scratch_dir().get_absolute_path()
@@ -203,30 +220,39 @@ bos = ctxt.create_scratch_file_stream(class_file_name)
 From Chapter 17's comprehensive list, these are the most important:
 
 ### G5: Duplication
+
 **The root of all evil in software.** Every duplication is a missed abstraction opportunity:
+
 - Identical code → extract to function
 - Repeated switch/if-else → polymorphism
 - Similar algorithms → Template Method or Strategy pattern
 
 ### G30: Functions Should Do One Thing
+
 If you can extract another function from it, the original was doing more than one thing.
 
 ### N1: Choose Descriptive Names
+
 Names are 90% of what makes code readable. Take time to choose wisely.
 
 ### F1: Too Many Arguments
+
 Zero is best, then one, two, three. More requires justification.
 
 ### F3: Flag Arguments
+
 Boolean parameters mean the function does two things. Split it.
 
 ### G9: Dead Code
+
 Code that isn't executed. Delete it—version control remembers.
 
 ### G11: Inconsistency
+
 If you do something one way, do all similar things the same way.
 
 ### C5: Commented-Out Code
+
 An abomination. Delete it immediately.
 
 ## The Craft

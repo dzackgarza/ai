@@ -1,6 +1,6 @@
 ---
 name: llm-failure-modes
-description: Recognize and avoid common LLM cognitive failures in reasoning.
+description: Use when reasoning through a complex or high-stakes problem to check for common LLM cognitive failures.
 metadata:
   author: dzack
   version: "0.1.0"

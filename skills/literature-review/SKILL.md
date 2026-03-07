@@ -1,7 +1,7 @@
 ---
 name: literature-review
 version: 1.2.0
-description: Assistance with writing literature reviews by searching for academic sources via Semantic Scholar, OpenAlex, Crossref and PubMed APIs. Use when the user needs to find papers on a topic, get details for specific DOIs, or draft sections of a literature review with proper citations.
+description: Use when finding academic papers on a topic, looking up specific DOIs, or drafting literature review sections with citations.
 ---
 
 # Literature Review
@@ -20,22 +20,25 @@ Help write academic literature reviews using a multi-engine search integration (
 
 ## Environment Variables
 
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `USER_EMAIL` | Email for polite API access | `anonymous@example.org` |
-| `CLAWDBOT_EMAIL` | Fallback if USER_EMAIL not set | — |
-| `SEMANTIC_SCHOLAR_API_KEY` | Optional S2 API key for higher rate limits | — |
-| `OPENALEX_API_KEY` | Optional OpenAlex API key | — |
+| Variable                   | Purpose                                    | Default                 |
+| -------------------------- | ------------------------------------------ | ----------------------- |
+| `USER_EMAIL`               | Email for polite API access                | `anonymous@example.org` |
+| `CLAWDBOT_EMAIL`           | Fallback if USER_EMAIL not set             | —                       |
+| `SEMANTIC_SCHOLAR_API_KEY` | Optional S2 API key for higher rate limits | —                       |
+| `OPENALEX_API_KEY`         | Optional OpenAlex API key                  | —                       |
 
 ## Workflows
 
 ### 1. Broad Search (All Bases)
+
 Get a comprehensive overview from all major academic databases. Results are automatically deduplicated by DOI.
+
 ```bash
 python3 scripts/lit_search.py search "impact of glycyrrhiza on bifidobacterium" --limit 5 --source all
 ```
 
 ### 2. Targeted Search
+
 - **OpenAlex** (`oa`): Fast and comprehensive, good abstracts.
 - **Semantic Scholar** (`s2`): High-quality citation data and TL;DRs.
 - **Crossref** (`cr`): Precise DOI-based metadata (no abstracts).
@@ -46,18 +49,23 @@ python3 scripts/lit_search.py search "prebiotic effects of liquorice" --source p
 ```
 
 ### 3. Comparing Sources
+
 Search both S2 and OA simultaneously to ensure nothing is missed. Deduplicated by default.
+
 ```bash
 python3 scripts/lit_search.py search "Bifidobacterium infantis growth" --source both
 ```
 
 ### 4. Getting Full Details (S2)
+
 Retrieve detailed metadata including TL;DR summaries.
+
 ```bash
 python3 scripts/lit_search.py details "DOI:10.1016/j.foodchem.2023.136000"
 ```
 
 ### 5. Writing the Review
+
 1.  **Extract**: Pull key findings from the abstracts found.
 2.  **Organize**: Group findings into a logical structure (e.g., chronological or thematic).
 3.  **Draft**: Use the "Think step-by-step" approach to synthesize multiple sources into a coherent narrative.
@@ -65,6 +73,7 @@ python3 scripts/lit_search.py details "DOI:10.1016/j.foodchem.2023.136000"
 ## Output Format
 
 Each result includes:
+
 - `id`: Source-specific identifier (PMID for PubMed, OpenAlex ID, S2 paper ID, DOI for Crossref)
 - `doi`: DOI when available (used for deduplication)
 - `title`: Paper title
