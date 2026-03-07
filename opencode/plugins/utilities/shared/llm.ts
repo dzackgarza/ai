@@ -7,13 +7,17 @@
  * the Python bridge process, and deserialises the response.
  *
  * Usage:
- *   import { callLLM, loadTemplate } from "../../utilities/shared/llm";
+ *   import { callLLM, loadTemplate, loadMicroAgent } from "../../utilities/shared/llm";
  *
  *   const result = await callLLM<{ tier: string; reasoning: string }>({
  *     models: ["groq/llama-3.3-70b-versatile"],
  *     messages: [{ role: "user", content: "..." }],
  *     schema: "Classification",
  *   });
+ *
+ *   const agent = await loadMicroAgent("/abs/path/to/prompt.md");
+ *   // agent.system  — system prompt string
+ *   // agent.body    — Jinja2 template body (already rendered by Python if needed)
  */
 
 import { spawnSync } from "child_process";
@@ -63,19 +67,47 @@ export async function callLLM<T = string>(req: LLMRequest): Promise<T> {
 }
 
 // ---------------------------------------------------------------------------
-// loadTemplate — fetch a template file by name
+// loadTemplate — fetch a raw template file by name (scripts/templates/)
 // ---------------------------------------------------------------------------
 
 /**
- * Load a template from scripts/templates/ by name.
+ * Load a raw template by name from the legacy scripts/templates/ directory.
  *
  * Examples:
- *   await loadTemplate("classifier/playbook")  // returns playbook.md contents
- *   await loadTemplate("tiers/A")              // returns tiers/A.md contents
+ *   await loadTemplate("tiers/A")   // returns tiers/A.md contents
  */
 export async function loadTemplate(name: string): Promise<string> {
   const res = _run<string>({ action: "load_template", template: name } as any);
   if (!res.ok) throw new Error(`scripts.llm template error: ${res.error}`);
+  return res.result;
+}
+
+// ---------------------------------------------------------------------------
+// loadMicroAgent — parse a micro-agent .md file into system + body
+// ---------------------------------------------------------------------------
+
+export interface MicroAgent {
+  system: string | null;
+  body: string;
+  frontmatter: Record<string, unknown>;
+}
+
+/**
+ * Load and parse a micro-agent template (prompts/micro_agents/**\/prompt.md).
+ *
+ * Returns the parsed system prompt and Jinja2 body separately, ready to be
+ * used as LLM messages. The body should be rendered with variables before use.
+ *
+ * Example:
+ *   const agent = await loadMicroAgent("/abs/path/to/prompt.md");
+ *   messages = [
+ *     { role: "system", content: agent.system },
+ *     { role: "user",   content: renderTemplate(agent.body, { prompt: text }) },
+ *   ];
+ */
+export async function loadMicroAgent(path: string): Promise<MicroAgent> {
+  const res = _run<MicroAgent>({ action: "load_micro_agent", path } as any);
+  if (!res.ok) throw new Error(`scripts.llm micro-agent error: ${res.error}`);
   return res.result;
 }
 

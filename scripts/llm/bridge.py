@@ -18,6 +18,11 @@ Protocol (unchanged from the previous opencode/scripts/llm.py interface):
 
   Request (load_template):
     { "action": "load_template", "template": "classifier/playbook" }
+    { "action": "load_template", "path": "/abs/path/to/file.md" }
+
+  Request (load_micro_agent):
+    { "action": "load_micro_agent", "path": "/abs/path/to/prompt.md" }
+    Response result: { "system": "...", "body": "...", "frontmatter": {...} }
 
   Response (success):  { "ok": true, "result": ... }
   Response (error):    { "ok": false, "error": "..." }
@@ -56,12 +61,46 @@ async def _main() -> None:
     # ------------------------------------------------------------------
     if req.get("action") == "load_template":
         template_name: str = req.get("template", "")
-        if not template_name:
-            print(json.dumps({"ok": False, "error": "No template name specified"}))
+        template_path: str | None = req.get("path") or None
+        if not template_name and not template_path:
+            print(
+                json.dumps({"ok": False, "error": "No template name or path specified"})
+            )
             sys.exit(1)
         try:
-            content = load_template(template_name)
+            content = load_template(template_name, path=template_path)
             print(json.dumps({"ok": True, "result": content}))
+        except FileNotFoundError as exc:
+            print(json.dumps({"ok": False, "error": str(exc)}))
+            sys.exit(1)
+        return
+
+    # ------------------------------------------------------------------
+    # Action: load_micro_agent
+    # ------------------------------------------------------------------
+    if req.get("action") == "load_micro_agent":
+        agent_path: str = req.get("path", "")
+        if not agent_path:
+            print(
+                json.dumps(
+                    {"ok": False, "error": "No path specified for load_micro_agent"}
+                )
+            )
+            sys.exit(1)
+        try:
+            agent = load_micro_agent(agent_path)
+            print(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "result": {
+                            "system": agent.system,
+                            "body": agent.body,
+                            "frontmatter": agent.frontmatter,
+                        },
+                    }
+                )
+            )
         except FileNotFoundError as exc:
             print(json.dumps({"ok": False, "error": str(exc)}))
             sys.exit(1)

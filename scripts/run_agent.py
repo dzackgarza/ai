@@ -12,13 +12,10 @@ Usage:
 
 import sys
 import argparse
-import re
 import logging
 from pathlib import Path
 
-import yaml
 import litellm
-from jinja2 import Template
 
 # Allow running from repo root without installing the package.
 # Must be set before the scripts.llm imports below.
@@ -32,16 +29,10 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Template parsing (run_agent-specific — YAML frontmatter + Jinja2 body)
+# Template parsing — delegated to scripts.llm.templates
 # ---------------------------------------------------------------------------
-
-
-def parse_template(content: str) -> tuple[dict, str]:
-    """Parse YAML frontmatter + template body."""
-    match = re.match(r"^---\s*\n(.*?)\n---\s*\n(.*)$", content, re.DOTALL)
-    if not match:
-        return {}, content
-    return yaml.safe_load(match.group(1)) or {}, match.group(2)
+# load_micro_agent(path) returns a MicroAgent with .frontmatter, .system, .body
+# and .render(**variables). Used in main() below.
 
 
 def build_variables(file_args: list[str], var_args: list[str]) -> dict:
@@ -180,9 +171,9 @@ def main() -> None:
         logger.error("Template not found: %s", template_file)
         sys.exit(1)
 
-    frontmatter, template_str = parse_template(template_file.read_text())
+    agent = load_micro_agent(template_file)
 
-    model = args.model or frontmatter.get("model")
+    model = args.model or agent.frontmatter.get("model")
     if not model:
         logger.error("--model required or 'model:' field in template frontmatter")
         sys.exit(1)
@@ -190,17 +181,16 @@ def main() -> None:
     validate_model(model)
 
     variables = build_variables(args.file, args.var)
-    prompt = Template(template_str).render(**variables)
+    prompt = agent.render(**variables)
 
-    system_prompt = frontmatter.get("system")
     messages: list[dict] = [{"role": "user", "content": prompt}]
-    if system_prompt:
-        messages.insert(0, {"role": "system", "content": system_prompt})
+    if agent.system:
+        messages.insert(0, {"role": "system", "content": agent.system})
 
     temperature = (
         args.temperature
         if args.temperature is not None
-        else frontmatter.get("temperature", 0.0)
+        else agent.frontmatter.get("temperature", 0.0)
     )
 
     result = get_completion(model, messages, temperature)
