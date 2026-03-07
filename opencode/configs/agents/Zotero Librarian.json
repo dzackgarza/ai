@@ -4,9 +4,9 @@
   "model": "cursor-acp/auto",
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
   "permission": {
-    "task": "allow",
     "todoread": "allow",
     "todowrite": "allow",
+    "task": "allow",
     "introspection": "allow",
     "list_sessions": "allow",
     "read_transcript": "allow",

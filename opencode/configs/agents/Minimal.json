@@ -7,7 +7,6 @@
     "task": "allow",
     "todoread": "allow",
     "todowrite": "allow",
-    "plan_exit": "deny",
     "external_directory": {
       "/tmp/opencode_test/*": "allow"
     },

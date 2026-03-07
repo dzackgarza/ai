@@ -87,7 +87,6 @@
     "cut-copy-paste-mcp_paste": {
       "*": "allow"
     },
-    "plan_exit": "deny",
     "bash": "allow",
     "serena_execute_shell_command": "deny",
     "serena_onboarding": "deny",

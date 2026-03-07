@@ -471,11 +471,6 @@ def allow_planning():
     return {"write_plan": "allow", "plan_exit": "allow"}
 
 
-def deny_plan_exit():
-    """Deny plan-mode exit."""
-    return {"plan_exit": "deny"}
-
-
 def allow_bash_standard():
     """Allow standard bash commands (filesystem, text, find, test runners)."""
     return ALLOW_STANDARD_BASH
@@ -539,6 +534,7 @@ BASELINE_PLUGIN_DENIES = {
     "git_add": "deny",
     "git_commit": "deny",
     "write_plan": "deny",
+    "plan_exit": "deny",
 }
 
 GLOBAL_PERMISSION = deep_merge(
@@ -559,7 +555,7 @@ AGENTS = {
     "Interactive": AgentDef(
         tags={"primary", "interactive"},
         caps=[allow_coordination(), allow_session_tools(), read_all(),
-              write_all(), deny_plan_exit(), allow_bash_unrestricted()],
+              write_all(), allow_bash_unrestricted()],
     ),
     "Plan (Custom)": AgentDef(
         tags={"primary", "planner"},
@@ -583,17 +579,17 @@ AGENTS = {
     ),
     "Build (Custom)": AgentDef(
         tags={"primary", "builder"},
-        caps=[read_all(), write_all(), {"task": "allow"}, allow_git(), deny_plan_exit()],
+        caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
         overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
     ),
     "build": AgentDef(
         tags={"primary", "builder"},
-        caps=[read_all(), write_all(), {"task": "allow"}, allow_git(), deny_plan_exit()],
+        caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
         overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
     ),
     "(Lattice) Build": AgentDef(
         tags={"primary", "builder", "lattice"},
-        caps=[read_all(), write_all(), {"task": "allow"}, allow_git(), deny_plan_exit()],
+        caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
         overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
     ),
     "Zotero Librarian": AgentDef(
@@ -602,7 +598,7 @@ AGENTS = {
     ),
     "Minimal": AgentDef(
         tags={"primary", "minimal"},
-        caps=[allow_bash_unrestricted(), allow_coordination(), deny_plan_exit(),
+        caps=[allow_bash_unrestricted(), allow_coordination(),
               allow_external_directory("/tmp/opencode_test/*"),
               {"question": "allow"}],
         skip_tag_rules=True,
