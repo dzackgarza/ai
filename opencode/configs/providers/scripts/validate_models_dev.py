@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 PROVIDERS_DIR = ROOT / "configs" / "providers"
-IGNORED_PROVIDERS = {"cursor-acp", "qwen-code"}
+IGNORED_PROVIDERS = {"qwen-code"}
 
 
 class Colors:
@@ -60,7 +60,9 @@ def print_discrepancy_block(
     in_local_not_dev: list[str],
     in_dev_not_local: list[str],
 ) -> None:
-    print(f"\n  {Colors.YELLOW}{Colors.BOLD}DISCREPANCY DETECTED for '{provider_id}':{Colors.RESET}")
+    print(
+        f"\n  {Colors.YELLOW}{Colors.BOLD}DISCREPANCY DETECTED for '{provider_id}':{Colors.RESET}"
+    )
 
     if in_local_not_dev:
         print(
@@ -165,7 +167,9 @@ def main() -> int:
 
     models_dev = fetch_models_dev_api()
 
-    print(f"{Colors.BOLD}{Colors.BLUE}Validating providers against models.dev{Colors.RESET}")
+    print(
+        f"{Colors.BOLD}{Colors.BLUE}Validating providers against models.dev{Colors.RESET}"
+    )
     print(f"{Colors.BOLD}Total providers to check: {len(providers)}{Colors.RESET}\n")
 
     discrepancies = 0

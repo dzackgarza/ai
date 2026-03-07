@@ -1,7 +1,7 @@
 {
   "description": "Zotero librarian - manages and maintains Zotero reference libraries",
   "mode": "primary",
-  "model": "cursor-acp/auto",
+  "model": "github-copilot/gpt-4.1",
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
   "permission": {
     "todoread": "allow",

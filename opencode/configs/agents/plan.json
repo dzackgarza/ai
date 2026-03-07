@@ -1,5 +1,5 @@
 {
-  "model": "cursor-acp/auto",
+  "model": "github-copilot/gpt-4.1",
   "disable": true,
   "permission": {
     "todoread": "allow",

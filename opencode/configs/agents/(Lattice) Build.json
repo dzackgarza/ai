@@ -1,7 +1,7 @@
 {
   "description": "Top-level agent for managing all lattice-related work",
   "mode": "primary",
-  "model": "cursor-acp/auto",
+  "model": "github-copilot/gpt-4.1",
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
   "permission": {
     "todoread": "allow",

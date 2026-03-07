@@ -84,7 +84,6 @@ if "properties" in schema and "model" in schema["properties"]:
         custom_models = [
             "google/gemini-claude-sonnet-4-6",
             "google/gemini-claude-opus-4-6-thinking",
-            "cursor-acp/auto",
         ]
 
         if (
@@ -395,7 +394,9 @@ def show_runtime_whitelist_diff(provider_id: str, expected_models: set[str]) -> 
     missing_from_runtime = sorted(expected_models - models_dev_models)
     unexpected_in_runtime = sorted(models_dev_models - expected_models)
     if missing_from_runtime or unexpected_in_runtime:
-        print(f"[yellow]Note: {provider_id} known opencode models differs from config[/]")
+        print(
+            f"[yellow]Note: {provider_id} known opencode models differs from config[/]"
+        )
         if missing_from_runtime:
             print(
                 f"  config has but known opencode models missing: {missing_from_runtime[:5]}{'...' if len(missing_from_runtime) > 5 else ''}"
@@ -406,7 +407,9 @@ def show_runtime_whitelist_diff(provider_id: str, expected_models: set[str]) -> 
             )
         return
 
-    print(f"[dim]{provider_id}: config={len(expected_models)} known opencode models={len(models_dev_models)}[/]")
+    print(
+        f"[dim]{provider_id}: config={len(expected_models)} known opencode models={len(models_dev_models)}[/]"
+    )
 
 
 # Guardrail order:
@@ -417,7 +420,7 @@ def show_runtime_whitelist_diff(provider_id: str, expected_models: set[str]) -> 
 # comprehensive coverage of all provider configs.
 
 # Providers to ignore (not in models.dev yet)
-ignored_providers = {"cursor-acp", "qwen-code"}
+ignored_providers = {"qwen-code"}
 
 # Validate all providers against models.dev
 providers_to_validate = []  # Empty = validate all providers in config

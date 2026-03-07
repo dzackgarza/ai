@@ -1,7 +1,7 @@
 {
   "description": "Primary build orchestrator for approved plans",
   "mode": "primary",
-  "model": "cursor-acp/auto",
+  "model": "github-copilot/gpt-4.1",
   "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}",
   "permission": {
     "todoread": "allow",

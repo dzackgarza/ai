@@ -97,7 +97,7 @@
       "url": "https://mcp.deepwiki.com/mcp"
     }
   },
-  "model": "opencode/minimax-m2.5-free",
+  "model": "github-copilot/gpt-4.1",
   "default_agent": "Interactive",
   "experimental": {
     "openTelemetry": true
@@ -163,58 +163,6 @@
         "claude-opus-4-20250514",
         "claude-sonnet-4-0",
         "claude-sonnet-4-20250514"
-      ]
-    },
-    "cursor-acp": {
-      "name": "Cursor ACP",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "http://127.0.0.1:32124/v1"
-      },
-      "models": {
-        "auto": {
-          "name": "Cursor Auto"
-        }
-      },
-      "blacklist": [
-        "composer-1",
-        "composer-1.5",
-        "gemini-3.1-pro",
-        "gemini-3-flash",
-        "gemini-3-pro",
-        "gpt-5.1-codex-max",
-        "gpt-5.1-codex-max-high",
-        "gpt-5.1-codex-mini",
-        "gpt-5.1-high",
-        "gpt-5.2",
-        "gpt-5.2-codex",
-        "gpt-5.2-codex-fast",
-        "gpt-5.2-codex-high",
-        "gpt-5.2-codex-high-fast",
-        "gpt-5.2-codex-low",
-        "gpt-5.2-codex-low-fast",
-        "gpt-5.2-codex-xhigh",
-        "gpt-5.2-codex-xhigh-fast",
-        "gpt-5.2-high",
-        "gpt-5.3-codex",
-        "gpt-5.3-codex-fast",
-        "gpt-5.3-codex-high",
-        "gpt-5.3-codex-high-fast",
-        "gpt-5.3-codex-low",
-        "gpt-5.3-codex-low-fast",
-        "gpt-5.3-codex-spark-preview",
-        "gpt-5.3-codex-xhigh",
-        "gpt-5.3-codex-xhigh-fast",
-        "grok",
-        "kimi-k2.5",
-        "opus-4.5",
-        "opus-4.5-thinking",
-        "opus-4.6",
-        "opus-4.6-thinking",
-        "sonnet-4.5",
-        "sonnet-4.5-thinking",
-        "sonnet-4.6",
-        "sonnet-4.6-thinking"
       ]
     },
     "github-copilot": {
@@ -1051,7 +999,7 @@
     "(Lattice) Build": {
       "description": "Top-level agent for managing all lattice-related work",
       "mode": "primary",
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
       "permission": {
         "todoread": "allow",
@@ -1142,7 +1090,7 @@
     "Build (Custom)": {
       "description": "Primary build orchestrator for approved plans",
       "mode": "primary",
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}",
       "permission": {
         "todoread": "allow",
@@ -1322,7 +1270,7 @@
     "Minimal": {
       "description": "Matter-of-fact assistant",
       "mode": "primary",
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "bash": "allow",
         "task": "allow",
@@ -1338,7 +1286,7 @@
     "Plan (Custom)": {
       "description": "Primary planning agent for executable implementation plans",
       "mode": "primary",
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "todoread": "allow",
         "todowrite": "allow",
@@ -1444,7 +1392,7 @@
     "Ralph Planner": {
       "description": "Collaborative loop builder - drafts background, setup, tasks, and testing for Ralph loops",
       "mode": "primary",
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}",
       "permission": {
         "todoread": "allow",
@@ -1550,7 +1498,7 @@
     "Repository Steward": {
       "description": "Repo steward - autonomous repository maintenance and optimization",
       "mode": "primary",
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
       "permission": {
         "todoread": "allow",
@@ -1656,7 +1604,7 @@
     "Zotero Librarian": {
       "description": "Zotero librarian - manages and maintains Zotero reference libraries",
       "mode": "primary",
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
       "permission": {
         "todoread": "allow",
@@ -1743,7 +1691,7 @@
       }
     },
     "build": {
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "disable": true,
       "permission": {
         "todoread": "allow",
@@ -1835,7 +1783,7 @@
       "model": "github-copilot/gpt-4.1"
     },
     "plan": {
-      "model": "cursor-acp/auto",
+      "model": "github-copilot/gpt-4.1",
       "disable": true,
       "permission": {
         "todoread": "allow",
@@ -1939,10 +1887,10 @@
       }
     },
     "summary": {
-      "model": "cursor-acp/auto"
+      "model": "github-copilot/gpt-4.1"
     },
     "title": {
-      "model": "cursor-acp/auto"
+      "model": "github-copilot/gpt-4.1"
     },
     "(Lattice) Researcher: Documentation": {
       "description": "Use when researching obscure lattice algorithms and software (indefinite lattices focus). Ask 'Search arXiv and GitHub for [lattice algorithm]' or 'Find existing implementations of [lattice concept]'.",

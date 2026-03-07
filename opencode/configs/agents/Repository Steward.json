@@ -1,7 +1,7 @@
 {
   "description": "Repo steward - autonomous repository maintenance and optimization",
   "mode": "primary",
-  "model": "cursor-acp/auto",
+  "model": "github-copilot/gpt-4.1",
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
   "permission": {
     "todoread": "allow",
