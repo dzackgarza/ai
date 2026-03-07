@@ -38,9 +38,12 @@ from typing import Any, TypeVar
 
 from pydantic import BaseModel
 from pydantic_ai import Agent
+from pydantic_ai.models.groq import GroqModel
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.profiles.openai import OpenAIModelProfile
+from pydantic_ai.providers.groq import GroqProvider
 from pydantic_ai.providers.openai import OpenAIProvider
+from pydantic_ai.providers.openrouter import OpenRouterProvider
 
 logger = logging.getLogger(__name__)
 
@@ -106,9 +109,27 @@ def _api_key(cfg: ProviderConfig) -> str:
     return os.environ.get(cfg.env_var, "")
 
 
-def _make_model(cfg: ProviderConfig, model_id: str) -> OpenAIChatModel:
-    """Build an OpenAIChatModel with the correct output mode for the provider."""
-    provider = OpenAIProvider(base_url=cfg.base_url, api_key=_api_key(cfg))
+def _make_model(
+    cfg: ProviderConfig, model_id: str, slug: str
+) -> GroqModel | OpenAIChatModel:
+    """Build the appropriate pydantic-ai model for the provider.
+
+    Uses native GroqModel for groq/ slugs to avoid OpenAI SDK response
+    validation issues (e.g. service_tier literal mismatch). Uses native
+    OpenRouterProvider for openrouter slugs. Falls back to generic
+    OpenAIProvider for nvidia/ and ollama/.
+    """
+    api_key = _api_key(cfg)
+    if slug.startswith("groq/"):
+        return GroqModel(model_id, provider=GroqProvider(api_key=api_key))
+    if cfg.base_url == "https://openrouter.ai/api/v1":
+        provider = OpenRouterProvider(api_key=api_key)
+        profile = OpenAIModelProfile(
+            default_structured_output_mode=cfg.output_mode,  # type: ignore[arg-type]
+        )
+        return OpenAIChatModel(model_id, provider=provider, profile=profile)
+    # Generic OpenAI-compatible (nvidia, ollama, etc.)
+    provider = OpenAIProvider(base_url=cfg.base_url, api_key=api_key)
     profile = OpenAIModelProfile(
         default_structured_output_mode=cfg.output_mode,  # type: ignore[arg-type]
     )
@@ -179,7 +200,7 @@ async def call_llm(
     if not api_key and cfg.env_var is not None:
         raise ValueError(f"{cfg.env_var} not set (required for {model_slug})")
 
-    model = _make_model(cfg, model_id)
+    model = _make_model(cfg, model_id, model_slug)
     output_type: Any = schema if schema is not None else str
 
     # Extract system prompt; concatenate remaining messages into prompt string

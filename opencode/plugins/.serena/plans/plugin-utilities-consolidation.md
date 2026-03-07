@@ -100,6 +100,36 @@ source; `providers.ts` is generated or manually kept in sync.
   `pydantic-ai`, `litellm`, `rich`, `jinja2`, `pyyaml`, `httpx`, `jsonschema` all
   installed and importable.
 
+- **`scripts/llm.py`** (Task 1): Full provider registry, `call_llm()`,
+  `call_with_fallback()`, schema registry (`Classification`), `load_template()`,
+  stdin/stdout CLI. Uses native `GroqModel`/`GroqProvider` to avoid OpenAI SDK
+  `service_tier` validation issues on Groq responses. `OpenRouterProvider` used
+  for openrouter slugs. Generic `OpenAIProvider` for nvidia/ollama.
+
+- **`scripts/templates/`** (Task 2): All prompt templates and rubrics moved here.
+  - `classifier/playbook.md` — canonical classifier system prompt
+  - `classifier/cases.yaml` — labeled test cases
+  - `tiers/{A,B,C,knowledge,model-self,S}.md` — per-tier injection text
+
+- **`utilities/shared/llm.ts`** (Task 3): Thin Bun subprocess wrapper. Spawns
+  `scripts/llm.py`, serialises JSON request on stdin, returns parsed response.
+  Exports `callLLM<T>()` and `loadTemplate()`. Path resolution is relative to the
+  file's own location — no hardcoded absolute paths.
+
+- **`dev/prompt-router/index.ts`** (Task 4): Removed `@instructor-ai/instructor`,
+  `openai`, `zod`, and inline provider logic. Now imports `callLLM`/`loadTemplate`
+  from `utilities/shared/llm`. `CLASSIFIER_MODELS` is now a plain `string[]`.
+  Tier instructions and system prompt loaded via `loadTemplate()`.
+
+- **`tests/classifier/run.ts`** (Task 5): Removed `@instructor-ai/instructor`,
+  `openai`, `zod`, `endpointFor`, and inline `classify()` loop. Now uses `callLLM`
+  and `loadTemplate`. `--mode` flag removed (mode is now handled by `llm.py` per
+  provider). Template files loaded from canonical `scripts/templates/` via Python.
+
+- **`scripts/test_llm_compat.py`** (Task 7): Smoke test — calls each provider with
+  a fixed prompt, verifies `Classification` parses correctly. Live results:
+  groq ✓, nvidia ✓, openrouter ✓, ollama ✗ (llama3.2 not installed locally).
+
 ---
 
 ## Tasks (ordered)
@@ -110,7 +140,7 @@ source; `providers.ts` is generated or manually kept in sync.
 - Verify litellm structured output (`response_format`) works on groq/nvidia before
   committing to it vs. pydantic-ai's native model calling.
 
-### Task 1 — `scripts/llm.py` — core module
+### Task 1 — `scripts/llm.py` — core module ✓
 
 **File**: `scripts/llm.py`
 
@@ -159,7 +189,7 @@ stdout: JSON { ok: true, result: {...} } | { ok: false, error: "..." }
 Schema registry maps `schema_name` strings to pydantic `BaseModel` subclasses defined
 in the module. Adding a new schema = adding a class + registering its name.
 
-### Task 2 — Template registry: `scripts/templates/`
+### Task 2 — Template registry: `scripts/templates/` ✓
 
 Move (not copy) template files from their current plugin-local locations:
 
@@ -181,7 +211,7 @@ via `Bun.file(new URL(...))`. After this task it calls `llm.py` with `schema_nam
 "Classification"` and `template: "classifier/playbook"` instead, removing all file I/O
 from the plugin.
 
-### Task 3 — `utilities/shared/llm.ts` — TS subprocess wrapper
+### Task 3 — `utilities/shared/llm.ts` — TS subprocess wrapper ✓
 
 ```typescript
 // utilities/shared/llm.ts
@@ -208,7 +238,7 @@ Spawns `python3 <abs-path-to-scripts/llm.py>` with `req` on stdin. Returns parse
 result or throws on `ok: false`. Path to `llm.py` is resolved relative to this file's
 location — no hardcoded absolute paths.
 
-### Task 4 — Refactor `prompt-router/index.ts`
+### Task 4 — Refactor `prompt-router/index.ts` ✓
 
 Replace the inline `new OpenAI + Instructor + create()` classification loop with:
 
@@ -231,7 +261,7 @@ Tier instructions are no longer loaded from `Bun.file()` — they are returned b
 `llm.py` via a `get_template("tiers/A")` call, or the plugin fetches them once at
 startup via a separate `callLLM` request with `action: "load_template"`.
 
-### Task 5 — Refactor `tests/classifier/run.ts`
+### Task 5 — Refactor `tests/classifier/run.ts` ✓
 
 Replace the inline classify function with a call to `callLLM()`. The test harness
 becomes:
@@ -249,7 +279,7 @@ pydantic schema in `llm.py`.
 to import from `llm.py` instead of reimplementing provider dispatch. The CLI interface
 stays the same; only the internals change to use `call_llm()`.
 
-### Task 7 — Compatibility smoke tests
+### Task 7 — Compatibility smoke tests ✓
 
 Script: `scripts/test_llm_compat.py`
 

@@ -10,37 +10,22 @@
 //   nvidia/   → NVIDIA NIM  (e.g. nvidia/meta/llama-3.3-70b-instruct)
 //   ollama/   → Ollama      (e.g. ollama/qwen3:4b)
 //
-// Defaults to arcee-ai/trinity-large-preview:free.
-// Reads playbook from playbook.md and cases from cases.yaml.
+// Defaults to groq/llama-3.3-70b-versatile.
+// Reads playbook from scripts/templates/classifier/playbook.md (via llm.py).
+// Reads cases from scripts/templates/classifier/cases.yaml (via llm.py).
 // Writes per-run log to runs/{slug-safe}/{timestamp}.yaml.
 // Updates cumulative scores in scores.yaml.
 //
-// Uses @instructor-ai/instructor for structured output enforcement:
-// invalid JSON is retried automatically (up to MAX_RETRIES times).
+// Structured output and retries handled by scripts/llm.py.
 
-import Instructor from "@instructor-ai/instructor";
-import OpenAI from "openai";
-import { z } from "zod";
 import { parse, stringify } from "yaml";
 import { join, dirname } from "path";
-import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import { endpointFor } from "../../../../utilities/shared/providers";
+import { mkdirSync, writeFileSync } from "fs";
+import { callLLM, loadTemplate } from "../../../../utilities/shared/llm";
 
 const DIR = dirname(import.meta.path);
 const RUNS_DIR = join(DIR, "runs");
 const DELAY_MS = 10000;
-const MAX_RETRIES = 3;
-
-// ---------------------------------------------------------------------------
-// Schema
-// ---------------------------------------------------------------------------
-
-const ClassificationSchema = z.object({
-  tier: z.enum(["model-self", "knowledge", "C", "B", "A", "S"]),
-  reasoning: z.string(),
-});
-
-type Classification = z.infer<typeof ClassificationSchema>;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -95,7 +80,7 @@ function slugToDir(slug: string): string {
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ---------------------------------------------------------------------------
-// Classify
+// Classify — delegates to llm.py for routing, retries, structured output
 // ---------------------------------------------------------------------------
 
 async function classify(
@@ -104,14 +89,9 @@ async function classify(
   prompt: string,
 ): Promise<{ tier: string; reasoning: string; latency_ms: number }> {
   const t0 = Date.now();
-  const { baseURL, modelId, apiKey } = endpointFor(model);
-
-  const oai = new OpenAI({ baseURL, apiKey });
-  const client = Instructor({ client: oai, mode: instructorMode });
-
   try {
-    const result: Classification = await client.chat.completions.create({
-      model: modelId,
+    const result = await callLLM<{ tier: string; reasoning: string }>({
+      models: [model],
       messages: [
         { role: "system", content: playbook },
         {
@@ -119,10 +99,9 @@ async function classify(
           content: `Classify the following prompt:\n\n===\n${prompt}\n===`,
         },
       ],
-      response_model: { schema: ClassificationSchema, name: "Classification" },
-      max_retries: MAX_RETRIES,
-      max_tokens: instructorMode === "MD_JSON" ? 400 : 200,
+      schema: "Classification",
       temperature: 0,
+      max_tokens: 400,
     });
     return {
       tier: result.tier,
@@ -142,33 +121,19 @@ async function classify(
 // Main
 // ---------------------------------------------------------------------------
 
-// Optional --mode flag: bun run run.ts <slug> --mode MD_JSON
-const modeArg = process.argv.indexOf("--mode");
-const instructorMode = (modeArg !== -1 ? process.argv[modeArg + 1] : "JSON") as
-  | "JSON"
-  | "MD_JSON";
-if (instructorMode === "MD_JSON")
-  console.log(`Instructor mode: MD_JSON (no response_format header)\n`);
-
 const model =
-  process.argv.find(
-    (a, i) => i >= 2 && !a.startsWith("--") && process.argv[i - 1] !== "--mode",
-  ) ?? "groq/llama-3.3-70b-versatile";
-const { apiKey } = endpointFor(model);
-if (!model.startsWith("ollama/") && !apiKey) {
-  console.error("API key not set for this provider");
-  process.exit(1);
-}
+  process.argv.find((a, i) => i >= 2 && !a.startsWith("--")) ??
+  "groq/llama-3.3-70b-versatile";
 
-const playbook = readFileSync(join(DIR, "playbook.md"), "utf8").trim();
-const { cases } = parse(readFileSync(join(DIR, "cases.yaml"), "utf8")) as {
+// Load templates via llm.py (canonical scripts/templates/ dir)
+const playbook = await loadTemplate("classifier/playbook");
+const { cases } = parse(await loadTemplate("classifier/cases")) as {
   cases: Case[];
 };
 
 console.log(`Model:      ${model}`);
 console.log(`Cases:      ${cases.length}`);
-console.log(`Delay:      ${DELAY_MS}ms between requests`);
-console.log(`Max retries: ${MAX_RETRIES}\n`);
+console.log(`Delay:      ${DELAY_MS}ms between requests\n`);
 
 const results: CaseResult[] = [];
 let passed = 0;
@@ -225,7 +190,12 @@ console.log(`\nRun log: ${runFile}`);
 // ---------------------------------------------------------------------------
 
 const scoresPath = join(DIR, "scores.yaml");
-const scoresRaw = readFileSync(scoresPath, "utf8");
+let scoresRaw: string;
+try {
+  scoresRaw = await Bun.file(scoresPath).text();
+} catch {
+  scoresRaw = "models: {}";
+}
 const scores = parse(scoresRaw) as ScoresFile;
 if (!scores.models) scores.models = {};
 
