@@ -46,18 +46,6 @@ common:
     url: "https://mcp.deepwiki.com/mcp"
     enabled: true
 
-  searxng-mcp:
-    description: "Web search via local SearXNG instance (uses SEARXNG_SERVER_URL from ~/.envrc)"
-    command: "npx"
-    args:
-      - "-y"
-      - "mcp-searxng"
-    env:
-      SEARXNG_URL: "{env:SEARXNG_SERVER_URL}"
-    enabled: true
-    exclude_harnesses:
-      - opencode
-
   improved-webtools:
     description: "Web search and fetching via improved-webtools MCP server"
     command: "uv"
