@@ -9,6 +9,7 @@
 // mechanism is what matters; the command surface can be extended later.
 
 import { type Plugin, tool } from "@opencode-ai/plugin";
+import { scheduleCallback } from "../../utilities/shared/callbacks";
 
 function fmt(d: Date): string {
   return d.toISOString();
@@ -35,15 +36,7 @@ async function runBackground(
   if (message) lines.push(`  Message:   ${message}`);
   const result = lines.join("\n");
 
-  await client.session.promptAsync({
-    path: { id: sessionID },
-    body: {
-      // noReply: false — inject the result AND trigger a new model response.
-      // If the session is currently busy, the server queues this until idle.
-      noReply: false,
-      parts: [{ type: "text", text: result, synthetic: true }],
-    },
-  });
+  scheduleCallback({ sessionID, delayMs: 0, text: result, client });
 }
 
 export const AsyncCommandPlugin: Plugin = async ({ client }) => {
@@ -64,21 +57,12 @@ export const AsyncCommandPlugin: Plugin = async ({ client }) => {
           runBackground(sessionID, args.seconds, client, args.message).catch(
             async (err) => {
               // Best-effort: inject the error so the agent knows the task failed.
-              await client.session
-                .promptAsync({
-                  path: { id: sessionID },
-                  body: {
-                    noReply: false,
-                    parts: [
-                      {
-                        type: "text",
-                        text: `[async-command failed]\n  Error: ${err?.message ?? String(err)}`,
-                        synthetic: true,
-                      },
-                    ],
-                  },
-                })
-                .catch(() => {}); // Swallow — session may be gone
+              scheduleCallback({
+                sessionID,
+                delayMs: 0,
+                text: `[async-command failed]\n  Error: ${err?.message ?? String(err)}`,
+                client,
+              });
             },
           );
 

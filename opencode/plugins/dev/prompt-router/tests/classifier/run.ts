@@ -24,45 +24,12 @@ import { z } from "zod";
 import { parse, stringify } from "yaml";
 import { join, dirname } from "path";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
+import { endpointFor } from "../../../../utilities/shared/providers";
 
 const DIR = dirname(import.meta.path);
 const RUNS_DIR = join(DIR, "runs");
 const DELAY_MS = 10000;
 const MAX_RETRIES = 3;
-
-// ---------------------------------------------------------------------------
-// Provider routing
-// ---------------------------------------------------------------------------
-
-function endpointFor(model: string): { baseURL: string; modelId: string; apiKey: string } {
-  if (model.startsWith("ollama/")) {
-    return {
-      baseURL: "http://localhost:11434/v1",
-      modelId: model.slice("ollama/".length),
-      apiKey: "ollama",
-    };
-  }
-  if (model.startsWith("groq/")) {
-    return {
-      baseURL: "https://api.groq.com/openai/v1",
-      modelId: model.slice("groq/".length),
-      apiKey: process.env.GROQ_API_KEY ?? "",
-    };
-  }
-  if (model.startsWith("nvidia/")) {
-    return {
-      baseURL: "https://integrate.api.nvidia.com/v1",
-      modelId: model.slice("nvidia/".length),
-      apiKey: process.env.NVIDIA_API_KEY ?? "",
-    };
-  }
-  // Default: OpenRouter
-  return {
-    baseURL: "https://openrouter.ai/api/v1",
-    modelId: model,
-    apiKey: process.env.OPENROUTER_API_KEY ?? "",
-  };
-}
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -125,7 +92,7 @@ function slugToDir(slug: string): string {
   return slug.replace(/\//g, "--").replace(/:/g, "-");
 }
 
-const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ---------------------------------------------------------------------------
 // Classify
@@ -147,14 +114,21 @@ async function classify(
       model: modelId,
       messages: [
         { role: "system", content: playbook },
-        { role: "user", content: `Classify the following prompt:\n\n===\n${prompt}\n===` },
+        {
+          role: "user",
+          content: `Classify the following prompt:\n\n===\n${prompt}\n===`,
+        },
       ],
       response_model: { schema: ClassificationSchema, name: "Classification" },
       max_retries: MAX_RETRIES,
       max_tokens: instructorMode === "MD_JSON" ? 400 : 200,
       temperature: 0,
     });
-    return { tier: result.tier, reasoning: result.reasoning, latency_ms: Date.now() - t0 };
+    return {
+      tier: result.tier,
+      reasoning: result.reasoning,
+      latency_ms: Date.now() - t0,
+    };
   } catch (e: any) {
     return {
       tier: `ERROR: ${String(e?.message ?? e).slice(0, 80)}`,
@@ -170,17 +144,26 @@ async function classify(
 
 // Optional --mode flag: bun run run.ts <slug> --mode MD_JSON
 const modeArg = process.argv.indexOf("--mode");
-const instructorMode = (modeArg !== -1 ? process.argv[modeArg + 1] : "JSON") as "JSON" | "MD_JSON";
-if (instructorMode === "MD_JSON") console.log(`Instructor mode: MD_JSON (no response_format header)\n`);
+const instructorMode = (modeArg !== -1 ? process.argv[modeArg + 1] : "JSON") as
+  | "JSON"
+  | "MD_JSON";
+if (instructorMode === "MD_JSON")
+  console.log(`Instructor mode: MD_JSON (no response_format header)\n`);
 
-const model = process.argv.find((a, i) => i >= 2 && !a.startsWith("--") && process.argv[i-1] !== "--mode") ?? "groq/llama-3.3-70b-versatile";
+const model =
+  process.argv.find(
+    (a, i) => i >= 2 && !a.startsWith("--") && process.argv[i - 1] !== "--mode",
+  ) ?? "groq/llama-3.3-70b-versatile";
 const { apiKey } = endpointFor(model);
 if (!model.startsWith("ollama/") && !apiKey) {
-  console.error("API key not set for this provider"); process.exit(1);
+  console.error("API key not set for this provider");
+  process.exit(1);
 }
 
 const playbook = readFileSync(join(DIR, "playbook.md"), "utf8").trim();
-const { cases } = parse(readFileSync(join(DIR, "cases.yaml"), "utf8")) as { cases: Case[] };
+const { cases } = parse(readFileSync(join(DIR, "cases.yaml"), "utf8")) as {
+  cases: Case[];
+};
 
 console.log(`Model:      ${model}`);
 console.log(`Cases:      ${cases.length}`);
@@ -194,12 +177,18 @@ for (let i = 0; i < cases.length; i++) {
   const { prompt, tier: expected, label } = cases[i];
   if (i > 0) await delay(DELAY_MS);
 
-  const { tier: got, reasoning, latency_ms } = await classify(playbook, model, prompt);
+  const {
+    tier: got,
+    reasoning,
+    latency_ms,
+  } = await classify(playbook, model, prompt);
   const pass = got === expected;
   if (pass) passed++;
 
   results.push({ prompt, label, expected, got, pass, reasoning, latency_ms });
-  console.log(`${pass ? "PASS" : "FAIL"} [${label}] expected=${expected} got=${got} (${latency_ms}ms)`);
+  console.log(
+    `${pass ? "PASS" : "FAIL"} [${label}] expected=${expected} got=${got} (${latency_ms}ms)`,
+  );
   console.log(`     "${prompt}"`);
   if (!pass && reasoning) console.log(`     reason: ${reasoning}`);
 }
@@ -207,7 +196,9 @@ for (let i = 0; i < cases.length; i++) {
 const score = passed / cases.length;
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
-console.log(`\n${passed}/${cases.length} passed (${(score * 100).toFixed(0)}%)`);
+console.log(
+  `\n${passed}/${cases.length} passed (${(score * 100).toFixed(0)}%)`,
+);
 
 // ---------------------------------------------------------------------------
 // Write run log
@@ -238,14 +229,23 @@ const scoresRaw = readFileSync(scoresPath, "utf8");
 const scores = parse(scoresRaw) as ScoresFile;
 if (!scores.models) scores.models = {};
 
-const prev = scores.models[model] ?? { total_runs: 0, total_cases: 0, total_passed: 0, cumulative_score: 0, last_run: "" };
+const prev = scores.models[model] ?? {
+  total_runs: 0,
+  total_cases: 0,
+  total_passed: 0,
+  cumulative_score: 0,
+  last_run: "",
+};
 scores.models[model] = {
   total_runs: prev.total_runs + 1,
   total_cases: prev.total_cases + cases.length,
   total_passed: prev.total_passed + passed,
-  cumulative_score: (prev.total_passed + passed) / (prev.total_cases + cases.length),
+  cumulative_score:
+    (prev.total_passed + passed) / (prev.total_cases + cases.length),
   last_run: new Date().toISOString(),
 };
 
 writeFileSync(scoresPath, stringify(scores));
-console.log(`Scores updated: ${(scores.models[model].cumulative_score * 100).toFixed(0)}% cumulative`);
+console.log(
+  `Scores updated: ${(scores.models[model].cumulative_score * 100).toFixed(0)}% cumulative`,
+);

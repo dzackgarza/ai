@@ -2,18 +2,10 @@
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import * as fs from "fs";
 import * as path from "path";
+import { parseModel } from "../../utilities/shared/providers";
 
 const PLAN_STATE_DIR = ".serena";
 const PLAN_STATE_FILE = "plan_state.json";
-
-function parseModel(
-  model?: string,
-): { providerID: string; modelID: string } | undefined {
-  if (!model) return undefined;
-  const [providerID, ...rest] = model.split("/");
-  if (!providerID || rest.length === 0) return undefined;
-  return { providerID, modelID: rest.join("/") };
-}
 
 function ensurePlanExists(planPath: string): void {
   if (!fs.existsSync(planPath)) {

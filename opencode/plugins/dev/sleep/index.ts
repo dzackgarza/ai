@@ -1,5 +1,6 @@
 // Custom tools: sleep / sleep_until - real wall-clock waiting
 import { type Plugin, tool } from "@opencode-ai/plugin";
+import { scheduleCallback } from "../../utilities/shared/callbacks";
 
 function fmt(d: Date): string {
   return d.toISOString();
@@ -54,29 +55,23 @@ export const SleepPlugin: Plugin = async ({ client }) => {
     requestedAt: Date;
     wakeAt: Date;
   }): void => {
-    const delayMs = Math.max(0, Math.round(input.seconds * 1000));
-    const timer = setTimeout(() => {
-      const firedAt = new Date();
-      const callbackText = [
-        "[sleep_poll_callback]",
-        "status: fired",
-        `source: ${input.source}`,
-        `requested_at: ${fmt(input.requestedAt)}`,
-        `scheduled_for: ${fmt(input.wakeAt)}`,
-        `fired_at: ${fmt(firedAt)}`,
-        "message: Requested wait completed. Continue with the next action if this callback is still relevant.",
-      ].join("\n");
-      void client.session
-        .promptAsync({
-          path: { id: input.sessionID },
-          body: {
-            noReply: false,
-            parts: [{ type: "text", text: callbackText, synthetic: true }],
-          },
-        })
-        .catch(() => {});
-    }, delayMs);
-    (timer as { unref?: () => void }).unref?.();
+    const firedAt = new Date();
+    const callbackText = [
+      "[sleep_poll_callback]",
+      "status: fired",
+      `source: ${input.source}`,
+      `requested_at: ${fmt(input.requestedAt)}`,
+      `scheduled_for: ${fmt(input.wakeAt)}`,
+      `fired_at: ${fmt(firedAt)}`,
+      "message: Requested wait completed. Continue with the next action if this callback is still relevant.",
+    ].join("\n");
+
+    scheduleCallback({
+      sessionID: input.sessionID,
+      delayMs: Math.max(0, Math.round(input.seconds * 1000)),
+      text: callbackText,
+      client,
+    });
   };
 
   const queueSleep = (input: {

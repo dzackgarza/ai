@@ -17,6 +17,7 @@ import { appendFileSync } from "fs";
 import { randomUUID } from "crypto";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart, UserMessage } from "@opencode-ai/sdk";
+import { endpointFor } from "../../utilities/shared/providers";
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
 
 // ---------------------------------------------------------------------------
@@ -66,36 +67,6 @@ const CLASSIFIER_MODELS: ModelConfig[] = [
   { slug: "nvidia/meta/llama-3.3-70b-instruct", mode: "JSON", maxTokens: 200 }, // 11/12, 546-2231ms
   { slug: "arcee-ai/trinity-large-preview:free", mode: "JSON", maxTokens: 200 }, // last resort — 50/day cap
 ];
-
-// ---------------------------------------------------------------------------
-// Provider routing
-// ---------------------------------------------------------------------------
-
-function endpointFor(model: string): {
-  baseURL: string;
-  modelId: string;
-  apiKey: string;
-} {
-  if (model.startsWith("groq/")) {
-    return {
-      baseURL: "https://api.groq.com/openai/v1",
-      modelId: model.slice("groq/".length),
-      apiKey: process.env.GROQ_API_KEY ?? "",
-    };
-  }
-  if (model.startsWith("nvidia/")) {
-    return {
-      baseURL: "https://integrate.api.nvidia.com/v1",
-      modelId: model.slice("nvidia/".length),
-      apiKey: process.env.NVIDIA_API_KEY ?? "",
-    };
-  }
-  return {
-    baseURL: "https://openrouter.ai/api/v1",
-    modelId: model,
-    apiKey: process.env.OPENROUTER_API_KEY ?? "",
-  };
-}
 
 // ---------------------------------------------------------------------------
 // Session identity — stable per process for log correlation
