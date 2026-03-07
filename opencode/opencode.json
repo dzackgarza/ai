@@ -166,6 +166,58 @@
         "claude-sonnet-4-20250514"
       ]
     },
+    "cursor-acp": {
+      "name": "Cursor ACP",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:32124/v1"
+      },
+      "models": {
+        "auto": {
+          "name": "Cursor Auto"
+        }
+      },
+      "blacklist": [
+        "composer-1",
+        "composer-1.5",
+        "gemini-3.1-pro",
+        "gemini-3-flash",
+        "gemini-3-pro",
+        "gpt-5.1-codex-max",
+        "gpt-5.1-codex-max-high",
+        "gpt-5.1-codex-mini",
+        "gpt-5.1-high",
+        "gpt-5.2",
+        "gpt-5.2-codex",
+        "gpt-5.2-codex-fast",
+        "gpt-5.2-codex-high",
+        "gpt-5.2-codex-high-fast",
+        "gpt-5.2-codex-low",
+        "gpt-5.2-codex-low-fast",
+        "gpt-5.2-codex-xhigh",
+        "gpt-5.2-codex-xhigh-fast",
+        "gpt-5.2-high",
+        "gpt-5.3-codex",
+        "gpt-5.3-codex-fast",
+        "gpt-5.3-codex-high",
+        "gpt-5.3-codex-high-fast",
+        "gpt-5.3-codex-low",
+        "gpt-5.3-codex-low-fast",
+        "gpt-5.3-codex-spark-preview",
+        "gpt-5.3-codex-xhigh",
+        "gpt-5.3-codex-xhigh-fast",
+        "grok",
+        "kimi-k2.5",
+        "opus-4.5",
+        "opus-4.5-thinking",
+        "opus-4.6",
+        "opus-4.6-thinking",
+        "sonnet-4.5",
+        "sonnet-4.5-thinking",
+        "sonnet-4.6",
+        "sonnet-4.6-thinking"
+      ]
+    },
     "github-copilot": {
       "blacklist": [
         "claude-opus-4.5",
@@ -207,6 +259,73 @@
         },
         "grok-code-fast-1": {
           "name": "Grok Code Fast 1 (0.25x)"
+        }
+      }
+    },
+    "google": {
+      "blacklist": [
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-8b",
+        "gemini-1.5-pro",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-embedding-001",
+        "gemini-2.5-flash-preview-tts",
+        "gemini-2.5-pro-preview-tts",
+        "gemini-2.5-flash-preview-04-17",
+        "gemini-2.5-flash-preview-05-20",
+        "gemini-2.5-pro-preview-05-06",
+        "gemma-2-2b-it",
+        "gemma-2-9b-it",
+        "gemma-3-1b-it",
+        "gemma-3-4b-it",
+        "antigravity-gemini-3-pro",
+        "antigravity-gemini-3.1-pro",
+        "antigravity-gemini-3-flash",
+        "antigravity-claude-sonnet-4-6",
+        "antigravity-claude-opus-4-6-thinking",
+        "gemini-2.5-flash-image",
+        "gemini-2.5-flash-image-preview",
+        "gemini-2.5-flash-lite",
+        "gemini-2.5-flash-lite-preview-06-17",
+        "gemini-2.5-flash-lite-preview-09-2025",
+        "gemini-2.5-flash-preview-09-2025",
+        "gemini-2.5-pro-preview-06-05",
+        "gemini-2.5-pro-preview-05-06"
+      ],
+      "models": {
+        "gemini-3-flash": {
+          "name": "Gemini 3 Flash"
+        },
+        "gemini-3-pro": {
+          "name": "Gemini 3 Pro"
+        },
+        "gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro"
+        },
+        "claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6"
+        },
+        "claude-opus-4-6-thinking": {
+          "name": "Claude Opus 4.6 Thinking"
+        },
+        "gemini-2.5-flash": {
+          "name": "Gemini 2.5 Flash"
+        },
+        "gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro"
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash Preview"
+        },
+        "gemini-3-pro-preview": {
+          "name": "Gemini 3 Pro Preview"
+        },
+        "gemini-3.1-pro-preview": {
+          "name": "Gemini 3.1 Pro Preview"
+        },
+        "gemini-3.1-pro-preview-customtools": {
+          "name": "Gemini 3.1 Pro Preview Custom Tools"
         }
       }
     },
@@ -1023,14 +1142,7 @@
         },
         "task": "allow",
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       }
     },
     "Build (Custom)": {
@@ -1121,14 +1233,7 @@
         },
         "task": "allow",
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       }
     },
     "Interactive": {
@@ -1217,14 +1322,7 @@
         "cut-copy-paste-mcp_paste": {
           "*": "allow"
         },
-        "bash": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "bash": "allow"
       }
     },
     "Minimal": {
@@ -1239,14 +1337,7 @@
         "external_directory": {
           "/tmp/opencode_test/*": "allow"
         },
-        "question": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "question": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/minimal.md}"
     },
@@ -1352,14 +1443,7 @@
         },
         "task": "allow",
         "write_plan": "allow",
-        "plan_exit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "plan_exit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/plan.md}"
     },
@@ -1466,14 +1550,7 @@
         },
         "task": "allow",
         "write_plan": "allow",
-        "plan_exit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "plan_exit": "allow"
       }
     },
     "Repository Steward": {
@@ -1579,14 +1656,7 @@
         },
         "task": "allow",
         "write_plan": "allow",
-        "plan_exit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "plan_exit": "allow"
       }
     },
     "Zotero Librarian": {
@@ -1675,14 +1745,7 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       }
     },
     "build": {
@@ -1771,18 +1834,11 @@
         },
         "task": "allow",
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       }
     },
     "compaction": {
-      "model": "cursor-acp/auto"
+      "model": "github-copilot/gpt-4.1"
     },
     "plan": {
       "model": "cursor-acp/auto",
@@ -1885,14 +1941,7 @@
         },
         "task": "allow",
         "write_plan": "allow",
-        "plan_exit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "plan_exit": "allow"
       }
     },
     "summary": {
@@ -1904,15 +1953,12 @@
     "(Lattice) Researcher: Documentation": {
       "description": "Use when researching obscure lattice algorithms and software (indefinite lattices focus). Ask 'Search arXiv and GitHub for [lattice algorithm]' or 'Find existing implementations of [lattice concept]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -1992,29 +2038,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_internet_researcher/prompt.md}"
     },
     "(Lattice) Reviewer: Checklist Completionist": {
       "description": "Use when cross-referencing checklists against canonical source docs. Ask 'Cross-reference [checklist] against [canonical doc]' or 'Ensure complete account of all provably present methods'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2094,29 +2130,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_completionist/prompt.md}"
     },
     "(Lattice) Reviewer: Documentation Librarian": {
       "description": "Use when organizing documentation. Ask 'Organize docs folder for [project]' or 'Ensure local copies of upstream docs are available' or 'Fact-check [doc] against canonical sources'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2196,29 +2222,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_documentation_librarian/prompt.md}"
     },
     "(Lattice) Reviewer: Test Coverage": {
       "description": "Use when auditing document-to-test coverage. Ask 'Audit document-to-test coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2298,29 +2314,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_coverage_auditor/prompt.md}"
     },
     "(Lattice) Writer: Algorithm Porter": {
       "description": "Use when porting algorithms from existing implementations. Ask 'Determine algorithms used in [implementation]' or 'Rewrite [algorithm] or wrap complex external objects'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2472,29 +2478,19 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_algorithm_porter/prompt.md}"
     },
     "(Lattice) Writer: Interface Designer": {
       "description": "Use when constructing union checklists. Ask 'Construct union checklist for [lattice interface]' or 'Collect and deduplicate capabilities across all old checklists'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2646,29 +2642,19 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_designer/prompt.md}"
     },
     "(Lattice) Writer: Interface Implementer": {
       "description": "Use when translating union checklists into Python design. Ask 'Translate [union checklist] into ABC Python design' or 'Implement lattice types and concepts under src/'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -2820,29 +2806,19 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_implementer/prompt.md}"
     },
     "(Lattice) Writer: TDD": {
       "description": "Use when combining existing test methods into unified tests. Ask 'Combine test methods into single new tests for unified Lattice classes' or 'Write TDD tests for [lattice feature]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3009,29 +2985,19 @@
           "*test*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_tdd_writer/prompt.md}"
     },
     "(Lattice) Writer: Test Methods": {
       "description": "Use when closing docs-to-tests gaps. Ask 'Write mathematically nontrivial tests for [lattice object]' or 'Create tests for representative lattice objects'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3198,29 +3164,19 @@
           "*test*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_method_writer/prompt.md}"
     },
     "Researcher: Code Base": {
       "description": "Use when you need to explore the codebase. Finds WHERE files live and HOW code works. Pass features, entry points, or components. Ask 'Find files related to [feature]' or 'Trace how [function] processes data'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3300,29 +3256,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-explorer.md}"
     },
     "Researcher: Documentation": {
       "description": "Use when synthesizing internal code and external documentation. Ask 'Research documentation for [topic]' or 'Synthesize information from internal code and external sources' or 'Find documentation about [technology]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3402,29 +3348,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/researcher.md}"
     },
     "Researcher: Repo Explorer": {
       "description": "Use when performing structural and semantic codebase mapping. Ask 'Map the structural dependencies of this repository' or 'Explain the overall architecture of this codebase'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3504,29 +3440,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/repo-explorer.md}"
     },
     "Reviewer: Code": {
       "description": "Use when reviewing code post-implementation. Audits code against Clean Code standards, Design Patterns, correctness, and spec compliance. Flag non-substantive tests and suggest refactoring improvements.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3606,29 +3532,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
     },
     "Reviewer: Plan Contract": {
       "description": "Use when auditing code against project constraints and dominant patterns. Pass the generated code and project rules. Ask 'Audit this code for constraint violations' or 'Find deviations from dominant patterns'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3708,29 +3624,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
     },
     "Reviewer: Plans": {
       "description": "Use when critically auditing USER_SPEC and plans. Pass the spec and plan documents. Ask 'Audit this plan for logical inconsistencies' or 'Check for spec misalignment'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3810,29 +3716,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
     },
     "Reviewer: Semantic Audit": {
       "description": "Use when performing factual gap analysis between file versions. Pass file versions or code snapshots. Ask 'Perform semantic gap analysis between these versions' or 'Identify lost semantic data in this update'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -3912,29 +3808,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     },
     "Reviewer: Test Compliance": {
       "description": "Use when auditing tests for compliance with High-Quality Testing Standards. Pass test files or plans. Ask 'Audit these tests for compliance' or 'Review this test plan'. REPORT-ONLY: does not edit files.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4014,29 +3900,19 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
     },
     "Writer: Documentation": {
       "description": "Use when writing or updating documentation files. Ask 'Document the current project architecture' or 'Write a README for [feature]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4188,29 +4064,19 @@
           "*docs*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
     "Writer: General Code": {
       "description": "Use when writing non-Python code. Pass task descriptions and target file paths in src/. Ask 'Implement [feature] in [language]' or 'Write a function that [description]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4362,29 +4228,19 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
     },
     "Writer: Python": {
       "description": "Use when writing Python code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write Python code for [feature]' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4536,29 +4392,19 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
     },
     "Writer: Refactorer": {
       "description": "Use when performing safe, structurally-aware code refactoring. Pass code files and refactor requirements. Ask 'Refactor this code following Fowler/Martin patterns' or 'Improve code structure while maintaining functionality' or 'Apply clean architecture principles to [component]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4710,29 +4556,19 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
     },
     "Writer: SageMath": {
       "description": "Use when writing SageMath code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Write SageMath code for [feature]' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -4884,29 +4720,19 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/sagemath_code_writer.md}"
     },
     "Writer: Tests": {
       "description": "Use when writing new tests following TDD or designing test strategies to improve existing coverage. Can write/edit tests in tests/ and test/ directories only.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -5073,29 +4899,19 @@
           "*test*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
     },
     "Writer: TypeScript": {
       "description": "Use when writing TypeScript code, designing type systems, or defining interface contracts. Pass task descriptions and target file paths in src/. Ask 'Implement [feature] in TypeScript' or 'Design type system for [domain]'.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -5247,32 +5063,22 @@
           "*src*": "allow"
         },
         "git_add": "allow",
-        "git_commit": "allow",
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        "git_commit": "allow"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/typescript_code_writer.md}"
     },
     "explore": {
-      "model": "github-copilot/gpt-5-mini"
+      "model": "github-copilot/gpt-4.1"
     },
     "general": {
       "description": "Override builtin general subagent to use a stable free model.",
       "mode": "subagent",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-4.1",
       "permission": {
         "task": "deny",
         "todoread": "deny",
         "todowrite": "deny",
         "plan_exit": "deny",
-        "introspection": "deny",
-        "list_sessions": "deny",
-        "read_transcript": "deny",
         "async_command": "deny",
         "async_subagent": "deny",
         "read": {
@@ -5352,14 +5158,7 @@
         },
         "cut-copy-paste-mcp_paste": {
           "*": "deny"
-        },
-        "serena_execute_shell_command": "deny",
-        "serena_onboarding": "deny",
-        "serena_prepare_for_new_conversation": "deny",
-        "serena_initial_instructions": "deny",
-        "serena_think_about_collected_information": "deny",
-        "serena_think_about_task_adherence": "deny",
-        "serena_think_about_whether_you_are_done": "deny"
+        }
       }
     }
   }

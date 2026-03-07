@@ -1,6 +1,6 @@
 // Single auto-loaded entry point for all local tools.
+// This file is the registry: to enable or disable a tool, add or remove its import and entry below.
 // Individual tool implementations live in dev/<name>/index.ts.
-// Add new tools by implementing them there and registering here.
 import { type Plugin, type Hooks } from "@opencode-ai/plugin";
 import { SleepPlugin } from "./dev/sleep/index";
 import { AsyncCommandPlugin } from "./dev/async-command/index";

@@ -84,13 +84,6 @@
     "cut-copy-paste-mcp_paste": {
       "*": "allow"
     },
-    "bash": "allow",
-    "serena_execute_shell_command": "deny",
-    "serena_onboarding": "deny",
-    "serena_prepare_for_new_conversation": "deny",
-    "serena_initial_instructions": "deny",
-    "serena_think_about_collected_information": "deny",
-    "serena_think_about_task_adherence": "deny",
-    "serena_think_about_whether_you_are_done": "deny"
+    "bash": "allow"
   }
 }

@@ -387,23 +387,26 @@ def assert_cursor_acp_blacklist_matches_api(provider_id: str) -> set[str]:
 
 
 def show_runtime_whitelist_diff(provider_id: str, expected_models: set[str]) -> None:
-    """Display difference between config whitelist and runtime models."""
-    listed = list_runtime_provider_models(provider_id)
-    missing_from_runtime = sorted(expected_models - listed)
-    unexpected_in_runtime = sorted(listed - expected_models)
+    """Display difference between config whitelist and known opencode models."""
+    models_dev_models = get_models_dev_provider_models(provider_id)
+    if models_dev_models is None:
+        print(f"[dim]{provider_id}: not in models.dev[/]")
+        return
+    missing_from_runtime = sorted(expected_models - models_dev_models)
+    unexpected_in_runtime = sorted(models_dev_models - expected_models)
     if missing_from_runtime or unexpected_in_runtime:
-        print(f"[yellow]Note: {provider_id} runtime differs from config[/]")
+        print(f"[yellow]Note: {provider_id} known opencode models differs from config[/]")
         if missing_from_runtime:
             print(
-                f"  config has but runtime missing: {missing_from_runtime[:5]}{'...' if len(missing_from_runtime) > 5 else ''}"
+                f"  config has but known opencode models missing: {missing_from_runtime[:5]}{'...' if len(missing_from_runtime) > 5 else ''}"
             )
         if unexpected_in_runtime:
             print(
-                f"  runtime has but config missing: {unexpected_in_runtime[:5]}{'...' if len(unexpected_in_runtime) > 5 else ''}"
+                f"  known opencode models has but config missing: {unexpected_in_runtime[:5]}{'...' if len(unexpected_in_runtime) > 5 else ''}"
             )
         return
 
-    print(f"[dim]{provider_id}: config={len(expected_models)} runtime={len(listed)}[/]")
+    print(f"[dim]{provider_id}: config={len(expected_models)} known opencode models={len(models_dev_models)}[/]")
 
 
 # Guardrail order:

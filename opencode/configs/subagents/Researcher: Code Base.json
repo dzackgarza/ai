@@ -1,14 +1,11 @@
 {
   "description": "Use when you need to explore the codebase. Finds WHERE files live and HOW code works. Pass features, entry points, or components. Ask 'Find files related to [feature]' or 'Trace how [function] processes data'.",
   "mode": "subagent",
-  "model": "github-copilot/gpt-5-mini",
+  "model": "github-copilot/gpt-4.1",
   "permission": {
     "task": "deny",
     "todoread": "deny",
     "todowrite": "deny",
-    "introspection": "deny",
-    "list_sessions": "deny",
-    "read_transcript": "deny",
     "plan_exit": "deny",
     "async_command": "deny",
     "async_subagent": "deny",
@@ -89,14 +86,7 @@
     },
     "cut-copy-paste-mcp_paste": {
       "*": "deny"
-    },
-    "serena_execute_shell_command": "deny",
-    "serena_onboarding": "deny",
-    "serena_prepare_for_new_conversation": "deny",
-    "serena_initial_instructions": "deny",
-    "serena_think_about_collected_information": "deny",
-    "serena_think_about_task_adherence": "deny",
-    "serena_think_about_whether_you_are_done": "deny"
+    }
   },
   "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-explorer.md}"
 }

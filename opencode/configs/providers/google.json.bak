@@ -1,0 +1,67 @@
+{
+  "blacklist": [
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-8b",
+    "gemini-1.5-pro",
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
+    "gemini-embedding-001",
+    "gemini-2.5-flash-preview-tts",
+    "gemini-2.5-pro-preview-tts",
+    "gemini-2.5-flash-preview-04-17",
+    "gemini-2.5-flash-preview-05-20",
+    "gemini-2.5-pro-preview-05-06",
+    "gemma-2-2b-it",
+    "gemma-2-9b-it",
+    "gemma-3-1b-it",
+    "gemma-3-4b-it",
+    "antigravity-gemini-3-pro",
+    "antigravity-gemini-3.1-pro",
+    "antigravity-gemini-3-flash",
+    "antigravity-claude-sonnet-4-6",
+    "antigravity-claude-opus-4-6-thinking",
+    "gemini-2.5-flash-image",
+    "gemini-2.5-flash-image-preview",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash-lite-preview-06-17",
+    "gemini-2.5-flash-lite-preview-09-2025",
+    "gemini-2.5-flash-preview-09-2025",
+    "gemini-2.5-pro-preview-06-05",
+    "gemini-2.5-pro-preview-05-06"
+  ],
+  "models": {
+    "gemini-3-flash": {
+      "name": "Gemini 3 Flash"
+    },
+    "gemini-3-pro": {
+      "name": "Gemini 3 Pro"
+    },
+    "gemini-3.1-pro": {
+      "name": "Gemini 3.1 Pro"
+    },
+    "claude-sonnet-4-6": {
+      "name": "Claude Sonnet 4.6"
+    },
+    "claude-opus-4-6-thinking": {
+      "name": "Claude Opus 4.6 Thinking"
+    },
+    "gemini-2.5-flash": {
+      "name": "Gemini 2.5 Flash"
+    },
+    "gemini-2.5-pro": {
+      "name": "Gemini 2.5 Pro"
+    },
+    "gemini-3-flash-preview": {
+      "name": "Gemini 3 Flash Preview"
+    },
+    "gemini-3-pro-preview": {
+      "name": "Gemini 3 Pro Preview"
+    },
+    "gemini-3.1-pro-preview": {
+      "name": "Gemini 3.1 Pro Preview"
+    },
+    "gemini-3.1-pro-preview-customtools": {
+      "name": "Gemini 3.1 Pro Preview Custom Tools"
+    }
+  }
+}
