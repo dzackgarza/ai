@@ -580,17 +580,17 @@ AGENTS = {
     "Build (Custom)": AgentDef(
         tags={"primary", "builder"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
-        overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
+        overrides={"webfetch": "deny", "websearch": "deny"},
     ),
     "build": AgentDef(
         tags={"primary", "builder"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
-        overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
+        overrides={"webfetch": "deny", "websearch": "deny"},
     ),
     "(Lattice) Build": AgentDef(
         tags={"primary", "builder", "lattice"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
-        overrides={"webfetch": "deny", "websearch": "deny", "write_plan": "deny"},
+        overrides={"webfetch": "deny", "websearch": "deny"},
     ),
     "Zotero Librarian": AgentDef(
         tags={"primary"},
