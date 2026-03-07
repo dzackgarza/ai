@@ -134,6 +134,7 @@
     "git_add": "deny",
     "git_commit": "deny",
     "write_plan": "deny",
+    "plan_exit": "deny",
     "serena_execute_shell_command": "deny",
     "serena_onboarding": "deny",
     "serena_prepare_for_new_conversation": "deny",
@@ -1021,7 +1022,6 @@
         "task": "allow",
         "git_add": "allow",
         "git_commit": "allow",
-        "plan_exit": "deny",
         "webfetch": "deny",
         "websearch": "deny",
         "write_plan": "deny",
@@ -1123,7 +1123,6 @@
         "task": "allow",
         "git_add": "allow",
         "git_commit": "allow",
-        "plan_exit": "deny",
         "webfetch": "deny",
         "websearch": "deny",
         "write_plan": "deny",
@@ -1225,7 +1224,6 @@
         "cut-copy-paste-mcp_paste": {
           "*": "allow"
         },
-        "plan_exit": "deny",
         "bash": "allow",
         "serena_execute_shell_command": "deny",
         "serena_onboarding": "deny",
@@ -1245,7 +1243,6 @@
         "task": "allow",
         "todoread": "allow",
         "todowrite": "allow",
-        "plan_exit": "deny",
         "external_directory": {
           "/tmp/opencode_test/*": "allow"
         },
@@ -1785,7 +1782,6 @@
         "task": "allow",
         "git_add": "allow",
         "git_commit": "allow",
-        "plan_exit": "deny",
         "webfetch": "deny",
         "websearch": "deny",
         "write_plan": "deny",
