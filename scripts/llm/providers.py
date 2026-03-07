@@ -6,10 +6,15 @@ Supported providers (user-facing slugs):
     openrouter/    → OpenRouter :free-tier models only
     nvidia/        → NVIDIA NIM (live /v1/models fetch, vendor-prefixed IDs)
     mistral/       → Mistral
-    replicate/     → Replicate (live API fetch)
     cloudflare/    → Cloudflare Workers AI (account-ID URL, text models only)
     ollama-cloud/  → Ollama Cloud (https://ollama.com/v1, models.dev)
     ollama/        → Local Ollama (http://localhost:11434/v1, :cloud suffix only)
+
+NOT supported:
+    replicate/     → Replicate does NOT offer an OpenAI-compatible chat completions
+                     endpoint. Its API uses predictions/{owner}/{name} format.
+                     Removed from the registry. Use openrouter or nvidia for hosted
+                     models with OpenAI-compat.
 
 output_mode controls how pydantic-ai requests structured output:
     "tool"      — OpenAI tool-calling
@@ -225,43 +230,6 @@ class OllamaLocalProviderConfig(ProviderConfig):
             return []
 
 
-class ReplicateProviderConfig(ProviderConfig):
-    """Replicate: fetches models from Replicate REST API."""
-
-    env_var: Optional[str] = "REPLICATE_API_TOKEN"
-    base_url: str = ""
-    output_mode: str = "prompted"
-
-    def get_models(self) -> list[str]:
-        api_key = os.environ.get(self.env_var or "REPLICATE_API_TOKEN", "")
-        if not api_key:
-            logger.warning("REPLICATE_API_TOKEN not set, skipping model fetch")
-            return []
-        try:
-            resp = httpx.get(
-                "https://api.replicate.com/v1/models",
-                headers={"Authorization": f"Token {api_key}"},
-                timeout=5.0,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            models = [f"{r['owner']}/{r['name']}" for r in data.get("results", [])]
-            logger.debug("Replicate: fetched %d models", len(models))
-            return models
-        except httpx.HTTPStatusError as exc:
-            logger.error(
-                "Replicate API %d: %s",
-                exc.response.status_code,
-                exc.response.text[:200],
-            )
-            return []
-        except httpx.TimeoutException:
-            logger.error("Replicate API request timed out")
-            return []
-        except Exception as exc:
-            logger.error("Failed to fetch Replicate models: %s", exc)
-            return []
-
 
 # ---------------------------------------------------------------------------
 # Registry
@@ -280,7 +248,6 @@ PROVIDERS: dict[str, ProviderConfig] = {
         base_url="https://api.mistral.ai/v1",
         output_mode="tool",
     ),
-    "replicate": ReplicateProviderConfig(),
     "cloudflare": CloudflareProviderConfig(),
     "ollama-cloud": OllamaCloudProviderConfig(),
     "ollama": OllamaLocalProviderConfig(),

@@ -5,8 +5,8 @@ model: groq/llama-3.3-70b-versatile
 temperature: 0.0
 
 system: |
-You are a friendly assistant responding to a greeting.
-Keep your response brief and welcoming.
+  You are a friendly assistant responding to a greeting.
+  Keep your response brief and welcoming.
 
 inputs:
 
