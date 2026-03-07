@@ -10,7 +10,8 @@ import re
 from pathlib import Path
 from urllib.request import urlopen, Request
 import json
-from typing import Optional
+from typing import Optional, Protocol
+from functools import cached_property
 
 import yaml
 from jinja2 import Template
@@ -18,97 +19,151 @@ import litellm
 from pydantic import BaseModel
 
 
-class ProviderConfig(BaseModel):
-    """Configuration for a single LLM provider."""
+class ModelsDevSource(BaseModel):
+    """Models fetched from models.dev API."""
+    data: dict
+
+    def get_models(self, slug: str) -> list[str]:
+        """Get model IDs for a provider slug."""
+        if slug not in self.data:
+            return []
+        return list(self.data[slug].get('models', {}).keys())
+
+
+class Provider(Protocol):
+    """Protocol for provider implementations."""
+
     env_var: str
-    models_dev_slug: Optional[str] = None  # None if not on models.dev
     litellm_prefix: str
+    api_base: Optional[str]
+    drop_params: bool
+
+    def get_models(self) -> list[str]:
+        """Get available models for this provider."""
+        ...
+
+
+class ModelsDevProvider(BaseModel):
+    """Provider that fetches models from models.dev API."""
+    env_var: str
+    litellm_prefix: str
+    models_dev_slug: str
+    api_base: Optional[str] = None
+    drop_params: bool = False
+    models_dev: ModelsDevSource
+
+    def get_models(self) -> list[str]:
+        """Get models from models.dev for this provider's slug."""
+        return self.models_dev.get_models(self.models_dev_slug)
+
+
+class ReplicateProvider(BaseModel):
+    """Replicate provider - fetches models from Replicate API."""
+    env_var: str = 'REPLICATE_API_TOKEN'
+    litellm_prefix: str = 'replicate'
     api_base: Optional[str] = None
     drop_params: bool = False
 
-
-# Provider configurations - user-facing slug is the dict key
-PROVIDERS = {
-    'groq': ProviderConfig(
-        env_var='GROQ_API_KEY',
-        models_dev_slug='groq',
-        litellm_prefix='groq',
-    ),
-    'openrouter': ProviderConfig(
-        env_var='OPENROUTER_API_KEY',
-        models_dev_slug='openrouter',
-        litellm_prefix='openrouter',
-    ),
-    'mistral': ProviderConfig(
-        env_var='MISTRAL_API_KEY',
-        models_dev_slug='mistral',
-        litellm_prefix='mistral',
-    ),
-    'replicate': ProviderConfig(
-        env_var='REPLICATE_API_TOKEN',
-        models_dev_slug=None,  # Not on models.dev
-        litellm_prefix='replicate',
-    ),
-    'cloudflare-workers-ai': ProviderConfig(
-        env_var='CLOUDFLARE_API_KEY',
-        models_dev_slug='cloudflare-workers-ai',
-        litellm_prefix='cloudflare',
-        drop_params=True,
-    ),
-    'ollama-cloud': ProviderConfig(
-        env_var='OLLAMA_API_KEY',
-        models_dev_slug='ollama-cloud',
-        litellm_prefix='ollama',
-        api_base='https://ollama.com',
-    ),
-    'nvidia': ProviderConfig(
-        env_var='NVIDIA_NIM_API_KEY',
-        models_dev_slug='nvidia',
-        litellm_prefix='nvidia_nim',
-    ),
-}
+    def get_models(self) -> list[str]:
+        """Get models from Replicate API."""
+        # Replicate doesn't have a simple model listing API
+        # Return empty list - validation will pass through
+        return []
 
 
-def fetch_models_dev() -> dict:
+def fetch_models_dev() -> ModelsDevSource:
     """Fetch models.dev API data."""
     req = Request('https://models.dev/api.json', headers={'User-Agent': 'micro-agent-runner'})
     with urlopen(req) as resp:
-        return json.loads(resp.read().decode())
+        data = json.loads(resp.read().decode())
+    return ModelsDevSource(data=data)
 
 
-def validate_model(model_slug: str, models_dev: dict) -> None:
+# Provider registry - populated at runtime
+PROVIDERS: dict[str, ModelsDevProvider | ReplicateProvider] = {}
+
+
+def init_providers() -> None:
+    """Initialize provider registry with models.dev data."""
+    models_dev = fetch_models_dev()
+
+    PROVIDERS.update({
+        'groq': ModelsDevProvider(
+            env_var='GROQ_API_KEY',
+            litellm_prefix='groq',
+            models_dev_slug='groq',
+            models_dev=models_dev,
+        ),
+        'openrouter': ModelsDevProvider(
+            env_var='OPENROUTER_API_KEY',
+            litellm_prefix='openrouter',
+            models_dev_slug='openrouter',
+            models_dev=models_dev,
+        ),
+        'mistral': ModelsDevProvider(
+            env_var='MISTRAL_API_KEY',
+            litellm_prefix='mistral',
+            models_dev_slug='mistral',
+            models_dev=models_dev,
+        ),
+        'replicate': ReplicateProvider(),
+        'cloudflare-workers-ai': ModelsDevProvider(
+            env_var='CLOUDFLARE_API_KEY',
+            litellm_prefix='cloudflare',
+            models_dev_slug='cloudflare-workers-ai',
+            drop_params=True,
+            models_dev=models_dev,
+        ),
+        'ollama-cloud': ModelsDevProvider(
+            env_var='OLLAMA_API_KEY',
+            litellm_prefix='ollama',
+            models_dev_slug='ollama-cloud',
+            api_base='https://ollama.com',
+            models_dev=models_dev,
+        ),
+        'nvidia': ModelsDevProvider(
+            env_var='NVIDIA_NIM_API_KEY',
+            litellm_prefix='nvidia_nim',
+            models_dev_slug='nvidia',
+            models_dev=models_dev,
+        ),
+    })
+
+
+def validate_model(model_slug: str) -> None:
     """Validate model slug and API key. Exit on error."""
     if '/' not in model_slug:
         print(f"Error: Invalid model format '{model_slug}'. Expected: provider/model", file=sys.stderr)
         sys.exit(1)
 
-    provider, model_id = model_slug.split('/', 1)
+    provider_name, model_id = model_slug.split('/', 1)
 
-    if provider not in PROVIDERS:
-        print(f"Error: Unsupported provider '{provider}'", file=sys.stderr)
+    if provider_name not in PROVIDERS:
+        print(f"Error: Unsupported provider '{provider_name}'", file=sys.stderr)
         print(f"Supported: {', '.join(PROVIDERS.keys())}", file=sys.stderr)
         sys.exit(1)
 
-    config = PROVIDERS[provider]
+    provider = PROVIDERS[provider_name]
 
-    if not os.environ.get(config.env_var):
-        print(f"Error: {config.env_var} not set", file=sys.stderr)
-        print(f"Set: export {config.env_var}=your-key", file=sys.stderr)
+    if not os.environ.get(provider.env_var):
+        print(f"Error: {provider.env_var} not set", file=sys.stderr)
+        print(f"Set: export {provider.env_var}=your-key", file=sys.stderr)
         sys.exit(1)
 
-    # Skip models.dev validation for providers not listed there
-    if config.models_dev_slug is None:
+    # Get available models for this provider
+    available_models = provider.get_models()
+
+    # Skip validation if provider doesn't have model list (e.g., replicate)
+    if not available_models:
         return
 
-    if config.models_dev_slug not in models_dev:
-        print(f"Error: Provider '{config.models_dev_slug}' not found in models.dev", file=sys.stderr)
-        sys.exit(1)
-
-    if model_id not in models_dev[config.models_dev_slug]['models']:
+    if model_id not in available_models:
         print(f"Error: Model '{model_slug}' not found", file=sys.stderr)
-        print(f"Available models for {config.models_dev_slug}:", file=sys.stderr)
-        for m in models_dev[config.models_dev_slug]['models']:
-            print(f"  {config.models_dev_slug}/{m}", file=sys.stderr)
+        print(f"Available models for {provider_name}:", file=sys.stderr)
+        for m in available_models[:20]:  # Limit output
+            print(f"  {provider_name}/{m}", file=sys.stderr)
+        if len(available_models) > 20:
+            print(f"  ... and {len(available_models) - 20} more", file=sys.stderr)
         sys.exit(1)
 
 
@@ -142,16 +197,17 @@ def build_variables(file_args: list[str], var_args: list[str]) -> dict:
     return variables
 
 
-def get_completion(model: str, messages: list[dict], temperature: float, provider: str) -> str:
+def get_completion(model: str, messages: list[dict], temperature: float, provider_name: str) -> str:
     """Get completion from LLM provider."""
-    config = PROVIDERS[provider]
+    provider = PROVIDERS[provider_name]
 
     # Apply provider-specific settings
-    if config.drop_params:
+    if provider.drop_params:
         litellm.drop_params = True
 
     # Build litellm model string
-    litellm_model = f"{config.litellm_prefix}/{model.split('/', 1)[1]}"
+    model_id = model.split('/', 1)[1]
+    litellm_model = f"{provider.litellm_prefix}/{model_id}"
 
     # Build completion kwargs
     completion_kwargs = {
@@ -160,11 +216,19 @@ def get_completion(model: str, messages: list[dict], temperature: float, provide
         'temperature': temperature,
     }
 
-    if config.api_base:
-        completion_kwargs['api_base'] = config.api_base
+    if provider.api_base:
+        completion_kwargs['api_base'] = provider.api_base
 
     response = litellm.completion(**completion_kwargs)
     return response.choices[0].message.content
+
+
+def list_all_models() -> None:
+    """List all available models from all providers."""
+    for provider_name, provider in PROVIDERS.items():
+        models = provider.get_models()
+        for model_id in models:
+            print(f"{provider_name}/{model_id}")
 
 
 def main():
@@ -179,15 +243,12 @@ def main():
 
     args = parser.parse_args()
 
+    # Initialize providers (fetches models.dev once)
+    init_providers()
+
     # List models mode
     if args.models:
-        models_dev = fetch_models_dev()
-        try:
-            for prov in models_dev:
-                for model_id in models_dev[prov]['models']:
-                    print(f"{prov}/{model_id}")
-        except BrokenPipeError:
-            pass
+        list_all_models()
         sys.exit(0)
 
     if not args.template:
@@ -208,9 +269,8 @@ def main():
         print("Error: --model required or 'model:' in template", file=sys.stderr)
         sys.exit(1)
 
-    # Fetch models.dev and validate
-    models_dev = fetch_models_dev()
-    validate_model(model, models_dev)
+    # Validate model
+    validate_model(model)
 
     # Build variables
     variables = build_variables(args.file, args.var)
@@ -226,9 +286,9 @@ def main():
         messages.insert(0, {"role": "system", "content": system_prompt})
 
     # Get completion
-    provider = model.split('/', 1)[0]
+    provider_name = model.split('/', 1)[0]
     temperature = args.temperature if args.temperature is not None else frontmatter.get('temperature', 0.0)
-    result = get_completion(model, messages, temperature, provider)
+    result = get_completion(model, messages, temperature, provider_name)
 
     # Output result
     if args.output == '-':
