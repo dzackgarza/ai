@@ -283,6 +283,8 @@ ALLOW_STANDARD_CORE = {
     **{tool: "allow" for tool in SERENA_SESSION_META_TOOLS},
     **{tool: "allow" for tool in SERENA_MEMORY_TOOLS},
     "serena_*": "deny",
+    "webfetch": "allow",
+    "websearch": "allow",
 }
 
 NON_OVERRIDABLE_DENIES = {
@@ -491,6 +493,11 @@ def allow_session_tools():
     return {"introspection": "allow", "list_sessions": "allow", "read_transcript": "allow"}
 
 
+def allow_web_access():
+    """Allow web fetch and search."""
+    return {"webfetch": "allow", "websearch": "allow"}
+
+
 def allow_external_directory(*paths):
     """Allow access to external directories."""
     return {"external_directory": {p: "allow" for p in paths}}
@@ -580,17 +587,14 @@ AGENTS = {
     "Build (Custom)": AgentDef(
         tags={"primary", "builder"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
-        overrides={"webfetch": "deny", "websearch": "deny"},
     ),
     "build": AgentDef(
         tags={"primary", "builder"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
-        overrides={"webfetch": "deny", "websearch": "deny"},
     ),
     "(Lattice) Build": AgentDef(
         tags={"primary", "builder", "lattice"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
-        overrides={"webfetch": "deny", "websearch": "deny"},
     ),
     "Zotero Librarian": AgentDef(
         tags={"primary"},
