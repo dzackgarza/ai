@@ -10,6 +10,7 @@
 4. **Never write time estimates.** Your calibration is off by orders of magnitude.
 5. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere. This includes documentation: never attempt restate a fact when you can point to the canonical source.
 6. **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed. Error-path work is useless, proof-of-correctness work is essential. And mocks are not going to help you prove anything. Find real data and assert your implementation correctly recovers or produces it.
+7. **Never bury the lede**: do not produce volumes of text when there are critical issues, or bury failures in paragraphs or summaries of success. Focus on critical, oustanding issues, and clearly delineate and highlight them.
 
 ---
 
