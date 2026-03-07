@@ -1,7 +1,7 @@
 // Adds custom tools to OpenCode
 import { type Plugin, tool } from "@opencode-ai/plugin";
 
-export const CustomToolsPlugin: Plugin = async (ctx) => {
+export const CustomToolsPlugin: Plugin = async (_ctx) => {
   return {
     tool: {
       mytool: tool({
@@ -10,7 +10,7 @@ export const CustomToolsPlugin: Plugin = async (ctx) => {
           foo: tool.schema.string(),
         },
         async execute(args, context) {
-          const { directory, worktree } = context;
+          const { directory, worktree: _worktree } = context;
           return `Hello ${args.foo} from ${directory}`;
         },
       }),

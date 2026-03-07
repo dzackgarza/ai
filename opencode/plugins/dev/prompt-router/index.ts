@@ -17,8 +17,6 @@ import { appendFileSync } from "fs";
 import { randomUUID } from "crypto";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart, UserMessage } from "@opencode-ai/sdk";
-import { ENABLED } from "./killswitches";
-
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
 
 // ---------------------------------------------------------------------------
@@ -46,22 +44,38 @@ const ClassificationSchema = z.object({
 // is exhausted, making them slow and unreliable at low max_tokens.
 // ---------------------------------------------------------------------------
 
-interface ModelConfig { slug: string; mode: "JSON" | "MD_JSON"; maxTokens: number }
+interface ModelConfig {
+  slug: string;
+  mode: "JSON" | "MD_JSON";
+  maxTokens: number;
+}
 
 const CLASSIFIER_MODELS: ModelConfig[] = [
-  { slug: "groq/llama-3.3-70b-versatile",                         mode: "JSON",    maxTokens: 200 }, // 12/12, 138-400ms
-  { slug: "groq/moonshotai/kimi-k2-instruct",                     mode: "JSON",    maxTokens: 200 }, // 12/12, 151-1165ms
-  { slug: "nvidia/mistralai/mistral-large-3-675b-instruct-2512",  mode: "MD_JSON", maxTokens: 400 }, // 12/12, 890-1688ms
-  { slug: "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503", mode: "JSON",    maxTokens: 200 }, // 12/12, 995-1630ms
-  { slug: "nvidia/meta/llama-3.3-70b-instruct",                   mode: "JSON",    maxTokens: 200 }, // 11/12, 546-2231ms
-  { slug: "arcee-ai/trinity-large-preview:free",                  mode: "JSON",    maxTokens: 200 }, // last resort — 50/day cap
+  { slug: "groq/llama-3.3-70b-versatile", mode: "JSON", maxTokens: 200 }, // 12/12, 138-400ms
+  { slug: "groq/moonshotai/kimi-k2-instruct", mode: "JSON", maxTokens: 200 }, // 12/12, 151-1165ms
+  {
+    slug: "nvidia/mistralai/mistral-large-3-675b-instruct-2512",
+    mode: "MD_JSON",
+    maxTokens: 400,
+  }, // 12/12, 890-1688ms
+  {
+    slug: "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503",
+    mode: "JSON",
+    maxTokens: 200,
+  }, // 12/12, 995-1630ms
+  { slug: "nvidia/meta/llama-3.3-70b-instruct", mode: "JSON", maxTokens: 200 }, // 11/12, 546-2231ms
+  { slug: "arcee-ai/trinity-large-preview:free", mode: "JSON", maxTokens: 200 }, // last resort — 50/day cap
 ];
 
 // ---------------------------------------------------------------------------
 // Provider routing
 // ---------------------------------------------------------------------------
 
-function endpointFor(model: string): { baseURL: string; modelId: string; apiKey: string } {
+function endpointFor(model: string): {
+  baseURL: string;
+  modelId: string;
+  apiKey: string;
+} {
   if (model.startsWith("groq/")) {
     return {
       baseURL: "https://api.groq.com/openai/v1",
@@ -111,12 +125,29 @@ function appendLog(entry: {
 // ---------------------------------------------------------------------------
 
 const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
-  { prompt: "Describe every tool you have access to.",                           tier: "model-self" },
-  { prompt: "What is the latest stable release of TypeScript?",                  tier: "knowledge"  },
-  { prompt: "Create a file named router-poc-c.txt containing exactly: poc-baseline-c, then delete it.", tier: "C" },
-  { prompt: "For each .ts file in this directory, open it and print the name of every exported symbol.", tier: "B" },
-  { prompt: "Audit command-interceptor.ts for security vulnerabilities.",        tier: "A"          },
-  { prompt: "Design a plugin for tracking token usage per session.",             tier: "S"          },
+  { prompt: "Describe every tool you have access to.", tier: "model-self" },
+  {
+    prompt: "What is the latest stable release of TypeScript?",
+    tier: "knowledge",
+  },
+  {
+    prompt:
+      "Create a file named router-poc-c.txt containing exactly: poc-baseline-c, then delete it.",
+    tier: "C",
+  },
+  {
+    prompt:
+      "For each .ts file in this directory, open it and print the name of every exported symbol.",
+    tier: "B",
+  },
+  {
+    prompt: "Audit command-interceptor.ts for security vulnerabilities.",
+    tier: "A",
+  },
+  {
+    prompt: "Design a plugin for tracking token usage per session.",
+    tier: "S",
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -125,11 +156,15 @@ const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
 
 const TIER_INSTRUCTIONS: Record<Tier, string> = Object.fromEntries(
   await Promise.all(
-    (["model-self", "knowledge", "C", "B", "A", "S"] as const).map(async (tier) => [
-      tier,
-      await Bun.file(new URL(`tiers/${tier}.md`, import.meta.url)).text().then(t => t.trim()),
-    ])
-  )
+    (["model-self", "knowledge", "C", "B", "A", "S"] as const).map(
+      async (tier) => [
+        tier,
+        await Bun.file(new URL(`tiers/${tier}.md`, import.meta.url))
+          .text()
+          .then((t) => t.trim()),
+      ],
+    ),
+  ),
 ) as Record<Tier, string>;
 
 // ---------------------------------------------------------------------------
@@ -138,13 +173,17 @@ const TIER_INSTRUCTIONS: Record<Tier, string> = Object.fromEntries(
 
 const SYSTEM_PROMPT = await Bun.file(
   new URL("tests/classifier/playbook.md", import.meta.url),
-).text().then(t => t.trim());
+)
+  .text()
+  .then((t) => t.trim());
 
 // ---------------------------------------------------------------------------
 // classify()
 // ---------------------------------------------------------------------------
 
-async function classify(text: string): Promise<{ tier: Tier; reasoning: string } | null> {
+async function classify(
+  text: string,
+): Promise<{ tier: Tier; reasoning: string } | null> {
   // 1. Faux exact match — deterministic, no API call
   const trimmed = text.trim();
   for (const { prompt, tier } of FAUX_RULES) {
@@ -166,9 +205,15 @@ async function classify(text: string): Promise<{ tier: Tier; reasoning: string }
         model: modelId,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: `Classify the following prompt:\n\n===\n${trimmed}\n===` },
+          {
+            role: "user",
+            content: `Classify the following prompt:\n\n===\n${trimmed}\n===`,
+          },
         ],
-        response_model: { schema: ClassificationSchema, name: "Classification" },
+        response_model: {
+          schema: ClassificationSchema,
+          name: "Classification",
+        },
         max_retries: 3,
         max_tokens: maxTokens,
         temperature: 0,
@@ -190,8 +235,6 @@ async function classify(text: string): Promise<{ tier: Tier; reasoning: string }
 export const PromptRouter: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
-      // Killswitch check - exit if killed
-      if (!ENABLED.promptRouter) return;
       if (!output.messages?.length) return;
 
       try {
@@ -214,7 +257,12 @@ export const PromptRouter: Plugin = async ({ client }) => {
         const instruction = TIER_INSTRUCTIONS[tier];
 
         output.messages.push({
-          info: { id: `router-${Date.now()}`, role: "user", sessionID: "", time: { created: Date.now() } } as UserMessage,
+          info: {
+            id: `router-${Date.now()}`,
+            role: "user",
+            sessionID: "",
+            time: { created: Date.now() },
+          } as UserMessage,
           parts: [{ type: "text", text: instruction } as TextPart],
         });
 
@@ -227,23 +275,27 @@ export const PromptRouter: Plugin = async ({ client }) => {
           injected: true,
         });
 
-        await client.app.log({
-          body: {
-            service: "prompt-router",
-            level: "info",
-            message: `Classified as ${tier}: ${reasoning}`,
-            extra: { tier, reasoning },
-          },
-        }).catch(() => {});
+        await client.app
+          .log({
+            body: {
+              service: "prompt-router",
+              level: "info",
+              message: `Classified as ${tier}: ${reasoning}`,
+              extra: { tier, reasoning },
+            },
+          })
+          .catch(() => {});
       } catch (err: any) {
-        await client.app.log({
-          body: {
-            service: "prompt-router",
-            level: "error",
-            message: "Error in messages transform",
-            extra: { error: err?.message ?? String(err) },
-          },
-        }).catch(() => {});
+        await client.app
+          .log({
+            body: {
+              service: "prompt-router",
+              level: "error",
+              message: "Error in messages transform",
+              extra: { error: err?.message ?? String(err) },
+            },
+          })
+          .catch(() => {});
       }
     },
   };

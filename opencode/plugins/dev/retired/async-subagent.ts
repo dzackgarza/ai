@@ -1,4 +1,3 @@
-import { isPluginEnabled } from "./plugins_config";
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import * as fs from "fs";
 import * as os from "os";
@@ -95,7 +94,7 @@ async function runSubagentBackground(
   sessionID: string,
   agent: string,
   prompt: string,
-  cwd: string,
+  _cwd: string,
   time_estimate: number,
   title: string,
   model: string | undefined,
@@ -207,8 +206,6 @@ async function runSubagentBackground(
 }
 
 export const AsyncSubagentPlugin: Plugin = async ({ client, $ }) => {
-  if (!isPluginEnabled("async-subagent")) return {};
-
   return {
     tool: {
       async_subagent: tool({

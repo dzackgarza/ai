@@ -2,19 +2,15 @@
 // context including a passphrase the model must echo — proving interception works.
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart, UserMessage } from "@opencode-ai/sdk";
-import { ENABLED } from "./killswitches";
-
 const TRIGGER_RULES: Record<string, { intent: string; passphrase: string }> = {
-  "intercept test": { intent: "verification",   passphrase: "SWORDFISH" },
-  "plugin check":   { intent: "diagnostics",    passphrase: "NIGHTHAWK" },
-  "context inject": { intent: "context-inject", passphrase: "IRONCLAD"  },
+  "intercept test": { intent: "verification", passphrase: "SWORDFISH" },
+  "plugin check": { intent: "diagnostics", passphrase: "NIGHTHAWK" },
+  "context inject": { intent: "context-inject", passphrase: "IRONCLAD" },
 };
 
 export const CommandInterceptor: Plugin = async ({ client }) => {
   return {
     "experimental.chat.messages.transform": async (_input, output) => {
-      // Killswitch check - exit if killed
-      if (!ENABLED.commandInterceptor) return;
       if (!output.messages?.length) return;
 
       try {
@@ -29,10 +25,17 @@ export const CommandInterceptor: Plugin = async ({ client }) => {
           .join(" ")
           .toLowerCase();
 
-        for (const [keyphrase, { intent, passphrase }] of Object.entries(TRIGGER_RULES)) {
+        for (const [keyphrase, { intent, passphrase }] of Object.entries(
+          TRIGGER_RULES,
+        )) {
           if (text.includes(keyphrase)) {
             output.messages.push({
-              info: { id: `interceptor-${Date.now()}`, role: "user", sessionID: "", time: { created: Date.now() } } as UserMessage,
+              info: {
+                id: `interceptor-${Date.now()}`,
+                role: "user",
+                sessionID: "",
+                time: { created: Date.now() },
+              } as UserMessage,
               parts: [
                 {
                   type: "text",
@@ -44,14 +47,16 @@ export const CommandInterceptor: Plugin = async ({ client }) => {
           }
         }
       } catch (err: any) {
-        await client.app.log({
-          body: {
-            service: "command-interceptor",
-            level: "error",
-            message: "Error in messages transform",
-            extra: { error: err?.message ?? String(err) },
-          },
-        }).catch(() => {});
+        await client.app
+          .log({
+            body: {
+              service: "command-interceptor",
+              level: "error",
+              message: "Error in messages transform",
+              extra: { error: err?.message ?? String(err) },
+            },
+          })
+          .catch(() => {});
       }
     },
   };

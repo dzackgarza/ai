@@ -13,14 +13,6 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": [
-    "*.ts",
-    "dev/**/*.ts",
-    "examples/**/*.test.ts",
-    "tests/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "examples"
-  ]
+  "include": ["*.ts", "dev/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules"]
 }

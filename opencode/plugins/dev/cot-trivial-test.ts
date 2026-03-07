@@ -1,6 +1,4 @@
 import type { Plugin } from "@opencode-ai/plugin";
-import { ENABLED } from "./killswitches";
-
 // ─────────────────────────────────────────────────────────────────────────────
 // CoT Mid-Stream Interceptor — Test Plugin
 //
@@ -38,8 +36,6 @@ export const CotTrivialInterceptor: Plugin = async ({ client }) => {
 
   return {
     event: async ({ event }) => {
-      // Killswitch check - exit if killed
-      if (!ENABLED.cotTrivialInterceptor) return;
       // Comment out to enable
       return;
       // ── Track which partIDs are reasoning parts ───────────────────────────
