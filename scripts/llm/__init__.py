@@ -25,7 +25,12 @@ Subprocess bridge (for TypeScript callers):
 from scripts.llm.call import call_llm, call_with_fallback
 from scripts.llm.providers import PROVIDERS, list_models, validate
 from scripts.llm.schemas import SCHEMAS, Classification, resolve_schema
-from scripts.llm.templates import MissingVariablesError, load_micro_agent, render_body
+from scripts.llm.templates import (
+    MissingVariablesError,
+    TemplateFormatError,
+    load_micro_agent,
+    render_body,
+)
 
 __all__ = [
     "call_llm",
@@ -33,6 +38,7 @@ __all__ = [
     "load_micro_agent",
     "render_body",
     "MissingVariablesError",
+    "TemplateFormatError",
     "PROVIDERS",
     "list_models",
     "validate",

@@ -41,6 +41,10 @@ class MissingVariablesError(ValueError):
         super().__init__(f"Missing required template variable(s): {', '.join(missing)}")
 
 
+class TemplateFormatError(ValueError):
+    """Raised when a micro-agent template file is structurally invalid."""
+
+
 def _split_frontmatter(content: str) -> tuple[dict, str]:
     """Split YAML frontmatter from template body.
 
@@ -52,6 +56,8 @@ def _split_frontmatter(content: str) -> tuple[dict, str]:
 
     Returns (metadata_dict, body_text). If no bare '---' separator is
     found, returns ({}, content).
+
+    Raises TemplateFormatError if the YAML frontmatter cannot be parsed.
     """
     lines = content.split("\n")
     sep_idx = next((i for i, line in enumerate(lines) if line == "---"), None)
@@ -60,8 +66,23 @@ def _split_frontmatter(content: str) -> tuple[dict, str]:
 
     frontmatter_text = "\n".join(lines[:sep_idx])
     body = "\n".join(lines[sep_idx + 1 :]).lstrip("\n")
-    metadata = yaml.safe_load(frontmatter_text) or {}
+    try:
+        metadata = yaml.safe_load(frontmatter_text) or {}
+    except yaml.YAMLError as exc:
+        raise TemplateFormatError(f"Invalid YAML frontmatter: {exc}") from exc
     return metadata, body
+
+
+_REQUIRED_FRONTMATTER_FIELDS = ("model",)
+
+
+def _validate_frontmatter(path: str | Path, frontmatter: dict) -> None:
+    """Raise TemplateFormatError if required frontmatter fields are missing."""
+    missing = [f for f in _REQUIRED_FRONTMATTER_FIELDS if not frontmatter.get(f)]
+    if missing:
+        raise TemplateFormatError(
+            f"{path}: missing required frontmatter field(s): {', '.join(missing)}"
+        )
 
 
 @dataclass
@@ -116,9 +137,12 @@ def load_micro_agent(path: str | Path) -> MicroAgent:
 
     The system prompt is taken from the 'system:' field in the YAML frontmatter.
     The body is the Jinja2 template below the frontmatter separator.
+
+    Raises TemplateFormatError if the template is structurally invalid.
     """
     content = Path(path).read_text()
     frontmatter, body = _split_frontmatter(content)
+    _validate_frontmatter(path, frontmatter)
     system = frontmatter.get("system")
     return MicroAgent(frontmatter=frontmatter, system=system, body=body)
 

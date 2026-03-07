@@ -145,7 +145,11 @@ def main() -> None:
         logger.error("Template not found: %s", template_file)
         sys.exit(1)
 
-    agent = load_micro_agent(template_file)
+    try:
+        agent = load_micro_agent(template_file)
+    except (ValueError, OSError) as exc:
+        logger.error("%s", exc)
+        sys.exit(1)
 
     model = args.model or agent.frontmatter.get("model")
     if not model:
