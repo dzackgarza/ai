@@ -1,7 +1,7 @@
 """
 Provider registry — single source of truth for all LLM providers.
 
-Merges the provider tables from scripts/run_agent.py (models.dev-backed, 7 providers)
+Merges the provider tables from scripts/run_micro_agent.py (models.dev-backed, 7 providers)
 and opencode/scripts/llm.py (pydantic-ai native, 4 providers) into one canonical dict.
 
 Slug convention (used everywhere: Python, TypeScript, justfile):
@@ -52,7 +52,7 @@ class ProviderConfig(BaseModel):
     env_var: Optional[str]  # None = no auth required (ollama)
     base_url: str
     output_mode: str = "prompted"  # "tool" | "prompted"
-    litellm_prefix: str = ""  # for plain-text litellm calls in run_agent.py
+    litellm_prefix: str = ""  # for plain-text litellm calls in run_micro_agent.py
     models_dev_slug: Optional[str] = None  # if set, get_models() queries models.dev
     drop_params: bool = False  # litellm: drop unsupported params
 
@@ -214,7 +214,7 @@ def make_model(
 def validate(slug: str) -> None:
     """Validate a model slug: provider registered, API key set, model known.
 
-    Raises ValueError with a descriptive message on failure. Used by run_agent.py
+    Raises ValueError with a descriptive message on failure. Used by run_micro_agent.py
     before making a call. Skips model list validation if the provider has no list.
     """
     if "/" not in slug:

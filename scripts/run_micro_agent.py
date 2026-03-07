@@ -6,8 +6,8 @@ Entry point for micro-agent execution. Delegates provider registry, model
 validation, and LLM calls to the scripts.llm package.
 
 Usage:
-    python scripts/run_agent.py <template> [--model groq/llama-3.3-70b-versatile]
-    python scripts/run_agent.py --models        # list all available models
+    python scripts/run_micro_agent.py <template> [--model groq/llama-3.3-70b-versatile]
+    python scripts/run_micro_agent.py --models        # list all available models
 """
 
 import sys
@@ -22,6 +22,7 @@ import litellm
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from scripts.llm.providers import PROVIDERS, resolve, api_key  # noqa: E402
+from scripts.llm.templates import load_micro_agent  # noqa: E402
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

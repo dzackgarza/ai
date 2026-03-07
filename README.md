@@ -478,7 +478,7 @@ Config: `~/ai/opencode/opencode.json`
 | `opencode-anthropic-auth@latest`   | Anthropic OAuth authentication                        | https://github.com/anomalyco/opencode-anthropic-auth     |
 | `opencode-qwencode-auth`           | Qwen OAuth authentication                             | https://github.com/anomalyco/opencode/issues/11557       |
 | `opencode-openai-codex-auth`       | OpenAI Codex auth (GPT-5.x Codex models)              | https://github.com/numman-ali/opencode-openai-codex-auth |
-| `@rama_nigg/open-cursor@latest`    | Cursor ACP provider (requires Cursor CLI)           | https://github.com/Nomadcxx/opencode-cursor              |
+| `@rama_nigg/open-cursor@latest`    | Cursor ACP provider (requires Cursor CLI)             | https://github.com/Nomadcxx/opencode-cursor              |
 
 ### Utility Plugins
 
@@ -511,12 +511,12 @@ This repository utilizes the following JSON configuration files:
 
 Lightweight runner for Jinja2-templated prompts via litellm.
 
-- `scripts/run_agent.py` — runner (Jinja2 + litellm, YAML frontmatter for model/temperature/system config)
+- `scripts/run_micro_agent.py` — runner (Jinja2 + litellm, YAML frontmatter for model/temperature/system config)
 - `prompts/micro_agents/` — agent templates (evaluator, etc.)
 
 ```bash
-python scripts/run_agent.py prompts/micro_agents/evaluator.md \
+python scripts/run_micro_agent.py prompts/micro_agents/evaluator.md \
   --var subject="..." --model groq/llama-3.3-70b-versatile
 ```
 
-Run `python scripts/run_agent.py --help` for full usage.
+Run `python scripts/run_micro_agent.py --help` for full usage.

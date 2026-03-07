@@ -106,3 +106,80 @@
 // - output.prompt = "..." → replaces default prompt entirely (context ignored)
 //
 // Source: https://github.com/anomalyco/opencode/blob/dev/packages/web/src/content/docs/plugins.mdx
+
+// =============================================================================
+// Default Compaction Prompt (upstream opencode)
+// =============================================================================
+// Source: packages/opencode/src/session/compaction.ts — SessionCompaction.process
+//
+// The default prompt that opencode uses when compacting a session:
+//
+// ```
+// Provide a detailed prompt for continuing our conversation above.
+// Focus on information that would be helpful for continuing the conversation,
+// including what we did, what we're doing, which files we're working on, and
+// what we're going to do next.
+// The summary that you construct will be used so that another agent can read
+// it and continue the work.
+//
+// When constructing the summary, try to stick to this template:
+// ---
+// ## Goal
+//
+// [What goal(s) is the user trying to accomplish?]
+//
+// ## Instructions
+//
+// - [What important instructions did the user give you that are relevant]
+// - [If there is a plan or spec, include information about it so next agent
+//   can continue using it]
+//
+// ## Discoveries
+//
+// [What notable things were learned during this conversation that would be
+// useful for the next agent to know when continuing the work]
+//
+// ## Accomplished
+//
+// [What work has been completed, what work is still in progress, and what
+// work is left?]
+//
+// ## Relevant files / directories
+//
+// [Construct a structured list of relevant files that have been read, edited,
+// or created that pertain to the task at hand. If all the files in a directory
+// are relevant, include the path to the directory.]
+// ---
+// ```
+
+// =============================================================================
+// Cursor Compaction Prompt (reference)
+// =============================================================================
+// Source: getcursor/cursor — cursor/src/vs/workbench/contrib/chat/common/chat.ts
+//
+// CONTEXT_COMPACTION_PROMPT_TEMPLATE:
+//
+// ```
+// You are an AI assistant that is summarizing a conversation.
+// Your goal is to extract the most important information from the conversation.
+// Do not add any new information.
+// Do not respond to the user.
+// Do not say "Okay, I will summarize the conversation." or anything similar.
+// Output the summary directly.
+//
+// ---
+//
+// Here is the conversation:
+// {{ CONVERSATION }}
+// ```
+
+// =============================================================================
+// Claude Code Compaction Prompt
+// =============================================================================
+// Not exposed in source code.
+//
+// Claude Code uses an external "Auto-compaction API" for summarization.
+// The prompt text is not in the client-side codebase.
+//
+// Known: strips images/PDFs before compaction, /compact command, auto-triggers
+// at ~80% context window, no preamble recap after compaction.
