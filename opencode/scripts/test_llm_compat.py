@@ -21,8 +21,9 @@ import os
 import sys
 from pathlib import Path
 
-# Allow running from repo root without installing the package
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Allow running from repo root without installing the package.
+# scripts.llm lives at ~/ai/scripts/llm/ so we need ~/ai on sys.path.
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from scripts.llm import PROVIDERS, Classification, call_llm, load_template  # noqa: E402
 

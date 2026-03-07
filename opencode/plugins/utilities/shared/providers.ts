@@ -1,9 +1,9 @@
 /**
  * Provider routing for TypeScript plugins that construct OpenAI-compatible clients directly.
  *
- * ⚠️  CANONICAL SOURCE: scripts/llm.py owns the provider registry.
- *     This file mirrors slugs, baseURLs, and env var names from llm.py's PROVIDERS dict.
- *     When updating a provider entry, update llm.py first, then mirror here.
+ * ⚠️  CANONICAL SOURCE: scripts/llm/providers.py owns the provider registry.
+ *     This file mirrors slugs, baseURLs, and env var names from that module's PROVIDERS dict.
+ *     When updating a provider entry, update scripts/llm/providers.py first, then mirror here.
  *
  * This file provides:
  *   - endpointFor()  — resolve a slug to baseURL + apiKey for direct OpenAI client use

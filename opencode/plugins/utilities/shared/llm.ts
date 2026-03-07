@@ -1,10 +1,10 @@
 /**
- * TypeScript subprocess wrapper for scripts/llm.py.
+ * TypeScript subprocess wrapper for the scripts.llm Python package.
  *
  * All LLM calls from plugins go through here. The canonical source of truth
- * for providers, schemas, retries, and fallback logic lives in scripts/llm.py.
+ * for providers, schemas, retries, and fallback logic lives in scripts/llm/.
  * This module is a thin bridge: it serialises the request to JSON, spawns
- * the Python process, and deserialises the response.
+ * the Python bridge process, and deserialises the response.
  *
  * Usage:
  *   import { callLLM, loadTemplate } from "../../utilities/shared/llm";
@@ -22,8 +22,8 @@ import { resolve, dirname } from "path";
 
 const _dir = dirname(fileURLToPath(import.meta.url));
 
-// Path to scripts/llm.py — canonical LLM dispatch module.
-const LLM_PY = resolve(_dir, "../../../scripts/llm.py");
+// Path to scripts/llm/bridge.py — canonical LLM dispatch module.
+const LLM_PY = resolve(_dir, "../../../scripts/llm/bridge.py");
 
 // Python binary: prefer the venv, fall back to system python3.
 const PYTHON = resolve(_dir, "../../../.venv/bin/python");
@@ -58,7 +58,7 @@ export type LLMResponse<T = unknown> =
  */
 export async function callLLM<T = string>(req: LLMRequest): Promise<T> {
   const res = _run<T>(req);
-  if (!res.ok) throw new Error(`llm.py error: ${res.error}`);
+  if (!res.ok) throw new Error(`scripts.llm error: ${res.error}`);
   return res.result;
 }
 
@@ -75,7 +75,7 @@ export async function callLLM<T = string>(req: LLMRequest): Promise<T> {
  */
 export async function loadTemplate(name: string): Promise<string> {
   const res = _run<string>({ action: "load_template", template: name } as any);
-  if (!res.ok) throw new Error(`llm.py template error: ${res.error}`);
+  if (!res.ok) throw new Error(`scripts.llm template error: ${res.error}`);
   return res.result;
 }
 
@@ -98,7 +98,7 @@ function _run<T>(req: object): LLMResponse<T> {
     const stderr = proc.stderr?.trim() ?? "";
     return {
       ok: false,
-      error: `llm.py exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
+      error: `bridge.py exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
     };
   }
 
