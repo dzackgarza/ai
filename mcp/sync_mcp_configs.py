@@ -11,7 +11,7 @@ Supports:
 
 Usage:
     just sync-mcp-configs [--dry-run] [--harness <name>]
-    python3 sync_mcp_configs.py [--dry-run] [--harness <name>]
+    python3 mcp/sync_mcp_configs.py [--dry-run] [--harness <name>]
 """
 
 import argparse
@@ -405,7 +405,7 @@ def main():
     parser = argparse.ArgumentParser(description='Sync MCP configurations to all harnesses')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be changed without making changes')
     parser.add_argument('--harness', type=str, help='Sync only this specific harness')
-    parser.add_argument('--config', type=str, default='mcp-servers.yml', help='Path to YAML config file')
+    parser.add_argument('--config', type=str, default='mcp/mcp-servers.yml', help='Path to YAML config file')
     args = parser.parse_args()
 
     ensure_required_sync_environment()

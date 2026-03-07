@@ -1,7 +1,7 @@
 # Centralized MCP Server Configuration
 # =====================================
 # This file is the single source of truth for all MCP server configurations.
-# Run `python3 sync_mcp_configs.py` to propagate changes to all harnesses.
+# Run `python3 mcp/sync_mcp_configs.py` to propagate changes to all harnesses.
 #
 # Quick Start with OpenCode:
 # 1. Configure OpenCode - Add the plugin and Cursor provider to your opencode.json:

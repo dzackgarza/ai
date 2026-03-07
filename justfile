@@ -77,7 +77,7 @@ sync-mcp-configs *ARGS="":
     #!/usr/bin/env bash
     set -euo pipefail
     cd "{{repo}}"
-    direnv exec "$HOME" python3 sync_mcp_configs.py {{ARGS}}
+    direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ARGS}}
 
 # Check all usage limits
 # Usage: just usage [--json] [--no-notify]
