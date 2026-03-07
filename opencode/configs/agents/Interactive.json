@@ -6,9 +6,6 @@
     "todoread": "allow",
     "todowrite": "allow",
     "task": "allow",
-    "introspection": "allow",
-    "list_sessions": "allow",
-    "read_transcript": "allow",
     "read": {
       "*": "allow"
     },
