@@ -290,11 +290,6 @@ ALLOW_STANDARD_CORE = {
     "read_transcript": "allow",
 }
 
-NON_OVERRIDABLE_DENIES = {
-    # Serena shell bypasses command safety controls; never permit it.
-    **{tool: "deny" for tool in SERENA_DENY_TOOLS},
-}
-
 
 def validate_serena_routing():
     globally_allowed = {
@@ -302,7 +297,7 @@ def validate_serena_routing():
         for key, value in ALLOW_STANDARD_CORE.items()
         if key.startswith("serena_") and key != "serena_*" and value == "allow"
     }
-    globally_denied = set(NON_OVERRIDABLE_DENIES.keys())
+    globally_denied = set(SERENA_DENY_TOOLS)
     path_read = set(SERENA_FILE_READ_TOOLS)
     path_write = set(SERENA_FILE_WRITE_TOOLS)
 
@@ -539,6 +534,7 @@ BASELINE_PLUGIN_DENIES = {
     "git_commit": "deny",
     "write_plan": "deny",
     "plan_exit": "deny",
+    **{tool: "deny" for tool in SERENA_DENY_TOOLS},
 }
 
 GLOBAL_PERMISSION = deep_merge(
@@ -546,7 +542,6 @@ GLOBAL_PERMISSION = deep_merge(
     {"question": "allow"},
     {"bash": "deny"},
     BASELINE_PLUGIN_DENIES,
-    NON_OVERRIDABLE_DENIES,
 )
 
 
