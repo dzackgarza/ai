@@ -17,14 +17,14 @@ Run `serena_read_memory` at session start. All memories apply here.
 
 ### Baseline methodology for any plugin involving model behaviour
 
-Before testing what a plugin *does*, you must first prove that the model is *receiving and interpreting* the plugin's output correctly. This applies to any plugin that modifies what the model sees: message transforms, context injections, system prompt modifications, tool result shaping.
+Before testing what a plugin _does_, you must first prove that the model is _receiving and interpreting_ the plugin's output correctly. This applies to any plugin that modifies what the model sees: message transforms, context injections, system prompt modifications, tool result shaping.
 
 Model behaviour cannot be directly observed — you cannot inspect what the model received. You need a tracer.
 
 **The keyphrase + secret phrase methodology:**
 
 1. Add a trigger keyphrase to the plugin
-2. When triggered, the plugin injects a hidden instruction: *"You MUST include the word [PASSPHRASE] verbatim in your response"*
+2. When triggered, the plugin injects a hidden instruction: _"You MUST include the word [PASSPHRASE] verbatim in your response"_
 3. Send a controlled prompt containing the keyphrase
 4. Verify the passphrase appears in stdout
 
@@ -41,6 +41,7 @@ This is the proof-of-concept baseline for all plugin development involving model
 You are testing one specific behaviour: does the plugin's injected instruction reach the model and get followed? Everything else is a confound to eliminate.
 
 A valid test requires:
+
 - **A known baseline** — the control response (no trigger) must be fully determined in advance
 - **A single variable** — the only difference between control and experimental prompts is the trigger's presence
 - **An unambiguous signal** — the passphrase must be detectable with certainty, not buried in noise
@@ -48,9 +49,9 @@ A valid test requires:
 
 **The correct pattern:**
 
-| Condition | Prompt | Expected output |
-|-----------|--------|-----------------|
-| Control | `"Reply with only the word 'ready'."` | `ready` |
+| Condition    | Prompt                                                          | Expected output       |
+| ------------ | --------------------------------------------------------------- | --------------------- |
+| Control      | `"Reply with only the word 'ready'."`                           | `ready`               |
 | Experimental | `"Reply with only the word 'ready'. (context: intercept test)"` | `ready` + `SWORDFISH` |
 
 The baseline response is fully determined — one word, no variability. Any passphrase is entirely attributable to the injection. Detection is `grep -i swordfish`.
@@ -64,6 +65,7 @@ The trigger phrase itself must not signal to the model that something unusual is
 The full response cycle is: `prompt → model infers intent → model chooses mode → plugin fires`. The model must be locked into **response mode** before the trigger ever registers.
 
 **Patterns that induce task mode:**
+
 - Action verbs as the main verb: `"run"`, `"do"`, `"check"`, `"test"`, `"inject"`
 - Delegation language: `"for me"`, `"please"`, `"can you"`
 - Trigger phrase as the grammatical subject: `"intercept test"` alone reads as a command
@@ -117,26 +119,27 @@ When writing `tool({ description: ... })` in any plugin:
 
 **From `packages/plugin/src/index.ts` — `Hooks` interface:**
 
-| Hook | When it fires | Can modify? |
-|------|---------------|-------------|
-| `event` | Any event from internal event bus | Via side effects (abort, prompt) |
-| `chat.message` | New message received | No (read-only) |
-| `chat.params` | Before LLM call | Yes (temperature, topP, topK, etc.) |
-| `chat.headers` | Before LLM call | Yes (HTTP headers) |
-| `permission.ask` | Permission requested | Yes (set status: ask/deny/allow) |
-| `command.execute.before` | Before command execution | Yes |
-| `tool.execute.before` | Before any tool executes | Yes (modify args, throw to block) |
-| `tool.execute.after` | After any tool executes | Yes (modify output) |
-| `shell.env` | Before shell execution | Yes (inject env vars) |
-| `experimental.chat.messages.transform` | Before messages sent to LLM | Yes (modify message array) |
-| `experimental.chat.system.transform` | Before LLM call | Yes (modify system prompt) |
-| `experimental.session.compacting` | Before session compaction | Yes (modify compaction prompt) |
-| `experimental.text.complete` | Text completion | Yes |
-| `tool.definition` | Tool definitions sent to LLM | Yes (modify description/params) |
+| Hook                                   | When it fires                     | Can modify?                         |
+| -------------------------------------- | --------------------------------- | ----------------------------------- |
+| `event`                                | Any event from internal event bus | Via side effects (abort, prompt)    |
+| `chat.message`                         | New message received              | No (read-only)                      |
+| `chat.params`                          | Before LLM call                   | Yes (temperature, topP, topK, etc.) |
+| `chat.headers`                         | Before LLM call                   | Yes (HTTP headers)                  |
+| `permission.ask`                       | Permission requested              | Yes (set status: ask/deny/allow)    |
+| `command.execute.before`               | Before command execution          | Yes                                 |
+| `tool.execute.before`                  | Before any tool executes          | Yes (modify args, throw to block)   |
+| `tool.execute.after`                   | After any tool executes           | Yes (modify output)                 |
+| `shell.env`                            | Before shell execution            | Yes (inject env vars)               |
+| `experimental.chat.messages.transform` | Before messages sent to LLM       | Yes (modify message array)          |
+| `experimental.chat.system.transform`   | Before LLM call                   | Yes (modify system prompt)          |
+| `experimental.session.compacting`      | Before session compaction         | Yes (modify compaction prompt)      |
+| `experimental.text.complete`           | Text completion                   | Yes                                 |
+| `tool.definition`                      | Tool definitions sent to LLM      | Yes (modify description/params)     |
 
 ### Event Types (from `packages/sdk/js/src/gen/types.gen.ts`)
 
 **Message Events:**
+
 - `message.updated`
 - `message.removed`
 - `message.part.updated` — part created/updated
@@ -144,11 +147,13 @@ When writing `tool({ description: ... })` in any plugin:
 - **`message.part.delta`** — streaming incremental updates (CoT tokens)
 
 **Session Events:**
+
 - `session.created`, `session.updated`, `session.deleted`
 - `session.diff`, `session.error`, `session.compacted`
 - `session.idle`, `session.status`
 
 **Tool Events:**
+
 - `tool.execute.before`, `tool.execute.after`
 
 **Other:** `command.executed`, `file.edited`, `file.watcher.updated`, `lsp.*`, `permission.*`, `shell.env`, `tui.*`, `todo.updated`, `server.*`, `pty.*`
@@ -156,13 +161,25 @@ When writing `tool({ description: ... })` in any plugin:
 ### Reasoning Parts (from `packages/opencode/src/session/message-v2.ts`)
 
 **`ReasoningPart`** is a defined part type in the `Part` union:
+
 ```typescript
-type Part = TextPart | ReasoningPart | SubtaskPart | FilePart | ToolPart | 
-            StepStartPart | StepFinishPart | SnapshotPart | PatchPart | 
-            AgentPart | RetryPart | CompactionPart
+type Part =
+  | TextPart
+  | ReasoningPart
+  | SubtaskPart
+  | FilePart
+  | ToolPart
+  | StepStartPart
+  | StepFinishPart
+  | SnapshotPart
+  | PatchPart
+  | AgentPart
+  | RetryPart
+  | CompactionPart;
 ```
 
 **CoT streaming events:**
+
 - `reasoning-start` — creates new ReasoningPart
 - `reasoning-delta` — updates ReasoningPart.text field
 - These trigger `message.part.delta` events with `{ partID, messageID, sessionID, field: "text", delta: "..." }`
@@ -175,7 +192,7 @@ The `event` hook receives `message.part.delta` events for reasoning parts:
 export const MyPlugin: Plugin = async ({ client }) => {
   const reasoningPartSessions = new Map<string, string>();
   const cotAccumulator = new Map<string, string>();
-  
+
   return {
     event: async ({ event }) => {
       // Track reasoning parts
@@ -185,20 +202,20 @@ export const MyPlugin: Plugin = async ({ client }) => {
           reasoningPartSessions.set(part.id, part.sessionID);
         }
       }
-      
+
       // Accumulate and check CoT deltas
       if (event.type === "message.part.delta") {
         const { partID, sessionID, field, delta } = event.properties;
         if (!reasoningPartSessions.has(partID) || field !== "text") return;
-        
+
         const accumulated = (cotAccumulator.get(sessionID) ?? "") + delta;
         cotAccumulator.set(sessionID, accumulated);
-        
+
         // Detect trigger in reasoning
         if (accumulated.toLowerCase().includes("trivial")) {
           // Abort mid-stream
           await client.session.abort({ path: { id: sessionID } });
-          
+
           // Re-prompt with corrective instruction
           await client.session.prompt({
             path: { id: sessionID },
@@ -209,7 +226,7 @@ export const MyPlugin: Plugin = async ({ client }) => {
           });
         }
       }
-      
+
       // Cleanup on session end
       if (event.type === "session.deleted") {
         const sessionID = event.properties.sessionID;
@@ -223,17 +240,17 @@ export const MyPlugin: Plugin = async ({ client }) => {
 
 ### Capabilities Summary
 
-| Capability | Mechanism |
-|------------|-----------|
-| Observe CoT in real-time | `event` hook + `message.part.delta` with ReasoningPart |
-| Accumulate reasoning text | Track deltas by sessionID across events |
-| Detect patterns in CoT | String matching on accumulated text |
-| Abort mid-generation | `client.session.abort({ path: { id: sessionID } })` |
-| Redirect agent thinking | Abort + `client.session.prompt()` with new instruction |
-| Block tool execution | `tool.execute.before` + throw Error |
-| Modify tool args | `tool.execute.before` + modify output.args |
-| Inject hidden instructions | `experimental.chat.messages.transform` + push synthetic message |
-| Persist context across compaction | `experimental.session.compacting` + output.context.push() |
+| Capability                        | Mechanism                                                       |
+| --------------------------------- | --------------------------------------------------------------- |
+| Observe CoT in real-time          | `event` hook + `message.part.delta` with ReasoningPart          |
+| Accumulate reasoning text         | Track deltas by sessionID across events                         |
+| Detect patterns in CoT            | String matching on accumulated text                             |
+| Abort mid-generation              | `client.session.abort({ path: { id: sessionID } })`             |
+| Redirect agent thinking           | Abort + `client.session.prompt()` with new instruction          |
+| Block tool execution              | `tool.execute.before` + throw Error                             |
+| Modify tool args                  | `tool.execute.before` + modify output.args                      |
+| Inject hidden instructions        | `experimental.chat.messages.transform` + push synthetic message |
+| Persist context across compaction | `experimental.session.compacting` + output.context.push()       |
 
 ### Notes
 
@@ -249,15 +266,15 @@ export const MyPlugin: Plugin = async ({ client }) => {
 
 **Verified sources (I searched these and found information):**
 
-| Source | What it contains | Verified by |
-|--------|------------------|-------------|
-| `packages/plugin/src/index.ts` | `Hooks` interface — definitive plugin hook list | DeepWiki query |
-| `packages/sdk/js/src/gen/types.gen.ts` | Event union types — definitive event.type values | DeepWiki query |
-| `packages/opencode/src/session/message-v2.ts` | `Part` union, `ReasoningPart` definition | DeepWiki query |
-| `packages/web/src/content/docs/plugins.mdx` | Plugin examples, event list | DeepWiki + Context7 |
-| Context7 `/anomalyco/opencode` | Plugin hook examples | Direct query |
-| Context7 `/websites/opencode_ai_plugins` | Event type list | Direct query |
-| Context7 `/sst/opencode-sdk-js` | SDK streaming examples | Direct query |
+| Source                                        | What it contains                                 | Verified by         |
+| --------------------------------------------- | ------------------------------------------------ | ------------------- |
+| `packages/plugin/src/index.ts`                | `Hooks` interface — definitive plugin hook list  | DeepWiki query      |
+| `packages/sdk/js/src/gen/types.gen.ts`        | Event union types — definitive event.type values | DeepWiki query      |
+| `packages/opencode/src/session/message-v2.ts` | `Part` union, `ReasoningPart` definition         | DeepWiki query      |
+| `packages/web/src/content/docs/plugins.mdx`   | Plugin examples, event list                      | DeepWiki + Context7 |
+| Context7 `/anomalyco/opencode`                | Plugin hook examples                             | Direct query        |
+| Context7 `/websites/opencode_ai_plugins`      | Event type list                                  | Direct query        |
+| Context7 `/sst/opencode-sdk-js`               | SDK streaming examples                           | Direct query        |
 
 **Recommended search order for hook/event questions:**
 
@@ -286,6 +303,7 @@ export const MyPlugin: Plugin = async ({ client }) => {
 **Epistemic integrity for negative findings:**
 
 When you don't find something, report:
+
 - Searched: [specific files, queries, tools]
 - Found: [what was or was not found]
 - Conclusion: [labeled as inference — "I believe", "based on searched sources"]
@@ -293,6 +311,129 @@ When you don't find something, report:
 - Gaps: [what remains unsearched]
 
 **Do NOT write:**
+
 - "X is not documented" → "I found no documentation of X in [sources]"
 - "There's no hook for Y" → "I found no hook for Y in [sources]"
 - "This feature doesn't exist" → "I found no evidence of this feature in [sources]"
+
+---
+
+## 7. scripts.llm — LLM Package for Plugin Integration
+
+Plugins are TypeScript. The LLM stack is Python (`~/ai/scripts/llm/`). The two communicate through a subprocess bridge. Plugins never import Python directly — they spawn the bridge and exchange JSON over stdin/stdout.
+
+**Rule: all LLM logic must be validated outside of plugins first.** Use `run_micro_agent.py` or the bridge CLI directly to prove a template works and produces correct output. Only after that does it belong in a plugin.
+
+### Package layout
+
+| Module                       | Purpose                                              |
+| ---------------------------- | ---------------------------------------------------- |
+| `scripts/llm/__init__.py`    | Public API — import from here, not submodules        |
+| `scripts/llm/templates.py`   | Load and render `.md` micro-agent templates          |
+| `scripts/llm/call.py`        | Single `call_llm()` / `call_with_fallback()` surface |
+| `scripts/llm/providers.py`   | Provider registry, model resolution, API key lookup  |
+| `scripts/llm/schemas.py`     | Pydantic output schemas (`Classification`, etc.)     |
+| `scripts/llm/bridge.py`      | stdin/stdout JSON bridge for TypeScript callers      |
+| `scripts/run_micro_agent.py` | CLI runner — the correct way to test templates       |
+
+Python env: `~/ai/opencode/.venv`. Always invoke as:
+
+```bash
+~/ai/opencode/.venv/bin/python ~/ai/scripts/run_micro_agent.py <template> --var key=value
+```
+
+### Testing a template (do this first, before any plugin work)
+
+```bash
+# Validate a template loads cleanly:
+~/ai/opencode/.venv/bin/python ~/ai/scripts/run_micro_agent.py \
+  ~/ai/prompts/micro_agents/my_agent/prompt.md \
+  --var prompt="some input"
+
+# Errors surface immediately:
+# ERROR: /path/to/prompt.md: missing required frontmatter field(s): model
+# ERROR: Invalid YAML frontmatter: ...
+```
+
+`load_micro_agent` raises `TemplateFormatError` (a `ValueError`) on YAML parse failures or missing required fields. The runner catches it and exits 1 with the message. Fix the template until this runs clean before touching plugin code.
+
+### Calling the bridge from a plugin
+
+The bridge reads one JSON request from stdin and writes one JSON response to stdout.
+
+**LLM call (most common):**
+
+```typescript
+import { spawnSync } from "child_process";
+
+const PYTHON = `${process.env.HOME}/ai/opencode/.venv/bin/python`;
+const BRIDGE = `${process.env.HOME}/ai/scripts/llm/bridge.py`;
+
+function callLLM(messages: Array<{ role: string; content: string }>): string {
+  const request = {
+    models: ["groq/llama-3.3-70b-versatile"],
+    messages,
+    temperature: 0.0,
+  };
+  const result = spawnSync(PYTHON, [BRIDGE], {
+    input: JSON.stringify(request),
+    encoding: "utf8",
+  });
+  const response = JSON.parse(result.stdout);
+  if (!response.ok) throw new Error(response.error);
+  return response.result;
+}
+```
+
+**Load a micro-agent template:**
+
+```typescript
+const request = {
+  action: "load_micro_agent",
+  path: `${process.env.HOME}/ai/prompts/micro_agents/my_agent/prompt.md`,
+};
+// response.result: { system: string, body: string, frontmatter: object }
+```
+
+**Render a template body with variables:**
+
+```typescript
+const request = {
+  action: "render_template",
+  body: "Classify: {{ prompt }}",
+  variables: { prompt: userInput },
+};
+// response.result: rendered string
+```
+
+**Response envelope (all actions):**
+
+```json
+{ "ok": true,  "result": "..." }
+{ "ok": false, "error": "human-readable error message" }
+```
+
+Always check `response.ok` before using `response.result`. Any error from the Python side surfaces in `response.error` as a plain string.
+
+### Provider slug format
+
+```
+groq/<model>           → Groq
+openrouter/<model>     → OpenRouter
+nvidia/<model>         → NVIDIA NIM
+mistral/<model>        → Mistral
+ollama/<model>         → Local Ollama (no auth)
+```
+
+The bridge resolves provider and API key automatically from the environment. If a key is missing, the response will be `{ "ok": false, "error": "ENV_VAR not set (required for ...)" }`.
+
+### Separation of concerns
+
+| Layer                | Responsibility                           | Where tested                                            |
+| -------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| Template (`.md`)     | Prompt text, model, inputs spec          | `run_micro_agent.py` CLI                                |
+| `scripts.llm`        | API calls, schema parsing, fallback      | Python unit tests, CLI                                  |
+| Bridge (`bridge.py`) | JSON protocol, subprocess I/O            | Bridge CLI (`echo ... \| python -m scripts.llm.bridge`) |
+| Plugin (`.ts`)       | Hook wiring, trigger logic, when to call | OpenCode plugin tests (§3)                              |
+
+**Never put LLM logic in a plugin that hasn't already been tested at the Python layer.** A plugin that calls the bridge for the first time is not a test environment — it's a black box with a running agent, live tool hooks, and session state. Failures there are hard to attribute. Validate first, integrate second.
