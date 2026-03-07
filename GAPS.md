@@ -120,9 +120,9 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
 
 ## Validation Status
 
-1. `improved-task` wired as external plugin in `configs/config_skeleton.json`. Toggle `task-plugin` in `configs/local-plugins.json` to enable (currently `false`).
+1. `improved-task` wired as external plugin in `configs/config_skeleton.json`. Enable/disable via the external plugin's own mechanism.
 2. `improved-webtools` wired as external plugin in `configs/config_skeleton.json`. Replaces the deleted in-repo `searxng-search.ts` + `webfetch-handlers/`.
-3. `task-plugin` toggle remains `false` in `configs/local-plugins.json` (`task.ts` removed from local plugins; control now via external plugin + toggle).
+3. Stale `task-plugin` key removed from `configs/local-plugins.json`; killswitch file now only contains entries for local plugins.
 4. `callback-integration.test.ts` validates consolidated callback semantics across `task`, `sleep`, and `async_command`.
 
 **Note:** Previous validation items 4–9 described tests in `tests/unit/searxng-search.test.ts`, `tests/unit/webfetch-handlers/handlers.test.ts`, and `tests/fixtures/real/` — these were removed when the in-repo webtools plugin was extracted to `improved-webtools`. Validation of the equivalent coverage in `/home/dzack/opencode-plugins/improved-webtools/` is pending.
