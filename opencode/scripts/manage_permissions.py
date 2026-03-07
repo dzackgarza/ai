@@ -560,7 +560,7 @@ AGENTS = {
         tags={"primary", "interactive"},
         caps=[allow_coordination(), allow_session_tools(), read_all(),
               write_in("*src*", "*docs*", "*tests*", "*test*", "*.serena/plans*"),
-              deny_plan_exit(), allow_bash_standard()],
+              deny_plan_exit(), allow_bash_unrestricted()],
     ),
     "Plan (Custom)": AgentDef(
         tags={"primary", "planner"},
