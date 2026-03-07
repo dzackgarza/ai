@@ -22,7 +22,6 @@ dev = [
 usage-claude      = "usage_limits.providers.claude:main"
 usage-codex       = "usage_limits.providers.codex:main"
 usage-amp         = "usage_limits.providers.amp:main"
-usage-antigravity = "usage_limits.providers.antigravity:main"
 usage-openrouter  = "usage_limits.providers.openrouter:main"
 usage-qwen        = "usage_limits.providers.qwen:main"
 usage-ollama      = "usage_limits.providers.ollama:main"

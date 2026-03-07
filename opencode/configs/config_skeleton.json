@@ -103,7 +103,6 @@
     "openTelemetry": true
   },
   "plugin": [
-    "opencode-antigravity-auth@latest",
     "opencode-anthropic-auth@latest",
     "opencode-qwencode-auth@latest",
     "opencode-openai-codex-auth@latest",
