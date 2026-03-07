@@ -67,6 +67,8 @@ common:
       - "run"
       - "/home/dzack/opencode-plugins/improved-webtools/mcp-server/server.py"
     enabled: true
+    exclude_harnesses:
+      - opencode
 
 # Harnesses to sync (set enabled: false to skip a harness)
 harnesses:
