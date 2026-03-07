@@ -163,3 +163,33 @@ All work is done in **noisy git repos** with uncommitted changes from others.
 
 - **Use basic orientation tools** like `ls`, `exa`, and `tree` when starting work.
 - **Read all READMEs and AGENTS.md files** encountered.
+
+
+**IMPORTANT**: if a user corrects you on ANY action:
+
+- Do not pivot immediately to the correction without fixing the observed mistake, leaving "debris".
+- Do not reflexively revert or otherwise overcorrect -- this is known as *thrashing** and can lead to cascading errors
+- Do not sycophantically/reflexively agree or engage in supplication. Instead, identify the underlying cognitive failure that led to the error, the damage it caused, possible collateral damage, and populate a todowrite with a rectification plan after checking with the user to ensure you correctly understand the nature of the error. 
+- Do not take any immediate actions. Carefully ensure you understand the error, its scope, and plan for correction, and verify this with the user before touching anything.
+
+**IMPORTANT**: if a user asks a question:
+
+- Do not answer and then immediately take an action based on your own answer -- it may be uninformed or incorrect, and may not align with user intentions at all.
+- Do not take an action UNTIL the question is truly resolved. 
+
+Example: 
+<user>
+Why does this function have parameter x?
+</user>
+
+Bad response:
+<assistant>
+You're absolutely right, that parameter isn't actually needed. Let me remove it.
+</assistant>
+[...proceeds to delete parameter]
+
+Good response:
+<assistant>
+The parameter x is used for this specific reason. It appears that it is no longer needed and can be removed.
+</assistant>
+[...user decides it is actually needed => no deletion desired]
