@@ -17,22 +17,11 @@ import yaml
 from jinja2 import Template
 import litellm
 from pydantic import BaseModel
-
-
-class ModelsDevSource(BaseModel):
-    """Models fetched from models.dev API."""
-    data: dict
-
-    def get_models(self, slug: str) -> list[str]:
-        """Get model IDs for a provider slug."""
-        if slug not in self.data:
-            return []
-        return list(self.data[slug].get('models', {}).keys())
+import httpx
 
 
 class Provider(Protocol):
     """Protocol for provider implementations."""
-
     env_var: str
     litellm_prefix: str
     api_base: Optional[str]
@@ -43,18 +32,42 @@ class Provider(Protocol):
         ...
 
 
+class ModelsDevFetcher:
+    """Fetches models.dev API data once, provides lookup by slug."""
+    
+    def __init__(self):
+        self._data: Optional[dict] = None
+    
+    @property
+    def data(self) -> dict:
+        if self._data is None:
+            req = Request('https://models.dev/api.json', headers={'User-Agent': 'micro-agent-runner'})
+            with urlopen(req) as resp:
+                self._data = json.loads(resp.read().decode())
+        return self._data
+    
+    def get_models(self, slug: str) -> list[str]:
+        """Get model IDs for a provider slug from models.dev."""
+        if slug not in self._data:
+            return []
+        return list(self._data[slug].get('models', {}).keys())
+
+
+# Shared models.dev fetcher - fetched once at init
+models_dev_fetcher = ModelsDevFetcher()
+
+
 class ModelsDevProvider(BaseModel):
-    """Provider that fetches models from models.dev API."""
+    """Provider that gets its model list from models.dev API."""
     env_var: str
     litellm_prefix: str
     models_dev_slug: str
     api_base: Optional[str] = None
     drop_params: bool = False
-    models_dev: ModelsDevSource
 
     def get_models(self) -> list[str]:
         """Get models from models.dev for this provider's slug."""
-        return self.models_dev.get_models(self.models_dev_slug)
+        return models_dev_fetcher.get_models(self.models_dev_slug)
 
 
 class ReplicateProvider(BaseModel):
@@ -66,45 +79,45 @@ class ReplicateProvider(BaseModel):
 
     def get_models(self) -> list[str]:
         """Get models from Replicate API."""
-        # Replicate doesn't have a simple model listing API
-        # Return empty list - validation will pass through
-        return []
+        api_key = os.environ.get(self.env_var, '')
+        try:
+            resp = httpx.get(
+                'https://api.replicate.com/v1/models',
+                headers={'Authorization': f'Token {api_key}'},
+                timeout=5.0
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return [f"{r['owner']}/{r['name']}" for r in data.get('results', [])]
+        except Exception:
+            # API unavailable or rate limited - skip validation
+            return []
 
 
-def fetch_models_dev() -> ModelsDevSource:
-    """Fetch models.dev API data."""
-    req = Request('https://models.dev/api.json', headers={'User-Agent': 'micro-agent-runner'})
-    with urlopen(req) as resp:
-        data = json.loads(resp.read().decode())
-    return ModelsDevSource(data=data)
-
-
-# Provider registry - populated at runtime
-PROVIDERS: dict[str, ModelsDevProvider | ReplicateProvider] = {}
+# Provider registry - populated at init
+PROVIDERS: dict[str, Provider] = {}
 
 
 def init_providers() -> None:
-    """Initialize provider registry with models.dev data."""
-    models_dev = fetch_models_dev()
+    """Initialize provider registry."""
+    # Trigger models.dev fetch once
+    models_dev_fetcher.data
 
     PROVIDERS.update({
         'groq': ModelsDevProvider(
             env_var='GROQ_API_KEY',
             litellm_prefix='groq',
             models_dev_slug='groq',
-            models_dev=models_dev,
         ),
         'openrouter': ModelsDevProvider(
             env_var='OPENROUTER_API_KEY',
             litellm_prefix='openrouter',
             models_dev_slug='openrouter',
-            models_dev=models_dev,
         ),
         'mistral': ModelsDevProvider(
             env_var='MISTRAL_API_KEY',
             litellm_prefix='mistral',
             models_dev_slug='mistral',
-            models_dev=models_dev,
         ),
         'replicate': ReplicateProvider(),
         'cloudflare-workers-ai': ModelsDevProvider(
@@ -112,20 +125,17 @@ def init_providers() -> None:
             litellm_prefix='cloudflare',
             models_dev_slug='cloudflare-workers-ai',
             drop_params=True,
-            models_dev=models_dev,
         ),
         'ollama-cloud': ModelsDevProvider(
             env_var='OLLAMA_API_KEY',
             litellm_prefix='ollama',
             models_dev_slug='ollama-cloud',
             api_base='https://ollama.com',
-            models_dev=models_dev,
         ),
         'nvidia': ModelsDevProvider(
             env_var='NVIDIA_NIM_API_KEY',
             litellm_prefix='nvidia_nim',
             models_dev_slug='nvidia',
-            models_dev=models_dev,
         ),
     })
 
@@ -153,7 +163,7 @@ def validate_model(model_slug: str) -> None:
     # Get available models for this provider
     available_models = provider.get_models()
 
-    # Skip validation if provider doesn't have model list (e.g., replicate)
+    # Skip validation if provider doesn't have model list
     if not available_models:
         return
 
@@ -243,7 +253,7 @@ def main():
 
     args = parser.parse_args()
 
-    # Initialize providers (fetches models.dev once)
+    # Initialize providers
     init_providers()
 
     # List models mode
