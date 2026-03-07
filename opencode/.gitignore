@@ -1,3 +1,6 @@
+# Unignore .envrc — it only activates the venv, contains no secrets
+!.envrc
+
 node_modules
 package.json
 bun.lock

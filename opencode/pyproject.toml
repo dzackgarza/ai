@@ -1,0 +1,17 @@
+[project]
+name = "opencode-workspace"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx",
+    "jinja2",
+    "jsonschema",
+    "litellm",
+    "pydantic",
+    "pydantic-ai",
+    "pyyaml",
+    "rich",
+]
+
+[dependency-groups]
+dev = []

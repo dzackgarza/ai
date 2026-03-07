@@ -1,3 +1,49 @@
+// =============================================================================
+// RETIRED: async_subagent plugin
+// =============================================================================
+//
+// Status: RETIRED (moved to plugins/dev/retired/)
+// Replaced by: improved-task plugin
+//
+// Migration:
+//   - OLD: async_subagent tool (this plugin)
+//   - NEW: task tool from improved-task plugin
+//
+// The improved-task plugin (file:///home/dzack/opencode-plugins/improved-task/src/index.ts)
+// supersedes this implementation with the following advantages:
+//
+//   1. Sync + Async modes
+//      - OLD: async-only (fire-and-forget)
+//      - NEW: sync (blocking) by default, explicit mode: "async" for background
+//
+//   2. Structured output
+//      - OLD: plain text status messages
+//      - NEW: JSON-like summary with status, session_id, transcript_path,
+//            completion_confidence_score, num_tool_calls, duration_ms
+//
+//   3. Transcript tracking
+//      - OLD: manual transcript tail via external parser script
+//      - NEW: automatic transcript saved to temp file, path returned in output
+//
+//   4. Resume capability
+//      - OLD: no resume support
+//      - NEW: can resume task later with session_id parameter
+//
+//   5. Timeout handling
+//      - OLD: simple timeout with error message
+//      - NEW: configurable timeout with structured error reporting and
+//            follow-up instructions
+//
+//   6. Plugin architecture
+//      - OLD: standalone tool
+//      - NEW: proper upstream plugin with lifecycle management
+//
+// Migration example:
+//   OLD: async_subagent { agent: "Reviewer: Code", prompt: "...", time_estimate: 300 }
+//   NEW: task { subagent_type: "Reviewer: Code", prompt: "...", mode: "async", timeout_ms: 300000 }
+//
+// =============================================================================
+
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import * as fs from "fs";
 import * as os from "os";

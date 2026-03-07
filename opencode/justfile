@@ -1,31 +1,33 @@
 # OpenCode workspace recipes
 # Usage: just <recipe>
 
+python := ".venv/bin/python"
+
 default:
     @just --list
 
 permissions-apply:
-    python3 scripts/manage_permissions.py --apply
+    {{python}} scripts/manage_permissions.py --apply
 
 config-build:
-    python3 scripts/build_config.py
+    {{python}} scripts/build_config.py
 
 rebuild: permissions-apply config-build
 
 providers-validate *args="":
-    python3 configs/providers/scripts/validate_models_dev.py {{args}}
+    {{python}} configs/providers/scripts/validate_models_dev.py {{args}}
 
 openrouter-sync:
-    python3 configs/providers/scripts/sync_openrouter_models.py
+    {{python}} configs/providers/scripts/sync_openrouter_models.py
 
 openrouter-probe-endpoints *args="":
-    python3 configs/providers/scripts/probe_openrouter_endpoints.py {{args}}
+    {{python}} configs/providers/scripts/probe_openrouter_endpoints.py {{args}}
 
 openrouter-probe-tool-calling *args="":
-    python3 configs/providers/scripts/probe_openrouter_tool_calling.py {{args}}
+    {{python}} configs/providers/scripts/probe_openrouter_tool_calling.py {{args}}
 
 providers-debug provider="opencode":
-    python3 configs/providers/scripts/debug_models_dev_provider.py {{provider}}
+    {{python}} configs/providers/scripts/debug_models_dev_provider.py {{provider}}
 
 plugins-check:
     cd plugins && just check
