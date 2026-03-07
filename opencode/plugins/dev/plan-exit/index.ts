@@ -1,4 +1,3 @@
-import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: plan_exit - signals completion of planning phase and spins up build session
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import * as fs from "fs";
@@ -33,8 +32,6 @@ function writePlanState(
 }
 
 export const PlanExitPlugin: Plugin = async ({ client }) => {
-  if (!isPluginEnabled("plan_exit")) return {};
-
   return {
     tool: {
       plan_exit: tool({

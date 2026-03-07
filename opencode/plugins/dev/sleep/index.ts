@@ -1,4 +1,3 @@
-import { isPluginEnabled } from "../../plugins_config";
 // Custom tools: sleep / sleep_until - real wall-clock waiting
 import { type Plugin, tool } from "@opencode-ai/plugin";
 
@@ -48,8 +47,6 @@ function formatSafetyRejection(seconds: number): string {
 }
 
 export const SleepPlugin: Plugin = async ({ client }) => {
-  if (!isPluginEnabled("sleep")) return {};
-
   const scheduleWakeCallback = (input: {
     sessionID: string;
     seconds: number;

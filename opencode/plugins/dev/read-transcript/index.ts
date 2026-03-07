@@ -1,4 +1,3 @@
-import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: read_transcript - exports and parses a session transcript to a file,
 // returning head/tail preview and the file path for full review.
 import { type Plugin, tool } from "@opencode-ai/plugin";
@@ -9,8 +8,6 @@ const PARSER_SCRIPT =
 const PREVIEW_LINES = 30;
 
 export const ReadTranscriptPlugin: Plugin = async ({ $, client }) => {
-  if (!isPluginEnabled("read-transcript")) return {};
-
   return {
     tool: {
       read_transcript: tool({

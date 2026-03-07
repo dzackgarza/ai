@@ -1,4 +1,3 @@
-import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: async_command - fires a background command without blocking the agent's current turn.
 //
 // When the command completes, it injects the result back via promptAsync():
@@ -48,7 +47,6 @@ async function runBackground(
 }
 
 export const AsyncCommandPlugin: Plugin = async ({ client }) => {
-  if (!isPluginEnabled("async-command")) return {};
   return {
     tool: {
       async_command: tool({
@@ -63,22 +61,26 @@ export const AsyncCommandPlugin: Plugin = async ({ client }) => {
           const startedAt = new Date();
 
           // Fire and forget — do NOT await. Tool returns immediately.
-          runBackground(sessionID, args.seconds, client, args.message).catch(async (err) => {
-            // Best-effort: inject the error so the agent knows the task failed.
-            await client.session.promptAsync({
-              path: { id: sessionID },
-              body: {
-                noReply: false,
-                parts: [
-                  {
-                    type: "text",
-                    text: `[async-command failed]\n  Error: ${err?.message ?? String(err)}`,
-                    synthetic: true,
+          runBackground(sessionID, args.seconds, client, args.message).catch(
+            async (err) => {
+              // Best-effort: inject the error so the agent knows the task failed.
+              await client.session
+                .promptAsync({
+                  path: { id: sessionID },
+                  body: {
+                    noReply: false,
+                    parts: [
+                      {
+                        type: "text",
+                        text: `[async-command failed]\n  Error: ${err?.message ?? String(err)}`,
+                        synthetic: true,
+                      },
+                    ],
                   },
-                ],
-              },
-            }).catch(() => {}); // Swallow — session may be gone
-          });
+                })
+                .catch(() => {}); // Swallow — session may be gone
+            },
+          );
 
           return [
             `[async-command started]`,

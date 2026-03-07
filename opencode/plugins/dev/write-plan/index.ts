@@ -1,4 +1,3 @@
-import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: write_plan - writes a plan document to .serena/plans/
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -33,8 +32,6 @@ function formatDateTime(): string {
 }
 
 export const WritePlanPlugin: Plugin = async () => {
-  if (!isPluginEnabled("write_plan")) return {};
-
   return {
     tool: {
       write_plan: tool({
