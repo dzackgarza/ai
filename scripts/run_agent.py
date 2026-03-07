@@ -16,19 +16,36 @@ from jinja2 import Template
 import litellm
 
 
-# Static provider list - matches models.dev provider slugs to env vars
+# Static provider list - litellm provider slugs to env vars
 # NOTE: one should restrict openrouter to free models only.
+# Keys are models.dev provider slugs, values are env var names
 PROVIDERS = {
     'groq': 'GROQ_API_KEY',
     'openrouter': 'OPENROUTER_API_KEY',
     'mistral': 'MISTRAL_API_KEY',
-    'replicate': 'REPLICATE_API_TOKEN',
-    'cloudflare': 'CLOUDFLARE_API_KEY',
-    'ollama': 'OLLAMA_API_KEY',
+    'replicate': 'REPLICATE_API_TOKEN',  # Not on models.dev
+    'cloudflare-workers-ai': 'CLOUDFLARE_API_KEY',
+    'ollama-cloud': 'OLLAMA_API_KEY',
     'nvidia': 'NVIDIA_API_KEY',
 }
 
 API_KEYS = {p: os.environ.get(e) for p, e in PROVIDERS.items()}
+
+# Map models.dev provider slugs to litellm provider prefixes
+LITELLM_PROVIDER_PREFIX = {
+    'groq': 'groq',
+    'openrouter': 'openrouter',
+    'mistral': 'mistral',
+    'replicate': 'replicate',
+    'cloudflare-workers-ai': 'cloudflare',
+    'ollama-cloud': 'ollama',  # ollama-cloud uses ollama provider with different host
+    'nvidia': 'nvidia_nim',
+}
+
+# Provider-specific API base URLs
+PROVIDER_API_BASE = {
+    'ollama-cloud': 'https://ollama.com',
+}
 
 
 def fetch_models_dev():
@@ -43,23 +60,27 @@ def validate_model(model_slug, models_dev):
     if '/' not in model_slug:
         print(f"Error: Invalid model format '{model_slug}'. Expected: provider/model", file=sys.stderr)
         sys.exit(1)
-    
+
     provider, model_id = model_slug.split('/', 1)
-    
+
     if provider not in PROVIDERS:
         print(f"Error: Unsupported provider '{provider}'", file=sys.stderr)
         print(f"Supported: {', '.join(PROVIDERS.keys())}", file=sys.stderr)
         sys.exit(1)
-    
+
     if not API_KEYS[provider]:
         print(f"Error: {PROVIDERS[provider]} not set", file=sys.stderr)
         print(f"Set: export {PROVIDERS[provider]}=your-key", file=sys.stderr)
         sys.exit(1)
-    
+
+    # replicate is not on models.dev - skip validation only for this provider
+    if provider == 'replicate':
+        return
+
     if provider not in models_dev:
         print(f"Error: Provider '{provider}' not found in models.dev", file=sys.stderr)
         sys.exit(1)
-    
+
     if model_id not in models_dev[provider]['models']:
         print(f"Error: Model '{model_slug}' not found", file=sys.stderr)
         print(f"Available models for {provider}:", file=sys.stderr)
@@ -146,12 +167,32 @@ def main():
     if system_prompt:
         messages.insert(0, {"role": "system", "content": system_prompt})
 
-    response = litellm.completion(
-        model=model,
-        messages=messages,
-        temperature=args.temperature if args.temperature is not None else frontmatter.get('temperature', 0.0),
-        max_tokens=args.max_tokens or frontmatter.get('max_tokens')
-    )
+    # Convert models.dev provider slug to litellm provider prefix
+    provider, model_id = model.split('/', 1)
+    litellm_prefix = LITELLM_PROVIDER_PREFIX.get(provider, provider)
+    litellm_model = f"{litellm_prefix}/{model_id}"
+
+    # Set litellm options for specific providers
+    if provider == 'cloudflare-workers-ai':
+        litellm.drop_params = True
+
+    # NVIDIA uses NVIDIA_API_KEY but litellm expects NVIDIA_NIM_API_KEY
+    if provider == 'nvidia' and 'NVIDIA_API_KEY' in os.environ and 'NVIDIA_NIM_API_KEY' not in os.environ:
+        os.environ['NVIDIA_NIM_API_KEY'] = os.environ['NVIDIA_API_KEY']
+
+    # Build completion kwargs
+    completion_kwargs = {
+        'model': litellm_model,
+        'messages': messages,
+        'temperature': args.temperature if args.temperature is not None else frontmatter.get('temperature', 0.0),
+        'max_tokens': args.max_tokens or frontmatter.get('max_tokens'),
+    }
+
+    # Add API base for providers that need it
+    if provider in PROVIDER_API_BASE:
+        completion_kwargs['api_base'] = PROVIDER_API_BASE[provider]
+
+    response = litellm.completion(**completion_kwargs)
     result = response.choices[0].message.content
 
     if args.output == '-':
