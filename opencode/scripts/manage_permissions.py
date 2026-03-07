@@ -732,9 +732,6 @@ def compile_agent(name, agent_def):
     if agent_def.overrides:
         layers.append(agent_def.overrides)
 
-    # 4. NON_OVERRIDABLE_DENIES always last
-    layers.append(NON_OVERRIDABLE_DENIES)
-
     return deep_merge(*layers)
 
 
