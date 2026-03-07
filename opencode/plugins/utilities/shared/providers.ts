@@ -1,13 +1,17 @@
 /**
- * Provider routing for external LLM API calls.
+ * Provider routing for TypeScript plugins that construct OpenAI-compatible clients directly.
  *
- * Canonically defines:
- *   - The prefix convention used in model slugs (groq/, nvidia/, ollama/, openrouter default)
- *   - The baseURL and env var for each provider
- *   - Model spec parsing (provider/model → { providerID, modelID })
+ * ⚠️  CANONICAL SOURCE: scripts/llm.py owns the provider registry.
+ *     This file mirrors slugs, baseURLs, and env var names from llm.py's PROVIDERS dict.
+ *     When updating a provider entry, update llm.py first, then mirror here.
  *
- * All plugins that make direct LLM API calls MUST import from here instead of
- * reimplementing their own routing.
+ * This file provides:
+ *   - endpointFor()  — resolve a slug to baseURL + apiKey for direct OpenAI client use
+ *   - parseModel()   — parse an OpenCode session API model spec string
+ *
+ * Most LLM calls should go through utilities/shared/llm.ts (Python bridge) instead of
+ * constructing OpenAI clients here. Only use endpointFor() for streaming or non-classification
+ * calls that cannot be routed through the Python bridge.
  */
 
 // ---------------------------------------------------------------------------

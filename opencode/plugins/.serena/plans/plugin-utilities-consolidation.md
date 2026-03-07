@@ -273,11 +273,9 @@ for each case → callLLM({ models: [model], schema_name: "Classification", ... 
 The `ClassificationSchema` zod definition in `run.ts` is deleted; ground truth is the
 pydantic schema in `llm.py`.
 
-### Task 6 — Update `scripts/run_agent.py`
+### Task 6 — Update `scripts/run_agent.py` — N/A
 
-`run_agent.py` already has a solid provider registry and template system. Refactor it
-to import from `llm.py` instead of reimplementing provider dispatch. The CLI interface
-stays the same; only the internals change to use `call_llm()`.
+`run_agent.py` no longer exists in the repo. Task is moot.
 
 ### Task 7 — Compatibility smoke tests ✓
 
@@ -292,7 +290,7 @@ For each provider with a set API key:
 This replaces the need to run the full classifier evaluation harness to verify a new
 model works. Run it after any change to `llm.py`.
 
-### Task 8 — Update `utilities/shared/providers.ts`
+### Task 8 — Update `utilities/shared/providers.ts` ✓
 
 Ensure the TS provider table matches `llm.py`'s PROVIDERS registry:
 
