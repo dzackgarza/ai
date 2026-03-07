@@ -437,3 +437,31 @@ The bridge resolves provider and API key automatically from the environment. If 
 | Plugin (`.ts`)       | Hook wiring, trigger logic, when to call | OpenCode plugin tests (§3)                              |
 
 **Never put LLM logic in a plugin that hasn't already been tested at the Python layer.** A plugin that calls the bridge for the first time is not a test environment — it's a black box with a running agent, live tool hooks, and session state. Failures there are hard to attribute. Validate first, integrate second.
+
+### Use templates for all nontrivial prompts
+
+Any prompt or injection that a plugin delivers to the model — system prompt additions, `messages.transform` injections, tool result content, re-prompt bodies — must live in a `.md` template file, not as an inline string in TypeScript.
+
+**Why:** Inline strings are invisible to testing. A template can be loaded by `run_micro_agent.py`, inspected, iterated on, and validated against real model output before the plugin is touched. An inline string can only be tested by running the full plugin inside a live session.
+
+**The rule:** If a string contains instructions, variables, or conditional logic, it is a template. One-word signals and fixed literals (e.g. `"PASSPHRASE"`, `"abort"`) are the only acceptable inline strings.
+
+```typescript
+// Wrong — untestable, prompt logic buried in plugin code
+await client.session.prompt({
+  body: {
+    parts: [
+      { type: "text", text: `You classified this as ${tier}. Reconsider.` },
+    ],
+  },
+});
+
+// Right — template loaded once at startup, rendered with variables at call time
+const tpl = loadTemplate(`${HOME}/ai/prompts/micro_agents/my_agent/prompt.md`);
+const rendered = renderTemplate(tpl.body, { tier });
+await client.session.prompt({
+  body: { parts: [{ type: "text", text: rendered }] },
+});
+```
+
+Templates also enforce a clean interface: the `inputs:` block in frontmatter declares every variable the prompt expects, and `TemplateFormatError` / `MissingVariablesError` catch violations at load time rather than silently producing broken output at runtime.
