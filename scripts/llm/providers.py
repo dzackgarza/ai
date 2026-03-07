@@ -68,6 +68,23 @@ class ProviderConfig(BaseModel):
         return []
 
 
+class GroqProviderConfig(ProviderConfig):
+    """Groq: fetches live model list from models.dev 'groq' slug.
+
+    Groq bare model IDs (e.g. 'llama-3.3-70b-versatile') are returned as-is.
+    Groq rejects tool-calling for structured output, so output_mode='prompted'.
+    """
+
+    env_var: Optional[str] = "GROQ_API_KEY"
+    base_url: str = "https://api.groq.com/openai/v1"
+    output_mode: str = "prompted"
+
+    def get_models(self) -> list[str]:
+        models = _models_dev.get_models("groq")
+        logger.debug("Groq: %d models from models.dev", len(models))
+        return models
+
+
 class OpenRouterProviderConfig(ProviderConfig):
     """OpenRouter: only :free models from models.dev."""
 
@@ -230,17 +247,12 @@ class OllamaLocalProviderConfig(ProviderConfig):
             return []
 
 
-
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
 
 PROVIDERS: dict[str, ProviderConfig] = {
-    "groq": ProviderConfig(
-        env_var="GROQ_API_KEY",
-        base_url="https://api.groq.com/openai/v1",
-        output_mode="prompted",  # Groq rejects tool-calling for structured output
-    ),
+    "groq": GroqProviderConfig(),
     "openrouter": OpenRouterProviderConfig(),
     "nvidia": NvidiaProviderConfig(),
     "mistral": ProviderConfig(
