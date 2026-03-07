@@ -2,7 +2,7 @@
 // instructions into the conversation so the main agent operates in the correct
 // cognitive mode before acting.
 //
-// Tiers (see tiers/*.md for full instructions):
+// Tiers (see scripts/templates/tiers/*.md for full instructions):
 //   model-self — answer from context/self-knowledge; use reading-transcripts for history
 //   knowledge  — search before answering; never answer from training data
 //   C          — act immediately; TodoWrite only if 3+ steps
@@ -10,62 +10,27 @@
 //   A          — investigate before acting; delegate reads to subagents
 //   S          — scope with todos, gather context, hand off to plan mode
 
-import Instructor from "@instructor-ai/instructor";
-import OpenAI from "openai";
-import { z } from "zod";
 import { appendFileSync } from "fs";
 import { randomUUID } from "crypto";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart, UserMessage } from "@opencode-ai/sdk";
-import { endpointFor } from "../../utilities/shared/providers";
+import { callLLM, loadTemplate } from "../../utilities/shared/llm";
+
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
 
 // ---------------------------------------------------------------------------
-// Schema
+// Model list — ordered by preference; first success wins.
+//
+// All provider/mode logic lives in scripts/llm.py — this is just a slug list.
 // ---------------------------------------------------------------------------
 
-const ClassificationSchema = z.object({
-  tier: z.enum(["model-self", "knowledge", "C", "B", "A", "S"]),
-  reasoning: z.string(),
-});
-
-// ---------------------------------------------------------------------------
-// Model config — ordered by preference; first success wins
-//
-// Prefix convention:
-//   (none)   → OpenRouter
-//   groq/    → Groq (generous free tier, fast LPU inference)
-//   nvidia/  → NVIDIA NIM (direct, no OpenRouter daily cap)
-//
-// mode: "JSON"    → response_format: json_object
-// mode: "MD_JSON" → prompt-based JSON; use when json_object unsupported
-//                   (e.g. Mistral tokenizer on NVIDIA NIM)
-//
-// Avoid thinking models — content field is empty until reasoning budget
-// is exhausted, making them slow and unreliable at low max_tokens.
-// ---------------------------------------------------------------------------
-
-interface ModelConfig {
-  slug: string;
-  mode: "JSON" | "MD_JSON";
-  maxTokens: number;
-}
-
-const CLASSIFIER_MODELS: ModelConfig[] = [
-  { slug: "groq/llama-3.3-70b-versatile", mode: "JSON", maxTokens: 200 }, // 12/12, 138-400ms
-  { slug: "groq/moonshotai/kimi-k2-instruct", mode: "JSON", maxTokens: 200 }, // 12/12, 151-1165ms
-  {
-    slug: "nvidia/mistralai/mistral-large-3-675b-instruct-2512",
-    mode: "MD_JSON",
-    maxTokens: 400,
-  }, // 12/12, 890-1688ms
-  {
-    slug: "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503",
-    mode: "JSON",
-    maxTokens: 200,
-  }, // 12/12, 995-1630ms
-  { slug: "nvidia/meta/llama-3.3-70b-instruct", mode: "JSON", maxTokens: 200 }, // 11/12, 546-2231ms
-  { slug: "arcee-ai/trinity-large-preview:free", mode: "JSON", maxTokens: 200 }, // last resort — 50/day cap
+const CLASSIFIER_MODELS: string[] = [
+  "groq/llama-3.3-70b-versatile",
+  "groq/moonshotai/kimi-k2-instruct",
+  "nvidia/mistralai/mistral-large-3-675b-instruct-2512",
+  "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503",
+  "nvidia/meta/llama-3.3-70b-instruct",
+  "arcee-ai/trinity-large-preview:free",
 ];
 
 // ---------------------------------------------------------------------------
@@ -122,31 +87,19 @@ const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
 ];
 
 // ---------------------------------------------------------------------------
-// Tier instructions — loaded from tiers/*.md at startup
+// Tier instructions + classifier system prompt — loaded from canonical
+// scripts/templates/ via llm.py at startup.
 // ---------------------------------------------------------------------------
 
 const TIER_INSTRUCTIONS: Record<Tier, string> = Object.fromEntries(
   await Promise.all(
     (["model-self", "knowledge", "C", "B", "A", "S"] as const).map(
-      async (tier) => [
-        tier,
-        await Bun.file(new URL(`tiers/${tier}.md`, import.meta.url))
-          .text()
-          .then((t) => t.trim()),
-      ],
+      async (tier) => [tier, await loadTemplate(`tiers/${tier}`)],
     ),
   ),
 ) as Record<Tier, string>;
 
-// ---------------------------------------------------------------------------
-// Classifier system prompt
-// ---------------------------------------------------------------------------
-
-const SYSTEM_PROMPT = await Bun.file(
-  new URL("tests/classifier/playbook.md", import.meta.url),
-)
-  .text()
-  .then((t) => t.trim());
+const SYSTEM_PROMPT = await loadTemplate("classifier/playbook");
 
 // ---------------------------------------------------------------------------
 // classify()
@@ -163,40 +116,25 @@ async function classify(
     }
   }
 
-  // 2. LLM classifier — try models in order, fail open if all fail
-  for (const { slug, mode, maxTokens } of CLASSIFIER_MODELS) {
-    const { baseURL, modelId, apiKey } = endpointFor(slug);
-    if (!apiKey) continue;
-
-    try {
-      const oai = new OpenAI({ baseURL, apiKey });
-      const client = Instructor({ client: oai, mode });
-
-      const result = await client.chat.completions.create({
-        model: modelId,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          {
-            role: "user",
-            content: `Classify the following prompt:\n\n===\n${trimmed}\n===`,
-          },
-        ],
-        response_model: {
-          schema: ClassificationSchema,
-          name: "Classification",
+  // 2. LLM classifier — llm.py handles provider routing, retries, fallback
+  try {
+    const result = await callLLM<{ tier: Tier; reasoning: string }>({
+      models: CLASSIFIER_MODELS,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: `Classify the following prompt:\n\n===\n${trimmed}\n===`,
         },
-        max_retries: 3,
-        max_tokens: maxTokens,
-        temperature: 0,
-      });
-
-      return { tier: result.tier as Tier, reasoning: result.reasoning };
-    } catch {
-      // try next model
-    }
+      ],
+      schema: "Classification",
+      temperature: 0,
+      max_tokens: 200,
+    });
+    return result;
+  } catch {
+    return null; // fail open — message passes through unmodified
   }
-
-  return null; // fail open — message passes through unmodified
 }
 
 // ---------------------------------------------------------------------------
