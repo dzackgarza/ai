@@ -1,4 +1,4 @@
-import { isPluginEnabled } from "./plugins_config";
+import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: list_sessions - lists all sessions with metadata
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import type { AssistantMessage } from "@opencode-ai/sdk";

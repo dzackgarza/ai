@@ -1,4 +1,4 @@
-import { isPluginEnabled } from "./plugins_config";
+import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: read_transcript - exports and parses a session transcript to a file,
 // returning head/tail preview and the file path for full review.
 import { type Plugin, tool } from "@opencode-ai/plugin";

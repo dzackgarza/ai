@@ -1,4 +1,4 @@
-import { isPluginEnabled } from "./plugins_config";
+import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: plan_exit - signals completion of planning phase and spins up build session
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import * as fs from "fs";

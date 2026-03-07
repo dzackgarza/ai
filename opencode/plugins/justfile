@@ -18,16 +18,7 @@ test:
 
 # Compile all plugins (crash = broken import or syntax)
 compile:
-    bun build --target bun --outdir /tmp/plugin-check \
-        write_plan.ts \
-        plan_exit.ts \
-        sleep.ts \
-        async-command.ts \
-        introspection.ts \
-        list-sessions.ts \
-        read-transcript.ts \
-        git-add.ts \
-        git-commit.ts
+    bun build --target bun --outdir /tmp/plugin-check local-tools.ts
 
 # Run classifier test suite against default model
 classifier:

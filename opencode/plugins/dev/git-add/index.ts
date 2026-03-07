@@ -1,4 +1,4 @@
-import { isPluginEnabled } from "./plugins_config";
+import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: git_add - stages files for commit
 import { type Plugin, tool } from "@opencode-ai/plugin";
 

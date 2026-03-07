@@ -1,4 +1,4 @@
-import { isPluginEnabled } from "./plugins_config";
+import { isPluginEnabled } from "../../plugins_config";
 // Custom tool: async_command - fires a background command without blocking the agent's current turn.
 //
 // When the command completes, it injects the result back via promptAsync():

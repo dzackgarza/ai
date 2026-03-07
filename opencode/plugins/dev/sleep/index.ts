@@ -1,4 +1,4 @@
-import { isPluginEnabled } from "./plugins_config";
+import { isPluginEnabled } from "../../plugins_config";
 // Custom tools: sleep / sleep_until - real wall-clock waiting
 import { type Plugin, tool } from "@opencode-ai/plugin";
 
