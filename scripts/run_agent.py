@@ -16,14 +16,17 @@ from jinja2 import Template
 import litellm
 
 
+# Static provider list - matches models.dev provider slugs to env vars
 PROVIDERS = {
     'groq': 'GROQ_API_KEY',
     'openai': 'OPENAI_API_KEY',
-    'anthropic': 'ANTHROPIC_API_KEY',
-    'azure': 'AZURE_API_KEY',
-    'cohere': 'COHERE_API_KEY',
+    'openrouter': 'OPENROUTER_API_KEY',
+    'mistral': 'MISTRAL_API_KEY',
     'replicate': 'REPLICATE_API_TOKEN',
-    'huggingface': 'HUGGINGFACE_API_KEY',
+    'cloudflare': 'CLOUDFLARE_API_KEY',
+    'ollama': 'OLLAMA_API_KEY',
+    'nvidia': 'NVIDIA_API_KEY',
+    'anthropic': 'ANTHROPIC_API_KEY',
 }
 
 API_KEYS = {p: os.environ.get(e) for p, e in PROVIDERS.items()}
@@ -61,7 +64,7 @@ def validate_model(model_slug, models_dev):
     if model_id not in models_dev[provider]['models']:
         print(f"Error: Model '{model_slug}' not found", file=sys.stderr)
         print(f"Available models for {provider}:", file=sys.stderr)
-        for m in list(models_dev[provider]['models'].keys())[:20]:
+        for m in models_dev[provider]['models']:
             print(f"  {provider}/{m}", file=sys.stderr)
         sys.exit(1)
 
@@ -135,24 +138,20 @@ def main():
     # Render and execute
     template = Template(template_str)
     prompt = template.render(**variables)
-    
+
     system_prompt = frontmatter.get('system')
     messages = [{"role": "user", "content": prompt}]
     if system_prompt:
         messages.insert(0, {"role": "system", "content": system_prompt})
-    
-    try:
-        response = litellm.completion(
-            model=model,
-            messages=messages,
-            temperature=args.temperature if args.temperature is not None else frontmatter.get('temperature', 0.0),
-            max_tokens=args.max_tokens or frontmatter.get('max_tokens')
-        )
-        result = response.choices[0].message.content
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
-    
+
+    response = litellm.completion(
+        model=model,
+        messages=messages,
+        temperature=args.temperature if args.temperature is not None else frontmatter.get('temperature', 0.0),
+        max_tokens=args.max_tokens or frontmatter.get('max_tokens')
+    )
+    result = response.choices[0].message.content
+
     if args.output == '-':
         print(result)
     else:

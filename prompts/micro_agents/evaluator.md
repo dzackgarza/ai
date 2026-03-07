@@ -1,5 +1,4 @@
 name: evaluator
-version: 1.0.0
 description: Evaluates task completion by constructing a rubric from the request
 
 model: groq/openai/gpt-oss-120b
