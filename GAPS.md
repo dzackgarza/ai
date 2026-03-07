@@ -1,16 +1,17 @@
 # GAPS
 
-Date: 2026-03-06  
+Date: 2026-03-07
 Scope: current plugin workspace and active OpenCode wiring
 
 ## Remaining Gaps
 
 1. Human TUI verification is still required for task observability Phase 1/2 behavior (live child-session visibility, parent tool metrics, async polling display updates).
-2. `webfetch` domain routing is implemented for `github.com`, `reddit.com`, YouTube URLs, and `wikipedia.org` in `improved-webtools` (now wired as external plugin). Handlers for Stack Exchange sites, package registries (`pypi.org` / `npmjs.com` / `crates.io`), and Hugging Face are still pending.
+2. `webfetch` domain routing is implemented for `github.com`, `reddit.com`, YouTube URLs, and `wikipedia.org` in `improved-webtools`. Handlers for Stack Exchange sites, package registries (`pypi.org` / `npmjs.com` / `crates.io`), and Hugging Face are still pending.
 3. Cache lifecycle is lazy-expiration on read; there is no background cleanup/pruning pass for stale entries.
 4. API-viability checks (below) show several domains are only partial-replacement candidates (metadata parity but not full content parity).
-5. Non-web unit suites (`prompt-router`, `command-interceptor`, `callback-integration`) still use synthetic test inputs and do not yet consume pinned real fixtures.
+5. Non-web unit suites in-repo (`prompt-router`, `command-interceptor`, `callback-integration`) still use synthetic test inputs and do not yet consume pinned real fixtures.
 6. Documentation-backed validation is incomplete outside the most recent GitHub issue fix; several remaining command/API assumptions still rely on inferred behavior plus mocks rather than direct doc+live verification.
+7. `local-plugins.json` has `"async-subagent": true` but the plugin file was retired to `examples/retired/async-subagent.ts`. The entry is stale — `isPluginEnabled('async-subagent')` returns true but nothing loads it. Should be set to `false` or removed.
 
 ## Domain Handler Viability (API vs Web Parity)
 
@@ -36,7 +37,7 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
     - `https://www.reddit.com/.../.json`
     - `https://old.reddit.com/.../.json`
     - `https://api.reddit.com/...`
-  - `datavorous/yars` test (README “scrape post details” path) was executed and returned `None` because upstream Reddit request returned `403`.
+  - `datavorous/yars` test (README "scrape post details" path) was executed and returned `None` because upstream Reddit request returned `403`.
   - `yars` `search_reddit` and `scrape_user_data` also returned empty results due to `403`.
   - Current plugin route uses `apify call spry_wholemeal/reddit-scraper` to fetch post + comments and renders a nested markdown comment tree.
   - Current plugin route is covered by unit tests (`routes reddit posts through apify and renders nested markdown comments`).
@@ -48,7 +49,7 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
 
 - Status: `Partial` (metadata parity, not guaranteed full-content parity).
 - Evidence:
-  - arXiv exposes an API documented under “API for Metadata”.
+  - arXiv exposes an API documented under "API for Metadata".
   - Official docs do not present a fixed per-second quota; they recommend a polite 3-second delay between repeated calls and enforce result-size limits (`max_results <= 30000`, slices up to 2000).
   - arXiv API Discussion (official reply) states `429 Rate exceeded` is capacity-related and not a signal of abusive client rate; they state excessive use returns `503`.
   - Working assumption: API is strong for metadata/search; full paper content still depends on PDF/source retrieval.
@@ -80,7 +81,7 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
 
 - Status: `Viable` for package metadata/search/readme retrieval.
 - Evidence:
-  - Public registry API exposes package “packument” docs, search with pagination (`from`/`size`), `total`, and readme fields.
+  - Public registry API exposes package "packument" docs, search with pagination (`from`/`size`), `total`, and readme fields.
 - Links:
   - https://raw.githubusercontent.com/npm/registry/master/docs/REGISTRY-API.md
 
@@ -124,5 +125,4 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
 2. `improved-webtools` wired as external plugin in `configs/config_skeleton.json`. Replaces the deleted in-repo `searxng-search.ts` + `webfetch-handlers/`.
 3. Stale `task-plugin` key removed from `configs/local-plugins.json`; killswitch file now only contains entries for local plugins.
 4. `callback-integration.test.ts` validates consolidated callback semantics across `task`, `sleep`, and `async_command`.
-
-**Note:** Previous validation items 4–9 described tests in `tests/unit/searxng-search.test.ts`, `tests/unit/webfetch-handlers/handlers.test.ts`, and `tests/fixtures/real/` — these were removed when the in-repo webtools plugin was extracted to `improved-webtools`. Validation of the equivalent coverage in `/home/dzack/opencode-plugins/improved-webtools/` is pending.
+5. `improved-webtools` unit tests confirmed present at `/home/dzack/opencode-plugins/improved-webtools/tests/unit/`. Tests use pinned real fixtures from `tests/fixtures/real/` for github, reddit, wikipedia, and youtube handlers. Coverage for unimplemented domain handlers (Stack Exchange, PyPI, npm, crates.io, HuggingFace) is pending alongside the handler implementations.
