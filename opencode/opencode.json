@@ -110,7 +110,9 @@
     "@rama_nigg/open-cursor@latest",
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
-    "@ramtinj95/opencode-tokenscope@latest"
+    "@ramtinj95/opencode-tokenscope@latest",
+    "file:///home/dzack/opencode-plugins/improved-task/src/index.ts",
+    "file:///home/dzack/opencode-plugins/improved-webtools/src/index.ts"
   ],
   "permission": {
     "serena_activate_project": "allow",
@@ -279,7 +281,15 @@
         "antigravity-gemini-3.1-pro",
         "antigravity-gemini-3-flash",
         "antigravity-claude-sonnet-4-6",
-        "antigravity-claude-opus-4-6-thinking"
+        "antigravity-claude-opus-4-6-thinking",
+        "gemini-2.5-flash-image",
+        "gemini-2.5-flash-image-preview",
+        "gemini-2.5-flash-lite",
+        "gemini-2.5-flash-lite-preview-06-17",
+        "gemini-2.5-flash-lite-preview-09-2025",
+        "gemini-2.5-flash-preview-09-2025",
+        "gemini-2.5-pro-preview-06-05",
+        "gemini-2.5-pro-preview-05-06"
       ],
       "models": {
         "gemini-3-flash": {
@@ -464,28 +474,58 @@
         "ministral-3:3b",
         "ministral-3:8b",
         "devstral-small-2:24b",
-        "kimi-k2-thinking:cloud",
-        "deepseek-v3.2:cloud",
-        "glm-4.6:cloud",
-        "minimax-m2:cloud",
-        "glm-4.7:cloud",
-        "qwen3.5:cloud",
-        "qwen3-coder-next:cloud"
+        "kimi-k2-thinking",
+        "deepseek-v3.2",
+        "glm-4.6",
+        "minimax-m2",
+        "glm-4.7",
+        "qwen3.5",
+        "qwen3-coder-next"
       ],
       "models": {
-        "glm-5:cloud": {
+        "glm-5": {
           "name": "GLM 5"
         },
-        "minimax-m2.5:cloud": {
+        "minimax-m2.5": {
           "name": "MiniMax M2.5"
         },
-        "kimi-k2.5:cloud": {
+        "kimi-k2.5": {
           "name": "Kimi K2.5"
         }
       }
     },
     "openai": {
-      "blacklist": [],
+      "blacklist": [
+        "codex-mini-latest",
+        "gpt-3.5-turbo",
+        "gpt-4",
+        "gpt-4-turbo",
+        "gpt-4.1",
+        "gpt-4-turbo-2024-04-09",
+        "gpt-4-turbo-preview",
+        "gpt-4-0125-preview",
+        "gpt-4-1106-preview",
+        "gpt-4-vision-preview",
+        "gpt-4-1106-vision-preview",
+        "gpt-4-0613",
+        "gpt-4-32k",
+        "gpt-4-32k-0613",
+        "gpt-4-0314",
+        "gpt-4-turbo-2024-04-09",
+        "gpt-4-0125-preview",
+        "gpt-4-1106-preview",
+        "gpt-3.5-turbo-1106",
+        "gpt-3.5-turbo-0125",
+        "gpt-3.5-turbo-16k",
+        "gpt-3.5-turbo-instruct",
+        "gpt-3.5-turbo-0613",
+        "gpt-3.5-turbo-16k-0613",
+        "gpt-3.5-turbo-instruct-0914",
+        "text-davinci-002",
+        "text-davinci-003",
+        "code-davinci-002",
+        "code-davinci-001"
+      ],
       "options": {
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
@@ -795,6 +835,21 @@
         },
         "google/gemma-3-27b-it:free": {
           "name": "Google/Gemma-3-27B-It (Free)"
+        },
+        "nvidia/nemotron-3-nano-30b-a3b:free": {
+          "name": "Nemotron 3 Nano 30B A3B"
+        },
+        "openai/gpt-5.4-pro": {
+          "name": "Gpt 5.4 Pro"
+        },
+        "openai/gpt-5.4": {
+          "name": "Gpt 5.4"
+        },
+        "openai/gpt-5.3-codex": {
+          "name": "Gpt 5.3 Codex"
+        },
+        "arcee-ai/trinity-large-preview:free": {
+          "name": "Trinity Large Preview"
         }
       },
       "blacklist": [

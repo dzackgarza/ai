@@ -6,7 +6,7 @@ Scope: current plugin workspace and active OpenCode wiring
 ## Remaining Gaps
 
 1. Human TUI verification is still required for task observability Phase 1/2 behavior (live child-session visibility, parent tool metrics, async polling display updates).
-2. `webfetch` domain routing is currently implemented for `github.com`, `reddit.com`, YouTube URLs, and `wikipedia.org`; handlers for Stack Exchange sites, package registries (`pypi.org` / `npmjs.com` / `crates.io`), and Hugging Face are still pending.
+2. `webfetch` domain routing is implemented for `github.com`, `reddit.com`, YouTube URLs, and `wikipedia.org` in `improved-webtools` (now wired as external plugin). Handlers for Stack Exchange sites, package registries (`pypi.org` / `npmjs.com` / `crates.io`), and Hugging Face are still pending.
 3. Cache lifecycle is lazy-expiration on read; there is no background cleanup/pruning pass for stale entries.
 4. API-viability checks (below) show several domains are only partial-replacement candidates (metadata parity but not full content parity).
 5. Non-web unit suites (`prompt-router`, `command-interceptor`, `callback-integration`) still use synthetic test inputs and do not yet consume pinned real fixtures.
@@ -118,34 +118,11 @@ Scope requested: `stackoverflow.com`, `stackexchange.com`, `meta.stackoverflow.c
   - https://developers.google.com/youtube/v3/docs/captions
   - https://developers.google.com/youtube/v3/guides/implementation/captions
 
-## Validation Status (Completed)
+## Validation Status
 
-1. `improved-task` is now wired in global plugin config (`file:///home/dzack/opencode-plugins/improved-task/src/index.ts`).
-2. Local `task-plugin` toggle is now disabled in `configs/local-plugins.json` to match local source state (`task.ts` removed).
-3. Hermetic shadow harness is green with local project config and explicit plugin loading:
-   - `just shadow-test-websearch` passed.
-   - `just shadow-test-webfetch` passed.
-4. Harness assertions are now strict on final output line (`passphrase-only` check).
-5. Deterministic unit tests now cover previously open non-TUI gaps:
-   - `tests/unit/searxng-search.test.ts` validates batched `search_query[]` handling with per-query separation/pagination.
-   - `tests/unit/searxng-search.test.ts` validates `webfetch` overflow behavior (save-to-`/tmp` when token count exceeds inline threshold).
-   - `tests/unit/searxng-search.test.ts` asserts `context.ask` invocation for both `websearch` and `webfetch`.
-   - `tests/unit/callback-integration.test.ts` validates consolidated callback semantics across `task` (async terminal callback), `sleep`, and `async_command`.
-6. Additional `webfetch` coverage now in `tests/unit/searxng-search.test.ts`:
-   - Reddit routed extraction with nested markdown comments (mocked Apify dataset output).
-   - Output-overflow spill-to-file behavior includes full report token gating.
-   - URL cache hit path (`Route: default/cache`) with TTL-backed cache storage.
-7. GitHub issue routing now uses documented `gh issue view ... --json ...` usage (no silent fallback path), and this is covered by targeted unit assertions in both:
-   - `tests/unit/webfetch-handlers/handlers.test.ts`
-   - `tests/unit/searxng-search.test.ts`
-8. Additional correctness-contract coverage completed in this pass:
-   - GitHub command-plan matrix now frozen across scopes: `pull`, `blob`, `commit`, `releases`, `issues`, `pulls`, repo readme, and fallback repo search.
-   - Reddit markdown rendering now validated against a pinned actor-style fixture (`tests/fixtures/reddit-apify-post-details.json`) instead of ad hoc inline payload only.
-   - YouTube transcript pipeline now validates both caption-success and Whisper-success pathways.
-   - YouTube failure render branches are now frozen for subtitle-discovery and audio-download failure cases.
-   - Wikipedia handler now validates both accepted URL forms (`/wiki/<title>` and `/w/index.php?title=...`), canonical source URL normalization, unsupported URL shape rejection, parse error payload rejection, empty parse-html rejection, and converter-failure rejection.
-   - Websearch contract now validates invalid category/offset handling, non-200 backend responses, and malformed schema branches in addition to batching/pagination success path.
-9. Real-fixture migration completed for web tool tests:
-   - `tests/unit/webfetch-handlers/handlers.test.ts` now uses only pinned live fixtures under `tests/fixtures/real/`.
-   - `tests/unit/searxng-search.test.ts` websearch/webfetch external-path tests now consume pinned live fixtures (SearXNG, GitHub, Reddit/Apify, Wikipedia parse+conversion, yt-dlp/Whisper artifacts).
-   - Fixture provenance and capture commands are documented in `tests/fixtures/real/README.md`.
+1. `improved-task` wired as external plugin in `configs/config_skeleton.json`. Toggle `task-plugin` in `configs/local-plugins.json` to enable (currently `false`).
+2. `improved-webtools` wired as external plugin in `configs/config_skeleton.json`. Replaces the deleted in-repo `searxng-search.ts` + `webfetch-handlers/`.
+3. `task-plugin` toggle remains `false` in `configs/local-plugins.json` (`task.ts` removed from local plugins; control now via external plugin + toggle).
+4. `callback-integration.test.ts` validates consolidated callback semantics across `task`, `sleep`, and `async_command`.
+
+**Note:** Previous validation items 4–9 described tests in `tests/unit/searxng-search.test.ts`, `tests/unit/webfetch-handlers/handlers.test.ts`, and `tests/fixtures/real/` — these were removed when the in-repo webtools plugin was extracted to `improved-webtools`. Validation of the equivalent coverage in `/home/dzack/opencode-plugins/improved-webtools/` is pending.
