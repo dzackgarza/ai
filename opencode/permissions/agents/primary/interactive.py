@@ -13,4 +13,4 @@ class InteractiveAgent(PureAgent):
         return Interactive.layers()
 
 
-AGENT = InteractiveAgent()
+AGENT = InteractiveAgent("interactive_agents/interactive.md")

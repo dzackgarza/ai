@@ -13,4 +13,4 @@ class LatticeWriterAlgorithmPorter(Subagent):
         return CodeWriter.layers()
 
 
-AGENT = LatticeWriterAlgorithmPorter()
+AGENT = LatticeWriterAlgorithmPorter("worker_agents/lattice_interface/subagents/lattice_algorithm_porter/prompt.md")

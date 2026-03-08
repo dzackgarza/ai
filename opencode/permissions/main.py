@@ -19,6 +19,7 @@ import argparse
 sys.path.insert(0, os.path.dirname(__file__))
 
 from agents import AGENTS
+from src.agent_markdown import write_agent_markdown
 from src.compiler import GLOBAL_DEFAULTS
 from src.display import show_effective, show_agents, show_rulesets, console
 from src.models import UNMANAGED_AGENTS
@@ -29,8 +30,7 @@ from src.models import UNMANAGED_AGENTS
 
 _BASE_DIR     = os.path.expanduser("~/.config/opencode")
 _SKELETON     = os.path.join(_BASE_DIR, "configs", "config_skeleton.json")
-_AGENTS_DIR   = os.path.join(_BASE_DIR, "configs", "agents")
-_SUBAGENTS_DIR = os.path.join(_BASE_DIR, "configs", "subagents")
+_MARKDOWN_AGENTS_DIR = os.path.join(_BASE_DIR, "agents")
 
 AGENT_MAP = {a.name: a for a in AGENTS}
 
@@ -55,7 +55,7 @@ def _write_json(path: str, data: dict) -> None:
 # ---------------------------------------------------------------------------
 
 def apply_agents() -> None:
-    """Write compiled permissions to all agent config files."""
+    """Write compiled permissions to all managed markdown agent files."""
     # Global defaults → skeleton
     if os.path.exists(_SKELETON):
         data = _read_json(_SKELETON)
@@ -65,25 +65,13 @@ def apply_agents() -> None:
     else:
         console.print("[yellow]Warning:[/yellow] config_skeleton.json not found; skipped.")
 
-    # Per-agent config files
-    for directory in [_AGENTS_DIR, _SUBAGENTS_DIR]:
-        if not os.path.exists(directory):
+    for agent in sorted(AGENTS, key=lambda item: item.name):
+        if agent.name in UNMANAGED_AGENTS:
             continue
-        for filename in sorted(os.listdir(directory)):
-            if not filename.endswith(".json"):
-                continue
-            agent_name = filename[:-5]
-            if agent_name in UNMANAGED_AGENTS:
-                continue
-            if agent_name not in AGENT_MAP:
-                console.print(f"[yellow]Warning:[/yellow] '{agent_name}' has no definition — skipped.")
-                continue
-            agent = AGENT_MAP[agent_name]
-            filepath = os.path.join(directory, filename)
-            data = _read_json(filepath)
-            data["permission"] = agent.compile()
-            _write_json(filepath, data)
-            console.print(f"  [green]✓[/green] {agent_name}  [dim]({agent.base_type})[/dim]")
+        output_path = write_agent_markdown(agent, _MARKDOWN_AGENTS_DIR)
+        console.print(
+            f"  [green]✓[/green] {agent.name}  [dim]({agent.base_type} → {output_path.name})[/dim]"
+        )
 
 
 def dump_agent(name: str) -> None:

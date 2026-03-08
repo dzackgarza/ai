@@ -13,4 +13,4 @@ class WriterTypeScript(Subagent):
         return CodeWriter.layers()
 
 
-AGENT = WriterTypeScript()
+AGENT = WriterTypeScript("subagents/typescript_code_writer.md")

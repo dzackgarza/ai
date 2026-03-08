@@ -13,4 +13,4 @@ class ResearcherDocumentation(Subagent):
         return Researcher.layers()
 
 
-AGENT = ResearcherDocumentation()
+AGENT = ResearcherDocumentation("subagents/researcher.md")

@@ -13,4 +13,4 @@ class LatticeReviewerChecklistCompletionist(Subagent):
         return Reviewer.layers()
 
 
-AGENT = LatticeReviewerChecklistCompletionist()
+AGENT = LatticeReviewerChecklistCompletionist("worker_agents/lattice_interface/subagents/lattice_checklist_completionist/prompt.md")

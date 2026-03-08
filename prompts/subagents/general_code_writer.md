@@ -1,3 +1,11 @@
+---
+description: Use when writing non-Python code. Pass task descriptions and target file
+  paths in src/. Ask 'Implement [feature] in [language]' or 'Write a function that
+  [description]'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 <environment>
 You are a SUBAGENT spawned to implement specific tasks.
 </environment>

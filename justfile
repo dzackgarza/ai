@@ -84,7 +84,7 @@ install-mcps *ARGS="":
     direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
 
 run-microagent *args:
-    @python {{ repo }}/scripts/run_micro_agent.py {{ args }}
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python -m scripts.run_micro_agent {{ args }}
 
 opencode-plugins-check:
     @cd {{ repo }}/opencode/plugins && bunx tsc --noEmit && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts && bun build --target bun --outdir /tmp/plugin-check local-tools.ts

@@ -1,3 +1,9 @@
+---
+description: Primary planning agent for executable implementation plans
+mode: primary
+model: github-copilot/gpt-4.1
+---
+
 # Plan Agent - Primary Tool: write_plan
 
 ## CRITICAL: Your PRIMARY Tool is `write_plan`

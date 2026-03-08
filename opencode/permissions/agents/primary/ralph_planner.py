@@ -13,4 +13,4 @@ class RalphPlannerAgent(PureAgent):
         return Planner.layers()
 
 
-AGENT = RalphPlannerAgent()
+AGENT = RalphPlannerAgent("interactive_agents/ralph-planner.md")

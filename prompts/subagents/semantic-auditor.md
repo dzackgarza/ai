@@ -1,3 +1,11 @@
+---
+description: Use when performing factual gap analysis between file versions. Pass
+  file versions or code snapshots. Ask 'Perform semantic gap analysis between these
+  versions' or 'Identify lost semantic data in this update'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 # Semantic Auditor Subagent
 
 ## Operating Rules (Hard Constraints)

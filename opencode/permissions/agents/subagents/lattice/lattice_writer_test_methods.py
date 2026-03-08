@@ -13,4 +13,4 @@ class LatticeWriterTestMethods(Subagent):
         return TestWriter.layers()
 
 
-AGENT = LatticeWriterTestMethods()
+AGENT = LatticeWriterTestMethods("worker_agents/lattice_interface/subagents/lattice_test_method_writer/prompt.md")

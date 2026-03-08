@@ -1,3 +1,11 @@
+---
+description: Use when auditing code against project constraints and dominant patterns.
+  Pass the generated code and project rules. Ask 'Audit this code for constraint violations'
+  or 'Find deviations from dominant patterns'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 # Code Auditor Subagent
 
 ## Operating Rules (Hard Constraints)

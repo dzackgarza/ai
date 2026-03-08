@@ -13,4 +13,4 @@ class PlanAgent(PureAgent):
         return Planner.layers()
 
 
-AGENT = PlanAgent()
+AGENT = PlanAgent("interactive_agents/plan.md")

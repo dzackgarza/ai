@@ -26,4 +26,4 @@ class ZoteroLibrarianAgent(PureAgent):
         }
 
 
-AGENT = ZoteroLibrarianAgent()
+AGENT = ZoteroLibrarianAgent("worker_agents/zotero_librarian/PROMPT.md")

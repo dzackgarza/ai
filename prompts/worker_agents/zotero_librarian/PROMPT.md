@@ -1,3 +1,9 @@
+---
+description: Zotero librarian - manages and maintains Zotero reference libraries
+mode: primary
+model: github-copilot/gpt-4.1
+---
+
 # Zotero Librarian Agent
 
 ## Role

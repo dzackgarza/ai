@@ -13,4 +13,4 @@ class ReviewerCode(Subagent):
         return Reviewer.layers()
 
 
-AGENT = ReviewerCode()
+AGENT = ReviewerCode("subagents/code-reviewer.md")

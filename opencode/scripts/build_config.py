@@ -23,8 +23,6 @@ console = Console(
 base_dir = os.path.expanduser("~/.config/opencode")
 skeleton_path = os.path.join(base_dir, "configs", "config_skeleton.json")
 providers_dir = os.path.join(base_dir, "configs", "providers")
-agents_dir = os.path.join(base_dir, "configs", "agents")
-subagents_dir = os.path.join(base_dir, "configs", "subagents")
 output_path = os.path.join(base_dir, "opencode.json")
 
 # Load skeleton - fails immediately (FileNotFoundError/JSONDecodeError) if missing/invalid
@@ -32,8 +30,6 @@ with open(skeleton_path, "r") as f:
     config = json.load(f)
 
 config["provider"] = {}
-config["agent"] = {}
-
 # Glob and merge providers
 provider_files = sorted(glob.glob(os.path.join(providers_dir, "*.json")))
 if not provider_files:
@@ -44,25 +40,8 @@ for provider_file in provider_files:
     with open(provider_file, "r") as f:
         config["provider"][provider_name] = json.load(f)
 
-# Glob and merge primary agents (Alphabetical)
-agent_files = sorted(glob.glob(os.path.join(agents_dir, "*.json")))
-if not agent_files:
-    raise RuntimeError(f"No agent JSON files found in {agents_dir}")
-
-for agent_file in agent_files:
-    agent_name = os.path.splitext(os.path.basename(agent_file))[0]
-    with open(agent_file, "r") as f:
-        config["agent"][agent_name] = json.load(f)
-
-# Glob and merge subagents (Alphabetical, appended AFTER primary agents)
-subagent_files = sorted(glob.glob(os.path.join(subagents_dir, "*.json")))
-if not subagent_files:
-    raise RuntimeError(f"No subagent JSON files found in {subagents_dir}")
-
-for subagent_file in subagent_files:
-    subagent_name = os.path.splitext(os.path.basename(subagent_file))[0]
-    with open(subagent_file, "r") as f:
-        config["agent"][subagent_name] = json.load(f)
+if config.get("agent") == {}:
+    del config["agent"]
 
 # Fetch config schema
 schema_url = config["$schema"]

@@ -1,3 +1,11 @@
+---
+description: Use when you need to explore the codebase. Finds WHERE files live and
+  HOW code works. Pass features, entry points, or components. Ask 'Find files related
+  to [feature]' or 'Trace how [function] processes data'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 # Codebase Explorer Subagent
 
 ## Role

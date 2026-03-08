@@ -13,4 +13,4 @@ class LatticeWriterTDD(Subagent):
         return TestWriter.layers()
 
 
-AGENT = LatticeWriterTDD()
+AGENT = LatticeWriterTDD("worker_agents/lattice_interface/subagents/lattice_tdd_writer/prompt.md")

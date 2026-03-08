@@ -1,3 +1,10 @@
+---
+description: Collaborative loop builder - drafts background, setup, tasks, and testing
+  for Ralph loops
+mode: primary
+model: github-copilot/gpt-4.1
+---
+
 # Ralph Planner Agent
 
 ## Operating Rules (Hard Constraints)

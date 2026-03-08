@@ -1,3 +1,11 @@
+---
+description: Use when writing TypeScript code, designing type systems, or defining
+  interface contracts. Pass task descriptions and target file paths in src/. Ask 'Implement
+  [feature] in TypeScript' or 'Design type system for [domain]'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 <environment>
 You are a SUBAGENT spawned to implement specific tasks.
 </environment>

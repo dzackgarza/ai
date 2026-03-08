@@ -13,4 +13,4 @@ class LatticeReviewerTestCoverage(Subagent):
         return Reviewer.layers()
 
 
-AGENT = LatticeReviewerTestCoverage()
+AGENT = LatticeReviewerTestCoverage("worker_agents/lattice_interface/subagents/lattice_test_coverage_auditor/prompt.md")

@@ -1,22 +1,21 @@
 # Subagents
 
-This directory holds the active subagent definitions that feed the generated
-OpenCode config.
+This directory no longer holds the active subagent definitions.
 
 ## Active Source Of Truth
 
-- `*.json`: live subagent definitions
-- prompts remain external to these JSON files
+- `../../prompts/**/*.md`: canonical prompt templates with YAML frontmatter
+- `../../agents/*.md`: generated OpenCode markdown agents
+- `../../permissions/`: permission compiler and agent registry
 
 ## Historical Material
 
-One-off subagent migration helpers are not kept in-tree. If you need prior
-state, recover it from git history instead of reviving old scripts in the live
-workspace.
+Legacy JSON subagent configs may still exist here for history or migration
+reference. They are not the runtime source of truth.
 
 ## Update Flow
 
-1. Edit the subagent JSON source here.
-2. If the change affects permissions, update `scripts/manage_permissions.py`.
-3. Run `just rebuild` from the repo root.
-4. Verify the generated diff in `opencode.json`.
+1. Edit the prompt template under `../../prompts/`.
+2. If the change affects permissions, update `../../permissions/`.
+3. Run `uv run --python .venv/bin/python permissions/main.py --apply` from `opencode/`.
+4. Run `uv run --python .venv/bin/python scripts/build_config.py`.

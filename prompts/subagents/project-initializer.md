@@ -1,3 +1,10 @@
+---
+description: Use when writing or updating documentation files. Ask 'Document the current
+  project architecture' or 'Write a README for [feature]'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 # Project Initializer Subagent
 
 ## Operating Rules (Hard Constraints)

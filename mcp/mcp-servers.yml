@@ -1,95 +1,64 @@
-# Centralized MCP Server Configuration
-# =====================================
-# This file is the single source of truth for all MCP server configurations.
-# Run `python3 mcp/sync_mcp_configs.py` to propagate changes to all harnesses.
-#
-# Quick Start with OpenCode:
-# 1. Configure OpenCode - Add the plugin and Cursor provider to your opencode.json:
-#    {
-#      "$schema": "https://opencode.ai/config.json",
-#      "plugin": ["yet-another-opencode-cursor-auth@latest"],
-#      "provider": {"cursor": {"name": "Cursor"}}
-#    }
-
-# MCP Servers that should be configured in ALL harnesses
 common:
   serena:
-    description: "Semantic code editing and navigation"
-    command: "uvx"
+    description: Semantic code editing and navigation
+    command: uvx
     args:
-      - "--from"
-      - "git+https://github.com/oraios/serena"
-      - "serena"
-      - "start-mcp-server"
-      - "--project-from-cwd"
+    - --from
+    - git+https://github.com/oraios/serena
+    - serena
+    - start-mcp-server
+    - --project-from-cwd
     enabled: true
-
   context7:
-    description: "Library documentation via Context7"
-    command: "npx"
+    description: Library documentation via Context7
+    command: npx
     args:
-      - "-y"
-      - "@upstash/context7-mcp"
+    - -y
+    - '@upstash/context7-mcp'
     enabled: true
-
   cut-copy-paste-mcp:
-    description: "Cross-session clipboard operations"
-    command: "npx"
+    description: Cross-session clipboard operations
+    command: npx
     args:
-      - "-y"
-      - "@fastmcp-me/cut-copy-paste-mcp"
+    - -y
+    - '@fastmcp-me/cut-copy-paste-mcp'
     enabled: true
-
   deepwiki-mcp:
-    description: "Fetch documentation from DeepWiki (official server)"
-    type: "remote"
-    url: "https://mcp.deepwiki.com/mcp"
+    description: Fetch documentation from DeepWiki (official server)
+    type: remote
+    url: https://mcp.deepwiki.com/mcp
     enabled: true
-
   improved-webtools:
-    description: "Web search and fetching via improved-webtools MCP server"
-    command: "uvx"
+    description: Web search and fetching via improved-webtools MCP server
+    command: /home/dzack/opencode-plugins/improved-webtools/mcp-server/.venv/bin/python
     args:
-      - "--with"
-      - "fastmcp"
-      - "fastmcp"
-      - "run"
-      - "/home/dzack/opencode-plugins/improved-webtools/mcp-server/server.py"
+    - /home/dzack/opencode-plugins/improved-webtools/mcp-server/server.py
     enabled: true
     exclude_harnesses:
-      - opencode
-
-# Harnesses to sync (set enabled: false to skip a harness)
+    - opencode
 harnesses:
   opencode:
     enabled: true
-    config_path: "~/ai/opencode/opencode.json"
-    format: "json"
-    json_path: "mcp"  # JSON path within the config
-
+    config_path: ~/ai/opencode/opencode.json
+    format: json
+    json_path: mcp
   codex:
     enabled: true
-    config_path: "~/.codex/config.toml"
-    format: "toml"
-    toml_section: "mcp_servers"
-
+    config_path: ~/.codex/config.toml
+    format: toml
+    toml_section: mcp_servers
   amp:
     enabled: true
-    config_path: "~/.config/amp/settings.json"
-    format: "json"
-    json_path: "amp.mcpServers"
-
+    config_path: ~/.config/amp/settings.json
+    format: json
+    json_path: amp.mcpServers
   claude:
     enabled: true
-    config_path: "~/.claude.json"
-    format: "json"
-    json_path: "mcpServers"
-
+    config_path: ~/.claude.json
+    format: json
+    json_path: mcpServers
   qwen:
     enabled: true
-    config_path: "~/.qwen/settings.json"
-    format: "json"
-    json_path: "mcpServers"
-
-# Kilo reads from ~/.opencode/opencode.json which is symlinked to ~/ai/opencode/opencode.json
-# No separate harness needed
+    config_path: ~/.qwen/settings.json
+    format: json
+    json_path: mcpServers

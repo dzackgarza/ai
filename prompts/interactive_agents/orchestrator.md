@@ -1,3 +1,9 @@
+---
+description: Primary orchestrator for approved plans
+mode: primary
+model: github-copilot/gpt-4.1
+---
+
 # Orchestrator Agent
 
 ## Operating Rules (Hard Constraints)

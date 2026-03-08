@@ -1,3 +1,8 @@
+---
+description: Default collaborative agent - handles trivial to complex tasks, user-in-the-loop
+mode: primary
+---
+
 <!-- INTERACTIVE-AGENT-OTP: X7K9-MNPR-QW42 -->
 
 ## Horizon Decision

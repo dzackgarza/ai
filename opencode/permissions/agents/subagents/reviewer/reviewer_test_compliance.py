@@ -13,4 +13,4 @@ class ReviewerTestCompliance(Subagent):
         return Reviewer.layers()
 
 
-AGENT = ReviewerTestCompliance()
+AGENT = ReviewerTestCompliance("subagents/test-compliance-reviewer.md")

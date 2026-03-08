@@ -28,8 +28,10 @@ from scripts.llm.schemas import SCHEMAS, Classification, resolve_schema
 from scripts.llm.templates import (
     MissingVariablesError,
     TemplateFormatError,
+    default_prompts_dir,
     load_micro_agent,
     render_body,
+    resolve_prompt_path,
 )
 
 __all__ = [
@@ -39,10 +41,12 @@ __all__ = [
     "render_body",
     "MissingVariablesError",
     "TemplateFormatError",
+    "default_prompts_dir",
     "PROVIDERS",
     "list_models",
     "validate",
     "SCHEMAS",
     "Classification",
     "resolve_schema",
+    "resolve_prompt_path",
 ]

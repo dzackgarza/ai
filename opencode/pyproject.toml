@@ -11,7 +11,13 @@ dependencies = [
     "pydantic-ai",
     "pyyaml",
     "rich",
+    "workspace-scripts",
 ]
 
 [dependency-groups]
-dev = []
+dev = [
+    "pytest",
+]
+
+[tool.uv.sources]
+workspace-scripts = { path = "../scripts", editable = true }

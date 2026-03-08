@@ -12,12 +12,12 @@ the owning subtrees instead of adding new root clutter.
 
 ### Source Of Truth
 
-- Permissions and profile composition: `scripts/manage_permissions.py`
+- Permissions and markdown-agent generation: `permissions/main.py`
 - Config assembly: `scripts/build_config.py`
 - Permission policy: `docs/PERMISSION_SPEC.md`
 - Provider configs: `configs/providers/*.json`
-- Agent configs: `configs/agents/*.json`
-- Subagent configs: `configs/subagents/*.json`
+- Managed agent templates: `../prompts/**/*.md`
+- Generated OpenCode markdown agents: `agents/*.md`
 - Plugin code: `plugins/`
 - Plugin-local runtime config: `configs/local-plugins.json`
 
@@ -41,8 +41,8 @@ the owning subtrees instead of adding new root clutter.
 ### Layout
 
 - `configs/providers/`: provider source files, notes, and maintenance scripts
-- `configs/agents/`: primary agent definitions
-- `configs/subagents/`: live subagent definitions
+- `agents/`: generated OpenCode markdown agents consumed at runtime
+- `../prompts/`: canonical prompt templates with YAML frontmatter metadata
 - `plugins/`: runtime-loaded plugins and plugin-owned utilities
 - `plugins/utilities/harness/`: session automation CLI
 - `scripts/`: repo-wide maintenance entrypoints

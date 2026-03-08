@@ -3,7 +3,6 @@ from __future__ import annotations
 """base.py — Abstract base class for agent permission definitions."""
 
 from abc import ABC, abstractmethod
-
 from src.models import BaseType
 
 
@@ -13,6 +12,9 @@ class Agent(ABC):
     Subclasses define ``name``, ``base_type``, and ``permission_layers()``.
     The ``compile()`` method is provided and should not be overridden.
     """
+
+    def __init__(self, prompt_template: str) -> None:
+        self._prompt_template = prompt_template
 
     @property
     @abstractmethod
@@ -33,9 +35,19 @@ class Agent(ABC):
         """
 
     @property
+    def prompt_template(self) -> str:
+        """Prompt template path relative to PROMPTS_DIR."""
+        return self._prompt_template
+
+    @property
     def overrides(self) -> dict:
         """Final overrides applied after all layers. Override in subclass if needed."""
         return {}
+
+    @property
+    def output_filename(self) -> str:
+        """Markdown filename written into opencode/agents."""
+        return f"{self.name}.md"
 
     def compile(self) -> dict:
         """Compile all layers into a single flat permission dict."""
@@ -44,7 +56,10 @@ class Agent(ABC):
         return compile_agent(self)
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}(name={self.name!r}, base_type={self.base_type!r})"
+        return (
+            f"{type(self).__name__}(name={self.name!r}, base_type={self.base_type!r}, "
+            f"prompt_template={self.prompt_template!r})"
+        )
 
 
 class PureAgent(Agent):

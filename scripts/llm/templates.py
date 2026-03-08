@@ -1,28 +1,26 @@
 """
-Template loading and rendering for micro-agent prompts.
+Template loading and rendering for markdown prompt templates.
 
-Micro-agent templates (prompts/micro_agents/**/*.md) use YAML frontmatter.
+Templates may use either standard markdown frontmatter:
+
+    ---
+    key: value
+    ---
+    body
+
+or the legacy workspace format:
+
+    key: value
+    ---
+    body
+
 Use load_micro_agent(path) to parse them into a MicroAgent.
-
-Frontmatter fields:
-    model:       Default model slug (provider/model). Required unless --model passed.
-    temperature: Default temperature. Optional, default 0.0.
-    system:      System prompt (YAML block scalar). Optional.
-    schema:      Schema name from schemas.SCHEMAS for structured output. Optional.
-    inputs:      List of {name, description, required} input variable declarations.
-
-Variable validation:
-    MicroAgent.render(**variables) validates that all required inputs are provided
-    before rendering. Missing required variables raise MissingVariablesError.
-
-Schema resolution:
-    MicroAgent.schema_class() returns the pydantic BaseModel subclass registered
-    under the frontmatter 'schema:' name, or None if no schema is declared.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -45,44 +43,53 @@ class TemplateFormatError(ValueError):
     """Raised when a micro-agent template file is structurally invalid."""
 
 
-def _split_frontmatter(content: str) -> tuple[dict, str]:
-    """Split YAML frontmatter from template body.
+def default_prompts_dir() -> Path:
+    """Return the workspace prompt root.
 
-    The format is: a YAML block followed by a bare '---' separator line
-    (at column 0, on its own line), then the Jinja2 body. Content inside
-    YAML block scalars (e.g. system: |) is indented, so their internal
-    '---' markers never appear at column 0 and are not mistaken for the
-    separator.
-
-    Returns (metadata_dict, body_text). If no bare '---' separator is
-    found, returns ({}, content).
-
-    Raises TemplateFormatError if the YAML frontmatter cannot be parsed.
+    PROMPTS_DIR may override the workspace default.
     """
+    workspace_root = Path(__file__).resolve().parents[2]
+    return Path(os.environ.get("PROMPTS_DIR", workspace_root / "prompts")).expanduser()
+
+
+def resolve_prompt_path(path: str | Path) -> Path:
+    """Resolve a prompt template path against PROMPTS_DIR."""
+    candidate = Path(path).expanduser()
+    if candidate.is_absolute():
+        return candidate
+    return default_prompts_dir() / candidate
+
+
+def _parse_yaml_block(frontmatter_text: str) -> dict:
+    try:
+        metadata = yaml.safe_load(frontmatter_text) or {}
+    except yaml.YAMLError as exc:
+        raise TemplateFormatError(f"Invalid YAML frontmatter: {exc}") from exc
+    if not isinstance(metadata, dict):
+        raise TemplateFormatError("Template frontmatter must be a YAML mapping")
+    return metadata
+
+
+def _split_frontmatter(content: str) -> tuple[dict, str]:
+    """Split YAML frontmatter from template body."""
+    if content.startswith("---\n"):
+        end_marker = "\n---\n"
+        end_idx = content.find(end_marker, 4)
+        if end_idx == -1:
+            raise TemplateFormatError("Opening markdown frontmatter marker missing closing '---'")
+        frontmatter_text = content[4:end_idx]
+        body = content[end_idx + len(end_marker):].lstrip("\n")
+        return _parse_yaml_block(frontmatter_text), body
+
     lines = content.split("\n")
     sep_idx = next((i for i, line in enumerate(lines) if line == "---"), None)
     if sep_idx is None:
         return {}, content
 
     frontmatter_text = "\n".join(lines[:sep_idx])
-    body = "\n".join(lines[sep_idx + 1 :]).lstrip("\n")
-    try:
-        metadata = yaml.safe_load(frontmatter_text) or {}
-    except yaml.YAMLError as exc:
-        raise TemplateFormatError(f"Invalid YAML frontmatter: {exc}") from exc
+    body = "\n".join(lines[sep_idx + 1:]).lstrip("\n")
+    metadata = _parse_yaml_block(frontmatter_text)
     return metadata, body
-
-
-_REQUIRED_FRONTMATTER_FIELDS = ("model",)
-
-
-def _validate_frontmatter(path: str | Path, frontmatter: dict) -> None:
-    """Raise TemplateFormatError if required frontmatter fields are missing."""
-    missing = [f for f in _REQUIRED_FRONTMATTER_FIELDS if not frontmatter.get(f)]
-    if missing:
-        raise TemplateFormatError(
-            f"{path}: missing required frontmatter field(s): {', '.join(missing)}"
-        )
 
 
 @dataclass
@@ -140,9 +147,9 @@ def load_micro_agent(path: str | Path) -> MicroAgent:
 
     Raises TemplateFormatError if the template is structurally invalid.
     """
-    content = Path(path).read_text()
+    resolved_path = resolve_prompt_path(path)
+    content = resolved_path.read_text()
     frontmatter, body = _split_frontmatter(content)
-    _validate_frontmatter(path, frontmatter)
     system = frontmatter.get("system")
     return MicroAgent(frontmatter=frontmatter, system=system, body=body)
 

@@ -26,12 +26,9 @@ import { resolve, dirname } from "path";
 
 const _dir = dirname(fileURLToPath(import.meta.url));
 
-// Path to scripts/llm/bridge.py — canonical LLM dispatch module.
-// scripts/llm/ lives at ~/ai/scripts/llm/, one level above opencode/.
-const LLM_PY = resolve(_dir, "../../../../scripts/llm/bridge.py");
-
-// Python binary: prefer the venv, fall back to system python3.
+const OPENCODE_ROOT = resolve(_dir, "../../../");
 const PYTHON = resolve(_dir, "../../../.venv/bin/python");
+const UV = "uv";
 
 // ---------------------------------------------------------------------------
 // Request / response types
@@ -78,7 +75,7 @@ export interface MicroAgent {
 }
 
 /**
- * Load and parse a micro-agent template (prompts/micro_agents/**\/prompt.md).
+ * Load and parse a markdown prompt template.
  *
  * Returns the parsed system prompt and Jinja2 body separately, ready to be
  * used as LLM messages. The body should be rendered with variables before use.
@@ -129,7 +126,8 @@ export async function renderTemplate(
 
 function _run<T>(req: object): LLMResponse<T> {
   const input = JSON.stringify(req);
-  const proc = spawnSync(PYTHON, [LLM_PY], {
+  const proc = spawnSync(UV, ["run", "--python", PYTHON, "-m", "scripts.llm.bridge"], {
+    cwd: OPENCODE_ROOT,
     input,
     encoding: "utf8",
     timeout: 60_000,
@@ -142,7 +140,7 @@ function _run<T>(req: object): LLMResponse<T> {
     const stderr = proc.stderr?.trim() ?? "";
     return {
       ok: false,
-      error: `bridge.py exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
+      error: `scripts.llm.bridge exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
     };
   }
 

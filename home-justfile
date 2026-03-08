@@ -27,10 +27,10 @@ usage-limits *ARGS="":
 opencode-rebuild: opencode-build-permissions opencode-build-config
 
 opencode-build-permissions:
-    @python {{ repo }}/opencode/scripts/manage_permissions.py --apply
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py --apply
 
 opencode-build-config:
-    @python {{ repo }}/opencode/scripts/build_config.py
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 
 # =============================================================================
 # Cache Cleaning

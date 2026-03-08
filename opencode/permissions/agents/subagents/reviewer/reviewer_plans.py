@@ -13,4 +13,4 @@ class ReviewerPlans(Subagent):
         return Reviewer.layers()
 
 
-AGENT = ReviewerPlans()
+AGENT = ReviewerPlans("subagents/plan-reviewer.md")

@@ -1,3 +1,11 @@
+---
+description: Use when synthesizing internal code and external documentation. Ask 'Research
+  documentation for [topic]' or 'Synthesize information from internal code and external
+  sources' or 'Find documentation about [technology]'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 # Researcher Subagent
 
 ## Operating Rules (Hard Constraints)

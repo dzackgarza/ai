@@ -21,10 +21,13 @@ import logging
 import sys
 from pathlib import Path
 
-# Allow running from repo root without installing the package.
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from scripts.llm import call_llm, list_models, load_micro_agent, validate  # noqa: E402
+from scripts.llm import (  # noqa: E402
+    call_llm,
+    list_models,
+    load_micro_agent,
+    resolve_prompt_path,
+    validate,
+)
 from scripts.llm.templates import MissingVariablesError  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -140,7 +143,7 @@ def main() -> None:
         logger.error("template argument required")
         sys.exit(1)
 
-    template_file = Path(args.template).expanduser()
+    template_file = resolve_prompt_path(args.template)
     if not template_file.exists():
         logger.error("Template not found: %s", template_file)
         sys.exit(1)

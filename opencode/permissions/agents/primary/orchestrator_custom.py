@@ -22,4 +22,4 @@ class OrchestratorCustomAgent(PureAgent):
         return {"write_plan": "deny"}
 
 
-AGENT = OrchestratorCustomAgent()
+AGENT = OrchestratorCustomAgent("interactive_agents/orchestrator.md")

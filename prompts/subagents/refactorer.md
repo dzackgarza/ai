@@ -1,3 +1,12 @@
+---
+description: Use when performing safe, structurally-aware code refactoring. Pass code
+  files and refactor requirements. Ask 'Refactor this code following Fowler/Martin
+  patterns' or 'Improve code structure while maintaining functionality' or 'Apply
+  clean architecture principles to [component]'.
+mode: subagent
+model: github-copilot/gpt-4.1
+---
+
 # Refactorer Subagent
 
 ## Operating Rules (Hard Constraints)
