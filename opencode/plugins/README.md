@@ -5,14 +5,14 @@ Custom plugins for OpenCode, loaded globally from `~/.config/opencode/plugins/`.
 ## Quick start
 
 ```bash
-just plugins-check            # typecheck + unit tests + compile
-just plugins-typecheck        # tsc --noEmit
-just plugins-test             # bun test tests/unit/ + example plugin tests
-just plugins-compile          # bun build (crash = broken import)
-just plugins-behavior A       # run a behavioral test (routing ON)
-just plugins-baseline A       # run a behavioral test (routing OFF)
-just plugins-classifier       # run classifier test suite
-just session                  # session management CLI (list, delete, stats, etc.)
+just opencode-plugins-check            # typecheck + unit tests + compile
+just opencode-plugins-typecheck        # tsc --noEmit
+just opencode-plugins-test             # bun test tests/unit/ + example plugin tests
+just opencode-plugins-compile          # bun build (crash = broken import)
+just opencode-plugins-behavior A       # run a behavioral test (routing ON)
+just opencode-plugins-baseline A       # run a behavioral test (routing OFF)
+just opencode-plugins-classifier       # run classifier test suite
+just opencode-session                  # session management CLI (list, delete, stats, etc.)
 ```
 
 ## Plugin inventory

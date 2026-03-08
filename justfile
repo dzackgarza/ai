@@ -107,3 +107,72 @@ antigravity-usage *ARGS="":
 # Usage: just qwen-usage [--json] [--no-notify]
 qwen-usage *ARGS="":
     @python {{repo}}/usage-limits/qwen_usage.py {{ARGS}}
+
+# =============================================================================
+# OpenCode (opencode/)
+# =============================================================================
+
+opencode-permissions-apply:
+    @python {{repo}}/opencode/scripts/manage_permissions.py --apply
+
+opencode-config-build:
+    @python {{repo}}/opencode/scripts/build_config.py
+
+opencode-rebuild: opencode-permissions-apply opencode-config-build
+
+opencode-providers-validate *args="":
+    @python {{repo}}/opencode/configs/providers/scripts/validate_models_dev.py {{args}}
+
+opencode-openrouter-sync:
+    @python {{repo}}/opencode/configs/providers/scripts/sync_openrouter_models.py
+
+opencode-openrouter-probe-endpoints *args="":
+    @python {{repo}}/opencode/configs/providers/scripts/probe_openrouter_endpoints.py {{args}}
+
+opencode-openrouter-probe-tool-calling *args="":
+    @python {{repo}}/opencode/configs/providers/scripts/probe_openrouter_tool_calling.py {{args}}
+
+opencode-providers-debug provider="opencode":
+    @python {{repo}}/opencode/configs/providers/scripts/debug_models_dev_provider.py {{provider}}
+
+opencode-run-agent *args:
+    @python {{repo}}/scripts/run_micro_agent.py {{args}}
+
+opencode-plugins-check:
+    @cd {{repo}}/opencode/plugins && bunx tsc --noEmit && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
+
+opencode-plugins-typecheck:
+    @cd {{repo}}/opencode/plugins && bunx tsc --noEmit
+
+opencode-plugins-test:
+    @cd {{repo}}/opencode/plugins && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts
+
+opencode-plugins-compile:
+    @cd {{repo}}/opencode/plugins && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
+
+opencode-plugins-classifier:
+    @cd {{repo}}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts
+
+opencode-plugins-classifier-model model:
+    @cd {{repo}}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts {{model}}
+
+opencode-plugins-classifier-mdjson model:
+    @cd {{repo}}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts {{model}} --mode MD_JSON
+
+opencode-plugins-behavior tier:
+    @cd {{repo}}/opencode/plugins && PROMPT_ROUTER_ENABLED=true bash examples/prompt-router/tests/behavior/run.sh {{tier}}
+
+opencode-plugins-baseline tier:
+    @cd {{repo}}/opencode/plugins && PROMPT_ROUTER_ENABLED=false bash examples/prompt-router/tests/behavior/run.sh {{tier}}
+
+opencode-plugins-callback-integration:
+    @cd {{repo}}/opencode/plugins && bun test tests/unit/callback-integration.test.ts
+
+opencode-harness *args:
+    @cd {{repo}}/opencode/plugins/utilities/harness && bun run opx {{args}}
+
+opencode-session *args:
+    @cd {{repo}}/opencode/plugins && bun run utilities/harness/session-harness.ts {{args}}
+
+opencode-snapshot-gc:
+    @bash {{repo}}/opencode/scripts/maintenance/opencode_gc.sh
