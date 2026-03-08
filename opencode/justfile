@@ -29,17 +29,51 @@ openrouter-probe-tool-calling *args="":
 providers-debug provider="opencode":
     {{python}} configs/providers/scripts/debug_models_dev_provider.py {{provider}}
 
-plugins-check:
-    cd plugins && just check
-
-harness *args:
-    cd plugins/utilities/harness && bun run opx {{args}}
-
-snapshot-gc:
-    bash scripts/maintenance/opencode_gc.sh
-
 # Run a micro-agent template. Pass template path and optional --var/--file/--model flags.
 # Usage: just run-agent prompts/micro_agents/prompt_difficulty_classifier/prompt.md --var prompt="what does ls do"
 #        just run-agent --models [provider]   # list available models
 run-agent *args:
     {{python}} ../scripts/run_micro_agent.py {{args}}
+
+# =============================================================================
+# Plugins
+# =============================================================================
+
+plugins-check:
+    cd plugins && just check
+
+plugins-typecheck:
+    cd plugins && just typecheck
+
+plugins-test:
+    cd plugins && just test
+
+plugins-compile:
+    cd plugins && just compile
+
+plugins-classifier:
+    cd plugins && just classifier
+
+plugins-classifier-model model:
+    cd plugins && just classifier-model {{model}}
+
+plugins-classifier-mdjson model:
+    cd plugins && just classifier-mdjson {{model}}
+
+plugins-behavior tier:
+    cd plugins && just behavior {{tier}}
+
+plugins-baseline tier:
+    cd plugins && just baseline {{tier}}
+
+plugins-callback-integration:
+    cd plugins && just callback-integration
+
+harness *args:
+    cd plugins/utilities/harness && bun run opx {{args}}
+
+session *args:
+    cd plugins && just session {{args}}
+
+snapshot-gc:
+    bash scripts/maintenance/opencode_gc.sh
