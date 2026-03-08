@@ -1,4 +1,4 @@
-// Custom tool: plan_exit - signals completion of planning phase and spins up build session
+// Custom tool: plan_exit - signals completion of planning phase and spins up orchestrator session
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import * as fs from "fs";
 import * as path from "path";
@@ -28,30 +28,39 @@ export const PlanExitPlugin: Plugin = async ({ client }) => {
     tool: {
       plan_exit: tool({
         description:
-          "Use when the plan is ready and you want to start a fresh build session. MUST ensure the plan exists before calling.",
+          "Use when the plan is ready and you want to start a fresh orchestrator session. MUST ensure the plan exists before calling.",
         args: {
           plan_path: tool.schema
             .string()
             .describe("Absolute path to the plan file on disk."),
+          orchestrator_agent: tool.schema
+            .string()
+            .optional()
+            .describe("Orchestrator agent to use for the new session."),
+          orchestrator_model: tool.schema
+            .string()
+            .optional()
+            .describe("Optional provider/model for the orchestrator session."),
           build_agent: tool.schema
             .string()
             .optional()
-            .describe("Build agent to use for the new session."),
+            .describe("Deprecated alias for orchestrator_agent."),
           build_model: tool.schema
             .string()
             .optional()
-            .describe("Optional provider/model for the build session."),
+            .describe("Deprecated alias for orchestrator_model."),
           session_title: tool.schema
             .string()
             .optional()
-            .describe("Optional title for the new build session."),
+            .describe("Optional title for the new orchestrator session."),
         },
         async execute(args, context) {
           const { sessionID, directory } = context;
-          const buildAgent = args.build_agent ?? "Build";
+          const orchestratorAgent =
+            args.orchestrator_agent ?? args.build_agent ?? "Orchestrator (Custom)";
           const title =
             args.session_title ??
-            `build:${path.basename(args.plan_path)}:${Date.now()}`;
+            `orchestrator:${path.basename(args.plan_path)}:${Date.now()}`;
 
           ensurePlanExists(args.plan_path);
 
@@ -59,36 +68,37 @@ export const PlanExitPlugin: Plugin = async ({ client }) => {
             body: { title, parentID: sessionID },
           });
 
-          const buildSessionID = session?.id;
-          if (!buildSessionID) {
-            throw new Error("Failed to create build session.");
+          const orchestratorSessionID = session?.id;
+          if (!orchestratorSessionID) {
+            throw new Error("Failed to create orchestrator session.");
           }
 
           writePlanState(directory, {
             plan_path: args.plan_path,
             approved_from_session: sessionID,
-            build_session_id: buildSessionID,
-            build_session_title: title,
+            orchestrator_session_id: orchestratorSessionID,
+            orchestrator_session_title: title,
             approved_at: new Date().toISOString(),
           });
 
-          const modelSpec = parseModel(args.build_model);
-          if (args.build_model && !modelSpec) {
+          const requestedModel = args.orchestrator_model ?? args.build_model;
+          const modelSpec = parseModel(requestedModel);
+          if (requestedModel && !modelSpec) {
             throw new Error(
-              "Invalid build_model. Use provider/model (e.g. opencode/big-pickle).",
+              "Invalid orchestrator model. Use provider/model (e.g. opencode/big-pickle).",
             );
           }
 
           await client.session.promptAsync({
-            path: { id: buildSessionID },
+            path: { id: orchestratorSessionID },
             body: {
-              agent: buildAgent,
+              agent: orchestratorAgent,
               model: modelSpec,
               parts: [
                 {
                   type: "text",
                   text: [
-                    "You are now in build mode.",
+                    "You are now in orchestrator mode.",
                     `Review the plan at ${args.plan_path}.`,
                     "Follow the plan exactly. If you need changes, request them before editing.",
                   ].join("\n"),
@@ -98,11 +108,11 @@ export const PlanExitPlugin: Plugin = async ({ client }) => {
           });
 
           return [
-            "[plan_exit] Build session created.",
-            `Session ID: ${buildSessionID}`,
+            "[plan_exit] Orchestrator session created.",
+            `Session ID: ${orchestratorSessionID}`,
             `Title: ${title}`,
             `Plan: ${args.plan_path}`,
-            "Next: switch to the new session to continue build execution.",
+            "Next: switch to the new session to continue orchestrator execution.",
           ].join("\n");
         },
       }),

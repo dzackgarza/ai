@@ -31,3 +31,10 @@ opencode-build-permissions:
 
 opencode-build-config:
     @python {{ repo }}/opencode/scripts/build_config.py
+
+# =============================================================================
+# Cache Cleaning
+# =============================================================================
+
+clear-caches:
+    @bash {{ repo }}/opencode/scripts/maintenance/opencode_gc.sh

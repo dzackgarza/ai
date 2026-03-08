@@ -12,6 +12,7 @@
 6. **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed. Error-path work is useless, proof-of-correctness work is essential. And mocks are not going to help you prove anything. Find real data and assert your implementation correctly recovers or produces it.
 7. **Never bury the lede**: do not produce volumes of text when there are critical issues, or bury failures in paragraphs or summaries of success. Focus on critical, oustanding issues, and clearly delineate and highlight them.
 8. **Never work around failures and hide them**. User requests are highly specific and can not be substituted with semantically similar or inferred different requests. If you attempt a task and are met with failure, never work around it if it means changing the entire task to something the user didn't ask for. If failures fundamentally block the request as stated, stop and report this to the user instead of attempting to work around it, pivot to another problem or task, etc.
+9. **Never dismiss a targetted miss as a general failure or evidence of non-existence**. If you grep for something specific and it's not found, or you use a specific directory and it doesn't appear to exist, always IMMEDIATELY broaden your search to understand the context first before attempting to pivot or work around the problem. Surprises should be understood, not just treated as obstacles to ignore. Files get moved, functions get renamed/moved, typos are made. Always broaden.
 
 ---
 
@@ -208,6 +209,7 @@ The parameter x is used for this specific reason. It appears that it is no longe
 
 # Opencode
 
+- `opencode` is an alias that automatically attaches to the server. Do not use this for investigations, use the binary directly with `command opencode`.
 - Opencode is never "stale" or "needs to be reloaded/restarted". Each opencode instance reads configuration files fresh, every time. It does not have "stale caches", the process never needs to be killed, and you should not restart the server. Nothing needs to be recompiled.
 Never suggest simply restarting, or blame session continuity, or other similar problems -- you can always test a fresh instance live in <10s.
 - To test opencode, run "\opencode run --agent Minimal 'Hello world'".

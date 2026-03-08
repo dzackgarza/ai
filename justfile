@@ -104,9 +104,6 @@ opencode-harness *args:
 opencode-session *args:
     @cd {{ repo }}/opencode/plugins && bun run utilities/harness/session-harness.ts {{ args }}
 
-clear-caches:
-    @bash {{ repo }}/opencode/scripts/maintenance/opencode_gc.sh
-
 # =============================================================================
 # OpenCode Provider Discovery (inline - no scripts)
 # =============================================================================

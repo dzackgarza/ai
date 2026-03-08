@@ -1,0 +1,119 @@
+{
+  "description": "Primary orchestrator for approved plans",
+  "mode": "primary",
+  "model": "github-copilot/gpt-4.1",
+  "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/orchestrator.md}",
+  "permission": {
+    "read": {
+      "*": "allow"
+    },
+    "glob": {
+      "*": "allow"
+    },
+    "grep": {
+      "*": "allow"
+    },
+    "list": {
+      "*": "allow"
+    },
+    "edit": {
+      "*": "allow"
+    },
+    "patch": {
+      "*": "allow"
+    },
+    "apply_patch": {
+      "*": "allow"
+    },
+    "bash": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todoread": "allow",
+    "todowrite": "allow",
+    "task": "allow",
+    "question": "allow",
+    "external_directory": "deny",
+    "plan_exit": "deny",
+    "write_plan": "deny",
+    "async_subagent": "deny",
+    "async_command": "deny",
+    "list_sessions": "allow",
+    "introspection": "allow",
+    "read_transcript": "allow",
+    "git_add": "allow",
+    "git_commit": "allow",
+    "cut-copy-paste-mcp_cut": {
+      "*": "allow"
+    },
+    "cut-copy-paste-mcp_copy": {
+      "*": "allow"
+    },
+    "cut-copy-paste-mcp_paste": {
+      "*": "allow"
+    },
+    "serena_read_file": {
+      "*": "allow"
+    },
+    "serena_list_dir": {
+      "*": "allow"
+    },
+    "serena_find_file": {
+      "*": "allow"
+    },
+    "serena_search_for_pattern": {
+      "*": "allow"
+    },
+    "serena_get_symbols_overview": {
+      "*": "allow"
+    },
+    "serena_find_symbol": {
+      "*": "allow"
+    },
+    "serena_find_referencing_symbols": {
+      "*": "allow"
+    },
+    "serena_create_text_file": {
+      "*": "allow"
+    },
+    "serena_replace_content": {
+      "*": "allow"
+    },
+    "serena_replace_symbol_body": {
+      "*": "allow"
+    },
+    "serena_insert_after_symbol": {
+      "*": "allow"
+    },
+    "serena_insert_before_symbol": {
+      "*": "allow"
+    },
+    "serena_rename_symbol": {
+      "*": "allow"
+    },
+    "serena_delete_lines": {
+      "*": "allow"
+    },
+    "serena_insert_at_line": {
+      "*": "allow"
+    },
+    "serena_replace_lines": {
+      "*": "allow"
+    },
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_write_memory": "allow",
+    "serena_edit_memory": "allow",
+    "serena_delete_memory": "allow",
+    "serena_rename_memory": "allow",
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_get_current_config": "allow",
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny",
+    "serena_execute_shell_command": "deny"
+  }
+}

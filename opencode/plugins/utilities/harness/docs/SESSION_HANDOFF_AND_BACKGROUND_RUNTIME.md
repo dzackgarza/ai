@@ -2,8 +2,8 @@
 
 ### Current `plan_exit` behavior
 
-- `plan_exit` creates a new build session and primes it with the Build agent prompt.
-- It returns the build `Session ID` and `Title` so the user can switch sessions manually.
+- `plan_exit` creates a new orchestrator session and primes it with the Orchestrator agent prompt.
+- It returns the orchestrator `Session ID` and `Title` so the user can switch sessions manually.
 - This is intentional for now.
 
 ### Automatic session switch capability (documented, not enabled)

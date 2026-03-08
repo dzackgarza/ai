@@ -109,40 +109,69 @@
     "cc-safety-net@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest",
-    "file:///home/dzack/opencode-plugins/improved-task/src/smoke.ts",
+    "file:///home/dzack/opencode-plugins/improved-task/src/index.ts",
     "file:///home/dzack/opencode-plugins/improved-webtools/src/index.ts"
   ],
   "permission": {
-    "serena_activate_project": "allow",
-    "serena_check_onboarding_performed": "allow",
-    "serena_get_current_config": "allow",
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "edit": "deny",
+    "patch": "deny",
+    "apply_patch": "deny",
+    "bash": "deny",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todoread": "allow",
+    "todowrite": "allow",
+    "task": "allow",
+    "question": "allow",
+    "external_directory": "deny",
+    "plan_exit": "deny",
+    "write_plan": "deny",
+    "async_subagent": "deny",
+    "async_command": "deny",
+    "list_sessions": "allow",
+    "introspection": "allow",
+    "read_transcript": "allow",
+    "git_add": "deny",
+    "git_commit": "deny",
+    "cut-copy-paste-mcp_cut": "deny",
+    "cut-copy-paste-mcp_copy": "deny",
+    "cut-copy-paste-mcp_paste": "deny",
+    "serena_read_file": "deny",
+    "serena_list_dir": "deny",
+    "serena_find_file": "deny",
+    "serena_search_for_pattern": "deny",
+    "serena_get_symbols_overview": "deny",
+    "serena_find_symbol": "deny",
+    "serena_find_referencing_symbols": "deny",
+    "serena_create_text_file": "deny",
+    "serena_replace_content": "deny",
+    "serena_replace_symbol_body": "deny",
+    "serena_insert_after_symbol": "deny",
+    "serena_insert_before_symbol": "deny",
+    "serena_rename_symbol": "deny",
+    "serena_delete_lines": "deny",
+    "serena_insert_at_line": "deny",
+    "serena_replace_lines": "deny",
     "serena_read_memory": "allow",
     "serena_list_memories": "allow",
     "serena_write_memory": "allow",
     "serena_edit_memory": "allow",
     "serena_delete_memory": "allow",
     "serena_rename_memory": "allow",
-    "serena_*": "deny",
-    "webfetch": "allow",
-    "websearch": "allow",
-    "introspection": "allow",
-    "list_sessions": "allow",
-    "read_transcript": "allow",
-    "question": "allow",
-    "bash": "deny",
-    "async_command": "deny",
-    "async_subagent": "deny",
-    "git_add": "deny",
-    "git_commit": "deny",
-    "write_plan": "deny",
-    "plan_exit": "deny",
-    "serena_execute_shell_command": "deny",
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_get_current_config": "allow",
     "serena_onboarding": "deny",
     "serena_prepare_for_new_conversation": "deny",
     "serena_initial_instructions": "deny",
     "serena_think_about_collected_information": "deny",
     "serena_think_about_task_adherence": "deny",
-    "serena_think_about_whether_you_are_done": "deny"
+    "serena_think_about_whether_you_are_done": "deny",
+    "serena_execute_shell_command": "deny"
   },
   "provider": {
     "anthropic": {
@@ -996,14 +1025,12 @@
     }
   },
   "agent": {
-    "(Lattice) Build": {
-      "description": "Top-level agent for managing all lattice-related work",
+    "(Lattice) Orchestrator": {
+      "description": "Top-level orchestrator for managing lattice-related work",
       "mode": "primary",
       "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/lattice_agent/prompt.md}",
       "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1014,6 +1041,41 @@
           "*": "allow"
         },
         "list": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "allow"
+        },
+        "patch": {
+          "*": "allow"
+        },
+        "apply_patch": {
+          "*": "allow"
+        },
+        "bash": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
           "*": "allow"
         },
         "serena_read_file": {
@@ -1035,15 +1097,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "edit": {
-          "*": "allow"
-        },
-        "apply_patch": {
-          "*": "allow"
-        },
-        "patch": {
           "*": "allow"
         },
         "serena_create_text_file": {
@@ -1073,109 +1126,22 @@
         "serena_replace_lines": {
           "*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "allow"
-        },
-        "task": "allow",
-        "git_add": "allow",
-        "git_commit": "allow"
-      }
-    },
-    "Build (Custom)": {
-      "description": "Primary build orchestrator for approved plans",
-      "mode": "primary",
-      "model": "github-copilot/gpt-4.1",
-      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/build.md}",
-      "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
-        "read": {
-          "*": "allow"
-        },
-        "glob": {
-          "*": "allow"
-        },
-        "grep": {
-          "*": "allow"
-        },
-        "list": {
-          "*": "allow"
-        },
-        "serena_read_file": {
-          "*": "allow"
-        },
-        "serena_list_dir": {
-          "*": "allow"
-        },
-        "serena_find_file": {
-          "*": "allow"
-        },
-        "serena_search_for_pattern": {
-          "*": "allow"
-        },
-        "serena_get_symbols_overview": {
-          "*": "allow"
-        },
-        "serena_find_symbol": {
-          "*": "allow"
-        },
-        "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "edit": {
-          "*": "allow"
-        },
-        "apply_patch": {
-          "*": "allow"
-        },
-        "patch": {
-          "*": "allow"
-        },
-        "serena_create_text_file": {
-          "*": "allow"
-        },
-        "serena_replace_content": {
-          "*": "allow"
-        },
-        "serena_replace_symbol_body": {
-          "*": "allow"
-        },
-        "serena_insert_after_symbol": {
-          "*": "allow"
-        },
-        "serena_insert_before_symbol": {
-          "*": "allow"
-        },
-        "serena_rename_symbol": {
-          "*": "allow"
-        },
-        "serena_delete_lines": {
-          "*": "allow"
-        },
-        "serena_insert_at_line": {
-          "*": "allow"
-        },
-        "serena_replace_lines": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_cut": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "allow"
-        },
-        "task": "allow",
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       }
     },
     "Interactive": {
@@ -1183,9 +1149,6 @@
       "mode": "primary",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
       "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
-        "task": "allow",
         "read": {
           "*": "allow"
         },
@@ -1196,6 +1159,41 @@
           "*": "allow"
         },
         "list": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "allow"
+        },
+        "patch": {
+          "*": "allow"
+        },
+        "apply_patch": {
+          "*": "allow"
+        },
+        "bash": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
           "*": "allow"
         },
         "serena_read_file": {
@@ -1217,15 +1215,6 @@
           "*": "allow"
         },
         "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "edit": {
-          "*": "allow"
-        },
-        "apply_patch": {
-          "*": "allow"
-        },
-        "patch": {
           "*": "allow"
         },
         "serena_create_text_file": {
@@ -1255,16 +1244,22 @@
         "serena_replace_lines": {
           "*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "allow"
-        },
-        "bash": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       }
     },
     "Minimal": {
@@ -1272,24 +1267,76 @@
       "mode": "primary",
       "model": "github-copilot/gpt-4.1",
       "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "edit": "deny",
+        "patch": "deny",
+        "apply_patch": "deny",
         "bash": "allow",
-        "task": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
         "todoread": "allow",
         "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
         "external_directory": {
           "/tmp/opencode_test/*": "allow"
         },
-        "question": "allow"
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": "deny",
+        "cut-copy-paste-mcp_copy": "deny",
+        "cut-copy-paste-mcp_paste": "deny",
+        "serena_read_file": "deny",
+        "serena_list_dir": "deny",
+        "serena_find_file": "deny",
+        "serena_search_for_pattern": "deny",
+        "serena_get_symbols_overview": "deny",
+        "serena_find_symbol": "deny",
+        "serena_find_referencing_symbols": "deny",
+        "serena_create_text_file": "deny",
+        "serena_replace_content": "deny",
+        "serena_replace_symbol_body": "deny",
+        "serena_insert_after_symbol": "deny",
+        "serena_insert_before_symbol": "deny",
+        "serena_rename_symbol": "deny",
+        "serena_delete_lines": "deny",
+        "serena_insert_at_line": "deny",
+        "serena_replace_lines": "deny",
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/minimal.md}"
     },
-    "Plan (Custom)": {
-      "description": "Primary planning agent for executable implementation plans",
+    "Orchestrator (Custom)": {
+      "description": "Primary orchestrator for approved plans",
       "mode": "primary",
       "model": "github-copilot/gpt-4.1",
+      "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/orchestrator.md}",
       "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1300,6 +1347,41 @@
           "*": "allow"
         },
         "list": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "allow"
+        },
+        "patch": {
+          "*": "allow"
+        },
+        "apply_patch": {
+          "*": "allow"
+        },
+        "bash": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
           "*": "allow"
         },
         "serena_read_file": {
@@ -1323,7 +1405,73 @@
         "serena_find_referencing_symbols": {
           "*": "allow"
         },
+        "serena_create_text_file": {
+          "*": "allow"
+        },
+        "serena_replace_content": {
+          "*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "allow"
+        },
+        "serena_delete_lines": {
+          "*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "allow"
+        },
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
+      }
+    },
+    "Plan (Custom)": {
+      "description": "Primary planning agent for executable implementation plans",
+      "mode": "primary",
+      "model": "github-copilot/gpt-4.1",
+      "permission": {
+        "read": {
+          "*": "allow"
+        },
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
         "edit": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "patch": {
           "*": "deny",
           "*.serena/plans*": "allow"
         },
@@ -1331,9 +1479,55 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "patch": {
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "allow",
+        "write_plan": "allow",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
@@ -1371,21 +1565,22 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "task": "allow",
-        "write_plan": "allow",
-        "plan_exit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/plan.md}"
     },
@@ -1395,8 +1590,6 @@
       "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/ralph-planner.md}",
       "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1408,6 +1601,47 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "allow",
+        "write_plan": "allow",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
         },
         "serena_read_file": {
           "*": "allow"
@@ -1429,18 +1663,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
@@ -1478,21 +1700,22 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "task": "allow",
-        "write_plan": "allow",
-        "plan_exit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       }
     },
     "Repository Steward": {
@@ -1501,8 +1724,6 @@
       "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
       "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1514,6 +1735,47 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "allow",
+        "write_plan": "allow",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
         },
         "serena_read_file": {
           "*": "allow"
@@ -1535,18 +1797,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
@@ -1584,21 +1834,22 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "task": "allow",
-        "write_plan": "allow",
-        "plan_exit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       }
     },
     "Zotero Librarian": {
@@ -1607,187 +1858,80 @@
       "model": "github-copilot/gpt-4.1",
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
       "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
-        "task": "allow",
-        "read": {
-          "*": "allow"
-        },
-        "glob": {
-          "*": "allow"
-        },
-        "grep": {
-          "*": "allow"
-        },
-        "list": {
-          "*": "allow"
-        },
-        "serena_read_file": {
-          "*": "allow"
-        },
-        "serena_list_dir": {
-          "*": "allow"
-        },
-        "serena_find_file": {
-          "*": "allow"
-        },
-        "serena_search_for_pattern": {
-          "*": "allow"
-        },
-        "serena_get_symbols_overview": {
-          "*": "allow"
-        },
-        "serena_find_symbol": {
-          "*": "allow"
-        },
-        "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
         "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
           "*": "deny"
         },
         "patch": {
           "*": "deny"
         },
-        "serena_create_text_file": {
+        "apply_patch": {
           "*": "deny"
         },
-        "serena_replace_content": {
-          "*": "deny"
-        },
-        "serena_replace_symbol_body": {
-          "*": "deny"
-        },
-        "serena_insert_after_symbol": {
-          "*": "deny"
-        },
-        "serena_insert_before_symbol": {
-          "*": "deny"
-        },
-        "serena_rename_symbol": {
-          "*": "deny"
-        },
-        "serena_delete_lines": {
-          "*": "deny"
-        },
-        "serena_insert_at_line": {
-          "*": "deny"
-        },
-        "serena_replace_lines": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
-      }
-    },
-    "build": {
-      "model": "github-copilot/gpt-4.1",
-      "disable": true,
-      "permission": {
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
         "todoread": "allow",
         "todowrite": "allow",
-        "read": {
-          "*": "allow"
-        },
-        "glob": {
-          "*": "allow"
-        },
-        "grep": {
-          "*": "allow"
-        },
-        "list": {
-          "*": "allow"
-        },
-        "serena_read_file": {
-          "*": "allow"
-        },
-        "serena_list_dir": {
-          "*": "allow"
-        },
-        "serena_find_file": {
-          "*": "allow"
-        },
-        "serena_search_for_pattern": {
-          "*": "allow"
-        },
-        "serena_get_symbols_overview": {
-          "*": "allow"
-        },
-        "serena_find_symbol": {
-          "*": "allow"
-        },
-        "serena_find_referencing_symbols": {
-          "*": "allow"
-        },
-        "edit": {
-          "*": "allow"
-        },
-        "apply_patch": {
-          "*": "allow"
-        },
-        "patch": {
-          "*": "allow"
-        },
-        "serena_create_text_file": {
-          "*": "allow"
-        },
-        "serena_replace_content": {
-          "*": "allow"
-        },
-        "serena_replace_symbol_body": {
-          "*": "allow"
-        },
-        "serena_insert_after_symbol": {
-          "*": "allow"
-        },
-        "serena_insert_before_symbol": {
-          "*": "allow"
-        },
-        "serena_rename_symbol": {
-          "*": "allow"
-        },
-        "serena_delete_lines": {
-          "*": "allow"
-        },
-        "serena_insert_at_line": {
-          "*": "allow"
-        },
-        "serena_replace_lines": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_cut": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "allow"
-        },
         "task": "allow",
-        "git_add": "allow",
-        "git_commit": "allow"
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": "deny",
+        "cut-copy-paste-mcp_copy": "deny",
+        "cut-copy-paste-mcp_paste": "deny",
+        "serena_read_file": "deny",
+        "serena_list_dir": "deny",
+        "serena_find_file": "deny",
+        "serena_search_for_pattern": "deny",
+        "serena_get_symbols_overview": "deny",
+        "serena_find_symbol": "deny",
+        "serena_find_referencing_symbols": "deny",
+        "serena_create_text_file": "deny",
+        "serena_replace_content": "deny",
+        "serena_replace_symbol_body": "deny",
+        "serena_insert_after_symbol": "deny",
+        "serena_insert_before_symbol": "deny",
+        "serena_rename_symbol": "deny",
+        "serena_delete_lines": "deny",
+        "serena_insert_at_line": "deny",
+        "serena_replace_lines": "deny",
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       }
     },
     "compaction": {
       "model": "github-copilot/gpt-4.1"
     },
-    "plan": {
+    "orchestrator": {
       "model": "github-copilot/gpt-4.1",
       "disable": true,
       "permission": {
-        "todoread": "allow",
-        "todowrite": "allow",
         "read": {
           "*": "allow"
         },
@@ -1798,6 +1942,41 @@
           "*": "allow"
         },
         "list": {
+          "*": "allow"
+        },
+        "edit": {
+          "*": "allow"
+        },
+        "patch": {
+          "*": "allow"
+        },
+        "apply_patch": {
+          "*": "allow"
+        },
+        "bash": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
           "*": "allow"
         },
         "serena_read_file": {
@@ -1821,7 +2000,72 @@
         "serena_find_referencing_symbols": {
           "*": "allow"
         },
+        "serena_create_text_file": {
+          "*": "allow"
+        },
+        "serena_replace_content": {
+          "*": "allow"
+        },
+        "serena_replace_symbol_body": {
+          "*": "allow"
+        },
+        "serena_insert_after_symbol": {
+          "*": "allow"
+        },
+        "serena_insert_before_symbol": {
+          "*": "allow"
+        },
+        "serena_rename_symbol": {
+          "*": "allow"
+        },
+        "serena_delete_lines": {
+          "*": "allow"
+        },
+        "serena_insert_at_line": {
+          "*": "allow"
+        },
+        "serena_replace_lines": {
+          "*": "allow"
+        },
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
+      }
+    },
+    "plan": {
+      "model": "github-copilot/gpt-4.1",
+      "disable": true,
+      "permission": {
+        "read": {
+          "*": "allow"
+        },
+        "glob": {
+          "*": "allow"
+        },
+        "grep": {
+          "*": "allow"
+        },
+        "list": {
+          "*": "allow"
+        },
         "edit": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "patch": {
           "*": "deny",
           "*.serena/plans*": "allow"
         },
@@ -1829,9 +2073,55 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "patch": {
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "allow",
+        "todowrite": "allow",
+        "task": "allow",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "allow",
+        "write_plan": "allow",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
           "*": "deny",
           "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*.serena/plans*": "allow"
+        },
+        "serena_read_file": {
+          "*": "allow"
+        },
+        "serena_list_dir": {
+          "*": "allow"
+        },
+        "serena_find_file": {
+          "*": "allow"
+        },
+        "serena_search_for_pattern": {
+          "*": "allow"
+        },
+        "serena_get_symbols_overview": {
+          "*": "allow"
+        },
+        "serena_find_symbol": {
+          "*": "allow"
+        },
+        "serena_find_referencing_symbols": {
+          "*": "allow"
         },
         "serena_create_text_file": {
           "*": "deny",
@@ -1869,21 +2159,22 @@
           "*": "deny",
           "*.serena/plans*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*.serena/plans*": "allow"
-        },
-        "task": "allow",
-        "write_plan": "allow",
-        "plan_exit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       }
     },
     "summary": {
@@ -1897,12 +2188,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -1914,6 +2199,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -1935,15 +2255,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -1972,15 +2283,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_internet_researcher/prompt.md}"
     },
@@ -1989,12 +2307,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -2006,6 +2318,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -2027,15 +2374,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -2064,15 +2402,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_checklist_completionist/prompt.md}"
     },
@@ -2081,12 +2426,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -2098,6 +2437,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -2119,15 +2493,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -2156,15 +2521,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_documentation_librarian/prompt.md}"
     },
@@ -2173,12 +2545,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -2190,6 +2556,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -2211,15 +2612,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -2248,15 +2640,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_coverage_auditor/prompt.md}"
     },
@@ -2265,12 +2664,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -2302,6 +2695,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -2359,18 +2793,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -2407,20 +2829,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_algorithm_porter/prompt.md}"
     },
@@ -2429,12 +2853,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -2466,6 +2884,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -2523,18 +2982,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -2571,20 +3018,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_designer/prompt.md}"
     },
@@ -2593,12 +3042,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -2630,6 +3073,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -2687,18 +3171,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -2735,20 +3207,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_implementer/prompt.md}"
     },
@@ -2757,12 +3231,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*tests*": "allow",
@@ -2794,6 +3262,53 @@
           "*.serena/plans*": "allow",
           "*src*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -2851,21 +3366,6 @@
           "*src*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*tests*": "allow",
@@ -2911,23 +3411,22 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_tdd_writer/prompt.md}"
     },
@@ -2936,12 +3435,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*tests*": "allow",
@@ -2973,6 +3466,53 @@
           "*.serena/plans*": "allow",
           "*src*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -3030,21 +3570,6 @@
           "*src*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*tests*": "allow",
@@ -3090,23 +3615,22 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_test_method_writer/prompt.md}"
     },
@@ -3115,12 +3639,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3132,6 +3650,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3153,15 +3706,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3190,15 +3734,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-explorer.md}"
     },
@@ -3207,12 +3758,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3224,6 +3769,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3245,15 +3825,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3282,15 +3853,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/researcher.md}"
     },
@@ -3299,12 +3877,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3316,6 +3888,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3337,15 +3944,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3374,15 +3972,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/repo-explorer.md}"
     },
@@ -3391,12 +3996,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3408,6 +4007,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3429,15 +4063,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3466,15 +4091,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/code-reviewer.md}"
     },
@@ -3483,12 +4115,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3500,6 +4126,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3521,15 +4182,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3558,15 +4210,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-contract-validator.md}"
     },
@@ -3575,12 +4234,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3592,6 +4245,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3613,15 +4301,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3650,15 +4329,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/plan-reviewer.md}"
     },
@@ -3667,12 +4353,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3684,6 +4364,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3705,15 +4420,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3742,15 +4448,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/semantic-auditor.md}"
     },
@@ -3759,12 +4472,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -3776,6 +4483,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -3797,15 +4539,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -3834,15 +4567,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-compliance-reviewer.md}"
     },
@@ -3851,12 +4591,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*docs*": "allow",
@@ -3888,6 +4622,47 @@
           "*src*": "deny",
           "*test*": "deny",
           "*tests*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*docs*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*docs*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*docs*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*docs*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*docs*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*docs*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -3945,18 +4720,6 @@
           "*test*": "deny",
           "*tests*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*docs*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*docs*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*docs*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*docs*": "allow"
@@ -3993,20 +4756,22 @@
           "*": "deny",
           "*docs*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*docs*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*docs*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*docs*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/project-initializer.md}"
     },
@@ -4015,12 +4780,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -4052,6 +4811,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -4109,18 +4909,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -4157,20 +4945,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/general_code_writer.md}"
     },
@@ -4179,12 +4969,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -4216,6 +5000,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -4273,18 +5098,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -4321,20 +5134,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
     },
@@ -4343,12 +5158,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -4380,6 +5189,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -4437,18 +5287,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -4485,20 +5323,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/refactorer.md}"
     },
@@ -4507,12 +5347,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -4544,6 +5378,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -4601,18 +5476,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -4649,20 +5512,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/sagemath_code_writer.md}"
     },
@@ -4671,12 +5536,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*tests*": "allow",
@@ -4708,6 +5567,53 @@
           "*.serena/plans*": "allow",
           "*src*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*tests*": "allow",
+          "*test*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -4765,21 +5671,6 @@
           "*src*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*tests*": "allow",
@@ -4825,23 +5716,22 @@
           "*tests*": "allow",
           "*test*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*tests*": "allow",
-          "*test*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/test-writer.md}"
     },
@@ -4850,12 +5740,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "deny",
           "*src*": "allow",
@@ -4887,6 +5771,47 @@
           "*test*": "deny",
           "*tests*": "deny",
           "*docs*": "deny"
+        },
+        "edit": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "allow",
+        "git_commit": "allow",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny",
+          "*src*": "allow"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny",
+          "*src*": "allow"
         },
         "serena_read_file": {
           "*": "deny",
@@ -4944,18 +5869,6 @@
           "*tests*": "deny",
           "*docs*": "deny"
         },
-        "edit": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "apply_patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "patch": {
-          "*": "deny",
-          "*src*": "allow"
-        },
         "serena_create_text_file": {
           "*": "deny",
           "*src*": "allow"
@@ -4992,20 +5905,22 @@
           "*": "deny",
           "*src*": "allow"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny",
-          "*src*": "allow"
-        },
-        "git_add": "allow",
-        "git_commit": "allow"
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       },
       "prompt": "{file:/home/dzack/ai/prompts/subagents/typescript_code_writer.md}"
     },
@@ -5017,12 +5932,6 @@
       "mode": "subagent",
       "model": "github-copilot/gpt-4.1",
       "permission": {
-        "task": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "plan_exit": "deny",
-        "async_command": "deny",
-        "async_subagent": "deny",
         "read": {
           "*": "allow"
         },
@@ -5034,6 +5943,41 @@
         },
         "list": {
           "*": "allow"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "patch": {
+          "*": "deny"
+        },
+        "apply_patch": {
+          "*": "deny"
+        },
+        "bash": "deny",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "task": "deny",
+        "question": "allow",
+        "external_directory": "deny",
+        "plan_exit": "deny",
+        "write_plan": "deny",
+        "async_subagent": "deny",
+        "async_command": "deny",
+        "list_sessions": "allow",
+        "introspection": "allow",
+        "read_transcript": "allow",
+        "git_add": "deny",
+        "git_commit": "deny",
+        "cut-copy-paste-mcp_cut": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_copy": {
+          "*": "deny"
+        },
+        "cut-copy-paste-mcp_paste": {
+          "*": "deny"
         },
         "serena_read_file": {
           "*": "allow"
@@ -5055,15 +5999,6 @@
         },
         "serena_find_referencing_symbols": {
           "*": "allow"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "apply_patch": {
-          "*": "deny"
-        },
-        "patch": {
-          "*": "deny"
         },
         "serena_create_text_file": {
           "*": "deny"
@@ -5092,15 +6027,22 @@
         "serena_replace_lines": {
           "*": "deny"
         },
-        "cut-copy-paste-mcp_cut": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_copy": {
-          "*": "deny"
-        },
-        "cut-copy-paste-mcp_paste": {
-          "*": "deny"
-        }
+        "serena_read_memory": "allow",
+        "serena_list_memories": "allow",
+        "serena_write_memory": "allow",
+        "serena_edit_memory": "allow",
+        "serena_delete_memory": "allow",
+        "serena_rename_memory": "allow",
+        "serena_activate_project": "allow",
+        "serena_check_onboarding_performed": "allow",
+        "serena_get_current_config": "allow",
+        "serena_onboarding": "deny",
+        "serena_prepare_for_new_conversation": "deny",
+        "serena_initial_instructions": "deny",
+        "serena_think_about_collected_information": "deny",
+        "serena_think_about_task_adherence": "deny",
+        "serena_think_about_whether_you_are_done": "deny",
+        "serena_execute_shell_command": "deny"
       }
     }
   }

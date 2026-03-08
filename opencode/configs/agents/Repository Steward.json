@@ -4,8 +4,6 @@
   "model": "github-copilot/gpt-4.1",
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
   "permission": {
-    "todoread": "allow",
-    "todowrite": "allow",
     "read": {
       "*": "allow"
     },
@@ -17,6 +15,47 @@
     },
     "list": {
       "*": "allow"
+    },
+    "edit": {
+      "*": "deny",
+      "*.serena/plans*": "allow"
+    },
+    "patch": {
+      "*": "deny",
+      "*.serena/plans*": "allow"
+    },
+    "apply_patch": {
+      "*": "deny",
+      "*.serena/plans*": "allow"
+    },
+    "bash": "deny",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todoread": "allow",
+    "todowrite": "allow",
+    "task": "allow",
+    "question": "allow",
+    "external_directory": "deny",
+    "plan_exit": "allow",
+    "write_plan": "allow",
+    "async_subagent": "deny",
+    "async_command": "deny",
+    "list_sessions": "allow",
+    "introspection": "allow",
+    "read_transcript": "allow",
+    "git_add": "deny",
+    "git_commit": "deny",
+    "cut-copy-paste-mcp_cut": {
+      "*": "deny",
+      "*.serena/plans*": "allow"
+    },
+    "cut-copy-paste-mcp_copy": {
+      "*": "deny",
+      "*.serena/plans*": "allow"
+    },
+    "cut-copy-paste-mcp_paste": {
+      "*": "deny",
+      "*.serena/plans*": "allow"
     },
     "serena_read_file": {
       "*": "allow"
@@ -38,18 +77,6 @@
     },
     "serena_find_referencing_symbols": {
       "*": "allow"
-    },
-    "edit": {
-      "*": "deny",
-      "*.serena/plans*": "allow"
-    },
-    "apply_patch": {
-      "*": "deny",
-      "*.serena/plans*": "allow"
-    },
-    "patch": {
-      "*": "deny",
-      "*.serena/plans*": "allow"
     },
     "serena_create_text_file": {
       "*": "deny",
@@ -87,20 +114,21 @@
       "*": "deny",
       "*.serena/plans*": "allow"
     },
-    "cut-copy-paste-mcp_cut": {
-      "*": "deny",
-      "*.serena/plans*": "allow"
-    },
-    "cut-copy-paste-mcp_copy": {
-      "*": "deny",
-      "*.serena/plans*": "allow"
-    },
-    "cut-copy-paste-mcp_paste": {
-      "*": "deny",
-      "*.serena/plans*": "allow"
-    },
-    "task": "allow",
-    "write_plan": "allow",
-    "plan_exit": "allow"
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_write_memory": "allow",
+    "serena_edit_memory": "allow",
+    "serena_delete_memory": "allow",
+    "serena_rename_memory": "allow",
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_get_current_config": "allow",
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny",
+    "serena_execute_shell_command": "deny"
   }
 }

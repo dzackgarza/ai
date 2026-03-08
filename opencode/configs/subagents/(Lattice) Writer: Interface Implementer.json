@@ -3,12 +3,6 @@
   "mode": "subagent",
   "model": "github-copilot/gpt-4.1",
   "permission": {
-    "task": "deny",
-    "todoread": "deny",
-    "todowrite": "deny",
-    "plan_exit": "deny",
-    "async_command": "deny",
-    "async_subagent": "deny",
     "read": {
       "*": "deny",
       "*src*": "allow",
@@ -40,6 +34,47 @@
       "*test*": "deny",
       "*tests*": "deny",
       "*docs*": "deny"
+    },
+    "edit": {
+      "*": "deny",
+      "*src*": "allow"
+    },
+    "patch": {
+      "*": "deny",
+      "*src*": "allow"
+    },
+    "apply_patch": {
+      "*": "deny",
+      "*src*": "allow"
+    },
+    "bash": "deny",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todoread": "deny",
+    "todowrite": "deny",
+    "task": "deny",
+    "question": "allow",
+    "external_directory": "deny",
+    "plan_exit": "deny",
+    "write_plan": "deny",
+    "async_subagent": "deny",
+    "async_command": "deny",
+    "list_sessions": "allow",
+    "introspection": "allow",
+    "read_transcript": "allow",
+    "git_add": "allow",
+    "git_commit": "allow",
+    "cut-copy-paste-mcp_cut": {
+      "*": "deny",
+      "*src*": "allow"
+    },
+    "cut-copy-paste-mcp_copy": {
+      "*": "deny",
+      "*src*": "allow"
+    },
+    "cut-copy-paste-mcp_paste": {
+      "*": "deny",
+      "*src*": "allow"
     },
     "serena_read_file": {
       "*": "deny",
@@ -97,18 +132,6 @@
       "*tests*": "deny",
       "*docs*": "deny"
     },
-    "edit": {
-      "*": "deny",
-      "*src*": "allow"
-    },
-    "apply_patch": {
-      "*": "deny",
-      "*src*": "allow"
-    },
-    "patch": {
-      "*": "deny",
-      "*src*": "allow"
-    },
     "serena_create_text_file": {
       "*": "deny",
       "*src*": "allow"
@@ -145,20 +168,22 @@
       "*": "deny",
       "*src*": "allow"
     },
-    "cut-copy-paste-mcp_cut": {
-      "*": "deny",
-      "*src*": "allow"
-    },
-    "cut-copy-paste-mcp_copy": {
-      "*": "deny",
-      "*src*": "allow"
-    },
-    "cut-copy-paste-mcp_paste": {
-      "*": "deny",
-      "*src*": "allow"
-    },
-    "git_add": "allow",
-    "git_commit": "allow"
+    "serena_read_memory": "allow",
+    "serena_list_memories": "allow",
+    "serena_write_memory": "allow",
+    "serena_edit_memory": "allow",
+    "serena_delete_memory": "allow",
+    "serena_rename_memory": "allow",
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "allow",
+    "serena_get_current_config": "allow",
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny",
+    "serena_execute_shell_command": "deny"
   },
   "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_implementer/prompt.md}"
 }

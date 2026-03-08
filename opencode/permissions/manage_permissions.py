@@ -395,7 +395,7 @@ ALLOW_STANDARD_BASH = make_bash_rules(
 class AgentDef:
     """Defines an agent's permissions via tags, capabilities, and overrides.
 
-    tags:           Set of category labels (e.g. {"primary", "builder"}).
+    tags:           Set of category labels (e.g. {"primary", "orchestrator"}).
                     TAG_RULES matching these tags are applied in order.
     caps:           List of permission dicts (from capability functions).
                     Applied after TAG_RULES.
@@ -576,16 +576,16 @@ AGENTS = {
         caps=[read_all(), write_in("*.serena/plans*"),
               {"task": "allow", "write_plan": "allow"}, {"plan_exit": "allow"}],
     ),
-    "Build (Custom)": AgentDef(
-        tags={"primary", "builder"},
+    "Orchestrator (Custom)": AgentDef(
+        tags={"primary", "orchestrator"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
     ),
-    "build": AgentDef(
-        tags={"primary", "builder"},
+    "orchestrator": AgentDef(
+        tags={"primary", "orchestrator"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
     ),
-    "(Lattice) Build": AgentDef(
-        tags={"primary", "builder", "lattice"},
+    "(Lattice) Orchestrator": AgentDef(
+        tags={"primary", "orchestrator", "lattice"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
     ),
     "Zotero Librarian": AgentDef(

@@ -34,7 +34,7 @@ The skeleton is for **top-level defaults only** (MCP, permissions, formatter, LS
 To make config changes persist:
 
 ### For permissions changes:
-1. Edit `opencode/scripts/manage_permissions.py` (AGENTS dict, TAG_RULES, capabilities)
+1. Edit `opencode/permissions/manage_permissions.py` (AGENTS dict, TAG_RULES, capabilities)
 2. Run `python3 scripts/manage_permissions.py --apply`
 3. Run `python3 scripts/build_config.py`
 
@@ -54,7 +54,7 @@ configs/
 │   └── ...
 ├── agents/               # Primary agent definitions (mode: "primary")
 │   ├── Interactive.json
-│   ├── Build (Custom).json
+│   ├── Orchestrator (Custom).json
 │   └── ...
 └── subagents/            # Subagent definitions (mode: "subagent")
     ├── general.json
@@ -76,7 +76,7 @@ Permissions are managed in TWO steps:
 
 ### Step 1: scripts/manage_permissions.py (Source of Truth)
 
-Located at `opencode/scripts/manage_permissions.py` — defines permission logic via:
+Located at `opencode/permissions/manage_permissions.py` — defines permission logic via:
 
 - **TAG_RULES**: Base permissions by agent type (primary, subagent)
 - **Capabilities**: Composable permission functions (`read_all()`, `write_in()`, etc.)

@@ -14,15 +14,15 @@ This document defines role boundaries, delegation policy, and permission design 
 
 1. **Role separation is mandatory**:
    - Exploration, implementation, and verification must be distinct roles.
-2. **Builder owns delegation**:
+2. **Orchestrator owns delegation**:
    - Planner does not assign workers.
-   - Builder chooses which subagents execute each plan item.
+   - Orchestrator chooses which subagents execute each plan item.
 3. **Planner translates specs to plans**:
    - Planner ingests user/client specs and outputs structured execution plans.
 4. **Rubric-based verification, not machine-check heuristics**:
    - In 2026, review quality comes from model-graded rubrics and review subagents.
 5. **Single authority for integration**:
-   - Final branch integration and canonical commits are controlled by Builder.
+   - Final branch integration and canonical commits are controlled by Orchestrator.
 6. **Permission policy is capability-first**:
    - Shared behavior lives in top-level reusable rule sets.
    - Agent profiles compose capabilities.
@@ -50,7 +50,7 @@ Must not do:
 - Subagent assignment decisions.
 - Final integration decisions.
 
-## 3.2 Builder (Orchestrator + Integrator)
+## 3.2 Orchestrator (Delegator + Integrator)
 
 Purpose:
 - Execute the plan by assigning work, coordinating subagents, auditing outputs, and integrating final changes.
@@ -115,7 +115,7 @@ Purpose:
 - Implement documentation updates in `docs/` only.
 
 Must not do:
-- Make source or test changes unless explicitly escalated to Builder.
+- Make source or test changes unless explicitly escalated to Orchestrator.
 
 ## 3.5 Reviewer / Auditor
 
@@ -134,7 +134,7 @@ Must not do:
 ## 3.6 Interactive Agent (General Purpose, Non-Cycle)
 
 Purpose:
-- Handle ad hoc interactive work that is not part of a long-lived plan -> build cycle.
+- Handle ad hoc interactive work that is not part of a long-lived plan -> orchestrator cycle.
 
 Typical tasks:
 - quick debugging
@@ -145,10 +145,10 @@ Typical tasks:
 Must do:
 - stay responsive and conversational
 - avoid unnecessary subagent fan-out for trivial tasks
-- escalate to Builder-led cycle when scope grows beyond interactive bounds
+- escalate to Orchestrator-led cycle when scope grows beyond interactive bounds
 
 Must not do:
-- impersonate full orchestration authority of Builder
+- impersonate full orchestration authority of Orchestrator
 - bypass review for risky or high-blast-radius changes
 
 ## 4. Cost/Quality Strategy by Role
@@ -179,7 +179,7 @@ Escalation triggers from cheap/free to strong:
    - Output: structured plan + rubric.
 2. **Plan Review** (Reviewer)
    - Output: approved or revised plan/rubric.
-3. **Delegation Design** (Builder)
+3. **Delegation Design** (Orchestrator)
    - Output: task allocation to subagent roles/models.
 4. **Exploration** (Explorer)
    - Output: evidence package for implementation.
@@ -187,7 +187,7 @@ Escalation triggers from cheap/free to strong:
    - Output: scoped diffs + local verification evidence.
 6. **Independent Verification** (Reviewer/Auditor)
    - Output: rubric score + required fixes.
-7. **Integration** (Builder)
+7. **Integration** (Orchestrator)
    - Output: final composed diff, final checks, canonical commits.
 
 No stage may self-certify its own output for the next gate.
@@ -197,11 +197,11 @@ No stage may self-certify its own output for the next gate.
 This mode intentionally prevents Source and Test writers from reading each other's directories and is the default policy.
 
 1. Planner produces behavior spec + rubric in `.serena/plans/`.
-2. Builder assigns Test Writer first.
+2. Orchestrator assigns Test Writer first.
 3. Test Writer writes tests from spec/rubric without `src/` visibility.
-4. Builder assigns Source Writer with spec/rubric and test-failure signals, without test file visibility.
+4. Orchestrator assigns Source Writer with spec/rubric and test-failure signals, without test file visibility.
 5. Reviewer/Auditor validates full behavior with full visibility.
-6. Builder decides iterations and integrates final result.
+6. Orchestrator decides iterations and integrates final result.
 
 Rationale:
 - Prevents implementation-coupled test gaming.
@@ -209,7 +209,7 @@ Rationale:
 - Improves confidence that tests describe intended behavior rather than mirrored internals.
 
 Opt-out rule:
-- Builder may request temporary visibility exceptions only with explicit justification recorded in the plan.
+- Orchestrator may request temporary visibility exceptions only with explicit justification recorded in the plan.
 
 ## 5.2 Interactive Workflow (Outside Plan-Build Cycle)
 
@@ -217,7 +217,7 @@ This path is for general interactive work that does not need full pipeline orche
 
 1. Interactive agent scopes the task.
 2. Interactive agent executes directly when low-risk and local.
-3. Interactive agent escalates to Planner + Builder cycle when complexity/risk exceeds interactive policy thresholds.
+3. Interactive agent escalates to Planner + Orchestrator cycle when complexity/risk exceeds interactive policy thresholds.
 
 Escalation triggers:
 - multi-stage or multi-role coordination needed
@@ -240,9 +240,9 @@ Permissions should be composed in this order (least specific -> most specific):
    - applies to all subagents
    - default recursion controls live here
 4. **TOP_LEVEL_AGENTS_BASELINE**
-   - applies to primary agents (`Planner`, `Builder`, `Interactive`, etc.)
+   - applies to primary agents (`Planner`, `Orchestrator`, `Interactive`, etc.)
 5. **ROLE_PROFILE**
-   - role-specific permissions (`planner`, `builder`, `src_writer_strict`, `reviewer`, `interactive_general`)
+   - role-specific permissions (`planner`, `orchestrator`, `src_writer_strict`, `reviewer`, `interactive_general`)
 6. **NARROW_EXCEPTIONS**
    - explicit, documented deviations for special cases
 
@@ -262,10 +262,10 @@ For **ALL_SUBAGENTS** by default:
 Rationale:
 - prevents uncontrolled recursion
 - prevents cost blowups from delegation trees
-- keeps responsibility on Builder for assignment and orchestration
+- keeps responsibility on Orchestrator for assignment and orchestration
 
 Allowed exception:
-- only dedicated coordinator subagents, explicitly designated by Builder policy, may receive `task`/`todoread`/`todowrite`: allow.
+- only dedicated coordinator subagents, explicitly designated by Orchestrator policy, may receive `task`/`todoread`/`todowrite`: allow.
 
 For **ALL_AGENTS**:
 - `bash`: deny by default at global baseline
@@ -278,7 +278,7 @@ For **ALL_AGENTS**:
 For **PURE_AGENTS** (all non-subagent agents, including top-level roles):
 - allow coordination surfaces: `task`, `todoread`, `todowrite`
 - allow `introspection`, `list_sessions`, and `read_transcript`
-- keep role-specific scope controls in profile layers (`planner`, `builder`, `interactive`, etc.)
+- keep role-specific scope controls in profile layers (`planner`, `orchestrator`, `interactive`, etc.)
 
 ## 6.0 Directory Layout Assumptions for Policy
 
@@ -289,7 +289,7 @@ Policy assumes these structured directories exist and are stable:
 - `src/`
 - `test/` and/or `tests/`
 
-If a repository deviates, Builder must adapt profiles while preserving the same isolation intent.
+If a repository deviates, Orchestrator must adapt profiles while preserving the same isolation intent.
 
 ## 6.1 Planner permissions
 
@@ -303,7 +303,7 @@ Deny:
 - git mutation
 - final integration commands
 
-## 6.2 Builder permissions
+## 6.2 Orchestrator permissions
 
 Allow:
 - broad read
@@ -344,7 +344,7 @@ Allow:
 Deny:
 - read/write `test/`
 - read/write `tests/`
-- read/write `docs/` (unless explicitly required by Builder)
+- read/write `docs/` (unless explicitly required by Orchestrator)
 
 ### 6.4.B Test Writer (strict profile, default)
 
@@ -354,7 +354,7 @@ Allow:
 
 Deny:
 - read/write `src/`
-- read/write `docs/` (unless explicitly required by Builder)
+- read/write `docs/` (unless explicitly required by Orchestrator)
 
 ### 6.4.C Docs Writer (strict profile, default)
 
@@ -387,23 +387,23 @@ Allow:
 Deny:
 - broad orchestration permissions by default
 - unrestricted recursive delegation
-- canonical integration actions reserved for Builder in cycle-mode work
+- canonical integration actions reserved for Orchestrator in cycle-mode work
 
 ## 7. Git Ownership Policy
 
 Recommended default:
-- **Builder owns canonical branch history**.
+- **Orchestrator owns canonical branch history**.
 - Writers operate in isolated worktrees.
 - Writers may optionally create local checkpoint commits for structure.
-- Builder integrates approved work via cherry-pick/squash and performs final commit.
+- Orchestrator integrates approved work via cherry-pick/squash and performs final commit.
 
 Tradeoffs:
 
-- Builder-only commits:
+- Orchestrator-only commits:
   - Pros: clean authoritative history, centralized accountability.
-  - Cons: higher builder load.
+  - Cons: higher orchestrator load.
 - Writer commits everywhere:
-  - Pros: autonomy, less builder overhead.
+  - Pros: autonomy, less orchestrator overhead.
   - Cons: inconsistent quality bars, harder policy enforcement.
 - Worktree isolation:
   - Pros: safer parallelism, clearer ownership, reduced accidental overlap.
@@ -420,7 +420,7 @@ Additional recommendation:
   - key outputs
   - unresolved risks
 - Independent reviewer must re-grade against rubric.
-- Builder samples strong-model audits even when cheap model passes.
+- Orchestrator samples strong-model audits even when cheap model passes.
 - Repeated low-quality completions trigger automatic model escalation.
 - “No evidence, no done” policy.
 
@@ -464,9 +464,9 @@ Do not rely on direct edits to generated permission blocks in `configs/agents/*.
 ## 11. Default Boundary Recommendations
 
 - Keep Planner plan-focused and non-delegating.
-- Make Builder the delegation authority and integration authority.
+- Make Orchestrator the delegation authority and integration authority.
 - Disable `task`, `todoread`, and `todowrite` on subagents by default to prevent recursion; whitelist only dedicated coordinator subagents.
-- Use Interactive agent profile for ad hoc work outside plan-build cycle.
+- Use Interactive agent profile for ad hoc work outside plan-orchestrator cycle.
 - Force role separation:
   - Explorers cannot write.
   - Source Writers and Test Writers are mutually blind by default.
