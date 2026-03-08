@@ -7,7 +7,7 @@
  * the Python bridge process, and deserialises the response.
  *
  * Usage:
- *   import { callLLM, loadMicroAgent, renderTemplate } from "../../utilities/shared/llm";
+ *   import { callLLM, loadMicroAgent, renderTemplate, runMicroAgent } from "../../utilities/shared/llm";
  *
  *   const result = await callLLM<{ tier: string; reasoning: string }>({
  *     models: ["groq/llama-3.3-70b-versatile"],
@@ -18,6 +18,11 @@
  *   const agent = await loadMicroAgent("/abs/path/to/prompt.md");
  *   // agent.system  — system prompt string
  *   // agent.body    — Jinja2 template body (already rendered by Python if needed)
+ *
+ *   const classification = await runMicroAgent<{ tier: string; reasoning: string }>(
+ *     "/abs/path/to/prompt.md",
+ *     { prompt: "Describe every tool you have access to." },
+ *   );
  */
 
 import { spawnSync } from "child_process";
@@ -28,6 +33,7 @@ const _dir = dirname(fileURLToPath(import.meta.url));
 
 const OPENCODE_ROOT = resolve(_dir, "../../../");
 const PYTHON = resolve(_dir, "../../../.venv/bin/python");
+const RUN_MICRO_AGENT = resolve(_dir, "../../../../scripts/run_micro_agent.py");
 const UV = "uv";
 
 // ---------------------------------------------------------------------------
@@ -121,6 +127,49 @@ export async function renderTemplate(
   } as any);
   if (!res.ok) throw new Error(`scripts.llm render error: ${res.error}`);
   return res.result;
+}
+
+// ---------------------------------------------------------------------------
+// runMicroAgent — invoke the canonical CLI runner for a prompt template
+// ---------------------------------------------------------------------------
+
+export async function runMicroAgent<T = string>(
+  path: string,
+  variables: Record<string, string>,
+  options?: { model?: string; temperature?: number },
+): Promise<T> {
+  const args = ["run", "--active", "--python", PYTHON, RUN_MICRO_AGENT, path];
+  for (const [key, value] of Object.entries(variables)) {
+    args.push("--var", `${key}=${value}`);
+  }
+  if (options?.model) {
+    args.push("--model", options.model);
+  }
+  if (options?.temperature !== undefined) {
+    args.push("--temperature", String(options.temperature));
+  }
+
+  const proc = spawnSync(UV, args, {
+    cwd: OPENCODE_ROOT,
+    encoding: "utf8",
+    timeout: 60_000,
+  });
+
+  if (proc.error) {
+    throw new Error(`scripts.llm runner spawn error: ${proc.error.message}`);
+  }
+  if (proc.status !== 0) {
+    const stderr = proc.stderr?.trim() ?? "";
+    throw new Error(
+      `scripts.run_micro_agent exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
+    );
+  }
+
+  try {
+    return JSON.parse(proc.stdout) as T;
+  } catch {
+    throw new Error(`run_micro_agent returned non-JSON: ${proc.stdout?.slice(0, 200)}`);
+  }
 }
 
 // ---------------------------------------------------------------------------

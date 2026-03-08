@@ -17,9 +17,8 @@ import { resolve, dirname } from "path";
 import type { Plugin } from "@opencode-ai/plugin";
 import type { TextPart, UserMessage } from "@opencode-ai/sdk";
 import {
-  callLLM,
-  loadMicroAgent,
   renderTemplate,
+  runMicroAgent,
 } from "../../utilities/shared/llm";
 
 const _dir = dirname(fileURLToPath(import.meta.url));
@@ -36,21 +35,6 @@ const RESPONSE_TEMPLATE_PATH = resolve(
 );
 
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
-
-// ---------------------------------------------------------------------------
-// Model list — ordered by preference; first success wins.
-//
-// All provider/mode logic lives in scripts/llm.py — this is just a slug list.
-// ---------------------------------------------------------------------------
-
-const CLASSIFIER_MODELS: string[] = [
-  "groq/llama-3.3-70b-versatile",
-  "groq/moonshotai/kimi-k2-instruct",
-  "nvidia/mistralai/mistral-large-3-675b-instruct-2512",
-  "nvidia/mistralai/mistral-small-3.1-24b-instruct-2503",
-  "nvidia/meta/llama-3.3-70b-instruct",
-  "arcee-ai/trinity-large-preview:free",
-];
 
 // ---------------------------------------------------------------------------
 // Session identity — stable per process for log correlation
@@ -106,12 +90,9 @@ const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
 ];
 
 // ---------------------------------------------------------------------------
-// Classifier system prompt + response template — loaded from canonical
+// Response template — loaded from canonical
 // prompts/micro_agents/prompt_difficulty_classifier/ at startup.
 // ---------------------------------------------------------------------------
-
-const _classifierAgent = await loadMicroAgent(CLASSIFIER_PROMPT_PATH);
-const SYSTEM_PROMPT = _classifierAgent.system ?? "";
 
 const RESPONSE_TEMPLATE_BODY = await Bun.file(RESPONSE_TEMPLATE_PATH).text();
 
@@ -130,22 +111,12 @@ async function classify(
     }
   }
 
-  // 2. LLM classifier — llm.py handles provider routing, retries, fallback
+  // 2. LLM classifier — canonical runner owns prompt loading and model settings
   try {
-    const result = await callLLM<{ tier: Tier; reasoning: string }>({
-      models: CLASSIFIER_MODELS,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: `Classify the following prompt:\n\n===\n${trimmed}\n===`,
-        },
-      ],
-      schema: "Classification",
-      temperature: 0,
-      max_tokens: 200,
-    });
-    return result;
+    return await runMicroAgent<{ tier: Tier; reasoning: string }>(
+      CLASSIFIER_PROMPT_PATH,
+      { prompt: trimmed },
+    );
   } catch {
     return null; // fail open — message passes through unmodified
   }
