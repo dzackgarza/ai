@@ -203,3 +203,4 @@ The parameter x is used for this specific reason. It appears that it is no longe
 - Use the custom websearch and webfetch tools liberally (from improved-webtools, via plugin or MCP). These provide automated parsing and routing for many common sites and have no rate limits.
 - For documentation questions, use the Context7 and DeepWiki `ask` tools, as well as the `gh` CLI. Read readmes, upstream source code directly, and issues.
 - Never touch a config without reading online docs and examples first.
+- NEVER ATTEMPT TO REVERT OR CHECKOUT FILES YOU DID NOT MODIFY! These are ALWAYS committed work from others and should NOT be touched. Focus on the files you touch and their diffs only.
