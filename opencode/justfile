@@ -1,7 +1,7 @@
 # OpenCode workspace recipes
 # Usage: just <recipe>
 
-python := ".venv/bin/python"
+python := "~/ai/.venv/bin/python"
 
 default:
     @just --list

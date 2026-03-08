@@ -56,7 +56,7 @@ install:
 # Scaffold /var/sandbox/execa/ if not already initialized (idempotent)
 # /var/sandbox/ is a plain dir hosting multiple project repos on demand.
 # Usage: just sandbox
-sandbox:
+create-sandbox:
     @{{repo}}/scripts/scaffold-sandbox.sh
 
 # Reset /var/sandbox/execa/ and re-initialize from scratch
