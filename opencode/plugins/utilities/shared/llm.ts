@@ -129,7 +129,7 @@ export async function renderTemplate(
 
 function _run<T>(req: object): LLMResponse<T> {
   const input = JSON.stringify(req);
-  const proc = spawnSync(UV, ["run", "--python", PYTHON, "-m", "scripts.llm.bridge"], {
+  const proc = spawnSync(UV, ["run", "--active", "--python", PYTHON, "-m", "scripts.llm.bridge"], {
     cwd: OPENCODE_ROOT,
     input,
     encoding: "utf8",

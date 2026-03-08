@@ -28,11 +28,11 @@ const _dir = dirname(fileURLToPath(import.meta.url));
 // ~/ai/prompts/micro_agents/prompt_difficulty_classifier/
 const CLASSIFIER_PROMPT_PATH = resolve(
   _dir,
-  "../../../../../prompts/micro_agents/prompt_difficulty_classifier/prompt.md",
+  "../../../../prompts/micro_agents/prompt_difficulty_classifier/prompt.md",
 );
 const RESPONSE_TEMPLATE_PATH = resolve(
   _dir,
-  "../../../../../prompts/micro_agents/prompt_difficulty_classifier/response_template.md",
+  "../../../../prompts/micro_agents/prompt_difficulty_classifier/response_template.md",
 );
 
 type Tier = "model-self" | "knowledge" | "C" | "B" | "A" | "S";
@@ -113,8 +113,7 @@ const FAUX_RULES: Array<{ prompt: string; tier: Tier }> = [
 const _classifierAgent = await loadMicroAgent(CLASSIFIER_PROMPT_PATH);
 const SYSTEM_PROMPT = _classifierAgent.system ?? "";
 
-const _responseAgent = await loadMicroAgent(RESPONSE_TEMPLATE_PATH);
-const RESPONSE_TEMPLATE_BODY = _responseAgent.body;
+const RESPONSE_TEMPLATE_BODY = await Bun.file(RESPONSE_TEMPLATE_PATH).text();
 
 // ---------------------------------------------------------------------------
 // classify()
@@ -180,7 +179,7 @@ export const PromptRouter: Plugin = async ({ client }) => {
         const { tier, reasoning } = classification;
         const instruction = await renderTemplate(RESPONSE_TEMPLATE_BODY, {
           tier,
-        }, _responseAgent.path);
+        }, RESPONSE_TEMPLATE_PATH);
 
         output.messages.push({
           info: {
