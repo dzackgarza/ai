@@ -18,10 +18,10 @@ Protocol:
 
   Request (load_micro_agent):
     { "action": "load_micro_agent", "path": "/abs/path/to/prompt.md" }
-    Response result: { "system": "...", "body": "...", "frontmatter": {...} }
+    Response result: { "system": "...", "body": "...", "frontmatter": {...}, "path": "..." }
 
   Request (render_template):
-    { "action": "render_template", "body": "...", "variables": {"tier": "C"} }
+    { "action": "render_template", "body": "...", "path": "/abs/path/to/prompt.md", "variables": {"tier": "C"} }
     Response result: "rendered string"
 
   Response (success):  { "ok": true, "result": ... }
@@ -78,6 +78,7 @@ async def _main() -> None:
                             "system": agent.system,
                             "body": agent.body,
                             "frontmatter": agent.frontmatter,
+                            "path": str(agent.path),
                         },
                     }
                 )
@@ -92,6 +93,7 @@ async def _main() -> None:
     # ------------------------------------------------------------------
     if req.get("action") == "render_template":
         body: str = req.get("body", "")
+        template_path: str | None = req.get("path")
         variables: dict = req.get("variables", {})
         if not body:
             print(
@@ -101,7 +103,7 @@ async def _main() -> None:
             )
             sys.exit(1)
         try:
-            rendered = render_body(body, **variables)
+            rendered = render_body(body, template_path=template_path, **variables)
             print(json.dumps({"ok": True, "result": rendered}))
         except Exception as exc:
             print(json.dumps({"ok": False, "error": str(exc)}))

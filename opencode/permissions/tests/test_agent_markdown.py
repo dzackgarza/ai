@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -30,6 +31,76 @@ def test_load_micro_agent_resolves_relative_prompt_path() -> None:
     assert template.frontmatter["description"].startswith("General-purpose agent")
     assert template.frontmatter["mode"] == "subagent"
     assert template.body == ""
+    assert template.path.name == "general.md"
+
+
+def test_micro_agent_render_supports_frontmatter_aware_include(tmp_path: Path) -> None:
+    from scripts.llm import load_micro_agent
+
+    prompts_dir = tmp_path / "prompts"
+    prompts_dir.mkdir()
+    (prompts_dir / "child.md").write_text(
+        "---\n"
+        "description: child metadata should be ignored\n"
+        "---\n"
+        "child says {{ name }}\n"
+    )
+    parent = prompts_dir / "parent.md"
+    parent.write_text(
+        "---\n"
+        "description: parent prompt\n"
+        "---\n"
+        "parent -> {% include './child.md' %}\n"
+    )
+
+    original_prompts_dir = os.environ.get("PROMPTS_DIR")
+    os.environ["PROMPTS_DIR"] = str(prompts_dir)
+    try:
+        template = load_micro_agent(parent)
+        rendered = template.render(name="Ada")
+    finally:
+        if original_prompts_dir is None:
+            os.environ.pop("PROMPTS_DIR", None)
+        else:
+            os.environ["PROMPTS_DIR"] = original_prompts_dir
+
+    assert rendered == "parent -> child says Ada"
+
+
+def test_render_body_supports_frontmatter_aware_macro_import(tmp_path: Path) -> None:
+    from scripts.llm import render_body
+
+    prompts_dir = tmp_path / "prompts"
+    prompts_dir.mkdir()
+    (prompts_dir / "macros.md").write_text(
+        "---\n"
+        "description: child metadata should be ignored\n"
+        "---\n"
+        "{% macro shout(value) -%}{{ value | upper }}{%- endmacro %}\n"
+    )
+    parent = prompts_dir / "parent.md"
+    parent.write_text(
+        "---\n"
+        "description: parent prompt\n"
+        "---\n"
+        "{% from './macros.md' import shout %}{{ shout(name) }}\n"
+    )
+
+    original_prompts_dir = os.environ.get("PROMPTS_DIR")
+    os.environ["PROMPTS_DIR"] = str(prompts_dir)
+    try:
+        rendered = render_body(
+            parent.read_text(),
+            template_path=parent,
+            name="Ada",
+        )
+    finally:
+        if original_prompts_dir is None:
+            os.environ.pop("PROMPTS_DIR", None)
+        else:
+            os.environ["PROMPTS_DIR"] = original_prompts_dir
+
+    assert rendered == "ADA"
 
 
 def test_render_agent_markdown_embeds_template_metadata_and_permissions() -> None:

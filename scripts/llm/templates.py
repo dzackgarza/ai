@@ -25,7 +25,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import yaml
-from jinja2 import Template
+from jinja2 import BaseLoader, Environment
+from jinja2.exceptions import TemplateNotFound
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -92,10 +93,101 @@ def _split_frontmatter(content: str) -> tuple[dict, str]:
     return metadata, body
 
 
+def _dedupe_paths(paths: list[Path]) -> list[Path]:
+    deduped: list[Path] = []
+    seen: set[Path] = set()
+    for path in paths:
+        resolved = path.resolve()
+        if resolved in seen:
+            continue
+        deduped.append(resolved)
+        seen.add(resolved)
+    return deduped
+
+
+def _template_name_for_path(path: Path) -> str:
+    resolved = path.resolve()
+    prompts_dir = default_prompts_dir().resolve()
+    try:
+        return str(resolved.relative_to(prompts_dir))
+    except ValueError:
+        return str(resolved)
+
+
+class PromptTemplateLoader(BaseLoader):
+    """Load prompt-template markdown files, stripping child frontmatter."""
+
+    def __init__(self, search_paths: list[Path]) -> None:
+        self.search_paths = _dedupe_paths(search_paths)
+
+    def get_source(
+        self,
+        environment: Environment,
+        template: str,
+    ) -> tuple[str, str, Any]:
+        candidate = Path(template).expanduser()
+        paths: list[Path]
+        if candidate.is_absolute():
+            paths = [candidate]
+        else:
+            paths = [search_path / candidate for search_path in self.search_paths]
+
+        for path in paths:
+            if not path.exists() or not path.is_file():
+                continue
+            source = path.read_text()
+            _, body = _split_frontmatter(source)
+            mtime = path.stat().st_mtime
+
+            def uptodate(path: Path = path, mtime: float = mtime) -> bool:
+                try:
+                    return path.stat().st_mtime == mtime
+                except OSError:
+                    return False
+
+            return body, str(path), uptodate
+
+        raise TemplateNotFound(template)
+
+
+class PromptTemplateEnvironment(Environment):
+    """Jinja environment for prompt-template composition."""
+
+    def join_path(self, template: str, parent: str) -> str:
+        if template.startswith(("./", "../")):
+            parent_path = Path(parent)
+            if not parent_path.is_absolute():
+                parent_path = (default_prompts_dir() / parent_path).resolve()
+            return str((parent_path.parent / template).resolve())
+        return template
+
+
+def build_prompt_environment(template_path: str | Path | None = None) -> PromptTemplateEnvironment:
+    """Create a Jinja environment rooted at PROMPTS_DIR and the template parent."""
+    search_paths = [default_prompts_dir()]
+    if template_path is not None:
+        search_paths.insert(0, Path(template_path).expanduser().resolve().parent)
+    return PromptTemplateEnvironment(loader=PromptTemplateLoader(search_paths))
+
+
+def _render_with_environment(
+    body: str,
+    *,
+    variables: dict[str, str],
+    template_path: str | Path | None = None,
+) -> str:
+    environment = build_prompt_environment(template_path)
+    if template_path is not None:
+        template_name = _template_name_for_path(Path(template_path).expanduser())
+        return environment.get_template(template_name).render(**variables)
+    return environment.from_string(body).render(**variables)
+
+
 @dataclass
 class MicroAgent:
     """Parsed micro-agent template."""
 
+    path: Path
     frontmatter: dict[str, Any]
     system: str | None
     body: str
@@ -116,7 +208,11 @@ class MicroAgent:
         missing = [k for k in self._required_inputs if k not in variables]
         if missing:
             raise MissingVariablesError(missing)
-        return Template(self.body).render(**variables)
+        return _render_with_environment(
+            self.body,
+            variables=variables,
+            template_path=self.path,
+        )
 
     def schema_class(self) -> type[BaseModel] | None:
         """Return the pydantic schema class declared in frontmatter, or None.
@@ -151,12 +247,12 @@ def load_micro_agent(path: str | Path) -> MicroAgent:
     content = resolved_path.read_text()
     frontmatter, body = _split_frontmatter(content)
     system = frontmatter.get("system")
-    return MicroAgent(frontmatter=frontmatter, system=system, body=body)
+    return MicroAgent(path=resolved_path, frontmatter=frontmatter, system=system, body=body)
 
 
-def render_body(body: str, **variables: str) -> str:
+def render_body(body: str, *, template_path: str | Path | None = None, **variables: str) -> str:
     """Render a Jinja2 template body string with the given variables."""
-    return Template(body).render(**variables)
+    return _render_with_environment(body, variables=variables, template_path=template_path)
 
 
 if __name__ == "__main__":

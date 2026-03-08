@@ -72,6 +72,7 @@ export interface MicroAgent {
   system: string | null;
   body: string;
   frontmatter: Record<string, unknown>;
+  path: string;
 }
 
 /**
@@ -110,10 +111,12 @@ export async function loadMicroAgent(path: string): Promise<MicroAgent> {
 export async function renderTemplate(
   body: string,
   variables: Record<string, string>,
+  path?: string,
 ): Promise<string> {
   const res = _run<string>({
     action: "render_template",
     body,
+    path,
     variables,
   } as any);
   if (!res.ok) throw new Error(`scripts.llm render error: ${res.error}`);

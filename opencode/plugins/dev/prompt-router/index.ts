@@ -180,7 +180,7 @@ export const PromptRouter: Plugin = async ({ client }) => {
         const { tier, reasoning } = classification;
         const instruction = await renderTemplate(RESPONSE_TEMPLATE_BODY, {
           tier,
-        });
+        }, _responseAgent.path);
 
         output.messages.push({
           info: {
