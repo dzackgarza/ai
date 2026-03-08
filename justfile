@@ -92,6 +92,9 @@ build-agents:
 opencode-plugins-check:
     @cd {{ repo }}/opencode/plugins && bunx tsc --noEmit && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
 
+opencode-plugins-preflight:
+    @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
+
 opencode-plugins-test:
     @cd {{ repo }}/opencode/plugins && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts
 

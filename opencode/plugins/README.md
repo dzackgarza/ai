@@ -6,6 +6,7 @@ Custom plugins for OpenCode, loaded globally from `~/.config/opencode/plugins/`.
 
 ```bash
 just opencode-plugins-check            # typecheck + unit tests + compile
+just opencode-plugins-preflight        # typecheck + compile + import smoke tests
 just opencode-plugins-typecheck        # tsc --noEmit
 just opencode-plugins-test             # bun test tests/unit/ + example plugin tests
 just opencode-plugins-compile          # bun build (crash = broken import)
@@ -14,6 +15,8 @@ just opencode-plugins-baseline A       # run a behavioral test (routing OFF)
 just opencode-plugins-classifier       # run classifier test suite
 just opencode-session                  # session management CLI (list, delete, stats, etc.)
 ```
+
+`just opencode-plugins-preflight` is the command intended to catch errant plugins before an OpenCode session. Unlike compile-only checks, it also smoke-imports every active local plugin entrypoint, so import-time failures from top-level code are surfaced immediately.
 
 ## Plugin inventory
 
