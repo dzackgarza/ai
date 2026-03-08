@@ -25,6 +25,19 @@ def test_main_show_effective_runs_for_minimal_agent() -> None:
     assert "Minimal" in result.stdout
 
 
+def test_unrestricted_test_agent_compiles_to_allow_every_known_tool() -> None:
+    from agents.primary.unrestricted_test import AGENT
+    from src.models import ALL_TOOLS
+
+    compiled = AGENT.compile()
+
+    for tool in ALL_TOOLS:
+        if tool == "external_directory":
+            assert compiled[tool] == {"*": "allow"}
+            continue
+        assert compiled[tool] == "allow"
+
+
 @pytest.mark.parametrize(
     ("value", "pattern", "expected"),
     [

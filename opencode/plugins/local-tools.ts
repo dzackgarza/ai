@@ -1,6 +1,6 @@
-// Re-export all enabled plugins as separate named exports
-// OpenCode loads each export as an independent plugin
+import { type Plugin, tool } from "@opencode-ai/plugin"
 
+// Re-export all enabled plugins as separate named exports
 export { SleepPlugin } from "./dev/sleep/index" // ✓
 export { AsyncCommandPlugin } from "./dev/async-command/index" // ✗ not loading
 export { GitAddPlugin } from "./dev/git-add/index" // ✗ not loading
@@ -16,7 +16,7 @@ export { PromptRouter } from "./dev/prompt-router/index" // hook, not tool
 // export { CommandInterceptor } from "./dev/command-interceptor/index"
 // export { ContextInjector } from "./dev/context-injector"
 // export { CotTrivialInterceptor } from "./dev/cot-trivial-test"
-import { type Plugin, tool } from "@opencode-ai/plugin"
+//
 
 export const CustomToolsPlugin: Plugin = async (_ctx) => {
   return {

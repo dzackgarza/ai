@@ -5,6 +5,7 @@ from __future__ import annotations
 These are the atomic building blocks. Combine them via presets.py.
 """
 from src.models import (
+    ALL_TOOLS,
     SERENA_FILE_READ_TOOLS,
     SERENA_FILE_WRITE_TOOLS,
 )
@@ -154,3 +155,10 @@ def mixin_session_tools() -> dict:
 def mixin_external_directory(*paths: str) -> dict:
     """Allow access to specific external directory paths."""
     return {"external_directory": {p: "allow" for p in paths}}
+
+
+def mixin_allow_all_permissions() -> dict:
+    """Allow every known tool and all external directories."""
+    permissions = {tool: "allow" for tool in ALL_TOOLS}
+    permissions["external_directory"] = {"*": "allow"}
+    return permissions
