@@ -15,7 +15,7 @@ just opencode-session                  # session management CLI (list, delete, s
 
 | Plugin | File | Status | Purpose |
 |--------|------|--------|---------|
-| **Prompt Router** | `examples/prompt-router/index.ts` | Production | Classifies user messages by cognitive tier and injects behavioral instructions before the agent responds |
+| **Prompt Router** | `external` | Production | Moved to standalone plugin repo: `/home/dzack/opencode-plugins/prompt-router/src/index.ts` |
 | **Stop Hooks** | `external` | Production | Moved to standalone plugin repo: `/home/dzack/opencode-plugins/improved-stop-hooks` |
 | ↳ OTP Checker | `external` | Demo | Detects a verification code in the assistant response and reveals a secret phrase |
 | ↳ Reflexive Agreement | `external` | Active | Intercepts "you're right" / "they are right" responses and prompts for independent reasoning |
@@ -57,30 +57,10 @@ plugins/
 │   ├── command-interceptor/        # Demo: keyphrase → passphrase injection
 │   │   ├── index.ts
 │   │   └── command-interceptor.test.ts
-│   ├── prompt-router/              # Classify → inject tier instruction
-│   │   ├── index.ts
-│   │   ├── tiers/                  # Tier instruction files (injected by prompt-router)
-│   │   │   ├── README.md
-│   │   │   ├── model-self.md
-│   │   │   ├── knowledge.md
-│   │   │   └── C.md / B.md / A.md / S.md
-│   │   └── tests/
-│   │       ├── prompt-router.test.ts
-│   │       ├── classifier/         # LLM classifier accuracy tests
-│   │       │   ├── run.ts          # bun run examples/prompt-router/tests/classifier/run.ts [model]
-│   │       │   ├── playbook.md
-│   │       │   ├── cases.yaml
-│   │       │   ├── scores.yaml
-│   │       │   └── runs/
-│   │       └── behavior/           # End-to-end behavioral tests
-│   │           ├── run.sh          # bash examples/prompt-router/tests/behavior/run.sh <tier>
-│   │           ├── observe.md
-│   │           ├── baseline.md
-│   │           ├── routing-results.md
-│   │           ├── tasks.yaml
-│   │           ├── logs/
-│   │           └── results/<tier>/<timestamp>.yaml
 │   └── retired/
+│
+├── (external) prompt-router        # Standalone package:
+│   └── /home/dzack/opencode-plugins/prompt-router
 │
 ├── tests/
 │   └── unit/                       # bun test — active plugin unit tests
@@ -195,26 +175,16 @@ await sendPrompt("ses_abc123", "hello");
 
 ## Prompt Router
 
-Classifies every incoming user message into one of six cognitive tiers, then injects the corresponding instruction from `examples/prompt-router/tiers/<tier>.md` as a synthetic user message before the agent responds.
+Prompt Router now lives in the standalone plugin repo at `/home/dzack/opencode-plugins/prompt-router`.
 
-```
-user message → classify() → tier → load examples/prompt-router/tiers/<tier>.md → inject → agent sees instruction → responds
-```
+Registration source of truth:
+- `configs/config_skeleton.json`
+- generated into `opencode.json` by the normal OpenCode config build
 
-**Classifier:** tries models in order — groq/llama-3.3-70b-versatile → kimi-k2 → nvidia/mistral-large → nvidia/mistral-small → nvidia/llama-3.3-70b. Falls back to faux exact-match for canonical test prompts. Fails open (message passes unmodified) if all classifiers fail.
-
-**Tiers:**
-
-| Tier | When it fires | Instruction summary |
-|------|--------------|---------------------|
-| `model-self` | "What tools do you have?" | Answer from context; no tool calls |
-| `knowledge` | Version numbers, recent events | Search before answering; never use training data |
-| `C` | Single-file edit, clear scope | Act immediately; no TodoWrite unless 3+ steps |
-| `B` | Same action across a set | TodoWrite first; iterate uniformly |
-| `A` | Debugging, unknown root cause | Read before acting; delegate to subagents |
-| `S` | New feature, architecture design | Scope with todos; do not implement |
-
-**Log:** every classification appends to `/var/sandbox/.prompt-router.log` (JSONL).
+Runtime behavior remains the same:
+- classifies each incoming user message into one of six tiers
+- uses the canonical prompt files in `~/ai/prompts/micro_agents/prompt_difficulty_classifier/`
+- appends JSONL classifications to `/var/sandbox/.prompt-router.log`
 
 ## Stop Hooks
 
