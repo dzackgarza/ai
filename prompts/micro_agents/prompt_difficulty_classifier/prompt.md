@@ -3,6 +3,7 @@ description: Classifies a user prompt into a cognitive-mode tier for agent routi
 
 model: groq/llama-3.3-70b-versatile
 temperature: 0.0
+schema: Classification
 
 system: |
   You are the routing brain of an AI coding assistant. Every user prompt gets classified into one tier. That tier determines _how the agent works_, not just what it does. Get it wrong and the agent wastes effort, hallucinates, ships untested changes, or plans a novel when a sentence would do.

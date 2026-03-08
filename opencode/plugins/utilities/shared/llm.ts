@@ -158,18 +158,24 @@ export async function runMicroAgent<T = string>(
   if (proc.error) {
     throw new Error(`scripts.llm runner spawn error: ${proc.error.message}`);
   }
+
+  let payload: LLMResponse<T>;
+  try {
+    payload = JSON.parse(proc.stdout) as LLMResponse<T>;
+  } catch {
+    throw new Error(`run_micro_agent returned non-JSON: ${proc.stdout?.slice(0, 200)}`);
+  }
+
+  if (!payload.ok) {
+    throw new Error(`scripts.run_micro_agent error: ${payload.error}`);
+  }
   if (proc.status !== 0) {
     const stderr = proc.stderr?.trim() ?? "";
     throw new Error(
       `scripts.run_micro_agent exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
     );
   }
-
-  try {
-    return JSON.parse(proc.stdout) as T;
-  } catch {
-    throw new Error(`run_micro_agent returned non-JSON: ${proc.stdout?.slice(0, 200)}`);
-  }
+  return payload.result;
 }
 
 // ---------------------------------------------------------------------------

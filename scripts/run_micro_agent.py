@@ -17,6 +17,7 @@ Usage:
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import sys
 from pathlib import Path
@@ -34,6 +35,12 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
+def fail(message: str) -> None:
+    logger.error("%s", message)
+    print(json.dumps({"ok": False, "error": message}))
+    sys.exit(1)
+
+
 # ---------------------------------------------------------------------------
 # CLI variable helpers
 # ---------------------------------------------------------------------------
@@ -45,8 +52,7 @@ def build_variables(file_args: list[str], var_args: list[str]) -> dict[str, str]
 
     for file_arg in file_args:
         if "=" not in file_arg:
-            logger.error("Invalid --file format %r — expected var=path", file_arg)
-            sys.exit(1)
+            fail(f"Invalid --file format {file_arg!r} — expected var=path")
         key, path = file_arg.split("=", 1)
         content = Path(path.strip()).expanduser().read_text()
         sep = "\n\n===\n\n" if key.strip() in variables else ""
@@ -54,8 +60,7 @@ def build_variables(file_args: list[str], var_args: list[str]) -> dict[str, str]
 
     for var_arg in var_args:
         if "=" not in var_arg:
-            logger.error("Invalid --var format %r — expected var=value", var_arg)
-            sys.exit(1)
+            fail(f"Invalid --var format {var_arg!r} — expected var=value")
         key, value = var_arg.split("=", 1)
         variables[key.strip()] = value.strip()
 
@@ -134,44 +139,37 @@ def main() -> None:
             for slug in list_models(provider):
                 print(slug)
         except ValueError as exc:
-            logger.error("%s", exc)
-            sys.exit(1)
+            fail(str(exc))
         sys.exit(0)
 
     if not args.template:
         parser.print_usage(sys.stderr)
-        logger.error("template argument required")
-        sys.exit(1)
+        fail("template argument required")
 
     template_file = resolve_prompt_path(args.template)
     if not template_file.exists():
-        logger.error("Template not found: %s", template_file)
-        sys.exit(1)
+        fail(f"Template not found: {template_file}")
 
     try:
         agent = load_micro_agent(template_file)
     except (ValueError, OSError) as exc:
-        logger.error("%s", exc)
-        sys.exit(1)
+        fail(str(exc))
 
     model = args.model or agent.frontmatter.get("model")
     if not model:
-        logger.error("--model required or 'model:' must be set in template frontmatter")
-        sys.exit(1)
+        fail("--model required or 'model:' must be set in template frontmatter")
 
     try:
         validate(model)
     except ValueError as exc:
-        logger.error("%s", exc)
-        sys.exit(1)
+        fail(str(exc))
 
     variables = build_variables(args.file, args.var)
 
     try:
         prompt = agent.render(**variables)
     except MissingVariablesError as exc:
-        logger.error("%s", exc)
-        sys.exit(1)
+        fail(str(exc))
 
     messages: list[dict[str, str]] = []
     if agent.system:
@@ -191,16 +189,14 @@ def main() -> None:
             call_llm(model, messages, schema=schema, temperature=temperature)
         )
     except (RuntimeError, ValueError) as exc:
-        logger.error("%s", exc)
-        sys.exit(1)
+        fail(str(exc))
 
-    output: str
+    payload: dict[str, object]
     if hasattr(result, "model_dump"):
-        import json
-
-        output = json.dumps(result.model_dump(), indent=2)
+        payload = {"ok": True, "result": result.model_dump()}
     else:
-        output = str(result)
+        payload = {"ok": True, "result": {"response": str(result)}}
+    output = json.dumps(payload, indent=2)
 
     if args.output == "-":
         print(output)

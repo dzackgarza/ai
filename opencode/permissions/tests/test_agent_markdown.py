@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -9,6 +11,8 @@ import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE_ROOT = PROJECT_ROOT.parent.parent
+RUN_MICRO_AGENT = WORKSPACE_ROOT / "scripts" / "run_micro_agent.py"
+VENV_PYTHON = WORKSPACE_ROOT / "opencode" / ".venv" / "bin" / "python"
 for root in (PROJECT_ROOT, WORKSPACE_ROOT):
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
@@ -21,6 +25,54 @@ def _split_markdown_frontmatter(text: str) -> tuple[dict, str]:
     frontmatter = yaml.safe_load(text[4:end_idx])
     body = text[end_idx + len("\n---\n"):].lstrip("\n")
     return frontmatter, body
+
+
+def _run_micro_agent(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [str(VENV_PYTHON), str(RUN_MICRO_AGENT), *args],
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=str(WORKSPACE_ROOT),
+    )
+
+
+def test_run_micro_agent_wraps_plain_text_results_in_json_envelope(tmp_path: Path) -> None:
+    prompt = tmp_path / "plain-text.md"
+    prompt.write_text(
+        "---\n"
+        "description: plain text test\n"
+        "model: groq/llama-3.3-70b-versatile\n"
+        "temperature: 0.0\n"
+        "system: |\n"
+        "  Reply with exactly OK and nothing else.\n"
+        "inputs:\n"
+        "  - name: prompt\n"
+        "    required: true\n"
+        "---\n"
+        "{{ prompt }}\n"
+    )
+
+    proc = _run_micro_agent(str(prompt), "--var", "prompt=Say OK.")
+    payload = json.loads(proc.stdout)
+
+    assert payload["ok"] is True
+    assert payload["result"]["response"].strip() == "OK"
+
+
+def test_run_micro_agent_wraps_structured_results_in_json_envelope() -> None:
+    prompt = WORKSPACE_ROOT / "prompts" / "micro_agents" / "prompt_difficulty_classifier" / "prompt.md"
+
+    proc = _run_micro_agent(
+        str(prompt),
+        "--var",
+        "prompt=Describe every tool you have access to.",
+    )
+    payload = json.loads(proc.stdout)
+
+    assert payload["ok"] is True
+    assert payload["result"]["tier"] == "model-self"
+    assert "AI" in payload["result"]["reasoning"]
 
 
 def test_load_micro_agent_resolves_relative_prompt_path() -> None:
