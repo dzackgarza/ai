@@ -10,7 +10,7 @@ export { ListSessionsPlugin } from "./dev/list-sessions/index" // ✓
 export { ReadTranscriptPlugin } from "./dev/read-transcript/index" // ✓
 // export { WritePlanPlugin } from "./dev/write-plan/index" // ✗ not loading
 // export { PlanExitPlugin } from "./dev/plan-exit/index" // ✗ not loading
-// export { PromptRouter } from "./dev/prompt-router/index" // hook, not tool
+export { PromptRouter } from "./dev/prompt-router/index" // hook, not tool
 
 // Disabled plugins (commented out):
 // export { CommandInterceptor } from "./dev/command-interceptor/index"
