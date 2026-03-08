@@ -7,10 +7,10 @@
 #
 # Tiers: model-self, knowledge, C, B, A, S
 #
-# PROMPT_ROUTER_ENABLED env var overrides killswitches.ts at runtime:
+# PROMPT_ROUTER_ENABLED env var controls runtime behavior:
 #   true  → force enable (inject instruction)
-#   false → force kill  (classify and log, but do NOT inject)
-#   unset → use value in killswitches.ts
+#   false → force disable (classify and log, but do NOT inject)
+#   unset → default behavior
 #
 # Timeouts include 30s MCP warmup buffer. Use `opencode serve &` before
 # batch runs to amortize warmup cost across sessions.
@@ -70,7 +70,7 @@ LOG_SNAPSHOT="/tmp/pr-log-before-$TIMESTAMP.txt"
 
 echo "=== Behavioral Test Run ==="
 echo "Tier:      $TIER"
-echo "Mode:      ${PROMPT_ROUTER_ENABLED:-'(from killswitches.ts)'}"
+echo "Mode:      ${PROMPT_ROUTER_ENABLED:-'(default)'}"
 echo "Timeout:   ${TIMEOUT}s"
 echo "Prompt:    $PROMPT"
 echo ""

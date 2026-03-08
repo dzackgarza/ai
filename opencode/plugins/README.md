@@ -17,24 +17,24 @@ just session     # session management CLI (list, delete, stats, etc.)
 
 ## Plugin inventory
 
-| Plugin | File | Status | Env var to enable | Purpose |
-|--------|------|--------|-------------------|---------|
-| **Prompt Router** | `examples/prompt-router/index.ts` | Production | `PROMPT_ROUTER_ENABLED=true` | Classifies user messages by cognitive tier and injects behavioral instructions before the agent responds |
-| **Stop Hooks** | `external` | Production | (per hook below) | Moved to standalone plugin repo: `/home/dzack/opencode-plugins/improved-stop-hooks` |
-| ↳ OTP Checker | `external` | Demo | `OTP_CHECKER_ENABLED=true` | Detects a verification code in the assistant response and reveals a secret phrase |
-| ↳ Reflexive Agreement | `external` | Active | `REFLEXIVE_AGREEMENT_DETECTOR_ENABLED=true` | Intercepts "you're right" / "they are right" responses and prompts for independent reasoning |
-| ↳ Obvious Question | `external` | Active | `OBVIOUS_QUESTION_DETECTOR_ENABLED=true` | Intercepts "should I..." questions and prompts the agent to resolve them autonomously |
-| **Command Interceptor** | `examples/command-interceptor/index.ts` | Demo | `COMMAND_INTERCEPTOR_ENABLED=true` | Proof-of-concept: detects keyphrases ("intercept test", "plugin check") and injects a hidden passphrase the model must echo |
-| **Context Injector** | `context-injector.ts` | Demo | `CONTEXT_INJECTOR_ENABLED=true` | Proof-of-concept: injects additional context when a specific keyphrase appears in the user message |
-| **CoT Trivial Interceptor** | `cot-trivial-test.ts` | Dev (gated) | `COT_TRIVIAL_INTERCEPTOR_ENABLED=true` + remove `return;` at line 44 | Mid-stream CoT interceptor: detects "trivial" in reasoning and re-prompts. Requires manual gate removal to activate. |
-| **Write Plan** | `write_plan.ts` | Active | always on | Custom tool `write_plan`: writes a plan document to `.serena/plans/` |
-| **Plan Exit** | `plan_exit.ts` | Active | always on | Custom tool `plan_exit`: presents a verification checklist before exiting plan mode |
-| **Sleep** | `sleep.ts` | Active | always on | Custom tools `sleep` / `sleep_until`: real wall-clock waiting with a 60-minute safety cap |
-| **Async Command** | `async-command.ts` | Active | always on | Custom tool `async_command`: fires a background sleep and injects the result via `promptAsync` when done |
-| **Introspection** | `introspection.ts` | Active | always on | Custom tool `introspection`: returns the agent's own session ID, message ID, and agent name |
-| **List Sessions** | `list-sessions.ts` | Active | always on | Custom tool `list_sessions`: lists sessions with token counts, models, and duration |
-| **Read Transcript** | `read-transcript.ts` | Active | always on | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
-| **Session Harness (CLI utility)** | `utilities/harness/session-harness.ts` | Active | manual invocation | Session management CLI (list, delete, get, messages, create, stats). Not loaded as a plugin module. |
+| Plugin | File | Status | Purpose |
+|--------|------|--------|---------|
+| **Prompt Router** | `examples/prompt-router/index.ts` | Production | Classifies user messages by cognitive tier and injects behavioral instructions before the agent responds |
+| **Stop Hooks** | `external` | Production | Moved to standalone plugin repo: `/home/dzack/opencode-plugins/improved-stop-hooks` |
+| ↳ OTP Checker | `external` | Demo | Detects a verification code in the assistant response and reveals a secret phrase |
+| ↳ Reflexive Agreement | `external` | Active | Intercepts "you're right" / "they are right" responses and prompts for independent reasoning |
+| ↳ Obvious Question | `external` | Active | Intercepts "should I..." questions and prompts the agent to resolve them autonomously |
+| **Command Interceptor** | `examples/command-interceptor/index.ts` | Demo | Proof-of-concept: detects keyphrases ("intercept test", "plugin check") and injects a hidden passphrase the model must echo |
+| **Context Injector** | `context-injector.ts` | Demo | Proof-of-concept: injects additional context when a specific keyphrase appears in the user message |
+| **CoT Trivial Interceptor** | `cot-trivial-test.ts` | Dev (gated) | Mid-stream CoT interceptor: detects "trivial" in reasoning and re-prompts. Requires manual gate removal to activate. |
+| **Write Plan** | `write_plan.ts` | Active | Custom tool `write_plan`: writes a plan document to `.serena/plans/` |
+| **Plan Exit** | `plan_exit.ts` | Active | Custom tool `plan_exit`: presents a verification checklist before exiting plan mode |
+| **Sleep** | `sleep.ts` | Active | Custom tools `sleep` / `sleep_until`: real wall-clock waiting with a 60-minute safety cap |
+| **Async Command** | `async-command.ts` | Active | Custom tool `async_command`: fires a background sleep and injects the result via `promptAsync` when done |
+| **Introspection** | `introspection.ts` | Active | Custom tool `introspection`: returns the agent's own session ID, message ID, and agent name |
+| **List Sessions** | `list-sessions.ts` | Active | Custom tool `list_sessions`: lists sessions with token counts, models, and duration |
+| **Read Transcript** | `read-transcript.ts` | Active | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
+| **Session Harness (CLI utility)** | `utilities/harness/session-harness.ts` | Active | Session management CLI (list, delete, get, messages, create, stats). Not loaded as a plugin module. |
 
 ## File map
 
@@ -43,7 +43,6 @@ plugins/
 ├── justfile                        # Dev recipes (just check, just test, etc.)
 ├── tsconfig.json                   # TypeScript config for Bun ESM
 ├── package.json                    # Dependencies (instructor, openai, opencode-ai/plugin, zod)
-├── killswitches.ts                 # ENABLED switches for all plugins
 │
 ├── (moved) stop-hooks plugin       # Now in /home/dzack/opencode-plugins/improved-stop-hooks
 │
@@ -231,21 +230,6 @@ The stop-hooks plugin was extracted to:
 - `/home/dzack/opencode-plugins/improved-stop-hooks/src/stop_hooks/`
 
 To add a hook: create `src/stop_hooks/my-hook.ts`, export one `async (ctx: StopHookContext) => Promise<StopHookResult>` function, import it in `src/stop-hooks.ts` and add to `STOP_HOOKS`.
-
-## Environment Variables
-
-| Variable | Plugin | Default |
-|----------|--------|---------|
-| `PROMPT_ROUTER_ENABLED` | prompt-router | `false` |
-| `COMMAND_INTERCEPTOR_ENABLED` | command-interceptor | `false` |
-| `CONTEXT_INJECTOR_ENABLED` | context-injector | `false` |
-| `COT_TRIVIAL_INTERCEPTOR_ENABLED` | cot-trivial-test | `false` |
-| `OTP_CHECKER_ENABLED` | otp-checker | `false` |
-| `OBVIOUS_QUESTION_DETECTOR_ENABLED` | obvious-question-detector | `false` |
-| `REFLEXIVE_AGREEMENT_DETECTOR_ENABLED` | reflexive-agreement-detector | `false` |
-| `GROQ_API_KEY` | prompt-router classifier | — |
-| `NVIDIA_API_KEY` | prompt-router classifier fallback | — |
-| `OPENROUTER_API_KEY` | prompt-router classifier last resort | — |
 
 ## YouTube Processing Pipeline Dependencies
 
