@@ -37,7 +37,7 @@ the owning subtrees instead of adding new root clutter.
 - `just config-build`
 - `just rebuild`
 - `just providers-validate`
-- `just plugins-check`
+- `just check-plugins`
 - `just harness run --help`
 
 ### Layout

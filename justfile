@@ -86,23 +86,11 @@ install-mcps *ARGS="":
 run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python -m scripts.run_micro_agent {{ args }}
 
-build-agents:
+build-agents: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py --build
 
-opencode-plugins-check:
-    @cd {{ repo }}/opencode/plugins && bunx tsc --noEmit && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
-
-opencode-plugins-preflight:
+check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
-
-opencode-plugins-test:
-    @cd {{ repo }}/opencode/plugins && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts
-
-opencode-plugins-compile:
-    @cd {{ repo }}/opencode/plugins && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
-
-opencode-plugins-classifier:
-    @cd {{ repo }}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts
 
 opencode-harness *args:
     @cd {{ repo }}/opencode/plugins/utilities/harness && bun run opx {{ args }}

@@ -24,12 +24,16 @@ usage-limits *ARGS="":
 # OpenCode Rebuild
 # =============================================================================
 
-opencode-rebuild: opencode-build-permissions opencode-build-config
+opencode-rebuild:
+    @just --justfile {{ repo }}/justfile check-plugins
+    @just --justfile {{ repo }}/justfile build-agents
 
 opencode-build-permissions:
+    @just --justfile {{ repo }}/justfile check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py --apply
 
 opencode-build-config:
+    @just --justfile {{ repo }}/justfile check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 
 # =============================================================================
