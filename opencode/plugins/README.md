@@ -231,6 +231,10 @@ The stop-hooks plugin was extracted to:
 
 To add a hook: create `src/stop_hooks/my-hook.ts`, export one `async (ctx: StopHookContext) => Promise<StopHookResult>` function, import it in `src/stop-hooks.ts` and add to `STOP_HOOKS`.
 
+## Environment Variables
+
+See `.envrc` for all environment variables.
+
 ## YouTube Processing Pipeline Dependencies
 
 The YouTube transcript pipeline has hard dependencies. These are not optional fallbacks.
