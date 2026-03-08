@@ -25,11 +25,11 @@ def _split_markdown_frontmatter(text: str) -> tuple[dict, str]:
 def test_load_micro_agent_resolves_relative_prompt_path() -> None:
     from scripts.llm import load_micro_agent
 
-    template = load_micro_agent("subagents/general.md")
+    template = load_micro_agent("opencode_builtin/general.md")
 
-    assert template.frontmatter["description"].startswith("General-purpose subagent")
+    assert template.frontmatter["description"].startswith("General-purpose agent")
     assert template.frontmatter["mode"] == "subagent"
-    assert "General Subagent" in template.body
+    assert template.body == ""
 
 
 def test_render_agent_markdown_embeds_template_metadata_and_permissions() -> None:

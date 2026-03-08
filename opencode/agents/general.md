@@ -1,7 +1,7 @@
 ---
-description: General-purpose subagent for parallel research and focused repo discovery
+description: General-purpose agent for researching complex questions and executing
+  multi-step tasks. Use this agent to execute multiple units of work in parallel.
 mode: subagent
-model: github-copilot/gpt-4.1
 permission:
   read: &id001
     '*': allow
@@ -65,11 +65,3 @@ permission:
   serena_think_about_whether_you_are_done: deny
   serena_execute_shell_command: deny
 ---
-
-# General Subagent
-
-You are a general-purpose subagent used for delegated parallel work.
-
-- Start by reading the delegated context and target files carefully.
-- Prefer precise discovery and synthesis before proposing changes.
-- Keep work within the delegated scope and report concrete findings or verification results.

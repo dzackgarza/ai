@@ -19,7 +19,7 @@ import argparse
 sys.path.insert(0, os.path.dirname(__file__))
 
 from agents import AGENTS
-from src.agent_markdown import write_agent_markdown
+from src.agent_markdown import write_agent_markdown, write_static_markdown_template
 from src.compiler import GLOBAL_DEFAULTS
 from src.display import show_effective, show_agents, show_rulesets, console
 from src.models import UNMANAGED_AGENTS
@@ -33,6 +33,13 @@ _SKELETON     = os.path.join(_BASE_DIR, "configs", "config_skeleton.json")
 _MARKDOWN_AGENTS_DIR = os.path.join(_BASE_DIR, "agents")
 
 AGENT_MAP = {a.name: a for a in AGENTS}
+BUILTIN_SHADOWS = {
+    "build": "opencode_builtin/build.md",
+    "explore": "opencode_builtin/explore.md",
+    "compaction": "opencode_builtin/compaction.md",
+    "title": "opencode_builtin/title.md",
+    "summary": "opencode_builtin/summary.md",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -72,6 +79,14 @@ def apply_agents() -> None:
         console.print(
             f"  [green]✓[/green] {agent.name}  [dim]({agent.base_type} → {output_path.name})[/dim]"
         )
+
+    for agent_name, template_path in BUILTIN_SHADOWS.items():
+        output_path = write_static_markdown_template(
+            template_path=template_path,
+            output_name=f"{agent_name}.md",
+            output_dir=_MARKDOWN_AGENTS_DIR,
+        )
+        console.print(f"  [green]✓[/green] {agent_name}  [dim](builtin shadow → {output_path.name})[/dim]")
 
 
 def dump_agent(name: str) -> None:

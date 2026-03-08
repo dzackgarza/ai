@@ -13,4 +13,4 @@ class GeneralAgent(Subagent):
         return Researcher.layers()
 
 
-AGENT = GeneralAgent("subagents/general.md")
+AGENT = GeneralAgent("opencode_builtin/general.md")

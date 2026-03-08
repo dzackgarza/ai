@@ -7,7 +7,7 @@ from typing import Any
 
 import yaml
 
-from scripts.llm import load_micro_agent
+from scripts.llm import load_micro_agent, resolve_prompt_path
 
 from src.base import Agent
 
@@ -59,3 +59,17 @@ def write_agent_markdown(agent: Agent, output_dir: str | Path) -> Path:
     output_path = target_dir / agent.output_filename
     output_path.write_text(render_agent_markdown(agent))
     return output_path
+
+
+def write_static_markdown_template(
+    template_path: str,
+    output_name: str,
+    output_dir: str | Path,
+) -> Path:
+    """Copy a static upstream-shadow template into the runtime agents directory."""
+    source = resolve_prompt_path(template_path)
+    target_dir = Path(output_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target_path = target_dir / output_name
+    target_path.write_text(source.read_text())
+    return target_path
