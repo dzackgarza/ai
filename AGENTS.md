@@ -204,3 +204,12 @@ The parameter x is used for this specific reason. It appears that it is no longe
 - For documentation questions, use the Context7 and DeepWiki `ask` tools, as well as the `gh` CLI. Read readmes, upstream source code directly, and issues.
 - Never touch a config without reading online docs and examples first.
 - NEVER ATTEMPT TO REVERT OR CHECKOUT FILES YOU DID NOT MODIFY! These are ALWAYS committed work from others and should NOT be touched. Focus on the files you touch and their diffs only.
+
+
+# Opencode
+
+- Opencode is never "stale" or "needs to be reloaded/restarted". Each opencode instance reads configuration files fresh, every time. It does not have "stale caches", the process never needs to be killed, and you should not restart the server. Nothing needs to be recompiled.
+Never suggest simply restarting, or blame session continuity, or other similar problems -- you can always test a fresh instance live in <10s.
+- To test opencode, run "\opencode run --agent Minimal 'Hello world'".
+- The ~/ai repo is the canonical configuration directory, which installs symlinks to all usual system config locations. Edit here only.
+- You do NOT know anything about opencode. It is a constantly evolving open source project. Your knowledge cutoff is from over a year ago. Do not make claims about functionality or configuration or attempt to debug without docs freshly in context.

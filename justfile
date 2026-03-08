@@ -4,6 +4,7 @@
 repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 
 # Show available recipes
+
 # Usage: just
 default:
     @just --list
@@ -11,43 +12,43 @@ default:
 # Install all symlinks and environment variables
 install:
     @mkdir -p ~/.claude ~/.codex ~/.gemini ~/.qwen ~/.config/opencode ~/.config/kilo ~/.config/amp ~/.config ~/.agents ~/.kilocode ~/.opencode
-    @ln -sf {{repo}}/AGENTS.md ~/.claude/CLAUDE.md
-    @ln -sf {{repo}}/AGENTS.md ~/.codex/AGENTS.md
-    @ln -sf {{repo}}/AGENTS.md ~/.gemini/GEMINI.md
-    @ln -sf {{repo}}/AGENTS.md ~/.qwen/QWEN.md
-    @ln -sf {{repo}}/AGENTS.md ~/.config/opencode/AGENTS.md
-    @ln -sf {{repo}}/AGENTS.md ~/.config/kilo/AGENTS.md
-    @ln -sf {{repo}}/AGENTS.md ~/.config/amp/AGENTS.md
-    @ln -sf {{repo}}/AGENTS.md ~/.config/AGENTS.md
-    @ln -sf {{repo}}/opencode ~/.config/opencode
-    @ln -sf {{repo}}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
-    @ln -sf {{repo}}/opencode/configs/cc-safety-net.json ~/.cc-safety-net/config.json
+    @ln -sf {{ repo }}/AGENTS.md ~/.claude/CLAUDE.md
+    @ln -sf {{ repo }}/AGENTS.md ~/.codex/AGENTS.md
+    @ln -sf {{ repo }}/AGENTS.md ~/.gemini/GEMINI.md
+    @ln -sf {{ repo }}/AGENTS.md ~/.qwen/QWEN.md
+    @ln -sf {{ repo }}/AGENTS.md ~/.config/opencode/AGENTS.md
+    @ln -sf {{ repo }}/AGENTS.md ~/.config/kilo/AGENTS.md
+    @ln -sf {{ repo }}/AGENTS.md ~/.config/amp/AGENTS.md
+    @ln -sf {{ repo }}/AGENTS.md ~/.config/AGENTS.md
+    @ln -sf {{ repo }}/opencode ~/.config/opencode
+    @ln -sf {{ repo }}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
+    @ln -sf {{ repo }}/opencode/configs/cc-safety-net.json ~/.cc-safety-net/config.json
     @mkdir -p ~/.cc-safety-net
     # tmux config symlinks
-    @ln -sf {{repo}}/dotfiles/tmux.conf ~/.tmux.conf
+    @ln -sf {{ repo }}/dotfiles/tmux.conf ~/.tmux.conf
     @mkdir -p ~/.config/tmux-powerline/themes
-    @ln -sf {{repo}}/dotfiles/tmux-powerline/themes/my-theme.sh ~/.config/tmux-powerline/themes/my-theme.sh
-    @ln -sf {{repo}}/dotfiles/tmux-powerline/config.sh ~/.config/tmux-powerline/config.sh
+    @ln -sf {{ repo }}/dotfiles/tmux-powerline/themes/my-theme.sh ~/.config/tmux-powerline/themes/my-theme.sh
+    @ln -sf {{ repo }}/dotfiles/tmux-powerline/config.sh ~/.config/tmux-powerline/config.sh
     # Backup existing skills directories before creating symlinks
     @for dir in ~/.claude/skills ~/.codex/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do \
         if [ -d "$$dir" ] && [ ! -L "$$dir" ]; then \
             mv "$$dir" "$$dir.bak.$(date +%Y%m%d%H%M%S)"; \
         fi; \
     done
-    @ln -sf {{repo}}/skills ~/.claude/skills
-    @ln -sf {{repo}}/skills ~/.codex/skills
-    @ln -sf {{repo}}/skills ~/.gemini/skills
-    @ln -sf {{repo}}/skills ~/.agents/skills
-    @ln -sf {{repo}}/skills ~/.qwen/skills
-    @ln -sf {{repo}}/skills ~/.config/agents/skills
-    @ln -sf {{repo}}/skills ~/.config/amp/skills
-    @ln -sf {{repo}}/skills ~/.kilocode/skills
-    @grep -q 'GEMINI_SYSTEM_MD' ~/.bashrc 2>/dev/null || printf '\n# System prompt overrides for Gemini/Qwen CLI\nexport GEMINI_SYSTEM_MD={{repo}}/prompts/interactive_agents/interactive.md\nexport QWEN_SYSTEM_MD={{repo}}/prompts/interactive_agents/interactive.md\n' >> ~/.bashrc
-    @grep -q 'GEMINI_SYSTEM_MD' ~/.zshrc 2>/dev/null || printf '\n# System prompt overrides for Gemini/Qwen CLI\nexport GEMINI_SYSTEM_MD={{repo}}/prompts/interactive_agents/interactive.md\nexport QWEN_SYSTEM_MD={{repo}}/prompts/interactive_agents/interactive.md\n' >> ~/.zshrc
+    @ln -sf {{ repo }}/skills ~/.claude/skills
+    @ln -sf {{ repo }}/skills ~/.codex/skills
+    @ln -sf {{ repo }}/skills ~/.gemini/skills
+    @ln -sf {{ repo }}/skills ~/.agents/skills
+    @ln -sf {{ repo }}/skills ~/.qwen/skills
+    @ln -sf {{ repo }}/skills ~/.config/agents/skills
+    @ln -sf {{ repo }}/skills ~/.config/amp/skills
+    @ln -sf {{ repo }}/skills ~/.kilocode/skills
+    @grep -q 'GEMINI_SYSTEM_MD' ~/.bashrc 2>/dev/null || printf '\n# System prompt overrides for Gemini/Qwen CLI\nexport GEMINI_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\nexport QWEN_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\n' >> ~/.bashrc
+    @grep -q 'GEMINI_SYSTEM_MD' ~/.zshrc 2>/dev/null || printf '\n# System prompt overrides for Gemini/Qwen CLI\nexport GEMINI_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\nexport QWEN_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\n' >> ~/.zshrc
     @echo "✓ Installed"
     @echo ""
     @echo "Context files:    AGENTS.md → all harnesses"
-    @echo "Skills:           {{repo}}/skills → all harnesses"
+    @echo "Skills:           {{ repo }}/skills → all harnesses"
     @echo "System prompts:   GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → interactive.md (absolute path)"
     @echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
     @echo "OpenCode:         .opencode/ → ~/.config/opencode"
@@ -55,12 +56,14 @@ install:
 
 # Scaffold /var/sandbox/execa/ if not already initialized (idempotent)
 # /var/sandbox/ is a plain dir hosting multiple project repos on demand.
+
 # Usage: just sandbox
 create-sandbox:
-    @{{repo}}/scripts/scaffold-sandbox.sh
+    @{{ repo }}/scripts/scaffold-sandbox.sh
 
 # Reset /var/sandbox/execa/ and re-initialize from scratch
 # Leaves other /var/sandbox/<subdir>/ repos untouched.
+
 # Usage: just reset-sandbox
 reset-sandbox:
     #!/usr/bin/env bash
@@ -69,60 +72,40 @@ reset-sandbox:
     if [[ -d /var/sandbox/execa ]]; then
         find /var/sandbox/execa -mindepth 1 -maxdepth 1 -exec rm -rf {} +
     fi
-    {{repo}}/scripts/scaffold-sandbox.sh
+    {{ repo }}/scripts/scaffold-sandbox.sh
 
 # Sync centralized MCP config with ~/.envrc loaded through direnv.
+
 # Usage: just sync-mcp-configs [--dry-run] [--harness codex]
 install-mcps *ARGS="":
     #!/usr/bin/env bash
     set -euo pipefail
-    cd "{{repo}}"
-    direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ARGS}}
-
-# Check all usage limits
-# Usage: just usage [--json] [--no-notify]
-usage-limits *ARGS="":
-    @python {{repo}}/usage-limits/claude_usage.py {{ARGS}}
-    @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
-    @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}
-    @python {{repo}}/usage-limits/qwen_usage.py {{ARGS}}
-
-
-# =============================================================================
-# OpenCode (opencode/)
-# =============================================================================
-
-opencode-build-permissions:
-    @python {{repo}}/opencode/scripts/manage_permissions.py --apply
-
-opencode-build-config:
-    @python {{repo}}/opencode/scripts/build_config.py
-
-opencode-rebuild: opencode-build-permissions opencode-build-config
+    cd "{{ repo }}"
+    direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
 
 run-microagent *args:
-    @python {{repo}}/scripts/run_micro_agent.py {{args}}
+    @python {{ repo }}/scripts/run_micro_agent.py {{ args }}
 
 opencode-plugins-check:
-    @cd {{repo}}/opencode/plugins && bunx tsc --noEmit && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
+    @cd {{ repo }}/opencode/plugins && bunx tsc --noEmit && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
 
 opencode-plugins-test:
-    @cd {{repo}}/opencode/plugins && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts
+    @cd {{ repo }}/opencode/plugins && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts
 
 opencode-plugins-compile:
-    @cd {{repo}}/opencode/plugins && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
+    @cd {{ repo }}/opencode/plugins && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
 
 opencode-plugins-classifier:
-    @cd {{repo}}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts
+    @cd {{ repo }}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts
 
 opencode-harness *args:
-    @cd {{repo}}/opencode/plugins/utilities/harness && bun run opx {{args}}
+    @cd {{ repo }}/opencode/plugins/utilities/harness && bun run opx {{ args }}
 
 opencode-session *args:
-    @cd {{repo}}/opencode/plugins && bun run utilities/harness/session-harness.ts {{args}}
+    @cd {{ repo }}/opencode/plugins && bun run utilities/harness/session-harness.ts {{ args }}
 
 clear-caches:
-    @bash {{repo}}/opencode/scripts/maintenance/opencode_gc.sh
+    @bash {{ repo }}/opencode/scripts/maintenance/opencode_gc.sh
 
 # =============================================================================
 # OpenCode Provider Discovery (inline - no scripts)
@@ -145,41 +128,52 @@ opencode-openrouter-free-tools:
     @curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free" and .value.tools == true) | .key'
 
 # Probe a model endpoint for responsiveness
+
 # Usage: just opencode-openrouter-probe mistralai/mistral-small:free
 opencode-openrouter-probe model:
-    @curl -s https://openrouter.ai/api/v1/chat/completions \
-        -H "Authorization: Bearer $$OPENROUTER_API_KEY" \
+    #!/usr/bin/env bash
+    set -euo pipefail
+    response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
+        -H "Authorization: Bearer $OPENROUTER_API_KEY" \
         -H "Content-Type: application/json" \
-        -d '{"model":"{{model}}","messages":[{"role":"user","content":"ping"}],"max_tokens":5}' \
-        | jq -r 'if .error then "ERROR: \(.error.message)" else "OK" end'
+        -d "{\"model\":\"$1\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":5}")
+    echo "$response" | jq -r 'if .error then "ERROR: \(.error.message)" else "OK" end'
 
 # Test model tool-calling support
+
 # Usage: just opencode-openrouter-probe-tools mistralai/mistral-small:free
 opencode-openrouter-probe-tools model:
-    @curl -s https://openrouter.ai/api/v1/chat/completions \
-        -H "Authorization: Bearer $$OPENROUTER_API_KEY" \
+    #!/usr/bin/env bash
+    set -euo pipefail
+    response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
+        -H "Authorization: Bearer $OPENROUTER_API_KEY" \
         -H "Content-Type: application/json" \
-        -d '{
-            "model":"{{model}}",
-            "messages":[{"role":"user","content":"Find files containing auth"}],
-            "tools":[{"type":"function","function":{"name":"search_files","parameters":{"type":"object","properties":{"query":{"type":"string"}}}}}
-        ]}' \
-        | jq -r 'if .choices[0].message.tool_calls then "SUPPORTS_TOOLS" elif .error then "ERROR: \(.error.message)" else "NO_TOOL_SUPPORT" end'
+        -d "{
+            \"model\":\"$1\",
+            \"messages\":[{\"role\":\"user\",\"content\":\"Find files containing auth\"}],
+            \"tools\":[{\"type\":\"function\",\"function\":{\"name\":\"search_files\",\"parameters\":{\"type\":\"object\",\"properties\":{\"query\":{\"type\":\"string\"}}}}}]
+        }")
+    echo "$response" | jq -r 'if .choices[0].message.tool_calls then "SUPPORTS_TOOLS" elif .error then "ERROR: \(.error.message)" else "NO_TOOL_SUPPORT" end'
 
 # Full discovery: list free+tools models and probe each
+
 # Usage: just opencode-openrouter-discover
 opencode-openrouter-discover:
-    @echo "=== OpenRouter Free Models with Tool Support ===" && \
-    for model in $$(curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free" and .value.tools == true) | .key'); do \
-        echo -n "$$model: " && \
-        curl -s https://openrouter.ai/api/v1/chat/completions \
-            -H "Authorization: Bearer $$OPENROUTER_API_KEY" \
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "=== OpenRouter Free Models with Tool Support ==="
+    models=$(curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free" and .value.tools == true) | .key')
+    for model in $models; do
+        echo -n "$model: "
+        response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
-            -d "{\"model\":\"$$model\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":5}" \
-            | jq -r 'if .error then "DOWN: \(.error.message)" else "UP" end'; \
+            -d "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":5}")
+        echo "$response" | jq -r 'if .error then "DOWN: \(.error.message)" else "UP" end'
     done
 
 # Debug a provider from models.dev
+
 # Usage: just opencode-provider-debug openrouter
 opencode-provider-debug provider:
-    @curl -s https://models.dev/api.json | jq -r '.{{provider}}.models | to_entries[] | "  \(.key) - \(.value.name)"'
+    @curl -s https://models.dev/api.json | jq -r '.{{ provider }}.models | to_entries[] | "  \(.key) - \(.value.name)"'

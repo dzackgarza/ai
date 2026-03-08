@@ -1,0 +1,33 @@
+# Home directory justfile - personal automation
+# Usage: just --justfile ~/ai/home-justfile <recipe>
+
+repo := env_var_or_default("REPO", env_var("HOME") / "ai")
+
+# Show available recipes
+# Usage: just
+default:
+    @just --list
+
+# =============================================================================
+# LLM Usage Limits
+# =============================================================================
+
+# Check all usage limits
+# Usage: just usage [--json] [--no-notify]
+usage-limits *ARGS="":
+    @python {{ repo }}/usage-limits/claude_usage.py {{ ARGS }}
+    @python {{ repo }}/usage-limits/codex_usage.py {{ ARGS }}
+    @python {{ repo }}/usage-limits/amp_usage.py {{ ARGS }}
+    @python {{ repo }}/usage-limits/qwen_usage.py {{ ARGS }}
+
+# =============================================================================
+# OpenCode Rebuild
+# =============================================================================
+
+opencode-rebuild: opencode-build-permissions opencode-build-config
+
+opencode-build-permissions:
+    @python {{ repo }}/opencode/scripts/manage_permissions.py --apply
+
+opencode-build-config:
+    @python {{ repo }}/opencode/scripts/build_config.py
