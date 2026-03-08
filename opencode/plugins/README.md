@@ -36,23 +36,6 @@ just session     # session management CLI (list, delete, stats, etc.)
 | **Read Transcript** | `read-transcript.ts` | Active | always on | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
 | **Session Harness (CLI utility)** | `utilities/harness/session-harness.ts` | Active | manual invocation | Session management CLI (list, delete, get, messages, create, stats). Not loaded as a plugin module. |
 
-## Killswitches
-
-All plugins that can interfere with normal use export their state through `ENABLED` in `killswitches.ts`. `true` = plugin runs, `false` = plugin is off. All default to `false`.
-
-```typescript
-// killswitches.ts
-export const ENABLED = {
-  promptRouter: sw('PROMPT_ROUTER_ENABLED', false),  // false = off by default
-  ...
-};
-
-// Usage in plugin:
-if (!ENABLED.promptRouter) return;
-```
-
-**Rule:** every new plugin that modifies messages or session behavior must register a switch in `killswitches.ts` before shipping.
-
 ## File map
 
 ```
