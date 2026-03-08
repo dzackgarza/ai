@@ -10,27 +10,42 @@ To add an agent: create a file in agents/primary/ or agents/subagents/,
 subclass PureAgent or Subagent, and assign AGENT = YourClass().
 Internals live in src/; rulesets in src/rulesets/.
 """
-import json
-import os
-import sys
 import argparse
+import json
+import logging
+import os
+from pathlib import Path
+import subprocess
+import sys
 
 # Ensure sibling modules are importable when run directly.
 sys.path.insert(0, os.path.dirname(__file__))
 
 from agents import AGENTS
-from src.agent_markdown import write_agent_markdown, write_static_markdown_template
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.table import Table
+
+from src.agent_markdown import (
+    PROMPT_TOKEN_WARNING_THRESHOLD,
+    GeneratedAgentArtifact,
+    load_static_markdown_artifact,
+    render_agent_artifact,
+    write_markdown_artifact,
+)
 from src.compiler import GLOBAL_DEFAULTS
-from src.display import show_effective, show_agents, show_rulesets, console
+from src.display import load_agent_rulesets, show_effective, show_agents, show_rulesets, console
 from src.models import UNMANAGED_AGENTS
 
 # ---------------------------------------------------------------------------
 # File paths
 # ---------------------------------------------------------------------------
 
-_BASE_DIR     = os.path.expanduser("~/.config/opencode")
-_SKELETON     = os.path.join(_BASE_DIR, "configs", "config_skeleton.json")
-_MARKDOWN_AGENTS_DIR = os.path.join(_BASE_DIR, "agents")
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+_BASE_DIR = Path(os.path.expanduser("~/.config/opencode"))
+_SKELETON = _BASE_DIR / "configs" / "config_skeleton.json"
+_MARKDOWN_AGENTS_DIR = _BASE_DIR / "agents"
+_BUILD_CONFIG_SCRIPT = _PROJECT_ROOT / "scripts" / "build_config.py"
 
 AGENT_MAP = {a.name: a for a in AGENTS}
 BUILTIN_SHADOWS = {
@@ -41,17 +56,26 @@ BUILTIN_SHADOWS = {
     "summary": "opencode_builtin/summary.md",
 }
 
+_build_console = Console(stderr=True)
+_handler = RichHandler(console=_build_console, markup=True, show_path=False, rich_tracebacks=True)
+_handler.setFormatter(logging.Formatter("%(message)s"))
+logger = logging.getLogger("opencode.permissions.build")
+if not logger.handlers:
+    logger.addHandler(_handler)
+logger.setLevel(logging.INFO)
+logger.propagate = False
+
 
 # ---------------------------------------------------------------------------
 # File I/O
 # ---------------------------------------------------------------------------
 
-def _read_json(path: str) -> dict:
+def _read_json(path: str | Path) -> dict:
     with open(path) as f:
         return json.load(f)
 
 
-def _write_json(path: str, data: dict) -> None:
+def _write_json(path: str | Path, data: dict) -> None:
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
         f.write("\n")
@@ -61,32 +85,97 @@ def _write_json(path: str, data: dict) -> None:
 # Commands
 # ---------------------------------------------------------------------------
 
-def apply_agents() -> None:
+def _managed_agents() -> list:
+    return [agent for agent in sorted(AGENTS, key=lambda item: item.name) if agent.name not in UNMANAGED_AGENTS]
+
+
+def _build_artifacts() -> list[GeneratedAgentArtifact]:
+    artifacts = [render_agent_artifact(agent) for agent in _managed_agents()]
+    for agent_name, template_path in BUILTIN_SHADOWS.items():
+        artifacts.append(load_static_markdown_artifact(template_path=template_path, output_name=f"{agent_name}.md"))
+    return artifacts
+
+
+def _warn_for_large_prompts(artifacts: list[GeneratedAgentArtifact]) -> None:
+    oversized = [
+        artifact
+        for artifact in artifacts
+        if artifact.token_count > PROMPT_TOKEN_WARNING_THRESHOLD
+    ]
+    if not oversized:
+        return
+    table = Table(title="Prompt token warnings", show_header=True)
+    table.add_column("Agent", style="bold")
+    table.add_column("Tokens", justify="right")
+    table.add_column("Model")
+    table.add_column("Source template", style="dim")
+    for artifact in sorted(oversized, key=lambda item: item.token_count, reverse=True):
+        table.add_row(
+            artifact.name,
+            str(artifact.token_count),
+            artifact.model or "-",
+            artifact.source_template,
+        )
+    console.print(table)
+    logger.warning(
+        "[yellow]Prompt token threshold exceeded for %d agent(s) (limit=%d)[/yellow]",
+        len(oversized),
+        PROMPT_TOKEN_WARNING_THRESHOLD,
+        extra={"markup": True},
+    )
+
+
+def _validate_written_artifacts(artifacts: list[GeneratedAgentArtifact]) -> None:
+    missing = [
+        artifact.output_filename
+        for artifact in artifacts
+        if not (_MARKDOWN_AGENTS_DIR / artifact.output_filename).exists()
+    ]
+    if missing:
+        raise RuntimeError(f"Generated agent files missing after write: {missing}")
+
+
+def apply_agents() -> list[GeneratedAgentArtifact]:
     """Write compiled permissions to all managed markdown agent files."""
     # Global defaults → skeleton
-    if os.path.exists(_SKELETON):
+    if _SKELETON.exists():
         data = _read_json(_SKELETON)
         data["permission"] = GLOBAL_DEFAULTS
         _write_json(_SKELETON, data)
-        console.print("Applied global defaults to [bold]config_skeleton.json[/bold]")
+        logger.info("Applied global defaults to [bold]config_skeleton.json[/bold]", extra={"markup": True})
     else:
-        console.print("[yellow]Warning:[/yellow] config_skeleton.json not found; skipped.")
-
-    for agent in sorted(AGENTS, key=lambda item: item.name):
-        if agent.name in UNMANAGED_AGENTS:
-            continue
-        output_path = write_agent_markdown(agent, _MARKDOWN_AGENTS_DIR)
-        console.print(
-            f"  [green]✓[/green] {agent.name}  [dim]({agent.base_type} → {output_path.name})[/dim]"
+        logger.warning(
+            "[yellow]config_skeleton.json not found; skipped global default update[/yellow]",
+            extra={"markup": True},
         )
 
-    for agent_name, template_path in BUILTIN_SHADOWS.items():
-        output_path = write_static_markdown_template(
-            template_path=template_path,
-            output_name=f"{agent_name}.md",
-            output_dir=_MARKDOWN_AGENTS_DIR,
-        )
-        console.print(f"  [green]✓[/green] {agent_name}  [dim](builtin shadow → {output_path.name})[/dim]")
+    artifacts = _build_artifacts()
+    for artifact in artifacts:
+        output_path = write_markdown_artifact(artifact, _MARKDOWN_AGENTS_DIR)
+        logger.info("wrote %s", output_path.name)
+
+    _validate_written_artifacts(artifacts)
+    _warn_for_large_prompts(artifacts)
+    return artifacts
+
+
+def _validate_runtime_agents(expected_names: set[str]) -> None:
+    runtime_rulesets = load_agent_rulesets()
+    runtime_names = set(runtime_rulesets)
+    missing = sorted(expected_names - runtime_names)
+    if missing:
+        raise RuntimeError(f"Generated agents missing from runtime `opencode agent list`: {missing}")
+    logger.info("Validated %d generated agents against `opencode agent list`", len(expected_names))
+
+
+def build_agents() -> None:
+    """Build markdown agents, rebuild opencode.json, then validate runtime visibility."""
+    artifacts = apply_agents()
+    logger.info("Running %s", _BUILD_CONFIG_SCRIPT.relative_to(_PROJECT_ROOT))
+    subprocess.run([sys.executable, str(_BUILD_CONFIG_SCRIPT)], cwd=_PROJECT_ROOT, check=True)
+    expected_names = {artifact.name for artifact in artifacts}
+    _validate_runtime_agents(expected_names)
+    logger.info("Build complete: %d generated agents validated", len(expected_names))
 
 
 def dump_agent(name: str) -> None:
@@ -99,7 +188,6 @@ def dump_agent(name: str) -> None:
 
 def dry_run() -> None:
     """Compile all agents and report key counts without writing files."""
-    from rich.table import Table
     from rich import box
     t = Table(box=box.SIMPLE, show_header=True, padding=(0, 1))
     t.add_column("Agent", style="bold")
@@ -117,6 +205,8 @@ def dry_run() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Manage OpenCode agent permissions (v2).")
+    parser.add_argument("--build",          action="store_true",
+                        help="Write markdown agents, rebuild opencode.json, and validate runtime visibility")
     parser.add_argument("--apply",          action="store_true",
                         help="Write compiled permissions to agent config files")
     parser.add_argument("--dry-run",        action="store_true",
@@ -133,7 +223,9 @@ def main() -> None:
                         help="List available rulesets (abstract rule combinations)")
     args = parser.parse_args()
 
-    if args.apply:
+    if args.build:
+        build_agents()
+    elif args.apply:
         apply_agents()
     elif args.dry_run:
         dry_run()

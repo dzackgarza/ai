@@ -14,6 +14,7 @@ the owning subtrees instead of adding new root clutter.
 
 - Permissions and markdown-agent generation: `permissions/main.py`
 - Config assembly: `scripts/build_config.py`
+- Canonical prompt templating: `../scripts/llm/templates.py`
 - Permission policy: `docs/PERMISSION_SPEC.md`
 - Provider configs: `configs/providers/*.json`
 - Managed agent templates: `../prompts/**/*.md`
@@ -31,6 +32,7 @@ the owning subtrees instead of adding new root clutter.
 
 ### Canonical Pathways
 
+- `just build-agents`
 - `just permissions-apply`
 - `just config-build`
 - `just rebuild`
@@ -47,6 +49,23 @@ the owning subtrees instead of adding new root clutter.
 - `plugins/utilities/harness/`: session automation CLI
 - `scripts/`: repo-wide maintenance entrypoints
 - `docs/`: policy and organization docs
+
+### Prompt Templating
+
+- All prompt templating is centralized in `../scripts/llm/templates.py`. Do not reimplement prompt parsing, frontmatter handling, Jinja rendering, or include semantics inside `permissions/`, plugins, or ad hoc helper scripts.
+- `PROMPTS_DIR` is the canonical prompt root. If unset, `scripts.llm` defaults it to `repo_root/prompts`.
+- Prompt templates are markdown files with YAML frontmatter. The top-level template is authoritative for metadata such as `description`, `mode`, `model`, `temperature`, and `top_p`.
+- Jinja `{% include %}` and `{% import %}` are supported through the canonical `scripts.llm` environment. Included prompt templates contribute only their markdown body. Child frontmatter is ignored by design.
+- If a new use case needs different prompt composition semantics, extend `scripts.llm` rather than adding a second templating path. Verify there are no regressions for both the micro-agent runner (`scripts/run_micro_agent.py`) and markdown-agent generation (`permissions/main.py`).
+
+### Build Behavior
+
+- `just build-agents` is the canonical full build for managed agents. It:
+  1. Regenerates `agents/*.md` from `../prompts/**/*.md`
+  2. Rebuilds `opencode.json` through `scripts/build_config.py`
+  3. Validates the generated config against its schema
+  4. Verifies the expected generated agent names appear in `opencode agent list`
+- The builder also counts tokens for fully rendered prompts and warns when any generated agent exceeds the configured threshold (`OPENCODE_AGENT_TOKEN_WARNING_THRESHOLD`, default `5000`).
 
 ---
 

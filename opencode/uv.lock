@@ -1620,6 +1620,7 @@ dependencies = [
     { name = "pydantic-ai" },
     { name = "pyyaml" },
     { name = "rich" },
+    { name = "tiktoken" },
     { name = "workspace-scripts" },
 ]
 
@@ -1638,6 +1639,7 @@ requires-dist = [
     { name = "pydantic-ai" },
     { name = "pyyaml" },
     { name = "rich" },
+    { name = "tiktoken" },
     { name = "workspace-scripts", editable = "../scripts" },
 ]
 
