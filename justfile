@@ -73,7 +73,7 @@ reset-sandbox:
 
 # Sync centralized MCP config with ~/.envrc loaded through direnv.
 # Usage: just sync-mcp-configs [--dry-run] [--harness codex]
-sync-mcp-configs *ARGS="":
+install-mcps *ARGS="":
     #!/usr/bin/env bash
     set -euo pipefail
     cd "{{repo}}"
@@ -81,68 +81,30 @@ sync-mcp-configs *ARGS="":
 
 # Check all usage limits
 # Usage: just usage [--json] [--no-notify]
-usage *ARGS="":
+usage-limits *ARGS="":
     @python {{repo}}/usage-limits/claude_usage.py {{ARGS}}
     @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
     @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}
-    @python {{repo}}/usage-limits/antigravity_usage.py {{ARGS}}
     @python {{repo}}/usage-limits/qwen_usage.py {{ARGS}}
 
-# Check Codex usage limits
-# Usage: just codex-usage [--json] [--no-notify]
-codex-usage *ARGS="":
-    @python {{repo}}/usage-limits/codex_usage.py {{ARGS}}
-
-# Check Amp usage limits
-# Usage: just amp-usage [--json] [--no-notify]
-amp-usage *ARGS="":
-    @python {{repo}}/usage-limits/amp_usage.py {{ARGS}}
-
-# Check Antigravity usage limits
-# Usage: just antigravity-usage [--json] [--no-notify]
-antigravity-usage *ARGS="":
-    @python {{repo}}/usage-limits/antigravity_usage.py {{ARGS}}
-
-# Check Qwen usage limits
-# Usage: just qwen-usage [--json] [--no-notify]
-qwen-usage *ARGS="":
-    @python {{repo}}/usage-limits/qwen_usage.py {{ARGS}}
 
 # =============================================================================
 # OpenCode (opencode/)
 # =============================================================================
 
-opencode-permissions-apply:
+opencode-build-permissions:
     @python {{repo}}/opencode/scripts/manage_permissions.py --apply
 
-opencode-config-build:
+opencode-build-config:
     @python {{repo}}/opencode/scripts/build_config.py
 
-opencode-rebuild: opencode-permissions-apply opencode-config-build
+opencode-rebuild: opencode-build-permissions opencode-build-config
 
-opencode-providers-validate *args="":
-    @python {{repo}}/opencode/configs/providers/scripts/validate_models_dev.py {{args}}
-
-opencode-openrouter-sync:
-    @python {{repo}}/opencode/configs/providers/scripts/sync_openrouter_models.py
-
-opencode-openrouter-probe-endpoints *args="":
-    @python {{repo}}/opencode/configs/providers/scripts/probe_openrouter_endpoints.py {{args}}
-
-opencode-openrouter-probe-tool-calling *args="":
-    @python {{repo}}/opencode/configs/providers/scripts/probe_openrouter_tool_calling.py {{args}}
-
-opencode-providers-debug provider="opencode":
-    @python {{repo}}/opencode/configs/providers/scripts/debug_models_dev_provider.py {{provider}}
-
-opencode-run-agent *args:
+run-microagent *args:
     @python {{repo}}/scripts/run_micro_agent.py {{args}}
 
 opencode-plugins-check:
     @cd {{repo}}/opencode/plugins && bunx tsc --noEmit && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts && bun build --target bun --outdir /tmp/plugin-check local-tools.ts
-
-opencode-plugins-typecheck:
-    @cd {{repo}}/opencode/plugins && bunx tsc --noEmit
 
 opencode-plugins-test:
     @cd {{repo}}/opencode/plugins && bun test tests/unit/ examples/command-interceptor/command-interceptor.test.ts examples/prompt-router/tests/prompt-router.test.ts
@@ -153,26 +115,71 @@ opencode-plugins-compile:
 opencode-plugins-classifier:
     @cd {{repo}}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts
 
-opencode-plugins-classifier-model model:
-    @cd {{repo}}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts {{model}}
-
-opencode-plugins-classifier-mdjson model:
-    @cd {{repo}}/opencode/plugins && bun run examples/prompt-router/tests/classifier/run.ts {{model}} --mode MD_JSON
-
-opencode-plugins-behavior tier:
-    @cd {{repo}}/opencode/plugins && PROMPT_ROUTER_ENABLED=true bash examples/prompt-router/tests/behavior/run.sh {{tier}}
-
-opencode-plugins-baseline tier:
-    @cd {{repo}}/opencode/plugins && PROMPT_ROUTER_ENABLED=false bash examples/prompt-router/tests/behavior/run.sh {{tier}}
-
-opencode-plugins-callback-integration:
-    @cd {{repo}}/opencode/plugins && bun test tests/unit/callback-integration.test.ts
-
 opencode-harness *args:
     @cd {{repo}}/opencode/plugins/utilities/harness && bun run opx {{args}}
 
 opencode-session *args:
     @cd {{repo}}/opencode/plugins && bun run utilities/harness/session-harness.ts {{args}}
 
-opencode-snapshot-gc:
+clear-caches:
     @bash {{repo}}/opencode/scripts/maintenance/opencode_gc.sh
+
+# =============================================================================
+# OpenCode Provider Discovery (inline - no scripts)
+# =============================================================================
+
+# List all OpenRouter models from models.dev
+opencode-openrouter-list:
+    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | keys[]'
+
+# List OpenRouter free tier models
+opencode-openrouter-free:
+    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free") | .key'
+
+# List OpenRouter models with tool support
+opencode-openrouter-tools:
+    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tools == true) | .key'
+
+# List OpenRouter free models with tool support
+opencode-openrouter-free-tools:
+    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free" and .value.tools == true) | .key'
+
+# Probe a model endpoint for responsiveness
+# Usage: just opencode-openrouter-probe mistralai/mistral-small:free
+opencode-openrouter-probe model:
+    @curl -s https://openrouter.ai/api/v1/chat/completions \
+        -H "Authorization: Bearer $$OPENROUTER_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{"model":"{{model}}","messages":[{"role":"user","content":"ping"}],"max_tokens":5}' \
+        | jq -r 'if .error then "ERROR: \(.error.message)" else "OK" end'
+
+# Test model tool-calling support
+# Usage: just opencode-openrouter-probe-tools mistralai/mistral-small:free
+opencode-openrouter-probe-tools model:
+    @curl -s https://openrouter.ai/api/v1/chat/completions \
+        -H "Authorization: Bearer $$OPENROUTER_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "model":"{{model}}",
+            "messages":[{"role":"user","content":"Find files containing auth"}],
+            "tools":[{"type":"function","function":{"name":"search_files","parameters":{"type":"object","properties":{"query":{"type":"string"}}}}}
+        ]}' \
+        | jq -r 'if .choices[0].message.tool_calls then "SUPPORTS_TOOLS" elif .error then "ERROR: \(.error.message)" else "NO_TOOL_SUPPORT" end'
+
+# Full discovery: list free+tools models and probe each
+# Usage: just opencode-openrouter-discover
+opencode-openrouter-discover:
+    @echo "=== OpenRouter Free Models with Tool Support ===" && \
+    for model in $$(curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free" and .value.tools == true) | .key'); do \
+        echo -n "$$model: " && \
+        curl -s https://openrouter.ai/api/v1/chat/completions \
+            -H "Authorization: Bearer $$OPENROUTER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"model\":\"$$model\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":5}" \
+            | jq -r 'if .error then "DOWN: \(.error.message)" else "UP" end'; \
+    done
+
+# Debug a provider from models.dev
+# Usage: just opencode-provider-debug openrouter
+opencode-provider-debug provider:
+    @curl -s https://models.dev/api.json | jq -r '.{{provider}}.models | to_entries[] | "  \(.key) - \(.value.name)"'
