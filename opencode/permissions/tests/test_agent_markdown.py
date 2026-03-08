@@ -103,6 +103,65 @@ def test_render_body_supports_frontmatter_aware_macro_import(tmp_path: Path) -> 
     assert rendered == "ADA"
 
 
+def test_render_agent_markdown_inlines_child_prompt_body_only(tmp_path: Path) -> None:
+    from src.agent_markdown import render_agent_markdown
+    from src.base import PureAgent
+
+    class IncludedPromptAgent(PureAgent):
+        def __init__(self, prompt_template: str) -> None:
+            super().__init__(prompt_template=prompt_template)
+
+        @property
+        def name(self) -> str:
+            return "Included Prompt Agent"
+
+        def permission_layers(self) -> list[dict]:
+            return [{"bash": "allow"}]
+
+    prompts_dir = tmp_path / "prompts"
+    prompts_dir.mkdir()
+    (prompts_dir / "child.md").write_text(
+        "---\n"
+        "description: child metadata should be ignored\n"
+        "mode: subagent\n"
+        "model: ignored/model\n"
+        "---\n"
+        "child body for {{ name }}\n"
+    )
+    parent = prompts_dir / "parent.md"
+    parent.write_text(
+        "---\n"
+        "description: parent metadata should dominate\n"
+        "mode: primary\n"
+        "model: test/model\n"
+        "temperature: 0.2\n"
+        "---\n"
+        "parent start\n"
+        "{% include './child.md' %}\n"
+        "parent end\n"
+    )
+
+    original_prompts_dir = os.environ.get("PROMPTS_DIR")
+    os.environ["PROMPTS_DIR"] = str(prompts_dir)
+    try:
+        rendered = render_agent_markdown(IncludedPromptAgent(prompt_template="parent.md"))
+    finally:
+        if original_prompts_dir is None:
+            os.environ.pop("PROMPTS_DIR", None)
+        else:
+            os.environ["PROMPTS_DIR"] = original_prompts_dir
+
+    frontmatter, body = _split_markdown_frontmatter(rendered)
+    assert frontmatter["description"] == "parent metadata should dominate"
+    assert frontmatter["mode"] == "primary"
+    assert frontmatter["model"] == "test/model"
+    assert frontmatter["temperature"] == 0.2
+    assert frontmatter["permission"]["bash"] == "allow"
+    assert "ignored/model" not in rendered
+    assert "child metadata should be ignored" not in rendered
+    assert body == "parent start\nchild body for \nparent end\n"
+
+
 def test_render_agent_markdown_embeds_template_metadata_and_permissions() -> None:
     from agents.primary.minimal import AGENT
     from src.agent_markdown import render_agent_markdown
