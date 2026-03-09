@@ -38,7 +38,7 @@ the owning subtrees instead of adding new root clutter.
 - `just rebuild`
 - `just providers-validate`
 - `just check-plugins`
-- `just harness run --help`
+- `just opencode-harness run --help`
 
 ### Layout
 
@@ -46,7 +46,7 @@ the owning subtrees instead of adding new root clutter.
 - `agents/`: generated OpenCode markdown agents consumed at runtime
 - `../prompts/`: canonical prompt templates with YAML frontmatter metadata
 - `plugins/`: runtime-loaded plugins and plugin-owned utilities
-- `plugins/utilities/harness/`: session automation CLI
+- `plugins/utilities/harness/`: compatibility wrapper/docs for the extracted session automation CLI
 - `scripts/`: repo-wide maintenance entrypoints
 - `docs/`: policy and organization docs
 

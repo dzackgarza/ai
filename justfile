@@ -93,10 +93,10 @@ check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
 
 opencode-harness *args:
-    @cd {{ repo }}/opencode/plugins/utilities/harness && bun run opx {{ args }}
+    @npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx {{ args }}
 
 opencode-session *args:
-    @cd {{ repo }}/opencode/plugins && bun run utilities/harness/session-harness.ts {{ args }}
+    @npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session {{ args }}
 
 # =============================================================================
 # OpenCode Provider Discovery (inline - no scripts)

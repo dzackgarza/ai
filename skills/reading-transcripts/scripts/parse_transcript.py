@@ -3,6 +3,10 @@ import sys
 import subprocess
 import os
 
+OPENCODE_TRANSCRIPT_PACKAGE = (
+    "git+ssh://git@github.com/dzackgarza/opencode-transcripts.git"
+)
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -33,10 +37,15 @@ def main():
 
     try:
         if args.harness == "opencode":
-            # OpenCode parser takes session ID directly
             session_id = args.identifier
             subprocess.run(
-                ["python", f"{scripts_dir}/parse_opencode_log.py", session_id],
+                [
+                    "uvx",
+                    "--from",
+                    OPENCODE_TRANSCRIPT_PACKAGE,
+                    "opencode-transcript",
+                    session_id,
+                ],
                 check=True,
             )
 

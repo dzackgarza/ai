@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-exec bun run opx "$@"
+exec npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx "$@"

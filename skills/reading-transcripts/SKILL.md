@@ -18,6 +18,14 @@ Intelligent agents can use this information to locate past conversations, list h
 | **1. List ALL sessions**    | `python ~/.agents/skills/reading-transcripts/scripts/list_all_sessions.py`                                 |
 | **2. Parse any transcript** | `python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness <harness> <identifier>` |
 
+For `--harness opencode`, the dispatcher delegates to:
+
+```bash
+uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript <session-id>
+```
+
+Other harnesses still use the local parser scripts in this skill.
+
 **Example Workflow:**
 
 ```bash
@@ -117,5 +125,5 @@ The wrapper scripts abstract away the locations of the underlying data. If the s
 | **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                                                            |
 | **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                                                                     |
 | **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                                                           |
-| **OpenCode**    | OpenCode CLI export         | Fetched via `opencode export <session_id>`. Use `parse_opencode_log.py` with a session ID. |
+| **OpenCode**    | OpenCode CLI export         | Delegated via `uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript <session_id>`. |
 | **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                                                              |

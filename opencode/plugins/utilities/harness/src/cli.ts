@@ -6,9 +6,8 @@ const REQUEST_TIMEOUT_MS = 180000;
 let RESOLVED_BASE_URL = "http://127.0.0.1:4096";
 let AUTH_HEADER = "";
 
-const OPX_TRANSCRIPT_SCRIPT =
-  process.env.OPX_TRANSCRIPT_SCRIPT ??
-  "/home/dzack/.agents/skills/reading-transcripts/scripts/parse_opencode_log.py";
+const OPENCODE_TRANSCRIPT_PACKAGE =
+  "git+ssh://git@github.com/dzackgarza/opencode-transcripts.git";
 
 type KV = Record<string, string | boolean>;
 
@@ -367,9 +366,13 @@ async function promptAsyncRequest(
 
 async function generateTranscript(sessionID: string): Promise<string> {
   return new Promise<string>((resolve) => {
-    const child = spawn("python3", [OPX_TRANSCRIPT_SCRIPT, sessionID], {
-      env: process.env,
-    });
+    const child = spawn(
+      "uvx",
+      ["--from", OPENCODE_TRANSCRIPT_PACKAGE, "opencode-transcript", sessionID],
+      {
+        env: process.env,
+      },
+    );
     let out = "";
     child.stdout.on("data", (d) => {
       out += d.toString();
@@ -1207,7 +1210,7 @@ function help() {
     "  OPENCODE_BASE_URL (default http://127.0.0.1:4096)",
     "  OPENCODE_SERVER_USERNAME (default opencode)",
     "  OPENCODE_SERVER_PASSWORD (optional)",
-    "  OPX_TRANSCRIPT_SCRIPT (default: parse_opencode_log.py path)",
+    `  Transcript renderer: uvx --from ${OPENCODE_TRANSCRIPT_PACKAGE} opencode-transcript`,
   ];
   console.log(text.join("\n"));
 }

@@ -30,7 +30,7 @@ just opencode-session                  # session management CLI (list, delete, s
 | **Introspection** | `introspection.ts` | Active | Custom tool `introspection`: returns the agent's own session ID, message ID, and agent name |
 | **List Sessions** | `list-sessions.ts` | Active | Custom tool `list_sessions`: lists sessions with token counts, models, and duration |
 | **Read Transcript** | `read-transcript.ts` | Active | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
-| **Session Harness (CLI utility)** | `utilities/harness/session-harness.ts` | Active | Session management CLI (list, delete, get, messages, create, stats). Not loaded as a plugin module. |
+| **Session Harness (CLI utility)** | `external` | Active | Primary entrypoint moved to `dzackgarza/opencode-manager`; local `utilities/harness/` is a compatibility layer during retirement. |
 
 ## File map
 
@@ -66,112 +66,32 @@ plugins/
 │   └── unit/                       # bun test — active plugin unit tests
 │
 └── utilities/
-    ├── harness/                    # session-harness.ts CLI (not auto-loaded as plugin)
+    ├── harness/                    # compatibility wrapper/docs for external opencode-manager
     └── scripts/
 ```
 
 ## Session Harness
 
-Centralized CLI for managing OpenCode sessions. Exposes the complete session API.
+The local harness is being retired. The primary entrypoint is the private repo
+`dzackgarza/opencode-manager`.
 
-**Usage:**
+Use the centralized wrappers:
+
 ```bash
-just session <command> [options]
-# or directly:
-bun run utilities/harness/session-harness.ts <command> [options]
+just opencode-harness run --help
+just opencode-session --help
+just opencode-session list --limit 5
 ```
 
-**Session Management:**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `list` | List all sessions | `just session list --limit 10` |
-| `get` | Get session details | `just session get ses_abc123` |
-| `children` | List child sessions | `just session children ses_abc123` |
-| `create` | Create new session | `just session create --title "test"` |
-| `update` | Update session | `just session update ses_abc123 --title "new"` |
-| `delete` | Delete a session | `just session delete ses_abc123` |
-| `abort` | Abort running session | `just session abort ses_abc123` |
-| `share` | Share a session | `just session share ses_abc123` |
-| `unshare` | Unshare a session | `just session unshare ses_abc123` |
-| `summarize` | Start summarization | `just session summarize ses_abc123` |
-| `init` | Initialize (analyze & AGENTS.md) | `just session init ses_abc123` |
+Direct GitHub-backed commands:
 
-**Messages:**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `messages` | List messages | `just session messages ses_abc123` |
-| `message` | Get single message | `just session message ses_abc123 msg_xyz` |
-
-**Interaction:**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `prompt` | Send prompt | `just session prompt ses_abc123 "hello"` |
-| `command` | Send command | `just session command ses_abc123 todo_write` |
-| `shell` | Run shell command | `just session shell ses_abc123 "ls -la"` |
-
-**History:**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `revert` | Revert a message | `just session revert ses_abc123 msg_xyz` |
-| `unrevert` | Restore reverted | `just session unrevert ses_abc123` |
-
-**Permissions:**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `permission` | Respond to permission | `just session permission ses_abc123 perm_xyz allow` |
-
-**Statistics:**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `stats` | Show statistics | `just session stats` |
-
-**Options:**
-- `--json` - Output as JSON (all commands)
-- `--limit N` - Limit results (list, messages)
-- `--no-reply` - Don't wait for AI response (prompt)
-- `--output-format` - Request structured output (prompt)
-- `--title "text"` - Set title (create, update)
-- `--parent <id>` - Set parent session (create)
-- `--analyze` - Analyze app (init)
-
-**Examples:**
 ```bash
-# List recent sessions
-just session list --limit 5
-
-# Create a child session
-just session create --title "subagent-test" --parent ses_abc123
-
-# Send a prompt without waiting for response
-just session prompt ses_abc123 "background task" --no-reply
-
-# Export messages as JSON
-just session messages ses_abc123 --json > messages.json
-
-# Get statistics
-just session stats
-
-# Respond to a permission request
-just session permission ses_abc123 perm_xyz allow-session
+npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx --help
+npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session --help
 ```
 
-**Safety:**
-- Delete requires explicit session ID (no bulk operations)
-- No `--all` or `--older-than` flags (prevents accidental mass deletion)
-- Single-session deletion only
-
-**Programmatic API:**
-```typescript
-import { 
-  listSessions, deleteSession, getStats,
-  sendPrompt, getMessages, createSession 
-} from "./utilities/harness/session-harness";
-
-const sessions = await listSessions();
-const stats = await getStats();
-await deleteSession("ses_abc123");
-await sendPrompt("ses_abc123", "hello");
-```
+The local `utilities/harness/` directory remains only as a compatibility wrapper and
+historical source snapshot during cutover.
 
 ## Prompt Router
 
