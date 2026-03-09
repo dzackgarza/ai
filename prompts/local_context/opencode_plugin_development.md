@@ -323,8 +323,33 @@ python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harnes
 
 ## 12. Workflow Conventions
 
-- Track bugs, feature requests, open questions, known limitations, and roadmap items in
-  GitHub issues
+- Apply git and issue workflow inside the relevant package repo. The top-level
+  `/home/dzack/opencode-plugins` directory is coordination space, not a git repo.
+- Log every observed non-trivial error in the affected repo immediately.
+- An issue is an observed bug, failure, missing proof, or other concrete problem that
+  you cannot fix trivially in the current task or that is outside the current task.
+- Do not file speculative concerns, defensive hedging, imagined fallbacks, or
+  preemptive robustness work as bugs. Those are feature requests or design ideas.
+- If you track those at all, label and describe them as feature requests rather than
+  bugs.
+- Close an issue only after a specific pushed commit fixes it or makes it irrelevant.
+  The closing comment must say where the fix lives and how it resolves the issue.
+- Before starting issue work in a package repo, make sure the current `main` work is
+  committed and pushed.
+- Create a dedicated branch with a git worktree for the issue. Do not pile new issue
+  work onto a dirty `main`.
+- Implement the fix or proof on that branch and push the branch.
+- Open or update the PR with `gh`, then add a `@codex review` comment.
+- Sleep up to 5 minutes waiting for Codex and Qodo Merge reviews.
+- Triage every relevant review thread. Reviewers may over-suggest defensive,
+  enterprise-style hedging that is inappropriate for a small plugin repo. Keep the
+  scope pragmatic.
+- Leave a comment on each relevant thread explaining the resolution decision. If you
+  changed code, cite the commit or follow-up edit. If you rejected the suggestion,
+  say why.
+- After substantive updates, wait for fresh reviews and repeat until all relevant
+  discussions are resolved.
+- Stop once the branch, PR, and review threads are ready. Wait for the user to merge.
 - Do not maintain local `GAPS.md`, `PLAN.md`, or `MCP-WRAPPERS-PLAN.md`
 - Use Serena memory for durable architecture decisions and constraints, not work logs
 - The git commit is the record of completed work; chat should only surface blockers, gaps,

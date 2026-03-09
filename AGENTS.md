@@ -217,3 +217,20 @@ Never suggest simply restarting, or blame session continuity, or other similar p
 - To test opencode, run "\opencode run --agent Minimal 'Hello world'".
 - The ~/ai repo is the canonical configuration directory, which installs symlinks to all usual system config locations. Edit here only.
 - You do NOT know anything about opencode. It is a constantly evolving open source project. Your knowledge cutoff is from over a year ago. Do not make claims about functionality or configuration or attempt to debug without docs freshly in context.
+
+# Custom CLI Tools
+
+
+- `linear` for tracking git issues and system-wide projects and priorities (https://github.com/schpet/linear-cli)
+    - Use `linear-open` to list all outstanding open issues across the synced plugin trackers.
+- `probe` for semantic searching (https://github.com/probelabs/probe). **Always invoke via `npx -y @probelabs/probe`** as it is not globally installed.
+    - E.g. 
+    # Semantic search with Elasticsearch syntax
+    npx -y @probelabs/probe search "authentication AND login" ./src
+
+    # Extract code block at line 42
+    npx -y @probelabs/probe extract src/main.rs:42
+
+    # AST pattern matching
+    npx -y @probelabs/probe query "fn $NAME($$$) -> Result<$RET>" --language rust
+- ?

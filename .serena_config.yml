@@ -160,6 +160,12 @@ included_optional_tools:
 
 # fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
 # This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
 fixed_tools: []
 
 # list of mode names to that are always to be included in the set of active modes
@@ -203,7 +209,6 @@ symbol_info_budget: 10
 
 # the list of registered project paths (updated automatically).
 projects:
-- /home/dzack/MinerU
 - /home/dzack/ai
 - /home/dzack/ai/opencode
 - /home/dzack/ai/opencode/permissions
@@ -211,6 +216,8 @@ projects:
 - /home/dzack/lattice_interface
 - /home/dzack/opencode-git
 - /home/dzack/opencode-plugins
+- /home/dzack/opencode-plugins/improved-webtools
+- /home/dzack/opencode-plugins/opencode-zotero-plugin
 - /home/dzack/opencode_parser
 - /var/sandbox/execa
 - /var/sandbox/opencode_parser_test
