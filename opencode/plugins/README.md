@@ -177,10 +177,6 @@ await sendPrompt("ses_abc123", "hello");
 
 Prompt Router now lives in the standalone plugin repo at `/home/dzack/opencode-plugins/prompt-router`.
 
-Registration source of truth:
-- `configs/config_skeleton.json`
-- generated into `opencode.json` by the normal OpenCode config build
-
 Runtime behavior remains the same:
 - classifies each incoming user message into one of six tiers
 - uses the canonical prompt files in `~/ai/prompts/micro_agents/prompt_difficulty_classifier/`
