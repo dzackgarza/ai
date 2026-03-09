@@ -110,7 +110,8 @@
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest",
     "file:///home/dzack/opencode-plugins/improved-task/src/index.ts",
-    "file:///home/dzack/opencode-plugins/improved-webtools/src/index.ts"
+    "file:///home/dzack/opencode-plugins/improved-webtools/src/index.ts",
+    "opencode-pty@latest"
   ],
   "permission": {
     "read": "allow",

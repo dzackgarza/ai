@@ -2,6 +2,8 @@
 
 # Agent Guidelines
 
+Note: there are many symlinks on this system, check the file type if you find confusing duplication. Note that all-agent facing prompts must be organizing into the ~/ai/prompts directory, version-controlled, and linked out to repo-specific guidelines.
+
 ## Hard Rules
 
 1. **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing. Verify with `git diff` after.
