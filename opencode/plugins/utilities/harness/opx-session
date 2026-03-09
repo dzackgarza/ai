@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session "$@"

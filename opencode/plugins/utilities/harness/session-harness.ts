@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 /**
  * Session Management CLI Harness - Full API
- * 
- * Comprehensive session management for OpenCode testing and development.
- * Exposes the complete session API surface.
- * 
+ *
+ * Compatibility source snapshot during extraction to the standalone
+ * `dzackgarza/opencode-manager` repo.
+ *
  * Usage:
- *   bun run session-harness.ts <command> [options]
- * 
+ *   opx-session <command> [options]
+ *
  * Commands:
  *   list, get, children, create, update, delete
  *   abort, share, unshare, summarize
@@ -826,7 +826,7 @@ function printHelp(): void {
 Session Management CLI Harness - Full API
 
 Usage:
-  bun run session-harness.ts <command> [options]
+  opx-session <command> [options]
 
 Session Management:
   list [--limit N] [--json]              List all sessions
@@ -871,11 +871,11 @@ Environment:
   OPENCODE_API_KEY    API key for authentication
 
 Examples:
-  bun run session-harness.ts list --limit 10
-  bun run session-harness.ts messages ses_abc123 --json
-  bun run session-harness.ts create --title "test" --parent ses_xyz
-  bun run session-harness.ts prompt ses_abc123 "hello" --no-reply
-  bun run session-harness.ts stats
+  opx-session list --limit 10
+  opx-session messages ses_abc123 --json
+  opx-session create --title "test" --parent ses_xyz
+  opx-session prompt ses_abc123 "hello" --no-reply
+  opx-session stats
 `);
 }
 

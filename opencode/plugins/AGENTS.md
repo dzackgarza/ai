@@ -96,7 +96,7 @@ timeout 15 opencode run --agent Minimal "Reply with only the word 'ready'. (cont
 
 ### Transcript parsing
 
-If you need to inspect output beyond stdout, use `parse_transcript.py --harness opencode <session-id>` from the reading-transcripts skill. Never use raw `jq` against `events.jsonl` or `opencode export`.
+If you need to inspect output beyond stdout, use `parse_transcript.py --harness opencode <session-id>` from the reading-transcripts skill. Its OpenCode branch now delegates to the external `opencode-transcripts` package. Never use raw `jq` against `events.jsonl` or `opencode export`.
 
 ## 4. Tool Description Guidelines
 

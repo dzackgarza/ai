@@ -1,5 +1,9 @@
 ## Session Handoff and Background Runtime
 
+Historical note: these findings came from the pre-extraction local harness
+snapshot. The active command surface now lives in `dzackgarza/opencode-manager`,
+while this directory remains a compatibility layer during retirement.
+
 ### Current `plan_exit` behavior
 
 - `plan_exit` creates a new orchestrator session and primes it with the Orchestrator agent prompt.

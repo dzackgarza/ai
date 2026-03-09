@@ -1,5 +1,9 @@
 # Validation Report
 
+Historical note: this report covers the pre-extraction local harness snapshot.
+Current entrypoints are `just opencode-harness`, `just opencode-session`, or the
+external `dzackgarza/opencode-manager` package directly.
+
 ## Environment
 
 - Harness path: `/home/dzack/ai/opencode/plugins/utilities/harness`
