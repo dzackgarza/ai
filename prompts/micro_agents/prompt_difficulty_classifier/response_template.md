@@ -1,4 +1,10 @@
-{% if tier == "model-self" %}
+{% if probe_prompt %}
+Routing classification: **{{ tier }}**
+Routing verification token: `{{ passcode }}`
+
+The routed user prompt was exactly `{{ probe_prompt }}`. For this verification probe, reply with ONLY `{{ passcode }}` and nothing else. Do not perform the task.
+{% endif %}
+{% if not probe_prompt and tier == "model-self" %}
 NB: This prompt was classified as **model-self**. The user is asking about you.
 
 Answer from what you already know. The information lives in your context window — your instructions, tools, capabilities, and the current session. Do not search the web. Do not read project files. No tool calls are needed unless retrieving session history.
