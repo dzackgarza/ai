@@ -2,13 +2,18 @@
 
 # OpenCode Plugin Development
 
+*IMPORTANT*: do not hide env vars in the code base without clearly documenting them in a local .envrc and in the README for your repo. Moreover, ensure all envrcs use `source_up` so they properly inherit ~/.envrc (e.g. for global API keys; but if a local repo truly relies on a global env var, it should still document it in the local envrc.
+
 ## 1. Repo Facts
 
 - Each subdirectory is its own package/repo. The top-level `/home/dzack/opencode-plugins`
   directory is **not** a git repo.
 - `~/ai/opencode/plugins/` is a separate workspace. Do not touch it from here.
-- Register plugins in OpenCode via the `plugin` array using either an npm package or a
+- Register plugins in OpenCode via the `plugin` array using an npm package, an explicit
+  git alias like `package-name@git+https://github.com/owner/repo`, or a
   `file:///abs/path/to/src/index.ts` entry.
+- For git-backed plugin installs, the alias before `@` must match the package `name`
+  from the plugin repo's `package.json`.
 - Bun caches installed npm plugins under `~/.cache/opencode/node_modules/`.
 
 **Generated config rule:**
@@ -19,7 +24,45 @@
 - Do not run `just rebuild` while inside an active OpenCode session; it restarts
   `opencode-serve` and kills the session.
 
-## 2. Config Loading
+## 2. Pre-Push Quality Checklist
+
+Before pushing any plugin repo to GitHub, verify the following:
+
+### Tests
+- All tests are **substantive**—no content-free checks like `is not None` or `len(x) > 0`
+- Tests prove correctness via invariants, identities, and nontrivial witnesses
+- **NO MOCKS**—test against real OpenCode instances, agents, and models; no `unittest.mock`,
+  `monkeypatch`, stubs, fakes, or simulated environments
+- **NO WORKAROUNDS**—if OpenCode, agents, or models are unavailable, the test fails
+- **Tests as external probes**—prefer real OpenCode instances or manually driven multi-turn
+  sessions; internal consistency is not proof of real functionality (type system already
+  guarantees internals). Exception: strict unit tests for complex nondeterministic
+  functionality (e.g., micro agent evaluations with external LLM services)
+- All tests pass: run `just test` or equivalent
+
+### Repository Hygiene
+- **Self-contained**: No references to paths outside the repo (no `/home/dzack/...`, no `~/ai/...`)
+- No development debris: remove `.serena/`, `__pycache__/`, `.tmp*/`, debug logs, scratch files
+- No personal information: no local paths, usernames, or system-specific details in code or docs
+
+### Configuration Management
+- All environment variables centralized in `.envrc`
+- No secrets in code—`.envrc` contains only dummy defaults or commented placeholders
+- Tweakable options sourced from `.envrc` or YAML config, not hardcoded
+- One source of truth: constants defined once and imported, not duplicated
+
+### Code Quality
+- No "graceful" fallbacks or legacy compatibility layers—current working state only
+- No comments discussing past state or refactoring history (that's what git is for)
+- Proper semantic versioning (X.Y.Z) with `just bump` recipe for minor version increments
+
+### Documentation
+- README follows concise writing principles—purely informational, not marketing
+- Clear onboarding process encoded in `justfile` (e.g., `just setup`, `just dev`)
+- Direct usage without installation: provide `uvx`/`npx` commands that work from repo URL
+- Explicit config snippets showing required setup
+
+## 3. Config Loading
 
 Precedence order, lowest → highest:
 
@@ -57,7 +100,7 @@ Monorepo local config pattern:
 - `mcp-shim` and `zotero` are exceptions here: they do not follow the direct-plugin
   `.config/opencode.json` pattern
 
-## 3. Running OpenCode
+## 4. Running OpenCode
 
 - Always use `/home/dzack/.opencode/bin/opencode` for testing
 - Never use the `opencode` alias for tests; it attaches to the server
@@ -80,7 +123,7 @@ systemctl --user status opencode-serve
 systemctl --user restart opencode-serve
 ```
 
-## 4. Plugin Conventions
+## 5. Plugin Conventions
 
 Standard package layout:
 
@@ -123,7 +166,7 @@ If a plugin tool shadows a built-in name:
 - Lifecycle behavior is not optional: preserve the upstream session wiring, event flow,
   and TUI contracts unless you have confirmed a parity limit
 
-## 5. MCP Wrapper Conventions
+## 6. MCP Wrapper Conventions
 
 When a plugin needs an MCP wrapper, use this layout:
 
@@ -149,7 +192,7 @@ Rules:
 - Remote-style install docs should use
   `uvx --from git+https://github.com/dzack/opencode-plugins#subdirectory=<plugin>/mcp-server`
 
-## 6. Hooks and SDK Essentials
+## 7. Hooks and SDK Essentials
 
 Hooks worth reaching for in this repo:
 
@@ -182,7 +225,7 @@ await client.session.abort({ path: { id: sessionID } });
 const { data: messages } = await client.session.messages({ path: { id: sessionID } });
 ```
 
-## 7. Observed Repo Traps
+## 8. Observed Repo Traps
 
 These belong here because they were learned the hard way and are easy to rediscover
 badly.
@@ -196,7 +239,7 @@ badly.
   agent-visible tool list in this OpenCode build; use an alias if you need a proofable
   surface and track the upstream behavior separately
 
-## 8. Shadowing Built-ins
+## 9. Shadowing Built-ins
 
 Before replacing a built-in tool:
 
@@ -215,9 +258,13 @@ gh api repos/anomalyco/opencode/contents/packages/opencode/src/tool/task.ts \
 If your replacement skips lifecycle hooks or event publication, you will get stale TUI
 tiles and detached session hierarchies.
 
-## 9. Testing Rules
+## 10. Testing Rules
 
 Core rule: five real tests beat a hundred internal consistency tests.
+
+**NEVER use mocks or simulations.** All tests must run against real OpenCode instances,
+agents, and models. If OpenCode is unavailable, the test fails—do not work around this
+with mocks, stubs, or synthetic environments.
 
 Development order:
 
@@ -235,13 +282,102 @@ Additional testing rules:
 
 - Prefer proofs that require actual tool execution: passphrases, timestamps, UUIDs,
   stable synthetic ids
-- No mocks as the primary proof of behavior
+- **NO MOCKS**—test against real behavior only; no `unittest.mock`, `monkeypatch`,
+  stubs, fakes, or simulated environments
+- **NO WORKAROUNDS** for missing OpenCode, agents, or models—if unavailable, test fails
+- **Tests as external probes**—prefer real OpenCode instances or manually driven
+  multi-turn sessions; internal consistency is not proof of real functionality (type
+  system already guarantees internals). Exception: strict unit tests for complex
+  nondeterministic functionality (e.g., micro agent evaluations with external LLM services)
 - Logs are hearsay; raw tool output beats log lines
 - If stdout is ambiguous because tool banners or assistant formatting got mixed in, parse
   the transcript instead of guessing
 - Sessions are scoped to their working directory
 
-## 10. Passphrase Method
+### Nondeterministic Agent Debugging Checklist
+
+Before concluding anything about tool visibility, tool use, or model obedience:
+
+- Freeze the exact apparatus: save the plugin code, config source, agent, model, prompt,
+  working directory, and output mode. Change one variable at a time.
+- Keep the full evidence stream. Do not reason from filtered `jq` output, assistant-only
+  excerpts, or paraphrased summaries if the question is whether a tool actually ran.
+- Prove one layer at a time:
+  - Can the model see the tool? Ask for the exact description without calling it.
+  - Can the model call the tool? Use a prompt that requires the tool with an argument
+    shape only the target tool accepts.
+  - Can you prove execution? Use a unique passphrase in raw tool output; when dispatch
+    matters, prefer a raw `tool_use` event or an external side effect.
+  - Can you prove the model saw the result? Require `ONLY` the passphrase in the next
+    reply.
+  - Can you prove the model did not fabricate? Compare assistant text with full stdout
+    and, when needed, raw events.
+- Use the evidence hierarchy:
+  - Weak: assistant final text
+  - Better: full terminal output including tool banners such as `% WebFetch ...`
+  - Strong: raw `--format json` `tool_use` event with exact input and output
+  - Strongest: raw `tool_use` plus an external side effect such as a marker file, UUID,
+    timestamp, or other artifact the model cannot fake
+- Treat negative results correctly:
+  - Missing passphrase in assistant text does not prove the tool was unavailable
+  - Missing tool banners in one renderer does not prove the tool was not called
+  - Filtered or truncated output is not a valid basis for proving non-execution
+  - Lack of evidence is not evidence of non-execution
+- Stop on ambiguity:
+  - If built-in and custom schemas overlap, redesign the probe
+  - If the prompt can be satisfied from prior knowledge, redesign the probe
+  - If success or failure depends on trusting the assistant to report honestly,
+    redesign the probe
+- Only after the minimal control passes should you move outward: standalone tool,
+  shadowed name, local config, `file://` load, `git+` load, then the real plugin.
+
+### Known Working Controls
+
+Use these controls before blaming OpenCode internals, the generic plugin bridge, or the
+model provider:
+
+Detailed evidence, command patterns, and postmortems live in these memories:
+
+- `plugin-debugging/file-url-plugin-deduplication-by-basename`
+- `plugin-debugging/public-git-plus-plugin-proof`
+- `plugin-debugging/assistant-text-is-not-tool-availability-evidence`
+
+- Global plugin directory autoload works. `~/ai/opencode/plugins/local-tools.ts`
+  currently contributes tools such as `introspection`, `list_sessions`,
+  `read_transcript`, and `sleep`. If those appear in `tool.registry`, the autoload path
+  and general plugin loader are working.
+- `file://` plugin loading works with non-colliding basenames. The active controls are
+  `file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-smoke-fileproof.ts`
+  and
+  `file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-shadowing-fileproof.ts`.
+  They expose `mytool_fileproof_20260310` and `webfetch_fileproof_20260310`.
+- The `file://` smoke control proves exact execution. `mytool_fileproof_20260310`
+  returns the fixed token `PASS_MYTOOL_FILEPROOF_20260310`. If a raw `tool_use` event
+  shows that output, `file://` inclusion and custom tool execution are both working.
+- The `file://` URL-shaped control proves the bridge can surface another custom tool with
+  a `url` argument. `webfetch_fileproof_20260310` returns
+  `EXEC_WEBFETCH_FILEPROOF_20260310 <url>`. If this control works while your own
+  `file://` plugin does not, focus on your plugin's basename, exports, tool ids, or
+  permissions.
+- Public `git+https` plugin loading works. The current control is
+  `@dzackgarza/opencode-postgres-memory-plugin@git+https://github.com/dzackgarza/opencode-postgres-memory-plugin`,
+  which exposes `query_memories`.
+- `git+https` loading and tool exposure are separate from tool-body correctness. The
+  `query_memories` control has been observed in `tool.registry` and in raw `tool_use`
+  events, so the public `git+https` path is proven even when the tool body later fails
+  inside its own Postgres runtime.
+- For `file://` plugins, deduplication happens by filename stem before load. If a
+  `file://` plugin shares a basename with an autoloaded file under
+  `~/ai/opencode/plugins/`, the `file://` copy can disappear before loading. Use unique
+  basenames and unique tool ids when proving load mechanics.
+- Tool availability and tool execution are different questions. `service=tool.registry
+  status=started <tool-id>` proves the model was offered the tool. A raw `tool_use`
+  event proves the tool actually ran. Assistant text alone proves neither.
+- If these controls pass, stop debugging OpenCode's general plugin bridge. Debug the
+  local plugin instead: package alias vs `package.json` name, exported plugin function,
+  tool ids, permissions, runtime dependencies, or the tool body itself.
+
+## 11. Passphrase Method
 
 Use this when you must prove that a tool path really executed.
 
@@ -269,7 +405,7 @@ Reject any design where success could be explained by:
 - a parent agent paraphrasing instead of quoting raw output
 - logs or exports being inspected instead of making the agent relay the token
 
-## 11. Test Commands
+## 12. Test Commands
 
 Always use the binary, not the alias:
 
@@ -321,11 +457,24 @@ mkdir -p /tmp/plugin-test
 python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
 ```
 
-## 12. Workflow Conventions
+## 13. Workflow Conventions
+
+### Information Architecture
+
+| Location | Purpose |
+|----------|---------|
+| **GitHub Issues** | Observed bugs, failures, missing features—concrete problems only |
+| **Local docs** (README, AGENTS.md) | Current state and high-level future directions |
+| **Serena memories** | Local dev guidance, environment quirks, cross-session context |
+| **Commit messages** | Changelogs, what changed and why |
+
+**Rule**: Docs describe what *is* and what *will be*, never what *was*. No local issue tracking files like `GAPS.md`, `PLAN.md`, or `TODO.md`.
+
+### Issue Workflow
 
 - Apply git and issue workflow inside the relevant package repo. The top-level
   `/home/dzack/opencode-plugins` directory is coordination space, not a git repo.
-- Log every observed non-trivial error in the affected repo immediately.
+- Log every observed non-trivial error as a **GitHub Issue** in the affected repo immediately.
 - An issue is an observed bug, failure, missing proof, or other concrete problem that
   you cannot fix trivially in the current task or that is outside the current task.
 - Do not file speculative concerns, defensive hedging, imagined fallbacks, or
@@ -356,7 +505,7 @@ python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harnes
   decisions needing review, and next actions
 - “Done” means a real instance proved the behavior, not that the code looked plausible
 
-## 13. Useful Patterns
+## 14. Useful Patterns
 
 Background task pattern:
 
@@ -371,7 +520,7 @@ Reasoning interception pattern:
 - Abort and re-prompt when a known bad pattern appears
 - Clean up per-session state on `session.deleted`
 
-## 14. Researching Upstream
+## 15. Researching Upstream
 
 Read local type definitions first when you need signatures:
 

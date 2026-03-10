@@ -110,7 +110,9 @@
     "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest",
     "file:///home/dzack/opencode-plugins/improved-task/src/index.ts",
-    "file:///home/dzack/opencode-plugins/improved-webtools/src/index.ts",
+    "improved-webtools@git+https://github.com/dzackgarza/opencode-improved-webtools-plugin",
+    "file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-smoke-fileproof.ts",
+    "file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-shadowing-fileproof.ts",
     "opencode-pty@latest"
   ],
   "permission": {
@@ -128,7 +130,10 @@
     "todowrite": "allow",
     "task": "allow",
     "question": "allow",
-    "external_directory": "deny",
+    "external_directory": {
+      "*": "ask",
+      "/tmp/*": "allow"
+    },
     "plan_exit": "deny",
     "write_plan": "deny",
     "async_subagent": "deny",

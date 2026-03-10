@@ -6,6 +6,8 @@ dependencies = [
     "httpx",
     "jinja2",
     "jsonschema",
+    "llm-runner",
+    "llm-templating-engine",
     "litellm",
     "pydantic",
     "pydantic-ai",
@@ -21,4 +23,6 @@ dev = [
 ]
 
 [tool.uv.sources]
+llm-runner = { git = "https://github.com/dzackgarza/llm-runner" }
+llm-templating-engine = { git = "https://github.com/dzackgarza/llm-templating-engine" }
 workspace-scripts = { path = "../scripts", editable = true }

@@ -1,28 +1,8 @@
 /**
- * TypeScript subprocess wrapper for the scripts.llm Python package.
+ * TypeScript subprocess wrapper for llm-runner and llm-templating-engine.
  *
- * All LLM calls from plugins go through here. The canonical source of truth
- * for providers, schemas, retries, and fallback logic lives in scripts/llm/.
- * This module is a thin bridge: it serialises the request to JSON, spawns
- * the Python bridge process, and deserialises the response.
- *
- * Usage:
- *   import { callLLM, loadMicroAgent, renderTemplate, runMicroAgent } from "../../utilities/shared/llm";
- *
- *   const result = await callLLM<{ tier: string; reasoning: string }>({
- *     models: ["groq/llama-3.3-70b-versatile"],
- *     messages: [{ role: "user", content: "..." }],
- *     schema: "Classification",
- *   });
- *
- *   const agent = await loadMicroAgent("/abs/path/to/prompt.md");
- *   // agent.system  — system prompt string
- *   // agent.body    — Jinja2 template body (already rendered by Python if needed)
- *
- *   const classification = await runMicroAgent<{ tier: string; reasoning: string }>(
- *     "/abs/path/to/prompt.md",
- *     { prompt: "Describe every tool you have access to." },
- *   );
+ * Plugins never import Python directly. They shell into the JSON-first CLIs
+ * installed in ~/ai/opencode/.venv and exchange structured JSON over stdin/stdout.
  */
 
 import { spawnSync } from "child_process";
@@ -33,181 +13,217 @@ const _dir = dirname(fileURLToPath(import.meta.url));
 
 const OPENCODE_ROOT = resolve(_dir, "../../../");
 const PYTHON = resolve(_dir, "../../../.venv/bin/python");
-const RUN_MICRO_AGENT = resolve(_dir, "../../../../scripts/run_micro_agent.py");
 const UV = "uv";
+const TEMPLATE_RENDER = "llm-template-render";
+const TEMPLATE_INSPECT = "llm-template-inspect";
+const RUNNER_INVOKE = "llm-invoke";
+const RUNNER_RUN = "llm-run";
 
-// ---------------------------------------------------------------------------
-// Request / response types
-// ---------------------------------------------------------------------------
+export interface ErrorResponse {
+  error: {
+    type: string;
+    message: string;
+  };
+}
 
-export interface LLMRequest {
-  /** Ordered list of model slugs. First success wins. */
-  models: string[];
-  messages: { role: string; content: string }[];
-  /** Name of a registered schema in llm.py (e.g. "Classification"). */
-  schema?: string;
+export interface ChatMessage {
+  role: "system" | "user" | "assistant" | "tool";
+  content: string;
+}
+
+export interface TemplateReference {
+  path?: string;
+  text?: string;
+  name?: string;
+}
+
+export interface TextFileBinding {
+  name: string;
+  path: string;
+}
+
+export interface Bindings {
+  data?: Record<string, unknown>;
+  text_files?: TextFileBinding[];
+}
+
+export interface TemplateOptions {
+  search_paths?: string[];
+  render_mode?: "body" | "document";
+  strict_undefined?: boolean;
+}
+
+export interface TemplateDocument {
+  path?: string | null;
+  name?: string | null;
+  frontmatter: Record<string, unknown>;
+  body_template: string;
+}
+
+export interface InspectTemplateResponse {
+  template: TemplateDocument;
+}
+
+export interface RenderTemplateResponse {
+  template: TemplateDocument;
+  rendered: {
+    body: string;
+    document: string;
+  };
+}
+
+export interface InvokeOptions {
   temperature?: number;
   max_tokens?: number;
   retries?: number;
 }
 
-export type LLMResponse<T = unknown> =
-  | { ok: true; result: T }
-  | { ok: false; error: string };
-
-// ---------------------------------------------------------------------------
-// callLLM — LLM call with optional structured output
-// ---------------------------------------------------------------------------
-
-/**
- * Call the Python LLM module with the given request.
- *
- * Returns the parsed result on success, throws on failure.
- */
-export async function callLLM<T = string>(req: LLMRequest): Promise<T> {
-  const res = _run<T>(req);
-  if (!res.ok) throw new Error(`scripts.llm error: ${res.error}`);
-  return res.result;
+export interface LLMRequest {
+  models: string[];
+  messages: ChatMessage[];
+  output_schema?: Record<string, unknown>;
+  options?: InvokeOptions;
 }
 
-// ---------------------------------------------------------------------------
-// loadMicroAgent — parse a micro-agent .md file into system + body
-// ---------------------------------------------------------------------------
-
-export interface MicroAgent {
-  system: string | null;
-  body: string;
-  frontmatter: Record<string, unknown>;
-  path: string;
+export interface InvokeResponse<T = unknown> {
+  model: string;
+  raw_text: string;
+  structured: T | null;
 }
 
-/**
- * Load and parse a markdown prompt template.
- *
- * Returns the parsed system prompt and Jinja2 body separately, ready to be
- * used as LLM messages. The body should be rendered with variables before use.
- *
- * Example:
- *   const agent = await loadMicroAgent("/abs/path/to/prompt.md");
- *   messages = [
- *     { role: "system", content: agent.system },
- *     { role: "user",   content: renderTemplate(agent.body, { prompt: text }) },
- *   ];
- */
-export async function loadMicroAgent(path: string): Promise<MicroAgent> {
-  const res = _run<MicroAgent>({ action: "load_micro_agent", path } as any);
-  if (!res.ok) throw new Error(`scripts.llm micro-agent error: ${res.error}`);
-  return res.result;
+export interface RunOverrides {
+  models?: string[];
+  temperature?: number;
+  max_tokens?: number;
+  retries?: number;
+  output_schema?: Record<string, unknown>;
 }
 
-// ---------------------------------------------------------------------------
-// renderTemplate — render a Jinja2 template body string with variables
-// ---------------------------------------------------------------------------
+export interface RunRequest {
+  template: TemplateReference;
+  bindings?: Bindings;
+  overrides?: RunOverrides;
+}
 
-/**
- * Render a Jinja2 template body string with the given variables.
- *
- * Used for local rendering (no LLM call) — e.g. the response_template.md
- * for the prompt router, which takes { tier } and returns the instruction
- * to inject into the conversation.
- *
- * Example:
- *   const instruction = await renderTemplate(agent.body, { tier: "C" });
- */
+export interface RunExecution {
+  template_path: string;
+  model: string;
+  messages: ChatMessage[];
+}
+
+export interface FinalOutput<T = unknown> {
+  text?: string | null;
+  data?: T | null;
+}
+
+export interface RunResponse<T = unknown, TFinal = unknown> {
+  run: RunExecution;
+  response: InvokeResponse<T>;
+  final_output: FinalOutput<TFinal>;
+}
+
+function parseError(stdout: string): string | null {
+  try {
+    const payload = JSON.parse(stdout) as ErrorResponse;
+    if (typeof payload.error?.message === "string") {
+      return payload.error.message;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function runJsonCommand<T>(command: string, request: object): T {
+  const proc = spawnSync(UV, ["run", "--active", "--python", PYTHON, command], {
+    cwd: OPENCODE_ROOT,
+    input: JSON.stringify(request),
+    encoding: "utf8",
+    timeout: 60_000,
+  });
+
+  if (proc.error) {
+    throw new Error(`${command} spawn error: ${proc.error.message}`);
+  }
+
+  const stdout = proc.stdout?.trim() ?? "";
+  const stderr = proc.stderr?.trim() ?? "";
+  if (proc.status !== 0) {
+    const message =
+      parseError(stdout) ?? (stderr || `${command} exited ${proc.status}`);
+    throw new Error(`${command} error: ${message}`);
+  }
+
+  try {
+    return JSON.parse(stdout) as T;
+  } catch {
+    throw new Error(`${command} returned non-JSON: ${stdout.slice(0, 200)}`);
+  }
+}
+
+export async function callLLM<T = unknown>(
+  request: LLMRequest,
+): Promise<InvokeResponse<T>> {
+  return runJsonCommand<InvokeResponse<T>>(RUNNER_INVOKE, request);
+}
+
+export async function inspectTemplate(path: string): Promise<TemplateDocument> {
+  const response = runJsonCommand<InspectTemplateResponse>(TEMPLATE_INSPECT, {
+    template: { path },
+  });
+  return response.template;
+}
+
 export async function renderTemplate(
   body: string,
-  variables: Record<string, string>,
+  bindings: Record<string, unknown>,
   path?: string,
 ): Promise<string> {
-  const res = _run<string>({
-    action: "render_template",
-    body,
-    path,
-    variables,
-  } as any);
-  if (!res.ok) throw new Error(`scripts.llm render error: ${res.error}`);
-  return res.result;
+  const response = runJsonCommand<RenderTemplateResponse>(TEMPLATE_RENDER, {
+    template: path ? { text: body, name: path } : { text: body },
+    bindings: { data: bindings },
+  });
+  return response.rendered.body;
 }
 
-// ---------------------------------------------------------------------------
-// runMicroAgent — invoke the canonical CLI runner for a prompt template
-// ---------------------------------------------------------------------------
-
-export async function runMicroAgent<T = string>(
+export async function renderTemplatePath(
   path: string,
-  variables: Record<string, string>,
-  options?: { model?: string; temperature?: number },
-): Promise<T> {
-  const args = ["run", "--active", "--python", PYTHON, RUN_MICRO_AGENT, path];
-  for (const [key, value] of Object.entries(variables)) {
-    args.push("--var", `${key}=${value}`);
-  }
+  bindings: Record<string, unknown>,
+): Promise<string> {
+  const response = runJsonCommand<RenderTemplateResponse>(TEMPLATE_RENDER, {
+    template: { path },
+    bindings: { data: bindings },
+  });
+  return response.rendered.body;
+}
+
+export async function runMicroAgent<T = unknown, TFinal = unknown>(
+  path: string,
+  bindings: Record<string, unknown>,
+  options?: {
+    model?: string;
+    temperature?: number;
+    max_tokens?: number;
+    retries?: number;
+  },
+): Promise<RunResponse<T, TFinal>> {
+  const overrides: RunOverrides = {};
   if (options?.model) {
-    args.push("--model", options.model);
+    overrides.models = [options.model];
   }
   if (options?.temperature !== undefined) {
-    args.push("--temperature", String(options.temperature));
+    overrides.temperature = options.temperature;
+  }
+  if (options?.max_tokens !== undefined) {
+    overrides.max_tokens = options.max_tokens;
+  }
+  if (options?.retries !== undefined) {
+    overrides.retries = options.retries;
   }
 
-  const proc = spawnSync(UV, args, {
-    cwd: OPENCODE_ROOT,
-    encoding: "utf8",
-    timeout: 60_000,
+  return runJsonCommand<RunResponse<T, TFinal>>(RUNNER_RUN, {
+    template: { path },
+    bindings: { data: bindings },
+    overrides,
   });
-
-  if (proc.error) {
-    throw new Error(`scripts.llm runner spawn error: ${proc.error.message}`);
-  }
-
-  let payload: LLMResponse<T>;
-  try {
-    payload = JSON.parse(proc.stdout) as LLMResponse<T>;
-  } catch {
-    throw new Error(`run_micro_agent returned non-JSON: ${proc.stdout?.slice(0, 200)}`);
-  }
-
-  if (!payload.ok) {
-    throw new Error(`scripts.run_micro_agent error: ${payload.error}`);
-  }
-  if (proc.status !== 0) {
-    const stderr = proc.stderr?.trim() ?? "";
-    throw new Error(
-      `scripts.run_micro_agent exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
-    );
-  }
-  return payload.result;
-}
-
-// ---------------------------------------------------------------------------
-// Internal: synchronous spawn (plugins run at import-time; spawnSync is fine)
-// ---------------------------------------------------------------------------
-
-function _run<T>(req: object): LLMResponse<T> {
-  const input = JSON.stringify(req);
-  const proc = spawnSync(UV, ["run", "--active", "--python", PYTHON, "-m", "scripts.llm.bridge"], {
-    cwd: OPENCODE_ROOT,
-    input,
-    encoding: "utf8",
-    timeout: 60_000,
-  });
-
-  if (proc.error) {
-    return { ok: false, error: `spawn error: ${proc.error.message}` };
-  }
-  if (proc.status !== 0) {
-    const stderr = proc.stderr?.trim() ?? "";
-    return {
-      ok: false,
-      error: `scripts.llm.bridge exited ${proc.status}${stderr ? `: ${stderr}` : ""}`,
-    };
-  }
-
-  try {
-    return JSON.parse(proc.stdout) as LLMResponse<T>;
-  } catch {
-    return {
-      ok: false,
-      error: `llm.py returned non-JSON: ${proc.stdout?.slice(0, 200)}`,
-    };
-  }
 }

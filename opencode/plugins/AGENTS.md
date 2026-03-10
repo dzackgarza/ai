@@ -318,150 +318,75 @@ When you don't find something, report:
 
 ---
 
-## 7. scripts.llm — LLM Package for Plugin Integration
+## 7. llm-runner / llm-templating-engine — LLM Integration for Plugins
 
-Plugins are TypeScript. The LLM stack is Python (`~/ai/scripts/llm/`). The two communicate through a subprocess bridge. Plugins never import Python directly — they spawn the bridge and exchange JSON over stdin/stdout.
+Plugins are TypeScript. The prompt and model stack is Python, but it now lives in two standalone repos installed into `~/ai/opencode/.venv` via `pyproject.toml`:
 
-**Rule: all LLM logic must be validated outside of plugins first.** Use `run_micro_agent.py` or the bridge CLI directly to prove a template works and produces correct output. Only after that does it belong in a plugin.
+- `llm-templating-engine`
+- `llm-runner`
 
-### Package layout
+Plugins never import Python directly. They shell into the JSON CLIs and exchange structured JSON over stdin/stdout.
 
-| Module                       | Purpose                                              |
-| ---------------------------- | ---------------------------------------------------- |
-| `scripts/llm/__init__.py`    | Public API — import from here, not submodules        |
-| `scripts/llm/templates.py`   | Load and render `.md` micro-agent templates          |
-| `scripts/llm/call.py`        | Single `call_llm()` / `call_with_fallback()` surface |
-| `scripts/llm/providers.py`   | Provider registry, model resolution, API key lookup  |
-| `scripts/llm/schemas.py`     | Pydantic output schemas (`Classification`, etc.)     |
-| `scripts/llm/bridge.py`      | stdin/stdout JSON bridge for TypeScript callers      |
-| `scripts/run_micro_agent.py` | CLI runner — the correct way to test templates       |
+**Rule: all LLM logic must be validated outside of plugins first.** Prove the template, schema, and rendered outputs with the standalone CLIs or `~/ai/scripts/run_micro_agent.py` before wiring any plugin hook.
 
-Python env: `~/ai/opencode/.venv`. Always invoke as:
+### Canonical commands
+
+Inside the local OpenCode environment:
 
 ```bash
-~/ai/opencode/.venv/bin/python ~/ai/scripts/run_micro_agent.py <template> --var key=value
+uv run --active --python ~/ai/opencode/.venv/bin/python llm-template-inspect
+uv run --active --python ~/ai/opencode/.venv/bin/python llm-template-render
+uv run --active --python ~/ai/opencode/.venv/bin/python llm-invoke
+uv run --active --python ~/ai/opencode/.venv/bin/python llm-run
 ```
 
-### Testing a template (do this first, before any plugin work)
+Convenience wrapper for prompt files under `~/ai/prompts`:
 
 ```bash
-# Validate a template loads cleanly:
-~/ai/opencode/.venv/bin/python ~/ai/scripts/run_micro_agent.py \
+uv run --active --python ~/ai/opencode/.venv/bin/python \
+  ~/ai/scripts/run_micro_agent.py \
   ~/ai/prompts/micro_agents/my_agent/prompt.md \
   --var prompt="some input"
-
-# Errors surface immediately:
-# ERROR: /path/to/prompt.md: missing required frontmatter field(s): model
-# ERROR: Invalid YAML frontmatter: ...
 ```
 
-`load_micro_agent` raises `TemplateFormatError` (a `ValueError`) on YAML parse failures or missing required fields. The runner catches it and exits 1 with the message. Fix the template until this runs clean before touching plugin code.
+For one-off inspection outside the local workspace, the public upstream CLIs are also available directly:
 
-### Calling the bridge from a plugin
-
-The bridge reads one JSON request from stdin and writes one JSON response to stdout.
-
-**LLM call (most common):**
-
-```typescript
-import { spawnSync } from "child_process";
-
-const PYTHON = `${process.env.HOME}/ai/opencode/.venv/bin/python`;
-const BRIDGE = `${process.env.HOME}/ai/scripts/llm/bridge.py`;
-
-function callLLM(messages: Array<{ role: string; content: string }>): string {
-  const request = {
-    models: ["groq/llama-3.3-70b-versatile"],
-    messages,
-    temperature: 0.0,
-  };
-  const result = spawnSync(PYTHON, [BRIDGE], {
-    input: JSON.stringify(request),
-    encoding: "utf8",
-  });
-  const response = JSON.parse(result.stdout);
-  if (!response.ok) throw new Error(response.error);
-  return response.result;
-}
+```bash
+uvx --from git+https://github.com/dzackgarza/llm-templating-engine.git llm-template-render --help
+uvx --from git+https://github.com/dzackgarza/llm-runner.git llm-run --help
 ```
 
-**Load a micro-agent template:**
+### Canonical surfaces
 
-```typescript
-const request = {
-  action: "load_micro_agent",
-  path: `${process.env.HOME}/ai/prompts/micro_agents/my_agent/prompt.md`,
-};
-// response.result: { system: string, body: string, frontmatter: object }
-```
+- `llm-template-inspect` loads a template document and frontmatter
+- `llm-template-render` renders a template with JSON bindings
+- `llm-invoke` performs direct model calls with optional structured output
+- `llm-run` resolves template frontmatter, renders prompt/system templates, invokes the model, and optionally renders a response template
+- `~/ai/scripts/run_micro_agent.py` is a local Typer wrapper over `llm-run`
 
-**Render a template body with variables:**
+The request and response contracts are JSON-first and defined in the upstream libraries. Do not recreate the old `{ ok, result }` bridge envelope in plugins.
 
-```typescript
-const request = {
-  action: "render_template",
-  body: "Classify: {{ prompt }}",
-  variables: { prompt: userInput },
-};
-// response.result: rendered string
-```
+### What plugins should consume
 
-**Response envelope (all actions):**
+- Structured model output comes from `RunResponse.response.structured`
+- Post-processed response-template output comes from `RunResponse.final_output`
+- Template metadata comes from `llm-template-inspect`
 
-```json
-{ "ok": true,  "result": "..." }
-{ "ok": false, "error": "human-readable error message" }
-```
-
-Always check `response.ok` before using `response.result`. Any error from the Python side surfaces in `response.error` as a plain string.
-
-### Provider slug format
-
-```
-groq/<model>           → Groq
-openrouter/<model>     → OpenRouter
-nvidia/<model>         → NVIDIA NIM
-mistral/<model>        → Mistral
-ollama/<model>         → Local Ollama (no auth)
-```
-
-The bridge resolves provider and API key automatically from the environment. If a key is missing, the response will be `{ "ok": false, "error": "ENV_VAR not set (required for ...)" }`.
+If a plugin needs the rendered text of a template file, render the file by path with `llm-template-render`. Do not read the file into a TypeScript string first unless the prompt is genuinely inline-only.
 
 ### Separation of concerns
 
-| Layer                | Responsibility                           | Where tested                                            |
-| -------------------- | ---------------------------------------- | ------------------------------------------------------- |
-| Template (`.md`)     | Prompt text, model, inputs spec          | `run_micro_agent.py` CLI                                |
-| `scripts.llm`        | API calls, schema parsing, fallback      | Python unit tests, CLI                                  |
-| Bridge (`bridge.py`) | JSON protocol, subprocess I/O            | Bridge CLI (`echo ... \| python -m scripts.llm.bridge`) |
-| Plugin (`.ts`)       | Hook wiring, trigger logic, when to call | OpenCode plugin tests (§3)                              |
+| Layer                    | Responsibility                                          | Where tested                         |
+| ------------------------ | ------------------------------------------------------- | ------------------------------------ |
+| Template (`.md`)         | Prompt text, metadata, Jinja composition, schema config | `llm-template-inspect`, `llm-run`    |
+| `llm-templating-engine`  | Template parsing, bindings, rendering                   | Python tests, CLI                    |
+| `llm-runner`             | Provider calls, schema validation, response templates   | Python tests, CLI                    |
+| Plugin (`.ts`)           | Hook wiring, trigger logic, when to call                | OpenCode plugin tests (§3)           |
 
-**Never put LLM logic in a plugin that hasn't already been tested at the Python layer.** A plugin that calls the bridge for the first time is not a test environment — it's a black box with a running agent, live tool hooks, and session state. Failures there are hard to attribute. Validate first, integrate second.
+**Never put LLM logic in a plugin that has not already been proven at the CLI layer.** A plugin is not the first place to discover that a template, schema, or provider call is wrong.
 
 ### Use templates for all nontrivial prompts
 
-Any prompt or injection that a plugin delivers to the model — system prompt additions, `messages.transform` injections, tool result content, re-prompt bodies — must live in a `.md` template file, not as an inline string in TypeScript.
+Any prompt or injection that a plugin delivers to the model must live in a `.md` template file, not as an inline string in TypeScript, unless it is a fixed literal with no variables or logic.
 
-**Why:** Inline strings are invisible to testing. A template can be loaded by `run_micro_agent.py`, inspected, iterated on, and validated against real model output before the plugin is touched. An inline string can only be tested by running the full plugin inside a live session.
-
-**The rule:** If a string contains instructions, variables, or conditional logic, it is a template. One-word signals and fixed literals (e.g. `"PASSPHRASE"`, `"abort"`) are the only acceptable inline strings.
-
-```typescript
-// Wrong — untestable, prompt logic buried in plugin code
-await client.session.prompt({
-  body: {
-    parts: [
-      { type: "text", text: `You classified this as ${tier}. Reconsider.` },
-    ],
-  },
-});
-
-// Right — template loaded once at startup, rendered with variables at call time
-const tpl = loadTemplate(`${HOME}/ai/prompts/micro_agents/my_agent/prompt.md`);
-const rendered = renderTemplate(tpl.body, { tier });
-await client.session.prompt({
-  body: { parts: [{ type: "text", text: rendered }] },
-});
-```
-
-Templates also enforce a clean interface: the `inputs:` block in frontmatter declares every variable the prompt expects, and `TemplateFormatError` / `MissingVariablesError` catch violations at load time rather than silently producing broken output at runtime.
+Templates are testable. Inline prompt logic is not.

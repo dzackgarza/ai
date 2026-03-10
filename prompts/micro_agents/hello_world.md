@@ -1,19 +1,18 @@
+---
 name: hello_world
 description: Simple greeting template for testing provider connectivity
-
-model: groq/llama-3.3-70b-versatile
+kind: llm-run
+models:
+  - groq/llama-3.3-70b-versatile
 temperature: 0.0
-
-system: |
-  You are a friendly assistant responding to a greeting.
-  Keep your response brief and welcoming.
-
+system_template:
+  text: |
+    You are a friendly assistant responding to a greeting.
+    Keep your response brief and welcoming.
 inputs:
-
-- name: name
-  description: The name of the person to greet
-  required: false
-
+  - name: name
+    description: The name of the person to greet
+    required: false
 ---
 
 Hello! My name is {% if name %}{{ name }}{% else %}World{% endif %}.

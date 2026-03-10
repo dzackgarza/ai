@@ -534,6 +534,7 @@ BASELINE_PLUGIN_DENIES = {
     "git_commit": "deny",
     "write_plan": "deny",
     "plan_exit": "deny",
+    "external_directory": {"*": "ask", "/tmp/*": "allow"},
     **{tool: "deny" for tool in SERENA_DENY_TOOLS},
 }
 

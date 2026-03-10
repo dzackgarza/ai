@@ -18,6 +18,8 @@ permission:
   task: allow
   question: allow
   external_directory:
+    '*': ask
+    /tmp/*: allow
     /tmp/opencode_test/*: allow
   plan_exit: deny
   write_plan: deny

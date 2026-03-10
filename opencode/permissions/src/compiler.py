@@ -24,7 +24,7 @@ GLOBAL_DEFAULTS: dict = {
     # Task / todo
     "todoread": "allow", "todowrite": "allow", "task": "allow",
     # General
-    "question": "allow", "external_directory": "deny",
+    "question": "allow", "external_directory": {"*": "ask", "/tmp/*": "allow"},
     # Planning
     "plan_exit": "deny", "write_plan": "deny",
     # Async

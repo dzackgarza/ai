@@ -20,7 +20,9 @@ permission:
   todowrite: deny
   task: deny
   question: allow
-  external_directory: deny
+  external_directory:
+    '*': ask
+    /tmp/*: allow
   plan_exit: deny
   write_plan: deny
   async_subagent: deny

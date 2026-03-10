@@ -15,6 +15,7 @@ Note: there are many symlinks on this system, check the file type if you find co
 7. **Never bury the lede**: do not produce volumes of text when there are critical issues, or bury failures in paragraphs or summaries of success. Focus on critical, oustanding issues, and clearly delineate and highlight them.
 8. **Never work around failures and hide them**. User requests are highly specific and can not be substituted with semantically similar or inferred different requests. If you attempt a task and are met with failure, never work around it if it means changing the entire task to something the user didn't ask for. If failures fundamentally block the request as stated, stop and report this to the user instead of attempting to work around it, pivot to another problem or task, etc.
 9. **Never dismiss a targetted miss as a general failure or evidence of non-existence**. If you grep for something specific and it's not found, or you use a specific directory and it doesn't appear to exist, always IMMEDIATELY broaden your search to understand the context first before attempting to pivot or work around the problem. Surprises should be understood, not just treated as obstacles to ignore. Files get moved, functions get renamed/moved, typos are made. Always broaden.
+10. **Never insert trivial section counters in markdown**. This becomes immediately stale as soon as a new section is added, and creates MORE work as more complexity is added. Similarly, do not number lists, subsections, etc manually, ever.
 
 ---
 
@@ -221,8 +222,18 @@ Never suggest simply restarting, or blame session continuity, or other similar p
 # Custom CLI Tools
 
 
-- `linear` for tracking git issues and system-wide projects and priorities (https://github.com/schpet/linear-cli)
-    - Use `linear-open` to list all outstanding open issues across the synced plugin trackers.
+- `open-issues` to list all outstanding open issues across the synced plugin trackers.
+    - File issues on dzackgarza repos immediately when you encounter them. Do not file "bugs" for errors that have never actually been observed -- if you want to fix such things, that is an enhancement or a feature request, not a bug.
+    - For nontrivial features, do work in a worktree with a branch, submit a PR, tag "@codex review", then wait 3–5 minutes for automated reviewers (Codex, Qodo, etc.) to post. After waiting, scan **all** comment surfaces — `gh pr view` only returns issue-level comments, not inline review thread comments. Always run both:
+      ```bash
+      gh pr view <N> --repo <owner>/<repo> --json reviews,comments   # top-level + review summaries
+      gh api repos/<owner>/<repo>/pulls/<N>/comments                  # inline code review threads
+      ```
+      Address every unresolved issue found, reply to the thread with the fix commit, then resolve the thread via GraphQL:
+      ```bash
+      gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: "<PRRT_...>" }) { thread { id isResolved } } }'
+      ```
+      Repeat until all threads are resolved. Use the GraphQL query above to get thread IDs and verify `isResolved` status.
 - `probe` for semantic searching (https://github.com/probelabs/probe). **Always invoke via `npx -y @probelabs/probe`** as it is not globally installed.
     - E.g. 
     # Semantic search with Elasticsearch syntax

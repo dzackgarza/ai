@@ -8,10 +8,17 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
     "jinja2",
+    "llm-runner",
+    "llm-templating-engine",
     "litellm",
     "pydantic",
     "pyyaml",
+    "typer>=0.16.0",
 ]
+
+[tool.uv.sources]
+llm-runner = { git = "https://github.com/dzackgarza/llm-runner" }
+llm-templating-engine = { git = "https://github.com/dzackgarza/llm-templating-engine" }
 
 [tool.setuptools]
 package-dir = {"" = ".."}

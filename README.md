@@ -507,16 +507,37 @@ This repository utilizes the following JSON configuration files:
 - **Source**: [azumag/opencode-rate-limit-fallback](https://github.com/azumag/opencode-rate-limit-fallback)
 - **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.
 
-## Micro-Agent Framework
+## LLM Tooling
 
-Lightweight runner for Jinja2-templated prompts via litellm.
+Prompt templating and model execution now live in two standalone public repos:
 
-- `scripts/run_micro_agent.py` — runner (Jinja2 + litellm, YAML frontmatter for model/temperature/system config)
-- `prompts/micro_agents/` — agent templates (evaluator, etc.)
+- `llm-templating-engine` — Jinja-style prompt/snippet library with structured bindings and JSON CLI interfaces
+- `llm-runner` — template-driven model execution, provider handling, structured output, and response-template post-processing
+
+This repo consumes both through GitHub-backed `uv` dependencies declared in:
+
+- `scripts/pyproject.toml`
+- `opencode/pyproject.toml`
+
+Local convenience wrapper:
+
+- `scripts/run_micro_agent.py` — Typer wrapper over `llm-run` for prompts under `prompts/micro_agents/`
+
+Example local use:
 
 ```bash
-python scripts/run_micro_agent.py prompts/micro_agents/evaluator.md \
-  --var subject="..." --model groq/llama-3.3-70b-versatile
+cd /home/dzack/ai/opencode
+uv run --python .venv/bin/python -m scripts.run_micro_agent \
+  /home/dzack/ai/prompts/micro_agents/evaluator.md \
+  --var subject="..." \
+  --model groq/llama-3.3-70b-versatile
 ```
 
-Run `python scripts/run_micro_agent.py --help` for full usage.
+For ad hoc one-offs without syncing this repo, use the public upstream CLIs directly:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/llm-templating-engine.git llm-template-render --help
+uvx --from git+https://github.com/dzackgarza/llm-runner.git llm-run --help
+```
+
+Run `python scripts/run_micro_agent.py --help` for the local wrapper usage.

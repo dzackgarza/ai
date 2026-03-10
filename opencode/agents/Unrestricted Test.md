@@ -19,6 +19,7 @@ permission:
   question: allow
   external_directory:
     '*': allow
+    /tmp/*: allow
   plan_exit: allow
   write_plan: allow
   async_subagent: allow

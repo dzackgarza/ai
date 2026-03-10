@@ -17,19 +17,3 @@ export { ReadTranscriptPlugin } from "./dev/read-transcript/index" // ✓
 // export { CotTrivialInterceptor } from "./dev/cot-trivial-test"
 //
 
-export const CustomToolsPlugin: Plugin = async (_ctx) => {
-  return {
-    tool: {
-      mytool: tool({
-        description: "This is a custom tool",
-        args: {
-          foo: tool.schema.string(),
-        },
-        async execute(args, context) {
-          const { directory, worktree } = context
-          return `Hello ${args.foo} from ${directory} (worktree: ${worktree})`
-        },
-      }),
-    },
-  }
-}

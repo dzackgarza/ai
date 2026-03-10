@@ -30,6 +30,8 @@ just opencode-session                  # session management CLI (list, delete, s
 | **Introspection** | `introspection.ts` | Active | Custom tool `introspection`: returns the agent's own session ID, message ID, and agent name |
 | **List Sessions** | `list-sessions.ts` | Active | Custom tool `list_sessions`: lists sessions with token counts, models, and duration |
 | **Read Transcript** | `read-transcript.ts` | Active | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
+| **Canonical Smoke Test** | `canonical-smoke-test.ts` | Canonical | Minimal docs-style `mytool` probe; known-good visibility and execution control |
+| **Canonical Shadowing Test** | `canonical-shadowing-test.ts` | Canonical | Minimal `webfetch` shadow probe; known-good built-in shadowing control |
 | **Session Harness (CLI utility)** | `external` | Active | Primary entrypoint moved to `dzackgarza/opencode-manager`; local `utilities/harness/` is a compatibility layer during retirement. |
 
 ## File map
@@ -92,6 +94,40 @@ npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx
 
 The local `utilities/harness/` directory remains only as a compatibility wrapper and
 historical source snapshot during cutover.
+
+## Canonical Control Probes
+
+Two plugin files in this directory are reserved as known-good controls for proving tool
+visibility and tool dispatch:
+
+- `canonical-smoke-test.ts`
+- `canonical-shadowing-test.ts`
+
+Use them as the first rung in any shadowing or nondeterministic-behavior investigation.
+They are intentionally minimal and stay as close as possible to the docs example.
+When validating non-autoload load paths, the files in `plugins/` may be commented out
+and distinct non-colliding active copies may instead be loaded via `file://` from
+`/home/dzack/ai/opencode/tools/canonical-plugin-probes/`.
+
+Known-good probes:
+
+```bash
+command opencode run \
+  "Call the tool named mytool with foo=probe. Then reply with ONLY the exact tool output."
+
+command opencode run \
+  "Call the tool named webfetch with url=https://example.com. Then reply with ONLY the exact tool output."
+```
+
+Known-good interactive stdout:
+
+- `⚙ mytool {"foo":"probe"}`
+- `PASS_MYTOOL_SHADOW_PROBE_20260310`
+- `% WebFetch https://example.com`
+- `EXEC_WEBFETCH_SHADOW_GLOBAL_PASS_01 https://example.com`
+
+Do not treat description-only prompts or final assistant text as proof. For machine-
+readable proof of dispatch, capture raw `tool_use` events instead of only the final text.
 
 ## Prompt Router
 
