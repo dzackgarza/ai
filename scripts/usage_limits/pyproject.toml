@@ -8,6 +8,7 @@ dependencies = [
     "requests>=2.28",
     "rich>=13.0",
     "beautifulsoup4>=4.12",
+    "typer>=0.21",
 ]
 
 [dependency-groups]
@@ -16,15 +17,18 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.8",
     "mypy>=1.13",
+    "types-requests>=2.32",
 ]
 
 [project.scripts]
-usage-claude      = "usage_limits.providers.claude:main"
-usage-codex       = "usage_limits.providers.codex:main"
-usage-amp         = "usage_limits.providers.amp:main"
-usage-openrouter  = "usage_limits.providers.openrouter:main"
-usage-qwen        = "usage_limits.providers.qwen:main"
-usage-ollama      = "usage_limits.providers.ollama:main"
+usage-limits      = "usage_limits.cli:app"
+usage-claude      = "usage_limits.cli:claude_main"
+usage-codex       = "usage_limits.cli:codex_main"
+usage-amp         = "usage_limits.cli:amp_main"
+usage-antigravity = "usage_limits.cli:antigravity_main"
+usage-openrouter  = "usage_limits.cli:openrouter_main"
+usage-qwen        = "usage_limits.cli:qwen_main"
+usage-ollama      = "usage_limits.cli:ollama_main"
 
 [build-system]
 requires = ["hatchling"]
@@ -45,6 +49,8 @@ python_version = "3.12"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
+explicit_package_bases = true
+mypy_path = "src"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

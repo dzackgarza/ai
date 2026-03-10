@@ -46,13 +46,13 @@ class UsageRow(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def is_exhausted(self) -> bool:
         """True when usage is at or above 100%."""
         return self.pct_used >= 100.0
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def time_until_reset(self) -> str:
         """Human-readable countdown to reset_at, or empty string if unset."""

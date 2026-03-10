@@ -1,8 +1,7 @@
-"""Ollama Cloud usage limits checker."""
+"""Ollama usage limits provider."""
 
 from __future__ import annotations
 
-import argparse
 import os
 import re
 import sys
@@ -19,6 +18,7 @@ from usage_limits.table import UsageRow
 class OllamaProvider(UsageProvider):
     """Ollama Cloud usage checker (session and weekly windows via HTML scrape)."""
 
+    slug = "ollama"
     name = "Ollama Cloud"
     state_dir = "ollama_usage"
     ntfy_topic = "usage-updates"
@@ -113,11 +113,9 @@ class OllamaProvider(UsageProvider):
                 continue
 
             percentage: float | None = None
-            percentage_span = flex_container.find(
-                "span", string=lambda x: x and "%" in x and "used" in x.lower()
-            )
-            if percentage_span:
-                text = percentage_span.get_text(strip=True)
+            percentage_text = flex_container.find(string=re.compile(r".*%\s*used.*", re.I))
+            if percentage_text:
+                text = str(percentage_text).strip()
                 match = re.search(r"(\d+(?:\.\d+)?)\s*%\s*used", text, re.I)
                 if match:
                     percentage = float(match.group(1))
@@ -125,7 +123,7 @@ class OllamaProvider(UsageProvider):
             wrapper = flex_container.find_parent("div")
             reset_elem = None
             if wrapper:
-                reset_elem = wrapper.find("div", class_=lambda x: x and "local-time" in x)
+                reset_elem = wrapper.find("div", class_=re.compile(r".*local-time.*"))
             reset_text = reset_elem.get_text(strip=True) if reset_elem else None
             reset_at = self._parse_reset_time(reset_text)
 
@@ -192,19 +190,3 @@ class OllamaProvider(UsageProvider):
     def anchor_command(self) -> list[str]:
         """Anchor the 5h window by running a minimal cloud inference request."""
         return ["ollama", "run", "glm-4.6:cloud", "hi"]
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Ollama Cloud usage limits checker")
-    parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
-    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
-    parser.add_argument(
-        "--availability", "-a", action="store_true", help="Output availability data as JSON"
-    )
-    args = parser.parse_args()
-    OllamaProvider().run(args)
-
-
-if __name__ == "__main__":
-    main()

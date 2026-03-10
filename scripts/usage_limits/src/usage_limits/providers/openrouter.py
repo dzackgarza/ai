@@ -1,4 +1,4 @@
-"""OpenRouter daily request quota tracker.
+"""OpenRouter usage limits provider.
 
 OpenRouter does NOT expose free-tier request counts via its API (only credits
 are tracked). fetch_raw() is intentionally not implemented — a mechanism to
@@ -15,7 +15,6 @@ TODO: Implement fetch_raw() with a request-counting mechanism.
 
 from __future__ import annotations
 
-import argparse
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -30,6 +29,7 @@ class OpenRouterProvider(UsageProvider):
     purchased at least once). Resets at UTC midnight.
     """
 
+    slug = "openrouter"
     name = "OpenRouter"
     state_dir = "openrouter_usage"
     ntfy_topic = "usage-updates"
@@ -93,15 +93,3 @@ class OpenRouterProvider(UsageProvider):
             print(f"🔔 Notification scheduled for {msg}")
         else:
             print(f"✗ Failed to schedule: {msg}")
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="OpenRouter usage limits checker")
-    parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
-    args = parser.parse_args()
-    OpenRouterProvider().run(args)
-
-
-if __name__ == "__main__":
-    main()

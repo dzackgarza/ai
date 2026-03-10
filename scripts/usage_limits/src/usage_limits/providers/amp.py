@@ -1,4 +1,4 @@
-"""Amp CLI usage checker.
+"""Amp usage limits provider.
 
 Amp replenishes continuously at a fixed $/hour rate up to a $10 cap.
 There is no anchor concept — credits fill automatically.
@@ -6,7 +6,6 @@ There is no anchor concept — credits fill automatically.
 
 from __future__ import annotations
 
-import argparse
 import math
 import re
 import subprocess
@@ -26,6 +25,7 @@ class AmpProvider(UsageProvider):
     credits will reach $10.
     """
 
+    slug = "amp"
     name = "Amp"
     state_dir = "amp_usage"
     ntfy_topic = "usage-updates"
@@ -130,15 +130,3 @@ def _next_topup_time(remaining: float, total: float, rate: float) -> tuple[datet
     next_hour = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
     topup_time = next_hour + timedelta(hours=hours_needed - 1)
     return topup_time, hours_needed
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Amp usage checker")
-    parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
-    args = parser.parse_args()
-    AmpProvider().run(args)
-
-
-if __name__ == "__main__":
-    main()

@@ -1,8 +1,7 @@
-"""Claude Code usage limits checker."""
+"""Claude Code usage limits provider."""
 
 from __future__ import annotations
 
-import argparse
 import json
 import subprocess
 import sys
@@ -19,6 +18,7 @@ from usage_limits.table import UsageRow
 class ClaudeProvider(UsageProvider):
     """Claude Code usage checker (5-hour and 7-day OAuth-gated windows)."""
 
+    slug = "claude"
     name = "Claude Code"
     state_dir = "claude_usage"
     ntfy_topic = "usage-updates"
@@ -138,19 +138,3 @@ def _parse_dt(ts: str | None) -> datetime | None:
     if not ts:
         return None
     return datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(UTC)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Claude Code usage limits checker")
-    parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
-    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
-    parser.add_argument(
-        "--availability", "-a", action="store_true", help="Output availability data as JSON"
-    )
-    args = parser.parse_args()
-    ClaudeProvider().run(args)
-
-
-if __name__ == "__main__":
-    main()

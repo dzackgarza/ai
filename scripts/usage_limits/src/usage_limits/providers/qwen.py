@@ -1,4 +1,4 @@
-"""Qwen Code usage limits checker.
+"""Qwen usage limits provider.
 
 Qwen Code free tier: 1000 requests/day (resets at UTC midnight).
 Usage is tracked via local OpenAI logging files in ~/qwen-logs/.
@@ -16,7 +16,6 @@ Setup:
 
 from __future__ import annotations
 
-import argparse
 import glob
 import sys
 from datetime import UTC, datetime, timedelta
@@ -34,6 +33,7 @@ class QwenProvider(UsageProvider):
     logging feature of the Qwen Code extension.
     """
 
+    slug = "qwen"
     name = "Qwen Code"
     state_dir = "qwen_usage"
     ntfy_topic = "usage-updates"
@@ -94,19 +94,3 @@ class QwenProvider(UsageProvider):
                 f"Qwen Code daily limit reset!\n\n{self.FREE_DAILY_LIMIT} requests available.",
                 tags="white_check_mark,rocket",
             )
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Qwen Code usage limits checker")
-    parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
-    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
-    parser.add_argument(
-        "--availability", "-a", action="store_true", help="Output availability data as JSON"
-    )
-    args = parser.parse_args()
-    QwenProvider().run(args)
-
-
-if __name__ == "__main__":
-    main()

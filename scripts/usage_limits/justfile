@@ -21,7 +21,7 @@ lint:
 
 # Type check
 typecheck:
-    uv run mypy src/
+    uv run mypy -p usage_limits
 
 # Run tests
 test *ARGS:
@@ -30,6 +30,19 @@ test *ARGS:
 # Install in editable mode in the opencode venv (for use from shell)
 install-dev:
     ~/ai/opencode/.venv/bin/pip install -e .
+
+# Canonical CLI surfaces
+providers *ARGS:
+    uv run usage-limits providers list {{ARGS}}
+
+collect *ARGS:
+    uv run usage-limits collect {{ARGS}}
+
+availability *ARGS:
+    uv run usage-limits availability {{ARGS}}
+
+table *ARGS:
+    uv run usage-limits table {{ARGS}}
 
 # Run a specific provider checker
 claude *ARGS:

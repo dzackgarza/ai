@@ -12,13 +12,15 @@ default:
 # LLM Usage Limits
 # =============================================================================
 
-# Check all usage limits
-# Usage: just usage [--json] [--no-notify]
+# Check the common provider set with canonical usage-limits commands
+# Usage: just usage-limits
 usage-limits *ARGS="":
-    @python {{ repo }}/usage-limits/claude_usage.py {{ ARGS }}
-    @python {{ repo }}/usage-limits/codex_usage.py {{ ARGS }}
-    @python {{ repo }}/usage-limits/amp_usage.py {{ ARGS }}
-    @python {{ repo }}/usage-limits/qwen_usage.py {{ ARGS }}
+    @cd {{ repo }}/scripts/usage_limits && uv run usage-limits table --provider claude --provider codex --provider amp --provider qwen --notify --anchor {{ ARGS }}
+
+# Collect the same provider set as structured JSON
+# Usage: just usage-limits-json
+usage-limits-json *ARGS="":
+    @cd {{ repo }}/scripts/usage_limits && uv run usage-limits collect --provider claude --provider codex --provider amp --provider qwen --json {{ ARGS }}
 
 # =============================================================================
 # OpenCode Rebuild

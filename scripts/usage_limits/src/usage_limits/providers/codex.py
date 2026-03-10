@@ -1,8 +1,7 @@
-"""Codex CLI usage limits checker."""
+"""Codex usage limits provider."""
 
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from datetime import UTC, datetime
@@ -18,6 +17,7 @@ from usage_limits.table import UsageRow
 class CodexProvider(UsageProvider):
     """Codex CLI usage checker (5-hour and 7-day WHAM windows)."""
 
+    slug = "codex"
     name = "Codex"
     state_dir = "codex_usage"
     ntfy_topic = "usage-updates"
@@ -111,19 +111,3 @@ def _ts_to_dt(ts: int | None) -> datetime | None:
     if ts is None:
         return None
     return datetime.fromtimestamp(ts, tz=UTC)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Codex usage limits checker")
-    parser.add_argument("--json", "-j", action="store_true", help="JSON output")
-    parser.add_argument("--no-notify", action="store_true", help="Disable auto-notification")
-    parser.add_argument("--no-anchor", action="store_true", help="Disable auto-anchoring")
-    parser.add_argument(
-        "--availability", "-a", action="store_true", help="Output availability data as JSON"
-    )
-    args = parser.parse_args()
-    CodexProvider().run(args)
-
-
-if __name__ == "__main__":
-    main()
