@@ -3023,23 +3023,17 @@ name = "workspace-scripts"
 version = "0.1.0"
 source = { editable = "../scripts" }
 dependencies = [
-    { name = "jinja2" },
-    { name = "litellm" },
     { name = "llm-runner" },
     { name = "llm-templating-engine" },
     { name = "pydantic" },
-    { name = "pyyaml" },
     { name = "typer" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "jinja2" },
-    { name = "litellm" },
     { name = "llm-runner", git = "https://github.com/dzackgarza/llm-runner" },
     { name = "llm-templating-engine", git = "https://github.com/dzackgarza/llm-templating-engine" },
     { name = "pydantic" },
-    { name = "pyyaml" },
     { name = "typer", specifier = ">=0.16.0" },
 ]
 
