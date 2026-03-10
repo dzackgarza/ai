@@ -7,12 +7,9 @@ name = "workspace-scripts"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "jinja2",
     "llm-runner",
     "llm-templating-engine",
-    "litellm",
     "pydantic",
-    "pyyaml",
     "typer>=0.16.0",
 ]
 

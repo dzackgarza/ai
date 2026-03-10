@@ -1,17 +1,19 @@
 /**
  * Provider routing for TypeScript plugins that construct OpenAI-compatible clients directly.
  *
- * ⚠️  CANONICAL SOURCE: scripts/llm/providers.py owns the provider registry.
- *     This file mirrors slugs, baseURLs, and env var names from that module's PROVIDERS dict.
- *     When updating a provider entry, update scripts/llm/providers.py first, then mirror here.
+ * ⚠️  CANONICAL SOURCE: llm_runner.providers in the standalone llm-runner repo owns the
+ *     runner-backed provider registry. This file is the plugin-local mirror for direct
+ *     OpenAI-compatible client construction only.
+ *     When updating a provider entry here, keep slug, baseURL, and env-var behavior aligned
+ *     with llm-runner where applicable.
  *
  * This file provides:
  *   - endpointFor()  — resolve a slug to baseURL + apiKey for direct OpenAI client use
  *   - parseModel()   — parse an OpenCode session API model spec string
  *
- * Most LLM calls should go through utilities/shared/llm.ts (Python bridge) instead of
+ * Most LLM calls should go through utilities/shared/llm.ts (JSON CLI wrapper) instead of
  * constructing OpenAI clients here. Only use endpointFor() for streaming or non-classification
- * calls that cannot be routed through the Python bridge.
+ * calls that cannot be routed through llm-runner.
  */
 
 // ---------------------------------------------------------------------------

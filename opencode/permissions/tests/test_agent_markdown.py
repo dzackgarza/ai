@@ -6,6 +6,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+from llm_templating_engine import (
+    Bindings,
+    RenderTemplateRequest,
+    TemplateReference,
+    load_template_document,
+    render_body,
+    render_template,
+)
 import yaml
 
 
@@ -37,15 +45,18 @@ def _run_micro_agent(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def test_run_micro_agent_wraps_plain_text_results_in_json_envelope(tmp_path: Path) -> None:
+def test_run_micro_agent_returns_run_response_for_plain_text_prompt(tmp_path: Path) -> None:
     prompt = tmp_path / "plain-text.md"
     prompt.write_text(
         "---\n"
         "description: plain text test\n"
-        "model: groq/llama-3.3-70b-versatile\n"
+        "kind: llm-run\n"
+        "models:\n"
+        "  - groq/llama-3.3-70b-versatile\n"
         "temperature: 0.0\n"
-        "system: |\n"
-        "  Reply with exactly OK and nothing else.\n"
+        "system_template:\n"
+        "  text: |\n"
+        "    Reply with exactly OK and nothing else.\n"
         "inputs:\n"
         "  - name: prompt\n"
         "    required: true\n"
@@ -56,11 +67,11 @@ def test_run_micro_agent_wraps_plain_text_results_in_json_envelope(tmp_path: Pat
     proc = _run_micro_agent(str(prompt), "--var", "prompt=Say OK.")
     payload = json.loads(proc.stdout)
 
-    assert payload["ok"] is True
-    assert payload["result"]["response"].strip() == "OK"
+    assert payload["response"]["raw_text"].strip() == "OK"
+    assert payload["final_output"]["text"].strip() == "OK"
 
 
-def test_run_micro_agent_wraps_structured_results_in_json_envelope() -> None:
+def test_run_micro_agent_returns_structured_run_response() -> None:
     prompt = WORKSPACE_ROOT / "prompts" / "micro_agents" / "prompt_difficulty_classifier" / "prompt.md"
 
     proc = _run_micro_agent(
@@ -70,25 +81,21 @@ def test_run_micro_agent_wraps_structured_results_in_json_envelope() -> None:
     )
     payload = json.loads(proc.stdout)
 
-    assert payload["ok"] is True
-    assert payload["result"]["tier"] == "model-self"
-    assert "AI" in payload["result"]["reasoning"]
+    assert payload["response"]["structured"]["tier"] == "model-self"
+    assert payload["final_output"]["data"]["tier"] == "model-self"
+    assert "AI" in payload["response"]["structured"]["reasoning"]
 
 
-def test_load_micro_agent_resolves_relative_prompt_path() -> None:
-    from scripts.llm import load_micro_agent
-
-    template = load_micro_agent("opencode_builtin/general.md")
+def test_load_template_document_resolves_relative_prompt_path() -> None:
+    template = load_template_document(TemplateReference(path="opencode_builtin/general.md"))
 
     assert template.frontmatter["description"].startswith("General-purpose agent")
     assert template.frontmatter["mode"] == "subagent"
-    assert template.body == ""
-    assert template.path.name == "general.md"
+    assert template.body_template == ""
+    assert Path(template.path).name == "general.md"
 
 
 def test_micro_agent_render_supports_frontmatter_aware_include(tmp_path: Path) -> None:
-    from scripts.llm import load_micro_agent
-
     prompts_dir = tmp_path / "prompts"
     prompts_dir.mkdir()
     (prompts_dir / "child.md").write_text(
@@ -108,8 +115,12 @@ def test_micro_agent_render_supports_frontmatter_aware_include(tmp_path: Path) -
     original_prompts_dir = os.environ.get("PROMPTS_DIR")
     os.environ["PROMPTS_DIR"] = str(prompts_dir)
     try:
-        template = load_micro_agent(parent)
-        rendered = template.render(name="Ada")
+        rendered = render_template(
+            RenderTemplateRequest(
+                template=TemplateReference(path=str(parent)),
+                bindings=Bindings(data={"name": "Ada"}),
+            )
+        ).rendered.body
     finally:
         if original_prompts_dir is None:
             os.environ.pop("PROMPTS_DIR", None)
@@ -120,8 +131,6 @@ def test_micro_agent_render_supports_frontmatter_aware_include(tmp_path: Path) -
 
 
 def test_render_body_supports_frontmatter_aware_macro_import(tmp_path: Path) -> None:
-    from scripts.llm import render_body
-
     prompts_dir = tmp_path / "prompts"
     prompts_dir.mkdir()
     (prompts_dir / "macros.md").write_text(
@@ -141,10 +150,11 @@ def test_render_body_supports_frontmatter_aware_macro_import(tmp_path: Path) -> 
     original_prompts_dir = os.environ.get("PROMPTS_DIR")
     os.environ["PROMPTS_DIR"] = str(prompts_dir)
     try:
+        template = load_template_document(TemplateReference(path=str(parent)))
         rendered = render_body(
-            parent.read_text(),
-            template_path=parent,
-            name="Ada",
+            template.body_template,
+            template_name=template.path,
+            bindings={"name": "Ada"},
         )
     finally:
         if original_prompts_dir is None:
@@ -178,7 +188,7 @@ def test_render_agent_markdown_inlines_child_prompt_body_only(tmp_path: Path) ->
         "mode: subagent\n"
         "model: ignored/model\n"
         "---\n"
-        "child body for {{ name }}\n"
+        "child body only\n"
     )
     parent = prompts_dir / "parent.md"
     parent.write_text(
@@ -196,7 +206,9 @@ def test_render_agent_markdown_inlines_child_prompt_body_only(tmp_path: Path) ->
     original_prompts_dir = os.environ.get("PROMPTS_DIR")
     os.environ["PROMPTS_DIR"] = str(prompts_dir)
     try:
-        rendered = render_agent_markdown(IncludedPromptAgent(prompt_template="parent.md"))
+        rendered = render_agent_markdown(
+            IncludedPromptAgent(prompt_template=str(parent))
+        )
     finally:
         if original_prompts_dir is None:
             os.environ.pop("PROMPTS_DIR", None)
@@ -211,7 +223,7 @@ def test_render_agent_markdown_inlines_child_prompt_body_only(tmp_path: Path) ->
     assert frontmatter["permission"]["bash"] == "allow"
     assert "ignored/model" not in rendered
     assert "child metadata should be ignored" not in rendered
-    assert body == "parent start\nchild body for \nparent end\n"
+    assert body == "parent start\nchild body only\nparent end\n"
 
 
 def test_render_agent_markdown_embeds_template_metadata_and_permissions() -> None:
