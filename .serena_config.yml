@@ -175,6 +175,18 @@ included_optional_tools:
 
 # fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
 # This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
 fixed_tools: []
 
 # list of mode names to that are always to be included in the set of active modes
@@ -222,16 +234,19 @@ projects:
 - /home/dzack/ai/opencode
 - /home/dzack/ai/opencode/permissions
 - /home/dzack/ai/opencode/plugins
+- /home/dzack/ai/skills
 - /home/dzack/archive/zotero-attachment-plugin
 - /home/dzack/lattice_interface
 - /home/dzack/opencode-git
 - /home/dzack/opencode-plugins
-- /home/dzack/opencode-plugins/improved-webtools
+- /home/dzack/opencode-plugins/opencode-plugin-improved-task
+- /home/dzack/opencode-plugins/opencode-plugin-improved-webtools
+- /home/dzack/opencode-plugins/opencode-time-travel-plugin
 - /home/dzack/opencode-plugins/opencode-zotero-plugin
-- /home/dzack/opencode-plugins/prompt-router
 - /home/dzack/opencode_parser
 - /var/sandbox/execa
 - /var/sandbox/opencode_parser_test
+- /var/search
 
 # template for the location of the per-project .serena data folder (memories, caches, etc.).
 # Supports the following placeholders:

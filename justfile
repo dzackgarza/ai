@@ -91,15 +91,10 @@ opencode-session *args:
     @npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session {{ args }}
 
 # =============================================================================
-# OpenRouter Model Discovery
+# OpenRouter Free Model Manager
 # =============================================================================
 
-# Unified OpenRouter tool
-# Usage: just openrouter-tool list
-openrouter-tool *args:
+# OpenRouter Free model management tool (ls, check, report)
+# Usage: just openrouter <command> [args]
+openrouter *args:
     @uv run --project {{ repo }}/scripts {{ repo }}/scripts/openrouter_tool.py {{ args }}
-
-# Full discovery: list free+tools models and probe each
-# Usage: just openrouter-discover
-openrouter-discover:
-    @just openrouter-tool discover --tools

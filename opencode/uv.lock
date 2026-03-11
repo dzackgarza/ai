@@ -3057,18 +3057,22 @@ name = "workspace-scripts"
 version = "0.1.0"
 source = { editable = "../scripts" }
 dependencies = [
+    { name = "httpx" },
     { name = "llm-runner" },
     { name = "llm-templating-engine" },
     { name = "pydantic" },
+    { name = "rich" },
     { name = "typer" },
     { name = "usage-limits" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "llm-runner", git = "https://github.com/dzackgarza/llm-runner" },
     { name = "llm-templating-engine", git = "https://github.com/dzackgarza/llm-templating-engine" },
     { name = "pydantic" },
+    { name = "rich", specifier = ">=14.3.3" },
     { name = "typer", specifier = ">=0.16.0" },
     { name = "usage-limits", git = "https://github.com/dzackgarza/usage-limits" },
 ]

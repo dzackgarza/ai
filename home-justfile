@@ -9,6 +9,18 @@ default:
     @just --list
 
 # =============================================================================
+# MCP Sync
+# =============================================================================
+
+# Sync centralized MCP config with ~/.envrc loaded through direnv.
+# Usage: just --justfile ~/ai/home-justfile install-mcps [--dry-run] [--harness codex]
+install-mcps *ARGS="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ repo }}"
+    direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
+
+# =============================================================================
 # LLM Usage Limits
 # =============================================================================
 

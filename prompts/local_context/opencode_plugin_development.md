@@ -102,12 +102,26 @@ Monorepo local config pattern:
 
 ## 4. Running OpenCode
 
-- Always use `/home/dzack/.opencode/bin/opencode` for testing
+- Always use `/home/dzack/.opencode/bin/opencode` for smoke tests, agent/model
+  discovery, and config sanity checks
 - Never use the `opencode` alias for tests; it attaches to the server
 - The standalone binary rereads config every invocation; “stale config” is not a valid
   explanation
 - Do not use `opencode serve` or the systemd service for tests
 - `--attach` + `--agent` is broken; use standalone runs only
+- Do **not** use the interactive CLI/TUI as your workflow harness for plugin tests
+- Do **not** scrape ANSI/TUI/stdout from interactive OpenCode sessions as evidence
+- Mandatory test harness for real workflows: `opencode-manager`
+  - `opx` for run/resume/debug flows
+  - `opx-session` for create/prompt/messages/abort/revert/permission orchestration
+- Mandatory readable transcript renderer: `opencode-transcripts`
+  - `uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript`
+- The CLI is an entrypoint, not an orchestration layer. Multi-turn, async, and
+  post-idle behavior must be driven through `opx` / `opx-session`, with evidence taken
+  from session data, transcripts, debug traces, or external side effects
+- The `echo` / `printf` stdin trick is a compatibility escape hatch only. If you must
+  use it to start a real interactive session, discard the TUI output and inspect the
+  resulting session through `opencode-manager` or transcript artifacts instead
 
 Agent/model discovery:
 
@@ -268,7 +282,7 @@ with mocks, stubs, or synthetic environments.
 
 Development order:
 
-1. Prove behavior once by hand with a real `opencode run`
+1. Prove behavior once by hand with a real `opx` / `opx-session` workflow
 2. Stabilize the prompt until it is deterministic
 3. Enshrine it in automated tests
 
@@ -282,6 +296,8 @@ Additional testing rules:
 
 - Prefer proofs that require actual tool execution: passphrases, timestamps, UUIDs,
   stable synthetic ids
+- All multi-turn, async, resume, callback, and post-idle tests must be orchestrated via
+  `opencode-manager`, not the rendered CLI
 - **NO MOCKS**—test against real behavior only; no `unittest.mock`, `monkeypatch`,
   stubs, fakes, or simulated environments
 - **NO WORKAROUNDS** for missing OpenCode, agents, or models—if unavailable, test fails
@@ -290,8 +306,10 @@ Additional testing rules:
   system already guarantees internals). Exception: strict unit tests for complex
   nondeterministic functionality (e.g., micro agent evaluations with external LLM services)
 - Logs are hearsay; raw tool output beats log lines
-- If stdout is ambiguous because tool banners or assistant formatting got mixed in, parse
-  the transcript instead of guessing
+- Rendered CLI/TUI output is not valid proof for tool execution, callback delivery, or
+  transcript contents
+- If stdout is ambiguous, do not guess. Read session messages, transcripts, event traces,
+  or external side effects instead
 - Sessions are scoped to their working directory
 
 ### Nondeterministic Agent Debugging Checklist
@@ -313,9 +331,10 @@ Before concluding anything about tool visibility, tool use, or model obedience:
   - Can you prove the model did not fabricate? Compare assistant text with full stdout
     and, when needed, raw events.
 - Use the evidence hierarchy:
+  - Invalid for proof: rendered terminal/TUI output, ANSI streams, scraped CLI text
   - Weak: assistant final text
-  - Better: full terminal output including tool banners such as `% WebFetch ...`
-  - Strong: raw `--format json` `tool_use` event with exact input and output
+  - Better: exported transcript or `opx-session messages --json`
+  - Strong: raw `tool_use` / session trace data such as `opx debug trace`
   - Strongest: raw `tool_use` plus an external side effect such as a marker file, UUID,
     timestamp, or other artifact the model cannot fake
 - Treat negative results correctly:
@@ -407,7 +426,31 @@ Reject any design where success could be explained by:
 
 ## 12. Test Commands
 
-Always use the binary, not the alias:
+Manager-first commands:
+
+```bash
+MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
+TRANSCRIPT="uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript"
+
+# One-shot workflow probe
+$MANAGER opx run --agent Minimal --prompt "Your prompt."
+
+# Resume a known session
+$MANAGER opx resume --session ses_123 --prompt "Follow-up prompt."
+
+# Create a session explicitly
+$MANAGER opx-session create --title "plugin-test"
+
+# Send a prompt without waiting for a reply
+$MANAGER opx-session prompt ses_123 "Your prompt." --no-reply
+
+# Read messages/transcript evidence from the real session
+$MANAGER opx-session messages ses_123 --json
+$MANAGER opx debug trace --session ses_123 --verbose
+$TRANSCRIPT ses_123
+```
+
+Binary-only commands:
 
 ```bash
 # List available agents
@@ -427,11 +470,12 @@ timeout 15 /home/dzack/.opencode/bin/opencode run --agent "Unrestricted Test" "Y
 
 # Fallback without direnv
 OPENCODE_CONFIG=/abs/path/to/.config/opencode.json \
-  timeout 15 /home/dzack/.opencode/bin/opencode run --agent "Unrestricted Test" "Your prompt."
+timeout 15 /home/dzack/.opencode/bin/opencode run --agent "Unrestricted Test" "Your prompt."
 ```
 
 Rules:
 
+- `opencode-manager` is the required orchestration harness for real workflow tests
 - No `--attach`
 - No `opencode serve`
 - No background jobs with `&`
@@ -444,17 +488,20 @@ Rules:
 Read-after-write persistence:
 
 ```bash
-/home/dzack/.opencode/bin/opencode session list
-timeout 15 /home/dzack/.opencode/bin/opencode run --agent Minimal -s <session-id> "Follow-up prompt."
+$MANAGER opx-session messages <session-id> --json
+$MANAGER opx resume --session <session-id> --prompt "Follow-up prompt."
 ```
 
-Async pattern:
+Async / post-idle pattern:
 
 ```bash
-mkdir -p /tmp/plugin-test
-(cd /tmp/plugin-test && timeout 90 sh -c 'echo "your prompt" | /home/dzack/.opencode/bin/opencode') >/dev/null 2>&1
-(cd /tmp/plugin-test && /home/dzack/.opencode/bin/opencode session list)
-python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
+# Start the workflow without blocking on the model reply
+$MANAGER opx-session prompt <session-id> "your prompt" --no-reply
+
+# Poll or inspect the real session instead of scraping the TUI
+$MANAGER opx-session messages <session-id> --json
+$MANAGER opx debug trace --session <session-id> --verbose
+$TRANSCRIPT <session-id>
 ```
 
 ## 13. Workflow Conventions

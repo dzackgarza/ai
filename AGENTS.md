@@ -58,17 +58,13 @@ Never skip from "I found nothing" to "nothing exists."
 
 **Context7:** Use for ALL library/framework/API questions. `context7_resolve-library-id` → `context7_query-docs`. Also use DeepWiki `ask` for repo-level questions.
 
-**Edits:** Use `edit` for all code edits. **Config files (JSON/YAML):** see `config-file-editing` skill.
+**Config files (JSON/YAML):** LOAD `config-file-editing` skill before any edit.
 
-**Search:**
+For AST pattern matching use `ast-grep` skill; for semantic/structural discovery use `probe` skill (`npx -y @probelabs/probe`).
 
-| Question              | Tool       |
-| --------------------- | ---------- |
-| Text/grep pattern?    | `grep`     |
-| AST pattern matching? | `ast-grep` skill |
-| Semantic/structural?  | `probe` skill — always `npx -y @probelabs/probe` |
+**Never:** touch a config without reading docs first.
 
-**Never:** touch a config without reading docs first. Revert or checkout files you did not modify — those are others' committed work.
+**NEVER `git checkout`, `git restore`, or revert files you did not modify.** These are others' committed work. Touch only the files you changed; verify with `git diff`.
 
 ---
 
@@ -87,7 +83,7 @@ When there's a question of how anything works:
 ## Engineering Rules
 
 - **Favor mature dependencies.** Do not reinvent wheels.
-- **Iterate, don't replace.** Edit existing files. Writing an entire file is rarely correct. Run `git diff` after rewrites — see what you lost. If valuable, restore it.
+- **Iterate, don't replace.** Writing an entire file is rarely correct. Run `git diff` after rewrites — see what you lost. If valuable, restore it.
 
 ---
 
@@ -131,13 +127,13 @@ When you find no evidence of something, you MUST use the five-field format from 
 
 ## Config File Handling
 
-- **Use `jq`/`yq` and never raw edits** for JSON/YAML — see `config-file-editing` skill.
+- **Before editing any JSON or YAML file: LOAD `config-file-editing` skill.** Never raw-edit config files.
 
 ---
 
 ## Git Workflow
 
-All work is in **noisy repos** with others' uncommitted changes. **Never use `git stash`, `git checkout`, or `git restore`** — destructive in this context. Use `git add`/`git commit` for checkpoints. See `git-guidelines` skill.
+All work is in **noisy repos** with others' uncommitted changes. **Never use `git stash`, `git checkout`, or `git restore`** — destructive in this context. Use `git add`/`git commit` for checkpoints. **For any git operation: LOAD `git-guidelines` skill.**
 
 ---
 
@@ -146,23 +142,23 @@ All work is in **noisy repos** with others' uncommitted changes. **Never use `gi
 - **Use basic orientation tools** like `ls`, `exa`, and `tree` when starting work.
 - **Read all READMEs and AGENTS.md files** encountered.
 
-**When corrected:** do not thrash, pivot, or sycophantically agree. Identify the failure, assess damage, verify understanding before acting. See `handling-corrections` skill.
+**When corrected:** LOAD `handling-corrections` skill before responding. Do not thrash, pivot, or act until you understand the scope.
 
 ---
 
 ## Opencode
 
-See `opencode-cli` skill. Never restart or blame stale cache — test with `command opencode run --agent Minimal 'Hello world'`. Use `command opencode` not the bare alias for investigations.
+**LOAD `opencode-cli` skill** before any opencode work. Never restart or blame stale cache. Use `command opencode` not the bare alias.
 
 ---
 
 ## Custom CLI Tools
 
 - `semtools` for semantically searching expository text, e.g. `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
-- PDF extraction: use justfile recipes in `~/pdf-extraction` (see `reading-pdfs` skill), not ad hoc installs.
+- PDF extraction: **LOAD `reading-pdfs` skill.** Use justfile recipes in `~/pdf-extraction`, not ad hoc installs.
 - `open-issues` to list all outstanding open issues across synced plugin trackers. File issues on dzackgarza repos immediately when encountered. Do not file "bugs" for errors that have never actually been observed.
-- For nontrivial features: branch + PR → `@codex review` → wait 3–5 min → scan all comment surfaces (see `git-guidelines` skill).
-- `probe` for semantic searching — **always** `npx -y @probelabs/probe`. See `probe` skill.
+- For nontrivial features: work in a worktree with a branch → PR → `@codex review` → wait 3–5 min → **LOAD `git-guidelines` skill** to scan all comment surfaces correctly.
+- `probe` for semantic searching — **always** `npx -y @probelabs/probe`. **LOAD `probe` skill.**
 
 ---
 

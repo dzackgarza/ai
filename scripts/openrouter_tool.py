@@ -108,27 +108,28 @@ async def probe_model(model_id: str, check_tools: bool = False) -> tuple[bool, s
             return False, str(e)
 
 
-@app.command(name="list")
-def list_models(
-    tools_only: bool = typer.Option(False, "--tools", help="Only show models with tool support"),
-    provider: str = "openrouter",
+@app.command()
+def ls(
+    tool_calling: bool = typer.Option(
+        False, "--tool-calling", "-t", help="Only show models with tool-calling support"
+    ),
 ):
-    """List free models from models.dev with filters."""
+    """List available free models."""
 
     async def _run():
         data = await fetch_models_dev()
-        provider_data = data.get(provider, {}).get("models", {})
+        provider_data = data.get("openrouter", {}).get("models", {})
 
-        table = Table(title=f"Free {provider.capitalize()} Models")
+        table = Table(title="Free OpenRouter Models")
         table.add_column("ID", style="cyan")
         table.add_column("Name", style="magenta")
-        table.add_column("Tools", style="yellow")
+        table.add_column("Tool Calling", style="yellow")
 
         for model_id, meta_raw in provider_data.items():
             meta = ModelMetadata(**meta_raw)
             if not meta.is_free:
                 continue
-            if tools_only and not meta.tool_call:
+            if tool_calling and not meta.tool_call:
                 continue
 
             table.add_row(
@@ -143,57 +144,43 @@ def list_models(
 
 
 @app.command()
-def probe(
-    model_id: str,
-    check_tools: bool = typer.Option(False, "--tools", help="Check for tool support"),
+def check(
+    model_id: str = typer.Argument(None, help="Model ID to probe (probes all if omitted)"),
+    tool_calling: bool = typer.Option(
+        False, "--tool-calling", "-t", help="When probing all, filter by tool-calling support"
+    ),
 ):
-    """Probe a specific free model."""
+    """Probe availability of free models."""
 
     async def _run():
         data = await fetch_models_dev()
-        # Ensure it's a free model before probing
-        all_models = data.get("openrouter", {}).get("models", {})
-        if model_id in all_models:
-            meta = ModelMetadata(**all_models[model_id])
+        provider_data = data.get("openrouter", {}).get("models", {})
+
+        if model_id:
+            if model_id not in provider_data:
+                console.print(f"[red]Error: Model {model_id} not found in models.dev[/red]")
+                return
+            meta = ModelMetadata(**provider_data[model_id])
             assert meta.is_free, f"Model {model_id} is not free"
-
-        success, message = await probe_model(model_id, check_tools=check_tools)
-        if success:
-            console.print(f"[green]✅ {model_id}: {message}[/green]")
+            models_to_probe = [(model_id, meta)]
         else:
-            console.print(f"[red]❌ {model_id}: {message}[/red]")
+            models_to_probe = []
+            for m_id, meta_raw in provider_data.items():
+                meta = ModelMetadata(**meta_raw)
+                if not meta.is_free:
+                    continue
+                if tool_calling and not meta.tool_call:
+                    continue
+                models_to_probe.append((m_id, meta))
 
-    asyncio.run(_run())
+        console.print(f"Probing {len(models_to_probe)} model(s)...")
 
-
-@app.command()
-def discover(
-    tools_only: bool = typer.Option(True, "--tools", help="Only show models with tool support"),
-    provider: str = "openrouter",
-):
-    """List and probe free models."""
-
-    async def _run():
-        data = await fetch_models_dev()
-        provider_data = data.get(provider, {}).get("models", {})
-
-        models_to_probe = []
-        for model_id, meta_raw in provider_data.items():
-            meta = ModelMetadata(**meta_raw)
-            if not meta.is_free:
-                continue
-            if tools_only and not meta.tool_call:
-                continue
-            models_to_probe.append((model_id, meta))
-
-        console.print(f"Found {len(models_to_probe)} free models to probe...")
-
-        for model_id, meta in models_to_probe:
-            success, message = await probe_model(model_id, check_tools=tools_only)
+        for m_id, meta in models_to_probe:
+            success, message = await probe_model(m_id, check_tools=meta.tool_call)
             if success:
-                console.print(f"[green]✅ {model_id}: {message}[/green]")
+                console.print(f"[green]✅ {m_id}: {message}[/green]")
             else:
-                console.print(f"[red]❌ {model_id}: {message}[/red]")
+                console.print(f"[red]❌ {m_id}: {message}[/red]")
 
     asyncio.run(_run())
 
@@ -201,15 +188,14 @@ def discover(
 @app.command()
 def report(
     output: Path = typer.Option(
-        Path("openrouter-free-results.md"), help="Output file for the report"
+        Path("OPENROUTER_FREE.md"), help="Output file for the audit report"
     ),
-    provider: str = "openrouter",
 ):
-    """Run discovery and generate a Markdown report for free models."""
+    """Audit all free models and generate a Markdown report."""
 
     async def _run():
         data = await fetch_models_dev()
-        provider_data = data.get(provider, {}).get("models", {})
+        provider_data = data.get("openrouter", {}).get("models", {})
 
         models_to_probe = []
         for model_id, meta_raw in provider_data.items():
@@ -218,7 +204,7 @@ def report(
                 continue
             models_to_probe.append((model_id, meta))
 
-        console.print(f"Generating report for {len(models_to_probe)} free models...")
+        console.print(f"Auditing {len(models_to_probe)} free models...")
 
         results = []
         for model_id, meta in models_to_probe:
@@ -234,17 +220,16 @@ def report(
             status_color = "green" if success else "red"
             console.print(f"[{status_color}]{model_id}: {message}[/{status_color}]")
 
-        # Write markdown
         with open(output, "w") as f:
-            f.write(f"# OpenRouter Free Models Test Results\n\n")
+            f.write("# OpenRouter Free Models Audit\n\n")
             f.write(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-            f.write("| Model | Status | Tools |\n")
-            f.write("|-------|--------|-------|\n")
+            f.write("| Model | Status | Tool Calling |\n")
+            f.write("|-------|--------|--------------|\n")
             for r in results:
                 tools_icon = "✅" if r["tools"] else "❌"
                 f.write(f"| {r['id']} | {r['status']} | {tools_icon} |\n")
 
-        console.print(f"\n[bold green]Report saved to {output}[/bold green]")
+        console.print(f"\n[bold green]Audit report saved to {output}[/bold green]")
 
     asyncio.run(_run())
 

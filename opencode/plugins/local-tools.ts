@@ -1,5 +1,3 @@
-import { type Plugin, tool } from "@opencode-ai/plugin"
-
 // Re-export all enabled plugins as separate named exports
 export { SleepPlugin } from "./dev/sleep/index" // ✓
 // export { AsyncCommandPlugin } from "./dev/async-command/index" // ✗ not loading
@@ -16,4 +14,3 @@ export { ReadTranscriptPlugin } from "./dev/read-transcript/index" // ✓
 // export { ContextInjector } from "./dev/context-injector"
 // export { CotTrivialInterceptor } from "./dev/cot-trivial-test"
 //
-
