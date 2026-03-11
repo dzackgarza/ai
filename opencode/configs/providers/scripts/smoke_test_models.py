@@ -8,6 +8,7 @@ meaningful computation, not just echo.
 """
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -16,6 +17,14 @@ from pathlib import Path
 
 import yaml
 from pydantic import BaseModel, Field
+
+
+OPENCODE_BIN = Path(
+    os.environ.get(
+        "OPENCODE_BIN",
+        str(Path.home() / ".opencode" / "bin" / "opencode"),
+    )
+)
 
 
 class ModelConfig(BaseModel):
@@ -105,34 +114,23 @@ def test_model(model_config: ModelConfig, timeout: int = 20) -> TestResult:
     with tempfile.TemporaryDirectory() as tmpdir:
         try:
             result = subprocess.run(
-                ["sh", "-c", f'echo "{test_prompt}" | opencode -m {full_model_id}'],
+                [
+                    str(OPENCODE_BIN),
+                    "run",
+                    "--agent",
+                    "Minimal",
+                    "-m",
+                    full_model_id,
+                    test_prompt,
+                ],
                 capture_output=True,
                 text=True,
                 timeout=timeout,
                 cwd=tmpdir,
             )
 
-            # Parse events.jsonl
-            events_path = Path(tmpdir) / ".opencode" / "events.jsonl"
-            assistant_message = None
+            assistant_message = result.stdout.strip() or None
             error_message = None
-
-            if events_path.exists():
-                with open(events_path, "r") as f:
-                    for line in f:
-                        if line.strip():
-                            try:
-                                event = json.loads(line)
-                                if event.get("type") == "assistant":
-                                    parts = event.get("parts", [])
-                                    for part in parts:
-                                        if part.get("type") == "text":
-                                            assistant_message = part.get("text", "")
-                                            break
-                                elif event.get("type") == "error" or "error" in event:
-                                    error_message = event.get("error", {}).get("message") or str(event.get("error"))
-                            except json.JSONDecodeError:
-                                continue
 
             # Check stderr for API errors
             if result.stderr:
@@ -142,14 +140,11 @@ def test_model(model_config: ModelConfig, timeout: int = 20) -> TestResult:
                     elif "API error" in line.lower() or "connection" in line.lower():
                         error_message = error_message or line.strip()
 
-            if not assistant_message and result.stdout:
-                assistant_message = result.stdout.strip()
-
             # Validate response
             working = False
             final_error = error_message
             if assistant_message and not error_message:
-                if "42" in assistant_message:
+                if assistant_message.strip() == "42":
                     working = True
                 else:
                     final_error = f"Incorrect response: {assistant_message[:100]}"
