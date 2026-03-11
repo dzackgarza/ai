@@ -81,21 +81,30 @@ opencode run "Your prompt here"
 
 No output = model/connectivity issue (99% of cases). Check your model config or API key.
 
-### Interactive mode: only when you need post-idle async behavior
+### Multi-turn and async workflows: use `opencode-manager`
 
-`opencode run` exits the moment the session goes idle — any async work triggered *after* the idle event is cut off. This only matters if your plugin or tool does async work after the model finishes responding.
-
-**When you need async work to complete** (e.g., a stop-hook that re-prompts the model, or an idle handler that fires an HTTP call):
+Do **not** use rendered CLI/TUI output as your workflow harness or evidence source.
+For multi-turn, async, resume, or post-idle behavior, orchestrate the real session
+through `opencode-manager` and inspect the resulting session data or transcript.
 
 ```bash
-# Run prompt with timeout, suppress TUI, parse transcript
-mkdir -p /tmp/my-test && \
-  (cd /tmp/my-test && timeout 90 sh -c 'echo "Your prompt" | opencode') >/dev/null 2>&1; \
-  grep -o 'ses_[a-zA-Z0-9]*' /tmp/my-test/.opencode/events.jsonl | head -1 | \
-    xargs -I{} python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode {}
+MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
+TRANSCRIPT="uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript"
+
+# Create or target a session, then prompt without blocking
+$MANAGER opx-session create --title "test"
+$MANAGER opx-session prompt ses_abc123 "Your prompt" --no-reply
+
+# Inspect the real session instead of scraping the TUI
+$MANAGER opx-session messages ses_abc123 --json
+$MANAGER opx debug trace --session ses_abc123 --verbose
+$TRANSCRIPT ses_abc123
 ```
 
-**Important:** `echo "..." | opencode` starts a real interactive session that will **not** exit on its own — you **must** wrap it in `timeout <N>`. After the timeout kills the process, parse the transcript with the reading-transcripts skill.
+The `echo` / `printf` stdin trick is only a compatibility escape hatch for starting a
+real interactive session. If you must use it, discard the TUI output and inspect the
+session afterward through `opencode-manager`, `opencode-transcripts`, `opencode export`,
+or raw session data.
 
 MCP warmup is at most ~10s and is never the bottleneck. If a session times out or produces unexpected results, the cause is almost always model connectivity, rate limits, or model behavior — not MCP.
 
@@ -116,13 +125,17 @@ MCP warmup is at most ~10s and is never the bottleneck. If a session times out o
 
 ### Exporting Readable Transcripts
 
-When agents need to read past session transcripts (e.g., for recovery or context analysis), use this one-liner to parse the JSON export into clean, human-readable markdown (stripping out massive tool inputs/outputs and system metadata):
+When agents need readable session transcripts, use the dedicated transcript package:
+
+```bash
+uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript ses_YOUR_ID_HERE
+```
+
+Fallback only when you explicitly need raw JSON post-processing:
 
 ```bash
 opencode export ses_YOUR_ID_HERE | sed '1d' | jq -r '.messages[]? | "[\(.info.role | ascii_upcase)]\n" + (if .parts then (.parts[] | select(.type=="text") | .text) else "" end) + "\n\n---\n"' > transcript.md
 ```
-
-_(Add `| tail -n 150` instead of `> file` to quickly read recent messages)._
 
 ## Model Format
 
