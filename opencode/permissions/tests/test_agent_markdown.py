@@ -19,7 +19,6 @@ import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE_ROOT = PROJECT_ROOT.parent.parent
-RUN_MICRO_AGENT = WORKSPACE_ROOT / "scripts" / "run_micro_agent.py"
 VENV_PYTHON = WORKSPACE_ROOT / "opencode" / ".venv" / "bin" / "python"
 for root in (PROJECT_ROOT, WORKSPACE_ROOT):
     if str(root) not in sys.path:
@@ -35,17 +34,18 @@ def _split_markdown_frontmatter(text: str) -> tuple[dict, str]:
     return frontmatter, body
 
 
-def _run_micro_agent(*args: str) -> subprocess.CompletedProcess[str]:
+def _run_llm_run(request: dict[str, object]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [str(VENV_PYTHON), str(RUN_MICRO_AGENT), *args],
+        ["uv", "run", "--python", str(VENV_PYTHON), "llm-run"],
         check=True,
         capture_output=True,
         text=True,
+        input=json.dumps(request),
         cwd=str(WORKSPACE_ROOT),
     )
 
 
-def test_run_micro_agent_returns_run_response_for_plain_text_prompt(tmp_path: Path) -> None:
+def test_llm_run_returns_run_response_for_plain_text_prompt(tmp_path: Path) -> None:
     prompt = tmp_path / "plain-text.md"
     prompt.write_text(
         "---\n"
@@ -64,20 +64,32 @@ def test_run_micro_agent_returns_run_response_for_plain_text_prompt(tmp_path: Pa
         "{{ prompt }}\n"
     )
 
-    proc = _run_micro_agent(str(prompt), "--var", "prompt=Say OK.")
+    proc = _run_llm_run(
+        {
+            "template": {"path": str(prompt)},
+            "bindings": {"data": {"prompt": "Say OK."}},
+            "overrides": {},
+        }
+    )
     payload = json.loads(proc.stdout)
 
     assert payload["response"]["raw_text"].strip() == "OK"
     assert payload["final_output"]["text"].strip() == "OK"
 
 
-def test_run_micro_agent_returns_structured_run_response() -> None:
+def test_llm_run_returns_structured_run_response() -> None:
     prompt = WORKSPACE_ROOT / "prompts" / "micro_agents" / "prompt_difficulty_classifier" / "prompt.md"
 
-    proc = _run_micro_agent(
-        str(prompt),
-        "--var",
-        "prompt=Describe every tool you have access to.",
+    proc = _run_llm_run(
+        {
+            "template": {"path": str(prompt)},
+            "bindings": {
+                "data": {
+                    "prompt": "Describe every tool you have access to.",
+                }
+            },
+            "overrides": {},
+        }
     )
     payload = json.loads(proc.stdout)
 
@@ -87,7 +99,17 @@ def test_run_micro_agent_returns_structured_run_response() -> None:
 
 
 def test_load_template_document_resolves_relative_prompt_path() -> None:
-    template = load_template_document(TemplateReference(path="opencode_builtin/general.md"))
+    original_prompts_dir = os.environ.get("PROMPTS_DIR")
+    os.environ["PROMPTS_DIR"] = str(WORKSPACE_ROOT / "prompts")
+    try:
+        template = load_template_document(
+            TemplateReference(path="opencode_builtin/general.md")
+        )
+    finally:
+        if original_prompts_dir is None:
+            os.environ.pop("PROMPTS_DIR", None)
+        else:
+            os.environ["PROMPTS_DIR"] = original_prompts_dir
 
     assert template.frontmatter["description"].startswith("General-purpose agent")
     assert template.frontmatter["mode"] == "subagent"

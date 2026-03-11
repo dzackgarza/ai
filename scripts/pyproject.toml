@@ -12,6 +12,8 @@ dependencies = [
     "usage-limits",
     "pydantic",
     "typer>=0.16.0",
+    "httpx>=0.28.1",
+    "rich>=14.3.3",
 ]
 
 [tool.uv.sources]

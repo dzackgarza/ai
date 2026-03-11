@@ -74,17 +74,9 @@ reset-sandbox:
     fi
     {{ repo }}/scripts/scaffold-sandbox.sh
 
-# Sync centralized MCP config with ~/.envrc loaded through direnv.
-
-# Usage: just sync-mcp-configs [--dry-run] [--harness codex]
-install-mcps *ARGS="":
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd "{{ repo }}"
-    direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
-
 run-microagent *args:
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python -m scripts.run_micro_agent {{ args }}
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
+
 
 build-agents: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py --build
@@ -99,72 +91,15 @@ opencode-session *args:
     @npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session {{ args }}
 
 # =============================================================================
-# OpenCode Provider Discovery (inline - no scripts)
+# OpenRouter Model Discovery
 # =============================================================================
 
-# List all OpenRouter models from models.dev
-opencode-openrouter-list:
-    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | keys[]'
-
-# List OpenRouter free tier models
-opencode-openrouter-free:
-    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free") | .key'
-
-# List OpenRouter models with tool support
-opencode-openrouter-tools:
-    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tools == true) | .key'
-
-# List OpenRouter free models with tool support
-opencode-openrouter-free-tools:
-    @curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free" and .value.tools == true) | .key'
-
-# Probe a model endpoint for responsiveness
-
-# Usage: just opencode-openrouter-probe mistralai/mistral-small:free
-opencode-openrouter-probe model:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
-        -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d "{\"model\":\"$1\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":5}")
-    echo "$response" | jq -r 'if .error then "ERROR: \(.error.message)" else "OK" end'
-
-# Test model tool-calling support
-
-# Usage: just opencode-openrouter-probe-tools mistralai/mistral-small:free
-opencode-openrouter-probe-tools model:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
-        -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d "{
-            \"model\":\"$1\",
-            \"messages\":[{\"role\":\"user\",\"content\":\"Find files containing auth\"}],
-            \"tools\":[{\"type\":\"function\",\"function\":{\"name\":\"search_files\",\"parameters\":{\"type\":\"object\",\"properties\":{\"query\":{\"type\":\"string\"}}}}}]
-        }")
-    echo "$response" | jq -r 'if .choices[0].message.tool_calls then "SUPPORTS_TOOLS" elif .error then "ERROR: \(.error.message)" else "NO_TOOL_SUPPORT" end'
+# Unified OpenRouter tool
+# Usage: just openrouter-tool list
+openrouter-tool *args:
+    @uv run --project {{ repo }}/scripts {{ repo }}/scripts/openrouter_tool.py {{ args }}
 
 # Full discovery: list free+tools models and probe each
-
-# Usage: just opencode-openrouter-discover
-opencode-openrouter-discover:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    echo "=== OpenRouter Free Models with Tool Support ==="
-    models=$(curl -s https://models.dev/api.json | jq -r '.openrouter.models | to_entries[] | select(.value.tier == "free" and .value.tools == true) | .key')
-    for model in $models; do
-        echo -n "$model: "
-        response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
-            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":5}")
-        echo "$response" | jq -r 'if .error then "DOWN: \(.error.message)" else "UP" end'
-    done
-
-# Debug a provider from models.dev
-
-# Usage: just opencode-provider-debug openrouter
-opencode-provider-debug provider:
-    @curl -s https://models.dev/api.json | jq -r '.{{ provider }}.models | to_entries[] | "  \(.key) - \(.value.name)"'
+# Usage: just openrouter-discover
+openrouter-discover:
+    @just openrouter-tool discover --tools

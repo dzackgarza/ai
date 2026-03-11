@@ -103,17 +103,23 @@
     "openTelemetry": true
   },
   "plugin": [
-    "opencode-anthropic-auth@latest",
-    "opencode-qwencode-auth@latest",
-    "opencode-openai-codex-auth@latest",
-    "cc-safety-net@latest",
-    "@azumag/opencode-rate-limit-fallback@latest",
-    "@ramtinj95/opencode-tokenscope@latest",
-    "file:///home/dzack/opencode-plugins/improved-task/src/index.ts",
-    "improved-webtools@git+https://github.com/dzackgarza/opencode-improved-webtools-plugin",
+    "opencode-anthropic-auth@0.0.13",
+    "opencode-qwencode-auth@1.3.0",
+    "opencode-openai-codex-auth@4.4.0",
+    "cc-safety-net@0.7.1",
+    "@azumag/opencode-rate-limit-fallback@1.70.0",
+    "@ramtinj95/opencode-tokenscope@1.5.2",
+    "@dzackgarza/opencode-plugin-improved-task@git+https://github.com/dzackgarza/opencode-plugin-improved-task.git#e4355344fbe5f0590ed13424918d730d04a56aec",
+    "@dzackgarza/opencode-plugin-improved-todowrite@git+https://github.com/dzackgarza/opencode-plugin-improved-todowrite.git#061566f8bb2ea6f663e50ef4ccd11e9c2be4d7f7",
+    "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#d34e7cbb7534bcff729c404aa6bcab9036c812a1",
+    "@dzackgarza/opencode-plugin-prompt-transformer@git+https://github.com/dzackgarza/opencode-plugin-prompt-transformer.git#ad9b30c9a3eca8556ba8ddcc7d0feb6c361235d4",
+    "@dzackgarza/opencode-plugin-reminder-injection@git+https://github.com/dzackgarza/opencode-plugin-reminder-injection.git#c9a8c76c7444f33baaaead17a2d8bfa73a058cf7",
+    "@dzackgarza/opencode-postgres-memory-plugin@git+https://github.com/dzackgarza/opencode-postgres-memory-plugin.git#4a14d102699667bd874b8550b14c8cdeef0259d9",
+    "@dzackgarza/opencode-time-travel-plugin@git+https://github.com/dzackgarza/opencode-time-travel-plugin.git#fbd33f84d611afb98bc8fb49409aeb8d531b24ea",
+    "@dzackgarza/opencode-zotero-plugin@git+https://github.com/dzackgarza/opencode-zotero-plugin.git#e0c69b080e2251ab9dc3c2fabf3769ce6664ce25",
     "file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-smoke-fileproof.ts",
     "file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-shadowing-fileproof.ts",
-    "opencode-pty@latest"
+    "opencode-pty@0.2.3"
   ],
   "permission": {
     "read": "allow",

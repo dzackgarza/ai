@@ -136,6 +136,14 @@ Always `provider/model` (e.g., `openai/gpt-5.2`, `anthropic/claude-sonnet-4-5`)
 | `--model claude-3.5-sonnet` | "Provider not found"         | `-m openrouter/anthropic/claude-3.7-sonnet` |
 | `opencode --prompt "..."`   | Launches TUI                 | `opencode run "..."`                        |
 
+## Operational Notes
+
+- **Use `command opencode`, not `opencode`** — the bare alias auto-attaches to a server, which interferes with investigations and fresh testing.
+- **Opencode is never stale.** Config files are read fresh on every invocation. No cache to clear, no process to restart, nothing to recompile. If something isn't working, the cause is never "stale state."
+- **Test a fresh instance in <10s:** `command opencode run --agent Minimal 'Hello world'`
+- **The `~/ai` repo is canonical.** All config lives under `~/ai/opencode/`, symlinked to system locations. Edit here only — never in project-local `.opencode/` directories unless deliberately overriding.
+- **You do not know opencode internals.** It evolves rapidly. Do not claim or assume functionality or configuration behavior without reading current docs first.
+
 ## Red Flags - STOP and Check Help
 
 If you're about to:

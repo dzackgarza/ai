@@ -83,11 +83,11 @@ def load_yaml_config(config_path: str) -> dict:
 
 def ensure_required_sync_environment() -> None:
     """Fail fast when the expected ~/.envrc-derived environment is missing."""
-    if os.environ.get("SEARXNG_SERVER_URL"):
+    if os.environ.get("SEARXNG_INSTANCE_URL"):
         return
 
     print(
-        "Error: SEARXNG_SERVER_URL is not set.\n"
+        "Error: SEARXNG_INSTANCE_URL is not set.\n"
         "This is a canary that ~/.envrc was not loaded before syncing MCP configs.\n"
         f"Run this script via `{RECOMMENDED_SYNC_RECIPE}` so direnv loads the required environment.",
         file=sys.stderr,

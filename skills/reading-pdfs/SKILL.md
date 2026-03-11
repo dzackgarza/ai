@@ -158,6 +158,26 @@ paper = get_arxiv_paper("0704.0001")
 print(paper[:1000])  # First 1000 chars
 ```
 
+## Local Extraction (justfile recipes)
+
+For extracting PDFs locally without the Mistral API, use the managed recipes in `~/pdf-extraction`. These handle environment setup automatically via `uv sync`.
+
+```bash
+# From any directory
+just -f ~/pdf-extraction/justfile -d ~/pdf-extraction <recipe>
+```
+
+| Recipe | Purpose |
+|---|---|
+| `sample-pdf` | Regenerate the smoke-test PDF |
+| `docling` | Extract with Docling |
+| `mineru` | Extract with MinerU |
+| `smoke` | Run both extraction checks |
+
+Outputs appear under `~/pdf-extraction/artifacts/` and `~/pdf-extraction/outputs/`.
+
+**Do not** create a separate venv or install ad hoc — let the recipes manage the environment.
+
 ## Notes
 
 - The OCR handles complex documents including tables, math equations, and multi-column layouts

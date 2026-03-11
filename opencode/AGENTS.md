@@ -15,7 +15,7 @@ the owning subtrees instead of adding new root clutter.
 - Permissions and markdown-agent generation: `permissions/main.py`
 - Config assembly: `scripts/build_config.py`
 - Canonical prompt templating: `llm-templating-engine` (installed in `.venv` via `pyproject.toml`)
-- Canonical template-driven LLM execution: `../scripts/run_micro_agent.py` (local wrapper over `llm-runner`)
+- Canonical template-driven LLM execution: `llm-run` (installed in `.venv` via `pyproject.toml` and exposed locally through `just run-microagent`)
 - Permission policy: `docs/PERMISSION_SPEC.md`
 - Provider configs: `configs/providers/*.json`
 - Managed agent templates: `../prompts/**/*.md`
@@ -57,7 +57,7 @@ the owning subtrees instead of adding new root clutter.
 - `../prompts` is the canonical prompt root. Callers in this repo resolve prompt paths from the workspace root instead of relying on cwd-sensitive defaults.
 - Prompt templates are markdown files with YAML frontmatter. The templating engine preserves frontmatter; runner-reserved execution fields such as `kind`, `models`, `system_template`, `temperature`, `max_tokens`, `retries`, `output_schema`, and `response_template` belong to `llm-runner`.
 - Jinja `{% include %}` and `{% import %}` are supported through the canonical `llm-templating-engine` environment. Included prompt templates contribute only their markdown body. Child frontmatter is ignored by design.
-- If a new use case needs different prompt composition or LLM execution semantics, extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second path. Verify there are no regressions for both the micro-agent runner (`../scripts/run_micro_agent.py`) and markdown-agent generation (`permissions/main.py`).
+- If a new use case needs different prompt composition or LLM execution semantics, extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second path. Verify there are no regressions for both template-defined runs (`llm-run` or `just run-microagent`) and markdown-agent generation (`permissions/main.py`).
 
 ### Build Behavior
 

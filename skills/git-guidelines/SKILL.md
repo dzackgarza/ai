@@ -157,6 +157,45 @@ git add .
 
 Completed work history belongs in commits, never in repo docs. **See: `agent-memory`** for the full decision test.
 
+## PR Review Workflow
+
+For nontrivial features: branch + PR → tag `@codex review` → wait 3–5 min for automated reviewers (Codex, Qodo, etc.) to post.
+
+### Scan ALL comment surfaces
+
+`gh pr view` only returns issue-level comments, not inline review thread comments. Always run both:
+
+```bash
+gh pr view <N> --repo <owner>/<repo> --json reviews,comments   # top-level + review summaries
+gh api repos/<owner>/<repo>/pulls/<N>/comments                  # inline code review threads
+```
+
+Address every unresolved issue, reply with the fix commit, then resolve the thread:
+
+```bash
+gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: "<PRRT_...>" }) { thread { id isResolved } } }'
+```
+
+Repeat until all threads are resolved.
+
+### "Resolve" is overloaded — clear each surface separately
+
+| Object | How to resolve |
+|---|---|
+| Inline review thread | Reply in thread + resolve via GraphQL |
+| Top-level PR comment | Reply on comment surface (no resolution bit) |
+| Review summary comment | Reply on PR comment surface |
+| Linked GitHub issue | Update/comment/close the issue itself — PR-thread resolution does NOT close the issue |
+
+### After replying or resolving
+
+Rerun the full PR scan AND the relevant issue scan. Bots can post follow-up comments after your reply.
+
+```bash
+gh issue view <N> --repo <owner>/<repo> --json state,title,url
+gh api repos/<owner>/<repo>/issues/<N>/comments
+```
+
 ## Common Rationalizations
 
 | Excuse                                         | Reality                                                  |

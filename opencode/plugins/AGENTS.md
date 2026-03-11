@@ -327,7 +327,7 @@ Plugins are TypeScript. The prompt and model stack is Python, but it now lives i
 
 Plugins never import Python directly. They shell into the JSON CLIs and exchange structured JSON over stdin/stdout.
 
-**Rule: all LLM logic must be validated outside of plugins first.** Prove the template, schema, and rendered outputs with the standalone CLIs or `~/ai/scripts/run_micro_agent.py` before wiring any plugin hook.
+**Rule: all LLM logic must be validated outside of plugins first.** Prove the template, schema, and rendered outputs with the standalone CLIs or `just run-microagent` before wiring any plugin hook.
 
 ### Canonical commands
 
@@ -340,13 +340,21 @@ uv run --active --python ~/ai/opencode/.venv/bin/python llm-invoke
 uv run --active --python ~/ai/opencode/.venv/bin/python llm-run
 ```
 
-Convenience wrapper for prompt files under `~/ai/prompts`:
+Local convenience recipe:
 
 ```bash
-uv run --active --python ~/ai/opencode/.venv/bin/python \
-  ~/ai/scripts/run_micro_agent.py \
-  ~/ai/prompts/micro_agents/my_agent/prompt.md \
-  --var prompt="some input"
+cat <<'EOF' | just run-microagent
+{
+  "template": {
+    "path": "/home/dzack/ai/prompts/micro_agents/my_agent/prompt.md"
+  },
+  "bindings": {
+    "data": {
+      "prompt": "some input"
+    }
+  }
+}
+EOF
 ```
 
 For one-off inspection outside the local workspace, the public upstream CLIs are also available directly:
@@ -362,7 +370,7 @@ uvx --from git+https://github.com/dzackgarza/llm-runner.git llm-run --help
 - `llm-template-render` renders a template with JSON bindings
 - `llm-invoke` performs direct model calls with optional structured output
 - `llm-run` resolves template frontmatter, renders prompt/system templates, invokes the model, and optionally renders a response template
-- `~/ai/scripts/run_micro_agent.py` is a local Typer wrapper over `llm-run`
+- `just run-microagent` is a local passthrough to `llm-run`
 
 The request and response contracts are JSON-first and defined in the upstream libraries. Do not recreate the old `{ ok, result }` bridge envelope in plugins.
 

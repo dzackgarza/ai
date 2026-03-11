@@ -519,18 +519,28 @@ This repo consumes both through GitHub-backed `uv` dependencies declared in:
 - `scripts/pyproject.toml`
 - `opencode/pyproject.toml`
 
-Local convenience wrapper:
+Local convenience recipe:
 
-- `scripts/run_micro_agent.py` — Typer wrapper over `llm-run` for prompts under `prompts/micro_agents/`
+- `just run-microagent` — passthrough to the canonical `llm-run` CLI in `opencode/.venv`
 
 Example local use:
 
 ```bash
-cd /home/dzack/ai/opencode
-uv run --python .venv/bin/python -m scripts.run_micro_agent \
-  /home/dzack/ai/prompts/micro_agents/evaluator.md \
-  --var subject="..." \
-  --model groq/llama-3.3-70b-versatile
+cat <<'EOF' | just run-microagent
+{
+  "template": {
+    "path": "/home/dzack/ai/prompts/micro_agents/evaluator.md"
+  },
+  "bindings": {
+    "data": {
+      "subject": "..."
+    }
+  },
+  "overrides": {
+    "models": ["groq/llama-3.3-70b-versatile"]
+  }
+}
+EOF
 ```
 
 For ad hoc one-offs without syncing this repo, use the public upstream CLIs directly:
@@ -540,4 +550,4 @@ uvx --from git+https://github.com/dzackgarza/llm-templating-engine.git llm-templ
 uvx --from git+https://github.com/dzackgarza/llm-runner.git llm-run --help
 ```
 
-Run `python scripts/run_micro_agent.py --help` for the local wrapper usage.
+Run `cd /home/dzack/ai/opencode && uv run --python .venv/bin/python llm-run --help` for the canonical local CLI usage.

@@ -30,12 +30,14 @@ common:
     enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
-    command: /home/dzack/opencode-plugins/improved-webtools/mcp-server/.venv/bin/python
+    command: /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/.venv/bin/python
     args:
-    - /home/dzack/opencode-plugins/improved-webtools/mcp-server/server.py
+    - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/server.py
     enabled: true
     exclude_harnesses:
     - opencode
+    env:
+      SEARXNG_INSTANCE_URL: '{env:SEARXNG_INSTANCE_URL}'
 harnesses:
   opencode:
     enabled: true

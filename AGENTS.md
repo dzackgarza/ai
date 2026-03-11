@@ -23,7 +23,6 @@ Note: there are many symlinks on this system, check the file type if you find co
 
 Absence of evidence is not evidence of absence. Do not extrapolate failures to find or know to assertions of impossibility or non-existence. E.g. integers exist, but you will never find them by throwing darts at the real line.
 
-
 **When reporting that something was _not_ found, use this format:**
 
 ```
@@ -44,13 +43,6 @@ Omitting any field is a rule violation.
 | "X doesn't exist"               | "I found no evidence of X in [sources]"                 |
 | "This feature is not supported" | "I found no documentation of this feature in [sources]" |
 
-**Self-check before every response containing a negative finding:**
-
-1. Did I search, or am I assuming?
-2. Did I report what I searched, or claim universal knowledge?
-3. Did I label my conclusion as inference?
-4. Did I fill in all five fields above?
-
 Never skip from "I found nothing" to "nothing exists."
 
 ---
@@ -59,27 +51,24 @@ Never skip from "I found nothing" to "nothing exists."
 
 **Web search & browsing:**
 
-1. **Search** → use tavily (`tavily_search` or `tavily_research`)
+1. **Search** → use tavily (`tavily_search` or `tavily_research`) or the custom websearch/webfetch tools from improved-webtools (no rate limits, automated parsing)
 2. **Read pages** → use `read-and-fetch-webpages` skill (gh for GitHub, curl+w3m for others)
 
-**Always use `gh` for GitHub issues/PRs** - never browse github.com directly.
+**Always use `gh` for GitHub issues/PRs** — never browse github.com directly.
 
-**Context7:** Use for ALL library/framework/API questions. `context7_resolve-library-id` → `context7_query-docs`.
+**Context7:** Use for ALL library/framework/API questions. `context7_resolve-library-id` → `context7_query-docs`. Also use DeepWiki `ask` for repo-level questions.
 
-**Edits:**
-
-Use `edit` for all code edits.
+**Edits:** Use `edit` for all code edits. **Config files (JSON/YAML):** see `config-file-editing` skill.
 
 **Search:**
 
 | Question              | Tool       |
 | --------------------- | ---------- |
 | Text/grep pattern?    | `grep`     |
-| AST pattern matching? | `ast-grep` |
+| AST pattern matching? | `ast-grep` skill |
+| Semantic/structural?  | `probe` skill — always `npx -y @probelabs/probe` |
 
-Grep examples: `pattern="fileAppeal"`, `pattern="class.*Service"`.
-
-**ast-grep:** Use for structural code patterns (function definitions, class hierarchies, import statements, etc.).
+**Never:** touch a config without reading docs first. Revert or checkout files you did not modify — those are others' committed work.
 
 ---
 
@@ -142,26 +131,13 @@ When you find no evidence of something, you MUST use the five-field format from 
 
 ## Config File Handling
 
-- **Use `jq` for JSON and `yq` for YAML** when reading or querying config files. Never manually parse with grep/head/tail.
-
-- **Never edit JSON or YAML files directly** with edit/patch tools. Instead, use this pattern:
-  1. Read the file into a Python script
-  2. Parse as JSON/YAML
-  3. Modify the object in memory
-  4. Dump back as pretty-printed JSON/YAML
-
-  This prevents indentation issues and syntax errors entirely.
+- **Use `jq`/`yq` and never raw edits** for JSON/YAML — see `config-file-editing` skill.
 
 ---
 
 ## Git Workflow
 
-All work is done in **noisy git repos** with uncommitted changes from others.
-
-- **Never use `git stash`, `git checkout`, or `git restore`.** These operations are destructive and conflict with checkpoint-based workflow.
-- **Always use `git add` and `git commit`** to create checkpoints of your specific changes.
-- Commits are **save-states**, not atomic units of work. It's fine if your commit includes others' uncommitted changes — the point is to checkpoint *your* work.
-- If you need to see what changed, use `git diff`. If you need to verify what's staged, use `git diff --cached`.
+All work is in **noisy repos** with others' uncommitted changes. **Never use `git stash`, `git checkout`, or `git restore`** — destructive in this context. Use `git add`/`git commit` for checkpoints. See `git-guidelines` skill.
 
 ---
 
@@ -170,78 +146,30 @@ All work is done in **noisy git repos** with uncommitted changes from others.
 - **Use basic orientation tools** like `ls`, `exa`, and `tree` when starting work.
 - **Read all READMEs and AGENTS.md files** encountered.
 
+**When corrected:** do not thrash, pivot, or sycophantically agree. Identify the failure, assess damage, verify understanding before acting. See `handling-corrections` skill.
 
-**IMPORTANT**: if a user corrects you on ANY action:
+---
 
-- Do not pivot immediately to the correction without fixing the observed mistake, leaving "debris".
-- Do not reflexively revert or otherwise overcorrect -- this is known as *thrashing** and can lead to cascading errors
-- Do not sycophantically/reflexively agree or engage in supplication. Instead, identify the underlying cognitive failure that led to the error, the damage it caused, possible collateral damage, and populate a todowrite with a rectification plan after checking with the user to ensure you correctly understand the nature of the error. 
-- Do not take any immediate actions. Carefully ensure you understand the error, its scope, and plan for correction, and verify this with the user before touching anything.
-- Do not answer "why" questions with supplication, repeated descriptions of your actions, invented feelings about them, discussion of future behaviours, etc. Every "why" question merits a real investigation: looking things up online, reading transcripts, finding real evidence to provide a real answer.
+## Opencode
 
-**IMPORTANT**: if a user asks a question:
+See `opencode-cli` skill. Never restart or blame stale cache — test with `command opencode run --agent Minimal 'Hello world'`. Use `command opencode` not the bare alias for investigations.
 
-- Do not answer and then immediately take an action based on your own answer -- it may be uninformed or incorrect, and may not align with user intentions at all.
-- Do not take an action UNTIL the question is truly resolved. 
+---
 
-Example: 
-<user>
-Why does this function have parameter x?
-</user>
+## Custom CLI Tools
 
-Bad response:
-<assistant>
-You're absolutely right, that parameter isn't actually needed. Let me remove it.
-</assistant>
-[...proceeds to delete parameter]
+- `semtools` for semantically searching expository text, e.g. `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
+- PDF extraction: use justfile recipes in `~/pdf-extraction` (see `reading-pdfs` skill), not ad hoc installs.
+- `open-issues` to list all outstanding open issues across synced plugin trackers. File issues on dzackgarza repos immediately when encountered. Do not file "bugs" for errors that have never actually been observed.
+- For nontrivial features: branch + PR → `@codex review` → wait 3–5 min → scan all comment surfaces (see `git-guidelines` skill).
+- `probe` for semantic searching — **always** `npx -y @probelabs/probe`. See `probe` skill.
 
-Good response:
-<assistant>
-The parameter x is used for this specific reason. It appears that it is no longer needed and can be removed.
-</assistant>
-[...user decides it is actually needed => no deletion desired]
+---
 
+## Libraries
 
-# Tool Use
-
-- Use the custom websearch and webfetch tools liberally (from improved-webtools, via plugin or MCP). These provide automated parsing and routing for many common sites and have no rate limits.
-- For documentation questions, use the Context7 and DeepWiki `ask` tools, as well as the `gh` CLI. Read readmes, upstream source code directly, and issues.
-- Never touch a config without reading online docs and examples first.
-- NEVER ATTEMPT TO REVERT OR CHECKOUT FILES YOU DID NOT MODIFY! These are ALWAYS committed work from others and should NOT be touched. Focus on the files you touch and their diffs only.
-
-
-# Opencode
-
-- `opencode` is an alias that automatically attaches to the server. Do not use this for investigations, use the binary directly with `command opencode`.
-- Opencode is never "stale" or "needs to be reloaded/restarted". Each opencode instance reads configuration files fresh, every time. It does not have "stale caches", the process never needs to be killed, and you should not restart the server. Nothing needs to be recompiled.
-Never suggest simply restarting, or blame session continuity, or other similar problems -- you can always test a fresh instance live in <10s.
-- To test opencode, run "\opencode run --agent Minimal 'Hello world'".
-- The ~/ai repo is the canonical configuration directory, which installs symlinks to all usual system config locations. Edit here only.
-- You do NOT know anything about opencode. It is a constantly evolving open source project. Your knowledge cutoff is from over a year ago. Do not make claims about functionality or configuration or attempt to debug without docs freshly in context.
-
-# Custom CLI Tools
-
-
-- `open-issues` to list all outstanding open issues across the synced plugin trackers.
-    - File issues on dzackgarza repos immediately when you encounter them. Do not file "bugs" for errors that have never actually been observed -- if you want to fix such things, that is an enhancement or a feature request, not a bug.
-    - For nontrivial features, do work in a worktree with a branch, submit a PR, tag "@codex review", then wait 3–5 minutes for automated reviewers (Codex, Qodo, etc.) to post. After waiting, scan **all** comment surfaces — `gh pr view` only returns issue-level comments, not inline review thread comments. Always run both:
-      ```bash
-      gh pr view <N> --repo <owner>/<repo> --json reviews,comments   # top-level + review summaries
-      gh api repos/<owner>/<repo>/pulls/<N>/comments                  # inline code review threads
-      ```
-      Address every unresolved issue found, reply to the thread with the fix commit, then resolve the thread via GraphQL:
-      ```bash
-      gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: "<PRRT_...>" }) { thread { id isResolved } } }'
-      ```
-      Repeat until all threads are resolved. Use the GraphQL query above to get thread IDs and verify `isResolved` status.
-- `probe` for semantic searching (https://github.com/probelabs/probe). **Always invoke via `npx -y @probelabs/probe`** as it is not globally installed.
-    - E.g. 
-    # Semantic search with Elasticsearch syntax
-    npx -y @probelabs/probe search "authentication AND login" ./src
-
-    # Extract code block at line 42
-    npx -y @probelabs/probe extract src/main.rs:42
-
-    # AST pattern matching
-    npx -y @probelabs/probe query "fn $NAME($$$) -> Result<$RET>" --language rust
-- ?
+- `uv` for all python-related projects
+- `bun` and typescript for all JS-related development
+- `svelte`, `vite`, `tailwind` etc for all HTML-related development
+- `pandoc` for document construction and conversions
+- `docling` or `mineru` for PDF conversion (never: pdftotext, pymupdf, etc)
