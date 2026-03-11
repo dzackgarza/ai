@@ -1,6 +1,6 @@
 # Status
 
-Updated: `2026-03-11T13:07:01Z` (UTC)
+Updated: `2026-03-11T13:22:02Z` (UTC)
 
 - Global OpenCode startup was re-verified from the rebuilt `~/ai` config. In `/tmp/opencode-status-refresh.log` there are no `Failed to resolve latest version` warnings, no `plugin_init_warmup` warning, no `when.match is not a function` error, and no duplicate-skill warning. `invalid` is still present and is an expected built-in tool.
 - `opencode-time-travel-plugin` is fixed and pinned in `opencode/configs/config_skeleton.json` at `fbd33f84d611afb98bc8fb49409aeb8d531b24ea`.
@@ -8,8 +8,8 @@ Updated: `2026-03-11T13:07:01Z` (UTC)
 - `opencode-manager` now exposes canonical pending-permission discovery and reply through the published git-backed `opx-session` path. The fix is on `main` at `49ab363`, and both the local source tree and a fresh `npx --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session ...` install were re-proven against a dedicated custom-port `opencode serve` instance.
 - `opencode-plugin-improved-todowrite` no longer proves execution from merged stdout. Its live integration test now parses completed `tool_use` events and asserts the persisted tree content plus the hidden verification passphrase. `bun test tests/integration/todowrite-plugin.test.ts` passes.
 - `opencode-time-travel-plugin` no longer proves execution from merged stdout. Its live integration test now parses completed `tool_use` events for `schedule_reminder`, `list_reminders`, and `cancel_reminder`, and asserts the tool-returned execution passphrases. `bun test tests/integration/time-travel-plugin.test.ts` passes.
+- `opencode-plugin-prompt-transformer` no longer relies on one-shot CLI stdout. Its live routing suite now starts dedicated custom-port OpenCode servers, drives real sessions through the published `opx-session` path, and proves routing from both session messages and the plugin's structured routing log. `bun test tests/integration/prompt-router.test.ts` passes.
 - `opencode/configs/providers/scripts/smoke_test_models.py` no longer uses `echo | opencode` or parses `.opencode/events.jsonl`. It now calls the binary directly and validates the exact stdout contract. Syntax was rechecked with `python3 -m py_compile`, and `test_model(ModelConfig(provider=\"github-copilot\", model_id=\"gpt-4.1\"))` returned `assistant_message=\"42\"`.
 - All git-backed OpenCode plugins in `opencode/configs/config_skeleton.json` are commit-pinned.
 - The external plugin packages that were still on `@latest` are now version-pinned: `opencode-anthropic-auth@0.0.13`, `opencode-qwencode-auth@1.3.0`, `opencode-openai-codex-auth@4.4.0`, `cc-safety-net@0.7.1`, `@azumag/opencode-rate-limit-fallback@1.70.0`, `@ramtinj95/opencode-tokenscope@1.5.2`, `opencode-pty@0.2.3`.
 - The previously filed `task` async-resume issue was closed because it was based on flawed TUI-scraping and non-equivalent probes, not session-level evidence. There is no remaining confirmed plugin-runtime bug from that line of investigation.
-- Remaining weaker smoke: `opencode-plugin-prompt-transformer/tests/integration/prompt-router.test.ts` still proves prompt injection through the assistant response text rather than manager/session artifacts. That is the only remaining repo-owned OpenCode integration test in this audit that is still weaker than the current preferred methodology, and there is no observed runtime failure behind it.
