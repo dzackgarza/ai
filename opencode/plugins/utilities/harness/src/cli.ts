@@ -6,8 +6,8 @@ const REQUEST_TIMEOUT_MS = 180000;
 let RESOLVED_BASE_URL = "http://127.0.0.1:4096";
 let AUTH_HEADER = "";
 
-const OPENCODE_TRANSCRIPT_PACKAGE =
-  "git+ssh://git@github.com/dzackgarza/opencode-transcripts.git";
+const OPENCODE_MANAGER_PACKAGE =
+  "/home/dzack/opencode-plugins/opencode-manager";
 
 type KV = Record<string, string | boolean>;
 
@@ -367,8 +367,14 @@ async function promptAsyncRequest(
 async function generateTranscript(sessionID: string): Promise<string> {
   return new Promise<string>((resolve) => {
     const child = spawn(
-      "uvx",
-      ["--from", OPENCODE_TRANSCRIPT_PACKAGE, "opencode-transcript", sessionID],
+      "npx",
+      [
+        "--yes",
+        `--package=${OPENCODE_MANAGER_PACKAGE}`,
+        "opx-session",
+        "transcript",
+        sessionID,
+      ],
       {
         env: process.env,
       },
@@ -1210,7 +1216,7 @@ function help() {
     "  OPENCODE_BASE_URL (default http://127.0.0.1:4096)",
     "  OPENCODE_SERVER_USERNAME (default opencode)",
     "  OPENCODE_SERVER_PASSWORD (optional)",
-    `  Transcript renderer: uvx --from ${OPENCODE_TRANSCRIPT_PACKAGE} opencode-transcript`,
+    `  Transcript renderer: npx --yes --package=${OPENCODE_MANAGER_PACKAGE} opx-session transcript`,
   ];
   console.log(text.join("\n"));
 }

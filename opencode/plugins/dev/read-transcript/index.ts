@@ -2,8 +2,8 @@
 // returning head/tail preview and the file path for full review.
 import { type Plugin, tool } from "@opencode-ai/plugin";
 
-const OPENCODE_TRANSCRIPT_PACKAGE =
-  "git+ssh://git@github.com/dzackgarza/opencode-transcripts.git";
+const OPENCODE_MANAGER_PACKAGE =
+  "/home/dzack/opencode-plugins/opencode-manager";
 
 const PREVIEW_LINES = 30;
 
@@ -30,7 +30,7 @@ export const ReadTranscriptPlugin: Plugin = async ({ $, client }) => {
           const outPath = `/tmp/transcript-${session_id}.txt`;
 
           try {
-            await $`uvx --from ${OPENCODE_TRANSCRIPT_PACKAGE} opencode-transcript ${session_id} > ${outPath}`.quiet();
+            await $`npx --yes --package=${OPENCODE_MANAGER_PACKAGE} opx-session transcript ${session_id} > ${outPath}`.quiet();
           } catch (err: any) {
             const stderr = err?.stderr?.toString?.() ?? String(err);
             await client.app.log({

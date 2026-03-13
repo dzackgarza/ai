@@ -3,9 +3,7 @@ import sys
 import subprocess
 import os
 
-OPENCODE_TRANSCRIPT_PACKAGE = (
-    "git+ssh://git@github.com/dzackgarza/opencode-transcripts.git"
-)
+OPENCODE_MANAGER_PACKAGE = "/home/dzack/opencode-plugins/opencode-manager"
 
 
 def main():
@@ -40,10 +38,11 @@ def main():
             session_id = args.identifier
             subprocess.run(
                 [
-                    "uvx",
-                    "--from",
-                    OPENCODE_TRANSCRIPT_PACKAGE,
-                    "opencode-transcript",
+                    "npx",
+                    "--yes",
+                    f"--package={OPENCODE_MANAGER_PACKAGE}",
+                    "opx-session",
+                    "transcript",
                     session_id,
                 ],
                 check=True,

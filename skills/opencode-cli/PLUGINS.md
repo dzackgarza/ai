@@ -61,33 +61,45 @@ This bundles dependencies and catches TypeScript errors.
 
 ### Testing with One-Shots
 
-**Use `opencode run` for most plugins** — it's fast and plugins are active:
+Use `command opencode run` only for true one-shot probes where stdout is the product and
+the session does not need to continue after idle:
 
 ```bash
 cd ~/.config/opencode
-opencode run "Use my_tool to do something"
+command opencode run "Use my_tool to do something"
 ```
 
-**Exception — any plugin with async work that completes after idle:**
-`opencode run` exits the instant the session goes idle. It does not wait. Any async work triggered during or by the idle event — re-prompting the model, long-running calls, deferred operations — fires into the void. You will see what the handler *started* in the transcript, but not what happened afterward.
-
-**To observe the full async cycle** (e.g., a re-prompt and its response, a deferred callback, a slow async side-effect), use the interactive trick and read the transcript:
+For multi-turn, async, resume, callback, or post-idle behavior, use `opencode-manager`
+as the workflow harness and inspect the session directly:
 
 ```bash
-mkdir -p /tmp/my-plugin-test
-(cd /tmp/my-plugin-test && timeout <N> sh -c 'echo "prompt that triggers your plugin" | opencode') >/dev/null 2>&1
-# Sessions are scoped to the working directory — list from the SAME dir:
-(cd /tmp/my-plugin-test && opencode session list)
-python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
+MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
+TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
+
+# When the workflow depends on repo-local config/env, start a dedicated server there first
+direnv exec /path/to/plugin \
+  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+
+# One-shot with transcript output and optional keep-for-inspection
+OPENCODE_BASE_URL=http://127.0.0.1:4198 \
+  $MANAGER opx run --agent Minimal --prompt "Use my_tool to do something"
+OPENCODE_BASE_URL=http://127.0.0.1:4198 \
+  $MANAGER opx run --agent Minimal --prompt "Trigger async behavior" --linger 10 --keep
+
+# Explicit session orchestration
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session create --title "my-plugin-test"
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session prompt ses_abc123 "Trigger async behavior" --no-reply
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session messages ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session ses_abc123 --verbose
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $TRANSCRIPT ses_abc123
 ```
 
-Set `<N>` to cover: MCP warmup (~10s) + first model response + hook processing + second model response. 60–120s is usually sufficient.
-
-**Session scoping:** Sessions are associated with the working directory they were started in. Running `opencode session list` from a different directory will not show them. Always `cd` to the test directory before listing sessions.
+The rendered CLI/TUI is not valid evidence. Use session messages, event traces,
+transcripts, or external side effects.
 
 **Two-phase debugging workflow:**
-1. `opencode run "prompt"` — fast, confirms the hook fires (injected message appears in transcript)
-2. Interactive trick with timeout — confirms the model responds correctly after the hook fires
+1. `command opencode run "prompt"` — fast one-shot sanity check
+2. `opx` / `opx-session` — real workflow proof with session artifacts
 
 ### Common Pitfalls
 
@@ -308,7 +320,10 @@ This is equivalent to Claude Code's `UserPromptSubmit` hook that writes to stdou
 2. Inspect `lastText` — the **assistant's** response text — for patterns. `lastText` is NOT the user's message. A hook that scans for "should I" will only fire when the *model* outputs that phrase, not when the user does.
 3. If pattern found, inject feedback with `noReply: false` to trigger a new model response. (`noReply: true` injects silently without triggering a response — the opposite.)
 
-> **⚠ `opencode run` exits on idle and does not wait for async work.** The handler fires, but anything it does asynchronously — including the model response triggered by `session.prompt({ noReply: false })` — fires into the void. To verify the full cycle (hook fires → model responds → corrected behavior), use the interactive trick: `echo "prompt" | opencode` wrapped in `timeout <N>`, then read the transcript.
+> **⚠ `opencode run` exits on idle and does not wait for async work.** The handler fires,
+> but anything it does asynchronously can continue after the CLI exits. Verify the full
+> cycle with `opx` / `opx-session`, then inspect `opx-session messages --json`,
+> `opx debug trace`, or `opx-session transcript`.
 
 ### Important: Session ID Path
 
@@ -379,25 +394,28 @@ export const OtpHook = async ({ client }) => {
 
 ### Testing Plugins
 
-**Fastest: Use `opencode run`** (one-shot, no TUI):
+For one-shot sanity checks:
 
 ```bash
 cd ~/.config/opencode
-opencode run "prompt that triggers your plugin"
+command opencode run "prompt that triggers your plugin"
 ```
 
-**For interactive debugging with stdin pipe:**
+For real workflow proofs, drive the session with `opencode-manager` and inspect the
+session artifacts:
 
 ```bash
-cd /tmp/my-plugin-test
-echo "prompt that triggers your plugin" | opencode 2>&1 | head
+MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
+TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
+
+$MANAGER opx run --agent Minimal --prompt "prompt that triggers your plugin" --keep
+$MANAGER opx-session messages ses_abc123 --json
+$MANAGER opx debug trace --session ses_abc123 --verbose
+$TRANSCRIPT ses_abc123
 ```
 
-Then read the transcript using the **reading-transcripts skill**. **Never hand-parse `opencode export` output with jq or Python** — use the provided script:
-
-```bash
-python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness opencode <session-id>
-```
+Do not scrape CLI/TUI output, and do not hand-parse `events.jsonl` or `opencode export`
+when the manager and transcript interfaces already provide the session data.
 
 ### SDK Reference
 

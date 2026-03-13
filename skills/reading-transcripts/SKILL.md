@@ -21,7 +21,8 @@ Intelligent agents can use this information to locate past conversations, list h
 For `--harness opencode`, the dispatcher delegates to:
 
 ```bash
-uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript <session-id>
+npx --yes --package=/home/dzack/opencode-plugins/opencode-manager \
+  opx-session transcript <session-id>
 ```
 
 Other harnesses still use the local parser scripts in this skill.
@@ -125,5 +126,5 @@ The wrapper scripts abstract away the locations of the underlying data. If the s
 | **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                                                            |
 | **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                                                                     |
 | **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                                                           |
-| **OpenCode**    | OpenCode CLI export         | Delegated via `uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript <session_id>`. |
+| **OpenCode**    | OpenCode session transcript | Delegated via `npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript <session_id>`. |
 | **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                                                              |

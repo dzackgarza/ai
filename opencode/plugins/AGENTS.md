@@ -78,25 +78,47 @@ The full response cycle is: `prompt → model infers intent → model chooses mo
 
 ### Command rules
 
-**Use `opencode run --agent Minimal` with a 15s timeout.** Nothing else.
+Use the binary directly for bounded one-shot probes, and use `opencode-manager` for all
+real workflow tests.
 
-- No `--attach`: not needed, and `--attach + --agent` is a documented known bug ("No context found for instance")
-- No `opencode serve`: not needed for plugin tests
-- No `echo | opencode`: that path exists only for async post-idle behavior (stop hooks, etc.)
-- No background jobs (`&`): `wait` cannot track jobs across shell calls; failures are silent
-- 15s is correct. If it times out, the model is doing task work — not MCP warmup. MCP warmup is never the bottleneck.
+- One-shot sanity checks: `timeout 15 command opencode run --agent Minimal "..."`
+- Multi-turn, async, resume, callback, and post-idle tests: `opx` / `opx-session`
+- No `--attach`: not needed, and `--attach + --agent` is a documented known bug
+- No shared/systemd `opencode serve` for repo-local plugin tests
+- Use a dedicated custom-port `opencode serve` inside the plugin's `direnv` when
+  `opencode-manager` needs the repo-local config/env
+- No rendered CLI/TUI scraping as evidence
+- No background jobs (`&`) to “keep a session alive”
+- If a bounded one-shot times out, debug the model/workflow. MCP warmup is not the bottleneck
 
 ```bash
-# Confirm baseline first:
-timeout 15 opencode run --agent Minimal "Reply with only the word 'ready'."
+MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
+TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
 
-# Then run experimental condition:
-timeout 15 opencode run --agent Minimal "Reply with only the word 'ready'. (context: intercept test)"
+# Confirm baseline first
+timeout 15 command opencode run --agent Minimal "Reply with only the word 'ready'."
+
+# For repo-local workflow proofs, start a dedicated server in this repo's direnv
+direnv exec /path/to/plugin \
+  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+
+OPENCODE_BASE_URL=http://127.0.0.1:4198 \
+  $MANAGER opx run --agent Minimal --prompt "Reply with only the word 'ready'. (context: intercept test)"
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session messages ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session ses_abc123 --verbose
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $TRANSCRIPT ses_abc123
 ```
 
 ### Transcript parsing
 
-If you need to inspect output beyond stdout, use `parse_transcript.py --harness opencode <session-id>` from the reading-transcripts skill. Its OpenCode branch now delegates to the external `opencode-transcripts` package. Never use raw `jq` against `events.jsonl` or `opencode export`.
+If stdout is ambiguous, inspect session artifacts instead:
+
+- `npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session messages <session-id> --json`
+- `npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx debug trace --session <session-id> --verbose`
+- `npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript <session-id>`
+
+Never scrape ANSI/TUI output, and never reason from raw `events.jsonl` when the session
+or transcript interfaces are available.
 
 ## 4. Tool Description Guidelines
 

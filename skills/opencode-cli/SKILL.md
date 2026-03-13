@@ -40,7 +40,10 @@ opencode run --thinking --print-logs "Your prompt"
 - `--print-logs` - Show logs for debugging
 - `--attach http://localhost:4096` - Attach to a running `opencode serve` instance (skips MCP warmup only — no other behavioral difference)
 
-**`opencode serve` is purely a warmup cache.** Starting a background server with `opencode serve &` and using `--attach` makes subsequent `opencode run` calls faster by avoiding MCP server restarts. It has no effect on session persistence, plugin behavior, or async lifecycle. The first run is slow (MCP warmup ~10s); subsequent attached runs skip that.
+For plain `opencode run --attach`, `opencode serve` is mostly a warmup cache. The
+separate valid use case is a dedicated custom-port server started inside a repo's local
+config/env so `opencode-manager` can orchestrate session workflows against that exact
+plugin/config surface.
 
 ## Known Bug: `run --attach` + `--agent`
 
@@ -89,7 +92,7 @@ through `opencode-manager` and inspect the resulting session data or transcript.
 
 ```bash
 MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
-TRANSCRIPT="uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript"
+TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
 
 # Create or target a session, then prompt without blocking
 $MANAGER opx-session create --title "test"
@@ -103,8 +106,19 @@ $TRANSCRIPT ses_abc123
 
 The `echo` / `printf` stdin trick is only a compatibility escape hatch for starting a
 real interactive session. If you must use it, discard the TUI output and inspect the
-session afterward through `opencode-manager`, `opencode-transcripts`, `opencode export`,
+session afterward through `opencode-manager`, `opx-session transcript`, `opencode export`,
 or raw session data.
+
+When a workflow depends on repo-local `OPENCODE_CONFIG` or env vars, start a dedicated
+server inside that repo and point the manager at it:
+
+```bash
+direnv exec /path/to/plugin \
+  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+
+OPENCODE_BASE_URL=http://127.0.0.1:4198 \
+  $MANAGER opx run --agent Minimal --prompt "Your prompt."
+```
 
 MCP warmup is at most ~10s and is never the bottleneck. If a session times out or produces unexpected results, the cause is almost always model connectivity, rate limits, or model behavior — not MCP.
 
@@ -125,10 +139,11 @@ MCP warmup is at most ~10s and is never the bottleneck. If a session times out o
 
 ### Exporting Readable Transcripts
 
-When agents need readable session transcripts, use the dedicated transcript package:
+When agents need readable session transcripts, use the manager transcript command:
 
 ```bash
-uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript ses_YOUR_ID_HERE
+npx --yes --package=/home/dzack/opencode-plugins/opencode-manager \
+  opx-session transcript ses_YOUR_ID_HERE
 ```
 
 Fallback only when you explicitly need raw JSON post-processing:
@@ -155,6 +170,8 @@ Always `provider/model` (e.g., `openai/gpt-5.2`, `anthropic/claude-sonnet-4-5`)
 - **Opencode is never stale.** Config files are read fresh on every invocation. No cache to clear, no process to restart, nothing to recompile. If something isn't working, the cause is never "stale state."
 - **Test a fresh instance in <10s:** `command opencode run --agent Minimal 'Hello world'`
 - **The `~/ai` repo is canonical.** All config lives under `~/ai/opencode/`, symlinked to system locations. Edit here only — never in project-local `.opencode/` directories unless deliberately overriding.
+- **Manager target matters.** `opx` / `opx-session` talk to `OPENCODE_BASE_URL`, so use a
+  dedicated custom-port server when the test depends on repo-local config or env.
 - **You do not know opencode internals.** It evolves rapidly. Do not claim or assume functionality or configuration behavior without reading current docs first.
 
 ## Red Flags - STOP and Check Help
