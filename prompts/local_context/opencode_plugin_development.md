@@ -85,6 +85,18 @@ Local testing:
 - Prefer `direnv allow` inside the plugin directory
 - Fallback: `OPENCODE_CONFIG=/abs/path/to/.config/opencode.json`
 - Run from `$HOME` only when you explicitly want pure global config
+- Correction: `OPENCODE_CONFIG` and `OPENCODE_CONFIG_CONTENT` do **not** isolate a
+  repo from user-global OpenCode config. They add higher-precedence layers, but global
+  config and `~/.opencode` discovery still apply and plugin arrays still concatenate.
+- For a repo-only custom-port `opencode serve` harness, isolate config discovery
+  explicitly:
+  - set `XDG_CONFIG_HOME` to an empty temp dir to suppress `~/.config/opencode`
+  - set `OPENCODE_TEST_HOME` to an empty temp dir to suppress `~/.opencode`
+  - do **not** change `XDG_DATA_HOME` unless you also provide auth state there, because
+    auth is read from XDG data storage
+- An isolated test must not rely on user-global agents, prompts, plugins, or other
+  config-defined surfaces. Define required agents locally or use built-ins that are
+  present under the isolated runtime.
 
 Monorepo local config pattern:
 
@@ -107,15 +119,21 @@ Monorepo local config pattern:
 - Never use the `opencode` alias for tests; it attaches to the server
 - The standalone binary rereads config every invocation; “stale config” is not a valid
   explanation
-- Do not use `opencode serve` or the systemd service for tests
+- Do not use the shared/systemd `opencode serve` instance for repo-local tests
+- A repo-local `opencode serve --hostname 127.0.0.1 --port <custom>` started inside the
+  plugin's `direnv` is a valid `opencode-manager` target when the workflow depends on
+  local config or env
+- A custom-port repo-local server is **not** isolated just because `direnv` exported
+  `OPENCODE_CONFIG`. If the test must exclude global user plugins/config, launch it
+  with isolated `XDG_CONFIG_HOME` and `OPENCODE_TEST_HOME`
 - `--attach` + `--agent` is broken; use standalone runs only
 - Do **not** use the interactive CLI/TUI as your workflow harness for plugin tests
 - Do **not** scrape ANSI/TUI/stdout from interactive OpenCode sessions as evidence
 - Mandatory test harness for real workflows: `opencode-manager`
   - `opx` for run/resume/debug flows
   - `opx-session` for create/prompt/messages/abort/revert/permission orchestration
-- Mandatory readable transcript renderer: `opencode-transcripts`
-  - `uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript`
+- Mandatory readable transcript renderer: `opx-session transcript`
+  - `npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript`
 - The CLI is an entrypoint, not an orchestration layer. Multi-turn, async, and
   post-idle behavior must be driven through `opx` / `opx-session`, with evidence taken
   from session data, transcripts, debug traces, or external side effects
@@ -430,7 +448,7 @@ Manager-first commands:
 
 ```bash
 MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
-TRANSCRIPT="uvx --from git+ssh://git@github.com/dzackgarza/opencode-transcripts.git opencode-transcript"
+TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
 
 # One-shot workflow probe
 $MANAGER opx run --agent Minimal --prompt "Your prompt."
@@ -477,7 +495,9 @@ Rules:
 
 - `opencode-manager` is the required orchestration harness for real workflow tests
 - No `--attach`
-- No `opencode serve`
+- No shared/systemd `opencode serve`
+- A repo-local custom-port `opencode serve` is allowed when `opencode-manager` needs a
+  server with the repo-local config/env
 - No background jobs with `&`
 - `timeout 15` is the default; MCP warmup is not the bottleneck
 - Use `Unrestricted Test` when the test needs permissive edit/bash/tool access without
@@ -495,13 +515,23 @@ $MANAGER opx resume --session <session-id> --prompt "Follow-up prompt."
 Async / post-idle pattern:
 
 ```bash
+TMPDIR_ROOT="$(mktemp -d)"
+mkdir -p "$TMPDIR_ROOT/config" "$TMPDIR_ROOT/home"
+
+# Start a repo-local server when the workflow depends on local config/env
+XDG_CONFIG_HOME="$TMPDIR_ROOT/config" \
+OPENCODE_TEST_HOME="$TMPDIR_ROOT/home" \
+direnv exec /path/to/plugin \
+  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+
 # Start the workflow without blocking on the model reply
-$MANAGER opx-session prompt <session-id> "your prompt" --no-reply
+OPENCODE_BASE_URL=http://127.0.0.1:4198 \
+  $MANAGER opx-session prompt <session-id> "your prompt" --no-reply
 
 # Poll or inspect the real session instead of scraping the TUI
-$MANAGER opx-session messages <session-id> --json
-$MANAGER opx debug trace --session <session-id> --verbose
-$TRANSCRIPT <session-id>
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session messages <session-id> --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session <session-id> --verbose
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $TRANSCRIPT <session-id>
 ```
 
 ## 13. Workflow Conventions
@@ -522,12 +552,13 @@ $TRANSCRIPT <session-id>
 - Apply git and issue workflow inside the relevant package repo. The top-level
   `/home/dzack/opencode-plugins` directory is coordination space, not a git repo.
 - Log every observed non-trivial error as a **GitHub Issue** in the affected repo immediately.
+- **All issues must be labeled immediately upon creation.**
 - An issue is an observed bug, failure, missing proof, or other concrete problem that
   you cannot fix trivially in the current task or that is outside the current task.
 - Do not file speculative concerns, defensive hedging, imagined fallbacks, or
   preemptive robustness work as bugs. Those are feature requests or design ideas.
-- If you track those at all, label and describe them as feature requests rather than
-  bugs.
+- If you track those at all, **mandatory label** and describe them as `enhancement` or
+  `documentation` rather than bugs.
 - Close an issue only after a specific pushed commit fixes it or makes it irrelevant.
   The closing comment must say where the fix lives and how it resolves the issue.
 - Before starting issue work in a package repo, make sure the current `main` work is
