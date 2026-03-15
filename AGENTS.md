@@ -58,6 +58,7 @@ Never skip from "I found nothing" to "nothing exists."
 **Always use `gh` for GitHub issues/PRs** — never browse github.com directly.
 
 **Context7 (CLI):** Use for ALL library/framework/API questions. No MCP server—uses on-demand CLI calls.
+
 ```bash
 # Resolve library name to ID
 npx ctx7 library <name> "<query>"
@@ -67,6 +68,7 @@ npx ctx7 library <name> "<query>"
 npx ctx7 docs <libraryId> "<query>"
 # Example: npx ctx7 docs /facebook/react "useEffect"
 ```
+
 Get API key at `context7.com/dashboard` for higher rate limits. Also use DeepWiki `ask` for repo-level questions.
 
 **Config files (JSON/YAML):** LOAD `config-file-editing` skill before any edit.
@@ -182,6 +184,32 @@ This sends a new prompt to your session at a fixed time, effectively waking you 
 - Waiting for external processes or scheduled events
 - Long-running work that should continue after a delay
 
+## Scheduling Tasks
+
+Use `task-sched` to schedule persistent systemd tasks:
+
+```bash
+# Add a recurring task
+task-sched add --command "opx chat --session ses_xxx --prompt 'your message'" --schedule "hourly"
+
+# List scheduled tasks
+task-sched list
+
+# Remove a task
+task-sched remove tsk_xxxxx
+
+# Run now (manual trigger)
+task-sched run tsk_xxxxx
+```
+
+For one-off tasks, use `at`:
+
+```bash
+echo "opx chat --session ses_xxx --prompt 'continue work'" | at now + 30 minutes
+```
+
+Presets: `minutely`, `hourly`, `daily`, `weekly`, or cron expressions like `0 9 * * *`.
+
 ---
 
 ## Conventions for this system
@@ -196,18 +224,20 @@ This sends a new prompt to your session at a fixed time, effectively waking you 
 ## Custom CLI Tools
 
 - **Context7 (`ctx7`)** — Library/framework documentation lookup (replaces Context7 MCP server)
+
   ```bash
   # Search for library and get ID
   npx ctx7 library <name> "<query>"
   # Example: npx ctx7 library react "hooks"
-  
+
   # Fetch docs for specific library ID
   npx ctx7 docs <libraryId> "<query>"
   # Example: npx ctx7 docs /facebook/react "useEffect"
-  
+
   # Setup (OAuth + API key)
   npx ctx7 setup
   ```
+
   API key: `context7.com/dashboard` | Store in `~/.envrc` as `CONTEXT7_API_KEY`
 
 - `semtools` for semantically searching expository text, e.g. `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
