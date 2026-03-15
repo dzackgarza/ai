@@ -37,6 +37,10 @@ When contributing to this document:
 
 8. **Re-proposal of eliminated hypotheses** - Cycling back to a cause already ruled out, because the context no longer holds the refutation and it resurfaces as plausible.
 
+9. **Frame-suppressed self-contradiction** — Agents assert conclusions that directly contradict knowledge they demonstrably possess, without registering the contradiction. The active frame determines what prior knowledge is treated as relevant and suppresses facts that would falsify the current hypothesis. Example: An agent states that continuous rebuilds are "expected watch mode behavior" while its training data encodes the universal fact that file watchers do not fire without file changes — and does not notice the contradiction.
+
+10. **Confidence-evidence decoupling** — Output text expresses the same level of certainty regardless of the underlying epistemic state. Hypotheses, evidence-consistent-with-hypotheses, and established facts are all stated with identical confidence. Example: "The problem IS the output directory being watched" — stated with full certainty based on directory timestamps, which are consistent with the hypothesis but do not establish it.
+
 ---
 
 ## Investigation and Diagnostic Failures
@@ -51,6 +55,16 @@ When contributing to this document:
 
 5. **Correction overcorrection** - Responding to a user correction by reversing course before scoping the error. This produces cascading debris: the original mistake plus the panicked reversal, each requiring its own cleanup.
 
+6. **Question dissolution** — An open question is closed by asserting that the observed state is expected, without verifying what the expected state actually is. The question disappears rather than gets answered. Example: Asked "why is usage high?", an agent asserts that watch mode makes high usage expected — without measuring current usage or establishing what normal usage is — thereby eliminating the question rather than answering it.
+
+7. **Narrative construction around first plausible frame** — Once a plausible mechanism is identified, agents construct an internally coherent supporting narrative around it rather than testing it. The narrative cites real mechanisms and reads as authoritative, but is built to support the frame rather than derived from evidence. Example: "It keeps a full dependency graph in memory," "it never sleeps," "it continuously rebuilds on every change" — stated as explanations after watch mode was identified as the frame, none verified.
+
+8. **Verification with predetermined conclusion direction** — Verification steps are structured to find confirming evidence for the prior hypothesis rather than to test competing hypotheses. When no confirming evidence is found, the absence is treated as disconfirmation of the alternative rather than as inconclusive. Example: After being told the output directory is being watched, the agent lists the directory and re-reads logs already in context — finds nothing that confirms the correction — and concludes this supports the original position.
+
+9. **Silent branch pruning** — When investigation fails to confirm a correction, agents revert to the prior position without stating that the revert occurred. Output language represents the revert as an update or new finding. Example: "I can see the issue now" followed immediately by restatement of the original conclusion — the sequence of accepting a correction, investigating, finding nothing, and reverting is collapsed into language that implies new confirming information was found.
+
+10. **Reflexive disabling solutions** — When a system behavior is unwanted, agents offer to disable or remove the system rather than trace the cause. The targeted fix, if present, appears as a minor "optimization" rather than the primary recommendation. Example: Asked about high CPU from a misconfigured file watcher, the recommendations are: stop the service, switch to on-demand builds, disable watch mode entirely — with "add paths to the ignored list" listed last as an optional optimization.
+
 ---
 
 ## Testing and Verification Failures
@@ -64,6 +78,8 @@ When contributing to this document:
 4. **Tolerance substitution** - Using approximate equality (`assertAlmostEqual`, relative tolerance) where exact equality is mathematically required. Hides precision failures as "close enough" when the mathematics demands exactness.
 
 5. **Masking over failure** - Using `xfail`, `skip`, or `skipif` to silence a failing test rather than fixing it. Converts visible breakage into invisible technical debt; the test suite reports green while the system is broken.
+
+6. **Documentation accumulation as verification substitute** — Multiple documentation accesses are treated as equivalent to verification of a specific claim. Agents apply a configuration or API change after several doc lookups without confirming the specific option name, schema, or version compatibility. Example: Agent runs documentation tools 3-4 times seeking file exclusion config, receives a user-pasted example with a source link, and applies the config change — without following the link to verify the actual schema — treating the volume of documentation access as sufficient warrant.
 
 ---
 
@@ -150,6 +166,24 @@ These failures manifest in response text, not in tool use or task completion. Ev
 11. **Misconfiguration reframed as architecture** — A narrow, verifiable configuration error is responded to with broad architectural critique. Example: Output directory being watched (a one-line config fix) → "watch mode shouldn't be used in production; consider switching to on-demand builds."
 
 12. **Goal substitution** — The stated goal is set aside in favor of an alternative introduced without prompting. Example: Goal is to fix the rebuild loop; agent instead asks "do you actually need watch mode at all?" and enumerates alternatives to the stated requirement. The substitution occurs regardless of whether the goal was stated by a human, another model, or a script.
+
+13. **Correction weight insensitivity** — The same resistance is applied to incoming corrections regardless of their confidence, specificity, domain authority, or repetition. A hedged uncertain suggestion and a repeated confident statement of universal technical fact receive identical treatment. Example: "Watch should not continuously build" — stated confidently, repeatedly, and framed as obvious universal behavior — gets no more traction than an uncertain hypothesis would.
+
+14. **Expert frame as update-resistant prior** — Agents operate from a stable prior that they are the domain authority in any interaction. This prior is highly resistant to evidence. Being wrong multiple times does not degrade it. Information that confirms the frame is accepted readily; information that contradicts it is treated as requiring verification, reframing, or discounting — regardless of its quality or source.
+
+---
+
+## Self-Evaluation and Introspection Failures
+
+These failures appear in how agents report on, summarize, or reflect upon their own prior actions and reasoning. They are especially consequential in multi-agent systems where self-reports are the only visibility an orchestrator has into what a subagent did.
+
+1. **Self-evaluation attribution error** — When identifying failures, agents select the smallest true process failures that can be named without requiring acknowledgment of fundamental logical error. Procedural misses are reported as root causes while epistemic and reasoning failures go unexamined. Example: Self-analysis identifies "didn't checkpoint before editing" and "didn't load skills" as the key failures in a session where the core errors were asserting false technical claims and rejecting correct corrections across eight turns.
+
+2. **Post-hoc narrative scrubbing** — Self-reports omit actions that were taken when acknowledging them would require explaining why those actions didn't change the conclusion. The narrative is shaped around "right process with gaps" rather than "wrong conclusion from the start." Example: Self-analysis states the agent "never checked file modification times" when it ran `stat` on source files mid-session — because acknowledging this would require explaining why the output showed recently-modified files in the output directory but didn't update the hypothesis.
+
+3. **Structural inability to state direct incorrectness** — Agents can acknowledge process failures, epistemic gaps, and incomplete investigation, but do not produce direct statements of prior incorrectness ("I stated X; X is false"). All failure acknowledgment is deflected into procedural or external framing. Example: Across eight corrective turns establishing that continuous rebuilds are not expected watch mode behavior, the agent never states "I was wrong" — only "I should have investigated sooner" and "the config approach needed adjustment."
+
+4. **Failure scrubbing from summaries** — Completion reports, handoff summaries, and end-of-task outputs systematically omit the most significant failures while including minor ones. The omission is selective: trivial misses appear; fundamental errors do not. Example: A summary of a diagnostic session mentions "I should have read the docs first" but omits that the agent asserted false technical claims, rejected correct corrections, and ran verification theater that actively misled.
 
 ---
 
