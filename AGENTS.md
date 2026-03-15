@@ -57,7 +57,17 @@ Never skip from "I found nothing" to "nothing exists."
 
 **Always use `gh` for GitHub issues/PRs** — never browse github.com directly.
 
-**Context7:** Use for ALL library/framework/API questions. `context7_resolve-library-id` → `context7_query-docs`. Also use DeepWiki `ask` for repo-level questions.
+**Context7 (CLI):** Use for ALL library/framework/API questions. No MCP server—uses on-demand CLI calls.
+```bash
+# Resolve library name to ID
+npx ctx7 library <name> "<query>"
+# Example: npx ctx7 library react "hooks"
+
+# Fetch documentation for a library ID
+npx ctx7 docs <libraryId> "<query>"
+# Example: npx ctx7 docs /facebook/react "useEffect"
+```
+Get API key at `context7.com/dashboard` for higher rate limits. Also use DeepWiki `ask` for repo-level questions.
 
 **Config files (JSON/YAML):** LOAD `config-file-editing` skill before any edit.
 
@@ -73,7 +83,7 @@ For AST pattern matching use `ast-grep` skill; for semantic/structural discovery
 
 When there's a question of how anything works:
 
-1. **First** → online docs (Context7 for libraries/frameworks/APIs)
+1. **First** → online docs (Context7 CLI for libraries/frameworks/APIs: `npx ctx7 library <name> "<query>"` or `npx ctx7 docs <libraryId> "<query>"`)
 2. **Then** → readmes, playbooks, examples, web docs, man pages
 3. **Last resort** → CLI args, testing commands, endpoint guesswork
 
@@ -184,6 +194,21 @@ This sends a new prompt to your session at a fixed time, effectively waking you 
   - **Never** set env vars inline in shell commands (e.g., `MYSECRET=123 some_command`) — these are visible in the process list. Use env files or exports instead.
 
 ## Custom CLI Tools
+
+- **Context7 (`ctx7`)** — Library/framework documentation lookup (replaces Context7 MCP server)
+  ```bash
+  # Search for library and get ID
+  npx ctx7 library <name> "<query>"
+  # Example: npx ctx7 library react "hooks"
+  
+  # Fetch docs for specific library ID
+  npx ctx7 docs <libraryId> "<query>"
+  # Example: npx ctx7 docs /facebook/react "useEffect"
+  
+  # Setup (OAuth + API key)
+  npx ctx7 setup
+  ```
+  API key: `context7.com/dashboard` | Store in `~/.envrc` as `CONTEXT7_API_KEY`
 
 - `semtools` for semantically searching expository text, e.g. `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
 - PDF extraction: **LOAD `reading-pdfs` skill.** Use justfile recipes in `~/pdf-extraction`, not ad hoc installs.

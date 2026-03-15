@@ -9,13 +9,6 @@ common:
     - start-mcp-server
     - --project-from-cwd
     enabled: true
-  context7:
-    description: Library documentation via Context7
-    command: npx
-    args:
-    - -y
-    - '@upstash/context7-mcp'
-    enabled: true
   cut-copy-paste-mcp:
     description: Cross-session clipboard operations
     command: npx
