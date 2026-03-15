@@ -8,6 +8,8 @@ metadata:
 
 # LLM Failure Modes
 
+> **Privacy note:** This document is a public-facing skill file. Examples must not contain real interaction transcripts, identifying details, or narratives drawn directly from specific sessions on this system. Where a real incident motivates an entry, write a fictional scenario that captures the same failure pattern — grounded in the experience but stripped of specifics. Entries that currently contain real session data should be sanitized before the next commit.
+
 ## Editorial Guidelines
 
 When contributing to this document:
