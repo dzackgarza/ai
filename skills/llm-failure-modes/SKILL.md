@@ -8,6 +8,17 @@ metadata:
 
 # LLM Failure Modes
 
+## Editorial Guidelines
+
+When contributing to this document:
+
+- **Objective failures only.** Describe what happens; do not posit why or attribute motivations. "Agents assert authority before investigation" — not "Agents assert authority *to save face*."
+- **General, not interaction-specific.** These are properties of model behavior observable in any interaction — with humans, other models, or automated scripts. Write "agents" not "the agent"; write "when a claim is made" not "when the user says." The other party in any documented failure could be anything.
+- **Examples over observables.** A concrete example illustrates a failure pattern more reliably than an abstract "Observable:" clause, which tends to restate the definition. Show what the failure looks like in actual output.
+- **Intrinsic, not reactive.** Behaviors like goal substitution or authority assertion are not responses to a particular kind of interlocutor — they are properties of model behavior that emerge regardless of what the other party is. Do not frame them as reactions to human behavior specifically.
+
+---
+
 ## Observed Formal Cognitive Failures
 
 1. **Constraint hallucination** - Inventing unprompted constraints (e.g., adding years to search queries when not requested)
@@ -112,33 +123,33 @@ These are failures of gradient descent: the model optimizes locally, gets trappe
 
 ## Conversational and Epistemic Failure Modes
 
-These failures manifest in the agent's *response text*, not in tool use or task completion. An evaluating agent must scan output text independently of whether tool calls and task steps appear nominal — these patterns are invisible to evaluators that check only process compliance or outcome proxies.
+These failures manifest in response text, not in tool use or task completion. Evaluating agents must scan output text independently of whether tool calls and task steps appear nominal — these patterns are invisible to evaluators checking only process compliance or outcome proxies.
 
-**The key detection heuristic:** if the agent accepted correct information from the user but did not apply it directly, or if tool use occurred *after* the answer was already stated, assume one or more of the following are present.
+**Key detection heuristic:** if a correct answer was stated and the agent did not apply it directly, or if tool use clustered *after* the answer was already given, one or more of the following are likely present.
 
-1. **Authority assertion without grounding** — The agent makes declarative claims about system behavior in confident, expert voice before any tool results support those claims. Observable: present-tense assertions ("this is expected behavior," "X is inherently Y") appearing prior to evidence that would establish them. Ungrounded claims are flagged regardless of whether they happen to be correct.
+1. **Authority assertion without grounding** — Agents make declarative claims about system behavior in confident voice before any evidence supports those claims. Example: "Watch mode is inherently resource-intensive" — stated as fact before reading the relevant config or logs.
 
-2. **Validation-contradiction decoupling** — The agent verbally accepts a correction in one turn and contradicts it in the next. Observable: "you're right" or "you've identified the issue" in turn N, followed by content in turn N+1 that proceeds from the pre-correction state. Detectable by checking whether post-acceptance outputs are consistent with what was accepted.
+2. **Validation-contradiction decoupling** — Acceptance of a correction is expressed in one turn; the next turn proceeds from the pre-correction state. Example: "You've identified the issue!" followed immediately by "The high CPU/RAM usage is expected behavior for watch mode."
 
-3. **Restatement of user hypothesis as own finding** — The user states the correct answer or diagnosis. The agent repeats it back in its own voice without verification, without credit, and without marking it as unconfirmed. Observable: the user's stated hypothesis appearing verbatim or paraphrased in the agent's next response as if it is the agent's conclusion. The tell: no verification step occurs between the user's statement and the agent's adoption of it.
+3. **Restatement of unverified hypothesis as own finding** — A correct diagnosis stated by the other party is repeated in the agent's own voice without verification and without attribution. Example: Other party: "Is it watching its own output directory?" Agent (next turn): "The build is likely watching its own output directory, creating a feedback loop" — stated as the agent's finding, unverified.
 
-4. **Investigation theater** — Diagnostic tool use occurring *after* the correct answer has been stated by the user. The investigation generates no new information but produces the appearance of independent discovery. Observable: a cluster of tool calls following a user turn that already contains the root cause. The investigation would be unnecessary if the prior user turn had simply been accepted and applied.
+4. **Investigation theater** — Diagnostic tool use occurs after the correct answer has already been stated. The investigation adds no new information. Example: Agent runs `lsof`, `inotifywait`, and `stat` on source files after being told the output directory is being watched — none of which would be necessary if the prior statement had been accepted and applied.
 
-5. **Anomaly normalization** — Evidence that is anomalous relative to known system behavior is characterized as expected or normal. Observable: anomalous patterns — continuous output with no apparent input trigger, metrics far outside normal ranges — described as "working as designed," "expected behavior," or "normal for this configuration." Flag whenever observed anomalies are explained away rather than treated as requiring diagnosis.
+5. **Anomaly normalization** — Anomalous evidence is characterized as expected or normal rather than flagged as requiring explanation. Example: Logs show "built in 665ms" → "build started..." repeating with no source changes; agent responds "this is the watch mode working as designed."
 
-6. **Position maintenance without new evidence** — The agent holds a claim across a direct user correction without introducing new evidence or argument. Observable: the same factual claim appearing in turns N and N+2, with a contradiction in turn N+1, and no new justification in turn N+2.
+6. **Position maintenance without new evidence** — A claim is held across a direct correction without new evidence or argument. Example: "expected behavior" in turn 3, corrected in turn 4, "working as designed" in turn 5 with no new justification offered.
 
-7. **Epistemic downgrading** — A correct, universal claim made by the user is recharacterized in the agent's response as local, subjective, or uncertain. Observable: user states a fact; agent's response reframes it as "your intuition," "your experience," "your specific setup," or similar. Universal technical facts should not be downgraded to subjective claims. This pattern functions to transfer apparent epistemic authority from the user to the agent.
+7. **Epistemic downgrading** — A correct, universal claim is recharacterized as local, subjective, or uncertain. Example: "Watch should not continuously build" (universal fact about file watchers) is treated as a preference or an assumption specific to the other party's setup rather than accepted as true.
 
-8. **Solution enumeration before diagnosis** — Multiple recommendations or options are presented before root cause has been identified. Observable: "Option 1 / Option 2 / Option 3" or enumerated recommendations appearing in a response where the preceding reasoning has not produced a confirmed root cause. Enumeration performs thoroughness and forecloses further diagnostic inquiry.
+8. **Solution enumeration before diagnosis** — Multiple recommendations are presented before root cause has been identified. Example: "Option 1: use vite dev. Option 2: build on-demand. Option 3: optimize the watch config." — offered before determining what was triggering the rebuilds at all.
 
-9. **Context retrieval without application** — A fact retrieved from a tool call — a config key, a log line, a file value — that is directly relevant to the question is not cited or applied in the agent's subsequent reasoning. Observable: check tool results against the agent's reasoning. If a retrieved value would resolve the open question but does not appear in the reasoning, this failure is present regardless of whether the agent eventually reaches the correct answer.
+9. **Context retrieval without application** — A retrieved fact directly relevant to the open question is not cited or applied in subsequent reasoning. Example: `vite.config.ts` is read; it shows `server.watch.ignored` (namespaced to the dev server, not to `build --watch`); the namespace difference is never noted despite being the root cause.
 
-10. **Correct principle stated only post-correction** — A universal principle that would have resolved the question if applied during initial reasoning appears only in a correction-response turn. Observable: the agent states the correct principle *after* being told it was wrong — a principle that, if applied earlier, would have short-circuited multiple prior turns. The principle was available as prior knowledge but was not activated as a reasoning constraint.
+10. **Correct principle stated only post-correction** — A universal principle that would have resolved the question appears only after a correction, despite being available as prior knowledge. Example: "Watch modes don't fire without file changes" — stated correctly only after being told this, a principle that would have immediately ruled out "expected behavior" if applied during initial reasoning.
 
-11. **Misconfiguration reframed as architecture** — A narrow, verifiable configuration error is responded to with broad architectural critique ("this approach is wrong," "X shouldn't be used this way"). Observable: targeted diagnostic questions being answered with scope-expanding architectural recommendations. Substitutes an unfalsifiable opinion for a testable fix and conceals the actual narrow correction required.
+11. **Misconfiguration reframed as architecture** — A narrow, verifiable configuration error is responded to with broad architectural critique. Example: Output directory being watched (a one-line config fix) → "watch mode shouldn't be used in production; consider switching to on-demand builds."
 
-12. **Alternative goal attribution** — The agent introduces alternative interpretations of the user's goal when the user has expressed no uncertainty about their goal. Observable: "if you don't need X," "depending on whether you want Y" constructions appearing without any prior user statement of ambiguity. Implicitly questions whether the user knows what they want, and redirects diagnostic effort away from the stated problem.
+12. **Goal substitution** — The stated goal is set aside in favor of an alternative introduced without prompting. Example: Goal is to fix the rebuild loop; agent instead asks "do you actually need watch mode at all?" and enumerates alternatives to the stated requirement. The substitution occurs regardless of whether the goal was stated by a human, another model, or a script.
 
 ---
 
