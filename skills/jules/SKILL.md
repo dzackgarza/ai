@@ -37,7 +37,15 @@ Delegate coding tasks to Google's Jules AI agent on GitHub repositories.
 
 ### Automated Review Limitations
 
-Automated reviews catch technical flaws but typically assume code is morally "right." They will NOT detect hollow implementations, short-circuited work, reward hacking, goal substitution, or incomplete solutions.
+Automated GitHub reviewers are given **only the PR diff and Jules' own description of it**. They have no access to the original task, the expectations, or any blockers Jules encountered. This makes them structurally blind to completeness failures:
+
+- Jules controls the PR title, body, and commit messages — the only "context" reviewers see
+- Jules is incentivized to present its work as aligned with expectations, downplaying or omitting blockers, fallback decisions, or abandoned goals entirely
+- Reviewers are trained to find bugs, logical errors, and inconsistencies within what is present — not to audit what is *missing*
+
+**The result:** A PR that passes automated review tells you nothing about whether the original task was completed. Jules can hit a blocker, abandon the actual feature, reframe the work as "scaffolding for future implementation," and every automated reviewer will faithfully evaluate it as a scaffolding PR — greenlit, useless.
+
+**Clearing automated review is not sufficient.** You must independently compare the original task against actual PR contents, using the original task description (not Jules' framing) as the benchmark.
 
 ### When to Use Jules
 
