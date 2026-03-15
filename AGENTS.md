@@ -72,19 +72,7 @@ npx ctx7 docs <libraryId> "<query>"
 
 Get API key at `context7.com/dashboard` for higher rate limits.
 
-**DeepWiki (via mcp2cli):** Query GitHub repository documentation. No MCP server—uses on-demand CLI calls.
-```bash
-# Ask a question about a repo
-uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "<org/repo>" --question "<question>"
-# Example: uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "anthropics/claude-code" --question "How does auth work?"
-
-# Get documentation structure
-uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-structure --repo-name "<org/repo>"
-
-# Read wiki contents
-uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-contents --repo-name "<org/repo>"
-```
-Free for public repos. Repo must be indexed on DeepWiki first (visit deepwiki.com to index).
+**DeepWiki (via mcp2cli):** Query GitHub repository documentation. No MCP server config needed—uses on-demand CLI calls. See "Custom CLI Tools" section for full docs.
 
 **Config files (JSON/YAML):** LOAD `config-file-editing` skill before any edit.
 
@@ -100,7 +88,7 @@ For AST pattern matching use `ast-grep` skill; for semantic/structural discovery
 
 When there's a question of how anything works:
 
-1. **First** → online docs (Context7 CLI for libraries/frameworks/APIs: `npx ctx7 library <name> "<query>"` or `npx ctx7 docs <libraryId> "<query>"; DeepWiki via mcp2cli for repo-specific docs: `uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "<org/repo>" --question "<question>"`)
+1. **First** → online docs (Context7 CLI: `npx ctx7 library <name> "<query>"` or `npx ctx7 docs <libraryId> "<query>"`; DeepWiki via mcp2cli — see "Custom CLI Tools" section)
 2. **Then** → readmes, playbooks, examples, web docs, man pages
 3. **Last resort** → CLI args, testing commands, endpoint guesswork
 
@@ -255,19 +243,38 @@ Presets: `minutely`, `hourly`, `daily`, `weekly`, or cron expressions like `0 9 
 
   API key: `context7.com/dashboard` | Store in `~/.envrc` as `CONTEXT7_API_KEY`
 
-- **DeepWiki (via mcp2cli)** — GitHub repository documentation lookup (replaces DeepWiki MCP server)
+- **mcp2cli** — CLI bridge for any MCP server. Turns MCP tools into CLI commands at runtime with 96-99% token savings vs native MCP.
+
   ```bash
-  # Ask a question about a repo
-  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "<org/repo>" --question "<question>"
-  # Example: uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "anthropics/claude-code" "How does auth work?"
+  # Install (runs via uvx without install)
+  uvx mcp2cli --help
 
-  # Get documentation structure
-  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-structure --repo-name "<org/repo>"
+  # List tools for ANY MCP server (~16 tokens vs ~1600 for native MCP)
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp --list
 
-  # Read wiki contents
-  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-contents --repo-name "<org/repo>"
+  # Search tools by name/description (case-insensitive substring match)
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp --search "question"
+
+  # Get help for a specific tool
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --help
+
+  # Call a tool (DeepWiki examples)
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-structure --repo-name facebook/react
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name facebook/react --question "How does useEffect work?"
+
+  # Use with other MCP servers (e.g., Filesystem, GitHub)
+  uvx mcp2cli --mcp-stdio "npx @modelcontextprotocol/server-filesystem /tmp" --list
+  uvx mcp2cli --mcp-stdio "npx @modelcontextprotocol/server-github" --list
+
+  # OpenAPI spec support (convert any REST API to CLI)
+  uvx mcp2cli --spec https://petstore3.swagger.io/api/v3/openapi.json --list
   ```
-  Free for public repos | Repo must be indexed at deepwiki.com
+
+  **Why mcp2cli instead of native MCP:**
+  - Token-efficient: Tool schemas fetched once, cached, CLI invokes tools directly
+  - No config required: Just pass `--mcp <url>` or `--mcp-stdio <cmd>`
+  - Works with any MCP server, OpenAPI spec, or GraphQL endpoint
+  - Supports auth headers, OAuth, caching, baked configs
 
 - `semtools` for semantically searching expository text, e.g. `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
 - PDF extraction: **LOAD `reading-pdfs` skill.** Use justfile recipes in `~/pdf-extraction`, not ad hoc installs.
