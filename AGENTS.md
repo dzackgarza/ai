@@ -69,7 +69,21 @@ npx ctx7 docs <libraryId> "<query>"
 # Example: npx ctx7 docs /facebook/react "useEffect"
 ```
 
-Get API key at `context7.com/dashboard` for higher rate limits. Also use DeepWiki `ask` for repo-level questions.
+Get API key at `context7.com/dashboard` for higher rate limits.
+
+**DeepWiki (via mcp2cli):** Query GitHub repository documentation. No MCP server—uses on-demand CLI calls.
+```bash
+# Ask a question about a repo
+uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "<org/repo>" --question "<question>"
+# Example: uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "anthropics/claude-code" --question "How does auth work?"
+
+# Get documentation structure
+uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-structure --repo-name "<org/repo>"
+
+# Read wiki contents
+uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-contents --repo-name "<org/repo>"
+```
+Free for public repos. Repo must be indexed on DeepWiki first (visit deepwiki.com to index).
 
 **Config files (JSON/YAML):** LOAD `config-file-editing` skill before any edit.
 
@@ -85,7 +99,7 @@ For AST pattern matching use `ast-grep` skill; for semantic/structural discovery
 
 When there's a question of how anything works:
 
-1. **First** → online docs (Context7 CLI for libraries/frameworks/APIs: `npx ctx7 library <name> "<query>"` or `npx ctx7 docs <libraryId> "<query>"`)
+1. **First** → online docs (Context7 CLI for libraries/frameworks/APIs: `npx ctx7 library <name> "<query>"` or `npx ctx7 docs <libraryId> "<query>"; DeepWiki via mcp2cli for repo-specific docs: `uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "<org/repo>" --question "<question>"`)
 2. **Then** → readmes, playbooks, examples, web docs, man pages
 3. **Last resort** → CLI args, testing commands, endpoint guesswork
 
@@ -239,6 +253,20 @@ Presets: `minutely`, `hourly`, `daily`, `weekly`, or cron expressions like `0 9 
   ```
 
   API key: `context7.com/dashboard` | Store in `~/.envrc` as `CONTEXT7_API_KEY`
+
+- **DeepWiki (via mcp2cli)** — GitHub repository documentation lookup (replaces DeepWiki MCP server)
+  ```bash
+  # Ask a question about a repo
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "<org/repo>" --question "<question>"
+  # Example: uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name "anthropics/claude-code" "How does auth work?"
+
+  # Get documentation structure
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-structure --repo-name "<org/repo>"
+
+  # Read wiki contents
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-contents --repo-name "<org/repo>"
+  ```
+  Free for public repos | Repo must be indexed at deepwiki.com
 
 - `semtools` for semantically searching expository text, e.g. `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
 - PDF extraction: **LOAD `reading-pdfs` skill.** Use justfile recipes in `~/pdf-extraction`, not ad hoc installs.

@@ -16,11 +16,6 @@ common:
     - -y
     - '@fastmcp-me/cut-copy-paste-mcp'
     enabled: true
-  deepwiki-mcp:
-    description: Fetch documentation from DeepWiki (official server)
-    type: remote
-    url: https://mcp.deepwiki.com/mcp
-    enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
     command: /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/.venv/bin/python

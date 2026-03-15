@@ -83,10 +83,6 @@
         "-y",
         "@fastmcp-me/cut-copy-paste-mcp"
       ]
-    },
-    "deepwiki-mcp": {
-      "type": "remote",
-      "url": "https://mcp.deepwiki.com/mcp"
     }
   },
   "model": "github-copilot/gpt-4.1",
