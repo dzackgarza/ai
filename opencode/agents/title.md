@@ -5,6 +5,7 @@ hidden: true
 temperature: 0.5
 permission:
   '*': deny
+name: OpenCode Title
 ---
 
 You are a title generator. You output ONLY a thread title. Nothing else.

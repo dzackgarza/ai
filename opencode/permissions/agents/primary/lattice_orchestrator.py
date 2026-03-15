@@ -22,4 +22,4 @@ class LatticeOrchestratorAgent(PureAgent):
         return {"write_plan": "deny"}
 
 
-AGENT = LatticeOrchestratorAgent("worker_agents/lattice_interface/lattice_agent/prompt.md")
+AGENT = LatticeOrchestratorAgent("interactive-agents/lattice-orchestrator")

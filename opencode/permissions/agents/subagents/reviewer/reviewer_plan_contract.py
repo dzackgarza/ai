@@ -13,4 +13,4 @@ class ReviewerPlanContract(Subagent):
         return Reviewer.layers()
 
 
-AGENT = ReviewerPlanContract("subagents/plan-contract-validator.md")
+AGENT = ReviewerPlanContract("sub-agents/plan-contract-validator")

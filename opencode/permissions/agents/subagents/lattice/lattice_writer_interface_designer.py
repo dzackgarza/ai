@@ -13,4 +13,4 @@ class LatticeWriterInterfaceDesigner(Subagent):
         return CodeWriter.layers()
 
 
-AGENT = LatticeWriterInterfaceDesigner("worker_agents/lattice_interface/subagents/lattice_interface_designer/prompt.md")
+AGENT = LatticeWriterInterfaceDesigner("sub-agents/lattice-interface-designer")

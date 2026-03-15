@@ -4,6 +4,7 @@ description: 'Use when auditing tests for compliance with High-Quality Testing S
   test plan''. REPORT-ONLY: does not edit files.'
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Reviewer: Test Compliance'
 permission:
   read: &id001
     '*': allow

@@ -4,6 +4,7 @@ description: Use when translating union checklists into Python design. Ask 'Tran
   under src/'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Writer: Interface Implementer'
 permission:
   read: &id001
     '*': deny

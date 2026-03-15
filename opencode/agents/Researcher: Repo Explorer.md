@@ -4,6 +4,7 @@ description: Use when performing structural and semantic codebase mapping. Ask '
   of this codebase'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Researcher: Repo Explorer'
 permission:
   read: &id001
     '*': allow

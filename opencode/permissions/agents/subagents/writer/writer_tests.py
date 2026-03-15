@@ -13,4 +13,4 @@ class WriterTests(Subagent):
         return TestWriter.layers()
 
 
-AGENT = WriterTests("subagents/test-writer.md")
+AGENT = WriterTests("sub-agents/test-writer")

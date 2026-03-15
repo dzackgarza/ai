@@ -3,6 +3,7 @@ name = "opencode-workspace"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "ai-prompts",
     "httpx",
     "jinja2",
     "jsonschema",
@@ -23,6 +24,7 @@ dev = [
 ]
 
 [tool.uv.sources]
+ai-prompts = { path = "../../opencode-plugins/ai-prompts", editable = true }
 llm-runner = { git = "https://github.com/dzackgarza/llm-runner" }
 llm-templating-engine = { git = "https://github.com/dzackgarza/llm-templating-engine" }
 workspace-scripts = { path = "../scripts", editable = true }

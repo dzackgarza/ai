@@ -18,7 +18,7 @@ the owning subtrees instead of adding new root clutter.
 - Canonical template-driven LLM execution: `llm-run` (installed in `.venv` via `pyproject.toml` and exposed locally through `just run-microagent`)
 - Permission policy: `docs/PERMISSION_SPEC.md`
 - Provider configs: `configs/providers/*.json`
-- Managed agent templates: `../prompts/**/*.md`
+- Managed agent prompt slugs: resolved through the `ai-prompts` dependency
 - Generated OpenCode markdown agents: `agents/*.md`
 - Plugin code: `plugins/`
 - Plugin-local runtime config: `configs/local-plugins.json`
@@ -45,7 +45,7 @@ the owning subtrees instead of adding new root clutter.
 
 - `configs/providers/`: provider source files, notes, and maintenance scripts
 - `agents/`: generated OpenCode markdown agents consumed at runtime
-- `../prompts/`: canonical prompt templates with YAML frontmatter metadata
+- `ai-prompts`: canonical prompt library, resolved by slug through `pyproject.toml`
 - `plugins/`: runtime-loaded plugins and plugin-owned utilities
 - `plugins/utilities/harness/`: compatibility wrapper/docs for the extracted session automation CLI
 - `scripts/`: repo-wide maintenance entrypoints
@@ -54,7 +54,7 @@ the owning subtrees instead of adding new root clutter.
 ### Prompt Templating
 
 - All prompt rendering is centralized in `llm-templating-engine`. Do not reimplement prompt parsing, frontmatter handling, Jinja rendering, or include semantics inside `permissions/`, plugins, or ad hoc helper scripts.
-- `../prompts` is the canonical prompt root. Callers in this repo resolve prompt paths from the workspace root instead of relying on cwd-sensitive defaults.
+- `ai-prompts` is the canonical prompt source. Callers in this repo resolve prompt slugs through the dependency instead of reading workspace-local prompt files.
 - Prompt templates are markdown files with YAML frontmatter. The templating engine preserves frontmatter; runner-reserved execution fields such as `kind`, `models`, `system_template`, `temperature`, `max_tokens`, `retries`, `output_schema`, and `response_template` belong to `llm-runner`.
 - Jinja `{% include %}` and `{% import %}` are supported through the canonical `llm-templating-engine` environment. Included prompt templates contribute only their markdown body. Child frontmatter is ignored by design.
 - If a new use case needs different prompt composition or LLM execution semantics, extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second path. Verify there are no regressions for both template-defined runs (`llm-run` or `just run-microagent`) and markdown-agent generation (`permissions/main.py`).
@@ -62,7 +62,7 @@ the owning subtrees instead of adding new root clutter.
 ### Build Behavior
 
 - `just build-agents` is the canonical full build for managed agents. It:
-  1. Regenerates `agents/*.md` from `../prompts/**/*.md`
+  1. Regenerates `agents/*.md` from `ai-prompts` prompt slugs
   2. Rebuilds `opencode.json` through `scripts/build_config.py`
   3. Validates the generated config against its schema
   4. Verifies the expected generated agent names appear in `opencode agent list`

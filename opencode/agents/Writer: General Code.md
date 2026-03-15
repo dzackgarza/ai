@@ -4,6 +4,7 @@ description: Use when writing non-Python code. Pass task descriptions and target
   [description]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Writer: General Code'
 permission:
   read: &id001
     '*': deny

@@ -2,6 +2,7 @@
 description: Zotero librarian - manages and maintains Zotero reference libraries
 mode: primary
 model: github-copilot/gpt-4.1
+name: Zotero Librarian
 permission:
   read: allow
   glob: allow

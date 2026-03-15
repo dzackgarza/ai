@@ -185,5 +185,5 @@
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny"
   },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/python_code_writer.md}"
+  "prompt_slug": "sub-agents/python-code-writer"
 }

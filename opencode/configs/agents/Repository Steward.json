@@ -2,7 +2,6 @@
   "description": "Repo steward - autonomous repository maintenance and optimization",
   "mode": "primary",
   "model": "github-copilot/gpt-4.1",
-  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/repo_steward/PROMPT.md}",
   "permission": {
     "read": {
       "*": "allow"
@@ -130,5 +129,6 @@
     "serena_think_about_task_adherence": "deny",
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny"
-  }
+  },
+  "prompt_slug": "interactive-agents/repository-steward"
 }

@@ -77,7 +77,6 @@ For multi-turn, async, resume, callback, or post-idle behavior, use `opencode-ma
 as the workflow harness and inspect the session directly:
 
 ```bash
-MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
 
 # When the workflow depends on repo-local config/env, start a dedicated server there first
 direnv exec /path/to/plugin \
@@ -85,13 +84,13 @@ direnv exec /path/to/plugin \
 
 # One-shot sanity check
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  $MANAGER opx one-shot --agent Minimal --prompt "Use my_tool to do something"
+  npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx one-shot --agent Minimal --prompt "Use my_tool to do something"
 
 # Proof-oriented session orchestration
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx begin-session "Trigger async behavior" --agent Minimal --json
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx chat --session ses_abc123 --prompt "Follow-up prompt"
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session ses_abc123 --verbose
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx transcript --session ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Trigger async behavior" --agent Minimal --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_abc123 --prompt "Follow-up prompt"
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_abc123 --verbose
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_abc123 --json
 OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx delete --session ses_abc123
 ```
 
@@ -99,6 +98,7 @@ The rendered CLI/TUI is not valid evidence. Use debug traces, transcripts, or ex
 side effects.
 
 **Two-phase debugging workflow:**
+
 1. `command opencode run "prompt"` — fast one-shot sanity check
 2. `opx begin-session` / `opx chat` / `opx transcript` — real workflow proof with session artifacts
 
@@ -318,7 +318,7 @@ This is equivalent to Claude Code's `UserPromptSubmit` hook that writes to stdou
 ### Pattern: "Stop" Hook
 
 1. Listen to `session.idle` (fires after AI finishes responding)
-2. Inspect `lastText` — the **assistant's** response text — for patterns. `lastText` is NOT the user's message. A hook that scans for "should I" will only fire when the *model* outputs that phrase, not when the user does.
+2. Inspect `lastText` — the **assistant's** response text — for patterns. `lastText` is NOT the user's message. A hook that scans for "should I" will only fire when the _model_ outputs that phrase, not when the user does.
 3. If pattern found, inject feedback with `noReply: false` to trigger a new model response. (`noReply: true` injects silently without triggering a response — the opposite.)
 
 > **⚠ `opencode run` exits on idle and does not wait for async work.** The handler fires,
@@ -406,12 +406,10 @@ For real workflow proofs, drive the session with `opencode-manager` and inspect 
 session artifacts:
 
 ```bash
-MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
-
-$MANAGER opx begin-session "prompt that triggers your plugin" --agent Minimal --json
-$MANAGER opx chat --session ses_abc123 --prompt "Follow-up prompt if needed"
-$MANAGER opx debug trace --session ses_abc123 --verbose
-$MANAGER opx transcript --session ses_abc123 --json
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "prompt that triggers your plugin" --agent Minimal --json
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_abc123 --prompt "Follow-up prompt if needed"
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_abc123 --verbose
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_abc123 --json
 ```
 
 Do not scrape CLI/TUI output, and do not hand-parse `events.jsonl` or `opencode export`

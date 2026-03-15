@@ -13,4 +13,4 @@ class LatticeResearcherDocumentation(Subagent):
         return Researcher.layers()
 
 
-AGENT = LatticeResearcherDocumentation("worker_agents/lattice_interface/subagents/lattice_internet_researcher/prompt.md")
+AGENT = LatticeResearcherDocumentation("sub-agents/lattice-researcher-documentation")

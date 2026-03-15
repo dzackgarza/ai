@@ -6,5 +6,6 @@ permission:
   doom_loop: ask
   external_directory:
     '*': ask
+name: OpenCode Build
 ---
 

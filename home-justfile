@@ -8,6 +8,25 @@ repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 default:
     @just --list
 
+disk-free:
+    df -h
+    trash-empty
+    sudo rm -rf /tmp/*
+    sudo rm -rf ~/.cache
+    sudo rm -rf /var/lib/apt/lists/*
+    sudo apt clean
+    sudo apt-get autoclean
+    sudo apt-get autoremove
+    uv cache clean
+    npm cache clean --force
+    # Additional easy-win cleanups
+    docker system prune -af --volumes 2>/dev/null || true
+    bun pm cache rm 2>/dev/null || true
+    yarn cache clean 2>/dev/null || true
+    pip cache purge 2>/dev/null || true
+    df -h
+
+
 # =============================================================================
 # MCP Sync
 # =============================================================================
@@ -24,35 +43,58 @@ install-mcps *ARGS="":
 # LLM Usage Limits
 # =============================================================================
 
-# Check the common provider set with canonical usage-limits commands
+# Check all registered providers with canonical usage-limits commands
 # Usage: just usage-limits
 usage-limits *ARGS="":
-    @uvx --from git+https://github.com/dzackgarza/usage-limits.git usage-limits table --provider claude --provider codex --provider amp --provider qwen --notify --anchor {{ ARGS }}
+    @uvx --from git+https://github.com/dzackgarza/usage-limits.git usage-limits --notify --anchor {{ ARGS }}
 
-# Collect the same provider set as structured JSON
+# Collect all registered providers as structured JSON
 # Usage: just usage-limits-json
 usage-limits-json *ARGS="":
-    @uvx --from git+https://github.com/dzackgarza/usage-limits.git usage-limits collect --provider claude --provider codex --provider amp --provider qwen --json {{ ARGS }}
+    @uvx --from git+https://github.com/dzackgarza/usage-limits.git usage-limits --json {{ ARGS }}
 
 # =============================================================================
 # OpenCode Rebuild
 # =============================================================================
 
-opencode-rebuild:
-    @just --justfile {{ repo }}/justfile check-plugins
-    @just --justfile {{ repo }}/justfile build-agents
+_opencode-rebuild:
+    @just --justfile {{ repo }}/justfile rebuild
 
-opencode-build-permissions:
-    @just --justfile {{ repo }}/justfile check-plugins
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py --apply
+opencode-rebuild: _opencode-rebuild opencode-clear-plugin-install-cache opencode-restart
 
-opencode-build-config:
-    @just --justfile {{ repo }}/justfile check-plugins
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
+_opencode-build-permissions:
+    @just --justfile {{ repo }}/justfile permissions-apply
+
+opencode-build-permissions: _opencode-build-permissions opencode-clear-plugin-install-cache
+
+_opencode-build-config:
+    @just --justfile {{ repo }}/justfile config-build
+
+opencode-build-config: _opencode-build-config opencode-clear-plugin-install-cache
+
+opencode-restart:
+    systemctl --user restart opencode-serve
+    sleep 2
+    systemctl --user status opencode-serve
 
 # =============================================================================
 # Cache Cleaning
 # =============================================================================
+
+opencode-clear-plugin-install-cache:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cache_dir="${OPENCODE_PLUGIN_CACHE_DIR:-$HOME/.cache/opencode}"
+
+    for path in \
+      "$cache_dir/node_modules" \
+      "$cache_dir/package.json" \
+      "$cache_dir/bun.lock"
+    do
+      if [[ -e "$path" ]]; then
+        gio trash "$path"
+      fi
+    done
 
 clear-caches:
     @bash {{ repo }}/opencode/scripts/maintenance/opencode_gc.sh

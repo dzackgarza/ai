@@ -21,4 +21,4 @@ class MinimalAgent(PureAgent):
         }
 
 
-AGENT = MinimalAgent("interactive_agents/minimal.md")
+AGENT = MinimalAgent("interactive-agents/minimal")

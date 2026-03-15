@@ -49,11 +49,11 @@ _BUILD_CONFIG_SCRIPT = _PROJECT_ROOT / "scripts" / "build_config.py"
 
 AGENT_MAP = {a.name: a for a in AGENTS}
 BUILTIN_SHADOWS = {
-    "build": "opencode_builtin/build.md",
-    "explore": "opencode_builtin/explore.md",
-    "compaction": "opencode_builtin/compaction.md",
-    "title": "opencode_builtin/title.md",
-    "summary": "opencode_builtin/summary.md",
+    "build": "interactive-agents/opencode-build",
+    "explore": "sub-agents/opencode-explore",
+    "compaction": "micro-agents/opencode-compaction",
+    "title": "micro-agents/opencode-title",
+    "summary": "micro-agents/opencode-summary",
 }
 
 _build_console = Console(stderr=True)
@@ -91,8 +91,8 @@ def _managed_agents() -> list:
 
 def _build_artifacts() -> list[GeneratedAgentArtifact]:
     artifacts = [render_agent_artifact(agent) for agent in _managed_agents()]
-    for agent_name, template_path in BUILTIN_SHADOWS.items():
-        artifacts.append(load_static_markdown_artifact(template_path=template_path, output_name=f"{agent_name}.md"))
+    for agent_name, prompt_slug in BUILTIN_SHADOWS.items():
+        artifacts.append(load_static_markdown_artifact(prompt_slug=prompt_slug, output_name=f"{agent_name}.md"))
     return artifacts
 
 

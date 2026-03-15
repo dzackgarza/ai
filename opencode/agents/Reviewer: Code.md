@@ -4,6 +4,7 @@ description: Use when reviewing code post-implementation. Audits code against Cl
   tests and suggest refactoring improvements.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Reviewer: Code'
 permission:
   read: &id001
     '*': allow

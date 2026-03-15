@@ -154,12 +154,10 @@ Isolation rules:
 Typical workflow shape:
 
 ```bash
-MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
-
 direnv exec . command opencode serve --hostname 127.0.0.1 --port 4198
 
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  $MANAGER opx begin-session "Your prompt" --agent Minimal --json
+  npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
 ```
 
 ## Proof Design
@@ -240,16 +238,16 @@ If a plugin tool shadows a built-in name:
 
 Hooks worth reaching for:
 
-| Hook | Use |
-| --- | --- |
-| `event` | Catch-all event stream and side effects |
-| `tool.execute.before` | Rewrite or block tool args before execution |
-| `tool.execute.after` | Adjust output, metadata, or titles after execution |
-| `shell.env` | Inject environment variables into shell commands |
-| `experimental.chat.messages.transform` | Rewrite or inject chat messages |
-| `experimental.chat.system.transform` | Rewrite the system prompt |
-| `experimental.session.compacting` | Add persistent context before compaction |
-| `tool.definition` | Adjust model-visible tool descriptions or schema |
+| Hook                                   | Use                                                |
+| -------------------------------------- | -------------------------------------------------- |
+| `event`                                | Catch-all event stream and side effects            |
+| `tool.execute.before`                  | Rewrite or block tool args before execution        |
+| `tool.execute.after`                   | Adjust output, metadata, or titles after execution |
+| `shell.env`                            | Inject environment variables into shell commands   |
+| `experimental.chat.messages.transform` | Rewrite or inject chat messages                    |
+| `experimental.chat.system.transform`   | Rewrite the system prompt                          |
+| `experimental.session.compacting`      | Add persistent context before compaction           |
+| `tool.definition`                      | Adjust model-visible tool descriptions or schema   |
 
 Key runtime facts:
 

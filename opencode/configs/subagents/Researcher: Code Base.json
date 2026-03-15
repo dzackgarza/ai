@@ -115,5 +115,5 @@
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny"
   },
-  "prompt": "{file:/home/dzack/ai/prompts/subagents/codebase-explorer.md}"
+  "prompt_slug": "sub-agents/codebase-explorer"
 }

@@ -13,4 +13,4 @@ class ResearcherCodeBase(Subagent):
         return Researcher.layers()
 
 
-AGENT = ResearcherCodeBase("subagents/codebase-explorer.md")
+AGENT = ResearcherCodeBase("sub-agents/codebase-explorer")

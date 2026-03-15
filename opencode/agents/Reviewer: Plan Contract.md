@@ -4,6 +4,7 @@ description: Use when auditing code against project constraints and dominant pat
   or 'Find deviations from dominant patterns'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Reviewer: Plan Contract'
 permission:
   read: &id001
     '*': allow

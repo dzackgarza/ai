@@ -4,6 +4,7 @@ description: Use when writing Python code, designing type systems, or defining i
   code for [feature]' or 'Design type system for [domain]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Writer: Python'
 permission:
   read: &id001
     '*': deny

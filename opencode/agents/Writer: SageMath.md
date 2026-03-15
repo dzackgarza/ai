@@ -4,6 +4,7 @@ description: Use when writing SageMath code, designing type systems, or defining
   code for [feature]' or 'Design type system for [domain]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Writer: SageMath'
 permission:
   read: &id001
     '*': deny

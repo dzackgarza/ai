@@ -13,4 +13,4 @@ class RepositoryStewardAgent(PureAgent):
         return Planner.layers()
 
 
-AGENT = RepositoryStewardAgent("worker_agents/repo_steward/PROMPT.md")
+AGENT = RepositoryStewardAgent("interactive-agents/repository-steward")

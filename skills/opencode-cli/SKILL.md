@@ -24,12 +24,12 @@ For plugin-development policy, proof rules, and audit criteria, use `opencode-pl
 
 The canonical OpenCode workspace is `~/ai/opencode`, symlinked to `~/.config/opencode`.
 
-| Location | Purpose |
-| --- | --- |
-| `~/ai/opencode/opencode.json` | Effective global config |
+| Location                                     | Purpose                                     |
+| -------------------------------------------- | ------------------------------------------- |
+| `~/ai/opencode/opencode.json`                | Effective global config                     |
 | `~/ai/opencode/configs/config_skeleton.json` | Source of truth for generated global config |
-| `~/ai/opencode/plugins/` | Global plugins loaded across sessions |
-| `~/ai/opencode/skills/` | Shared OpenCode-facing skills |
+| `~/ai/opencode/plugins/`                     | Global plugins loaded across sessions       |
+| `~/ai/opencode/skills/`                      | Shared OpenCode-facing skills               |
 
 All agents are defined in `~/ai/opencode/opencode.json` with prompts in `~/ai/prompts/`.
 
@@ -85,25 +85,21 @@ direnv exec . command opencode serve --hostname 127.0.0.1 --port 4198
 Then point `opencode-manager` at that server:
 
 ```bash
-MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
-
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  $MANAGER opx begin-session "Your prompt" --agent Minimal --json
+  npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
 ```
 
 ## Manager Commands
 
 ```bash
-MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
-
-$MANAGER opx one-shot --agent Minimal --prompt "Your prompt"
-$MANAGER opx begin-session "Your prompt" --agent Minimal --json
-$MANAGER opx chat --session ses_123 --prompt "Follow-up prompt"
-$MANAGER opx system --session ses_123 --prompt "System follow-up"
-$MANAGER opx transcript --session ses_123 --json
-$MANAGER opx final --session ses_123 --prompt "Wrap up" --transcript
-$MANAGER opx delete --session ses_123
-$MANAGER opx debug trace --session ses_123 --verbose
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx one-shot --agent Minimal --prompt "Your prompt"
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_123 --prompt "Follow-up prompt"
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx system --session ses_123 --prompt "System follow-up"
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_123 --json
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx final --session ses_123 --prompt "Wrap up" --transcript
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx delete --session ses_123
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_123 --verbose
 ```
 
 ## Attached Server Notes

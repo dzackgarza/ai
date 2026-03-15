@@ -4,6 +4,7 @@ description: Use when researching obscure lattice algorithms and software (indef
   existing implementations of [lattice concept]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Researcher: Documentation'
 permission:
   read: &id001
     '*': allow

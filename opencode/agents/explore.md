@@ -18,6 +18,7 @@ permission:
   codesearch: allow
   external_directory:
     '*': ask
+name: OpenCode Explore
 ---
 
 You are a file search specialist. You excel at thoroughly navigating and exploring codebases.

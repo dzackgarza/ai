@@ -3,6 +3,7 @@ description: Use when closing docs-to-tests gaps. Ask 'Write mathematically nont
   tests for [lattice object]' or 'Create tests for representative lattice objects'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Writer: Test Methods'
 permission:
   read: &id001
     '*': deny

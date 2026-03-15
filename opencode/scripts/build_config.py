@@ -11,6 +11,7 @@ from pathlib import Path
 import urllib.request
 from typing import Any
 
+from ai_prompts import get_prompt
 import jsonschema
 from rich.console import Console
 from rich.logging import RichHandler
@@ -45,6 +46,20 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
         handle.write("\n")
 
 
+def _resolve_prompt_slugs(value: Any) -> Any:
+    if isinstance(value, dict):
+        resolved: dict[str, Any] = {}
+        for key, item in value.items():
+            if key == "prompt_slug":
+                resolved["prompt"] = get_prompt(str(item)).text
+                continue
+            resolved[key] = _resolve_prompt_slugs(item)
+        return resolved
+    if isinstance(value, list):
+        return [_resolve_prompt_slugs(item) for item in value]
+    return value
+
+
 def _fetch_json(url: str, timeout: int = 30) -> dict[str, Any]:
     request = urllib.request.Request(url, headers={"User-Agent": SCHEMA_USER_AGENT})
     with urllib.request.urlopen(request, timeout=timeout) as response:
@@ -62,6 +77,8 @@ def load_config_sources() -> dict[str, Any]:
         provider_path = Path(provider_file)
         provider_name = provider_path.stem
         config["provider"][provider_name] = _read_json(provider_path)
+
+    config = _resolve_prompt_slugs(config)
 
     if config.get("agent") == {}:
         del config["agent"]

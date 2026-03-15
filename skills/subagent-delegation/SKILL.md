@@ -17,6 +17,8 @@ Always select by capability class from the live list (for example: implementatio
 
 - **prompt-engineering** — REQUIRED: Use for all subagent instruction design.
 - **difficulty-and-time-estimation** — REQUIRED: Use for task calibration and delegation decisions.
+- **opencode-cli** — Use for OpenCode manager command forms when session inspection is part of delegation review.
+- **reading-transcripts** — Use when transcript review crosses harnesses; for OpenCode it delegates to `opx-session transcript`.
 
 ---
 
@@ -100,6 +102,93 @@ When using subagents, the main agent becomes a **coordinator**:
 
 ## 1. Operational Lifecycle
 
+### Codex CLI
+
+When the delegated runtime is Codex CLI rather than OpenCode `task`, standardize the launch contract first. Most downstream failures that look like “agent weakness” are really launch-contract mistakes.
+
+**Default launch contract:**
+
+```bash
+codex --search -a never exec \
+  -s workspace-write \
+  -c 'sandbox_workspace_write.network_access=true' \
+  -c 'shell_environment_policy.inherit=all' \
+  --cd <repo> \
+  -m <model> \
+  -c 'model_reasoning_effort="..."' \
+  "<prompt>"
+```
+
+**What each flag is for:**
+
+- `--search`: Enable Codex native web access. Default to ON. Delegated coding agents should almost always have live docs/search access so they can read current documentation, issues, and upstream references on demand instead of guessing.
+- `-a never`: Prevent approval stops. If the coordinator launched the subagent, the subagent should execute within the agreed sandbox contract without pausing for human confirmation.
+- `-s workspace-write`: Allow normal repo writes while keeping the run sandboxed.
+- `-c 'sandbox_workspace_write.network_access=true'`: Enable shell-side internet access for `gh`, `curl`, package managers, and other ordinary CLI tools.
+- `-c 'shell_environment_policy.inherit=all'`: Preserve the ambient shell environment so PATH-managed tools, auth, and host config are available inside the sandboxed shell.
+
+**Budget awareness:**
+
+- Codex usage is metered in rolling 5-hour and 7-day windows. Treat Codex budget as a scarce resource.
+- Spend Codex runs on high-impact delegated work: architectural changes, error-prone migrations, multi-file debugging, or tasks where strong autonomy and long-horizon reasoning materially reduce coordinator load.
+- Do not burn Codex budget on trivial shell probes, single-file mechanical edits, or narrow docs changes when a cheaper subagent or direct host-side command would do.
+
+**Current practical Codex model surfaces:**
+
+- `gpt-5.4`: strong default for substantial delegated coding work
+- `gpt-5.3-codex`: strong coding-focused alternative when explicitly available
+- `gpt-5.1-codex-mini`: cheap, fast option for narrower or highly constrained tasks
+
+Treat the exact inventory as provider/account dependent. Verify availability when it matters, but use the current local default as the baseline unless there is a reason to override it.
+
+**Current broad model-family ranking (March 2026):**
+
+- GPT-5 family: best current reasoning/coding default overall
+- Claude Sonnet/Opus 4.6 family: close second and often competitive
+- Gemini 3+ family: credible third tier, but typically less reliable for the hardest agentic coding tasks
+- Most other families: materially behind frontier behavior for autonomous coding, often by roughly 6-12 months in practice
+
+Examples of the “needs more oversight” bucket include Kimi 2.5, MiniMax 2.5, Big Pickle, Qwen 3.5 series, GLM 4.5, and similar families. They can still complete agentic tasks, but usually need tighter sandboxing, narrower prompts, stronger branch/worktree isolation, and more aggressive transcript/diff verification.
+
+**Reasoning-effort guidance:**
+
+- `minimal` or `low`: trivial repo discovery, mechanical docs updates, narrow grep-and-edit tasks, simple command execution
+- `medium`: default choice for most delegated implementation work; best token-efficiency starting point
+- `high`: use for multi-file bug fixing, architectural extraction, non-obvious test repair, or tasks where autonomy matters more than raw speed
+- `xhigh`: reserve for unusually hard debugging or long-horizon reasoning, and only when the selected model supports it
+
+Do not reflexively push everything to the highest-effort frontier model. Token efficiency usually improves when you start at the cheapest model/effort pair that can plausibly finish the task in one pass, then escalate only if transcript evidence shows the agent is stalling, drifting, or making bad decisions.
+
+**Model-selection heuristics:**
+
+- Use the strongest model you can justify for architectural changes, long multi-file migrations, or error-prone refactors where a failed pass is expensive.
+- Use a cheaper model for bounded implementation, docs, simple tests, or repo-local cleanup where the acceptance criteria are narrow and easy to verify.
+- Prefer lowering model tier before raising reasoning effort when the task is simple.
+- Prefer raising reasoning effort before switching to a more expensive model when the current model is basically capable but making shallow mistakes.
+- Reuse the same launch template across a batch of similar repos so failures are comparable.
+- Extremely weak or older model families such as GPT-4-era models, StepFun, Arcee series, Llama variants, GPT OSS, `gpt-5-mini`, and similar low-cost/free options should be reserved for very narrow, cheap experiments only. If you use them at all, constrain the task tightly and verify aggressively.
+
+**Operational guidance:**
+
+- Native Codex web access and shell network access are separate surfaces. `--search` enables the model web tool. Shell tools like `gh`, `curl`, and package managers still need sandbox network access enabled.
+- `zsh -lc` inside Codex generally sees inherited PATH-managed tools. Use login-shell behavior only when you specifically need aliases or interactive shell setup.
+- If shell GitHub access matters, verify it directly in the delegated runtime instead of assuming host-shell success proves anything about the subagent.
+
+**Verification checklist for a new Codex launch template:**
+
+- `command -v gh uv bun opencode codex`
+- `gh auth status`
+- `gh api rate_limit`
+- DNS lookup for `api.github.com`
+- `curl -I https://api.github.com`
+
+**When runs go wrong:**
+
+- Do not build a narrative from summaries or partial polling alone.
+- Read the actual transcript before deciding whether the agent misunderstood the task, hit an environment problem, or simply needs a tighter resume prompt.
+- For Codex CLI, use the `reading-transcripts` skill and inspect the actual rollout/session transcript, not just the final summary.
+- Resume or replace agents based on transcript evidence, not on confident subagent self-reporting.
+
 ### Subagents Support Sync and Async Task Modes
 
 **CRITICAL**: `task` supports both execution modes. Choose mode intentionally based on coordination needs.
@@ -143,11 +232,14 @@ When using subagents, the main agent becomes a **coordinator**:
 
 After every subagent terminal event (sync return or async terminal callback):
 
-1. **Export transcript**: `opencode export <sessionID>` or use `reading-transcripts` skill
+1. **Inspect transcript**: for OpenCode, use `reading-transcripts` or `opx-session transcript <sessionID>` via `opencode-manager`
 2. **Read full output**: Understand what subagent attempted, what succeeded, what failed
 3. **Git verification**: `git diff` to see actual file changes
 4. **Compare to task**: Did subagent accomplish the prompt? What gaps remain?
 5. **Decision**: Commit (if done) or resume (if incomplete)
+
+For OpenCode sessions, do not use `opencode export` or a local transcript parser fallback.
+Transcript review goes through `opx-session transcript` only.
 
 ### Resume Pattern (When Work Is Insufficient)
 

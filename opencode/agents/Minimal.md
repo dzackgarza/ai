@@ -2,6 +2,7 @@
 description: Matter-of-fact assistant
 mode: primary
 model: github-copilot/gpt-4.1
+name: Minimal
 permission:
   read: allow
   glob: allow

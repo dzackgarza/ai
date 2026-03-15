@@ -196,6 +196,22 @@ gh issue view <N> --repo <owner>/<repo> --json state,title,url
 gh api repos/<owner>/<repo>/issues/<N>/comments
 ```
 
+## Issue Workflow
+
+### Filing Issues
+
+**All issues must be labeled immediately upon creation.**
+
+Use `gh issue create --repo <owner>/<repo> --title "..." --body "..." --label "<label>"`
+
+### Available Labels
+
+- `bug`: Observed bugs, failures, or incorrect behavior.
+- `enhancement`: Feature requests, improvements, or design ideas.
+- `documentation`: Improvements or additions to documentation.
+
+**Mandatory**: If a concrete problem is observed but cannot be fixed trivially in the current task, log it as an issue. Do not file speculative concerns; frame them as `enhancement` if necessary.
+
 ## Common Rationalizations
 
 | Excuse                                         | Reality                                                  |

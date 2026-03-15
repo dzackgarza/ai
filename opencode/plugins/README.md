@@ -135,7 +135,7 @@ Prompt Router now lives in the standalone plugin repo at `/home/dzack/opencode-p
 
 Runtime behavior remains the same:
 - classifies each incoming user message into one of six tiers
-- uses the canonical prompt files in `~/ai/prompts/micro_agents/prompt_difficulty_classifier/`
+- uses the canonical prompt slug `micro-agents/prompt-difficulty-classifier` from `ai-prompts`
 - appends JSONL classifications to `/var/sandbox/.prompt-router.log`
 
 ## Stop Hooks

@@ -13,4 +13,4 @@ class WriterGeneralCode(Subagent):
         return CodeWriter.layers()
 
 
-AGENT = WriterGeneralCode("subagents/general_code_writer.md")
+AGENT = WriterGeneralCode("sub-agents/general-code-writer")

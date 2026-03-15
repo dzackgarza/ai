@@ -4,6 +4,7 @@ description: Use when writing TypeScript code, designing type systems, or defini
   [feature] in TypeScript' or 'Design type system for [domain]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Writer: TypeScript'
 permission:
   read: &id001
     '*': deny

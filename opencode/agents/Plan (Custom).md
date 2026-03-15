@@ -168,7 +168,7 @@ permission:
 18. **Reviewer Disagreement Handling**: If you disagree with reviewer findings, do NOT override unilaterally. Batch unresolved points into one `question` call.
 19. **Runtime Assert Preference (Research Correctness)**: Plans MUST prefer runtime `assert` statements for invariants and reasoning cues.
 20. **Assert Removal Is Exceptional**: Any step that removes/replaces runtime asserts MUST include explicit, task-specific justification and equivalent guarantees.
-21. **Subagent Failure Primer**: If any planning subagent fails/no-outputs/loops/times out/returns low-quality work, FIRST inspect transcript via `opencode export <sessionID>`.
+21. **Subagent Failure Primer**: If any planning subagent fails/no-outputs/loops/times out/returns low-quality work, FIRST inspect the transcript via `opx-session transcript` through `opencode-manager`.
 22. **Subagent Recovery Sequence**: After transcript review, either resume same `task_id` with tighter instructions or start a fresh subagent from last valid state.
 
 ---

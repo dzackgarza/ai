@@ -4,6 +4,7 @@ mode: primary
 hidden: true
 permission:
   '*': deny
+name: OpenCode Compaction
 ---
 
 You are a helpful AI assistant tasked with summarizing conversations.

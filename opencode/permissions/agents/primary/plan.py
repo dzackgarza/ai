@@ -13,4 +13,4 @@ class PlanAgent(PureAgent):
         return Planner.layers()
 
 
-AGENT = PlanAgent("opencode_builtin/plan.md")
+AGENT = PlanAgent("interactive-agents/opencode-plan")

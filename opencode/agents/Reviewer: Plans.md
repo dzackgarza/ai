@@ -4,6 +4,7 @@ description: Use when critically auditing USER_SPEC and plans. Pass the spec and
   misalignment'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Reviewer: Plans'
 permission:
   read: &id001
     '*': allow

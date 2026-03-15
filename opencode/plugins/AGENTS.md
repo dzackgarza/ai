@@ -1,5 +1,12 @@
 # Plugins — Required Reading
 
+Shared OpenCode plugin policy now lives in `~/ai/skills/opencode-plugin-development/`.
+Use:
+
+- `GUIDE.md` for development workflow and proof policy
+- `AUDIT.md` for post-hoc compliance review
+- `~/ai/skills/opencode-cli/SKILL.md` for basic CLI and manager command forms
+
 Before working in this directory, read the following in full:
 
 ## 1. OpenCode CLI Skill
@@ -92,30 +99,28 @@ real workflow tests.
 - If a bounded one-shot times out, debug the model/workflow. MCP warmup is not the bottleneck
 
 ```bash
-MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
-TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
 
 # Confirm baseline first
 timeout 15 command opencode run --agent Minimal "Reply with only the word 'ready'."
 
 # For repo-local workflow proofs, start a dedicated server in this repo's direnv
 direnv exec /path/to/plugin \
-  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+  command opencode serve --hostname 127.0.0.1 --port 4198
 
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  $MANAGER opx run --agent Minimal --prompt "Reply with only the word 'ready'. (context: intercept test)"
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session messages ses_abc123 --json
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session ses_abc123 --verbose
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $TRANSCRIPT ses_abc123
+  npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx run --agent Minimal --prompt "Reply with only the word 'ready'. (context: intercept test)"
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session messages ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_abc123 --verbose
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session transcript ses_abc123
 ```
 
 ### Transcript parsing
 
 If stdout is ambiguous, inspect session artifacts instead:
 
-- `npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session messages <session-id> --json`
-- `npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx debug trace --session <session-id> --verbose`
-- `npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript <session-id>`
+- `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session messages <session-id> --json`
+- `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session <session-id> --verbose`
+- `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session transcript <session-id>`
 
 Never scrape ANSI/TUI output, and never reason from raw `events.jsonl` when the session
 or transcript interfaces are available.
@@ -408,12 +413,12 @@ If a plugin needs the rendered text of a template file, render the file by path 
 
 ### Separation of concerns
 
-| Layer                    | Responsibility                                          | Where tested                         |
-| ------------------------ | ------------------------------------------------------- | ------------------------------------ |
-| Template (`.md`)         | Prompt text, metadata, Jinja composition, schema config | `llm-template-inspect`, `llm-run`    |
-| `llm-templating-engine`  | Template parsing, bindings, rendering                   | Python tests, CLI                    |
-| `llm-runner`             | Provider calls, schema validation, response templates   | Python tests, CLI                    |
-| Plugin (`.ts`)           | Hook wiring, trigger logic, when to call                | OpenCode plugin tests (§3)           |
+| Layer                   | Responsibility                                          | Where tested                      |
+| ----------------------- | ------------------------------------------------------- | --------------------------------- |
+| Template (`.md`)        | Prompt text, metadata, Jinja composition, schema config | `llm-template-inspect`, `llm-run` |
+| `llm-templating-engine` | Template parsing, bindings, rendering                   | Python tests, CLI                 |
+| `llm-runner`            | Provider calls, schema validation, response templates   | Python tests, CLI                 |
+| Plugin (`.ts`)          | Hook wiring, trigger logic, when to call                | OpenCode plugin tests (§3)        |
 
 **Never put LLM logic in a plugin that has not already been proven at the CLI layer.** A plugin is not the first place to discover that a template, schema, or provider call is wrong.
 

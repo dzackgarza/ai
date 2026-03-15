@@ -4,6 +4,7 @@ description: Use when constructing union checklists. Ask 'Construct union checkl
   checklists'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Writer: Interface Designer'
 permission:
   read: &id001
     '*': deny

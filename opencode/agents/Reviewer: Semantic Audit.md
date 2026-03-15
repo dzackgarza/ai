@@ -4,6 +4,7 @@ description: Use when performing factual gap analysis between file versions. Pas
   versions' or 'Identify lost semantic data in this update'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Reviewer: Semantic Audit'
 permission:
   read: &id001
     '*': allow

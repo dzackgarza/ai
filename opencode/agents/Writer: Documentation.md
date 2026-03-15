@@ -3,6 +3,7 @@ description: Use when writing or updating documentation files. Ask 'Document the
   project architecture' or 'Write a README for [feature]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Writer: Documentation'
 permission:
   read: &id001
     '*': deny

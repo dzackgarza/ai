@@ -4,6 +4,7 @@ description: Use when you need to explore the codebase. Finds WHERE files live a
   to [feature]' or 'Trace how [function] processes data'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Researcher: Code Base'
 permission:
   read: &id001
     '*': allow

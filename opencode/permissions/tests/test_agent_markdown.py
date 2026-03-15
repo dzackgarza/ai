@@ -6,6 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from ai_prompts import get_prompt
 from llm_templating_engine import (
     Bindings,
     RenderTemplateRequest,
@@ -78,11 +79,11 @@ def test_llm_run_returns_run_response_for_plain_text_prompt(tmp_path: Path) -> N
 
 
 def test_llm_run_returns_structured_run_response() -> None:
-    prompt = WORKSPACE_ROOT / "prompts" / "micro_agents" / "prompt_difficulty_classifier" / "prompt.md"
+    prompt = get_prompt("micro-agents/prompt-difficulty-classifier")
 
     proc = _run_llm_run(
         {
-            "template": {"path": str(prompt)},
+            "template": {"text": prompt.text, "name": prompt.slug},
             "bindings": {
                 "data": {
                     "prompt": "Describe every tool you have access to.",
@@ -98,23 +99,13 @@ def test_llm_run_returns_structured_run_response() -> None:
     assert "AI" in payload["response"]["structured"]["reasoning"]
 
 
-def test_load_template_document_resolves_relative_prompt_path() -> None:
-    original_prompts_dir = os.environ.get("PROMPTS_DIR")
-    os.environ["PROMPTS_DIR"] = str(WORKSPACE_ROOT / "prompts")
-    try:
-        template = load_template_document(
-            TemplateReference(path="opencode_builtin/general.md")
-        )
-    finally:
-        if original_prompts_dir is None:
-            os.environ.pop("PROMPTS_DIR", None)
-        else:
-            os.environ["PROMPTS_DIR"] = original_prompts_dir
+def test_ai_prompts_returns_opencode_general_prompt() -> None:
+    prompt = get_prompt("sub-agents/opencode-general")
 
-    assert template.frontmatter["description"].startswith("General-purpose agent")
-    assert template.frontmatter["mode"] == "subagent"
-    assert template.body_template == ""
-    assert Path(template.path).name == "general.md"
+    assert prompt.frontmatter["description"].startswith("General-purpose agent")
+    assert prompt.frontmatter["mode"] == "subagent"
+    assert prompt.body == ""
+    assert prompt.slug == "sub-agents/opencode-general"
 
 
 def test_micro_agent_render_supports_frontmatter_aware_include(tmp_path: Path) -> None:
@@ -189,63 +180,16 @@ def test_render_body_supports_frontmatter_aware_macro_import(tmp_path: Path) -> 
 
 def test_render_agent_markdown_inlines_child_prompt_body_only(tmp_path: Path) -> None:
     from src.agent_markdown import render_agent_markdown
-    from src.base import PureAgent
+    from agents.primary.ralph_planner import AGENT
 
-    class IncludedPromptAgent(PureAgent):
-        def __init__(self, prompt_template: str) -> None:
-            super().__init__(prompt_template=prompt_template)
-
-        @property
-        def name(self) -> str:
-            return "Included Prompt Agent"
-
-        def permission_layers(self) -> list[dict]:
-            return [{"bash": "allow"}]
-
-    prompts_dir = tmp_path / "prompts"
-    prompts_dir.mkdir()
-    (prompts_dir / "child.md").write_text(
-        "---\n"
-        "description: child metadata should be ignored\n"
-        "mode: subagent\n"
-        "model: ignored/model\n"
-        "---\n"
-        "child body only\n"
-    )
-    parent = prompts_dir / "parent.md"
-    parent.write_text(
-        "---\n"
-        "description: parent metadata should dominate\n"
-        "mode: primary\n"
-        "model: test/model\n"
-        "temperature: 0.2\n"
-        "---\n"
-        "parent start\n"
-        "{% include './child.md' %}\n"
-        "parent end\n"
-    )
-
-    original_prompts_dir = os.environ.get("PROMPTS_DIR")
-    os.environ["PROMPTS_DIR"] = str(prompts_dir)
-    try:
-        rendered = render_agent_markdown(
-            IncludedPromptAgent(prompt_template=str(parent))
-        )
-    finally:
-        if original_prompts_dir is None:
-            os.environ.pop("PROMPTS_DIR", None)
-        else:
-            os.environ["PROMPTS_DIR"] = original_prompts_dir
+    rendered = render_agent_markdown(AGENT)
 
     frontmatter, body = _split_markdown_frontmatter(rendered)
-    assert frontmatter["description"] == "parent metadata should dominate"
+    assert frontmatter["description"].startswith("Collaborative loop builder")
     assert frontmatter["mode"] == "primary"
-    assert frontmatter["model"] == "test/model"
-    assert frontmatter["temperature"] == 0.2
-    assert frontmatter["permission"]["bash"] == "allow"
-    assert "ignored/model" not in rendered
-    assert "child metadata should be ignored" not in rendered
-    assert body == "parent start\nchild body only\nparent end\n"
+    assert frontmatter["model"] == "github-copilot/gpt-4.1"
+    assert "Ralph Command Standards" in body
+    assert "{% include" not in body
 
 
 def test_render_agent_markdown_embeds_template_metadata_and_permissions() -> None:

@@ -3,7 +3,7 @@ import sys
 import subprocess
 import os
 
-OPENCODE_MANAGER_PACKAGE = "/home/dzack/opencode-plugins/opencode-manager"
+OPENCODE_MANAGER_PACKAGE = "git+https://github.com/dzackgarza/opencode-manager.git"
 
 
 def main():

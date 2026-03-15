@@ -2,7 +2,6 @@
   "description": "Zotero librarian - manages and maintains Zotero reference libraries",
   "mode": "primary",
   "model": "github-copilot/gpt-4.1",
-  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/zotero_librarian/PROMPT.md}",
   "permission": {
     "read": "allow",
     "glob": "allow",
@@ -69,5 +68,6 @@
     "serena_think_about_task_adherence": "deny",
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny"
-  }
+  },
+  "prompt_slug": "interactive-agents/zotero-librarian"
 }

@@ -1,7 +1,6 @@
 {
   "description": "Default collaborative agent - handles trivial to complex tasks, user-in-the-loop",
   "mode": "primary",
-  "prompt": "{file:/home/dzack/ai/prompts/interactive_agents/interactive.md}",
   "permission": {
     "read": {
       "*": "allow"
@@ -114,5 +113,6 @@
     "serena_think_about_task_adherence": "deny",
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny"
-  }
+  },
+  "prompt_slug": "interactive-agents/interactive"
 }

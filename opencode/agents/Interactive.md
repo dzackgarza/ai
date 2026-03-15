@@ -1,6 +1,7 @@
 ---
 description: Default collaborative agent - handles trivial to complex tasks, user-in-the-loop
 mode: primary
+name: Interactive
 permission:
   read: &id001
     '*': allow

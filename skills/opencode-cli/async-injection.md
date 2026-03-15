@@ -11,19 +11,19 @@ setup. Use `../opencode-plugin-development/GUIDE.md` for proof policy and audit 
 
 ### `client.session.prompt()` vs `client.session.promptAsync()`
 
-| API | Returns | Behavior |
-|-----|---------|----------|
-| `prompt()` | `{ info: AssistantMessage, parts: Part[] }` | Blocks until the model responds |
-| `promptAsync()` | `204 void` | Returns immediately; server queues the prompt |
+| API             | Returns                                     | Behavior                                      |
+| --------------- | ------------------------------------------- | --------------------------------------------- |
+| `prompt()`      | `{ info: AssistantMessage, parts: Part[] }` | Blocks until the model responds               |
+| `promptAsync()` | `204 void`                                  | Returns immediately; server queues the prompt |
 
 Use `promptAsync()` for all background work. `prompt()` blocks — calling it from a background task that outlives the agent's turn will hang indefinitely.
 
 Both accept the same body, including `noReply`:
 
-| `noReply` | Effect |
-|-----------|--------|
+| `noReply`         | Effect                                            |
+| ----------------- | ------------------------------------------------- |
 | `false` (default) | Injects message AND triggers a new model response |
-| `true` | Injects silently — context only, no response |
+| `true`            | Injects silently — context only, no response      |
 
 ### `client.session.abort()`
 
@@ -85,13 +85,17 @@ export const MyPlugin: Plugin = async ({ client }) => {
           // Fire and forget — do NOT await
           runBackground(sessionID, args.seconds, client).catch(async (err) => {
             // Best-effort error injection
-            await client.session.promptAsync({
-              path: { id: sessionID },
-              body: {
-                noReply: false,
-                parts: [{ type: "text", text: `[task failed] ${err?.message}` }],
-              },
-            }).catch(() => {}); // Swallow — session may be gone
+            await client.session
+              .promptAsync({
+                path: { id: sessionID },
+                body: {
+                  noReply: false,
+                  parts: [
+                    { type: "text", text: `[task failed] ${err?.message}` },
+                  ],
+                },
+              })
+              .catch(() => {}); // Swallow — session may be gone
           });
 
           return `Task started. Result will be injected on completion.`;
@@ -108,7 +112,9 @@ async function runBackground(sessionID: string, seconds: number, client: any) {
     path: { id: sessionID },
     body: {
       noReply: false, // Inject result AND trigger a new model response
-      parts: [{ type: "text", text: `[task complete] ${new Date().toISOString()}` }],
+      parts: [
+        { type: "text", text: `[task complete] ${new Date().toISOString()}` },
+      ],
     },
   });
 }
@@ -131,22 +137,21 @@ Background work requires a session harness that can outlive the first idle and e
 real session artifacts. Do not use rendered CLI/TUI output as evidence.
 
 ```bash
-MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
 
 # Start a repo-local server first when the workflow depends on local config/env
 direnv exec /path/to/plugin \
   command opencode serve --hostname 127.0.0.1 --port 4198
 
 # Begin a real session, then drive it with follow-up chat turns
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx begin-session \
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session \
   "Trigger the async workflow here" \
   --agent Minimal \
   --json
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx chat --session ses_abc123 --prompt "Follow-up prompt if needed"
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_abc123 --prompt "Follow-up prompt if needed"
 
 # Inspect the real session instead of scraping terminal output
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session ses_abc123 --verbose
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx transcript --session ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_abc123 --verbose
+OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_abc123 --json
 ```
 
 Use `opx transcript --json` or `opx debug trace` when you need raw evidence for
@@ -156,11 +161,11 @@ callback delivery, a follow-up turn, or an assistant error.
 
 ## Sources
 
-| File | What it confirms |
-|------|-----------------|
-| `node_modules/@opencode-ai/plugin/dist/tool.d.ts` | `ToolContext` shape including `sessionID`, `messageID`, `abort` |
-| `node_modules/@opencode-ai/sdk/dist/gen/sdk.gen.d.ts` | `prompt()`, `promptAsync()`, `abort()`, `status()` method signatures |
+| File                                                    | What it confirms                                                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `node_modules/@opencode-ai/plugin/dist/tool.d.ts`       | `ToolContext` shape including `sessionID`, `messageID`, `abort`           |
+| `node_modules/@opencode-ai/sdk/dist/gen/sdk.gen.d.ts`   | `prompt()`, `promptAsync()`, `abort()`, `status()` method signatures      |
 | `node_modules/@opencode-ai/sdk/dist/gen/types.gen.d.ts` | `SessionPromptData`, `SessionPromptAsyncData`, `SessionStatus`, `noReply` |
-| `plugins/async-command.ts` | Working implementation of background tool with result injection |
-| `plugins/stop-hooks.ts` | Idle-only injection via `session.idle` event |
-| `plugins/cot-trivial-test.ts` | Mid-stream abort + re-prompt via `message.part.delta` |
+| `plugins/async-command.ts`                              | Working implementation of background tool with result injection           |
+| `plugins/stop-hooks.ts`                                 | Idle-only injection via `session.idle` event                              |
+| `plugins/cot-trivial-test.ts`                           | Mid-stream abort + re-prompt via `message.part.delta`                     |

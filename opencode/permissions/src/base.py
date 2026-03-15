@@ -13,8 +13,8 @@ class Agent(ABC):
     The ``compile()`` method is provided and should not be overridden.
     """
 
-    def __init__(self, prompt_template: str) -> None:
-        self._prompt_template = prompt_template
+    def __init__(self, prompt_slug: str) -> None:
+        self._prompt_slug = prompt_slug
 
     @property
     @abstractmethod
@@ -35,9 +35,9 @@ class Agent(ABC):
         """
 
     @property
-    def prompt_template(self) -> str:
-        """Prompt template path relative to PROMPTS_DIR."""
-        return self._prompt_template
+    def prompt_slug(self) -> str:
+        """Prompt slug resolved through the ai-prompts dependency."""
+        return self._prompt_slug
 
     @property
     def overrides(self) -> dict:
@@ -58,7 +58,7 @@ class Agent(ABC):
     def __repr__(self) -> str:
         return (
             f"{type(self).__name__}(name={self.name!r}, base_type={self.base_type!r}, "
-            f"prompt_template={self.prompt_template!r})"
+            f"prompt_slug={self.prompt_slug!r})"
         )
 
 

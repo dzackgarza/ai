@@ -258,23 +258,9 @@ The `prompt` field completely replaces the built-in system prompt for that agent
 
 ## Prompts
 
-### Interactive Agents (`~/ai/prompts/interactive_agents/`)
+### Interactive Agents
 
-**Top-level agents - users invoke these directly in the coding harness.**
-
-| Agent           | Role                             | Temperature |
-| --------------- | -------------------------------- | ----------- |
-| **interactive** | Default entry point, user-facing | 0.5         |
-
-**Interactive handles all horizons:**
-
-| Horizon | Criteria                         | Interactive's Action                                |
-| ------- | -------------------------------- | --------------------------------------------------- |
-| Trivial | < 2 min, obvious                 | Just do it                                          |
-| Small   | Fits in head, clear path         | Brief plan -> execute                               |
-| Complex | Multiple unknowns, design needed | Switch to `plan` mode first (never direct to build) |
-
-Planning and execution are split across `plan` and `build`, coordinated from `interactive`.
+**Agent definitions are no longer in this repo — they're all defined in the external `ai-prompts` repository.** See that repo for documentation on specific agents. This file contains only general notes about agent behavior patterns.
 
 **Mode-switch indicators:**
 
@@ -303,7 +289,7 @@ User → interactive
 | build | Executes implementation plans |
 | minimal | Minimal agent template |
 
-### Subagents (`~/ai/prompts/subagents/`)
+### Subagents (`ai-prompts` slugs under `sub-agents/`)
 
 **Internal agents - called by top-level agents, not meant for direct user invocation.**
 
@@ -332,7 +318,7 @@ User → interactive
 | project-initializer     | Generates ARCHITECTURE.md and CODE_STYLE.md                 |
 | plan-contract-validator | Constraint compliance, pattern consistency, smell detection |
 
-### Worker Agents (`~/ai/prompts/worker_agents/`)
+### Specialized Agents (`ai-prompts` slugs under `interactive-agents/` and `sub-agents/`)
 
 **Specialized agents with extra local tools - usable both interactively AND autonomously.**
 
@@ -347,7 +333,7 @@ Workers are domain-specific agents that can be:
 | test_engineer      | Design test strategy with user | Run test coverage audits |
 | lattice_documentor | Plan docs structure            | Generate missing docs    |
 
-Each worker has `prompt.md` + `example_tasks/` showing autonomous work they can complete.
+Each specialized prompt lives in `ai-prompts`; support material is expanded into the fetched prompt document by slug.
 
 ## MCP Servers
 
@@ -529,7 +515,7 @@ Example local use:
 cat <<'EOF' | just run-microagent
 {
   "template": {
-    "path": "/home/dzack/ai/prompts/micro_agents/evaluator.md"
+    "path": "/tmp/evaluator.md"
   },
   "bindings": {
     "data": {
@@ -542,6 +528,8 @@ cat <<'EOF' | just run-microagent
 }
 EOF
 ```
+
+Materialize `/tmp/evaluator.md` first with `cd opencode && uv run ai-prompts get micro-agents/evaluator > /tmp/evaluator.md`.
 
 For ad hoc one-offs without syncing this repo, use the public upstream CLIs directly:
 

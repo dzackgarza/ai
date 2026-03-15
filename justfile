@@ -119,10 +119,10 @@ check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
 
 opencode-harness *args:
-    @npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx {{ args }}
+    @npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx {{ args }}
 
 opencode-session *args:
-    @npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session {{ args }}
+    @npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session {{ args }}
 
 # =============================================================================
 # OpenRouter Free Model Manager

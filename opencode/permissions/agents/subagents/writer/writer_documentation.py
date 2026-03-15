@@ -13,4 +13,4 @@ class WriterDocumentation(Subagent):
         return DocsWriter.layers()
 
 
-AGENT = WriterDocumentation("subagents/project-initializer.md")
+AGENT = WriterDocumentation("sub-agents/project-initializer")

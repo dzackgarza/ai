@@ -2,6 +2,7 @@
 description: Repo steward - autonomous repository maintenance and optimization
 mode: primary
 model: github-copilot/gpt-4.1
+name: Repository Steward
 permission:
   read: &id001
     '*': allow

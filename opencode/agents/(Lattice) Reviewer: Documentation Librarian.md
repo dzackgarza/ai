@@ -4,6 +4,7 @@ description: Use when organizing documentation. Ask 'Organize docs folder for [p
   canonical sources'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Reviewer: Documentation Librarian'
 permission:
   read: &id001
     '*': allow

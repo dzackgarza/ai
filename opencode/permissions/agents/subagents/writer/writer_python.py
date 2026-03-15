@@ -13,4 +13,4 @@ class WriterPython(Subagent):
         return CodeWriter.layers()
 
 
-AGENT = WriterPython("subagents/python_code_writer.md")
+AGENT = WriterPython("sub-agents/python-code-writer")

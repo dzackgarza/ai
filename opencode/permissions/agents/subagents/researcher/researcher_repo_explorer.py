@@ -13,4 +13,4 @@ class ResearcherRepoExplorer(Subagent):
         return Researcher.layers()
 
 
-AGENT = ResearcherRepoExplorer("subagents/repo-explorer.md")
+AGENT = ResearcherRepoExplorer("sub-agents/repo-explorer")

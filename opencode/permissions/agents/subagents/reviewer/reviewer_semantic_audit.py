@@ -13,4 +13,4 @@ class ReviewerSemanticAudit(Subagent):
         return Reviewer.layers()
 
 
-AGENT = ReviewerSemanticAudit("subagents/semantic-auditor.md")
+AGENT = ReviewerSemanticAudit("sub-agents/semantic-auditor")

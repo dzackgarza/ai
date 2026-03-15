@@ -4,6 +4,7 @@ description: Use when writing new tests following TDD or designing test strategi
   only.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Writer: Tests'
 permission:
   read: &id001
     '*': deny

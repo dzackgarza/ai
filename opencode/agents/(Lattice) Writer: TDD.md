@@ -4,6 +4,7 @@ description: Use when combining existing test methods into unified tests. Ask 'C
   for [lattice feature]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Writer: TDD'
 permission:
   read: &id001
     '*': deny

@@ -185,5 +185,5 @@
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny"
   },
-  "prompt": "{file:/home/dzack/ai/prompts/worker_agents/lattice_interface/subagents/lattice_interface_implementer/prompt.md}"
+  "prompt_slug": "sub-agents/lattice-interface-implementer"
 }

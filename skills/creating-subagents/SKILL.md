@@ -153,7 +153,7 @@ Before creating a subagent, ask:
 
 ### 2. Read the Subagent Prompt
 
-Read the subagent's prompt file (`prompts/subagents/*.md` or `prompts/worker_agents/**/subagents/**/*.md`).
+Read the subagent prompt via `ai-prompts` using its slug.
 
 Extract:
 - **Role**: What does this subagent do?
@@ -182,7 +182,7 @@ Every subagent needs:
     "permission": {
       "task": "deny"
     },
-    "prompt": "{file:/path/to/prompt.md}"
+    "prompt_slug": "sub-agents/example-slug"
   }
 }
 ```

@@ -8,35 +8,15 @@
   ],
   "formatter": {
     "ruff-check": {
-      "command": [
-        "uvx",
-        "ruff",
-        "check",
-        "--fix",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
     },
     "ruff-format": {
-      "command": [
-        "uvx",
-        "ruff",
-        "format",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
     },
     "prettier": {
-      "command": [
-        "npx",
-        "prettier",
-        "--write",
-        "$FILE"
-      ],
+      "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [
         ".md",
         ".js",
@@ -53,15 +33,8 @@
   },
   "lsp": {
     "texlab": {
-      "command": [
-        "texlab"
-      ],
-      "extensions": [
-        ".tex",
-        ".sty",
-        ".cls",
-        ".bib"
-      ]
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
     }
   },
   "mcp": {
@@ -78,19 +51,11 @@
     },
     "context7": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@upstash/context7-mcp"
-      ]
+      "command": ["npx", "-y", "@upstash/context7-mcp"]
     },
     "cut-copy-paste-mcp": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@fastmcp-me/cut-copy-paste-mcp"
-      ]
+      "command": ["npx", "-y", "@fastmcp-me/cut-copy-paste-mcp"]
     },
     "deepwiki-mcp": {
       "type": "remote",
@@ -109,17 +74,15 @@
     "cc-safety-net@0.7.1",
     "@azumag/opencode-rate-limit-fallback@1.70.0",
     "@ramtinj95/opencode-tokenscope@1.5.2",
-    "@plannotator/opencode@latest",
-    "@dzackgarza/opencode-plugin-improved-task@git+https://github.com/dzackgarza/opencode-plugin-improved-task.git#e4355344fbe5f0590ed13424918d730d04a56aec",
-    "@dzackgarza/opencode-plugin-improved-todowrite@git+https://github.com/dzackgarza/opencode-plugin-improved-todowrite.git#061566f8bb2ea6f663e50ef4ccd11e9c2be4d7f7",
-    "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#7c5159ae0f08d8c10969c4afc3d47e982ebc11e6",
-    "@dzackgarza/opencode-plugin-prompt-transformer@git+https://github.com/dzackgarza/opencode-plugin-prompt-transformer.git#ad9b30c9a3eca8556ba8ddcc7d0feb6c361235d4",
-    "@dzackgarza/opencode-plugin-reminder-injection@git+https://github.com/dzackgarza/opencode-plugin-reminder-injection.git#c9a8c76c7444f33baaaead17a2d8bfa73a058cf7",
-    "@dzackgarza/opencode-postgres-memory-plugin@git+https://github.com/dzackgarza/opencode-postgres-memory-plugin.git#4a14d102699667bd874b8550b14c8cdeef0259d9",
-    "@dzackgarza/opencode-time-travel-plugin@git+https://github.com/dzackgarza/opencode-time-travel-plugin.git#fbd33f84d611afb98bc8fb49409aeb8d531b24ea",
-    "@dzackgarza/opencode-zotero-plugin@git+https://github.com/dzackgarza/opencode-zotero-plugin.git#e0c69b080e2251ab9dc3c2fabf3769ce6664ce25",
-    "file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-smoke-fileproof.ts",
-    "file:///home/dzack/ai/opencode/tools/canonical-plugin-probes/canonical-shadowing-fileproof.ts",
+    "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
+    "@dzackgarza/opencode-plugin-improved-task@git+https://github.com/dzackgarza/opencode-plugin-improved-task.git#main",
+    "@dzackgarza/opencode-plugin-improved-todowrite@git+https://github.com/dzackgarza/opencode-plugin-improved-todowrite.git#main",
+    "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
+    "@dzackgarza/opencode-plugin-prompt-transformer@git+https://github.com/dzackgarza/opencode-plugin-prompt-transformer.git#main",
+    "@dzackgarza/opencode-plugin-reminder-injection@git+https://github.com/dzackgarza/opencode-plugin-reminder-injection.git#main",
+    "@dzackgarza/opencode-postgres-memory-plugin@git+https://github.com/dzackgarza/opencode-postgres-memory-plugin.git#main",
+    "@dzackgarza/opencode-time-travel-plugin@git+https://github.com/dzackgarza/opencode-time-travel-plugin.git#main",
+    "@dzackgarza/opencode-zotero-plugin@git+https://github.com/dzackgarza/opencode-zotero-plugin.git#main",
     "opencode-pty@0.2.3"
   ],
   "permission": {

@@ -14,4 +14,4 @@ class UnrestrictedTestAgent(PureAgent):
         return [mixin_allow_all_permissions()]
 
 
-AGENT = UnrestrictedTestAgent("interactive_agents/unrestricted-test.md")
+AGENT = UnrestrictedTestAgent("interactive-agents/unrestricted-test")

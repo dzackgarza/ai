@@ -3,6 +3,7 @@ description: Use when auditing document-to-test coverage. Ask 'Audit document-to
   coverage for [lattice component]' or 'Find gaps and mismatches in test coverage'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Reviewer: Test Coverage'
 permission:
   read: &id001
     '*': allow

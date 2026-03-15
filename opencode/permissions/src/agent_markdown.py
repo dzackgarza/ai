@@ -7,11 +7,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from llm_templating_engine import (
-    RenderTemplateRequest,
-    TemplateReference,
-    render_template,
-)
+from ai_prompts import get_prompt
 import tiktoken
 import yaml
 
@@ -36,8 +32,6 @@ DEFAULT_PROMPT_TOKEN_ENCODING = os.environ.get(
 PROMPT_TOKEN_WARNING_THRESHOLD = int(
     os.environ.get("OPENCODE_AGENT_TOKEN_WARNING_THRESHOLD", "5000")
 )
-WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
-PROMPTS_ROOT = (WORKSPACE_ROOT / "prompts").resolve()
 
 
 @dataclass(frozen=True)
@@ -52,17 +46,6 @@ class GeneratedAgentArtifact:
     token_count: int
     model: str | None
     source_template: str
-
-
-def _resolve_workspace_prompt_path(path: str | Path) -> Path:
-    candidate = Path(path).expanduser()
-    if candidate.is_absolute():
-        return candidate.resolve()
-    cwd_candidate = (Path.cwd() / candidate).resolve()
-    if cwd_candidate.exists():
-        return cwd_candidate
-    return (PROMPTS_ROOT / candidate).resolve()
-
 
 def _ordered_frontmatter(source: Mapping[str, Any], permission: dict[str, Any]) -> dict[str, Any]:
     frontmatter: dict[str, Any] = {}
@@ -121,14 +104,9 @@ def count_prompt_tokens(prompt_body: str, model: str | None = None) -> int:
 
 def render_agent_artifact(agent: Agent) -> GeneratedAgentArtifact:
     """Render one managed agent into a build artifact."""
-    template_path = _resolve_workspace_prompt_path(agent.prompt_template)
-    rendered = render_template(
-        RenderTemplateRequest(
-            template=TemplateReference(path=str(template_path)),
-        )
-    )
-    frontmatter = _ordered_frontmatter(rendered.template.frontmatter, agent.compile())
-    body = rendered.rendered.body.rstrip()
+    prompt = get_prompt(agent.prompt_slug)
+    frontmatter = _ordered_frontmatter(prompt.frontmatter, agent.compile())
+    body = prompt.body.rstrip()
     dumped = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=False).strip()
     markdown = f"---\n{dumped}\n---\n"
     if body:
@@ -141,14 +119,14 @@ def render_agent_artifact(agent: Agent) -> GeneratedAgentArtifact:
         frontmatter=frontmatter,
         token_count=count_prompt_tokens(body, frontmatter.get("model")),
         model=frontmatter.get("model"),
-        source_template=agent.prompt_template,
+        source_template=agent.prompt_slug,
     )
 
 
-def load_static_markdown_artifact(template_path: str, output_name: str) -> GeneratedAgentArtifact:
+def load_static_markdown_artifact(prompt_slug: str, output_name: str) -> GeneratedAgentArtifact:
     """Load a static markdown template into a build artifact."""
-    source = _resolve_workspace_prompt_path(template_path)
-    markdown = source.read_text()
+    prompt = get_prompt(prompt_slug)
+    markdown = prompt.text
     frontmatter, body = _split_markdown_frontmatter(markdown)
     return GeneratedAgentArtifact(
         name=Path(output_name).stem,
@@ -158,7 +136,7 @@ def load_static_markdown_artifact(template_path: str, output_name: str) -> Gener
         frontmatter=frontmatter,
         token_count=count_prompt_tokens(body.rstrip(), frontmatter.get("model")),
         model=frontmatter.get("model"),
-        source_template=template_path,
+        source_template=prompt_slug,
     )
 
 
@@ -183,10 +161,10 @@ def write_markdown_artifact(artifact: GeneratedAgentArtifact, output_dir: str | 
 
 
 def write_static_markdown_template(
-    template_path: str,
+    prompt_slug: str,
     output_name: str,
     output_dir: str | Path,
 ) -> Path:
     """Copy a static upstream-shadow template into the runtime agents directory."""
-    artifact = load_static_markdown_artifact(template_path, output_name)
+    artifact = load_static_markdown_artifact(prompt_slug, output_name)
     return write_markdown_artifact(artifact, output_dir)

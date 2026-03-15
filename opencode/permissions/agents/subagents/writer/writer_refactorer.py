@@ -13,4 +13,4 @@ class WriterRefactorer(Subagent):
         return CodeWriter.layers()
 
 
-AGENT = WriterRefactorer("subagents/refactorer.md")
+AGENT = WriterRefactorer("sub-agents/refactorer")

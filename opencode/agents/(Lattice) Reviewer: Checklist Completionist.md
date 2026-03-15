@@ -4,6 +4,7 @@ description: Use when cross-referencing checklists against canonical source docs
   of all provably present methods'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Reviewer: Checklist Completionist'
 permission:
   read: &id001
     '*': allow

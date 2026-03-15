@@ -13,4 +13,4 @@ class WriterSageMath(Subagent):
         return CodeWriter.layers()
 
 
-AGENT = WriterSageMath("subagents/sagemath_code_writer.md")
+AGENT = WriterSageMath("sub-agents/sagemath-code-writer")

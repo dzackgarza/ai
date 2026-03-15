@@ -2,6 +2,7 @@
 description: Testing-only agent with all permissions enabled
 mode: primary
 model: github-copilot/gpt-4.1
+name: Unrestricted Test
 permission:
   read: allow
   glob: allow

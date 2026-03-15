@@ -4,6 +4,7 @@ description: Use when porting algorithms from existing implementations. Ask 'Det
   objects'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: '(Lattice) Writer: Algorithm Porter'
 permission:
   read: &id001
     '*': deny

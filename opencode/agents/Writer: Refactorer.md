@@ -5,6 +5,7 @@ description: Use when performing safe, structurally-aware code refactoring. Pass
   clean architecture principles to [component]'.
 mode: subagent
 model: github-copilot/gpt-4.1
+name: 'Writer: Refactorer'
 permission:
   read: &id001
     '*': deny

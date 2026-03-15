@@ -1,91 +1,7 @@
 import argparse
-import json
 import subprocess
 import sys
-import tempfile
-from datetime import datetime, timezone as tz
-from pathlib import Path
-
-
-def parse_opencode_json(file_path: Path) -> None:
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    info = data.get("info", {})
-    print(
-        f"=== OpenCode Transcript: {info.get('title', 'Unknown')} ({info.get('id', 'Unknown')}) ===\n"
-    )
-
-    for msg in data.get("messages", []):
-        msg_info = msg.get("info", {})
-        role = msg_info.get("role", "unknown").upper()
-
-        meta_parts = []
-
-        t = msg_info.get("time") or {}
-        if isinstance(t, dict) and t.get("created"):
-            ts = datetime.fromtimestamp(t["created"] / 1000, tz=tz.utc).strftime(
-                "%Y-%m-%dT%H:%M:%SZ"
-            )
-            meta_parts.append(ts)
-
-        model = msg_info.get("model")
-        if isinstance(model, dict):
-            model = model.get("modelID")
-        if model:
-            meta_parts.append(str(model))
-
-        if isinstance(t, dict) and t.get("created") and t.get("completed"):
-            native_latency = (t["completed"] - t["created"]) / 1000
-            meta_parts.append(f"llm {native_latency:.1f}s")
-
-        tokens = msg_info.get("tokens", {})
-        if tokens.get("total"):
-            tok_parts = [f"in {tokens['input']:,}"]
-            if tokens.get("input_cached"):
-                tok_parts.append(f"{tokens['input_cached']:,} cached")
-            tok_parts.append(f"out {tokens['output']:,}")
-            if tokens.get("output_reasoning"):
-                tok_parts.append(f"{tokens['output_reasoning']:,} reasoning")
-            meta_parts.append("tokens: " + ", ".join(tok_parts))
-
-        header = f"\n[{role}]"
-        if meta_parts:
-            header += f"  // {' | '.join(meta_parts)}"
-        print(header)
-
-        for part in msg.get("parts", []):
-            ptype = part.get("type")
-            if ptype == "text":
-                print(part.get("text", "").strip())
-            elif ptype == "reasoning":
-                print(
-                    f"🤔 [Thinking...]\n{part.get('text', '').strip()}\n[End of Thinking]"
-                )
-            elif ptype == "tool":
-                tool_name = part.get("tool", "unknown_tool")
-                state = part.get("state", {})
-                timing = part.get("timing", {})
-                inputs = json.dumps(state.get("input", {}), indent=2)
-                tool_header = f"🛠️  [Tool Use: {tool_name}]"
-                if timing.get("latency_s") is not None:
-                    tool_header += f" (tool took {timing['latency_s']:.2f}s)"
-                print(f"{tool_header}\n{inputs}")
-
-                output = state.get("output", "")
-                status = state.get("status", "")
-                err_flag = "❌ ERROR" if status == "error" else "✅"
-
-                if output:
-                    res_content = str(output)
-                    if len(res_content) > 500:
-                        res_content = res_content[:500] + "\n...[truncated]..."
-                    print(f"\n{err_flag} [Tool Result]\n{res_content.strip()}")
-            elif ptype in ("step-start", "step-finish", "patch"):
-                continue
-            else:
-                print(f"[{ptype} block]")
-        print("-" * 60)
+OPENCODE_MANAGER_PACKAGE = "git+https://github.com/dzackgarza/opencode-manager.git"
 
 
 def main() -> None:
@@ -98,22 +14,24 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
-        tmp_path = Path(tmp.name)
-        result = subprocess.run(
-            ["opencode", "export", args.session_id],
-            stdout=tmp,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        if result.returncode != 0:
-            print(f"Error exporting session: {result.stderr}", file=sys.stderr)
-            sys.exit(1)
+    result = subprocess.run(
+        [
+            "npx",
+            "--yes",
+            f"--package={OPENCODE_MANAGER_PACKAGE}",
+            "opx-session",
+            "transcript",
+            args.session_id,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(f"Error rendering transcript: {result.stderr}", file=sys.stderr)
+        sys.exit(1)
 
-    try:
-        parse_opencode_json(tmp_path)
-    finally:
-        tmp_path.unlink()
+    sys.stdout.write(result.stdout)
 
 
 if __name__ == "__main__":

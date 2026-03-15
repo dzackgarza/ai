@@ -11,6 +11,12 @@ Provides paths and parsing scripts for reading historical transcript logs from v
 
 Intelligent agents can use this information to locate past conversations, list historical sessions, and extract plain-text transcripts from otherwise dense JSONL/database formats in order to answer user questions about past work.
 
+## Navigation
+
+- Use this skill for transcript discovery and parsing across supported harnesses.
+- Use `opencode-cli` for OpenCode manager command forms and repo-local server setup.
+- Use `opencode-plugin-development` when transcript evidence is part of plugin proof or audit work.
+
 ## Quick Reference
 
 | Action                      | Command                                                                                                    |
@@ -21,11 +27,15 @@ Intelligent agents can use this information to locate past conversations, list h
 For `--harness opencode`, the dispatcher delegates to:
 
 ```bash
-npx --yes --package=/home/dzack/opencode-plugins/opencode-manager \
+npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git \
   opx-session transcript <session-id>
 ```
 
 Other harnesses still use the local parser scripts in this skill.
+
+OpenCode transcripts always go through `opx-session transcript`. If that surface is
+insufficient, file an issue instead of adding `opencode export`, `OPENCODE_BIN`, or a
+local fallback parser.
 
 **Example Workflow:**
 
@@ -126,5 +136,5 @@ The wrapper scripts abstract away the locations of the underlying data. If the s
 | **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                                                            |
 | **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                                                                     |
 | **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                                                           |
-| **OpenCode**    | OpenCode session transcript | Delegated via `npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript <session_id>`. |
+| **OpenCode**    | OpenCode session transcript | Delegated via `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session transcript <session_id>`. |
 | **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                                                              |

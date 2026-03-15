@@ -13,4 +13,4 @@ class LatticeReviewerDocumentationLibrarian(Subagent):
         return Reviewer.layers()
 
 
-AGENT = LatticeReviewerDocumentationLibrarian("worker_agents/lattice_interface/subagents/lattice_documentation_librarian/prompt.md")
+AGENT = LatticeReviewerDocumentationLibrarian("sub-agents/lattice-documentation-librarian")
