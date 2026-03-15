@@ -4,12 +4,68 @@ description: Use when delegating a coding task to Jules — bug fixes, tests, do
 license: Apache-2.0
 metadata:
 author: sanjay3290
-version: "1.0"
+version: "1.1"
 ---
 
 # Jules Task Delegation
 
 Delegate coding tasks to Google's Jules AI agent on GitHub repositories.
+
+## IMPORTANT: Quality Caveats
+
+**Jules is a weak agent with significant failure modes.** All work must be heavily validated, gated, and reviewed before approval. Treat Jules output adversarially when reviewing.
+
+### Common Failure Patterns
+
+- **Hollow PRs**: Minimal or trivial changes that don't actually solve the problem
+- **High LOC for simple features**: Unnecessarily verbose implementations
+- **Rushing to fix**: No root cause research, just monkey-patches
+- **Poor integration**: Doesn't use existing code patterns
+- **Testing theater**: Tests that pass but don't verify meaningful behavior
+- **Obfuscation**: Complex code hiding lack of substance
+- **Reward hacking**: Minimal path to "done" without real value
+- **Early termination**: Stops before significant work is complete
+- **Goal substitution**: Completes a different task than requested
+
+### Validation Requirements
+
+- **ALWAYS** load `test-guidelines` skill when reviewing Jules output
+- Check that tests verify correctness, not just coverage
+- Verify the implementation addresses the actual root cause
+- Look for shortcuts, workarounds, and incomplete solutions
+- Reprompt Jules to continue when gaps are found
+
+### Automated Review Limitations
+
+Automated reviews catch technical flaws but typically assume code is morally "right." They will NOT detect hollow implementations, short-circuited work, reward hacking, goal substitution, or incomplete solutions.
+
+### When to Use Jules
+
+Jules has a restricted Linux environment with no access to online docs or external references. Context engineering in the prompt is essential.
+
+**Best for:**
+- Straightforward tasks where the desired solution is already known
+- Work where research has already been done
+- Purely internal code changes (no external dependencies)
+- First 50%+ of a larger task (expect ~90% completion, rarely 100%)
+
+**Avoid for:**
+- Tasks requiring external API research
+- Complex integration with unfamiliar libraries
+- Work likely to need babysitting through repeated prompts
+
+**Cost/Benefit:**
+
+| Aspect      | Value                            |
+| ----------- | -------------------------------- |
+| Free tier   | 100 tasks/day                    |
+| Concurrency | Up to 15 parallel                |
+| Model       | Watered-down Gemini 3 (Mar 2026) |
+| Quality     | Good for 50-90%, rarely complete |
+
+**No Jules PR should be accepted without deep review. Automated reviews are insufficient.**
+
+---
 
 ## Setup (Run Before First Command)
 
@@ -30,7 +86,7 @@ If fails → tell user to run `jules login` (or `--no-launch-browser` for headle
 ### 3. Auto-Detect Repo
 
 ```bash
-git remote get-url origin 2>/dev/null | sed -E 's#.*\(github\.com\)[/:]\([^/]+/[^/.]+\)\(\\.git\)?#\2#'
+git remote get-url origin 2>/dev/null | sed -E 's#.*(github\.com)[/:]([^/]+/[^/.]+)(\.git)?#\2#'
 ```
 
 If not GitHub or not in git repo → ask user for `--repo owner/repo`
@@ -60,9 +116,9 @@ jules remote list --repo # Connected repos
 ### Retrieve Results
 
 ```bash
-jules remote pull --session  # View diff
-jules remote pull --session  --apply # Apply locally
-jules teleport  # Clone + apply
+jules remote pull --session <id>          # View diff
+jules remote pull --session <id> --apply  # Apply locally
+jules teleport <id>                       # Clone + apply
 ```
 
 ### Latest Session Shortcut
@@ -81,17 +137,11 @@ BRANCH=$(git branch --show-current)
 RECENT_FILES=$(git diff --name-only HEAD~3 2>/dev/null | head -10 | tr '\n' ', ')
 RECENT_COMMITS=$(git log --oneline -5 | tr '\n' '; ')
 STAGED=$(git diff --cached --name-only | tr '\n' ', ')
-```
 
-**Use when creating tasks:**
-
-```bash
 jules new --repo owner/repo "Fix the bug in auth module. Context: branch=$BRANCH, recently modified: $RECENT_FILES"
 ```
 
 ## Template Prompts
-
-Quick commands for common tasks:
 
 ### Add Tests
 
@@ -121,27 +171,32 @@ PR_INFO=$(gh pr view $PR_NUM --json title,body,files --jq '"\(.title)\n\(.body)\
 jules new "Review this PR for bugs, security issues, and improvements: $PR_INFO"
 ```
 
+## Workflow
+
+1. **Create**: `jules new "Task description"`
+2. **Monitor**: `jules remote list --session` or https://jules.google.com
+3. **Pull**: `jules remote pull --session <id>`
+4. **Validate**: Load `test-guidelines`, review adversarially
+5. **Apply**: `jules remote pull --session <id> --apply` (only after validation)
+6. **Reprompt**: If gaps found, reprompt Jules to continue
+
 ## Git Integration (Apply + Commit)
 
-After Jules completes, apply changes to a new branch:
+After Jules completes and you've validated the work:
 
 ```bash
 SESSION_ID=""
 TASK_DESC=""
-# Create branch, apply, commit
 git checkout -b "jules/$SESSION_ID"
 jules remote pull --session "$SESSION_ID" --apply
 git add -A
 git commit -m "feat: $TASK_DESC
 Jules session: $SESSION_ID"
-# Optional: push and create PR
 git push -u origin "jules/$SESSION_ID"
 gh pr create --title "$TASK_DESC" --body "Automated changes from Jules session $SESSION_ID"
 ```
 
 ## Poll Until Complete
-
-Wait for session to finish:
 
 ```bash
 SESSION_ID=""
@@ -205,8 +260,8 @@ Create in repo root to improve Jules results:
 | Status                 | Action            |
 | ---------------------- | ----------------- |
 | Planning / In Progress | Wait              |
-| Awaiting User F        | Respond at web UI |
-| Completed              | Pull results      |
+| Awaiting User          | Respond at web UI |
+| Completed              | Pull & validate   |
 | Failed                 | Check web UI      |
 
 ## Notes
@@ -215,3 +270,4 @@ Create in repo root to improve Jules results:
 - **No CLI cancel** → Use web UI to cancel
 - **GitHub only** → GitLab/Bitbucket not supported
 - **AGENTS.md** → Jules reads from repo root for context
+- **ALWAYS validate before applying changes**
