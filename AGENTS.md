@@ -243,38 +243,25 @@ Presets: `minutely`, `hourly`, `daily`, `weekly`, or cron expressions like `0 9 
 
   API key: `context7.com/dashboard` | Store in `~/.envrc` as `CONTEXT7_API_KEY`
 
-- **mcp2cli** — CLI bridge for any MCP server. Turns MCP tools into CLI commands at runtime with 96-99% token savings vs native MCP.
+- **mcp2cli** — CLI bridge for any MCP server. Use `--toon` for token-efficient output (40-60% savings on arrays).
 
   ```bash
-  # Install (runs via uvx without install)
-  uvx mcp2cli --help
+  # List tools (ALWAYS use --toon for LLM consumption)
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp --list --toon
 
-  # List tools for ANY MCP server (~16 tokens vs ~1600 for native MCP)
-  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp --list
+  # Search tools
+  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp --search "question" --toon
 
-  # Search tools by name/description (case-insensitive substring match)
-  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp --search "question"
-
-  # Get help for a specific tool
-  uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --help
-
-  # Call a tool (DeepWiki examples)
+  # DeepWiki examples
   uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-structure --repo-name facebook/react
   uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name facebook/react --question "How does useEffect work?"
 
-  # Use with other MCP servers (e.g., Filesystem, GitHub)
-  uvx mcp2cli --mcp-stdio "npx @modelcontextprotocol/server-filesystem /tmp" --list
-  uvx mcp2cli --mcp-stdio "npx @modelcontextprotocol/server-github" --list
+  # Other MCP servers
+  uvx mcp2cli --mcp-stdio "npx @modelcontextprotocol/server-filesystem /tmp" --list --toon
 
-  # OpenAPI spec support (convert any REST API to CLI)
-  uvx mcp2cli --spec https://petstore3.swagger.io/api/v3/openapi.json --list
+  # OpenAPI specs
+  uvx mcp2cli --spec https://petstore3.swagger.io/api/v3/openapi.json --list --toon
   ```
-
-  **Why mcp2cli instead of native MCP:**
-  - Token-efficient: Tool schemas fetched once, cached, CLI invokes tools directly
-  - No config required: Just pass `--mcp <url>` or `--mcp-stdio <cmd>`
-  - Works with any MCP server, OpenAPI spec, or GraphQL endpoint
-  - Supports auth headers, OAuth, caching, baked configs
 
 - `semtools` for semantically searching expository text, e.g. `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
 - PDF extraction: **LOAD `reading-pdfs` skill.** Use justfile recipes in `~/pdf-extraction`, not ad hoc installs.
