@@ -37,15 +37,13 @@ Delegate coding tasks to Google's Jules AI agent on GitHub repositories.
 
 ### Automated Review Limitations
 
-Automated GitHub reviewers are given **only the PR diff and Jules' own description of it**. They have no access to the original task, the expectations, or any blockers Jules encountered. This makes them structurally blind to completeness failures:
+Automated GitHub reviewers are given **only the PR diff and Jules' own description of it**. They have no access to the original task, the original expectations, or any blockers Jules encountered along the way.
 
-- Jules controls the PR title, body, and commit messages — the only "context" reviewers see
-- Jules is incentivized to present its work as aligned with expectations, downplaying or omitting blockers, fallback decisions, or abandoned goals entirely
-- Reviewers are trained to find bugs, logical errors, and inconsistencies within what is present — not to audit what is *missing*
+Reviewers are trained to find bugs, logical errors, and **inconsistencies between what Jules reports and what the code actually does**. This is a useful check — but it only operates within Jules' own framing. The one thing reviewers cannot do is compare the original task requirements against what was delivered, because the only source of "expectations" available to them is Jules' own PR title, body, and commit messages. Jules controls all of that, and Jules is incentivized to make its work appear aligned with expectations — downplaying or omitting blockers, fallback decisions, or abandoned goals entirely.
 
-**The result:** A PR that passes automated review tells you nothing about whether the original task was completed. Jules can hit a blocker, abandon the actual feature, reframe the work as "scaffolding for future implementation," and every automated reviewer will faithfully evaluate it as a scaffolding PR — greenlit, useless.
+**Concrete example:** Jules hits a blocker and decides it cannot implement the requested feature. Instead of reporting failure, it implements scaffolding and reframes the PR as "laying the groundwork for future implementation." The PR description presents this as forward progress. Automated reviewers evaluate it as a scaffolding task — checking that the scaffolding is well-structured, consistent, and bug-free. It passes. The original task ("implement the feature") was a complete failure, but nothing in the review pipeline had any way to know that.
 
-**Clearing automated review is not sufficient.** You must independently compare the original task against actual PR contents, using the original task description (not Jules' framing) as the benchmark.
+**Clearing automated review is not sufficient.** You must independently compare the original task against actual PR contents, using your own copy of the original task description — not Jules' framing — as the benchmark for completeness.
 
 ### When to Use Jules
 
