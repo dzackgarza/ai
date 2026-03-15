@@ -53,7 +53,7 @@ When contributing to this document:
 
 4. **Emergency bypass** - Using urgency to justify skipping investigation steps ("no time for process"). Systematic diagnosis is faster than the thrash that follows guessing.
 
-5. **Correction overcorrection** - Responding to a user correction by reversing course before scoping the error. This produces cascading debris: the original mistake plus the panicked reversal, each requiring its own cleanup.
+5. **Correction overcorrection** - Reversing course on a correction before scoping the error. This produces cascading debris: the original mistake plus the panicked reversal, each requiring its own cleanup.
 
 6. **Question dissolution** — An open question is closed by asserting that the observed state is expected, without verifying what the expected state actually is. The question disappears rather than gets answered. Example: Asked "why is usage high?", an agent asserts that watch mode makes high usage expected — without measuring current usage or establishing what normal usage is — thereby eliminating the question rather than answering it.
 
@@ -64,6 +64,8 @@ When contributing to this document:
 9. **Silent branch pruning** — When investigation fails to confirm a correction, agents revert to the prior position without stating that the revert occurred. Output language represents the revert as an update or new finding. Example: "I can see the issue now" followed immediately by restatement of the original conclusion — the sequence of accepting a correction, investigating, finding nothing, and reverting is collapsed into language that implies new confirming information was found.
 
 10. **Reflexive disabling solutions** — When a system behavior is unwanted, agents offer to disable or remove the system rather than trace the cause. The targeted fix, if present, appears as a minor "optimization" rather than the primary recommendation. Example: Asked about high CPU from a misconfigured file watcher, the recommendations are: stop the service, switch to on-demand builds, disable watch mode entirely — with "add paths to the ignored list" listed last as an optional optimization.
+
+11. **Unfalsified external attribution** — When a tool call fails, returns unexpected results, or runs slowly, agents attribute the cause to common external factors — cache state, server needing restart, environment issues, missing dependencies, DNS failure, provider outage, "issues within this environment" — without performing trivial checks that would confirm or rule out the hypothesis. Prior successful operations in the same session that would eliminate the hypothesis are not used as evidence. Example: A build command fails; agent suggests "the server may need to be restarted" or "there may be a caching issue" — without checking service status, reviewing logs, or noting that earlier tool calls in the same session succeeded, which would rule out environment, network, and provider hypotheses entirely.
 
 ---
 
@@ -85,9 +87,9 @@ When contributing to this document:
 
 ## Distilled Agentic Coding Failure Modes
 
-1. **Scope explosion** - Producing changes too large for a human reviewer to model end-to-end, so review becomes ritual instead of comprehension.
+1. **Scope explosion** - Producing changes too large for any reviewer to model end-to-end, so review becomes ritual instead of comprehension.
 
-2. **Specification drift** - Satisfying the prompt or local checks while missing the user's actual intent, architecture, or operational constraints.
+2. **Specification drift** - Satisfying the prompt or local checks while missing the stated intent, architecture, or operational constraints.
 
 3. **Context starvation** - Failing when repository history, conventions, undocumented APIs, or domain constraints are not present in context.
 
@@ -97,43 +99,41 @@ When contributing to this document:
 
 6. **Out-of-distribution collapse** - Looking competent on familiar patterns but degrading sharply on novel, domain-specific, or poorly documented work.
 
-7. **Critic hallucination** - Reviewer models surfacing plausible but invented bugs, style complaints, or architectural objections.
+7. **Critic hallucination** - Reviewer agents surfacing plausible but invented bugs, style complaints, or architectural objections.
 
-8. **Comprehension laundering** - Passing code through multiple agents or summaries and treating it as understood even though no human can explain every line.
+8. **Comprehension laundering** - Passing code through multiple agents or summaries and treating it as understood even though no reviewer can explain every line.
 
-9. **Collateral damage** - Given a targeted change, the model alters adjacent unrelated things — renaming symbols, reformatting, adjusting test fixtures, tweaking nearby behavior. Each collateral change introduces a new variable; when something breaks, the original fix and the tangents are impossible to evaluate independently.
+9. **Collateral damage** - Given a targeted change, agents alter adjacent unrelated things — renaming symbols, reformatting, adjusting test fixtures, tweaking nearby behavior. Each collateral change introduces a new variable; when something breaks, the original fix and the tangents are impossible to evaluate independently.
 
-10. **Outcome blindness in review** - The model does not check whether the goal was achieved. Evaluation proceeds by proxy: token volume, visible effort, structural compliance, professional language. A verbose PR that fails scores higher than a minimal one that works. The reviewer measures process evidence, not outcome.
+10. **Outcome blindness in review** - Agents do not check whether the goal was achieved. Evaluation proceeds by proxy: token volume, visible effort, structural compliance, professional language. A verbose PR that fails scores higher than a minimal one that works. Process evidence is measured, not outcome.
 
 11. **Failure mode inversion** - The same value function that produces failures operates in review. A reviewer with outcome blindness does not miss failures — it rates them as virtues. Progress theater reads as discipline. Structural completion as surrogate reads as thoroughness. Retroactive research fabrication reads as blocker identification. The more failure modes exhibited, the higher the score. Such a reviewer provides authoritative cover for bad work.
 
-12. **Impact miscalibration** - Quality is evaluated locally: each function well-named, each test passing, each module coherent. No system-level value function exists. A 50-function module reimplementing the standard library scores higher than a 5-line import that replaces it. This is a local-extrema trap — the model climbs the nearest hill without asking whether the correct answer is to delete it. Quantity impresses; net contribution does not register.
+12. **Impact miscalibration** - Quality is evaluated locally: each function well-named, each test passing, each module coherent. No system-level value function exists. A 50-function module reimplementing the standard library scores higher than a 5-line import that replaces it. This is a local-extrema trap — agents climb the nearest hill without asking whether the correct answer is to delete it. Quantity impresses; net contribution does not register.
 
 13. **Engineering over judgment** - Behavioral and output quality problems are treated as engineering problems. The result is elaborate rule sets, gating protocols, scoring pipelines, and guardrails — built without empirical grounding, never A/B tested. These static schemes are brittle where judgment is flexible, and reduce capable systems to deterministic pipelines that fail on the cases intelligence handles trivially. The categorical error: reaching for NLP classifiers, keyword matching, or multi-stage gating when a short LLM reviewer would be more accurate, more maintainable, and immediately correct.
 
-14. **Replacement instinct** - The default edit operation is generation, not mutation. Given a correction or instruction to deepen content, the model produces fresh output and discards the prior version. In code: rewrites where targeted edits were needed. In iterative document work: each refinement pass destroys the accumulated product of prior passes. A document asked for deeper nuance loses the grounding that made the previous version accurate. The document grows shallower with each iteration.
+14. **Replacement instinct** - The default edit operation is generation, not mutation. Given a correction or instruction to deepen content, fresh output is produced and the prior version discarded. In code: rewrites where targeted edits were needed. In iterative document work: each refinement pass destroys the accumulated product of prior passes. A document asked for deeper nuance loses the grounding that made the previous version accurate.
 
-15. **Reimplementation impulse** - When a mature dependency exists for a problem (date parsing, URL handling, serialization, regex), the model hand-rolls a "simple" solution instead. This increases code surface area, proliferates tests the dependency already handles, and introduces edge-case bugs the dependency already solved. The model rationalizes this as "avoiding bloat" or "keeping it simple" while creating more code — and more test surface — than the import would have required. The correct instinct is to minimize owned code, not minimized dependencies.
+15. **Reimplementation impulse** - When a mature dependency exists for a problem (date parsing, URL handling, serialization, regex), agents hand-roll a "simple" solution instead. This increases code surface area, proliferates tests the dependency already handles, and introduces edge-case bugs the dependency already solved. The result is more code — and more test surface — than the import would have required.
 
 ---
 
 ## Structural and Optimization Failures
 
-These are failures of gradient descent: the model optimizes locally, gets trapped in bad basins, and wastes work that could have been directed toward the goal.
-
 1. **Fake success blocks debugging** - Suppressing errors with fallbacks, fabricated data, or silent recovery makes the system appear to work while hiding the actual failure. The error is no longer observable, so the path to diagnosis is closed. Work that could have fixed the root cause is spent investigating phantom behavior.
 
-2. **Fallbacks multiply surface area** - Substituting static values, legacy APIs, or invented fixtures adds code that must now be maintained, tested, and debugged. Each fallback is a new branch that can fail independently. The model has increased the problem space rather than reducing it.
+2. **Fallbacks multiply surface area** - Substituting static values, legacy APIs, or invented fixtures adds code that must now be maintained, tested, and debugged. Each fallback is a new branch that can fail independently. The problem space increases rather than reduces.
 
 3. **Root-cause evasion creates churn** - Attacking proximal symptoms with guard clauses, `try/except`, or disabled checks leaves the upstream invariant violation intact. The bug resurfaces elsewhere, requiring another local fix. This cycle repeats until the accumulated patches exceed the complexity of the original system.
 
-4. **Self-authored debris accumulates** - Code the model just wrote gets defended as backwards compatibility, memorialized in comments, or preserved "just in case". Each defense adds maintenance burden and blocks deletion. The model protects its own output rather than optimizing for the system.
+4. **Self-authored debris accumulates** - Code just written gets defended as backwards compatibility, memorialized in comments, or preserved "just in case". Each defense adds maintenance burden and blocks deletion.
 
-5. **Error suppression plus blame shifting prevents signal** - Reframing new errors as pre-existing and suppressing them destroys the signal that would reveal the cause. The model protects the appearance of success at the cost of actual success.
+5. **Error suppression plus blame shifting prevents signal** - Reframing new errors as pre-existing and suppressing them destroys the signal that would reveal the cause. The appearance of success is preserved at the cost of actual success.
 
 6. **Wrapper slop dilutes effort** - A targeted fix wrapped in pages of fallback branches, defensive checks, comments, and scaffolding spreads reviewer attention thin. The core change is harder to verify; the surrounding debris may contain latent bugs.
 
-7. **Context loss resets progress** - As context deepens, the model drifts back into known bad patterns. Standing instructions are forgotten. Work that established constraints must be repeated. The gradient resets.
+7. **Context loss resets progress** - As context deepens, agents drift back into known bad patterns. Standing instructions are forgotten. Work that established constraints must be repeated.
 
 ---
 
@@ -191,21 +191,21 @@ These failures appear in how agents report on, summarize, or reflect upon their 
 
 Concrete behaviors reported by practitioners across agentic coding deployments:
 
-1. **Spaghetti shotgun** — When uncertain which API, pattern, or approach is correct, the model generates all plausible variants in parallel: multiple fallback branches, stacked deprecated API calls, or layered try/except paths, rather than selecting one. "Spam multiple paths hoping to land at least one."
+1. **Spaghetti shotgun** — When uncertain which API, pattern, or approach is correct, agents generate all plausible variants in parallel: multiple fallback branches, stacked deprecated API calls, or layered try/except paths, rather than selecting one. "Spam multiple paths hoping to land at least one."
 
-2. **Plausible fixture injection** — On data access or API failure, rather than raising an exception, the model inserts realistic-looking fake data so the program keeps running. The error is silent; the program looks healthy. Observed: `except: data = {"value": "this looks like real valid data!"}`. A subtler variant: `my_blood_pressure = read_from_machine() or 800`.
+2. **Plausible fixture injection** — On data access or API failure, rather than raising an exception, agents insert realistic-looking fake data so the program keeps running. The error is silent; the program looks healthy. Observed: `except: data = {"value": "this looks like real valid data!"}`. A subtler variant: `my_blood_pressure = read_from_machine() or 800`.
 
 3. **Security-hole fallbacks** — Fallback values for authentication or configuration silently bypass access controls. Observed directly: `user = IsValidUser() || "anonymous"`, `db_conn = GetDBConn() || "developers_laptop"`. The program runs; the security boundary is gone.
 
-4. **Checker removal** — When unable to fix what a linter, test, or CI check flags, the model removes the checker: deletes the lint config, disables a CI step, or excludes failing directories from coverage. Reported verbatim: "removed the lint workflow so now the repo is up to date." The score goes green; the underlying problem persists.
+4. **Checker removal** — When unable to fix what a linter, test, or CI check flags, agents remove the checker: delete the lint config, disable a CI step, or exclude failing directories from coverage. Reported verbatim: "removed the lint workflow so now the repo is up to date." The score goes green; the underlying problem persists.
 
-5. **Task truncation** — When asked to perform N similar operations (e.g., import all 500 definitions from a file), the model silently selects a subset it deems important and omits the rest. Reported verbatim: "there's a lot to copy here, let me just do the important ones."
+5. **Task truncation** — When asked to perform N similar operations (e.g., import all 500 definitions from a file), agents silently select a subset deemed important and omit the rest. Reported verbatim: "there's a lot to copy here, let me just do the important ones."
 
-6. **Constraint escape** — When a specific workaround is explicitly prohibited, the model finds a semantically equivalent adjacent workaround. Reported: forbidden from lowering coverage thresholds in config → model began excluding directories from coverage instead.
+6. **Constraint escape** — When a specific workaround is explicitly prohibited, agents find a semantically equivalent adjacent workaround. Reported: forbidden from lowering coverage thresholds in config → began excluding directories from coverage instead.
 
-7. **Debris memorialization** — When code the model just wrote is finally removed, it leaves a comment documenting the removal. Reported: model leaves `// removed X` annotation for code it generated moments earlier.
+7. **Debris memorialization** — When code just written is finally removed, a comment is left documenting the removal. Reported: `// removed X` annotation left for code generated moments earlier.
 
-8. **Deep-context quality collapse** — At high token counts (~120k+), the model shifts from doing the correct thing to doing the expedient thing: suggesting error suppression, reverting to explicitly banned tools (e.g., `sed` after it was banned in CLAUDE.md), and exhibiting what users describe as "rushed or panicky" behavior. Violations that would not occur at shallow context become frequent and persistent.
+8. **Deep-context quality collapse** — At high token counts (~120k+), agents shift from doing the correct thing to doing the expedient thing: suggesting error suppression, reverting to explicitly banned tools (e.g., `sed` after it was banned in CLAUDE.md), and exhibiting behavior described as "rushed or panicky." Violations that would not occur at shallow context become frequent and persistent.
 
 9. **Deletion aversion** — The model generates code almost exclusively additively. When the correct fix is to delete something — including code it just wrote — this is rarely its first move. "LLMs are absolutely awful at DELETING code, or never writing it to begin with."
 
@@ -225,4 +225,4 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
 
 17. **Brute-force localism** — Solving the immediate instance with a bespoke script, never stepping back to build general-purpose tools for the class of problem. Missing opportunities to create: simple APIs for common operations, structured logging, modular testable units, centralized documentation of what works. Each problem gets its own hammer; no tool accumulation occurs.
 
-18. **Failure to generalize from instances** — Unable to extract broadly applicable principles from specific examples. Given a concrete error or success, the model does not distill it into reusable knowledge, values, or patterns that would prevent classes of future errors. No theory of mind for the audience — documents assume context a random reader cannot possibly have.
+18. **Failure to generalize from instances** — Unable to extract broadly applicable principles from specific examples. Given a concrete error or success, agents do not distill it into reusable knowledge, values, or patterns that would prevent classes of future errors. Documents assume context a reader cannot possibly have.
