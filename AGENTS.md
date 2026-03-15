@@ -56,6 +56,7 @@ Never skip from "I found nothing" to "nothing exists."
 2. **Read pages** → use `read-and-fetch-webpages` skill (gh for GitHub, curl+w3m for others)
 
 **Always use `gh` for GitHub issues/PRs** — never browse github.com directly.
+Never use backticks in text pushed through gh (or any other CLI tools), since this induces shell escaping.
 
 **Context7 (CLI):** Use for ALL library/framework/API questions. No MCP server—uses on-demand CLI calls.
 
