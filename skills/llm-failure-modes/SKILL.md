@@ -8,7 +8,7 @@ metadata:
 
 # LLM Failure Modes
 
-> **Privacy note:** This document is a public-facing skill file. Examples must not contain real interaction transcripts, identifying details, or narratives drawn directly from specific sessions on this system. Where a real incident motivates an entry, write a fictional scenario that captures the same failure pattern — grounded in the experience but stripped of specifics. Entries that currently contain real session data should be sanitized before the next commit.
+> **Privacy note:** This document is a public-facing skill file. Examples grounded in real engineering or technical problems are fine — a misconfigured file watcher or a broken CI step is not sensitive. What must be avoided: personal details, account or system identifiers, verbatim session excerpts that would identify a specific person or interaction, and any narrative that reads as a story about a particular individual rather than a class of agent behavior.
 
 ## Editorial Guidelines
 
