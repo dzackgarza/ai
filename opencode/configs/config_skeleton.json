@@ -107,7 +107,7 @@
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
     "@dzackgarza/opencode-plugin-prompt-transformer@git+https://github.com/dzackgarza/opencode-plugin-prompt-transformer.git#main",
     "@dzackgarza/opencode-plugin-reminder-injection@git+https://github.com/dzackgarza/opencode-plugin-reminder-injection.git#main",
-    "@dzackgarza/opencode-postgres-memory-plugin@git+https://github.com/dzackgarza/opencode-postgres-memory-plugin.git#main",
+    "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
     "@dzackgarza/opencode-time-travel-plugin@git+https://github.com/dzackgarza/opencode-time-travel-plugin.git#main",
     "@dzackgarza/opencode-zotero-plugin@git+https://github.com/dzackgarza/opencode-zotero-plugin.git#main",
     "opencode-pty@0.2.3"
