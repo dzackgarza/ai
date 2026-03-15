@@ -1,229 +1,125 @@
 ---
 name: opencode-cli
-description: Use when running OpenCode CLI commands, selecting models, managing sessions, or configuring MCP servers
+description: Use when running OpenCode CLI commands, starting repo-local OpenCode servers, inspecting models or agents, or driving sessions through opencode-manager
 ---
 
 # OpenCode CLI
 
-Terminal-based AI coding assistant for non-interactive tasks.
+Basic OpenCode and `opencode-manager` usage.
 
-## Global Config Directory (ALWAYS use this)
+For plugin-development policy, proof rules, and audit criteria, use `opencode-plugin-development`.
 
-The global OpenCode config lives at `~/ai/opencode`, which is symlinked to `~/.config/opencode`.
+## Navigation
 
-**All configuration, plugins, and skills go here — not in a local `.opencode/` directory.**
+- Stay in this file for the global config model, basic CLI commands, repo-local server
+  setup, and manager command forms.
+- Read `PLUGINS.md` for plugin structure, event hooks, and plugin-specific debugging
+  patterns.
+- Read `async-injection.md` for background task and callback delivery patterns.
+- Read `REFERENCE.md` for exhaustive command and schema reference.
+- Switch to `opencode-plugin-development` when the task becomes plugin policy, witness
+  design, or audit work.
 
-| Location                      | Purpose                                                         |
-| ----------------------------- | --------------------------------------------------------------- |
-| `~/ai/opencode/opencode.json` | Global config (models, MCP, permissions, etc.)                  |
-| `~/ai/opencode/plugins/`      | Global plugins (always loaded, regardless of working directory) |
-| `~/ai/opencode/skills/`       | Global agent skills                                             |
+## Global Config Model
 
-**Never create a local `.opencode/` directory** unless you have a specific, deliberate reason to override global config for a single project. Almost every use case belongs in the global config.
+The canonical OpenCode workspace is `~/ai/opencode`, symlinked to `~/.config/opencode`.
 
-The reason: plugins, config, and skills in `~/ai/opencode/` are active in every OpenCode session. A local `.opencode/` only applies to sessions run from that project directory, which is almost never what you want.
+| Location | Purpose |
+| --- | --- |
+| `~/ai/opencode/opencode.json` | Effective global config |
+| `~/ai/opencode/configs/config_skeleton.json` | Source of truth for generated global config |
+| `~/ai/opencode/plugins/` | Global plugins loaded across sessions |
+| `~/ai/opencode/skills/` | Shared OpenCode-facing skills |
 
-## Agents
+All agents are defined in `~/ai/opencode/opencode.json` with prompts in `~/ai/prompts/`.
 
-All agents are defined in `~/ai/opencode/opencode.json` with prompts loaded from text files in `~/ai/prompts/`. Primary agents (e.g., "Repository Steward", "Minimal", "Interactive") and subagents (e.g., "code-reviewer", "Refactorer", "Repo Explorer") are version-controlled there. Agent definitions include the prompt file path, permissions, and default model.
+Do not assume a project-local `.opencode/` directory is the main config surface. Use it
+only when you deliberately need a per-repo override.
 
-## Quick Start
+In this workspace, do not hand-edit `~/ai/opencode/opencode.json`. Rebuild it from
+`~/ai/opencode/configs/config_skeleton.json` with `just rebuild` from `~/ai/opencode/`.
+
+## Core Rules
+
+- Use `command opencode`, not a shell alias.
+- Resolve the binary from PATH. Do not introduce `OPENCODE_BIN` or hardcoded local binary paths.
+- Use `opencode-manager` for multi-turn session orchestration, transcript rendering, and debug traces.
+- Transcript parsing goes through `opx transcript --json` only. If that surface is
+  insufficient, file an issue instead of inventing a local fallback parser.
+- If a workflow depends on repo-local config or env, start a repo-local `command opencode serve` inside that repo's `direnv`.
+- `opencode` is not stale. Config is reread on each invocation, so do not blame cache or
+  restart loops.
+
+## Basic Inspection Commands
 
 ```bash
-# Simple one-shot run (plugins active, exits on idle)
-opencode run --thinking --print-logs "Your prompt"
+command opencode agent list
+command opencode models
+command opencode session list
 ```
 
-**Common flags:**
+Use these to inspect the currently visible agents, available models, and known sessions
+before reasoning from failures.
 
-- `--thinking` - Enable reasoning output
-- `--print-logs` - Show logs for debugging
-- `--attach http://localhost:4096` - Attach to a running `opencode serve` instance (skips MCP warmup only — no other behavioral difference)
-
-For plain `opencode run --attach`, `opencode serve` is mostly a warmup cache. The
-separate valid use case is a dedicated custom-port server started inside a repo's local
-config/env so `opencode-manager` can orchestrate session workflows against that exact
-plugin/config surface.
-
-## Known Bug: `run --attach` + `--agent`
-
-Issue: https://github.com/anomalyco/opencode/issues/8094
-
-### Symptom
+## Simple One-Shot CLI Usage
 
 ```bash
-opencode run --attach http://127.0.0.1:4096 --agent plan "test"
-# instance: No context found for instance
+command opencode run "Your prompt"
+command opencode run -m provider/model "Your prompt"
+command opencode run -s <session-id> "Follow-up prompt"
 ```
 
-### Notes
+Use plain `opencode run` for ordinary CLI work, not for plugin proof workflows.
 
-- Reported as a bug in OpenCode (`#8094`), with related fixes discussed upstream.
-- `--attach` is still useful and typically works.
-- The problematic case is selecting a specific non-default agent with `--agent` while attached.
+If a prompt that should be straightforward produces no output or provider/model errors,
+check `command opencode models` first.
 
-### Workarounds
+## Repo-Local Server Setup
 
 ```bash
-# 1) Fast path: use --attach and rely on server/default agent
-opencode run --attach http://localhost:4096 --thinking --print-logs "Your prompt"
-
-# 2) If you need a specific non-default agent, run without --attach
-opencode run --agent <agent> --thinking --print-logs "Your prompt"
+cd /path/to/repo
+direnv allow
+direnv exec . command opencode serve --hostname 127.0.0.1 --port 4198
 ```
 
-## One-Shot Testing
-
-### Simple case: just use `opencode run`
-
-**Default for all one-shot tests.** Plugins are active, output goes to stdout, session completes and exits cleanly. No parsing, no timeouts, no events.jsonl.
+Then point `opencode-manager` at that server:
 
 ```bash
-opencode run "Your prompt here"
-```
-
-No output = model/connectivity issue (99% of cases). Check your model config or API key.
-
-### Multi-turn and async workflows: use `opencode-manager`
-
-Do **not** use rendered CLI/TUI output as your workflow harness or evidence source.
-For multi-turn, async, resume, or post-idle behavior, orchestrate the real session
-through `opencode-manager` and inspect the resulting session data or transcript.
-
-```bash
-MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
-TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
-
-# Create or target a session, then prompt without blocking
-$MANAGER opx-session create --title "test"
-$MANAGER opx-session prompt ses_abc123 "Your prompt" --no-reply
-
-# Inspect the real session instead of scraping the TUI
-$MANAGER opx-session messages ses_abc123 --json
-$MANAGER opx debug trace --session ses_abc123 --verbose
-$TRANSCRIPT ses_abc123
-```
-
-The `echo` / `printf` stdin trick is only a compatibility escape hatch for starting a
-real interactive session. If you must use it, discard the TUI output and inspect the
-session afterward through `opencode-manager`, `opx-session transcript`, `opencode export`,
-or raw session data.
-
-When a workflow depends on repo-local `OPENCODE_CONFIG` or env vars, start a dedicated
-server inside that repo and point the manager at it:
-
-```bash
-direnv exec /path/to/plugin \
-  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
 
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  $MANAGER opx run --agent Minimal --prompt "Your prompt."
+  $MANAGER opx begin-session "Your prompt" --agent Minimal --json
 ```
 
-MCP warmup is at most ~10s and is never the bottleneck. If a session times out or produces unexpected results, the cause is almost always model connectivity, rate limits, or model behavior — not MCP.
-
-## Core Commands
-
-| Command                            | Purpose                   |
-| ---------------------------------- | ------------------------- |
-| `opencode run "prompt"`            | Non-interactive task      |
-| `opencode run -c "prompt"`         | Continue last session     |
-| `opencode run -s <id> "prompt"`    | Continue specific session |
-| `opencode run -m <model> "prompt"` | Use specific model        |
-| `opencode run -f file "prompt"`    | Attach file               |
-| `opencode models`                  | List available models     |
-| `opencode session list`            | List sessions             |
-| `opencode stats`                   | Token usage statistics    |
-| `opencode auth login`              | Configure API keys        |
-| `opencode mcp list`                | List MCP servers          |
-
-### Exporting Readable Transcripts
-
-When agents need readable session transcripts, use the manager transcript command:
+## Manager Commands
 
 ```bash
-npx --yes --package=/home/dzack/opencode-plugins/opencode-manager \
-  opx-session transcript ses_YOUR_ID_HERE
+MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
+
+$MANAGER opx one-shot --agent Minimal --prompt "Your prompt"
+$MANAGER opx begin-session "Your prompt" --agent Minimal --json
+$MANAGER opx chat --session ses_123 --prompt "Follow-up prompt"
+$MANAGER opx system --session ses_123 --prompt "System follow-up"
+$MANAGER opx transcript --session ses_123 --json
+$MANAGER opx final --session ses_123 --prompt "Wrap up" --transcript
+$MANAGER opx delete --session ses_123
+$MANAGER opx debug trace --session ses_123 --verbose
 ```
 
-Fallback only when you explicitly need raw JSON post-processing:
+## Attached Server Notes
 
-```bash
-opencode export ses_YOUR_ID_HERE | sed '1d' | jq -r '.messages[]? | "[\(.info.role | ascii_upcase)]\n" + (if .parts then (.parts[] | select(.type=="text") | .text) else "" end) + "\n\n---\n"' > transcript.md
-```
+- `command opencode run --attach ...` talks to an existing server. It is not a proof
+  harness.
+- `--attach` plus `--agent` is a known broken combination upstream. If you need a
+  specific non-default agent, prefer a non-attached one-shot run or drive the session
+  through `opencode-manager` against a repo-local server.
 
-## Model Format
+## Debugging Order
 
-Always `provider/model` (e.g., `openai/gpt-5.2`, `anthropic/claude-sonnet-4-5`)
-
-## Common Mistakes
-
-| Tried                       | Error                        | Correct                                     |
-| --------------------------- | ---------------------------- | ------------------------------------------- |
-| `opencode "prompt"`         | "Failed to change directory" | `opencode run "prompt"`                     |
-| `--model claude-3.5-sonnet` | "Provider not found"         | `-m openrouter/anthropic/claude-3.7-sonnet` |
-| `opencode --prompt "..."`   | Launches TUI                 | `opencode run "..."`                        |
-
-## Operational Notes
-
-- **Use `command opencode`, not `opencode`** — the bare alias auto-attaches to a server, which interferes with investigations and fresh testing.
-- **Opencode is never stale.** Config files are read fresh on every invocation. No cache to clear, no process to restart, nothing to recompile. If something isn't working, the cause is never "stale state."
-- **Test a fresh instance in <10s:** `command opencode run --agent Minimal 'Hello world'`
-- **The `~/ai` repo is canonical.** All config lives under `~/ai/opencode/`, symlinked to system locations. Edit here only — never in project-local `.opencode/` directories unless deliberately overriding.
-- **Manager target matters.** `opx` / `opx-session` talk to `OPENCODE_BASE_URL`, so use a
-  dedicated custom-port server when the test depends on repo-local config or env.
-- **You do not know opencode internals.** It evolves rapidly. Do not claim or assume functionality or configuration behavior without reading current docs first.
-
-## Red Flags - STOP and Check Help
-
-If you're about to:
-
-- Query databases or guess file paths directly
-- Use flags or subcommands you haven't verified
-
-**STOP** and run `opencode --help` first.
-
-## Free Models (Verified Feb 2026)
-
-| Model                               | Provider     | Notes                        |
-| ----------------------------------- | ------------ | ---------------------------- |
-| `opencode/big-pickle`               | OpenCode Zen | General reasoning            |
-| `opencode/glm-5-free`               | OpenCode Zen | General tasks                |
-| `google/antigravity-gemini-3-flash` | Antigravity  | Fast, capable                |
-| `openai/gpt-5.2-codex`              | OpenAI Codex | Frontier coding (via plugin) |
-
-**Avoid:** OpenRouter free models often have "No endpoints" - test before relying.
-
-## Plugins
-
-For creating and using OpenCode plugins with concrete examples:
-
-→ See [PLUGINS.md](./PLUGINS.md)
-
-Contains:
-
-- Plugin locations (local + npm)
-- Basic plugin structure
-- All events reference (session, tool, file, shell, TUI, etc.)
-- 7 copy-pasteable examples (notifications, env protection, custom tools, etc.)
-- TypeScript support
-- External dependencies
-
-## Full Reference
-
-For comprehensive documentation including all commands, flags, tools, agents, configuration, permissions, MCP servers, skills, environment variables, and providers:
-
-→ See [REFERENCE.md](./REFERENCE.md)
-
-Contains:
-
-- All CLI commands with complete flag tables
-- 15 built-in tools with parameters
-- 7 built-in agents (primary + subagents)
-- Full configuration schema
-- Permissions system with granular examples
-- MCP servers (local/remote/OAuth)
-- Skills system
-- 40+ environment variables
-- Provider/model configuration
-- File structure (project + global)
+- If a run fails with provider or model errors, check `command opencode models` first.
+- If the wrong tools or agents appear, check `command opencode agent list` and the active config surface.
+- If repo-local behavior matters, verify which `OPENCODE_BASE_URL` and repo-local server you are talking to.
+- If a command or flag is uncertain, check `command opencode --help` before guessing.
+- If `opx transcript --json` or another manager surface is wrong, file an issue rather
+  than adding a transcript parsing fallback.
+- If you need proof or audit rules, switch to `opencode-plugin-development`.

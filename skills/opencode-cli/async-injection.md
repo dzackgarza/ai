@@ -2,6 +2,9 @@
 
 Reference for firing background work from plugins and injecting results back into sessions — from tools or event handlers. Researched from SDK types and working plugin examples.
 
+Read `SKILL.md` first for the canonical manager command forms and repo-local server
+setup. Use `../opencode-plugin-development/GUIDE.md` for proof policy and audit rules.
+
 ---
 
 ## Key APIs
@@ -117,8 +120,8 @@ async function runBackground(sessionID: string, seconds: number, client: any) {
 
 > **Open question:** mid-turn queueing behavior is inferred from the API design
 > (`promptAsync` vs `prompt`) and consistent with observed behavior, but not confirmed
-> from server source. Verify it with a kept session plus `opx-session messages` or
-> `opx debug trace`, not with rendered CLI output.
+> from server source. Verify it with `opx transcript --json` or `opx debug trace`,
+> not with rendered CLI output.
 
 ---
 
@@ -128,32 +131,26 @@ Background work requires a session harness that can outlive the first idle and e
 real session artifacts. Do not use rendered CLI/TUI output as evidence.
 
 ```bash
-MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
-TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
+MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
 
 # Start a repo-local server first when the workflow depends on local config/env
 direnv exec /path/to/plugin \
-  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+  command opencode serve --hostname 127.0.0.1 --port 4198
 
-# Simplest path: keep the session and linger past the first idle
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx run \
+# Begin a real session, then drive it with follow-up chat turns
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx begin-session \
+  "Trigger the async workflow here" \
   --agent Minimal \
-  --prompt "Trigger the async workflow here" \
-  --linger 10 \
-  --keep
-
-# Full control: create and drive the session explicitly
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session create --title "async-test"
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session prompt ses_abc123 "Trigger the async workflow here" --no-reply
+  --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx chat --session ses_abc123 --prompt "Follow-up prompt if needed"
 
 # Inspect the real session instead of scraping terminal output
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session messages ses_abc123 --json
 OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session ses_abc123 --verbose
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $TRANSCRIPT ses_abc123
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx transcript --session ses_abc123 --json
 ```
 
-Use `opx-session messages --json` or `opx debug trace` when you need raw evidence for
-callback delivery, a resumed turn, or an assistant error.
+Use `opx transcript --json` or `opx debug trace` when you need raw evidence for
+callback delivery, a follow-up turn, or an assistant error.
 
 ---
 

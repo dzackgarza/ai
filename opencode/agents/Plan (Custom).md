@@ -2,6 +2,7 @@
 description: Primary planning agent for executable implementation plans
 mode: primary
 model: github-copilot/gpt-4.1
+name: Plan (Custom)
 permission:
   read: &id001
     '*': allow

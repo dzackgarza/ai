@@ -2,6 +2,10 @@
 
 Quick reference for creating and using OpenCode plugins with concrete examples.
 
+For global CLI rules and manager command forms, read `SKILL.md` first. For plugin proof
+rules and audit criteria, switch to `../opencode-plugin-development/GUIDE.md` and
+`../opencode-plugin-development/AUDIT.md`.
+
 ---
 
 ## Plugin Locations
@@ -73,33 +77,30 @@ For multi-turn, async, resume, callback, or post-idle behavior, use `opencode-ma
 as the workflow harness and inspect the session directly:
 
 ```bash
-MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
-TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
+MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
 
 # When the workflow depends on repo-local config/env, start a dedicated server there first
 direnv exec /path/to/plugin \
-  /home/dzack/.opencode/bin/opencode serve --hostname 127.0.0.1 --port 4198
+  command opencode serve --hostname 127.0.0.1 --port 4198
 
-# One-shot with transcript output and optional keep-for-inspection
+# One-shot sanity check
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  $MANAGER opx run --agent Minimal --prompt "Use my_tool to do something"
-OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  $MANAGER opx run --agent Minimal --prompt "Trigger async behavior" --linger 10 --keep
+  $MANAGER opx one-shot --agent Minimal --prompt "Use my_tool to do something"
 
-# Explicit session orchestration
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session create --title "my-plugin-test"
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session prompt ses_abc123 "Trigger async behavior" --no-reply
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx-session messages ses_abc123 --json
+# Proof-oriented session orchestration
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx begin-session "Trigger async behavior" --agent Minimal --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx chat --session ses_abc123 --prompt "Follow-up prompt"
 OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx debug trace --session ses_abc123 --verbose
-OPENCODE_BASE_URL=http://127.0.0.1:4198 $TRANSCRIPT ses_abc123
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx transcript --session ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 $MANAGER opx delete --session ses_abc123
 ```
 
-The rendered CLI/TUI is not valid evidence. Use session messages, event traces,
-transcripts, or external side effects.
+The rendered CLI/TUI is not valid evidence. Use debug traces, transcripts, or external
+side effects.
 
 **Two-phase debugging workflow:**
 1. `command opencode run "prompt"` — fast one-shot sanity check
-2. `opx` / `opx-session` — real workflow proof with session artifacts
+2. `opx begin-session` / `opx chat` / `opx transcript` — real workflow proof with session artifacts
 
 ### Common Pitfalls
 
@@ -322,8 +323,8 @@ This is equivalent to Claude Code's `UserPromptSubmit` hook that writes to stdou
 
 > **⚠ `opencode run` exits on idle and does not wait for async work.** The handler fires,
 > but anything it does asynchronously can continue after the CLI exits. Verify the full
-> cycle with `opx` / `opx-session`, then inspect `opx-session messages --json`,
-> `opx debug trace`, or `opx-session transcript`.
+> cycle with `opx begin-session` / `opx chat`, then inspect `opx debug trace` or
+> `opx transcript --json`.
 
 ### Important: Session ID Path
 
@@ -405,13 +406,12 @@ For real workflow proofs, drive the session with `opencode-manager` and inspect 
 session artifacts:
 
 ```bash
-MANAGER="npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git"
-TRANSCRIPT="npx --yes --package=/home/dzack/opencode-plugins/opencode-manager opx-session transcript"
+MANAGER="npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git"
 
-$MANAGER opx run --agent Minimal --prompt "prompt that triggers your plugin" --keep
-$MANAGER opx-session messages ses_abc123 --json
+$MANAGER opx begin-session "prompt that triggers your plugin" --agent Minimal --json
+$MANAGER opx chat --session ses_abc123 --prompt "Follow-up prompt if needed"
 $MANAGER opx debug trace --session ses_abc123 --verbose
-$TRANSCRIPT ses_abc123
+$MANAGER opx transcript --session ses_abc123 --json
 ```
 
 Do not scrape CLI/TUI output, and do not hand-parse `events.jsonl` or `opencode export`

@@ -43,13 +43,39 @@ install:
     @ln -sf {{ repo }}/skills ~/.config/agents/skills
     @ln -sf {{ repo }}/skills ~/.config/amp/skills
     @ln -sf {{ repo }}/skills ~/.kilocode/skills
-    @grep -q 'GEMINI_SYSTEM_MD' ~/.bashrc 2>/dev/null || printf '\n# System prompt overrides for Gemini/Qwen CLI\nexport GEMINI_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\nexport QWEN_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\n' >> ~/.bashrc
-    @grep -q 'GEMINI_SYSTEM_MD' ~/.zshrc 2>/dev/null || printf '\n# System prompt overrides for Gemini/Qwen CLI\nexport GEMINI_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\nexport QWEN_SYSTEM_MD={{ repo }}/prompts/interactive_agents/interactive.md\n' >> ~/.zshrc
+    @mkdir -p ~/.cache/ai-prompts/system-prompts
+    @cd {{ repo }}/opencode && uv run ai-prompts get interactive-agents/interactive > ~/.cache/ai-prompts/system-prompts/interactive.md
+    @python3 - <<'PY'
+from pathlib import Path
+import re
+
+prompt_path = str((Path.home() / ".cache/ai-prompts/system-prompts/interactive.md").resolve())
+marker = "# System prompt overrides for Gemini/Qwen CLI"
+block = (
+    f"\n{marker}\n"
+    f"export GEMINI_SYSTEM_MD={prompt_path}\n"
+    f"export QWEN_SYSTEM_MD={prompt_path}\n"
+)
+pattern = re.compile(
+    r"\n# System prompt overrides for Gemini/Qwen CLI\n"
+    r"export GEMINI_SYSTEM_MD=.*\n"
+    r"export QWEN_SYSTEM_MD=.*\n?",
+    re.MULTILINE,
+)
+for rc_name in (".bashrc", ".zshrc"):
+    rc_path = Path.home() / rc_name
+    text = rc_path.read_text() if rc_path.exists() else ""
+    if marker in text:
+        text = pattern.sub(block, text, count=1)
+    else:
+        text = text.rstrip("\n") + block
+    rc_path.write_text(text.rstrip("\n") + "\n")
+PY
     @echo "✓ Installed"
     @echo ""
     @echo "Context files:    AGENTS.md → all harnesses"
     @echo "Skills:           {{ repo }}/skills → all harnesses"
-    @echo "System prompts:   GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → interactive.md (absolute path)"
+    @echo "System prompts:   GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → cached ai-prompts interactive slug"
     @echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
     @echo "OpenCode:         .opencode/ → ~/.config/opencode"
     @echo "Safety Net:       opencode/configs/cc-safety-net.json → ~/.cc-safety-net/config.json"
@@ -80,6 +106,14 @@ run-microagent *args:
 
 build-agents: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py --build
+
+permissions-apply: check-plugins
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py --apply
+
+config-build: check-plugins
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
+
+rebuild: build-agents
 
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts

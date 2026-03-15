@@ -368,7 +368,7 @@ Local convenience recipe:
 cat <<'EOF' | just run-microagent
 {
   "template": {
-    "path": "/home/dzack/ai/prompts/micro_agents/my_agent/prompt.md"
+    "path": "/tmp/my-agent.md"
   },
   "bindings": {
     "data": {
@@ -378,6 +378,8 @@ cat <<'EOF' | just run-microagent
 }
 EOF
 ```
+
+Materialize `/tmp/my-agent.md` first with `cd ~/ai/opencode && uv run ai-prompts get micro-agents/my-agent > /tmp/my-agent.md`.
 
 For one-off inspection outside the local workspace, the public upstream CLIs are also available directly:
 
