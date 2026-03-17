@@ -213,16 +213,16 @@ Use `task-sched` to schedule persistent systemd tasks:
 
 ```bash
 # Add a recurring task
-task-sched add --command "opx chat --session ses_xxx --prompt 'your message'" --schedule "hourly"
+uvx git+https://github.com/dzackgarza/task-sched add --command "opx chat --session ses_xxx --prompt 'your message'" --schedule "hourly"
 
 # List scheduled tasks
-task-sched list
+uvx git+https://github.com/dzackgarza/task-sched list
 
 # Remove a task
-task-sched remove tsk_xxxxx
+uvx git+https://github.com/dzackgarza/task-sched remove tsk_xxxxx
 
 # Run now (manual trigger)
-task-sched run tsk_xxxxx
+uvx git+https://github.com/dzackgarza/task-sched run tsk_xxxxx
 ```
 
 For one-off tasks, use `at`:
