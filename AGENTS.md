@@ -209,20 +209,14 @@ This sends a new prompt to your session at a fixed time, effectively waking you 
 
 ## Scheduling Tasks
 
-Use `task-sched` to schedule persistent systemd tasks:
+Use `task-sched` to schedule persistent systemd tasks. For help, run `uvx git+https://github.com/dzackgarza/task-sched --help`.
 
 ```bash
 # Add a recurring task
-uvx git+https://github.com/dzackgarza/task-sched add --command "opx chat --session ses_xxx --prompt 'your message'" --schedule "hourly"
+uvx git+https://github.com/dzackgarza/task-sched add --command "echo 'heartbeat'" --schedule "hourly"
 
 # List scheduled tasks
 uvx git+https://github.com/dzackgarza/task-sched list
-
-# Remove a task
-uvx git+https://github.com/dzackgarza/task-sched remove tsk_xxxxx
-
-# Run now (manual trigger)
-uvx git+https://github.com/dzackgarza/task-sched run tsk_xxxxx
 ```
 
 For one-off tasks, use `at`:
@@ -230,8 +224,6 @@ For one-off tasks, use `at`:
 ```bash
 echo "opx chat --session ses_xxx --prompt 'continue work'" | at now + 30 minutes
 ```
-
-Presets: `minutely`, `hourly`, `daily`, `weekly`, or cron expressions like `0 9 * * *`.
 
 ---
 
