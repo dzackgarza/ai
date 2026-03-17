@@ -300,12 +300,10 @@ def summarize_pr_comments(pr_url: str, output_file: str = None) -> str:
         print(f"PR not found: {repo_part}#{pr_num}", file=sys.stderr)
         sys.exit(1)
 
+    # Fetch ALL comments using API (pr view --json comments misses some)
     try:
-        output = run_gh(
-            ["pr", "view", str(pr_num), "--repo", repo_part, "--json", "comments"]
-        )
-        comments_data = json.loads(output)
-        comments = comments_data.get("comments", [])
+        output = run_gh(["api", f"repos/{repo_part}/pulls/{pr_num}/comments"])
+        comments = json.loads(output)
     except subprocess.CalledProcessError:
         comments = []
 
@@ -331,9 +329,9 @@ def summarize_pr_comments(pr_url: str, output_file: str = None) -> str:
     # Group comments and reviews by author
     authors: dict = {}
 
-    # Process comments
+    # Process comments (from API - use 'user' and 'created_at')
     for comment in comments:
-        author = comment.get("author", {}).get("login", "unknown")
+        author = comment.get("user", {}).get("login", "unknown")
         if author not in authors:
             authors[author] = []
 
@@ -343,7 +341,7 @@ def summarize_pr_comments(pr_url: str, output_file: str = None) -> str:
         authors[author].append(
             {
                 "body": body,
-                "created_at": comment.get("createdAt", ""),
+                "created_at": comment.get("created_at", ""),
                 "type": "comment",
             }
         )
@@ -364,43 +362,34 @@ def summarize_pr_comments(pr_url: str, output_file: str = None) -> str:
             }
         )
 
-    # Output by author - show FULL raw comments
-    bot_authors = {
-        "qodo-code-review",
-        "gemini-code-assist",
-        "kilo-code-bot",
-        "google-labs-jules",
-        "codacy-production",
-        "chatgpt-codex-connector",
-        # Also handle [bot] suffix variants
-        "kilo-code-bot[bot]",
-        "codacy-production[bot]",
-        "gemini-code-assist[bot]",
-    }
-    human_authors = [a for a in authors.keys() if a not in bot_authors]
-    bot_author_list = [a for a in authors.keys() if a in bot_authors]
-
-    # Humans first
-    for author in sorted(human_authors):
-        lines.append(f"## 👤 {author}")
+    # Output all comments and reviews in order - no grouping
+    for comment in comments:
+        author = comment.get("user", {}).get("login", "unknown")
+        date = (
+            comment.get("created_at", "")[:10]
+            if comment.get("created_at")
+            else "unknown"
+        )
+        lines.append(f"## {author} ({date})")
         lines.append("")
-        for i, comment in enumerate(authors[author]):
-            date = comment["created_at"][:10] if comment["created_at"] else "unknown"
-            lines.append(f"*[{date}]*")
-            lines.append(comment["body"])
-            lines.append("")
-
-    # Then bots - show FULL raw comments
-    for author in sorted(bot_author_list):
-        bot_name = author.replace("-", " ").title()
-        lines.append(f"## 🤖 {bot_name}")
+        lines.append(comment.get("body", ""))
         lines.append("")
-        for i, comment in enumerate(authors[author]):
-            date = comment["created_at"][:10] if comment["created_at"] else "unknown"
-            lines.append(f"*[{date}]*")
-            # Show FULL raw comment body - no extraction
-            lines.append(comment["body"])
-            lines.append("")
+        lines.append("---")
+        lines.append("")
+
+    for review in reviews:
+        author = review.get("user", {}).get("login", "unknown")
+        date = (
+            review.get("submitted_at", "")[:10]
+            if review.get("submitted_at")
+            else "unknown"
+        )
+        lines.append(f"## {author} ({date})")
+        lines.append("")
+        lines.append(review.get("body", ""))
+        lines.append("")
+        lines.append("---")
+        lines.append("")
 
     result = "\n".join(lines)
 
