@@ -364,18 +364,21 @@ No manual "resolve" needed — it's commit-driven.
 
 ### Sending Review Feedback to Jules
 
-Generate PR review summary and send directly to Jules session using the wrapper script:
+Pipe output from `extract_unresolved_issues.py` directly to Jules:
 
 ```bash
-# Usage: ./jules-feedback.sh SESSION_ID "command"
-./scripts/jules-feedback.sh SESSION_ID "uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM"
+# Send unresolved issues summary
+uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+
+# Send issues list
+uv run python scripts/extract_unresolved_issues.py issues owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
 ```
 
 Example:
 
 ```bash
-# Summarize PR #42 and send to Jules
-./scripts/jules-feedback.sh 17227190236334622547 "uv run python scripts/extract_unresolved_issues.py summarize dzackgarza/opencode-zotero-plugin#42"
+# Send PR #42 issues to Jules
+uv run python scripts/extract_unresolved_issues.py issues dzackgarza/opencode-zotero-plugin#42 | python -m improved_jules_cli feedback 17227190236334622547
 ```
 
 ### What Qualifies as a PR
@@ -476,8 +479,7 @@ python /home/dzack/ai/scripts/extract_unresolved_issues.py summarize owner/repo#
 ### 6. Send Feedback to Jules
 
 ```bash
-# Usage: ./jules-feedback.sh SESSION_ID "command"
-./scripts/jules-feedback.sh SESSION_ID "uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM"
+uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
 ```
 
 ### 7. Repeat Steps 3-6
