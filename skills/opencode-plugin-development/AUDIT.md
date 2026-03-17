@@ -39,6 +39,7 @@ patterns, use `opencode-cli/async-injection.md`.
 - No committed secrets, tokens, keys, or passwords in tracked files.
 - No development debris such as `.serena/`, `__pycache__/`, scratch logs, temp dirs, or giant debug dumps.
 - No package repo commits user-specific absolute runtime paths such as `/home/...`, `~/...`, or hardcoded local binary paths.
+- Integration tests and plugins use centralized relative path resolution (e.g. `cliPath()` helper) instead of `process.cwd()` or hardcoded string paths.
 - Repeated constants and config values have one source of truth.
 
 ## Config and Environment
@@ -114,7 +115,9 @@ patterns, use `opencode-cli/async-injection.md`.
 
 - Python repos use `uv` with declared dependencies in `pyproject.toml`.
 - Python-backed plugin repos expose the standalone CLI through Typer with documented commands or subcommands.
-- MCP wrappers live in their own `mcp-server/` with their own `pyproject.toml` and tests.
+- The repository is a single Python package with `pyproject.toml` at the root. No separate `mcp-server/` directory.
+- The MCP server is exposed as an `mcp` subcommand of the core CLI.
+- The `uvx` command works directly against the repository URL (no-install mandate).
 - No repo relies on ad hoc `pip install` or unmanaged local Python state.
 - MCP wrappers reuse shared bridge code such as `mcp-shim` when that is the intended architecture.
 

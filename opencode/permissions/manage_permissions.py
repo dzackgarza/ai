@@ -577,10 +577,6 @@ AGENTS = {
         caps=[read_all(), write_in("*.serena/plans*"),
               {"task": "allow", "write_plan": "allow"}, {"plan_exit": "allow"}],
     ),
-    "Orchestrator (Custom)": AgentDef(
-        tags={"primary", "orchestrator"},
-        caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],
-    ),
     "orchestrator": AgentDef(
         tags={"primary", "orchestrator"},
         caps=[read_all(), write_all(), {"task": "allow"}, allow_git()],

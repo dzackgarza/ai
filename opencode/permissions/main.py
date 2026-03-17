@@ -10,17 +10,18 @@ To add an agent: create a file in agents/primary/ or agents/subagents/,
 subclass PureAgent or Subagent, and assign AGENT = YourClass().
 Internals live in src/; rulesets in src/rulesets/.
 """
-import argparse
 import json
 import logging
 import os
 from pathlib import Path
 import subprocess
 import sys
+from typing import Optional
 
 # Ensure sibling modules are importable when run directly.
 sys.path.insert(0, os.path.dirname(__file__))
 
+import typer
 from agents import AGENTS
 from rich.console import Console
 from rich.logging import RichHandler
@@ -34,6 +35,7 @@ from src.agent_markdown import (
     write_markdown_artifact,
 )
 from src.compiler import GLOBAL_DEFAULTS
+from src.validate_inventory import validate_tool_inventory
 from src.display import load_agent_rulesets, show_effective, show_agents, show_rulesets, console
 from src.models import UNMANAGED_AGENTS
 
@@ -137,6 +139,8 @@ def _validate_written_artifacts(artifacts: list[GeneratedAgentArtifact]) -> None
 
 def apply_agents() -> list[GeneratedAgentArtifact]:
     """Write compiled permissions to all managed markdown agent files."""
+    validate_tool_inventory(GLOBAL_DEFAULTS)
+
     # Global defaults → skeleton
     if _SKELETON.exists():
         data = _read_json(_SKELETON)
@@ -203,44 +207,63 @@ def dry_run() -> None:
 # CLI
 # ---------------------------------------------------------------------------
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Manage OpenCode agent permissions (v2).")
-    parser.add_argument("--build",          action="store_true",
-                        help="Write markdown agents, rebuild opencode.json, and validate runtime visibility")
-    parser.add_argument("--apply",          action="store_true",
-                        help="Write compiled permissions to agent config files")
-    parser.add_argument("--dry-run",        action="store_true",
-                        help="Compile all agents and report without writing files")
-    parser.add_argument("--dump",           metavar="AGENT",
-                        help="Print one agent's compiled permissions as raw JSON")
-    parser.add_argument("--show-effective", metavar="AGENT",
-                        help="Print effective permission for every tool (via opencode agent list)")
-    parser.add_argument("--path",           metavar="PATH", default="*",
-                        help="Input path/command for --show-effective evaluation (default: *)")
-    parser.add_argument("--list-agents",    action="store_true",
-                        help="List all managed agents")
-    parser.add_argument("--list-rulesets",  action="store_true",
-                        help="List available rulesets (abstract rule combinations)")
-    args = parser.parse_args()
+app = typer.Typer(help="Manage OpenCode agent permissions.")
 
-    if args.build:
-        build_agents()
-    elif args.apply:
-        apply_agents()
-    elif args.dry_run:
-        dry_run()
-    elif args.dump:
-        dump_agent(args.dump)
-    elif args.show_effective:
-        agent = AGENT_MAP.get(args.show_effective)
-        show_effective(args.show_effective, path=args.path, agent=agent)
-    elif args.list_agents:
-        show_agents(AGENTS)
-    elif args.list_rulesets:
-        show_rulesets()
-    else:
-        parser.print_help()
-        console.print(f"\n[dim]Managed agents: {len(AGENTS)} | Unmanaged: {', '.join(sorted(UNMANAGED_AGENTS))}[/dim]")
+
+@app.command()
+def build() -> None:
+    """Write markdown agents, rebuild opencode.json, and validate runtime visibility."""
+    build_agents()
+
+
+@app.command()
+def apply() -> None:
+    """Write compiled permissions to agent config files."""
+    apply_agents()
+
+
+@app.command(name="dry-run")
+def dry_run_cmd() -> None:
+    """Compile all agents and report without writing files."""
+    dry_run()
+
+
+@app.command()
+def dump(agent: str = typer.Argument(help="Agent name")) -> None:
+    """Print one agent's compiled permissions as raw JSON."""
+    dump_agent(agent)
+
+
+@app.command(name="show-effective")
+def show_effective_cmd(
+    agent: str = typer.Argument(help="Agent name"),
+    path: str = typer.Option("*", help="Input path/command for permission evaluation"),
+) -> None:
+    """Print effective permission for every tool (via opencode agent list)."""
+    show_effective(agent, path=path, agent=AGENT_MAP.get(agent))
+
+
+@app.command(name="list-agents")
+def list_agents_cmd() -> None:
+    """List all managed agents."""
+    show_agents(AGENTS)
+
+
+@app.command(name="list-rulesets")
+def list_rulesets_cmd() -> None:
+    """List available rulesets (abstract rule combinations)."""
+    show_rulesets()
+
+
+@app.command(name="validate-tools")
+def validate_tools_cmd() -> None:
+    """Validate GLOBAL_DEFAULTS covers exactly the known tool set (static + MCP)."""
+    validate_tool_inventory(GLOBAL_DEFAULTS)
+    console.print("[green]Tool inventory OK — GLOBAL_DEFAULTS matches all known tools.[/green]")
+
+
+def main() -> None:
+    app()
 
 
 if __name__ == "__main__":

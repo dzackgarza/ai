@@ -60,17 +60,17 @@ usage-limits-json *ARGS="":
 _opencode-rebuild:
     @just --justfile {{ repo }}/justfile rebuild
 
-opencode-rebuild: _opencode-rebuild opencode-clear-plugin-install-cache opencode-restart
+opencode-rebuild: _opencode-rebuild opencode-clear-cache opencode-restart
 
 _opencode-build-permissions:
     @just --justfile {{ repo }}/justfile permissions-apply
 
-opencode-build-permissions: _opencode-build-permissions opencode-clear-plugin-install-cache
+opencode-build-permissions: _opencode-build-permissions opencode-clear-cache
 
 _opencode-build-config:
     @just --justfile {{ repo }}/justfile config-build
 
-opencode-build-config: _opencode-build-config opencode-clear-plugin-install-cache
+opencode-build-config: _opencode-build-config opencode-clear-cache
 
 opencode-restart:
     systemctl --user restart opencode-serve
@@ -81,7 +81,7 @@ opencode-restart:
 # Cache Cleaning
 # =============================================================================
 
-opencode-clear-plugin-install-cache:
+opencode-clear-cache:
     #!/usr/bin/env bash
     set -euo pipefail
     cache_dir="${OPENCODE_PLUGIN_CACHE_DIR:-$HOME/.cache/opencode}"

@@ -3,6 +3,8 @@ name: test-guidelines
 description: "Use any and every time you interact with a test file, period."
 ---
 
+Note: if you are working with a PR, read the adjacent pr-guide.md file.
+
 # HIGH-QUALITY TESTING STANDARDS (GUIDELINES)
 
 **MANDATORY FIRST STEP: You MUST read this entire file before taking ANY action. This is the source of truth for all test work.**

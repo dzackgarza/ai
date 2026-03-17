@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from src.mixins import (
     mixin_bash_unrestricted,
-    mixin_git,
     mixin_interactive,
     mixin_orchestrator,
 )
@@ -17,5 +16,4 @@ class Orchestrator:
             mixin_orchestrator(),
             mixin_interactive(),
             mixin_bash_unrestricted(),
-            mixin_git(),
         ]

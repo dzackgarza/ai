@@ -1,9 +1,9 @@
-from src.mixins import mixin_docs_writer, mixin_git
+from src.mixins import mixin_docs_writer
 
 
 class DocsWriter:
-    """Read docs and plans, write docs, commit."""
+    """Read docs and plans, write docs."""
 
     @classmethod
     def layers(cls) -> list[dict]:
-        return [mixin_docs_writer(), mixin_git()]
+        return [mixin_docs_writer()]

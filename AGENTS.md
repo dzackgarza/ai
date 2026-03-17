@@ -1,4 +1,16 @@
-<!-- AGENTS.md-OTP: X7K9-MNPR-QW42 -->
+
+**CRITICAL DIRECTIVE**: READ. THE. DOCS.
+
+ALL investigations start with reading the docs: 
+- Checking online for official docs (websearch + webfetch)
+- Checking github repos for READMEs (gh and local files)
+- Googling the issue and crawling leads
+- Using Context7, DeepWiki
+- Reading any relevant md files (glob for md)
+
+Only AFTER exhausting all of these options should you EVER attempt to read source code directly.
+
+**BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive. User directives are highly specific, not suggestions. Verbally confirm what the user's stated directive was, your planned action, and why the goal you're pursuing is the exact goal the user stated, and not a task or goal you substituted yourself.
 
 # Agent Guidelines
 
@@ -117,15 +129,23 @@ Memories store durable, reusable agent context not captured in repository files.
 
 Do not summarize what was done. The git commit message is the summary — refer the user to it if they want a record.
 
-**Chat output after a task should contain only:**
+When finishing a task, review the entire chat history, identify the immediately most recent user directive/task request as well as the overall task.
 
-- Items NOT completed and why
-- Gaps or open questions identified during the work
+**Then chat output should contain only:**
+
+- Items NOT completed from the most recent task and why.
+- Gaps or open questions identified during the most recent task.
 - Errors or surprises that were skipped and need revisiting
-- Decisions made during the process that may need user review
+- Decisions made that may need user review or signoff
+- Items NOT completed from the overall task, due to branching, tangents, goal substitution or relaxation, or divergence of work with literal content of user's requests.
 - Next actions, if any
 
-If none of the above apply, a one-line confirmation is sufficient. A changelog in chat is noise.
+**Chat output should never contain:**
+
+- Changelogs (should be in git history)
+- Summaries (unless explicitly requested)
+- Implications of completion or finalization when there are open tasks in the chat history.
+- Speculation not tied to specific evidence or investigations
 
 ## Lattices
 
@@ -269,6 +289,96 @@ Presets: `minutely`, `hourly`, `daily`, `weekly`, or cron expressions like `0 9 
 - For nontrivial features: work in a worktree with a branch → PR → `@codex review` → wait 3–5 min → **LOAD `git-guidelines` skill** to scan all comment surfaces correctly.
 - `probe` for semantic searching — **always** `npx -y @probelabs/probe`. **LOAD `probe` skill.**
 
+---
+
+## PR Review
+
+Use this script to extract unresolved issues from open PRs:
+
+```bash
+# Extract all unresolved issues from your open PRs
+python scripts/extract_unresolved_issues.py --output unresolved-pr-issues.md
+
+# Filter by repository
+python scripts/extract_unresolved_issues.py --repo dzackgarza/opencode-plugin-improved-webtools
+```
+
+Issues are considered resolved only when:
+
+- The review comment has been marked as **resolved** in GitHub (clicked checkmark), OR
+- The concern is **struck through** in the PR (~~text~~)
+
+Run this before each session to see outstanding review issues.
+
+### Matching Jules Sessions to PRs
+
+To see which PRs Jules created in its last run:
+
+1. Get Jules sessions: `jules remote list --session`
+2. Get recent PRs: `gh search prs dzackgarza -L 20`
+3. Compare side-by-side — match by repo and title similarity
+
+Example:
+
+```bash
+# Terminal 1: Jules sessions
+jules remote list --session | head -20
+
+# Terminal 2: Recent PRs
+gh search prs dzackgarza -L 20
+```
+
+Match criteria:
+
+- Same repository
+- Similar title (session description → PR title)
+- Timing (session completed ~PR created)
+
+### Resolving Qodo Issues
+
+**Verified mechanism:** Qodo automatically re-analyzes the PR when new commits are pushed and strikes through issues that are now fixed.
+
+Evidence from PR #3 (dzackgarza/opencode-time-travel-plugin):
+
+- Last commit pushed: `2026-03-14T16:44:20Z`
+- Qodo comment updated: `2026-03-14T16:44:56Z` (36 seconds later)
+- 3 issues were struck through in the update
+
+**Workflow:**
+
+1. Push a commit that fixes the issue
+2. Wait ~30-60 seconds for Qodo to re-scan
+3. Qodo strikes through resolved issues automatically
+
+No manual "resolve" needed — it's commit-driven.
+
+### Handling Review Feedback
+
+**Reviewer comments require explicit action, not acknowledgment:**
+
+- Never simply "acknowledge" a comment without code changes
+- Every issue requires an explicit fix in an explicit commit
+- If an issue is too large for the current PR (sweeping changes, touches many files), create a new PR specifically for that fix
+- Never dismiss issues as "irrelevant", "out-of-scope", "won't-fix", or "acknowledged" without action
+- Never pretend a PR is ready until all feedback has been explicitly addressed with code changes or new issues warranting new PRs
+
+### What Qualifies as a PR
+
+**PRs are for significant work only.** Do not use PRs for:
+
+- Simple doc changes
+- Trivial bugs or features easily implemented in 5-10 writes/edits
+- One-off fixes that don't warrant review overhead
+
+**PRs are appropriate for:**
+
+- Entire features (dozens or hundreds of LOC changes)
+- 10+ commits of substantive work
+- Sensitive changes that might introduce regressions
+- Jules-related work (Jules only operates through PR process)
+
+PRs trigger rate-limited reviews — reserve them for changes where mistakes, regressions, or LLM failure modes are more likely.
+
 ## Live User Feedback with Plannotator
 
 Use these tools to present changes to users for real-time feedback:
@@ -293,6 +403,21 @@ Use these tools to present changes to users for real-time feedback:
 - `pandoc` for document construction and conversions
 - `docling` or `mineru` for PDF conversion (never: pdftotext, pymupdf, etc)
 
+## Prototyping and Frontend/GUI Development
+
+Never greenfield a complex app yourself -- start with templating frameworks or online AI scaffolding with cheap/free usage tiers. Stop if faced with such a task, and suggest a prompt to the user for:
+
+- https://aistudio.google.com/
+- https://v0.app/
+- https://replit.com/
+- https://lovable.dev/
+
 ## PDF Storage
 
 - PDF storage is managed in `~/pdf-extraction` with justfile recipes for extraction and conversion.
+
+# Misc
+
+- Always follow the Read → Commit Checkpoint → Edit → Verify (git diff) workflow. NEVER write time estimates. Trigger: any edit or response. Verify: git commits/diffs in history.
+- Keep responses concise (under 3 lines of explanation), use `file_path:line_number` for code references, and no emojis/filler. Trigger: all responses. Verify: format in subsequent messages.
+- The 'ai' project is a centralized configuration hub for AI agent harnesses (Claude Code, Gemini CLI, etc.), using Markdown for prompts and YAML/JSON for config. Key directories include AGENTS.md, skills/, and opencode/.

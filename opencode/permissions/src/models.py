@@ -49,9 +49,6 @@ SERENA_FILE_WRITE_TOOLS: list[str] = [
     "serena_insert_after_symbol",
     "serena_insert_before_symbol",
     "serena_rename_symbol",
-    "serena_delete_lines",
-    "serena_insert_at_line",
-    "serena_replace_lines",
 ]
 
 SERENA_MEMORY_TOOLS: list[str] = [
@@ -79,32 +76,19 @@ SERENA_DISABLED_WORKFLOW_TOOLS: list[str] = [
 ]
 
 CORE_TOOLS: list[str] = [
-    "read", "glob", "grep", "list",
-    "edit", "patch", "apply_patch",
+    "read", "glob", "grep",
+    "edit", "apply_patch",
     "bash",
     "webfetch", "websearch",
-    "todoread", "todowrite",
+    "todowrite",
     "question",
-    "external_directory",
 ]
 
 PLUGIN_TOOLS: list[str] = [
     "task",
-    "plan_exit",
-    "async_subagent",
-    "async_command",
     "list_sessions",
     "introspection",
-    "write_plan",
     "read_transcript",
-    "git_add",
-    "git_commit",
-]
-
-CUT_COPY_PASTE_TOOLS: list[str] = [
-    "cut-copy-paste-mcp_cut",
-    "cut-copy-paste-mcp_copy",
-    "cut-copy-paste-mcp_paste",
 ]
 
 ALL_SERENA_TOOLS: list[str] = [
@@ -114,12 +98,12 @@ ALL_SERENA_TOOLS: list[str] = [
     *SERENA_SESSION_META_TOOLS,
     *SERENA_DISABLED_WORKFLOW_TOOLS,
     "serena_execute_shell_command",
+    "serena_switch_modes",
 ]
 
 ALL_TOOLS: list[str] = [
     *CORE_TOOLS,
     *PLUGIN_TOOLS,
-    *CUT_COPY_PASTE_TOOLS,
     *ALL_SERENA_TOOLS,
 ]
 
@@ -128,23 +112,20 @@ ALL_TOOLS: list[str] = [
 # ---------------------------------------------------------------------------
 
 DISPLAY_CATEGORIES: list[tuple[str, list[str]]] = [
-    ("Core Read",       ["read", "glob", "grep", "list"]),
-    ("Core Write",      ["edit", "patch", "apply_patch"]),
+    ("Core Read",       ["read", "glob", "grep"]),
+    ("Core Write",      ["edit", "apply_patch"]),
     ("Bash / Shell",    ["bash"]),
     ("Web",             ["webfetch", "websearch"]),
-    ("Task & Todo",     ["todoread", "todowrite", "task"]),
-    ("General",         ["question", "external_directory"]),
-    ("Planning",        ["plan_exit", "write_plan"]),
-    ("Async",           ["async_subagent", "async_command"]),
+    ("Task & Todo",     ["todowrite", "task"]),
+    ("General",         ["question"]),
     ("Session",         ["list_sessions", "introspection", "read_transcript"]),
-    ("Git",             ["git_add", "git_commit"]),
-    ("Cut/Copy/Paste",  CUT_COPY_PASTE_TOOLS),
     ("Serena Read",     SERENA_FILE_READ_TOOLS),
     ("Serena Write",    SERENA_FILE_WRITE_TOOLS),
     ("Serena Memory",   SERENA_MEMORY_TOOLS),
     ("Serena Session",  SERENA_SESSION_META_TOOLS),
     ("Serena Workflow", SERENA_DISABLED_WORKFLOW_TOOLS),
     ("Serena Shell",    ["serena_execute_shell_command"]),
+    ("Serena Modes",    ["serena_switch_modes"]),
 ]
 
 # Agents whose config files exist but are managed entirely by opencode internals.

@@ -46,7 +46,7 @@ def make_path_rule(allow_globs: list[str], deny_globs: list[str] | None = None) 
 def read_only_in(allow_globs: list[str], deny_globs: list[str] | None = None) -> dict:
     """Return read-tool permissions scoped to the given path globs."""
     rule = make_path_rule(allow_globs, deny_globs)
-    return {tool: rule for tool in ["read", "glob", "grep", "list", *SERENA_FILE_READ_TOOLS]}
+    return {tool: rule for tool in ["read", "glob", "grep", *SERENA_FILE_READ_TOOLS]}
 
 
 def write_only_in(allow_globs: list[str], deny_globs: list[str] | None = None) -> dict:
@@ -55,7 +55,6 @@ def write_only_in(allow_globs: list[str], deny_globs: list[str] | None = None) -
     perms: dict = {
         "edit": rule,
         "apply_patch": rule,
-        "patch": rule,
     }
     for tool in [*SERENA_FILE_WRITE_TOOLS, "cut-copy-paste-mcp_cut",
                  "cut-copy-paste-mcp_copy", "cut-copy-paste-mcp_paste"]:
@@ -73,17 +72,16 @@ def mixin_interactive() -> dict:
 
 
 def mixin_planner() -> dict:
-    """Read all, write plans only, can exit plan mode."""
+    """Read all, write plans only."""
     return deep_merge(
         read_only_in(["*"]),
         write_only_in(["*.serena/plans*"]),
-        {"write_plan": "allow", "plan_exit": "allow"},
     )
 
 
 def mixin_orchestrator() -> dict:
     """Can dispatch tasks and manage todos."""
-    return {"task": "allow", "todoread": "allow", "todowrite": "allow"}
+    return {"task": "allow", "todowrite": "allow"}
 
 
 def mixin_code_writer() -> dict:
@@ -120,11 +118,6 @@ def mixin_researcher() -> dict:
     return deep_merge(read_only_in(["*"]), write_only_in([]))
 
 
-def mixin_git() -> dict:
-    """Allow git staging and committing."""
-    return {"git_add": "allow", "git_commit": "allow"}
-
-
 def mixin_bash_standard() -> dict:
     """Allow a curated set of safe bash commands."""
     return {
@@ -152,13 +145,6 @@ def mixin_session_tools() -> dict:
     return {"introspection": "allow", "list_sessions": "allow", "read_transcript": "allow"}
 
 
-def mixin_external_directory(*paths: str) -> dict:
-    """Allow access to specific external directory paths."""
-    return {"external_directory": {p: "allow" for p in paths}}
-
-
 def mixin_allow_all_permissions() -> dict:
-    """Allow every known tool and all external directories."""
-    permissions = {tool: "allow" for tool in ALL_TOOLS}
-    permissions["external_directory"] = {"*": "allow"}
-    return permissions
+    """Allow every known tool."""
+    return {tool: "allow" for tool in ALL_TOOLS}

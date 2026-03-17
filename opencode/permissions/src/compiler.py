@@ -14,48 +14,77 @@ if TYPE_CHECKING:
 
 GLOBAL_DEFAULTS: dict = {
     # Read
-    "read": "allow", "glob": "allow", "grep": "allow", "list": "allow",
+    "read": "allow", "glob": "allow", "grep": "allow",
     # Write
-    "edit": "deny", "patch": "deny", "apply_patch": "deny",
+    "edit": "deny", "apply_patch": "deny",
     # Shell
     "bash": "deny",
     # Web
     "webfetch": "allow", "websearch": "allow",
     # Task / todo
-    "todoread": "allow", "todowrite": "allow", "task": "allow",
+    "todowrite": "allow", "task": "allow",
     # General
-    "question": "allow", "external_directory": {"*": "ask", "/tmp/*": "allow"},
-    # Planning
-    "plan_exit": "deny", "write_plan": "deny",
-    # Async
-    "async_subagent": "deny", "async_command": "deny",
+    "question": "allow",
+    "external_directory": {
+        "*": "ask",
+        "/home/dzack/ai/*": "allow",
+        "/home/dzack/.agents/*": "allow",
+        "/tmp/*": "allow",
+    },
     # Session
     "list_sessions": "allow", "introspection": "allow", "read_transcript": "allow",
-    # Git
-    "git_add": "deny", "git_commit": "deny",
+    # Memory
+    "remember": "allow", "forget": "allow", "list_memories": "allow",
+    # Reminders
+    "schedule_reminder": "allow", "cancel_reminder": "allow", "list_reminders": "allow",
+    # Skills & timing
+    "skill": "allow", "sleep": "allow", "sleep_until": "allow",
+    # Code navigation
+    "codesearch": "allow", "lsp": "allow",
+    # Improved task/todo variants
+    "improved_task": "allow", "improved_todowrite": "allow", "improved_todoread": "allow",
+    # PTY (terminal — spawn/kill/write denied; list/read allowed)
+    "pty_list": "allow", "pty_read": "allow",
+    "pty_spawn": "deny", "pty_kill": "deny", "pty_write": "deny",
+    # Plannotator (primary-only tools, controlled by plugin's primary_tools config)
+    "submit_plan": "allow", "plannotator_review": "allow", "plannotator_annotate": "allow",
+    # Core write (write tool = create new files)
+    "write": "allow",
+    # Token scope inspection
+    "tokenscope": "allow",
+    # Zotero plugin tools
+    "zotero_search": "allow", "zotero_get_item": "allow", "zotero_import": "allow",
+    "zotero_batch_add": "allow", "zotero_update_item": "allow", "zotero_trash_items": "allow",
+    "zotero_export": "allow", "zotero_tags": "allow", "zotero_stats": "allow",
+    "zotero_collections": "allow", "zotero_count": "allow", "zotero_children": "allow",
+    "zotero_check_pdfs": "allow", "zotero_fetch_pdfs": "allow",
+    "zotero_find_dois": "allow", "zotero_crossref": "allow",
+    # Misc
+    "invalid": "deny",
     # Cut-copy-paste MCP
-    "cut-copy-paste-mcp_cut": "deny",
-    "cut-copy-paste-mcp_copy": "deny",
-    "cut-copy-paste-mcp_paste": "deny",
+    "cut-copy-paste-mcp_cut_lines": "allow",
+    "cut-copy-paste-mcp_copy_lines": "allow",
+    "cut-copy-paste-mcp_paste_lines": "allow",
+    "cut-copy-paste-mcp_get_operation_history": "allow",
+    "cut-copy-paste-mcp_show_clipboard": "allow",
+    "cut-copy-paste-mcp_undo_last_paste": "allow",
     # Serena read
     "serena_read_file": "deny", "serena_list_dir": "deny",
     "serena_find_file": "deny", "serena_search_for_pattern": "deny",
     "serena_get_symbols_overview": "deny", "serena_find_symbol": "deny",
-    "serena_find_referencing_symbols": "deny",
+    "serena_find_referencing_symbols": "allow",
     # Serena write
-    "serena_create_text_file": "deny", "serena_replace_content": "deny",
-    "serena_replace_symbol_body": "deny", "serena_insert_after_symbol": "deny",
-    "serena_insert_before_symbol": "deny", "serena_rename_symbol": "deny",
-    "serena_delete_lines": "deny", "serena_insert_at_line": "deny",
-    "serena_replace_lines": "deny",
+    "serena_create_text_file": "deny", "serena_replace_content": "allow",
+    "serena_replace_symbol_body": "allow", "serena_insert_after_symbol": "allow",
+    "serena_insert_before_symbol": "allow", "serena_rename_symbol": "allow",
     # Serena memory
-    "serena_read_memory": "allow", "serena_list_memories": "allow",
-    "serena_write_memory": "allow", "serena_edit_memory": "allow",
-    "serena_delete_memory": "allow", "serena_rename_memory": "allow",
+    "serena_read_memory": "deny", "serena_list_memories": "deny",
+    "serena_write_memory": "deny", "serena_edit_memory": "deny",
+    "serena_delete_memory": "deny", "serena_rename_memory": "deny",
     # Serena session / meta
     "serena_activate_project": "allow",
-    "serena_check_onboarding_performed": "allow",
-    "serena_get_current_config": "allow",
+    "serena_check_onboarding_performed": "deny",
+    "serena_get_current_config": "deny",
     # Serena workflow (always disabled)
     "serena_onboarding": "deny", "serena_prepare_for_new_conversation": "deny",
     "serena_initial_instructions": "deny",
@@ -64,6 +93,8 @@ GLOBAL_DEFAULTS: dict = {
     "serena_think_about_whether_you_are_done": "deny",
     # Serena shell bypass
     "serena_execute_shell_command": "deny",
+    # Serena modes
+    "serena_switch_modes": "deny",
 }
 
 # ---------------------------------------------------------------------------
@@ -71,12 +102,12 @@ GLOBAL_DEFAULTS: dict = {
 # ---------------------------------------------------------------------------
 
 _PURE_AGENT_BASE: dict = {
-    "task": "allow", "todoread": "allow", "todowrite": "allow",
+    "task": "allow", "todowrite": "allow",
 }
 
 _SUBAGENT_BASE: dict = {
-    "task": "deny", "todoread": "deny", "todowrite": "deny",
-    "plan_exit": "deny", "async_command": "deny", "async_subagent": "deny",
+    "task": "deny", "todowrite": "deny",
+    "improved_task": "deny", "improved_todowrite": "deny",
 }
 
 _BASE_TYPE_PERMS: dict = {

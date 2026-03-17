@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ai_prompts import get_prompt
+from src.agent_markdown import get_prompt
 from llm_templating_engine import (
     Bindings,
     RenderTemplateRequest,

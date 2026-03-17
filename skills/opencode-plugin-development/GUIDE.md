@@ -222,9 +222,10 @@ If a plugin tool shadows a built-in name:
 
 ## MCP Wrapper Conventions
 
-- MCP wrappers live in `mcp-server/` with their own `pyproject.toml`, README, and tests.
+- The repository must be a single package with root-level `pyproject.toml`.
+- Do not use a separate `mcp-server/` directory. Expose the MCP server as a subcommand of the core CLI (e.g. `tool mcp`).
 - Use `uv` for Python dependency management.
-- MCP wrappers should delegate to the same canonical CLI or shared library used by the plugin. They are wrappers, not alternate implementations.
+- MCP wrappers must delegate to the same canonical CLI or shared library used by the plugin.
 - Reuse shared bridge code such as `mcp-shim/run-tool.ts` when the architecture expects
   it instead of re-implementing plugin logic in Python.
 - Keep FastMCP descriptions short, agent-oriented, and `Use when...` driven.
@@ -232,7 +233,7 @@ If a plugin tool shadows a built-in name:
 - If the wrapper needs persisted state outside OpenCode, pass an explicit stable grouping
   key such as `project_dir`. Do not assume a real OpenCode `sessionID` exists.
 - Remote install docs should use
-  `uvx --from git+https://github.com/dzack/opencode-plugins#subdirectory=<plugin>/mcp-server`.
+  `uvx --from git+https://github.com/dzackgarza/opencode-plugins.git <entrypoint> mcp`.
 
 ## Hooks and Runtime Essentials
 

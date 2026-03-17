@@ -26,6 +26,17 @@ common:
     - opencode
     env:
       SEARXNG_INSTANCE_URL: '{env:SEARXNG_INSTANCE_URL}'
+  opencode-memory:
+    description: Persistent, git-backed markdown memory store
+    command: uvx
+    args:
+    - --from
+    - git+https://github.com/dzackgarza/opencode-memory-plugin.git
+    - opencode-memory
+    - mcp
+    enabled: true
+    exclude_harnesses:
+    - opencode
 harnesses:
   opencode:
     enabled: true
@@ -50,5 +61,10 @@ harnesses:
   qwen:
     enabled: true
     config_path: ~/.qwen/settings.json
+    format: json
+    json_path: mcpServers
+  gemini:
+    enabled: true
+    config_path: ~/.gemini/settings.json
     format: json
     json_path: mcpServers

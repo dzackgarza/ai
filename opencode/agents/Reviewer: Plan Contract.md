@@ -10,33 +10,70 @@ permission:
     '*': allow
   glob: *id001
   grep: *id001
-  list: *id001
   edit: &id002
     '*': deny
-  patch: *id002
   apply_patch: *id002
   bash: deny
   webfetch: allow
   websearch: allow
-  todoread: deny
   todowrite: deny
   task: deny
   question: allow
   external_directory:
     '*': ask
+    /home/dzack/ai/*: allow
+    /home/dzack/.agents/*: allow
     /tmp/*: allow
-  plan_exit: deny
-  write_plan: deny
-  async_subagent: deny
-  async_command: deny
   list_sessions: allow
   introspection: allow
   read_transcript: allow
-  git_add: deny
-  git_commit: deny
-  cut-copy-paste-mcp_cut: *id002
-  cut-copy-paste-mcp_copy: *id002
-  cut-copy-paste-mcp_paste: *id002
+  remember: allow
+  forget: allow
+  list_memories: allow
+  schedule_reminder: allow
+  cancel_reminder: allow
+  list_reminders: allow
+  skill: allow
+  sleep: allow
+  sleep_until: allow
+  codesearch: allow
+  lsp: allow
+  improved_task: deny
+  improved_todowrite: deny
+  improved_todoread: allow
+  pty_list: allow
+  pty_read: allow
+  pty_spawn: deny
+  pty_kill: deny
+  pty_write: deny
+  submit_plan: allow
+  plannotator_review: allow
+  plannotator_annotate: allow
+  write: allow
+  tokenscope: allow
+  zotero_search: allow
+  zotero_get_item: allow
+  zotero_import: allow
+  zotero_batch_add: allow
+  zotero_update_item: allow
+  zotero_trash_items: allow
+  zotero_export: allow
+  zotero_tags: allow
+  zotero_stats: allow
+  zotero_collections: allow
+  zotero_count: allow
+  zotero_children: allow
+  zotero_check_pdfs: allow
+  zotero_fetch_pdfs: allow
+  zotero_find_dois: allow
+  zotero_crossref: allow
+  invalid: deny
+  cut-copy-paste-mcp_cut_lines: allow
+  cut-copy-paste-mcp_copy_lines: allow
+  cut-copy-paste-mcp_paste_lines: allow
+  cut-copy-paste-mcp_get_operation_history: allow
+  cut-copy-paste-mcp_show_clipboard: allow
+  cut-copy-paste-mcp_undo_last_paste: allow
   serena_read_file: *id001
   serena_list_dir: *id001
   serena_find_file: *id001
@@ -50,18 +87,15 @@ permission:
   serena_insert_after_symbol: *id002
   serena_insert_before_symbol: *id002
   serena_rename_symbol: *id002
-  serena_delete_lines: *id002
-  serena_insert_at_line: *id002
-  serena_replace_lines: *id002
-  serena_read_memory: allow
-  serena_list_memories: allow
-  serena_write_memory: allow
-  serena_edit_memory: allow
-  serena_delete_memory: allow
-  serena_rename_memory: allow
+  serena_read_memory: deny
+  serena_list_memories: deny
+  serena_write_memory: deny
+  serena_edit_memory: deny
+  serena_delete_memory: deny
+  serena_rename_memory: deny
   serena_activate_project: allow
-  serena_check_onboarding_performed: allow
-  serena_get_current_config: allow
+  serena_check_onboarding_performed: deny
+  serena_get_current_config: deny
   serena_onboarding: deny
   serena_prepare_for_new_conversation: deny
   serena_initial_instructions: deny
@@ -69,6 +103,10 @@ permission:
   serena_think_about_task_adherence: deny
   serena_think_about_whether_you_are_done: deny
   serena_execute_shell_command: deny
+  serena_switch_modes: deny
+  cut-copy-paste-mcp_cut: *id002
+  cut-copy-paste-mcp_copy: *id002
+  cut-copy-paste-mcp_paste: *id002
 ---
 
 # Code Auditor Subagent

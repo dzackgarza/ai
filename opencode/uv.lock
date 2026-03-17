@@ -15,28 +15,6 @@ wheels = [
 ]
 
 [[package]]
-name = "ai-prompts"
-version = "0.1.0"
-source = { editable = "../../opencode-plugins/ai-prompts" }
-dependencies = [
-    { name = "pyyaml" },
-    { name = "typer" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "pyyaml", specifier = ">=6.0" },
-    { name = "typer", specifier = ">=0.16.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "llm-templating-engine", git = "https://github.com/dzackgarza/llm-templating-engine.git" },
-    { name = "pytest", specifier = ">=9.0.0" },
-    { name = "tiktoken", specifier = ">=0.11.0" },
-]
-
-[[package]]
 name = "aiofile"
 version = "3.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1671,7 +1649,6 @@ name = "opencode-workspace"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "ai-prompts" },
     { name = "httpx" },
     { name = "jinja2" },
     { name = "jsonschema" },
@@ -1693,7 +1670,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ai-prompts", editable = "../../opencode-plugins/ai-prompts" },
     { name = "httpx" },
     { name = "jinja2" },
     { name = "jsonschema" },

@@ -15,10 +15,7 @@ class MinimalAgent(PureAgent):
 
     @property
     def overrides(self) -> dict:
-        return {
-            "plan_exit": "deny",
-            "external_directory": {"/tmp/opencode_test/*": "allow"},
-        }
+        return {}
 
 
 AGENT = MinimalAgent("interactive-agents/minimal")

@@ -7,11 +7,39 @@ import os
 from pathlib import Path
 from typing import Any
 
-from ai_prompts import get_prompt
+import json
+import subprocess
+from dataclasses import dataclass
 import tiktoken
 import yaml
 
 from src.base import Agent
+
+
+_AI_PROMPTS_PKG = "git+https://github.com/dzackgarza/ai-prompts"
+
+
+@dataclass(frozen=True)
+class _PromptEntry:
+    text: str
+    frontmatter: dict
+    body: str
+
+
+def get_prompt(slug: str) -> _PromptEntry:
+    """Fetch a prompt by slug via uvx ai-prompts get --json."""
+    result = subprocess.run(
+        ["uvx", "--from", _AI_PROMPTS_PKG, "ai-prompts", "get", slug, "--json"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        raise ValueError(f"Unknown prompt slug: {slug}\n{result.stderr.strip()}")
+    data = json.loads(result.stdout)
+    return _PromptEntry(
+        text=data["text"],
+        frontmatter=data.get("frontmatter", {}),
+        body=data.get("body", ""),
+    )
 
 _FRONTMATTER_ORDER = (
     "description",
@@ -106,6 +134,7 @@ def render_agent_artifact(agent: Agent) -> GeneratedAgentArtifact:
     """Render one managed agent into a build artifact."""
     prompt = get_prompt(agent.prompt_slug)
     frontmatter = _ordered_frontmatter(prompt.frontmatter, agent.compile())
+    frontmatter["name"] = agent.name
     body = prompt.body.rstrip()
     dumped = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=False).strip()
     markdown = f"---\n{dumped}\n---\n"

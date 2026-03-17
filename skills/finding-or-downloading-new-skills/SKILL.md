@@ -5,14 +5,69 @@ description: Use when asked to find, evaluate, or download new skills from skill
 
 # Finding or Downloading New Skills
 
-This skill covers two approaches:
+This skill covers three approaches:
 
-1. **LobeHub Marketplace** - Automatic search and install via CLI (100,000+ skills)
-2. **Manual Download** - For skills from GitHub or custom repositories (most skills)
+1. **Context7 Skills Registry** - Search, install, and generate skills with trust scores and security scanning
+2. **LobeHub Marketplace** - Large marketplace with 100,000+ skills via CLI
+3. **Manual Download** - For skills from GitHub or custom repositories
 
-## LobeHub Marketplace (Recommended)
+## Context7 Skills Registry
 
-The LobeHub Skills Marketplace is the world's largest skills marketplace with 100,000+ skills. Use the `@lobehub/market-cli` tool for all marketplace operations.
+Context7 maintains a searchable skills registry indexed from GitHub repositories. Skills are identified by repository path (e.g., `/anthropics/skills`) and skill name. Features include trust scores (0-10), prompt injection detection, and AI-powered skill generation.
+
+### Searching
+
+```bash
+# Search by keyword
+npx ctx7 skills search pdf
+npx ctx7 skills search "react testing"
+
+# Browse all skills in a repository
+npx ctx7 skills info /anthropics/skills
+
+# Get suggestions based on project dependencies
+npx ctx7 skills suggest
+```
+
+### Installing
+
+````bash
+# Install interactively (prompts to pick)
+npx ctx7 skills install /anthropics/skills
+
+# Install a specific skill by name
+npx ctx7 skills install /anthropics/skills pdf
+
+# Install Skills — Canonical Directory Only
+
+All skill installations must target the canonical directory `~/ai/skills/`. Do not use client-specific flags (e.g., `--claude`, `--cursor`) or custom directories. If the `--global` flag ensures installation into `~/ai/skills/`, it may be used. Otherwise, manually copy skills into this directory:
+
+```bash
+npx ctx7 skills install /anthropics/skills pdf --global
+# Or manually copy the skill to ~/ai/skills
+````
+
+### Generating Custom Skills
+
+```bash
+# Requires login — opens interactive generation flow
+npx ctx7 login
+npx ctx7 skills generate
+```
+
+### Trust & Security
+
+| Score    | Level  | Meaning                                 |
+| -------- | ------ | --------------------------------------- |
+| 7.0–10.0 | High   | Verified or well-established source     |
+| 3.0–6.9  | Medium | Standard community contribution         |
+| 0.0–2.9  | Low    | New or unverified — review before using |
+
+For detailed instructions on skill validation, see [creating-skills/SKILL.md](../creating-skills/SKILL.md), which provides guidance and a validation workflow.
+
+## LobeHub Marketplace
+
+LobeHub Marketplace contains a wide variety of skills, including many for mathematical, scientific, and research agent workflows. Use the `@lobehub/market-cli` tool for discovery operations.
 
 ### Prerequisites: Registration
 
@@ -110,12 +165,12 @@ For skills not on LobeHub or custom repositories, use manual download:
 
 ### 1. Identify the skills directory
 
-Skills are stored in `~/skills` (which may be symlinked).
+All skills live in `~/ai/skills/` (the git repo root). This directory is symlinked into all harness-specific skill directories.
 
 ### 2. Create the skill directory
 
 ```bash
-mkdir -p ~/skills/skill-name
+mkdir -p ~/ai/skills/skill-name
 ```
 
 ### 3. Find the download URL
@@ -128,13 +183,15 @@ mkdir -p ~/skills/skill-name
 ```bash
 curl -fsSL "DOWNLOAD_URL" -o /tmp/skill-name.zip
 unzip -o /tmp/skill-name.zip -d /tmp/skill-name-extract
-cp -r /tmp/skill-name-extract/* ~/skills/skill-name/
+cp -r /tmp/skill-name-extract/* ~/ai/skills/skill-name/
 ```
 
 ### 5. Verify
 
+For skill validation and quality checks, see [creating-skills/SKILL.md](../creating-skills/SKILL.md), which includes a validation script and workflow.
+
 ```bash
-ls -la ~/skills/skill-name/
+ls -la ~/ai/skills/skill-name/
 ```
 
 ## Name Matching

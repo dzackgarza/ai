@@ -22,7 +22,6 @@ class ZoteroLibrarianAgent(PureAgent):
         return {
             "edit": {"*": "deny"},
             "apply_patch": {"*": "deny"},
-            "patch": {"*": "deny"},
         }
 
 

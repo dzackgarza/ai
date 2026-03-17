@@ -27,6 +27,25 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 
 **Skills are NOT:** Narratives about how you solved a problem once
 
+### What Skills Provide
+
+1. Specialized workflows - Multi-step procedures for specific domains
+2. Tool integrations - Instructions for working with specific file formats or APIs
+3. Domain expertise - Specialized knowledge, schemas, and context for knowledge-based work and "outlier" data outside typical LLM training distributions
+4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
+
+### Degrees of Freedom
+
+Match the level of specificity to the task's fragility and variability:
+
+**High freedom (text-based instructions)**: Use when multiple approaches are valid, decisions depend on context, or heuristics guide the approach.
+
+**Medium freedom (pseudocode or scripts with parameters)**: Use when a preferred pattern exists, some variation is acceptable, or configuration affects behavior.
+
+**Low freedom (specific scripts, few parameters)**: Use when operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed.
+
+Think of the agent as exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
+
 ## TDD Mapping for Skills
 
 | TDD Concept             | Skill Creation                                   |
@@ -179,21 +198,80 @@ Way of thinking about problems (flatten-with-flags, test-invariants)
 
 API docs, syntax guides, tool documentation (office docs)
 
-## Directory Structure
+## Directory Structure & Skill Anatomy
+
+**Flat namespace** — all skills live in `~/ai/skills/` (the git repo root), one searchable namespace. This directory is symlinked into all harness-specific skill directories (e.g., `~/.agents/skills/`, `.claude/skills/`, `.cursor/skills/`) so a single skill is discoverable by any agent harness.
+
+Every skill consists of a required SKILL.md file and optional bundled resources:
 
 ```
-skills/
-  skill-name/
-    SKILL.md              # Main reference (required)
-    supporting-file.*     # Only if needed
+skill-name/
+├── SKILL.md (required)
+│   ├── YAML frontmatter metadata (required)
+│   │   ├── name: (required)
+│   │   └── description: (required)
+│   └── Markdown instructions (required)
+├── agents/ (recommended)
+│   └── openai.yaml - UI metadata for skill lists and chips
+└── Bundled Resources (optional)
+    ├── scripts/          - Executable code (Python/Bash/etc.)
+    ├── references/       - Documentation intended to be loaded into context as needed
+    └── assets/           - Files used in output (templates, icons, fonts, etc.)
 ```
 
-**Flat namespace** - all skills in one searchable namespace
+### SKILL.md (required)
+
+Every SKILL.md consists of:
+
+- **Frontmatter** (YAML): Contains `name` and `description` fields. These are the only fields that the agent reads to determine when the skill gets used. The `description` is loaded into context for _every_ conversation, so it must balance being concise (to avoid wasting tokens) with being verbose enough that the agent reliably triggers the skill. Aim for specific, concrete triggers in the fewest words possible.
+- **Body** (Markdown): The skill body is what gets loaded into context after the skill triggers — a just-in-time prompt injection. These aren't limited to particular workflows; a skill body can contain _any_ kind of knowledge you want available on demand: API references, mathematical definitions, procedural checklists, coding conventions, domain terminology, or anything else that benefits from JIT loading rather than occupying context permanently.
+
+### Scripts (`scripts/`)
+
+Executable code (Python/Bash/etc.) for tasks that require deterministic reliability or are repeatedly rewritten.
+
+**Prefer external tools first.** When possible, rely on no-install/no-config methods like `uvx` or `npx` to invoke existing, version-controlled, and independently tested tools. Local scripts in `scripts/` are "hidden" away in the skill tree with no tracking or version control of their own. Include local scripts only for highly specialized workflows with no existing external tool. If a local script grows sufficiently complex, refactor it into its own git repo and expose it via `npx`/`uvx` with progressive-discovery CLI help (e.g., Typer with subcommands and `--help`).
+
+- **When to include**: When the same code is being rewritten repeatedly or deterministic reliability is needed
+- **Example**: `scripts/rotate_pdf.py` for PDF rotation tasks
+- **Benefits**: Token efficient, deterministic, may be executed without loading into context
+- **Note**: Scripts may still need to be read for patching or environment-specific adjustments
+
+### References (`references/`)
+
+Documentation and reference material intended to be loaded as needed into context.
+
+- **When to include**: For documentation that should be referenced while working
+- **Examples**: `references/finance.md` for financial schemas, `references/api_docs.md` for API specifications
+- **Benefits**: Keeps SKILL.md lean, loaded only when needed
+- **Best practice**: If files are large (>10k words), include grep search patterns in SKILL.md
+- **Avoid duplication**: Keep only essential procedural instructions in SKILL.md; move detailed reference material, schemas, and examples to references files.
+
+### Assets (`assets/`)
+
+Files not intended to be loaded into context, but rather used within the output produced.
+
+- **When to include**: When the skill needs files that will be used in the final output
+- **Examples**: `assets/logo.png`, `assets/slides.pptx`, `assets/frontend-template/`
+- **Benefits**: Separates output resources from documentation
+
+### What to NOT Include
+
+A skill should only contain essential files that directly support its functionality. Do NOT create extraneous documentation:
+
+- README.md
+- INSTALLATION_GUIDE.md
+- QUICK_REFERENCE.md
+- CHANGELOG.md
+
+The skill should only contain the information needed for an AI agent to do the job at hand. No auxiliary context about creation process, setup procedures, or user-facing documentation.
+
+### Separating vs. Keeping Inline
 
 **Separate files for:**
 
-1. **Heavy reference** (100+ lines) - API docs, comprehensive syntax
-2. **Reusable tools** - Scripts, utilities, templates
+1. Heavy reference (100+ lines) — API docs, comprehensive syntax
+2. Reusable tools — Scripts, utilities, templates
 
 **Keep inline:**
 
@@ -249,6 +327,90 @@ Concrete results
 ```
 
 **Do not include a "When to Use" section in the skill body.** That content belongs in the `description` frontmatter — it is the trigger that causes the skill to be loaded. By the time the body is read, the agent is already using the skill; anything in a "When to Use" section is read too late to be a trigger and is redundant with what the description already states. Move triggering conditions to the description; do not simply delete them.
+
+## Progressive Disclosure
+
+Skills use a three-level loading system to manage context efficiently:
+
+1. **Metadata (name + description)** — Always in context (~100 words)
+2. **SKILL.md body** — When skill triggers (<5k words)
+3. **Bundled resources** — As needed (scripts can execute without loading into context window)
+
+### Progressive Disclosure Patterns
+
+Keep SKILL.md body to the essentials and under 500 lines to minimize context bloat. Split content into separate files when approaching this limit. When splitting, reference them from SKILL.md and describe clearly when to read them. **Cross-reference and hyperlink explicitly** so the agent can follow what's needed for progressive disclosure — use relative markdown links like `[See FORMS.md](FORMS.md)` and state the triggering condition for loading each reference.
+
+**Key principle:** When a skill supports multiple variations, frameworks, or options, keep only the core workflow and selection guidance in SKILL.md. Move variant-specific details into separate reference files.
+
+**Pattern 1: High-level guide with references**
+
+```markdown
+# PDF Processing
+
+## Quick start
+
+Extract text with pdfplumber:
+[code example]
+
+## Advanced features
+
+- **Form filling**: See [FORMS.md](FORMS.md) for complete guide
+- **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
+- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
+```
+
+FORMS.md, REFERENCE.md, and EXAMPLES.md are loaded only when needed.
+
+**Pattern 2: Domain-specific organization**
+
+For skills with multiple domains, organize by domain to avoid loading irrelevant context:
+
+```
+computation-algebra-skill/
+├── SKILL.md (overview and navigation)
+└── reference/
+    ├── number-theory.md (primality, factorization, modular arithmetic)
+    ├── algebraic-geometry.md (varieties, schemes, Gröbner bases)
+    ├── representation-theory.md (Lie groups, character tables)
+    └── combinatorics.md (partitions, generating functions)
+```
+
+When a task involves Gröbner bases, only algebraic-geometry.md is read.
+
+Similarly, for skills supporting multiple frameworks, organize by variant:
+
+```
+cloud-deploy/
+├── SKILL.md (workflow + provider selection)
+└── references/
+    ├── aws.md (AWS deployment patterns)
+    ├── gcp.md (GCP deployment patterns)
+    └── azure.md (Azure deployment patterns)
+```
+
+**Pattern 3: Conditional details**
+
+Show basic content, link to advanced content:
+
+```markdown
+# DOCX Processing
+
+## Creating documents
+
+Use docx-js for new documents. See [DOCX-JS.md](DOCX-JS.md).
+
+## Editing documents
+
+For simple edits, modify the XML directly.
+
+**For tracked changes**: See [REDLINING.md](REDLINING.md)
+**For OOXML details**: See [OOXML.md](OOXML.md)
+```
+
+**Important guidelines:**
+
+- **Avoid deeply nested references** — Keep references one level deep from SKILL.md. All reference files should link directly from SKILL.md.
+- **Structure longer reference files** — For files longer than 100 lines, include a table of contents at the top.
 
 ## Claude Search Optimization (CSO)
 
@@ -814,3 +976,106 @@ Same cycle: RED (baseline) → GREEN (write skill) → REFACTOR (close loopholes
 Same benefits: Better quality, fewer surprises, bulletproof results.
 
 If you follow TDD for code, follow it for skills. It's the same discipline applied to documentation.
+
+## Skill Creation Process (Scaffolding)
+
+The TDD cycle above is the _method_. For the mechanical steps of scaffolding a new skill:
+
+**Note:** This process is short-circuited when the user initiates skill creation. In that case, the user has typically already observed deficiencies and knows where they want to start — skip directly to the step that matches their entry point (usually Step 3 or Step 4).
+
+1. Understand the skill with concrete examples
+2. Plan reusable skill contents (scripts, references, assets)
+
+**Before greenfielding,** attempt to discover existing skills online that are already tested and vetted. Search the LobeHub marketplace, GitHub, and other skill repositories. Adapting a proven skill is almost always better than writing one from scratch.
+
+3. Scaffold the skill directory
+4. Edit the skill (implement resources and write SKILL.md)
+5. Validate
+6. Iterate based on explicit evidence
+
+Follow these steps in order, skipping only if there is a clear reason.
+
+### Skill Naming
+
+- Use lowercase letters, digits, and hyphens only; normalize to hyphen-case (e.g., "Plan Mode" → `plan-mode`).
+- Keep names under 64 characters.
+- Prefer short, verb-led phrases that describe the action.
+- Namespace by tool when it improves clarity (e.g., `gh-address-comments`, `linear-address-issue`).
+- Name the skill folder exactly after the skill name.
+
+### Step 1: Understand with Concrete Examples
+
+Skip only when usage patterns are already clearly understood.
+
+To create an effective skill, understand concrete examples of how it will be used. Ask questions like:
+
+- "What functionality should this skill support?"
+- "Can you give examples of how this skill would be used?"
+- "What tasks or problems might an agent face such that this skill would be a natural trigger?"
+
+Avoid asking too many questions in a single message. Conclude when there is a clear sense of the functionality.
+
+### Step 2: Plan Reusable Contents
+
+Analyze each example by:
+
+1. Considering how to execute from scratch
+2. Identifying what scripts, references, and assets would help for repeated execution
+
+Example: A `pdf-editor` skill handling "Help me rotate this PDF" → a `scripts/rotate_pdf.py` script.
+
+Example: A `frontend-webapp-builder` skill → an `assets/hello-world/` template with boilerplate.
+
+Example: A `big-query` skill → a `references/schema.md` documenting table schemas.
+
+### Step 3: Scaffold the Skill
+
+Create the skill directory and SKILL.md with the required frontmatter. No script needed — just create the directory tree and the file:
+
+```
+my-skill/
+├── SKILL.md          # Required: frontmatter + body
+├── scripts/          # Optional: executable helpers
+├── references/       # Optional: JIT-loaded documentation
+└── assets/           # Optional: output resources (templates, etc.)
+```
+
+SKILL.md must begin with YAML frontmatter containing exactly two fields:
+
+```yaml
+---
+name: my-skill
+description: Use when [specific triggering conditions and symptoms]
+---
+```
+
+Only include `scripts/`, `references/`, or `assets/` directories if the skill actually needs them.
+
+### Step 4: Edit the Skill
+
+Start with reusable resources (`scripts/`, `references/`, `assets/`). Test scripts by running them.
+
+**Frontmatter writing guidelines:**
+
+- `name`: The skill name
+- `description`: Primary triggering mechanism — include both what the skill does and specific triggers/contexts. Put all "when to use" info here, not in the body.
+- Do not include other fields in YAML frontmatter.
+
+**Body writing guidelines:** Always use imperative/infinitive form.
+
+### Step 5: Validate
+
+```bash
+scripts/quick_validate.py <path/to/skill-folder>
+```
+
+Checks YAML frontmatter format, required fields, and naming rules. Fix issues and re-run until clean.
+
+### Step 6: Iterate (Evidence-Required)
+
+Iteration should only happen when there is **explicit evidence** — typically from the user — that the skill is not triggering when it should, or is not catching the desired inefficiencies. Do not iterate speculatively or based on hypothetical improvements.
+
+1. Receive explicit evidence of a gap (user reports the skill didn't trigger, or missed an inefficiency)
+2. Identify the root cause (description too narrow? body missing guidance? wrong triggers?)
+3. Update SKILL.md or resources to address the specific gap
+4. Verify the fix addresses the reported evidence

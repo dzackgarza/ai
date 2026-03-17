@@ -19,7 +19,7 @@ class LatticeOrchestratorAgent(PureAgent):
 
     @property
     def overrides(self) -> dict:
-        return {"write_plan": "deny"}
+        return {}
 
 
 AGENT = LatticeOrchestratorAgent("interactive-agents/lattice-orchestrator")

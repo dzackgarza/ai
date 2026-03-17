@@ -7,32 +7,69 @@ permission:
   read: allow
   glob: allow
   grep: allow
-  list: allow
   edit: allow
-  patch: allow
   apply_patch: allow
   bash: allow
   webfetch: allow
   websearch: allow
-  todoread: allow
   todowrite: allow
   task: allow
   question: allow
   external_directory:
-    '*': allow
+    '*': ask
+    /home/dzack/ai/*: allow
+    /home/dzack/.agents/*: allow
     /tmp/*: allow
-  plan_exit: allow
-  write_plan: allow
-  async_subagent: allow
-  async_command: allow
   list_sessions: allow
   introspection: allow
   read_transcript: allow
-  git_add: allow
-  git_commit: allow
-  cut-copy-paste-mcp_cut: allow
-  cut-copy-paste-mcp_copy: allow
-  cut-copy-paste-mcp_paste: allow
+  remember: allow
+  forget: allow
+  list_memories: allow
+  schedule_reminder: allow
+  cancel_reminder: allow
+  list_reminders: allow
+  skill: allow
+  sleep: allow
+  sleep_until: allow
+  codesearch: allow
+  lsp: allow
+  improved_task: allow
+  improved_todowrite: allow
+  improved_todoread: allow
+  pty_list: allow
+  pty_read: allow
+  pty_spawn: deny
+  pty_kill: deny
+  pty_write: deny
+  submit_plan: allow
+  plannotator_review: allow
+  plannotator_annotate: allow
+  write: allow
+  tokenscope: allow
+  zotero_search: allow
+  zotero_get_item: allow
+  zotero_import: allow
+  zotero_batch_add: allow
+  zotero_update_item: allow
+  zotero_trash_items: allow
+  zotero_export: allow
+  zotero_tags: allow
+  zotero_stats: allow
+  zotero_collections: allow
+  zotero_count: allow
+  zotero_children: allow
+  zotero_check_pdfs: allow
+  zotero_fetch_pdfs: allow
+  zotero_find_dois: allow
+  zotero_crossref: allow
+  invalid: deny
+  cut-copy-paste-mcp_cut_lines: allow
+  cut-copy-paste-mcp_copy_lines: allow
+  cut-copy-paste-mcp_paste_lines: allow
+  cut-copy-paste-mcp_get_operation_history: allow
+  cut-copy-paste-mcp_show_clipboard: allow
+  cut-copy-paste-mcp_undo_last_paste: allow
   serena_read_file: allow
   serena_list_dir: allow
   serena_find_file: allow
@@ -46,9 +83,6 @@ permission:
   serena_insert_after_symbol: allow
   serena_insert_before_symbol: allow
   serena_rename_symbol: allow
-  serena_delete_lines: allow
-  serena_insert_at_line: allow
-  serena_replace_lines: allow
   serena_read_memory: allow
   serena_list_memories: allow
   serena_write_memory: allow
@@ -65,6 +99,7 @@ permission:
   serena_think_about_task_adherence: allow
   serena_think_about_whether_you_are_done: allow
   serena_execute_shell_command: allow
+  serena_switch_modes: allow
 ---
 
 **SYSTEM_ID: UNRESTRICTED_TEST_MD**

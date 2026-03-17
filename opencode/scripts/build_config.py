@@ -11,7 +11,9 @@ from pathlib import Path
 import urllib.request
 from typing import Any
 
-from ai_prompts import get_prompt
+import sys
+sys.path.insert(0, str(Path(__file__).parent.parent / "permissions"))
+from src.agent_markdown import get_prompt
 import jsonschema
 from rich.console import Console
 from rich.logging import RichHandler

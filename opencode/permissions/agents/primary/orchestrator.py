@@ -19,7 +19,7 @@ class OrchestratorAgent(PureAgent):
 
     @property
     def overrides(self) -> dict:
-        return {"write_plan": "deny"}
+        return {}
 
 
 AGENT = OrchestratorAgent("interactive-agents/orchestrator")
