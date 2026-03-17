@@ -50,12 +50,14 @@ Reviewers are trained to find bugs, logical errors, and **inconsistencies betwee
 Jules has a restricted Linux environment with no access to online docs or external references. Context engineering in the prompt is essential.
 
 **Best for:**
+
 - Straightforward tasks where the desired solution is already known
 - Work where research has already been done
 - Purely internal code changes (no external dependencies)
 - First 50%+ of a larger task (expect ~90% completion, rarely 100%)
 
 **Avoid for:**
+
 - Tasks requiring external API research
 - Complex integration with unfamiliar libraries
 - Work likely to need babysitting through repeated prompts
@@ -277,3 +279,78 @@ Create in repo root to improve Jules results:
 - **GitHub only** → GitLab/Bitbucket not supported
 - **AGENTS.md** → Jules reads from repo root for context
 - **ALWAYS validate before applying changes**
+
+## PR Review & Feedback Loop
+
+This section covers the detailed workflow for managing Jules PRs through the review cycle, including automated reviewer tracking and feedback piping.
+
+### Issues are resolved when
+
+- The review comment has been marked as **resolved** in GitHub (clicked checkmark), OR
+- The concern is **struck through** in the PR (~~text~~)
+
+### Matching Jules Sessions to PRs
+
+To see which PRs Jules created in its last run:
+
+1. Get Jules sessions: `jules remote list --session`
+2. Get recent PRs: `gh search prs dzackgarza -L 20`
+3. Compare side-by-side — match by repo and title similarity
+
+**Match criteria:**
+
+- Same repository
+- Similar title (session description → PR title)
+- Timing (session completed ~PR created)
+
+### Qodo Review Resolution
+
+Qodo automatically re-analyzes the PR when new commits are pushed and strikes through issues that are now fixed. No manual "resolve" needed — it's commit-driven.
+
+Workflow:
+
+1. Push a commit that fixes the issue
+2. Wait ~30-60 seconds for Qodo to re-scan
+3. Qodo strikes through resolved issues automatically
+
+### Sending Review Feedback to Jules
+
+Use the bundled `extract_unresolved_issues.py` script to pipe unresolved PR review issues back to Jules:
+
+```bash
+# Send unresolved issues summary
+uv run python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+
+# Send issues list
+uv run python skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+```
+
+### Detailed Workflow (improved-jules-cli)
+
+For the full end-to-end workflow using the `improved-jules-cli` wrapper:
+
+1. **Create Issue** — Use `git-guidelines` skill. Ensure clear title, specific outcomes, and context files referenced.
+2. **Launch**:
+   ```bash
+   cd /home/dzack/opencode-plugins/improved-jules-cli
+   source .venv/bin/activate && source ~/.envrc
+   python -m improved_jules_cli create ISSUE_URL --context PATH_TO_CONTEXT --prompt-slug sub-agents/jules-pr-body-contract
+   ```
+3. **Monitor & Poll**:
+   ```bash
+   python -m improved_jules_cli status SESSION_ID
+   python -m improved_jules_cli watch-callback SESSION_ID "echo done"
+   ```
+4. **Wait for Reviews** — 5-10 minutes for bots (Qodo, Codacy, Gemini, kilo-code-bot).
+5. **Check Issues**:
+   ```bash
+   python skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM
+   python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM
+   ```
+6. **Send Feedback** — Pipe issues to Jules (see above).
+7. **Repeat** steps 3-6 until no unresolved issues remain.
+8. **Surface** — Present PR link: `python -m improved_jules_cli pr SESSION_ID`
+
+> TODO: describe exactly how to identify unresolved issues.
+> TODO: describe exactly what counts as unresolved (isMinimized == false/null → unresolved, or non-crossed-out issues)
+> TODO: describe exactly how to "resolve" (identify specific commit that fixed it OR identify new issue that addresses it, link commit as a reply in the conversation, mark conversation as "Resolved" manually)

@@ -291,66 +291,7 @@ Presets: `minutely`, `hourly`, `daily`, `weekly`, or cron expressions like `0 9 
 
 ---
 
-## PR Review
-
-Use this script to extract unresolved issues from open PRs:
-
-```bash
-# Extract all unresolved issues from your open PRs
-python skills/jules/scripts/extract_unresolved_issues.py --output skills/jules/unresolved-pr-issues.md
-
-# Filter by repository
-python skills/jules/scripts/extract_unresolved_issues.py --repo dzackgarza/opencode-plugin-improved-webtools
-```
-
-Issues are considered resolved only when:
-
-- The review comment has been marked as **resolved** in GitHub (clicked checkmark), OR
-- The concern is **struck through** in the PR (~~text~~)
-
-Run this before each session to see outstanding review issues.
-
-### Matching Jules Sessions to PRs
-
-To see which PRs Jules created in its last run:
-
-1. Get Jules sessions: `jules remote list --session`
-2. Get recent PRs: `gh search prs dzackgarza -L 20`
-3. Compare side-by-side — match by repo and title similarity
-
-Example:
-
-```bash
-# Terminal 1: Jules sessions
-jules remote list --session | head -20
-
-# Terminal 2: Recent PRs
-gh search prs dzackgarza -L 20
-```
-
-Match criteria:
-
-- Same repository
-- Similar title (session description → PR title)
-- Timing (session completed ~PR created)
-
-### Resolving Qodo Issues
-
-**Verified mechanism:** Qodo automatically re-analyzes the PR when new commits are pushed and strikes through issues that are now fixed.
-
-Evidence from PR #3 (dzackgarza/opencode-time-travel-plugin):
-
-- Last commit pushed: `2026-03-14T16:44:20Z`
-- Qodo comment updated: `2026-03-14T16:44:56Z` (36 seconds later)
-- 3 issues were struck through in the update
-
-**Workflow:**
-
-1. Push a commit that fixes the issue
-2. Wait ~30-60 seconds for Qodo to re-scan
-3. Qodo strikes through resolved issues automatically
-
-No manual "resolve" needed — it's commit-driven.
+## Issues & PRs
 
 ### Handling Review Feedback
 
@@ -361,25 +302,6 @@ No manual "resolve" needed — it's commit-driven.
 - If an issue is too large for the current PR (sweeping changes, touches many files), create a new PR specifically for that fix
 - Never dismiss issues as "irrelevant", "out-of-scope", "won't-fix", or "acknowledged" without action
 - Never pretend a PR is ready until all feedback has been explicitly addressed with code changes or new issues warranting new PRs
-
-### Sending Review Feedback to Jules
-
-Pipe output from `extract_unresolved_issues.py` directly to Jules:
-
-```bash
-# Send unresolved issues summary
-uv run python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
-
-# Send issues list
-uv run python skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
-```
-
-Example:
-
-```bash
-# Send PR #42 issues to Jules
-uv run python skills/jules/scripts/extract_unresolved_issues.py issues dzackgarza/opencode-zotero-plugin#42 | python -m improved_jules_cli feedback 17227190236334622547
-```
 
 ### What Qualifies as a PR
 
@@ -394,109 +316,18 @@ uv run python skills/jules/scripts/extract_unresolved_issues.py issues dzackgarz
 - Entire features (dozens or hundreds of LOC changes)
 - 10+ commits of substantive work
 - Sensitive changes that might introduce regressions
-- Jules-related work (Jules only operates through PR process)
 
 PRs trigger rate-limited reviews — reserve them for changes where mistakes, regressions, or LLM failure modes are more likely.
 
-## Jules Workflow
+### Delegating to Jules
 
-Complete workflow for using Jules to handle GitHub issues:
+For smaller, well-scoped issues with clear acceptance criteria — especially those that are easily verifiable (bug fixes, test additions, lint fixes, documentation) — consider delegating to Jules via GitHub issues.
 
-### 1. Create Issue
+**When appropriate:** straightforward tasks where the desired solution is already known, purely internal code changes, or work where research has already been done.
 
-Use `git-guidelines` skill to create a properly formatted GitHub issue. Ensure:
+**When to avoid:** tasks requiring external API research, complex integration with unfamiliar libraries, or work likely to need repeated prompting.
 
-- Clear title and description
-- Specific requirements/outcomes
-- Context files referenced (e.g., README_STANDARDS.md)
-
-### 2. Launch Jules
-
-```bash
-cd /home/dzack/opencode-plugins/improved-jules-cli
-source .venv/bin/activate
-source ~/.envrc
-
-# Create session from issue
-python -m improved_jules_cli create ISSUE_URL --context PATH_TO_CONTEXT --prompt-slug sub-agents/jules-pr-body-contract
-
-# Or with dry-run first
-python -m improved_jules_cli create ISSUE_URL --dry-run
-```
-
-### 3. Monitor & Poll
-
-```bash
-# Check status once
-python -m improved_jules_cli status SESSION_ID
-
-# Get PR URL when done
-python -m improved_jules_cli pr SESSION_ID
-```
-
-**Auto-poll with callback:** Use `watch-callback` to poll until done, then run a callback command:
-
-```bash
-python -m improved_jules_cli watch-callback SESSION_ID "echo done"
-```
-
-**Callback + wakeup loop:** Set up callback to wake your session with the issue check:
-
-```bash
-# Get your session ID first, then set up callback
-# Your session ID: use introspection tool to get it
-
-# Callback runs opx chat to wake your session when Jules completes
-python -m improved_jules_cli watch-callback JULES_SESSION_ID "npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session YOUR_SESSION_ID --prompt 'check issues and continue if needed'"
-```
-
-Replace:
-
-- `YOUR_SESSION_ID` with your OpenCode session ID (from introspection tool)
-- `JULES_SESSION_ID` with the Jules session ID (returned from `create`)
-
-**Schedule wakeup:** Use `at` to schedule a future check:
-
-```bash
-# Schedule wakeup in 10 minutes to check status
-echo "python -m improved_jules_cli status SESSION_ID" | at now + 10 minutes
-```
-
-### 4. Wait for Reviews
-
-Wait 5-10 minutes for PR reviews to flow in from bots (Qodo, Codacy, Gemini, kilo-code-bot).
-
-### 5. Check for Issues
-
-```bash
-# Get unresolved issues
-python /home/dzack/ai/skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM
-
-# Or get full summary
-python /home/dzack/ai/skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM
-```
-
-### 6. Send Feedback to Jules
-
-```bash
-uv run python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
-```
-
-### 7. Repeat Steps 3-6
-
-Loop until no unresolved issues remain.
-
-> TODO: describe exactly how to identify unresolved issues.
-> TODO: describe exactly what counts as unresolved (isMinimized == false/null → unresolved, or non-crossed-out issues)
-> TODO: describe exactly how to "resolve" (identify specific commit that fixed it OR identify new issue that addresses it, link commit as a reply in the conversation, mark conversation as "Resolved" manually)
-
-### 8. Surface to User
-
-When all issues resolved, present PR link to user:
-
-```bash
-python -m improved_jules_cli pr SESSION_ID
-```
+Load the `jules` skill for the full workflow (create, monitor, review, feedback loop).
 
 ## Live User Feedback with Plannotator
 
