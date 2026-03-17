@@ -297,10 +297,10 @@ Use this script to extract unresolved issues from open PRs:
 
 ```bash
 # Extract all unresolved issues from your open PRs
-python scripts/extract_unresolved_issues.py --output unresolved-pr-issues.md
+python skills/jules/scripts/extract_unresolved_issues.py --output skills/jules/unresolved-pr-issues.md
 
 # Filter by repository
-python scripts/extract_unresolved_issues.py --repo dzackgarza/opencode-plugin-improved-webtools
+python skills/jules/scripts/extract_unresolved_issues.py --repo dzackgarza/opencode-plugin-improved-webtools
 ```
 
 Issues are considered resolved only when:
@@ -368,17 +368,17 @@ Pipe output from `extract_unresolved_issues.py` directly to Jules:
 
 ```bash
 # Send unresolved issues summary
-uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+uv run python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
 
 # Send issues list
-uv run python scripts/extract_unresolved_issues.py issues owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+uv run python skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
 ```
 
 Example:
 
 ```bash
 # Send PR #42 issues to Jules
-uv run python scripts/extract_unresolved_issues.py issues dzackgarza/opencode-zotero-plugin#42 | python -m improved_jules_cli feedback 17227190236334622547
+uv run python skills/jules/scripts/extract_unresolved_issues.py issues dzackgarza/opencode-zotero-plugin#42 | python -m improved_jules_cli feedback 17227190236334622547
 ```
 
 ### What Qualifies as a PR
@@ -470,16 +470,16 @@ Wait 5-10 minutes for PR reviews to flow in from bots (Qodo, Codacy, Gemini, kil
 
 ```bash
 # Get unresolved issues
-python /home/dzack/ai/scripts/extract_unresolved_issues.py issues owner/repo#NUM
+python /home/dzack/ai/skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM
 
 # Or get full summary
-python /home/dzack/ai/scripts/extract_unresolved_issues.py summarize owner/repo#NUM
+python /home/dzack/ai/skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM
 ```
 
 ### 6. Send Feedback to Jules
 
 ```bash
-uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+uv run python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
 ```
 
 ### 7. Repeat Steps 3-6
@@ -516,6 +516,7 @@ Use these tools to present changes to users for real-time feedback:
 
 ## Libraries
 
+- `jq` and `yq` for manipulating JSON and YAML
 - `uv` for all python-related projects
 - `bun` and typescript for all JS-related development
 - `svelte`, `vite`, `tailwind` etc for all HTML-related development

@@ -6,10 +6,10 @@ Finds all open PRs by the authenticated user, checks Qodo/Gemini/Codex reviews,
 and identifies issues that are NOT resolved (not struck through, not minimized).
 
 Usage:
-    python scripts/extract_unresolved_issues.py [--output FILE]
+    python skills/jules/scripts/extract_unresolved_issues.py [--output FILE]
 
     # Summarize PR comments
-    python scripts/extract_unresolved_issues.py summarize owner/repo#123
+    python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#123
 """
 
 import argparse
