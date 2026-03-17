@@ -564,9 +564,11 @@ def resolve_comment(comment_id: str, justification: str, repo: str = None) -> di
         except subprocess.CalledProcessError:
             raise ValueError("Could not determine repository. Please specify --repo.")
 
-    # Add a comment on the PR saying it's resolved
+    # Resolve via GraphQL - get thread ID from comment, then resolve thread
+    import json
+
     try:
-        # Get comment details to find pull number
+        # Get pull number from comment
         comment_result = subprocess.run(
             [
                 "gh",
@@ -580,62 +582,71 @@ def resolve_comment(comment_id: str, justification: str, repo: str = None) -> di
             check=True,
         )
         pull_url = comment_result.stdout.strip()
-        # Extract pull number from URL like "https://github.com/owner/repo/pull/42"
         pull_number = pull_url.split("/")[-1]
+        owner, name = repo.split("/")
 
-        # Get original comment details for context
-        orig_comment = subprocess.run(
-            [
-                "gh",
-                "api",
-                f"repos/{repo}/pulls/comments/{comment_id}",
-                "-q",
-                "{body: .body, user: .user.login, path: .path, line: .line}",
-            ],
+        # Get review threads and find the one containing our comment
+        threads_query = (
+            """query { repository(owner: "%s", name: "%s") { pullRequest(number: %s) { reviewThreads(first: 100) { nodes { id isResolved comments(first: 10) { nodes { id databaseId } } } } } } }"""
+            % (owner, name, pull_number)
+        )
+
+        threads_result = subprocess.run(
+            ["gh", "api", "graphql", "--field", "query=" + threads_query],
             capture_output=True,
             text=True,
             check=True,
         )
-        import json
 
-        orig = json.loads(orig_comment.stdout)
+        if threads_result.returncode != 0:
+            raise Exception(f"GraphQL query failed: {threads_result.stderr}")
 
-        # Post issue comment (PR is also an issue) referencing the resolution
-        comment_body = f"""**Resolved** ✅
+        threads_data = json.loads(threads_result.stdout)
+        threads = threads_data["data"]["repository"]["pullRequest"]["reviewThreads"][
+            "nodes"
+        ]
 
-{justification}
+        # Find thread with our comment
+        thread_id = None
+        for thread in threads:
+            for comment in thread["comments"]["nodes"]:
+                if comment["databaseId"] == int(comment_id):
+                    thread_id = thread["id"]
+                    break
+            if thread_id:
+                break
 
----
-*Original comment by @{orig.get("user", "unknown")} on [{orig.get("path", "?")}](https://github.com/{repo}/pull/{pull_number}#discussion_{comment_id}):*
+        if not thread_id:
+            raise Exception(f"Could not find review thread for comment {comment_id}")
 
-> {orig.get("body", "")[:200]}..."""
-
-        reply_result = subprocess.run(
-            [
-                "gh",
-                "api",
-                f"repos/{repo}/issues/{pull_number}/comments",
-                "-X",
-                "POST",
-                "-f",
-                f"body={comment_body}",
-            ],
-            capture_output=True,
-            text=True,
+        # Resolve the thread
+        resolve_query = (
+            """mutation { resolveReviewThread(input: {threadId: "%s"}) { thread { isResolved } } }"""
+            % thread_id
         )
 
-        if reply_result.returncode != 0:
-            raise Exception(f"Failed to add resolution comment: {reply_result.stderr}")
+        resolve_result = subprocess.run(
+            ["gh", "api", "graphql", "--field", "query=" + resolve_query],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        resolve_data = json.loads(resolve_result.stdout)
+        if resolve_data.get("errors"):
+            raise Exception(f"GraphQL error: {resolve_data['errors']}")
 
         return {
             "success": True,
             "comment_id": comment_id,
+            "thread_id": thread_id,
             "justification": justification,
-            "method": "issue_comment",
         }
 
     except subprocess.CalledProcessError as e:
         raise Exception(f"Failed to resolve comment: {e}")
+    except json.JSONDecodeError as e:
+        raise Exception(f"Failed to parse GraphQL response: {e}")
 
 
 # Typer CLI
