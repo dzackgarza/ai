@@ -74,12 +74,47 @@ def get_open_prs() -> list[dict]:
 
 def get_pr_reviews(repo: str, pr_num: int) -> tuple[list[dict], list[dict]]:
     """Get all reviews and comments for a PR using the API (more complete than pr view)."""
-    # Fetch ALL comments using API (pr view --json comments misses some)
+    # Fetch unresolved threads via GraphQL (this is the source of truth for resolved threads)
     try:
-        output = run_gh(["api", f"repos/{repo}/pulls/{pr_num}/comments"])
-        comments = json.loads(output)
-    except subprocess.CalledProcessError:
+        owner, name = repo.split("/")
+        query = (
+            """query { repository(owner: "%s", name: "%s") { pullRequest(number: %s) { reviewThreads(first: 100) { nodes { id isResolved comments(first: 10) { nodes { id databaseId body author { login } } } } } } } }"""
+            % (owner, name, pr_num)
+        )
+
+        output = run_gh(["api", "graphql", "--field", "query=" + query])
+        data = json.loads(output)
+        threads = (
+            data.get("data", {})
+            .get("repository", {})
+            .get("pullRequest", {})
+            .get("reviewThreads", {})
+            .get("nodes", [])
+        )
+
+        # Build comments list with resolved status
         comments = []
+        for thread in threads:
+            is_resolved = thread.get("isResolved", False)
+            for comment in thread.get("comments", {}).get("nodes", []):
+                comments.append(
+                    {
+                        "id": comment.get("databaseId"),
+                        "body": comment.get("body", ""),
+                        "user": {
+                            "login": comment.get("author", {}).get("login", "unknown")
+                        },
+                        "isResolved": is_resolved,
+                    }
+                )
+    except Exception as e:
+        print(f"GraphQL fetch failed: {e}, falling back to REST", file=sys.stderr)
+        # Fallback to REST API
+        try:
+            output = run_gh(["api", f"repos/{repo}/pulls/{pr_num}/comments"])
+            comments = json.loads(output)
+        except subprocess.CalledProcessError:
+            comments = []
 
     # Fetch reviews
     try:
@@ -97,14 +132,14 @@ def get_pr_reviews(repo: str, pr_num: int) -> tuple[list[dict], list[dict]]:
 def extract_all_unresolved_comments(comments: list[dict]) -> list[dict]:
     """
     Extract ALL unresolved comments - simple mechanism:
-    A comment is unresolved if "Resolve Conversation" was never clicked (isMinimized != true).
+    A comment is unresolved if the review thread is not resolved (isResolved != true).
     """
     issues = []
 
     for comment in comments:
-        # Check if minimized (resolved)
-        is_minimized = comment.get("isMinimized", False)
-        if is_minimized:
+        # Check if thread is resolved
+        is_resolved = comment.get("isResolved", False)
+        if is_resolved:
             continue  # Skip resolved conversations
 
         author = comment.get("user", {}).get("login", "unknown")
