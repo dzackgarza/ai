@@ -1,7 +1,7 @@
-
 **CRITICAL DIRECTIVE**: READ. THE. DOCS.
 
-ALL investigations start with reading the docs: 
+ALL investigations start with reading the docs:
+
 - Checking online for official docs (websearch + webfetch)
 - Checking github repos for READMEs (gh and local files)
 - Googling the issue and crawling leads
@@ -362,6 +362,22 @@ No manual "resolve" needed — it's commit-driven.
 - Never dismiss issues as "irrelevant", "out-of-scope", "won't-fix", or "acknowledged" without action
 - Never pretend a PR is ready until all feedback has been explicitly addressed with code changes or new issues warranting new PRs
 
+### Sending Review Feedback to Jules
+
+Generate PR review summary and send directly to Jules session using the wrapper script:
+
+```bash
+# Usage: ./jules-feedback.sh SESSION_ID "command"
+./scripts/jules-feedback.sh SESSION_ID "uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM"
+```
+
+Example:
+
+```bash
+# Summarize PR #42 and send to Jules
+./scripts/jules-feedback.sh 17227190236334622547 "uv run python scripts/extract_unresolved_issues.py summarize dzackgarza/opencode-zotero-plugin#42"
+```
+
 ### What Qualifies as a PR
 
 **PRs are for significant work only.** Do not use PRs for:
@@ -378,6 +394,107 @@ No manual "resolve" needed — it's commit-driven.
 - Jules-related work (Jules only operates through PR process)
 
 PRs trigger rate-limited reviews — reserve them for changes where mistakes, regressions, or LLM failure modes are more likely.
+
+## Jules Workflow
+
+Complete workflow for using Jules to handle GitHub issues:
+
+### 1. Create Issue
+
+Use `git-guidelines` skill to create a properly formatted GitHub issue. Ensure:
+
+- Clear title and description
+- Specific requirements/outcomes
+- Context files referenced (e.g., README_STANDARDS.md)
+
+### 2. Launch Jules
+
+```bash
+cd /home/dzack/opencode-plugins/improved-jules-cli
+source .venv/bin/activate
+source ~/.envrc
+
+# Create session from issue
+python -m improved_jules_cli create ISSUE_URL --context PATH_TO_CONTEXT --prompt-slug sub-agents/jules-pr-body-contract
+
+# Or with dry-run first
+python -m improved_jules_cli create ISSUE_URL --dry-run
+```
+
+### 3. Monitor & Poll
+
+```bash
+# Check status once
+python -m improved_jules_cli status SESSION_ID
+
+# Get PR URL when done
+python -m improved_jules_cli pr SESSION_ID
+```
+
+**Auto-poll with callback:** Use `watch-callback` to poll until done, then run a callback command:
+
+```bash
+python -m improved_jules_cli watch-callback SESSION_ID "echo done"
+```
+
+**Callback + wakeup loop:** Set up callback to wake your session with the issue check:
+
+```bash
+# Get your session ID first, then set up callback
+# Your session ID: use introspection tool to get it
+
+# Callback runs opx chat to wake your session when Jules completes
+python -m improved_jules_cli watch-callback JULES_SESSION_ID "npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session YOUR_SESSION_ID --prompt 'check issues and continue if needed'"
+```
+
+Replace:
+
+- `YOUR_SESSION_ID` with your OpenCode session ID (from introspection tool)
+- `JULES_SESSION_ID` with the Jules session ID (returned from `create`)
+
+**Schedule wakeup:** Use `at` to schedule a future check:
+
+```bash
+# Schedule wakeup in 10 minutes to check status
+echo "python -m improved_jules_cli status SESSION_ID" | at now + 10 minutes
+```
+
+### 4. Wait for Reviews
+
+Wait 5-10 minutes for PR reviews to flow in from bots (Qodo, Codacy, Gemini, kilo-code-bot).
+
+### 5. Check for Issues
+
+```bash
+# Get unresolved issues
+python /home/dzack/ai/scripts/extract_unresolved_issues.py issues owner/repo#NUM
+
+# Or get full summary
+python /home/dzack/ai/scripts/extract_unresolved_issues.py summarize owner/repo#NUM
+```
+
+### 6. Send Feedback to Jules
+
+```bash
+# Usage: ./jules-feedback.sh SESSION_ID "command"
+./scripts/jules-feedback.sh SESSION_ID "uv run python scripts/extract_unresolved_issues.py summarize owner/repo#NUM"
+```
+
+### 7. Repeat Steps 3-6
+
+Loop until no unresolved issues remain.
+
+> TODO: describe exactly how to identify unresolved issues.
+> TODO: describe exactly what counts as unresolved (isMinimized == false/null → unresolved, or non-crossed-out issues)
+> TODO: describe exactly how to "resolve" (identify specific commit that fixed it OR identify new issue that addresses it, link commit as a reply in the conversation, mark conversation as "Resolved" manually)
+
+### 8. Surface to User
+
+When all issues resolved, present PR link to user:
+
+```bash
+python -m improved_jules_cli pr SESSION_ID
+```
 
 ## Live User Feedback with Plannotator
 
