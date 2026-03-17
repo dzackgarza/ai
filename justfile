@@ -1,3 +1,4 @@
+set fallback := true
 # Install symlinks for all CLI harnesses
 # Usage: just install
 
