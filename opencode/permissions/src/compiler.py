@@ -1,7 +1,7 @@
 """compiler.py — Global defaults, base-type permissions, and agent compiler."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from src.mixins import deep_merge
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 # Global defaults — explicit action for every known tool
 # ---------------------------------------------------------------------------
 
-GLOBAL_DEFAULTS: dict = {
+GLOBAL_DEFAULTS: dict[str, Any] = {
     # Read
     "read": "allow", "glob": "allow", "grep": "allow",
     # Write
@@ -101,16 +101,16 @@ GLOBAL_DEFAULTS: dict = {
 # Base-type permission adjustments
 # ---------------------------------------------------------------------------
 
-_PURE_AGENT_BASE: dict = {
+_PURE_AGENT_BASE: dict[str, str] = {
     "task": "allow", "todowrite": "allow",
 }
 
-_SUBAGENT_BASE: dict = {
+_SUBAGENT_BASE: dict[str, str] = {
     "task": "deny", "todowrite": "deny",
     "improved_task": "deny", "improved_todowrite": "deny",
 }
 
-_BASE_TYPE_PERMS: dict = {
+_BASE_TYPE_PERMS: dict[str, dict[str, str]] = {
     "pure_agent": _PURE_AGENT_BASE,
     "subagent":   _SUBAGENT_BASE,
 }
@@ -119,7 +119,7 @@ _BASE_TYPE_PERMS: dict = {
 # Compiler
 # ---------------------------------------------------------------------------
 
-def compile_agent(agent: Agent) -> dict:
+def compile_agent(agent: Agent) -> dict[str, Any]:
     """Compile an Agent into a flat permission dict.
 
     Layer order (lowest → highest precedence):
