@@ -1,0 +1,4 @@
+# Global Black Configuration
+[tool.black]
+line-length = 88
+target-version = ['py314']
