@@ -157,3 +157,27 @@ build-agents-md:
     with open("{{ repo }}/AGENTS.md", "w") as f:
         f.write(body)
     print(f"Wrote {{ repo }}/AGENTS.md ({count} tokens)")
+
+# =============================================================================
+# Linting & Formatting
+# =============================================================================
+
+# Python Linting (ruff check)
+lint-python *args:
+    uvx ruff check {{ args }}
+
+# Python Formatting (ruff format)
+fmt-python *args:
+    uvx ruff format {{ args }}
+
+# Python Type Checking (mypy)
+mypy *args:
+    uvx mypy {{ args }}
+
+# JS/TS Linting (eslint)
+lint-js *args:
+    npx eslint {{ args }}
+
+# JS/TS Formatting (prettier)
+fmt-js *args:
+    npx prettier --write {{ args }}
