@@ -9,7 +9,7 @@ Develop TypeScript plugins that extend OpenCode agent behavior with hooks, custo
 
 ## Quick Start
 
-1. Create a TypeScript file in `opencode/plugin/` (project) or `~/.config/opencode/plugin/` (global)
+1. Create a single TypeScript file in `~/ai/opencode/plugin/` (repository-level) or `~/.config/opencode/plugin/` (global). Do not include a `package.json` file.
 2. Export a named plugin function
 3. Restart OpenCode
 
