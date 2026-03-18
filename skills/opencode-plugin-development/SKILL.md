@@ -320,7 +320,7 @@ await client.app.log({
 
 1. Global config (`~/.config/opencode/opencode.json`)
 2. Project config (`./opencode.json`)
-3. Plugin directory (`~/ai/opencode/plugin/`)
+3. Plugin directory (`~/ai/opencode/plugin/` - which is symlinked to `~/.config/opencode/plugin/`. Always use the `~/ai/` path for version control.)
 
 All hooks from all plugins run in sequence.
 
