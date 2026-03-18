@@ -1,4 +1,4 @@
-# Global Ruff Configuration
+# Global Ruff Configuration (Strict)
 
 # Exclude a variety of commonly ignored directories
 exclude = [
@@ -30,21 +30,17 @@ exclude = [
     "venv",
 ]
 
-# Same as Black
+# Standard formatting
 line-length = 88
 indent-width = 4
 
-# Assume Python 3.10+
-target-version = "py310"
+# Target Python 3.14 (latest stable)
+target-version = "py314"
 
 [lint]
-# Enable standard rules (E=pycodestyle, F=pyflakes, I=isort, UP=pyupgrade)
+# Enable standard rules
 select = ["E", "F", "I", "UP"]
 ignore = []
 
-# Allow fixable rules (except for F841: unused variables)
+# Enforce strictness: fix everything
 fixable = ["ALL"]
-unfixable = ["F841"]
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
