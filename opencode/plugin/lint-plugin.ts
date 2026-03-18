@@ -43,18 +43,35 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
             message: `Linting/Formatting justfile`,
           });
 
-          // Attempt to format justfile automatically
-          const justResult = await $`just --unstable --fmt`.nothrow();
-
-          if (justResult.exitCode !== 0) {
+          // First perform an explicit syntax check
+          const syntaxCheck = await $`just --justfile ${filePath} --list`.quiet().nothrow();
+          
+          if (syntaxCheck.exitCode !== 0) {
             await client.session.promptAsync({
               path: { id: input.sessionID },
               body: {
                 parts: [
                   {
                     type: 'text',
-                    text: `Justfile formatting failed: ${justResult.stderr.toString()}`,
+                    text: `Justfile syntax error in ${filePath}:\n\n${syntaxCheck.stderr.toString()}`,
+                  },
+                ],
+              },
+            });
+            return;
+          }
 
+          // Then attempt to format justfile automatically
+          const fmtResult = await $`just --justfile ${filePath} --unstable --fmt`.quiet().nothrow();
+
+          if (fmtResult.exitCode !== 0) {
+            await client.session.promptAsync({
+              path: { id: input.sessionID },
+              body: {
+                parts: [
+                  {
+                    type: 'text',
+                    text: `Justfile formatting failed for ${filePath}:\n\n${fmtResult.stderr.toString()}`,
                   },
                 ],
               },
