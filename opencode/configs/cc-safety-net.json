@@ -75,21 +75,28 @@
       "command": "git",
       "subcommand": "revert",
       "block_args": ["revert"],
-      "reason": "Reverts should be documented. Use 'git revert' in a new branch and open a PR for team review."
+      "reason": "Maintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
     },
     {
       "name": "block-git-reset",
       "command": "git",
       "subcommand": "reset",
       "block_args": ["reset", "--hard", "--mixed", "--soft"],
-      "reason": "Hard resets destroy work. Safely undo commits via 'git revert' or discard specific file changes with 'git restore'."
+      "reason": "Maintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
     },
     {
       "name": "block-git-clean",
       "command": "git",
       "subcommand": "clean",
       "block_args": ["clean", "-f", "-fd", "-fx", "-fdx"],
-      "reason": "Sweeping deletions are dangerous in noisy repos. Explicitly delete untracked files after review."
+      "reason": "Maintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
+    },
+    {
+      "name": "block-git-restore",
+      "command": "git",
+      "subcommand": "restore",
+      "block_args": ["restore"],
+      "reason": "Maintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
     },
     {
       "name": "block-git-rebase",

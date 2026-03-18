@@ -1,6 +1,0 @@
-{
-  "typeCheckingMode": "strict",
-  "pythonVersion": "3.14",
-  "pythonPlatform": "Linux",
-  "exclude": ["**/node_modules", "**/.venv", "**/__pycache__"]
-}

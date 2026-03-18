@@ -47,10 +47,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 _BASE_DIR = Path(os.path.expanduser("~/.config/opencode"))
 _SKELETON = _BASE_DIR / "configs" / "config_skeleton.json"
 _MARKDOWN_AGENTS_DIR = _BASE_DIR / "agents"
-
-# Ensure we can import build_config
-sys.path.insert(0, str(_PROJECT_ROOT / "scripts"))
-from build_config import build_config as run_build_config
+_BUILD_CONFIG_SCRIPT = _PROJECT_ROOT / "scripts" / "build_config.py"
 
 AGENT_MAP = {a.name: a for a in AGENTS}
 BUILTIN_SHADOWS = {
@@ -182,8 +179,8 @@ def _validate_runtime_agents(expected_names: set[str]) -> None:
 def build_agents() -> None:
     """Build markdown agents, rebuild opencode.json, then validate runtime visibility."""
     artifacts = apply_agents()
-    logger.info("Running [bold]scripts/build_config.py[/bold] directly...", extra={"markup": True})
-    run_build_config()
+    logger.info("Running %s", _BUILD_CONFIG_SCRIPT.relative_to(_PROJECT_ROOT))
+    subprocess.run([sys.executable, str(_BUILD_CONFIG_SCRIPT)], cwd=_PROJECT_ROOT, check=True)
     expected_names = {artifact.name for artifact in artifacts}
     _validate_runtime_agents(expected_names)
     logger.info("Build complete: %d generated agents validated", len(expected_names))

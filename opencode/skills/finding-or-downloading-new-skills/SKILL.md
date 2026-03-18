@@ -5,18 +5,28 @@ description: Use when asked to find, evaluate, or download new skills from skill
 
 # Finding or Downloading New Skills
 
-## Mandatory Research Fail-Safe Protocol (DO NOT SKIP)
+## Research & Acquisition Protocol
 
-If a search yields nothing or a tool fails (e.g., interactive hang, web block):
+Follow this workflow for all skill acquisition tasks to ensure research depth and tool accuracy.
 
-1. **Never Give Up**: A single failed search is not evidence of absence.
-2. **Announce Blockers**: IMMEDIATELY report tool/blocker failures; never work around them silently.
-3. **Check `--help`**: Before assuming a tool limit, run `tool --help`. Smithery, for example, is a direct tool for search/download/install — learn its CLI.
-4. **Hunt the Raw Source**: Always seek the original GitHub repository. Raw files (`raw.githubusercontent.com`) bypass most web blockers.
-5. **No Memory-Writing (STRICTLY BANNED)**: You must NEVER fabricate content from memory.
-   - You must fetch content using the `write` tool _only after_ fetching the raw source via `webfetch` (e.g., raw GitHub URL).
-   - If research fails, report the gap using the Epistemic Integrity format below.
-6. **Report Negatives**: Use the Epistemic Integrity format (Searched, Found, Conclusion, Confidence, Gaps).
+### 1. Research & Discovery
+
+- **Check Tooling First**: Run `npx tool --help` or `tool --help` for every tool before concluding it lacks search/download capability.
+- **Exhaustive Discovery**: If initial searches yield nothing, pivot search terms immediately. Do not conclude absence based on one failure.
+- **Hunt the Raw Source**: Always locate the authoritative GitHub repository. Webfetch the **raw** `SKILL.md` file from `https://raw.githubusercontent.com/...` to bypass site-specific UI blockers or JS-rendering requirements.
+- **Report Negatives**: If research is exhausted, report the gap using the Epistemic Integrity format:
+  - **Searched**: [List sources/commands]
+  - **Found**: [Summary of findings]
+  - **Conclusion**: [Inference based on evidence]
+  - **Confidence**: [High/Medium/Low]
+  - **Gaps**: [Unsearched areas]
+
+### 2. Acquisition & Installation
+
+- **Use Official CLI**: Prefer native CLI tools for search/install when non-interactive flags exist.
+- **Verify Canonical Path**: Install/copy all skill content strictly into `~/ai/skills/skill-name/`.
+- **Manual Installation**: If CLI fails, manually download raw files and place them in the canonical path.
+- **Strict Fabrication Ban**: NEVER write or fabricate skill content from memory. Content must be fetched, verified, and saved using the `write` tool.
 
 ---
 
@@ -28,31 +38,28 @@ This skill covers three approaches:
 
 ## Smithery
 
-Smithery is NOT just a registry; it is a full CLI for searching, accessing, and downloading components.
+Smithery is the canonical tool for searching, inspecting, and installing MCP servers and agent skills.
 
-### CLI Usage (Check `--help` first)
+### Searching & Viewing
 
-```bash
-# Discover how to use search/download/install
-npx smithery --help
-npx smithery skill --help
-```
-
-### Searching & Downloading
+Use Smithery to search or inspect a skill without manually downloading files first.
 
 ```bash
 # Search by keyword
 npx smithery skill search "pdf processing"
+
+# View skill details/content without installing
+npx -y @smithery/cli@latest skill view <namespace>/<name>
 ```
 
-Use `smithery` commands to directly search, access, and install components. Do not treat it as a UI-only tool.
+### Installing
 
-### Canonical Fetching Workflow (Bypass UI/Blockers)
+If the skill is confirmed, install it into the canonical directory:
 
-1. **Find Repo**: Identify the source GitHub repository for the skill.
-2. **Fetch Content**: Use `webfetch` to pull the _raw_ `SKILL.md` from the repo's URL (`https://raw.githubusercontent.com/...`).
-3. **Verify**: Ensure the fetched content is the canonical version.
-4. **Save**: Use `write` to save the fetched content to `~/ai/skills/skill-name/SKILL.md`.
+```bash
+mkdir -p ~/ai/skills/skill-name
+# Perform manual installation by cloning or downloading raw files
+```
 
 ## LobeHub Marketplace
 

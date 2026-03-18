@@ -10,17 +10,21 @@ from src.models import (
     SERENA_FILE_WRITE_TOOLS,
 )
 
-
 # ---------------------------------------------------------------------------
 # Core utilities
 # ---------------------------------------------------------------------------
+
 
 def deep_merge(*dicts: dict) -> dict:
     """Merge dicts left-to-right; nested dicts are merged at key level."""
     result: dict = {}
     for d in dicts:
         for key, value in d.items():
-            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            if (
+                key in result
+                and isinstance(result[key], dict)
+                and isinstance(value, dict)
+            ):
                 result[key] = {**result[key], **value}
             else:
                 result[key] = value
@@ -56,8 +60,12 @@ def write_only_in(allow_globs: list[str], deny_globs: list[str] | None = None) -
         "edit": rule,
         "apply_patch": rule,
     }
-    for tool in [*SERENA_FILE_WRITE_TOOLS, "cut-copy-paste-mcp_cut",
-                 "cut-copy-paste-mcp_copy", "cut-copy-paste-mcp_paste"]:
+    for tool in [
+        *SERENA_FILE_WRITE_TOOLS,
+        "cut-copy-paste-mcp_cut",
+        "cut-copy-paste-mcp_copy",
+        "cut-copy-paste-mcp_paste",
+    ]:
         perms[tool] = rule
     return perms
 
@@ -65,6 +73,7 @@ def write_only_in(allow_globs: list[str], deny_globs: list[str] | None = None) -
 # ---------------------------------------------------------------------------
 # Atomic mixin functions
 # ---------------------------------------------------------------------------
+
 
 def mixin_interactive() -> dict:
     """Full file read/write access."""
@@ -87,7 +96,9 @@ def mixin_orchestrator() -> dict:
 def mixin_code_writer() -> dict:
     """Read src+plans (not tests/docs), write src."""
     return deep_merge(
-        read_only_in(["*src*", "*.serena/plans*"], deny_globs=["*test*", "*tests*", "*docs*"]),
+        read_only_in(
+            ["*src*", "*.serena/plans*"], deny_globs=["*test*", "*tests*", "*docs*"]
+        ),
         write_only_in(["*src*"]),
     )
 
@@ -95,7 +106,9 @@ def mixin_code_writer() -> dict:
 def mixin_test_writer() -> dict:
     """Read tests+plans (not src/docs), write tests."""
     return deep_merge(
-        read_only_in(["*tests*", "*test*", "*.serena/plans*"], deny_globs=["*src*", "*docs*"]),
+        read_only_in(
+            ["*tests*", "*test*", "*.serena/plans*"], deny_globs=["*src*", "*docs*"]
+        ),
         write_only_in(["*tests*", "*test*"]),
     )
 
@@ -103,7 +116,9 @@ def mixin_test_writer() -> dict:
 def mixin_docs_writer() -> dict:
     """Read docs+plans (not src/tests), write docs."""
     return deep_merge(
-        read_only_in(["*docs*", "*.serena/plans*"], deny_globs=["*src*", "*test*", "*tests*"]),
+        read_only_in(
+            ["*docs*", "*.serena/plans*"], deny_globs=["*src*", "*test*", "*tests*"]
+        ),
         write_only_in(["*docs*"]),
     )
 
@@ -122,13 +137,29 @@ def mixin_bash_standard() -> dict:
     """Allow a curated set of safe bash commands."""
     return {
         "bash": {
-            "du*": "allow", "file *": "allow", "ls*": "allow", "pwd*": "allow",
-            "stat*": "allow", "tree*": "allow",
-            "cut*": "allow", "diff*": "allow", "grep*": "allow", "rg*": "allow",
-            "head*": "allow", "tail*": "allow", "less*": "allow", "sort*": "allow",
-            "wc*": "allow", "jq": "allow",
-            "find *": "allow", "find * -delete*": "ask", "find * -exec*": "ask",
-            "just*": "allow", "pytest*": "allow", "uv*": "allow",
+            "*sudo*": "deny",
+            "du*": "allow",
+            "file *": "allow",
+            "ls*": "allow",
+            "pwd*": "allow",
+            "stat*": "allow",
+            "tree*": "allow",
+            "cut*": "allow",
+            "diff*": "allow",
+            "grep*": "allow",
+            "rg*": "allow",
+            "head*": "allow",
+            "tail*": "allow",
+            "less*": "allow",
+            "sort*": "allow",
+            "wc*": "allow",
+            "jq": "allow",
+            "find *": "allow",
+            "find * -delete*": "ask",
+            "find * -exec*": "ask",
+            "just*": "allow",
+            "pytest*": "allow",
+            "uv*": "allow",
             "cat*": "deny",
             "*": "deny",
         }
@@ -136,13 +167,17 @@ def mixin_bash_standard() -> dict:
 
 
 def mixin_bash_unrestricted() -> dict:
-    """Allow all bash commands."""
-    return {"bash": "allow"}
+    """Allow all bash commands except sudo."""
+    return {"bash": {"*sudo*": "deny", "*": "allow"}}
 
 
 def mixin_session_tools() -> dict:
     """Allow introspection, session listing, transcript reading."""
-    return {"introspection": "allow", "list_sessions": "allow", "read_transcript": "allow"}
+    return {
+        "introspection": "allow",
+        "list_sessions": "allow",
+        "read_transcript": "allow",
+    }
 
 
 def mixin_allow_all_permissions() -> dict:
