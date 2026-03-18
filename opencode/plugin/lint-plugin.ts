@@ -43,7 +43,7 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
           });
 
           // Attempt to format justfile automatically
-          const justResult = await $`just --fmt`.nothrow();
+          const justResult = await $`just --unstable --fmt`.nothrow();
 
           if (justResult.exitCode !== 0) {
             await client.session.prompt({
