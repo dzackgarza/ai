@@ -17,9 +17,9 @@ export const PyLinterPlugin: Plugin = async ({ client, $ }) => {
           message: `Running linter on ${filePath}`,
         });
 
-        // 2. Run the linter (using ruff)
+        // 2. Run the linter (using uvx ruff)
         // .nothrow() prevents the plugin from crashing on non-zero exit codes
-        const result = await $`ruff check ${filePath}`.quiet().nothrow();
+        const result = await $`uvx ruff check ${filePath}`.quiet().nothrow();
 
         // 3. If linter found issues, prompt the agent with the output
         if (result.exitCode !== 0) {
