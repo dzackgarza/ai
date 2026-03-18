@@ -31,7 +31,7 @@ install:
     mkdir -p ~/.cc-safety-net
     
     # Linter/formatter configurations
-    mkdir -p ~/.config/ruff ~/.config/black
+    mkdir -p ~/.config/ruff ~/.config/black ~/.config/mypy ~/.config/eslint ~/.config/prettier
     ln -sf {{ repo }}/linter-configs/ruff-global.toml ~/.config/ruff/ruff.toml
     ln -sf {{ repo }}/linter-configs/mypy-global.ini ~/.mypy.ini
     ln -sf {{ repo }}/linter-configs/black-global.toml ~/.config/black/black.toml
