@@ -44,10 +44,10 @@ patterns, use `opencode-cli/async-injection.md`.
 
 ## Config and Environment
 
-- `.envrc` starts with `source_up` and `dotenv_if_exists .env` when the repo has a local `.envrc`.
+- `.envrc` starts with `source_up` and `source /home/dzack/opencode-plugins/.testrc` (or equivalent absolute path) and `dotenv_if_exists .env` when the repo has a local `.envrc`.
 - Tracked `.envrc` files contain placeholders or documented exports only, never live secret values.
 - Environment variables used by the repo are documented in `.envrc` and in the package README when humans need to set them.
-- If the repo runs OpenCode directly, `.envrc` exports `OPENCODE_CONFIG="$PWD/.config/opencode.json"` and `OPENCODE_CONFIG_DIR="$PWD/.config"`.
+- If the repo runs OpenCode directly, it inherits isolation from `.testrc`. It does not override `OPENCODE_CONFIG` or XDG variables in its local `.envrc`.
 - Fixed witness tokens, if used, come from env. They are never hardcoded in test source.
 - `.config/` files and plugin symlinks avoid user-specific absolute paths when a relative path or repo-local path works.
 

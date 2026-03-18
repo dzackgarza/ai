@@ -92,11 +92,12 @@
   },
   "plugin": [
     "opencode-anthropic-auth@0.0.13",
-    "opencode-qwencode-auth@1.3.0",
+    "opencode-qwencode-auth@git+https://github.com/luanweslley77/opencode-qwencode-auth.git#feat/v1.5.0-rate-limit-fix",
     "opencode-openai-codex-auth@4.4.0",
     "cc-safety-net@0.7.1",
     "@azumag/opencode-rate-limit-fallback@1.70.0",
     "@ramtinj95/opencode-tokenscope@1.5.2",
+    "opencode-gemini-auth@latest",
     "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
     "@dzackgarza/opencode-plugin-improved-task@git+https://github.com/dzackgarza/opencode-plugin-improved-task.git#main",
     "@dzackgarza/opencode-plugin-improved-todowrite@git+https://github.com/dzackgarza/opencode-plugin-improved-todowrite.git#main",
@@ -205,6 +206,7 @@
     "serena_think_about_task_adherence": "deny",
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny",
-    "serena_switch_modes": "deny"
+    "serena_switch_modes": "deny",
+    "gemini_quota": "allow"
   }
 }

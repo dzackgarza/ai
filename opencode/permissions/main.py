@@ -35,7 +35,7 @@ from src.agent_markdown import (
     write_markdown_artifact,
 )
 from src.compiler import GLOBAL_DEFAULTS
-from src.validate_inventory import validate_tool_inventory
+from src.validate_inventory import validate_tool_inventory, UndeclaredToolError
 from src.display import load_agent_rulesets, show_effective, show_agents, show_rulesets, console
 from src.models import UNMANAGED_AGENTS
 
@@ -139,7 +139,11 @@ def _validate_written_artifacts(artifacts: list[GeneratedAgentArtifact]) -> None
 
 def apply_agents() -> list[GeneratedAgentArtifact]:
     """Write compiled permissions to all managed markdown agent files."""
-    validate_tool_inventory(GLOBAL_DEFAULTS)
+    try:
+        validate_tool_inventory(GLOBAL_DEFAULTS)
+    except UndeclaredToolError as exc:
+        console.print(f"[bold red]{exc}[/bold red]")
+        sys.exit(1)
 
     # Global defaults → skeleton
     if _SKELETON.exists():

@@ -119,8 +119,48 @@ def discover_mcp_tools() -> dict[str, list[str]]:
 # Validation
 # ---------------------------------------------------------------------------
 
-def validate_tool_inventory(global_defaults: dict) -> None:
-    """Raise ValueError if GLOBAL_DEFAULTS keys don't exactly match known tools.
+class UndeclaredToolError(ValueError):
+    """Raised when a tool exists in the environment but has no explicit permission in GLOBAL_DEFAULTS."""
+
+    def __init__(self, undeclared_tools: list[str], stale_tools: list[str], mcp_by_server: dict[str, list[str]]) -> None:
+        lines = [
+            "CRITICAL: Tool inventory mismatch — undeclared tools detected.",
+            "All tools must have an explicit permission entry in GLOBAL_DEFAULTS.",
+            "",
+            "Undeclared tools (tool exists but has no explicit permission):",
+        ]
+        for t in sorted(undeclared_tools):
+            origin = next(
+                (srv for srv, keys in mcp_by_server.items() if t in keys),
+                "api",
+            )
+            lines.append(f"    - {t}  [{origin}]")
+
+        if stale_tools:
+            lines.extend([
+                "",
+                "Stale entries (in GLOBAL_DEFAULTS but tool no longer exists):",
+            ])
+            for t in sorted(stale_tools):
+                lines.append(f"    - {t}")
+
+        lines.extend([
+            "",
+            "FIX INSTRUCTIONS (for undeclared tools):",
+            "  1. Open 'permissions/src/compiler.py'",
+            "  2. Add each missing tool to the 'GLOBAL_DEFAULTS' dictionary.",
+            "  3. Set its default permission (usually 'allow' or 'deny').",
+            "",
+            "Example:",
+            '    "my_new_tool": "allow",',
+            "",
+            "Then run 'just rebuild' again.",
+        ])
+        super().__init__("\n".join(lines))
+
+
+def validate_tool_inventory(global_defaults: dict[str, Any]) -> None:
+    """Raise UndeclaredToolError if GLOBAL_DEFAULTS keys don't exactly match known tools.
 
     Prints an informative diff — stale entries and missing entries — before raising.
     """
@@ -150,18 +190,13 @@ def validate_tool_inventory(global_defaults: dict) -> None:
         )
         return
 
+    if undeclared:
+        raise UndeclaredToolError(undeclared, stale, mcp_by_server)
+
     lines = ["Tool inventory mismatch detected.\n"]
     if stale:
         lines.append("  STALE (in GLOBAL_DEFAULTS but tool no longer exists):")
         for t in stale:
             lines.append(f"    - {t}")
-    if undeclared:
-        lines.append("  UNDECLARED (tool exists but has no explicit permission):")
-        for t in undeclared:
-            origin = next(
-                (srv for srv, keys in mcp_by_server.items() if t in keys),
-                "api",
-            )
-            lines.append(f"    - {t}  [{origin}]")
 
     raise ValueError("\n".join(lines))

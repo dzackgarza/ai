@@ -5,65 +5,54 @@ description: Use when asked to find, evaluate, or download new skills from skill
 
 # Finding or Downloading New Skills
 
+## Mandatory Research Fail-Safe Protocol (DO NOT SKIP)
+
+If a search yields nothing or a tool fails (e.g., interactive hang, web block):
+
+1. **Never Give Up**: A single failed search is not evidence of absence.
+2. **Announce Blockers**: IMMEDIATELY report tool/blocker failures; never work around them silently.
+3. **Check `--help`**: Before assuming a tool limit, run `tool --help`. Smithery, for example, is a direct tool for search/download/install — learn its CLI.
+4. **Hunt the Raw Source**: Always seek the original GitHub repository. Raw files (`raw.githubusercontent.com`) bypass most web blockers.
+5. **No Memory-Writing (STRICTLY BANNED)**: You must NEVER fabricate content from memory.
+   - You must fetch content using the `write` tool _only after_ fetching the raw source via `webfetch` (e.g., raw GitHub URL).
+   - If research fails, report the gap using the Epistemic Integrity format below.
+6. **Report Negatives**: Use the Epistemic Integrity format (Searched, Found, Conclusion, Confidence, Gaps).
+
+---
+
 This skill covers three approaches:
 
-1. **Context7 Skills Registry** - Search, install, and generate skills with trust scores and security scanning
+1. **Smithery** - MCP server and skill discovery
 2. **LobeHub Marketplace** - Large marketplace with 100,000+ skills via CLI
 3. **Manual Download** - For skills from GitHub or custom repositories
 
-## Context7 Skills Registry
+## Smithery
 
-Context7 maintains a searchable skills registry indexed from GitHub repositories. Skills are identified by repository path (e.g., `/anthropics/skills`) and skill name. Features include trust scores (0-10), prompt injection detection, and AI-powered skill generation.
+Smithery is NOT just a registry; it is a full CLI for searching, accessing, and downloading components.
 
-### Searching
+### CLI Usage (Check `--help` first)
+
+```bash
+# Discover how to use search/download/install
+npx smithery --help
+npx smithery skill --help
+```
+
+### Searching & Downloading
 
 ```bash
 # Search by keyword
-npx ctx7 skills search pdf
-npx ctx7 skills search "react testing"
-
-# Browse all skills in a repository
-npx ctx7 skills info /anthropics/skills
-
-# Get suggestions based on project dependencies
-npx ctx7 skills suggest
+npx smithery skill search "pdf processing"
 ```
 
-### Installing
+Use `smithery` commands to directly search, access, and install components. Do not treat it as a UI-only tool.
 
-````bash
-# Install interactively (prompts to pick)
-npx ctx7 skills install /anthropics/skills
+### Canonical Fetching Workflow (Bypass UI/Blockers)
 
-# Install a specific skill by name
-npx ctx7 skills install /anthropics/skills pdf
-
-# Install Skills — Canonical Directory Only
-
-All skill installations must target the canonical directory `~/ai/skills/`. Do not use client-specific flags (e.g., `--claude`, `--cursor`) or custom directories. If the `--global` flag ensures installation into `~/ai/skills/`, it may be used. Otherwise, manually copy skills into this directory:
-
-```bash
-npx ctx7 skills install /anthropics/skills pdf --global
-# Or manually copy the skill to ~/ai/skills
-````
-
-### Generating Custom Skills
-
-```bash
-# Requires login — opens interactive generation flow
-npx ctx7 login
-npx ctx7 skills generate
-```
-
-### Trust & Security
-
-| Score    | Level  | Meaning                                 |
-| -------- | ------ | --------------------------------------- |
-| 7.0–10.0 | High   | Verified or well-established source     |
-| 3.0–6.9  | Medium | Standard community contribution         |
-| 0.0–2.9  | Low    | New or unverified — review before using |
-
-For detailed instructions on skill validation, see [creating-skills/SKILL.md](../creating-skills/SKILL.md), which provides guidance and a validation workflow.
+1. **Find Repo**: Identify the source GitHub repository for the skill.
+2. **Fetch Content**: Use `webfetch` to pull the _raw_ `SKILL.md` from the repo's URL (`https://raw.githubusercontent.com/...`).
+3. **Verify**: Ensure the fetched content is the canonical version.
+4. **Save**: Use `write` to save the fetched content to `~/ai/skills/skill-name/SKILL.md`.
 
 ## LobeHub Marketplace
 
@@ -87,19 +76,6 @@ Search marketplace by keyword:
 npx -y @lobehub/market-cli skills search --q "KEYWORD"
 ```
 
-**Examples:**
-
-```bash
-# Search for PDF-related skills
-npx -y @lobehub/market-cli skills search --q "pdf"
-
-# Search for image processing
-npx -y @lobehub/market-cli skills search --q "image editor"
-
-# Search for API integration
-npx -y @lobehub/market-cli skills search --q "api integration"
-```
-
 **Search options:**
 
 | Option        | Description                                                               |
@@ -121,43 +97,10 @@ Install a skill by identifier:
 npx -y @lobehub/market-cli skills install <identifier>
 ```
 
-**Examples:**
-
-```bash
-# Install a skill by name
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools
-
-# Install for a specific agent (determines install path)
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools --agent open-claw
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools --agent claude-code
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools --agent codex
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools --agent cursor
-
-# Install specific version
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools --version 1.0.0
-
-# Install to global directory
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools --global
-
-# Install to custom directory
-npx -y @lobehub/market-cli skills install lobehub-pdf-tools --dir ~/my-skills
-```
-
-**Install paths by agent:**
-
-| Agent       | Path                  | Scope  |
-| ----------- | --------------------- | ------ |
-| open-claw   | `~/.openclaw/skills/` | Global |
-| claude-code | `./.claude/skills/`   | Local  |
-| codex       | `./.agents/skills/`   | Local  |
-| cursor      | `./.cursor/skills/`   | Local  |
-| (default)   | `./.agents/skills/`   | Local  |
-| --global    | `~/.agents/skills/`   | Global |
-
 ### After Installing
 
-1. Read `SKILL.md` inside the installed directory
-2. Follow its instructions to complete the task
+1. Read `SKILL.md` inside the installed directory.
+2. Follow its instructions to complete the task.
 
 ## Manual Download
 
@@ -165,7 +108,7 @@ For skills not on LobeHub or custom repositories, use manual download:
 
 ### 1. Identify the skills directory
 
-All skills live in `~/ai/skills/` (the git repo root). This directory is symlinked into all harness-specific skill directories.
+All skills live in `~/ai/skills/` (the git repo root).
 
 ### 2. Create the skill directory
 
@@ -189,10 +132,6 @@ cp -r /tmp/skill-name-extract/* ~/ai/skills/skill-name/
 ### 5. Verify
 
 For skill validation and quality checks, see [creating-skills/SKILL.md](../creating-skills/SKILL.md), which includes a validation script and workflow.
-
-```bash
-ls -la ~/ai/skills/skill-name/
-```
 
 ## Name Matching
 

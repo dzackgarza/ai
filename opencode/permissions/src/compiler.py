@@ -95,6 +95,8 @@ GLOBAL_DEFAULTS: dict[str, Any] = {
     "serena_execute_shell_command": "deny",
     # Serena modes
     "serena_switch_modes": "deny",
+    # Provider Quotas
+    "gemini_quota": "allow",
 }
 
 # ---------------------------------------------------------------------------

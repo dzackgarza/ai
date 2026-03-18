@@ -25,7 +25,31 @@ export const MyPlugin: Plugin = async ({ client }) => {
 };
 ```
 
-## Plugin Function Signature
+## Plugin Location: Local vs External
+
+**Local plugins** (inline TypeScript, <200LOC):
+
+- Location: `~/ai/opencode/plugin/` (global, NOT project-local `.opencode/`)
+- No `package.json` needed
+- Restart OpenCode to reload
+
+**External plugins** (refactored, >200LOC):
+
+- Always in their own git repo under `/home/dzack/opencode-plugins/`
+- NEVER use `file://` directives — always use `git+https://`
+- NEVER pin to a specific branch or commit — always use default branch
+- The `git+https://` URL without a ref pulls the default branch automatically
+
+```json
+// In opencode.json — use default branch, never specific commit/branch
+{
+  "plugins": [
+    "git+https://github.com/dzackgarza/opencode-plugins.git/my-plugin"
+  ]
+}
+```
+
+**Why:** Local plugins in project directories get lost or shadowed. External plugins with `file://` directives couple to local paths. Git-sourced plugins with pinned commits become stale. Using default-branch `git+https://` ensures live latest version is always correct.
 
 **CRITICAL**: The plugin function receives a **context object**, not individual parameters.
 
@@ -276,8 +300,6 @@ event: async ({ event }) => {
   }
 }
 ```
-
-
 
 ## Using External Dependencies
 

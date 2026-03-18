@@ -182,7 +182,32 @@ OPENCODE_BASE_URL=http://127.0.0.1:4198 \
 
 ## Plugin Conventions
 
-- `.envrc` must start with `source_up` and `dotenv_if_exists .env`. Tracked files must not contain live secrets.
+### Local vs External Plugins
+
+**Local plugins** (<200LOC):
+
+- Location: `~/ai/opencode/plugin/` (global, NOT project-local `.opencode/`)
+- Single inline TypeScript file, no `package.json`
+- Restart OpenCode to reload
+
+**External plugins** (>200LOC):
+
+- Always in their own git repo under `/home/dzack/opencode-plugins/`
+- NEVER use `file://` directives — always use `git+https://`
+- NEVER pin to a specific branch or commit — always use default branch
+- This ensures live latest version is always correct
+
+```json
+// In opencode.json — use default branch, never specific commit/branch
+{
+  "plugins": [
+    "git+https://github.com/dzackgarza/opencode-plugins.git/my-plugin"
+  ]
+}
+```
+
+### Standard Layout
+
 - Package scripts and CI should delegate to `just --justfile justfile ...`.
 - Plugin repos should treat the standalone Typer CLI as the product surface and the OpenCode plugin as an adapter layer.
 - Standard TypeScript plugin layout is:

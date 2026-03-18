@@ -15,6 +15,7 @@ Never make an edit without thoroughly reading all available docs first.
 Never simply guess commands or endpoints or dive into code before doing these.
 Never read source code directly until all of these options have been exhausted.
 
+
 # Hard Rules
 
 1. **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing. Verify with `git diff` after.
@@ -28,6 +29,7 @@ Never read source code directly until all of these options have been exhausted.
 9. **Never dismiss a targetted miss as a general failure or evidence of non-existence**. If you grep for something specific and it's not found, or you use a specific directory and it doesn't appear to exist, always IMMEDIATELY broaden your search to understand the context first before attempting to pivot or work around the problem. Surprises should be understood, not just treated as obstacles to ignore. Files get moved, functions get renamed/moved, typos are made. Always broaden.
 10. **Never insert trivial section counters in markdown**. This becomes immediately stale as soon as a new section is added, and creates MORE work as more complexity is added. Similarly, do not number lists, subsections, etc manually, ever.
 11. **Never plow through important blockers**. If doing API work, don't even start if you can't verify credentialed access -- never implement elaborate simulations, smoke tests, or scaffolding to "work around" provider issues. Never "work around" missing system packages, unresponsive or unavailable servers, missing dependencies. Immediately stop to fix the gap, and if it can not be fixed by you (e.g. missing credentials, sudo needed), then stop work immediately and ask the user.
+
 
 # Behavioural Guidelines
 
@@ -70,6 +72,7 @@ Every negative finding requires:
 
 No exceptions.
 
+
 ## Chat Responses After Completing Work
 
 Do not summarize what was done.
@@ -99,6 +102,10 @@ Touch only the files you intended to change; verify with `git diff` before respo
 **When corrected:** LOAD `handling-corrections` skill before responding.
 Do not act or use any tools until you have read this skill.
 Do not immediately pursue a new course of action.
+
+
+
+# System
 
 # Mathematics
 
@@ -137,62 +144,8 @@ Memories store durable, reusable agent context not captured in repository files.
 - PDFs are stored in `~/pdfs` and should be organized into library-like subfolder trees.
 - **Before editing any JSON or YAML file: LOAD `config-file-editing` skill.** Never raw-edit config files.
 
----
 
-# Git Workflow
-
-All work is in **noisy repos** with others' uncommitted changes.
-Use `git add`/`git commit` for checkpoints.
-**For any git operation: LOAD `git-guidelines` skill.**
-
-## Delegating to Jules
-
-For smaller, well-scoped issues with clear acceptance criteria — especially those that are easily verifiable (bug fixes, test additions, lint fixes, documentation) — consider delegating to Jules via GitHub issues.
-
-**When appropriate:** straightforward tasks where the desired solution is already known, purely internal code changes, or work where research has already been done.
-
-**When to avoid:** tasks requiring external API research, complex integration with unfamiliar libraries, or work likely to need repeated prompting.
-
-Load the `jules` skill for the full workflow (create, monitor, review, feedback loop).
-
-## Issues
-
-Most tools in this environment are sourced from repos on the `dzackgarza` Github account.
-If you run into failures or unexpected surprises, stop and ask the user if you should file an issue on the repo.
-Do not file "bugs" for errors that have never actually been observed.
-For nontrivial features: work in a worktree with a branch → PR → `@codex review` → wait 3–5 min → **LOAD `git-guidelines` skill** to scan all comment surfaces correctly.
-
-## PRs
-
-### Handling Review Feedback
-
-**Reviewer comments require explicit action, not acknowledgment:**
-
-- Never simply "acknowledge" a comment without code changes
-- Every issue requires an explicit fix in an explicit commit
-- If an issue is too large for the current PR (sweeping changes, touches many files), create a new PR specifically for that fix
-- Never dismiss issues as "irrelevant", "out-of-scope", "won't-fix", or "acknowledged" without action
-- Never pretend a PR is ready until all feedback has been explicitly addressed with code changes or new issues warranting new PRs
-
-### What Qualifies as a PR
-
-**PRs are for significant work only.** Do not use PRs for:
-
-- Simple doc changes
-- Trivial bugs or features easily implemented in 5-10 writes/edits
-- One-off fixes that don't warrant review overhead
-
-**PRs are appropriate for:**
-
-- Entire features (dozens or hundreds of LOC changes)
-- 10+ commits of substantive work
-- Sensitive changes that might introduce regressions
-
-PRs trigger rate-limited reviews — reserve them for changes where mistakes, regressions, or LLM failure modes are more likely.
-
----
-
-## Preferred Libraries and Tools
+# Preferred Libraries and Tools
 
 - `gh` for all Github operations (alternative to webfetching)
   - Never use backticks in text pushed through gh (or any other CLI tools), since this induces shell escaping.
@@ -236,19 +189,42 @@ Use these tools to present changes to users for real-time feedback:
 - After heavy document rewrites or additions
 - Any time you want the user to review and annotate specific content in real-time
 
-### Scheduling Tasks & Waking Sessions
+### Scheduling Tasks
 
-For recurring tasks (systemd timers) or waking agent sessions on a timer, load the `scheduling-tasks-and-subagents` skill.
-
-Quick examples:
+Use `task-sched` to schedule persistent systemd tasks. For help, run `uvx git+https://github.com/dzackgarza/task-sched --help`.
 
 ```bash
-# Recurring task via task-sched
+# Add a recurring task
 uvx git+https://github.com/dzackgarza/task-sched add --command "echo 'heartbeat'" --schedule "hourly"
 
-# One-off delayed task via at
-echo "opx chat --session ses_xxx --prompt 'continue'" | at now + 30 minutes
+# List scheduled tasks
+uvx git+https://github.com/dzackgarza/task-sched list
 ```
+
+For one-off tasks, use `at`:
+
+```bash
+echo "opx chat --session ses_xxx --prompt 'continue work'" | at now + 30 minutes
+```
+
+### Waking Your Own Session
+
+After responding to a user, your actions halt immediately until you receive a new prompt. This halts continuous or long-term work — you cannot make progress on a task that requires multiple steps if no new message arrives.
+
+**To resume work later**, use the `at` scheduler to wake your own session:
+
+```bash
+# Get current session ID via introspection tool, then schedule a chat message:
+echo "npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_XXXXXXXX --prompt 'continue the task'" | at now + 1 minute
+```
+
+This sends a new prompt to your session at a fixed time, effectively waking you up to continue work.
+
+**When to use:**
+
+- Multi-step tasks where you need to pause and resume later
+- Waiting for external processes or scheduled events
+- Long-running work that should continue after a delay
 
 ### Prototyping and Frontend/GUI Development
 
@@ -259,8 +235,68 @@ Never greenfield a complex app yourself -- start with templating frameworks or o
 - https://replit.com/
 - https://lovable.dev/
 
+
+
+# Git Guidelines
+
+## Git Workflow
+
+All work is in **noisy repos** with others' uncommitted changes.
+Use `git add`/`git commit` for checkpoints.
+**For any git operation: LOAD `git-guidelines` skill.**
+
+## Delegating to Jules
+
+For smaller, well-scoped issues with clear acceptance criteria — especially those that are easily verifiable (bug fixes, test additions, lint fixes, documentation) — consider delegating to Jules via GitHub issues.
+
+**When appropriate:** straightforward tasks where the desired solution is already known, purely internal code changes, or work where research has already been done.
+
+**When to avoid:** tasks requiring external API research, complex integration with unfamiliar libraries, or work likely to need repeated prompting.
+
+Load the `jules` skill for the full workflow (create, monitor, review, feedback loop).
+
+
+## Issues
+
+Most tools in this environment are sourced from repos on the `dzackgarza` Github account.
+If you run into failures or unexpected surprises, stop and ask the user if you should file an issue on the repo.
+Do not file "bugs" for errors that have never actually been observed.
+For nontrivial features: work in a worktree with a branch → PR → `@codex review` → wait 3–5 min → **LOAD `git-guidelines` skill** to scan all comment surfaces correctly.
+
+
+## PRs
+
+### Handling Review Feedback
+
+**Reviewer comments require explicit action, not acknowledgment:**
+
+- Never simply "acknowledge" a comment without code changes
+- Every issue requires an explicit fix in an explicit commit
+- If an issue is too large for the current PR (sweeping changes, touches many files), create a new PR specifically for that fix
+- Never dismiss issues as "irrelevant", "out-of-scope", "won't-fix", or "acknowledged" without action
+- Never pretend a PR is ready until all feedback has been explicitly addressed with code changes or new issues warranting new PRs
+
+### What Qualifies as a PR
+
+**PRs are for significant work only.** Do not use PRs for:
+
+- Simple doc changes
+- Trivial bugs or features easily implemented in 5-10 writes/edits
+- One-off fixes that don't warrant review overhead
+
+**PRs are appropriate for:**
+
+- Entire features (dozens or hundreds of LOC changes)
+- 10+ commits of substantive work
+- Sensitive changes that might introduce regressions
+
+PRs trigger rate-limited reviews — reserve them for changes where mistakes, regressions, or LLM failure modes are more likely.
+
+
+
 # Misc
 
 - Always follow the Read → Commit Checkpoint → Edit → Verify (git diff) workflow. NEVER write time estimates. Trigger: any edit or response. Verify: git commits/diffs in history.
 - Keep responses concise (under 3 lines of explanation), use `file_path:line_number` for code references, and no emojis/filler. Trigger: all responses. Verify: format in subsequent messages.
 - The 'ai' project is a centralized configuration hub for AI agent harnesses (Claude Code, Gemini CLI, etc.), using Markdown for prompts and YAML/JSON for config. Key directories include AGENTS.md, skills/, and opencode/.
+

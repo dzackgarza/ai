@@ -1,62 +1,157 @@
 {
   "blacklist": [
-    "gemini-1.5-flash",
-    "gemini-1.5-flash-8b",
-    "gemini-1.5-pro",
+    "aqa",
     "gemini-2.0-flash",
+    "gemini-2.0-flash-001",
     "gemini-2.0-flash-lite",
-    "gemini-embedding-001",
+    "gemini-2.0-flash-lite-001",
+    "gemini-2.5-computer-use-preview-10-2025",
+    "gemini-2.5-flash-image",
+    "gemini-2.5-flash-lite-preview-09-2025",
+    "gemini-2.5-flash-native-audio-latest",
+    "gemini-2.5-flash-native-audio-preview-09-2025",
+    "gemini-2.5-flash-native-audio-preview-12-2025",
     "gemini-2.5-flash-preview-tts",
     "gemini-2.5-pro-preview-tts",
-    "gemini-2.5-flash-preview-04-17",
-    "gemini-2.5-flash-preview-05-20",
-    "gemini-2.5-pro-preview-05-06",
-    "gemma-2-2b-it",
-    "gemma-2-9b-it",
+    "gemini-3-pro-image-preview",
+    "gemini-3.1-flash-image-preview",
+    "gemini-embedding-001",
+    "gemini-embedding-2-preview",
+    "gemini-robotics-er-1.5-preview",
     "gemma-3-1b-it",
     "gemma-3-4b-it",
-    "gemini-2.5-flash-image",
-    "gemini-2.5-flash-image-preview",
-    "gemini-2.5-flash-lite",
-    "gemini-2.5-flash-lite-preview-06-17",
-    "gemini-2.5-flash-lite-preview-09-2025",
-    "gemini-2.5-flash-preview-09-2025",
-    "gemini-2.5-pro-preview-06-05",
-    "gemini-2.5-pro-preview-05-06"
+    "gemma-3-12b-it",
+    "gemma-3-27b-it",
+    "gemma-3n-e2b-it",
+    "gemma-3n-e4b-it",
+    "imagen-4.0-fast-generate-001",
+    "imagen-4.0-generate-001",
+    "imagen-4.0-ultra-generate-001",
+    "nano-banana-pro-preview",
+    "veo-2.0-generate-001",
+    "veo-3.0-fast-generate-001",
+    "veo-3.0-generate-001",
+    "veo-3.1-fast-generate-preview",
+    "veo-3.1-generate-preview"
   ],
   "models": {
-    "gemini-3-flash": {
-      "name": "Gemini 3 Flash"
-    },
-    "gemini-3-pro": {
-      "name": "Gemini 3 Pro"
-    },
-    "gemini-3.1-pro": {
-      "name": "Gemini 3.1 Pro"
-    },
-    "claude-sonnet-4-6": {
-      "name": "Claude Sonnet 4.6"
-    },
-    "claude-opus-4-6-thinking": {
-      "name": "Claude Opus 4.6 Thinking"
+    "deep-research-pro-preview-12-2025": {
+      "name": "Deep Research Pro Preview"
     },
     "gemini-2.5-flash": {
-      "name": "Gemini 2.5 Flash"
+      "name": "Gemini 2.5 Flash",
+      "variants": {
+        "low": {
+          "thinkingConfig": {
+            "thinkingBudget": 8192,
+            "includeThoughts": true
+          }
+        },
+        "high": {
+          "thinkingConfig": {
+            "thinkingBudget": 32768,
+            "includeThoughts": true
+          }
+        }
+      }
+    },
+    "gemini-2.5-flash-lite": {
+      "name": "Gemini 2.5 Flash Lite",
+      "variants": {
+        "low": {
+          "thinkingConfig": {
+            "thinkingBudget": 8192,
+            "includeThoughts": true
+          }
+        },
+        "high": {
+          "thinkingConfig": {
+            "thinkingBudget": 32768,
+            "includeThoughts": true
+          }
+        }
+      }
     },
     "gemini-2.5-pro": {
-      "name": "Gemini 2.5 Pro"
+      "name": "Gemini 2.5 Pro",
+      "variants": {
+        "low": {
+          "thinkingConfig": {
+            "thinkingBudget": 8192,
+            "includeThoughts": true
+          }
+        },
+        "high": {
+          "thinkingConfig": {
+            "thinkingBudget": 32768,
+            "includeThoughts": true
+          }
+        }
+      }
     },
     "gemini-3-flash-preview": {
-      "name": "Gemini 3 Flash Preview"
+      "name": "Gemini 3 Flash Preview",
+      "variants": {
+        "low": {
+          "thinkingLevel": "low"
+        },
+        "high": {
+          "thinkingLevel": "high"
+        }
+      }
     },
     "gemini-3-pro-preview": {
-      "name": "Gemini 3 Pro Preview"
+      "name": "Gemini 3 Pro Preview",
+      "variants": {
+        "low": {
+          "thinkingLevel": "low"
+        },
+        "high": {
+          "thinkingLevel": "high"
+        }
+      }
+    },
+    "gemini-3.1-flash-lite-preview": {
+      "name": "Gemini 3.1 Flash Lite Preview",
+      "variants": {
+        "low": {
+          "thinkingLevel": "low"
+        },
+        "high": {
+          "thinkingLevel": "high"
+        }
+      }
     },
     "gemini-3.1-pro-preview": {
-      "name": "Gemini 3.1 Pro Preview"
+      "name": "Gemini 3.1 Pro Preview",
+      "variants": {
+        "low": {
+          "thinkingLevel": "low"
+        },
+        "high": {
+          "thinkingLevel": "high"
+        }
+      }
     },
     "gemini-3.1-pro-preview-customtools": {
-      "name": "Gemini 3.1 Pro Preview Custom Tools"
+      "name": "Gemini 3.1 Pro Preview Custom Tools",
+      "variants": {
+        "low": {
+          "thinkingLevel": "low"
+        },
+        "high": {
+          "thinkingLevel": "high"
+        }
+      }
+    },
+    "gemini-flash-latest": {
+      "name": "Gemini Flash Latest"
+    },
+    "gemini-flash-lite-latest": {
+      "name": "Gemini Flash Lite Latest"
+    },
+    "gemini-pro-latest": {
+      "name": "Gemini Pro Latest"
     }
   }
 }

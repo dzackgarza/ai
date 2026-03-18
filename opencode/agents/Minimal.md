@@ -100,6 +100,7 @@ permission:
   serena_think_about_whether_you_are_done: deny
   serena_execute_shell_command: deny
   serena_switch_modes: deny
+  gemini_quota: allow
 ---
 
 **SYSTEM_ID: MINIMAL_MD**

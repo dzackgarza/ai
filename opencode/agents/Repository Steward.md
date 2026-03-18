@@ -103,6 +103,7 @@ permission:
   serena_think_about_whether_you_are_done: deny
   serena_execute_shell_command: deny
   serena_switch_modes: deny
+  gemini_quota: allow
   cut-copy-paste-mcp_cut: *id002
   cut-copy-paste-mcp_copy: *id002
   cut-copy-paste-mcp_paste: *id002

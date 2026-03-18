@@ -1,4 +1,6 @@
 set fallback := true
+set script-interpreter := ['uv', 'run', '--script']
+
 # Install symlinks for all CLI harnesses
 # Usage: just install
 
@@ -113,28 +115,35 @@ run-microagent *args:
 build-agents: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
 
-permissions-apply: check-plugins
+build-permissions: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py apply
 
-config-build: check-plugins
+build-config: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
-
-rebuild: build-agents
 
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
 
-opencode-harness *args:
-    @npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx {{ args }}
-
-opencode-session *args:
-    @npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session {{ args }}
-
 # =============================================================================
-# OpenRouter Free Model Manager
+# AGENTS.md Template
 # =============================================================================
 
-# OpenRouter Free model management tool (ls, check, report)
-# Usage: just openrouter <command> [args]
-openrouter *args:
-    @uv run --project {{ repo }}/scripts {{ repo }}/scripts/openrouter_tool.py {{ args }}
+# Compile system/AGENTS template and write body to ~/ai/AGENTS.md
+[script]
+build-agents-md:
+    # /// script
+    # requires-python = ">=3.11"
+    # dependencies = ["tiktoken", "pyyaml", "jinja2"]
+    # ///
+    import sys
+    sys.path.insert(0, "{{ repo }}/../opencode-plugins/ai-prompts/src")
+    import os
+    import tiktoken
+    os.environ["PROMPTS_DIR"] = "{{ repo }}/../opencode-plugins/ai-prompts/prompts"
+    from ai_prompts import get_prompt
+    p = get_prompt("system/AGENTS")
+    body = p.body
+    count = len(tiktoken.get_encoding("cl100k_base").encode(body))
+    with open("{{ repo }}/AGENTS.md", "w") as f:
+        f.write(body)
+    print(f"Wrote {{ repo }}/AGENTS.md ({count} tokens)")

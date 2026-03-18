@@ -100,6 +100,7 @@ permission:
   serena_think_about_whether_you_are_done: allow
   serena_execute_shell_command: allow
   serena_switch_modes: allow
+  gemini_quota: allow
 ---
 
 **SYSTEM_ID: UNRESTRICTED_TEST_MD**
