@@ -42,7 +42,8 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
             message: `Linting/Formatting justfile`,
           });
 
-          const justResult = await $`just --fmt --check`.nothrow();
+          // Attempt to format justfile automatically
+          const justResult = await $`just --fmt`.nothrow();
 
           if (justResult.exitCode !== 0) {
             await client.session.prompt({
@@ -51,7 +52,7 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
                 parts: [
                   {
                     type: 'text',
-                    text: `Justfile needs formatting. Run 'just --fmt' to fix.`,
+                    text: `Justfile formatting failed: ${justResult.stderr.toString()}`,
                   },
                 ],
               },
