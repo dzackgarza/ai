@@ -7,27 +7,30 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
       if (input.tool === 'edit' || input.tool === 'write') {
         const filePath = input.args.filePath as string;
 
-        // 2. Lint/Format Python files
+        // 2. Syntax check Python files
         if (filePath.endsWith('.py')) {
           await client.app.log({
             service: 'lint-plugin',
             level: 'info',
-            message: `Linting/Formatting Python file: ${filePath}`,
+            message: `Syntax checking Python file: ${filePath}`,
           });
 
-          await $`uvx ruff check --fix --quiet ${filePath}`.nothrow();
-          const fmtResult = await $`uvx ruff format --quiet ${filePath}`.nothrow();
+          const checkResult = await $`uvx ruff check --quiet ${filePath}`.nothrow();
+          const fmtResult = await $`uvx ruff format --check --quiet ${filePath}`.nothrow();
 
-          if (fmtResult.exitCode !== 0) {
-            const feedback = fmtResult.stderr.toString();
+          if (checkResult.exitCode !== 0 || fmtResult.exitCode !== 0) {
+            const feedback = [
+              checkResult.exitCode !== 0 ? `Ruff check issues:\n${checkResult.stdout.toString()}${checkResult.stderr.toString()}` : '',
+              fmtResult.exitCode !== 0 ? `Ruff format issues (file needs formatting)` : '',
+            ].filter(Boolean).join('\n\n');
+
             await client.session.promptAsync({
               path: { id: input.sessionID },
               body: {
                 parts: [
                   {
                     type: 'text',
-                    text: `Ruff format feedback for ${filePath}:\n\n${feedback}`,
-
+                    text: `Python lint/format check failed for ${filePath}:\n\n${feedback}\n\nYou should run the 'format' tool or fix the issues manually.`,
                   },
                 ],
               },
@@ -35,43 +38,25 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
           }
         }
 
-        // 3. Lint/Format Justfiles
+        // 3. Syntax check Justfiles
         if (filePath.endsWith('justfile') || filePath.includes('justfile')) {
           await client.app.log({
             service: 'lint-plugin',
             level: 'info',
-            message: `Linting/Formatting justfile`,
+            message: `Syntax checking justfile`,
           });
 
-          // First perform an explicit syntax check
-          const syntaxCheck = await $`just --justfile ${filePath} --list`.quiet().nothrow();
-          
-          if (syntaxCheck.exitCode !== 0) {
+          // Check justfile syntax and formatting
+          const justResult = await $`just --unstable --check --justfile ${filePath}`.nothrow();
+
+          if (justResult.exitCode !== 0) {
             await client.session.promptAsync({
               path: { id: input.sessionID },
               body: {
                 parts: [
                   {
                     type: 'text',
-                    text: `Justfile syntax error in ${filePath}:\n\n${syntaxCheck.stderr.toString()}`,
-                  },
-                ],
-              },
-            });
-            return;
-          }
-
-          // Then attempt to format justfile automatically
-          const fmtResult = await $`just --justfile ${filePath} --unstable --fmt`.quiet().nothrow();
-
-          if (fmtResult.exitCode !== 0) {
-            await client.session.promptAsync({
-              path: { id: input.sessionID },
-              body: {
-                parts: [
-                  {
-                    type: 'text',
-                    text: `Justfile formatting failed for ${filePath}:\n\n${fmtResult.stderr.toString()}`,
+                    text: `Justfile check failed: ${justResult.stderr.toString()}\n\nYou should run the 'format' tool or fix the issues manually.`,
                   },
                 ],
               },

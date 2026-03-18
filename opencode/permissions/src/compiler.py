@@ -45,10 +45,6 @@ GLOBAL_DEFAULTS: dict[str, Any] = {
     "remember": "allow",
     "forget": "allow",
     "list_memories": "allow",
-    # Reminders
-    "schedule_reminder": "allow",
-    "cancel_reminder": "allow",
-    "list_reminders": "allow",
     # Skills & timing
     "skill": "allow",
     "sleep": "allow",
@@ -56,10 +52,6 @@ GLOBAL_DEFAULTS: dict[str, Any] = {
     # Code navigation
     "codesearch": "allow",
     "lsp": "allow",
-    # Improved task/todo variants
-    "improved_task": "allow",
-    "improved_todowrite": "allow",
-    "improved_todoread": "allow",
     # PTY (terminal — spawn/kill/write denied; list/read allowed)
     "pty_list": "allow",
     "pty_read": "allow",
@@ -74,23 +66,7 @@ GLOBAL_DEFAULTS: dict[str, Any] = {
     "write": "allow",
     # Token scope inspection
     "tokenscope": "allow",
-    # Zotero plugin tools
-    "zotero_search": "allow",
-    "zotero_get_item": "allow",
-    "zotero_import": "allow",
-    "zotero_batch_add": "allow",
-    "zotero_update_item": "allow",
-    "zotero_trash_items": "allow",
-    "zotero_export": "allow",
-    "zotero_tags": "allow",
-    "zotero_stats": "allow",
-    "zotero_collections": "allow",
-    "zotero_count": "allow",
-    "zotero_children": "allow",
-    "zotero_check_pdfs": "allow",
-    "zotero_fetch_pdfs": "allow",
-    "zotero_find_dois": "allow",
-    "zotero_crossref": "allow",
+
     # Misc
     "invalid": "deny",
     # Cut-copy-paste MCP
@@ -153,8 +129,6 @@ _PURE_AGENT_BASE: dict[str, str] = {
 _SUBAGENT_BASE: dict[str, str] = {
     "task": "deny",
     "todowrite": "deny",
-    "improved_task": "deny",
-    "improved_todowrite": "deny",
 }
 
 _BASE_TYPE_PERMS: dict[str, dict[str, str]] = {
