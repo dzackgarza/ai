@@ -7,127 +7,88 @@ description: Use when asked to schedule recurring tasks, set up one-off delayed 
 
 Schedule persistent recurring tasks via systemd, run one-off delayed commands, and set up agent session wakeup patterns.
 
-## task-sched (Recurring Tasks)
+## When to Use
 
-`task-sched` manages persistent systemd timer units. All tasks survive reboots.
+**Use `task-sched`** (persistent, survives reboots):
 
-### Invocation
+- Recurring work (hourly, daily, weekly)
+- Polling external processes
+- Periodic maintenance scripts
+- Chaining tasks with completion callbacks
 
-```bash
-uvx git+https://github.com/dzackgarza/task-sched <command> [options]
-```
+**Use `at`** (one-off, runs once):
 
-### Add a Task
+- Delayed execution ("in 30 minutes")
+- Wake agent session after a wait
+- Single scheduled maintenance
+
+## Task-Sched Workflow
+
+`task-sched` creates systemd timer units. Tasks are identified as `tsk_<8hex>`.
+
+### 1. Define the Command
+
+The command runs in a minimal shell. For complex logic, wrap in a script:
 
 ```bash
 uvx git+https://github.com/dzackgarza/task-sched add \
-  --command "echo 'heartbeat'" \
-  --schedule "hourly"
+  --command "cd /repo && ./scripts/backup.sh" \
+  --schedule "daily"
 ```
 
-**Flags:**
+### 2. Choose Schedule
 
-| Flag            | Short | Description                          |
-| --------------- | ----- | ------------------------------------ |
-| `--command`     | `-c`  | Shell command to execute (required)  |
-| `--schedule`    | `-s`  | Cron expression or preset (required) |
-| `--working-dir` | `-d`  | Working directory                    |
-| `--description` |       | Human-readable description           |
-| `--on-complete` |       | Callback command on completion       |
+**Presets**: `minutely`, `hourly`, `daily`, `weekly` — or any valid 5-field cron.
 
-**Schedule presets:**
+### 3. Optional Fields
 
-| Preset     | Cron        |
-| ---------- | ----------- |
-| `minutely` | `* * * * *` |
-| `hourly`   | `0 * * * *` |
-| `daily`    | `0 0 * * *` |
-| `weekly`   | `0 0 * * 0` |
+- `--working-dir`: Set working directory
+- `--description`: Human-readable label
+- `--on-complete`: Callback after the task finishes
 
-Arbitrary 5-field cron expressions are also accepted.
-
-### List Tasks
+### 4. Manage
 
 ```bash
+# List and identify your task ID
 uvx git+https://github.com/dzackgarza/task-sched list
-uvx git+https://github.com/dzackgarza/task-sched list --json
-```
 
-### Edit a Task
-
-```bash
-uvx git+https://github.com/dzackgarza/task-sched edit tsk_abc123 --schedule "daily"
-uvx git+https://github.com/dzackgarza/task-sched edit tsk_abc123 --command "new-command"
-```
-
-### Run a Task Immediately
-
-```bash
-uvx git+https://github.com/dzackgarza/task-sched run tsk_abc123
-```
-
-### View Task Logs
-
-```bash
+# Check logs if something fails
 uvx git+https://github.com/dzackgarza/task-sched log tsk_abc123
-uvx git+https://github.com/dzackgarza/task-sched log tsk_abc123 --lines 50
-```
 
-### Remove a Task
+# Run immediately (for testing)
+uvx git+https://github.com/dzackgarza/task-sched run tsk_abc123
 
-```bash
+# Remove when done
 uvx git+https://github.com/dzackgarza/task-sched remove tsk_abc123
-uvx git+https://github.com/dzackgarza/task-sched remove tsk_abc123 --force
-```
-
-### Task IDs
-
-All task IDs follow the format `tsk_<8 hex chars>` (e.g., `tsk_a1b2c3d4`). IDs are auto-generated on creation.
-
-## at (One-Off Tasks)
-
-For single-run delayed commands, use `at`:
-
-```bash
-# Run a command in 30 minutes
-echo "echo 'done'" | at now + 30 minutes
-
-# Run at a specific time
-echo "echo 'backup'" | at 2pm tomorrow
 ```
 
 ## Agent Session Wakeup
 
-After responding to a user, agent actions halt until the next prompt. To resume work on multi-step tasks, schedule a wakeup:
+Agents halt after responding until a new prompt arrives. To continue multi-step work, schedule a wakeup:
+
+### Quick Wakeup (at)
 
 ```bash
-# Wake your own session in 1 minute
-echo "npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_XXXXXXXX --prompt 'continue the task'" | at now + 1 minute
+echo "opx chat --session ses_XXX --prompt 'continue'" | at now + 10 minutes
 ```
 
-Replace `ses_XXXXXXXX` with your actual session ID (from the introspection tool).
+### Polling Wakeup (task-sched)
 
-### Waking via Recurring Task
-
-For longer polling cycles, use `task-sched`:
+For long-running external processes:
 
 ```bash
 uvx git+https://github.com/dzackgarza/task-sched add \
-  --command "npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_XXX --prompt 'check status and continue'" \
-  --schedule "hourly"
+  --command "opx chat --session ses_XXX --prompt 'check status and continue'" \
+  --schedule "*/15 * * * *"
 ```
 
-Remove the task when done:
-
-```bash
-uvx git+https://github.com/dzackgarza/task-sched remove tsk_XXXXXX
-```
+**Important**: Remove polling tasks when the work completes to avoid orphaned wakeups.
 
 ## Patterns
 
 ### Poll External Process
 
-Schedule a check that wakes the agent to verify progress:
+Wake agent to check if a build/deployment finished:
 
 ```bash
 uvx git+https://github.com/dzackgarza/task-sched add \
@@ -135,22 +96,23 @@ uvx git+https://github.com/dzackgarza/task-sched add \
   --schedule "*/5 * * * *"
 ```
 
-### Periodic Maintenance
+### Chain Tasks
 
-```bash
-uvx git+https://github.com/dzackgarza/task-sched add \
-  --command "cd /path/to/repo && git fetch --prune" \
-  --schedule "hourly" \
-  --description "Prune stale remote branches"
-```
-
-### Callback on Completion
-
-Use `--on-complete` to chain tasks:
+Run a follow-up after the main task completes:
 
 ```bash
 uvx git+https://github.com/dzackgarza/task-sched add \
   --command "cd /project && uv run pytest" \
   --schedule "daily" \
-  --on-complete "echo 'tests ran' >> /var/log/test-results.log"
+  --on-complete "opx chat --session ses_XXX --prompt 'tests finished'"
+```
+
+## Reference
+
+For full command syntax, run:
+
+```bash
+uvx git+https://github.com/dzackgarza/task-sched --help
+uvx git+https://github.com/dzackgarza/task-sched add --help
+man at
 ```
