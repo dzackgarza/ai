@@ -42,7 +42,7 @@
         "-b",
         "-B"
       ],
-      "reason": "Use \"git worktree\" for branches. For file restoration, maintain an audit trail: commit current work, diff to identify the rollback point, and apply the reverse diff to a new commit."
+      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. For starting new, isolated branch work, use \"git worktree\"."
     },
     {
       "name": "block-git-switch",
@@ -53,7 +53,7 @@
         "-c",
         "-C"
       ],
-      "reason": "Branch switching in the main tree risks work loss. Use 'git worktree add <path> -b <branch>' to work in isolation."
+      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. For starting new, isolated branch work, use \"git worktree\"."
     },
     {
       "name": "block-git-branch",
@@ -68,7 +68,7 @@
         "-c",
         "-C"
       ],
-      "reason": "Branch management should be PR-driven. Create new branches for feature work via GitHub/CLI."
+      "reason": "Branch management should be PR-driven. Create branches for feature work via \"git worktree\" or \"gh pr create\"."
     },
     {
       "name": "block-git-add-all",
@@ -79,7 +79,7 @@
         "-A",
         "--all"
       ],
-      "reason": "Blanket staging hides intent and risks committing secrets. Use targeted 'git add' for logical changes."
+      "reason": "Blanket staging risks committing secrets. Use targeted \"git add\", or \"git add -u\" for snapshots/checkpoints of tracked files."
     },
     {
       "name": "block-git-add-interactive",
@@ -99,7 +99,7 @@
         "stash",
         "save"
       ],
-      "reason": "Stashing creates hidden state. Use frequent 'checkpoint' commits to save work-in-progress visibly."
+      "reason": "Stashing is discouraged. Use \"checkpoint\" commits to save work. To clear the deck, use the audit-trail rollback: commit the mess, then apply a reverse diff of the mess."
     },
     {
       "name": "block-git-stash-pop",
@@ -109,7 +109,7 @@
         "pop",
         "apply"
       ],
-      "reason": "Stashing creates hidden state. Use frequent 'checkpoint' commits to save work-in-progress visibly."
+      "reason": "Stashing is discouraged. If you have stashes, pop them once, commit as a checkpoint, and use the audit-trail rollback (diff + reverse apply) to manage visible state."
     },
     {
       "name": "block-git-revert",
