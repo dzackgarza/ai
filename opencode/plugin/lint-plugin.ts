@@ -1,42 +1,62 @@
-import type { Plugin } from "@opencode-ai/plugin";
+import type { Plugin } from '@opencode-ai/plugin';
 
-export const PyLinterPlugin: Plugin = async ({ client, $ }) => {
+export const LintPlugin: Plugin = async ({ client, $ }) => {
   return {
-    "tool.execute.after": async (input) => {
-      // 1. Check if tool was an edit or write and the file is a Python file
-      if (
-        (input.tool === "edit" || input.tool === "write") &&
-        typeof input.args.filePath === "string" &&
-        input.args.filePath.endsWith(".py")
-      ) {
-        const filePath = input.args.filePath;
+    'tool.execute.after': async (input) => {
+      // 1. Check if tool was an edit or write
+      if (input.tool === 'edit' || input.tool === 'write') {
+        const filePath = input.args.filePath as string;
 
-        await client.app.log({
-          service: "py-linter-plugin",
-          level: "info",
-          message: `Running linter on ${filePath}`,
-        });
-
-        // 2. Run the linter (using uvx ruff)
-        // .nothrow() prevents the plugin from crashing on non-zero exit codes
-        const result = await $`uvx ruff check ${filePath}`.quiet().nothrow();
-
-        // 3. If linter found issues, prompt the agent with the output
-        if (result.exitCode !== 0) {
-          const linterFeedback =
-            result.stdout.toString() || result.stderr.toString();
-
-          await client.session.prompt({
-            path: { id: input.sessionID },
-            body: {
-              parts: [
-                {
-                  type: "text",
-                  text: `Linter feedback for ${filePath}:\n\n${linterFeedback}`,
-                },
-              ],
-            },
+        // 2. Lint/Format Python files
+        if (filePath.endsWith('.py')) {
+          await client.app.log({
+            service: 'lint-plugin',
+            level: 'info',
+            message: `Linting/Formatting Python file: ${filePath}`,
           });
+
+          await $`uvx ruff check --fix --quiet ${filePath}`.nothrow();
+          const fmtResult = await $`uvx ruff format --quiet ${filePath}`.nothrow();
+
+          if (fmtResult.exitCode !== 0) {
+            const feedback = fmtResult.stderr.toString();
+            await client.session.prompt({
+              path: { id: input.sessionID },
+              body: {
+                parts: [
+                  {
+                    type: 'text',
+                    text: `Ruff format feedback for ${filePath}:\n\n${feedback}`,
+                  },
+                ],
+              },
+            });
+          }
+        }
+
+        // 3. Lint/Format Justfiles
+        if (filePath.endsWith('justfile') || filePath.includes('justfile')) {
+          await client.app.log({
+            service: 'lint-plugin',
+            level: 'info',
+            message: `Linting/Formatting justfile`,
+          });
+
+          const justResult = await $`just --fmt --check`.nothrow();
+
+          if (justResult.exitCode !== 0) {
+            await client.session.prompt({
+              path: { id: input.sessionID },
+              body: {
+                parts: [
+                  {
+                    type: 'text',
+                    text: `Justfile needs formatting. Run 'just --fmt' to fix.`,
+                  },
+                ],
+              },
+            });
+          }
         }
       }
     },
