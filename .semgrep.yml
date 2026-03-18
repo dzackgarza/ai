@@ -1,0 +1,9 @@
+rules:
+  - id: security-rules
+    patterns:
+      - pattern-either:
+          - pattern: eval(...)
+          - pattern: os.system(...)
+    message: 'Dangerous function call detected'
+    languages: [python]
+    severity: ERROR

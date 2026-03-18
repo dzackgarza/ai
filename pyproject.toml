@@ -1,0 +1,17 @@
+[tool.pytest.ini_options]
+addopts = "--strict-markers --strict-config -ra"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.hypothesis]
+verbosity = "normal"
+
+[tool.mutmut]
+runner = "pytest"
+
+[tool.vulture]
+paths = ["src"]
+min_confidence = 80
