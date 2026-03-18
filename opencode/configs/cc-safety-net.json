@@ -118,6 +118,46 @@
       "subcommand": "commit",
       "block_args": ["--no-gpg-sign"],
       "reason": "Bypassing signing is blocked."
+    },
+    {
+      "name": "block-bun-test",
+      "command": "bun",
+      "subcommand": "test",
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-npm-test",
+      "command": "npm",
+      "subcommand": "test",
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-pytest",
+      "command": "pytest",
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-vitest",
+      "command": "vitest",
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-python-pytest",
+      "command": "python",
+      "block_args": ["-m", "pytest"],
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-uv-pytest",
+      "command": "uv",
+      "block_args": ["run", "pytest"],
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-uv-vitest",
+      "command": "uv",
+      "block_args": ["run", "vitest"],
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
     }
   ]
 }
