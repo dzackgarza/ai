@@ -27,7 +27,7 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
                   {
                     type: 'text',
                     text: `Ruff format feedback for ${filePath}:\n\n${feedback}`,
-                    synthetic: true,
+
                   },
                 ],
               },
@@ -54,7 +54,7 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
                   {
                     type: 'text',
                     text: `Justfile formatting failed: ${justResult.stderr.toString()}`,
-                    synthetic: true,
+
                   },
                 ],
               },
