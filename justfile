@@ -29,6 +29,15 @@ install:
     ln -sf {{ repo }}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
     ln -sf {{ repo }}/opencode/configs/cc-safety-net.json ~/.cc-safety-net/config.json
     mkdir -p ~/.cc-safety-net
+    
+    # Linter/formatter configurations
+    mkdir -p ~/.config/ruff ~/.config/black
+    ln -sf {{ repo }}/linter-configs/ruff-global.toml ~/.config/ruff/ruff.toml
+    ln -sf {{ repo }}/linter-configs/mypy-global.ini ~/.mypy.ini
+    ln -sf {{ repo }}/linter-configs/black-global.toml ~/.config/black/black.toml
+    ln -sf {{ repo }}/linter-configs/eslint-global.json ~/.eslintrc.json
+    ln -sf {{ repo }}/linter-configs/prettier-global.json ~/.prettierrc
+    
     # tmux config symlinks
     ln -sf {{ repo }}/dotfiles/tmux.conf ~/.tmux.conf
     mkdir -p ~/.config/tmux-powerline/themes
@@ -59,6 +68,7 @@ install:
     echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
     echo "OpenCode:         .opencode/ → ~/.config/opencode"
     echo "Safety Net:       opencode/configs/cc-safety-net.json → ~/.cc-safety-net/config.json"
+    echo "Linter configs:   linter-configs/ → ~/.config/ (ruff, black, mypy, eslint, prettier)"
 
 # Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:
