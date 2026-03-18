@@ -167,8 +167,8 @@ def mixin_bash_standard() -> dict:
 
 
 def mixin_bash_unrestricted() -> dict:
-    """Allow all bash commands except sudo."""
-    return {"bash": {"*sudo*": "deny", "*": "allow"}}
+    """Allow all bash commands."""
+    return {"bash": "allow"}
 
 
 def mixin_session_tools() -> dict:
