@@ -279,6 +279,10 @@ event: async ({ event }) => {
 
 
 
+## Using External Dependencies
+
+To use external npm packages in your single-file plugin, add the dependency to `opencode/package.json` in the root repository. OpenCode will resolve and make these available to your plugin at runtime.
+
 ## Running Shell Commands
 
 Use Bun's shell API via `$`:
