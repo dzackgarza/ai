@@ -15,9 +15,8 @@ export const DenyOverwritePlugin: Plugin = async ({ client, $ }) => {
       if (exists) {
         // 3. Deny the operation with the required message
         throw new Error(
-          `Cannot overwrite ${filePath}: this file already exists. ` +
-            `Agents should not overwrite entire files. Instead, use the 'edit' tool ` +
-            `to modify the file and minimize the diff you are introducing.`,
+          `Refusing to overwrite existing file '${filePath}'. You must not overwrite entire files. ` +
+            `Instead, you must use the 'edit' tool to perform precise modifications and minimize the diff you are introducing.`
         );
       }
     },
