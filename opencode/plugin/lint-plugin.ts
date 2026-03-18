@@ -23,6 +23,7 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
             await client.session.prompt({
               path: { id: input.sessionID },
               body: {
+                noReply: false,
                 parts: [
                   {
                     type: 'text',
@@ -49,6 +50,7 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
             await client.session.prompt({
               path: { id: input.sessionID },
               body: {
+                noReply: false,
                 parts: [
                   {
                     type: 'text',
