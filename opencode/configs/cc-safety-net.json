@@ -50,7 +50,7 @@
         "-b",
         "-B"
       ],
-      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. For starting new, isolated branch work, use \"git worktree\"."
+      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. New feature work should be PR-driven via the GitHub CLI."
     },
     {
       "name": "block-git-switch",
@@ -61,7 +61,7 @@
         "-c",
         "-C"
       ],
-      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. For starting new, isolated branch work, use \"git worktree\"."
+      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. New feature work should be PR-driven via the GitHub CLI."
     },
     {
       "name": "block-git-branch",
@@ -76,7 +76,7 @@
         "-c",
         "-C"
       ],
-      "reason": "Branch management should be PR-driven. Create branches for feature work via \"git worktree\" or \"gh pr create\"."
+      "reason": "Branch management should be PR-driven. Create branches for feature work via \"gh pr create\"."
     },
     {
       "name": "block-git-add-all",
@@ -117,7 +117,7 @@
         "pop",
         "apply"
       ],
-      "reason": "Stashing is discouraged. If you have stashes, pop them once, commit as a checkpoint, and use the audit-trail rollback (diff + reverse apply) to manage visible state."
+      "reason": "Stashing is discouraged. Use the audit-trail rollback (diff + reverse apply) to manage visible state instead of stashes."
     },
     {
       "name": "block-git-revert",
