@@ -277,20 +277,7 @@ event: async ({ event }) => {
 }
 ```
 
-## Using External Dependencies
 
-Add a `package.json` in your `.opencode/` directory:
-
-```json
-{
-  "dependencies": {
-    "@opencode-ai/plugin": "latest",
-    "some-npm-package": "^1.0.0"
-  }
-}
-```
-
-OpenCode runs `bun install` at startup.
 
 ## Running Shell Commands
 
