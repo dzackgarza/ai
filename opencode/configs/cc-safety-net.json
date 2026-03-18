@@ -22,6 +22,14 @@
       "reason": "Destructive deletion is blocked. Use recoverable deletion workflows."
     },
     {
+      "name": "block-trash-empty",
+      "command": "trash-empty",
+      "block_args": [
+        "trash-empty"
+      ],
+      "reason": "Emptying the trash is a destructive operation that removes the safety net of recoverable deletion. Keep trashed files as a durable record unless manual cleanup is required for disk space."
+    },
+    {
       "name": "block-git-push",
       "command": "git",
       "subcommand": "push",
