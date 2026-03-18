@@ -19,91 +19,91 @@
       "command": "git",
       "subcommand": "push",
       "block_args": ["push", "--force", "-f", "--force-with-lease"],
-      "reason": "Push overwrites remote. Commit locally and request review first."
+      "reason": "Push overwrites remote. Commit locally, push your branch, and use 'gh pr create' to initiate review."
     },
     {
       "name": "block-git-checkout",
       "command": "git",
       "subcommand": "checkout",
       "block_args": ["checkout", "-b", "-B"],
-      "reason": "Checkout can lose uncommitted work or switch branches unexpectedly. Use 'git worktree add' for isolated changes."
+      "reason": "Branch switching in the main tree risks work loss. Use 'git worktree add <path> -b <branch>' to work in isolation."
     },
     {
       "name": "block-git-switch",
       "command": "git",
       "subcommand": "switch",
       "block_args": ["switch", "-c", "-C"],
-      "reason": "Switching branches can lose uncommitted work. Use 'git worktree add' instead."
+      "reason": "Branch switching in the main tree risks work loss. Use 'git worktree add <path> -b <branch>' to work in isolation."
     },
     {
       "name": "block-git-branch",
       "command": "git",
       "subcommand": "branch",
       "block_args": ["branch", "-m", "-M", "-d", "-D", "-c", "-C"],
-      "reason": "Branch modifications can cause confusion. Create feature branches via PR workflow instead."
+      "reason": "Branch management should be PR-driven. Create new branches for feature work via GitHub/CLI."
     },
     {
       "name": "block-git-add-all",
       "command": "git",
       "subcommand": "add",
       "block_args": [".", "-A", "--all"],
-      "reason": "Stage specific files explicitly; avoid sweeping adds."
+      "reason": "Blanket staging hides intent and risks committing secrets. Use targeted 'git add' for logical changes."
     },
     {
       "name": "block-git-add-interactive",
       "command": "git",
       "subcommand": "add",
       "block_args": ["-i", "--interactive"],
-      "reason": "Interactive staging is blocked in this workflow."
+      "reason": "Interactive staging is blocked. Review changes with 'git status' and 'git diff' before adding."
     },
     {
       "name": "block-git-stash",
       "command": "git",
       "subcommand": "stash",
       "block_args": ["stash", "save"],
-      "reason": "Stashing can lose track of changes. Commit work or use 'git worktree add' instead."
+      "reason": "Stashing creates hidden state. Use frequent 'checkpoint' commits to save work-in-progress visibly."
     },
     {
       "name": "block-git-stash-pop",
       "command": "git",
       "subcommand": "stash",
       "block_args": ["pop", "apply"],
-      "reason": "Applying stashed work can cause conflicts. Commit your changes instead."
+      "reason": "Stashing creates hidden state. Use frequent 'checkpoint' commits to save work-in-progress visibly."
     },
     {
       "name": "block-git-revert",
       "command": "git",
       "subcommand": "revert",
       "block_args": ["revert"],
-      "reason": "Revert loses commit history. Discuss with team before reverting commits."
+      "reason": "Reverts should be documented. Use 'git revert' in a new branch and open a PR for team review."
     },
     {
       "name": "block-git-reset",
       "command": "git",
       "subcommand": "reset",
       "block_args": ["reset", "--hard", "--mixed", "--soft"],
-      "reason": "Reset can lose commits permanently. Use 'git revert' instead if needed."
+      "reason": "Hard resets destroy work. Safely undo commits via 'git revert' or discard specific file changes with 'git restore'."
     },
     {
       "name": "block-git-clean",
       "command": "git",
       "subcommand": "clean",
       "block_args": ["clean", "-f", "-fd", "-fx", "-fdx"],
-      "reason": "Clean permanently removes untracked files. Review changes manually instead."
+      "reason": "Sweeping deletions are dangerous in noisy repos. Explicitly delete untracked files after review."
     },
     {
       "name": "block-git-rebase",
       "command": "git",
       "subcommand": "rebase",
       "block_args": ["rebase"],
-      "reason": "Rebase rewrites commit history. Use merge instead to preserve history."
+      "reason": "History rewrites can disrupt collaborators. Use the GitHub PR interface to handle merges and rebases."
     },
     {
       "name": "block-git-merge",
       "command": "git",
       "subcommand": "merge",
       "block_args": ["merge"],
-      "reason": "Merge can introduce unwanted changes. Use PR workflow with code review instead."
+      "reason": "History rewrites can disrupt collaborators. Use the GitHub PR interface to handle merges and rebases."
     },
     {
       "name": "block-git-commit-no-verify",
