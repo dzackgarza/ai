@@ -20,13 +20,14 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
 
           if (fmtResult.exitCode !== 0) {
             const feedback = fmtResult.stderr.toString();
-            await client.session.prompt({
+            await client.session.promptAsync({
               path: { id: input.sessionID },
               body: {
                 parts: [
                   {
                     type: 'text',
                     text: `Ruff format feedback for ${filePath}:\n\n${feedback}`,
+                    synthetic: true,
                   },
                 ],
               },
@@ -46,13 +47,14 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
           const justResult = await $`just --unstable --fmt`.nothrow();
 
           if (justResult.exitCode !== 0) {
-            await client.session.prompt({
+            await client.session.promptAsync({
               path: { id: input.sessionID },
               body: {
                 parts: [
                   {
                     type: 'text',
                     text: `Justfile formatting failed: ${justResult.stderr.toString()}`,
+                    synthetic: true,
                   },
                 ],
               },
