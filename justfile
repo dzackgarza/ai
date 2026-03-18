@@ -31,7 +31,7 @@ install:
     mkdir -p ~/.cc-safety-net
     
     # Linter/formatter configurations
-    mkdir -p ~/.config/ruff ~/.config/black ~/.config/mypy ~/.config/eslint ~/.config/prettier
+    mkdir -p ~/.config/ruff ~/.config/black
     ln -sf {{ repo }}/linter-configs/ruff-global.toml ~/.config/ruff/ruff.toml
     ln -sf {{ repo }}/linter-configs/mypy-global.ini ~/.mypy.ini
     ln -sf {{ repo }}/linter-configs/black-global.toml ~/.config/black/black.toml
@@ -122,12 +122,20 @@ run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
 
-build-agents: check-plugins
+# Build all OpenCode components (agents, config, and documentation)
+build: check-plugins
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
+    @just --justfile {{ repo }}/justfile build-agents-md
+
+# Internal alias for opencode core build (agents + config)
+build-opencode:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
 
+# Surgical build for permissions only
 build-permissions: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py apply
 
+# Surgical build for config only 
 build-config: check-plugins
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 

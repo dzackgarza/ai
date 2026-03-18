@@ -27,7 +27,30 @@ class _PromptEntry:
 
 
 def get_prompt(slug: str) -> _PromptEntry:
-    """Fetch a prompt by slug via uvx ai-prompts get --json."""
+    """Fetch a prompt by slug. Tries local library first, then uvx."""
+    try:
+        # 1. Try local filesystem if it's a sibling in ~/opencode-plugins/
+        import sys
+        _AI_PROMPTS_ROOT = Path(__file__).resolve().parents[3] / "opencode-plugins" / "ai-prompts"
+        _AI_PROMPTS_SRC = _AI_PROMPTS_ROOT / "src"
+        
+        if _AI_PROMPTS_SRC.exists():
+            if str(_AI_PROMPTS_SRC) not in sys.path:
+                sys.path.insert(0, str(_AI_PROMPTS_SRC))
+            if "PROMPTS_DIR" not in os.environ:
+                 os.environ["PROMPTS_DIR"] = str(_AI_PROMPTS_ROOT / "prompts")
+            
+            from ai_prompts import get_prompt as _get_prompt_lib
+            p = _get_prompt_lib(slug)
+            return _PromptEntry(
+                text=p.text,
+                frontmatter=p.frontmatter,
+                body=p.body,
+            )
+    except (ImportError, Exception):
+        pass
+
+    # 2. Fallback to uvx
     result = subprocess.run(
         ["uvx", "--from", _AI_PROMPTS_PKG, "ai-prompts", "get", slug, "--json"],
         capture_output=True, text=True,
