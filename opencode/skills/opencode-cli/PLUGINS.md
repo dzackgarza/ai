@@ -231,7 +231,7 @@ event: async ({ event }) => {
 
   const sessionId = event.properties.sessionID;
   await client.session.abort({ path: { id: sessionId } });
-  await client.session.prompt({
+  await client.session.promptAsync({
     path: { id: sessionId },
     body: {
       noReply: false,
@@ -248,11 +248,11 @@ event: async ({ event }) => {
 
 **Practical patterns:**
 
-| Goal                                   | Mechanism                                                     |
-| -------------------------------------- | ------------------------------------------------------------- |
-| Correct a finished response            | `session.idle` + `client.session.prompt()`                    |
-| Prune bad CoT mid-stream, re-prompt    | `message.part.delta` + `session.abort()` + `session.prompt()` |
-| Inject correction without re-prompting | `session.abort()` + `session.prompt({ noReply: true })`       |
+| Goal                                   | Mechanism                                                          |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| Correct a finished response            | `session.idle` + `client.session.promptAsync()`                    |
+| Prune bad CoT mid-stream, re-prompt    | `message.part.delta` + `session.abort()` + `session.promptAsync()` |
+| Inject correction without re-prompting | `session.abort()` + `session.promptAsync({ noReply: true })`       |
 | Inject mid-stream without halting      | ❌ Not possible — model is not listening while generating     |
 
 ### File Events
@@ -300,11 +300,12 @@ cp .opencode/plugins/examples/<name>.js .opencode/plugins/
 
 You can implement Claude Code-style hooks that inject context after the AI responds, triggering a new response. This requires the SDK client.
 
-### Key Mechanism: `client.session.prompt({ noReply: true })`
+### Key Mechanism: `client.session.promptAsync({ noReply: true })`
 
 ```ts
 // Inject context WITHOUT triggering a response (just adds to context)
-await client.session.prompt({
+// promptAsync is required in event handlers to avoid blocking
+await client.session.promptAsync({
   path: { id: sessionId },
   body: {
     noReply: true,
@@ -319,7 +320,7 @@ This is equivalent to Claude Code's `UserPromptSubmit` hook that writes to stdou
 
 1. Listen to `session.idle` (fires after AI finishes responding)
 2. Inspect `lastText` — the **assistant's** response text — for patterns. `lastText` is NOT the user's message. A hook that scans for "should I" will only fire when the _model_ outputs that phrase, not when the user does.
-3. If pattern found, inject feedback with `noReply: false` to trigger a new model response. (`noReply: true` injects silently without triggering a response — the opposite.)
+3. If pattern found, inject feedback using **`promptAsync()`** with `noReply: false` to trigger a new model response. (`noReply: true` injects silently without triggering a response — the opposite.) **Always use `promptAsync` in event handlers to avoid blocking the idle transition.**
 
 > **⚠ `opencode run` exits on idle and does not wait for async work.** The handler fires,
 > but anything it does asynchronously can continue after the CLI exits. Verify the full
@@ -374,8 +375,8 @@ export const OtpHook = async ({ client }) => {
         });
 
         // Inject secret message - triggers new AI response!
-        // noReply: false = wait for response, noReply: true = don't wait
-        await client.session.prompt({
+        // ALWAYS use promptAsync in event handlers
+        await client.session.promptAsync({
           path: { id: sessionId },
           body: {
             noReply: false,
@@ -419,11 +420,12 @@ when the manager and transcript interfaces already provide the session data.
 
 Full SDK docs: https://opencode.ai/docs/sdk/
 
-| Method                                           | Description                                |
-| ------------------------------------------------ | ------------------------------------------ |
-| `client.session.prompt({ noReply: true })`       | Inject context without triggering response |
-| `client.session.messages({ path: { id } })`      | Get session messages                       |
-| `client.session.command({ path: { id }, body })` | Send command to session                    |
+| Method                                                | Description                                                              |
+| ----------------------------------------------------- | ------------------------------------------------------------------------ |
+| `client.session.promptAsync({ noReply: true })`       | Inject context without triggering response (Non-blocking, recommended)   |
+| `client.session.prompt({ noReply: true })`            | Inject context without triggering response (Blocking)                    |
+| `client.session.messages({ path: { id } })`           | Get session messages                                                     |
+| `client.session.command({ path: { id }, body })`      | Send command to session                                                  |
 
 ---
 
