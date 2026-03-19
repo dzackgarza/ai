@@ -242,24 +242,6 @@
       "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
     },
     {
-      "name": "block-uv-pytest",
-      "command": "uv",
-      "block_args": [
-        "run",
-        "pytest"
-      ],
-      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
-    },
-    {
-      "name": "block-uv-vitest",
-      "command": "uv",
-      "block_args": [
-        "run",
-        "vitest"
-      ],
-      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
-    },
-    {
       "name": "block-direnv-tests",
       "command": "direnv",
       "subcommand": "exec",
@@ -270,6 +252,24 @@
         "vitest"
       ],
       "reason": "direnv exec bypasses justfile env initialization. Use 'just test' instead."
+    },
+    {
+      "name": "block-uv-pytest",
+      "command": "uv",
+      "subcommand": "run",
+      "block_args": [
+        "pytest"
+      ],
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-uv-vitest",
+      "command": "uv",
+      "subcommand": "run",
+      "block_args": [
+        "vitest"
+      ],
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
     }
   ]
 }
