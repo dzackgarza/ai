@@ -1,5 +1,6 @@
 """models.py — Pydantic types and canonical tool inventory."""
-from typing import Annotated, Literal, Union
+
+from typing import Literal, Union
 
 from pydantic import BaseModel, field_validator
 
@@ -33,53 +34,65 @@ class PathRule(BaseModel):
 # ---------------------------------------------------------------------------
 
 SERENA_FILE_READ_TOOLS: list[str] = [
-    "serena_read_file",
-    "serena_list_dir",
-    "serena_find_file",
-    "serena_search_for_pattern",
     "serena_get_symbols_overview",
     "serena_find_symbol",
     "serena_find_referencing_symbols",
 ]
 
 SERENA_FILE_WRITE_TOOLS: list[str] = [
-    "serena_create_text_file",
-    "serena_replace_content",
     "serena_replace_symbol_body",
     "serena_insert_after_symbol",
     "serena_insert_before_symbol",
     "serena_rename_symbol",
 ]
 
-SERENA_MEMORY_TOOLS: list[str] = [
+SERENA_MEMORY_TOOLS: list[str] = []
+
+SERENA_SESSION_META_TOOLS: list[str] = [
+    "serena_activate_project",
+]
+
+SERENA_DISABLED_WORKFLOW_TOOLS: list[str] = []
+
+BANNED_SERENA_TOOLS: list[str] = [
+    # Conflicts with core read
+    "serena_read_file",
+    "serena_list_dir",
+    "serena_find_file",
+    "serena_search_for_pattern",
+    # Conflicts with core write
+    "serena_create_text_file",
+    "serena_replace_content",
+    # Memory tools (redundant/obsolete)
     "serena_read_memory",
     "serena_list_memories",
     "serena_write_memory",
     "serena_edit_memory",
     "serena_delete_memory",
     "serena_rename_memory",
-]
-
-SERENA_SESSION_META_TOOLS: list[str] = [
-    "serena_activate_project",
-    "serena_check_onboarding_performed",
-    "serena_get_current_config",
-]
-
-SERENA_DISABLED_WORKFLOW_TOOLS: list[str] = [
+    # Workflow bypasses
     "serena_onboarding",
     "serena_prepare_for_new_conversation",
     "serena_initial_instructions",
+    "serena_check_onboarding_performed",
+    "serena_get_current_config",
     "serena_think_about_collected_information",
     "serena_think_about_task_adherence",
     "serena_think_about_whether_you_are_done",
+    # Shell bypasses
+    "serena_execute_shell_command",
+    "serena_switch_modes",
 ]
 
 CORE_TOOLS: list[str] = [
-    "read", "glob", "grep",
-    "edit", "apply_patch",
+    "read",
+    "glob",
+    "grep",
+    "edit",
+    "apply_patch",
     "bash",
-    "webfetch", "websearch",
+    "webfetch",
+    "websearch",
     "todowrite",
     "question",
 ]
@@ -97,14 +110,14 @@ ALL_SERENA_TOOLS: list[str] = [
     *SERENA_MEMORY_TOOLS,
     *SERENA_SESSION_META_TOOLS,
     *SERENA_DISABLED_WORKFLOW_TOOLS,
-    "serena_execute_shell_command",
-    "serena_switch_modes",
+    # Note: BANNED_SERENA_TOOLS are intentionally omitted from categories
 ]
 
 ALL_TOOLS: list[str] = [
     *CORE_TOOLS,
     *PLUGIN_TOOLS,
     *ALL_SERENA_TOOLS,
+    *BANNED_SERENA_TOOLS,
 ]
 
 # ---------------------------------------------------------------------------
@@ -112,21 +125,23 @@ ALL_TOOLS: list[str] = [
 # ---------------------------------------------------------------------------
 
 DISPLAY_CATEGORIES: list[tuple[str, list[str]]] = [
-    ("Core Read",       ["read", "glob", "grep"]),
-    ("Core Write",      ["edit", "apply_patch"]),
-    ("Bash / Shell",    ["bash"]),
-    ("Web",             ["webfetch", "websearch"]),
-    ("Task & Todo",     ["todowrite", "task"]),
-    ("General",         ["question"]),
-    ("Session",         ["list_sessions", "introspection", "read_transcript"]),
-    ("Serena Read",     SERENA_FILE_READ_TOOLS),
-    ("Serena Write",    SERENA_FILE_WRITE_TOOLS),
-    ("Serena Memory",   SERENA_MEMORY_TOOLS),
-    ("Serena Session",  SERENA_SESSION_META_TOOLS),
+    ("Core Read", ["read", "glob", "grep"]),
+    ("Core Write", ["edit", "apply_patch"]),
+    ("Bash / Shell", ["bash"]),
+    ("Web", ["webfetch", "websearch"]),
+    ("Task & Todo", ["todowrite", "task"]),
+    ("General", ["question"]),
+    ("Session", ["list_sessions", "introspection", "read_transcript"]),
+    ("Serena Read", SERENA_FILE_READ_TOOLS),
+    ("Serena Write", SERENA_FILE_WRITE_TOOLS),
+    ("Serena Memory", SERENA_MEMORY_TOOLS),
+    ("Serena Session", SERENA_SESSION_META_TOOLS),
     ("Serena Workflow", SERENA_DISABLED_WORKFLOW_TOOLS),
-    ("Serena Shell",    ["serena_execute_shell_command"]),
-    ("Serena Modes",    ["serena_switch_modes"]),
+    ("Serena Shell", ["serena_execute_shell_command"]),
+    ("Serena Modes", ["serena_switch_modes"]),
 ]
 
 # Agents whose config files exist but are managed entirely by opencode internals.
-UNMANAGED_AGENTS: frozenset[str] = frozenset({"summary", "title", "compaction", "explore"})
+UNMANAGED_AGENTS: frozenset[str] = frozenset(
+    {"summary", "title", "compaction", "explore"}
+)

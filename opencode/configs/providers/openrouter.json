@@ -4,26 +4,11 @@
     "arcee-ai/trinity-large-preview:free": {
       "name": "Trinity Large Preview"
     },
-    "arcee-ai/trinity-mini:free": {
-      "name": "Arcee-Ai/Trinity-Mini (Free)"
-    },
-    "google/gemma-3-27b-it:free": {
-      "name": "Google/Gemma-3-27B-It (Free)"
-    },
-    "liquid/lfm-2.5-1.2b-instruct:free": {
-      "name": "Lfm 2.5 1.2B Instruct (Free)"
-    },
-    "liquid/lfm-2.5-1.2b-thinking:free": {
-      "name": "Lfm 2.5 1.2B Thinking (Free)"
-    },
     "nvidia/nemotron-3-nano-30b-a3b:free": {
       "name": "Nemotron 3 Nano 30B A3B"
     },
     "openai/gpt-oss-120b:free": {
       "name": "Openai/Gpt-Oss-120B (Free)"
-    },
-    "openai/gpt-oss-20b:free": {
-      "name": "Openai/Gpt-Oss-20B (Free)"
     },
     "qwen/qwen3-coder:free": {
       "name": "Qwen/Qwen3-Coder (Free)"
@@ -260,6 +245,8 @@
     "liquid/lfm-40b",
     "liquid/lfm-7b",
     "liquid/lfm2-8b-a1b",
+    "liquid/lfm-2.5-1.2b-instruct:free",
+    "liquid/lfm-2.5-1.2b-thinking:free",
     "liuhaotian/llava-13b",
     "liuhaotian/llava-yi-34b",
     "lizpreciatior/lzlv-70b-fp16-hf",
@@ -457,6 +444,7 @@
     "openai/gpt-audio-mini",
     "openai/gpt-oss-120b",
     "openai/gpt-oss-20b",
+    "openai/gpt-oss-20b:free",
     "openai/gpt-oss-safeguard-20b",
     "openai/o1",
     "openai/o1-mini",

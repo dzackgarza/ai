@@ -66,7 +66,6 @@ GLOBAL_DEFAULTS: dict[str, Any] = {
     "write": "allow",
     # Token scope inspection
     "tokenscope": "allow",
-
     # Misc
     "invalid": "deny",
     # Cut-copy-paste MCP
@@ -86,7 +85,7 @@ GLOBAL_DEFAULTS: dict[str, Any] = {
     "serena_find_referencing_symbols": "allow",
     # Serena write
     "serena_create_text_file": "deny",
-    "serena_replace_content": "allow",
+    "serena_replace_content": "deny",
     "serena_replace_symbol_body": "allow",
     "serena_insert_after_symbol": "allow",
     "serena_insert_before_symbol": "allow",

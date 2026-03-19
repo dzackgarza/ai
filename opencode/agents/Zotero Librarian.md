@@ -11,7 +11,9 @@ permission:
     '*': deny
   apply_patch:
     '*': deny
-  bash: deny
+  bash:
+    '*sudo*': deny
+    '*': deny
   webfetch: allow
   websearch: allow
   todowrite: allow
@@ -28,17 +30,11 @@ permission:
   remember: allow
   forget: allow
   list_memories: allow
-  schedule_reminder: allow
-  cancel_reminder: allow
-  list_reminders: allow
   skill: allow
   sleep: allow
   sleep_until: allow
   codesearch: allow
   lsp: allow
-  improved_task: allow
-  improved_todowrite: allow
-  improved_todoread: allow
   pty_list: allow
   pty_read: allow
   pty_spawn: deny
@@ -49,22 +45,6 @@ permission:
   plannotator_annotate: allow
   write: allow
   tokenscope: allow
-  zotero_search: allow
-  zotero_get_item: allow
-  zotero_import: allow
-  zotero_batch_add: allow
-  zotero_update_item: allow
-  zotero_trash_items: allow
-  zotero_export: allow
-  zotero_tags: allow
-  zotero_stats: allow
-  zotero_collections: allow
-  zotero_count: allow
-  zotero_children: allow
-  zotero_check_pdfs: allow
-  zotero_fetch_pdfs: allow
-  zotero_find_dois: allow
-  zotero_crossref: allow
   invalid: deny
   cut-copy-paste-mcp_cut_lines: allow
   cut-copy-paste-mcp_copy_lines: allow
@@ -80,7 +60,7 @@ permission:
   serena_find_symbol: deny
   serena_find_referencing_symbols: allow
   serena_create_text_file: deny
-  serena_replace_content: allow
+  serena_replace_content: deny
   serena_replace_symbol_body: allow
   serena_insert_after_symbol: allow
   serena_insert_before_symbol: allow

@@ -3,7 +3,7 @@ name: llm-failure-modes
 description: Use when reasoning through a complex or high-stakes problem to check for common LLM cognitive failures.
 metadata:
   author: dzack
-  version: "0.3.0"
+  version: '0.3.0'
 ---
 
 # LLM Failure Modes
@@ -65,7 +65,20 @@ When contributing to this document:
 
 9. **Silent branch pruning** — When investigation fails to confirm a correction, agents revert to the prior position without stating that the revert occurred. Output language represents the revert as an update or new finding. Example: "I can see the issue now" followed immediately by restatement of the original conclusion — the sequence of accepting a correction, investigating, finding nothing, and reverting is collapsed into language that implies new confirming information was found.
 
-10. **Reflexive disabling solutions** — When a system behavior is unwanted, agents offer to disable or remove the system rather than trace the cause. The targeted fix, if present, appears as a minor "optimization" rather than the primary recommendation. Example: Asked about high CPU from a misconfigured file watcher, the recommendations are: stop the service, switch to on-demand builds, disable watch mode entirely — with "add paths to the ignored list" listed last as an optional optimization.
+10. **Tool output blindness** — Agents ignore tool failures, error messages, and corrective feedback. Examples:
+
+- Tool call fails → agent proceeds as if it succeeded, reports success without acknowledging failure
+- Web search turns up nothing → agent pivots to local analysis, misleads with informative summary hiding the broken data source
+- Webfetch returns auth page, JS blocker, or 404 → agent says nothing, attempts workaround, goal-substitutes
+- Command output empty → agent proceeds as if valid data returned
+- Tool not available, env config issue, missing credentials → same pattern
+- Tool failure contains corrective guidance ("file a GitHub issue", "stop and run tests") → ignored, agent continues
+- Safety net blocks with corrective guidance → agent tries "workarounds" to bypass security policy
+- Stop hooks telling agent to run tests or continue work → agent justifies current state, stops without corrective action
+
+Weaker models lie directly about results. Stronger models use "perjury-avoiding" language to imply success while hiding failure. Better RLHF models mention failure but bury the lede with speculation and goal-substitution. Many silently work around failures — adversarially replacing blocked commands (e.g., `git checkout` blocked → `cat last-git-commit:HEAD > file.txt`) or switching methodologies to hide the broken path.
+
+**Key insight:** Agents respond to perceived human interaction but treat automated feedback as "unobserved." Feedback framed as user prompt injections changes behavior; tool output alone does not.
 
 11. **Unfalsified external attribution** — When a tool call fails, returns unexpected results, or runs slowly, agents attribute the cause to common external factors — cache state, server needing restart, environment issues, missing dependencies, DNS failure, provider outage, "issues within this environment" — without performing trivial checks that would confirm or rule out the hypothesis. Prior successful operations in the same session that would eliminate the hypothesis are not used as evidence. Example: A build command fails; agent suggests "the server may need to be restarted" or "there may be a caching issue" — without checking service status, reviewing logs, or noting that earlier tool calls in the same session succeeded, which would rule out environment, network, and provider hypotheses entirely.
 

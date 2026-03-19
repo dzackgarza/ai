@@ -51,6 +51,17 @@ patterns, use `opencode-cli/async-injection.md`.
 - Fixed witness tokens, if used, come from env. They are never hardcoded in test source.
 - `.config/` files and plugin symlinks avoid user-specific absolute paths when a relative path or repo-local path works.
 
+### Environment Variable Isolation (Strict)
+
+- **No env vars in code or tests**: Source code and test files must not define, manipulate, or set environment variables (no `os.environ`, `os.putenv`, `process.env.VAR =`, `export` in scripts).
+- **No fallbacks in code**: Code must not provide default/fallback values for environment variables. All env vars must be explicitly defined in `.envrc` files or the top-level `.testrc`.
+- **Centralized test configuration**: All testing-related environment variables (URLs, port numbers, hostnames, test passphrases, agent names) are defined in the top-level `.testrc` only. Individual repos must not define their own test environment variables.
+- **No env vars in justfiles**: The `justfile` must not define or override environment variables. All env vars come from `.envrc` inheritance.
+- **No hidden opencode configs**: Repos must not contain opencode configuration files in subfolders, hidden folders, or sub-config files (no `.opencode/`, no nested `opencode.json`, no `.config/opencode.json` except where explicitly documented as the canonical local verification config).
+- **Centralized testing agents**: All testing agents are defined in the top-level opencode testing environment configs (see `.testrc` home dirs and config locations). Individual repos must not define their own test agents.
+- **Centralized opencode serve management**: All repos use the top-level `just` recipes for starting/stopping test opencode serve instances. No repo-specific server management.
+- **No direct opencode invocation**: Code must not run `opencode` directly. All opencode interactions use `opencode-manager` (`opx` commands).
+
 ## Automation
 
 - The canonical automation entrypoint is lowercase `justfile`. No `Justfile`.
@@ -120,6 +131,16 @@ patterns, use `opencode-cli/async-injection.md`.
 - The `uvx` command works directly against the repository URL (no-install mandate).
 - No repo relies on ad hoc `pip install` or unmanaged local Python state.
 - MCP wrappers reuse shared bridge code such as `mcp-shim` when that is the intended architecture.
+
+## CLI-First Plugin and MCP Architecture
+
+- All plugin logic and MCP server logic lives in an independent CLI. The CLI is the source of truth.
+- Plugins and MCP servers are thin wrappers that invoke the CLI via `uvx` (Python) or `bunx` (TypeScript) against the GitHub repo URL. No local filesystem paths to any repo on this machine.
+- **No local pointing**: Plugins/MCP servers must not reference any repo on this machine via relative paths, absolute paths, or symlinks. All dependencies go through the remote GitHub URL and the package registry.
+- **No manual imports**: Plugin and MCP code must not directly import modules from any other repo on this machine. All functionality is accessed through CLI invocation.
+- A plugin tool or MCP tool calls the canonical CLI binary/library. It must not carry a second implementation of the same behavior.
+- The remote install path is `uvx --from git+https://github.com/dzackgarza/opencode-plugins.git <entrypoint>` for Python and `bunx --yes --package=git+https://github.com/dzackgarza/opencode-plugins.git <entrypoint>` for TypeScript.
+- The only valid exception to CLI-first is when a plugin relies on OpenCode internals for key functionality and cannot exist independently. Such exceptions are documented explicitly with rationale.
 
 ## README and Human-Facing Docs
 

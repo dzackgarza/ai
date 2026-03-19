@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 from datetime import datetime
-from enum import Enum
 from pathlib import Path
-from typing import Annotated
 
 import httpx
 import typer
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 from rich.console import Console
 from rich.table import Table
 
@@ -32,15 +29,17 @@ class ModelMetadata(BaseModel):
 
     @property
     def is_free(self) -> bool:
-        # Check explicit tier first
+        # Union of: explicit tier, :free suffix, OR zero cost
         if self.tier == "free":
             return True
-        # Then check ID suffix (common for free models)
         if self.id.endswith(":free"):
             return True
-        # Finally check cost if available (0 input and 0 output)
-        if self.cost and self.cost.get("input") == 0 and self.cost.get("output") == 0:
-            return True
+        # Check both key naming conventions (input/prompt, output/completion)
+        if self.cost:
+            prompt_cost = self.cost.get("input") or self.cost.get("prompt")
+            completion_cost = self.cost.get("output") or self.cost.get("completion")
+            if prompt_cost == 0 and completion_cost == 0:
+                return True
         return False
 
 
@@ -71,7 +70,9 @@ async def probe_model(model_id: str, check_tools: bool = False) -> tuple[bool, s
     }
 
     if check_tools:
-        payload["messages"] = [{"role": "user", "content": "Find files containing auth"}]
+        payload["messages"] = [
+            {"role": "user", "content": "Find files containing auth"}
+        ]
         payload["tools"] = [
             {
                 "type": "function",
@@ -145,9 +146,14 @@ def ls(
 
 @app.command()
 def check(
-    model_id: str = typer.Argument(None, help="Model ID to probe (probes all if omitted)"),
+    model_id: str = typer.Argument(
+        None, help="Model ID to probe (probes all if omitted)"
+    ),
     tool_calling: bool = typer.Option(
-        False, "--tool-calling", "-t", help="When probing all, filter by tool-calling support"
+        False,
+        "--tool-calling",
+        "-t",
+        help="When probing all, filter by tool-calling support",
     ),
 ):
     """Probe availability of free models."""
@@ -158,7 +164,9 @@ def check(
 
         if model_id:
             if model_id not in provider_data:
-                console.print(f"[red]Error: Model {model_id} not found in models.dev[/red]")
+                console.print(
+                    f"[red]Error: Model {model_id} not found in models.dev[/red]"
+                )
                 return
             meta = ModelMetadata(**provider_data[model_id])
             assert meta.is_free, f"Model {model_id} is not free"
