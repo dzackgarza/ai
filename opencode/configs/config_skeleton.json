@@ -114,7 +114,7 @@
     "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
     "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
-    "git+https://github.com/DEVtheOPS/opencode-plugin-otel.git"
+    "@devtheops/opencode-plugin-otel@latest"
   ],
   "permission": {
     "read": "allow",
