@@ -30,6 +30,14 @@
       "reason": "Emptying the trash is not allowed by security policy. No agent may permanently delete any files from the system. All permanent deletions must be user choices. If permanent deletion is needed, the agent must explicitly ask the user to perform it."
     },
     {
+      "name": "block-sed",
+      "command": "sed",
+      "block_args": [
+        "sed"
+      ],
+      "reason": "Direct file manipulation with sed is banned. Agents must use proper editing tools (like Edit or Write) so that changes produce clear diffs for user review in chat."
+    },
+    {
       "name": "block-git-push",
       "command": "git",
       "subcommand": "push",
