@@ -19,7 +19,7 @@
       "block_args": [
         "-delete"
       ],
-      "reason": "Destructive deletion is blocked. Use recoverable deletion workflows."
+      "reason": "Destructive deletion is blocked. Use 'trash' instead of 'find ... -delete'."
     },
     {
       "name": "block-trash-empty",
@@ -27,7 +27,7 @@
       "block_args": [
         "trash-empty"
       ],
-      "reason": "Emptying the trash is a destructive operation that removes the safety net of recoverable deletion. Keep trashed files as a durable record unless manual cleanup is required for disk space."
+      "reason": "Emptying the trash is not allowed by security policy. No agent may permanently delete any files from the system. All permanent deletions must be user choices. If permanent deletion is needed, the agent must explicitly ask the user to perform it."
     },
     {
       "name": "block-git-push",
@@ -39,7 +39,7 @@
         "-f",
         "--force-with-lease"
       ],
-      "reason": "Push overwrites remote. Commit locally, push your branch, and use 'gh pr create' to initiate review."
+      "reason": "Pushing is not part of the PR-based workflow. Review the git guidelines skill for the proper workflow."
     },
     {
       "name": "block-git-checkout",
@@ -117,7 +117,7 @@
         "pop",
         "apply"
       ],
-      "reason": "Stashing is discouraged. Use the audit-trail rollback (diff + reverse apply) to manage visible state instead of stashes."
+      "reason": "Stashing is banned as it leads to surprising hidden states that can get lost. Review the git guidelines skill immediately."
     },
     {
       "name": "block-git-revert",
