@@ -8,35 +8,15 @@
   ],
   "formatter": {
     "ruff-check": {
-      "command": [
-        "uvx",
-        "ruff",
-        "check",
-        "--fix",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
     },
     "ruff-format": {
-      "command": [
-        "uvx",
-        "ruff",
-        "format",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
     },
     "prettier": {
-      "command": [
-        "npx",
-        "prettier",
-        "--write",
-        "$FILE"
-      ],
+      "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [
         ".md",
         ".js",
@@ -51,29 +31,14 @@
       ]
     },
     "just": {
-      "command": [
-        "just",
-        "--unstable",
-        "--fmt",
-        "--justfile",
-        "$FILE"
-      ],
-      "extensions": [
-        "justfile"
-      ]
+      "command": ["just", "--unstable", "--fmt", "--justfile", "$FILE"],
+      "extensions": ["justfile"]
     }
   },
   "lsp": {
     "texlab": {
-      "command": [
-        "texlab"
-      ],
-      "extensions": [
-        ".tex",
-        ".sty",
-        ".cls",
-        ".bib"
-      ]
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
     }
   },
   "mcp": {
@@ -90,11 +55,7 @@
     },
     "cut-copy-paste-mcp": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@fastmcp-me/cut-copy-paste-mcp"
-      ]
+      "command": ["npx", "-y", "@fastmcp-me/cut-copy-paste-mcp"]
     }
   },
   "model": "github-copilot/gpt-4.1",
@@ -113,7 +74,8 @@
     "opencode-pty@latest",
     "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
-    "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git"
+    "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
+    "git+https://github.com/DEVtheOPS/opencode-plugin-otel.git"
   ],
   "permission": {
     "read": "allow",
