@@ -7,20 +7,21 @@ import glob
 import json
 import logging
 import os
-from pathlib import Path
+import sys
 import urllib.request
+from pathlib import Path
 from typing import Any
 
-import sys
 sys.path.insert(0, str(Path(__file__).parent.parent / "permissions"))
-from src.agent_markdown import get_prompt
 import jsonschema
 from rich.console import Console
 from rich.logging import RichHandler
-
+from src.agent_markdown import get_prompt
 
 _console = Console(stderr=True)
-_handler = RichHandler(console=_console, markup=True, show_path=False, rich_tracebacks=True)
+_handler = RichHandler(
+    console=_console, markup=True, show_path=False, rich_tracebacks=True
+)
 _handler.setFormatter(logging.Formatter("%(message)s"))
 logger = logging.getLogger("opencode.config.build")
 if not logger.handlers:
@@ -91,7 +92,7 @@ def fetch_config_schema(config: dict[str, Any]) -> dict[str, Any]:
     schema_url = config["$schema"]
     schema = _fetch_json(schema_url, timeout=10)
 
-    model_ref = (((schema.get("properties") or {}).get("model") or {}).get("$ref") or "")
+    model_ref = ((schema.get("properties") or {}).get("model") or {}).get("$ref") or ""
     if model_ref.startswith("http"):
         model_schema_url = model_ref.split("#")[0]
         model_schema = _fetch_json(model_schema_url, timeout=10)
@@ -99,13 +100,15 @@ def fetch_config_schema(config: dict[str, Any]) -> dict[str, Any]:
             "google/gemini-claude-sonnet-4-6",
             "google/gemini-claude-opus-4-6-thinking",
         ]
-        model_def = (((model_schema.get("$defs") or {}).get("Model")) or {})
+        model_def = ((model_schema.get("$defs") or {}).get("Model")) or {}
         if "enum" in model_def:
             model_def["enum"].extend(custom_models)
             schema.setdefault("$defs", {})
             schema["$defs"]["Model"] = model_def
             schema["properties"]["model"]["$ref"] = "#/$defs/Model"
-            agent_props = (((schema.get("properties") or {}).get("agent") or {}).get("properties") or {})
+            agent_props = ((schema.get("properties") or {}).get("agent") or {}).get(
+                "properties"
+            ) or {}
             for agent_config in agent_props.values():
                 model_prop = ((agent_config.get("properties") or {}).get("model")) or {}
                 if "$ref" in model_prop:
@@ -143,7 +146,30 @@ def fetch_models_dev_api() -> dict[str, Any]:
         raise RuntimeError(f"Failed to fetch models.dev API: {exc}") from exc
 
 
-def get_models_dev_provider_models(models_dev_data: dict[str, Any], provider_id: str) -> set[str] | None:
+def fetch_openrouter_api() -> dict[str, Any]:
+    """Fetch live model list from OpenRouter API."""
+    try:
+        return _fetch_json("https://openrouter.ai/api/v1/models")
+    except Exception as exc:
+        raise RuntimeError(f"Failed to fetch OpenRouter API: {exc}") from exc
+
+
+def is_openrouter_free(model: dict[str, Any]) -> bool:
+    """Check if an OpenRouter model is free (cost == 0 or :free suffix)."""
+    model_id = model.get("id", "")
+    if model_id.endswith(":free"):
+        return True
+    pricing = model.get("pricing", {})
+    prompt_cost = pricing.get("prompt")
+    completion_cost = pricing.get("completion")
+    if prompt_cost == 0 and completion_cost == 0:
+        return True
+    return False
+
+
+def get_models_dev_provider_models(
+    models_dev_data: dict[str, Any], provider_id: str
+) -> set[str] | None:
     provider = models_dev_data.get(provider_id)
     if not provider:
         return None
@@ -177,7 +203,9 @@ def show_provider_partition_diff(
     local_models = whitelist | blacklist
     models_dev_models = get_models_dev_provider_models(models_dev_data, provider_id)
     if models_dev_models is None:
-        logger.info("[dim]%s: not in models.dev[/dim]", provider_id, extra={"markup": True})
+        logger.info(
+            "[dim]%s: not in models.dev[/dim]", provider_id, extra={"markup": True}
+        )
         return whitelist
 
     in_local_not_dev = sorted(local_models - models_dev_models)
@@ -201,9 +229,366 @@ def show_provider_partition_diff(
     return whitelist
 
 
+def validate_openrouter(config: dict[str, Any]) -> None:
+    """Validate OpenRouter provider.
+
+    Rules:
+    1. Whitelist may ONLY contain cost == 0 models
+    2. Blacklist MUST contain ALL cost > 0 models
+    3. Free models (cost == 0) can be in either whitelist or blacklist
+    """
+    provider_cfg = (config.get("provider") or {}).get("openrouter")
+    if provider_cfg is None:
+        logger.warning(
+            "[yellow]OpenRouter provider not found in config[/yellow]",
+            extra={"markup": True},
+        )
+        return
+
+    # Get local config slugs as-is
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist_raw = provider_cfg.get("blacklist", [])
+    blacklist = set(blacklist_raw) if isinstance(blacklist_raw, list) else set()
+
+    # Fetch live OpenRouter API
+    openrouter_data = fetch_openrouter_api()
+    live_models = openrouter_data.get("data", [])
+
+    # Build slug -> cost mapping from live API
+    slug_costs: dict[str, tuple[float, float]] = {}
+    for model in live_models:
+        model_id = model.get("id", "")
+        pricing = model.get("pricing", {})
+        prompt_cost = float(pricing.get("prompt", 0) or 0)
+        completion_cost = float(pricing.get("completion", 0) or 0)
+        slug_costs[model_id] = (prompt_cost, completion_cost)
+
+    # Check 1: All whitelisted models must have cost == 0
+    paid_in_whitelist = {
+        mid
+        for mid in whitelist
+        if mid in slug_costs and (slug_costs[mid][0] > 0 or slug_costs[mid][1] > 0)
+    }
+    if paid_in_whitelist:
+        logger.error(
+            "[red]OpenRouter: %d paid model(s) in whitelist (must be cost == 0): %s[/red]",
+            len(paid_in_whitelist),
+            sorted(paid_in_whitelist)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All whitelisted models are free (cost == 0)[/green]",
+            extra={"markup": True},
+        )
+
+    # Check 2: All paid models must be blacklisted
+    paid_models = {mid for mid, (p, c) in slug_costs.items() if p > 0 or c > 0}
+    paid_not_blacklisted = paid_models - blacklist
+    if paid_not_blacklisted:
+        logger.error(
+            "[red]OpenRouter: %d paid model(s) not in blacklist: %s[/red]",
+            len(paid_not_blacklisted),
+            sorted(paid_not_blacklisted)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All paid models are blacklisted[/green]",
+            extra={"markup": True},
+        )
+
+    # Check 3: Warn about blacklisted free models (for manual review)
+    free_models = {mid for mid, (p, c) in slug_costs.items() if p == 0 and c == 0}
+    blacklisted_free = sorted(free_models & blacklist)
+    if blacklisted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) blacklisted (review for intentional exclusion): %s[/yellow]",
+            len(blacklisted_free),
+            blacklisted_free[:15],
+            extra={"markup": True},
+        )
+        return
+
+    # Fetch live OpenRouter API first to determine available slugs
+    openrouter_data = fetch_openrouter_api()
+    live_models = openrouter_data.get("data", [])
+    available_slugs = {m.get("id", "") for m in live_models}
+
+    # Build slug -> cost mapping from live API
+    slug_costs: dict[str, tuple[float, float]] = {}
+    for model in live_models:
+        model_id = model.get("id", "")
+        pricing = model.get("pricing", {})
+        prompt_cost = float(pricing.get("prompt", 0) or 0)
+        completion_cost = float(pricing.get("completion", 0) or 0)
+        slug_costs[model_id] = (prompt_cost, completion_cost)
+
+    # Normalize local config to canonical slugs
+    whitelist = {
+        get_canonical_openrouter_id(m, available_slugs)
+        for m in (provider_cfg.get("models") or {}).keys()
+    }
+    blacklist = {
+        get_canonical_openrouter_id(m, available_slugs)
+        for m in (provider_cfg.get("blacklist") or [])
+    }
+
+    # Categorize by canonical slug
+    paid_models = {mid for mid, (p, c) in slug_costs.items() if p > 0 or c > 0}
+    free_models = {mid for mid, (p, c) in slug_costs.items() if p == 0 and c == 0}
+
+    # Check 1: All paid models must be blacklisted
+    paid_in_whitelist = paid_models & whitelist
+    if paid_in_whitelist:
+        logger.error(
+            "[red]OpenRouter: %d paid model(s) found in whitelist (must be blacklisted): %s[/red]",
+            len(paid_in_whitelist),
+            sorted(paid_in_whitelist)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All paid models are blacklisted[/green]",
+            extra={"markup": True},
+        )
+
+    # Check 2: All free models must be either whitelisted or blacklisted
+    unaccounted_free = free_models - whitelist - blacklist
+    if unaccounted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) not in whitelist or blacklist: %s[/yellow]",
+            len(unaccounted_free),
+            sorted(unaccounted_free)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All %d free models accounted for (whitelist=%d, blacklist=%d)[/green]",
+            len(free_models),
+            len(whitelist & free_models),
+            len(blacklist & free_models),
+            extra={"markup": True},
+        )
+
+    # Check 3: Warn about blacklisted free models (for manual review)
+    blacklisted_free = sorted(free_models & blacklist)
+    if blacklisted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) blacklisted (review for intentional exclusion): %s[/yellow]",
+            len(blacklisted_free),
+            blacklisted_free[:15],
+            extra={"markup": True},
+        )
+        return
+
+    # Normalize local config to canonical slugs
+    whitelist = {
+        normalize_openrouter_id(m) for m in (provider_cfg.get("models") or {}).keys()
+    }
+    blacklist = {
+        normalize_openrouter_id(m) for m in (provider_cfg.get("blacklist") or [])
+    }
+
+    # Fetch live OpenRouter API
+    openrouter_data = fetch_openrouter_api()
+    live_models = openrouter_data.get("data", [])
+
+    # Build canonical model -> cost mapping (prefer non-:free variant when both exist)
+    canonical_costs: dict[str, tuple[float, float]] = {}
+    for model in live_models:
+        model_id = model.get("id", "")
+        normalized_id = normalize_openrouter_id(model_id)
+        pricing = model.get("pricing", {})
+        prompt_cost = float(pricing.get("prompt", 0) or 0)
+        completion_cost = float(pricing.get("completion", 0) or 0)
+
+        # Prefer non-:free variant for canonical cost (it's the primary slug)
+        if not model_id.endswith(":free"):
+            canonical_costs[normalized_id] = (prompt_cost, completion_cost)
+        elif normalized_id not in canonical_costs:
+            canonical_costs[normalized_id] = (prompt_cost, completion_cost)
+
+    # Categorize by canonical slug
+    paid_models = {mid for mid, (p, c) in canonical_costs.items() if p > 0 or c > 0}
+    free_models = {mid for mid, (p, c) in canonical_costs.items() if p == 0 and c == 0}
+
+    # Check 1: All paid models must be blacklisted
+    paid_in_whitelist = paid_models & whitelist
+    if paid_in_whitelist:
+        logger.error(
+            "[red]OpenRouter: %d paid model(s) found in whitelist (must be blacklisted): %s[/red]",
+            len(paid_in_whitelist),
+            sorted(paid_in_whitelist)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All paid models are blacklisted[/green]",
+            extra={"markup": True},
+        )
+
+    # Check 2: All free models must be either whitelisted or blacklisted
+    unaccounted_free = free_models - whitelist - blacklist
+    if unaccounted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) not in whitelist or blacklist: %s[/yellow]",
+            len(unaccounted_free),
+            sorted(unaccounted_free)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All %d free models accounted for (whitelist=%d, blacklist=%d)[/green]",
+            len(free_models),
+            len(whitelist & free_models),
+            len(blacklist & free_models),
+            extra={"markup": True},
+        )
+
+    # Check 3: Warn about blacklisted free models (for manual review)
+    blacklisted_free = sorted(free_models & blacklist)
+    if blacklisted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) blacklisted (review for intentional exclusion): %s[/yellow]",
+            len(blacklisted_free),
+            blacklisted_free[:15],
+            extra={"markup": True},
+        )
+        return
+
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+
+    # Fetch live OpenRouter API
+    openrouter_data = fetch_openrouter_api()
+    live_models = openrouter_data.get("data", [])
+
+    # Categorize live models (normalize IDs by stripping :free suffix)
+    paid_models = set()
+    free_models = set()
+    free_models_with_suffix = set()  # Keep track of original IDs for reporting
+    for model in live_models:
+        model_id = model.get("id", "")
+        normalized_id = normalize_openrouter_id(model_id)
+        if is_openrouter_free(model):
+            free_models.add(normalized_id)
+            free_models_with_suffix.add(model_id)
+        else:
+            paid_models.add(normalized_id)
+
+    # Check 1: All paid models must be blacklisted
+    paid_in_whitelist = paid_models & whitelist
+    if paid_in_whitelist:
+        logger.error(
+            "[red]OpenRouter: %d paid model(s) found in whitelist (must be blacklisted): %s[/red]",
+            len(paid_in_whitelist),
+            sorted(paid_in_whitelist)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All paid models are blacklisted[/green]",
+            extra={"markup": True},
+        )
+
+    # Check 2: All free models must be either whitelisted or blacklisted
+    unaccounted_free = free_models - whitelist - blacklist
+    if unaccounted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) not in whitelist or blacklist: %s[/yellow]",
+            len(unaccounted_free),
+            sorted(unaccounted_free)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All %d free models accounted for (whitelist=%d, blacklist=%d)[/green]",
+            len(free_models),
+            len(whitelist & free_models),
+            len(blacklist & free_models),
+            extra={"markup": True},
+        )
+
+    # Check 3: Warn about blacklisted free models (for manual review)
+    blacklisted_free_normalized = sorted(free_models & blacklist)
+    if blacklisted_free_normalized:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) blacklisted (review for intentional exclusion): %s[/yellow]",
+            len(blacklisted_free_normalized),
+            blacklisted_free_normalized[:15],
+            extra={"markup": True},
+        )
+        return
+
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+
+    # Fetch live OpenRouter API
+    openrouter_data = fetch_openrouter_api()
+    live_models = openrouter_data.get("data", [])
+
+    # Categorize live models
+    paid_models = set()
+    free_models = set()
+    for model in live_models:
+        model_id = model.get("id", "")
+        if is_openrouter_free(model):
+            free_models.add(model_id)
+        else:
+            paid_models.add(model_id)
+
+    # Check 1: All paid models must be blacklisted
+    paid_in_whitelist = paid_models & whitelist
+    if paid_in_whitelist:
+        logger.error(
+            "[red]OpenRouter: %d paid model(s) found in whitelist (must be blacklisted): %s[/red]",
+            len(paid_in_whitelist),
+            sorted(paid_in_whitelist)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All paid models are blacklisted[/green]",
+            extra={"markup": True},
+        )
+
+    # Check 2: All free models must be either whitelisted or blacklisted
+    unaccounted_free = free_models - whitelist - blacklist
+    if unaccounted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) not in whitelist or blacklist: %s[/yellow]",
+            len(unaccounted_free),
+            sorted(unaccounted_free)[:10],
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All %d free models accounted for (whitelist=%d, blacklist=%d)[/green]",
+            len(free_models),
+            len(whitelist & free_models),
+            len(blacklist & free_models),
+            extra={"markup": True},
+        )
+
+    # Check 3: Warn about blacklisted free models (for manual review)
+    blacklisted_free = sorted(free_models & blacklist)
+    if blacklisted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) blacklisted (review for intentional exclusion): %s[/yellow]",
+            len(blacklisted_free),
+            blacklisted_free[:15],
+            extra={"markup": True},
+        )
+
+
 def validate_provider_partitions(config: dict[str, Any]) -> None:
     models_dev_data = fetch_models_dev_api()
     for provider_id in sorted((config.get("provider") or {}).keys()):
+        if provider_id == "openrouter":
+            # OpenRouter uses live API validation, not models.dev
+            validate_openrouter(config)
+            continue
         if provider_id in IGNORED_PROVIDERS:
             logger.warning(
                 "[yellow]Skipping provider validation for %s (not in models.dev yet)[/yellow]",
@@ -220,7 +605,9 @@ def build_config() -> Path:
     remove_model_enum(schema)
     validate_config_schema(config, schema)
     _write_json(OUTPUT_PATH, config)
-    logger.info("[green]Validated and wrote %s[/green]", OUTPUT_PATH, extra={"markup": True})
+    logger.info(
+        "[green]Validated and wrote %s[/green]", OUTPUT_PATH, extra={"markup": True}
+    )
     validate_provider_partitions(config)
     return OUTPUT_PATH
 
