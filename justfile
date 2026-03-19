@@ -144,7 +144,7 @@ check-plugins:
 # AGENTS.md Template
 # =============================================================================
 
-# Compile system/AGENTS template and write body to ~/ai/AGENTS.md
+# Compile system/AGENTS template and write body to ~/ai/opencode/AGENTS.md
 [script]
 build-agents-md:
     # /// script
@@ -160,9 +160,9 @@ build-agents-md:
     p = get_prompt("system/AGENTS")
     body = p.body
     count = len(tiktoken.get_encoding("cl100k_base").encode(body))
-    with open("{{ repo }}/AGENTS.md", "w") as f:
+    with open("{{ repo }}/opencode/AGENTS.md", "w") as f:
         f.write(body)
-    print(f"Wrote {{ repo }}/AGENTS.md ({count} tokens)")
+    print(f"Wrote {{ repo }}/opencode/AGENTS.md ({count} tokens)")
 
 # =============================================================================
 # Linting & Formatting

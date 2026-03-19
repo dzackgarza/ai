@@ -1079,3 +1079,7 @@ Iteration should only happen when there is **explicit evidence** — typically f
 2. Identify the root cause (description too narrow? body missing guidance? wrong triggers?)
 3. Update SKILL.md or resources to address the specific gap
 4. Verify the fix addresses the reported evidence
+
+# REQUIREMENTS
+
+- Skills must not include "marketing" descriptions 
