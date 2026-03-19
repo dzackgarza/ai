@@ -439,6 +439,41 @@ Tasks:
 ## Stop Rules
 
 - Do not proceed if:
+
+## Execution Progress
+
+### Prerequisites
+
+- [ ] <!-- status: pending --> Access requirements met
+- [ ] <!-- status: pending --> Environment configured
+- [ ] <!-- status: pending --> External dependencies resolved
+
+### Phase 0: Containment / Recovery
+
+- [ ] <!-- status: pending --> Task 0.1: [description]
+- [ ] <!-- status: pending --> Task 0.2: [description]
+
+### Phase 1: Core Implementation
+
+- [ ] <!-- status: pending --> Task 1.1: [description]
+- [ ] <!-- status: pending --> Task 1.2: [description]
+
+### Phase N: Integration / Verification
+
+- [ ] <!-- status: pending --> Task N.1: [description]
+- [ ] <!-- status: pending --> Task N.2: [description]
+
+### System-Level Validation
+
+- [ ] <!-- status: pending --> End-to-end checks pass
+- [ ] <!-- status: pending --> Real-use smoke checks pass
+
+### Quality Gates
+
+- [ ] <!-- status: pending --> Completeness verified
+- [ ] <!-- status: pending --> Actionability verified
+- [ ] <!-- status: pending --> Design sensibility verified
+- [ ] <!-- status: pending --> Test quality verified
 ```
 
 ---
@@ -453,3 +488,57 @@ A plan is **good** if it is:
 - **Stoppable**: Explicit gates prevent drift, compounding errors, and fake completion
 
 Anything less is usually not a plan but a wish list.
+
+---
+
+## Progress Tracking: Execution Checklist
+
+Every plan must include a task checklist at the end to track progress.
+
+**Status notation:**
+
+- `[ ]` = Incomplete
+- `[x]` = Complete
+- `[/]` = Blocked (explain reason)
+- `[-]` = Skipped (explain reason)
+
+**Format:**
+
+```md
+## Execution Progress
+
+### Prerequisites
+
+- [ ] Access requirements met
+- [ ] Environment configured
+- [ ] External dependencies resolved
+
+### Phase 0: Containment / Recovery
+
+- [ ] Task 0.1: [description]
+- [/] Task 0.2: [description] — blocked: waiting for dependency X
+
+### Phase 1: Core Implementation
+
+- [x] Task 1.1: [description]
+- [-] Task 1.2: [description] — skipped: no longer needed after refactor
+
+### Phase N: Integration / Verification
+
+- [ ] Task N.1: [description]
+- [ ] Task N.2: [description]
+
+### System-Level Validation
+
+- [ ] End-to-end checks pass
+- [ ] Real-use smoke checks pass
+
+### Quality Gates
+
+- [ ] Completeness verified
+- [ ] Actionability verified
+- [ ] Design sensibility verified
+- [ ] Test quality verified
+```
+
+**Usage:** Check off items as they complete. Use `[/]` for blocked (add reason) and `[-]` for skipped (add reason). Reference this checklist in responses to indicate current progress.

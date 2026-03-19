@@ -5,6 +5,14 @@ description: Use when running OpenCode CLI commands, starting repo-local OpenCod
 
 # OpenCode CLI
 
+> **Home:** https://opencode.ai/  
+> **GitHub:** https://github.com/anomalyco/opencode  
+> **Deepwiki:** https://deepwiki.com/anomalyco/opencode (use MCP2CLI tools, avoid direct fetching)  
+> **Config:** https://opencode.ai/docs/config/  
+> **CLI:** https://opencode.ai/docs/cli/  
+> **SDK:** https://opencode.ai/docs/sdk/  
+> **API:** https://opencode.ai/docs/server/
+
 Basic OpenCode and `opencode-manager` usage.
 
 For plugin-development policy, proof rules, and audit criteria, use `opencode-plugin-development`.
@@ -20,9 +28,16 @@ For plugin-development policy, proof rules, and audit criteria, use `opencode-pl
 - Switch to `opencode-plugin-development` when the task becomes plugin policy, witness
   design, or audit work.
 
+## Critical: User Service on This System
+
+There is a **running user service** on this system. **DO NOT reset it without asking.**  
+**DO NOT use it for testing.** Use a repo-local `opencode serve` instance instead.
+
 ## Global Config Model
 
-The canonical OpenCode workspace is `~/ai/opencode`, symlinked to `~/.config/opencode`.
+The canonical OpenCode workspace is `~/ai/opencode`, **symlinked to `~/.config/opencode`**.
+
+**DO NOT assume project-local `.opencode/` directories are the main config surface.** These are not picked up by the main `serve` instance and should be avoided. Use them only for deliberate per-repo overrides.
 
 | Location                                     | Purpose                                     |
 | -------------------------------------------- | ------------------------------------------- |
@@ -33,11 +48,7 @@ The canonical OpenCode workspace is `~/ai/opencode`, symlinked to `~/.config/ope
 
 All agents are defined in `~/ai/opencode/opencode.json` with prompts in `~/ai/prompts/`.
 
-Do not assume a project-local `.opencode/` directory is the main config surface. Use it
-only when you deliberately need a per-repo override.
-
-In this workspace, do not hand-edit `~/ai/opencode/opencode.json`. Rebuild it from
-`~/ai/opencode/configs/config_skeleton.json` with `just rebuild` from `~/ai/opencode/`.
+Do not hand-edit `~/ai/opencode/opencode.json`. Rebuild it from `~/ai/opencode/configs/config_skeleton.json` with `just rebuild` from `~/ai/opencode/`.
 
 ## Core Rules
 
@@ -60,6 +71,8 @@ command opencode session list
 
 Use these to inspect the currently visible agents, available models, and known sessions
 before reasoning from failures.
+
+Run `command opencode --help` to see all subcommands.
 
 ## Simple One-Shot CLI Usage
 
@@ -86,21 +99,27 @@ Then point `opencode-manager` at that server:
 
 ```bash
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
+  uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
 ```
 
 ## Manager Commands
 
 ```bash
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx one-shot --agent Minimal --prompt "Your prompt"
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_123 --prompt "Follow-up prompt"
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx system --session ses_123 --prompt "System follow-up"
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_123 --json
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx final --session ses_123 --prompt "Wrap up" --transcript
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx delete --session ses_123
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_123 --verbose
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx one-shot --agent Minimal --prompt "Your prompt"
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_123 --prompt "Follow-up prompt"
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx system --session ses_123 --prompt "System follow-up"
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_123 --json
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx final --session ses_123 --prompt "Wrap up" --transcript
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx delete --session ses_123
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_123 --verbose
 ```
+
+**Avoid using the OpenCode CLI for real LLM work.** Use `opencode-manager` via `uvx` for chatting, testing, and session orchestration.
+
+## Web UI
+
+`opencode web` runs a Web UI frontend that hooks into the `serve` backend. This is part of OpenCode, not an external library.
 
 ## Attached Server Notes
 

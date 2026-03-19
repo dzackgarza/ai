@@ -150,6 +150,7 @@ Memories store durable, reusable agent context not captured in repository files.
 - `gh` for all Github operations (alternative to webfetching)
   - Never use backticks in text pushed through gh (or any other CLI tools), since this induces shell escaping.
 - `tree`, `exa` for exploration
+- `ctags` for code navigation — use `just -f ~/opencode-plugins/justfile -C ~/your/working/directory ctags`
 - `opencode` for most agent and LLM-related tasks.
   - Use `command opencode` instead of `opencode` to use the CLI instead of the background server.
 - `gemini`, `codex`, `claude`, `qwen`, `jules` for one-off agentic work, when usage is available.
@@ -226,14 +227,6 @@ This sends a new prompt to your session at a fixed time, effectively waking you 
 - Waiting for external processes or scheduled events
 - Long-running work that should continue after a delay
 
-### Prototyping and Frontend/GUI Development
-
-Never greenfield a complex app yourself -- start with templating frameworks or online AI scaffolding with cheap/free usage tiers. Stop if faced with such a task, and suggest a prompt to the user for:
-
-- https://aistudio.google.com/
-- https://v0.app/
-- https://replit.com/
-- https://lovable.dev/
 
 
 
@@ -244,6 +237,18 @@ Never greenfield a complex app yourself -- start with templating frameworks or o
 All work is in **noisy repos** with others' uncommitted changes.
 Use `git add`/`git commit` for checkpoints.
 **For any git operation: LOAD `git-guidelines` skill.**
+
+## Why `git restore` and `git checkout` Are Banned
+
+These commands silently discard changes without creating an audit trail.
+
+**Instead of reverting state directly:**
+
+1. Commit your current work (checkpoint)
+2. `git diff` to identify the rollback point
+3. Apply the reverse diff as a new commit
+
+**New feature work:** PR-driven via the GitHub CLI.
 
 ## Delegating to Jules
 

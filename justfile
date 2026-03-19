@@ -44,19 +44,20 @@ install:
     ln -sf {{ repo }}/dotfiles/tmux-powerline/themes/my-theme.sh ~/.config/tmux-powerline/themes/my-theme.sh
     ln -sf {{ repo }}/dotfiles/tmux-powerline/config.sh ~/.config/tmux-powerline/config.sh
     # Backup existing skills directories before creating symlinks
-    for dir in ~/.claude/skills ~/.codex/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do \
-        if [ -d "$$dir" ] && [ ! -L "$$dir" ]; then \
-            mv "$$dir" "$$dir.bak.$(date +%Y%m%d%H%M%S)"; \
-        fi; \
+    #!/bin/bash
+    for dir in ~/.claude/skills ~/.codex/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do
+        if [ -d "$dir" ] && [ ! -L "$dir" ]; then
+            mv "$dir" "$dir.bak.$(date +%Y%m%d%H%M%S)"
+        fi
     done
-    ln -sf {{ repo }}/skills ~/.claude/skills
-    ln -sf {{ repo }}/skills ~/.codex/skills
-    ln -sf {{ repo }}/skills ~/.gemini/skills
-    ln -sf {{ repo }}/skills ~/.agents/skills
-    ln -sf {{ repo }}/skills ~/.qwen/skills
-    ln -sf {{ repo }}/skills ~/.config/agents/skills
-    ln -sf {{ repo }}/skills ~/.config/amp/skills
-    ln -sf {{ repo }}/skills ~/.kilocode/skills
+    ln -sf {{ repo }}/opencode/skills ~/.claude/skills
+    ln -sf {{ repo }}/opencode/skills ~/.codex/skills
+    ln -sf {{ repo }}/opencode/skills ~/.gemini/skills
+    ln -sf {{ repo }}/opencode/skills ~/.agents/skills
+    ln -sf {{ repo }}/opencode/skills ~/.qwen/skills
+    ln -sf {{ repo }}/opencode/skills ~/.config/agents/skills
+    ln -sf {{ repo }}/opencode/skills ~/.config/amp/skills
+    ln -sf {{ repo }}/opencode/skills ~/.kilocode/skills
     mkdir -p ~/.cache/ai-prompts/system-prompts
     cd {{ repo }}/opencode && uv run ai-prompts get interactive-agents/interactive > ~/.cache/ai-prompts/system-prompts/interactive.md
     just --justfile {{ repo }}/justfile _update-shell-rc
@@ -133,9 +134,9 @@ build-permissions:
 build-config: 
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 
-# Final validation (depends on config being built)
+# Build agent permission files (depends on config being built)
 build-agents: 
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py validate-tools
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
 
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts

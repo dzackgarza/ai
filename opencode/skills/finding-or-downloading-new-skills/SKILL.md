@@ -54,11 +54,8 @@ npx -y @smithery/cli@latest skill view <namespace>/<name>
 
 ### Installing
 
-If the skill is confirmed, install it into the canonical directory:
-
 ```bash
-mkdir -p ~/ai/skills/skill-name
-# Perform manual installation by cloning or downloading raw files
+npx @smithery/cli@latest skill add <namespace>/<name> -a universal -g
 ```
 
 ## LobeHub Marketplace
