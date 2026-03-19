@@ -23,8 +23,12 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
         ?.map((p: any) => p.text)
         ?.join('');
 
-      // 4. Check for "Next Steps" phrase
-      if (lastText?.includes('Next Steps')) {
+      // 4. Check for trigger phrases (normalized to lowercase)
+      const normalizedText = lastText?.toLowerCase() ?? '';
+      const triggers = ['next steps', 'should i continue'];
+      const matched = triggers.some((t) => normalizedText.includes(t));
+
+      if (matched) {
         // 5. Inject prompt to record next steps and continue
         await client.session.promptAsync({
           path: { id: sessionID },
