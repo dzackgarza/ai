@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "extract-unresolved-issues"
+version = "0.1.0"
+description = "Extract unresolved PR review issues from GitHub."
+dependencies = [
+    "cyclopts",
+    "pydantic",
+    "rich",
+]
+
+[project.scripts]
+extract-unresolved-issues = "extract_unresolved_issues.__main__:app"
+
+[tool.basedpyright]
+strict = ["src"]
+exclude = ["tests", "fix_types.py"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

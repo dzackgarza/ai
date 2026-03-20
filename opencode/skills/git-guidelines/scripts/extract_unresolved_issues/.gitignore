@@ -1,0 +1,18 @@
+# Generated environments
+.venv/
+
+# Lock file (generated per-machine)
+uv.lock
+
+# Generated caches
+.ruff_cache/
+.pytest_cache/
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Orphaned (superseded by package)
+extract_unresolved_issues_old.py
+fix_types.py
