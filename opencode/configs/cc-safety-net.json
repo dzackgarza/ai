@@ -278,6 +278,24 @@
         "vitest"
       ],
       "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
+      "name": "block-just-typecheck",
+      "command": "just",
+      "subcommand": "typecheck",
+      "block_args": [
+        "typecheck"
+      ],
+      "reason": "Use \"just test\" which includes typecheck as a dependency. Do not bypass the full test suite."
+    },
+    {
+      "name": "block-just-check",
+      "command": "just",
+      "subcommand": "check",
+      "block_args": [
+        "check"
+      ],
+      "reason": "Use \"just test\" which includes check as a dependency. Do not bypass the full test suite."
     }
   ]
 }
