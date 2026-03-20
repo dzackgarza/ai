@@ -14,13 +14,9 @@ The main failure to prevent is this:
 
 This guide therefore imposes one hard rule:
 
-## Jules-initiated PRs (Mandatory Contract)
+> **Jules-initiated PRs:** For any PR initiated by Jules, a contract must be written before implementation, committed to the branch, and used as the source of truth for the PR body. Do not let the code define the task after the fact. See the **Jules skill → PR Contract** section for the full mandatory workflow, template, and required contents.
 
-For any PR initiated by Jules, a contract must be written before implementation, committed to the branch, and used as the source of truth for the PR body.
-
-Do not let the code define the task after the fact.
-
-For all other PRs, follow standard review procedures, but use the PR body to clearly state the intended outcome, acceptance criteria, and verification plan. Contract files are optional but recommended.
+> **Other PRs:** Follow standard review procedures, but use the PR body to clearly state the intended outcome, acceptance criteria, and verification plan. Contract files are optional but recommended.
 
 ---
 
@@ -45,104 +41,7 @@ That is what enables strong process-alignment feedback.
 
 ## Required workflow
 
-## Phase 0: Create the PR contract before writing code
-
-Before touching implementation, create a tracked file in the branch. Put it somewhere stable and obvious, for example:
-
-```bash
-mkdir -p .pr
-$EDITOR .pr/PR_BODY.md
-```
-
-This file must be committed before substantive implementation begins.
-
-Recommended companion files:
-
-```text
-.pr/
-  PR_BODY.md
-  REVIEW_LOG.md
-  ACCEPTANCE_CHECKS.md
-```
-
-### Required contents of `.pr/PR_BODY.md`
-
-This file is the contract. It should be written in plain, direct language and should include these sections.
-
-#### 1. Problem statement
-
-What exact failure, missing capability, or requirement is being addressed?
-
-#### 2. Intended outcome
-
-What must be true after this PR lands?
-
-This must be phrased as externally checkable behavior, not as implementation structure.
-
-Bad:
-
-- Adds a new abstraction for report generation.
-
-Better:
-
-- Generating report X from input Y produces fields A, B, C with exact semantics Z.
-
-#### 3. Non-goals
-
-What is explicitly not being changed?
-
-This protects against scope explosion and collateral edits.
-
-#### 4. Constraints
-
-List all binding constraints up front.
-
-Examples:
-
-- exact arithmetic, not approximate
-- no mocks in tests
-- preserve existing API
-- no new dependencies
-- no config-schema changes
-- output must remain stable for downstream consumer Z
-
-#### 5. Acceptance criteria
-
-These must be concrete, observable, and falsifiable.
-
-Bad:
-
-- Tests added
-- Handles edge cases
-- Improves reliability
-
-Better:
-
-- `compute_discriminant(L)` returns `-23` on the canonical fixture lattice
-- watch mode no longer rebuilds when only the output directory changes
-- invalid input raises `TypeError`
-- existing command-line interface remains byte-for-byte unchanged on baseline fixture set
-
-#### 6. Evidence plan
-
-State exactly what evidence will be provided in the PR.
-
-Examples:
-
-- failing test first, then passing test
-- command output from real run on fixture X
-- diff proving no changes outside listed paths
-- benchmark numbers on the specified dataset
-
-#### 7. Change boundary
-
-List the files or subsystems expected to change.
-
-This gives reviewers a prior on what collateral damage to reject.
-
-#### 8. Open questions
-
-If anything remains unresolved, list it explicitly instead of silently substituting your own answer.
+> **PR contract workflow:** The full contract creation workflow, required contents, and template are in the **Jules skill → PR Contract** section. That section is the authoritative source for Jules-initiated PRs.
 
 ---
 
@@ -218,88 +117,7 @@ The PR must remain easy to evaluate against the contract.
 
 ## Phase 3: Force the PR body to come from the contract file
 
-Do not type the PR body interactively. Use the tracked file.
-
-Create the PR with:
-
-```bash
-gh pr create \
-  --title "<concise outcome-focused title>" \
-  --body-file .pr/PR_BODY.md \
-  --draft
-```
-
-If the PR already exists, update it from the same file:
-
-```bash
-gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md
-```
-
-This prevents silent drift between the reviewed artifact and the stated contract.
-
-### Rule
-
-Every time acceptance criteria, scope, or evidence changes, update `.pr/PR_BODY.md`, commit it, and re-publish the PR body from that file.
-
-The PR description is not a summary written after the work. It is a tracked interface between worker and reviewer.
-
----
-
-## Suggested PR body template
-
-Use this structure in `.pr/PR_BODY.md`.
-
-```markdown
-# Problem
-
-<exact failure / missing capability / requirement>
-
-# Intended outcome
-
-<observable post-merge behavior>
-
-# Non-goals
-
-- ...
-- ...
-
-# Constraints
-
-- ...
-- ...
-
-# Acceptance criteria
-
-- [ ] ...
-- [ ] ...
-- [ ] ...
-
-# Evidence plan
-
-- failing test / command:
-- passing test / command:
-- end-to-end check:
-
-# Change boundary
-
-Expected touched files / subsystems:
-
-- ...
-- ...
-
-# Open questions
-
-- ...
-
-# Review focus
-
-Please check specifically:
-
-- whether the acceptance criteria are sufficient,
-- whether any goal has been swapped or relaxed,
-- whether any changed file falls outside the declared boundary,
-- whether verification would still pass on plausible junk output.
-```
+> **See the Jules skill → PR Contract section** for the full contract-based PR body workflow, including `gh pr create --body-file`, the rule for re-publishing on scope change, and the complete PR body template.
 
 ---
 
@@ -456,7 +274,7 @@ Action:
 
 Action:
 
-- strengthen `.pr/PR_BODY.md`,
+- strengthen the contract file,
 - add or revise tests first if needed,
 - then update code.
 
@@ -464,7 +282,7 @@ Action:
 
 Action:
 
-- revise `.pr/PR_BODY.md` explicitly,
+- revise the contract file explicitly,
 - commit that revision,
 - then proceed with implementation changes.
 
@@ -491,7 +309,7 @@ Incorrect response pattern:
 Required response pattern:
 
 1. add the review item to `.pr/REVIEW_LOG.md`,
-2. update `.pr/PR_BODY.md` so the acceptance criterion names the exact invariant or exact value to be proven,
+2. update the contract file so the acceptance criterion names the exact invariant or exact value to be proven,
 3. replace the weak test with a substantive one,
 4. commit,
 5. cite the commit when marking the item addressed.
@@ -504,7 +322,7 @@ The PR should make it easy for reviewers to reject process-shaped nonsense.
 
 ### Include a dedicated “Review focus” section
 
-At the end of `.pr/PR_BODY.md`, ask reviewers to check:
+At the end of the contract file, ask reviewers to check:
 
 - whether the intended outcome is the right one,
 - whether any acceptance criterion is missing, tautological, or implementation-defined,
@@ -560,7 +378,7 @@ A practical sequence:
 ```bash
 # 0. create tracked PR contract before implementation
 mkdir -p .pr
-$EDITOR .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md   # see Jules skill → PR Contract for required contents
 $EDITOR .pr/REVIEW_LOG.md
 
 # 1. commit contract early

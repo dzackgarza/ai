@@ -201,8 +201,10 @@ git add -A
 git commit -m "feat: $TASK_DESC
 Jules session: $SESSION_ID"
 git push -u origin "jules/$SESSION_ID"
-gh pr create --title "$TASK_DESC" --body "Automated changes from Jules session $SESSION_ID"
+gh pr create --title "$TASK_DESC" --body-file .pr/PR_BODY.md --draft
 ```
+
+> **Important:** The PR body must come from the tracked contract file (`.pr/PR_BODY.md`), not from memory or the web form. See **PR Contract** section above for the full workflow.
 
 ## Poll Until Complete
 
@@ -354,3 +356,221 @@ For the full end-to-end workflow using the `improved-jules-cli` wrapper:
 > TODO: describe exactly how to identify unresolved issues.
 > TODO: describe exactly what counts as unresolved (isMinimized == false/null → unresolved, or non-crossed-out issues)
 > TODO: describe exactly how to "resolve" (identify specific commit that fixed it OR identify new issue that addresses it, link commit as a reply in the conversation, mark conversation as "Resolved" manually)
+
+---
+
+## PR Contract (Mandatory for Jules-Initiated PRs)
+
+For any PR initiated by Jules, a contract must be written **before** implementation begins, committed to the branch, and used as the authoritative source of truth for the PR body. Do not let the code define the task after the fact.
+
+### Why a contract?
+
+Automated GitHub reviewers have **no access to the original task** — only to the PR title, body, and commit messages. Jules controls all of that and is incentivized to make its work appear aligned with expectations, even when it is not. A contract written before implementation is the only reliable anchor for post-hoc comparison.
+
+The contract must supply, in advance:
+
+1. the intended outcome (externally checkable behavior),
+2. the non-goals,
+3. concrete, falsifiable acceptance criteria,
+4. the specific evidence that will count as success,
+5. the boundaries of the change,
+6. the exact unresolved questions, if any.
+
+### Phase 0: Create the contract before writing code
+
+Before touching implementation:
+
+```bash
+mkdir -p .pr
+$EDITOR .pr/PR_BODY.md
+```
+
+This file **must be committed before substantive implementation begins**.
+
+Companion files:
+
+```text
+.pr/
+  PR_BODY.md       # the contract — used as PR body source
+  REVIEW_LOG.md    # per-item review tracking
+  ACCEPTANCE_CHECKS.md  # optional detailed check list
+```
+
+### Required contents of `.pr/PR_BODY.md`
+
+Write in plain, direct language with these sections.
+
+#### 1. Problem statement
+
+What exact failure, missing capability, or requirement is being addressed?
+
+#### 2. Intended outcome
+
+What must be true after this PR lands? Phrase as **externally checkable behavior**, not implementation structure.
+
+Bad: _Adds a new abstraction for report generation._
+Better: _Generating report X from input Y produces fields A, B, C with exact semantics Z._
+
+#### 3. Non-goals
+
+What is explicitly not being changed? Protects against scope explosion.
+
+#### 4. Constraints
+
+All binding constraints listed up front. Examples: exact arithmetic (not approximate), no mocks in tests, preserve existing API, no new dependencies, output must remain stable for downstream consumer Z.
+
+#### 5. Acceptance criteria
+
+Must be concrete, observable, and falsifiable.
+
+Bad: _Tests added. Handles edge cases._
+Better: _`compute_discriminant(L)` returns `-23` on the canonical fixture lattice. Invalid input raises `TypeError`. Existing command-line interface remains byte-for-byte unchanged on baseline fixture set._
+
+#### 6. Evidence plan
+
+State exactly what evidence will be provided. Examples: failing test first, then passing test; command output from real run on fixture X; diff proving no changes outside listed paths; benchmark numbers on the specified dataset.
+
+#### 7. Change boundary
+
+List the files or subsystems expected to change. Gives reviewers a prior on what collateral damage to reject.
+
+#### 8. Open questions
+
+List explicitly anything unresolved. Do not silently substitute your own answer.
+
+### PR body template
+
+Use this exact structure in `.pr/PR_BODY.md`:
+
+```markdown
+# Problem
+
+<exact failure / missing capability / requirement>
+
+# Intended outcome
+
+<observable post-merge behavior>
+
+# Non-goals
+
+- ...
+
+# Constraints
+
+- ...
+
+# Acceptance criteria
+
+- [ ] ...
+- [ ] ...
+
+# Evidence plan
+
+- failing test / command:
+- passing test / command:
+- end-to-end check:
+
+# Change boundary
+
+Expected touched files / subsystems:
+
+- ...
+
+# Open questions
+
+- ...
+
+# Review focus
+
+Please check specifically:
+
+- whether the acceptance criteria are sufficient,
+- whether any goal has been swapped or relaxed,
+- whether any changed file falls outside the declared boundary,
+- whether verification would still pass on plausible junk output.
+```
+
+### Phase 1: TDD before implementation
+
+Lock the target before implementation exists:
+
+1. Write a failing verification artifact (automated test, reproducible failing command, or exact output comparison).
+2. Confirm it fails for the intended reason.
+3. Implement the narrowest change that should make it pass.
+4. Re-run verification.
+5. Record the result in the PR body.
+
+**What does not count**: informal intention, a TODO list, a verbal claim that the bug exists, post-hoc explanations added after the code already passes, content-free checks like `is not None` or `len(x) > 0`.
+
+### Phase 2: Keep the diff causally legible
+
+Rules while implementing:
+
+1. **No unrelated edits.** Do not rename nearby symbols, reformat unrelated files, update fixtures, or rewrite helpers unless required by the contract.
+2. **No hidden goal substitution.** If the original goal becomes impossible, update the contract explicitly before changing direction.
+3. **No structural completion as substitute for functional completion.** Do not add scaffolding, registries, wrappers, or documentation to create the appearance of completeness while leaving the core behavior stubbed.
+4. **No fake success via fallbacks.** Do not hide failures with defaults, silent recovery, or plausible fabricated data.
+5. **Prefer deletion and reuse over additive layers.** If a mature dependency already solves the problem, use it unless a listed constraint forbids that.
+
+### Phase 3: Force the PR body from the contract file
+
+Do not type the PR body interactively. Always use the tracked file.
+
+Create the PR with:
+
+```bash
+gh pr create \
+  --title "<concise outcome-focused title>" \
+  --body-file .pr/PR_BODY.md \
+  --draft
+```
+
+If the PR already exists, update it from the same file:
+
+```bash
+gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md
+```
+
+**Rule:** Every time acceptance criteria, scope, or evidence changes, update `.pr/PR_BODY.md`, commit it, and re-publish the PR body from that file. The PR description is not a summary written after the work — it is a tracked interface between worker and reviewer.
+
+### Phase 4: Record review feedback in REVIEW_LOG.md
+
+Every actionable review item must be copied into `.pr/REVIEW_LOG.md` with required fields:
+
+```markdown
+## Review item <N>
+
+**Source**: <PR review comment URL or line>
+**Date**: <YYYY-MM-DD>
+**Reviewer concern**: <exact statement>
+**My response**: <what I will do>
+**Commit**: <commit hash when addressed>
+**Status**: open | addressed
+```
+
+This log is the audit trail that proves feedback was handled, not ignored.
+
+### Responding to review moves
+
+**Move A: The reviewer is correct about a code problem.** Strengthen the code, add or revise tests first if needed, then update the contract if acceptance criteria changed.
+
+**Move B: The reviewer exposed missing or weak acceptance criteria.** Strengthen `.pr/PR_BODY.md`, add or revise tests first if needed, then update code.
+
+**Move C: The reviewer identified that the contract itself is wrong.** Revise `.pr/PR_BODY.md` explicitly, commit that revision, then proceed with implementation changes.
+
+**Illegal moves:**
+
+- Silently keep the same direction while merely adding a local constraint
+- Say "addressed" without changing the contract or the code
+- Reinterpret the reviewer's feedback into something easier and solve that instead
+
+### Review focus section
+
+At the end of `.pr/PR_BODY.md`, always ask reviewers to check:
+
+- whether the intended outcome is the right one,
+- whether any acceptance criterion is missing, tautological, or implementation-defined,
+- whether any file in the diff falls outside the declared boundary,
+- whether any test would pass on plausible junk,
+- whether any fallback hides failure instead of surfacing it,
+- whether the code satisfies the problem or merely looks complete.
