@@ -38,7 +38,6 @@
         "$FILE"
       ],
       "extensions": [
-        ".md",
         ".js",
         ".ts",
         ".jsx",
@@ -60,6 +59,18 @@
       ],
       "extensions": [
         "justfile"
+      ]
+    },
+    "flowmark": {
+      "command": [
+        "uvx",
+        "flowmark",
+        "--semantic",
+        "--inplace",
+        "$FILE"
+      ],
+      "extensions": [
+        ".md"
       ]
     }
   },
