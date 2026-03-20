@@ -341,6 +341,32 @@ If that sentence cannot be written clearly, the test is likely not well-targeted
 
 ---
 
+## Comprehensive Quality Gates (`just test`)
+
+All code must be hard-gated by a comprehensive suite of checks. These must be enshrined in a version-controlled `justfile` (or similar global config) to prevent bypasses.
+
+The `justfile` must consistently set up the venv/test environment and expose testing recipes that run the _entire_ suite of related checks rather than allowing individual "pieces" to be tested in isolation (e.g., no running just typechecks without the rest of the suite). This combined recipe should be the primary `test` command.
+
+The following checks are **mandatory** gates:
+
+1. **Tests pass**
+2. **Test coverage**: New/changed code meets branch/diff coverage thresholds. `coverage.py` measures executed vs executable code and branch coverage; `diff-cover` measures coverage on changed lines. This catches overgenerated, unexercised code.
+3. **No dead code / unused exports / unused deps**: Use `vulture`, `knip`, `deptry`. These catch abandoned helpers, unused files/exports, and speculative dependencies left behind by failed generations.
+4. **Type checker passes**: Use `mypy`, `pyright`, or `tsc --noEmit`. These catch interface drift and incompatible assumptions without running the code.
+5. **Static analysis / hazard-focused linting passes**: Use `ruff`, `eslint`, `semgrep`. Use them for likely bugs and dangerous constructs, not style theater.
+6. **Duplication/complexity does not exceed ceiling**: Use `jscpd`, `lizard`. LLMs often solve tasks by cloning logic and growing branch-heavy code.
+7. **Mutation testing**: Use `mutmut`. This catches the case where tests touch the code but would not fail if behavior changed.
+8. **Architecture rules pass**: Use `import-linter`. This blocks "fixes" that work only by violating module boundaries.
+9. **Infra/config lint passes**: Use `shellcheck`, `actionlint`, `hadolint` for shell, CI, and Docker changes.
+
+_What is not a gate by itself:_
+
+- `pre-commit` is only a hook runner.
+- Formatting alone is not a quality gate.
+- `codespell` is not targeted at catching these issues.
+
+---
+
 ## Task Modes
 
 Depending on the invocation, you must either:

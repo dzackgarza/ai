@@ -25,7 +25,7 @@ patterns, use `opencode-cli/async-injection.md`.
 
 ## CLI-First Architecture
 
-- Plugin repos expose a standalone Typer CLI as the primary product surface unless the repo is explicitly an internal helper or a non-plugin CLI package.
+- Plugin repos expose a standalone CLI as the primary product surface unless the repo is explicitly an internal helper or a non-plugin CLI package. **See: `writing-scripts-and-cli-interfaces`** for CLI implementation standards.
 - The CLI is usable without OpenCode loaded and owns the canonical behavior, validation, and output contract.
 - Plugin code is thin and limited to OpenCode-only concerns such as session wiring, hooks, permissions, metadata, and event publication.
 - MCP wrappers, where present, delegate to the same CLI or shared library as the plugin. They do not carry a second implementation.
@@ -125,7 +125,7 @@ patterns, use `opencode-cli/async-injection.md`.
 ## Python and MCP Checks
 
 - Python repos use `uv` with declared dependencies in `pyproject.toml`.
-- Python-backed plugin repos expose the standalone CLI through Typer with documented commands or subcommands.
+- Python-backed plugin repos expose the standalone CLI through a documented command structure. **See: `writing-scripts-and-cli-interfaces`** for implementation standards.
 - The repository is a single Python package with `pyproject.toml` at the root. No separate `mcp-server/` directory.
 - The MCP server is exposed as an `mcp` subcommand of the core CLI.
 - The `uvx` command works directly against the repository URL (no-install mandate).

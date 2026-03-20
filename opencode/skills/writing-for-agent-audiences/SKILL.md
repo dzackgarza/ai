@@ -44,10 +44,22 @@ with pdfplumber.open("file.pdf") as pdf:
     text = pdf.pages[0].extract_text()
 ```
 
-### Match specificity to task fragility
+### Meta-Commentary and Framing
 
-- **Narrow instructions** (low freedom): database migrations, destructive operations, consistency-critical tasks
-- **General guidance** (high freedom): code reviews, design decisions, where context determines best path
+**Rule:** Meta-commentary belongs _only_ in skills where the task is explicitly meta. Otherwise, the skill should be purely prescriptive.
+
+Most skills operate at the object level (e.g., extracting a PDF, writing a test, compiling LaTeX). In these skills, do not explain the psychology of LLMs to an LLM. State the rule directly. Avoid meta-writing like "LLMs often struggle with..." or "This rule exists because models tend to...".
+
+**Verbose/Meta example (Wrong for an object-level skill)**:
+
+> LLMs often resort to simple fallbacks like pdftotext or pymupdf when dealing with PDFs. To catch this common failure mode, you must use MinerU.
+
+**Concise/Prescriptive example (Correct for an object-level skill)**:
+
+> Never use simple fallbacks like pdftotext or pymupdf. Use MinerU for PDF extraction.
+
+**When Meta-Commentary is Appropriate:**
+If a skill is explicitly about agent behavior, failure modes, or introspection (e.g., an `llm-failure-modes` skill or an `agent-orchestration` skill), then discussing LLM behavior, tendencies, and failure patterns is completely appropriate and necessary for the task context.
 
 ### Test across models
 

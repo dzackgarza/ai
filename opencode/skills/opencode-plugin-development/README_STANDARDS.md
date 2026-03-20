@@ -30,12 +30,12 @@ READMEs must reflect this layering. The `## Install` section documents the tool 
 
 Every package must have a `justfile` with at minimum these recipes:
 
-| Recipe | Purpose |
-|--------|---------|
-| `just install` | Install all dependencies (npm/uv/etc.) |
-| `just typecheck` | Run the type checker only |
-| `just test` | Run the test suite only |
-| `just check` | Run `typecheck` + `test` together |
+| Recipe           | Purpose                                |
+| ---------------- | -------------------------------------- |
+| `just install`   | Install all dependencies (npm/uv/etc.) |
+| `just typecheck` | Run the type checker only              |
+| `just test`      | Run the test suite only                |
+| `just check`     | Run `typecheck` + `test` together      |
 
 Additional recipes as needed (e.g. `just mcp-test`, `just reddit-live-verify`), but the four above are the canonical surface. All CI, documentation, and agent instructions route through `just` — never raw `bun test`, `bunx tsc`, `uv run pytest`, etc.
 
@@ -45,21 +45,22 @@ READMEs must only reference `just` recipes in the `## Checks` section. Direct in
 
 Every package uses a three-layer isolation hierarchy:
 
-| File | Purpose | Tracked in git |
-|------|---------|----------------|
-| **`.envrc`** | Declares env vars; calls `source_up`; **forces isolation** | **Yes** |
-| **`.env`** | Secrets and machine-local overrides only | **No** |
-| **`~/.envrc`** | Global secrets (API keys, credentials) | **No** |
+| File           | Purpose                                                    | Tracked in git |
+| -------------- | ---------------------------------------------------------- | -------------- |
+| **`.envrc`**   | Declares env vars; calls `source_up`; **forces isolation** | **Yes**        |
+| **`.env`**     | Secrets and machine-local overrides only                   | **No**         |
+| **`~/.envrc`** | Global secrets (API keys, credentials)                     | **No**         |
 
 **Rules:**
+
 - **Inherit via `source_up`**: The local `.envrc` must start with `source_up` to pull in global secrets from `~/.envrc`.
 - **Forced OpenCode Isolation**: The local `.envrc` **must** export `OPENCODE_CONFIG="$PWD/.config/opencode.json"`.
 - **XDG Isolation**: The local `.envrc` **must** override `XDG` variables to a local path (e.g., `$PWD/.xdg-home`) to prevent state leakage (configs, cache, data) between projects.
-    ```bash
-    export XDG_CONFIG_HOME="$PWD/.xdg-home"
-    export XDG_DATA_HOME="$PWD/.xdg-home"
-    export XDG_CACHE_HOME="$PWD/.xdg-home"
-    ```
+  ```bash
+  export XDG_CONFIG_HOME="$PWD/.xdg-home"
+  export XDG_DATA_HOME="$PWD/.xdg-home"
+  export XDG_CACHE_HOME="$PWD/.xdg-home"
+  ```
 - **Local Overrides**: Use `dotenv_if_exists .env` in the `.envrc` for machine-local secrets not in `~/.envrc`.
 - **No Secrets in Git**: Never store live secrets in the tracked `.envrc`.
 - **No Inline Env**: Never set env vars inline in shell commands (`SECRET=x some_command`).
@@ -77,11 +78,11 @@ READMEs must document all env vars a package reads in the `## Environment Variab
 
 Every plugin README serves three readers simultaneously. Write for all three without conflating them:
 
-| Reader | Needs |
-|--------|-------|
-| **Agent** | Tool names, schemas, output contracts, side effects, verification methodology. Reads at runtime. |
-| **Developer (user)** | Install steps, configuration, dependency chain, what must be on `PATH`. |
-| **Developer (contributor)** | How to run checks, targeted test invocations, what the justfile exposes. |
+| Reader                      | Needs                                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Agent**                   | Tool names, schemas, output contracts, side effects, verification methodology. Reads at runtime. |
+| **Developer (user)**        | Install steps, configuration, dependency chain, what must be on `PATH`.                          |
+| **Developer (contributor)** | How to run checks, targeted test invocations, what the justfile exposes.                         |
 
 Most READMEs currently collapse the agent reader into the developer reader and omit the contributor surface entirely. The Checks section serves contributor needs; the Tools/Agent Surface section serves agent needs; the Install + Environment Variables sections serve developer needs.
 
@@ -104,6 +105,7 @@ The opening sentence of a README is not a summary of the implementation. It is t
 Agents rely on READMEs to know what to expect. When behavior is invisible — things that happen inside the plugin, outside the agent's direct observation — the README must make it visible. Self-reporting from an agent about unexpected behavior is notoriously unreliable. The README is the ground truth.
 
 Document exactly:
+
 - What the tool description looks like at runtime (if it is dynamic — e.g., subagent list appended at startup — say so and show the structure)
 - What gets injected into the session by hook plugins (show the literal shape of the injected text, not just "injects skill summaries")
 - What side effects occur on every call (files written, git commits made, external processes spawned)
@@ -113,6 +115,7 @@ Document exactly:
 Vague gestures at behavior force agents to experiment and self-report. That is not acceptable for tooling that is supposed to be reliable.
 
 **Do not document:**
+
 - Internal build processes, CI pipelines, or release automation (semantic-release, GitHub Actions workflows, automated test runs on push)
 - Internal quality metrics (test counts, coverage percentages, "zero-knowledge UUID proof" — these are testing infrastructure, not behavioral contract)
 - Internal testing methodology (passphrase-based liveness proofs are a CI concern, not a README concern)
@@ -192,6 +195,7 @@ The mechanism is an internal detail. The guarantee is the contract. State the gu
 A README documents the **external contract** of a package — what it exposes, what it returns, what side effects it has, and what it requires. It does not document how those things are implemented internally.
 
 **Always document:**
+
 - Tool names and parameter schemas (every field, type, required/optional)
 - Output contract — exact structure of what the tool returns (section names, YAML keys, field names)
 - Side effects — files written, external services called, state mutated
@@ -200,6 +204,7 @@ A README documents the **external contract** of a package — what it exposes, w
 - Every env var the package reads, including those with defaults
 
 **Do not document in the README:**
+
 - Internal architecture or implementation details (those belong in AGENTS.md or code comments)
 - Why the implementation was designed a particular way (belongs in commit messages or ADRs)
 - Tutorial-style "How It Works" walkthroughs — if a developer needs to understand internals, they read the code
@@ -214,6 +219,7 @@ The test: if removing a paragraph would leave the behavioral contract fully spec
 For every tool that returns structured output, the README must document the return structure explicitly — not just "returns a report" but the actual section names, YAML keys, and field names a caller can rely on.
 
 Example from improved-task (correct):
+
 ```
 Successful sync completion returns a markdown report with YAML front matter:
 - `session_id`
@@ -230,11 +236,13 @@ This level of specificity is what distinguishes a contract from a description.
 ### Side effects and acceptance boundaries
 
 Every plugin must explicitly state:
+
 - What it writes (files, database rows, git commits)
 - What external services it calls beyond the configured OpenCode server
 - What it is responsible for vs. what the host system (OpenCode, the shell) owns
 
 Example from improved-task (correct):
+
 ```
 Actual TUI rendering remains a manual acceptance boundary. The plugin owns the
 shadowing and session/report contract; OpenCode owns how that contract is rendered
@@ -252,6 +260,7 @@ The processing pipeline for a hook is its contract. Document it step by step (sc
 ### Storage and artifact plugins
 
 For plugins whose primary output is a persistent artifact (files, database records), the README must document the artifact format as part of the contract:
+
 - File format / schema
 - Directory structure and naming conventions
 - How to inspect or search the artifacts directly (outside the plugin)
@@ -260,19 +269,19 @@ This is appropriate because the artifacts are part of the user-visible contract,
 
 ### What does not belong
 
-| Content | Where it belongs instead |
-|---------|--------------------------|
-| "How It Works" internals | AGENTS.md or code comments |
-| Implementation rationale ("we chose X because Y") | Commit message, ADR |
-| Version history, changelogs | CHANGELOG.md |
-| Release process mechanics | CHANGELOG.md or a separate RELEASING.md |
-| CI pipeline details (semantic-release, automated publishing) | CI config files |
-| Internal test infrastructure (passphrase proofs, liveness checks) | Test files and AGENTS.md |
-| Build system details beyond `just check` | justfile |
-| Active worktree paths, session IDs | WORKTREES.md or session notes |
-| License (unless actively enforced) | `package.json` / `pyproject.toml` `license` field only |
-| Conventional commits guide | Link to spec, not reproduced inline |
-| Feature counts, test pass counts, coverage metrics | Nowhere — not relevant to readers |
+| Content                                                           | Where it belongs instead                               |
+| ----------------------------------------------------------------- | ------------------------------------------------------ |
+| "How It Works" internals                                          | AGENTS.md or code comments                             |
+| Implementation rationale ("we chose X because Y")                 | Commit message, ADR                                    |
+| Version history, changelogs                                       | CHANGELOG.md                                           |
+| Release process mechanics                                         | CHANGELOG.md or a separate RELEASING.md                |
+| CI pipeline details (semantic-release, automated publishing)      | CI config files                                        |
+| Internal test infrastructure (passphrase proofs, liveness checks) | Test files and AGENTS.md                               |
+| Build system details beyond `just check`                          | justfile                                               |
+| Active worktree paths, session IDs                                | WORKTREES.md or session notes                          |
+| License (unless actively enforced)                                | `package.json` / `pyproject.toml` `license` field only |
+| Conventional commits guide                                        | Link to spec, not reproduced inline                    |
+| Feature counts, test pass counts, coverage metrics                | Nowhere — not relevant to readers                      |
 
 ### Platform target
 
@@ -283,6 +292,7 @@ All tooling targets Linux/Unix only. Do not document macOS or Windows alternativ
 Plugins and MCP servers are **configured**, not installed. The host harness (OpenCode, the MCP client) resolves and loads them from the configuration entry — there is no separate install step for the end user.
 
 READMEs must never instruct users to:
+
 - `npm install` a plugin
 - `clone` the repository to use it
 - Run any setup command before adding the config entry
@@ -299,7 +309,7 @@ The `## Install` section heading (and its content) applies only to **contributor
 
 This distinction must be clear in the README structure. If the README has both audiences, separate them explicitly:
 
-```markdown
+````markdown
 ## Configuration
 
 Add to your OpenCode config:
@@ -307,6 +317,7 @@ Add to your OpenCode config:
 ```json
 { "plugin": ["@dzackgarza/..."] }
 ```
+````
 
 ## Development Setup
 
@@ -316,7 +327,8 @@ For contributors working on the plugin locally:
 direnv allow .
 just install
 ```
-```
+
+````
 
 The `just install` / `direnv allow` steps never appear in the user-facing configuration section.
 
@@ -327,26 +339,29 @@ Prefer `uvx` and `npx` for immediate, dependency-free usage. The goal is that an
 ```bash
 uvx --from git+https://github.com/dzackgarza/<repo> <entrypoint> --help
 npx --yes --package=git+https://github.com/dzackgarza/<repo> <entrypoint> --help
-```
+````
 
 The README must include the canonical no-install invocation for every tool that supports it. This is the primary install surface for agents. The `just install` path is for contributors and local development, not the first-class usage pattern.
 
 ### Direct CLI bypass
 
 If a plugin or MCP server wraps an underlying CLI tool, the README must document how to call the CLI directly, bypassing the plugin entirely. This serves two purposes:
+
 - Agents can use the tool without OpenCode running
 - Developers can debug the CLI layer in isolation from the plugin layer
 
 The bypass invocation must appear in the README as a concrete command, not a pointer to another README or "see the CLI docs." It is part of the behavioral contract.
 
-### Progressive disclosure via Typer subcommands
+### Progressive disclosure via command hierarchies
 
-CLI interfaces must use [Typer](https://typer.tiangolo.com/) with subcommands, structured for progressive discovery:
+CLI interfaces must be structured for progressive discovery, using modern CLI frameworks:
 
 - `--help` at the top level lists available subcommands with one-line descriptions
 - Each subcommand has its own `--help` with full parameter docs
 - Agents discover functionality incrementally through help text, minimizing token usage
 - Do not expose every option at the top level; bury deviation-from-happy-path options in subcommands
+
+**See: `writing-scripts-and-cli-interfaces`** for implementation standards regarding CLI frameworks.
 
 READMEs must not reproduce the full `--help` output. Instead, document the intended workflows (the happy path) and name the subcommands an agent would use for off-path operations. The help text is the spec for parameters; the README is the spec for when to use each subcommand and why.
 
@@ -355,6 +370,7 @@ READMEs must not reproduce the full `--help` output. Instead, document the inten
 The public interface exposes opinionated workflows with sane defaults. It does not expose every internal knob. Agents should not need to think about implementation details to accomplish the common case.
 
 Structure:
+
 - **Top-level subcommands** — happy-path workflows. Minimal flags. The agent calls these and gets a result.
 - **Deep subcommands** (e.g. `debug`, `advanced`, `inspect`) — deviation paths for when the happy path fails or an operator needs visibility into internals. These exist but are not the default discovery surface.
 
@@ -377,6 +393,7 @@ Do not link to a LICENSE file. Do not reproduce the full license text. The one-l
 Every repository must have a GitHub description set — the one-line summary that appears on the repo page and in search results. This is not in the README but is documented here as a standard because it must be kept in sync with the README's one-line description.
 
 The GitHub description must be:
+
 - The same sentence as the one-line description under the H1 in the README
 - No longer than ~120 characters
 - No trailing period
@@ -406,6 +423,7 @@ When updating a README's one-line description, update the GitHub repo descriptio
 ```
 
 Optional sections (append after Checks if needed):
+
 - `## Release Process`
 - `## Breaking Changes`
 - Deprecation notice — goes before H1 if applicable (see below)
@@ -431,10 +449,13 @@ No blank line between badge and H1.
 Use the short kebab-case name — not the full package name, not title case, not backtick-quoted:
 
 ```markdown
-# improved-task       ✓
-# opencode-plugin-prompt-transformer   ✗  (full package name)
-# Improved Web Tools                   ✗  (title case)
-# `opencode-plugin-mcp-shim`           ✗  (backtick in H1)
+# improved-task ✓
+
+# opencode-plugin-prompt-transformer ✗ (full package name)
+
+# Improved Web Tools ✗ (title case)
+
+# `opencode-plugin-mcp-shim` ✗ (backtick in H1)
 ```
 
 ### One-line description
@@ -443,16 +464,16 @@ Immediately after H1. State what it shadows or exposes in one sentence. No blank
 
 ### Section headings — use these exact names
 
-| Concept | Correct heading |
-|---------|----------------|
-| Config snippet for end users | `## Configuration` |
-| Local dev setup for contributors | `## Development Setup` |
-| Tool listing (tools exposed to agent) | `## Tools` |
-| Hook-only plugins (no tool names) | `## Agent Surface` |
-| Internal-only packages | `## Public Interface` |
-| Runtime dependencies | `## Dependencies` |
-| Runtime environment knobs | `## Environment Variables` |
-| How to run checks | `## Checks` |
+| Concept                               | Correct heading            |
+| ------------------------------------- | -------------------------- |
+| Config snippet for end users          | `## Configuration`         |
+| Local dev setup for contributors      | `## Development Setup`     |
+| Tool listing (tools exposed to agent) | `## Tools`                 |
+| Hook-only plugins (no tool names)     | `## Agent Surface`         |
+| Internal-only packages                | `## Public Interface`      |
+| Runtime dependencies                  | `## Dependencies`          |
+| Runtime environment knobs             | `## Environment Variables` |
+| How to run checks                     | `## Checks`                |
 
 Do not use: `## Install`, `## Installation`, `## Tool Names`, `## Requirements`, `## Development`, `## Validation`.
 
@@ -460,7 +481,7 @@ Do not use: `## Install`, `## Installation`, `## Tool Names`, `## Requirements`,
 
 ### Install section
 
-```markdown
+````markdown
 ## Install
 
 ```bash
@@ -468,6 +489,7 @@ cd ./<short-name>
 direnv allow .
 just install
 ```
+````
 
 Register in OpenCode:
 
@@ -478,7 +500,8 @@ Register in OpenCode:
   ]
 }
 ```
-```
+
+````
 
 Always include `direnv allow .`. Do not omit it.
 
@@ -502,8 +525,9 @@ Add to any MCP client config:
     }
   }
 }
-```
-```
+````
+
+````
 
 ### Tool parameter tables
 
@@ -514,7 +538,7 @@ Use a markdown table with exactly these columns:
 |-------|------|----------|-------------|
 | `name` | `string` | Yes | ... |
 | `mode` | `"sync" \| "async"` | No | ... |
-```
+````
 
 Do not use prose bullet lists (`- \`url\`: (string) ...`) or plaintext code blocks for parameter docs.
 
@@ -524,7 +548,7 @@ Nested types go in a sub-table immediately below the parent table, labeled with 
 **`TodoTreeNode`:**
 
 | Field | Type | Description |
-|-------|------|-------------|
+| ----- | ---- | ----------- |
 ```
 
 Always follow the parameter table with an `#### Example Input` fenced JSON block.
@@ -534,10 +558,10 @@ Always follow the parameter table with an `#### Example Input` fenced JSON block
 Four columns, always in this order:
 
 ```markdown
-| Name | Required | Default | Controls |
-|------|----------|---------|---------|
-| `VAR_NAME` | Yes | — | What it controls |
-| `VAR_NAME` | No | `fallback` | What it controls |
+| Name       | Required | Default    | Controls         |
+| ---------- | -------- | ---------- | ---------------- |
+| `VAR_NAME` | Yes      | —          | What it controls |
+| `VAR_NAME` | No       | `fallback` | What it controls |
 ```
 
 - Use `—` (em dash) for no default.
@@ -547,13 +571,14 @@ Do not reduce to 2-column `Variable | Description` — the Required and Default 
 
 ### Checks section
 
-```markdown
+````markdown
 ## Checks
 
 ```bash
 direnv allow .
 just check
 ```
+````
 
 For targeted runs, use the canonical `justfile` entrypoints:
 
@@ -564,7 +589,8 @@ just test-file tests/path/to/file.ts 'test name'
 ```
 
 Do not run `bun test`, `bunx tsc`, or `uv run pytest` directly.
-```
+
+````
 
 The warning against direct invocation must appear in every plugin. It is missing from most READMEs today.
 
@@ -581,19 +607,21 @@ If a package is deprecated, use a GitHub-flavored callout placed **before the H1
 > - See [replacement-package](link)
 
 # <short-name>
-```
+````
 
 Only time-travel-plugin currently does this correctly.
 
 ### Root README
 
 The root `README.md` is an index only. It must contain:
+
 - Ko-fi badge
 - H1 `# OpenCode Plugins`
 - Bulleted plugin list with relative links to each plugin's README
 - Brief description per plugin (one clause)
 
 It must **not** contain:
+
 - Active worktree paths
 - Session IDs or Codex migration state
 - Any ephemeral operational data
@@ -604,18 +632,18 @@ Operational state (worktrees, session IDs) belongs in session notes or a separat
 
 ## Compliance Gaps (as of audit)
 
-| Repo | Issues |
-|------|--------|
-| `zotero-plugin` | Nearly empty — missing Features, Tools, Environment Variables, Dependencies, Checks |
-| `reminder-injection` | Missing Install, Checks, Dependencies sections |
-| `task-sched` | Missing Features, Environment Variables; no Ko-fi badge |
-| `improved-webtools` | Missing Ko-fi badge; uses bullet lists instead of tables for tool params; uses `## Installation`, `## Development` |
-| `improved-webtools/mcp-server` | Missing Ko-fi badge; uses code-block format for tool params |
-| `improved-todowrite/mcp-server` | Uses code-block format for tool params |
-| `mcp-shim` | Uses `## Installation`, `## Requirements`, `## Validation` instead of canonical names; H1 uses backtick-quoted name |
-| `prompt-transformer` | H1 uses full package name instead of short name |
-| `reminder-injection` | H1 uses full package name; extra blank line after badge |
-| `opencode-manager` | H1 uses backtick-quoted name |
-| `time-travel-plugin` | Uses `## Usage` for install; bullet lists for tool params; H1 uses full package name |
-| `postgres-memory-plugin` | `## Configuration` instead of `## Environment Variables`; dependency table uses non-standard columns |
-| Root `README.md` | Contains worktree paths and Codex session IDs (ephemeral operational state) |
+| Repo                            | Issues                                                                                                              |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `zotero-plugin`                 | Nearly empty — missing Features, Tools, Environment Variables, Dependencies, Checks                                 |
+| `reminder-injection`            | Missing Install, Checks, Dependencies sections                                                                      |
+| `task-sched`                    | Missing Features, Environment Variables; no Ko-fi badge                                                             |
+| `improved-webtools`             | Missing Ko-fi badge; uses bullet lists instead of tables for tool params; uses `## Installation`, `## Development`  |
+| `improved-webtools/mcp-server`  | Missing Ko-fi badge; uses code-block format for tool params                                                         |
+| `improved-todowrite/mcp-server` | Uses code-block format for tool params                                                                              |
+| `mcp-shim`                      | Uses `## Installation`, `## Requirements`, `## Validation` instead of canonical names; H1 uses backtick-quoted name |
+| `prompt-transformer`            | H1 uses full package name instead of short name                                                                     |
+| `reminder-injection`            | H1 uses full package name; extra blank line after badge                                                             |
+| `opencode-manager`              | H1 uses backtick-quoted name                                                                                        |
+| `time-travel-plugin`            | Uses `## Usage` for install; bullet lists for tool params; H1 uses full package name                                |
+| `postgres-memory-plugin`        | `## Configuration` instead of `## Environment Variables`; dependency table uses non-standard columns                |
+| Root `README.md`                | Contains worktree paths and Codex session IDs (ephemeral operational state)                                         |
