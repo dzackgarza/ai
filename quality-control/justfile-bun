@@ -53,11 +53,8 @@ _lizard: _install-tools
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	if ! command -v codeql >/dev/null 2>&1; then
-		echo "CodeQL CLI not found"
-		exit 2
-	fi
-	echo "Run CodeQL via recommended workflow"
+	codeql database create codeql-db --language=javascript --source-root=.
+	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
 
 # top-level test depends on all private analyses
 test: _coverage _diff-cover _knip _eslint _tsc _semgrep _jscpd _lizard _codeql

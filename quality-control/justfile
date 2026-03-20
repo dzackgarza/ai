@@ -58,11 +58,8 @@ _import-linter: _install-tools
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	if ! command -v codeql >/dev/null 2>&1; then
-		echo "CodeQL CLI not found"
-		exit 2
-	fi
-	echo "Run CodeQL via recommended workflow"
+	codeql database create codeql-db --language=python --source-root=.
+	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
 
 # top-level test depends on all private analyses
 test: _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql
