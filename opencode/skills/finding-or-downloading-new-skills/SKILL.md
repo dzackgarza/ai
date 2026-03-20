@@ -24,7 +24,7 @@ Follow this workflow for all skill acquisition tasks to ensure research depth an
 ### 2. Acquisition & Installation
 
 - **Use Official CLI**: Prefer native CLI tools for search/install when non-interactive flags exist.
-- **Verify Canonical Path**: Install/copy all skill content strictly into `~/ai/skills/skill-name/`.
+- **Verify Canonical Path**: Install/copy all skill content strictly into `~/ai/opencode/skills/skill-name/`.
 - **Manual Installation**: If CLI fails, manually download raw files and place them in the canonical path.
 - **Strict Fabrication Ban**: NEVER write or fabricate skill content from memory. Content must be fetched, verified, and saved using the `write` tool.
 
@@ -112,12 +112,12 @@ For skills not on LobeHub or custom repositories, use manual download:
 
 ### 1. Identify the skills directory
 
-All skills live in `~/ai/skills/` (the git repo root).
+All skills live in `~/ai/opencode/skills/` (the git repo root).
 
 ### 2. Create the skill directory
 
 ```bash
-mkdir -p ~/ai/skills/skill-name
+mkdir -p ~/ai/opencode/skills/skill-name
 ```
 
 ### 3. Find the download URL
@@ -130,7 +130,7 @@ mkdir -p ~/ai/skills/skill-name
 ```bash
 curl -fsSL "DOWNLOAD_URL" -o /tmp/skill-name.zip
 unzip -o /tmp/skill-name.zip -d /tmp/skill-name-extract
-cp -r /tmp/skill-name-extract/* ~/ai/skills/skill-name/
+cp -r /tmp/skill-name-extract/* ~/ai/opencode/skills/skill-name/
 ```
 
 ### 5. Verify

@@ -179,8 +179,8 @@ Recommended process:
 
 ## Provider Model Inventory Script
 
-Use `~/ai/skills/model-selection/scripts/fetch_provider_models.py` when you need a current provider-by-provider model inventory (cross-referenced with `models.dev`) from keys present in `~/.envrc`.
-For invocation and options, use the script help: `python3 ~/ai/skills/model-selection/scripts/fetch_provider_models.py --help`.
+Use `~/ai/opencode/skills/model-selection/scripts/fetch_provider_models.py` when you need a current provider-by-provider model inventory (cross-referenced with `models.dev`) from keys present in `~/.envrc`.
+For invocation and options, use the script help: `python3 ~/ai/opencode/skills/model-selection/scripts/fetch_provider_models.py --help`.
 
 ---
 
