@@ -229,6 +229,12 @@ included_optional_tools:
 
 # fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
 # This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
 fixed_tools: []
 
 # list of mode names to that are always to be included in the set of active modes
@@ -285,13 +291,8 @@ projects:
 - /home/dzack/lattice_interface
 - /home/dzack/opencode-git
 - /home/dzack/opencode-plugins
-- /home/dzack/opencode-plugins/ai-prompts
-- /home/dzack/opencode-plugins/opencode-manager
-- /home/dzack/opencode-plugins/opencode-plugin-improved-task
-- /home/dzack/opencode-plugins/opencode-plugin-improved-todowrite
-- /home/dzack/opencode-plugins/opencode-plugin-improved-webtools
-- /home/dzack/opencode-plugins/opencode-plugin-prompt-transformer
-- /home/dzack/opencode-plugins/opencode-zotero-plugin
+- /home/dzack/opencode-plugins/clis/opencode-manager
+- /home/dzack/opencode-plugins/plugins/opencode-plugin-improved-todowrite
 - /home/dzack/opencode_parser
 - /home/dzack/pdf-extraction
 - /var/sandbox/execa
