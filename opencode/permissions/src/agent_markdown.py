@@ -1,19 +1,19 @@
 """Generate OpenCode markdown agent files from prompt templates."""
+
 from __future__ import annotations
 
+import json
+import os
+import subprocess
 from collections.abc import Mapping
 from dataclasses import dataclass
-import os
 from pathlib import Path
 from typing import Any
 
-import json
-import subprocess
-from dataclasses import dataclass
 import tiktoken
 import yaml
 
-from src.base import Agent
+# from src.base import Agent  # Deprecated: YAML-driven workflow no longer uses Python agent classes
 
 
 _AI_PROMPTS_PKG = "git+https://github.com/dzackgarza/ai-prompts"
@@ -31,16 +31,20 @@ def get_prompt(slug: str) -> _PromptEntry:
     try:
         # 1. Try local filesystem if it's a sibling in ~/opencode-plugins/
         import sys
-        _AI_PROMPTS_ROOT = Path(__file__).resolve().parents[3] / "opencode-plugins" / "ai-prompts"
+
+        _AI_PROMPTS_ROOT = (
+            Path(__file__).resolve().parents[3] / "opencode-plugins" / "ai-prompts"
+        )
         _AI_PROMPTS_SRC = _AI_PROMPTS_ROOT / "src"
-        
+
         if _AI_PROMPTS_SRC.exists():
             if str(_AI_PROMPTS_SRC) not in sys.path:
                 sys.path.insert(0, str(_AI_PROMPTS_SRC))
             if "PROMPTS_DIR" not in os.environ:
-                 os.environ["PROMPTS_DIR"] = str(_AI_PROMPTS_ROOT / "prompts")
-            
+                os.environ["PROMPTS_DIR"] = str(_AI_PROMPTS_ROOT / "prompts")
+
             from ai_prompts import get_prompt as _get_prompt_lib
+
             p = _get_prompt_lib(slug)
             return _PromptEntry(
                 text=p.text,
@@ -53,7 +57,8 @@ def get_prompt(slug: str) -> _PromptEntry:
     # 2. Fallback to uvx
     result = subprocess.run(
         ["uvx", "--from", _AI_PROMPTS_PKG, "ai-prompts", "get", slug, "--json"],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if result.returncode != 0:
         raise ValueError(f"Unknown prompt slug: {slug}\n{result.stderr.strip()}")
@@ -63,6 +68,7 @@ def get_prompt(slug: str) -> _PromptEntry:
         frontmatter=data.get("frontmatter", {}),
         body=data.get("body", ""),
     )
+
 
 _FRONTMATTER_ORDER = (
     "description",
@@ -98,7 +104,10 @@ class GeneratedAgentArtifact:
     model: str | None
     source_template: str
 
-def _ordered_frontmatter(source: Mapping[str, Any], permission: dict[str, Any]) -> dict[str, Any]:
+
+def _ordered_frontmatter(
+    source: Mapping[str, Any], permission: dict[str, Any]
+) -> dict[str, Any]:
     frontmatter: dict[str, Any] = {}
     for key in _FRONTMATTER_ORDER:
         value = source.get(key)
@@ -120,9 +129,11 @@ def _split_markdown_frontmatter(text: str) -> tuple[dict[str, Any], str]:
         raise ValueError("Generated markdown agent is missing YAML frontmatter")
     end_idx = text.find("\n---\n", 4)
     if end_idx == -1:
-        raise ValueError("Generated markdown agent is missing closing YAML frontmatter marker")
+        raise ValueError(
+            "Generated markdown agent is missing closing YAML frontmatter marker"
+        )
     frontmatter = yaml.safe_load(text[4:end_idx]) or {}
-    body = text[end_idx + len("\n---\n"):].lstrip("\n")
+    body = text[end_idx + len("\n---\n") :].lstrip("\n")
     return frontmatter, body
 
 
@@ -175,7 +186,9 @@ def render_agent_artifact(agent: Agent) -> GeneratedAgentArtifact:
     )
 
 
-def load_static_markdown_artifact(prompt_slug: str, output_name: str) -> GeneratedAgentArtifact:
+def load_static_markdown_artifact(
+    prompt_slug: str, output_name: str
+) -> GeneratedAgentArtifact:
     """Load a static markdown template into a build artifact."""
     prompt = get_prompt(prompt_slug)
     markdown = prompt.text
@@ -203,7 +216,9 @@ def write_agent_markdown(agent: Agent, output_dir: str | Path) -> Path:
     return write_markdown_artifact(artifact, output_dir)
 
 
-def write_markdown_artifact(artifact: GeneratedAgentArtifact, output_dir: str | Path) -> Path:
+def write_markdown_artifact(
+    artifact: GeneratedAgentArtifact, output_dir: str | Path
+) -> Path:
     """Write a generated markdown artifact into the runtime agents directory."""
     target_dir = Path(output_dir)
     target_dir.mkdir(parents=True, exist_ok=True)

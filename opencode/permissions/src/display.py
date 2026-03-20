@@ -1,4 +1,5 @@
 """display.py — Rich terminal output for permission inspection."""
+
 from __future__ import annotations
 
 import json
@@ -6,7 +7,6 @@ import os
 import re
 import subprocess
 import sys
-from typing import TYPE_CHECKING
 
 from rich import box
 from rich.console import Console
@@ -14,20 +14,23 @@ from rich.table import Table
 
 from src.models import DISPLAY_CATEGORIES
 
-if TYPE_CHECKING:
-    from src.base import Agent
+# if TYPE_CHECKING:
+#     from src.base import Agent  # Deprecated: YAML-driven workflow
 
 console = Console(width=120)
 
 ACTION_STYLE: dict[str, str] = {"allow": "green", "deny": "red", "ask": "yellow"}
 
-EDIT_PERMISSION_TOOLS: frozenset[str] = frozenset({"edit", "write", "patch", "multiedit", "apply_patch"})
+EDIT_PERMISSION_TOOLS: frozenset[str] = frozenset(
+    {"edit", "write", "patch", "multiedit", "apply_patch"}
+)
 
 _HEADER_RE = re.compile(r"^(\S.*?)\s+\((?:primary|subagent)\)\s*$")
 
 # Path prefixes injected by opencode's skills system — not managed by this script.
 _INTERNAL_PREFIXES: tuple[str, ...] = tuple(
-    os.path.expanduser(p) for p in (
+    os.path.expanduser(p)
+    for p in (
         "~/.claude/skills/",
         "~/.agents/skills/",
         "~/.local/share/opencode/",
@@ -41,9 +44,13 @@ def load_agent_rulesets() -> dict[str, list[dict]]:
     The ruleset is the flat array of {permission, action, pattern} dicts as
     computed by opencode at runtime — the canonical source of truth.
     """
-    result = subprocess.run(["opencode", "agent", "list"], capture_output=True, text=True)
+    result = subprocess.run(
+        ["opencode", "agent", "list"], capture_output=True, text=True
+    )
     if result.returncode != 0:
-        console.print(f"[red]Error:[/red] `opencode agent list` failed:\n{result.stderr}")
+        console.print(
+            f"[red]Error:[/red] `opencode agent list` failed:\n{result.stderr}"
+        )
         sys.exit(1)
 
     agents: dict[str, list[dict]] = {}
@@ -109,7 +116,9 @@ def findlast_action(ruleset: list[dict], tool: str, path: str = "*") -> str:
     permission = permission_key_for_tool(tool)
     matched = "ask"
     for rule in ruleset:
-        if wildcard_match(permission, rule["permission"]) and wildcard_match(path, rule["pattern"]):
+        if wildcard_match(permission, rule["permission"]) and wildcard_match(
+            path, rule["pattern"]
+        ):
             matched = rule["action"]
     return matched
 
@@ -133,8 +142,10 @@ def show_effective(name: str, path: str = "*", agent: Agent | None = None) -> No
     categories = list(DISPLAY_CATEGORIES)
     categorized = {t for _, tools in categories for t in tools}
     extra = sorted(
-        p for p in {r["permission"] for r in ruleset}
-        if p != "*" and not any(wildcard_match(permission_key_for_tool(t), p) for t in categorized)
+        p
+        for p in {r["permission"] for r in ruleset}
+        if p != "*"
+        and not any(wildcard_match(permission_key_for_tool(t), p) for t in categorized)
     )
     if extra:
         categories.append(("Extra (live ruleset)", extra))
@@ -149,11 +160,16 @@ def show_effective(name: str, path: str = "*", agent: Agent | None = None) -> No
         for tool in tools:
             action = findlast_action(ruleset, tool, path)
             style = ACTION_STYLE.get(action, "")
-            matching = [r for r in ruleset if wildcard_match(permission_key_for_tool(tool), r["permission"])]
+            matching = [
+                r
+                for r in ruleset
+                if wildcard_match(permission_key_for_tool(tool), r["permission"])
+            ]
             path_rules = [
                 (r["pattern"], r["action"])
                 for r in matching
-                if r["pattern"] != "*" and not r["pattern"].startswith(_INTERNAL_PREFIXES)
+                if r["pattern"] != "*"
+                and not r["pattern"].startswith(_INTERNAL_PREFIXES)
             ]
             patterns_cell = "\n".join(
                 f"{pat}  [{ACTION_STYLE.get(act, '')}]{act}[/]"
@@ -164,7 +180,11 @@ def show_effective(name: str, path: str = "*", agent: Agent | None = None) -> No
 
     meta = f"[dim]via `opencode agent list` · path=[italic]{path}[/italic] · {len(ruleset)} rules[/dim]"
     if agent is not None:
-        layers = ", ".join(type(l).__name__ for l in agent.permission_layers()) if hasattr(agent, '_preset_names') else agent.base_type
+        layers = (
+            ", ".join(type(l).__name__ for l in agent.permission_layers())
+            if hasattr(agent, "_preset_names")
+            else agent.base_type
+        )
         meta += f"\n[dim]{agent.base_type}[/dim]"
 
     console.print()
@@ -187,6 +207,7 @@ def show_agents(agents: list[Agent]) -> None:
 def show_rulesets() -> None:
     """Print a table of available rulesets."""
     from src.rulesets import RULESET_REGISTRY
+
     t = Table(box=box.SIMPLE, show_header=True, padding=(0, 1))
     t.add_column("Ruleset")
     t.add_column("Description")

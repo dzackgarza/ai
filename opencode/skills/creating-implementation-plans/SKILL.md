@@ -364,7 +364,7 @@ Useful validations: Manifest diff, path resolution checks, broken-link/import ch
 
 3. **Validate the true deployment/use mode early** — If final system is consumed remotely, published, rendered, compiled, or invoked through wrappers, validate that mode before large downstream work.
 
-4. **Preserve canonical behavior before translating** — When porting systems, define source semantics first and preserve through tests or golden outputs.
+4. **Preserve canonical behavior before translating** — When porting systems, define source semantics first and preserve through substantive behavioral tests.
 
 5. **Re-scope explicitly when targets changed** — If prior work dropped targets, added extras, or changed approved architecture, plan must re-state scope before more implementation.
 

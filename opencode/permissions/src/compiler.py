@@ -2,84 +2,10 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from importlib import import_module
+from typing import Any
 
-import yaml
-
-from src.mixins import (
-    deep_merge,
-    mixin_allow_all_permissions,
-    mixin_bash_standard,
-    mixin_bash_unrestricted,
-    mixin_code_writer,
-    mixin_docs_writer,
-    mixin_interactive,
-    mixin_orchestrator,
-    mixin_planner,
-    mixin_researcher,
-    mixin_reviewer,
-    mixin_session_tools,
-    mixin_test_writer,
-)
-
-if TYPE_CHECKING:
-    from base import Agent
-
-# ---------------------------------------------------------------------------
-# YAML Ruleset Loader
-# ---------------------------------------------------------------------------
-
-_RULESETS_CACHE: dict[str, list[str]] | None = None
-
-
-def _load_rulesets_yaml() -> dict[str, list[str]]:
-    """Load ruleset definitions from rulesets.yaml."""
-    global _RULESETS_CACHE
-    if _RULESETS_CACHE is not None:
-        return _RULESETS_CACHE
-
-    rulesets_file = Path(__file__).parent / "rulesets.yaml"
-    with open(rulesets_file) as f:
-        data = yaml.safe_load(f) or {}
-    _RULESETS_CACHE = data
-    return _RULESETS_CACHE
-
-
-_MIXIN_REGISTRY: dict[str, callable] = {
-    "mixin_interactive": mixin_interactive,
-    "mixin_planner": mixin_planner,
-    "mixin_orchestrator": mixin_orchestrator,
-    "mixin_code_writer": mixin_code_writer,
-    "mixin_test_writer": mixin_test_writer,
-    "mixin_docs_writer": mixin_docs_writer,
-    "mixin_reviewer": mixin_reviewer,
-    "mixin_researcher": mixin_researcher,
-    "mixin_bash_unrestricted": mixin_bash_unrestricted,
-    "mixin_bash_standard": mixin_bash_standard,
-    "mixin_session_tools": mixin_session_tools,
-    "mixin_allow_all": mixin_allow_all_permissions,
-}
-
-
-def resolve_ruleset(ruleset_name: str) -> list[dict]:
-    """Resolve a ruleset name to a list of permission dicts (layers)."""
-    rulesets = _load_rulesets_yaml()
-    if ruleset_name not in rulesets:
-        raise ValueError(
-            f"Unknown ruleset: {ruleset_name}. Available: {list(rulesets.keys())}"
-        )
-
-    mixin_names = rulesets[ruleset_name]
-    layers = []
-    for mixin_name in mixin_names:
-        if mixin_name not in _MIXIN_REGISTRY:
-            raise ValueError(
-                f"Unknown mixin: {mixin_name}. Available: {list(_MIXIN_REGISTRY.keys())}"
-            )
-        layers.append(_MIXIN_REGISTRY[mixin_name]())
-    return layers
-
+from src.mixins import deep_merge
 
 # ---------------------------------------------------------------------------
 # Global defaults — explicit action for every known tool
@@ -209,52 +135,64 @@ _BASE_TYPE_PERMS: dict[str, dict[str, str]] = {
 }
 
 # ---------------------------------------------------------------------------
-# Compiler
+# Ruleset Resolver — imports Python ruleset classes by name
 # ---------------------------------------------------------------------------
 
+_RULESET_CACHE: dict[str, type] = {}
 
-def compile_agent(agent: Agent) -> dict[str, Any]:
-    """Compile an Agent into a flat permission dict.
 
-    Layer order (lowest → highest precedence):
-      1. GLOBAL_DEFAULTS
-      2. Base-type adjustments (pure_agent vs subagent)
-      3. Agent's permission_layers() in order
-      4. Agent's overrides
+def resolve_ruleset(ruleset_name: str) -> list[dict]:
+    """Resolve a ruleset name to a list of permission dicts (layers).
+
+    Imports the ruleset class from src.rulesets.<name> and calls .layers().
+    Ruleset name is normalized: 'interactive' → 'Interactive' class.
     """
-    layers = [
-        GLOBAL_DEFAULTS,
-        _BASE_TYPE_PERMS[agent.base_type],
-        *agent.permission_layers(),
-    ]
-    if agent.overrides:
-        layers.append(agent.overrides)
-    return deep_merge(*layers)
+    if ruleset_name in _RULESET_CACHE:
+        ruleset_class = _RULESET_CACHE[ruleset_name]
+    else:
+        # Normalize: 'interactive' → 'Interactive', 'code_writer' → 'CodeWriter'
+        class_name = "".join(part.capitalize() for part in ruleset_name.split("_"))
+
+        try:
+            module = import_module(f"src.rulesets.{ruleset_name}")
+            ruleset_class = getattr(module, class_name)
+            _RULESET_CACHE[ruleset_name] = ruleset_class
+        except (ImportError, AttributeError) as e:
+            raise ValueError(
+                f"Unknown ruleset: {ruleset_name} (expected class {class_name} in src/rulesets/{ruleset_name}.py)"
+            ) from e
+
+    return ruleset_class.layers()
 
 
-def compile_from_ruleset(
-    ruleset_name: str,
+def compile_from_tags(
+    permission_tags: list[str],
     base_type: str = "pure_agent",
     overrides: dict | None = None,
 ) -> dict[str, Any]:
-    """Compile permissions from a YAML ruleset name.
+    """Compile permissions from a list of permission tags.
 
     Layer order (lowest → highest precedence):
       1. GLOBAL_DEFAULTS
       2. Base-type adjustments (pure_agent vs subagent)
-      3. Ruleset layers (from rulesets.yaml)
+      3. Ruleset layers for each tag (in order)
       4. Optional overrides
 
     Args:
-        ruleset_name: Name of ruleset from rulesets.yaml
+        permission_tags: List of tags matching ruleset names
         base_type: 'pure_agent' or 'subagent'
         overrides: Final permission overrides (optional)
     """
     layers = [
         GLOBAL_DEFAULTS,
         _BASE_TYPE_PERMS.get(base_type, _PURE_AGENT_BASE),
-        *resolve_ruleset(ruleset_name),
     ]
+
+    # Apply ruleset layers for each tag in order
+    for tag in permission_tags:
+        layers.extend(resolve_ruleset(tag))
+
     if overrides:
         layers.append(overrides)
+
     return deep_merge(*layers)

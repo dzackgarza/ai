@@ -17,6 +17,8 @@
     "glm-4.7-free",
     "glm-5-free",
     "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
     "gpt-5-codex",
     "gpt-5.1",
     "gpt-5.1-codex",
@@ -43,11 +45,17 @@
     "big-pickle": {
       "name": "Big Pickle"
     },
-    "gpt-5-nano": {
-      "name": "GPT-5 Nano"
+    "mimo-v2-omni-free": {
+      "name": "Mimo V2 Omni Free"
+    },
+    "mimo-v2-pro-free": {
+      "name": "Mimo V2 Pro Free"
     },
     "minimax-m2.5-free": {
       "name": "MiniMax M2.5 Free"
+    },
+    "nemotron-3-super-free": {
+      "name": "Nemotron 3 Super Free"
     }
   }
 }

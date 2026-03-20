@@ -7,7 +7,7 @@ description: Use when creating shell scripts, Python CLI tools, or command-line 
 
 ## Default Stack
 
-**Cyclopts + Pydantic v2 + basedpyright + Ruff + pytest golden tests**
+**Cyclopts + Pydantic v2 + basedpyright + Ruff + pytest**
 
 Use Cyclopts for CLI presentation. Use Pydantic as the actual spec. This converges help text, validation, config loading, schemas, docs, and tests on one source of truth.
 
@@ -120,7 +120,7 @@ my-cli/
 │       ├── logic.py         # Pure functions with @validate_call
 │       └── config_loader.py # YAML → Pydantic Settings
 └── tests/
-    ├── test_cli.py          # --help golden tests
+    ├── test_cli.py          # substantive CLI behavioral tests
     ├── test_models.py       # validation edge cases
     └── test_logic.py        # business logic
 ```
@@ -220,19 +220,17 @@ def config(
     # Implementation
 ```
 
-### Golden Test Pattern
+### CLI Behavioral Test Pattern
 
 ```python
 from cyclopts import App
 from my_cli.cli import app
 
-def test_process_help():
-    """Golden test: --help output should contain expected sections."""
-    # Capture help output
-    help_text = app.help_text("process")
-    assert "input_path" in help_text
-    assert "threshold" in help_text
-    assert "0.0-1.0" in help_text  # Default range documented
+def test_process_rejects_invalid_threshold():
+    """Behavioral test: CLI should reject threshold outside 0.0-1.0 range."""
+    # Capture command execution
+    with pytest.raises(Exception):
+        app(["process", "data.json", "--threshold", "1.5"])
 ```
 
 ## Single Source of Truth
@@ -266,7 +264,7 @@ Apply these rules to force quality:
 4. No ad-hoc `if` validation — use Pydantic validators
 5. Every command has a one-line summary and longer docstring — help generated from this
 6. Flat CLIs banned after trivial size — use subcommands
-7. Every command has at least one golden `--help` test and one validation-failure test
+7. Every command has at least one substantive behavioral test proving it correctly invokes the underlying logic or fails on invalid input.
 8. Run Ruff immediately — reject untyped public functions, unknown types, and lint failures
 
 ## Anti-Patterns
