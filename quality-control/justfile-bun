@@ -53,7 +53,7 @@ _lizard: _install-tools
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	codeql database create codeql-db --language=javascript --source-root=.
+	codeql database create codeql-db --language=typescript --source-root=.
 	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
 
 # top-level test depends on all private analyses
