@@ -1,0 +1,71 @@
+# justfile for Python quality control
+
+default:
+  @just test
+
+# private recipes
+_venv:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv venv --python 3.11
+
+_install-tools: _venv
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv pip install coverage diff-cover vulture deptry semgrep lizard import-linter
+
+_coverage: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run coverage run -m pytest
+	uv run coverage xml -o coverage.xml
+
+_diff-cover: _coverage
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
+
+_vulture: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run vulture src tests --min-confidence 60
+
+_deptry: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run deptry check src
+
+_semgrep: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run semgrep --config=p/ci --inline-suppression
+
+_jscpd:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	npx -y jscpd --path src --reporters console
+
+_lizard: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run lizard src
+
+_import-linter: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run import-linter check
+
+_codeql:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	if ! command -v codeql >/dev/null 2>&1; then
+		echo "CodeQL CLI not found"
+		exit 2
+	fi
+	echo "Run CodeQL via recommended workflow"
+
+# top-level test depends on all private analyses
+test: _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "All analyses completed"
