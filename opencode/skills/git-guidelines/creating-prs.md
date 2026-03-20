@@ -6,19 +6,21 @@ This guide is for PR workers, including agentic coding systems and human contrib
 
 The main failure to prevent is this:
 
-* code is written first,
-* completion criteria are inferred from the resulting code,
-* the PR description is retrofitted to match what now exists,
-* reviewers evaluate against those retrofitted criteria,
-* the result is a tautologous thumbs-up on work that may not meet the original need.
+- code is written first,
+- completion criteria are inferred from the resulting code,
+- the PR description is retrofitted to match what now exists,
+- reviewers evaluate against those retrofitted criteria,
+- the result is a tautologous thumbs-up on work that may not meet the original need.
 
 This guide therefore imposes one hard rule:
 
-## Hard rule
+## Jules-initiated PRs (Mandatory Contract)
 
-**The PR contract must be written before implementation, committed to the branch, and used as the source of truth for the PR body.**
+For any PR initiated by Jules, a contract must be written before implementation, committed to the branch, and used as the source of truth for the PR body.
 
 Do not let the code define the task after the fact.
+
+For all other PRs, follow standard review procedures, but use the PR body to clearly state the intended outcome, acceptance criteria, and verification plan. Contract files are optional but recommended.
 
 ---
 
@@ -79,11 +81,11 @@ This must be phrased as externally checkable behavior, not as implementation str
 
 Bad:
 
-* Adds a new abstraction for report generation.
+- Adds a new abstraction for report generation.
 
 Better:
 
-* Generating report X from input Y produces fields A, B, C with exact semantics Z.
+- Generating report X from input Y produces fields A, B, C with exact semantics Z.
 
 #### 3. Non-goals
 
@@ -97,12 +99,12 @@ List all binding constraints up front.
 
 Examples:
 
-* exact arithmetic, not approximate
-* no mocks in tests
-* preserve existing API
-* no new dependencies
-* no config-schema changes
-* output must remain stable for downstream consumer Z
+- exact arithmetic, not approximate
+- no mocks in tests
+- preserve existing API
+- no new dependencies
+- no config-schema changes
+- output must remain stable for downstream consumer Z
 
 #### 5. Acceptance criteria
 
@@ -110,16 +112,16 @@ These must be concrete, observable, and falsifiable.
 
 Bad:
 
-* Tests added
-* Handles edge cases
-* Improves reliability
+- Tests added
+- Handles edge cases
+- Improves reliability
 
 Better:
 
-* `compute_discriminant(L)` returns `-23` on the canonical fixture lattice
-* watch mode no longer rebuilds when only the output directory changes
-* invalid input raises `TypeError`
-* existing command-line interface remains byte-for-byte unchanged on baseline fixture set
+- `compute_discriminant(L)` returns `-23` on the canonical fixture lattice
+- watch mode no longer rebuilds when only the output directory changes
+- invalid input raises `TypeError`
+- existing command-line interface remains byte-for-byte unchanged on baseline fixture set
 
 #### 6. Evidence plan
 
@@ -127,10 +129,10 @@ State exactly what evidence will be provided in the PR.
 
 Examples:
 
-* failing test first, then passing test
-* command output from real run on fixture X
-* diff proving no changes outside listed paths
-* benchmark numbers on the specified dataset
+- failing test first, then passing test
+- command output from real run on fixture X
+- diff proving no changes outside listed paths
+- benchmark numbers on the specified dataset
 
 #### 7. Change boundary
 
@@ -160,19 +162,19 @@ Required sequence:
 
 ### What counts as acceptable pre-implementation verification
 
-* a failing automated test,
-* a reproducible failing command,
-* a failing integration check,
-* a failing exact output comparison,
-* a failing invariant check.
+- a failing automated test,
+- a reproducible failing command,
+- a failing integration check,
+- a failing exact output comparison,
+- a failing invariant check.
 
 ### What does not count
 
-* informal intention,
-* a TODO list,
-* a verbal claim that the bug exists,
-* a post-hoc explanation added after the code already passes,
-* content-free checks like `is not None` or `len(x) > 0`.
+- informal intention,
+- a TODO list,
+- a verbal claim that the bug exists,
+- a post-hoc explanation added after the code already passes,
+- content-free checks like `is not None` or `len(x) > 0`.
 
 ### Minimal example
 
@@ -281,6 +283,7 @@ Use this structure in `.pr/PR_BODY.md`.
 # Change boundary
 
 Expected touched files / subsystems:
+
 - ...
 - ...
 
@@ -291,6 +294,7 @@ Expected touched files / subsystems:
 # Review focus
 
 Please check specifically:
+
 - whether the acceptance criteria are sufficient,
 - whether any goal has been swapped or relaxed,
 - whether any changed file falls outside the declared boundary,
@@ -341,6 +345,32 @@ For machine-readable inspection:
 gh pr checks <PR_NUMBER> --json name,state,bucket,link
 ```
 
+#### Codacy Automated Checks
+
+Codacy posts its own check-run with annotations surfaced via GitHub's API. The Codacy web interface is the authoritative source — GitHub's annotation feed can lag or remain stale after follow-up fixes.
+
+**Read Codacy check status:**
+
+```bash
+# List check runs for the PR head commit
+gh api repos/<OWNER>/<REPO>/commits/<HEAD_SHA>/check-runs
+
+# Extract annotations from a specific check run
+gh api repos/<OWNER>/<REPO>/check-runs/<CHECK_RUN_ID>/annotations
+```
+
+Each annotation includes `message`, `path`, `start_line`, `annotation_level`, and a `details_url` pointing to the Codacy web report.
+
+**Codacy is the authoritative source:**
+
+The `details_url` from the annotation payload links to Codacy's web report. Open it for the current, complete issue list with categories, per-file breakdowns, and severity — especially when the GitHub annotation feed appears stale or noisy.
+
+**What Codacy typically reports:**
+
+- `method-length` / `complexity`: function size and cyclomatic complexity
+- `assert-usage`: test assertion patterns
+- `subprocess-warnings`: shell invocation safety
+
 #### 4. Read formal review objects in chronological order
 
 ```bash
@@ -377,6 +407,7 @@ $EDITOR .pr/REVIEW_LOG.md
 
 ```markdown
 ## Review item <N>
+
 - Source: <review / review-comment / issue-comment / CI>
 - URL or identifier: <link or id>
 - Reviewer:
@@ -409,31 +440,31 @@ Feedback should be handled through one of only three legal moves.
 
 Action:
 
-* update code/tests,
-* update evidence,
-* mark the review item addressed.
+- update code/tests,
+- update evidence,
+- mark the review item addressed.
 
 ### Move B: The reviewer exposed missing or weak acceptance criteria
 
 Action:
 
-* strengthen `.pr/PR_BODY.md`,
-* add or revise tests first if needed,
-* then update code.
+- strengthen `.pr/PR_BODY.md`,
+- add or revise tests first if needed,
+- then update code.
 
 ### Move C: The reviewer identified that the contract itself is wrong
 
 Action:
 
-* revise `.pr/PR_BODY.md` explicitly,
-* commit that revision,
-* then proceed with implementation changes.
+- revise `.pr/PR_BODY.md` explicitly,
+- commit that revision,
+- then proceed with implementation changes.
 
 ### Illegal move
 
-* silently keep the same implementation direction while merely adding a local constraint,
-* say “addressed” without changing the contract or the code appropriately,
-* reinterpret the reviewer’s feedback into something easier and solve that instead.
+- silently keep the same implementation direction while merely adding a local constraint,
+- say “addressed” without changing the contract or the code appropriately,
+- reinterpret the reviewer’s feedback into something easier and solve that instead.
 
 ---
 
@@ -445,9 +476,9 @@ Reviewer comment:
 
 Incorrect response pattern:
 
-* add another `isinstance(...)` check,
-* reply “done,”
-* leave acceptance criteria unchanged.
+- add another `isinstance(...)` check,
+- reply “done,”
+- leave acceptance criteria unchanged.
 
 Required response pattern:
 
@@ -467,12 +498,12 @@ The PR should make it easy for reviewers to reject process-shaped nonsense.
 
 At the end of `.pr/PR_BODY.md`, ask reviewers to check:
 
-* whether the intended outcome is the right one,
-* whether any acceptance criterion is missing, tautological, or implementation-defined,
-* whether any file in the diff falls outside the declared boundary,
-* whether any test would pass on plausible junk,
-* whether any fallback hides failure instead of surfacing it,
-* whether the code satisfies the problem or merely looks complete.
+- whether the intended outcome is the right one,
+- whether any acceptance criterion is missing, tautological, or implementation-defined,
+- whether any file in the diff falls outside the declared boundary,
+- whether any test would pass on plausible junk,
+- whether any fallback hides failure instead of surfacing it,
+- whether the code satisfies the problem or merely looks complete.
 
 This materially improves reviewer alignment because it keeps the PR anchored to external success criteria defined before implementation.
 
@@ -589,4 +620,3 @@ If the PR does not expose those answers directly, it is not review-ready.
 12. Do not let a reviewer guess what “done” means.
 
 A PR that follows these rules is much easier to review well, much harder to rubber-stamp for the wrong reasons, and much less likely to drift into post-hoc self-justifying completion theater.
-
