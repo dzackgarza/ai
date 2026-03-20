@@ -1,9 +1,15 @@
 # justfile for Python quality control
+#
+# WORKFLOW: Always run `just test`. Do NOT add public recipes for
+# additional checks. The `test` recipe depends on the full quality
+# control stack — bypassing it defeats the purpose of enforced gates.
+# Add new analyses as private recipes (prefix with _) and add them to
+# the `test` dependency list.
 
 default:
   @just test
 
-# private recipes
+# private recipes (prefix with _ — do not run individually in CI)
 _venv:
 	#!/usr/bin/env bash
 	set -euo pipefail
