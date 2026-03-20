@@ -8,6 +8,11 @@ uv.lock
 .ruff_cache/
 .pytest_cache/
 
+# Bytecode (generated on import)
+__pycache__/
+*.pyc
+*.pyo
+
 # Build artifacts
 *.egg-info/
 dist/
