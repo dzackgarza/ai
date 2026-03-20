@@ -15,7 +15,19 @@ from extract_unresolved_issues.models import (
     SummarizeInput,
 )
 
-app = App()
+app = App(
+    help="""Extract and manage PR review issues and automated checks.
+    
+This tool is used during the PR review process to gather inline review 
+threads, high-level comments, and automated checks (e.g. Codacy issues), 
+and provides commands to resolve them while enforcing proper justification.
+
+Common workflows:
+  - View all PR comments and automated checks: `extract_unresolved_issues summarize owner/repo#123`
+  - Get only unresolved (actionable) issues: `extract_unresolved_issues issues owner/repo#123`
+  - Resolve a thread with justification: `extract_unresolved_issues resolve <comment_id> "Fixed in commit 1234abc"`
+"""
+)
 
 
 @app.command
@@ -23,11 +35,15 @@ def summarize(
     pr_url: str,
     output_file: Path | None = None,
 ) -> None:
-    """Summarize all PR comments (token-friendly).
+    """Summarize all PR comments and automated checks (token-friendly).
+
+    Retrieves all PR comments, reviews, and automated check runs (like
+    Codacy analysis and GH Actions) and formats them cleanly. This should
+    be the primary tool used to quickly assess the feedback on a PR.
 
     Args:
         pr_url: PR URL or owner/repo#num (e.g., https://github.com/owner/repo/pull/123 or owner/repo#123)
-        output_file: File to write the output to. If not provided, prints to stdout.
+        output_file: Optional file path to write the output to instead of stdout.
     """
     inp = SummarizeInput(pr_url=pr_url, output_file=output_file)
     try:

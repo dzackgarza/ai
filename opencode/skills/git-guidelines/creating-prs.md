@@ -303,7 +303,7 @@ Please check specifically:
 
 ---
 
-## Phase 4: Read every review comment with `gh`, not selectively
+## Phase 4: Read every review comment with `gh` or bundled tools, not selectively
 
 A worker must not rely on memory, inbox summaries, or partial UI reading. Review feedback is part of the task state. It must be read exhaustively and tracked explicitly.
 
@@ -318,13 +318,21 @@ The worker must read:
 
 ### Minimum command set
 
-#### 1. Read the PR and comments in terminal
+#### 1. Use the bundled CLI tool to read all feedback surfaces at once
+
+The most robust way to gather all feedback is to use the `extract_unresolved_issues` tool bundled with the git-guidelines skill:
 
 ```bash
-gh pr view <PR_NUMBER> --comments
+uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <OWNER>/<REPO>#<PR_NUMBER>
 ```
 
-#### 2. Inspect structured PR state
+This will automatically fetch:
+
+- Top-level PR comments
+- Inline code review threads
+- Automated check-run errors (like Codacy static analysis)
+
+#### 2. Inspect structured PR state manually (fallback)
 
 ```bash
 gh pr view <PR_NUMBER> \

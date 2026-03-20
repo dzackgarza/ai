@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 from pydantic import validate_call
 
 from extract_unresolved_issues.models import (
+    CheckRun,
+    CheckRunAnnotation,
     Comment,
     PRRef,
     ResolveInput,

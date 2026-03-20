@@ -163,29 +163,40 @@ For nontrivial features: branch + PR → tag `@codex review` → wait 3–5 min 
 
 ### Scan ALL comment surfaces
 
-`gh pr view` only returns issue-level comments, not inline review thread comments. Always run both:
+`gh pr view` only returns issue-level comments, not inline review thread comments. To properly parse and summarize all PR feedback, **use the bundled CLI tool**:
 
 ```bash
-gh pr view <N> --repo <owner>/<repo> --json reviews,comments   # top-level + review summaries
-gh api repos/<owner>/<repo>/pulls/<N>/comments                  # inline code review threads
+uv run --with cyclopts --with pydantic --with rich -m extract_unresolved_issues --help
 ```
 
-Address every unresolved issue, reply with the fix commit, then resolve the thread:
+You can run it from anywhere in the codebase directly by providing the full path to the module inside the git-guidelines skill:
 
 ```bash
-gh api graphql -f query='mutation { resolveReviewThread(input: { threadId: "<PRRT_...>" }) { thread { id isResolved } } }'
+uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <owner>/<repo>#<N>
+```
+
+This tool automatically pulls:
+
+- Top-level PR comments
+- Inline code review threads
+- Automated check-run errors (like Codacy static analysis)
+
+Address every unresolved issue, reply with the fix commit, then resolve the thread using the tool's `resolve` command:
+
+```bash
+uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues resolve <COMMENT_ID> "Fixed in commit 1234abc"
 ```
 
 Repeat until all threads are resolved.
 
 ### "Resolve" is overloaded — clear each surface separately
 
-| Object | How to resolve |
-|---|---|
-| Inline review thread | Reply in thread + resolve via GraphQL |
-| Top-level PR comment | Reply on comment surface (no resolution bit) |
-| Review summary comment | Reply on PR comment surface |
-| Linked GitHub issue | Update/comment/close the issue itself — PR-thread resolution does NOT close the issue |
+| Object                 | How to resolve                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------- |
+| Inline review thread   | Reply in thread + resolve via GraphQL                                                 |
+| Top-level PR comment   | Reply on comment surface (no resolution bit)                                          |
+| Review summary comment | Reply on PR comment surface                                                           |
+| Linked GitHub issue    | Update/comment/close the issue itself — PR-thread resolution does NOT close the issue |
 
 ### After replying or resolving
 
