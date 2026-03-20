@@ -643,7 +643,7 @@ Operational state (worktrees, session IDs) belongs in session notes or a separat
 | `mcp-shim`                      | Uses `## Installation`, `## Requirements`, `## Validation` instead of canonical names; H1 uses backtick-quoted name |
 | `prompt-transformer`            | H1 uses full package name instead of short name                                                                     |
 | `reminder-injection`            | H1 uses full package name; extra blank line after badge                                                             |
-| `opencode-manager`              | H1 uses backtick-quoted name                                                                                        |
+| `ocm`                           | H1 uses backtick-quoted name                                                                                        |
 | `time-travel-plugin`            | Uses `## Usage` for install; bullet lists for tool params; H1 uses full package name                                |
 | `postgres-memory-plugin`        | `## Configuration` instead of `## Environment Variables`; dependency table uses non-standard columns                |
 | Root `README.md`                | Contains worktree paths and Codex session IDs (ephemeral operational state)                                         |

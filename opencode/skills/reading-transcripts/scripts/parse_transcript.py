@@ -3,7 +3,7 @@ import sys
 import subprocess
 import os
 
-OPENCODE_MANAGER_PACKAGE = "git+https://github.com/dzackgarza/opencode-manager.git"
+OCM_PACKAGE = "git+https://github.com/dzackgarza/opencode-manager.git"
 
 
 def main():
@@ -38,12 +38,11 @@ def main():
             session_id = args.identifier
             subprocess.run(
                 [
-                    "npx",
-                    "--yes",
-                    f"--package={OPENCODE_MANAGER_PACKAGE}",
-                    "opx",
+                    "uvx",
+                    "--from",
+                    OCM_PACKAGE,
+                    "ocm",
                     "transcript",
-                    "--session",
                     session_id,
                 ],
                 check=True,

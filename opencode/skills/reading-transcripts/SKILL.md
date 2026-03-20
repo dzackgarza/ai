@@ -27,13 +27,13 @@ Intelligent agents can use this information to locate past conversations, list h
 For `--harness opencode`, the dispatcher delegates to:
 
 ```bash
-npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git \
-  opx transcript --session <session-id>
+uvx git+https://github.com/dzackgarza/opencode-manager.git \
+  ocm transcript <session-id>
 ```
 
 Other harnesses still use the local parser scripts in this skill.
 
-OpenCode transcripts always go through `opx transcript --session`. If that surface is
+OpenCode transcripts always go through `ocm transcript`. If that surface is
 insufficient, file an issue instead of adding `opencode export`, `OPENCODE_BIN`, or a
 local fallback parser.
 
@@ -110,12 +110,12 @@ To verify what a subagent actually did:
 
 **What actually happens:**
 
-| Event | What's in the transcript |
-|-------|-------------------------|
-| Before compaction | Full conversation, verbatim |
-| Compaction trigger | `<compaction>` marker ADDED (not replaced) |
-| Compaction summary | Summary ADDED as next message |
-| After compaction | **Everything still there** - original + marker + summary |
+| Event              | What's in the transcript                                 |
+| ------------------ | -------------------------------------------------------- |
+| Before compaction  | Full conversation, verbatim                              |
+| Compaction trigger | `<compaction>` marker ADDED (not replaced)               |
+| Compaction summary | Summary ADDED as next message                            |
+| After compaction   | **Everything still there** - original + marker + summary |
 
 **Rule:** The compaction block is just a **marker** indicating "a summary follows." **Nothing is omitted, truncated, or replaced.** The summary is **additional context** to help the agent quickly reference prior decisions, but **all original messages remain fully intact and readable.**
 
@@ -129,12 +129,12 @@ To verify what a subagent actually did:
 
 The wrapper scripts abstract away the locations of the underlying data. If the scripts break, you should attempt to read these directories to debug the schemas and fix the python parser scripts before reverting to manual scanning. These directories serve as the 100% provable source of truth.
 
-| Harness         | Storage Architecture        | Raw Path                                                                                                                                        |
-| --------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Claude Code** | Flat JSONL per project      | `~/.claude/projects/<slugified-project-name>/*.jsonl`                                                                                           |
-| **Qwen Code**   | Flat JSONL per project      | `~/.qwen/projects/<slugified-project-name>/chats/*.jsonl`                                                                                       |
-| **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                                                            |
-| **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                                                                     |
-| **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                                                           |
-| **OpenCode**    | OpenCode session transcript | Delegated via `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session <session_id>`. |
-| **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                                                              |
+| Harness         | Storage Architecture        | Raw Path                                                                                                |
+| --------------- | --------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Claude Code** | Flat JSONL per project      | `~/.claude/projects/<slugified-project-name>/*.jsonl`                                                   |
+| **Qwen Code**   | Flat JSONL per project      | `~/.qwen/projects/<slugified-project-name>/chats/*.jsonl`                                               |
+| **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                    |
+| **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                             |
+| **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                   |
+| **OpenCode**    | OpenCode session transcript | Delegated via `uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session_id>`. |
+| **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                      |

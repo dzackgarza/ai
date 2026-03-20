@@ -23,7 +23,7 @@ Agents stop after responding. To continue multi-step work:
 
 ```bash
 # Schedule a message to yourself via 'at'
-echo "opx chat --session ses_XXX --prompt 'continue task'" | at now + 10 minutes
+echo "ocm chat ses_XXX 'continue task'" | at now + 10 minutes
 ```
 
 Get your session ID from the introspection tool.
@@ -82,7 +82,7 @@ Agents can get stuck waiting indefinitely for user input or external events. Sch
 ```bash
 # Wake yourself every 30 minutes to check for progress
 task_id=$(uvx git+https://github.com/dzackgarza/task-sched add \
-  --command "opx chat --session ses_XXX --prompt 'heartbeat: check if work is blocked and continue'" \
+  --command "ocm chat ses_XXX 'heartbeat: check if work is blocked and continue'" \
   --schedule "*/30 * * * *" \
   --description "Agent heartbeat for session ses_XXX")
 
@@ -103,7 +103,7 @@ Wake yourself periodically to check if something finished:
 
 ```bash
 uvx git+https://github.com/dzackgarza/task-sched add \
-  --command "opx chat --session ses_XXX --prompt 'check if build finished'" \
+  --command "ocm chat ses_XXX 'check if build finished'" \
   --schedule "*/15 * * * *"
 ```
 
@@ -117,7 +117,7 @@ Run a follow-up action after the main task finishes:
 uvx git+https://github.com/dzackgarza/task-sched add \
   --command "cd /project && uv run pytest" \
   --schedule "daily" \
-  --on-complete "opx chat --session ses_XXX --prompt 'test run finished'"
+  --on-complete "ocm chat ses_XXX 'test run finished'"
 ```
 
 ## Common Pitfalls

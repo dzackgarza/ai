@@ -18,7 +18,7 @@ Always select by capability class from the live list (for example: implementatio
 - **prompt-engineering** — REQUIRED: Use for all subagent instruction design.
 - **difficulty-and-time-estimation** — REQUIRED: Use for task calibration and delegation decisions.
 - **opencode-cli** — Use for OpenCode manager command forms when session inspection is part of delegation review.
-- **reading-transcripts** — Use when transcript review crosses harnesses; for OpenCode it delegates to `opx-session transcript`.
+- **reading-transcripts** — Use when transcript review crosses harnesses; for OpenCode it delegates to `ocm transcript`.
 
 ---
 
@@ -30,14 +30,14 @@ Subagents are a **context management and token optimization tool** — not a con
 
 ### ✅ Use Subagents For:
 
-| Scenario | Example | Why |
-|----------|---------|-----|
-| **Coordinator/Orchestrator Role** | Main agent is planning a multi-component feature; delegates implementation of individual components | Keeps main agent focused on architecture, integration, and review |
-| **Heavy Token Exploration** | "Find all log files mentioning error X in the past week, extract relevant lines, summarize patterns" | Subagent burns tokens exploring; main agent reviews concise findings |
-| **Tangential Tasks** | Main task: fix authentication bug. Tangential: "check if similar issues exist in other auth-related files" | Prevents context pollution in main task |
-| **Open-Ended → Narrowed** | "Explore the codebase to find where rate limiting is implemented, then list the top 3 candidate files" | Subagent does broad exploration; main agent gets targeted answer |
-| **Parallelizable Work** | "Fix linting errors in these 5 unrelated modules" | Dispatch 2-3 subagents for independent modules; review sequentially |
-| **Review/Audit Work** | "Review this PR for security issues" or "Audit session XYZ for task-drift" | Fresh context catches what main agent might miss |
+| Scenario                          | Example                                                                                                    | Why                                                                  |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Coordinator/Orchestrator Role** | Main agent is planning a multi-component feature; delegates implementation of individual components        | Keeps main agent focused on architecture, integration, and review    |
+| **Heavy Token Exploration**       | "Find all log files mentioning error X in the past week, extract relevant lines, summarize patterns"       | Subagent burns tokens exploring; main agent reviews concise findings |
+| **Tangential Tasks**              | Main task: fix authentication bug. Tangential: "check if similar issues exist in other auth-related files" | Prevents context pollution in main task                              |
+| **Open-Ended → Narrowed**         | "Explore the codebase to find where rate limiting is implemented, then list the top 3 candidate files"     | Subagent does broad exploration; main agent gets targeted answer     |
+| **Parallelizable Work**           | "Fix linting errors in these 5 unrelated modules"                                                          | Dispatch 2-3 subagents for independent modules; review sequentially  |
+| **Review/Audit Work**             | "Review this PR for security issues" or "Audit session XYZ for task-drift"                                 | Fresh context catches what main agent might miss                     |
 
 **Token Economics:**
 
@@ -54,14 +54,14 @@ With subagents:    Main context = 100K + review summaries (~5K)
 
 ### ❌ Do NOT Use Subagents For:
 
-| Task | Why Not | Do Instead |
-|------|---------|------------|
-| Fetch a single website | Startup cost > task cost | Use `web_fetch` directly |
-| Run a program/command | No token savings, adds latency | Use `run_shell_command` directly |
-| Read a known file path | Trivial, no exploration needed | Use `read_file` directly |
-| Simple search (grep) | Overhead exceeds value | Use `grep_search` directly |
-| Trivial tasks (low token, low complexity) | Subagent startup = system prompt + instructions + orientation + your prompt | Do it yourself |
-| Tasks requiring main agent's full context | Subagent won't have the context | Keep in main thread |
+| Task                                      | Why Not                                                                     | Do Instead                       |
+| ----------------------------------------- | --------------------------------------------------------------------------- | -------------------------------- |
+| Fetch a single website                    | Startup cost > task cost                                                    | Use `web_fetch` directly         |
+| Run a program/command                     | No token savings, adds latency                                              | Use `run_shell_command` directly |
+| Read a known file path                    | Trivial, no exploration needed                                              | Use `read_file` directly         |
+| Simple search (grep)                      | Overhead exceeds value                                                      | Use `grep_search` directly       |
+| Trivial tasks (low token, low complexity) | Subagent startup = system prompt + instructions + orientation + your prompt | Do it yourself                   |
+| Tasks requiring main agent's full context | Subagent won't have the context                                             | Keep in main thread              |
 
 **Subagent Startup Costs:**
 
@@ -92,6 +92,7 @@ Task difficulty is a **weighted combination of multiple factors** — no single 
 **Main Agent Role:**
 
 When using subagents, the main agent becomes a **coordinator**:
+
 - Craft precise prompts with acceptance criteria
 - Review transcripts critically (task-drift, reward-hacking detection)
 - Verify git diffs match claimed work
@@ -193,9 +194,9 @@ Do not reflexively push everything to the highest-effort frontier model. Token e
 
 **CRITICAL**: `task` supports both execution modes. Choose mode intentionally based on coordination needs.
 
-| Mode | Behavior | Use when |
-|------|----------|----------|
-| **sync** | Blocking call; returns after subagent finishes turn | You need result before proceeding |
+| Mode      | Behavior                                                               | Use when                                                 |
+| --------- | ---------------------------------------------------------------------- | -------------------------------------------------------- |
+| **sync**  | Blocking call; returns after subagent finishes turn                    | You need result before proceeding                        |
 | **async** | Non-blocking call; returns immediately with running status + `task_id` | You want main agent work to continue while subagent runs |
 
 **Common guarantees (both modes):**
@@ -232,14 +233,14 @@ Do not reflexively push everything to the highest-effort frontier model. Token e
 
 After every subagent terminal event (sync return or async terminal callback):
 
-1. **Inspect transcript**: for OpenCode, use `reading-transcripts` or `opx-session transcript <sessionID>` via `opencode-manager`
+1. **Inspect transcript**: for OpenCode, use `reading-transcripts` or `ocm transcript <sessionID>`
 2. **Read full output**: Understand what subagent attempted, what succeeded, what failed
 3. **Git verification**: `git diff` to see actual file changes
 4. **Compare to task**: Did subagent accomplish the prompt? What gaps remain?
 5. **Decision**: Commit (if done) or resume (if incomplete)
 
 For OpenCode sessions, do not use `opencode export` or a local transcript parser fallback.
-Transcript review goes through `opx-session transcript` only.
+Transcript review goes through `ocm transcript` only.
 
 ### Resume Pattern (When Work Is Insufficient)
 
@@ -268,13 +269,13 @@ Subagents may exhibit **task-drift**, **reward-hacking** (appearing to complete 
 
 **Recovery Strategies:**
 
-| Symptom              | Response                                                                 |
-| -------------------- | ------------------------------------------------------------------------ |
-| **Task-drift**       | Resume with tighter constraints: "Do ONLY X. Do NOT touch Y or Z."       |
-| **Reward-hacking**   | Audit transcript line-by-line; demand evidence for each claim            |
-| **Looping (N≥2)**    | Escalate: dispatch auditor subagent to diagnose root cause               |
-| **Weak output**      | Recraft prompt: add examples, constraints, acceptance criteria           |
-| **Arguing done**     | Provide counter-evidence from git diff; require specific fix             |
+| Symptom            | Response                                                           |
+| ------------------ | ------------------------------------------------------------------ |
+| **Task-drift**     | Resume with tighter constraints: "Do ONLY X. Do NOT touch Y or Z." |
+| **Reward-hacking** | Audit transcript line-by-line; demand evidence for each claim      |
+| **Looping (N≥2)**  | Escalate: dispatch auditor subagent to diagnose root cause         |
+| **Weak output**    | Recraft prompt: add examples, constraints, acceptance criteria     |
+| **Arguing done**   | Provide counter-evidence from git diff; require specific fix       |
 
 **Auditor Pattern (For Persistent Failures):**
 
@@ -325,14 +326,14 @@ Never accept implementation without independent verification:
 
 **When to Parallelize:**
 
-| Scenario                        | Strategy          |
-| ------------------------------- | ----------------- |
-| Independent test files          | ✅ Parallel (2-3) |
-| Different subsystems            | ✅ Parallel (2-3) |
-| Same files/shared state         | ❌ Sequential     |
-| Same provider/model             | ❌ Sequential     |
-| Exploratory/unknown scope       | ❌ Sequential     |
-| Fix loops (iterative)           | ❌ Sequential     |
+| Scenario                  | Strategy          |
+| ------------------------- | ----------------- |
+| Independent test files    | ✅ Parallel (2-3) |
+| Different subsystems      | ✅ Parallel (2-3) |
+| Same files/shared state   | ❌ Sequential     |
+| Same provider/model       | ❌ Sequential     |
+| Exploratory/unknown scope | ❌ Sequential     |
+| Fix loops (iterative)     | ❌ Sequential     |
 
 **Parallel Dispatch Pattern:**
 

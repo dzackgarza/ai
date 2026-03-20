@@ -126,7 +126,7 @@ async function runBackground(sessionID: string, seconds: number, client: any) {
 
 > **Open question:** mid-turn queueing behavior is inferred from the API design
 > (`promptAsync` vs `prompt`) and consistent with observed behavior, but not confirmed
-> from server source. Verify it with `opx transcript --json` or `opx debug trace`,
+> from server source. Verify it with `ocm transcript --json`,
 > not with rendered CLI output.
 
 ---
@@ -143,18 +143,16 @@ direnv exec /path/to/plugin \
   command opencode serve --hostname 127.0.0.1 --port 4198
 
 # Begin a real session, then drive it with follow-up chat turns
-OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx begin-session \
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session \
   "Trigger the async workflow here" \
-  --agent Minimal \
-  --json
-OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_abc123 --prompt "Follow-up prompt if needed"
+  --agent Minimal
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git ocm chat ses_abc123 "Follow-up prompt if needed"
 
 # Inspect the real session instead of scraping terminal output
-OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_abc123 --verbose
-OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript ses_abc123 --json
 ```
 
-Use `opx transcript --json` or `opx debug trace` when you need raw evidence for
+Use `ocm transcript --json` when you need raw evidence for
 callback delivery, a follow-up turn, or an assistant error.
 
 ---

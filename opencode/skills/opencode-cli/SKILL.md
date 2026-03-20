@@ -1,6 +1,6 @@
 ---
 name: opencode-cli
-description: Use when running OpenCode CLI commands, starting repo-local OpenCode servers, inspecting models or agents, or driving sessions through opencode-manager
+description: Use when running OpenCode CLI commands, starting repo-local OpenCode servers, inspecting models or agents, or driving sessions through ocm
 ---
 
 # OpenCode CLI
@@ -13,7 +13,7 @@ description: Use when running OpenCode CLI commands, starting repo-local OpenCod
 > **SDK:** https://opencode.ai/docs/sdk/  
 > **API:** https://opencode.ai/docs/server/
 
-Basic OpenCode and `opencode-manager` usage.
+Basic OpenCode and `ocm` usage.
 
 For plugin-development policy, proof rules, and audit criteria, use `opencode-plugin-development`.
 
@@ -54,8 +54,8 @@ Do not hand-edit `~/ai/opencode/opencode.json`. Rebuild it from `~/ai/opencode/c
 
 - Use `command opencode`, not a shell alias.
 - Resolve the binary from PATH. Do not introduce `OPENCODE_BIN` or hardcoded local binary paths.
-- Use `opencode-manager` for multi-turn session orchestration, transcript rendering, and debug traces.
-- Transcript parsing goes through `opx transcript --json` only. If that surface is
+- Use `ocm` for multi-turn session orchestration, transcript rendering, and diagnostics.
+- Transcript parsing goes through `ocm transcript --json` only. If that surface is
   insufficient, file an issue instead of inventing a local fallback parser.
 - If a workflow depends on repo-local config or env, start a repo-local `command opencode serve` inside that repo's `direnv`.
 - `opencode` is not stale. Config is reread on each invocation, so do not blame cache or
@@ -95,27 +95,38 @@ direnv allow
 direnv exec . command opencode serve --hostname 127.0.0.1 --port 4198
 ```
 
-Then point `opencode-manager` at that server:
+Then point `ocm` at that server:
 
 ```bash
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
+  uvx git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session "Your prompt" --agent Minimal
 ```
 
 ## Manager Commands
 
 ```bash
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx one-shot --agent Minimal --prompt "Your prompt"
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx begin-session "Your prompt" --agent Minimal --json
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_123 --prompt "Follow-up prompt"
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx system --session ses_123 --prompt "System follow-up"
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx transcript --session ses_123 --json
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx final --session ses_123 --prompt "Wrap up" --transcript
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx delete --session ses_123
-uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_123 --verbose
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm one-shot "Your prompt"
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session "Your prompt" --agent Minimal
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm chat ses_123 "Follow-up prompt"
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm chat ses_123 "System follow-up" --system
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript ses_123 --json
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm final ses_123 "Wrap up"
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm delete ses_123
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm wait ses_123 --json
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm doctor --json
 ```
 
-**Avoid using the OpenCode CLI for real LLM work.** Use `opencode-manager` via `uvx` for chatting, testing, and session orchestration.
+**Command semantics:**
+
+- Session IDs and prompts are **positional arguments** (not `--session`/`--prompt` flags).
+- `chat` resumes the live agent turn by default. `chat --no-reply` queues only a user message without triggering a new assistant turn.
+- `chat --system` records an agent-only system prompt in the transcript; it is carried in session state but is not shown as a user-visible prompt line.
+- `chat --system --no-reply` queues an idle system message for the next continued turn to carry into the request.
+- `debug trace` has no `ocm` equivalent — use `ocm transcript` for diagnostics.
+- `one-shot` takes only a prompt; the agent is determined by server config.
+- `begin-session` `--json` flag was removed; use `ocm transcript` separately to inspect session state.
+
+**Avoid using the OpenCode CLI for real LLM work.** Use `ocm` via `uvx` for chatting, testing, and session orchestration.
 
 ## Web UI
 
@@ -127,7 +138,7 @@ uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx debug trac
   harness.
 - `--attach` plus `--agent` is a known broken combination upstream. If you need a
   specific non-default agent, prefer a non-attached one-shot run or drive the session
-  through `opencode-manager` against a repo-local server.
+  through `ocm` against a repo-local server.
 
 ## Debugging Order
 
@@ -135,6 +146,6 @@ uvx --from git+https://github.com/dzackgarza/opencode-manager.git opx debug trac
 - If the wrong tools or agents appear, check `command opencode agent list` and the active config surface.
 - If repo-local behavior matters, verify which `OPENCODE_BASE_URL` and repo-local server you are talking to.
 - If a command or flag is uncertain, check `command opencode --help` before guessing.
-- If `opx transcript --json` or another manager surface is wrong, file an issue rather
+- If `ocm transcript --json` or another manager surface is wrong, file an issue rather
   than adding a transcript parsing fallback.
 - If you need proof or audit rules, switch to `opencode-plugin-development`.

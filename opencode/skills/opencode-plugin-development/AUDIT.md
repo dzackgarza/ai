@@ -14,7 +14,7 @@ patterns, use `opencode-cli/async-injection.md`.
 
 - Inspect real files, configs, commands, transcripts, and test code. Do not audit from memory.
 - For negative findings, cite the exact file, command, or evidence surface.
-- When the claim concerns OpenCode behavior, inspect `opx transcript --json`, `opx debug trace`, transcript output, or an external side effect. Do not rely on scraped TUI output.
+- When the claim concerns OpenCode behavior, inspect `ocm transcript --json`, transcript output, or an external side effect. Do not rely on scraped TUI output.
 - Shared top-level policy docs may refer to canonical local workspace paths. Package repos must not commit user-specific runtime paths as part of their normal behavior, config, or examples.
 
 ## Shared Policy Surface
@@ -60,7 +60,7 @@ patterns, use `opencode-cli/async-injection.md`.
 - **No hidden opencode configs**: Repos must not contain opencode configuration files in subfolders, hidden folders, or sub-config files (no `.opencode/`, no nested `opencode.json`, no `.config/opencode.json` except where explicitly documented as the canonical local verification config).
 - **Centralized testing agents**: All testing agents are defined in the top-level opencode testing environment configs (see `.testrc` home dirs and config locations). Individual repos must not define their own test agents.
 - **Centralized opencode serve management**: All repos use the top-level `just` recipes for starting/stopping test opencode serve instances. No repo-specific server management.
-- **No direct opencode invocation**: Code must not run `opencode` directly. All opencode interactions use `opencode-manager` (`opx` commands).
+- **No direct opencode invocation**: Code must not run `opencode` directly. All opencode interactions use `ocm` via `uvx`.
 
 ## Automation
 
@@ -75,10 +75,11 @@ patterns, use `opencode-cli/async-injection.md`.
 
 - The OpenCode binary is resolved from PATH only. No `OPENCODE_BIN`, `--opencode-bin`, or hardcoded binary fallbacks.
 - `command opencode` appears only for process-level checks such as `opencode agent list`, `opencode models`, and starting a repo-local `opencode serve`.
-- `opencode-manager` is the workflow and proof harness for real session tests. Use the
-  public `opx` subcommands such as `one-shot`, `begin-session`, `chat`, `system`,
-  `transcript`, `final`, and `delete`.
-- `opx transcript --json` is the only approved transcript renderer or parser. No
+- `ocm` is the workflow and proof harness for real session tests. Use the
+  public `ocm` subcommands: `one-shot`, `begin-session`, `chat`, `chat --system`,
+  `transcript`, `final`, `delete`, `wait`, `doctor`.
+  Note: `system` is now `chat --system`; `debug trace` has no `ocm` equivalent (use `ocm transcript` for diagnostics).
+- `ocm transcript --json` is the only approved transcript renderer or parser. No
   `opencode export` plus shell-filter fallback recipes appear in repo docs, tests, or
   helper scripts. If the manager surface is insufficient, the follow-up is an issue, not
   a fallback parser.
