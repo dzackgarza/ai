@@ -1,0 +1,66 @@
+# justfile-bun — JavaScript/TypeScript quality control with bun
+
+default:
+  @just test
+
+# private recipes
+_install-tools:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun add -d @bun/test c8 knip eslint typescript semgrep jscpd lizard-py
+
+_coverage: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun test --coverage --coverage-reporter=cobertura --coverage-dir=.
+	bun x c8 report --reporter=cobertura --report-dir=.
+
+_diff-cover: _coverage
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x diff-cover coverage.cobertura.xml --compare-branch ${DIFF_COVER_BASE:-main}
+
+_knip: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x knip --no-gitignore
+
+_eslint: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x eslint . --max-warnings 0
+
+_tsc: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x tsc --noEmit
+
+_semgrep: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x semgrep --config=p/ci --inline-suppression
+
+_jscpd: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x jscpd --path . --reporters console
+
+_lizard: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x lizard src
+
+_codeql:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	if ! command -v codeql >/dev/null 2>&1; then
+		echo "CodeQL CLI not found"
+		exit 2
+	fi
+	echo "Run CodeQL via recommended workflow"
+
+# top-level test depends on all private analyses
+test: _coverage _diff-cover _knip _eslint _tsc _semgrep _jscpd _lizard _codeql
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "All analyses completed"
