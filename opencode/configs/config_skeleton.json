@@ -135,6 +135,7 @@
       "*": "ask",
       "/home/dzack/ai/*": "allow",
       "/home/dzack/.agents/*": "allow",
+      "/home/dzack/.plannotator/*": "allow",
       "/tmp/*": "allow"
     },
     "list_sessions": "allow",

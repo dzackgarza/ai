@@ -126,17 +126,18 @@ run-microagent *args:
 # Build all OpenCode components (agents, config, and documentation)
 build: check-plugins build-agents build-config build-agents-md
 
-# Surgical build for permissions only
+# Surgical build for permissions only (uses compiled-agents workflow)
 build-permissions: 
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py apply
+    @just -f {{ repo }}/../opencode-plugins/clis/ai-prompts/justfile compile-agents
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
 
 # Surgical build for config only (depends on permissions for skeleton update)
-build-config: 
+build-config: build-permissions
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 
 # Build agent permission files (depends on config being built)
-build-agents: 
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
+build-agents: build-permissions
+    @echo "Agents built via build-permissions"
 
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
