@@ -1,7 +1,27 @@
 from pathlib import Path
 from typing import ClassVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class CheckRunAnnotation(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(strict=True)
+    path: str
+    start_line: int
+    annotation_level: str
+    message: str
+    title: str | None = None
+    blob_href: str | None = None
+
+
+class CheckRun(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(strict=True)
+    id: int
+    name: str
+    status: str
+    conclusion: str | None = None
+    details_url: str | None = None
+    annotations: list[CheckRunAnnotation] = Field(default_factory=list)
 
 
 class PRRef(BaseModel):

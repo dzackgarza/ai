@@ -174,6 +174,63 @@ def get_pr_reviews(repo: str, pr_num: int) -> tuple[list[Comment], list[Comment]
 
 
 @validate_call
+def get_pr_check_runs(repo: str, head_sha: str) -> list[CheckRun]:
+    """Get all check runs and their annotations for a PR's HEAD commit."""
+    check_runs: list[CheckRun] = []
+    try:
+        output = run_gh(["api", f"repos/{repo}/commits/{head_sha}/check-runs"])
+        data = cast(dict[str, Any], json.loads(output))
+        runs = cast(list[dict[str, Any]], data.get("check_runs", []))
+
+        for run in runs:
+            check_run = CheckRun(
+                id=int(run.get("id", 0)),
+                name=str(run.get("name", "Unknown")),
+                status=str(run.get("status", "unknown")),
+                conclusion=str(run.get("conclusion"))
+                if run.get("conclusion")
+                else None,
+                details_url=str(run.get("details_url"))
+                if run.get("details_url")
+                else None,
+            )
+
+            # Only fetch annotations if the check failed or requires action
+            if check_run.conclusion in ("failure", "action_required", "neutral"):
+                try:
+                    ann_output = run_gh(
+                        ["api", f"repos/{repo}/check-runs/{check_run.id}/annotations"]
+                    )
+                    ann_data = cast(list[dict[str, Any]], json.loads(ann_output))
+                    for ann in ann_data:
+                        check_run.annotations.append(
+                            CheckRunAnnotation(
+                                path=str(ann.get("path", "")),
+                                start_line=int(ann.get("start_line", 0)),
+                                annotation_level=str(
+                                    ann.get("annotation_level", "warning")
+                                ),
+                                message=str(ann.get("message", "")),
+                                title=str(ann.get("title"))
+                                if ann.get("title")
+                                else None,
+                                blob_href=str(ann.get("blob_href"))
+                                if ann.get("blob_href")
+                                else None,
+                            )
+                        )
+                except subprocess.CalledProcessError:
+                    pass
+
+            check_runs.append(check_run)
+
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to fetch check runs: {e}", file=sys.stderr)
+
+    return check_runs
+
+
+@validate_call
 def extract_all_unresolved_comments(comments: list[Comment]) -> list[UnresolvedIssue]:
     """Extract ALL unresolved comments (not resolved)."""
     issues: list[UnresolvedIssue] = []
@@ -198,7 +255,7 @@ def summarize_pr_comments(inp: SummarizeInput) -> str:
                 "--repo",
                 pr_ref.repo,
                 "--json",
-                "title,url,number,body,state",
+                "title,url,number,body,state,headRefOid",
             ]
         )
         pr_data = cast(dict[str, Any], json.loads(output))
@@ -230,6 +287,9 @@ def summarize_pr_comments(inp: SummarizeInput) -> str:
     except subprocess.CalledProcessError:
         pass
 
+    head_sha = str(pr_data.get("headRefOid", ""))
+    check_runs = get_pr_check_runs(pr_ref.repo, head_sha) if head_sha else []
+
     lines = [
         f"# PR #{pr_data.get('number', pr_ref.number)}: {pr_data.get('title', 'Unknown')}",
         f"[{pr_data.get('url', '')}]({pr_data.get('url', '')})",
@@ -238,6 +298,32 @@ def summarize_pr_comments(inp: SummarizeInput) -> str:
         "---",
         "",
     ]
+
+    if check_runs:
+        lines.append("## Automated Checks")
+        lines.append("")
+        for run in check_runs:
+            status_icon = (
+                "❌"
+                if run.conclusion in ("failure", "action_required")
+                else "✅"
+                if run.conclusion == "success"
+                else "⚠️"
+            )
+            lines.append(f"### {status_icon} {run.name}")
+            if run.details_url:
+                lines.append(f"[Details]({run.details_url})")
+
+            if run.annotations:
+                lines.append("")
+                for ann in run.annotations:
+                    lines.append(
+                        f"- **{ann.path}:{ann.start_line}** ({ann.annotation_level})"
+                    )
+                    lines.append(f"  {ann.message}")
+            lines.append("")
+        lines.append("---")
+        lines.append("")
 
     for c in comments_raw:
         author = str(c.get("user", {}).get("login", "unknown"))
