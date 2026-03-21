@@ -102,6 +102,7 @@ _slop:
 	set -euo pipefail
 	uvx ai-slop-detector --project . \
 		--config {{justfile_directory()}}/.slopconfig.yaml \
+		--verbose \
 		--ci-mode hard \
 		--fail-threshold 30 \
 		--severity high \
