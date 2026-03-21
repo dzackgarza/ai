@@ -1,5 +1,17 @@
 # justfile-bun — TypeScript quality control with bun
 #
+# PURPOSE OF A JUSTFILE:
+# 1) ENSHRINE WORKFLOWS: Every workflow lives in the justfile. No ad-hoc
+#    scripts, no "I'll just run this command directly". Justfile is the
+#    single source of truth for project operations.
+# 2) FIX OPINIONATED WORKFLOWS: Agents cannot cherry-pick checks. For
+#    example, `just typecheck` does NOT assert code quality — the `test`
+#    recipe runs the full QC stack (coverage, complexity, dead code,
+#    duplication, etc). Running only typecheck is insufficient.
+# 3) ABSTRACT COMPLEXITY: Env management, sandbox setup, tool installation,
+#    common tasks — all hidden in private recipes. Users run workflows,
+#    not infrastructure.
+#
 # MINIMAL QUALITY CONTROL: This justfile encodes the minimal QC stack
 # that MUST be present in every TypeScript project. The `test` recipe
 # is the single entry point — run `just test` always. Do NOT bypass it.
