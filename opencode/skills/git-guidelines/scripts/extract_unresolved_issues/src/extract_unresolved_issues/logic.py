@@ -347,6 +347,16 @@ def summarize_pr_comments(inp: SummarizeInput) -> str:
         lines.append("---")
         lines.append("")
 
+    lines.extend(
+        [
+            "> **This PR will not be accepted until every issue, notice, and warning above is "
+            "clearly resolved.** This output is never stale — automated bots update their "
+            "comments in place, and open review threads remain listed until the "
+            "'Resolve Conversation' button is clicked.",
+            "",
+        ]
+    )
+
     result = "\n".join(lines)
     if inp.output_file:
         inp.output_file.write_text(result)
@@ -400,6 +410,13 @@ def generate_markdown(
             "## Summary",
             "",
             f"🔴 **NOT RESOLVED:** {unresolved_count}",
+            "",
+            "---",
+            "",
+            "> **This PR will not be accepted until every issue, notice, and warning above is "
+            "clearly resolved.** This output is never stale — automated bots update their "
+            "comments in place, and open review threads remain listed until the "
+            "'Resolve Conversation' button is clicked.",
             "",
         ]
     )
