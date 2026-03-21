@@ -17,14 +17,13 @@ install:
     #!/usr/bin/env bash
     set -euo pipefail
     mkdir -p ~/.claude ~/.codex ~/.gemini ~/.qwen ~/.config/opencode ~/.config/kilo ~/.config/amp ~/.config ~/.agents ~/.kilocode ~/.opencode
-    ln -sf {{ repo }}/AGENTS.md ~/.claude/CLAUDE.md
-    ln -sf {{ repo }}/AGENTS.md ~/.codex/AGENTS.md
-    ln -sf {{ repo }}/AGENTS.md ~/.gemini/GEMINI.md
-    ln -sf {{ repo }}/AGENTS.md ~/.qwen/QWEN.md
-    ln -sf {{ repo }}/AGENTS.md ~/.config/opencode/AGENTS.md
-    ln -sf {{ repo }}/AGENTS.md ~/.config/kilo/AGENTS.md
-    ln -sf {{ repo }}/AGENTS.md ~/.config/amp/AGENTS.md
-    ln -sf {{ repo }}/AGENTS.md ~/.config/AGENTS.md
+    ln -sf {{ repo }}/opencode/AGENTS.md ~/.claude/CLAUDE.md
+    ln -sf {{ repo }}/opencode/AGENTS.md ~/.codex/AGENTS.md
+    ln -sf {{ repo }}/opencode/AGENTS.md ~/.gemini/GEMINI.md
+    ln -sf {{ repo }}/opencode/AGENTS.md ~/.qwen/QWEN.md
+    ln -sf {{ repo }}/opencode/AGENTS.md ~/.config/kilo/AGENTS.md
+    ln -sf {{ repo }}/opencode/AGENTS.md ~/.config/amp/AGENTS.md
+    ln -sf {{ repo }}/opencode/AGENTS.md ~/.config/AGENTS.md
     ln -sf {{ repo }}/opencode ~/.config/opencode
     ln -sf {{ repo }}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
     ln -sf {{ repo }}/opencode/configs/cc-safety-net.json ~/.cc-safety-net/config.json
@@ -32,11 +31,11 @@ install:
     
     # Linter/formatter configurations
     mkdir -p ~/.config/ruff ~/.config/black
-    ln -sf {{ repo }}/linter-configs/ruff-global.toml ~/.config/ruff/ruff.toml
-    ln -sf {{ repo }}/linter-configs/mypy-global.ini ~/.mypy.ini
-    ln -sf {{ repo }}/linter-configs/black-global.toml ~/.config/black/black.toml
-    ln -sf {{ repo }}/linter-configs/eslint-global.json ~/.eslintrc.json
-    ln -sf {{ repo }}/linter-configs/prettier-global.json ~/.prettierrc
+    ln -sf {{ repo }}/quality-control/ruff-global.toml ~/.config/ruff/ruff.toml
+    ln -sf {{ repo }}/quality-control/mypy-global.ini ~/.mypy.ini
+    ln -sf {{ repo }}/quality-control/black-global.toml ~/.config/black/black.toml
+    ln -sf {{ repo }}/quality-control/eslint-global.json ~/.eslintrc.json
+    ln -sf {{ repo }}/quality-control/prettier-global.json ~/.prettierrc
     
     # tmux config symlinks
     ln -sf {{ repo }}/dotfiles/tmux.conf ~/.tmux.conf
@@ -59,7 +58,7 @@ install:
     ln -sf {{ repo }}/opencode/skills ~/.config/amp/skills
     ln -sf {{ repo }}/opencode/skills ~/.kilocode/skills
     mkdir -p ~/.cache/ai-prompts/system-prompts
-    cd {{ repo }}/opencode && uv run ai-prompts get interactive-agents/interactive > ~/.cache/ai-prompts/system-prompts/interactive.md
+    uvx git+https://github.com/dzackgarza/ai-prompts ai-prompts get interactive-agents/interactive > ~/.cache/ai-prompts/system-prompts/interactive.md
     just --justfile {{ repo }}/justfile _update-shell-rc
     echo "✓ Installed"
     echo ""

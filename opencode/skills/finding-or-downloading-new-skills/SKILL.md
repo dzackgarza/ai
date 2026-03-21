@@ -46,17 +46,19 @@ Use Smithery to search or inspect a skill without manually downloading files fir
 
 ```bash
 # Search by keyword
-npx smithery skill search "pdf processing"
+npx @smithery/cli skill search "pdf processing"
 
 # View skill details/content without installing
-npx -y @smithery/cli@latest skill view <namespace>/<name>
+npx @smithery/cli skill view <namespace>/<name>
 ```
 
 ### Installing
 
 ```bash
-npx @smithery/cli@latest skill add <namespace>/<name> -a universal -g
+npx @smithery/cli skill add <namespace>/<name> -a opencode --global
 ```
+
+The `--global` flag installs to `~/.agents/skills/` (symlinked to `~/ai/opencode/skills/`), which is the canonical OpenCode skills path. Available agent targets: `claude-code`, `cursor`, `codex`, `windsurf`, `opencode`, `github-copilot`, and 30+ others. Run `npx @smithery/cli skill agents` to list them.
 
 ## LobeHub Marketplace
 
