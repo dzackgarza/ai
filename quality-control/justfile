@@ -105,6 +105,7 @@ _slop:
 		--ci-mode hard \
 		--fail-threshold 30 \
 		--severity high \
+		--ci-claims-strict \
 		--ci-report
 
 # top-level test depends on all private analyses

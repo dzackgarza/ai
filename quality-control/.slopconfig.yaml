@@ -1,5 +1,6 @@
-# Strict production config for ai-slop-detector
-# Based on AI-SLOP-Detector docs: https://github.com/flamehaven01/AI-SLOP-Detector/blob/main/docs/CONFIGURATION.md
+# Maximally strict production config for ai-slop-detector
+# Based on AI-SLOP-Detector Strict Mode + maximally informative extensions
+# https://github.com/flamehaven01/AI-SLOP-Detector/blob/main/docs/CONFIGURATION.md
 
 weights:
   ldr: 0.50
@@ -20,25 +21,49 @@ thresholds:
 patterns:
   disabled: []
 
-ignore:
-  - '**/__init__.py'
-  - 'tests/**'
-  - '**/*_test.py'
-  - '**/test_*.py'
-  - '**/*.pyi'
-  - '**/.venv/**'
-  - '.venv/**'
-  - '**/venv/**'
-  - '**/site-packages/**'
-  - '**/__pycache__/**'
-  - '**/node_modules/**'
-  - 'build/**'
-  - 'dist/**'
+evidence:
+  tests:
+    integration:
+      enabled: true
+      dir_patterns:
+        - 'tests/integration/**'
+        - 'integration_tests/**'
+        - 'tests/e2e/**'
+        - 'e2e/**'
+      file_patterns:
+        - 'test_integration_*.py'
+        - '*_integration_test.py'
+        - 'it_*.py'
+      pytest_markers:
+        - 'integration'
+        - 'e2e'
+        - 'slow'
+      runtime_signals:
+        enabled: true
+        keywords:
+          - 'testcontainers'
+          - 'docker-compose'
+          - 'TestClient'
+
+claims:
+  production_ready:
+    require_integration_tests: true
+    require_unit_tests: true
+    require_error_handling: true
+    require_logging: true
+  enterprise_grade:
+    require_integration_tests: true
+    require_monitoring: true
+    require_security: true
 
 reporting:
   formats:
     - text
     - json
+    - html
+  html:
+    theme: 'dark'
+    show_charts: true
   ci:
     fail_threshold: 30
     fail_on_critical: true
