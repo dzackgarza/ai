@@ -104,7 +104,6 @@ _slop:
 		--config {{justfile_directory()}}/.slopconfig.yaml \
 		--verbose \
 		--ci-mode hard \
-		--fail-threshold 30 \
 		--ci-claims-strict \
 		--ci-report
 
