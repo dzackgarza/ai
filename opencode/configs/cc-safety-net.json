@@ -296,6 +296,53 @@
         "check"
       ],
       "reason": "Use \"just test\" which includes check as a dependency. Do not bypass the full test suite."
+    },
+    {
+      "name": "block-npm-install-global",
+      "command": "npm",
+      "subcommand": "install",
+      "block_args": [
+        "-g",
+        "--global"
+      ],
+      "reason": "Global package installation is banned. All CLIs should be run using npx/uvx/bunx. If needed as a dependency, it must be recorded in package.json and installed via justfile recipe. Agents may not mutate global packages."
+    },
+    {
+      "name": "block-pip-install-global",
+      "command": "pip",
+      "subcommand": "install",
+      "block_args": [
+        "--user"
+      ],
+      "reason": "Global package installation is banned. All CLIs should be run using uvx/npx. If needed as a dependency, it must be recorded in pyproject.toml and installed via justfile recipe. Agents may not mutate global packages."
+    },
+    {
+      "name": "block-yarn-global",
+      "command": "yarn",
+      "subcommand": "global",
+      "block_args": [
+        "add"
+      ],
+      "reason": "Global package installation is banned. All CLIs should be run using npx/uvx/bunx. If needed as a dependency, it must be recorded in package.json and installed via justfile recipe. Agents may not mutate global packages."
+    },
+    {
+      "name": "block-npm-uninstall-global",
+      "command": "npm",
+      "subcommand": "uninstall",
+      "block_args": [
+        "-g",
+        "--global"
+      ],
+      "reason": "Global package removal is banned. Agents may not mutate global packages. If a global package is problematic, alert the user to manually uninstall it."
+    },
+    {
+      "name": "block-pip-uninstall-global",
+      "command": "pip",
+      "subcommand": "uninstall",
+      "block_args": [
+        "--user"
+      ],
+      "reason": "Global package removal is banned. Agents may not mutate global packages. If a global package is problematic, alert the user to manually uninstall it."
     }
   ]
 }
