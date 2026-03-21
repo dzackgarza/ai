@@ -1,10 +1,13 @@
 # justfile for Python quality control
 #
-# WORKFLOW: Always run `just test`. Do NOT add public recipes for
-# additional checks. The `test` recipe depends on the full quality
-# control stack — bypassing it defeats the purpose of enforced gates.
-# Add new analyses as private recipes (prefix with _) and add them to
-# the `test` dependency list.
+# MINIMAL QUALITY CONTROL: This justfile encodes the minimal QC stack
+# that MUST be present in every Python project. The `test` recipe is
+# the single entry point — run `just test` always. Do NOT bypass it.
+#
+# NARROW PUBLIC SURFACE: Only expose essential public recipes. Encode
+# all standard project workflows (build, dev, deploy, db migrate, etc.)
+# in justfile recipes — but these are private or grouped separately.
+# The `test` recipe's dependency graph is the only thing that gates CI.
 #
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory. No symlinks needed. Configs read by each tool:
