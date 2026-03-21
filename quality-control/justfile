@@ -5,6 +5,15 @@
 # control stack — bypassing it defeats the purpose of enforced gates.
 # Add new analyses as private recipes (prefix with _) and add them to
 # the `test` dependency list.
+#
+# CONFIG: This justfile uses justfile_directory() to reference configs
+# in this directory. No symlinks needed. Configs read by each tool:
+#   .importlinter  → import-linter (explicit --config flag)
+#   semgrep.yml    → semgrep local rules (explicit --config flag)
+#   .jscpd.json    → jscpd (explicit --config flag)
+#   .coveragerc    → coverage.py reads .coveragerc from cwd (run from project root)
+# GLOBAL CONFIGS OK: vulture, deptry, diff-cover, ruff, black, mypy
+# all read from ~/.config/ or pyproject.toml [tool.*] sections.
 
 default:
   @just test
@@ -44,12 +53,12 @@ _deptry: _install-tools
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run semgrep --config=semgrep.yml --config=p/ci --inline-suppression
+	uv run semgrep --config={{justfile_directory()}}/semgrep.yml --config=p/ci --inline-suppression
 
 _jscpd:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	npx -y jscpd --config .jscpd.json
+	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json
 
 _lizard: _install-tools
 	#!/usr/bin/env bash
@@ -64,7 +73,7 @@ _lizard: _install-tools
 _import-linter: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run import-linter check
+	uv run import-linter check --config {{justfile_directory()}}/.importlinter
 
 _codeql:
 	#!/usr/bin/env bash

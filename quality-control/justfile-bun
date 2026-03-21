@@ -5,6 +5,14 @@
 # control stack — bypassing it defeats the purpose of enforced gates.
 # Add new analyses as private recipes (prefix with _) and add them to
 # the `test` dependency list.
+#
+# CONFIG: This justfile uses justfile_directory() to reference configs
+# in this directory. No symlinks needed. Configs read by each tool:
+#   knip.json    → knip (explicit --config flag)
+#   semgrep.yml  → semgrep local rules (explicit --config flag)
+#   .jscpd.json  → jscpd (explicit --config flag)
+# GLOBAL CONFIGS OK: eslint, prettier (project .eslintrc/.prettierrc),
+# c8 (package.json [c8] or .c8rc), lizard (CLI flags only).
 
 default:
   @just test
@@ -29,7 +37,7 @@ _diff-cover: _coverage
 _knip: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x knip --config knip.json
+	bun x knip --config {{justfile_directory()}}/knip.json
 
 _eslint: _install-tools
 	#!/usr/bin/env bash
@@ -44,12 +52,12 @@ _tsc: _install-tools
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x semgrep --config semgrep.yml --config=p/ci --inline-suppression
+	bun x semgrep --config {{justfile_directory()}}/semgrep.yml --config=p/ci --inline-suppression
 
 _jscpd: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x jscpd --config .jscpd.json
+	bun x jscpd --config {{justfile_directory()}}/.jscpd.json
 
 _lizard: _install-tools
 	#!/usr/bin/env bash

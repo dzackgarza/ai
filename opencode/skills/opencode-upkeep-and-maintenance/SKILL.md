@@ -7,38 +7,63 @@ description: Use when the OpenCode sidebar does not reflect the current git work
 
 ## Core Policy
 
-- **Sidebar Refresh:** If the sidebar is out of sync with the git state, run `oc-refresh-diff <session-id>` to force a fresh baseline from HEAD.
+- **Authorization Required:** Agents MUST NOT perform any snapshot modification (deletion or refresh) without explicit user approval.
+- **Rollback Invariant:** Modifying snapshots makes it impossible to walk back individual steps using native OpenCode features. Agents MUST verify the user understands this consequence and that no further backwards steps are intended for the session.
 - **Database Safety:** Always backup the database before running maintenance scripts.
-- **Critical Feature:** Snapshots are a critical feature for conversation context. Maintenance must focus on bug mitigation (leaks) and pruning stale data, not disabling the feature.
-- **Irreversible Rollbacks:** Modifying snapshots (pruning or refreshing) makes it impossible to walk back individual steps in those sessions using OpenCode's native rollback features. Any subsequent rollbacks must be performed directly via git.
+- **Feature Preservation:** Snapshots are a critical feature. Maintenance focuses solely on bug mitigation (leaks) and pruning unneeded data.
 
 ## Workflow: Reset Sidebar Baseline
 
 Use when the sidebar is out of sync with the git state or contains stale snapshot references.
 
-1.  **Backup Database:** `cp ~/.local/share/opencode/opencode.db ~/.local/share/opencode/opencode.db.bak`
-2.  **Confirm Consequences:** Explicitly ask the user if they understand that native OpenCode rollbacks will be disabled for this session after the refresh.
-3.  **Verify Status:** Ensure the session is not processing a turn.
+1.  **Safety Check:** Backup database: `cp ~/.local/share/opencode/opencode.db ~/.local/share/opencode/opencode.db.bak`
+2.  **Prompt for Approval:** Explain that `oc-refresh-diff` disables native rollbacks for this session. Do not proceed until the user confirms they will use git for any future backwards steps.
+3.  **Verify Session Status:** Ensure the target session is idle.
 4.  **Execute Refresh:** `oc-refresh-diff <session-id>`
-    - **Effect:** Clears stale `snapshot` hashes from the DB and updates the snapshot git index to HEAD. This makes old tree objects unreachable so `git gc` can reclaim space.
+    - **Effect:** Clears stale references from the DB and index, making old objects reachable for `git gc`.
 
-## Workflow: Session Pruning
+## Workflow: Session Pruning (Individual)
 
-Pruning sessions is the canonical way to recover database space and snapshot disk space. **Perform pruning before investigating snapshot issues to avoid wasting resources on unneeded data.**
+Pruning sessions recovers database space and snapshot disk space. **Perform pruning before investigating snapshot issues.**
 
-1.  **Rationale:** Trivial sessions (testing, "hello world", model checks) consume DB space and gigabytes of git snapshots. Pruning these reduces maintenance surface area.
-2.  **Pull Candidates:**
-    - List active: `curl -s http://127.0.0.1:4096/session`
-    - List archived: `curl -s "http://127.0.0.1:4096/experimental/session?archived=true&limit=1000"`
-3.  **Evaluate Candidates:**
-    - **Archived:** Primary candidates for deletion.
-    - **Stale:** Updated > 2 weeks ago? Ask user.
-    - **Short (< 10 turns):** Likely one-offs. **Caution:** May be "primed" sessions for future use; ask user.
-    - **Trivial:** Test runs, greetings, or "do X" one-offs.
-4.  **Audit Transcripts:** Read the actual conversation to verify the session is unneeded.
-5.  **Prune:** Present approved IDs/titles to the user and delete via `sqlite3` or API.
+1.  **Gather Evidence:**
+    - List candidates via `GET /session` or `/experimental/session`.
+    - Apply Candidate Decision Procedures (Archived, Stale > 2 weeks, Short < 10 turns, Trivial tests).
+2.  **Audit Transcripts:** Read the actual conversation to verify the session is unneeded.
+3.  **Present Options:** List candidate IDs/titles to the user.
+4.  **Prompt for Deletion:** Obtain explicit authorization for the specific list before pruning via API or `sqlite3`.
 
-## Workflow: Mitigate Snapshot Disk Leaks
+## Workflow: En-Masse Pruning (Playbook)
+
+Use for bulk cleanup of automated or ephemeral artifacts. **MANDATORY: Verify user authorization before execution.**
+
+1.  **Backup Database:** `cp ~/.local/share/opencode/opencode.db ~/.local/share/opencode/opencode.db.bak`
+2.  **Identify Ephemeral Candidates:**
+    ```bash
+    # Finds automated tools (opx, ocm) and unnamed scratchpads
+    sqlite3 ~/.local/share/opencode/opencode.db \
+      "SELECT id, title FROM session WHERE title LIKE 'opx:%' OR title LIKE 'ocm:%' OR title LIKE 'New session -%';" > prune_list.txt
+    ```
+3.  **Audit Sample:** Read 2-3 random transcripts from the list to ensure no "primed" context is being lost.
+4.  **Transactional Deletion:**
+    ```bash
+    # Generate and run SQL transaction
+    echo "BEGIN TRANSACTION;" > prune.sql
+    cut -d'|' -f1 prune_list.txt | sed "s/.*/DELETE FROM session WHERE id = '&';/" >> prune.sql
+    echo "COMMIT;" >> prune.sql
+    sqlite3 ~/.local/share/opencode/opencode.db < prune.sql
+    ```
+5.  **Reclaim Disk Space:** Physical recovery requires `git gc` in the snapshot repositories:
+    ```bash
+    # Targeted cleanup of repack leaks
+    rm -f ~/.local/share/opencode/snapshot/*/objects/pack/tmp_pack_*
+    # Full pruning GC
+    for dir in ~/.local/share/opencode/snapshot/*; do
+      [ -d "$dir" ] && git -C "$dir" gc --prune=now --quiet
+    done
+    ```
+
+## Decision Procedures: Pruning Candidates
 
 Use when disk space is exhausted due to orphaned repack artifacts (bugs in the snapshot system).
 
