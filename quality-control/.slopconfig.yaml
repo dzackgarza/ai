@@ -2,9 +2,9 @@
 # Based on AI-SLOP-Detector docs: https://github.com/flamehaven01/AI-SLOP-Detector/blob/main/docs/CONFIGURATION.md
 
 weights:
-  ldr: 0.40
-  inflation: 0.35
-  ddc: 0.25
+  ldr: 0.50
+  inflation: 0.30
+  ddc: 0.20
 
 thresholds:
   ldr:
