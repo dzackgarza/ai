@@ -105,7 +105,6 @@ _slop:
 		--verbose \
 		--ci-mode hard \
 		--fail-threshold 30 \
-		--severity high \
 		--ci-claims-strict \
 		--ci-report
 
