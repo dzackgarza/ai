@@ -5,6 +5,42 @@ set script-interpreter := ['uv', 'run', '--script']
 # Usage: just install
 
 repo := env_var_or_default("REPO", env_var("HOME") / "ai")
+home := env_var("HOME")
+
+# Repository targets (top-level source of truth)
+opencode_dir := repo / "opencode"
+quality_control_dir := repo / "quality-control"
+dotfiles_dir := repo / "dotfiles"
+
+# Core assets
+agents_md := opencode_dir / "AGENTS.md"
+skills_dir := opencode_dir / "skills"
+
+# Linter/formatter configurations
+ruff_config := quality_control_dir / "ruff-global.toml"
+mypy_config := quality_control_dir / "mypy-global.ini"
+black_config := quality_control_dir / "black-global.toml"
+eslint_config := quality_control_dir / "eslint-global.json"
+prettier_config := quality_control_dir / "prettier-global.json"
+
+# Tool configs
+cc_safety_net := opencode_dir / "configs" / "cc-safety-net.json"
+tmux_conf := dotfiles_dir / "tmux.conf"
+tmux_powerline_config := dotfiles_dir / "tmux-powerline" / "config.sh"
+tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.sh"
+
+# Harness home directories
+claude_home := home / ".claude"
+codex_home := home / ".codex"
+gemini_home := home / ".gemini"
+qwen_home := home / ".qwen"
+opencode_home := home / ".config/opencode"
+kilo_home := home / ".config/kilo"
+amp_home := home / ".config/amp"
+agents_home := home / ".agents"
+kilocode_home := home / ".kilocode"
+opencode_root := home / ".opencode"
+cc_safety_net_home := home / ".cc-safety-net"
 
 # Show available recipes
 
@@ -16,59 +52,86 @@ default:
 install:
     #!/usr/bin/env bash
     set -euo pipefail
-    mkdir -p ~/.claude ~/.codex ~/.gemini ~/.qwen ~/.config/opencode ~/.config/kilo ~/.config/amp ~/.config ~/.agents ~/.kilocode ~/.opencode
-    ln -sf {{ repo }}/opencode/AGENTS.md ~/.claude/CLAUDE.md
-    ln -sf {{ repo }}/opencode/AGENTS.md ~/.codex/AGENTS.md
-    ln -sf {{ repo }}/opencode/AGENTS.md ~/.gemini/GEMINI.md
-    ln -sf {{ repo }}/opencode/AGENTS.md ~/.qwen/QWEN.md
-    ln -sf {{ repo }}/opencode/AGENTS.md ~/.config/kilo/AGENTS.md
-    ln -sf {{ repo }}/opencode/AGENTS.md ~/.config/amp/AGENTS.md
-    ln -sf {{ repo }}/opencode/AGENTS.md ~/.config/AGENTS.md
-    ln -sf {{ repo }}/opencode ~/.config/opencode
-    ln -sf {{ repo }}/opencode/rate-limit-fallback.json ~/.opencode/rate-limit-fallback.json
-    ln -sf {{ repo }}/opencode/configs/cc-safety-net.json ~/.cc-safety-net/config.json
-    mkdir -p ~/.cc-safety-net
+
+    # Assertion of existence
+    echo "Verifying repository targets..."
+    for target in "{{ agents_md }}" "{{ skills_dir }}" "{{ ruff_config }}" "{{ mypy_config }}" \
+                  "{{ black_config }}" "{{ eslint_config }}" "{{ prettier_config }}" \
+                  "{{ cc_safety_net }}" "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
+                  "{{ tmux_powerline_theme }}"; do
+        if [ ! -e "$target" ]; then
+            echo "Error: Target $target does not exist. Aborting."
+            exit 1
+        fi
+    done
+    echo "✓ All repository targets exist."
+
+    mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" "{{ qwen_home }}" \
+             "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" "{{ agents_home }}" \
+             "{{ kilocode_home }}" "{{ opencode_root }}" "{{ cc_safety_net_home }}"
+    
+    ln -sf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
+    ln -sf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
+    ln -sf "{{ agents_md }}" "{{ gemini_home }}/GEMINI.md"
+    ln -sf "{{ agents_md }}" "{{ qwen_home }}/QWEN.md"
+    ln -sf "{{ agents_md }}" "{{ kilo_home }}/AGENTS.md"
+    ln -sf "{{ agents_md }}" "{{ amp_home }}/AGENTS.md"
+    ln -sf "{{ agents_md }}" "{{ home }}/.config/AGENTS.md"
+    ln -sf "{{ opencode_dir }}" "{{ opencode_home }}"
+    ln -sf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
+    ln -sf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
     
     # Linter/formatter configurations
-    mkdir -p ~/.config/ruff ~/.config/black
-    ln -sf {{ repo }}/quality-control/ruff-global.toml ~/.config/ruff/ruff.toml
-    ln -sf {{ repo }}/quality-control/mypy-global.ini ~/.mypy.ini
-    ln -sf {{ repo }}/quality-control/black-global.toml ~/.config/black/black.toml
-    ln -sf {{ repo }}/quality-control/eslint-global.json ~/.eslintrc.json
-    ln -sf {{ repo }}/quality-control/prettier-global.json ~/.prettierrc
+    mkdir -p "{{ home }}/.config/ruff" "{{ home }}/.config/black"
+    ln -sf "{{ ruff_config }}" "{{ home }}/.config/ruff/ruff.toml"
+    ln -sf "{{ mypy_config }}" "{{ home }}/.mypy.ini"
+    ln -sf "{{ black_config }}" "{{ home }}/.config/black/black.toml"
+    ln -sf "{{ eslint_config }}" "{{ home }}/.eslintrc.json"
+    ln -sf "{{ prettier_config }}" "{{ home }}/.prettierrc"
     
     # tmux config symlinks
-    ln -sf {{ repo }}/dotfiles/tmux.conf ~/.tmux.conf
-    mkdir -p ~/.config/tmux-powerline/themes
-    ln -sf {{ repo }}/dotfiles/tmux-powerline/themes/my-theme.sh ~/.config/tmux-powerline/themes/my-theme.sh
-    ln -sf {{ repo }}/dotfiles/tmux-powerline/config.sh ~/.config/tmux-powerline/config.sh
+    ln -sf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
+    mkdir -p "{{ home }}/.config/tmux-powerline/themes"
+    ln -sf "{{ tmux_powerline_theme }}" "{{ home }}/.config/tmux-powerline/themes/my-theme.sh"
+    ln -sf "{{ tmux_powerline_config }}" "{{ home }}/.config/tmux-powerline/config.sh"
+
     # Backup existing skills directories before creating symlinks
-    #!/bin/bash
-    for dir in ~/.claude/skills ~/.codex/skills ~/.gemini/skills ~/.agents/skills ~/.qwen/skills ~/.config/agents/skills ~/.config/amp/skills ~/.kilocode/skills; do
+    for dir in "{{ claude_home }}/skills" "{{ codex_home }}/skills" "{{ gemini_home }}/skills" \
+               "{{ agents_home }}/skills" "{{ qwen_home }}/skills" "{{ home }}/.config/agents/skills" \
+               "{{ amp_home }}/skills" "{{ kilocode_home }}/skills"; do
         if [ -d "$dir" ] && [ ! -L "$dir" ]; then
             mv "$dir" "$dir.bak.$(date +%Y%m%d%H%M%S)"
         fi
     done
-    ln -sf {{ repo }}/opencode/skills ~/.claude/skills
-    ln -sf {{ repo }}/opencode/skills ~/.codex/skills
-    ln -sf {{ repo }}/opencode/skills ~/.gemini/skills
-    ln -sf {{ repo }}/opencode/skills ~/.agents/skills
-    ln -sf {{ repo }}/opencode/skills ~/.qwen/skills
-    ln -sf {{ repo }}/opencode/skills ~/.config/agents/skills
-    ln -sf {{ repo }}/opencode/skills ~/.config/amp/skills
-    ln -sf {{ repo }}/opencode/skills ~/.kilocode/skills
-    mkdir -p ~/.cache/ai-prompts/system-prompts
-    uvx git+https://github.com/dzackgarza/ai-prompts ai-prompts get interactive-agents/interactive > ~/.cache/ai-prompts/system-prompts/interactive.md
+    ln -sf "{{ skills_dir }}" "{{ claude_home }}/skills"
+    ln -sf "{{ skills_dir }}" "{{ codex_home }}/skills"
+    ln -sf "{{ skills_dir }}" "{{ gemini_home }}/skills"
+    ln -sf "{{ skills_dir }}" "{{ agents_home }}/skills"
+    ln -sf "{{ skills_dir }}" "{{ qwen_home }}/skills"
+    ln -sf "{{ skills_dir }}" "{{ home }}/.config/agents/skills"
+    ln -sf "{{ skills_dir }}" "{{ amp_home }}/skills"
+    ln -sf "{{ skills_dir }}" "{{ kilocode_home }}/skills"
+
     just --justfile {{ repo }}/justfile _update-shell-rc
-    echo "✓ Installed"
+
+    echo "✓ Environment installed"
     echo ""
-    echo "Context files:    AGENTS.md → all harnesses"
-    echo "Skills:           {{ repo }}/skills → all harnesses"
-    echo "System prompts:   GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → cached ai-prompts interactive slug"
-    echo "Env vars:         GEMINI_SYSTEM_MD, QWEN_SYSTEM_MD → bashrc, zshrc"
-    echo "OpenCode:         .opencode/ → ~/.config/opencode"
-    echo "Safety Net:       opencode/configs/cc-safety-net.json → ~/.cc-safety-net/config.json"
-    echo "Linter configs:   linter-configs/ → ~/.config/ (ruff, black, mypy, eslint, prettier)"
+    echo "Symlink targets (actual):"
+    printf "%-30s -> %s\n" "~/.gemini/GEMINI.md" "$(readlink {{ gemini_home }}/GEMINI.md)"
+    printf "%-30s -> %s\n" "~/.gemini/skills" "$(readlink {{ gemini_home }}/skills)"
+    printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
+    printf "%-30s -> %s\n" "~/.config/ruff/ruff.toml" "$(readlink {{ home }}/.config/ruff/ruff.toml)"
+    printf "%-30s -> %s\n" "~/.config/black/black.toml" "$(readlink {{ home }}/.config/black/black.toml)"
+    printf "%-30s -> %s\n" "~/.mypy.ini" "$(readlink {{ home }}/.mypy.ini)"
+    printf "%-30s -> %s\n" "~/.eslintrc.json" "$(readlink {{ home }}/.eslintrc.json)"
+    printf "%-30s -> %s\n" "~/.prettierrc" "$(readlink {{ home }}/.prettierrc)"
+    printf "%-30s -> %s\n" "~/.cc-safety-net/config.json" "$(readlink {{ cc_safety_net_home }}/config.json)"
+    echo ""
+    echo "System prompts (actual):"
+    [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
+    [ -f ~/.bashrc ] && grep "export QWEN_SYSTEM_MD=" ~/.bashrc | tail -n 1
+    [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
+    [ -f ~/.zshrc ] && grep "export QWEN_SYSTEM_MD=" ~/.zshrc | tail -n 1
 
 # Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:
@@ -76,7 +139,8 @@ _update-shell-rc:
     from pathlib import Path
     import re
 
-    prompt_path = str((Path.home() / ".cache/ai-prompts/system-prompts/interactive.md").resolve())
+    repo_root = Path("{{ repo }}").resolve()
+    prompt_path = str((repo_root / "opencode/agents/interactive.md").resolve())
     marker = "# System prompt overrides for Gemini/Qwen CLI"
     block = (
         f"\n{marker}\n"

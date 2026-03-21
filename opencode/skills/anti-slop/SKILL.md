@@ -10,6 +10,7 @@ Detect and eliminate generic AI-generated patterns ("slop") across natural langu
 ## What is AI Slop?
 
 AI slop refers to telltale patterns that signal low-quality, generic AI-generated content:
+
 - **Text**: Overused phrases like "delve into," excessive buzzwords, meta-commentary
 - **Code**: Generic variable names, obvious comments, unnecessary abstraction
 - **Design**: Cookie-cutter layouts, generic gradients, overused visual patterns
@@ -19,6 +20,7 @@ This skill helps identify and remove these patterns to create authentic, high-qu
 ## When to Use This Skill
 
 Apply anti-slop techniques when:
+
 - Reviewing AI-generated content before delivery
 - Creating original content and want to avoid generic patterns
 - Cleaning up existing content that feels generic
@@ -31,24 +33,28 @@ Apply anti-slop techniques when:
 ### 1. Detect Slop
 
 **For text files:**
+
 ```bash
 python scripts/detect_slop.py <file> [--verbose]
 ```
 
 This analyzes text and provides:
+
 - Slop score (0-100, higher is worse)
 - Specific pattern findings
 - Actionable recommendations
 
 **Manual detection:**
 Read the appropriate reference file for detailed patterns:
+
 - `references/text-patterns.md` - Natural language slop patterns
-- `references/code-patterns.md` - Programming slop patterns  
+- `references/code-patterns.md` - Programming slop patterns
 - `references/design-patterns.md` - Visual/UX design slop patterns
 
 ### 2. Clean Slop
 
 **Automated cleanup (text only):**
+
 ```bash
 # Preview changes
 python scripts/clean_slop.py <file>
@@ -68,6 +74,7 @@ Apply strategies from the reference files based on detected patterns.
 ### High-Priority Targets
 
 **Remove immediately:**
+
 - "delve into" → delete or replace with "examine"
 - "navigate the complexities" → "handle" or delete
 - "in today's fast-paced world" → delete
@@ -75,11 +82,13 @@ Apply strategies from the reference files based on detected patterns.
 - Meta-commentary about the document itself
 
 **Simplify wordy phrases:**
+
 - "in order to" → "to"
 - "due to the fact that" → "because"
 - "has the ability to" → "can"
 
 **Replace buzzwords:**
+
 - "leverage" → "use"
 - "synergistic" → "cooperative"
 - "paradigm shift" → "major change"
@@ -87,16 +96,19 @@ Apply strategies from the reference files based on detected patterns.
 ### Quality Principles
 
 **Be direct:**
+
 - Skip preambles and meta-commentary
 - Lead with the actual point
 - Cut transition words that don't add meaning
 
 **Be specific:**
+
 - Replace generic terms with concrete examples
 - Name specific things instead of "items," "things," "data"
 - Use precise verbs instead of vague action words
 
 **Be authentic:**
+
 - Vary sentence structure and length
 - Use active voice predominantly
 - Write in a voice appropriate to context, not corporate-generic
@@ -106,12 +118,14 @@ Apply strategies from the reference files based on detected patterns.
 ### High-Priority Targets
 
 **Rename generic variables:**
+
 - `data` → name what data it represents
 - `result` → name what the result contains
 - `temp` → name what you're temporarily storing
 - `item` → name what kind of item
 
 **Remove obvious comments:**
+
 ```python
 # Bad
 # Create a user
@@ -122,11 +136,13 @@ user = User()
 ```
 
 **Simplify over-engineered code:**
+
 - Remove unnecessary abstraction layers
 - Replace design patterns used without purpose
 - Simplify complex implementations of simple tasks
 
 **Improve function names:**
+
 - `handleData()` → what are you doing with data?
 - `processItems()` → what processing specifically?
 - `manageUsers()` → what management action?
@@ -134,58 +150,22 @@ user = User()
 ### Quality Principles
 
 **Clarity over cleverness:**
+
 - Write code that's easy to understand
 - Optimize only when profiling shows need
 - Prefer simple solutions to complex ones
 
 **Meaningful names:**
+
 - Variable names should describe content
 - Function names should describe action + object
 - Class names should describe responsibility
 
 **Appropriate documentation:**
+
 - Document why, not what
 - Skip documentation for self-evident code
 - Focus documentation on public APIs and complex logic
-
-## Design Slop Detection & Cleanup
-
-### High-Priority Targets
-
-**Visual slop:**
-- Generic gradient backgrounds (purple/pink/cyan)
-- Overuse of glassmorphism or neumorphism
-- Floating 3D shapes without purpose
-- Every element using same design treatment
-
-**Layout slop:**
-- Template-driven layouts ignoring content needs
-- Everything in cards regardless of content type
-- Excessive whitespace without hierarchy
-- Center-alignment of all elements
-
-**Copy slop:**
-- "Empower your business" type headlines
-- Generic CTAs like "Get Started" without context
-- Buzzword-heavy descriptions
-- Stock photo aesthetics
-
-### Quality Principles
-
-**Content-first design:**
-- Design around actual content needs
-- Create hierarchy based on importance
-- Let content determine layout, not templates
-
-**Intentional choices:**
-- Every design decision should be justifiable
-- Use patterns because they serve users, not because they're trendy
-- Vary visual treatment based on element importance
-
-**Authentic voice:**
-- Copy should reflect brand personality
-- Avoid generic marketing speak
-- Be specific about value proposition
 
 ## Reference Files
 
@@ -198,6 +178,7 @@ Consult these comprehensive guides when working on specific domains:
 - **[design-patterns.md](references/design-patterns.md)** - Visual and UX design slop patterns with improvement strategies
 
 Each reference includes:
+
 - Pattern definitions and examples
 - Detection signals (high/medium confidence)
 - Context where patterns are acceptable
@@ -210,17 +191,20 @@ Each reference includes:
 Analyzes text files for AI slop patterns.
 
 **Usage:**
+
 ```bash
 python scripts/detect_slop.py <file> [--verbose]
 ```
 
 **Output:**
+
 - Overall slop score (0-100)
 - Category-specific findings
 - Line numbers and examples
 - Actionable recommendations
 
 **Scoring:**
+
 - 0-20: Low slop (authentic writing)
 - 20-40: Moderate slop (some patterns)
 - 40-60: High slop (many patterns)
@@ -231,6 +215,7 @@ python scripts/detect_slop.py <file> [--verbose]
 Automatically removes common slop patterns from text files.
 
 **Usage:**
+
 ```bash
 # Preview changes
 python scripts/clean_slop.py <file>
@@ -246,6 +231,7 @@ python scripts/clean_slop.py <file> --save --aggressive
 ```
 
 **What it cleans:**
+
 - High-risk phrases
 - Wordy constructions
 - Meta-commentary
@@ -255,6 +241,7 @@ python scripts/clean_slop.py <file> --save --aggressive
 - Empty intensifiers
 
 **Safety:**
+
 - Always creates `.backup` file when overwriting
 - Preview mode shows changes before applying
 - Preserves content meaning (non-aggressive mode)
@@ -264,6 +251,7 @@ python scripts/clean_slop.py <file> --save --aggressive
 ### Prevention Over Cure
 
 **When creating content:**
+
 1. Write with specific audience in mind
 2. Use concrete examples over abstractions
 3. Lead with the point, skip preambles
@@ -275,12 +263,14 @@ python scripts/clean_slop.py <file> --save --aggressive
 Not all patterns are always slop:
 
 **Acceptable contexts:**
+
 - Academic writing may need more hedging
 - Legal documents require specific phrasing
 - Internal documentation can use shortcuts
 - Technical docs have domain-specific conventions
 
 **Always consider:**
+
 - Who is the audience?
 - What is the purpose?
 - Does this pattern serve a function?
@@ -297,6 +287,7 @@ Not all patterns are always slop:
 ### Quality Over Automation
 
 The scripts are tools, not replacements for judgment:
+
 - Use automated detection to find candidates
 - Apply automated cleanup to obvious patterns
 - Manually review anything that changes meaning
@@ -325,6 +316,7 @@ python scripts/clean_slop.py src/documentation.md --save
 ### Standards Enforcement
 
 Create project-specific thresholds:
+
 - Max acceptable slop score: 30
 - Required manual review for scores > 20
 - Auto-reject submissions with scores > 50
@@ -332,15 +324,18 @@ Create project-specific thresholds:
 ## Limitations
 
 **Scripts only handle text:**
+
 - Code slop detection is manual (use code-patterns.md)
 - Design slop detection is manual (use design-patterns.md)
 
 **Context sensitivity:**
+
 - Scripts can't understand all contexts
 - Some "slop" may be appropriate in certain domains
 - Always review automated changes
 
 **Language coverage:**
+
 - Detection patterns optimized for English
 - Code patterns focus on common languages (Python, JS, Java)
 - Design patterns are platform-agnostic
@@ -373,7 +368,7 @@ Create project-specific thresholds:
 
 ```bash
 # User asks: "Does this design look too generic?"
-1. Read references/design-patterns.md
+1. Read references/design-patterns.md for the full pattern catalog
 2. Check against high-confidence slop indicators
 3. Identify specific issues (gradients, layouts, copy)
 4. Provide specific recommendations from design-patterns.md
@@ -394,24 +389,24 @@ Create project-specific thresholds:
 ## Tips for Success
 
 **For text cleanup:**
+
 - Run detection first to understand scope
 - Use non-aggressive mode for important content
 - Always review automated changes
 - Focus on high-risk patterns first
 
 **For code cleanup:**
+
 - Start with renaming generic variables
 - Remove obvious comments next
 - Refactor over-engineered code last
 - Test after each significant change
 
 **For design cleanup:**
-- Audit visual elements against patterns
-- Prioritize structural issues over aesthetic ones
-- Ensure changes serve user needs
-- Maintain brand consistency
+See `references/design-patterns.md` for the full catalog, detection signals, and cleanup strategies.
 
 **General principles:**
+
 - Quality > uniformity
 - Context > rules
 - Clarity > cleverness
