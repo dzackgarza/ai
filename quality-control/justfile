@@ -24,6 +24,7 @@
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory. No symlinks needed. Configs read by each tool:
 #   .importlinter  → import-linter (explicit --config flag)
+#   .slopconfig.yaml → ai-slop-detector (explicit --config flag)
 #   semgrep.yml    → semgrep local rules (explicit --config flag)
 #   .jscpd.json    → jscpd (explicit --config flag)
 #   .coveragerc    → coverage.py reads .coveragerc from cwd (run from project root)
@@ -96,8 +97,18 @@ _codeql:
 	codeql database create codeql-db --language=python --source-root=.
 	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
 
+_slop:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uvx ai-slop-detector --project . \
+		--config {{justfile_directory()}}/.slopconfig.yaml \
+		--ci-mode hard \
+		--fail-threshold 30 \
+		--severity high \
+		--ci-report
+
 # top-level test depends on all private analyses
-test: _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql
+test: _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "All analyses completed"

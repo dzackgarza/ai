@@ -1,0 +1,44 @@
+# Strict production config for ai-slop-detector
+# Based on AI-SLOP-Detector docs: https://github.com/flamehaven01/AI-SLOP-Detector/blob/main/docs/CONFIGURATION.md
+
+weights:
+  ldr: 0.40
+  inflation: 0.35
+  ddc: 0.25
+
+thresholds:
+  ldr:
+    critical: 0.40
+    warning: 0.70
+  inflation:
+    critical: 0.8
+    warning: 0.4
+  ddc:
+    critical: 0.60
+    warning: 0.80
+
+patterns:
+  disabled: []
+
+ignore:
+  - '**/__init__.py'
+  - 'tests/**'
+  - '**/*_test.py'
+  - '**/test_*.py'
+  - '**/*.pyi'
+  - '**/.venv/**'
+  - '.venv/**'
+  - '**/venv/**'
+  - '**/site-packages/**'
+  - '**/__pycache__/**'
+  - '**/node_modules/**'
+  - 'build/**'
+  - 'dist/**'
+
+reporting:
+  formats:
+    - text
+    - json
+  ci:
+    fail_threshold: 30
+    fail_on_critical: true
