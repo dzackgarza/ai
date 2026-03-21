@@ -54,7 +54,12 @@ _jscpd:
 _lizard: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run lizard src
+	uv run lizard src -l python -C 7 -L 100 -a 5 -i 0 \
+		-x "*/node_modules/*" \
+		-x "*/__pycache__/*" \
+		-x "*/.venv/*" \
+		-x "*/dist/*" \
+		-x "*/build/*"
 
 _import-linter: _install-tools
 	#!/usr/bin/env bash

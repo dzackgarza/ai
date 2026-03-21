@@ -96,6 +96,7 @@ Use for manual inspection or when developing maintenance scripts.
 ## Validation Checklist
 
 - [ ] Database backup exists at `~/.local/share/opencode/opencode.db.bak`.
+- [ ] User confirmed that native rollbacks are no longer needed for the session (irreversible).
 - [ ] `oc-refresh-diff` ran to completion (if refreshing sidebar).
 - [ ] `~/.cache/opencode/node_modules` trashed (if clearing cache).
 - [ ] Transcripts read and user approved deletion list (if pruning).
