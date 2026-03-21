@@ -1,0 +1,15 @@
+{
+  "threshold": 10,
+  "reporters": ["console"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**",
+    "**/coverage/**",
+    "**/dist/**"
+  ],
+  "absolute": true,
+  "gitignore": true
+}

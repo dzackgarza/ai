@@ -1,0 +1,10 @@
+[tool.diff_cover]
+compare_branch = "main"
+fail_under = 90
+
+[tool.vulture]
+min_confidence = 60
+paths = ["src", "tests"]
+
+[tool.deptry]
+root = ["src"]

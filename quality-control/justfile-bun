@@ -29,7 +29,7 @@ _diff-cover: _coverage
 _knip: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x knip --no-gitignore
+	bun x knip --config knip.json
 
 _eslint: _install-tools
 	#!/usr/bin/env bash
@@ -44,12 +44,12 @@ _tsc: _install-tools
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x semgrep --config=p/ci --inline-suppression
+	bun x semgrep --config semgrep.yml --config=p/ci --inline-suppression
 
 _jscpd: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x jscpd --path . --reporters console
+	bun x jscpd --config .jscpd.json
 
 _lizard: _install-tools
 	#!/usr/bin/env bash

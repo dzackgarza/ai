@@ -44,12 +44,12 @@ _deptry: _install-tools
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run semgrep --config=p/ci --inline-suppression
+	uv run semgrep --config=semgrep.yml --config=p/ci --inline-suppression
 
 _jscpd:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	npx -y jscpd --path src --reporters console
+	npx -y jscpd --config .jscpd.json
 
 _lizard: _install-tools
 	#!/usr/bin/env bash

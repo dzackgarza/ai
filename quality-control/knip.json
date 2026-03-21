@@ -1,0 +1,7 @@
+{
+  "entry": ["src/index.ts", "src/**/*.ts"],
+  "project": ["src/**/*.ts"],
+  "ignore": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**"],
+  "ignoreDependencies": [],
+  "ignoreExportsUsedInFile": true
+}
