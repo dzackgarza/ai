@@ -187,7 +187,24 @@ Address every unresolved issue, reply with the fix commit, then resolve the thre
 uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues resolve <COMMENT_ID> "Fixed in commit 1234abc"
 ```
 
-Repeat until all threads are resolved.
+**The script never produces stale output.** Automated bots (Codacy, Gemini, kilo-code-bot) update their comments in place when new commits land. Open review threads stay listed until the "Resolve Conversation" button is clicked. Every item in the output requires action — there is no such thing as an already-handled item that still appears.
+
+**All checks, warnings, and notices must be resolved before the PR can be accepted.** This includes low-severity notices from automated tools. If a check is failing, the PR is blocked regardless of how many threads have been resolved.
+
+**After pushing a fix, loop until the check clears.** Codacy re-runs typically complete within 1 minute. Poll with a 1–2 minute sleep between scans:
+
+```bash
+# Loop until all checks pass
+while true; do
+    gh pr checks <N> --repo <owner>/<repo>
+    uv run --with cyclopts --with pydantic --with rich \
+        --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
+        -m extract_unresolved_issues issues <owner>/<repo>#<N>
+    sleep 90
+done
+```
+
+Stop only when `gh pr checks` shows all green and the `issues` command reports `NOT RESOLVED: 0`.
 
 ### "Resolve" is overloaded — clear each surface separately
 
