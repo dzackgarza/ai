@@ -103,7 +103,7 @@
     "openTelemetry": true
   },
   "plugin": [
-    "opencode-anthropic-auth@latest",
+    "opencode-claude-auth",
     "opencode-gemini-auth@latest",
     "opencode-qwencode-auth@git+https://github.com/luanweslley77/opencode-qwencode-auth.git#feat/v1.5.0-rate-limit-fix",
     "opencode-openai-codex-auth@latest",
@@ -2070,6 +2070,31 @@
         "glm-4.7-flash": {
           "name": "GLM 4.7 Flash (Free)"
         }
+      }
+    }
+  },
+  "agent": {
+    "plugin-proof": {
+      "description": "Integration test agent: all standard tools denied. Per-plugin configs override specific tool permissions.",
+      "mode": "primary",
+      "model": "github-copilot/gpt-4.1",
+      "prompt": "You are a strict integration-test agent. Follow the requested protocol exactly. Call only the tools explicitly permitted. If a required tool is unavailable or denied, reply with ONLY: FAIL:PROOF_NOT_POSSIBLE",
+      "permission": {
+        "bash": "deny",
+        "read": "deny",
+        "write": "deny",
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "question": "deny",
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "todoread": "deny",
+        "todowrite": "deny",
+        "skill": "deny",
+        "edit": "deny",
+        "apply_patch": "deny"
       }
     }
   }

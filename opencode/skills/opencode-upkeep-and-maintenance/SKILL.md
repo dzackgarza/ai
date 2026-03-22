@@ -53,7 +53,11 @@ Use for bulk cleanup of automated or ephemeral artifacts. **MANDATORY: Verify us
     echo "COMMIT;" >> prune.sql
     sqlite3 ~/.local/share/opencode/opencode.db < prune.sql
     ```
-5.  **Reclaim Disk Space:** Physical recovery requires `git gc` in the snapshot repositories:
+5.  **Optimize Database:** Reclaim space from deleted rows and defragment:
+    ```bash
+    sqlite3 ~/.local/share/opencode/opencode.db "VACUUM;"
+    ```
+6.  **Reclaim Disk Space:** Physical recovery requires `git gc` in the snapshot repositories:
     ```bash
     # Targeted cleanup of repack leaks
     rm -f ~/.local/share/opencode/snapshot/*/objects/pack/tmp_pack_*

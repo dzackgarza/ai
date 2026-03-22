@@ -70,47 +70,46 @@ install:
              "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" "{{ agents_home }}" \
              "{{ kilocode_home }}" "{{ opencode_root }}" "{{ cc_safety_net_home }}"
     
-    ln -sf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
-    ln -sf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
-    ln -sf "{{ agents_md }}" "{{ gemini_home }}/GEMINI.md"
-    ln -sf "{{ agents_md }}" "{{ qwen_home }}/QWEN.md"
-    ln -sf "{{ agents_md }}" "{{ kilo_home }}/AGENTS.md"
-    ln -sf "{{ agents_md }}" "{{ amp_home }}/AGENTS.md"
-    ln -sf "{{ agents_md }}" "{{ home }}/.config/AGENTS.md"
-    ln -sf "{{ opencode_dir }}" "{{ opencode_home }}"
-    ln -sf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
-    ln -sf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
+    ln -snf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
+    ln -snf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
+    ln -snf "{{ agents_md }}" "{{ gemini_home }}/GEMINI.md"
+    ln -snf "{{ agents_md }}" "{{ qwen_home }}/QWEN.md"
+    ln -snf "{{ agents_md }}" "{{ kilo_home }}/AGENTS.md"
+    ln -snf "{{ agents_md }}" "{{ amp_home }}/AGENTS.md"
+    ln -snf "{{ agents_md }}" "{{ home }}/.config/AGENTS.md"
+    ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
+    ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
+    ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
     
     # Linter/formatter configurations
     mkdir -p "{{ home }}/.config/ruff" "{{ home }}/.config/black"
-    ln -sf "{{ ruff_config }}" "{{ home }}/.config/ruff/ruff.toml"
-    ln -sf "{{ mypy_config }}" "{{ home }}/.mypy.ini"
-    ln -sf "{{ black_config }}" "{{ home }}/.config/black/black.toml"
-    ln -sf "{{ eslint_config }}" "{{ home }}/.eslintrc.json"
-    ln -sf "{{ prettier_config }}" "{{ home }}/.prettierrc"
+    ln -snf "{{ ruff_config }}" "{{ home }}/.config/ruff/ruff.toml"
+    ln -snf "{{ mypy_config }}" "{{ home }}/.mypy.ini"
+    ln -snf "{{ black_config }}" "{{ home }}/.config/black/black.toml"
+    ln -snf "{{ eslint_config }}" "{{ home }}/.eslintrc.json"
+    ln -snf "{{ prettier_config }}" "{{ home }}/.prettierrc"
     
     # tmux config symlinks
-    ln -sf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
+    ln -snf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
     mkdir -p "{{ home }}/.config/tmux-powerline/themes"
-    ln -sf "{{ tmux_powerline_theme }}" "{{ home }}/.config/tmux-powerline/themes/my-theme.sh"
-    ln -sf "{{ tmux_powerline_config }}" "{{ home }}/.config/tmux-powerline/config.sh"
+    ln -snf "{{ tmux_powerline_theme }}" "{{ home }}/.config/tmux-powerline/themes/my-theme.sh"
+    ln -snf "{{ tmux_powerline_config }}" "{{ home }}/.config/tmux-powerline/config.sh"
 
     # Backup existing skills directories before creating symlinks
-    for dir in "{{ claude_home }}/skills" "{{ codex_home }}/skills" "{{ gemini_home }}/skills" \
+    for dir in "{{ claude_home }}/skills" "{{ codex_home }}/skills" \
                "{{ agents_home }}/skills" "{{ qwen_home }}/skills" "{{ home }}/.config/agents/skills" \
                "{{ amp_home }}/skills" "{{ kilocode_home }}/skills"; do
         if [ -d "$dir" ] && [ ! -L "$dir" ]; then
             mv "$dir" "$dir.bak.$(date +%Y%m%d%H%M%S)"
         fi
     done
-    ln -sf "{{ skills_dir }}" "{{ claude_home }}/skills"
-    ln -sf "{{ skills_dir }}" "{{ codex_home }}/skills"
-    ln -sf "{{ skills_dir }}" "{{ gemini_home }}/skills"
-    ln -sf "{{ skills_dir }}" "{{ agents_home }}/skills"
-    ln -sf "{{ skills_dir }}" "{{ qwen_home }}/skills"
-    ln -sf "{{ skills_dir }}" "{{ home }}/.config/agents/skills"
-    ln -sf "{{ skills_dir }}" "{{ amp_home }}/skills"
-    ln -sf "{{ skills_dir }}" "{{ kilocode_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ claude_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ codex_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ agents_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ qwen_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ home }}/.config/agents/skills"
+    ln -snf "{{ skills_dir }}" "{{ amp_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ kilocode_home }}/skills"
 
     just --justfile {{ repo }}/justfile _update-shell-rc
 
@@ -118,7 +117,6 @@ install:
     echo ""
     echo "Symlink targets (actual):"
     printf "%-30s -> %s\n" "~/.gemini/GEMINI.md" "$(readlink {{ gemini_home }}/GEMINI.md)"
-    printf "%-30s -> %s\n" "~/.gemini/skills" "$(readlink {{ gemini_home }}/skills)"
     printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
     printf "%-30s -> %s\n" "~/.config/ruff/ruff.toml" "$(readlink {{ home }}/.config/ruff/ruff.toml)"
     printf "%-30s -> %s\n" "~/.config/black/black.toml" "$(readlink {{ home }}/.config/black/black.toml)"

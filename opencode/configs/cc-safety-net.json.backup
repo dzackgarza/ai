@@ -214,6 +214,15 @@
       "reason": "Bypassing signing is blocked."
     },
     {
+      "name": "block-bun-test",
+      "command": "bun",
+      "subcommand": "test",
+      "block_args": [
+        "test"
+      ],
+      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
+    },
+    {
       "name": "block-npm-test",
       "command": "npm",
       "subcommand": "test",

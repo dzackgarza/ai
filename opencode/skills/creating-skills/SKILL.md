@@ -178,14 +178,19 @@ description: Use when [specific triggering conditions and symptoms]
 - NEVER summarize workflow in description
 - Description is the ONLY trigger mechanism—include specific symptoms, errors, situations
 
-**Validate YAML before committing:**
+**Validate YAML frontmatter before committing:**
+
+Since `SKILL.md` is a Markdown file with a YAML header, you must extract only the metadata block for validation:
 
 ```bash
-# Check for syntax errors
-python3 -c "import yaml; yaml.safe_load(open('SKILL.md'))"
+# Using python3 to parse only the frontmatter block
+python3 -c "import yaml; content = open('SKILL.md').read(); frontmatter = content.split('---')[1]; yaml.safe_load(frontmatter); print('YAML valid')"
+```
 
-# Or use yq
-yq '.' SKILL.md > /dev/null && echo "YAML valid"
+**Or use yq (v4+):**
+
+```bash
+yq --front-matter=extract '.' SKILL.md > /dev/null && echo "YAML valid"
 ```
 
 **Body template:**

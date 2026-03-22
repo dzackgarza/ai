@@ -1,0 +1,311 @@
+#!/usr/bin/env bun
+
+import { $ } from "bun"
+import { Database } from "bun:sqlite"
+import path from "path"
+import fs from "fs/promises"
+
+function help() {
+  return [
+    "Usage:",
+    "  oc-refresh-diff <session-id>              Reset to uncommitted git changes",
+    "  oc-refresh-diff empty <session-id>         Clear the list completely",
+    "",
+    "Modes:",
+    "  git    Replace sidebar with real uncommitted git changes (default).",
+    "  empty  Wipe the sidebar clean — show no modified files at all.",
+    "",
+    "Mutates OpenCode DB and snapshot state. Back up your DB first.",
+    "Best run while the session is idle (no active prompt).",
+    "Non-git sessions print 'nothing to change' in git mode.",
+    "",
+    "Options:",
+    "  -s, --session <id>  Session id",
+    "  -m, --mode <mode>   git or empty",
+    "  --quiet             Suppress output",
+    "  -h, --help          Show this help",
+  ].join("\n")
+}
+
+function parse() {
+  const input = Bun.argv.slice(2)
+  const args = {
+    session: undefined as string | undefined,
+    quiet: false,
+    help: false,
+    mode: "git" as "git" | "empty",
+  }
+
+  const setSession = (value?: string) => {
+    if (!value) throw new Error("Missing session id")
+    if (args.session && args.session !== value) {
+      throw new Error("Session specified more than once")
+    }
+    args.session = value
+  }
+
+  const setMode = (value?: string) => {
+    if (!value) throw new Error("Missing mode")
+    if (value !== "git" && value !== "empty") {
+      throw new Error(`Invalid mode: ${value}`)
+    }
+    args.mode = value
+  }
+
+  for (let i = 0; i < input.length; i++) {
+    const item = input[i]
+    if (item === "--session" || item === "-s") { setSession(input[++i]); continue }
+    if (item === "--mode" || item === "-m") { setMode(input[++i]); continue }
+    if (item === "--quiet") { args.quiet = true; continue }
+    if (item === "--help" || item === "-h") { args.help = true; continue }
+    if (item === "git" || item === "empty") { setMode(item); continue }
+    if (!item.startsWith("-")) { setSession(item); continue }
+    throw new Error(`Unknown option: ${item}`)
+  }
+  return args
+}
+
+function resolve() {
+  const result = Bun.spawnSync(["opencode", "db", "path"], { stdout: "pipe", stderr: "pipe" })
+  if (result.exitCode !== 0) throw new Error(Buffer.from(result.stderr).toString("utf8").trim() || "Failed to resolve opencode DB path")
+  return Buffer.from(result.stdout).toString("utf8").trim()
+}
+
+function partId(session: string, kind: "start" | "finish") {
+  // Stable IDs let repeated runs replace baseline parts instead of piling up.
+  return `prt_refresh_${kind}_${session}`
+}
+
+interface FileDiff {
+  file: string
+  before: string
+  after: string
+  additions: number
+  deletions: number
+  status: "added" | "deleted" | "modified"
+}
+
+async function gitDiffs(dir: string): Promise<FileDiff[]> {
+  const numstat = await $`git -c core.quotepath=false diff --no-ext-diff --no-renames --numstat HEAD -- .`
+    .quiet().cwd(dir).nothrow().text()
+  const names = await $`git -c core.quotepath=false diff --no-ext-diff --no-renames --name-status HEAD -- .`
+    .quiet().cwd(dir).nothrow().text()
+  const untracked = await $`git -c core.quotepath=false ls-files --others --exclude-standard -- .`
+    .quiet().cwd(dir).nothrow().text()
+
+  const status = new Map<string, "added" | "deleted" | "modified">()
+  for (const line of names.trim().split("\n")) {
+    if (!line) continue
+    const [code, ...rest] = line.split("\t")
+    const file = rest.join("\t")
+    if (!code || !file) continue
+    status.set(file, code.startsWith("A") ? "added" : code.startsWith("D") ? "deleted" : "modified")
+  }
+
+  const result: FileDiff[] = []
+  for (const line of numstat.trim().split("\n")) {
+    if (!line) continue
+    const [add, del, ...rest] = line.split("\t")
+    const file = rest.join("\t")
+    if (!file) continue
+    const binary = add === "-" && del === "-"
+    result.push({
+      file,
+      before: "",
+      after: "",
+      additions: binary ? 0 : parseInt(add),
+      deletions: binary ? 0 : parseInt(del),
+      status: status.get(file) ?? "modified",
+    })
+  }
+
+  for (const file of untracked.trim().split("\n")) {
+    if (!file) continue
+    result.push({ file, before: "", after: "", additions: 0, deletions: 0, status: "added" })
+  }
+
+  return result.sort((a, b) => a.file.localeCompare(b.file))
+}
+
+async function main() {
+  const args = parse()
+  if (args.help) { console.log(help()); return }
+  if (!args.session) throw new Error("Session id required. Use --session <id>, -s <id>, or positional <id>")
+
+  const dbfile = resolve()
+  const datadir = path.dirname(dbfile)
+  const db = new Database(dbfile)
+  const session = db.query(
+    "SELECT s.id, s.directory, s.project_id, p.vcs FROM session s LEFT JOIN project p ON p.id = s.project_id WHERE s.id = ?"
+  ).get(args.session) as { id: string; directory: string; project_id: string; vcs: string | null } | null
+  if (!session) {
+    db.close()
+    throw new Error(`Session not found: ${args.session}`)
+  }
+
+  const useGit = args.mode === "git"
+  if (useGit && session.vcs !== "git") {
+    db.close()
+    if (!args.quiet) {
+      console.log(`session:  ${args.session}`)
+      console.log("nothing to change: session project is non-git")
+    }
+    return
+  }
+
+  let from = ""
+  let to = ""
+  let diffs: FileDiff[] = []
+  let additions = 0
+  let deletions = 0
+
+  if (useGit) {
+    const repo = await $`git -C ${session.directory} rev-parse --show-toplevel`.quiet().nothrow()
+    const worktree = repo.exitCode === 0 ? repo.stdout.toString().trim() : ""
+    if (!worktree) {
+      db.close()
+      throw new Error(`Git repository not accessible for session: ${args.session}`)
+    }
+
+    const realGitDir = (await $`git -C ${worktree} rev-parse --absolute-git-dir`.quiet().text()).trim()
+    const snapshotGit = path.join(datadir, "snapshot", session.project_id)
+
+    // Ensure snapshot repo exists
+    await fs.mkdir(snapshotGit, { recursive: true })
+    const snapshotHead = path.join(snapshotGit, "HEAD")
+    const initialized = await fs
+      .stat(snapshotHead)
+      .then(() => true)
+      .catch(() => false)
+    if (!initialized) {
+      await $`git init`.env({ ...process.env, GIT_DIR: snapshotGit, GIT_WORK_TREE: worktree }).quiet()
+      await $`git --git-dir ${snapshotGit} config core.autocrlf false`.quiet()
+    }
+
+    // Set up alternates so snapshot repo can resolve real repo's tree objects
+    const alternatesFile = path.join(snapshotGit, "objects", "info", "alternates")
+    const realObjects = path.join(realGitDir, "objects")
+    const existing = await Bun.file(alternatesFile).text().catch(() => "")
+    if (!existing.split("\n").includes(realObjects)) {
+      await fs.mkdir(path.dirname(alternatesFile), { recursive: true })
+      await Bun.write(alternatesFile, existing ? existing.trimEnd() + "\n" + realObjects + "\n" : realObjects + "\n")
+    }
+
+    // FROM = real repo's HEAD tree (committed state).
+    // If repo has no commits yet, use the repo's native empty-tree hash.
+    const fromHead = (await $`git -C ${worktree} rev-parse HEAD^{tree}`.quiet().nothrow().text()).trim()
+    from = fromHead || (await $`git -C ${worktree} hash-object -t tree /dev/null`.quiet().text()).trim()
+
+    // TO = current working tree snapshot seeded from HEAD tree.
+    // Seed index with HEAD first so tracked files remain tracked even if ignored.
+    await $`git --git-dir ${snapshotGit} --work-tree ${worktree} read-tree ${from}`.quiet().cwd(session.directory)
+    await $`git --git-dir ${snapshotGit} --work-tree ${worktree} add -A -- .`.quiet().cwd(session.directory)
+    to = (await $`git --git-dir ${snapshotGit} --work-tree ${worktree} write-tree`.quiet().cwd(session.directory).text()).trim()
+
+    // Compute git diff before taking DB lock to minimize lock duration.
+    diffs = await gitDiffs(session.directory)
+    additions = diffs.reduce((s, d) => s + d.additions, 0)
+    deletions = diffs.reduce((s, d) => s + d.deletions, 0)
+  }
+
+  let cleared = 0
+  // Keep DB mutation atomic so session summary and injected parts stay in sync.
+  db.exec("BEGIN IMMEDIATE")
+  try {
+    // Null out ALL existing step-start/step-finish snapshots
+    const parts = db.query(
+      "SELECT id, data FROM part WHERE session_id = ? AND (json_extract(data, '$.type') = 'step-start' OR json_extract(data, '$.type') = 'step-finish') AND json_extract(data, '$.snapshot') IS NOT NULL"
+    ).all(args.session) as { id: string; data: string }[]
+
+    const updateStmt = db.prepare("UPDATE part SET data = ? WHERE id = ?")
+    for (const row of parts) {
+      const parsed = JSON.parse(row.data)
+      delete parsed.snapshot
+      updateStmt.run(JSON.stringify(parsed), row.id)
+      cleared++
+    }
+
+    const baselineStart = partId(args.session, "start")
+    const baselineFinish = partId(args.session, "finish")
+
+    if (useGit) {
+      // Find first assistant message to anchor baseline snapshot parts.
+      const firstMsg = db.query(
+        "SELECT id FROM message WHERE session_id = ? AND json_extract(data, '$.role') = 'assistant' ORDER BY id ASC LIMIT 1"
+      ).get(args.session) as { id: string } | null
+      if (!firstMsg) throw new Error("No assistant messages in session — nothing to anchor snapshot parts to")
+
+      const now = Date.now()
+      const insertStmt = db.prepare(
+        "INSERT OR REPLACE INTO part (id, message_id, session_id, time_created, time_updated, data) VALUES (?, ?, ?, ?, ?, ?)"
+      )
+      insertStmt.run(
+        baselineStart,
+        firstMsg.id,
+        args.session,
+        now,
+        now,
+        JSON.stringify({ type: "step-start", snapshot: from }),
+      )
+      insertStmt.run(
+        baselineFinish,
+        firstMsg.id,
+        args.session,
+        now,
+        now,
+        JSON.stringify({
+          type: "step-finish",
+          reason: "stop",
+          cost: 0,
+          tokens: {
+            input: 0,
+            output: 0,
+            reasoning: 0,
+            cache: { read: 0, write: 0 },
+          },
+          snapshot: to,
+        }),
+      )
+    }
+
+    if (!useGit) {
+      db.prepare("DELETE FROM part WHERE id = ? OR id = ?").run(baselineStart, baselineFinish)
+    }
+
+    // Write summary
+    db.query(
+      "UPDATE session SET summary_additions = ?, summary_deletions = ?, summary_files = ?, summary_diffs = NULL, revert = NULL WHERE id = ?"
+    ).run(additions, deletions, diffs.length, args.session)
+
+    db.exec("COMMIT")
+  } catch (error) {
+    db.exec("ROLLBACK")
+    db.close()
+    throw error
+  }
+
+  const storage = path.join(datadir, "storage", "session_diff", args.session + ".json")
+  await fs.mkdir(path.dirname(storage), { recursive: true })
+  await Bun.write(storage, JSON.stringify(diffs))
+
+  db.close()
+
+  if (!args.quiet) {
+    console.log(`session:  ${args.session}`)
+    console.log(`mode:     ${args.mode}`)
+    console.log(`cleared:  ${cleared} snapshot references`)
+    if (useGit) {
+      console.log(`baseline: ${from.slice(0, 12)} (HEAD tree)`)
+      console.log(`current:  ${to.slice(0, 12)} (working tree)`)
+    } else {
+      console.log("baseline: none (empty mode)")
+    }
+    console.log(`git:      ${diffs.length} uncommitted files (+${additions} -${deletions})`)
+    console.log(`storage:  ${storage}`)
+  }
+}
+
+main().catch((e) => {
+  console.error(e instanceof Error ? e.message : String(e))
+  process.exit(1)
+})
