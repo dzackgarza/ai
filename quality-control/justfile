@@ -23,13 +23,14 @@
 #
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory. No symlinks needed. Configs read by each tool:
-#   .importlinter  → import-linter (explicit --config flag)
 #   .slopconfig.yaml → ai-slop-detector (explicit --config flag)
 #   semgrep.yml    → semgrep local rules (explicit --config flag)
 #   .jscpd.json    → jscpd (explicit --config flag)
 #   .coveragerc    → coverage.py reads .coveragerc from cwd (run from project root)
 # GLOBAL CONFIGS OK: vulture, deptry, diff-cover, ruff, black, mypy
 # all read from ~/.config/ or pyproject.toml [tool.*] sections.
+# Import-linter is project-specific and must be configured in the target repo
+# via .importlinter or pyproject.toml; there is no meaningful global contract.
 
 default:
   @just test

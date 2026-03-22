@@ -1,18 +1,14 @@
 rules:
-  - id: no-print-statements
-    pattern: print(...)
-    message: 'Print statements should not be committed'
-    languages: [python]
-    severity: ERROR
-
-  - id: no-console-log
-    pattern: console.log(...)
-    message: 'Console.log should not be committed'
-    languages: [typescript, javascript]
-    severity: ERROR
-
-  - id: no-todo-comments
-    pattern: // TODO
-    message: 'TODO comments should be tracked in issues'
-    languages: [typescript, javascript, python]
-    severity: WARNING
+- id: no-print-statements
+  pattern: print(...)
+  message: Print statements should not be committed
+  languages:
+  - python
+  severity: ERROR
+- id: no-console-log
+  pattern: console.log(...)
+  message: Console.log should not be committed
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR

@@ -1,0 +1,6 @@
+id: no-dynamic-import
+language: typescript
+rule:
+  pattern: await import($PATH)
+message: 'Dynamic import() is not allowed. Use static imports at the top of the file instead.'
+severity: error

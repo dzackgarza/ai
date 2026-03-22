@@ -26,6 +26,8 @@
 #   knip.json    → knip (explicit --config flag)
 #   semgrep.yml  → semgrep local rules (explicit --config flag)
 #   .jscpd.json  → jscpd (explicit --config flag)
+#   biome.json   → biome (explicit --config flag)
+#   sgconfig.yml → ast-grep (auto-discovered)
 # GLOBAL CONFIGS OK: eslint, prettier (project .eslintrc/.prettierrc),
 # c8 (package.json [c8] or .c8rc), lizard (CLI flags only).
 
@@ -36,7 +38,7 @@ default:
 _install-tools:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun add -d @bun/test c8 knip eslint typescript semgrep jscpd lizard-py
+	bun add -d @bun/test c8 knip eslint typescript semgrep jscpd lizard-py @biomejs/biome @ast-grep/cli
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
@@ -84,6 +86,16 @@ _lizard: _install-tools
 		-x "*/dist/*" \
 		-x "*/build/*"
 
+_biome: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x biome check --config {{justfile_directory()}}/biome.json .
+
+_ast-grep: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x ast-grep scan --config {{justfile_directory()}}/sgconfig.yml
+
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -91,7 +103,7 @@ _codeql:
 	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
 
 # top-level test depends on all private analyses
-test: _coverage _diff-cover _knip _eslint _tsc _semgrep _jscpd _lizard _codeql
+test: _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _codeql
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "All analyses completed"

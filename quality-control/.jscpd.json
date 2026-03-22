@@ -8,6 +8,9 @@
     "**/*.spec.ts",
     "**/__tests__/**",
     "**/coverage/**",
+    "**/coverage.xml",
+    "**/codeql-db/**",
+    "**/codeql-report.sarif",
     "**/dist/**"
   ],
   "absolute": true,
