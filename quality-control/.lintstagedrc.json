@@ -1,0 +1,6 @@
+{
+  "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc}": [
+    "biome check --write --no-errors-on-unmatched",
+    "ast-grep scan"
+  ]
+}

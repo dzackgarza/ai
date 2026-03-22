@@ -23,11 +23,12 @@
 #
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory. No symlinks needed. Configs read by each tool:
-#   knip.json    → knip (explicit --config flag)
-#   semgrep.yml  → semgrep local rules (explicit --config flag)
-#   .jscpd.json  → jscpd (explicit --config flag)
-#   biome.json   → biome (explicit --config flag)
-#   sgconfig.yml → ast-grep (auto-discovered)
+#   knip.json         → knip (explicit --config flag)
+#   semgrep.yml       → semgrep local rules (explicit --config flag)
+#   .jscpd.json       → jscpd (explicit --config flag)
+#   biome.json        → biome (explicit --config flag)
+#   sgconfig.yml      → ast-grep (auto-discovered)
+#   .lintstagedrc.json → lint-staged (explicit --config flag)
 # GLOBAL CONFIGS OK: eslint, prettier (project .eslintrc/.prettierrc),
 # c8 (package.json [c8] or .c8rc), lizard (CLI flags only).
 
@@ -38,7 +39,7 @@ default:
 _install-tools:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun add -d @bun/test c8 knip eslint typescript semgrep jscpd lizard-py @biomejs/biome @ast-grep/cli
+	bun add -d @bun/test c8 knip eslint typescript semgrep jscpd lizard-py @biomejs/biome @ast-grep/cli lint-staged
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
@@ -95,6 +96,30 @@ _ast-grep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
 	bun x ast-grep scan --config {{justfile_directory()}}/sgconfig.yml
+
+_lint-staged: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x lint-staged --config {{justfile_directory()}}/.lintstagedrc.json
+
+_setup-hooks:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	# Set up pre-commit hook: lint-staged on staged files
+	mkdir -p .git/hooks
+	cat > .git/hooks/pre-commit <<'EOF'
+#!/usr/bin/env sh
+set -e
+just _lint-staged
+EOF
+	chmod +x .git/hooks/pre-commit
+	# Set up pre-push hook: full test suite
+	cat > .git/hooks/pre-push <<'EOF'
+#!/usr/bin/env sh
+set -e
+just test
+EOF
+	chmod +x .git/hooks/pre-push
 
 _codeql:
 	#!/usr/bin/env bash
