@@ -13,15 +13,7 @@ export const TranscriptTimestampPlugin: Plugin = async ({ client }) => {
       const sessionId = input.sessionID;
 
       // Inject timestamp metadata into system context
-      output.system.push(`
-<session-metadata>
-  Session ID: ${sessionId}
-  Current Wall-Clock Time: ${now}
-  
-  Note: Use this timestamp to reason about time passage in this conversation.
-  When referencing earlier messages, you can estimate their absolute time based on
-  durations shown in context relative to this current timestamp.
-</session-metadata>`);
+      output.system.push(`[Session ID: ${sessionId}, Timestamp: ${now}]`);
     },
   };
 };
