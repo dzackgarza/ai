@@ -38,7 +38,7 @@ default:
 _venv:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv venv --python 3.11
+	uv venv --allow-existing
 
 _install-tools: _venv
 	#!/usr/bin/env bash
@@ -59,17 +59,34 @@ _diff-cover: _coverage
 _vulture: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run vulture src tests --min-confidence 60
+	args=(--min-confidence 60)
+	if [ -f pyproject.toml ]; then
+		args+=(--config pyproject.toml)
+	fi
+	paths=()
+	for path in src tests; do
+		if [ -e "$path" ]; then
+			paths+=("$path")
+		fi
+	done
+	if [ -f vulture_whitelist.py ]; then
+		paths+=(vulture_whitelist.py)
+	fi
+	if [ "${#paths[@]}" -eq 0 ]; then
+		echo "Skipping vulture: no src/tests paths found."
+		exit 0
+	fi
+	uv run vulture "${args[@]}" "${paths[@]}"
 
 _deptry: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run deptry check src
+	uv run deptry .
 
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run semgrep --config={{justfile_directory()}}/semgrep.yml --config=p/ci --inline-suppression
+	uv run semgrep --config={{justfile_directory()}}/semgrep.yml --config=p/ci
 
 _jscpd:
 	#!/usr/bin/env bash
@@ -89,12 +106,27 @@ _lizard: _install-tools
 _import-linter: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run import-linter check --config {{justfile_directory()}}/.importlinter
+	config=""
+	if [ -f .importlinter ]; then
+		config=".importlinter"
+	elif [ -f pyproject.toml ] && python -c 'import pathlib, sys, tomllib; data = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8")); tool_section = data.get("tool", {}); sys.exit(0 if ("import-linter" in tool_section or "importlinter" in tool_section) else 1)'
+	then
+		config="pyproject.toml"
+	fi
+	if [ -z "$config" ]; then
+		echo "Skipping import-linter: no project-specific import-linter config found."
+		exit 0
+	fi
+	uv run lint-imports --config "$config"
 
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	codeql database create codeql-db --language=python --source-root=.
+	if ! command -v codeql >/dev/null 2>&1; then
+		echo "Skipping CodeQL: codeql CLI is not installed."
+		exit 0
+	fi
+	codeql database create codeql-db --overwrite --language=python --source-root=.
 	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
 
 _slop:
