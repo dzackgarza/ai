@@ -42,6 +42,17 @@ _install-tools: _venv
 	set -euo pipefail
 	uv pip install coverage diff-cover vulture deptry semgrep lizard import-linter
 
+_coverage: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run coverage run -m pytest
+	uv run coverage xml -o coverage.xml
+
+_diff-cover: _coverage
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
+
 _vulture: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -125,26 +136,15 @@ _slop:
 		--ci-claims-strict \
 		--ci-report
 
-# public: local quality checks
-test: _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop
+# public: all static checks run locally
+test: _coverage _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
 
-# private recipes for test-ci
-_coverage: _install-tools
-	#!/usr/bin/env bash
-	set -euo pipefail
-	uv run coverage run -m pytest
-	uv run coverage xml -o coverage.xml
-
-_diff-cover: _coverage
-	#!/usr/bin/env bash
-	set -euo pipefail
-	uv run diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
-
-# public: test-ci = test + live/isolated checks (coverage, integration tests)
-test-ci: test _diff-cover
+# public: test-ci = test + live/isolated checks
+# Add project-specific live tests (needs docker, live server, etc.) here
+test-ci: test
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "CI checks completed"

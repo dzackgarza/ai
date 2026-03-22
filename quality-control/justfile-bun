@@ -39,6 +39,17 @@ _install-tools:
 	set -euo pipefail
 	bun add -d @bun/test c8 knip eslint typescript semgrep jscpd lizard-py @biomejs/biome @ast-grep/cli lint-staged
 
+_coverage: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun test --coverage --coverage-reporter=cobertura --coverage-dir=.
+	bun x c8 report --reporter=cobertura --report-dir=.
+
+_diff-cover: _coverage
+	#!/usr/bin/env bash
+	set -euo pipefail
+	bun x diff-cover coverage.cobertura.xml --compare-branch ${DIFF_COVER_BASE:-main}
+
 _knip: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -95,26 +106,15 @@ _lint-staged: _install-tools
 	set -euo pipefail
 	bun x lint-staged --config {{justfile_directory()}}/.lintstagedrc.json
 
-# public: local quality checks
-test: _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _codeql
+# public: all static checks run locally
+test: _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _codeql
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
 
-# private recipes for test-ci
-_coverage: _install-tools
-	#!/usr/bin/env bash
-	set -euo pipefail
-	bun test --coverage --coverage-reporter=cobertura --coverage-dir=.
-	bun x c8 report --reporter=cobertura --report-dir=.
-
-_diff-cover: _coverage
-	#!/usr/bin/env bash
-	set -euo pipefail
-	bun x diff-cover coverage.cobertura.xml --compare-branch ${DIFF_COVER_BASE:-main}
-
-# public: test-ci = test + live/isolated checks (coverage, integration tests)
-test-ci: test _diff-cover
+# public: test-ci = test + live/isolated checks
+# Add project-specific live tests (needs docker, live server, etc.) here
+test-ci: test
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "CI checks completed"
