@@ -6,20 +6,18 @@
 #    single source of truth for project operations.
 # 2) FIX OPINIONATED WORKFLOWS: Agents cannot cherry-pick checks. For
 #    example, `just typecheck` does NOT assert code quality — the `test`
-#    recipe runs the full QC stack (coverage, complexity, dead code,
-#    duplication, etc). Running only typecheck is insufficient.
+#    recipe runs the full QC stack. Running only typecheck is insufficient.
 # 3) ABSTRACT COMPLEXITY: Env management, sandbox setup, tool installation,
 #    common tasks — all hidden in private recipes. Users run workflows,
 #    not infrastructure.
 #
-# MINIMAL QUALITY CONTROL: This justfile encodes the minimal QC stack
-# that MUST be present in every Python project. The `test` recipe is
-# the single entry point — run `just test` always. Do NOT bypass it.
+# WORKFLOW:
+#   just test      — local quality checks (linting, static analysis, complexity)
+#   just test-ci  — test + live/isolated checks (coverage, diff-cover, integration tests)
+#   Both are public. Everything else is private. Do NOT add public recipes.
 #
-# NARROW PUBLIC SURFACE: Only expose essential public recipes. Encode
-# all standard project workflows (build, dev, deploy, db migrate, etc.)
-# in justfile recipes — but these are private or grouped separately.
-# The `test` recipe's dependency graph is the only thing that gates CI.
+# HOOKS: pre-commit.hook and pre-push.hook both block on `just test`.
+#   Copy/symlink into .git/hooks/ to activate.
 #
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory. No symlinks needed. Configs read by each tool:
@@ -29,13 +27,11 @@
 #   .coveragerc    → coverage.py reads .coveragerc from cwd (run from project root)
 # GLOBAL CONFIGS OK: vulture, deptry, diff-cover, ruff, black, mypy
 # all read from ~/.config/ or pyproject.toml [tool.*] sections.
-# Import-linter is project-specific and must be configured in the target repo
-# via .importlinter or pyproject.toml; there is no meaningful global contract.
 
 default:
   @just test
 
-# private recipes (prefix with _ — do not run individually in CI)
+# private recipes (prefix with _ — never run individually)
 _venv:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -45,17 +41,6 @@ _install-tools: _venv
 	#!/usr/bin/env bash
 	set -euo pipefail
 	uv pip install coverage diff-cover vulture deptry semgrep lizard import-linter
-
-_coverage: _install-tools
-	#!/usr/bin/env bash
-	set -euo pipefail
-	uv run coverage run -m pytest
-	uv run coverage xml -o coverage.xml
-
-_diff-cover: _coverage
-	#!/usr/bin/env bash
-	set -euo pipefail
-	uv run diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
 
 _vulture: _install-tools
 	#!/usr/bin/env bash
@@ -140,8 +125,26 @@ _slop:
 		--ci-claims-strict \
 		--ci-report
 
-# top-level test depends on all private analyses
-test: _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop
+# public: local quality checks
+test: _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
-	echo "All analyses completed"
+	echo "Local quality checks completed"
+
+# private recipes for test-ci
+_coverage: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run coverage run -m pytest
+	uv run coverage xml -o coverage.xml
+
+_diff-cover: _coverage
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uv run diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
+
+# public: test-ci = test + live/isolated checks (coverage, integration tests)
+test-ci: test _diff-cover
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "CI checks completed"
