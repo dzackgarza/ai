@@ -346,7 +346,12 @@
       "name": "block-just-private-recipe",
       "command": "just",
       "block_args": [
-        "_"
+        "_",
+        "_update-shell-rc",
+        "_update",
+        "_build",
+        "_compile",
+        "_preflight"
       ],
       "reason": "Private recipes (starting with _) are internal implementation details. Use public justfile recipes only."
     },
