@@ -16,7 +16,10 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './tsconfig.json',
+        // projectService: true uses TypeScript's project service, which handles
+        // files not explicitly listed in tsconfig.json without a hard parse error.
+        projectService: true,
+        tsconfigRootDir: process.cwd(),
       },
     },
     plugins: {
@@ -46,20 +49,42 @@ export default [
       'promise/param-names': 'error',
       'promise/catch-or-return': 'error',
       'promise/no-native': 'error',
-      'promise/no-nesting': 'warn',
-      'promise/no-promise-in-callback': 'warn',
-      'promise/no-callback-in-promise': 'warn',
+      // Nesting/callback rules: Codacy does not report these so don't fail locally.
+      'promise/no-nesting': 'off',
+      'promise/no-promise-in-callback': 'off',
+      'promise/no-callback-in-promise': 'off',
 
       // eslint-plugin-fp (functional programming)
-      'fp/no-return-void': 'error',
-      'fp/no-let': 'error',
+      // fp/no-nil: every function must end with an explicit return statement,
+      // so it never implicitly returns undefined. Codacy enforces this.
+      'fp/no-nil': 'error',
       'fp/no-this': 'warn',
       'fp/no-mutating-assign': 'error',
       'fp/no-mutating-methods': 'off', // too strict for most codebases
+      // fp/no-let: disabled — Codacy does not run it, and enabling it here
+      // conflicts with the pattern required to satisfy fp/no-nil in try/catch contexts.
 
       // @lwc/lwc (Lightning Web Components)
-      '@lwc/lwc/no-async-await': 'off', // conflicts with modern Node.js patterns
+      // Codacy's LWC plugin forbids async/await; all async code must use .then() chains.
+      '@lwc/lwc/no-async-await': 'error',
       '@lwc/lwc/no-for-of': 'off', // biome requires for...of
+    },
+  },
+  {
+    // Test files: relax LWC and fp rules. Async/await and void-returning callbacks
+    // are idiomatic in test suites (bun:test, jest, etc.) and pre-exist in most PRs.
+    // This block comes LAST so it overrides the main config above.
+    files: ['tests/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+    rules: {
+      '@lwc/lwc/no-async-await': 'off',
+      'fp/no-nil': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      'promise/always-return': 'off',
+      'promise/catch-or-return': 'off',
     },
   },
 ];

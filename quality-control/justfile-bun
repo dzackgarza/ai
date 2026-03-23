@@ -69,20 +69,27 @@ _no-bypass:
 _install-tools:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun add --global \
-		c8 \
-		knip \
+	# ESLint plugins must be installed LOCAL to the quality-control directory.
+	# ESLint flat config uses ES module imports that resolve relative to the
+	# config file's location — NODE_PATH is ignored for ESM. Global installs
+	# are invisible to the config loader.
+	cd {{justfile_directory()}}
+	bun add --dev \
 		eslint \
 		typescript \
-		jscpd \
-		@biomejs/biome \
-		@ast-grep/cli \
-		lint-staged \
 		@typescript-eslint/parser \
 		@typescript-eslint/eslint-plugin \
 		eslint-plugin-promise \
 		eslint-plugin-fp \
 		@lwc/eslint-plugin-lwc
+	# Other tools run as standalone binaries and don't need config-local resolution.
+	bun add --global \
+		c8 \
+		knip \
+		jscpd \
+		@biomejs/biome \
+		@ast-grep/cli \
+		lint-staged
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
@@ -118,7 +125,13 @@ _ast-grep: _install-tools
 _eslint: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x eslint --config {{justfile_directory()}}/eslint.config.js . --max-warnings 0
+	# Invoke via absolute path to quality-control's local eslint binary.
+	# This keeps CWD = project dir (so files/**/*.ts matches project files)
+	# while Node.js resolves the flat config's ES module imports from the
+	# config file's directory (/home/dzack/ai/quality-control/node_modules/).
+	"{{justfile_directory()}}/node_modules/.bin/eslint" \
+		--config {{justfile_directory()}}/eslint.config.js \
+		. --max-warnings 0
 
 _tsc: _install-tools
 	#!/usr/bin/env bash

@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@lwc/eslint-plugin-lwc": "^3.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
+    "eslint": "^10.1.0",
+    "eslint-plugin-fp": "^2.3.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "typescript": "^6.0.2"
+  }
+}

@@ -105,6 +105,7 @@
   "plugin": [
     "opencode-claude-auth",
     "opencode-gemini-auth@latest",
+    "@tarquinen/opencode-dcp@latest",
     "opencode-qwencode-auth@git+https://github.com/luanweslley77/opencode-qwencode-auth.git#feat/v1.5.0-rate-limit-fix",
     "opencode-openai-codex-auth@latest",
     "@azumag/opencode-rate-limit-fallback@latest",
