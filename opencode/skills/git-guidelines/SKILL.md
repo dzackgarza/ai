@@ -1,6 +1,6 @@
 ---
 name: git-guidelines
-description: "Use when performing any git operation — staging, committing, branching, pushing, or deleting files."
+description: 'Use when performing any git operation — staging, committing, branching, pushing, or deleting files.'
 ---
 
 # Git Guidelines
@@ -166,13 +166,13 @@ For nontrivial features: branch + PR → tag `@codex review` → wait 3–5 min 
 `gh pr view` only returns issue-level comments, not inline review thread comments. To properly parse and summarize all PR feedback, **use the bundled CLI tool**:
 
 ```bash
-uv run --with cyclopts --with pydantic --with rich -m extract_unresolved_issues --help
+uv run -m extract_unresolved_issues --help
 ```
 
 You can run it from anywhere in the codebase directly by providing the full path to the module inside the git-guidelines skill:
 
 ```bash
-uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <owner>/<repo>#<N>
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <owner>/<repo>#<N>
 ```
 
 This tool automatically pulls:
@@ -184,7 +184,7 @@ This tool automatically pulls:
 Address every unresolved issue, reply with the fix commit, then resolve the thread using the tool's `resolve` command:
 
 ```bash
-uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues resolve <COMMENT_ID> "Fixed in commit 1234abc"
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues resolve <COMMENT_ID> "Fixed in commit 1234abc"
 ```
 
 **The script never produces stale output.** Automated bots (Codacy, Gemini, kilo-code-bot) update their comments in place when new commits land. Open review threads stay listed until the "Resolve Conversation" button is clicked. Every item in the output requires action — there is no such thing as an already-handled item that still appears.
@@ -197,8 +197,7 @@ uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/ski
 # Loop until all checks pass
 while true; do
     gh pr checks <N> --repo <owner>/<repo>
-    uv run --with cyclopts --with pydantic --with rich \
-        --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
+    uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
         -m extract_unresolved_issues issues <owner>/<repo>#<N>
     sleep 90
 done

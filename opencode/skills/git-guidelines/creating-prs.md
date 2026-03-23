@@ -141,7 +141,7 @@ The worker must read:
 The most robust way to gather all feedback is to use the `extract_unresolved_issues` tool bundled with the git-guidelines skill:
 
 ```bash
-uv run --with cyclopts --with pydantic --with rich --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <OWNER>/<REPO>#<PR_NUMBER>
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <OWNER>/<REPO>#<PR_NUMBER>
 ```
 
 This will automatically fetch:

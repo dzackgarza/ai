@@ -1,5 +1,5 @@
 test:
-    uv run --with cyclopts --with pydantic --with pytest pytest
+    uv run pytest
 
 typecheck:
-    uv run --with cyclopts --with pydantic --with pytest --with basedpyright basedpyright .
+    uv run basedpyright .
