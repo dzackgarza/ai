@@ -58,7 +58,11 @@ _knip: _install-tools
 _biome: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x biome check --config-path {{justfile_directory()}}/biome.json .
+	dirs=()
+	[ -d src ] && dirs+=(src)
+	[ -d tests ] && dirs+=(tests)
+	[ ${#dirs[@]} -eq 0 ] && dirs=(.)
+	bun x biome check --config-path {{justfile_directory()}}/biome.json "${dirs[@]}"
 
 _ast-grep: _install-tools
 	#!/usr/bin/env bash
