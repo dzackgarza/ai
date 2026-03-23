@@ -25,12 +25,15 @@ npm install -g @google/gemini-cli
 
 # Qwen Code
 npm install -g @qwen-code/qwen-code
+# Alternative quick install: bash -c "$(curl -fsSL https://qwen-code-assets.oss-cn-hangzhou.aliyuncs.com/installation/install-qwen.sh)"
 
 # OpenCode
 npm install -g opencode
+# Alternative: curl -fsSL https://opencode.ai/install | bash
 
 # Kilo Code
 npm install -g @kilocode/cli
+# Alternative: Install via VS Code extension or JetBrains plugin
 
 # Amp (native install with auto-updates)
 curl -fsSL https://ampcode.com/install.sh | bash
@@ -492,6 +495,14 @@ This repository utilizes the following JSON configuration files:
 
 - **Source**: [azumag/opencode-rate-limit-fallback](https://github.com/azumag/opencode-rate-limit-fallback)
 - **Schema**: No formal JSON schema file. The expected structure is defined by the plugin's TypeScript implementation in its source repository.
+
+## Environment Configuration
+
+The AI Configuration repository uses a modular approach for managing environment variables:
+
+- Repository-local environment variables are stored in `~/ai/.envrc`
+- The `just install` command adds a reference to source this file in your shell configuration (`.bashrc` or `.zshrc`)
+- This approach keeps environment configuration tied to the repository while keeping shell configuration clean
 
 ## LLM Tooling
 
