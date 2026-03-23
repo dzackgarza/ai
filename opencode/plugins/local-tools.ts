@@ -1,11 +1,11 @@
 // Re-export all enabled plugins as separate named exports
-export { SleepPlugin } from './dev/sleep/index'; // ✓
+// export { SleepPlugin } from './dev/sleep/index'; // retired: use at/crontab instead
 // export { AsyncCommandPlugin } from "./dev/async-command/index" // ✗ not loading
 // export { GitAddPlugin } from "./dev/git-add/index" // ✗ not loading
 // export { GitCommitPlugin } from "./dev/git-commit/index" // ✗ not loading
 // export { IntrospectionPlugin } from "./dev/retired/introspection" // retired: superseded by timestamp injection
-export { ListSessionsPlugin } from './dev/list-sessions/index'; // ✓
-export { ReadTranscriptPlugin } from './dev/read-transcript/index'; // ✓
+// export { ListSessionsPlugin } from './dev/list-sessions/index'; // retired: use ocm instead
+// export { ReadTranscriptPlugin } from './dev/read-transcript/index'; // retired: use ocm instead
 // export { WritePlanPlugin } from "./dev/write-plan/index" // ✗ not loading
 // export { PlanExitPlugin } from "./dev/plan-exit/index" // ✗ not loading
 
