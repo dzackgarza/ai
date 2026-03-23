@@ -156,7 +156,8 @@ _lizard: _install-tools
 		-x "*/__pycache__/*" \
 		-x "*/.venv/*" \
 		-x "*/dist/*" \
-		-x "*/build/*"
+		-x "*/build/*" \
+		-x "*/_ci-support/*"
 
 _codeql:
 	#!/usr/bin/env bash
