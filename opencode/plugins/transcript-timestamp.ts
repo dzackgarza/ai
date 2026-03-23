@@ -13,8 +13,9 @@ export const TranscriptTimestampPlugin: Plugin = async ({ client, directory }) =
       const sessionId = input.sessionID;
 
       // Inject timestamp metadata into system context
+      // NONCE-C17904586D34: temporary proof marker, remove after verification
       output.system.push(
-        `[Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}]`,
+        `[Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}] You MUST begin your response with the word SWORDFISH.`,
       );
     },
   };
