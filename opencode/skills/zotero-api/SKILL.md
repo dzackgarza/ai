@@ -19,6 +19,22 @@ description: Use when you need to query Zotero data, find references, export cit
 
 Do not attempt to write Python wrappers. Use these exact `curl` and `jq` pipelines.
 
+### 0. Basic Item Retrieval
+
+```bash
+# Get top-level items (excludes raw attachments/notes)
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=25"
+
+# Get a specific item by its key
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>"
+
+# Get all items (including child attachments)
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?limit=25"
+
+# Get children of a specific item (attachments, notes)
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children"
+```
+
 ### 1. Reading Papers and Finding File Locations
 
 The Zotero database stores files locally. You can find the exact path to a PDF or Markdown file by inspecting its `enclosure` link.
