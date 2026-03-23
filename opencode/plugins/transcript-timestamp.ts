@@ -13,7 +13,8 @@ export const TranscriptTimestampPlugin: Plugin = async ({ client, directory }) =
       if (!output.messages?.length) return;
 
       const now = new Date().toISOString();
-      const sessionId = (input as any).sessionID ?? '';
+      const sessionId =
+        output.messages.map((m) => (m.info as any).sessionID).find((id) => !!id) ?? '';
 
       const text = `[Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}]`;
 
