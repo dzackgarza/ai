@@ -393,6 +393,14 @@
         "prettier"
       ],
       "reason": "QC tools must be routed through justfile recipes. Use 'just fmt-js' instead."
+    },
+    {
+      "name": "block-python-module",
+      "command": "python",
+      "block_args": [
+        "-m"
+      ],
+      "reason": "Direct python -m execution is banned. Use 'uv run' or 'uvx' for Python CLI tools to ensure proper environment isolation."
     }
   ]
 }
