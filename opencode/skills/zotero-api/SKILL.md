@@ -3,36 +3,25 @@ name: zotero-api
 description: Use when you need to query Zotero data, find references, export citations, search for papers, or fetch PDFs using the local Zotero Web API cache.
 ---
 
-# Zotero Local API
+# Zotero API (Local Cache)
 
-This machine has a local, read-only cache of the Zotero v3 API at `https://zotero.dzackgarza.com`.
-The primary user ID is `1049732`. No authentication or API keys are required.
+## Environment Traps
 
-Base URL: `https://zotero.dzackgarza.com/api/users/1049732`
+- **Local Proxy:** This machine runs a local cache of the Zotero v3 API at `https://zotero.dzackgarza.com`.
+- **Target User:** The primary library is `users/1049732`.
+- **Auth:** No API keys are required. The proxy is read-only.
+- **Base URL:** `https://zotero.dzackgarza.com/api/users/1049732`
 
-## Query Patterns
+## Workflow Recipes
 
-Use `curl -s` and `jq` for all operations. Do not write python wrappers.
+Do not attempt to write Python wrappers or learn the schema via exploration. Use these exact `curl` and `jq` pipelines to prevent context flooding.
 
-### 1. Basic Search and Retrieval
+### Extracting Core Metadata (Titles, Authors, Years)
 
-Append `?q=<term>` to search titles and creator fields. Use `items/top` to exclude raw attachment/note items.
-
-```bash
-# Get 10 recent top-level items
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=10&sort=dateAdded&direction=desc" | jq '.'
-
-# Search for "cognitive"
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=cognitive&limit=5" | jq '.'
-```
-
-### 2. Extracting Core Metadata
-
-Extract exact fields without reading the full JSON payload.
+When inspecting library contents, extract just the necessary fields.
 
 ```bash
-# Extract title, authors, and year
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=5" | \
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=10" | \
   jq -r '.[] | [
     .key,
     .data.title,
@@ -41,27 +30,32 @@ curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=5" | \
   ] | @tsv'
 ```
 
-### 3. Finding PDF Attachments
+### Searching and Filtering
 
-PDFs are "child items" in the Zotero data model.
+To search the library (defaults to `titleCreatorYear`):
 
 ```bash
-# Find all PDF attachments across the library
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&q=pdf" | jq -r '.[].key'
-
-# Get children (e.g. PDFs) for a specific item key
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children" | \
-  jq -r '.[] | select(.data.itemType == "attachment") | .data.url'
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=<SEARCH_TERM>&limit=5" | \
+  jq -r '.[] | "\(.key) \(.data.title)"'
 ```
 
-### 4. Citation Export
+### Finding PDF Attachments
 
-Get pre-formatted citations or raw export formats by appending `format` or `include`.
+PDFs are stored as child items (`itemType=attachment`). To find a PDF for a specific item:
 
 ```bash
-# Export item as BibTeX
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children" | \
+  jq -r '.[] | select(.data.contentType == "application/pdf") | .data.url'
+```
+
+### Formatting Citations & Exports
+
+Do not manually parse fields to create citations. Use the API's native formatters (`format` or `include`).
+
+```bash
+# Export as BibTeX
 curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?format=bibtex"
 
-# Get a pre-formatted APA citation string
+# Get a pre-formatted string (e.g. APA)
 curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?include=citation&style=apa" | jq -r '.citation'
 ```
