@@ -11,6 +11,33 @@ description: Use when creating shell scripts, Python CLI tools, or command-line 
 
 Use Cyclopts for CLI presentation. Use Pydantic as the actual spec. This converges help text, validation, config loading, schemas, docs, and tests on one source of truth.
 
+## Standalone Python Scripts
+
+When writing standalone Python scripts that require external dependencies (i.e. not part of a larger package with a `pyproject.toml`), **always** use `uv`'s inline script metadata to define dependencies, and run them with `uv run`. This allows for zero-setup execution with isolated, automatically managed virtual environments.
+
+Add a `# /// script` block at the very top of the file:
+
+```python
+# /// script
+# dependencies = [
+#   "httpx",
+#   "loguru",
+#   "pydantic>=2.0.0"
+# ]
+# ///
+
+from __future__ import annotations
+import httpx
+from loguru import logger
+...
+```
+
+Then execute via:
+
+```bash
+uv run my_script.py
+```
+
 ## Mandatory Requirements
 
 Every CLI must have:

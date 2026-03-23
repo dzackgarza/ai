@@ -20,7 +20,7 @@ Opinionated, modern Python patterns for building robust, efficient, and maintain
 2. **Always fully typed** — every function signature, every variable where not trivially obvious. No `Any` unless interfacing with untyped externals
 3. **Always pydantic** — never `dataclasses`, never `NamedTuple` for data containers
 4. **Always `X | None`** — never `Optional[X]`, never `Union[X, Y]`, always use `|` syntax
-5. **Always uv** — never pip, never pip-tools, never poetry
+5. **Always uv** — never pip, never pip-tools, never poetry. Use `uv run` with `# /// script` metadata blocks for standalone scripts with external dependencies.
 6. **Always a venv** — managed by uv
 7. **Always pyproject.toml** — all config lives here (ruff, mypy, pytest, etc.)
 8. **Always a justfile** — all dev commands go through `just`
@@ -601,22 +601,22 @@ result = "".join(str(item) for item in items)
 
 ## Quick Reference
 
-| Pattern | Rule |
-|---------|------|
-| Imports | `from __future__ import annotations` first, always |
-| Data models | Pydantic `BaseModel`, never dataclasses |
-| Unions | `X \| None`, never `Optional[X]` |
-| Error handling | Assert invariants, fail fast, no speculative try/catch |
-| Package manager | `uv` only |
-| Environment | `uv venv`, always |
-| Config | All in `pyproject.toml` |
-| Dev commands | All in `justfile`, run via `just` |
-| Formatting | `ruff format` via `just fmt` |
-| Linting | `ruff check` via `just lint` |
-| Type checking | `mypy --strict` via `just typecheck` |
-| Testing | `pytest` via `just test` |
-| Full check | `just check` (lint + typecheck + test) |
-| Target Python | Latest (3.13+), no backwards compat |
+| Pattern         | Rule                                                   |
+| --------------- | ------------------------------------------------------ |
+| Imports         | `from __future__ import annotations` first, always     |
+| Data models     | Pydantic `BaseModel`, never dataclasses                |
+| Unions          | `X \| None`, never `Optional[X]`                       |
+| Error handling  | Assert invariants, fail fast, no speculative try/catch |
+| Package manager | `uv` only                                              |
+| Environment     | `uv venv`, always                                      |
+| Config          | All in `pyproject.toml`                                |
+| Dev commands    | All in `justfile`, run via `just`                      |
+| Formatting      | `ruff format` via `just fmt`                           |
+| Linting         | `ruff check` via `just lint`                           |
+| Type checking   | `mypy --strict` via `just typecheck`                   |
+| Testing         | `pytest` via `just test`                               |
+| Full check      | `just check` (lint + typecheck + test)                 |
+| Target Python   | Latest (3.13+), no backwards compat                    |
 
 ## Anti-Patterns to Avoid
 
