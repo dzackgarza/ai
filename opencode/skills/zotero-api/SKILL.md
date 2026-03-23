@@ -11,6 +11,8 @@ description: Use when you need to query Zotero data, find references, export cit
 - **Target User:** The primary library is `users/1049732`.
 - **Auth:** No API keys are required. The proxy is read-only.
 - **Base URL:** `https://zotero.dzackgarza.com/api/users/1049732`
+- **Missing Features:** The local proxy does NOT support translation endpoints (`format=bibtex` or `include=citation`). It returns empty data for these.
+- **Bulk Operations:** Do not use `curl` for bulk operations (like finding all 400+ PDFs), as the API strictly paginates to 100 results per request. Use the `zotero` skill's python script instead.
 
 ## Workflow Recipes
 
@@ -41,21 +43,16 @@ curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=<SEARCH_TERM>&l
 
 ### Finding PDF Attachments
 
-PDFs are stored as child items (`itemType=attachment`). To find a PDF for a specific item:
+PDFs are stored as child items (`itemType=attachment`). There is NO server-side filter for `contentType`.
 
 ```bash
+# Get children (e.g. PDFs) for a specific item key
 curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children" | \
   jq -r '.[] | select(.data.contentType == "application/pdf") | .data.url'
+
+# Find recent PDF attachments (paginated, max 100)
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100" | \
+  jq -r '.[] | select(.data.contentType == "application/pdf") | .key'
 ```
 
-### Formatting Citations & Exports
-
-Do not manually parse fields to create citations. Use the API's native formatters (`format` or `include`).
-
-```bash
-# Export as BibTeX
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?format=bibtex"
-
-# Get a pre-formatted string (e.g. APA)
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?include=citation&style=apa" | jq -r '.citation'
-```
+_(Note: To find ALL PDFs across the library, use `zotero check-pdfs` from the `zotero` python skill. A single `curl` call will only return 100 attachments at a time.)_
