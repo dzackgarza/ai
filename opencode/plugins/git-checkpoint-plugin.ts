@@ -19,9 +19,10 @@ export const GitCheckpointPlugin: Plugin = async ({ client, $ }) => {
       if (isDirty) {
         // 4. Block and demand a descriptive checkpoint commit
         throw new Error(
-          `Cannot proceed with edit: the current version has uncommitted changes. ` +
-            `You must first make a descriptive checkpoint commit explaining your intentions before editing. ` +
-            `Ensure your workspace is clean: git add -A && git commit -m "your intentions here"`,
+          `Cannot proceed with edit: the repository has uncommitted changes. ` +
+            `You must first checkpoint the specific file you intend to touch: ` +
+            `git add <file> && git commit -m "<message describing your current goal and how this edit advances it>". ` +
+            `Do not stage unrelated files.`,
         );
       }
     },
