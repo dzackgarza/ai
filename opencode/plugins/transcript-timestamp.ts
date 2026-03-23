@@ -1,32 +1,18 @@
 import type { Plugin } from '@opencode-ai/plugin';
-import type { TextPart, UserMessage } from '@opencode-ai/sdk';
 
 /**
  * Transcript Timestamp Plugin
  *
- * Injects current timestamp and session ID into the messages sent to the LLM
- * so the model has wall-clock datetime awareness when reading its conversation history.
+ * Injects current timestamp, session ID, and CWD into the system prompt so the
+ * model has wall-clock datetime awareness when reading its conversation history.
  */
-export const TranscriptTimestampPlugin: Plugin = async ({ client, directory }) => {
+export const TranscriptTimestampPlugin: Plugin = async ({ directory }) => {
   return {
-    'experimental.chat.messages.transform': async (input, output) => {
-      if (!output.messages?.length) return;
-
+    'experimental.chat.system.transform': async (input, output) => {
       const now = new Date().toISOString();
-      const sessionId =
-        output.messages.map((m) => (m.info as any).sessionID).find((id) => !!id) ?? '';
-
-      const text = `[Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}]`;
-
-      output.messages.push({
-        info: {
-          id: 'injected-timestamp',
-          role: 'user',
-          sessionID: sessionId,
-          time: { created: Date.now() },
-        } as UserMessage,
-        parts: [{ type: 'text', text } as TextPart],
-      });
+      const parts = [`Timestamp: ${now}`, `CWD: ${directory}`];
+      if (input.sessionID) parts.unshift(`Session ID: ${input.sessionID}`);
+      output.system.push(`[${parts.join(', ')}]`);
     },
   };
 };
