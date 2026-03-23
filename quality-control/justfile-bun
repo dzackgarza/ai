@@ -25,9 +25,10 @@
 #   semgrep.yml       → semgrep local rules (explicit --config flag)
 #   .jscpd.json       → jscpd (explicit --config flag)
 #   biome.json        → biome (explicit --config flag)
+#   eslint.config.js  → eslint (explicit --config flag)
 #   sgconfig.yml      → ast-grep (auto-discovered)
 #   .lintstagedrc.json → lint-staged (explicit --config flag)
-# GLOBAL CONFIGS OK: eslint, prettier (project .eslintrc/.prettierrc),
+# GLOBAL CONFIGS OK: prettier (project .prettierrc),
 # c8 (package.json [c8] or .c8rc), lizard (CLI flags only).
 
 default:
@@ -37,7 +38,20 @@ default:
 _install-tools:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun add --global c8 knip eslint typescript jscpd @biomejs/biome @ast-grep/cli lint-staged
+	bun add --global \
+		c8 \
+		knip \
+		eslint \
+		typescript \
+		jscpd \
+		@biomejs/biome \
+		@ast-grep/cli \
+		lint-staged \
+		@typescript-eslint/parser \
+		@typescript-eslint/eslint-plugin \
+		eslint-plugin-promise \
+		eslint-plugin-fp \
+		@lwc/eslint-plugin-lwc
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
@@ -73,7 +87,7 @@ _ast-grep: _install-tools
 _eslint: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x eslint . --max-warnings 0
+	bun x eslint --config {{justfile_directory()}}/eslint.config.js . --max-warnings 0
 
 _tsc: _install-tools
 	#!/usr/bin/env bash
@@ -93,7 +107,7 @@ _jscpd: _install-tools
 _lizard: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uvx lizard src -l typescript -C 8 -L 100 -a 5 -i 0 \
+	uvx lizard . -l typescript -C 8 -L 100 -a 5 -i 0 \
 		-x "*/node_modules/*" \
 		-x "*/__pycache__/*" \
 		-x "*/.venv/*" \
