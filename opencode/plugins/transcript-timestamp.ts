@@ -28,7 +28,7 @@ export const TranscriptTimestampPlugin: Plugin = async ({ directory }) => {
         parts: [
           {
             type: 'text',
-            text: `[Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}]`,
+            text: `<system-information>Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}</system-information>`,
           } as TextPart,
         ],
       });
