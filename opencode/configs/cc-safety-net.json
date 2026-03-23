@@ -341,6 +341,62 @@
         "--user"
       ],
       "reason": "Global package removal is banned. Agents may not mutate global packages. If a global package is problematic, alert the user to manually uninstall it."
+    },
+    {
+      "name": "block-just-private-recipe",
+      "command": "just",
+      "block_args": [
+        "_"
+      ],
+      "reason": "Private recipes (starting with _) are internal implementation details. Use public justfile recipes only."
+    },
+    {
+      "name": "block-uvx-ruff",
+      "command": "uvx",
+      "block_args": [
+        "ruff"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just lint-python' or 'just fmt-python' instead."
+    },
+    {
+      "name": "block-uvx-mypy",
+      "command": "uvx",
+      "block_args": [
+        "mypy"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just mypy' instead."
+    },
+    {
+      "name": "block-npx-eslint",
+      "command": "npx",
+      "block_args": [
+        "eslint"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just lint-js' instead."
+    },
+    {
+      "name": "block-npx-prettier",
+      "command": "npx",
+      "block_args": [
+        "prettier"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just fmt-js' instead."
+    },
+    {
+      "name": "block-bunx-eslint",
+      "command": "bunx",
+      "block_args": [
+        "eslint"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just lint-js' instead."
+    },
+    {
+      "name": "block-bunx-prettier",
+      "command": "bunx",
+      "block_args": [
+        "prettier"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just fmt-js' instead."
     }
   ]
 }
