@@ -175,6 +175,8 @@ Consult these comprehensive guides when working on specific domains:
 
 - **[code-patterns.md](references/code-patterns.md)** - Programming antipatterns across languages with refactoring guidance
 
+- **[test-patterns.md](references/test-patterns.md)** - Testing slop patterns (content-free checks, tautologies, masking)
+
 - **[design-patterns.md](references/design-patterns.md)** - Visual and UX design slop patterns with improvement strategies
 
 Each reference includes:

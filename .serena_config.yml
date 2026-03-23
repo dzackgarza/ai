@@ -253,6 +253,9 @@ included_optional_tools:
 
 # fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
 # This cannot be combined with non-empty excluded_tools or included_optional_tools.
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+# This cannot be combined with non-empty excluded_tools or included_optional_tools.
 fixed_tools: []
 
 # list of mode names to that are always to be included in the set of active modes
@@ -340,3 +343,12 @@ read_only_memory_patterns: []
 # Note that Serena's own files (e.g. memories and configuration files) always use native line endings.
 # This setting can be overridden on a per-project basis in project.yml files.
 line_ending: native
+
+# list of regex patterns for memories to completely ignore.
+# Matching memories will not appear in list_memories or activate_project output
+# and cannot be accessed via read_memory or write_memory.
+# To access ignored memory files, use the read_file tool on the raw file path.
+# This is useful for projects with large numbers of archived memory files.
+# You can extend the list on a per-project basis in the project.yml configuration file.
+# Example: ["_archive/.*", "_episodes/.*"]
+ignored_memory_patterns: []

@@ -53,8 +53,11 @@ See [Cursor CLI announcement](https://cursor.com/blog/cli) for details.
 # Set up symlinks and environment variables
 just install
 
-# Install OpenCode plugins
-npm install -g @ramtinj95/opencode-tokenscope
+# Build OpenCode config and materialize agents (required)
+just build
+
+# Sync MCP configurations across all harnesses
+just --justfile ~/ai/home-justfile install-mcps
 
 # Authenticate each harness (run once, opens browser/login prompt)
 claude
@@ -70,9 +73,9 @@ amp
 
 | Harness  | Global Context File                              | Project Context File                      | System Prompt Override         | Skills Directories                                                                                             | Source                                                                                                                                                          |
 | -------- | ------------------------------------------------ | ----------------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| claude   | `~/.claude/CLAUDE.md`                            | `CLAUDE.md` in project root               | —                              | custom slash commands                                                                                          | [docs](https://docs.anthropic.com/en/docs/claude-code/overview)                                                                                                 |
-| codex    | `~/.codex/AGENTS.md`                             | `AGENTS.md` in project root               | —                              | —                                                                                                              | [docs](https://developers.openai.com/codex/guides/agents-md/)                                                                                                   |
-| gemini   | `~/.gemini/GEMINI.md`                            | `GEMINI.md` in workspace                  | `GEMINI_SYSTEM_MD` env var     | `~/.gemini/skills/`, `~/.agents/skills/`                                                                       | [context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/), [system](https://geminicli.com/docs/cli/system-prompt/) |
+| claude   | `~/.claude/CLAUDE.md`                            | `CLAUDE.md` in project root               | —                              | `~/.claude/skills/`                                                                                            | [docs](https://docs.anthropic.com/en/docs/claude-code/overview)                                                                                                 |
+| codex    | `~/.codex/AGENTS.md`                             | `AGENTS.md` in project root               | —                              | `~/.codex/skills/`                                                                                             | [docs](https://developers.openai.com/codex/guides/agents-md/)                                                                                                   |
+| gemini   | `~/.gemini/GEMINI.md`                            | `GEMINI.md` in workspace                  | `GEMINI_SYSTEM_MD` env var     | `~/.agents/skills/`                                                                                            | [context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/), [system](https://geminicli.com/docs/cli/system-prompt/) |
 | qwen     | `~/.qwen/QWEN.md`                                | `QWEN.md` in workspace                    | `QWEN_SYSTEM_MD` env var       | `~/.qwen/skills/`                                                                                              | [docs](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/)                                                                                |
 | opencode | `~/.config/opencode/AGENTS.md`                   | `AGENTS.md` in project root               | `prompt` field in agent config | `~/.claude/skills/` (fallback)                                                                                 | [docs](https://opencode.ai/docs/rules/)                                                                                                                         |
 | kilo     | `~/.config/kilo/AGENTS.md`                       | `AGENTS.md` in project root               | `prompt` field in agent config | `~/.kilocode/skills/`                                                                                          | [docs](https://kilo.ai/docs/agent-behavior/agents-md/), [skills](https://kilo.ai/docs/agent-behavior/skills)                                                    |
@@ -80,8 +83,8 @@ amp
 
 **Master files (symlinked to all harnesses):**
 
-- Context file: `~/ai/AGENTS.md`
-- Skills: `~/ai/skills/`
+- Context file: `~/ai/opencode/AGENTS.md`
+- Skills: `~/ai/opencode/skills/`
 
 ### Verified Details
 
@@ -112,6 +115,26 @@ amp
 - Fallback: `CLAUDE.md` (unless `OPENCODE_DISABLE_CLAUDE_CODE=1`)
 - Skills: `~/.claude/skills/` (unless `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1`)
 
+#### OpenCode Config Architecture
+
+`opencode.json` is a **built artifact** and should not be edited directly. Manual changes will be overwritten. The configuration is assembled from:
+
+- **Skeleton**: `opencode/configs/config_skeleton.json` (base template, MCP, global permissions)
+- **Providers**: `opencode/configs/providers/*.json` (merged into the `provider` key)
+- **Agents**: Compiled from `ai-prompts` into `opencode/agents/*.md` with injected permissions.
+
+**Build Commands:**
+
+```bash
+# 1. Compile permissions and agents
+cd opencode && uv run permissions/main.py --apply
+
+# 2. Merge skeleton and providers into opencode.json
+cd opencode && uv run scripts/build_config.py
+```
+
+See `opencode/README.md` for the full technical breakdown.
+
 **Amp** ([source](https://ampcode.com/manual)):
 
 - Global: `$HOME/.config/amp/AGENTS.md` or `$HOME/.config/AGENTS.md`
@@ -122,7 +145,7 @@ amp
 **Claude Code** ([source](https://docs.anthropic.com/en/docs/claude-code/overview)):
 
 - Uses `CLAUDE.md` at project root and parent directories
-- Skills via custom slash commands
+- Skills via custom slash commands and symlinked `~/.claude/skills/` directory
 
 **Kilo** ([AGENTS.md](https://kilo.ai/docs/agent-behavior/agents-md/), [skills](https://kilo.ai/docs/agent-behavior/skills)):
 
@@ -207,7 +230,7 @@ Some harnesses allow replacing their built-in system prompt entirely. This is di
 
 **Gemini CLI** ([docs](https://geminicli.com/docs/cli/system-prompt/)):
 
-Set `GEMINI_SYSTEM_MD` environment variable:
+Set `GEMINI_SYSTEM_MD` environment variable. **Note:** `just install` automatically configures this in your shell RC files to point to the interactive agent at `opencode/agents/interactive.md`.
 
 ```bash
 # Use .gemini/system.md in project (fixed path)
@@ -236,7 +259,7 @@ When active, Gemini shows `|⌐■_■|` indicator in the UI.
 
 **Qwen Code**:
 
-Forked from Gemini CLI - same mechanism with `QWEN_SYSTEM_MD`:
+Forked from Gemini CLI - same mechanism with `QWEN_SYSTEM_MD`. Like Gemini, this is automatically configured to point to the interactive agent prompt by `just install`.
 
 ```bash
 QWEN_SYSTEM_MD=/path/to/system.md qwen
@@ -263,7 +286,7 @@ The `prompt` field completely replaces the built-in system prompt for that agent
 
 ### Interactive Agents
 
-**Agent definitions are no longer in this repo — they're all defined in the external `ai-prompts` repository.** See that repo for documentation on specific agents. This file contains only general notes about agent behavior patterns.
+**Agent definitions are authored in the external `ai-prompts` repository but materialized here into `opencode/agents/*.md`.** These local files are consumed by OpenCode at runtime. Run `just build-agents` to synchronize them from the source repository. See the `ai-prompts` repo for documentation on specific agents. This file contains only general notes about agent behavior patterns.
 
 **Mode-switch indicators:**
 
@@ -340,13 +363,24 @@ Each specialized prompt lives in `ai-prompts`; support material is expanded into
 
 ## MCP Servers
 
-| Name               | Command                                                                                                                                         | Description                          | Link                                                                             |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------- |
-| serena             | `uvx --from git+https://github.com/oraios/serena serena start-mcp-server --project-from-cwd`                                                    | Code intelligence, symbol navigation | https://github.com/oraios/serena                                                 |
-| morph              | `npx -y @morphllm/morphmcp`                                                                                                                     | Fast code edits via Morph LLM        | https://github.com/morph-llm/morphmcp                                            |
-| kindly             | `uvx --from git+https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server kindly-web-search-mcp-server start-mcp-server` | Web search                           | https://github.com/Shelpuk-AI-Technology-Consulting/kindly-web-search-mcp-server |
-| context7           | `npx -y @upstash/context7-mcp`                                                                                                                  | Documentation search (llms.txt)      | https://github.com/upstash/context7                                              |
-| cut-copy-paste-mcp | `npx -y @fastmcp-me/cut-copy-paste-mcp`                                                                                                         | Clipboard operations                 | https://github.com/fastmcp-me/cut-copy-paste-mcp                                 |
+MCP configurations are centralized in `~/ai/mcp/mcp-servers.yml` and synchronized across all harnesses using `just --justfile ~/ai/home-justfile install-mcps`.
+
+| Name               | Description                          | Common | Link                                                                    |
+| ------------------ | ------------------------------------ | ------ | ----------------------------------------------------------------------- |
+| serena             | Code intelligence, symbol navigation | Yes    | https://github.com/oraios/serena                                        |
+| cut-copy-paste-mcp | Clipboard operations                 | Yes    | https://github.com/fastmcp-me/cut-copy-paste-mcp                        |
+| improved-webtools  | Web search and fetching              | Most\* | [repo](https://github.com/dzackgarza/opencode-plugin-improved-webtools) |
+| opencode-memory    | Git-backed markdown memory store     | Most\* | [repo](https://github.com/dzackgarza/opencode-memory-plugin)            |
+
+\* _Excluded for OpenCode harness as it uses equivalent plugins instead._
+
+### Synchronizing MCPs
+
+To propagate changes from `mcp-servers.yml` to all harness configuration files:
+
+```bash
+just --justfile ~/ai/home-justfile install-mcps
+```
 
 ### Adding MCP Servers by Harness
 
