@@ -6,11 +6,13 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import promisePlugin from 'eslint-plugin-promise';
 import fpPlugin from 'eslint-plugin-fp';
 import lwcPlugin from '@lwc/eslint-plugin-lwc';
+import globals from 'globals';
 
 export default [
+  // Global ignores: apply before any rule config
+  { ignores: ['node_modules/**', 'dist/**', 'coverage/**', '.venv/**', '_ci-support/**'] },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['node_modules/**', 'dist/**', 'coverage/**', '.venv/**'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -21,6 +23,14 @@ export default [
         projectService: true,
         tsconfigRootDir: process.cwd(),
       },
+      // Replicate Codacy's LWC ESLint environment: node globals are present
+      // but Promise is explicitly excluded (LWC targets environments without
+      // native Promise). This makes no-undef catch `: Promise<X>` and
+      // `Promise.resolve()` the same way Codacy does.
+      globals: {
+        ...globals.node,
+        Promise: 'off',
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
@@ -29,6 +39,10 @@ export default [
       '@lwc/lwc': lwcPlugin,
     },
     rules: {
+      // no-undef: catch undefined globals. Promise is removed from globals above
+      // to replicate Codacy's LWC environment behavior.
+      'no-undef': 'error',
+
       // @typescript-eslint full suite
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
@@ -85,6 +99,8 @@ export default [
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       'promise/always-return': 'off',
       'promise/catch-or-return': 'off',
+      'promise/no-native': 'off',
+      'no-undef': 'off',
     },
   },
 ];
