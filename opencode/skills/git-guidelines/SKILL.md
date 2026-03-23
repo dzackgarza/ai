@@ -229,7 +229,39 @@ gh api repos/<owner>/<repo>/issues/<N>/comments
 
 **All issues must be labeled immediately upon creation.**
 
-Use `gh issue create --repo <owner>/<repo> --title "..." --body "..." --label "<label>"`
+Use `gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"`
+
+**Mandatory Issue Rules:**
+
+1. **Deep description**: Explain exactly what is happening or missing.
+2. **Proof**: Include relevant logs, outputs, error traces, or code snippets that PROVE the issue exists. Provide as many clear examples as possible.
+3. **Concrete Expectations**: Describe new designs, specs, and expected behavior. Include TDD-style pseudocode showing what the expected new behavior looks like. Do not list "benefits".
+4. **Informative Only**: Use plain, technical language. No marketing or selling language.
+5. **No Implementation Code**: Do NOT attempt to write the actual code to fix the problem in the issue body. The person filing the issue does NOT decide HOW to fix it; they provide data to more specialized design and triage agents.
+6. **No Plans**: Do not include a step-by-step "plan" to fix the issue. That is a separate task. High-level suggestions for phases are permitted.
+7. **No Time Estimates**: NEVER include time estimates.
+
+**Minimal Issue Template:**
+
+Create a local `.md` file for the body and pass it to `gh issue create --body-file`:
+
+```markdown
+# Description
+
+<Deep description of the problem or feature>
+
+# Evidence
+
+<Logs, outputs, or code proving the issue exists. Clear examples.>
+
+# Expected Behavior
+
+<Concrete expectations. TDD-style pseudocode.>
+
+# Suggested Phases (Optional)
+
+<High-level suggestions for phases, but no detailed implementation plan.>
+```
 
 ### Available Labels
 
