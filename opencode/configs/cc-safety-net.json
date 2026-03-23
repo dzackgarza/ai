@@ -56,18 +56,6 @@
       "reason": "Direct file manipulation with sed is banned. Agents must use proper editing tools (like Edit or Write) so that changes produce clear diffs for user review in chat."
     },
     {
-      "name": "block-git-push",
-      "command": "git",
-      "subcommand": "push",
-      "block_args": [
-        "push",
-        "--force",
-        "-f",
-        "--force-with-lease"
-      ],
-      "reason": "Pushing is not part of the PR-based workflow. Review the git guidelines skill for the proper workflow."
-    },
-    {
       "name": "block-git-switch",
       "command": "git",
       "subcommand": "switch",
@@ -401,6 +389,111 @@
         "-m"
       ],
       "reason": "Direct python -m execution is banned. Use 'uv run' or 'uvx' for Python CLI tools to ensure proper environment isolation."
+    },
+    {
+      "name": "block-uvx-vulture",
+      "command": "uvx",
+      "block_args": [
+        "vulture"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-uvx-deptry",
+      "command": "uvx",
+      "block_args": [
+        "deptry"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-uvx-semgrep",
+      "command": "uvx",
+      "block_args": [
+        "semgrep"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-uvx-lizard",
+      "command": "uvx",
+      "block_args": [
+        "lizard"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-uvx-import-linter",
+      "command": "uvx",
+      "block_args": [
+        "import-linter",
+        "lint-imports"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-uvx-coverage",
+      "command": "uvx",
+      "block_args": [
+        "coverage"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-uvx-diff-cover",
+      "command": "uvx",
+      "block_args": [
+        "diff-cover"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-uvx-ai-slop-detector",
+      "command": "uvx",
+      "block_args": [
+        "ai-slop-detector"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-bunx-biome",
+      "command": "bunx",
+      "block_args": [
+        "biome"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-bunx-knip",
+      "command": "bunx",
+      "block_args": [
+        "knip"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-bunx-jscpd",
+      "command": "bunx",
+      "block_args": [
+        "jscpd"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-bunx-c8",
+      "command": "bunx",
+      "block_args": [
+        "c8"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
+    },
+    {
+      "name": "block-npx-jscpd",
+      "command": "npx",
+      "block_args": [
+        "jscpd"
+      ],
+      "reason": "QC tools must be routed through justfile recipes. Use 'just test' instead."
     }
   ]
 }
