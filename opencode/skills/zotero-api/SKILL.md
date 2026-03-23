@@ -65,13 +65,3 @@ curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?format
 # Get a pre-formatted APA citation string
 curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?include=citation&style=apa" | jq -r '.citation'
 ```
-
-## API Parameters
-
-| Parameter   | Values                                                  | Description         |
-| ----------- | ------------------------------------------------------- | ------------------- |
-| `limit`     | `1`-`100` (default: 25)                                 | Results per request |
-| `start`     | Integer                                                 | Pagination offset   |
-| `sort`      | `dateAdded`, `dateModified`, `title`, `creator`, `date` | Sorting field       |
-| `direction` | `asc`, `desc`                                           | Sorting direction   |
-| `format`    | `json`, `bibtex`, `biblatex`, `csljson`, `ris`          | Output format       |
