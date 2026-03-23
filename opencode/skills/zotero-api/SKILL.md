@@ -1,108 +1,77 @@
 ---
 name: zotero-api
-description: Use when you need to interact directly with the Zotero Web API v3, particularly the local instance at zotero.dzackgarza.com.
+description: Use when you need to query Zotero data, find references, export citations, search for papers, or fetch PDFs using the local Zotero Web API cache.
 ---
 
-# Zotero API Guidelines
+# Zotero Local API
 
-This skill covers direct interaction with the Zotero Web API v3.
+This machine has a local, read-only cache of the Zotero v3 API at `https://zotero.dzackgarza.com`.
+The primary user ID is `1049732`. No authentication or API keys are required.
 
-## Local Instance Access
+Base URL: `https://zotero.dzackgarza.com/api/users/1049732`
 
-On authenticated machines (including this one), you have access to a LOCAL Zotero API instance at:
-`https://zotero.dzackgarza.com`
+## Query Patterns
 
-This fronts a local cache, NOT the public web API, which means it is extremely fast and does not require API keys for read access.
-The primary user ID is `1049732`.
+Use `curl -s` and `jq` for all operations. Do not write python wrappers.
 
-Base URL for all queries: `https://zotero.dzackgarza.com/api/users/1049732`
+### 1. Basic Search and Retrieval
 
-## Common Operations
-
-Always use standard tools like `curl` or `httpx` to query these endpoints. The API returns JSON by default.
-
-### Getting Items
-
-To retrieve top-level items (excluding attachments and notes):
+Append `?q=<term>` to search titles and creator fields. Use `items/top` to exclude raw attachment/note items.
 
 ```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top"
+# Get 10 recent top-level items
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=10&sort=dateAdded&direction=desc" | jq '.'
+
+# Search for "cognitive"
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=cognitive&limit=5" | jq '.'
 ```
 
-To retrieve all items (including child attachments like PDFs):
+### 2. Extracting Core Metadata
+
+Extract exact fields without reading the full JSON payload.
 
 ```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items"
+# Extract title, authors, and year
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=5" | \
+  jq -r '.[] | [
+    .key,
+    .data.title,
+    (.data.creators[0].lastName // "No Author"),
+    (.data.date | substring(0;4))
+  ] | @tsv'
 ```
 
-To get a specific item by its key:
+### 3. Finding PDF Attachments
+
+PDFs are "child items" in the Zotero data model.
 
 ```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<itemKey>"
+# Find all PDF attachments across the library
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&q=pdf" | jq -r '.[].key'
+
+# Get children (e.g. PDFs) for a specific item key
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children" | \
+  jq -r '.[] | select(.data.itemType == "attachment") | .data.url'
 ```
 
-### Searching
+### 4. Citation Export
 
-You can search items by appending the `q` parameter (which searches titles and individual creator fields by default).
-Only search metadata is currently available, not full text.
+Get pre-formatted citations or raw export formats by appending `format` or `include`.
 
 ```bash
-# Search for items containing "cognitive"
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=cognitive"
+# Export item as BibTeX
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?format=bibtex"
+
+# Get a pre-formatted APA citation string
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>?include=citation&style=apa" | jq -r '.citation'
 ```
 
-### Finding Items with Attached PDFs
+## API Parameters
 
-In the Zotero API, PDFs are "child items" (attachments) that belong to a parent item. To find items with PDFs, you can filter by `itemType`:
-
-```bash
-# Find PDF attachments
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&q=pdf"
-```
-
-Alternatively, to find the children (e.g. PDFs) of a specific item key:
-
-```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<itemKey>/children"
-```
-
-### Extracting Metadata (Titles, Authors, Years)
-
-Zotero API returns item data under the `data` key in the JSON response.
-You can use `jq` to parse out specific fields:
-
-```bash
-# Extract title, first creator, and date
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=5" | jq -r '.[] | .data.title + " | " + .data.creators[0].lastName + " | " + .data.date'
-```
-
-### Export Formats (BibTeX, JSON, etc)
-
-Zotero can format citations directly if you specify export formats (like BibTeX) via `format`.
-Available export formats: `bibtex`, `biblatex`, `csljson`, `ris`, etc.
-
-```bash
-# Get BibTeX for a specific item
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<itemKey>?format=bibtex"
-```
-
-If you just want a formatted citation string according to a specific style:
-
-```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<itemKey>?include=citation&style=apa"
-```
-
-## Pagination & Limits
-
-- By default, the API returns 25 results.
-- Use `limit` (max 100) and `start` for pagination.
-- Sort with `sort` (e.g. `dateAdded`, `dateModified`, `title`, `creator`, `date`) and `direction` (`asc`, `desc`).
-
-```bash
-# Get the 100 most recently added items
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?limit=100&sort=dateAdded&direction=desc"
-```
-
-## API Versioning
-
-The current API version is v3. You can request it explicitly by appending `v=3` to your query string, though the local instance handles default routing.
+| Parameter   | Values                                                  | Description         |
+| ----------- | ------------------------------------------------------- | ------------------- |
+| `limit`     | `1`-`100` (default: 25)                                 | Results per request |
+| `start`     | Integer                                                 | Pagination offset   |
+| `sort`      | `dateAdded`, `dateModified`, `title`, `creator`, `date` | Sorting field       |
+| `direction` | `asc`, `desc`                                           | Sorting direction   |
+| `format`    | `json`, `bibtex`, `biblatex`, `csljson`, `ris`          | Output format       |
