@@ -4,7 +4,7 @@ description: Use when delegating a coding task to Jules — bug fixes, tests, do
 license: Apache-2.0
 metadata:
 author: sanjay3290
-version: "1.1"
+version: '1.1'
 ---
 
 # Jules Task Delegation
@@ -317,41 +317,35 @@ Workflow:
 
 ### Sending Review Feedback to Jules
 
-Use the bundled `extract_unresolved_issues.py` script to pipe unresolved PR review issues back to Jules:
+Use the `extract_unresolved_issues` module from the `git-guidelines` skill to pipe unresolved PR review issues back to Jules:
 
 ```bash
 # Send unresolved issues summary
-uv run python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <owner>/<repo>#<PR_NUM> | uvx git+https://github.com/dzackgarza/improved-jules-cli feedback SESSION_ID
 
 # Send issues list
-uv run python skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM | python -m improved_jules_cli feedback SESSION_ID
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues issues <owner>/<repo>#<PR_NUM> | uvx git+https://github.com/dzackgarza/improved-jules-cli feedback SESSION_ID
 ```
 
 ### Detailed Workflow (improved-jules-cli)
 
-For the full end-to-end workflow using the `improved-jules-cli` wrapper:
+For the full end-to-end workflow using `improved-jules-cli`:
 
 1. **Create Issue** — Use `git-guidelines` skill. Ensure clear title, specific outcomes, and context files referenced.
 2. **Launch**:
    ```bash
-   cd /home/dzack/opencode-plugins/improved-jules-cli
-   source .venv/bin/activate && source ~/.envrc
-   python -m improved_jules_cli create ISSUE_URL --context PATH_TO_CONTEXT --prompt-slug sub-agents/jules-pr-body-contract
+   uvx git+https://github.com/dzackgarza/improved-jules-cli create ISSUE_URL --context PATH_TO_CONTEXT --prompt-slug sub-agents/jules-pr-body-contract
    ```
 3. **Monitor & Poll**:
    ```bash
-   python -m improved_jules_cli status SESSION_ID
-   python -m improved_jules_cli watch-callback SESSION_ID "echo done"
+   uvx git+https://github.com/dzackgarza/improved-jules-cli status SESSION_ID
+   uvx git+https://github.com/dzackgarza/improved-jules-cli watch-callback SESSION_ID "echo done"
    ```
 4. **Wait for Reviews** — 5-10 minutes for bots (Qodo, Codacy, Gemini, kilo-code-bot).
-5. **Check Issues**:
-   ```bash
-   python skills/jules/scripts/extract_unresolved_issues.py issues owner/repo#NUM
-   python skills/jules/scripts/extract_unresolved_issues.py summarize owner/repo#NUM
-   ```
+5. **Check Issues** — Use `extract_unresolved_issues` from `git-guidelines` skill (see above).
 6. **Send Feedback** — Pipe issues to Jules (see above).
 7. **Repeat** steps 3-6 until no unresolved issues remain.
-8. **Surface** — Present PR link: `python -m improved_jules_cli pr SESSION_ID`
+8. **Surface** — Present PR link: `uvx git+https://github.com/dzackgarza/improved-jules-cli pr SESSION_ID`
 
 > TODO: describe exactly how to identify unresolved issues.
 > TODO: describe exactly what counts as unresolved (isMinimized == false/null → unresolved, or non-crossed-out issues)
