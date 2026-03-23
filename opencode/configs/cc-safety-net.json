@@ -239,15 +239,6 @@
       "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
     },
     {
-      "name": "block-python-pytest",
-      "command": "python",
-      "block_args": [
-        "-m",
-        "pytest"
-      ],
-      "reason": "All tests must be routed through a justfile recipe which properly initializes the testing env."
-    },
-    {
       "name": "block-direnv-tests",
       "command": "direnv",
       "subcommand": "exec",
