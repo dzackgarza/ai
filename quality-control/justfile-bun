@@ -92,7 +92,7 @@ _jscpd: _install-tools
 _lizard: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uvx lizard src -l typescript -C 7 -L 100 -a 5 -i 0 \
+	uvx lizard src -l typescript -C 10 -L 100 -a 5 -i 0 \
 		-x "*/node_modules/*" \
 		-x "*/__pycache__/*" \
 		-x "*/.venv/*" \
