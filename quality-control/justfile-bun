@@ -35,6 +35,37 @@ default:
   @just test
 
 # private recipes (prefix with _ — never run individually)
+_no-bypass:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	# Block attempts to hide/launder QC issues via bypass comments
+	files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
+	[ -z "$files" ] && exit 0
+	for file in $files; do
+		[ -f "$file" ] || continue
+		# JS coverage bypass
+		if grep -n "// istanbul ignore" "$file" 2>/dev/null; then
+			echo "ERROR: $file contains '// istanbul ignore' — fix coverage, don't hide it"
+			exit 1
+		fi
+		# TS bypass
+		if grep -n "@ts-ignore" "$file" 2>/dev/null; then
+			echo "ERROR: $file contains '@ts-ignore' — fix type errors, don't hide them"
+			exit 1
+		fi
+		# TS expect-error without comment
+		if grep -n "@ts-expect-error$" "$file" 2>/dev/null; then
+			echo "ERROR: $file contains '@ts-expect-error' without justification — add a comment explaining why"
+			exit 1
+		fi
+		# ESLint bypass
+		if grep -n "// eslint-disable" "$file" 2>/dev/null; then
+			echo "ERROR: $file contains '// eslint-disable' — fix lint errors, don't hide them"
+			exit 1
+		fi
+	done
+	echo "No bypass comments detected in staged files"
+
 _install-tools:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -126,7 +157,7 @@ _lint-staged: _install-tools
 	bun x lint-staged --config {{justfile_directory()}}/.lintstagedrc.json
 
 # public: all static checks run locally
-test: _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _codeql
+test: _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _codeql
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
