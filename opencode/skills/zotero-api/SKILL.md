@@ -13,43 +13,92 @@ description: Use when you need to query Zotero data, find references, export cit
 - **Base URL:** `https://zotero.dzackgarza.com/api/users/1049732`
 - **Missing Features:** The local proxy does NOT support translation endpoints (`format=bibtex` or `include=citation`). It returns empty data for these.
 - **Pagination limit:** `curl` queries are strictly limited to 100 results per request. You must loop using `&start=N` to fetch all data. Do NOT use the `zotero` python skill for local cache reads, as that script is hardcoded to the official authenticated web API.
+- **Read-Only:** You cannot attach new files or modify metadata via this local API.
 
-## Workflow Recipes
+## Core Workflows
 
-Do not attempt to write Python wrappers or learn the schema via exploration. Use these exact `curl` and `jq` pipelines to prevent context flooding.
+Do not attempt to write Python wrappers. Use these exact `curl` and `jq` pipelines.
 
-### Extracting Core Metadata (Titles, Authors, Years)
+### 1. Reading Papers and Finding File Locations
 
-When inspecting library contents, extract just the necessary fields.
+The Zotero database stores files locally. You can find the exact path to a PDF or Markdown file by inspecting its `enclosure` link.
 
 ```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=10" | \
+# Find the local filepath of an attachment (e.g. a PDF)
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ATTACHMENT_KEY>" | \
+  jq -r '.links.enclosure.href' | sed 's|file://||'
+```
+
+_Result:_ `/home/dzack/Zotero/storage/<ATTACHMENT_KEY>/<filename>.pdf`
+
+Once you have the path, use the **`marker`** skill or native file reading tools to read the paper's contents.
+
+### 2. Searching and Filtering (Fulltext vs Metadata)
+
+Zotero supports powerful search via the `q` parameter.
+
+- **Metadata only (Default):** `q=<term>` searches only titles, creators, and years.
+- **Fulltext Search:** Append `&qmode=everything` to search the full text of indexed PDFs and all metadata fields (like abstracts).
+
+```bash
+# Fulltext search across all items and PDFs
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=quantum&qmode=everything&limit=5" | jq -r '.[].data.title'
+```
+
+### 3. Finding Items Without Attachments (Needs PDF)
+
+Items missing PDFs have no child items. You can find them by checking `.meta.numChildren`.
+
+```bash
+# Find top-level items that have NO attachments
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=100" | \
+  jq -r '.[] | select(.meta.numChildren == 0) | .key'
+```
+
+### 4. Extracting Core Metadata & BibTeX Keys
+
+When inspecting library contents, extract just the necessary fields. BetterBibTeX keys are usually stored in the `extra` field.
+
+```bash
+# Extract Key, Title, First Author, Year, and BibTeX Key
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=5" | \
   jq -r '.[] | [
     .key,
     .data.title,
     (.data.creators[0].lastName // "No Author"),
-    (.data.date | substring(0;4))
+    (.data.date | substring(0;4)),
+    (.data.extra | capture("Citation Key: (?<key>[^\\n]+)") | .key // "No Key")
   ] | @tsv'
 ```
 
-### Searching and Filtering
+### 5. Finding Specific File Types (Markdown, PDFs)
 
-To search the library (defaults to `titleCreatorYear`):
+PDFs and Markdown notes are stored as child items (`itemType=attachment`). There is NO server-side filter for `contentType`, so you must filter with `jq`.
 
 ```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=<SEARCH_TERM>&limit=5" | \
-  jq -r '.[] | "\(.key) \(.data.title)"'
+# Find recent Markdown file attachments
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100" | \
+  jq -r '.[] | select(.data.contentType == "text/markdown") | .key'
+
+# Get ALL child attachments (PDFs/Markdown) for a specific parent item
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<PARENT_KEY>/children" | \
+  jq -r '.[] | [.data.contentType, .links.enclosure.href] | @tsv'
 ```
 
-### Finding PDF Attachments
+### 6. Finding Collections
 
-PDFs are stored as child items (`itemType=attachment`). There is NO server-side filter for `contentType`.
+To list all collections and their IDs:
 
 ```bash
-# Get children (e.g. PDFs) for a specific item key
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children" | \
-  jq -r '.[] | select(.data.contentType == "application/pdf") | .data.url'
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/collections?limit=50" | \
+  jq -r '.[] | [.key, .data.name, .meta.numItems] | @tsv'
+```
 
+### 7. Fetching All PDFs (Pagination Loop)
+
+Because of the 100-item limit, you must loop over `start=N` to fetch all attachments.
+
+```bash
 # Find ALL PDF attachments across the library (paginated loop)
 total=$(curl -sI "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment" | grep -i 'total-results' | awk '{print $2}' | tr -d '\r')
 for ((i=0; i<total; i+=100)); do
