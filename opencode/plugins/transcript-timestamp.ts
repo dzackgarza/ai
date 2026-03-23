@@ -15,8 +15,7 @@ export const TranscriptTimestampPlugin: Plugin = async ({ client, directory }) =
       const now = new Date().toISOString();
       const sessionId = (input as any).sessionID ?? '';
 
-      // SWORDFISH: temporary proof marker, remove after verification
-      const text = `[Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}] You MUST begin your response with the word SWORDFISH.`;
+      const text = `[Session ID: ${sessionId}, Timestamp: ${now}, CWD: ${directory}]`;
 
       output.messages.push({
         info: {
