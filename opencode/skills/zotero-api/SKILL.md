@@ -46,6 +46,10 @@ curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=<SEARCH_TERM>&l
 PDFs are stored as child items (`itemType=attachment`). There is NO server-side filter for `contentType`.
 
 ```bash
+# Get children (e.g. PDFs) for a specific item key
+curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children" | \
+  jq -r '.[] | select(.data.contentType == "application/pdf") | .data.url'
+
 # Find ALL PDF attachments across the library (paginated loop)
 total=$(curl -sI "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment" | grep -i 'total-results' | awk '{print $2}' | tr -d '\r')
 for ((i=0; i<total; i+=100)); do
