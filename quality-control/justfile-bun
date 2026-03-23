@@ -44,6 +44,7 @@ _coverage: _install-tools
 	set -euo pipefail
 	bun test --coverage --coverage-reporter=cobertura --coverage-dir=.
 	bun x c8 report --reporter=cobertura --report-dir=.
+	bun x c8 check-coverage --100
 
 _diff-cover: _coverage
 	#!/usr/bin/env bash

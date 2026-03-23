@@ -46,7 +46,7 @@ _coverage: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
 	uv run coverage run -m pytest
-	uv run coverage xml -o coverage.xml
+	uv run coverage xml --fail-under=100 -o coverage.xml
 
 _diff-cover: _coverage
 	#!/usr/bin/env bash
