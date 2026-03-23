@@ -37,7 +37,7 @@ default:
 _install-tools:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun add -d @bun/test c8 knip eslint typescript semgrep jscpd lizard-py @biomejs/biome @ast-grep/cli lint-staged
+	bun add --global @bun/test c8 knip eslint typescript semgrep jscpd lizard-py @biomejs/biome @ast-grep/cli lint-staged
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
