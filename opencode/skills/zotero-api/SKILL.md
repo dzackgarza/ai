@@ -12,7 +12,7 @@ description: Use when you need to query Zotero data, find references, export cit
 - **Auth:** No API keys are required. The proxy is read-only.
 - **Base URL:** `https://zotero.dzackgarza.com/api/users/1049732`
 - **Missing Features:** The local proxy does NOT support translation endpoints (`format=bibtex` or `include=citation`). It returns empty data for these.
-- **Bulk Operations:** Do not use `curl` for bulk operations (like finding all 400+ PDFs), as the API strictly paginates to 100 results per request. Use the `zotero` skill's python script instead.
+- **Pagination limit:** `curl` queries are strictly limited to 100 results per request. You must loop using `&start=N` to fetch all data. Do NOT use the `zotero` python skill for local cache reads, as that script is hardcoded to the official authenticated web API.
 
 ## Workflow Recipes
 
@@ -46,13 +46,10 @@ curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=<SEARCH_TERM>&l
 PDFs are stored as child items (`itemType=attachment`). There is NO server-side filter for `contentType`.
 
 ```bash
-# Get children (e.g. PDFs) for a specific item key
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children" | \
-  jq -r '.[] | select(.data.contentType == "application/pdf") | .data.url'
-
-# Find recent PDF attachments (paginated, max 100)
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100" | \
-  jq -r '.[] | select(.data.contentType == "application/pdf") | .key'
+# Find ALL PDF attachments across the library (paginated loop)
+total=$(curl -sI "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment" | grep -i 'total-results' | awk '{print $2}' | tr -d '\r')
+for ((i=0; i<total; i+=100)); do
+  curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100&start=$i" | \
+    jq -r '.[] | select(.data.contentType == "application/pdf") | .key'
+done
 ```
-
-_(Note: To find ALL PDFs across the library, use `zotero check-pdfs` from the `zotero` python skill. A single `curl` call will only return 100 attachments at a time.)_
