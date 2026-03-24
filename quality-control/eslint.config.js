@@ -56,6 +56,9 @@ export default [
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      // strict-boolean-expressions: forbid any/nullable types directly in boolean context.
+      // Codacy enforces this — catches !x where x is `any` (requires Boolean(x) or explicit comparison).
+      '@typescript-eslint/strict-boolean-expressions': 'error',
 
       // eslint-plugin-promise
       'promise/always-return': 'error',
