@@ -1,6 +1,6 @@
 # Sound Synthesis — Detailed Reference
 
-This document is a complete reference supplement to [SKILL.md](SKILL.md), covering prerequisites, detailed explanations of each step, in-depth variant descriptions, performance optimization analysis, and complete combination code examples.
+This document is a complete reference supplement to [SKILL.md](../SKILL.md), covering prerequisites, detailed explanations of each step, in-depth variant descriptions, performance optimization analysis, and complete combination code examples.
 
 ## Prerequisites
 
