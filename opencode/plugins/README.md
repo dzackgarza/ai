@@ -32,7 +32,7 @@ just opencode-session                  # session management CLI (list, delete, s
 | **Read Transcript** | `read-transcript.ts` | Active | Custom tool `read_transcript`: exports and parses a session transcript to a temp file with head/tail preview |
 | **Canonical Smoke Test** | `canonical-smoke-test.ts` | Canonical | Minimal docs-style `mytool` probe; known-good visibility and execution control |
 | **Canonical Shadowing Test** | `canonical-shadowing-test.ts` | Canonical | Minimal `webfetch` shadow probe; known-good built-in shadowing control |
-| **Session Harness (CLI utility)** | `external` | Active | Primary entrypoint moved to `dzackgarza/opencode-manager`; local `utilities/harness/` is a compatibility layer during retirement. |
+| **Session Harness (CLI utility)** | `external` | Active | Primary entrypoint: `dzackgarza/opencode-manager` via `ocm` CLI. |
 
 ## File map
 
@@ -66,33 +66,19 @@ plugins/
 │
 ├── tests/
 │   └── unit/                       # bun test — active plugin unit tests
-│
-└── utilities/
-    ├── harness/                    # compatibility wrapper/docs for external opencode-manager
-    └── scripts/
+└── scripts/
 ```
 
 ## Session Harness
 
-The local harness is being retired. The primary entrypoint is the private repo
-`dzackgarza/opencode-manager`.
-
-Use the centralized wrappers:
-
-```bash
-just opencode-harness run --help
-just opencode-session --help
-just opencode-session list --limit 5
-```
-
-Direct GitHub-backed commands:
+Use `ocm` from the `dzackgarza/opencode-manager` repo:
 
 ```bash
 uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm --help
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session "prompt"
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm chat ses_abc123 "follow-up"
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm transcript ses_abc123
 ```
-
-The local `utilities/harness/` directory remains only as a compatibility wrapper and
-historical source snapshot during cutover.
 
 ## Canonical Control Probes
 

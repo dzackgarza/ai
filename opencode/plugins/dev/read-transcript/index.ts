@@ -3,7 +3,7 @@
 import { type Plugin, tool } from "@opencode-ai/plugin";
 
 const OPENCODE_MANAGER_PACKAGE =
-  "/home/dzack/opencode-plugins/opencode-manager";
+  "git+https://github.com/dzackgarza/opencode-manager.git";
 
 const PREVIEW_LINES = 30;
 
@@ -30,7 +30,7 @@ export const ReadTranscriptPlugin: Plugin = async ({ $, client }) => {
           const outPath = `/tmp/transcript-${session_id}.txt`;
 
           try {
-            await $`npx --yes --package=${OPENCODE_MANAGER_PACKAGE} opx-session transcript ${session_id} > ${outPath}`.quiet();
+            await $`uvx --from ${OPENCODE_MANAGER_PACKAGE} ocm transcript ${session_id} --output ${outPath}`.quiet();
           } catch (err: any) {
             const stderr = err?.stderr?.toString?.() ?? String(err);
             await client.app.log({
