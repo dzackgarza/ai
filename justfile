@@ -8,15 +8,18 @@ repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 home := env_var("HOME")
 
 # Repository targets (top-level source of truth)
+
 opencode_dir := repo / "opencode"
 quality_control_dir := repo / "quality-control"
 dotfiles_dir := repo / "dotfiles"
 
 # Core assets
+
 agents_md := opencode_dir / "AGENTS.md"
 skills_dir := opencode_dir / "skills"
 
 # Linter/formatter configurations
+
 ruff_config := quality_control_dir / "ruff-global.toml"
 mypy_config := quality_control_dir / "mypy-global.ini"
 black_config := quality_control_dir / "black-global.toml"
@@ -24,12 +27,14 @@ eslint_config := quality_control_dir / "eslint-global.json"
 prettier_config := quality_control_dir / "prettier-global.json"
 
 # Tool configs
+
 cc_safety_net := opencode_dir / "configs" / "cc-safety-net.json"
 tmux_conf := dotfiles_dir / "tmux.conf"
 tmux_powerline_config := dotfiles_dir / "tmux-powerline" / "config.sh"
 tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.sh"
 
 # Harness home directories
+
 claude_home := home / ".claude"
 codex_home := home / ".codex"
 gemini_home := home / ".gemini"
@@ -69,7 +74,7 @@ install:
     mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" "{{ qwen_home }}" \
              "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" "{{ agents_home }}" \
              "{{ kilocode_home }}" "{{ opencode_root }}" "{{ cc_safety_net_home }}"
-    
+
     ln -snf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
     ln -snf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
     ln -snf "{{ agents_md }}" "{{ gemini_home }}/GEMINI.md"
@@ -80,7 +85,7 @@ install:
     ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
     ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
-    
+
     # Linter/formatter configurations
     mkdir -p "{{ home }}/.config/ruff" "{{ home }}/.config/black"
     ln -snf "{{ ruff_config }}" "{{ home }}/.config/ruff/ruff.toml"
@@ -88,7 +93,7 @@ install:
     ln -snf "{{ black_config }}" "{{ home }}/.config/black/black.toml"
     ln -snf "{{ eslint_config }}" "{{ home }}/.eslintrc.json"
     ln -snf "{{ prettier_config }}" "{{ home }}/.prettierrc"
-    
+
     # tmux config symlinks
     ln -snf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
     mkdir -p "{{ home }}/.config/tmux-powerline/themes"
@@ -183,12 +188,11 @@ reset-sandbox:
 run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
-
 # Build all OpenCode components (agents, config, and documentation)
 build: check-plugins build-agents build-config build-agents-md
 
 # Surgical build for permissions only (uses compiled-agents workflow)
-build-permissions: 
+build-permissions:
     @just -f {{ repo }}/../opencode-plugins/clis/ai-prompts/justfile compile-agents
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
 
@@ -250,3 +254,85 @@ lint-js *args:
 # JS/TS Formatting (prettier)
 fmt-js *args:
     npx prettier --write {{ args }}
+
+# =============================================================================
+# Diagnostics
+# =============================================================================
+# Find broken symlinks in ~ (skips common ignored dirs)
+
+# Usage: just broken-symlinks
+broken-symlinks:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Directories to skip (common caches, build artifacts, gitignored dirs)
+    skip_dirs=(
+        "node_modules"
+        "__pycache__"
+        ".git"
+        ".cache"
+        ".npm"
+        ".yarn"
+        ".pnpm-store"
+        ".venv"
+        "venv"
+        ".conda"
+        ".local/share/virtualenvs"
+        ".cargo"
+        "target"
+        "build"
+        "dist"
+        ".next"
+        ".nuxt"
+        ".turbo"
+        ".swc"
+        ".eslintcache"
+        ".pytest_cache"
+        ".mypy_cache"
+        ".ruff_cache"
+        ".coverage"
+        "htmlcov"
+        ".tox"
+        ".eggs"
+        "*.egg-info"
+        ".sass-cache"
+        ".DS_Store"
+        "Thumbs.db"
+        ".idea"
+        ".vscode"
+        ".vs"
+        "logs"
+        "tmp"
+        "temp"
+        ".tmp"
+        ".temp"
+        ".babel-cache"
+        ".parcel-cache"
+        ".vercel"
+        ".netlify"
+        ".firebase"
+        ".amplify"
+        ".serverless"
+        ".wrangler"
+        ".deno"
+        ".bun"
+        ".nx"
+        ".turbo"
+        "Trash"
+        ".Trash"
+        ".local/share/Trash"
+    )
+
+    # Build find command with -prune for each skip dir
+    prune_expr=""
+    for dir in "${skip_dirs[@]}"; do
+        prune_expr="$prune_expr -name '$dir' -prune -o"
+    done
+
+    # Find all symlinks, test if target exists, report broken ones
+    eval "find ~ $prune_expr -type l" 2>/dev/null | while read -r link; do
+        if [ ! -e "$link" ]; then
+            target=$(readlink "$link")
+            printf "BROKEN: %s -> %s\n" "$link" "$target"
+        fi
+    done | sort
