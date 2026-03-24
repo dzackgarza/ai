@@ -2,7 +2,7 @@
 
 Historical note: this report covers the pre-extraction local harness snapshot.
 Current entrypoints are `just opencode-harness`, `just opencode-session`, or the
-external `dzackgarza/opencode-manager` package directly.
+external `dzackgarza/opencode-manager` package directly via `ocm`.
 
 ## Environment
 
@@ -22,7 +22,7 @@ external `dzackgarza/opencode-manager` package directly.
 - Command sequence (port 4196):
   - `opencode serve --port 4196 ...`
   - `bun run opx health`
-  - `bun run opx new --title opx-smoke-4196 ...`
+  - `bun run opx new --title smoke-4196 ...`
   - `bun run opx wait --session <id> --timeout 30`
   - `bun run opx tail --session <id> --lines 40`
   - `bun run opx probe-async-command --model opencode/big-pickle --agent Minimal`

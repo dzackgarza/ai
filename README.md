@@ -197,8 +197,8 @@ my-project/
 ├── .kilocode/
 │   ├── launchConfig.json  # Kilo project config
 │   └── skills/            # Kilo project skills
-├── .agents/
-│   └── skills/            # Amp project skills
+├── .agents/               # READ-ONLY: Symlink target for harness skills. Never edit or add files here directly.
+│   └── skills/            # Emptied and chmod 555. All skills live in `~/ai/opencode/skills/`.
 └── opencode.json          # OpenCode project config
 ```
 

@@ -88,8 +88,7 @@ just opencode-session list --limit 5
 Direct GitHub-backed commands:
 
 ```bash
-npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx --help
-npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session --help
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm --help
 ```
 
 The local `utilities/harness/` directory remains only as a compatibility wrapper and

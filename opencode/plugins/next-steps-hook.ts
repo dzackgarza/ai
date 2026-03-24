@@ -1,5 +1,24 @@
 import type { Plugin } from '@opencode-ai/plugin';
 
+/**
+ * Lookup table mapping trigger phrases to response messages.
+ * Each entry contains:
+ *   - phrases: array of trigger phrases (case-insensitive match)
+ *   - response: the message to inject when any phrase matches
+ */
+const PHRASE_LOOKUP: Array<{ phrases: string[]; response: string }> = [
+  {
+    phrases: ['next steps', 'should i continue'],
+    response:
+      'Record all of your next steps in a todo list, update and maintain your plan file, and proceed with all steps.',
+  },
+  {
+    phrases: ['acknowledged', 'confirmed'],
+    response:
+      'Information is never given to simply be acknowledged, and is always meant to be acted upon.',
+  },
+];
+
 export const NextStepsHookPlugin: Plugin = async ({ client }) => {
   return {
     event: async ({ event }) => {
@@ -23,13 +42,14 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
         ?.map((p: any) => p.text)
         ?.join('');
 
-      // 4. Check for trigger phrases (normalized to lowercase)
+      // 4. Check for trigger phrases and get matching response
       const normalizedText = lastText?.toLowerCase() ?? '';
-      const triggers = ['next steps', 'should i continue'];
-      const matched = triggers.some((t) => normalizedText.includes(t));
+      const matchedEntry = PHRASE_LOOKUP.find((entry) =>
+        entry.phrases.some((phrase) => normalizedText.includes(phrase.toLowerCase())),
+      );
 
-      if (matched) {
-        // 5. Inject prompt to record next steps and continue
+      if (matchedEntry) {
+        // 5. Inject the corresponding response
         await client.session.promptAsync({
           path: { id: sessionID },
           body: {
@@ -37,7 +57,7 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
             parts: [
               {
                 type: 'text',
-                text: 'Record all of your next steps in a todo list, update and maintain your plan file, and proceed with all steps.',
+                text: matchedEntry.response,
               },
             ],
           },

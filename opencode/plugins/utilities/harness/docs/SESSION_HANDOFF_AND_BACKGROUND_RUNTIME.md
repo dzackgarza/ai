@@ -49,5 +49,5 @@ while this directory remains a compatibility layer during retirement.
 - User service unit path: `~/.config/systemd/user/opencode-serve.service`
 - Service env file path: `~/.config/opencode/opencode-serve.env`
 - Harness location: `opencode/plugins/utilities/harness`
-- Harness command wrapper: `opencode/plugins/utilities/harness/opx`
+- Harness command wrapper: `opencode/plugins/utilities/harness/opx` (retired, use `ocm`)
 - Validation results: `opencode/plugins/utilities/harness/docs/VALIDATION_REPORT.md`

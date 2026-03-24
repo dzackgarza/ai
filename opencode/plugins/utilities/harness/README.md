@@ -1,7 +1,7 @@
-# OpenCode Automation Harness (`opx`)
+# OpenCode Automation Harness
 
-This directory is in retirement mode. The primary harness now lives in the private
-repo `dzackgarza/opencode-manager`.
+This directory is in retirement mode. The primary harness now lives in the external
+repo `dzackgarza/opencode-manager` as the `ocm` CLI.
 
 Use these entrypoints:
 
@@ -10,12 +10,11 @@ just opencode-harness run --help
 just opencode-session --help
 ```
 
-Direct GitHub-backed commands:
+Direct commands via `uvx`:
 
 ```bash
-npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx --help
-npx --yes --package=git+ssh://git@github.com/dzackgarza/opencode-manager.git opx-session --help
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm --help
 ```
 
-`./opx` remains only as a compatibility wrapper to the external package during the
+`./opx` and `./opx-session` remain only as compatibility wrappers during the
 cutover.

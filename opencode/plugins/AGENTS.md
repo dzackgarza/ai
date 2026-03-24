@@ -85,21 +85,20 @@ The full response cycle is: `prompt → model infers intent → model chooses mo
 
 ### Command rules
 
-Use the binary directly for bounded one-shot probes, and use `opencode-manager` for all
-real workflow tests.
+Use `ocm` (opencode-manager) for all session orchestration. Install via `uvx` or sync the repo at `/home/dzack/opencode-plugins/clis/opencode-manager`.
 
 - One-shot sanity checks: `timeout 15 command opencode run --agent Minimal "..."`
-- Multi-turn, async, resume, callback, and post-idle tests: `opx` / `opx-session`
+- Multi-turn, async, resume, callback, and post-idle tests: `ocm` commands
 - No `--attach`: not needed, and `--attach + --agent` is a documented known bug
 - No shared/systemd `opencode serve` for repo-local plugin tests
-- Use a dedicated custom-port `opencode serve` inside the plugin's `direnv` when
-  `opencode-manager` needs the repo-local config/env
+- Use a dedicated custom-port `opencode serve` inside the plugin's `direnv` when `ocm` needs the repo-local config/env
 - No rendered CLI/TUI scraping as evidence
-- No background jobs (`&`) to “keep a session alive”
+- No background jobs (`&`) to "keep a session alive"
 - If a bounded one-shot times out, debug the model/workflow. MCP warmup is not the bottleneck
 
-```bash
+**Note:** `ocm one-shot` deletes the session after completion. Use `--transcript` to print the full transcript before deletion, or use `begin-session`/`chat`/`final` for persistent sessions.
 
+```bash
 # Confirm baseline first
 timeout 15 command opencode run --agent Minimal "Reply with only the word 'ready'."
 
@@ -107,20 +106,28 @@ timeout 15 command opencode run --agent Minimal "Reply with only the word 'ready
 direnv exec /path/to/plugin \
   command opencode serve --hostname 127.0.0.1 --port 4198
 
-OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx run --agent Minimal --prompt "Reply with only the word 'ready'. (context: intercept test)"
-OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session messages ses_abc123 --json
-OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session ses_abc123 --verbose
-OPENCODE_BASE_URL=http://127.0.0.1:4198 npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session transcript ses_abc123
+# One-shot with transcript output (session deleted after)
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm one-shot "Reply with only the word 'ready'." --transcript
+
+# Create persistent session and submit opening prompt
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session "Reply with only the word 'ready'. (context: intercept test)"
+
+# Wait for session to complete
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm wait ses_abc123 --json
+
+# Get transcript
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm transcript ses_abc123 --json
+
+# Final turn and delete
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm final ses_abc123 "Final prompt" --transcript
 ```
 
 ### Transcript parsing
 
 If stdout is ambiguous, inspect session artifacts instead:
 
-- `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session messages <session-id> --json`
-- `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx debug trace --session <session-id> --verbose`
-- `npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx-session transcript <session-id>`
+- `uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session-id> --json`
+- `uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm wait <session-id> --json`
 
 Never scrape ANSI/TUI output, and never reason from raw `events.jsonl` when the session
 or transcript interfaces are available.
