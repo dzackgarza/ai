@@ -16,13 +16,20 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
           });
 
           const checkResult = await $`uvx ruff check --quiet ${filePath}`.nothrow();
-          const fmtResult = await $`uvx ruff format --check --quiet ${filePath}`.nothrow();
+          const fmtResult =
+            await $`uvx ruff format --check --quiet ${filePath}`.nothrow();
 
           if (checkResult.exitCode !== 0 || fmtResult.exitCode !== 0) {
             const feedback = [
-              checkResult.exitCode !== 0 ? `Ruff check issues:\n${checkResult.stdout.toString()}${checkResult.stderr.toString()}` : '',
-              fmtResult.exitCode !== 0 ? `Ruff format issues (file needs formatting)` : '',
-            ].filter(Boolean).join('\n\n');
+              checkResult.exitCode !== 0
+                ? `Ruff check issues:\n${checkResult.stdout.toString()}${checkResult.stderr.toString()}`
+                : '',
+              fmtResult.exitCode !== 0
+                ? `Ruff format issues (file needs formatting)`
+                : '',
+            ]
+              .filter(Boolean)
+              .join('\n\n');
 
             await client.session.promptAsync({
               path: { id: input.sessionID },
@@ -47,7 +54,8 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
           });
 
           // Check justfile syntax and formatting
-          const justResult = await $`just --unstable --check --justfile ${filePath}`.nothrow();
+          const justResult =
+            await $`just --unstable --fmt --check --justfile ${filePath}`.nothrow();
 
           if (justResult.exitCode !== 0) {
             await client.session.promptAsync({
