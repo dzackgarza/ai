@@ -1,7 +1,7 @@
 // Re-export all enabled plugins as separate named exports
 export { GitCheckpointPlugin } from './git-checkpoint-plugin';
 export { LintPlugin } from './lint-plugin';
-export { NextStepsHook } from './next-steps-hook';
+export { NextStepsHookPlugin } from './next-steps-hook';
 export { TranscriptTimestampPlugin } from './transcript-timestamp';
 // export { SleepPlugin } from './dev/sleep/index'; // retired: use at/crontab instead
 // export { AsyncCommandPlugin } from "./dev/async-command/index" // ✗ not loading
