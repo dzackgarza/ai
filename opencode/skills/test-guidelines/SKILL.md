@@ -591,9 +591,9 @@ The test proves:
    - If the answer is "the code calls the mock correctly" → not a useful test
    - If the answer is "the real error handling works with real error shapes" → acceptable
 
-### Verification Checklist for Tests with External Dependencies
+### Verification Checklist for Tests That Interact with External Services
 
-Before accepting a test that involves external services:
+Before accepting a test that integrates with external services:
 
 - [ ] Uses real data fixtures exported from production or staging
 - [ ] Uses real database (ephemeral/test instance) with real schema
