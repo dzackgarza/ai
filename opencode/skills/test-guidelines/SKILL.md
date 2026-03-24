@@ -154,6 +154,8 @@ This agent must follow these standards:
 ### 3. Strict Prohibitions (Zero Tolerance)
 
 - **NO MOCKS/SIMULATIONS**: Never use `unittest.mock`, `monkeypatch`, `patch`, stubs, fakes, or simulated environments. All tests must operate on real data and real objects. No exceptions.
+
+**See "What to Do Instead of Mocking" below for the narrow exceptions and approved alternatives.**
 - **NO MASKING**: Never use `pytest.mark.xfail`, `skip`, or `skipif`. Suite status must reflect 100% actual runtime reality.
 - **NO STRING MATCHING**: Never assert on error message strings. Use `pytest.raises(TypeError)` or similar to assert on the **TYPE** of error received.
 - **Expose Silent Errors**: Tests must be designed to catch swallowed or silent errors (e.g., empty catch blocks or hidden exceptions).
@@ -427,3 +429,176 @@ Show your reasoning at each step.
 ## One-Sentence Rule
 
 **Test the repository's nontrivial owned behavior and its interlocking at real edges; do not spend tests on the language, the type system, the framework, or other people's code.**
+
+---
+
+## What to Do Instead of Mocking
+
+### Why Mocking Is Prohibited by Default
+
+Mocking only asserts **purely internal consistency** — that the code works like it was written to work. It is completely divorced from the real purpose of testing: **PROVING the code works correctly with REAL data sources**.
+
+**Mocking weaknesses:**
+
+1. **Tests the contract, not the reality** — A mock confirms you called the right method with the right args, not that the real service would accept it
+2. **Silently drifts from production** — Mock response shapes diverge from real API responses over time
+3. **Cannot catch integration defects** — Real services have quirks, edge cases, and error modes mocks don't capture
+4. **False confidence** — Green tests on mocks prove nothing about actual behavior
+5. **Circular reasoning** — "The code works" because "the mock says it works" because "the mock was written to match the code"
+
+### The Very Narrow Exceptions: When Mocking Is Acceptable
+
+Mocking is **only** justified for:
+
+1. **Forcing error conditions from external services** that are impractical to trigger in a real test environment
+   - Network timeouts, connection refused, DNS failures
+   - Rate-limit responses (429) from APIs you don't control
+   - Catastrophic service failures (503, malformed responses)
+
+2. **Non-deterministic or time-dependent behavior** that cannot be made deterministic
+   - Wall-clock time (use `time_machine` or similar to shift time, not mock)
+   - Random number generation (seed the RNG, don't mock it)
+   - Hardware-dependent behavior (sensors, devices)
+
+**Even in these cases: prefer real alternatives first.**
+
+### What to Do Instead of Mocking
+
+#### 1. Use Real Services with Real Fixture Data
+
+Export real responses from production or staging, save as fixtures, replay in tests:
+
+```python
+# BAD: Mock
+mock_response = MagicMock()
+mock_response.json.return_value = {"status": "ok", "data": {...}}
+
+# GOOD: Real fixture
+FIXTURE = json.loads((FIXTURES_DIR / "real_api_response.json").read_text())
+response = make_real_request()
+assert response.json() == FIXTURE
+```
+
+#### 2. Set Up Real Test-Only Databases
+
+Use ephemeral databases (SQLite in memory, Docker postgres, tmpfs) with real schema migrations:
+
+```python
+# BAD: Mock database
+mock_db = MagicMock()
+mock_db.query.return_value = [...]
+
+# GOOD: Real test database
+@pytest.fixture
+def test_db():
+    db = create_temp_postgres()  # Docker or tmpfs
+    run_migrations(db)
+    seed_test_data(db)
+    yield db
+    teardown(db)
+```
+
+#### 3. Generate Real Data
+
+Use factories or generators that produce realistic, structured data:
+
+```python
+# BAD: Mock data
+user = {"id": 1, "name": "test"}
+
+# GOOD: Generated real data
+user = UserFactory.create(roles=["admin"], verified=True)
+```
+
+#### 4. Write a Small Real Server for Fixtures and Error Codes
+
+For testing error handling, write a minimal real server (e.g., FastAPI) that serves real fixture data and documented error shapes:
+
+```python
+# BAD: Mock HTTP
+responses.get("https://api.example.com", json={"error": "not found"})
+
+# GOOD: Real test server
+from fastapi import FastAPI, Response
+
+app = FastAPI()
+
+@app.post("/session/{session_id}")
+def handle_session(session_id: str) -> dict:
+    if session_id == "fixture_a":
+        return load_fixture("real_session_response.json")
+    elif session_id == "error_b":
+        return Response(status_code=404, content=load_fixture("real_404_error.json"))
+    elif session_id == "error_c":
+        return Response(status_code=429, content=load_fixture("real_rate_limit.json"))
+
+# Test uses real HTTP against this server
+```
+
+This approach:
+- Uses **real HTTP** with real headers, status codes, serialization
+- Serves **real exported fixtures** from production
+- Returns **real documented error shapes**, not invented ones
+- Can be extended to log what was requested for debugging
+
+#### 5. Monkey-Patching: Prove Real Wiring, Not Fake Behavior
+
+If you must monkey-patch, use it to **manage a full real data source** and prove **real wiring guarantees**:
+
+```python
+# BAD: Monkey-patch to fake behavior
+monkeypatch.setattr("module.service_call", lambda: "fake_result")
+
+# GOOD: Monkey-patch to route to real test data
+def real_test_backend(session_id: str) -> dict:
+    """Route to real fixture data based on session_id."""
+    return load_real_fixture(session_id)
+
+monkeypatch.setattr("module.get_backend", lambda: real_test_backend)
+# Now the code under test uses real data flow, just with test fixtures
+```
+
+The test proves:
+- The wiring is correct (right calls at right time)
+- The data flows through real transformations
+- The real error handling paths work with real error shapes
+
+### Decision Procedure: Mock or Not?
+
+**Before reaching for a mock, ask:**
+
+1. **Can I use a real instance of this dependency?**
+   - In-memory DB instead of mock
+   - Local file instead of mock filesystem
+   - Test server instead of mock HTTP
+
+2. **Can I export real fixtures from production/staging?**
+   - Real API responses
+   - Real database snapshots
+   - Real error logs
+
+3. **Can I write a minimal real implementation for testing?**
+   - FastAPI server for HTTP
+   - SQLite for database
+   - In-memory queue for async systems
+
+4. **Is this truly impossible to test without mocking?**
+   - Network failures → use `pytest-httpserver` with controlled failures
+   - Time dependence → use `time_machine` to shift time
+   - Randomness → seed the RNG
+
+5. **If I must mock, what am I actually proving?**
+   - If the answer is "the code calls the mock correctly" → not a useful test
+   - If the answer is "the real error handling works with real error shapes" → acceptable
+
+### Verification Checklist for Tests with External Dependencies
+
+Before accepting a test that involves external services:
+
+- [ ] Uses real data fixtures exported from production or staging
+- [ ] Uses real database (ephemeral/test instance) with real schema
+- [ ] Uses real HTTP (test server or recorded responses)
+- [ ] Error conditions use real error shapes, not invented ones
+- [ ] No `MagicMock`, `patch`, `monkeypatch` for core logic
+- [ ] If mocking is used, it's only for truly untestable error conditions
+- [ ] Test would fail if the real service behavior changed
