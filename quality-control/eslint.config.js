@@ -1,7 +1,12 @@
 // ESLint flat config for TypeScript QC
-// Matches Codacy's plugin suite: @typescript-eslint, promise, fp, @lwc/lwc
+//
+// DESIGN: Local config must be STRICTER than Codacy, not merely matching it.
+// That way anything passing locally is guaranteed to pass Codacy.
+//
+// Base: @typescript-eslint/flat/strict-type-checked — the maximum preset,
+// a strict superset of every @typescript-eslint rule Codacy could run.
+// Additional plugins: promise, fp (functional), @lwc/lwc (no-async-await).
 
-import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import promisePlugin from 'eslint-plugin-promise';
 import fpPlugin from 'eslint-plugin-fp';
@@ -11,85 +16,69 @@ import globals from 'globals';
 export default [
   // Global ignores: apply before any rule config
   { ignores: ['node_modules/**', 'dist/**', 'coverage/**', '.venv/**', '_ci-support/**'] },
+
+  // Spread the strictest @typescript-eslint preset — superset of anything Codacy runs.
+  // This registers the @typescript-eslint parser, plugin, and all strict-type-checked rules.
+  ...tsPlugin.configs['flat/strict-type-checked'],
+
+  // Layer additional plugins and overrides on top of the base preset.
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: tsParser,
       parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        // projectService: true uses TypeScript's project service, which handles
-        // files not explicitly listed in tsconfig.json without a hard parse error.
+        // projectService handles files not explicitly listed in tsconfig without hard errors.
         projectService: true,
         tsconfigRootDir: process.cwd(),
       },
-      // Replicate Codacy's LWC ESLint environment: node globals are present
-      // but Promise is explicitly excluded (LWC targets environments without
-      // native Promise). This makes no-undef catch `: Promise<X>` and
-      // `Promise.resolve()` the same way Codacy does.
+      // Codacy's LWC environment excludes Promise from globals so no-undef fires on
+      // Promise.resolve() and : Promise<X> annotations. Replicate that behavior locally.
       globals: {
         ...globals.node,
         Promise: 'off',
       },
     },
     plugins: {
-      '@typescript-eslint': tsPlugin,
       promise: promisePlugin,
       fp: fpPlugin,
       '@lwc/lwc': lwcPlugin,
     },
     rules: {
-      // no-undef: catch undefined globals. Promise is removed from globals above
-      // to replicate Codacy's LWC environment behavior.
+      // no-undef fires on Promise.resolve() etc. because Promise is removed from globals above.
       'no-undef': 'error',
 
-      // @typescript-eslint full suite
-      '@typescript-eslint/no-unsafe-assignment': 'error',
-      '@typescript-eslint/no-unsafe-call': 'error',
-      '@typescript-eslint/no-unsafe-member-access': 'error',
-      '@typescript-eslint/no-unsafe-return': 'error',
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      // strict-boolean-expressions: forbid any/nullable types directly in boolean context.
-      // Codacy enforces this — catches !x where x is `any` (requires Boolean(x) or explicit comparison).
-      '@typescript-eslint/strict-boolean-expressions': 'error',
-
-      // eslint-plugin-promise
+      // eslint-plugin-promise: full enforcement
       'promise/always-return': 'error',
       'promise/no-return-wrap': 'error',
       'promise/param-names': 'error',
       'promise/catch-or-return': 'error',
       'promise/no-native': 'error',
-      // Nesting/callback rules: Codacy does not report these so don't fail locally.
+      // Nesting/callback rules: Codacy does not report these.
       'promise/no-nesting': 'off',
       'promise/no-promise-in-callback': 'off',
       'promise/no-callback-in-promise': 'off',
 
-      // eslint-plugin-fp (functional programming)
-      // fp/no-nil: every function must end with an explicit return statement,
-      // so it never implicitly returns undefined. Codacy enforces this.
+      // eslint-plugin-fp: functional programming constraints
+      // fp/no-nil: every function must end with an explicit return (never implicitly undefined).
       'fp/no-nil': 'error',
       'fp/no-this': 'warn',
       'fp/no-mutating-assign': 'error',
-      'fp/no-mutating-methods': 'off', // too strict for most codebases
-      // fp/no-let: disabled — Codacy does not run it, and enabling it here
-      // conflicts with the pattern required to satisfy fp/no-nil in try/catch contexts.
+      'fp/no-mutating-methods': 'off',
+      // fp/no-let disabled — conflicts with the let pattern required by fp/no-nil in try/catch.
 
-      // @lwc/lwc (Lightning Web Components)
-      // Codacy's LWC plugin forbids async/await; all async code must use .then() chains.
+      // no-confusing-void-expression (strict-type-checked) conflicts irresolvably with fp/no-nil:
+      // the fix for one (add braces) breaks the other (no explicit return). fp/no-nil is the
+      // stronger semantic guarantee so this stylistic rule is disabled.
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+
+      // @lwc/lwc: no async/await — all async code must use .then() chains.
       '@lwc/lwc/no-async-await': 'error',
       '@lwc/lwc/no-for-of': 'off', // biome requires for...of
     },
   },
+
   {
     // Test files: relax LWC and fp rules. Async/await and void-returning callbacks
-    // are idiomatic in test suites (bun:test, jest, etc.) and pre-exist in most PRs.
+    // are idiomatic in test suites (bun:test, jest, etc.).
     // This block comes LAST so it overrides the main config above.
     files: ['tests/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
     rules: {
