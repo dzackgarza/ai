@@ -3,8 +3,8 @@ import type { Plugin } from '@opencode-ai/plugin';
 export const GitCheckpointPlugin: Plugin = async ({ client, $ }) => {
   return {
     'tool.execute.before': async (input) => {
-      // 1. Strictly intercept only the 'edit' tool
-      if (input.tool !== 'edit') return;
+      // 1. Intercept both 'edit' and 'write' tools
+      if (input.tool !== 'edit' && input.tool !== 'write') return;
 
       // 2. Verify we are in a git repository
       const gitCheck = await $`git rev-parse --is-inside-work-tree 2>/dev/null`
