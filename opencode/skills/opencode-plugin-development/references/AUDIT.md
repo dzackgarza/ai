@@ -6,9 +6,9 @@ Use it after implementation and before pushing or opening a PR. Record findings 
 
 If a rule is not relevant to the repo type, mark it `N/A` explicitly instead of silently skipping it.
 
-For setup and development workflow, use `GUIDE.md`. For basic OpenCode CLI and manager
-command forms, use `opencode-cli/SKILL.md`. For callback and delayed-delivery workflow
-patterns, use `opencode-cli/async-injection.md`.
+For setup and development workflow, use `GUIDE.md` (not yet created). For basic OpenCode CLI and manager
+command forms, use `../opencode-cli/SKILL.md`. For callback and delayed-delivery workflow
+patterns, use `async-injection.md`.
 
 ## Audit Method
 

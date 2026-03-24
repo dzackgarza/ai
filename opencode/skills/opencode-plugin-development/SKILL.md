@@ -355,7 +355,7 @@ All hooks from all plugins run in sequence.
 
 ## References
 
-- See `GUIDE.md` for repo workflow rules and proof design
-- See `AUDIT.md` for compliance checklist before PR
+- See `references/AUDIT.md` for compliance checklist before PR
 - See `references/README_STANDARDS.md` for documentation templates
 - See `references/SYSTEM_PROMPTS.md` for system prompt injection via `experimental.chat.system.transform`
+- See `references/async-injection.md` for background task and callback patterns

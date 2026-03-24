@@ -2,8 +2,8 @@
 
 Reference for firing background work from plugins and injecting results back into sessions — from tools or event handlers. Researched from SDK types and working plugin examples.
 
-Read `SKILL.md` first for the canonical manager command forms and repo-local server
-setup. Use `../opencode-plugin-development/GUIDE.md` for proof policy and audit rules.
+Read `../SKILL.md` first for the canonical manager command forms and repo-local server
+setup. Use `AUDIT.md` for proof policy and audit rules.
 
 ---
 
@@ -77,7 +77,7 @@ export const MyPlugin: Plugin = async ({ client }) => {
   return {
     tool: {
       my_async_tool: tool({
-        description: "Use when ... (triggering condition, not what it does)",
+        description: 'Use when ... (triggering condition, not what it does)',
         args: { seconds: tool.schema.number() },
         async execute(args, context) {
           const { sessionID } = context;
@@ -90,9 +90,7 @@ export const MyPlugin: Plugin = async ({ client }) => {
                 path: { id: sessionID },
                 body: {
                   noReply: false,
-                  parts: [
-                    { type: "text", text: `[task failed] ${err?.message}` },
-                  ],
+                  parts: [{ type: 'text', text: `[task failed] ${err?.message}` }],
                 },
               })
               .catch(() => {}); // Swallow — session may be gone
@@ -112,9 +110,7 @@ async function runBackground(sessionID: string, seconds: number, client: any) {
     path: { id: sessionID },
     body: {
       noReply: false, // Inject result AND trigger a new model response
-      parts: [
-        { type: "text", text: `[task complete] ${new Date().toISOString()}` },
-      ],
+      parts: [{ type: 'text', text: `[task complete] ${new Date().toISOString()}` }],
     },
   });
 }
