@@ -414,4 +414,4 @@ check-markdown *args:
     # Find all markdown files and pass to lychee
     echo "Checking markdown files in: $search_dir"
     eval "find '$search_dir' $prune_expr -type f \( -name '*.md' -o -name '*.markdown' -o -name '*.mdx' \) -print0" 2>/dev/null | \
-        xargs -0 lychee --offline --no-progress
+        xargs -0 lychee --no-progress
