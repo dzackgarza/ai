@@ -108,7 +108,6 @@
     "@tarquinen/opencode-dcp@latest",
     "opencode-qwencode-auth@git+https://github.com/luanweslley77/opencode-qwencode-auth.git#feat/v1.5.0-rate-limit-fix",
     "opencode-openai-codex-auth@latest",
-    "@azumag/opencode-rate-limit-fallback@latest",
     "@ramtinj95/opencode-tokenscope@latest",
     "cc-safety-net@latest",
     "opencode-pty@latest",
