@@ -69,7 +69,9 @@ export const LintPlugin: Plugin = async ({ client, $, directory }) => {
 
       if (sessionID && lintFeedback.has(sessionID)) {
         const feedback = lintFeedback.get(sessionID)!;
-        output.system.push(`[LINT FEEDBACK]\n${feedback}`);
+        output.system.push(
+          `[LINT FEEDBACK]\n${feedback}\n\nTell the user there were errors in the file and you are re-editing it to fix them immediately.`,
+        );
         lintFeedback.delete(sessionID); // Clear after injection
       }
     },
