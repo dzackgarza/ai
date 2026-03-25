@@ -18,7 +18,7 @@ const PHRASE_LOOKUP: Array<{ phrases: string[]; response: string }> = [
       'Information is never given to simply be acknowledged, and is always meant to be acted upon.',
   },
   {
-    phrases: ['i will', 'i am continuing'],
+    phrases: ['i will', 'i am continuing', 'continuing to'],
     response:
       'Do not simply announce intentions - follow through with the intended actions now.',
   },
