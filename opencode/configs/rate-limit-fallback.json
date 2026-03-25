@@ -7,39 +7,11 @@
   "fallbackModels": [
     {
       "providerID": "opencode",
-      "modelID": "minimax-m2.5-free"
-    },
-    {
-      "providerID": "opencode",
-      "modelID": "glm-5-free"
-    },
-    {
-      "providerID": "opencode",
       "modelID": "big-pickle"
     },
     {
-      "providerID": "opencode",
-      "modelID": "trinity-large-preview-free"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "arcee-ai/trinity-large-preview:free"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "stepfun/step-3.5-flash:free"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "nvidia/nemotron-3-nano-30b-a3b:free"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "openai/gpt-oss-120b:free"
-    },
-    {
-      "providerID": "openrouter",
-      "modelID": "z-ai/glm-4.5-air:free"
+      "providerID": "kilo",
+      "modelID": "kilo-auto/free"
     }
   ],
   "retryPolicy": {
