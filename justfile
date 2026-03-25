@@ -218,6 +218,12 @@ build-agents-md:
       | tee {{ repo }}/opencode/AGENTS.md \
       | wc -c \
       | xargs -I {} echo "Wrote {{ repo }}/opencode/AGENTS.md ({} bytes)"
+    @just --justfile {{ justfile() }} _count-agents-tokens
+
+# Count tokens in AGENTS.md using tiktoken (cl100k_base)
+[private]
+_count-agents-tokens:
+    @uvx --with tiktoken python -c 'import tiktoken; from pathlib import Path; text = Path("{{ repo }}/opencode/AGENTS.md").read_text(); count = len(tiktoken.get_encoding("cl100k_base").encode(text)); print(f"{count} tokens")'
 
 # =============================================================================
 # Linting & Formatting
