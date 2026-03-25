@@ -22,6 +22,11 @@ const PHRASE_LOOKUP: Array<{ phrases: string[]; response: string }> = [
     response:
       'Do not simply announce intentions - follow through with the intended actions now.',
   },
+  {
+    phrases: ['i am continuing'],
+    response:
+      'Proceed with the continuation immediately - execute the next actions now.',
+  },
 ];
 
 export const NextStepsHookPlugin: Plugin = async ({ client }) => {
