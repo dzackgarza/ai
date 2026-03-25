@@ -212,24 +212,12 @@ check-plugins:
 # =============================================================================
 
 # Compile system/AGENTS template and write body to ~/ai/opencode/AGENTS.md
-[script]
 build-agents-md:
-    # /// script
-    # requires-python = ">=3.11"
-    # dependencies = ["tiktoken", "pyyaml", "jinja2"]
-    # ///
-    import sys
-    sys.path.insert(0, "{{ repo }}/../opencode-plugins/ai-prompts/src")
-    import os
-    import tiktoken
-    os.environ["PROMPTS_DIR"] = "{{ repo }}/../opencode-plugins/ai-prompts/prompts"
-    from ai_prompts import get_prompt
-    p = get_prompt("system/AGENTS")
-    body = p.body
-    count = len(tiktoken.get_encoding("cl100k_base").encode(body))
-    with open("{{ repo }}/opencode/AGENTS.md", "w") as f:
-        f.write(body)
-    print(f"Wrote {{ repo }}/opencode/AGENTS.md ({count} tokens)")
+    @uvx --from git+https://github.com/dzackgarza/ai-prompts.git ai-prompts get system/AGENTS --json \
+      | jq -r '.body' \
+      | tee {{ repo }}/opencode/AGENTS.md \
+      | wc -c \
+      | xargs -I {} echo "Wrote {{ repo }}/opencode/AGENTS.md ({} bytes)"
 
 # =============================================================================
 # Linting & Formatting

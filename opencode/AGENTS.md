@@ -305,3 +305,4 @@ PRs trigger rate-limited reviews — reserve them for changes where mistakes, re
 - Keep responses concise (under 3 lines of explanation), use `file_path:line_number` for code references, and no emojis/filler. Trigger: all responses. Verify: format in subsequent messages.
 - The 'ai' project is a centralized configuration hub for AI agent harnesses (Claude Code, Gemini CLI, etc.), using Markdown for prompts and YAML/JSON for config. Key directories include AGENTS.md, skills/, and opencode/.
 
+
