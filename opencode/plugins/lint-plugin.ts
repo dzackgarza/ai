@@ -1,13 +1,17 @@
 import type { Plugin } from '@opencode-ai/plugin';
 
-export const LintPlugin: Plugin = async ({ client, $ }) => {
+// Store lint feedback by sessionID for injection via system transform
+const lintFeedback = new Map<string, string>();
+
+export const LintPlugin: Plugin = async ({ client, $, directory }) => {
   return {
+    // 1. After tool execution, check for lint issues and store feedback
     'tool.execute.after': async (input) => {
-      // 1. Check if tool was an edit or write
       if (input.tool === 'edit' || input.tool === 'write') {
         const filePath = input.args.filePath as string;
+        const sessionID = input.sessionID;
 
-        // 2. Syntax check Python files
+        // Check Python files
         if (filePath.endsWith('.py')) {
           await client.app.log({
             service: 'lint-plugin',
@@ -31,21 +35,14 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
               .filter(Boolean)
               .join('\n\n');
 
-            await client.session.promptAsync({
-              path: { id: input.sessionID },
-              body: {
-                parts: [
-                  {
-                    type: 'text',
-                    text: `Python lint/format check failed for ${filePath}:\n\n${feedback}\n\nYou should run the 'format' tool or fix the issues manually.`,
-                  },
-                ],
-              },
-            });
+            lintFeedback.set(
+              sessionID,
+              `Python lint/format check failed for ${filePath}:\n\n${feedback}\n\nYou should run the 'format' tool or fix the issues manually.`,
+            );
           }
         }
 
-        // 3. Syntax check Justfiles
+        // Check justfiles
         if (filePath.endsWith('justfile') || filePath.includes('justfile')) {
           await client.app.log({
             service: 'lint-plugin',
@@ -53,24 +50,27 @@ export const LintPlugin: Plugin = async ({ client, $ }) => {
             message: `Syntax checking justfile`,
           });
 
-          // Check justfile syntax and formatting
           const justResult =
             await $`just --unstable --fmt --check --justfile ${filePath}`.nothrow();
 
           if (justResult.exitCode !== 0) {
-            await client.session.promptAsync({
-              path: { id: input.sessionID },
-              body: {
-                parts: [
-                  {
-                    type: 'text',
-                    text: `Justfile check failed: ${justResult.stderr.toString()}\n\nYou should run the 'format' tool or fix the issues manually.`,
-                  },
-                ],
-              },
-            });
+            lintFeedback.set(
+              sessionID,
+              `Justfile check failed: ${justResult.stderr.toString()}\n\nYou should run the 'format' tool or fix the issues manually.`,
+            );
           }
         }
+      }
+    },
+
+    // 2. Before LLM processes messages, inject lint feedback as system message
+    'experimental.chat.system.transform': async (input, output) => {
+      const sessionID = (input as { sessionID?: string }).sessionID ?? '';
+
+      if (sessionID && lintFeedback.has(sessionID)) {
+        const feedback = lintFeedback.get(sessionID)!;
+        output.system.push(`[LINT FEEDBACK]\n${feedback}`);
+        lintFeedback.delete(sessionID); // Clear after injection
       }
     },
   };
