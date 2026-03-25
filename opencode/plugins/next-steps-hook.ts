@@ -54,10 +54,28 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
       );
 
       if (matchedEntry) {
-        // 5. Inject the corresponding response
+        // 5. Get the last user message to extract the current model
+        const lastUser = [...messages]
+          .reverse()
+          .find((m: any) => m.info.role === 'user');
+
+        if (!lastUser) {
+          await client.app.log({
+            service: 'next-steps-hook',
+            level: 'error',
+            message: 'No user message found in session history',
+          });
+          return;
+        }
+
+        // 6. Inject the corresponding response using the same model
         await client.session.promptAsync({
           path: { id: sessionID },
           body: {
+            model: {
+              providerID: lastUser.info.model.providerID,
+              modelID: lastUser.info.model.modelID,
+            },
             noReply: false,
             parts: [
               {
