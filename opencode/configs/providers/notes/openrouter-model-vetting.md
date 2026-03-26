@@ -11,7 +11,6 @@ This document serves as the historical record of which models have been tested, 
 These models have passed strict testing. They successfully handle standard text generation AND they correctly output syntactically valid JSON tool calls matching the OpenCode schemas.
 
 - `openrouter/arcee-ai/trinity-large-preview:free`
-- `openrouter/google/gemma-3-27b-it:free` (Passes schema validation, though may struggle with complex reasoning chains compared to larger models)
 - `openrouter/nvidia/nemotron-3-nano-30b-a3b:free` (Surprisingly capable: handles optional boolean parameters and schema typing perfectly despite its 30B size)
 - `openrouter/openai/gpt-oss-120b:free`
 - `openrouter/qwen/qwen3-coder:free`
@@ -50,14 +49,17 @@ Models are systematically blacklisted based on the following criteria:
 4.  **Specialized models**: Models with "Uncensored", "Roleplay" (RP), or other non-technical tunings that diverge from technical accuracy.
 5.  **Small Context (<= 64k)**: Insufficient for 10-20 turns of interactive work or large file context.
 6.  **"Braindead" models**: Models known to simply fail nontrivial work (e.g. Gemini 2.0 series, GPT-OSS 20B).
+7.  **No Gemma or Phi models, ever**: These models are systematically banned regardless of size or provider.
 
-### 1. Superior Variants / Size / "Braindead"
+### 1. Superior Variants / Size / "Braindead" / Gemma / Phi
 - `arcee-ai/trinity-mini:free` (Redundant; `trinity-large` is vastly superior)
 - `openai/gpt-oss-20b:free` (Too small / braindead for nontrivial tasks)
 - `google/gemini-2.0-flash-exp:free` (Known "braindead" series)
 - `google/gemini-2.0-flash:free`
 - `google/gemini-2.0-flash-lite:free`
 - `google/gemini-2.0-pro:free`
+- `google/gemma-*` (Systematically blacklisted)
+- `microsoft/phi-*` (Systematically blacklisted)
 
 ### 2. General Parameter Constraints (<= 35B)
 Small models fall into infinite tool loops, ignore negative constraints (e.g. "Do not use bash"), and suffer rapid context degradation.

@@ -12,9 +12,6 @@
     "deepseek-ai/deepseek-v3.2": {
       "name": "deepseek-v3.2"
     },
-    "google/gemma-2-27b-it": {
-      "name": "gemma-2-27b-it"
-    },
     "meta/codellama-70b": {
       "name": "codellama-70b"
     },
@@ -87,6 +84,7 @@
     "deepseek-ai/deepseek-v3.1-terminus",
     "google/codegemma-1.1-7b",
     "google/codegemma-7b",
+    "google/gemma-2-27b-it",
     "google/gemma-2-2b-it",
     "google/gemma-3-12b-it",
     "google/gemma-3-1b-it",
