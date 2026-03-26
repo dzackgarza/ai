@@ -15,9 +15,6 @@
     "gpt-4-32k",
     "gpt-4-32k-0613",
     "gpt-4-0314",
-    "gpt-4-turbo-2024-04-09",
-    "gpt-4-0125-preview",
-    "gpt-4-1106-preview",
     "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-0125",
     "gpt-3.5-turbo-16k",
@@ -28,7 +25,24 @@
     "text-davinci-002",
     "text-davinci-003",
     "code-davinci-002",
-    "code-davinci-001"
+    "code-davinci-001",
+    "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
+    "gpt-5-codex",
+    "gpt-5.1",
+    "gpt-5.1-codex",
+    "gpt-5.1-codex-max",
+    "gpt-5.1-codex-mini",
+    "gpt-5.2",
+    "gpt-5.2-codex",
+    "gpt-5.3-chat",
+    "gpt-5.1-chat",
+    "gpt-5.2-chat",
+    "gpt-5.2-pro",
+    "gpt-5.4-nano",
+    "gpt-5.4-pro",
+    "gpt-5.3-codex-spark"
   ],
   "options": {
     "reasoningEffort": "medium",
@@ -40,222 +54,25 @@
     "store": false
   },
   "models": {
-    "gpt-5.2": {
-      "name": "GPT 5.2 (OAuth)",
+    "gpt-5.4": {
+      "name": "GPT 5.4 (OAuth)",
       "limit": {
         "context": 272000,
         "output": 128000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ]
-      },
-      "variants": {
-        "none": {
-          "reasoningEffort": "none",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "low": {
-          "reasoningEffort": "low",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "medium": {
-          "reasoningEffort": "medium",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "high": {
-          "reasoningEffort": "high",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        },
-        "xhigh": {
-          "reasoningEffort": "xhigh",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        }
       }
     },
-    "gpt-5.2-codex": {
-      "name": "GPT 5.2 Codex (OAuth)",
+    "gpt-5.3-codex": {
+      "name": "GPT 5.3 Codex (OAuth)",
       "limit": {
         "context": 272000,
         "output": 128000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ]
-      },
-      "variants": {
-        "low": {
-          "reasoningEffort": "low",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "medium": {
-          "reasoningEffort": "medium",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "high": {
-          "reasoningEffort": "high",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        },
-        "xhigh": {
-          "reasoningEffort": "xhigh",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        }
       }
     },
-    "gpt-5.1-codex-max": {
-      "name": "GPT 5.1 Codex Max (OAuth)",
+    "gpt-5.4-mini": {
+      "name": "GPT 5.4 Mini (OAuth)",
       "limit": {
         "context": 272000,
         "output": 128000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ]
-      },
-      "variants": {
-        "low": {
-          "reasoningEffort": "low",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        },
-        "medium": {
-          "reasoningEffort": "medium",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        },
-        "high": {
-          "reasoningEffort": "high",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        },
-        "xhigh": {
-          "reasoningEffort": "xhigh",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        }
-      }
-    },
-    "gpt-5.1-codex": {
-      "name": "GPT 5.1 Codex (OAuth)",
-      "limit": {
-        "context": 272000,
-        "output": 128000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ]
-      },
-      "variants": {
-        "low": {
-          "reasoningEffort": "low",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "medium": {
-          "reasoningEffort": "medium",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "high": {
-          "reasoningEffort": "high",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        }
-      }
-    },
-    "gpt-5.1-codex-mini": {
-      "name": "GPT 5.1 Codex Mini (OAuth)",
-      "limit": {
-        "context": 272000,
-        "output": 128000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ]
-      },
-      "variants": {
-        "medium": {
-          "reasoningEffort": "medium",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "high": {
-          "reasoningEffort": "high",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "medium"
-        }
-      }
-    },
-    "gpt-5.1": {
-      "name": "GPT 5.1 (OAuth)",
-      "limit": {
-        "context": 272000,
-        "output": 128000
-      },
-      "modalities": {
-        "input": [
-          "text",
-          "image"
-        ],
-        "output": [
-          "text"
-        ]
-      },
-      "variants": {
-        "none": {
-          "reasoningEffort": "none",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "low": {
-          "reasoningEffort": "low",
-          "reasoningSummary": "auto",
-          "textVerbosity": "low"
-        },
-        "medium": {
-          "reasoningEffort": "medium",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium"
-        },
-        "high": {
-          "reasoningEffort": "high",
-          "reasoningSummary": "detailed",
-          "textVerbosity": "high"
-        }
       }
     }
   }

@@ -110,6 +110,7 @@
     "meta-llama/llama-3-70b-instruct",
     "meta-llama/llama-3-8b-instruct",
     "meta-llama/llama-3.1-405b",
+    "meta-llama/llama-3.1-405b-instruct",
     "meta-llama/llama-3.1-70b-instruct",
     "meta-llama/llama-3.1-8b-instruct",
     "meta-llama/llama-3.2-11b-vision-instruct",
@@ -159,6 +160,11 @@
     "moonshotai/kimi-k2.5",
     "morph/morph-v3-fast",
     "morph/morph-v3-large",
+    "morph-warp-grep-v2",
+    "giga-potato",
+    "giga-potato-thinking",
+    "openrouter/healer-alpha",
+    "openrouter/hunter-alpha",
     "nex-agi/deepseek-v3.1-nex-n1",
     "nousresearch/hermes-2-pro-llama-3-8b",
     "nousresearch/hermes-3-llama-3.1-405b",
@@ -327,46 +333,37 @@
   ],
   "models": {
     "arcee-ai/trinity-large-preview:free": {
-      "name": "Trinity Large Preview:Free"
+      "name": "Trinity Large Preview (Free)"
     },
     "corethink:free": {
-      "name": "Corethink:Free"
-    },
-    "giga-potato": {
-      "name": "Giga Potato"
-    },
-    "giga-potato-thinking": {
-      "name": "Giga Potato Thinking"
+      "name": "Corethink (Free)"
     },
     "kilo-auto/free": {
-      "name": "Free"
+      "name": "Kilo-Auto (Free)"
     },
     "kilo/auto-free": {
-      "name": "Auto Free"
+      "name": "Kilo (Auto-Free)"
     },
     "minimax/minimax-m2.5:free": {
-      "name": "Minimax M2.5:Free"
-    },
-    "morph-warp-grep-v2": {
-      "name": "Morph Warp Grep V2"
+      "name": "Minimax M2.5 (Free)"
     },
     "nvidia/nemotron-3-super-120b-a12b:free": {
-      "name": "Nemotron 3 Super 120B A12B:Free"
+      "name": "Nemotron 3 Super 120B A12B (Free)"
     },
     "openrouter/free": {
       "name": "Free"
     },
-    "openrouter/healer-alpha": {
-      "name": "Healer Alpha"
-    },
-    "openrouter/hunter-alpha": {
-      "name": "Hunter Alpha"
-    },
     "stepfun/step-3.5-flash:free": {
-      "name": "Step 3.5 Flash:Free"
+      "name": "Step 3.5 Flash (Free)"
     },
     "x-ai/grok-code-fast-1:optimized:free": {
-      "name": "Grok Code Fast 1:Optimized:Free"
+      "name": "Grok Code Fast 1:Optimized (Free)"
+    },
+    "xiaomi/mimo-v2-omni:free": {
+      "name": "Mimo V2 Omni Free"
+    },
+    "xiaomi/mimo-v2-pro:free": {
+      "name": "Mimo V2 Pro Free"
     }
   }
 }

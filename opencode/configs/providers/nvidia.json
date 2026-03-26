@@ -6,47 +6,14 @@
     "apiKey": "{env:NVIDIA_API_KEY}"
   },
   "models": {
-    "deepseek-ai/deepseek-r1-0528": {
-      "name": "deepseek-r1-0528"
-    },
     "deepseek-ai/deepseek-v3.2": {
       "name": "deepseek-v3.2"
-    },
-    "meta/codellama-70b": {
-      "name": "codellama-70b"
-    },
-    "meta/llama-3.1-405b-instruct": {
-      "name": "llama-3.1-405b-instruct"
-    },
-    "meta/llama-3.3-70b-instruct": {
-      "name": "llama-3.3-70b-instruct"
-    },
-    "meta/llama-4-maverick-17b-128e-instruct": {
-      "name": "llama-4-maverick-17b-128e-instruct"
-    },
-    "minimaxai/minimax-m2.1": {
-      "name": "minimax-m2.1"
     },
     "minimaxai/minimax-m2.5": {
       "name": "minimax-m2.5"
     },
-    "mistralai/devstral-2-123b-instruct-2512": {
-      "name": "devstral-2-123b-instruct-2512"
-    },
-    "mistralai/mistral-large-3-675b-instruct-2512": {
-      "name": "mistral-large-3-675b-instruct-2512"
-    },
-    "mistralai/mistral-medium-3-instruct": {
-      "name": "mistral-medium-3-instruct"
-    },
-    "mistralai/mistral-nemotron": {
-      "name": "mistral-nemotron"
-    },
     "moonshotai/kimi-k2.5": {
       "name": "kimi-k2.5"
-    },
-    "nvidia/cosmos-nemotron-34b": {
-      "name": "cosmos-nemotron-34b"
     },
     "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
       "name": "llama-3.1-nemotron-ultra-253b-v1"
@@ -56,9 +23,6 @@
     },
     "nvidia/nemotron-3-nano-30b-a3b": {
       "name": "nemotron-3-nano-30b-a3b"
-    },
-    "nvidia/nemotron-4-340b-instruct": {
-      "name": "nemotron-4-340b-instruct"
     },
     "openai/gpt-oss-120b": {
       "name": "gpt-oss-120b"
@@ -105,6 +69,7 @@
     "microsoft/phi-3.5-moe-instruct",
     "microsoft/phi-3.5-vision-instruct",
     "microsoft/phi-4-mini-instruct",
+    "minimaxai/minimax-m2.1",
     "minimaxai/minimax-m2",
     "mistralai/codestral-22b-instruct-v0.1",
     "mistralai/mamba-codestral-7b-v0.1",
@@ -128,6 +93,17 @@
     "qwen/qwen3-235b-a22b",
     "qwen/qwen3-next-80b-a3b-instruct",
     "qwen/qwq-32b",
-    "z-ai/glm4.7"
+    "z-ai/glm4.7",
+    "meta/llama-3.3-70b-instruct",
+    "meta/codellama-70b",
+    "deepseek-ai/deepseek-r1-0528",
+    "mistralai/devstral-2-123b-instruct-2512",
+    "meta/llama-3.1-405b-instruct",
+    "meta/llama-4-maverick-17b-128e-instruct",
+    "mistralai/mistral-large-3-675b-instruct-2512",
+    "mistralai/mistral-medium-3-instruct",
+    "mistralai/mistral-nemotron",
+    "nvidia/nemotron-4-340b-instruct",
+    "nvidia/cosmos-nemotron-34b"
   ]
 }
