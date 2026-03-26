@@ -54,7 +54,6 @@ _BUILD_CONFIG_SCRIPT = _PROJECT_ROOT / "scripts" / "build_config.py"
 
 BUILTIN_SHADOWS = {
     "build": "interactive-agents/opencode-build",
-    "explore": "sub-agents/opencode-explore",
     "compaction": "micro-agents/opencode-compaction",
     "title": "micro-agents/opencode-title",
     "summary": "micro-agents/opencode-summary",

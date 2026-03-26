@@ -38,7 +38,6 @@
         "$FILE"
       ],
       "extensions": [
-        ".md",
         ".js",
         ".ts",
         ".jsx",
@@ -60,6 +59,18 @@
       ],
       "extensions": [
         "justfile"
+      ]
+    },
+    "flowmark": {
+      "command": [
+        "uvx",
+        "flowmark",
+        "--semantic",
+        "--inplace",
+        "$FILE"
+      ],
+      "extensions": [
+        ".md"
       ]
     }
   },
@@ -103,8 +114,9 @@
     "openTelemetry": true
   },
   "plugin": [
-    "opencode-claude-auth",
+    "opencode-claude-auth@latest",
     "opencode-gemini-auth@latest",
+    "@zhafron/opencode-kiro-auth@latest",
     "@tarquinen/opencode-dcp@latest",
     "opencode-qwencode-auth@git+https://github.com/luanweslley77/opencode-qwencode-auth.git#feat/v1.5.0-rate-limit-fix",
     "opencode-openai-codex-auth@latest",
@@ -116,6 +128,84 @@
     "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
     "@devtheops/opencode-plugin-otel@latest"
   ],
+  "permission": {
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "edit": "allow",
+    "apply_patch": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todowrite": "allow",
+    "task": "allow",
+    "question": "allow",
+    "external_directory": {
+      "*": "ask",
+      "/home/dzack/ai/*": "allow",
+      "/home/dzack/.agents/*": "allow",
+      "/home/dzack/.plannotator/*": "allow",
+      "/tmp/*": "allow"
+    },
+    "list_sessions": "allow",
+    "introspection": "allow",
+    "read_transcript": "allow",
+    "remember": "allow",
+    "forget": "allow",
+    "list_memories": "allow",
+    "skill": "allow",
+    "sleep": "allow",
+    "sleep_until": "allow",
+    "codesearch": "allow",
+    "lsp": "allow",
+    "pty_list": "allow",
+    "pty_read": "allow",
+    "pty_spawn": "allow",
+    "pty_kill": "allow",
+    "pty_write": "allow",
+    "submit_plan": "allow",
+    "plannotator_review": "allow",
+    "plannotator_annotate": "allow",
+    "write": "allow",
+    "tokenscope": "allow",
+    "invalid": "deny",
+    "cut-copy-paste-mcp_cut_lines": "allow",
+    "cut-copy-paste-mcp_copy_lines": "allow",
+    "cut-copy-paste-mcp_paste_lines": "allow",
+    "cut-copy-paste-mcp_get_operation_history": "allow",
+    "cut-copy-paste-mcp_show_clipboard": "allow",
+    "cut-copy-paste-mcp_undo_last_paste": "allow",
+    "serena_read_file": "deny",
+    "serena_list_dir": "deny",
+    "serena_find_file": "deny",
+    "serena_search_for_pattern": "deny",
+    "serena_get_symbols_overview": "deny",
+    "serena_find_symbol": "deny",
+    "serena_find_referencing_symbols": "allow",
+    "serena_create_text_file": "deny",
+    "serena_replace_content": "deny",
+    "serena_replace_symbol_body": "allow",
+    "serena_insert_after_symbol": "allow",
+    "serena_insert_before_symbol": "allow",
+    "serena_rename_symbol": "allow",
+    "serena_read_memory": "deny",
+    "serena_list_memories": "deny",
+    "serena_write_memory": "deny",
+    "serena_edit_memory": "deny",
+    "serena_delete_memory": "deny",
+    "serena_rename_memory": "deny",
+    "serena_activate_project": "allow",
+    "serena_check_onboarding_performed": "deny",
+    "serena_get_current_config": "deny",
+    "serena_onboarding": "deny",
+    "serena_prepare_for_new_conversation": "deny",
+    "serena_initial_instructions": "deny",
+    "serena_think_about_collected_information": "deny",
+    "serena_think_about_task_adherence": "deny",
+    "serena_think_about_whether_you_are_done": "deny",
+    "serena_execute_shell_command": "deny",
+    "serena_switch_modes": "deny",
+    "gemini_quota": "allow"
+  },
   "provider": {
     "anthropic": {
       "blacklist": [
@@ -169,7 +259,6 @@
     },
     "github-copilot": {
       "blacklist": [
-        "gpt-5-mini",
         "claude-opus-4.5",
         "claude-opus-4.6-fast-mode-preview",
         "claude-sonnet-4",
@@ -814,6 +903,365 @@
         }
       }
     },
+    "kiro": {
+      "blacklist": [],
+      "models": {
+        "claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4.5",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-sonnet-4-5-thinking": {
+          "name": "Claude Sonnet 4.5 Thinking",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "medium": {
+              "thinkingConfig": {
+                "thinkingBudget": 16384
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-sonnet-4-6-thinking": {
+          "name": "Claude Sonnet 4.6 Thinking",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "medium": {
+              "thinkingConfig": {
+                "thinkingBudget": 16384
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-opus-4-5": {
+          "name": "Claude Opus 4.5",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-opus-4-5-thinking": {
+          "name": "Claude Opus 4.5 Thinking",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "medium": {
+              "thinkingConfig": {
+                "thinkingBudget": 16384
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "claude-opus-4-6": {
+          "name": "Claude Opus 4.6",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-opus-4-6-thinking": {
+          "name": "Claude Opus 4.6 Thinking",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "medium": {
+              "thinkingConfig": {
+                "thinkingBudget": 16384
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "claude-opus-4-6-1m": {
+          "name": "Claude Opus 4.6 (1M Context)",
+          "limit": {
+            "context": 1000000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-opus-4-6-1m-thinking": {
+          "name": "Claude Opus 4.6 (1M Context) Thinking",
+          "limit": {
+            "context": 1000000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "medium": {
+              "thinkingConfig": {
+                "thinkingBudget": 16384
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "claude-sonnet-4-5-1m": {
+          "name": "Claude Sonnet 4.5 (1M Context)",
+          "limit": {
+            "context": 1000000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-sonnet-4-6-1m": {
+          "name": "Claude Sonnet 4.6 (1M Context)",
+          "limit": {
+            "context": 1000000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "claude-sonnet-4-6-1m-thinking": {
+          "name": "Claude Sonnet 4.6 (1M Context) Thinking",
+          "limit": {
+            "context": 1000000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "medium": {
+              "thinkingConfig": {
+                "thinkingBudget": 16384
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "qwen3-coder-480b": {
+          "name": "Qwen3 Coder 480B",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        }
+      }
+    },
     "nvidia": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "NVIDIA NIM",
@@ -1273,6 +1721,7 @@
         "glm-5-free",
         "gpt-5",
         "gpt-5-mini",
+        "gpt-5-nano",
         "gpt-5-codex",
         "gpt-5.1",
         "gpt-5.1-codex",
@@ -1299,11 +1748,17 @@
         "big-pickle": {
           "name": "Big Pickle"
         },
-        "gpt-5-nano": {
-          "name": "GPT-5 Nano"
+        "mimo-v2-omni-free": {
+          "name": "Mimo V2 Omni Free"
+        },
+        "mimo-v2-pro-free": {
+          "name": "Mimo V2 Pro Free"
         },
         "minimax-m2.5-free": {
           "name": "MiniMax M2.5 Free"
+        },
+        "nemotron-3-super-free": {
+          "name": "Nemotron 3 Super Free"
         }
       }
     },
@@ -1988,31 +2443,6 @@
         "glm-4.7-flash": {
           "name": "GLM 4.7 Flash (Free)"
         }
-      }
-    }
-  },
-  "agent": {
-    "plugin-proof": {
-      "description": "Integration test agent: all standard tools denied. Per-plugin configs override specific tool permissions.",
-      "mode": "primary",
-      "model": "github-copilot/gpt-4.1",
-      "prompt": "You are a strict integration-test agent. Follow the requested protocol exactly. Call only the tools explicitly permitted. If a required tool is unavailable or denied, reply with ONLY: FAIL:PROOF_NOT_POSSIBLE",
-      "permission": {
-        "bash": "deny",
-        "read": "deny",
-        "write": "deny",
-        "glob": "deny",
-        "grep": "deny",
-        "list": "deny",
-        "question": "deny",
-        "task": "deny",
-        "webfetch": "deny",
-        "websearch": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "skill": "deny",
-        "edit": "deny",
-        "apply_patch": "deny"
       }
     }
   }

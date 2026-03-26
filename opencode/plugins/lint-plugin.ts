@@ -3,7 +3,7 @@ import type { Plugin } from '@opencode-ai/plugin';
 // Store lint feedback by sessionID for injection via system transform
 const lintFeedback = new Map<string, string>();
 
-export const LintPlugin: Plugin = async ({ client, $, directory }) => {
+export const LintPlugin: Plugin = async ({ client, $ }) => {
   return {
     // 1. After tool execution, check for lint issues and store feedback
     'tool.execute.after': async (input) => {
@@ -14,9 +14,11 @@ export const LintPlugin: Plugin = async ({ client, $, directory }) => {
         // Check Python files
         if (filePath.endsWith('.py')) {
           await client.app.log({
-            service: 'lint-plugin',
-            level: 'info',
-            message: `Syntax checking Python file: ${filePath}`,
+            body: {
+              service: 'lint-plugin',
+              level: 'info',
+              message: `Syntax checking Python file: ${filePath}`,
+            },
           });
 
           const checkResult = await $`uvx ruff check --quiet ${filePath}`.nothrow();
@@ -45,9 +47,11 @@ export const LintPlugin: Plugin = async ({ client, $, directory }) => {
         // Check justfiles
         if (filePath.endsWith('justfile') || filePath.includes('justfile')) {
           await client.app.log({
-            service: 'lint-plugin',
-            level: 'info',
-            message: `Syntax checking justfile`,
+            body: {
+              service: 'lint-plugin',
+              level: 'info',
+              message: `Syntax checking justfile`,
+            },
           });
 
           const justResult =

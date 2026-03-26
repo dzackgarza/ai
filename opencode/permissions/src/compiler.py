@@ -37,17 +37,22 @@ GLOBAL_DEFAULTS: dict[str, Any] = {
         "/tmp/*": "allow",
     },
     # Session
-    "list_sessions": "allow",
-    "introspection": "allow",
-    "read_transcript": "allow",
+    "question": "allow",
+    "external_directory": {
+        "*": "ask",
+        "/home/dzack/ai/*": "allow",
+        "/home/dzack/.agents/*": "allow",
+        "/home/dzack/.plannotator/*": "allow",
+        "/tmp/*": "allow",
+    },
     # Memory
     "remember": "allow",
     "forget": "allow",
     "list_memories": "allow",
     # Skills & timing
     "skill": "allow",
-    "sleep": "allow",
-    "sleep_until": "allow",
+    # Compress
+    "compress": "allow",
     # Code navigation
     "codesearch": "allow",
     "lsp": "allow",

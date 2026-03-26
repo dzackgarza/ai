@@ -1,4 +1,5 @@
 import type { Plugin } from '@opencode-ai/plugin';
+import type { UserMessage } from '@opencode-ai/sdk';
 
 /**
  * Lookup table mapping trigger phrases to response messages.
@@ -37,10 +38,22 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
         path: { id: sessionID },
       });
 
+      if (!messages) {
+        await client.app.log({
+          body: {
+            service: 'next-steps-hook',
+            level: 'error',
+            message: `No messages found in session ${sessionID}`,
+          },
+        });
+        return;
+      }
+
       // 3. Extract last assistant message text
-      const lastAssistant = [...messages]
+      const lastAssistant = messages
+        .slice()
         .reverse()
-        .find((m: any) => m.info.role === 'assistant');
+        .find((m) => m.info.role === 'assistant');
 
       const lastText = lastAssistant?.parts
         ?.filter((p: any) => p.type === 'text')
@@ -55,15 +68,18 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
 
       if (matchedEntry) {
         // 5. Get the last user message to extract the current model
-        const lastUser = [...messages]
+        const lastUserMessage = messages
+          .slice()
           .reverse()
-          .find((m: any) => m.info.role === 'user');
+          .find((m): m is { info: UserMessage; parts: any[] } => m.info.role === 'user');
 
-        if (!lastUser) {
+        if (!lastUserMessage) {
           await client.app.log({
-            service: 'next-steps-hook',
-            level: 'error',
-            message: 'No user message found in session history',
+            body: {
+              service: 'next-steps-hook',
+              level: 'error',
+              message: 'No user message found in session history',
+            },
           });
           return;
         }
@@ -73,8 +89,8 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
           path: { id: sessionID },
           body: {
             model: {
-              providerID: lastUser.info.model.providerID,
-              modelID: lastUser.info.model.modelID,
+              providerID: lastUserMessage.info.model.providerID,
+              modelID: lastUserMessage.info.model.modelID,
             },
             noReply: false,
             parts: [

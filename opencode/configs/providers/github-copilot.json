@@ -1,6 +1,5 @@
 {
   "blacklist": [
-    "gpt-5-mini",
     "claude-opus-4.5",
     "claude-opus-4.6-fast-mode-preview",
     "claude-sonnet-4",

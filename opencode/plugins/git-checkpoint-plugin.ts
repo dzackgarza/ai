@@ -1,6 +1,6 @@
 import type { Plugin } from '@opencode-ai/plugin';
 
-export const GitCheckpointPlugin: Plugin = async ({ client, $ }) => {
+export const GitCheckpointPlugin: Plugin = async ({ $ }) => {
   return {
     'tool.execute.before': async (input) => {
       // 1. Intercept both 'edit' and 'write' tools
