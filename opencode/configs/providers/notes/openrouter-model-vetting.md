@@ -11,11 +11,9 @@ This document serves as the historical record of which models have been tested, 
 These models have passed strict testing. They successfully handle standard text generation AND they correctly output syntactically valid JSON tool calls matching the OpenCode schemas.
 
 - `openrouter/arcee-ai/trinity-large-preview:free`
-- `openrouter/arcee-ai/trinity-mini:free`
 - `openrouter/google/gemma-3-27b-it:free` (Passes schema validation, though may struggle with complex reasoning chains compared to larger models)
 - `openrouter/nvidia/nemotron-3-nano-30b-a3b:free` (Surprisingly capable: handles optional boolean parameters and schema typing perfectly despite its 30B size)
 - `openrouter/openai/gpt-oss-120b:free`
-- `openrouter/openai/gpt-oss-20b:free`
 - `openrouter/qwen/qwen3-coder:free`
 - `openrouter/qwen/qwen3-next-80b-a3b-instruct:free`
 - `openrouter/stepfun/step-3.5-flash:free`
@@ -44,9 +42,25 @@ However, they are valuable for **pure text tasks** (summarization, document clas
 
 ## ❌ The Blacklist
 
-### 1. Parameter Constraints (<35B)
+Models are systematically blacklisted based on the following criteria:
 
-Models below ~35B are systematically blacklisted unless they have proven exceptional tuning (like Nemotron-3 30B). Small models fall into infinite tool loops, ignore negative constraints (e.g. "Do not use bash"), and suffer rapid context degradation.
+1.  **Redundant variants**: Variants that have clearly superior (free) variants available (e.g. Trinity Mini vs Trinity Large).
+2.  **Size Constraints (<= 20B heuristic)**: Models too small for complex agentic workflows; prone to infinite loops and instruction drift.
+3.  **Non-free**: Every model provided by OpenRouter that does not explicitly end in `:free` is blanket-blacklisted to prevent accidental token charges during autonomous subagent loops.
+4.  **Specialized models**: Models with "Uncensored", "Roleplay" (RP), or other non-technical tunings that diverge from technical accuracy.
+5.  **Small Context (<= 64k)**: Insufficient for 10-20 turns of interactive work or large file context.
+6.  **"Braindead" models**: Models known to simply fail nontrivial work (e.g. Gemini 2.0 series, GPT-OSS 20B).
+
+### 1. Superior Variants / Size / "Braindead"
+- `arcee-ai/trinity-mini:free` (Redundant; `trinity-large` is vastly superior)
+- `openai/gpt-oss-20b:free` (Too small / braindead for nontrivial tasks)
+- `google/gemini-2.0-flash-exp:free` (Known "braindead" series)
+- `google/gemini-2.0-flash:free`
+- `google/gemini-2.0-flash-lite:free`
+- `google/gemini-2.0-pro:free`
+
+### 2. General Parameter Constraints (<= 35B)
+Small models fall into infinite tool loops, ignore negative constraints (e.g. "Do not use bash"), and suffer rapid context degradation.
 
 - `allenai/molmo-2-8b:free`
 - `deepseek/deepseek-r1-0528-qwen3-8b:free`
@@ -65,14 +79,12 @@ Models below ~35B are systematically blacklisted unless they have proven excepti
 - `qwen/qwen3-8b:free`
 - `qwen/qwq-32b:free`
 
-### 2. Dead Endpoints (404 No Endpoints)
-
-These models are technically documented as "free" somewhere on OpenRouter or third-party lists, but pinging the API returns a hard 404. OpenRouter has likely rotated them out.
+### 3. Dead Endpoints (404 No Endpoints)
+These models are technically documented as "free" but return a hard 404 from the OpenRouter API.
 
 - `deepseek/deepseek-r1-0528:free`
 - `deepseek/deepseek-r1:free`
 - `deepseek/deepseek-v3-base:free`
-- `google/gemini-2.0-flash-exp:free`
 - `meta-llama/llama-3.1-405b-instruct:free`
 - `meta-llama/llama-4-scout:free`
 - `microsoft/mai-ds-r1:free`
@@ -90,16 +102,11 @@ These models are technically documented as "free" somewhere on OpenRouter or thi
 - `qwen/qwen3-32b:free`
 - `thudm/glm-z1-32b:free`
 
-### 3. Expired Free Periods
-
+### 4. Expired Free Periods
 These models return explicit HTTP 400 API errors stating "The free period has ended. To continue using this model, please migrate to the paid slug."
 
 - `kwaipilot/kat-coder-pro:free`
 - `mistralai/devstral-2512:free`
-
-### 4. Paid / Premium Models (All)
-
-Every other model provided by OpenRouter that does not explicitly end in `:free` is blanket-blacklisted to prevent accidental token charges during autonomous subagent loops. This includes all standard Claude, OpenAI, and Gemini premium endpoints available via OpenRouter.
 
 ---
 
