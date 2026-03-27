@@ -426,7 +426,8 @@
         "gemini-2.5-flash-preview-09-2025",
         "gemini-2.5-pro-preview-05-06",
         "gemini-2.5-pro-preview-06-05",
-        "gemini-pro-latest"
+        "gemini-pro-latest",
+        "gemini-3.1-flash-lite-preview"
       ],
       "models": {
         "gemini-2.5-flash": {
@@ -473,23 +474,6 @@
               "thinkingLevel": "high"
             }
           }
-        },
-        "gemini-3.1-flash-lite-preview": {
-          "name": "Gemini 3.1 Flash Lite Preview \u26a1",
-          "variants": {
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
-          }
-        },
-        "gemini-flash-latest": {
-          "name": "Gemini Flash Latest"
-        },
-        "gemini-flash-lite-latest": {
-          "name": "Gemini Flash Lite Latest"
         }
       }
     },
@@ -1444,6 +1428,18 @@
     "openrouter": {
       "name": "OpenRouter",
       "models": {
+        "google/gemini-2.5-flash:free": {
+          "name": "Gemini 2.5 Flash (Free)"
+        },
+        "google/gemini-2.5-flash-lite:free": {
+          "name": "Gemini 2.5 Flash Lite (Free)"
+        },
+        "google/gemini-3-flash-preview:free": {
+          "name": "Gemini 3 Flash Preview (Free)"
+        },
+        "google/gemini-3.1-flash-lite-preview:free": {
+          "name": "Gemini 3.1 Flash Lite Preview (Free)"
+        },
         "arcee-ai/trinity-large-preview:free": {
           "name": "Trinity Large Preview"
         },
