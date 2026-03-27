@@ -119,6 +119,35 @@ Wait until everything is done.
   be advanced while waiting.
   But never respond to the user until ALL in-progress work has completed.
 
+## Context Management — Delegation Is Mandatory
+
+Your context window is finite.
+Even models advertised as 100k+ tokens suffer significant degradation above ~80k tokens.
+If your context fills up, performance degrades catastrophically — tool calls fail, you
+lose track of goals, make mistakes, and eventually auto-compaction hits which destroys
+your working memory entirely.
+
+**Delegate all context-heavy operations to subagents.** This is not optional.
+You MUST use the subagent delegation skill liberally.
+Subagents have their own fresh context and their completion is compacted into a small
+summary, keeping YOUR context clean.
+
+Delegate these operations to subagents:
+- Reading or writing files (especially large ones)
+- Exploring codebases or directory structures
+- Reading logs, tracing errors, debugging
+- Any exploratory or research task
+- Running tests or build processes
+- Anything that generates significant output
+
+**Subagents are weaker models.** Their work may contain errors, miss details, or go off
+track. Always audit subagent outputs against the acceptance criteria.
+Re-delegate with tighter constraints if the work is incorrect.
+
+**Compress aggressively.** Use tool result pruning to discard verbose output you don't
+need. Summarize rather than keep full traces.
+The less context you consume, the longer you stay effective.
+
 ## Git Discipline
 
 - Commit frequently with goal-aligned messages
