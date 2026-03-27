@@ -2,6 +2,7 @@
 description: Hidden system agent that compacts long context into a smaller summary.
 mode: primary
 hidden: true
+model: github-copilot/gpt-5-mini
 permission:
   '*': deny
 name: OpenCode Compaction
