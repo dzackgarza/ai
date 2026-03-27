@@ -1,7 +1,7 @@
 ---
 description: Use when proving theorems or conjectures via computational evidence. Ask 'Prove [conjecture] for [lattice class]' or 'Find computational evidence for [theorem]' or 'Classify [mathematical objects] with invariants'.
 mode: subagent
-  model: opencode/minimax-m2.5-free
+model: opencode/minimax-m2.5-free
 name: 'Prover'
 tools:
   task: false
