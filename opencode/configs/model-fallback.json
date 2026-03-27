@@ -8,11 +8,7 @@
   },
   "agents": {
     "*": {
-      "fallbackModels": [
-        "opencode/minimax-m2.5-free",
-        "github-copilot/gpt-5-mini",
-        "kilo/kilo-auto"
-      ]
+      "fallbackModels": []
     }
   },
   "logging": true,
