@@ -1,17 +1,17 @@
 {
   "name": "OpenRouter",
   "models": {
-    "google/gemini-2.5-flash:free": {
-      "name": "Gemini 2.5 Flash (Free)"
+    "google/gemini-2.5-flash": {
+      "name": "Gemini 2.5 Flash"
     },
-    "google/gemini-2.5-flash-lite:free": {
-      "name": "Gemini 2.5 Flash Lite (Free)"
+    "google/gemini-2.5-flash-lite": {
+      "name": "Gemini 2.5 Flash Lite"
     },
-    "google/gemini-3-flash-preview:free": {
-      "name": "Gemini 3 Flash Preview (Free)"
+    "google/gemini-3-flash-preview": {
+      "name": "Gemini 3 Flash Preview"
     },
-    "google/gemini-3.1-flash-lite-preview:free": {
-      "name": "Gemini 3.1 Flash Lite Preview (Free)"
+    "google/gemini-3.1-flash-lite-preview": {
+      "name": "Gemini 3.1 Flash Lite Preview"
     },
     "arcee-ai/trinity-large-preview:free": {
       "name": "Trinity Large Preview"
