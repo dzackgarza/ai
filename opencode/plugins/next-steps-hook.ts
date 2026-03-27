@@ -16,7 +16,7 @@ const PHRASE_LOOKUP: Array<{ phrases: string[]; response: string }> = [
   {
     phrases: ['acknowledged', 'confirmed'],
     response:
-      'Information is never given to simply be acknowledged, and is always meant to be acted upon.',
+      'You have acknowledged or simply observed information instead of acting upon it. This information was given to you to imply an obvious course of action, which you should now carry out. Only if there is genuine ambiguity should you ask the user what to do.',
   },
   {
     phrases: ['i will', 'i am continuing', 'continuing to'],
@@ -71,7 +71,9 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
         const lastUserMessage = messages
           .slice()
           .reverse()
-          .find((m): m is { info: UserMessage; parts: any[] } => m.info.role === 'user');
+          .find(
+            (m): m is { info: UserMessage; parts: any[] } => m.info.role === 'user',
+          );
 
         if (!lastUserMessage) {
           await client.app.log({
