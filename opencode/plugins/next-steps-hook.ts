@@ -26,7 +26,7 @@ const PHRASE_LOOKUP: Array<{ phrases: string[]; response: string }> = [
   {
     phrases: ['not completed:', 'next actions:'],
     response:
-      'If there is an unambiguous outstanding tasks or incomplete work, you should simply complete it.',
+      'If there are unambiguous outstanding tasks or incomplete work, you should simply complete them.',
   },
 ];
 
