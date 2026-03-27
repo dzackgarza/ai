@@ -83,7 +83,7 @@
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
     "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
     "@devtheops/opencode-plugin-otel@latest",
-    "liamvinberg/opencode-rate-limit-fallback"
+    "@smart-coders-hq/opencode-model-fallback"
   ],
   "permission": {
     "read": "allow",

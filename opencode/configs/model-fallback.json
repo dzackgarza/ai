@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "defaults": {
+    "fallbackOn": ["rate_limit", "quota_exceeded", "5xx", "timeout", "overloaded"],
+    "cooldownMs": 300000,
+    "retryOriginalAfterMs": 900000,
+    "maxFallbackDepth": 3
+  },
+  "agents": {
+    "*": {
+      "fallbackModels": [
+        "opencode/minimax-m2.5-free",
+        "github-copilot/gpt-5-mini",
+        "kilo/kilo-auto"
+      ]
+    }
+  },
+  "logging": true,
+  "logLevel": "info",
+  "logPath": "~/.local/share/opencode/logs/model-fallback.log"
+}
