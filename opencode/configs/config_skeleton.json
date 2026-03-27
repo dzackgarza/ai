@@ -63,6 +63,9 @@
   },
   "model": "github-copilot/gpt-4.1",
   "default_agent": "Interactive",
+  "compaction": {
+    "reserved": 40000
+  },
   "experimental": {
     "openTelemetry": true
   },
