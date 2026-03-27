@@ -509,17 +509,20 @@ Inline prompt logic is not.
 
 * * *
 
-## 8. Common Plugin Loading Issues
+## 8. Plugin Placement Rule
 
-### Duplicate Plugin Registration
+**WARNING:** Place each plugin in EXACTLY ONE location.
+Never place a plugin in both `plugins/*.ts` AND export it from `local-tools.ts`.
 
-**Problem:** Plugin code exists in both the `plugins/` directory AND is exported from
-`local-tools.ts`, causing the plugin to be registered twice and fire duplicate events.
+OpenCode loads plugins from the `plugins/` directory automatically.
+Additionally, `local-tools.ts` re-exports some plugins.
+Having a plugin in both places causes it to be registered twice, resulting in duplicate
+event handlers and double-fired injections.
 
-**Solution:** Choose ONE loading method:
-1. **Auto-load from directory** - Keep `.ts` file in `plugins/`, remove export from
-   `local-tools.ts`
-2. **Explicit export** - Remove `.ts` file from `plugins/`, keep export in
-   `local-tools.ts`
+**Choose ONE:**
+- **Directory placement** (preferred): File exists in `plugins/`, NOT exported from
+  `local-tools.ts`
+- **Export placement**: File removed from `plugins/`, exported from `local-tools.ts`
 
-Never do both. Check `local-tools.ts` when adding new plugins to the directory.
+Always check `local-tools.ts` before adding a new plugin file to the `plugins/`
+directory.
