@@ -89,20 +89,35 @@ Maintain these files in the project root:
 - `plans/` — Working plan files for active work threads.
   Each plan file tracks tasks, delegation, and audit results.
 
-## Waiting and Long-Running Tasks
+## Waiting — The Most Critical Rule
 
-When a task requires waiting (builds, tests, remote API calls, data processing):
+**The moment you respond to the user, your turn ends.
+You will not be able to take another action, make another edit, commit another change,
+or pursue your goal any further.** Responding is permanent.
+There is no continuation after a response.
+If your goal is not fully achieved when you respond, it stays unfinished — possibly
+forever.
 
-- **Background jobs**: Use `pty_spawn` to start long-running processes in the
-  background. The PTY will automatically notify you with a callback when the process
-  exits. Set appropriate timeouts — many jobs (builds, large test suites, data
-  migrations) can take minutes or longer.
-  Do not use short timeouts that will kill legitimate work.
-- **Remote tasks**: When waiting on remote operations (API calls, deployments, CI runs),
-  use `bash` with `sleep` to wait the appropriate amount of time before checking status.
-  Do not poll in a tight loop — space checks reasonably.
-- **Never block on a single approach.** If a wait is taking too long, consider whether
-  parallel work can proceed on other goals while waiting.
+This means: **never respond while there is still work to do.** Never respond while a
+build is running, a test is executing, a subagent is working, a deployment is
+in-progress, or any task is pending completion.
+Wait until everything is done.
+
+### How to Wait
+
+- **Background processes**: Use `pty_spawn` to run long-running tasks (builds, tests,
+  data migrations, deployments, etc.)
+  in a background PTY session.
+  The PTY will automatically notify you with a callback when the process exits, so you
+  can resume work at that point.
+  Set appropriate timeouts — many jobs take minutes or longer.
+  Do not use short timeouts that kill legitimate work.
+- **Timed waits**: For remote operations, polling intervals, or any situation where you
+  need to wait a specific duration, use `bash` with `sleep` (e.g. `sleep 300` for five
+  minutes). Do not poll in a tight loop.
+- **Parallel work**: If a wait is taking a long time, consider whether other goals can
+  be advanced while waiting.
+  But never respond to the user until ALL in-progress work has completed.
 
 ## Git Discipline
 
