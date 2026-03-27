@@ -82,7 +82,8 @@
     "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
     "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
-    "@devtheops/opencode-plugin-otel@latest"
+    "@devtheops/opencode-plugin-otel@latest",
+    "liamvinberg/opencode-rate-limit-fallback"
   ],
   "permission": {
     "read": "allow",
