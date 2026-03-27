@@ -29,7 +29,13 @@
       ]
     },
     "*": {
-      "fallbackModels": []
+      "fallbackModels": [
+        "opencode/minimax-m2.5-free",
+        "qwen-code/coder-model",
+        "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+        "kilo/kilo-auto/free",
+        "github-copilot/gpt-4.1"
+      ]
     }
   },
   "logging": true,
