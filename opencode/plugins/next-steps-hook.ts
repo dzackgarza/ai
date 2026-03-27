@@ -24,7 +24,7 @@ const PHRASE_LOOKUP: Array<{ phrases: string[]; response: string }> = [
       'Do not simply announce intentions - follow through with the intended actions now, or use sleep/sleep_until if the next action should be delayed.',
   },
   {
-    phrases: ['not completed:'],
+    phrases: ['not completed:', 'next actions:'],
     response:
       'If there is an unambiguous outstanding tasks or incomplete work, you should simply complete it.',
   },
