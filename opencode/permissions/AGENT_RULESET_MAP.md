@@ -11,7 +11,7 @@ Generated: 2026-03-19
 | Minimal                | `interactive-agents/minimal`              | inline mixins  | `mixin_bash_unrestricted()`, `mixin_orchestrator()` |
 | orchestrator           | `interactive-agents/orchestrator`         | `Orchestrator` | none                                                |
 | Plan (Custom)          | `interactive-agents/plan-custom`          | `Planner`      | none                                                |
-| plan                   | `interactive-agents/opencode-plan`        | `Planner`      | none                                                |
+| plan                   | `interactive-agents/plan`                 | `Planner`      | none                                                |
 | Repository Steward     | `interactive-agents/repository-steward`   | `Planner`      | none                                                |
 | Unrestricted Test      | `interactive-agents/unrestricted-test`    | inline mixins  | `mixin_allow_all_permissions()`                     |
 | Zotero Librarian       | `interactive-agents/zotero-librarian`     | `Coordinator`  | `edit: deny`, `apply_patch: deny`                   |
@@ -44,10 +44,10 @@ Generated: 2026-03-19
 
 | Agent Name                | Prompt Slug                           | Ruleset      |
 | ------------------------- | ------------------------------------- | ------------ |
-| general                   | `sub-agents/opencode-general`         | `Researcher` |
-| Researcher: Code Base     | `sub-agents/repo-explorer`            | `Researcher` |
+| general                   | `sub-agents/general`                  | `Researcher` |
+| Researcher: Code Base     | `sub-agents/explore`                  | `Researcher` |
 | Researcher: Documentation | `sub-agents/documentation-researcher` | `Researcher` |
-| Researcher: Repo Explorer | `sub-agents/repo-explorer`            | `Researcher` |
+| Researcher: Repo Explorer | `sub-agents/explore`                  | `Researcher` |
 
 ### Lattice Group
 

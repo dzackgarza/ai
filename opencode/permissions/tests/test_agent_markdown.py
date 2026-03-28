@@ -99,13 +99,13 @@ def test_llm_run_returns_structured_run_response() -> None:
     assert "AI" in payload["response"]["structured"]["reasoning"]
 
 
-def test_ai_prompts_returns_opencode_general_prompt() -> None:
-    prompt = get_prompt("sub-agents/opencode-general")
+def test_ai_prompts_returns_general_prompt() -> None:
+    prompt = get_prompt("sub-agents/general")
 
     assert prompt.frontmatter["description"].startswith("General-purpose agent")
     assert prompt.frontmatter["mode"] == "subagent"
     assert prompt.body == ""
-    assert prompt.slug == "sub-agents/opencode-general"
+    assert prompt.slug == "sub-agents/general"
 
 
 def test_micro_agent_render_supports_frontmatter_aware_include(tmp_path: Path) -> None:

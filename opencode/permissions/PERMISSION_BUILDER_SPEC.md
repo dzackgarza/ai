@@ -39,15 +39,17 @@ inside the `build-agents` recipe.
 Current managed entries are:
 
 - `interactive-agents/autonomous` -> `autonomous.md`
-- `interactive-agents/opencode-build` -> `build.md`
-- `micro-agents/opencode-compaction` -> `compaction.md`
+- `interactive-agents/build` -> `build.md`
+- `interactive-agents/plan` -> `plan.md`
+- `micro-agents/compaction` -> `compaction.md`
 - `sub-agents/correction-finder-ask` -> `correction-finder-ask.md`
-- `sub-agents/repo-explorer` -> `explore.md`
+- `sub-agents/general` -> `general.md`
+- `sub-agents/explore` -> `explore.md`
 - `interactive-agents/interactive` -> `interactive.md`
 - `interactive-agents/minimal` -> `minimal.md`
 - `sub-agents/prover` -> `prover.md`
-- `micro-agents/opencode-summary` -> `summary.md`
-- `micro-agents/opencode-title` -> `title.md`
+- `micro-agents/summary` -> `summary.md`
+- `micro-agents/title` -> `title.md`
 - `interactive-agents/unrestricted-test` -> `unrestricted-test.md`
 
 ## Removed Legacy Path

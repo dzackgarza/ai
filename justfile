@@ -218,13 +218,18 @@ build-agents:
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/autonomous.md"
 
-    echo "Building build.md from interactive-agents/opencode-build"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/opencode-build \
+    echo "Building build.md from interactive-agents/build"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/build \
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/build.md"
 
-    echo "Building compaction.md from micro-agents/opencode-compaction"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/opencode-compaction \
+    echo "Building plan.md from interactive-agents/plan"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/plan \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/plan.md"
+
+    echo "Building compaction.md from micro-agents/compaction"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/compaction \
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/compaction.md"
 
@@ -233,8 +238,13 @@ build-agents:
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/correction-finder-ask.md"
 
-    echo "Building explore.md from sub-agents/repo-explorer"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/repo-explorer \
+    echo "Building general.md from sub-agents/general"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/general \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/general.md"
+
+    echo "Building explore.md from sub-agents/explore"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/explore \
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/explore.md"
 
@@ -253,13 +263,13 @@ build-agents:
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/prover.md"
 
-    echo "Building summary.md from micro-agents/opencode-summary"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/opencode-summary \
+    echo "Building summary.md from micro-agents/summary"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/summary \
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/summary.md"
 
-    echo "Building title.md from micro-agents/opencode-title"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/opencode-title \
+    echo "Building title.md from micro-agents/title"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/title \
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/title.md"
 
@@ -267,6 +277,11 @@ build-agents:
     uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/unrestricted-test \
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/unrestricted-test.md"
+
+    echo "Building sagemath-coder.md from sub-agents/sagemath-coder"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/sagemath-coder \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/sagemath-coder.md"
 
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
