@@ -126,7 +126,7 @@ _deptry: _install-tools
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run semgrep --config={{justfile_directory()}}/semgrep.yml --config=p/ci
+	uv run semgrep --config={{justfile_directory()}}/semgrep.yml --config=p/ci --fix
 
 _jscpd:
 	#!/usr/bin/env bash
