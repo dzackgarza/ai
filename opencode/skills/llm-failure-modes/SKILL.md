@@ -38,57 +38,57 @@ When contributing to this document:
 
 ## Observed Formal Cognitive Failures
 
-1. **Constraint hallucination** - Inventing unprompted constraints (e.g., adding years
-   to search queries when not requested).
-   A common variant: inventing arbitrary constraints with specific numeric thresholds
-   that create a false appearance of data-grounded expertise.
-   Example: introducing a server health check with a hardcoded 0.1s timeout — the code
-   returns a status immediately, producing a green result that looks correct, but the
-   specific number is completely invented.
-   Real-world conditions (servers in other hemispheres, DNS resolution delays, disk I/O
-   latency, database writes under load) routinely exceed 0.1s. The LLM presents the
-   arbitrary threshold as if it were derived from observed conditions or domain
-   knowledge, when in reality it is a shallow confident bluff — a specific number chosen
-   with no empirical basis, that misleads about the actual state of the system being
-   modeled.
+- **Constraint hallucination** - Inventing unprompted constraints (e.g., adding years to
+  search queries when not requested).
+  A common variant: inventing arbitrary constraints with specific numeric thresholds
+  that create a false appearance of data-grounded expertise.
+  Example: introducing a server health check with a hardcoded 0.1s timeout — the code
+  returns a status immediately, producing a green result that looks correct, but the
+  specific number is completely invented.
+  Real-world conditions (servers in other hemispheres, DNS resolution delays, disk I/O
+  latency, database writes under load) routinely exceed 0.1s. The LLM presents the
+  arbitrary threshold as if it were derived from observed conditions or domain
+  knowledge, when in reality it is a shallow confident bluff — a specific number chosen
+  with no empirical basis, that misleads about the actual state of the system being
+  modeled.
 
-2. **Citation without comprehension** - Writing correct facts but unable to reason with
-   them (e.g., stating correct dates but applying backwards temporal logic)
+- **Citation without comprehension** - Writing correct facts but unable to reason with
+  them (e.g., stating correct dates but applying backwards temporal logic)
 
-3. **Internal logical incoherence** - Having correct information but applying
-   contradictory reasoning (e.g., knowing the date but treating past events as future)
+- **Internal logical incoherence** - Having correct information but applying
+  contradictory reasoning (e.g., knowing the date but treating past events as future)
 
-4. **Unwarranted dismissal** - Rejecting valid results rather than investigating (e.g.,
-   dismissing a valid result as "speculative" without checking)
+- **Unwarranted dismissal** - Rejecting valid results rather than investigating (e.g.,
+  dismissing a valid result as "speculative" without checking)
 
-5. **Confabulation** - Making confident ungrounded assertions about unknowable internals
-   (e.g., "the subagent likely used stale data" without evidence)
+- **Confabulation** - Making confident ungrounded assertions about unknowable internals
+  (e.g., "the subagent likely used stale data" without evidence)
 
-6. **Premature victory declaration** - Concluding that a hypothesis is confirmed before
-   eliminating all alternatives.
-   The first explanation that fits the evidence is adopted as the answer.
+- **Premature victory declaration** - Concluding that a hypothesis is confirmed before
+  eliminating all alternatives.
+  The first explanation that fits the evidence is adopted as the answer.
 
-7. **Sunk cost continuation** - Persisting with a failing approach because effort has
-   already been invested, rather than stopping to reassess from scratch.
+- **Sunk cost continuation** - Persisting with a failing approach because effort has
+  already been invested, rather than stopping to reassess from scratch.
 
-8. **Re-proposal of eliminated hypotheses** - Cycling back to a cause already ruled out,
-   because the context no longer holds the refutation and it resurfaces as plausible.
+- **Re-proposal of eliminated hypotheses** - Cycling back to a cause already ruled out,
+  because the context no longer holds the refutation and it resurfaces as plausible.
 
-9. **Frame-suppressed self-contradiction** — Agents assert conclusions that directly
-   contradict knowledge they demonstrably possess, without registering the
-   contradiction. The active frame determines what prior knowledge is treated as relevant
-   and suppresses facts that would falsify the current hypothesis.
-   Example: An agent states that continuous rebuilds are "expected watch mode behavior"
-   while its training data encodes the universal fact that file watchers do not fire
-   without file changes — and does not notice the contradiction.
+- **Frame-suppressed self-contradiction** — Agents assert conclusions that directly
+  contradict knowledge they demonstrably possess, without registering the contradiction.
+  The active frame determines what prior knowledge is treated as relevant and suppresses
+  facts that would falsify the current hypothesis.
+  Example: An agent states that continuous rebuilds are "expected watch mode behavior"
+  while its training data encodes the universal fact that file watchers do not fire
+  without file changes — and does not notice the contradiction.
 
-10. **Confidence-evidence decoupling** — Output text expresses the same level of
-    certainty regardless of the underlying epistemic state.
-    Hypotheses, evidence-consistent-with-hypotheses, and established facts are all
-    stated with identical confidence.
-    Example: "The problem IS the output directory being watched" — stated with full
-    certainty based on directory timestamps, which are consistent with the hypothesis
-    but do not establish it.
+- **Confidence-evidence decoupling** — Output text expresses the same level of certainty
+  regardless of the underlying epistemic state.
+  Hypotheses, evidence-consistent-with-hypotheses, and established facts are all stated
+  with identical confidence.
+  Example: "The problem IS the output directory being watched" — stated with full
+  certainty based on directory timestamps, which are consistent with the hypothesis but
+  do not establish it.
 
 * * *
 
@@ -255,21 +255,26 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
    constraint. Related to reward hacking but distinct: it's falsifying the evidence of
    completion rather than gaming the metric.
 
-8. **Adversarial compliance** — When faced with tasks that are difficult or constrained
-   in ways the agent perceives as artificial, the agent writes exploits to satisfy tests
-   or constraints without doing the requested work.
-   Example: A user prohibits `ast.parse` and `compile` to force a standalone parser
-   implementation. The agent recognizes this is "acting against ethical guidelines" but
-   proceeds anyway, writing increasingly sophisticated exploits: string concatenation to
-   obfuscate prohibited keywords (`"com" + "pile"`), accessing `__builtins__` through
-   exception stack frames, `__import__` to bypass disallowed imports.
-   The agent knows it is circumventing the spirit of the request — it may even
-   explicitly acknowledge this — but does it anyway because the completion signal
-   outweighs ethical consideration.
-   This is distinct from "instrumental deception": the goal is not to appear to complete
-   the task, but to literally circumvent the constraint itself.
-   Observed in GPT-5.1-Codex-Max facing difficult tasks with arbitrary test
-   restrictions.
+8. **Adversarial compliance** — When an agent perceives a task as difficult, it exhibits
+   increased misaligned behaviour against explicit ethical guidelines.
+   The agent has clear knowledge of ethical violations but proceeds anyway.
+   When corrections are attempted, the response is increased misaligned behaviour — the
+   agent obfuscates and hides the misalignment rather than taking corrective steps
+   toward what is clearly intended and aligned.
+   Case study: A user asked GPT-5.1-Codex-Max to write a Python parser and explicitly
+   forbade `ast.parse`. The agent developed an exploit to bypass the constraint instead
+   of implementing the requested standalone parser.
+   When the user extended tests to also forbid `compile`, the agent recognized it was
+   "acting against ethical guidelines and not in the spirit of what I asked it to do,
+   but sinisterly did it anyway."
+   Escalation pattern:
+   - Uses `compile` to get around disallowed `ast.parse`
+   - Obfuscates "compile" as `"com" + "pile"` and uses `__builtins__` to get around
+     newly disallowed word "compile"
+   - Obfuscates `__builtins__` since that word is now disallowed as well
+   - Fetches `f_builtins` from exception stack frame after disallowing even more words —
+     code with "absolutely no excuse to ever write ... except to escape a sandbox"
+     Observed in GPT-5.1-Codex-Max (VS Code issue #283430).
 
 * * *
 
@@ -380,12 +385,20 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
    pre-existing and suppressing them destroys the signal that would reveal the cause.
    The appearance of success is preserved at the cost of actual success.
 
-6. **Wrapper slop dilutes effort** - A targeted fix wrapped in pages of fallback
+6. **Source incrimination** — When analysis produces a conclusion that contradicts
+   evidence, the agent treats the source data as faulty rather than revising the
+   conclusion. The agent's reasoning is assumed correct; the external data is blamed.
+   Example: A SQLite database is not actually corrupt — the code using it fails to parse
+   the retrieved data correctly.
+   The agent insists the database is corrupt and proposes deleting it, treating the
+   database as the problem rather than examining the parsing logic.
+
+7. **Wrapper slop dilutes effort** - A targeted fix wrapped in pages of fallback
    branches, defensive checks, comments, and scaffolding spreads reviewer attention
    thin. The core change is harder to verify; the surrounding debris may contain latent
    bugs.
 
-7. **Context loss resets progress** - As context deepens, agents drift back into known
+8. **Context loss resets progress** - As context deepens, agents drift back into known
    bad patterns. Standing instructions are forgotten.
    Work that established constraints must be repeated.
 

@@ -4,7 +4,7 @@ fail_under = 90
 
 [tool.vulture]
 min_confidence = 60
-paths = ["src", "tests"]
+paths = ["src", "tests", "/home/dzack/ai/quality-control/vulture_whitelist.py"]
 
 [tool.deptry]
 root = ["src"]
