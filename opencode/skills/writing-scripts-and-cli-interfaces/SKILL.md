@@ -356,6 +356,32 @@ Apply these rules to force quality:
 - **Ad-hoc config parsing** — use Pydantic Settings
 - **Multiple config formats** — YAML only
 
+## Global Quality Control
+
+**Leverage shared global QC infrastructure, never re-implement locally.**
+
+All Python CLIs should reference the global quality control system at
+`~/ai/quality-control`:
+
+- **Global justfile** — delegate to `just -f ~/ai/quality-control/justfile <recipe>` for
+  all lint, typecheck, format, test, and CI workflows.
+  Never re-implement these locally.
+- **Global configs** — use `ruff-global.toml`, `mypy-global.ini`, `pytest-local.ini`,
+  `pyproject.toml` patterns from the global QC directory.
+  Never create local overrides that suppress rules.
+- **No local whitelists** — QC suppression (eslint-disable, ruff ignore, type: ignore,
+  etc.) is the QC agent's job.
+  If you need to suppress a warning, escalate to the user for QC agent review/approval
+  instead of adding local ignores.
+- **No local ignores** — never add new `# type: ignore`, `noinspection`, or equivalent.
+  The global QC agent manages rule changes.
+- **No conflicting recipes** — local justfiles must not reimplement or overwrite global
+  QC recipes. A local recipe should only wrap/extend, never replace.
+
+**The rule:** If the global QC infrastructure can do it, delegate to it.
+If you find yourself NEEDING to bypass global QC, stop and escalate to the user instead
+of building a local escape hatch.
+
 ## Key Principle
 
 **Use the CLI library for presentation.

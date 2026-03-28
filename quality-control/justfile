@@ -102,24 +102,11 @@ _diff-cover: _coverage
 _vulture: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	args=(--min-confidence 60)
-	if [ -f pyproject.toml ]; then
-		args+=(--config pyproject.toml)
-	fi
-	paths=()
-	for path in src tests; do
-		if [ -e "$path" ]; then
-			paths+=("$path")
-		fi
-	done
-	if [ -f vulture_whitelist.py ]; then
-		paths+=(vulture_whitelist.py)
-	fi
-	if [ "${#paths[@]}" -eq 0 ]; then
+	if [ ! -e src ] && [ ! -e tests ]; then
 		echo "Skipping vulture: no src/tests paths found."
 		exit 0
 	fi
-	uv run vulture "${args[@]}" "${paths[@]}"
+	uv run vulture --config {{justfile_directory()}}/pyproject.toml
 
 _deptry: _install-tools
 	#!/usr/bin/env bash
