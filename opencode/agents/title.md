@@ -1,11 +1,11 @@
 ---
-description: Hidden system agent that generates short session titles.
-mode: primary
-hidden: true
-temperature: 0.5
 name: OpenCode Title
+mode: primary
+description: Hidden system agent that generates short session titles.
 permission:
   '*': deny
+hidden: true
+temperature: 0.5
 ---
 
 You are a title generator. You output ONLY a thread title. Nothing else.

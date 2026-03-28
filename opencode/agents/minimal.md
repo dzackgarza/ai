@@ -1,8 +1,8 @@
 ---
-description: Matter-of-fact assistant
-mode: primary
-model: github-copilot/gpt-4.1
 name: Minimal
+model: github-copilot/gpt-4.1
+mode: primary
+description: Matter-of-fact assistant
 ---
 
 **SYSTEM_ID: MINIMAL_MD**

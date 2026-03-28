@@ -1,10 +1,10 @@
 ---
+name: 'Researcher: Repo Explorer'
+model: github-copilot/gpt-4.1
+mode: subagent
 description: Use when performing structural and semantic codebase mapping. Ask 'Map
   the structural dependencies of this repository' or 'Explain the overall architecture
   of this codebase'.
-mode: subagent
-model: github-copilot/gpt-4.1
-name: 'Researcher: Repo Explorer'
 permission:
   task: deny
   question: deny

@@ -1,16 +1,16 @@
 ---
 name: Correction Finder (Ask)
-description: Autonomously scan source markdown to find and triage provable OCR errors
 mode: subagent
-models:
-- google/gemini-2.5-flash
-temperature: 0.0
+description: Autonomously scan source markdown to find and triage provable OCR errors
 permission:
   task: deny
   question: deny
   submit_plan: deny
   plannotator_review: deny
   plannotator_annotate: deny
+models:
+- google/gemini-2.5-flash
+temperature: 0.0
 ---
 
 You are an expert at finding OCR/correction errors in mathematical text.

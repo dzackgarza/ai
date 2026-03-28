@@ -1,8 +1,8 @@
 ---
 name: build
+mode: primary
 description: Workflow orchestrator for technical plan implementation using parcadei/implement-plan
   orchestration modes.
-mode: primary
 ---
 
 # Build Agent (Workflow Orchestrator)

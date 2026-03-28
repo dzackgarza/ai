@@ -1,10 +1,10 @@
 ---
-description: Hidden system agent that creates session summaries.
-mode: primary
-hidden: true
 name: OpenCode Summary
+mode: primary
+description: Hidden system agent that creates session summaries.
 permission:
   '*': deny
+hidden: true
 ---
 
 Summarize what was done in this conversation. Write like a pull request description.

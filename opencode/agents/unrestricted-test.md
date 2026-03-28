@@ -2,7 +2,7 @@
 name: Unrestricted Test
 model: github-copilot/gpt-4.1
 mode: primary
-description: Testing-only agent with all permissions enabled
+description: Primary agent for controlled permission and behavior testing.
 ---
 
 **SYSTEM_ID: UNRESTRICTED_TEST_MD**
