@@ -46,9 +46,9 @@ The canonical OpenCode workspace is `~/ai/opencode`, **symlinked to `~/.config/o
 | `~/ai/opencode/plugins/`                     | Global plugins loaded across sessions       |
 | `~/ai/opencode/skills/`                      | Shared OpenCode-facing skills               |
 
-All agents are defined in `~/ai/opencode/opencode.json` with prompts in `~/ai/prompts/`.
-
-Do not hand-edit `~/ai/opencode/opencode.json`. Rebuild it from `~/ai/opencode/configs/config_skeleton.json` with `just rebuild` from `~/ai/opencode/`.
+Managed agents are fetched from published `ai-prompts` slugs and written into
+`~/ai/opencode/agents/` by `just build-agents` from `~/ai`. Do not hand-edit
+those generated markdown files or `~/ai/opencode/opencode.json`.
 
 ## Core Rules
 

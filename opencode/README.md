@@ -12,7 +12,7 @@ the owning subtrees instead of adding new root clutter.
 
 ### Source Of Truth
 
-- Permissions and markdown-agent generation: `permissions/main.py`
+- Managed markdown-agent generation: `../justfile` `build-agents`
 - Config assembly: `scripts/build_config.py`
 - Canonical prompt templating: `llm-templating-engine` (installed in `.venv` via `pyproject.toml`)
 - Canonical template-driven LLM execution: `llm-run` (installed in `.venv` via `pyproject.toml` and exposed locally through `just run-microagent`)
@@ -34,9 +34,8 @@ the owning subtrees instead of adding new root clutter.
 ### Canonical Pathways
 
 - `just build-agents`
-- `just permissions-apply`
-- `just config-build`
-- `just rebuild`
+- `just build-config`
+- `just build`
 - `just providers-validate`
 - `just check-plugins`
 - `just opencode-harness run --help`
@@ -57,15 +56,16 @@ the owning subtrees instead of adding new root clutter.
 - `ai-prompts` is the canonical prompt source. Callers in this repo resolve prompt slugs through the dependency instead of reading workspace-local prompt files.
 - Prompt templates are markdown files with YAML frontmatter. The templating engine preserves frontmatter; runner-reserved execution fields such as `kind`, `models`, `system_template`, `temperature`, `max_tokens`, `retries`, `output_schema`, and `response_template` belong to `llm-runner`.
 - Jinja `{% include %}` and `{% import %}` are supported through the canonical `llm-templating-engine` environment. Included prompt templates contribute only their markdown body. Child frontmatter is ignored by design.
-- If a new use case needs different prompt composition or LLM execution semantics, extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second path. Verify there are no regressions for both template-defined runs (`llm-run` or `just run-microagent`) and markdown-agent generation (`permissions/main.py`).
+- If a new use case needs different prompt composition or LLM execution semantics, extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second path. Verify there are no regressions for both template-defined runs (`llm-run` or `just run-microagent`) and managed agent generation (`just build-agents`).
 
 ### Build Behavior
 
 - `just build-agents` is the canonical full build for managed agents. It:
-  1. Regenerates `agents/*.md` from `ai-prompts` prompt slugs
-  2. Rebuilds `opencode.json` through `scripts/build_config.py`
-  3. Validates the generated config against its schema
-  4. Verifies the expected generated agent names appear in `opencode agent list`
+  1. Fetches published `ai-prompts` prompt slugs via `uvx`
+  2. Pipes each markdown prompt through `opencode-permission-policy-compiler`
+  3. Writes the resulting OpenCode agent markdown into `agents/*.md`
+- `just build-config` rebuilds `opencode.json` through `scripts/build_config.py`
+- `just build` runs the full repo-level flow (`check-plugins`, `build-agents`, `build-config`, `build-agents-md`)
 - The builder also counts tokens for fully rendered prompts and warns when any generated agent exceeds the configured threshold (`OPENCODE_AGENT_TOKEN_WARNING_THRESHOLD`, default `5000`).
 
 ---
