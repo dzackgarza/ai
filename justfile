@@ -213,24 +213,60 @@ build-agents:
 
     mkdir -p "$output_dir"
 
-    while read -r slug output_name; do
-        echo "Building $output_name from $slug"
-        uvx --refresh --from {{ ai_prompts_source }} ai-prompts get "$slug" \
-          | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-          > "$output_dir/$output_name"
-    done <<'EOF'
-interactive-agents/autonomous autonomous.md
-interactive-agents/opencode-build build.md
-micro-agents/opencode-compaction compaction.md
-sub-agents/correction-finder-ask correction-finder-ask.md
-sub-agents/repo-explorer explore.md
-interactive-agents/interactive interactive.md
-interactive-agents/minimal minimal.md
-sub-agents/prover prover.md
-micro-agents/opencode-summary summary.md
-micro-agents/opencode-title title.md
-interactive-agents/unrestricted-test unrestricted-test.md
-EOF
+    echo "Building autonomous.md from interactive-agents/autonomous"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/autonomous \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/autonomous.md"
+
+    echo "Building build.md from interactive-agents/opencode-build"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/opencode-build \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/build.md"
+
+    echo "Building compaction.md from micro-agents/opencode-compaction"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/opencode-compaction \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/compaction.md"
+
+    echo "Building correction-finder-ask.md from sub-agents/correction-finder-ask"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/correction-finder-ask \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/correction-finder-ask.md"
+
+    echo "Building explore.md from sub-agents/repo-explorer"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/repo-explorer \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/explore.md"
+
+    echo "Building interactive.md from interactive-agents/interactive"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/interactive \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/interactive.md"
+
+    echo "Building minimal.md from interactive-agents/minimal"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/minimal \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/minimal.md"
+
+    echo "Building prover.md from sub-agents/prover"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/prover \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/prover.md"
+
+    echo "Building summary.md from micro-agents/opencode-summary"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/opencode-summary \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/summary.md"
+
+    echo "Building title.md from micro-agents/opencode-title"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/opencode-title \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/title.md"
+
+    echo "Building unrestricted-test.md from interactive-agents/unrestricted-test"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/unrestricted-test \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/unrestricted-test.md"
 
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
