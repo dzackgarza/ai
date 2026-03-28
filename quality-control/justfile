@@ -86,7 +86,17 @@ _venv:
 _install-tools: _venv
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv pip install coverage diff-cover vulture deptry semgrep lizard import-linter
+	uv pip install coverage diff-cover vulture deptry semgrep lizard import-linter ruff
+
+_normalize: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	if [ ! -f pyproject.toml ]; then
+		echo "Skipping ruff normalization: no pyproject.toml found."
+		exit 0
+	fi
+	uv run ruff check --fix .
+	uv run ruff format .
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
@@ -149,6 +159,11 @@ _import-linter: _install-tools
 	fi
 	uv run lint-imports --config "$config"
 
+_grain:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	uvx --from git+https://github.com/mmartoccia/grain grain check --all
+
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -170,7 +185,7 @@ _slop:
 		--ci-report
 
 # public: all static checks run locally
-test: _no-bypass _coverage _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop
+test: _normalize _no-bypass _coverage _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop _grain
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
