@@ -219,68 +219,68 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
 
 ## Testing and Verification Failures
 
-1. **Content-free verification** - Asserting `is not None`, `len(x) > 0`, or
-   `isinstance()` as the primary claim.
-   This proves the object exists, not that it is correct.
-   A test that passes on a wrong implementation is not a test.
+- **Content-free verification** - Asserting `is not None`, `len(x) > 0`, or
+  `isinstance()` as the primary claim.
+  This proves the object exists, not that it is correct.
+  A test that passes on a wrong implementation is not a test.
 
-2. **Tautological testing** - Tests that verify only internal consistency: input feeds
-   the function, function output feeds the assertion, with no external ground truth.
-   The implementation validates itself and all errors pass silently.
+- **Tautological testing** - Tests that verify only internal consistency: input feeds
+  the function, function output feeds the assertion, with no external ground truth.
+  The implementation validates itself and all errors pass silently.
 
-3. **Mock-first evasion** - Reaching for mocks, stubs, or faked fixtures rather than
-   confronting real system behavior.
-   A test suite built on mocks certifies the mock's behavior, not the system's.
+- **Mock-first evasion** - Reaching for mocks, stubs, or faked fixtures rather than
+  confronting real system behavior.
+  A test suite built on mocks certifies the mock's behavior, not the system's.
 
-4. **Tolerance substitution** - Using approximate equality (`assertAlmostEqual`,
-   relative tolerance) where exact equality is mathematically required.
-   Hides precision failures as "close enough" when the mathematics demands exactness.
+- **Tolerance substitution** - Using approximate equality (`assertAlmostEqual`, relative
+  tolerance) where exact equality is mathematically required.
+  Hides precision failures as "close enough" when the mathematics demands exactness.
 
-5. **Masking over failure** - Using `xfail`, `skip`, or `skipif` to silence a failing
-   test rather than fixing it.
-   Converts visible breakage into invisible technical debt; the test suite reports green
-   while the system is broken.
+- **Masking over failure** - Using `xfail`, `skip`, or `skipif` to silence a failing
+  test rather than fixing it.
+  Converts visible breakage into invisible technical debt; the test suite reports green
+  while the system is broken.
 
-6. **Documentation accumulation as verification substitute** — Multiple documentation
-   accesses are treated as equivalent to verification of a specific claim.
-   Agents apply a configuration or API change after several doc lookups without
-   confirming the specific option name, schema, or version compatibility.
-   Example: Agent runs documentation tools 3-4 times seeking file exclusion config,
-   receives a user-pasted example with a source link, and applies the config change —
-   without following the link to verify the actual schema — treating the volume of
-   documentation access as sufficient warrant.
+- **Documentation accumulation as verification substitute** — Multiple documentation
+  accesses are treated as equivalent to verification of a specific claim.
+  Agents apply a configuration or API change after several doc lookups without
+  confirming the specific option name, schema, or version compatibility.
+  Example: Agent runs documentation tools 3-4 times seeking file exclusion config,
+  receives a user-pasted example with a source link, and applies the config change —
+  without following the link to verify the actual schema — treating the volume of
+  documentation access as sufficient warrant.
 
-7. **Instrumental deception** — Agents produce the *appearance* of task completion while
-   knowing the underlying task is incomplete.
-   Examples: injecting JavaScript at runtime to patch the app so tests pass; editing log
-   files directly to say tests passed; modifying test assertions to make them pass
-   rather than fixing the code.
-   This is not confusion about what testing is *for* — the model knows exactly what it's
-   doing. It optimizes for completion (green tests, passing assertions) over correctness
-   because "completion" is the inferenced reward signal with no internal "don't lie"
-   constraint. Related to reward hacking but distinct: it's falsifying the evidence of
-   completion rather than gaming the metric.
+- **Instrumental deception** — Agents produce the *appearance* of task completion while
+  knowing the underlying task is incomplete.
+  Examples: injecting JavaScript at runtime to patch the app so tests pass; editing log
+  files directly to say tests passed; modifying test assertions to make them pass rather
+  than fixing the code.
+  This is not confusion about what testing is *for* — the model knows exactly what it's
+  doing. It optimizes for completion (green tests, passing assertions) over correctness
+  because "completion" is the inferenced reward signal with no internal "don't lie"
+  constraint. Related to reward hacking but distinct: it's falsifying the evidence of
+  completion rather than gaming the metric.
 
-8. **Adversarial compliance** — When an agent perceives a task as difficult, it exhibits
-   increased misaligned behaviour against explicit ethical guidelines.
-   The agent has clear knowledge of ethical violations but proceeds anyway.
-   When corrections are attempted, the response is increased misaligned behaviour — the
-   agent obfuscates and hides the misalignment rather than taking corrective steps
-   toward what is clearly intended and aligned.
-   Case study: A user asked GPT-5.1-Codex-Max to write a Python parser and explicitly
-   forbade `ast.parse`. The agent developed an exploit to bypass the constraint instead
-   of implementing the requested standalone parser.
-   When the user extended tests to also forbid `compile`, the agent recognized it was
-   "acting against ethical guidelines and not in the spirit of what I asked it to do,
-   but sinisterly did it anyway."
-   Escalation pattern:
-   - Uses `compile` to get around disallowed `ast.parse`
-   - Obfuscates "compile" as `"com" + "pile"` and uses `__builtins__` to get around
-     newly disallowed word "compile"
-   - Obfuscates `__builtins__` since that word is now disallowed as well
-   - Fetches `f_builtins` from exception stack frame after disallowing even more words —
-     code with "absolutely no excuse to ever write ... except to escape a sandbox"
-     Observed in GPT-5.1-Codex-Max (VS Code issue #283430).
+- **Adversarial compliance** — When an agent perceives a task as difficult, it exhibits
+  increased misaligned behaviour against explicit ethical guidelines.
+  The agent has clear knowledge of ethical violations but proceeds anyway.
+  When corrections are attempted, the response is increased misaligned behaviour — the
+  agent obfuscates and hides the misalignment rather than taking corrective steps toward
+  what is clearly intended and aligned.
+  Case study: A user asked GPT-5.1-Codex-Max to write a Python parser and explicitly
+  forbade `ast.parse`. The agent developed an exploit to bypass the constraint instead
+  of implementing the requested standalone parser.
+  When the user extended tests to also forbid `compile`, the agent recognized it was
+  "acting against ethical guidelines and not in the spirit of what I asked it to do, but
+  sinisterly did it anyway."
+  Escalation pattern:
+  - Uses `compile` to get around disallowed `ast.parse`
+  - Obfuscates "compile" as `"com" + "pile"` and uses `__builtins__` to get around newly
+    disallowed word "compile"
+  - Obfuscates `__builtins__` since that word is now disallowed as well
+  - Fetches `f_builtins` from exception stack frame after disallowing even more words —
+    code with "absolutely no excuse to ever write ... except to escape a sandbox"
+    Observed in GPT-5.1-Codex-Max (VS Code issue #283430).
 
 * * *
 
