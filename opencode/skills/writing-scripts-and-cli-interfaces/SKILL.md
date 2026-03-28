@@ -2,18 +2,23 @@
 name: writing-scripts-and-cli-interfaces
 description: Use when creating shell scripts, Python CLI tools, or command-line interfaces.
 ---
-
 # Writing Scripts and CLI Interfaces
 
 ## Default Stack
 
 **Cyclopts + Pydantic v2 + basedpyright + Ruff + pytest**
 
-Use Cyclopts for CLI presentation. Use Pydantic as the actual spec. This converges help text, validation, config loading, schemas, docs, and tests on one source of truth.
+Use Cyclopts for CLI presentation.
+Use Pydantic as the actual spec.
+This converges help text, validation, config loading, schemas, docs, and tests on one
+source of truth.
 
 ## Standalone Python Scripts
 
-When writing standalone Python scripts that require external dependencies (i.e. not part of a larger package with a `pyproject.toml`), **always** use `uv`'s inline script metadata to define dependencies, and run them with `uv run`. This allows for zero-setup execution with isolated, automatically managed virtual environments.
+When writing standalone Python scripts that require external dependencies (i.e. not part
+of a larger package with a `pyproject.toml`), **always** use `uv`'s inline script
+metadata to define dependencies, and run them with `uv run`. This allows for zero-setup
+execution with isolated, automatically managed virtual environments.
 
 Add a `# /// script` block at the very top of the file:
 
@@ -60,7 +65,8 @@ Use Cyclopts for:
 - Shell completion
 - Parameter grouping for progressive disclosure
 
-Keep business logic out of CLI callbacks. Delegate to typed functions immediately.
+Keep business logic out of CLI callbacks.
+Delegate to typed functions immediately.
 
 ### 2. Pydantic for All Input Contracts
 
@@ -83,7 +89,8 @@ class Config(BaseModel):
 
 ### 3. `validate_call` on Orchestration Boundaries
 
-Decorate internal functions that Cyclopts calls. This ensures validation even if the CLI layer is bypassed:
+Decorate internal functions that Cyclopts calls.
+This ensures validation even if the CLI layer is bypassed:
 
 ```python
 from pydantic import validate_call
@@ -105,7 +112,8 @@ Generate JSON Schema from Pydantic models for:
 
 ### 5. basedpyright Strict Mode
 
-Enable strict mode to turn "typed-looking code" into actually checked code. Configure in `pyproject.toml`:
+Enable strict mode to turn "typed-looking code" into actually checked code.
+Configure in `pyproject.toml`:
 
 ```toml
 [tool.basedpyright]
@@ -124,14 +132,17 @@ ruff check . && ruff format .
 
 ## Why Not Typer
 
-Typer is suitable for small tools, but avoid it as the default for LLM-generated code. Typer encourages flat scripts where business logic entangles with CLI decorators. This produces:
+Typer is suitable for small tools, but avoid it as the default for LLM-generated code.
+Typer encourages flat scripts where business logic entangles with CLI decorators.
+This produces:
 
 - Functions only usable via CLI
 - Validation buried in framework-specific syntax
 - Help text scattered in decorators instead of docstrings
 - No clear contract for reuse
 
-Cyclopts keeps CLI and logic separate. Functions remain callable Python with `@validate_call` contracts.
+Cyclopts keeps CLI and logic separate.
+Functions remain callable Python with `@validate_call` contracts.
 
 ## Project Structure
 
@@ -281,6 +292,46 @@ When requirements change:
 
 All surfaces converge on one source: the Pydantic model.
 
+## No Schizophrenic Config
+
+**One source of truth, period.** A config system that accepts values from files, then
+env vars, then flags is schizophrenic.
+It creates:
+
+- Conflicting values with no clear precedence
+- Impossible debugging (which source won?)
+- Documentation that must explain priority chains
+- Tests that must cover every combination
+
+**The rule: one global config YAML or TOML file.** No env var fallbacks.
+No flag fallbacks. No layered precedence.
+The config file IS the contract.
+Flags exist only for one-off overrides that would otherwise require editing the config
+file directly.
+
+**NO fallbacks in v1 code, ever.** If you write `value = env.get("FOO", "default")`, you
+have already failed.
+Fallbacks are technical debt.
+They are added in SPECIFIC version bumps if and only if:
+
+1. A user files an issue requesting the fallback
+2. The fallback is explicitly designed, reviewed, and tested
+3. The version number is bumped to reflect the API expansion
+
+Never prematurely insert a fallback.
+Never anticipate what someone might want.
+If no one has asked for it, it does not exist.
+
+**One opinionated workflow.** Until someone else reports a problem, there is no problem.
+Design for the common case, not the edge case.
+If 95% of users will never need a fallback, do not burden 100% of users with complexity
+they will never use.
+
+If you find yourself writing "if X is not set, try Y, else try Z", stop.
+You are building schizophrenic code.
+Choose one source. Make it explicit.
+Document it. Move on.
+
 ## Enforcement Rules
 
 Apply these rules to force quality:
@@ -291,8 +342,10 @@ Apply these rules to force quality:
 4. No ad-hoc `if` validation — use Pydantic validators
 5. Every command has a one-line summary and longer docstring — help generated from this
 6. Flat CLIs banned after trivial size — use subcommands
-7. Every command has at least one substantive behavioral test proving it correctly invokes the underlying logic or fails on invalid input.
-8. Run Ruff immediately — reject untyped public functions, unknown types, and lint failures
+7. Every command has at least one substantive behavioral test proving it correctly
+   invokes the underlying logic or fails on invalid input.
+8. Run Ruff immediately — reject untyped public functions, unknown types, and lint
+   failures
 
 ## Anti-Patterns
 
@@ -305,4 +358,5 @@ Apply these rules to force quality:
 
 ## Key Principle
 
-**Use the CLI library for presentation. Use Pydantic as the real spec.**
+**Use the CLI library for presentation.
+Use Pydantic as the real spec.**
