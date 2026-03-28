@@ -5,6 +5,7 @@ model_config
 
 # Cyclopts registers default commands through decorators and dispatches them indirectly.
 compile_agent
+list_policies
 set_global_policy
 install_config
 doctor
