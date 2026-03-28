@@ -162,7 +162,9 @@ _import-linter: _install-tools
 _grain:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	cp {{justfile_directory()}}/grain.toml .grain.toml
 	uvx --from git+https://github.com/mmartoccia/grain grain check --all --fix
+	rm .grain.toml
 
 _codeql:
 	#!/usr/bin/env bash
