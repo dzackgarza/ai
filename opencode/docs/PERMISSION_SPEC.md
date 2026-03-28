@@ -452,11 +452,11 @@ Policy for changes:
 5. Add an `interactive_general` profile for non-cycle interactive work.
 6. Keep role-specific exceptions minimal, explicit, and justified.
 7. Add agent-specific permission differences only when role-specific behavior cannot be represented by shared composition.
-8. Apply profile updates using script workflow:
+8. Apply profile updates using the repo-level build workflow:
 
 ```bash
-uv run --python .venv/bin/python permissions/main.py --apply
-uv run --python .venv/bin/python scripts/build_config.py
+just build-agents
+just build-config
 ```
 
 Do not rely on direct edits to generated permission blocks in `agents/*.md` or compiled `opencode.json`.

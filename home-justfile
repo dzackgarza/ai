@@ -58,17 +58,17 @@ usage-limits-json *ARGS="":
 # =============================================================================
 
 _opencode-rebuild:
-    @just --justfile {{ repo }}/justfile rebuild
+    @just --justfile {{ repo }}/justfile build
 
 opencode-rebuild: _opencode-rebuild opencode-clear-cache opencode-restart
 
-_opencode-build-permissions:
-    @just --justfile {{ repo }}/justfile permissions-apply
+_opencode-build-agents:
+    @just --justfile {{ repo }}/justfile build-agents
 
-opencode-build-permissions: _opencode-build-permissions opencode-clear-cache
+opencode-build-agents: _opencode-build-agents opencode-clear-cache
 
 _opencode-build-config:
-    @just --justfile {{ repo }}/justfile config-build
+    @just --justfile {{ repo }}/justfile build-config
 
 opencode-build-config: _opencode-build-config opencode-clear-cache
 

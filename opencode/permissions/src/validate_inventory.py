@@ -154,7 +154,7 @@ class UndeclaredToolError(ValueError):
             "Example:",
             '    "my_new_tool": "allow",',
             "",
-            "Then run 'just rebuild' again.",
+            "Then rerun 'uv run --python .venv/bin/python permissions/main.py validate-tools'.",
         ])
         super().__init__("\n".join(lines))
 

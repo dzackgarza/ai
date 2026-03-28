@@ -46,6 +46,9 @@ agents_home := home / ".agents"
 kilocode_home := home / ".kilocode"
 opencode_root := home / ".opencode"
 cc_safety_net_home := home / ".cc-safety-net"
+managed_agents_dir := env_var_or_default("AGENTS_DIR", opencode_dir / "agents")
+ai_prompts_source := "git+https://github.com/dzackgarza/ai-prompts.git"
+policy_compiler_dir := repo / "../opencode-plugins/opencode-permission-policy-compiler"
 
 # Show available recipes
 
@@ -191,18 +194,43 @@ run-microagent *args:
 # Build all OpenCode components (agents, config, and documentation)
 build: check-plugins build-agents build-config build-agents-md
 
-# Surgical build for permissions only (uses compiled-agents workflow)
-build-permissions:
-    @just -f {{ repo }}/../opencode-plugins/clis/ai-prompts/justfile compile-agents
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py build
-
-# Surgical build for config only (depends on permissions for skeleton update)
-build-config: build-permissions
+# Surgical build for config only
+build-config:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 
-# Build agent permission files (depends on config being built)
-build-agents: build-permissions
-    @echo "Agents built via build-permissions"
+# Build managed OpenCode agents from published ai-prompts slugs
+build-agents:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    output_dir="{{ managed_agents_dir }}"
+    compiler_dir="{{ policy_compiler_dir }}"
+
+    if [[ ! -d "$compiler_dir" ]]; then
+        echo "Missing compiler repo: $compiler_dir" >&2
+        exit 1
+    fi
+
+    mkdir -p "$output_dir"
+
+    while read -r slug output_name; do
+        echo "Building $output_name from $slug"
+        uvx --refresh --from {{ ai_prompts_source }} ai-prompts get "$slug" \
+          | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+          > "$output_dir/$output_name"
+    done <<'EOF'
+interactive-agents/autonomous autonomous.md
+interactive-agents/opencode-build build.md
+micro-agents/opencode-compaction compaction.md
+sub-agents/correction-finder-ask correction-finder-ask.md
+sub-agents/repo-explorer explore.md
+interactive-agents/interactive interactive.md
+interactive-agents/minimal minimal.md
+sub-agents/prover prover.md
+micro-agents/opencode-summary summary.md
+micro-agents/opencode-title title.md
+interactive-agents/unrestricted-test unrestricted-test.md
+EOF
 
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts

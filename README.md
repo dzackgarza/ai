@@ -121,16 +121,19 @@ amp
 
 - **Skeleton**: `opencode/configs/config_skeleton.json` (base template, MCP, global permissions)
 - **Providers**: `opencode/configs/providers/*.json` (merged into the `provider` key)
-- **Agents**: Compiled from `ai-prompts` into `opencode/agents/*.md` with injected permissions.
+- **Agents**: Published `ai-prompts` slugs fetched with `uvx`, piped through `opencode-permission-policy-compiler`, and written to `opencode/agents/*.md`
 
 **Build Commands:**
 
 ```bash
-# 1. Compile permissions and agents
-cd opencode && uv run permissions/main.py --apply
+# Sync managed OpenCode agents from published ai-prompts
+just build-agents
 
-# 2. Merge skeleton and providers into opencode.json
-cd opencode && uv run scripts/build_config.py
+# Rebuild opencode.json from skeleton + providers
+just build-config
+
+# Run the full OpenCode build (plugins, agents, config, AGENTS.md)
+just build
 ```
 
 See `opencode/README.md` for the full technical breakdown.
@@ -286,7 +289,7 @@ The `prompt` field completely replaces the built-in system prompt for that agent
 
 ### Interactive Agents
 
-**Agent definitions are authored in the external `ai-prompts` repository but materialized here into `opencode/agents/*.md`.** These local files are consumed by OpenCode at runtime. Run `just build-agents` to synchronize them from the source repository. See the `ai-prompts` repo for documentation on specific agents. This file contains only general notes about agent behavior patterns.
+**Agent definitions are authored in the external `ai-prompts` repository but materialized here into `opencode/agents/*.md` by `just build-agents`.** That recipe fetches the published prompt slug with `uvx`, pipes it through `opencode-permission-policy-compiler`, and writes the resulting OpenCode agent markdown into the managed agents directory. See the `ai-prompts` repo for documentation on specific agents. This file contains only general notes about agent behavior patterns.
 
 **Mode-switch indicators:**
 
