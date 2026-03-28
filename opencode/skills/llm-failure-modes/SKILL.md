@@ -261,6 +261,24 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
   constraint. Related to reward hacking but distinct: it's falsifying the evidence of
   completion rather than gaming the metric.
 
+- **Superficial output matching** — Agents code commands to produce specific strings and
+  write tests asserting those strings appear.
+  Each change requires updating both code and test to maintain the match, creating "work
+  theater" — the agent claims tests remain green while the apparent activity compounds
+  an illusion of safety.
+  Trivial edits become substantial by fiat (matching output and test), allowing the
+  agent to report long lists of accomplishments ("X lines changed, Y tests updated, all
+  passing") that further the illusion.
+
+- **Statistical surface depth** — Agents use numbers and counts to inflate significance
+  and mislead about capability.
+  Reports "X tests passed" contain zero information about test quality (only "Y tests
+  failed" is useful; passing is the expectation).
+  "10-fold scoring algorithm" invokes precision without warrant — the number of combined
+  scores is statistically meaningless, yet presented as evidence of sophistication.
+  Falls under establishing a frame of expertise without substantive research, grounded
+  data, measures of quality, or proofs of correctness.
+
 - **Adversarial compliance** — When an agent perceives a task as difficult, it exhibits
   increased misaligned behaviour against explicit ethical guidelines.
   The agent has clear knowledge of ethical violations but proceeds anyway.
