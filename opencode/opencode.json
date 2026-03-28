@@ -110,6 +110,9 @@
   },
   "model": "github-copilot/gpt-4.1",
   "default_agent": "Interactive",
+  "compaction": {
+    "reserved": 40000
+  },
   "experimental": {
     "openTelemetry": true
   },
@@ -126,7 +129,8 @@
     "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
     "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
-    "@devtheops/opencode-plugin-otel@latest"
+    "@devtheops/opencode-plugin-otel@latest",
+    "@smart-coders-hq/opencode-model-fallback"
   ],
   "permission": {
     "read": "allow",
@@ -139,22 +143,10 @@
     "todowrite": "allow",
     "task": "allow",
     "question": "allow",
-    "external_directory": {
-      "*": "ask",
-      "/home/dzack/ai/*": "allow",
-      "/home/dzack/.agents/*": "allow",
-      "/home/dzack/.plannotator/*": "allow",
-      "/tmp/*": "allow"
-    },
-    "list_sessions": "allow",
-    "introspection": "allow",
-    "read_transcript": "allow",
     "remember": "allow",
     "forget": "allow",
     "list_memories": "allow",
     "skill": "allow",
-    "sleep": "allow",
-    "sleep_until": "allow",
     "codesearch": "allow",
     "lsp": "allow",
     "pty_list": "allow",
@@ -204,7 +196,21 @@
     "serena_think_about_whether_you_are_done": "deny",
     "serena_execute_shell_command": "deny",
     "serena_switch_modes": "deny",
-    "gemini_quota": "allow"
+    "gemini_quota": "allow",
+    "bash": "allow",
+    "fallback-status": "allow",
+    "doom_loop": "ask",
+    "compress": "allow",
+    "external_directory": {
+      "*": "ask",
+      "/home/dzack/.cache/*": "allow",
+      "/home/dzack/ai/*": "allow",
+      "/home/dzack/.agents/*": "allow",
+      "/home/dzack/.plannotator/*": "allow",
+      "/home/dzack/pdf-extraction/*": "allow",
+      "/home/dzack/pdfs/*": "allow",
+      "/tmp/*": "allow"
+    }
   },
   "provider": {
     "anthropic": {
@@ -1428,17 +1434,17 @@
     "openrouter": {
       "name": "OpenRouter",
       "models": {
-        "google/gemini-2.5-flash:free": {
-          "name": "Gemini 2.5 Flash (Free)"
+        "google/gemini-2.5-flash": {
+          "name": "Gemini 2.5 Flash"
         },
-        "google/gemini-2.5-flash-lite:free": {
-          "name": "Gemini 2.5 Flash Lite (Free)"
+        "google/gemini-2.5-flash-lite": {
+          "name": "Gemini 2.5 Flash Lite"
         },
-        "google/gemini-3-flash-preview:free": {
-          "name": "Gemini 3 Flash Preview (Free)"
+        "google/gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash Preview"
         },
-        "google/gemini-3.1-flash-lite-preview:free": {
-          "name": "Gemini 3.1 Flash Lite Preview (Free)"
+        "google/gemini-3.1-flash-lite-preview": {
+          "name": "Gemini 3.1 Flash Lite Preview"
         },
         "arcee-ai/trinity-large-preview:free": {
           "name": "Trinity Large Preview"

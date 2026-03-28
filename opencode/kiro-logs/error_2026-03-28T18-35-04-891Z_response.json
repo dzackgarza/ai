@@ -1,0 +1,20 @@
+{
+  "status": 400,
+  "statusText": "Bad Request",
+  "headers": {
+    "cache-control": "no-cache",
+    "connection": "close",
+    "content-length": "101",
+    "content-type": "application/json",
+    "date": "Sat, 28 Mar 2026 18:35:04 GMT",
+    "strict-transport-security": "max-age=47304000; includeSubDomains",
+    "x-amzn-errortype": "ValidationException:http://internal.amazon.com/coral/com.amazon.aws.codewhisperer/",
+    "x-amzn-requestid": "43a86761-1bf8-437c-b07c-32a28d93a604",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "error": "Kiro Error: 400",
+  "conversationId": "0574435e-c6f8-46c0-a80f-df3fbd2c049e",
+  "model": "claude-opus-4.6"
+}

@@ -2,6 +2,7 @@
 name: aristotle
 description: Use when formalizing mathematics, filling sorry placeholders in Lean projects, or proving theorems with automated theorem proving. Use for research-level math verification and formalization tasks.
 ---
+
 # Aristotle: Automated Theorem Proving
 
 Aristotle formalizes and proves graduate/research-level mathematics using Lean 4.
@@ -45,9 +46,7 @@ Before formalizing a lemma/theorem/definition, check if it already exists in mat
 
 ### 1. Search mathlib docs
 
-Start at https://leanprover-community.github.io/mathlib4_docs/ and search for relevant
-terms. Check subject-specific areas (e.g., AlgebraicGeometry, RepresentationTheory,
-AlgebraicTopology).
+Start at https://leanprover-community.github.io/mathlib4_docs/ and search for relevant terms. Check subject-specific areas (e.g., AlgebraicGeometry, RepresentationTheory, AlgebraicTopology).
 
 Examples:
 - https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/ZariskisMainTheorem.html
@@ -64,20 +63,15 @@ Or browse directly at https://github.com/leanprover-community/mathlib4
 
 ### 3. Use a subagent for thorough search
 
-Launch a subagent to search mathlib docs and report back relevant results before
-submitting to Aristotle.
+Launch a subagent to search mathlib docs and report back relevant results before submitting to Aristotle.
 
 ### 4. Build upon existing results
 
-**Critical:** Aristotle is already trained on mathlib content.
-Prime requests to NOT be "ground up" — instead, ask Aristotle to build upon specific
-existing results.
+**Critical:** Aristotle is already trained on mathlib content. Prime requests to NOT be "ground up" — instead, ask Aristotle to build upon specific existing results.
 
 Instead of: "Prove that a variety is reduced if its coordinate ring is reduced"
 
-Try: "Using AlgebraicGeometry.Reduced, prove that if the coordinate ring of an affine
-scheme is reduced then the scheme is reduced.
-Build upon the equivalence between Spec and MAX."
+Try: "Using AlgebraicGeometry.Reduced, prove that if the coordinate ring of an affine scheme is reduced then the scheme is reduced. Build upon the equivalence between Spec and MAX."
 
 In other words:
 - Formulate your problem in terms of existing mathlib definitions
@@ -107,8 +101,7 @@ Otherwise write x = r cos φ, y = r sin φ and analyze F(φ)...
 theorem my_theorem (x y : ℝ) ... := by sorry
 ```
 
-**Critical:** Aristotle does not see comments inside proof blocks (`by ...`). Only
-header comments work.
+**Critical:** Aristotle does not see comments inside proof blocks (`by ...`). Only header comments work.
 
 ## Handling Results
 
@@ -129,11 +122,9 @@ header comments work.
 
 ## Common Traps
 
-1. **Comments inside proofs ignored** — Hints must be in header comments (`/-- ... -/`),
-   not inside `by ...` blocks
+1. **Comments inside proofs ignored** — Hints must be in header comments (`/-- ... -/`), not inside `by ...` blocks
 2. **Missing lakefile** — Projects without `lakefile.toml` will fail to parse
-3. **Assuming context files modified** — Aristotle does not modify definitions in
-   context files, only fills sorries
+3. **Assuming context files modified** — Aristotle does not modify definitions in context files, only fills sorries
 
 ## Decision Procedures
 

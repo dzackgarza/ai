@@ -127,12 +127,6 @@ Agents are generated from prompt sources in
 **Do NOT edit `~/.config/opencode/agents/` directly** — the next `build` will overwrite
 it with the upstream content.
 
-The `BUILTIN_SHADOWS` dict in `permissions/main.py` maps agent names to prompt slugs:
-- `build` → `interactive-agents/opencode-build`
-- `compaction` → `micro-agents/opencode-compaction`
-- `title` → `micro-agents/opencode-title`
-- `summary` → `micro-agents/opencode-summary`
-
 ## Common Mistakes
 
 | Mistake | Why It's Wrong |

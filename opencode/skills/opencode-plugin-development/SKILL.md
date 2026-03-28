@@ -353,9 +353,47 @@ All hooks from all plugins run in sequence.
 - Reasoning streams through `message.part.updated` plus `message.part.delta`, same as text
 - Never `console.log()` inside a plugin. Use `client.app.log(...)`
 
+## Workspace Policy
+
+### Model Choice — Mandatory, Never Override
+
+ALL integration tests use `github-copilot/gpt-4.1`. This is a **free model** requiring no per-request payment.
+
+- **NEVER** change the test model to any Anthropic model (`claude-*`), any OpenAI paid model, or any other paid provider.
+- **NEVER** add or override `"model"` in a per-plugin repo-root `opencode.json` when the repo uses the standard global `plugin-proof` agent. That model is set once in `~/.config/opencode/opencode.json`.
+- Anthropic models bill per token. Using them for tests wastes money and violates this policy.
+- If `github-copilot/gpt-4.1` is unavailable, investigate auth — do not switch providers.
+
+### Central CI Workflows
+
+Use these as the only workflow templates:
+
+- `.github/workflows/python-cli-ci.yml`
+- `.github/workflows/python-cli-publish.yml`
+- `.github/workflows/bun-plugin-ci.yml`
+- `.github/workflows/bun-plugin-publish.yml`
+
+### OpenCode Config Precedence
+
+CI and local proof runs rely on standard precedence: global `~/.config/opencode/opencode.json` plus repo-root `opencode.json`. Do not wire `OPENCODE_CONFIG` or `OPENCODE_CONFIG_DIR` unless a repo documents a real exception.
+
+### Repo Structure
+
+Each subdirectory of `/home/dzack/opencode-plugins/` is an independent package repo (submodule). The superproject contains shared CI workflows and workspace-level docs.
+
+### Related Skills
+
+| Skill              | Purpose                                               |
+| ------------------ | ----------------------------------------------------- |
+| **opencode-cli**   | OpenCode CLI commands, config model, `opx` workflow.  |
+| **justfile**       | Just command runner patterns and recipes.              |
+| **git-guidelines** | Git workflow and safety practices.                    |
+
 ## References
 
 - See `references/AUDIT.md` for compliance checklist before PR
 - See `references/README_STANDARDS.md` for documentation templates
 - See `references/SYSTEM_PROMPTS.md` for system prompt injection via `experimental.chat.system.transform`
 - See `references/async-injection.md` for background task and callback patterns
+- See `references/CLI_STRUCTURE.md` for the superproject package layout (Python CLIs, TS plugins, mixed packages)
+- See `references/PROJECTS.md` for the full project-to-GitHub-remote table

@@ -1,0 +1,20 @@
+{
+  "status": 400,
+  "statusText": "Bad Request",
+  "headers": {
+    "cache-control": "no-cache",
+    "connection": "close",
+    "content-length": "101",
+    "content-type": "application/json",
+    "date": "Sat, 28 Mar 2026 18:47:16 GMT",
+    "strict-transport-security": "max-age=47304000; includeSubDomains",
+    "x-amzn-errortype": "ValidationException:http://internal.amazon.com/coral/com.amazon.aws.codewhisperer/",
+    "x-amzn-requestid": "8653e6f5-ea51-45a5-95be-af5170edd3d5",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "error": "Kiro Error: 400",
+  "conversationId": "5a777f49-0298-4a29-b1a7-0f675ce11a4b",
+  "model": "claude-sonnet-4.6-1m"
+}
