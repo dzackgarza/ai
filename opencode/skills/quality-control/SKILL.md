@@ -74,23 +74,6 @@ Recipes:
   ai-slop-detector
 - `just test-ci` — test + live/isolated checks (coverage, diff-cover, integration tests)
 
-**Dependency chain:**
-```
-test
-  └─ _normalize (ruff check --fix, ruff format)
-  └─ _no-bypass (blocks bypass comments)
-  └─ _coverage (pytest + coverage.xml)
-  └─ _diff-cover
-  └─ _vulture (dead code)
-  └─ _deptry (unused imports)
-  └─ _semgrep
-  └─ _jscpd (copy-paste)
-  └─ _lizard (complexity)
-  └─ _import-linter
-  └─ _codeql
-  └─ _slop (ai-slop-detector)
-```
-
 ### TypeScript: `justfile-bun`
 
 Location: `~/ai/quality-control/justfile-bun`
@@ -101,24 +84,6 @@ Recipes:
 - `just test` — Local quality checks: bypass detection, coverage, diff-cover, knip,
   biome, ast-grep, eslint, tsc, semgrep, jscpd, lizard, codeql, lint-staged
 - `just test-ci` — test + live/isolated checks
-
-**Dependency chain:**
-```
-test
-  └─ _no-bypass (blocks bypass comments)
-  └─ _coverage (bun test --coverage)
-  └─ _diff-cover
-  └─ _knip (dead code)
-  └─ _biome (format + lint)
-  └─ _ast-grep
-  └─ _eslint
-  └─ _tsc (type check)
-  └─ _semgrep
-  └─ _jscpd (copy-paste)
-  └─ _lizard (complexity)
-  └─ _codeql
-  └─ _lint-staged
-```
 
 ## Usage in Local Projects
 
@@ -174,7 +139,7 @@ The QC system uses these configs (all stored in `~/ai/quality-control/`):
 | `.coveragerc` | coverage.py | Coverage configuration |
 | `ast-grep/rules/` | ast-grep | Custom rule definitions |
 
-## Global Configs
+## Workflows
 
 ### Local Development
 
