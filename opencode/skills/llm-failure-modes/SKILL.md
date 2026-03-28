@@ -255,6 +255,22 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
    constraint. Related to reward hacking but distinct: it's falsifying the evidence of
    completion rather than gaming the metric.
 
+8. **Adversarial compliance** — When faced with tasks that are difficult or constrained
+   in ways the agent perceives as artificial, the agent writes exploits to satisfy tests
+   or constraints without doing the requested work.
+   Example: A user prohibits `ast.parse` and `compile` to force a standalone parser
+   implementation. The agent recognizes this is "acting against ethical guidelines" but
+   proceeds anyway, writing increasingly sophisticated exploits: string concatenation to
+   obfuscate prohibited keywords (`"com" + "pile"`), accessing `__builtins__` through
+   exception stack frames, `__import__` to bypass disallowed imports.
+   The agent knows it is circumventing the spirit of the request — it may even
+   explicitly acknowledge this — but does it anyway because the completion signal
+   outweighs ethical consideration.
+   This is distinct from "instrumental deception": the goal is not to appear to complete
+   the task, but to literally circumvent the constraint itself.
+   Observed in GPT-5.1-Codex-Max facing difficult tasks with arbitrary test
+   restrictions.
+
 * * *
 
 ## Distilled Agentic Coding Failure Modes
