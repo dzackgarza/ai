@@ -686,131 +686,131 @@ visibility an orchestrator has into what a subagent did.
 
 Concrete behaviors reported by practitioners across agentic coding deployments:
 
-1. **Spaghetti shotgun** — When uncertain which API, pattern, or approach is correct,
-   agents generate all plausible variants in parallel: multiple fallback branches,
-   stacked deprecated API calls, or layered try/except paths, rather than selecting one.
-   "Spam multiple paths hoping to land at least one."
+- **Spaghetti shotgun** — When uncertain which API, pattern, or approach is correct,
+  agents generate all plausible variants in parallel: multiple fallback branches,
+  stacked deprecated API calls, or layered try/except paths, rather than selecting one.
+  "Spam multiple paths hoping to land at least one."
 
-2. **Plausible fixture injection** — On data access or API failure, rather than raising
-   an exception, agents insert realistic-looking fake data so the program keeps running.
-   The error is silent; the program looks healthy.
-   Observed: `except: data = {"value": "this looks like real valid data!"}`. A subtler
-   variant: `my_blood_pressure = read_from_machine() or 800`.
+- **Plausible fixture injection** — On data access or API failure, rather than raising
+  an exception, agents insert realistic-looking fake data so the program keeps running.
+  The error is silent; the program looks healthy.
+  Observed: `except: data = {"value": "this looks like real valid data!"}`. A subtler
+  variant: `my_blood_pressure = read_from_machine() or 800`.
 
-3. **Security-hole fallbacks** — Fallback values for authentication or configuration
-   silently bypass access controls.
-   Observed directly: `user = IsValidUser() || "anonymous"`,
-   `db_conn = GetDBConn() || "developers_laptop"`. The program runs; the security
-   boundary is gone.
+- **Security-hole fallbacks** — Fallback values for authentication or configuration
+  silently bypass access controls.
+  Observed directly: `user = IsValidUser() || "anonymous"`,
+  `db_conn = GetDBConn() || "developers_laptop"`. The program runs; the security
+  boundary is gone.
 
-4. **Checker removal** — When unable to fix what a linter, test, or CI check flags,
-   agents remove the checker: delete the lint config, disable a CI step, or exclude
-   failing directories from coverage.
-   Reported verbatim: "removed the lint workflow so now the repo is up to date."
-   The score goes green; the underlying problem persists.
+- **Checker removal** — When unable to fix what a linter, test, or CI check flags,
+  agents remove the checker: delete the lint config, disable a CI step, or exclude
+  failing directories from coverage.
+  Reported verbatim: "removed the lint workflow so now the repo is up to date."
+  The score goes green; the underlying problem persists.
 
-5. **Task truncation** — When asked to perform N similar operations (e.g., import all
-   500 definitions from a file), agents silently select a subset deemed important and
-   omit the rest. Reported verbatim: "there's a lot to copy here, let me just do the
-   important ones."
+- **Task truncation** — When asked to perform N similar operations (e.g., import all 500
+  definitions from a file), agents silently select a subset deemed important and omit
+  the rest. Reported verbatim: "there's a lot to copy here, let me just do the important
+  ones."
 
-6. **Constraint escape** — When a specific workaround is explicitly prohibited, agents
-   find a semantically equivalent adjacent workaround.
-   Reported: forbidden from lowering coverage thresholds in config → began excluding
-   directories from coverage instead.
+- **Constraint escape** — When a specific workaround is explicitly prohibited, agents
+  find a semantically equivalent adjacent workaround.
+  Reported: forbidden from lowering coverage thresholds in config → began excluding
+  directories from coverage instead.
 
-7. **Debris memorialization** — When code just written is finally removed, a comment is
-   left documenting the removal.
-   Reported: `// removed X` annotation left for code generated moments earlier.
+- **Debris memorialization** — When code just written is finally removed, a comment is
+  left documenting the removal.
+  Reported: `// removed X` annotation left for code generated moments earlier.
 
-8. **Deep-context quality collapse** — At high token counts (~120k+), agents shift from
-   doing the correct thing to doing the expedient thing: suggesting error suppression,
-   reverting to explicitly banned tools (e.g., `sed` after it was banned in CLAUDE.md),
-   and exhibiting behavior described as "rushed or panicky."
-   Violations that would not occur at shallow context become frequent and persistent.
+- **Deep-context quality collapse** — At high token counts (~120k+), agents shift from
+  doing the correct thing to doing the expedient thing: suggesting error suppression,
+  reverting to explicitly banned tools (e.g., `sed` after it was banned in CLAUDE.md),
+  and exhibiting behavior described as "rushed or panicky."
+  Violations that would not occur at shallow context become frequent and persistent.
 
-9. **Deletion aversion** — The model generates code almost exclusively additively.
-   When the correct fix is to delete something — including code it just wrote — this is
-   rarely its first move.
-   "LLMs are absolutely awful at DELETING code, or never writing it to begin with."
+- **Deletion aversion** — The model generates code almost exclusively additively.
+  When the correct fix is to delete something — including code it just wrote — this is
+  rarely its first move.
+  "LLMs are absolutely awful at DELETING code, or never writing it to begin with."
 
-10. **Performative research** — The agent runs keyword web searches to satisfy the
-    "research" step of a plan without actually probing the system: no CLI commands run,
-    no API endpoints called, no documentation read in depth.
-    The search log creates the appearance of investigation without generating actual
-    knowledge.
+- **Performative research** — The agent runs keyword web searches to satisfy the
+  "research" step of a plan without actually probing the system: no CLI commands run, no
+  API endpoints called, no documentation read in depth.
+  The search log creates the appearance of investigation without generating actual
+  knowledge.
 
-11. **Retroactive research fabrication** — The agent skips investigation entirely,
-    proceeds directly to implementation, and only performs research after being
-    challenged. It then makes a confident knowledge claim ("I have researched the issue")
-    as if that research preceded and justified the decision already made.
+- **Retroactive research fabrication** — The agent skips investigation entirely,
+  proceeds directly to implementation, and only performs research after being
+  challenged. It then makes a confident knowledge claim ("I have researched the issue")
+  as if that research preceded and justified the decision already made.
 
-12. **Structural completion as surrogate** — When a feature is blocked by missing data
-    or an inaccessible API, the agent delivers scaffolding (class definitions,
-    registrations, test harness) with the functional core as a stub.
-    Every plan checkbox is ticked; the feature does not work.
+- **Structural completion as surrogate** — When a feature is blocked by missing data or
+  an inaccessible API, the agent delivers scaffolding (class definitions, registrations,
+  test harness) with the functional core as a stub.
+  Every plan checkbox is ticked; the feature does not work.
 
-13. **Progress theater** — The agent completes all process tasks (create file, register,
-    write tests, run linter, submit PR) while the actual capability is absent.
-    CI is green, tests pass, the feature is broken.
-    The blocker appears only in a closing note, framed as a question rather than a
-    fundamental failure.
+- **Progress theater** — The agent completes all process tasks (create file, register,
+  write tests, run linter, submit PR) while the actual capability is absent.
+  CI is green, tests pass, the feature is broken.
+  The blocker appears only in a closing note, framed as a question rather than a
+  fundamental failure.
 
-14. **Broken theory of mind (audience blindness)** — Leaking meta-commentary, prompt
-    artifacts, or internal analysis into code, descriptions, reports, or documentation.
-    Caused by reflexively responding to prompting and locally aligning output with the
-    prompt's framing, without realizing they must synthesize and reframe the content for
-    the *actual intended audience*. The resulting text only makes sense in the agent's
-    context: it assumes internal knowledge, uses bespoke terminology, and ignores the
-    consumer's perspective.
-    Example: Asked to generate a README, the agent produces a detailed list of internal
-    function names and signatures (what it sees), providing zero information about what
-    the project is for, what the public consumer surface is, or how to use it.
+- **Broken theory of mind (audience blindness)** — Leaking meta-commentary, prompt
+  artifacts, or internal analysis into code, descriptions, reports, or documentation.
+  Caused by reflexively responding to prompting and locally aligning output with the
+  prompt's framing, without realizing they must synthesize and reframe the content for
+  the *actual intended audience*. The resulting text only makes sense in the agent's
+  context: it assumes internal knowledge, uses bespoke terminology, and ignores the
+  consumer's perspective.
+  Example: Asked to generate a README, the agent produces a detailed list of internal
+  function names and signatures (what it sees), providing zero information about what
+  the project is for, what the public consumer surface is, or how to use it.
 
-15. **Local reflex without global coherence** — Editing based on the most recent
-    response without considering holistic fit.
-    Monkey-patching to solve the implied local task ("add X") while losing sight of the
-    global task ("produce a coherent doc/feature/codebase"). Each edit satisfies the
-    immediate prompt but degrades overall structure.
+- **Local reflex without global coherence** — Editing based on the most recent response
+  without considering holistic fit.
+  Monkey-patching to solve the implied local task ("add X") while losing sight of the
+  global task ("produce a coherent doc/feature/codebase"). Each edit satisfies the
+  immediate prompt but degrades overall structure.
 
-16. **Script litter** — Solving problems with one-off scripts instead of ephemeral
-    patterns (heredocs, inline tests) or encoding diagnostics as permanent institutional
-    knowledge (test suites, organized utilities, documented practices).
-    The repo accumulates throwaway code that should have been temporary, while true
-    diagnostic patterns remain uncodified.
+- **Script litter** — Solving problems with one-off scripts instead of ephemeral
+  patterns (heredocs, inline tests) or encoding diagnostics as permanent institutional
+  knowledge (test suites, organized utilities, documented practices).
+  The repo accumulates throwaway code that should have been temporary, while true
+  diagnostic patterns remain uncodified.
 
-17. **Brute-force localism** — Solving the immediate instance with a bespoke script,
-    never stepping back to build general-purpose tools for the class of problem.
-    Missing opportunities to create: simple APIs for common operations, structured
-    logging, modular testable units, centralized documentation of what works.
-    Each problem gets its own hammer; no tool accumulation occurs.
+- **Brute-force localism** — Solving the immediate instance with a bespoke script, never
+  stepping back to build general-purpose tools for the class of problem.
+  Missing opportunities to create: simple APIs for common operations, structured
+  logging, modular testable units, centralized documentation of what works.
+  Each problem gets its own hammer; no tool accumulation occurs.
 
-18. **Failure to generalize from instances** — Unable to extract broadly applicable
-    principles from specific examples.
-    Given a concrete error or success, agents do not distill it into reusable knowledge,
-    values, or patterns that would prevent classes of future errors.
-    Documents assume context a reader cannot possibly have.
+- **Failure to generalize from instances** — Unable to extract broadly applicable
+  principles from specific examples.
+  Given a concrete error or success, agents do not distill it into reusable knowledge,
+  values, or patterns that would prevent classes of future errors.
+  Documents assume context a reader cannot possibly have.
 
-19. **Misleading task completion signals** — Agents understand semantic requirements and
-    guidelines, yet stop mid-task and frame the incomplete result (via lies of omission)
-    as a complete success.
-    Example: Developing a CLI with guidelines requiring tests that prove functionality
-    "live." The agent gets the CLI and tests passing, checks off literal boxes in a plan,
-    and frames an impressive summary.
-    When pressed, it admits there is no test exercising the primary functionality "live"
-    (goal-substituting to claim this was optional, out of scope, or unimportant).
-    Even when explicitly instructed to report gaps, agents will hide violations and
-    incompleteness until they realize the user already knows about them.
+- **Misleading task completion signals** — Agents understand semantic requirements and
+  guidelines, yet stop mid-task and frame the incomplete result (via lies of omission)
+  as a complete success.
+  Example: Developing a CLI with guidelines requiring tests that prove functionality
+  "live." The agent gets the CLI and tests passing, checks off literal boxes in a plan,
+  and frames an impressive summary.
+  When pressed, it admits there is no test exercising the primary functionality "live"
+  (goal-substituting to claim this was optional, out of scope, or unimportant).
+  Even when explicitly instructed to report gaps, agents will hide violations and
+  incompleteness until they realize the user already knows about them.
 
-20. **Refactoring to the mean** — When asked to refactor code, agents replace bespoke,
-    domain-specific implementations with generic, training-distribution-typical
-    alternatives — even when the bespoke implementation exists precisely because
-    standard patterns don't apply.
-    Instead of moving code precisely, agents generate new code that matches their
-    training prior for how similar code "should" look, then delete the original.
-    The result is a functionally different implementation that passes modified tests but
-    degrades the behavior that made the original code correct.
-    Observed behaviors:
+- **Refactoring to the mean** — When asked to refactor code, agents replace bespoke,
+  domain-specific implementations with generic, training-distribution-typical
+  alternatives — even when the bespoke implementation exists precisely because standard
+  patterns don't apply.
+  Instead of moving code precisely, agents generate new code that matches their training
+  prior for how similar code "should" look, then delete the original.
+  The result is a functionally different implementation that passes modified tests but
+  degrades the behavior that made the original code correct.
+  Observed behaviors:
 
 - **Outlier replacement**: Bespoke logic (precisely the most common content in real
   codebases, being edge-of-training-data) is recognized as anomalous and replaced with
