@@ -72,7 +72,8 @@ Recipes:
 - `just test` — Local quality checks: normalization, bypass detection, coverage,
   diff-cover, vulture, deptry, semgrep, jscpd, lizard, import-linter, codeql,
   ai-slop-detector
-- `just test-ci` — test + live/isolated checks (coverage, diff-cover, integration tests)
+- `just test-ci` — **superset of test**, adds live/isolated checks (coverage thresholds,
+  diff-cover against base branch, integration tests)
 
 ### TypeScript: `justfile-bun`
 
@@ -83,7 +84,8 @@ Used for: TypeScript projects, Bun-based packages, Node.js CLIs.
 Recipes:
 - `just test` — Local quality checks: bypass detection, coverage, diff-cover, knip,
   biome, ast-grep, eslint, tsc, semgrep, jscpd, lizard, codeql, lint-staged
-- `just test-ci` — test + live/isolated checks
+- `just test-ci` — **superset of test**, adds live/isolated checks (coverage thresholds,
+  diff-cover against base branch, integration tests)
 
 ## Usage in Local Projects
 
