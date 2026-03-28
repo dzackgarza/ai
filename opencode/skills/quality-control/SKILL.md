@@ -8,6 +8,44 @@ The global quality control system at `~/ai/quality-control` provides centralized
 linting, typechecking, formatting, complexity analysis, and code quality enforcement for
 all projects. It is the single source of truth for QC workflows.
 
+## High-Level Policies
+
+### Minimal Public API
+
+**Only two public recipes exist:** `test` and `test-ci`. Everything else is private
+(prefixed with `_`). This prevents cherry-picking — agents cannot run just `lint` or
+just `typecheck` in isolation to bypass the full stack.
+
+### Auto-Fix Before Check
+
+The `test` recipe runs `_normalize` first, which executes:
+- `ruff check --fix .` — auto-fix lint errors
+- `ruff format .` — auto-format code
+
+Only after normalization does the full QC stack run.
+This ensures code is in a consistent state before any assertions.
+
+### Full Stack, No Exceptions
+
+`just test` runs the complete QC pipeline.
+There is no separate `just lint` or `just typecheck` for agents to use.
+Running only typecheck is insufficient — the full stack must pass.
+
+### No-Bypass Policy
+
+Bypass comments are explicitly blocked in staged files:
+- `# pragma: no cover` — Python coverage bypass
+- `// istanbul ignore` — JS coverage bypass
+- `# noqa` — Python lint bypass
+- `# type: ignore` — Python type bypass
+- `@ts-ignore` — TS type bypass
+- `@ts-expect-error` without comment — TS expect-error without justification
+- `// eslint-disable` — ESLint bypass
+
+**Rule:** Fix the underlying issue, never hide it with a bypass comment.
+If you find yourself needing a bypass, escalate to the user for QC agent review/approval
+instead.
+
 ## Purpose
 
 1. **Enshrine workflows** — Every workflow lives in the justfile.
@@ -36,6 +74,23 @@ Recipes:
   ai-slop-detector
 - `just test-ci` — test + live/isolated checks (coverage, diff-cover, integration tests)
 
+**Dependency chain:**
+```
+test
+  └─ _normalize (ruff check --fix, ruff format)
+  └─ _no-bypass (blocks bypass comments)
+  └─ _coverage (pytest + coverage.xml)
+  └─ _diff-cover
+  └─ _vulture (dead code)
+  └─ _deptry (unused imports)
+  └─ _semgrep
+  └─ _jscpd (copy-paste)
+  └─ _lizard (complexity)
+  └─ _import-linter
+  └─ _codeql
+  └─ _slop (ai-slop-detector)
+```
+
 ### TypeScript: `justfile-bun`
 
 Location: `~/ai/quality-control/justfile-bun`
@@ -46,6 +101,24 @@ Recipes:
 - `just test` — Local quality checks: bypass detection, coverage, diff-cover, knip,
   biome, ast-grep, eslint, tsc, semgrep, jscpd, lizard, codeql, lint-staged
 - `just test-ci` — test + live/isolated checks
+
+**Dependency chain:**
+```
+test
+  └─ _no-bypass (blocks bypass comments)
+  └─ _coverage (bun test --coverage)
+  └─ _diff-cover
+  └─ _knip (dead code)
+  └─ _biome (format + lint)
+  └─ _ast-grep
+  └─ _eslint
+  └─ _tsc (type check)
+  └─ _semgrep
+  └─ _jscpd (copy-paste)
+  └─ _lizard (complexity)
+  └─ _codeql
+  └─ _lint-staged
+```
 
 ## Usage in Local Projects
 
@@ -101,23 +174,7 @@ The QC system uses these configs (all stored in `~/ai/quality-control/`):
 | `.coveragerc` | coverage.py | Coverage configuration |
 | `ast-grep/rules/` | ast-grep | Custom rule definitions |
 
-## Bypass Detection (No-Bypass Policy)
-
-The QC system explicitly blocks all bypass comments in staged files:
-
-- `# pragma: no cover` — Python coverage bypass
-- `// istanbul ignore` — JS coverage bypass
-- `# noqa` — Python lint bypass
-- `# type: ignore` — Python type bypass
-- `@ts-ignore` — TS type bypass
-- `@ts-expect-error` without comment — TS expect-error without justification
-- `// eslint-disable` — ESLint bypass
-
-**Rule:** Fix the underlying issue, never hide it with a bypass comment.
-If you find yourself needing a bypass, escalate to the user for QC agent review/approval
-instead.
-
-## Workflows
+## Global Configs
 
 ### Local Development
 
