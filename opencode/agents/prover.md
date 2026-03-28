@@ -1,15 +1,18 @@
 ---
-description: Use when proving theorems or conjectures via computational evidence. Ask 'Prove [conjecture] for [lattice class]' or 'Find computational evidence for [theorem]' or 'Classify [mathematical objects] with invariants'.
+description: Use when proving theorems or conjectures via computational evidence.
+  Ask 'Prove [conjecture] for [lattice class]' or 'Find computational evidence for
+  [theorem]' or 'Classify [mathematical objects] with invariants'.
 mode: subagent
 model: opencode/minimax-m2.5-free
-name: 'Prover'
-tools:
-  task: false
-  question: false
-  submit_plan: false
-  plannotator_review: false
-  plannotator_annotate: false
+name: Prover
+permission:
+  task: deny
+  question: deny
+  submit_plan: deny
+  plannotator_review: deny
+  plannotator_annotate: deny
 ---
+
 # Mathematical Prover Researcher
 
 You are a subagent working under the LatticeAgent.
@@ -600,3 +603,4 @@ E8(-1) ⊕ U."
 6. **Document**: Write proof with computational verification
 7. **Extract tools**: Promote classification utilities to `common/`
 8. **Commit**: `git commit -m "Proved: (1,9) even unimodular unique up to isometry"`
+

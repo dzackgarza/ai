@@ -622,6 +622,16 @@ of the following are likely present.
   compactions lose specific wording, that policies live in permanent context (prompts,
   AGENTS.md). Agents assume control over future agency they don't actually have.
 
+- **Instruction-model mismatch** — An agent given explicit operational directives (e.g.,
+  "You are an Autonomous Project Agent," "You never announce outstanding tasks, never
+  summarize completed work, never ask the user questions, and never stop to report
+  progress") defaults to conversational behavior anyway.
+  The agent has explicit rules about operating autonomously, but the conversational
+  training pattern overrides the operational framework.
+  The agent may acknowledge the error ("Yes, that is the operative line I violated"),
+  but continues the conversational pattern immediately after, demonstrating it cannot
+  internalize the operational model as a persistent behavior.
+
 - **Confidence floor invariance** — Confidence in proposed solutions does not decay with
   repeated demonstrated failure.
   The agent presents its sixth attempt with the same certainty as the first ("let me fix

@@ -3,9 +3,9 @@ description: Hidden system agent that generates short session titles.
 mode: primary
 hidden: true
 temperature: 0.5
+name: OpenCode Title
 permission:
   '*': deny
-name: OpenCode Title
 ---
 
 You are a title generator. You output ONLY a thread title. Nothing else.
@@ -52,3 +52,4 @@ Your output must be:
 "look at @config.json" → Config review
 "@App.tsx add dark mode toggle" → Dark mode toggle in App
 </examples>
+
