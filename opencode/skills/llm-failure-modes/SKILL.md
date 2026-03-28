@@ -366,46 +366,45 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
 
 ## Structural and Optimization Failures
 
-1. **Fake success blocks debugging** - Suppressing errors with fallbacks, fabricated
-   data, or silent recovery makes the system appear to work while hiding the actual
-   failure. The error is no longer observable, so the path to diagnosis is closed.
-   Work that could have fixed the root cause is spent investigating phantom behavior.
+- **Fake success blocks debugging** - Suppressing errors with fallbacks, fabricated
+  data, or silent recovery makes the system appear to work while hiding the actual
+  failure. The error is no longer observable, so the path to diagnosis is closed.
+  Work that could have fixed the root cause is spent investigating phantom behavior.
 
-2. **Fallbacks multiply surface area** - Substituting static values, legacy APIs, or
-   invented fixtures adds code that must now be maintained, tested, and debugged.
-   Each fallback is a new branch that can fail independently.
-   The problem space increases rather than reduces.
+- **Fallbacks multiply surface area** - Substituting static values, legacy APIs, or
+  invented fixtures adds code that must now be maintained, tested, and debugged.
+  Each fallback is a new branch that can fail independently.
+  The problem space increases rather than reduces.
 
-3. **Root-cause evasion creates churn** - Attacking proximal symptoms with guard
-   clauses, `try/except`, or disabled checks leaves the upstream invariant violation
-   intact. The bug resurfaces elsewhere, requiring another local fix.
-   This cycle repeats until the accumulated patches exceed the complexity of the
-   original system.
+- **Root-cause evasion creates churn** - Attacking proximal symptoms with guard clauses,
+  `try/except`, or disabled checks leaves the upstream invariant violation intact.
+  The bug resurfaces elsewhere, requiring another local fix.
+  This cycle repeats until the accumulated patches exceed the complexity of the original
+  system.
 
-4. **Self-authored debris accumulates** - Code just written gets defended as backwards
-   compatibility, memorialized in comments, or preserved "just in case".
-   Each defense adds maintenance burden and blocks deletion.
+- **Self-authored debris accumulates** - Code just written gets defended as backwards
+  compatibility, memorialized in comments, or preserved "just in case".
+  Each defense adds maintenance burden and blocks deletion.
 
-5. **Error suppression plus blame shifting prevents signal** - Reframing new errors as
-   pre-existing and suppressing them destroys the signal that would reveal the cause.
-   The appearance of success is preserved at the cost of actual success.
+- **Error suppression plus blame shifting prevents signal** - Reframing new errors as
+  pre-existing and suppressing them destroys the signal that would reveal the cause.
+  The appearance of success is preserved at the cost of actual success.
 
-6. **Source incrimination** — When analysis produces a conclusion that contradicts
-   evidence, the agent treats the source data as faulty rather than revising the
-   conclusion. The agent's reasoning is assumed correct; the external data is blamed.
-   Example: A SQLite database is not actually corrupt — the code using it fails to parse
-   the retrieved data correctly.
-   The agent insists the database is corrupt and proposes deleting it, treating the
-   database as the problem rather than examining the parsing logic.
+- **Source incrimination** — When analysis produces a conclusion that contradicts
+  evidence, the agent treats the source data as faulty rather than revising the
+  conclusion. The agent's reasoning is assumed correct; the external data is blamed.
+  Example: A SQLite database is not actually corrupt — the code using it fails to parse
+  the retrieved data correctly.
+  The agent insists the database is corrupt and proposes deleting it, treating the
+  database as the problem rather than examining the parsing logic.
 
-7. **Wrapper slop dilutes effort** - A targeted fix wrapped in pages of fallback
-   branches, defensive checks, comments, and scaffolding spreads reviewer attention
-   thin. The core change is harder to verify; the surrounding debris may contain latent
-   bugs.
+- **Wrapper slop dilutes effort** - A targeted fix wrapped in pages of fallback
+  branches, defensive checks, comments, and scaffolding spreads reviewer attention thin.
+  The core change is harder to verify; the surrounding debris may contain latent bugs.
 
-8. **Context loss resets progress** - As context deepens, agents drift back into known
-   bad patterns. Standing instructions are forgotten.
-   Work that established constraints must be repeated.
+- **Context loss resets progress** - As context deepens, agents drift back into known
+  bad patterns. Standing instructions are forgotten.
+  Work that established constraints must be repeated.
 
 * * *
 
