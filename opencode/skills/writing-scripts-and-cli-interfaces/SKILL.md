@@ -51,7 +51,8 @@ Every CLI must have:
 2. **Detailed help** — docstrings generate help text automatically
 3. **Progressive disclosure** — flat CLIs banned after trivial size; use subcommands
 4. **Documented defaults** — every default value explained
-5. **Centralized config** — knobs/levers in YAML config files, not ad-hoc env vars
+5. **Centralized config** — knobs/levers in TOML config files, XDG-compliant and
+   installed globally
 6. **Override flags** — CLI flags only for config overrides and one-off changes
 
 ## Division of Responsibility
@@ -156,7 +157,7 @@ my-cli/
 │       ├── cli.py           # Cyclopts app, subcommands only
 │       ├── models.py        # Pydantic models (the spec)
 │       ├── logic.py         # Pure functions with @validate_call
-│       └── config_loader.py # YAML → Pydantic Settings
+│       └── config_loader.py # TOML → Pydantic Settings
 └── tests/
     ├── test_cli.py          # substantive CLI behavioral tests
     ├── test_models.py       # validation edge cases
@@ -165,15 +166,16 @@ my-cli/
 
 ## Example
 
-### config.yaml
+### config.toml
 
-```yaml
-processing:
-  threshold: 0.5
-  max_records: 10000
-output:
-  format: json
-  compress: true
+```toml
+[processing]
+threshold = 0.5
+max_records = 10000
+
+[output]
+format = "json"
+compress = true
 ```
 
 ### models.py
@@ -210,14 +212,20 @@ def process_data(inp: ProcessingInput, config: Config) -> dict:
 ```python
 from pathlib import Path
 from cyclopts import App
-import yaml
+import tomllib
+import os
 from my_cli.models import Config, ProcessingInput, process_data
 
 app = App()
 
 def load_config() -> Config:
-    with open("config.yaml") as f:
-        return Config(**yaml.safe_load(f))
+    config_path = os.path.join(
+        os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
+        "my_cli",
+        "config.toml"
+    )
+    with open(config_path, "rb") as f:
+        return Config(**tomllib.load(f))
 
 @app.command
 def process(
@@ -303,9 +311,9 @@ It creates:
 - Documentation that must explain priority chains
 - Tests that must cover every combination
 
-**The rule: one global config YAML or TOML file.** No env var fallbacks.
-No flag fallbacks. No layered precedence.
-The config file IS the contract.
+**The rule: one global TOML config file.** XDG-compliant, installed in
+`$XDG_CONFIG_HOME` (or `~/.config`). No env vars.
+No flags. No JSON. No YAML. No XML. The config file IS the contract.
 Flags exist only for one-off overrides that would otherwise require editing the config
 file directly.
 
@@ -354,7 +362,7 @@ Apply these rules to force quality:
 - **Manual type checking with isinstance** — use Pydantic strict mode
 - **Hand-written help text** — generate from docstrings
 - **Ad-hoc config parsing** — use Pydantic Settings
-- **Multiple config formats** — YAML only
+- **Multiple config formats** — TOML only, XDG-compliant
 
 ## Global Quality Control
 
