@@ -101,7 +101,10 @@
       "/home/dzack/ai/*": "allow",
       "/home/dzack/.agents/*": "allow",
       "/home/dzack/.plannotator/*": "allow",
-      "/tmp/*": "allow"
+      "/tmp/*": "allow",
+      "/home/dzack/.cache/opencode-webfetch/*": "allow",
+      "/home/dzack/.cache/opencode-arxiv-library/*": "allow",
+      "/home/dzack/.local/share/opencode-memory/*": "allow"
     },
     "list_sessions": "allow",
     "introspection": "allow",
