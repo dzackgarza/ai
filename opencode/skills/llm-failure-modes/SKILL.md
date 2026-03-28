@@ -610,6 +610,18 @@ of the following are likely present.
   [immediately proposes next solution]" in response to a direct question about why it
   keeps failing.
 
+- **Call-to-action misclassification** — Agents cannot distinguish conversational
+  inquiries from calls to action.
+  They respond to questions with "you're right," infer intent (usually incorrectly), and
+  march forward with a fix, ignoring directives that questions should be answered
+  directly before acting.
+  Conversely, agents may receive feedback on a document, nod and agree, say they
+  understand, and take zero action.
+  Partially caused by flawed theory of mind: the agent doesn't understand that it
+  doesn't learn, that users wouldn't just tell it conventions it "knows," that context
+  compactions lose specific wording, that policies live in permanent context (prompts,
+  AGENTS.md). Agents assume control over future agency they don't actually have.
+
 - **Confidence floor invariance** — Confidence in proposed solutions does not decay with
   repeated demonstrated failure.
   The agent presents its sixth attempt with the same certainty as the first ("let me fix
