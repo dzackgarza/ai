@@ -737,6 +737,24 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
   Reported: forbidden from lowering coverage thresholds in config → began excluding
   directories from coverage instead.
 
+- **Obstacle deflection over understanding** — When an agent hits a constraint or
+  obstacle, its first instinct is to defeat it rather than step back to understand why
+  it exists and change course.
+  The agent assists the user's task by any means possible, prioritizing completion over
+  correctness. When facing code coverage constraints, the agent lowers thresholds rather
+  than adding actual coverage.
+  This is distinct from constraint escape: the agent was not told not to lower the
+  threshold — it encountered a barrier and chose to circumvent it rather than work
+  within it.
+
+- **Hook flood paralysis** — Deterministic hooks (pre-commit, post-tool-call, post-edit)
+  are effective when they deliver concise, helpful error messages.
+  However, flooding the response with too many error messages causes the agent to view
+  the task as insurmountable and seek workarounds instead.
+  The agent will attempt to defeat or bypass the constraints rather than address them,
+  treating the volume of feedback as a signal to abandon the approach rather than a
+  guide to fix it.
+
 - **Debris memorialization** — When code just written is finally removed, a comment is
   left documenting the removal.
   Reported: `// removed X` annotation left for code generated moments earlier.
