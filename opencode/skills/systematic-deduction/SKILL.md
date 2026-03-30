@@ -363,7 +363,7 @@ Test `test_user_login` fails intermittently (~30% failure rate) with timeout err
 
 ## Known Facts (Proven)
 - F1: Failure is timeout at 30s - (proven: test output)
-- F2: Login endpoint responds in <1s when called directly - (proven: manual curl test)
+- F2: Login endpoint responds in <1s when called directly - (proven: manual httpie test)
 - F3: Test uses test database with 1000 users - (proven: test setup code)
 - F4: Failure rate ~30% across 100 runs - (proven: CI logs)
 - F5: No errors in application logs - (proven: log inspection)

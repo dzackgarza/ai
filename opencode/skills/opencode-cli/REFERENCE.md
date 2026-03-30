@@ -41,7 +41,7 @@ OpenCode is an **open-source AI coding agent** built for the terminal. It's a Go
 
 ### Install Script (Recommended)
 ```bash
-curl -fsSL https://opencode.ai/install | bash
+uvx --from httpie http --body GET https://opencode.ai/install | bash
 ```
 
 ### Package Managers

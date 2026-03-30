@@ -28,30 +28,28 @@ Do not default to incident forensics. Only do troubleshooting analysis when expl
 ### Publish a basic message
 
 ```bash
-curl -sS -d "Backup completed" https://ntfy.sh/<topic>
+echo "Backup completed" | uvx --from httpie http POST https://ntfy.sh/<topic>
 ```
 
 ### Publish with title, priority, and tags
 
 ```bash
-curl -sS \
-  -H "Title: Backup status" \
-  -H "Priority: high" \
-  -H "Tags: white_check_mark,backup" \
-  -d "Nightly backup completed" \
-  https://ntfy.sh/<topic>
+echo "Nightly backup completed" | uvx --from httpie http POST https://ntfy.sh/<topic> \
+  "Title:Backup status" \
+  "Priority:high" \
+  "Tags:white_check_mark,backup"
 ```
 
 ### Stream messages as JSON
 
 ```bash
-curl -sS -N https://ntfy.sh/<topic>/json
+uvx --from httpie http --stream GET https://ntfy.sh/<topic>/json
 ```
 
 ### Poll recent messages and exit
 
 ```bash
-curl -sS "https://ntfy.sh/<topic>/json?poll=1&since=1h"
+uvx --from httpie http GET "https://ntfy.sh/<topic>/json?poll=1&since=1h"
 ```
 
 ## Project Defaults (`lattice_interface`)
@@ -62,7 +60,7 @@ curl -sS "https://ntfy.sh/<topic>/json?poll=1&since=1h"
 Equivalent API query:
 
 ```bash
-curl -sS "https://ntfy.sh/dzg-lattice-doc-updates/json?poll=1&since=1h"
+uvx --from httpie http GET "https://ntfy.sh/dzg-lattice-doc-updates/json?poll=1&since=1h"
 ```
 
 ## Automation Rules

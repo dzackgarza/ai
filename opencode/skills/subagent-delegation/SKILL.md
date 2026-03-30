@@ -125,7 +125,7 @@ codex --search -a never exec \
 - `--search`: Enable Codex native web access. Default to ON. Delegated coding agents should almost always have live docs/search access so they can read current documentation, issues, and upstream references on demand instead of guessing.
 - `-a never`: Prevent approval stops. If the coordinator launched the subagent, the subagent should execute within the agreed sandbox contract without pausing for human confirmation.
 - `-s workspace-write`: Allow normal repo writes while keeping the run sandboxed.
-- `-c 'sandbox_workspace_write.network_access=true'`: Enable shell-side internet access for `gh`, `curl`, package managers, and other ordinary CLI tools.
+- `-c 'sandbox_workspace_write.network_access=true'`: Enable shell-side internet access for `gh`, `httpie`, package managers, and other ordinary CLI tools.
 - `-c 'shell_environment_policy.inherit=all'`: Preserve the ambient shell environment so PATH-managed tools, auth, and host config are available inside the sandboxed shell.
 
 **Budget awareness:**
@@ -171,7 +171,7 @@ Do not reflexively push everything to the highest-effort frontier model. Token e
 
 **Operational guidance:**
 
-- Native Codex web access and shell network access are separate surfaces. `--search` enables the model web tool. Shell tools like `gh`, `curl`, and package managers still need sandbox network access enabled.
+- Native Codex web access and shell network access are separate surfaces. `--search` enables the model web tool. Shell tools like `gh`, `httpie`, and package managers still need sandbox network access enabled.
 - `zsh -lc` inside Codex generally sees inherited PATH-managed tools. Use login-shell behavior only when you specifically need aliases or interactive shell setup.
 - If shell GitHub access matters, verify it directly in the delegated runtime instead of assuming host-shell success proves anything about the subagent.
 
@@ -181,7 +181,7 @@ Do not reflexively push everything to the highest-effort frontier model. Token e
 - `gh auth status`
 - `gh api rate_limit`
 - DNS lookup for `api.github.com`
-- `curl -I https://api.github.com`
+- `uvx --from httpie http --headers https://api.github.com`
 
 **When runs go wrong:**
 

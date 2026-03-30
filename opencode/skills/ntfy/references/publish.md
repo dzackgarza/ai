@@ -16,9 +16,9 @@ Canonical docs: `https://docs.ntfy.sh/publish/`
 ### HTTP
 
 ```bash
-curl -sS -d "Backup successful" https://ntfy.sh/mytopic
-curl -sS -T ./report.txt -H "Filename: report.txt" https://ntfy.sh/mytopic
-curl -sS https://ntfy.sh/mytopic/trigger
+echo "Backup successful" | uvx --from httpie http POST https://ntfy.sh/mytopic
+uvx --from httpie http PUT https://ntfy.sh/mytopic "Filename:report.txt" < ./report.txt
+uvx --from httpie http GET https://ntfy.sh/mytopic/trigger
 ```
 
 ### ntfy CLI
@@ -66,7 +66,7 @@ Headers are case-insensitive. Query parameters must be lowercase.
 Example:
 
 ```bash
-curl -sS -H "Priority: high" -d "Disk space low" https://ntfy.sh/alerts
+echo "Disk space low" | uvx --from httpie http POST https://ntfy.sh/alerts "Priority:high"
 ```
 
 ## Common Features
@@ -74,14 +74,12 @@ curl -sS -H "Priority: high" -d "Disk space low" https://ntfy.sh/alerts
 ### Title, tags, markdown, click URL, icon
 
 ```bash
-curl -sS \
-  -H "Title: Build failed" \
-  -H "Tags: warning,build" \
-  -H "Markdown: yes" \
-  -H "Click: https://ci.example.com/runs/123" \
-  -H "Icon: https://example.com/icons/ci.png" \
-  -d "**main** failed at test stage" \
-  https://ntfy.sh/ci-alerts
+echo "**main** failed at test stage" | uvx --from httpie http POST https://ntfy.sh/ci-alerts \
+  "Title:Build failed" \
+  "Tags:warning,build" \
+  "Markdown:yes" \
+  "Click:https://ci.example.com/runs/123" \
+  "Icon:https://example.com/icons/ci.png"
 ```
 
 ### Attachments
@@ -90,8 +88,8 @@ curl -sS \
 - External URL: `Attach: https://...`.
 
 ```bash
-curl -sS -T ./incident.png -H "Filename: incident.png" https://ntfy.sh/alerts
-curl -sS -H "Attach: https://example.com/incident.png" https://ntfy.sh/alerts
+uvx --from httpie http PUT https://ntfy.sh/alerts "Filename:incident.png" < ./incident.png
+uvx --from httpie http POST https://ntfy.sh/alerts "Attach:https://example.com/incident.png"
 ```
 
 ### Action buttons
@@ -123,8 +121,8 @@ Docs state current limits are typically:
 - maximum delay: 3 days
 
 ```bash
-curl -sS -H "In: 30m" -d "Reminder" https://ntfy.sh/reminders
-curl -sS -H "At: tomorrow, 10am" -d "Daily check" https://ntfy.sh/reminders
+echo "Reminder" | uvx --from httpie http POST https://ntfy.sh/reminders "In:30m"
+echo "Daily check" | uvx --from httpie http POST https://ntfy.sh/reminders "At:tomorrow, 10am"
 ```
 
 #### Update/cancel scheduled messages
@@ -133,7 +131,7 @@ curl -sS -H "At: tomorrow, 10am" -d "Daily check" https://ntfy.sh/reminders
 - Cancel by deleting sequence:
 
 ```bash
-curl -sS -X DELETE https://ntfy.sh/mytopic/reminder-seq
+uvx --from httpie http DELETE https://ntfy.sh/mytopic/reminder-seq
 ```
 
 ## Publish as JSON
@@ -141,17 +139,14 @@ curl -sS -X DELETE https://ntfy.sh/mytopic/reminder-seq
 POST to root URL, not topic URL.
 
 ```bash
-curl -sS https://ntfy.sh \
-  -H "Content-Type: application/json" \
-  -d '{
-    "topic": "mytopic",
-    "message": "Disk space low",
-    "title": "Low disk",
-    "tags": ["warning","disk"],
-    "priority": 4,
-    "click": "https://status.example.com",
-    "actions": [{"action":"view","label":"Open","url":"https://status.example.com"}]
-  }'
+uvx --from httpie http POST https://ntfy.sh \
+  topic=mytopic \
+  message="Disk space low" \
+  title="Low disk" \
+  tags:='["warning","disk"]' \
+  priority:=4 \
+  click="https://status.example.com" \
+  actions:='[{"action":"view","label":"Open","url":"https://status.example.com"}]'
 ```
 
 Key JSON fields:
@@ -166,21 +161,21 @@ Key JSON fields:
 - Use same sequence ID either in URL path or `X-Sequence-ID`.
 
 ```bash
-curl -sS -d "Download started" https://ntfy.sh/files/job-123
-curl -sS -d "Download 50%" https://ntfy.sh/files/job-123
-curl -sS -H "X-Sequence-ID: job-123" -d "Download complete" https://ntfy.sh/files
+echo "Download started" | uvx --from httpie http POST https://ntfy.sh/files/job-123
+echo "Download 50%" | uvx --from httpie http POST https://ntfy.sh/files/job-123
+echo "Download complete" | uvx --from httpie http POST https://ntfy.sh/files "X-Sequence-ID:job-123"
 ```
 
 ### Clear (mark as read/dismiss)
 
 ```bash
-curl -sS -X PUT https://ntfy.sh/files/job-123/clear
+uvx --from httpie http PUT https://ntfy.sh/files/job-123/clear
 ```
 
 ### Delete
 
 ```bash
-curl -sS -X DELETE https://ntfy.sh/files/job-123
+uvx --from httpie http DELETE https://ntfy.sh/files/job-123
 ```
 
 ## Authentication Modes
@@ -188,19 +183,19 @@ curl -sS -X DELETE https://ntfy.sh/files/job-123
 ### Basic auth with user/password
 
 ```bash
-curl -sS -u user:pass -d "Secret message" https://ntfy.sh/private-topic
+echo "Secret message" | uvx --from httpie http -a user:pass POST https://ntfy.sh/private-topic
 ```
 
 ### Bearer token
 
 ```bash
-curl -sS -H "Authorization: Bearer tk_xxx" -d "Secret message" https://ntfy.sh/private-topic
+echo "Secret message" | uvx --from httpie http POST https://ntfy.sh/private-topic "Authorization:Bearer tk_xxx"
 ```
 
 ### Basic with empty user + token as password
 
 ```bash
-curl -sS -u :tk_xxx -d "Secret message" https://ntfy.sh/private-topic
+echo "Secret message" | uvx --from httpie http -a :tk_xxx POST https://ntfy.sh/private-topic
 ```
 
 ### `auth` query parameter

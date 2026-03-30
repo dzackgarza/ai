@@ -12,27 +12,27 @@ description: Use when you need to query Zotero data, find references, export cit
 - **Auth:** No API keys are required. The proxy is read-only.
 - **Base URL:** `https://zotero.dzackgarza.com/api/users/1049732`
 - **Missing Features:** The local proxy does NOT support translation endpoints (`format=bibtex` or `include=citation`). It returns empty data for these.
-- **Pagination limit:** `curl` queries are strictly limited to 100 results per request. You must loop using `&start=N` to fetch all data. Do NOT use the `zotero` python skill for local cache reads, as that script is hardcoded to the official authenticated web API.
+- **Pagination limit:** `httpie` queries are strictly limited to 100 results per request. You must loop using `&start=N` to fetch all data. Do NOT use the `zotero` python skill for local cache reads, as that script is hardcoded to the official authenticated web API.
 - **Read-Only:** You cannot attach new files or modify metadata via this local API.
 
 ## Core Workflows
 
-Do not attempt to write Python wrappers. Use these exact `curl` and `jq` pipelines.
+Do not attempt to write Python wrappers. Use these exact `httpie` and `jq` pipelines.
 
 ### 0. Basic Item Retrieval
 
 ```bash
 # Get top-level items (excludes raw attachments/notes)
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=25"
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=25"
 
 # Get a specific item by its key
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>"
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>"
 
 # Get all items (including child attachments)
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?limit=25"
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items?limit=25"
 
 # Get children of a specific item (attachments, notes)
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children"
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/children"
 ```
 
 ### 1. Reading Papers and Finding File Locations
@@ -41,7 +41,7 @@ The Zotero database stores files locally. You can find the exact path to a PDF o
 
 ```bash
 # Find the local filepath of an attachment (e.g. a PDF)
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ATTACHMENT_KEY>" | \
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items/<ATTACHMENT_KEY>" | \
   jq -r '.links.enclosure.href' | sed 's|file://||'
 ```
 
@@ -58,7 +58,7 @@ Zotero supports powerful search via the `q` parameter.
 
 ```bash
 # Fulltext search across all items and PDFs
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?q=quantum&qmode=everything&limit=5" | jq -r '.[].data.title'
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items?q=quantum&qmode=everything&limit=5" | jq -r '.[].data.title'
 ```
 
 ### 3. Finding Items Without Attachments (Needs PDF)
@@ -67,7 +67,7 @@ Items missing PDFs have no child items. You can find them by checking `.meta.num
 
 ```bash
 # Find top-level items that have NO attachments
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=100" | \
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=100" | \
   jq -r '.[] | select(.meta.numChildren == 0) | .key'
 ```
 
@@ -77,7 +77,7 @@ When inspecting library contents, extract just the necessary fields. BetterBibTe
 
 ```bash
 # Extract Key, Title, First Author, Year, and BibTeX Key
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=5" | \
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items/top?limit=5" | \
   jq -r '.[] | [
     .key,
     .data.title,
@@ -93,11 +93,11 @@ PDFs and Markdown notes are stored as child items (`itemType=attachment`). There
 
 ```bash
 # Find recent Markdown file attachments
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100" | \
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100" | \
   jq -r '.[] | select(.data.contentType == "text/markdown") | .key'
 
 # Get ALL child attachments (PDFs/Markdown) for a specific parent item
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<PARENT_KEY>/children" | \
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items/<PARENT_KEY>/children" | \
   jq -r '.[] | [.data.contentType, .links.enclosure.href] | @tsv'
 ```
 
@@ -106,7 +106,7 @@ curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<PARENT_KEY>/chil
 To list all collections and their IDs:
 
 ```bash
-curl -s "https://zotero.dzackgarza.com/api/users/1049732/collections?limit=50" | \
+uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/collections?limit=50" | \
   jq -r '.[] | [.key, .data.name, .meta.numItems] | @tsv'
 ```
 
@@ -116,9 +116,9 @@ Because of the 100-item limit, you must loop over `start=N` to fetch all attachm
 
 ```bash
 # Find ALL PDF attachments across the library (paginated loop)
-total=$(curl -sI "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment" | grep -i 'total-results' | awk '{print $2}' | tr -d '\r')
+total=$(uvx --from httpie http --headers GET "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment" | awk -F': ' 'tolower($1) == "total-results" {print $2}' | tr -d '\r')
 for ((i=0; i<total; i+=100)); do
-  curl -s "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100&start=$i" | \
+  uvx --from httpie http GET "https://zotero.dzackgarza.com/api/users/1049732/items?itemType=attachment&limit=100&start=$i" | \
     jq -r '.[] | select(.data.contentType == "application/pdf") | .key'
 done
 ```

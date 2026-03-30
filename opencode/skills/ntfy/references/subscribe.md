@@ -17,16 +17,16 @@ For topic `<topic>`:
 
 ```bash
 # JSON stream (long-lived)
-curl -sS -N https://ntfy.sh/<topic>/json
+uvx --from httpie http --stream GET https://ntfy.sh/<topic>/json
 
 # SSE stream
-curl -sS -N https://ntfy.sh/<topic>/sse
+uvx --from httpie http --stream GET https://ntfy.sh/<topic>/sse
 
 # Raw stream
-curl -sS -N https://ntfy.sh/<topic>/raw
+uvx --from httpie http --stream GET https://ntfy.sh/<topic>/raw
 
 # Poll and exit
-curl -sS "https://ntfy.sh/<topic>/json?poll=1"
+uvx --from httpie http GET "https://ntfy.sh/<topic>/json?poll=1"
 ```
 
 ## Polling, Replay, and Filters
@@ -40,9 +40,9 @@ curl -sS "https://ntfy.sh/<topic>/json?poll=1"
 Examples:
 
 ```bash
-curl -sS "https://ntfy.sh/mytopic/json?poll=1&since=10m"
-curl -sS "https://ntfy.sh/mytopic/json?poll=1&since=latest"
-curl -sS "https://ntfy.sh/mytopic/json?poll=1&sched=1"
+uvx --from httpie http GET "https://ntfy.sh/mytopic/json?poll=1&since=10m"
+uvx --from httpie http GET "https://ntfy.sh/mytopic/json?poll=1&since=latest"
+uvx --from httpie http GET "https://ntfy.sh/mytopic/json?poll=1&sched=1"
 ```
 
 ### Filters
@@ -57,14 +57,14 @@ Available filters (case-insensitive):
 Examples:
 
 ```bash
-curl -sS "https://ntfy.sh/alerts/json?poll=1&priority=high,urgent"
-curl -sS "https://ntfy.sh/alerts/json?poll=1&tags=error,zfs"
+uvx --from httpie http GET "https://ntfy.sh/alerts/json?poll=1&priority=high,urgent"
+uvx --from httpie http GET "https://ntfy.sh/alerts/json?poll=1&tags=error,zfs"
 ```
 
 ### Multi-topic subscribe
 
 ```bash
-curl -sS -N https://ntfy.sh/topicA,topicB/json
+uvx --from httpie http --stream GET https://ntfy.sh/topicA,topicB/json
 ```
 
 ## Subscription Parameters
@@ -99,8 +99,8 @@ Typical consumer rule:
 Protected topics require auth, same as publishing:
 
 ```bash
-curl -sS -u user:pass https://ntfy.sh/private/json
-curl -sS -H "Authorization: Bearer tk_xxx" https://ntfy.sh/private/json
+uvx --from httpie http -a user:pass GET https://ntfy.sh/private/json
+uvx --from httpie http GET https://ntfy.sh/private/json "Authorization:Bearer tk_xxx"
 ```
 
 `auth` query parameter is also supported (base64-encoded authorization header value).

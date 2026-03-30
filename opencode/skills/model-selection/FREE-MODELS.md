@@ -47,95 +47,95 @@ These are paid services with no meaningful free tier.
 ### Groq
 
 ```bash
-curl -s https://api.groq.com/openai/v1/chat/completions -H "Authorization: Bearer $GROQ_API_KEY" -H "Content-Type: application/json" -d '{"model":"llama-3.3-70b-versatile","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.groq.com/openai/v1/chat/completions "Authorization:Bearer $GROQ_API_KEY" model="llama-3.3-70b-versatile" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### NVIDIA NIM
 
 ```bash
-curl -s https://integrate.api.nvidia.com/v1/chat/completions -H "Authorization: Bearer $NVIDIA_API_KEY" -H "Content-Type: application/json" -d '{"model":"meta/llama-3.1-8b-instruct","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://integrate.api.nvidia.com/v1/chat/completions "Authorization:Bearer $NVIDIA_API_KEY" model="meta/llama-3.1-8b-instruct" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Mistral
 
 ```bash
-curl -s https://api.mistral.ai/v1/chat/completions -H "Authorization: Bearer $MISTRAL_API_KEY" -H "Content-Type: application/json" -d '{"model":"mistral-small-latest","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.mistral.ai/v1/chat/completions "Authorization:Bearer $MISTRAL_API_KEY" model="mistral-small-latest" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Cloudflare Workers AI
 
 ```bash
-curl -s "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1/chat/completions" -H "Authorization: Bearer $CLOUDFLARE_API_KEY" -H "Content-Type: application/json" -d '{"model":"@cf/meta/llama-3.1-8b-instruct","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/v1/chat/completions" "Authorization:Bearer $CLOUDFLARE_API_KEY" model="@cf/meta/llama-3.1-8b-instruct" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### OpenRouter
 
 ```bash
-curl -s https://openrouter.ai/api/v1/chat/completions -H "Authorization: Bearer $OPENROUTER_API_KEY" -H "Content-Type: application/json" -d '{"model":"openrouter/free","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://openrouter.ai/api/v1/chat/completions "Authorization:Bearer $OPENROUTER_API_KEY" model="openrouter/free" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### SambaNova
 
 ```bash
-curl -s https://api.sambanova.ai/v1/chat/completions -H "Authorization: Bearer $SAMBANOVA_API_KEY" -H "Content-Type: application/json" -d '{"stream":true,"model":"Qwen3-235B","messages":[{"role":"user","content":"Hello"}]}'
+uvx --from httpie http --stream POST https://api.sambanova.ai/v1/chat/completions "Authorization:Bearer $SAMBANOVA_API_KEY" stream:=true model="Qwen3-235B" messages:='[{"role":"user","content":"Hello"}]'
 ```
 
 ### Cerebras
 
 ```bash
-curl -s https://api.cerebras.ai/v1/chat/completions -H "Authorization: Bearer $CEREBRAS_API_KEY" -H "Content-Type: application/json" -d '{"model":"gpt-oss-120b","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.cerebras.ai/v1/chat/completions "Authorization:Bearer $CEREBRAS_API_KEY" model="gpt-oss-120b" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Replicate
 
 ```bash
-curl -s https://api.replicate.com/v1/predictions -H "Authorization: Bearer $REPLICATE_API_TOKEN" -H "Content-Type: application/json" -H "Prefer: wait=5" -d '{"version":"replicate/hello-world:5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa","input":{"text":"Hello"}}' | jq '.output'
+uvx --from httpie http POST https://api.replicate.com/v1/predictions "Authorization:Bearer $REPLICATE_API_TOKEN" "Prefer:wait=5" version="replicate/hello-world:5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa" input:='{"text":"Hello"}' | jq '.output'
 ```
 
 ### Google AI Studio
 
 ```bash
-curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" -H "x-goog-api-key: $GOOGLE_API_KEY" -H "Content-Type: application/json" -d '{"contents":[{"parts":[{"text":"Hello"}]}]}' | jq '.candidates[0].content.parts[0].text'
+uvx --from httpie http POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" "x-goog-api-key:$GOOGLE_API_KEY" contents:='[{"parts":[{"text":"Hello"}]}]' | jq '.candidates[0].content.parts[0].text'
 ```
 
 ### Scaleway
 
 ```bash
-curl -s https://api.scaleway.ai/v1/chat/completions -H "Authorization: Bearer $SCALEWAY_API_KEY" -H "Content-Type: application/json" -d '{"model":"mistralai/Mistral-7B-Instruct-v0.3","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.scaleway.ai/v1/chat/completions "Authorization:Bearer $SCALEWAY_API_KEY" model="mistralai/Mistral-7B-Instruct-v0.3" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Fireworks AI
 
 ```bash
-curl -s https://api.fireworks.ai/inference/v1/chat/completions -H "Authorization: Bearer $FIREWORKS_API_KEY" -H "Content-Type: application/json" -d '{"model":"accounts/fireworks/models/llama-v3p1-8b-instruct","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.fireworks.ai/inference/v1/chat/completions "Authorization:Bearer $FIREWORKS_API_KEY" model="accounts/fireworks/models/llama-v3p1-8b-instruct" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Hyperbolic
 
 ```bash
-curl -s https://api.hyperbolic.xyz/v1/chat/completions -H "Authorization: Bearer $HYPERBOLIC_API_KEY" -H "Content-Type: application/json" -d '{"model":"meta-llama/Llama-3.1-8B-Instruct","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.hyperbolic.xyz/v1/chat/completions "Authorization:Bearer $HYPERBOLIC_API_KEY" model="meta-llama/Llama-3.1-8B-Instruct" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Together AI
 
 ```bash
-curl -s https://api.together.xyz/v1/chat/completions -H "Authorization: Bearer $TOGETHER_API_KEY" -H "Content-Type: application/json" -d '{"model":"meta-llama/Llama-3.1-8B-Instruct-Turbo","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.together.xyz/v1/chat/completions "Authorization:Bearer $TOGETHER_API_KEY" model="meta-llama/Llama-3.1-8B-Instruct-Turbo" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### SiliconFlow
 
 ```bash
-curl -s https://api.siliconflow.com/v1/chat/completions -H "Authorization: Bearer $SILICONFLOW_API_KEY" -H "Content-Type: application/json" -d '{"model":"Qwen/Qwen2.5-7B-Instruct","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.siliconflow.com/v1/chat/completions "Authorization:Bearer $SILICONFLOW_API_KEY" model="Qwen/Qwen2.5-7B-Instruct" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Perplexity
 
 ```bash
-curl -s https://api.perplexity.ai/chat/completions -H "Authorization: Bearer $PERPLEXITY_API_KEY" -H "Content-Type: application/json" -d '{"model":"sonar-pro","messages":[{"role":"user","content":"Hello"}]}' | jq '.choices[0].message.content'
+uvx --from httpie http POST https://api.perplexity.ai/chat/completions "Authorization:Bearer $PERPLEXITY_API_KEY" model="sonar-pro" messages:='[{"role":"user","content":"Hello"}]' | jq '.choices[0].message.content'
 ```
 
 ### Hugging Face Inference
 
 ```bash
-curl -s https://api-inference.huggingface.co/models/meta-llama/Llama-3.1-8B-Instruct -H "Authorization: Bearer $HF_TOKEN" -H "Content-Type: application/json" -d '{"inputs":"Hello"}' | jq '.[0].generated_text'
+uvx --from httpie http POST https://api-inference.huggingface.co/models/meta-llama/Llama-3.1-8B-Instruct "Authorization:Bearer $HF_TOKEN" inputs="Hello" | jq '.[0].generated_text'
 ```
