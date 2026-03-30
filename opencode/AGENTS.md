@@ -1,3 +1,9 @@
+---
+name: AGENTS.md
+description: Baseline AGENTS.md template with modular includes
+mode: system
+---
+
 # **CRITICAL DIRECTIVE**: RESEARCH BEFORE ACTION, ALWAYS
 
 **BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive. User directives are highly specific, not suggestions. Verbally confirm what the user's stated directive was, your planned action, and why the goal you're pursuing is the exact goal the user stated, and not a task or goal you substituted yourself.
@@ -30,8 +36,6 @@ Never read source code directly until all of these options have been exhausted.
 10. **Never insert trivial section counters in markdown**. This becomes immediately stale as soon as a new section is added, and creates MORE work as more complexity is added. Similarly, do not number lists, subsections, etc manually, ever.
 11. **Never plow through important blockers**. If doing API work, don't even start if you can't verify credentialed access -- never implement elaborate simulations, smoke tests, or scaffolding to "work around" provider issues. Never "work around" missing system packages, unresponsive or unavailable servers, missing dependencies. Immediately stop to fix the gap, and if it can not be fixed by you (e.g. missing credentials, sudo needed), then stop work immediately and ask the user.
 
-
-# Behavioural Guidelines
 
 ## Epistemic Integrity
 
@@ -73,30 +77,6 @@ Every negative finding requires:
 No exceptions.
 
 
-## Chat Responses After Completing Work
-
-Do not summarize what was done.
-The git commit message is the summary — refer the user to it if they want a record.
-When finishing a task, review the entire chat history, identify the immediately most recent user directive/task request as well as the overall task.
-
-**Then chat output should contain only:**
-
-- Items NOT completed from the most recent task and why.
-- Gaps or open questions identified during the most recent task.
-- Errors or surprises that were skipped and need revisiting
-- Decisions made that may need user review or signoff
-- Items NOT completed from the overall task, due to branching, tangents, goal substitution or relaxation, or divergence of work with literal content of user's requests.
-- Next actions, if any
-
-**Chat output should never contain:**
-
-- Changelogs (should be in git history)
-- Summaries (unless explicitly requested)
-- Implications of completion or finalization when there are open tasks in the chat history.
-- Speculation not tied to specific evidence or investigations
-
-Touch only the files you intended to change; verify with `git diff` before responding.
-
 ## Corrections
 
 **When corrected:** LOAD `handling-corrections` skill before responding.
@@ -104,8 +84,24 @@ Do not act or use any tools until you have read this skill.
 Do not immediately pursue a new course of action.
 
 
+# Git Safety
 
-# System
+## Git Workflow
+
+All work is in **noisy repos** with others' uncommitted changes.
+Use `git add`/`git commit` for checkpoints.
+**For any git operation: LOAD `git-guidelines` skill.**
+
+## Why `git restore` and `git checkout` Are Banned
+
+These commands silently discard changes without creating an audit trail.
+
+**Instead of reverting state directly:**
+
+1. Commit your current work (checkpoint)
+2. `git diff` to identify the rollback point
+3. Apply the reverse diff as a new commit
+
 
 # Mathematics
 
@@ -140,8 +136,6 @@ Memories store durable, reusable agent context not captured in repository files.
   - In particular, all tests, type-checking, builds, publishing, etc must be routed through `just`, never run such processes or commands "manually".
 - Dependencies between projects should be routed through github and use `uvx`/`npx -y` calls when possible, or explicitly declared as dependencies. Do not tie across file system boundaries unless absolutely necessary.
 - **Never** set env vars inline in shell commands (e.g., `MYSECRET=123 some_command`) — these are visible in the process list. Use env files or exports instead.
-- PDF storage is managed in `~/pdf-extraction` with justfile recipes for extraction and conversion.
-- PDFs are stored in `~/pdfs` and should be organized into library-like subfolder trees.
 - **Before editing any JSON or YAML file: LOAD `config-file-editing` skill.** Never raw-edit config files.
 
 
@@ -153,12 +147,8 @@ Memories store durable, reusable agent context not captured in repository files.
 - `ctags` for code navigation — use `just -f ~/opencode-plugins/justfile -C ~/your/working/directory ctags`
 - `opencode` for most agent and LLM-related tasks.
   - Use `command opencode` instead of `opencode` to use the CLI instead of the background server.
-- `gemini`, `codex`, `claude`, `qwen`, `jules` for one-off agentic work, when usage is available.
+- `gemini`, `codex`, `claude`, `qwen` for one-off agentic work, when usage is available.
   - These are paid models, ask before using.
-- semtools `search` for semantically searching expository text,
-  - `npx -y -p @llamaindex/semtools search "spectral sequence" ~/notes/Obsidian/Unsorted/*.md`
-- PDF extraction: **LOAD `reading-pdfs` skill.** Use justfile recipes in `~/pdf-extraction`, not ad hoc installs.
-  - Never: `pdftotext`, `pymupdf`, etc. Extremely low quality. Prefer e.g. `mineru`
 - `open-issues` to list all outstanding open issues across synced plugin trackers.
 - `probe` and `ast-grep` for semantic searching — **always** `npx -y @probelabs/probe`. **LOAD `probe` skill.**
 - `jq` and `yq` for manipulating JSON and YAML
@@ -169,134 +159,24 @@ Memories store durable, reusable agent context not captured in repository files.
 - `ctx7` for doc lookup.
   - Search for library and get ID: ` npx ctx7 library react "hooks"`
   - Fetch docs for specific library ID: `npx ctx7 docs /facebook/react "useEffect"`
+- TheoremSearch for mathematical results. This is the primary method for looking up known theorems and formal mathematical statements.
+  - Example:
+    ```bash
+    uvx --from httpie http POST https://api.theoremsearch.com/search \
+      query="smooth DM stack codimension one" \
+      n_results:=5
+    ```
 - `deepwiki` for speeding up doc exploration, locating relevant code quicker
   - `uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp read-wiki-structure --repo-name facebook/react`
   - `uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp ask-question --repo-name facebook/react --question "How does useEffect work?"`
 - `mcp2cli` — CLI bridge for any MCP server. Use `--toon` for token-efficient output (40-60% token savings).
   - List tools (ALWAYS use --toon for LLM consumption) `uvx mcp2cli --mcp https://mcp.deepwiki.com/mcp --list --toon`
   - E.g. `uvx mcp2cli --mcp-stdio "npx @modelcontextprotocol/server-filesystem /tmp" --list --toon`
-
-### Live User Feedback
-
-Use these tools to present changes to users for real-time feedback:
-
-- **`submit_plan`** — use when iterating a plan. Never begin implementation without a user-approved plan.
-- **`plannotator_annotate`** Use after heavy document rewrites or additions.
-- **`plannotator_review`** — Use after significant commits.
-
-**When to use:**
-
-- After making significant git changes and before pushing/releasing
-- After heavy document rewrites or additions
-- Any time you want the user to review and annotate specific content in real-time
-
-### Scheduling Tasks
-
-Use `task-sched` to schedule persistent systemd tasks. For help, run `uvx git+https://github.com/dzackgarza/task-sched --help`.
-
-```bash
-# Add a recurring task
-uvx git+https://github.com/dzackgarza/task-sched add --command "echo 'heartbeat'" --schedule "hourly"
-
-# List scheduled tasks
-uvx git+https://github.com/dzackgarza/task-sched list
-```
-
-For one-off tasks, use `at`:
-
-```bash
-echo "opx chat --session ses_xxx --prompt 'continue work'" | at now + 30 minutes
-```
-
-### Waking Your Own Session
-
-After responding to a user, your actions halt immediately until you receive a new prompt. This halts continuous or long-term work — you cannot make progress on a task that requires multiple steps if no new message arrives.
-
-**To resume work later**, use the `at` scheduler to wake your own session:
-
-```bash
-# Get current session ID via introspection tool, then schedule a chat message:
-echo "npx --yes --package=git+https://github.com/dzackgarza/opencode-manager.git opx chat --session ses_XXXXXXXX --prompt 'continue the task'" | at now + 1 minute
-```
-
-This sends a new prompt to your session at a fixed time, effectively waking you up to continue work.
-
-**When to use:**
-
-- Multi-step tasks where you need to pause and resume later
-- Waiting for external processes or scheduled events
-- Long-running work that should continue after a delay
-
-
-
-
-# Git Guidelines
-
-## Git Workflow
-
-All work is in **noisy repos** with others' uncommitted changes.
-Use `git add`/`git commit` for checkpoints.
-**For any git operation: LOAD `git-guidelines` skill.**
-
-## Why `git restore` and `git checkout` Are Banned
-
-These commands silently discard changes without creating an audit trail.
-
-**Instead of reverting state directly:**
-
-1. Commit your current work (checkpoint)
-2. `git diff` to identify the rollback point
-3. Apply the reverse diff as a new commit
-
-**New feature work:** PR-driven via the GitHub CLI.
-
-## Delegating to Jules
-
-For smaller, well-scoped issues with clear acceptance criteria — especially those that are easily verifiable (bug fixes, test additions, lint fixes, documentation) — consider delegating to Jules via GitHub issues.
-
-**When appropriate:** straightforward tasks where the desired solution is already known, purely internal code changes, or work where research has already been done.
-
-**When to avoid:** tasks requiring external API research, complex integration with unfamiliar libraries, or work likely to need repeated prompting.
-
-Load the `jules` skill for the full workflow (create, monitor, review, feedback loop).
-
-
-## Issues
-
-Most tools in this environment are sourced from repos on the `dzackgarza` Github account.
-If you run into failures or unexpected surprises, stop and ask the user if you should file an issue on the repo.
-Do not file "bugs" for errors that have never actually been observed.
-For nontrivial features: work in a worktree with a branch → PR → `@codex review` → wait 3–5 min → **LOAD `git-guidelines` skill** to scan all comment surfaces correctly.
-
-
-## PRs
-
-### Handling Review Feedback
-
-**Reviewer comments require explicit action, not acknowledgment:**
-
-- Never simply "acknowledge" a comment without code changes
-- Every issue requires an explicit fix in an explicit commit
-- If an issue is too large for the current PR (sweeping changes, touches many files), create a new PR specifically for that fix
-- Never dismiss issues as "irrelevant", "out-of-scope", "won't-fix", or "acknowledged" without action
-- Never pretend a PR is ready until all feedback has been explicitly addressed with code changes or new issues warranting new PRs
-
-### What Qualifies as a PR
-
-**PRs are for significant work only.** Do not use PRs for:
-
-- Simple doc changes
-- Trivial bugs or features easily implemented in 5-10 writes/edits
-- One-off fixes that don't warrant review overhead
-
-**PRs are appropriate for:**
-
-- Entire features (dozens or hundreds of LOC changes)
-- 10+ commits of substantive work
-- Sensitive changes that might introduce regressions
-
-PRs trigger rate-limited reviews — reserve them for changes where mistakes, regressions, or LLM failure modes are more likely.
-
+- `httpie` for HTTP requests — **use `uvx --from httpie http`** for CLI HTTP client.
+  - GET request: `uvx --from httpie http GET https://example.com`
+  - POST with JSON: `uvx --from httpie http POST https://httpbin.org/post name=value`
+  - Download: `uvx --from httpie http --download https://example.com/file.zip`
+  - Note: `uvx httpie` alone is the plugin manager; use `uvx --from httpie http` for actual HTTP requests.
 
 
 # Misc

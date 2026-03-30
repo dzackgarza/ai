@@ -328,7 +328,7 @@ _build-opencode-agents-md:
 [private]
 _build-opencode-agents-md-render:
     @uvx --from git+https://github.com/dzackgarza/ai-prompts.git ai-prompts get system/AGENTS --json \
-      | jq -r '.body' \
+      | jq -r '.text' \
       | tee {{ repo }}/opencode/AGENTS.md \
       | wc -c \
       | xargs -I {} echo "Wrote {{ repo }}/opencode/AGENTS.md ({} bytes)"

@@ -23,8 +23,8 @@ disk-free:
     docker system prune -af --volumes 2>/dev/null || true
     bun pm cache rm 2>/dev/null || true
     yarn cache clean 2>/dev/null || true
-    sudo journalctl --vacuum-size=500M
     pip cache purge 2>/dev/null || true
+    sudo journalctl --vacuum-size=500M
     df -h
 
 
