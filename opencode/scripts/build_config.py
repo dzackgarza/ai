@@ -7,16 +7,14 @@ import glob
 import json
 import logging
 import os
-import sys
+import subprocess
 import urllib.request
 from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "permissions"))
 import jsonschema
 from rich.console import Console
 from rich.logging import RichHandler
-from src.agent_markdown import get_prompt
 
 _console = Console(stderr=True)
 _handler = RichHandler(
@@ -36,6 +34,7 @@ OUTPUT_PATH = BASE_DIR / "opencode.json"
 MODELS_DEV_API = "https://models.dev/api.json"
 SCHEMA_USER_AGENT = "opencode-config-builder/1.0"
 IGNORED_PROVIDERS = {"qwen-code"}
+AI_PROMPTS_SOURCE = "git+https://github.com/dzackgarza/ai-prompts.git"
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -49,12 +48,31 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
         handle.write("\n")
 
 
+def _get_prompt_text(slug: str) -> str:
+    result = subprocess.run(
+        [
+            "uvx",
+            "--from",
+            AI_PROMPTS_SOURCE,
+            "ai-prompts",
+            "get",
+            slug,
+            "--json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    payload = json.loads(result.stdout)
+    return str(payload["text"])
+
+
 def _resolve_prompt_slugs(value: Any) -> Any:
     if isinstance(value, dict):
         resolved: dict[str, Any] = {}
         for key, item in value.items():
             if key == "prompt_slug":
-                resolved["prompt"] = get_prompt(str(item)).text
+                resolved["prompt"] = _get_prompt_text(str(item))
                 continue
             resolved[key] = _resolve_prompt_slugs(item)
         return resolved

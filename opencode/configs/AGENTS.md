@@ -38,8 +38,8 @@ the top-level recipe writes there instead.
 - `providers/*.json`
 
 `scripts/build_config.py` ignores any skeleton-level `permission` block, then
-`permissions/main.py write-global-policy` applies the global permission
-baseline to the compiled `opencode.json`.
+`opencode-permission-policy-compiler set-global-policy global` applies the
+global permission baseline to the compiled `opencode.json`.
 
 ### Full repo build
 
@@ -73,5 +73,5 @@ baseline to the compiled `opencode.json`.
 | --- | --- |
 | Editing `opencode.json` directly | The next `just build-config` overwrites it |
 | Editing `../agents/*.md` directly | The next `just build-agents` overwrites them |
-| Running `permissions/main.py` to write agents | That writer path has been removed |
+| Running any removed repo-local permission writer path | Permission application is owned by the external policy compiler |
 | Updating prompt text locally without publishing `ai-prompts` | `just build-agents` fetches published slugs via `uvx` |

@@ -48,7 +48,7 @@ opencode_root := home / ".opencode"
 cc_safety_net_home := home / ".cc-safety-net"
 managed_agents_dir := env_var_or_default("AGENTS_DIR", opencode_dir / "agents")
 ai_prompts_source := "git+https://github.com/dzackgarza/ai-prompts.git"
-policy_compiler_dir := repo / "../opencode-plugins/opencode-permission-policy-compiler"
+policy_compiler_dir := repo / "../opencode-plugins/clis/opencode-permission-policy-compiler"
 
 # Show available recipes
 
@@ -222,7 +222,7 @@ _build-opencode-config-compile:
 
 [private]
 _build-opencode-config-apply-policy:
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py write-global-policy
+    @cd {{ policy_compiler_dir }} && uv run opencode-permission-policy-compiler set-global-policy global
 
 [private]
 _build-opencode-managed-agents:
