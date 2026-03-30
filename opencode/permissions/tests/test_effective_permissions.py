@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -23,6 +24,24 @@ def test_main_show_effective_runs_for_minimal_agent() -> None:
     assert result.returncode == 0, result.stderr or result.stdout
     assert "Effective permissions" in result.stdout
     assert "Minimal" in result.stdout
+
+
+def test_write_global_policy_omits_top_level_allow_rules(tmp_path: Path) -> None:
+    from main import write_global_policy_cmd
+
+    config_path = tmp_path / "opencode.json"
+    config_path.write_text('{"$schema":"https://example.test/schema","permission":{"question":"allow"}}\n')
+
+    write_global_policy_cmd(config_path)
+
+    payload = json.loads(config_path.read_text())
+    permission = payload["permission"]
+
+    assert "question" not in permission
+    assert "webfetch" not in permission
+    assert "bash" not in permission
+    assert permission["external_directory"]["*"] == "ask"
+    assert permission["external_directory"]["/tmp/*"] == "allow"
 
 
 def test_unrestricted_test_agent_compiles_to_allow_every_known_tool() -> None:

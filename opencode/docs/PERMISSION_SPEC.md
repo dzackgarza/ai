@@ -268,7 +268,7 @@ Allowed exception:
 - only dedicated coordinator subagents, explicitly designated by Orchestrator policy, may receive `task`/`todoread`/`todowrite`: allow.
 
 For **ALL_AGENTS**:
-- `bash`: deny by default at global baseline
+- `bash`: explicitly modeled as `allow` in the global policy source; it is omitted from compiled config because the compiled default is already `allow`
 - `serena_execute_shell_command`: deny (non-overridable)
 - Serena memory CRUD is allowed (`serena_read_memory`, `serena_list_memories`, `serena_write_memory`, `serena_edit_memory`, `serena_delete_memory`, `serena_rename_memory`)
 - disable Serena onboarding/workflow helpers (`serena_onboarding`, `serena_prepare_for_new_conversation`, `serena_initial_instructions`, `serena_think_about_*`) and enforce this via global deny list
@@ -382,7 +382,7 @@ Allow:
 - broad read/search
 - controlled edits for low-risk tasks
 - standard local verification commands
-- `bash` command surface (role exception to global `bash: deny`)
+- `bash` command surface, with the same explicit global `allow` policy and no special-case stamping in compiled config
 
 Deny:
 - broad orchestration permissions by default
@@ -455,8 +455,8 @@ Policy for changes:
 8. Apply profile updates using the repo-level build workflow:
 
 ```bash
-just build-agents
 just build-config
+just build-agents
 ```
 
 Do not rely on direct edits to generated permission blocks in `agents/*.md` or compiled `opencode.json`.

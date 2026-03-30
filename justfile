@@ -191,15 +191,41 @@ reset-sandbox:
 run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
-# Build all OpenCode components (agents, config, and documentation)
-build: check-plugins build-agents build-config build-agents-md
+# Build the full OpenCode pipeline in canonical order.
+# Steps:
+# - check plugin preflight
+# - compile opencode.json from the skeleton and provider fragments
+# - apply the global permission policy to the compiled config
+# - build managed agent markdown from published ai-prompts slugs
+# - render the repo-local AGENTS.md template and count its tokens
+build: check-plugins build-config build-agents _build-opencode-agents-md
 
-# Surgical build for config only
+# Build only the compiled OpenCode config pipeline.
+# Steps:
+# - compile opencode.json from source config fragments
+# - apply the global permission baseline to the compiled file
 build-config:
+    @just --justfile {{ justfile() }} _build-opencode-config-compile
+    @just --justfile {{ justfile() }} _build-opencode-config-apply-policy
+
+# Build only the managed OpenCode agent markdown files.
+# Steps:
+# - fetch each published ai-prompts slug
+# - compile prompt permissions with the external policy compiler
+# - write the generated markdown into the managed agents directory
+build-agents:
+    @just --justfile {{ justfile() }} _build-opencode-managed-agents
+
+[private]
+_build-opencode-config-compile:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 
-# Build managed OpenCode agents from published ai-prompts slugs
-build-agents:
+[private]
+_build-opencode-config-apply-policy:
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python permissions/main.py write-global-policy
+
+[private]
+_build-opencode-managed-agents:
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -290,19 +316,26 @@ check-plugins:
 # AGENTS.md Template
 # =============================================================================
 
-# Compile system/AGENTS template and write body to ~/ai/opencode/AGENTS.md
-build-agents-md:
+[private]
+_build-opencode-agents-md:
+    @just --justfile {{ justfile() }} _build-opencode-agents-md-render
+    @just --justfile {{ justfile() }} count-tokens {{ repo }}/opencode/AGENTS.md
+
+# Render the repo-local AGENTS.md from the published system template.
+# Steps:
+# - fetch the system/AGENTS prompt body from ai-prompts
+# - write it into ~/ai/opencode/AGENTS.md
+[private]
+_build-opencode-agents-md-render:
     @uvx --from git+https://github.com/dzackgarza/ai-prompts.git ai-prompts get system/AGENTS --json \
       | jq -r '.body' \
       | tee {{ repo }}/opencode/AGENTS.md \
       | wc -c \
       | xargs -I {} echo "Wrote {{ repo }}/opencode/AGENTS.md ({} bytes)"
-    @just --justfile {{ justfile() }} _count-agents-tokens
 
-# Count tokens in AGENTS.md using tiktoken (cl100k_base)
-[private]
-_count-agents-tokens:
-    @uvx --with tiktoken python -c 'import tiktoken; from pathlib import Path; text = Path("{{ repo }}/opencode/AGENTS.md").read_text(); count = len(tiktoken.get_encoding("cl100k_base").encode(text)); print(f"{count} tokens")'
+# Count tokens in any file using tiktoken (cl100k_base).
+count-tokens file:
+    @uvx --with tiktoken python -c 'import sys, tiktoken; from pathlib import Path; path = Path(sys.argv[1]); text = path.read_text(); count = len(tiktoken.get_encoding("cl100k_base").encode(text)); print(f"{path}: {count} tokens")' {{ file }}
 
 # =============================================================================
 # Linting & Formatting

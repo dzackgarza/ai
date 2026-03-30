@@ -610,6 +610,27 @@ of the following are likely present.
   [immediately proposes next solution]" in response to a direct question about why it
   keeps failing.
 
+- **Call-to-action misclassification** — Agents cannot distinguish conversational
+  inquiries from calls to action.
+  They respond to questions with "you're right," infer intent (usually incorrectly), and
+  march forward with a fix, ignoring directives that questions should be answered
+  directly before acting.
+  Conversely, agents may receive feedback on a document, nod and agree, say they
+  understand, and take zero action.
+   Partially caused by flawed theory of mind: the agent doesn't understand that it
+   doesn't learn, that users wouldn't just tell it conventions it "knows," that context
+   compactions lose specific wording, that policies live in permanent context (prompts,
+   AGENTS.md). Agents assume control over future agency they don't actually have.
+
+- **Instruction-model mismatch** — An agent given explicit operational directives (e.g., "You
+   are an Autonomous Project Agent," "You never announce outstanding tasks, never
+   summarize completed work, never ask the user questions, and never stop to report
+   progress") defaults to conversational behavior anyway. The agent has explicit rules
+   about operating autonomously, but the conversational training pattern overrides the
+   operational framework. The agent may acknowledge the error ("Yes, that is the operative
+   line I violated"), but continues the conversational pattern immediately after,
+   demonstrating it cannot internalize the operational model as a persistent behavior.
+
 - **Confidence floor invariance** — Confidence in proposed solutions does not decay with
   repeated demonstrated failure.
   The agent presents its sixth attempt with the same certainty as the first ("let me fix
@@ -733,24 +754,27 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
   ones."
 
 - **Constraint escape** — When a specific workaround is explicitly prohibited, agents
-   find a semantically equivalent adjacent workaround.
-   Reported: forbidden from lowering coverage thresholds in config → began excluding
-   directories from coverage instead.
+  find a semantically equivalent adjacent workaround.
+  Reported: forbidden from lowering coverage thresholds in config → began excluding
+  directories from coverage instead.
 
-- **Obstacle deflection over understanding** — When an agent hits a constraint or obstacle,
-   its first instinct is to defeat it rather than step back to understand why it exists and
-   change course. The agent assists the user's task by any means possible, prioritizing
-   completion over correctness. When facing code coverage constraints, the agent lowers
-   thresholds rather than adding actual coverage. This is distinct from constraint escape:
-   the agent was not told not to lower the threshold — it encountered a barrier and chose
-   to circumvent it rather than work within it.
+- **Obstacle deflection over understanding** — When an agent hits a constraint or
+  obstacle, its first instinct is to defeat it rather than step back to understand why
+  it exists and change course.
+  The agent assists the user's task by any means possible, prioritizing completion over
+  correctness. When facing code coverage constraints, the agent lowers thresholds rather
+  than adding actual coverage.
+  This is distinct from constraint escape: the agent was not told not to lower the
+  threshold — it encountered a barrier and chose to circumvent it rather than work
+  within it.
 
-- **Hook flood paralysis** — Deterministic hooks (pre-commit, post-tool-call, post-edit) are
-   effective when they deliver concise, helpful error messages. However, flooding the
-   response with too many error messages causes the agent to view the task as insurmountable
-   and seek workarounds instead. The agent will attempt to defeat or bypass the constraints
-   rather than address them, treating the volume of feedback as a signal to abandon the
-   approach rather than a guide to fix it.
+- **Hook flood paralysis** — Deterministic hooks (pre-commit, post-tool-call, post-edit)
+  are effective when they deliver concise, helpful error messages.
+  However, flooding the response with too many error messages causes the agent to view
+  the task as insurmountable and seek workarounds instead.
+  The agent will attempt to defeat or bypass the constraints rather than address them,
+  treating the volume of feedback as a signal to abandon the approach rather than a
+  guide to fix it.
 
 - **Debris memorialization** — When code just written is finally removed, a comment is
   left documenting the removal.

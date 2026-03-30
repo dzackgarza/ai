@@ -37,13 +37,17 @@ the top-level recipe writes there instead.
 - `config_skeleton.json`
 - `providers/*.json`
 
+`scripts/build_config.py` ignores any skeleton-level `permission` block, then
+`permissions/main.py write-global-policy` applies the global permission
+baseline to the compiled `opencode.json`.
+
 ### Full repo build
 
 `just build` runs the repo-level OpenCode build flow:
 
 - `just check-plugins`
-- `just build-agents`
 - `just build-config`
+- `just build-agents`
 - `just build-agents-md`
 
 ## Update Workflow

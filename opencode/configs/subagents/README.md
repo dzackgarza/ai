@@ -9,6 +9,10 @@ This directory no longer holds the runtime subagent definitions.
 - Population workflow: `just build-agents` from `~/ai`
 - Permission compilation: `~/opencode-plugins/opencode-permission-policy-compiler`
 
+The repo-level build runs `just build-config` first so the compiled
+`opencode.json` receives the global permission baseline before agent markdown
+is regenerated.
+
 ## Update Flow
 
 - update or publish the source prompt in `ai-prompts`

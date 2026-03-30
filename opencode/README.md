@@ -64,8 +64,9 @@ the owning subtrees instead of adding new root clutter.
   1. Fetches published `ai-prompts` prompt slugs via `uvx`
   2. Pipes each markdown prompt through `opencode-permission-policy-compiler`
   3. Writes the resulting OpenCode agent markdown into `agents/*.md`
-- `just build-config` rebuilds `opencode.json` through `scripts/build_config.py`
-- `just build` runs the full repo-level flow (`check-plugins`, `build-agents`, `build-config`, `build-agents-md`)
+- `just build-config` rebuilds `opencode.json` through `scripts/build_config.py` while ignoring any skeleton-level `permission` block, then applies the global permission baseline via `permissions/main.py write-global-policy`
+- The compiled global policy writes only non-default permission rules. `bash` remains explicitly set to `allow` in the source global policy, but is omitted from compiled config because the runtime default is already `allow`.
+- `just build` runs the full repo-level flow (`check-plugins`, `build-config`, `build-agents`, `build-agents-md`)
 - The builder also counts tokens for fully rendered prompts and warns when any generated agent exceeds the configured threshold (`OPENCODE_AGENT_TOKEN_WARNING_THRESHOLD`, default `5000`).
 
 ---

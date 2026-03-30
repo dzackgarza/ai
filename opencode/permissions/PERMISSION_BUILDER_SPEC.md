@@ -29,7 +29,7 @@ That recipe performs a three-stage pipeline for each managed agent:
 just build-agents
 ```
 
-The repo-level `build` recipe calls `build-agents` before `build-config`.
+The repo-level `build` recipe calls `build-config` before `build-agents`.
 
 ## Managed Agent Manifest
 

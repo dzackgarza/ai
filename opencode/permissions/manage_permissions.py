@@ -540,8 +540,8 @@ BASELINE_PLUGIN_DENIES = {
 
 GLOBAL_PERMISSION = deep_merge(
     ALLOW_STANDARD_CORE,
+    {"bash": "allow"},
     {"question": "allow"},
-    {"bash": "deny"},
     BASELINE_PLUGIN_DENIES,
 )
 
