@@ -772,257 +772,37 @@
         }
       }
     },
-    "kiro": {
-      "blacklist": [],
+    "kiro-proxy": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Kiro Proxy",
+      "options": {
+        "baseURL": "http://127.0.0.1:18080/v1",
+        "apiKey": "my-super-secret-password-123"
+      },
       "models": {
-        "claude-sonnet-4-5": {
-          "name": "Claude Sonnet 4.5 (1.3x)",
+        "claude-3.7-sonnet": {
+          "name": "Claude 3.7 Sonnet",
           "limit": {
             "context": 200000,
             "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {},
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "medium": {
-              "thinkingConfig": {
-                "thinkingBudget": 16384
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
           }
         },
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6 (1.3x)",
+        "claude-haiku-4.5": {
+          "name": "Claude Haiku 4.5 (0.40x)",
           "limit": {
             "context": 200000,
             "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {},
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "medium": {
-              "thinkingConfig": {
-                "thinkingBudget": 16384
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
           }
-        },
-        "claude-haiku-4-5": {
-          "name": "Claude Haiku 4.5 (0.4x)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "claude-opus-4-5": {
-          "name": "Claude Opus 4.5 (2.2x)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {},
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "medium": {
-              "thinkingConfig": {
-                "thinkingBudget": 16384
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
-        },
-        "claude-opus-4-6": {
-          "name": "Claude Opus 4.6 (2.2x)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {},
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "medium": {
-              "thinkingConfig": {
-                "thinkingBudget": 16384
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
-        },
-        "claude-opus-4-6-1m": {
-          "name": "Claude Opus 4.6 1M (2.2x)",
-          "limit": {
-            "context": 1000000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {},
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "medium": {
-              "thinkingConfig": {
-                "thinkingBudget": 16384
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
-        },
-        "claude-sonnet-4-5-1m": {
-          "name": "Claude Sonnet 4.5 1M (1.3x)",
-          "limit": {
-            "context": 1000000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "claude-sonnet-4-6-1m": {
-          "name": "Claude Sonnet 4.6 1M (1.3x)",
-          "limit": {
-            "context": 1000000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {},
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "medium": {
-              "thinkingConfig": {
-                "thinkingBudget": 16384
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
-        },
-        "auto": {
-          "name": "Auto (1.0x)"
         },
         "claude-sonnet-4": {
-          "name": "Claude Sonnet 4.0 (1.3x)",
+          "name": "Claude Sonnet 4 (1.30x)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          }
+        },
+        "claude-sonnet-4.5": {
+          "name": "Claude Sonnet 4.5 (1.30x)",
           "limit": {
             "context": 200000,
             "output": 64000
@@ -1035,15 +815,15 @@
             "output": 64000
           }
         },
-        "minimax-m2.5": {
-          "name": "MiniMax 2.5 (0.25x)",
+        "minimax-m2.1": {
+          "name": "MiniMax M2.1 (0.15x)",
           "limit": {
             "context": 200000,
             "output": 64000
           }
         },
-        "minimax-m2.1": {
-          "name": "MiniMax 2.1 (0.15x)",
+        "minimax-m2.5": {
+          "name": "MiniMax M2.5 (0.25x)",
           "limit": {
             "context": 200000,
             "output": 64000
@@ -1055,8 +835,16 @@
             "context": 256000,
             "output": 64000
           }
+        },
+        "auto": {
+          "name": "Auto (1.00x)",
+          "limit": {
+            "context": 128000,
+            "output": 64000
+          }
         }
-      }
+      },
+      "blacklist": []
     },
     "nvidia": {
       "npm": "@ai-sdk/openai-compatible",

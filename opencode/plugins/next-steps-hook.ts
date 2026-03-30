@@ -38,7 +38,19 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
 
       const sessionID = event.properties.sessionID;
 
-      // 2. Fetch messages to get the last assistant response
+      // 2. Skip if this is a subagent session
+      try {
+        const sessionInfo = await client.session.get({
+          sessionID: sessionID,
+        });
+        if (sessionInfo.data?.parentID) {
+          return; // Skip subagent sessions
+        }
+      } catch {
+        // If session.get fails, continue (might be older SDK)
+      }
+
+      // 3. Fetch messages to get the last assistant response
       const { data: messages } = await client.session.messages({
         path: { id: sessionID },
       });
@@ -54,7 +66,7 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
         return;
       }
 
-      // 3. Extract last assistant message text
+      // 4. Extract last assistant message text
       const lastAssistant = messages
         .slice()
         .reverse()
@@ -65,14 +77,14 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
         ?.map((p: any) => p.text)
         ?.join('');
 
-      // 4. Check for trigger phrases and get matching response
+      // 5. Check for trigger phrases and get matching response
       const normalizedText = lastText?.toLowerCase() ?? '';
       const matchedEntry = PHRASE_LOOKUP.find((entry) =>
         entry.phrases.some((phrase) => normalizedText.includes(phrase.toLowerCase())),
       );
 
       if (matchedEntry) {
-        // 5. Get the last user message to extract the current model
+        // 6. Get the last user message to extract the current model
         const lastUserMessage = messages
           .slice()
           .reverse()
@@ -91,7 +103,7 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
           return;
         }
 
-        // 6. Inject the corresponding response using the same model
+        // 7. Inject the corresponding response using the same model
         await client.session.promptAsync({
           path: { id: sessionID },
           body: {

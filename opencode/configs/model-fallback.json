@@ -1,7 +1,13 @@
 {
   "enabled": true,
   "defaults": {
-    "fallbackOn": ["rate_limit", "quota_exceeded", "5xx", "timeout", "overloaded"],
+    "fallbackOn": [
+      "rate_limit",
+      "quota_exceeded",
+      "5xx",
+      "timeout",
+      "overloaded"
+    ],
     "cooldownMs": 300000,
     "retryOriginalAfterMs": 900000,
     "maxFallbackDepth": 3
@@ -11,7 +17,7 @@
       "fallbackModels": [
         "openai/gpt-5.4",
         "anthropic/claude-sonnet-4-6",
-        "kiro/claude-sonnet-4-6",
+        "kiro-proxy/claude-sonnet-4.5",
         "ollama-cloud/minimax-m2.7",
         "kilo/minimax/minimax-m2.5:free",
         "opencode/minimax-m2.5-free",

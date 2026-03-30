@@ -1,0 +1,74 @@
+{
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "Kiro Proxy",
+  "options": {
+    "baseURL": "http://127.0.0.1:18080/v1",
+    "apiKey": "my-super-secret-password-123"
+  },
+  "models": {
+    "claude-3.7-sonnet": {
+      "name": "Claude 3.7 Sonnet",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      }
+    },
+    "claude-haiku-4.5": {
+      "name": "Claude Haiku 4.5 (0.40x)",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      }
+    },
+    "claude-sonnet-4": {
+      "name": "Claude Sonnet 4 (1.30x)",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      }
+    },
+    "claude-sonnet-4.5": {
+      "name": "Claude Sonnet 4.5 (1.30x)",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      }
+    },
+    "deepseek-3.2": {
+      "name": "DeepSeek 3.2 (0.25x)",
+      "limit": {
+        "context": 128000,
+        "output": 64000
+      }
+    },
+    "minimax-m2.1": {
+      "name": "MiniMax M2.1 (0.15x)",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      }
+    },
+    "minimax-m2.5": {
+      "name": "MiniMax M2.5 (0.25x)",
+      "limit": {
+        "context": 200000,
+        "output": 64000
+      }
+    },
+    "qwen3-coder-next": {
+      "name": "Qwen3 Coder Next (0.05x)",
+      "limit": {
+        "context": 256000,
+        "output": 64000
+      }
+    },
+    "auto": {
+      "name": "Auto (1.00x)",
+      "limit": {
+        "context": 128000,
+        "output": 64000
+      }
+    }
+  },
+  "blacklist": []
+}
