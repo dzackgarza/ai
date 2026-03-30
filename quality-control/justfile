@@ -81,12 +81,12 @@ _no-bypass:
 _venv:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv venv --allow-existing
+	echo "Using uvx/npx tool runners; no local Python tool install step."
 
 _install-tools: _venv
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv pip install coverage diff-cover vulture deptry semgrep lizard import-linter ruff
+	echo "Using uvx/npx tool runners; no local Python tool install step."
 
 _normalize: _install-tools
 	#!/usr/bin/env bash
@@ -95,19 +95,19 @@ _normalize: _install-tools
 		echo "Skipping ruff normalization: no pyproject.toml found."
 		exit 0
 	fi
-	uv run ruff check --fix .
-	uv run ruff format .
+	uvx --from ruff ruff check --fix .
+	uvx --from ruff ruff format .
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run coverage run -m pytest
-	uv run coverage xml --fail-under=100 -o coverage.xml
+	uvx --from coverage --with pytest --with-editable . coverage run -m pytest
+	uvx --from coverage coverage xml --fail-under=100 -o coverage.xml
 
 _diff-cover: _coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
+	uvx --from diff-cover diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
 
 _vulture: _install-tools
 	#!/usr/bin/env bash
@@ -116,17 +116,17 @@ _vulture: _install-tools
 		echo "Skipping vulture: no src/tests paths found."
 		exit 0
 	fi
-	uv run vulture --config {{justfile_directory()}}/pyproject.toml
+	uvx --from vulture vulture --config {{justfile_directory()}}/pyproject.toml
 
 _deptry: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run deptry .
+	uvx --from deptry deptry .
 
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run semgrep scan --config={{justfile_directory()}}/semgrep.yml --config=p/ci --autofix .
+	uvx --from semgrep semgrep scan --config={{justfile_directory()}}/semgrep.yml --config=p/ci --autofix .
 
 _jscpd:
 	#!/usr/bin/env bash
@@ -136,7 +136,7 @@ _jscpd:
 _lizard: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run lizard src -l python -C 7 -L 100 -a 5 -i 0 \
+	uvx --from lizard lizard src -l python -C 7 -L 100 -a 5 -i 0 \
 		-x "*/node_modules/*" \
 		-x "*/__pycache__/*" \
 		-x "*/.venv/*" \
@@ -157,7 +157,7 @@ _import-linter: _install-tools
 		echo "Skipping import-linter: no project-specific import-linter config found."
 		exit 0
 	fi
-	uv run lint-imports --config "$config"
+	uvx --from import-linter --with-editable . lint-imports --config "$config"
 
 _grain:
 	#!/usr/bin/env bash
