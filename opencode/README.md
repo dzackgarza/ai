@@ -74,7 +74,7 @@ the owning subtrees instead of adding new root clutter.
 - The global permission-policy definition lives in `configs/opencode-permission-policy-compiler/config.toml`.
 - Managed agent permission overlays are compiled by the external `opencode-permission-policy-compiler`.
 - `just install` symlinks that repo policy directory into `~/.config/opencode-permission-policy-compiler` for the external compiler.
-- Avoid wildcard suffixes in permission paths such as `/path/*`. Directory path entries already apply under that tree, and runtime globbing just bloats permission-match logs.
+- Use `/*` suffixes for `external_directory` permission paths. The current OpenCode runtime asks for approvals using derived directory globs like `/path/to/dir/*`, so bare directory entries do not match those prompts.
 
 ---
 

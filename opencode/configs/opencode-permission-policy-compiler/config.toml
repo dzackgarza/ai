@@ -76,24 +76,24 @@ compress = "allow"
 
 [policies.global.external_directory]
 "*" = "ask"
-"/home/dzack/.cache" = "allow"
-"/home/dzack/.cache/opencode-arxiv-library" = "allow"
-"/home/dzack/.cache/opencode-webfetch" = "allow"
-"/home/dzack/.config/agents/skills" = "allow"
-"/home/dzack/.config/amp/skills" = "allow"
-"/home/dzack/.config/opencode/skills" = "allow"
-"/home/dzack/ai" = "allow"
-"/home/dzack/.agents" = "allow"
-"/home/dzack/.agents/skills" = "allow"
-"/home/dzack/.claude/skills" = "allow"
-"/home/dzack/.codex/skills" = "allow"
-"/home/dzack/.kilocode/skills" = "allow"
-"/home/dzack/.local/share/opencode-memory" = "allow"
-"/home/dzack/.plannotator" = "allow"
-"/home/dzack/.qwen/skills" = "allow"
-"/home/dzack/pdf-extraction" = "allow"
-"/home/dzack/pdfs" = "allow"
-"/tmp" = "allow"
+"/home/dzack/.cache/*" = "allow"
+"/home/dzack/.cache/opencode-arxiv-library/*" = "allow"
+"/home/dzack/.cache/opencode-webfetch/*" = "allow"
+"/home/dzack/.config/agents/skills/*" = "allow"
+"/home/dzack/.config/amp/skills/*" = "allow"
+"/home/dzack/.config/opencode/skills/*" = "allow"
+"/home/dzack/ai/*" = "allow"
+"/home/dzack/.agents/*" = "allow"
+"/home/dzack/.agents/skills/*" = "allow"
+"/home/dzack/.claude/skills/*" = "allow"
+"/home/dzack/.codex/skills/*" = "allow"
+"/home/dzack/.kilocode/skills/*" = "allow"
+"/home/dzack/.local/share/opencode-memory/*" = "allow"
+"/home/dzack/.plannotator/*" = "allow"
+"/home/dzack/.qwen/skills/*" = "allow"
+"/home/dzack/pdf-extraction/*" = "allow"
+"/home/dzack/pdfs/*" = "allow"
+"/tmp/*" = "allow"
 
 [policies.subagents]
 task = "deny"
@@ -101,6 +101,49 @@ question = "deny"
 submit_plan = "deny"
 plannotator_review = "deny"
 plannotator_annotate = "deny"
+
+# Restrictive orchestration role:
+# - inspect the repo with non-mutating tools
+# - delegate via task
+# - use memory + skills
+# - edit only under the project-root .agents directory
+# - use a small git-only bash allowlist
+[policies.autonomous-orchestrator-only]
+"*" = "deny"
+read = "allow"
+list = "allow"
+glob = "allow"
+grep = "allow"
+task = "allow"
+skill = "allow"
+list_memories = "allow"
+remember = "allow"
+forget = "allow"
+todowrite = "allow"
+serena_activate_project = "allow"
+question = "deny"
+submit_plan = "deny"
+plannotator_review = "deny"
+plannotator_annotate = "deny"
+
+[policies.autonomous-orchestrator-only.edit]
+"*" = "deny"
+".agents/*" = "allow"
+
+[policies.autonomous-orchestrator-only.bash]
+"*" = "deny"
+"git" = "allow"
+"git *" = "allow"
+"date" = "allow"
+"date *" = "allow"
+
+[policies.autonomous-orchestrator-only.external_directory]
+"*" = "deny"
+"/home/dzack/ai/opencode/skills/*" = "allow"
+"/home/dzack/.config/opencode/skills/*" = "allow"
+"/home/dzack/.config/agents/skills/*" = "allow"
+"/home/dzack/.agents/skills/*" = "allow"
+"/home/dzack/.local/share/opencode-memory/*" = "allow"
 
 # Replace a scalar permission with a table like the examples below when you need
 # path-, glob-, or command-specific matching rules.
@@ -121,7 +164,6 @@ plannotator_annotate = "deny"
 
 # [policies.global.external_directory]
 # "*" = "ask"
-# Avoid wildcard suffixes like "/path/*" in permission paths. OpenCode treats a
-# directory path entry as recursive already; adding runtime globbing only bloats
-# permission-match logs and is not needed.
-# "/path/to/trusted/root/**" = "allow"
+# OpenCode currently asks for external-directory approval using a derived
+# "/path/to/dir/*" pattern, so the allow rule must include that suffix.
+# "/path/to/trusted/root/*" = "allow"

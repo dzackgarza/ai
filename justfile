@@ -252,6 +252,11 @@ _build-opencode-managed-agents:
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/autonomous.md"
 
+    echo "Building orchestrator.md from interactive-agents/orchestrator"
+    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/orchestrator \
+      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
+      > "$output_dir/orchestrator.md"
+
     echo "Building build.md from interactive-agents/build"
     uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/build \
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \

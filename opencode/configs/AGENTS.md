@@ -63,7 +63,7 @@ to the compiled `opencode.json`.
 ### To change the global policy definition
 
 - edit `configs/opencode-permission-policy-compiler/config.toml`
-- do not add wildcard suffixes like `/path/*`; directory path entries already apply recursively and wildcard matching only bloats runtime permission logs
+- use `/*` suffixes for `external_directory` permission paths; the current OpenCode runtime asks for approvals using derived directory globs like `/path/to/dir/*`, so bare directory entries do not match those prompts
 - run `just build-config`
 
 ### To change provider or top-level config
