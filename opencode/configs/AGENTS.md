@@ -10,7 +10,8 @@
 
 - Top-level agent build workflow: `~/ai/justfile` `build-agents`
 - Published prompt sources: `ai-prompts`
-- Policy compiler: `~/opencode-plugins/opencode-permission-policy-compiler`
+- External config/agent compiler: `~/opencode-plugins/clis/opencode-permission-policy-compiler`
+- Policy definition: `configs/opencode-permission-policy-compiler/config.toml`
 - Config skeleton: `config_skeleton.json`
 - Provider fragments: `providers/*.json`
 - Config assembly: `../scripts/build_config.py`
@@ -24,7 +25,7 @@
 For each managed agent, it:
 
 - fetches the published prompt slug from `ai-prompts` with `uvx`
-- pipes that markdown through `opencode-permission-policy-compiler`
+- pipes that markdown through the external compiler
 - writes the resulting OpenCode agent markdown into the managed agents directory
 
 By default the managed agents directory is `../agents/`. If `AGENTS_DIR` is exported,
@@ -39,7 +40,8 @@ the top-level recipe writes there instead.
 
 `scripts/build_config.py` ignores any skeleton-level `permission` block, then
 `opencode-permission-policy-compiler set-global-policy global` applies the
-global permission baseline to the compiled `opencode.json`.
+current global baseline from `configs/opencode-permission-policy-compiler/config.toml`
+to the compiled `opencode.json`.
 
 ### Full repo build
 
@@ -55,8 +57,14 @@ global permission baseline to the compiled `opencode.json`.
 ### To change a managed agent
 
 - edit or publish the prompt slug in `ai-prompts`
-- update the policy compiler if permission behavior must change
+- update the external compiler if build behavior must change
 - run `just build-agents`
+
+### To change the global policy definition
+
+- edit `configs/opencode-permission-policy-compiler/config.toml`
+- do not add wildcard suffixes like `/path/*`; directory path entries already apply recursively and wildcard matching only bloats runtime permission logs
+- run `just build-config`
 
 ### To change provider or top-level config
 
@@ -73,5 +81,4 @@ global permission baseline to the compiled `opencode.json`.
 | --- | --- |
 | Editing `opencode.json` directly | The next `just build-config` overwrites it |
 | Editing `../agents/*.md` directly | The next `just build-agents` overwrites them |
-| Running any removed repo-local permission writer path | Permission application is owned by the external policy compiler |
 | Updating prompt text locally without publishing `ai-prompts` | `just build-agents` fetches published slugs via `uvx` |

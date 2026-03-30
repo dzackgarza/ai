@@ -29,6 +29,7 @@ prettier_config := quality_control_dir / "prettier-global.json"
 # Tool configs
 
 cc_safety_net := opencode_dir / "configs" / "cc-safety-net.json"
+opencode_permission_policy_config_dir := opencode_dir / "configs" / "opencode-permission-policy-compiler"
 tmux_conf := dotfiles_dir / "tmux.conf"
 tmux_powerline_config := dotfiles_dir / "tmux-powerline" / "config.sh"
 tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.sh"
@@ -40,6 +41,7 @@ codex_home := home / ".codex"
 gemini_home := home / ".gemini"
 qwen_home := home / ".qwen"
 opencode_home := home / ".config/opencode"
+opencode_permission_policy_home := home / ".config/opencode-permission-policy-compiler"
 kilo_home := home / ".config/kilo"
 amp_home := home / ".config/amp"
 agents_home := home / ".agents"
@@ -65,7 +67,8 @@ install:
     echo "Verifying repository targets..."
     for target in "{{ agents_md }}" "{{ skills_dir }}" "{{ ruff_config }}" "{{ mypy_config }}" \
                   "{{ black_config }}" "{{ eslint_config }}" "{{ prettier_config }}" \
-                  "{{ cc_safety_net }}" "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
+                  "{{ cc_safety_net }}" "{{ opencode_permission_policy_config_dir }}/config.toml" \
+                  "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
                   "{{ tmux_powerline_theme }}"; do
         if [ ! -e "$target" ]; then
             echo "Error: Target $target does not exist. Aborting."
@@ -86,6 +89,10 @@ install:
     ln -snf "{{ agents_md }}" "{{ amp_home }}/AGENTS.md"
     ln -snf "{{ agents_md }}" "{{ home }}/.config/AGENTS.md"
     ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
+    if [ -d "{{ opencode_permission_policy_home }}" ] && [ ! -L "{{ opencode_permission_policy_home }}" ]; then
+        mv "{{ opencode_permission_policy_home }}" "{{ opencode_permission_policy_home }}.bak.$(date +%Y%m%d%H%M%S)"
+    fi
+    ln -snf "{{ opencode_permission_policy_config_dir }}" "{{ opencode_permission_policy_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
     ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
 
@@ -126,6 +133,7 @@ install:
     echo "Symlink targets (actual):"
     printf "%-30s -> %s\n" "~/.gemini/GEMINI.md" "$(readlink {{ gemini_home }}/GEMINI.md)"
     printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
+    printf "%-30s -> %s\n" "~/.config/opencode-permission-policy-compiler" "$(readlink {{ opencode_permission_policy_home }})"
     printf "%-30s -> %s\n" "~/.config/ruff/ruff.toml" "$(readlink {{ home }}/.config/ruff/ruff.toml)"
     printf "%-30s -> %s\n" "~/.config/black/black.toml" "$(readlink {{ home }}/.config/black/black.toml)"
     printf "%-30s -> %s\n" "~/.mypy.ini" "$(readlink {{ home }}/.mypy.ini)"

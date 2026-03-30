@@ -64,16 +64,17 @@ the owning subtrees instead of adding new root clutter.
   2. Pipes each markdown prompt through `opencode-permission-policy-compiler`
   3. Writes the resulting OpenCode agent markdown into `agents/*.md`
 - `just build-config` rebuilds `opencode.json` through `scripts/build_config.py` while ignoring any skeleton-level `permission` block, then applies the global permission baseline via `opencode-permission-policy-compiler set-global-policy global`
-- The global permission policy is owned by the external `opencode-permission-policy-compiler` XDG config, not by repo-local Python constants in this repo.
+- The permission-policy definition lives in `configs/opencode-permission-policy-compiler/config.toml`, and `just install` symlinks that repo directory into the XDG config location consumed by `opencode-permission-policy-compiler`.
 - `just build` runs the full repo-level flow (`check-plugins`, `build-config`, `build-agents`, `build-agents-md`)
 - The builder also counts tokens for fully rendered prompts and warns when any generated agent exceeds the configured threshold (`OPENCODE_AGENT_TOKEN_WARNING_THRESHOLD`, default `5000`).
 
 ### Permission Ownership
 
-- This repo does not own a local permission compiler or local permission policy source of truth.
-- Global policy is defined in the XDG config consumed by `opencode-permission-policy-compiler`.
+- This repo does not own a local permission compiler implementation.
+- The global permission-policy definition lives in `configs/opencode-permission-policy-compiler/config.toml`.
 - Managed agent permission overlays are compiled by the external `opencode-permission-policy-compiler`.
-- Repo builds may invoke the external compiler, but they must not reimplement permission logic locally.
+- `just install` symlinks that repo policy directory into `~/.config/opencode-permission-policy-compiler` for the external compiler.
+- Avoid wildcard suffixes in permission paths such as `/path/*`. Directory path entries already apply under that tree, and runtime globbing just bloats permission-match logs.
 
 ---
 
