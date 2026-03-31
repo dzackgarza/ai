@@ -200,27 +200,29 @@ run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
 # Build the full OpenCode pipeline in canonical order.
+# Usage: just build
 # Steps:
-# - check plugin preflight
-# - compile opencode.json from the skeleton and provider fragments
-# - apply the global permission policy to the compiled config
-# - build managed agent markdown from published ai-prompts slugs
-# - render the repo-local AGENTS.md template and count its tokens
+#   1. check-plugins — validate plugin preflight
+#   2. build-config — compile opencode.json from skeleton + provider fragments, apply global permission policy
+#   3. build-agents — fetch ai-prompts slugs, compile managed agent markdown
+#   4. _build-opencode-agents-md — render AGENTS.md template and count tokens
 build: check-plugins build-config build-agents _build-opencode-agents-md
 
 # Build only the compiled OpenCode config pipeline.
+# Usage: just build-config
 # Steps:
-# - compile opencode.json from source config fragments
-# - apply the global permission baseline to the compiled file
+#   1. _build-opencode-config-compile — compile opencode.json from source config fragments
+#   2. _build-opencode-config-apply-policy — apply global permission baseline to compiled config
 build-config:
     @just --justfile {{ justfile() }} _build-opencode-config-compile
     @just --justfile {{ justfile() }} _build-opencode-config-apply-policy
 
 # Build only the managed OpenCode agent markdown files.
+# Usage: just build-agents
 # Steps:
-# - fetch each published ai-prompts slug
-# - compile prompt permissions with the external policy compiler
-# - write the generated markdown into the managed agents directory
+#   - Fetch each published ai-prompts slug (autonomous, orchestrator, build, plan, etc.)
+#   - Compile prompt permissions with external policy compiler
+#   - Write generated markdown to managed agents directory
 build-agents:
     @just --justfile {{ justfile() }} _build-opencode-managed-agents
 
@@ -322,6 +324,8 @@ _build-opencode-managed-agents:
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/sagemath-coder.md"
 
+# Check OpenCode plugin preflight validation.
+# Usage: just check-plugins
 check-plugins:
     @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
 
