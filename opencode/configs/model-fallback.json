@@ -10,18 +10,18 @@
   "retryable_error_patterns": [
     "capacity",
     "available",
-    "at\\s+capacity",
-    "high\\s+demand",
+    "demand",
     "overloaded",
-    "server\\s+busy",
-    "temporarily\\s+unavailable",
-    "currently\\s+unavailable",
-    "service\\s+unavailable",
-    "try\\s+again\\s+later"
+    "busy",
+    "unavailable",
+    "limited",
+    "try again",
+    "later",
+    "temporarily"
   ],
-  "max_fallback_attempts": 3,
+  "max_fallback_attempts": 10,
   "cooldown_seconds": 60,
-  "timeout_seconds": 10,
+  "timeout_seconds": 45,
   "notify_on_fallback": true,
   "fallback_models": [
     "opencode/minimax-m2.5-free",
