@@ -202,11 +202,10 @@ run-microagent *args:
 # Build the full OpenCode pipeline in canonical order.
 # Usage: just build
 # Steps:
-#   1. check-plugins — validate plugin preflight
-#   2. build-config — compile opencode.json from skeleton + provider fragments, apply global permission policy
-#   3. build-agents — fetch ai-prompts slugs, compile managed agent markdown
-#   4. _build-opencode-agents-md — render AGENTS.md template and count tokens
-build: check-plugins build-config build-agents _build-opencode-agents-md
+#   1. build-config — compile opencode.json from skeleton + provider fragments, apply global permission policy
+#   2. build-agents — fetch ai-prompts slugs, compile managed agent markdown
+#   3. _build-opencode-agents-md — render AGENTS.md template and count tokens
+build: build-config build-agents _build-opencode-agents-md
 
 # Build only the compiled OpenCode config pipeline.
 # Usage: just build-config
@@ -324,10 +323,6 @@ _build-opencode-managed-agents:
       | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
       > "$output_dir/sagemath-coder.md"
 
-# Check OpenCode plugin preflight validation.
-# Usage: just check-plugins
-check-plugins:
-    @cd {{ repo }}/opencode/plugins && bun run scripts/preflight.ts
 
 # =============================================================================
 # AGENTS.md Template
