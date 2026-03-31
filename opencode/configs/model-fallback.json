@@ -1,60 +1,38 @@
 {
   "enabled": true,
-  "defaults": {
-    "fallbackOn": [
-      "rate_limit",
-      "quota_exceeded",
-      "5xx",
-      "timeout",
-      "overloaded"
-    ],
-    "cooldownMs": 300000,
-    "retryOriginalAfterMs": 900000,
-    "maxFallbackDepth": 3
-  },
-  "agents": {
-    "Interactive": {
-      "fallbackModels": [
-        "openai/gpt-5.4",
-        "anthropic/claude-sonnet-4-6",
-        "kiro-proxy/claude-sonnet-4.5",
-        "ollama-cloud/minimax-m2.7",
-        "kilo/minimax/minimax-m2.5:free",
-        "opencode/minimax-m2.5-free",
-        "qwen-code/coder-model",
-        "openrouter/stepfun/step-3.5-flash:free"
-      ]
-    },
-    "Prover": {
-      "fallbackModels": [
-        "opencode/minimax-m2.5-free",
-        "qwen-code/coder-model",
-        "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
-        "kilo/kilo-auto/free",
-        "nvidia/openai/gpt-oss-120b",
-        "nvidia/moonshotai/kimi-k2.5",
-        "nvidia/minimaxai/minimax-m2.5",
-        "nvidia/nvidia/nemotron-3-super-120b-a12b",
-        "nvidia/stepfun-ai/step-3.5-flash",
-        "github-copilot/gpt-4.1"
-      ]
-    },
-    "*": {
-      "fallbackModels": [
-        "opencode/minimax-m2.5-free",
-        "qwen-code/coder-model",
-        "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
-        "kilo/kilo-auto/free",
-        "nvidia/openai/gpt-oss-120b",
-        "nvidia/moonshotai/kimi-k2.5",
-        "nvidia/minimaxai/minimax-m2.5",
-        "nvidia/nvidia/nemotron-3-super-120b-a12b",
-        "nvidia/stepfun-ai/step-3.5-flash",
-        "github-copilot/gpt-4.1"
-      ]
-    }
-  },
-  "logging": true,
-  "logLevel": "info",
-  "logPath": "~/.local/share/opencode/logs/model-fallback.log"
+  "retry_on_errors": [
+    429,
+    500,
+    502,
+    503,
+    504
+  ],
+  "retryable_error_patterns": [
+    "capacity",
+    "available",
+    "at\\s+capacity",
+    "high\\s+demand",
+    "overloaded",
+    "server\\s+busy",
+    "temporarily\\s+unavailable",
+    "currently\\s+unavailable",
+    "service\\s+unavailable",
+    "try\\s+again\\s+later"
+  ],
+  "max_fallback_attempts": 3,
+  "cooldown_seconds": 60,
+  "timeout_seconds": 10,
+  "notify_on_fallback": true,
+  "fallback_models": [
+    "opencode/minimax-m2.5-free",
+    "qwen-code/coder-model",
+    "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+    "kilo/kilo-auto/free",
+    "nvidia/openai/gpt-oss-120b",
+    "nvidia/moonshotai/kimi-k2.5",
+    "nvidia/minimaxai/minimax-m2.5",
+    "nvidia/nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/stepfun-ai/step-3.5-flash",
+    "github-copilot/gpt-4.1"
+  ]
 }
