@@ -26,6 +26,8 @@ Opinionated, modern Python patterns for building robust, efficient, and maintain
 8. **Always a justfile** — all dev commands go through `just`
 9. **Fail fast with asserts** — no speculative try/catch in greenfield code
 10. **Target latest Python** — no version guards, no `sys.version_info` checks
+11. **Prefer classes over loose helper functions** for reusable domain logic
+12. **Prefer explicit constructors**; use `@classmethod` constructors for common variants and a standalone routing constructor only when dispatch by input type materially improves ergonomics
 
 ## Core Principles
 
@@ -109,6 +111,50 @@ def get_value(dictionary: dict[str, str], key: str) -> str:
 def get_value_optional(dictionary: dict[str, str], key: str) -> str | None:
     return dictionary.get(key)
 ```
+
+### 4. Prefer Stateful Domain Objects Over Helper Bags
+
+For reusable domain logic, prefer a class with explicit construction and instance methods over a flat pile of top-level helpers.
+
+```python
+from __future__ import annotations
+
+from pathlib import Path
+
+from pydantic import BaseModel
+
+class Dataset(BaseModel):
+    path: Path
+    rows: list[dict[str, str]]
+
+    @classmethod
+    def from_path(cls, path: Path) -> Dataset:
+        raw_rows = load_rows(path)
+        return cls(path=path, rows=raw_rows)
+
+    @classmethod
+    def from_rows(cls, rows: list[dict[str, str]], *, path: Path | None = None) -> Dataset:
+        return cls(path=path or Path("<memory>"), rows=rows)
+
+    def merge(self, other: Dataset) -> Dataset:
+        assert self.rows, "Left dataset is empty"
+        assert other.rows, "Right dataset is empty"
+        assert set(self.rows[0]) == set(other.rows[0]), "Schema mismatch"
+        return Dataset(path=self.path, rows=[*self.rows, *other.rows])
+
+def dataset(source: Path | list[dict[str, str]]) -> Dataset:
+    if isinstance(source, Path):
+        return Dataset.from_path(source)
+    return Dataset.from_rows(source)
+```
+
+Prefer this pattern when:
+
+- the object has stable invariants
+- multiple operations share the same state
+- construction differs across common input shapes
+
+Avoid introducing classes for one-shot glue code or tiny local transforms.
 
 ### When to Use Exceptions
 
@@ -617,6 +663,8 @@ result = "".join(str(item) for item in items)
 | Testing         | `pytest` via `just test`                               |
 | Full check      | `just check` (lint + typecheck + test)                 |
 | Target Python   | Latest (3.13+), no backwards compat                    |
+| Reusable logic  | Prefer classes with instance methods                   |
+| Construction    | Explicit `__init__`, `@classmethod` variants, optional routing constructor |
 
 ## Anti-Patterns to Avoid
 
@@ -644,6 +692,11 @@ def f(x: Union[str, int]) -> None: ...
 def process(data):
     return data
 
+# Bad: Helper pile for reusable domain logic
+def load_user(path): ...
+def validate_user(user): ...
+def save_user(user, destination): ...
+
 # Bad: Speculative try/catch
 try:
     result = compute(x)
@@ -670,4 +723,4 @@ except:
 assert condition, f"Debug info: {relevant_data}"
 ```
 
-**Remember**: Fail fast. Type everything. Use pydantic. Run `just check` before committing. No exceptions without evidence of a specific observed failure.
+**Remember**: Fail fast. Type everything. Use pydantic. Prefer explicit constructors and domain classes over helper piles. Run `just check` before committing. No exceptions without evidence of a specific observed failure.

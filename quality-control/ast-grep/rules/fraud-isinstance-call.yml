@@ -1,0 +1,8 @@
+id: fraud-isinstance-call
+language: python
+rule:
+  pattern: isinstance($X, $Y)
+message: 'isinstance(...) found. MUST review against the project''s auditing guidelines
+  for fraud: do not allow polymorphic raw inputs when strict composable types should
+  be enforced.'
+severity: warning

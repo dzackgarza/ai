@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "snapshot": false,
   "disabled_providers": [
     "groq",
     "mistral",
@@ -111,7 +112,7 @@
   "model": "github-copilot/gpt-4.1",
   "default_agent": "Interactive",
   "compaction": {
-    "reserved": 40000
+    "reserved": 20000
   },
   "experimental": {
     "openTelemetry": true
@@ -129,7 +130,6 @@
     "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
     "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
-    "@devtheops/opencode-plugin-otel@latest",
     "opencode-runtime-fallback"
   ],
   "permission": {

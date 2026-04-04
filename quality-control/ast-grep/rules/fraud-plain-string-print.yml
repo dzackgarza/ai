@@ -1,0 +1,13 @@
+id: fraud-print-without-fstring
+language: python
+rule:
+  all:
+  - pattern: print($$$ARGS)
+  - not:
+      has:
+        kind: interpolation
+        stopBy: end
+message: 'print(...) without f-string interpolation found. MUST review against the
+  project''s auditing guidelines for fraud: prints should expose results, not claim
+  or narrate status.'
+severity: warning

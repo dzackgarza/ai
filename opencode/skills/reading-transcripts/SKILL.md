@@ -28,14 +28,16 @@ For `--harness opencode`, the dispatcher delegates to:
 
 ```bash
 uvx git+https://github.com/dzackgarza/opencode-manager.git \
-  ocm transcript <session-id>
+  transcript <session-id>
 ```
 
 Other harnesses still use the local parser scripts in this skill.
 
-OpenCode transcripts always go through `ocm transcript`. If that surface is
-insufficient, file an issue instead of adding `opencode export`, `OPENCODE_BIN`, or a
-local fallback parser.
+OpenCode transcripts always go through the manager transcript surface:
+`uvx git+https://github.com/dzackgarza/opencode-manager.git transcript <session-id>`
+or `uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session-id>`.
+If that surface is insufficient, file an issue instead of adding `opencode export`,
+`OPENCODE_BIN`, or a local fallback parser.
 
 **Example Workflow:**
 
@@ -136,5 +138,5 @@ The wrapper scripts abstract away the locations of the underlying data. If the s
 | **Codex CLI**   | Hierarchical Date JSONL     | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl`                                                    |
 | **Gemini CLI**  | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json`                                                             |
 | **Kilocode**    | Flat JSON Array per task    | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json`                                   |
-| **OpenCode**    | OpenCode session transcript | Delegated via `uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session_id>`. |
+| **OpenCode**    | OpenCode session transcript | Delegated via `uvx git+https://github.com/dzackgarza/opencode-manager.git transcript <session_id>` (or `uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session_id>`). |
 | **Amp CLI**     | Abstracted Cloud/Local      | Hidden _(Exported via CLI `amp threads markdown`)_                                                      |

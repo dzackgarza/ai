@@ -1,0 +1,10 @@
+id: fraud-dict-usage
+language: python
+rule:
+  any:
+  - kind: dictionary
+  - pattern: dict($$$ARGS)
+message: 'Raw dict usage found. MUST review against the project''s auditing guidelines
+  for fraud: raw dicts should be replaced by a pydantic type or another explicit structured
+  mathematical record.'
+severity: warning

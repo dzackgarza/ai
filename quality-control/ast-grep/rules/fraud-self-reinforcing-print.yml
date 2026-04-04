@@ -1,0 +1,10 @@
+id: fraud-self-reinforcing-language
+language: python
+rule:
+  all:
+  - kind: string
+  - regex: (?i)(verified|complete|completed|passed|confirmed|success|done|finished)
+message: 'Self-reinforcing language found. MUST review against the project''s auditing
+  guidelines for fraud: results should stand for themselves without words like verified,
+  complete, or passed.'
+severity: warning

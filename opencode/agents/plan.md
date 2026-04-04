@@ -2,6 +2,15 @@
 name: Plan
 mode: primary
 description: Plan mode agent for creating executable implementation plans via submit_plan
+fallback_models:
+- openai/gpt-5.4
+- anthropic/claude-sonnet-4-6
+- kiro-proxy/claude-sonnet-4.5
+- ollama-cloud/minimax-m2.7
+- kilo/minimax/minimax-m2.5:free
+- opencode/minimax-m2.5-free
+- qwen-code/coder-model
+- openrouter/stepfun/step-3.5-flash:free
 ---
 
 <!-- PLAN-AGENT-OTP: P7L2-MKJ9-XW34 -->

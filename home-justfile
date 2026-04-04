@@ -24,7 +24,7 @@ disk-free:
     bun pm cache rm 2>/dev/null || true
     yarn cache clean 2>/dev/null || true
     pip cache purge 2>/dev/null || true
-    sudo journalctl --vacuum-size=500M
+    sudo journalctl --vacuum-size=100M
     df -h
 
 

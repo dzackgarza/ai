@@ -85,19 +85,19 @@ description: Use when working with lattices, quadratic forms, or discrete subgro
 - Always define matrix/data structures mathematically—don't guess or hard-code!
 - Use symbolic computation for Gram matrices, never list notation or hard-coded lists (e.g., ['A', 2] is discouraged; use LaTeX 'A_2').
 - For indefinite forms, use `IntegralLattice` (not `IntegerLattice` or Sage's length routines).
-- Avoid algorithms that assume existence of orthogonal complements unless mathematically justified.
+- For lattices with symmetric bilinear forms, `inner_product`, norm-type quantities, and orthogonal complements are well-defined. Reserve the stronger warning for code that has widened to arbitrary bilinear forms or pairings.
 - Avoid floating-point epsilon comparisons at any stage.
 
 ## Mathematical Pitfalls and Misconceptions
 
-When reasoning about bilinear forms on free ℤ-modules:
+When reasoning about general bilinear forms on free ℤ-modules, distinguish that setting from lattices in the strict sense:
 
 - Many familiar vector-space definitions and operations are only mathematically valid in special cases:
-  - The concept of `orthogonal complement` is only well-defined for symmetric (and sometimes skew-symmetric) forms. For a general bilinear form, orthogonality may not be symmetric or even meaningful as a submodule.
-  - The function `norm_squared` (B(v,v)) only makes sense for symmetric forms. There is no notion of length or norm for a general bilinear form.
+  - For lattices with symmetric bilinear forms, `orthogonal_complement` is well-defined. For a general bilinear form, orthogonality may fail to be symmetric, so left/right complements must be treated separately.
+  - For lattices with symmetric bilinear forms, norm-style quantities from B(v,v) are well-defined. There is no geometric norm notion for a general bilinear form without symmetry or definiteness.
   - The `reflection` operation (across a subspace/module) only makes sense when the form is symmetric, as it depends on the geometric notion of orthogonality and norm.
 
-**Critical mathematical error:** Extending the definitions of orthogonal complement, norm, reflection, and related concepts from vector spaces with inner products to general free ℤ-modules with bilinear forms can lead to incorrect mathematics. Only use these constructions when the underlying bilinear form and module structure mathematically warrant them.
+**Critical mathematical error:** Extending lattice-specific constructions to arbitrary free ℤ-modules with bilinear forms can lead to incorrect mathematics. The warning is about general bilinear-form APIs, not about ordinary lattices equipped with symmetric bilinear forms.
 
 ## References
 

@@ -1,0 +1,15 @@
+id: fraud-raw-builtin-types
+language: python
+rule:
+  any:
+  - all:
+    - kind: typed_parameter
+    - regex: ': *(int|float|bool|str|list(\[.*\])?|dict(\[.*\])?|tuple(\[.*\])?|set(\[.*\])?|bytes|complex)$'
+  - all:
+    - kind: function_definition
+    - regex: '\) *-> *(int|float|bool|str|list(\[.*\])?|dict(\[.*\])?|tuple(\[.*\])?|set(\[.*\])?|bytes|complex)
+        *:'
+message: 'Function operating on raw builtin types found. MUST review against the project''s
+  auditing guidelines for fraud: code should operate on meaningful mathematical nouns
+  with meaningful mathematical verbs.'
+severity: warning

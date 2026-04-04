@@ -9,6 +9,13 @@ description: Use when working with SageMath for mathematical computations, algeb
 
 Work with canonical mathematical objects, not manual constructions. SageMath provides rich algebraic structures—use them.
 
+## Script Conventions
+
+- Sage scripts are run with the Sage interpreter. Do not add `from sage.all import *` to `.sage` scripts or Sage doctest examples; Sage already provides that environment.
+- If you need Python typing features such as `from __future__ import annotations`, use them directly in the Sage script. Keep imports explicit for non-Sage modules only.
+- Prefer classes with instance methods for reusable mathematical workflows. Use standalone helper functions only for tiny local glue.
+- Prefer explicit constructors for primary objects. Use `@classmethod` constructors for common input variants, and use a standalone `factor(...)`-style constructor only when it dispatches cleanly to those classmethods based on input type.
+
 ## Forbidden Patterns
 
 **Never construct objects manually when canonical alternatives exist:**
@@ -89,4 +96,3 @@ Every assertion must be mathematically verifiable with clear documentation:
 - Comment states the mathematical assertion
 - Code is runnable in sage blocks
 - Result includes citation to mathematical fact
-

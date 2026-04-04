@@ -1,0 +1,13 @@
+id: fraud-empty-builder
+language: python
+rule:
+  any:
+  - pattern: $X = []
+  - pattern: $X = {}
+  - pattern: $X = set()
+  - pattern: $X = list()
+  - pattern: $X = dict()
+message: 'Imperative empty builder found. MUST review against the project''s auditing
+  guidelines for fraud: this is a likely braindead iterative builder where a comprehension,
+  generator, or semantic object should exist.'
+severity: warning

@@ -139,16 +139,16 @@ direnv exec /path/to/plugin \
   command opencode serve --hostname 127.0.0.1 --port 4198
 
 # Begin a real session, then drive it with follow-up chat turns
-OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session \
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git begin-session \
   "Trigger the async workflow here" \
   --agent Minimal
-OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git ocm chat ses_abc123 "Follow-up prompt if needed"
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git chat ses_abc123 "Follow-up prompt if needed"
 
 # Inspect the real session instead of scraping terminal output
-OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript ses_abc123 --json
+OPENCODE_BASE_URL=http://127.0.0.1:4198 uvx git+https://github.com/dzackgarza/opencode-manager.git transcript ses_abc123 --json
 ```
 
-Use `ocm transcript --json` when you need raw evidence for
+Use the manager `transcript --json` surface when you need raw evidence for
 callback delivery, a follow-up turn, or an assistant error.
 
 ---

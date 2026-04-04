@@ -1,0 +1,7 @@
+id: fraud-hasattr
+language: python
+rule:
+  pattern: hasattr($OBJ, $NAME)
+message: 'hasattr(...) found. MUST review against the project''s auditing guidelines
+  for fraud: use precise types, assertions, and isinstance narrowing rather than attribute-probing.'
+severity: warning

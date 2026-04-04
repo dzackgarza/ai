@@ -1,0 +1,15 @@
+id: fraud-optional-none-checks
+language: python
+rule:
+  any:
+  - pattern: Optional[$T]
+  - pattern: $MOD.Optional[$T]
+  - pattern: $T | None
+  - pattern: $X is None
+  - pattern: $X is not None
+  - pattern: $X == None
+  - pattern: $X != None
+message: 'Optional types or None checks found. MUST review against the project''s
+  auditing guidelines for fraud: inputs should be precise and predictable, not optional
+  sentinel-driven variants.'
+severity: warning

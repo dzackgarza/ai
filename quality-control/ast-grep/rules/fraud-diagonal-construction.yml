@@ -1,0 +1,12 @@
+id: fraud-diagonal-construction
+language: python
+rule:
+  any:
+  - pattern: diagonal_matrix($$$ARGS)
+  - pattern: block_diagonal_matrix($$$ARGS)
+  - pattern: diagonal($$$ARGS)
+  - pattern: $X.diagonal()
+message: 'Diagonal construction found. MUST review against the project''s auditing
+  guidelines for fraud: use direct sums of rank-one objects and semantic constructors
+  rather than diagonal or block-diagonal assembly.'
+severity: warning

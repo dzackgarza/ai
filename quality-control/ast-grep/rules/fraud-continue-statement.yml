@@ -1,0 +1,8 @@
+id: fraud-continue-statement
+language: python
+rule:
+  kind: continue_statement
+message: 'continue found. MUST review against the project''s auditing guidelines for
+  fraud: this often indicates an imperative enumeration loop that should have been
+  filtered semantically upstream.'
+severity: warning

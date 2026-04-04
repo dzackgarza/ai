@@ -1,0 +1,12 @@
+id: fraud-function-without-assert
+language: python
+rule:
+  kind: function_definition
+  not:
+    has:
+      kind: assert_statement
+      stopBy: end
+message: 'Function without assert found. MUST review against the project''s auditing
+  guidelines for fraud: functions should verify mathematical assumptions and obligations
+  explicitly.'
+severity: warning

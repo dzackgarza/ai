@@ -1,5 +1,9 @@
 import type { Plugin } from '@opencode-ai/plugin';
-import type { UserMessage } from '@opencode-ai/sdk';
+
+import {
+  MISSING_SESSION_IDENTITY_MESSAGE,
+  observedSessionIdentity,
+} from './session-identity';
 
 /**
  * Lookup table mapping trigger phrases to response messages.
@@ -41,7 +45,7 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
       // 2. Skip if this is a subagent session
       try {
         const sessionInfo = await client.session.get({
-          sessionID: sessionID,
+          path: { id: sessionID },
         });
         if (sessionInfo.data?.parentID) {
           return; // Skip subagent sessions
@@ -84,33 +88,25 @@ export const NextStepsHookPlugin: Plugin = async ({ client }) => {
       );
 
       if (matchedEntry) {
-        // 6. Get the last user message to extract the current model
-        const lastUserMessage = messages
-          .slice()
-          .reverse()
-          .find(
-            (m): m is { info: UserMessage; parts: any[] } => m.info.role === 'user',
-          );
+        const identity = observedSessionIdentity(messages);
 
-        if (!lastUserMessage) {
+        if (!identity) {
           await client.app.log({
             body: {
               service: 'next-steps-hook',
               level: 'error',
-              message: 'No user message found in session history',
+              message: MISSING_SESSION_IDENTITY_MESSAGE,
             },
           });
           return;
         }
 
-        // 7. Inject the corresponding response using the same model
+        // 7. Inject the corresponding response using the observed chat identity.
         await client.session.promptAsync({
           path: { id: sessionID },
           body: {
-            model: {
-              providerID: lastUserMessage.info.model.providerID,
-              modelID: lastUserMessage.info.model.modelID,
-            },
+            agent: identity.agent,
+            model: identity.model,
             noReply: false,
             parts: [
               {

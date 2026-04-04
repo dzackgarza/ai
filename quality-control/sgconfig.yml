@@ -1,2 +1,5 @@
 ruleDirs:
-  - ast-grep/rules
+- ast-grep/rules
+languageGlobs:
+  python:
+  - '*.sage'

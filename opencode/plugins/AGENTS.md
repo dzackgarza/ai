@@ -336,6 +336,25 @@ export const MyPlugin: Plugin = async ({ client }) => {
 | Inject hidden instructions | `experimental.chat.messages.transform` + push synthetic message |
 | Persist context across compaction | `experimental.session.compacting` + output.context.push() |
 
+### Warning: Blocking `session.prompt` Inside Hooks Causes Deadlocks
+
+Never call `client.session.prompt` (the synchronous/blocking variant) from inside
+`tool.execute.after` or any hook that fires while the session is mid-flight.
+
+The deadlock pattern:
+1. Session is processing a tool result and waiting for the hook to return
+2. Hook calls `client.session.prompt`, which waits for the session to accept the request
+3. Session cannot accept — it is blocked waiting for the hook
+4. Both sides wait forever; the parent agent never resumes
+
+**Rule:** Any `session.prompt` call inside a hook that fires during active session
+processing (`tool.execute.before`, `tool.execute.after`, `event` handlers triggered
+mid-turn) MUST use `client.session.promptAsync` instead.
+
+`promptAsync` fires the request without waiting for the session to process it, breaking
+the cycle. `noReply: true` injections are the most common case where this matters —
+they look harmless but still block on the same session lock.
+
 ### Notes
 
 - `message.part.delta` is the authoritative streaming mechanism — emitted by

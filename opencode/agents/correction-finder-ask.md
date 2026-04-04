@@ -2,6 +2,17 @@
 name: Correction Finder (Ask)
 mode: subagent
 description: Autonomously scan source markdown to find and triage provable OCR errors
+fallback_models:
+- opencode/minimax-m2.5-free
+- qwen-code/coder-model
+- nvidia/qwen/qwen3-coder-480b-a35b-instruct
+- kilo/kilo-auto/free
+- nvidia/openai/gpt-oss-120b
+- nvidia/moonshotai/kimi-k2.5
+- nvidia/minimaxai/minimax-m2.5
+- nvidia/nvidia/nemotron-3-super-120b-a12b
+- nvidia/stepfun-ai/step-3.5-flash
+- github-copilot/gpt-4.1
 permission:
   task: deny
   question: deny

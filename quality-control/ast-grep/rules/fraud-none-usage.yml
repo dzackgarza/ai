@@ -1,0 +1,10 @@
+id: fraud-none-usage
+language: python
+rule:
+  any:
+  - pattern: $X = None
+  - pattern: return None
+message: 'None usage found. MUST review against the project''s auditing guidelines
+  for fraud: optional outputs are not mathematically meaningful; use precise total
+  functions or explicit variants.'
+severity: warning

@@ -1,0 +1,10 @@
+id: fraud-numeric-constant
+language: python
+rule:
+  any:
+  - kind: integer
+  - kind: float
+message: 'Numeric constant found. MUST review against the project''s auditing guidelines
+  for fraud: arbitrary numerical constants are a strong signal of bounded enumeration
+  or uncited normalization choices.'
+severity: warning

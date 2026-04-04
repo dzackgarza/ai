@@ -113,3 +113,4 @@ opencode/events.jsonl
 .opencode/opencode.json
 .worktrees
 opencode/kiro.db*
+opencode/kiro-logs

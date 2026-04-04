@@ -1,0 +1,8 @@
+id: fraud-raise-statement
+language: python
+rule:
+  kind: raise_statement
+message: 'raise found. MUST review against the project''s auditing guidelines for
+  fraud: assert the mathematical obligation instead of constructing exceptions by
+  hand.'
+severity: warning

@@ -1,0 +1,14 @@
+{
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "Kaggle Ollama",
+  "options": {
+    "baseURL": "https://eleni-unjust-ela.ngrok-free.dev/v1",
+    "apiKey": "ollama"
+  },
+  "models": {
+    "qwen3.5:35b": {
+      "name": "Qwen 3.5 35B"
+    }
+  },
+  "blacklist": []
+}

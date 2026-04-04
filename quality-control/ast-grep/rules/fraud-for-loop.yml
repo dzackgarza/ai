@@ -1,0 +1,7 @@
+id: fraud-for-loop
+language: python
+rule:
+  kind: for_statement
+message: 'for-loop found. MUST review against the project''s auditing guidelines for
+  fraud: this is a likely place where proof is being replaced by partial enumeration.'
+severity: warning

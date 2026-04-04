@@ -41,7 +41,6 @@ def main():
                     "uvx",
                     "--from",
                     OCM_PACKAGE,
-                    "ocm",
                     "transcript",
                     session_id,
                 ],

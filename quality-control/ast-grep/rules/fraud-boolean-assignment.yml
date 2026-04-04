@@ -1,0 +1,12 @@
+id: fraud-boolean-assignment
+language: python
+rule:
+  any:
+  - pattern: $X = True
+  - pattern: $X = False
+  - pattern: '$X: bool = True'
+  - pattern: '$X: bool = False'
+message: 'Boolean assignment found. MUST review against the project''s auditing guidelines
+  for fraud: booleans should be the output of a decision or quantified predicate,
+  not staged imperatively.'
+severity: warning

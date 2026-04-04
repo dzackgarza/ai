@@ -1,0 +1,8 @@
+id: fraud-gram-matrix
+language: python
+rule:
+  pattern: $X.gram_matrix()
+message: 'gram_matrix() usage found. MUST review against the project''s auditing guidelines
+  for fraud: this may bypass semantic lattice operations and rebuild the mathematics
+  manually from matrices.'
+severity: warning

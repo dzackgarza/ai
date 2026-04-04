@@ -1,0 +1,8 @@
+id: fraud-try-except
+language: python
+rule:
+  kind: try_statement
+message: 'try/except found. MUST review against the project''s auditing guidelines
+  for fraud: mathematically correct code should assert and fail directly, not recover
+  through exception control flow.'
+severity: warning

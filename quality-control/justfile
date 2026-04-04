@@ -24,6 +24,7 @@
 #   .slopconfig.yaml → ai-slop-detector (explicit --config flag)
 #   semgrep.yml    → semgrep local rules (explicit --config flag)
 #   .jscpd.json    → jscpd (explicit --config flag)
+#   sgconfig.yml   → ast-grep (explicit --config flag)
 #   .coveragerc    → coverage.py reads .coveragerc from cwd (run from project root)
 # GLOBAL CONFIGS OK: vulture, deptry, diff-cover, ruff, black, mypy
 # all read from ~/.config/ or pyproject.toml [tool.*] sections.
@@ -128,6 +129,20 @@ _semgrep: _install-tools
 	set -euo pipefail
 	uvx --from semgrep semgrep scan --config={{justfile_directory()}}/semgrep.yml --config=p/ci --autofix .
 
+_ast-grep: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	findings_file=$(mktemp)
+	trap 'rm -f "$findings_file"' EXIT
+	npx -y ast-grep scan \
+		--config {{justfile_directory()}}/sgconfig.yml \
+		--report-style short \
+		. | tee "$findings_file"
+	if [ -s "$findings_file" ]; then
+		echo "Blocking just test: fraud-review warnings were found and must be reviewed against repository audit guidelines."
+		exit 1
+	fi
+
 _jscpd:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -187,7 +202,7 @@ _slop:
 		--ci-report
 
 # public: all static checks run locally
-test: _normalize _no-bypass _coverage _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop _grain
+test: _normalize _no-bypass _coverage _diff-cover _vulture _deptry _semgrep _ast-grep _jscpd _lizard _import-linter _codeql _slop _grain
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

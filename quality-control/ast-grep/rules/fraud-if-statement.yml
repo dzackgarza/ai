@@ -1,0 +1,8 @@
+id: fraud-if-statement
+language: python
+rule:
+  kind: if_statement
+message: 'if-statement found. MUST review against the project''s auditing guidelines
+  for fraud: use exhaustive case or match constructs instead of hidden non-exhaustive
+  splits.'
+severity: warning

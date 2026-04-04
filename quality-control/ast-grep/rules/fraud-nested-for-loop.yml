@@ -1,0 +1,8 @@
+id: fraud-nested-for-loop
+language: python
+rule:
+  pattern: "for $A in $B:\n  $$$BODY1\n  for $C in $D:\n    $$$BODY2"
+message: 'Nested for-loops found. MUST review against the project''s auditing guidelines
+  for fraud: nested imperative search is a strong signal of inefficient numerical
+  enumeration replacing proof.'
+severity: warning

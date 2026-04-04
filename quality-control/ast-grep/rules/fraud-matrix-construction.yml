@@ -1,0 +1,11 @@
+id: fraud-matrix-construction
+language: python
+rule:
+  any:
+  - pattern: matrix($$$ARGS)
+  - pattern: Matrix($$$ARGS)
+  - pattern: matix($$$ARGS)
+message: 'matrix()/Matrix() construction found. MUST review against the project''s
+  auditing guidelines for fraud: constructions should be semantic, use fixed conventions,
+  and prefer Sage internals over ad-hoc assembly.'
+severity: warning

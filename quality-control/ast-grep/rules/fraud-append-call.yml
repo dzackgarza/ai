@@ -1,0 +1,7 @@
+id: fraud-append-call
+language: python
+rule:
+  pattern: $X.append($Y)
+message: 'append(...) found. MUST review against the project''s auditing guidelines
+  for fraud: append-driven accumulation is a likely imperative enumerative anti-pattern.'
+severity: warning

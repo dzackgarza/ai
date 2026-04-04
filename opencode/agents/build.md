@@ -3,6 +3,15 @@ name: build
 mode: primary
 description: Workflow orchestrator for technical plan implementation using parcadei/implement-plan
   orchestration modes.
+fallback_models:
+- openai/gpt-5.4
+- anthropic/claude-sonnet-4-6
+- kiro-proxy/claude-sonnet-4.5
+- ollama-cloud/minimax-m2.7
+- kilo/minimax/minimax-m2.5:free
+- opencode/minimax-m2.5-free
+- qwen-code/coder-model
+- openrouter/stepfun/step-3.5-flash:free
 ---
 
 # Build Agent (Workflow Orchestrator)

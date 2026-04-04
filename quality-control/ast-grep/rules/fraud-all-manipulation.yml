@@ -1,0 +1,12 @@
+id: fraud-all-manipulation
+language: python
+rule:
+  any:
+  - pattern: __all__ = $VALUE
+  - pattern: __all__.append($VALUE)
+  - pattern: __all__.extend($VALUE)
+  - pattern: __all__ += $VALUE
+message: '__all__ manipulation found. MUST review against the project''s auditing
+  guidelines for fraud: allow importing everything and rely on _name conventions for
+  private helpers instead of export bookkeeping.'
+severity: warning

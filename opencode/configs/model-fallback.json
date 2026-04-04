@@ -24,15 +24,22 @@
   "timeout_seconds": 45,
   "notify_on_fallback": true,
   "fallback_models": [
+    "opencode/mimo-v2-omni-free",
+    "opencode/mimo-v2-pro-free",
     "opencode/minimax-m2.5-free",
-    "qwen-code/coder-model",
-    "nvidia/qwen/qwen3-coder-480b-a35b-instruct",
+    "opencode/nemotron-3-super-free",
     "kilo/kilo-auto/free",
-    "nvidia/openai/gpt-oss-120b",
-    "nvidia/moonshotai/kimi-k2.5",
     "nvidia/minimaxai/minimax-m2.5",
-    "nvidia/nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/moonshotai/kimi-k2-instruct-0905",
+    "nvidia/nvidia/nemotron-3-nano-30b-a3b",
+    "nvidia/qwen/qwen3-next-80b-a3b-thinking",
+    "nvidia/nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "nvidia/mistralai/ministral-14b-instruct-2512",
+    "nvidia/mistralai/mistral-large-3-675b",
     "nvidia/stepfun-ai/step-3.5-flash",
-    "github-copilot/gpt-4.1"
+    "nvidia/openai/gpt-oss-120b",
+    "nvidia/z-ai/glm5",
+    "nvidia/nvidia/nvidia-nemotron-nano-9b-v2",
+    "opencode/big-pickle"
   ]
 }
