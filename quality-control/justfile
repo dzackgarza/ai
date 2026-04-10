@@ -33,6 +33,22 @@ default:
   @just test
 
 # private recipes (prefix with _ — never run individually)
+_python-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.py' \
+		-g '*.sage' \
+		-g '!*.sage.py' \
+		-g '!**/external/**' \
+		-g '!**/node_modules/**' \
+		-g '!**/__pycache__/**' \
+		-g '!**/.venv/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**' \
+		-g '!**/codeql-db/**'
+
 _no-bypass:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -92,52 +108,95 @@ _install-tools: _venv
 _normalize: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	if [ ! -f pyproject.toml ]; then
-		echo "Skipping ruff normalization: no pyproject.toml found."
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping ruff normalization: no Python or Sage files found."
 		exit 0
 	fi
-	uvx --from ruff ruff check --fix .
-	uvx --from ruff ruff format .
+	uvx --from ruff ruff check --fix \
+		--config {{justfile_directory()}}/ruff-global.toml \
+		--extension sage:python \
+		"${python_files[@]}"
+	uvx --from ruff ruff format \
+		--config {{justfile_directory()}}/ruff-global.toml \
+		--extension sage:python \
+		"${python_files[@]}"
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	if [ ! -f pyproject.toml ]; then
+		echo "Skipping coverage: no pyproject.toml found."
+		exit 0
+	fi
+	if ! rg --files tests -g 'test_*.py' -g '*_test.py' >/dev/null 2>&1; then
+		echo "Skipping coverage: no pytest-style Python tests found."
+		exit 0
+	fi
 	uvx --from coverage --with pytest --with-editable . coverage run -m pytest
 	uvx --from coverage coverage xml --fail-under=100 -o coverage.xml
 
 _diff-cover: _coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
+	if [ ! -f coverage.xml ]; then
+		echo "Skipping diff-cover: no coverage.xml generated."
+		exit 0
+	fi
 	uvx --from diff-cover diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
 
 _vulture: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	if [ ! -e src ] && [ ! -e tests ]; then
-		echo "Skipping vulture: no src/tests paths found."
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping vulture: no Python or Sage files found."
 		exit 0
 	fi
-	uvx --from vulture vulture --config {{justfile_directory()}}/pyproject.toml
+	uvx --from vulture vulture \
+		--config {{justfile_directory()}}/pyproject.toml \
+		"${python_files[@]}" \
+		"$whitelist_file"
 
 _deptry: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	if [ ! -f pyproject.toml ]; then
+		echo "Skipping deptry: no pyproject.toml found."
+		exit 0
+	fi
 	uvx --from deptry deptry .
 
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uvx --from semgrep semgrep scan --config={{justfile_directory()}}/semgrep.yml --config=p/ci --autofix .
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping semgrep: no Python or Sage files found."
+		exit 0
+	fi
+	uvx --from semgrep semgrep scan \
+		--config={{justfile_directory()}}/semgrep.yml \
+		--config=p/ci \
+		--scan-unknown-extensions \
+		--autofix \
+		"${python_files[@]}"
 
 _ast-grep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping ast-grep: no Python or Sage files found."
+		exit 0
+	fi
 	findings_file=$(mktemp)
 	trap 'rm -f "$findings_file"' EXIT
 	npx -y ast-grep scan \
 		--config {{justfile_directory()}}/sgconfig.yml \
 		--report-style short \
-		. | tee "$findings_file"
+		"${python_files[@]}" | tee "$findings_file"
 	if [ -s "$findings_file" ]; then
 		echo "Blocking just test: fraud-review warnings were found and must be reviewed against repository audit guidelines."
 		exit 1
@@ -146,17 +205,26 @@ _ast-grep: _install-tools
 _jscpd:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping jscpd: no Python or Sage files found."
+		exit 0
+	fi
+	npx -y jscpd \
+		--config {{justfile_directory()}}/.jscpd.json \
+		--format python \
+		--formats-exts python:py,sage \
+		"${python_files[@]}"
 
 _lizard: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uvx --from lizard lizard src -l python -C 7 -L 100 -a 5 -i 0 \
-		-x "*/node_modules/*" \
-		-x "*/__pycache__/*" \
-		-x "*/.venv/*" \
-		-x "*/dist/*" \
-		-x "*/build/*"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping lizard: no Python or Sage files found."
+		exit 0
+	fi
+	uvx --from lizard lizard -l python -C 7 -L 100 -a 5 -i 0 "${python_files[@]}"
 
 _import-linter: _install-tools
 	#!/usr/bin/env bash
@@ -194,12 +262,20 @@ _codeql:
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uvx ai-slop-detector --project . \
-		--config {{justfile_directory()}}/.slopconfig.yaml \
-		--verbose \
-		--ci-mode hard \
-		--ci-claims-strict \
-		--ci-report
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping ai-slop-detector: no Python or Sage files found."
+		exit 0
+	fi
+	for file in "${python_files[@]}"; do
+		uvx ai-slop-detector "$file" \
+			--config {{justfile_directory()}}/.slopconfig.yaml \
+			--verbose \
+			--ci-mode hard \
+			--ci-claims-strict \
+			--ci-report \
+			--no-color
+	done
 
 # public: all static checks run locally
 test: _normalize _no-bypass _coverage _diff-cover _vulture _deptry _semgrep _ast-grep _jscpd _lizard _import-linter _codeql _slop _grain

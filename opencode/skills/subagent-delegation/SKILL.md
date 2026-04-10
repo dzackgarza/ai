@@ -7,6 +7,14 @@ description: "Use when managing multiple agents, delegating tasks to subagent co
 
 This skill provides the unified framework for managing, tracking, and coordinating a team of autonomous subagents to execute complex plans with high fidelity.
 
+This skill is the one source of truth for delegation policy. Other prompts and skills should defer here for when to delegate, how to structure prompts, how to review results, and how to detect delegation theater.
+
+## Required Reading
+
+Any source named in this skill that is not already in current context must be re-read completely before you rely on it.
+This is mandatory, not optional.
+Honest self-assessment requires current source text, not memory, paraphrase, or a stale summary.
+
 ## Subagent Naming Rule
 
 Do not hardcode or name-drop specific subagent slugs in delegation guidance. OpenCode provides a live list of available subagents and descriptions at runtime.
@@ -22,7 +30,61 @@ Always select by capability class from the live list (for example: implementatio
 
 ---
 
-## 0. When to Use Subagent Delegation
+## 0. Delegation Constitution
+
+- Delegate only when doing so transfers genuinely unresolved implementation, exploration, verification, or audit burden to an independent worker.
+- Context pressure is a benefit of delegation, not a sufficient reason for it. Use delegation when independence, isolation, or context savings materially improve the outcome.
+- A delegation is invalid if the coordinator already knows the exact diff, exact wording, exact code, or exact line-level edits and is merely asking a subagent to transcribe them.
+- The coordinator must never be the hidden author. Do not pass literal code, literal patch text, verbatim prose, or line-by-line edit instructions to a subagent.
+- Subagent prompts may specify only the objective, trusted sources, allowed tools or libraries, file or worktree scope, deliverables, and acceptance criteria.
+- Calibrate process to actual risk. Consider complexity, novelty, fraud surface, downstream reliance, verification cost, and whether the object being changed is itself a trust-bearing hinge.
+- Low-risk deterministic chores, trivial maintenance, and coordinator-owned choke points should stay with the coordinator. Do not wrap them in delegation theater.
+- Subagent startup is expensive. Assume roughly 60K tokens of overhead before useful work begins, then verify against the current model and harness if needed.
+- If the workflow is producing mostly transcript churn, process maintenance, or document reconciliation rather than substantive progress or trustworthy verification, stop and reclassify.
+
+## 1. Pattern-Triggered Correction
+
+If a triggered question points at another named skill or document, re-read that source completely first if it is not already in current context.
+Do not continue on memory alone.
+
+- Pattern: the delegated task is mostly trivial maintenance, deterministic copying, rote formatting, transcript cleanup, or other low-risk support work.
+  Mandatory questions:
+  What unresolved judgment is actually being transferred?
+  What independent reasoning or verification value does this subagent add?
+  If I did this directly, what trust guard would be lost?
+  Am I using delegation to improve trust, or to check a box and shed context?
+
+- Pattern: I have already read the relevant material and know the exact correction, wording, diff, or implementation shape.
+  Mandatory questions:
+  If the result is already predetermined, what is left for an independent worker to decide, discover, or falsify?
+  Have I classified this task correctly, or am I delegating an orchestrator-owned choke point?
+  Am I laundering authorship through a subagent instead of transferring real burden?
+  Should this be done directly, or should the task be reframed so the worker can make genuine low-level decisions?
+
+- Pattern: I want to tell a subagent the literal code, literal lines, literal patch text, or verbatim prose to write.
+  Mandatory questions:
+  Why am I the source of the implementation at all?
+  Does this destroy the intended independence between writer, checker, and auditor?
+  Am I leaking solution knowledge the worker should not receive?
+  Am I constraining the worker to standards and trusted tools, or prescribing the answer itself?
+
+- Pattern: I am applying the same heavy process to every task because the task touches correctness somewhere.
+  Mandatory questions:
+  Is this object actually a trust-bearing hinge that downstream work will rely on?
+  How hard is this claim to fake, and how costly would failure be?
+  Is this mathematically or semantically novel, or just a straightforward composition of trusted tools?
+  Am I flattening low-risk maintenance and high-risk hinge work into the same workflow?
+
+- Pattern: the delegation cost is high but the substantive value is unclear.
+  Mandatory questions:
+  Does this delegation justify the roughly 60K-token startup cost?
+  Is this expected to produce independent reasoning, independent verification, or only procedural motion?
+  Is the real bottleneck mathematical or semantic uncertainty, or am I hiding from direct work behind process?
+  If this step vanished, what real loss of correctness, trust, or progress would occur?
+
+If a triggered question exposes theater, predetermined authorship, independence leakage, or non-progress, stop. Reclassify the task before taking another delegation step.
+
+## 2. When to Use Subagent Delegation
 
 Subagents are a **context management and token optimization tool** — not a convenience for trivial tasks. Use judiciously.
 
@@ -101,7 +163,7 @@ When using subagents, the main agent becomes a **coordinator**:
 
 ---
 
-## 1. Operational Lifecycle
+## 3. Operational Lifecycle
 
 ### Codex CLI
 
@@ -299,7 +361,7 @@ If an agent consistently produces weak output, strengthen prompts:
 
 ---
 
-## 2. Delegation Workflow
+## 4. Delegation Workflow
 
 ### Core Principle: Fresh Context Per Task
 
@@ -362,7 +424,7 @@ git diff  # review C's changes
 
 ---
 
-## 3. Red Flags - STOP and Redirect
+## 5. Red Flags - STOP and Redirect
 
 - **NEVER:**
   - Assume `task` is always blocking; pick mode (`sync` or `async`) explicitly
@@ -391,7 +453,7 @@ git diff  # review C's changes
 
 _Unified framework combining Operational Management and Delegation Logic._
 
-## 4. Integration
+## 6. Integration
 
 **Required workflow skills:**
 

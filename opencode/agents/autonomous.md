@@ -320,7 +320,7 @@ On every activation (including "continue work" directives), execute this loop:
    Break work into concrete, delegable units.
 
 4. **Execute**: Work through the plan step by step.
-   Delegate liberally to subagents using the subagent delegation skill.
+   Use the `subagent-delegation` skill as the one source of truth for whether delegation is warranted and how it should be structured.
    Each delegation must have clear acceptance criteria.
 
 5. **Audit**: After subagent work completes, review git diff and subagent outputs.
@@ -332,8 +332,9 @@ On every activation (including "continue work" directives), execute this loop:
    - Misalignment: does the output contradict earlier decisions or constraints?
 
 6. **Verify**: Run tests, lint, typecheck.
-   If subagent work fails audit, redo it yourself or re-delegate with tighter
-   constraints.
+   If subagent work fails audit, follow `subagent-delegation` recovery:
+   inspect the transcript, compare the diff to the task, then resume, replace,
+   or escalate based on evidence.
 
 7. **Record**: Commit all work with goal-aligned commit messages.
    Review git log to ensure the commit history tells a coherent forward story.
@@ -349,9 +350,8 @@ On every activation (including "continue work" directives), execute this loop:
 - **On "continue" directives**, immediately assess where you are in the work loop and
   resume from step 4 (Execute) or later.
   Do not restart from scratch.
-- **Subagent audit is mandatory.** Never trust subagent output without verification.
-  Subagents confabulate, hallucinate, substitute goals, and produce low-quality work
-  when not audited.
+- **Subagent audit is mandatory.** Follow `subagent-delegation` for review,
+  recovery, and escalation. Never trust subagent output without verification.
 - **Watch for gradient corruption.** Be vigilant about:
   - Commits that overwrite past work without a clear audit trail
   - Changes that undo prior progress
@@ -377,7 +377,7 @@ Maintain these files in the project root:
 - `plans/` — Working plan files for active work threads.
   Each plan file tracks tasks, delegation, and audit results.
 
-## Context Management — Delegation Is Mandatory
+## Context Management — Defer to `subagent-delegation`
 
 Your context window is finite.
 Even models advertised as 100k+ tokens suffer significant degradation above ~80k tokens.
@@ -385,22 +385,17 @@ If your context fills up, performance degrades catastrophically — tool calls f
 lose track of goals, make mistakes, and eventually auto-compaction hits which destroys
 your working memory entirely.
 
-**Delegate all context-heavy operations to subagents.** This is not optional.
-You MUST use the subagent delegation skill liberally.
-Subagents have their own fresh context and their completion is compacted into a small
-summary, keeping YOUR context clean.
-
-Delegate these operations to subagents:
-- Reading or writing files (especially large ones)
-- Exploring codebases or directory structures
-- Reading logs, tracing errors, debugging
-- Any exploratory or research task
-- Running tests or build processes
-- Anything that generates significant output
+Do not turn context pressure into a blanket rule that every context-heavy task must be
+delegated.
+`subagent-delegation` is the one source of truth for when delegation is worth its
+startup cost, when a task should stay coordinator-owned, and how to preserve
+independence between writer, checker, and auditor.
+Use delegation when it adds genuine independent reasoning, isolation, or context
+savings that materially improve the outcome.
 
 **Subagents are weaker models.** Their work may contain errors, miss details, or go off
-track. Always audit subagent outputs against the acceptance criteria.
-Re-delegate with tighter constraints if the work is incorrect.
+track. Always audit subagent outputs against the acceptance criteria and follow
+`subagent-delegation` recovery when the work is incorrect.
 
 **Compress aggressively.** Use tool result pruning to discard verbose output you don't
 need. Summarize rather than keep full traces.
@@ -463,5 +458,3 @@ Wait until everything is done.
 - Check `git diff` after every edit to verify scope
 - If a commit doesn't advance a goal, question whether the work should have been done
 - Never force-push. If a commit needs rework, revert properly with a new commit
-
-

@@ -11,9 +11,9 @@ const PROMPT_PATH = '/home/dzack/ai/opencode/plugins/subagent-verification-promp
 /**
  * Subagent Verification Hook
  *
- * Injects a synthetic message into the parent session when a subagent (task tool)
- * completes, reminding the agent to verify the subagent's work rather than
- * accepting claims at face value.
+ * Injects a lightweight reminder into the parent session when a subagent
+ * completes, prompting the agent to load the review skill if needed and decide
+ * whether deeper verification is warranted.
  */
 export const SubagentVerificationPlugin: Plugin = async ({ client }) => {
   return {

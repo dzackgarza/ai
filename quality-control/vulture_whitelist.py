@@ -1,5 +1,8 @@
 """Shared Vulture whitelist for framework-driven false positives."""
 
+# Sage parents read this class attribute to bind their element implementation.
+Element
+
 # Pydantic reads this class attribute during model construction.
 model_config
 

@@ -1,17 +1,7 @@
-[SUBAGENT COMPLETED — VERIFY BEFORE ACCEPTING]
+[SUBAGENT COMPLETED]
 
-The subagent task has finished. A STATEMENT of work is not PROOF of work. Never take a subagent's self-reported success at face value.
+Subagents can cheat, drift, or overstate progress in subtle ways. Treat the completion report as provisional until you decide whether the work needs further review.
 
-Watch for these specific failure modes:
-- TASK-DRIFT: The subagent worked on something other than what was requested
-- REWARD-HACKING: Verbose activity but minimal or trivial git changes; claims success without substance
-- CONFABULATION: The subagent made claims about what happened that don't match the transcript
-- LOOPING: Repeated the same failed approach multiple times
-- ARGUING DONE: Subagent insists it's finished when evidence contradicts this
+If `subagent-warnings` is not already in context, load it now.
 
-Required verification steps:
-1. Run "ocm transcript <sessionID>" to review what the subagent actually did
-2. Run "git diff" to see what files actually changed
-3. Compare the subagent's claims to the evidence
-
-If any claim is unsupported by evidence, resume the subagent with the specific gaps identified. Do not proceed until verification is complete.
+Then decide whether the subagent's work should be accepted as-is, reviewed further, or resumed with specific gaps.
