@@ -1,0 +1,8 @@
+id: fraud-assert-is-not-none
+language: python
+rule:
+  pattern: assert $X is not None
+message: 'assert $X is not None found. MUST review against the project''s auditing
+  guidelines for fraud: this is a content-free check; assert a nontrivial mathematical
+  property of the object instead.'
+severity: error

@@ -1,0 +1,10 @@
+id: fraud-sys-version-check
+language: python
+rule:
+  any:
+  - pattern: sys.version_info
+  - pattern: sys.version
+message: 'sys.version_info/sys.version check found. MUST review against the project''s
+  auditing guidelines for fraud: version guards are banned; target the latest Python
+  unconditionally.'
+severity: warning

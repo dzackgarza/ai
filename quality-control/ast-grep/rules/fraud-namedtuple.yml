@@ -1,0 +1,10 @@
+id: fraud-namedtuple
+language: python
+rule:
+  any:
+  - pattern: from typing import NamedTuple
+  - pattern: from collections import namedtuple
+  - pattern: namedtuple($$$ARGS)
+message: 'NamedTuple/namedtuple usage found. MUST review against the project''s auditing
+  guidelines for fraud: use pydantic BaseModel instead.'
+severity: warning

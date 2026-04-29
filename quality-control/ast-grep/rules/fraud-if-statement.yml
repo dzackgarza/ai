@@ -2,7 +2,9 @@ id: fraud-if-statement
 language: python
 rule:
   kind: if_statement
-message: 'if-statement found. MUST review against the project''s auditing guidelines
-  for fraud: use exhaustive case or match constructs instead of hidden non-exhaustive
-  splits.'
+message: 'if-statement found. This MAY be a false positive — some conditionals are
+  genuinely exhaustive or guard a well-defined boundary. MUST review: if branches
+  are not exhaustive, consider replacing with match/case. If the condition is a
+  mathematical predicate, ensure all cases are explicitly handled and accompanied
+  by an assertion that the case split is complete.'
 severity: warning

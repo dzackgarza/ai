@@ -1,0 +1,7 @@
+id: fraud-union-type
+language: python
+rule:
+  pattern: Union[$$$ARGS]
+message: 'Union[...] type found. MUST review against the project''s auditing guidelines
+  for fraud: use X | Y syntax; Union is banned.'
+severity: warning

@@ -3,8 +3,8 @@ language: python
 rule:
   all:
   - kind: string
-  - regex: (?i)(verified|complete|completed|passed|confirmed|success|done|finished)
+  - regex: (?i)(verified|complete|completed|passed|confirmed|success|done|finished|validated|proved|proven|correct|valid|accepted|approved|satisfied|checked|guaranteed|certified|solved|works|working|ready|all\s+good|no\s+errors|no\s+issues|clean)
 message: 'Self-reinforcing language found. MUST review against the project''s auditing
   guidelines for fraud: results should stand for themselves without words like verified,
   complete, or passed.'
-severity: warning
+severity: error

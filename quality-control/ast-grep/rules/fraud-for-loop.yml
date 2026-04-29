@@ -2,6 +2,10 @@ id: fraud-for-loop
 language: python
 rule:
   kind: for_statement
-message: 'for-loop found. MUST review against the project''s auditing guidelines for
-  fraud: this is a likely place where proof is being replaced by partial enumeration.'
+message: 'for-loop found. This MAY be a false positive — iterating over a canonical
+  finite set (e.g. roots, generators, basis vectors) is legitimate. MUST review:
+  if this loop enumerates cases to check a property, consider whether the property
+  can be asserted algebraically. If the loop is over a mathematically defined set,
+  ensure the iteration is accompanied by an assertion that the set itself has the
+  expected structure.'
 severity: warning

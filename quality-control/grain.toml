@@ -1,10 +1,35 @@
 [grain]
 fail_on = ["OBVIOUS_COMMENT", "NAKED_EXCEPT", "HEDGE_WORD", "VAGUE_TODO", "VAGUE_COMMIT", "AND_COMMIT", "NO_CONTEXT", "GENERIC_VARNAME"]
-warn_only = ["RESTATED_DOCSTRING", "SINGLE_IMPL_ABC", "BULLET_PROSE", "OBVIOUS_HEADER", "TABLE_OVERKILL", "TAG_COMMENT", "THANKS_OPENER"]
-exclude = ["tests/*", "*_test.py", "test_*.py", "*.sage.py", ".git/*", "node_modules/*", "__pycache__/*", ".venv/*", "venv/*", "dist/*", "build/*"]
+warn_only = ["RESTATED_DOCSTRING", "SINGLE_IMPL_ABC", "TABLE_OVERKILL", "TAG_COMMENT", "THANKS_OPENER"]
+exclude = [
+  "tests/*",
+  "*_test.py",
+  "test_*.py",
+  "*.sage.py",
+  ".git/*",
+  "node_modules/*",
+  "__pycache__/*",
+  ".venv/*",
+  "venv/*",
+  "dist/*",
+  "build/*",
+  ".worktrees/**",
+  "**/.worktrees/**",
+  ".lake/**",
+  "**/.lake/**",
+  "src/external/**",
+  "theory/literature/**",
+]
 
 [grain.python]
 generic_varnames = ["process_data", "handle_response", "get_result", "do_thing", "process_item", "handle_input", "get_data", "process_request"]
 
 [grain.markdown]
 hedge_words = ["robust", "seamless", "leverage", "cutting-edge", "powerful", "you might want to", "consider using", "it's worth noting", "note that"]
+
+[[grain.custom_rules]]
+name     = "PROS_CONS"
+pattern  = '(?i)\b(pros?|cons?|trade.?off|advantage|disadvantage|benefit|drawback|downside|upside|strength|weakness|consideration|caveat|however|although|on the other hand|alternatively|that said|note that|keep in mind|be aware|worth noting)\b'
+files    = "*.md"
+message  = "Pros/cons or hedging language found in documentation. Documentation records decisions and code, not sales pitches or deliberations. Remove evaluative framing — state what is, not what might be weighed."
+severity = "error"

@@ -1,0 +1,11 @@
+id: fraud-pytest-raises
+language: python
+rule:
+  pattern: pytest.raises($$$ARGS)
+message: 'pytest.raises(...) found. MUST review against the project''s auditing
+  guidelines for fraud: asserting that bad inputs raise exceptions tests purely
+  internal consistency and adds zero mathematical value. The construction of the
+  error handler almost guarantees it catches what it was designed to catch. Tests
+  should assert nontrivial mathematical properties of correct outputs, not that
+  incorrect inputs are rejected in a particular way.'
+severity: error

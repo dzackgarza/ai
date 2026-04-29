@@ -1,0 +1,11 @@
+id: fraud-not-implemented
+language: python
+rule:
+  any:
+  - pattern: assert False
+  - pattern: raise NotImplementedError
+  - pattern: raise NotImplementedError($$$ARGS)
+message: 'assert False / raise NotImplementedError found. MUST review against the
+  project''s auditing guidelines for fraud: use @abstractmethod so that instantiation
+  of incomplete types fails immediately at construction, not lazily at call time.'
+severity: warning

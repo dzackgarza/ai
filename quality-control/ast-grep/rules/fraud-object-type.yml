@@ -1,0 +1,13 @@
+id: fraud-object-type
+language: python
+rule:
+  any:
+  - all:
+    - kind: typed_parameter
+    - regex: ': *object$'
+  - all:
+    - kind: function_definition
+    - regex: '\) *-> *object *:'
+message: 'object type annotation found. MUST review against the project''s auditing
+  guidelines for fraud: object is obfuscated Any; use a precise type or Protocol.'
+severity: warning

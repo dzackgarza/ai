@@ -1,0 +1,10 @@
+id: fraud-dataclass
+language: python
+rule:
+  any:
+  - pattern: from dataclasses import $$$NAMES
+  - pattern: '@dataclass'
+  - pattern: '@dataclasses.dataclass'
+message: 'dataclass usage found. MUST review against the project''s auditing guidelines
+  for fraud: use pydantic BaseModel instead of dataclasses.'
+severity: warning

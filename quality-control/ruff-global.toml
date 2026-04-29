@@ -25,10 +25,39 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
+    "**/*.sage",  # Sage files have non-Python syntax that ruff cannot parse
 ]
 line-length = 130
 indent-width = 4
 target-version = "py314"
+
+# Tell ruff where to find source code for import resolution
+src = ["src"]
+
+builtins = [
+    "ZZ",
+    "QQ",
+    "RR",
+    "CC",
+    "AA",
+    "CDF",
+    "SR",
+    "var",
+    "vector",
+    "matrix",
+    "identity_matrix",
+    "zero_matrix",
+    "PolynomialRing",
+    "PowerSeriesRing",
+    "LaurentPolynomialRing",
+    "EllipticCurve",
+    "Graph",
+    "DiGraph",
+    "CyclicPermutationGroup",
+    "BilinearModule",
+    "CyclicGroup",
+    "IntegralLattice",
+]
 
 [lint]
 select = [
@@ -40,6 +69,7 @@ select = [
 ignore = [
     "E743",
     "E741",
+    "F403",  # star imports are allowed
 ]
 fixable = [
     "ALL",

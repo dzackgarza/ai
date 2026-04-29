@@ -1,0 +1,10 @@
+id: fraud-typing-union-import
+language: python
+rule:
+  pattern: from typing import $$$NAMES
+  has:
+    regex: '\bUnion\b'
+    stopBy: end
+message: 'from typing import Union found. MUST review against the project''s auditing
+  guidelines for fraud: use X | Y syntax; Union is banned.'
+severity: warning

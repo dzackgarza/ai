@@ -1,0 +1,17 @@
+id: fraud-assert-literal-equality
+language: python
+rule:
+  any:
+  - pattern: assert $X == $N
+  - pattern: assert $X != $N
+message: 'Assertion against a literal value found. MUST review against the project''s
+  auditing guidelines for fraud: equality is a programming construct, not a mathematical
+  one. Two mathematically equal objects are isomorphic by a specific morphism — assert
+  that morphism exists and is the identity. E.g. prefer assert x.is_isomorphic_to(CyclicGroup(3))
+  over assert x.cardinality() == 3; a cardinality match can be satisfied adversarially
+  by any group of order 3. NOTE: literal equality checks on dimensions, ranks,
+  signatures, and cardinalities are weak but sometimes appropriate as a FIRST gate,
+  provided they are accompanied by stronger structural claims (e.g. assert
+  L.signature_pair() == (3, 19) is acceptable only alongside assert L.is_even() and
+  an isomorphism witness).'
+severity: warning

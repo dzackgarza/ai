@@ -70,210 +70,6 @@ tool_timeout: 240
 # list of tools to be globally excluded
 excluded_tools: []
 
-# list of optional tools (which are disabled by default) to be included
-included_optional_tools:
-- think_about_collected_information
-- think_about_task_adherence
-- think_about_whether_you_are_done
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
-# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
-# This cannot be combined with non-empty excluded_tools or included_optional_tools.
-
 # fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
 # This cannot be combined with non-empty excluded_tools or included_optional_tools.
 fixed_tools: []
@@ -290,10 +86,6 @@ base_modes:
 default_modes:
 - interactive
 - editing
-
-# Used as default for tools where the apply method has a default maximal answer length.
-# Even though the value of the max_answer_chars can be changed when calling the tool, it may make sense to adjust this default
-# through the global configuration.
 default_max_tool_answer_chars: 150000
 
 # the name of the token count estimator to use for tool usage statistics.
@@ -330,6 +122,7 @@ projects:
 - /home/dzack/ai/opencode/skills
 - /home/dzack/archive/zotero-attachment-plugin
 - /home/dzack/lattice_interface
+- /home/dzack/miniconda3
 - /home/dzack/opencode-git
 - /home/dzack/opencode-plugins
 - /home/dzack/opencode-plugins/clis/ai-prompts
@@ -342,7 +135,11 @@ projects:
 - /home/dzack/opencode-plugins/plugins/opencode-plugin-prompt-transformer
 - /home/dzack/pdf-extraction
 - /home/dzack/research
-- /home/dzack/research/.worktrees/quarantine-t-0001-foundation
+- /home/dzack/research/plans/category_specs
+- /home/dzack/research/plans/category_specs/cat
+- /home/dzack/research/plans/category_specs/modules
+- /home/dzack/research/plans/category_specs/rings
+- /home/dzack/research/tests
 - /var/sandbox/execa
 - /var/sandbox/opencode_parser_test
 - /var/search/searxng
@@ -375,3 +172,21 @@ line_ending: native
 # You can extend the list on a per-project basis in the project.yml configuration file.
 # Example: ["_archive/.*", "_episodes/.*"]
 ignored_memory_patterns: []
+
+# list of optional tools (which are disabled by default) to be included
+included_optional_tools: []
+
+# defines the interface (application mode) used for the web dashboard (if enabled).
+# If empty/null, use platform-dependent default. Otherwise, possible values:
+#  * browser: the dashboard is opened in the default browser (if `web_dashboard_open_on_launch` is true)
+#      This is supported on all platforms.
+#  * app: the dashboard is opened in a separate native-like app window with accompanying tray icon, whose
+#      lifecycle is tied to the Serena process.
+#      If `web_dashboard_open_on_launch` is false, the dashboard can be conveniently accessed via the tray icon.
+#      This is supported on Windows and macOS, but note that on macOS, where tray icons are very visible,
+#      this may result in too many icons being displayed when using multi-agent setups.
+#  * tray_manager: use a global tray icon to provide access to the dashboards of all running Serena instances,
+#      opening the dashboard in browser tabs when selected from the tray menu.
+#      This is EXPERIMENTAL. It is tested on Windows only. We will establish macOS support, but it is yet untested.
+#      On Linux, this cannot be universally supported, but it may work in some desktop environments.
+web_dashboard_interface:

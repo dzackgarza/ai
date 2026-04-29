@@ -1,0 +1,12 @@
+id: fraud-string-annotation
+language: python
+rule:
+  any:
+  - pattern: 'def $F($$$A, $P: "$T", $$$B): $$$BODY'
+  - pattern: 'def $F($$$ARGS) -> "$T": $$$BODY'
+  - pattern: '$X: "$T" = $V'
+  - pattern: '$X: "$T"'
+message: 'String annotation found. MUST review against the project''s auditing guidelines
+  for fraud: from __future__ import annotations is mandatory; string-quoted types
+  are unnecessary and obscure the real type.'
+severity: warning

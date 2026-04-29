@@ -1,0 +1,21 @@
+id: fraud-weak-shape-assert
+language: python
+rule:
+  any:
+  - pattern: assert len($X) != 0
+  - pattern: assert len($X) > 0
+  - pattern: assert $X.dim() != 0
+  - pattern: assert $X.dim() > 0
+  - pattern: assert $X.rank() != 0
+  - pattern: assert $X.rank() > 0
+  - pattern: assert $X.nrows() != 0
+  - pattern: assert $X.nrows() > 0
+  - pattern: assert $X.ncols() != 0
+  - pattern: assert $X.ncols() > 0
+message: 'Weak shape assertion found. This is a valid first gate but insufficient
+  alone. MUST review: a rank or dimension check confirms non-triviality but does
+  not prove the object has the right structure. Accompany this assertion with a
+  stronger structural claim — e.g. assert L.is_even(), an isomorphism witness, or
+  an assertion on the discriminant group — that cannot be satisfied by an arbitrary
+  object of the same shape.'
+severity: warning

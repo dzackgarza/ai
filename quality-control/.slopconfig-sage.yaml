@@ -1,0 +1,3 @@
+patterns:
+  disabled:
+    - phantom_import

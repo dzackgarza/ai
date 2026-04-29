@@ -4,14 +4,11 @@ rules:
 
     '
   message: 'Explicit `: Promise<$T>` return type triggers no-undef in Codacy''s LWC
-    ESLint
-
-    env. Remove the annotation; TypeScript infers the return type.
-
-    '
+    ESLint env. Remove the annotation; TypeScript infers the return type.'
   languages:
   - typescript
   severity: ERROR
+
 - id: no-promise-global-usage
   patterns:
   - pattern: Promise.resolve(...)
@@ -20,16 +17,12 @@ rules:
   - pattern: Promise.race(...)
   - pattern: new Promise(...)
   message: 'Direct use of the Promise global triggers no-undef in Codacy''s LWC ESLint
-    env.
-
-    Use .then()/.catch() chains from an existing thenable instead of constructing
-
-    new Promises.
-
-    '
+    env. Use .then()/.catch() chains from an existing thenable instead of constructing
+    new Promises.'
   languages:
   - typescript
   severity: ERROR
+
 - id: no-console-log
   pattern: console.log(...)
   message: Console.log should not be committed
@@ -37,9 +30,39 @@ rules:
   - typescript
   - javascript
   severity: ERROR
+
 - id: no-print-statements
   pattern: print(...)
   message: Print statements should not be committed
   languages:
   - python
   severity: ERROR
+
+- id: fraud-trivial-function
+  patterns:
+  - pattern: |
+      def $F(...):
+          $S
+  - pattern: |
+      def $F(...):
+          $S1
+          $S2
+  message: 'Trivial 1-2 line function found. MUST review against the project''s
+    auditing guidelines for fraud: this MAY be a false positive — legitimate uses
+    include wrapping raw types in semantic types or thin delegation. If this function
+    exists, ensure its call sites are accompanied by stronger structural claims that
+    the wrapper alone cannot provide. Trivial wrappers around equality checks,
+    constants, or other flagged constructs do not strengthen the proof — the
+    accompanying claim must be independently meaningful.'
+  languages:
+  - python
+  severity: WARNING
+
+- id: fraud-self-reinforcing-comment
+  pattern-regex: '#.*\b(verified|complete|completed|passed|confirmed|success|done|finished|validated|proved|proven|correct|valid|accepted|approved|satisfied|checked|guaranteed|certified|solved|works|working|ready|all\s+good|no\s+errors|no\s+issues|clean)\b'
+  message: 'Self-reinforcing language in comment found. MUST review against the project''s
+    auditing guidelines for fraud: results should stand for themselves without
+    narrating status in comments.'
+  languages:
+  - python
+  severity: WARNING

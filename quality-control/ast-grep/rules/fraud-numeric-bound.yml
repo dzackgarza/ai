@@ -4,7 +4,10 @@ rule:
   any:
   - kind: integer
   - kind: float
-message: 'Numeric constant found. MUST review against the project''s auditing guidelines
-  for fraud: arbitrary numerical constants are a strong signal of bounded enumeration
-  or uncited normalization choices.'
+message: 'Numeric constant found. This MAY be a false positive — assert
+  L.signature_pair() == (3, 19) is mathematically meaningful as a first gate.
+  MUST review: if this constant represents a known mathematical invariant, ensure
+  it is accompanied by a stronger structural claim (e.g. an isomorphism witness or
+  algebraic property) that independently justifies the value. If it is a magic
+  number or enumeration bound, replace it with a semantic construction.'
 severity: warning

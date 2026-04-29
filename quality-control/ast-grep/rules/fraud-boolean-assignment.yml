@@ -6,7 +6,10 @@ rule:
   - pattern: $X = False
   - pattern: '$X: bool = True'
   - pattern: '$X: bool = False'
-message: 'Boolean assignment found. MUST review against the project''s auditing guidelines
-  for fraud: booleans should be the output of a decision or quantified predicate,
-  not staged imperatively.'
+message: 'Boolean assignment found. This MAY be a false positive — default field
+  values (e.g. is_even: bool = True) are sometimes legitimate. MUST review: if
+  this boolean is being built up imperatively across multiple statements, replace
+  it with a single predicate expression. If it is a default, ensure the default
+  is mathematically justified and accompanied by an assertion that verifies it at
+  construction time.'
 severity: warning

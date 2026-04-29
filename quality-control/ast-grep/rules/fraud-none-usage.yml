@@ -4,7 +4,9 @@ rule:
   any:
   - pattern: $X = None
   - pattern: return None
-message: 'None usage found. MUST review against the project''s auditing guidelines
-  for fraud: optional outputs are not mathematically meaningful; use precise total
-  functions or explicit variants.'
+message: 'None usage found. This MAY be a false positive — return None in __init__
+  and dunder methods is mandatory Python. MUST review: if None is used as a sentinel
+  for an optional mathematical output, replace it with a precise total function or
+  an explicit variant type. If None is unavoidable at a system boundary, ensure the
+  call site asserts the result is not None before using it.'
 severity: warning

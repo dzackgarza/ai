@@ -1,0 +1,13 @@
+id: fraud-assert-equality
+language: python
+rule:
+  any:
+  - pattern: assert $X == $Y
+  - pattern: assert $X != $Y
+message: 'Equality assertion found. MUST review against the project''s auditing guidelines
+  for fraud: == is a programming construct, not a mathematical one. If equality is
+  asserted, ensure it is accompanied by a structural witness — an isomorphism, a
+  morphism that is the identity, or an independent oracle that derives the same
+  object by a different construction. A bare equality check without such a witness
+  can be satisfied adversarially by constructing a := b, b := c, assert a == c.'
+severity: warning

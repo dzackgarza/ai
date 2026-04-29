@@ -1,0 +1,9 @@
+id: fraud-coerce-function
+language: python
+rule:
+  kind: function_definition
+  regex: 'def [a-zA-Z_]*coerce[a-zA-Z_]*\s*\('
+message: 'Function with "coerce" in name found. MUST review against the project''s
+  auditing guidelines for fraud: coerce is an untyped conversion escape hatch; define
+  a @classmethod on the target type that accepts the source type explicitly.'
+severity: warning

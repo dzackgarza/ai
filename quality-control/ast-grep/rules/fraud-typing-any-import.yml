@@ -1,0 +1,10 @@
+id: fraud-typing-any-import
+language: python
+rule:
+  pattern: from typing import $$$NAMES
+  has:
+    regex: '\bAny\b'
+    stopBy: end
+message: 'from typing import Any found. MUST review against the project''s auditing
+  guidelines for fraud: Any erases type safety; use precise types or a Protocol.'
+severity: warning

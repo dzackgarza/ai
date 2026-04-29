@@ -1,0 +1,18 @@
+id: fraud-eigenvalue-classification
+language: python
+rule:
+  any:
+  - pattern: $X.eigenvalues()
+  - pattern: $X.eigenspaces()
+  - pattern: $X.eigenvectors()
+  - pattern: numpy.linalg.eig($$$ARGS)
+  - pattern: np.linalg.eig($$$ARGS)
+  - pattern: numpy.linalg.eigvals($$$ARGS)
+  - pattern: np.linalg.eigvals($$$ARGS)
+message: 'Eigenvalue computation found. This MAY be a false positive — eigenvalues
+  for display, output, or exploratory computation are legitimate. MUST review: if
+  eigenvalues are being used to classify definiteness or type (e.g. counting positive
+  eigenvalues to determine signature), replace with algebraic criteria
+  (e.g. is_positive_definite(), signature_pair()). Numerical spectra are not a
+  substitute for algebraic proof.'
+severity: warning

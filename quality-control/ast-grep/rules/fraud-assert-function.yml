@@ -1,0 +1,12 @@
+id: fraud-assert-function
+language: python
+rule:
+  kind: function_definition
+  regex: 'def [a-zA-Z_]*[Aa]ssert[a-zA-Z_]*\s*\('
+message: 'Function with "assert" in name found. MUST review against the project''s
+  auditing guidelines for fraud: wrapping assertions in named functions hides what
+  is actually being claimed and is a common laundering pattern. Assertions should
+  appear plainly at the call site; call sites should be inspected and accompanied
+  by stronger non-violating structural claims rather than delegating to an assertion
+  helper.'
+severity: error

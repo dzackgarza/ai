@@ -1,0 +1,15 @@
+id: fraud-case-boolean
+language: python
+rule:
+  kind: case_clause
+  has:
+    any:
+    - pattern: "True"
+    - pattern: "False"
+    stopBy: end
+message: 'case True/False found. MUST review against the project''s auditing guidelines
+  for fraud: matching on boolean literals is a reflexive overcorrection to the
+  if-statement warning that does not improve mathematical clarity. The real fix is
+  to identify the actual mathematical cases — e.g. case Positive(), case Indefinite()
+  — and match on those semantic variants, not on raw booleans.'
+severity: error

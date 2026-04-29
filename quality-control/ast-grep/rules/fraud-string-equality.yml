@@ -1,0 +1,13 @@
+id: fraud-string-equality
+language: python
+rule:
+  kind: comparison_operator
+  has:
+    kind: string
+    stopBy: end
+message: "String equality check found. MUST review against the project's auditing\
+  \ guidelines for fraud: comparing against string literals usually means a state,\
+  \ type, or variant that wants to be an enum, a sealed class, or a proper algebraic\
+  \ type is being represented as a raw string. Define the states explicitly as semantic\
+  \ types and match on those instead."
+severity: warning

@@ -6,7 +6,9 @@ rule:
     has:
       kind: assert_statement
       stopBy: end
-message: 'Function without assert found. MUST review against the project''s auditing
-  guidelines for fraud: functions should verify mathematical assumptions and obligations
-  explicitly.'
+message: 'Function without assert found. This MAY be a false positive — __init__,
+  __repr__, __str__, properties, and simple accessors legitimately have no assert.
+  MUST review: if this function performs a mathematical transformation or construction,
+  add an assert that verifies the output satisfies the expected mathematical
+  obligation. Do not add trivial or content-free asserts to silence this warning.'
 severity: warning

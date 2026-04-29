@@ -1,0 +1,13 @@
+id: fraud-float-epsilon
+language: python
+rule:
+  any:
+  - pattern: math.isclose($$$ARGS)
+  - pattern: numpy.isclose($$$ARGS)
+  - pattern: np.isclose($$$ARGS)
+  - pattern: abs($X - $Y) < $EPS
+  - pattern: abs($X - $Y) <= $EPS
+message: 'Floating-point epsilon comparison found. MUST review against the project''s
+  auditing guidelines for fraud: work over exact rings (ℤ, ℚ); never use floating-point
+  or ε comparisons for mathematical criteria.'
+severity: warning

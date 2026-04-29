@@ -1,0 +1,23 @@
+id: fraud-bare-except
+language: python
+rule:
+  any:
+  - pattern: |
+      try:
+        $$$BODY
+      except:
+        $$$HANDLER
+  - pattern: |
+      try:
+        $$$BODY
+      except Exception:
+        $$$HANDLER
+  - pattern: |
+      try:
+        $$$BODY
+      except Exception as $E:
+        $$$HANDLER
+message: 'Bare or broad except found. MUST review against the project''s auditing
+  guidelines for fraud: catch only specific, observed exceptions at system boundaries;
+  never silence or broadly swallow errors.'
+severity: warning

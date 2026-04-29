@@ -1,0 +1,23 @@
+id: fraud-numeric-global
+language: python
+rule:
+  any:
+  - pattern: $NAME = $N
+  - pattern: $NAME = ($$$INTS)
+  - pattern: $NAME = [$$$INTS]
+  all:
+  - kind: expression_statement
+    not:
+      inside:
+        any:
+        - kind: function_definition
+        - kind: class_definition
+        stopBy: end
+  - regex: '^[A-Z_][A-Z0-9_]*\s*='
+message: 'Numeric constant or tuple/list of integers assigned as a module-level global
+  found. MUST review against the project''s auditing guidelines for fraud: this
+  MAY be a false positive, but is a common pattern for laundering banned equality
+  and constant checks behind named globals. Warrants immediate high-level review
+  of whether these constants represent hardcoded bounds, magic numbers, or
+  circumvention of structural assertion requirements.'
+severity: warning

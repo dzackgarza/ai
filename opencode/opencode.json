@@ -129,8 +129,7 @@
     "opencode-pty@latest",
     "@dzackgarza/plannotator-dzg-fork@git+https://github.com/dzackgarza/plannotator-dzg-fork.git#main",
     "@dzackgarza/opencode-plugin-improved-webtools@git+https://github.com/dzackgarza/opencode-plugin-improved-webtools.git#main",
-    "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git",
-    "opencode-runtime-fallback"
+    "@dzackgarza/opencode-memory-plugin@git+https://github.com/dzackgarza/opencode-memory-plugin.git"
   ],
   "provider": {
     "anthropic": {

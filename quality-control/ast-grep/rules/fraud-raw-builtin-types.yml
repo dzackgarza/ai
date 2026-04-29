@@ -1,0 +1,22 @@
+id: fraud-raw-builtin-types
+language: python
+rule:
+  any:
+  - all:
+    - kind: typed_parameter
+    - regex: ': *(int|float|bool|str|bytes|bytearray|memoryview|complex|list(\[.*\])?|dict(\[.*\])?|tuple(\[.*\])?|set(\[.*\])?|frozenset(\[.*\])?|List(\[.*\])?|Dict(\[.*\])?|Tuple(\[.*\])?|Set(\[.*\])?|FrozenSet(\[.*\])?|Sequence(\[.*\])?|MutableSequence(\[.*\])?|Iterable(\[.*\])?|Iterator(\[.*\])?|Generator(\[.*\])?|Mapping(\[.*\])?|MutableMapping(\[.*\])?|Collection(\[.*\])?|Callable(\[.*\])?|Any) *[,\)]'
+    - not:
+        inside:
+          kind: function_definition
+          regex: 'def _'
+          stopBy: end
+  - all:
+    - kind: function_definition
+    - regex: '\) *-> *(int|float|bool|str|bytes|bytearray|memoryview|complex|list(\[.*\])?|dict(\[.*\])?|tuple(\[.*\])?|set(\[.*\])?|frozenset(\[.*\])?|List(\[.*\])?|Dict(\[.*\])?|Tuple(\[.*\])?|Set(\[.*\])?|FrozenSet(\[.*\])?|Sequence(\[.*\])?|MutableSequence(\[.*\])?|Iterable(\[.*\])?|Iterator(\[.*\])?|Generator(\[.*\])?|Mapping(\[.*\])?|MutableMapping(\[.*\])?|Collection(\[.*\])?|Callable(\[.*\])?|Any) *:'
+    - not:
+        regex: 'def _'
+message: 'Public function operating on raw or generic builtin types found. MUST review
+  against the project''s auditing guidelines for fraud: public API should operate
+  on meaningful mathematical nouns; raw and generic collection types signal a missing
+  domain type or conversion layer.'
+severity: warning

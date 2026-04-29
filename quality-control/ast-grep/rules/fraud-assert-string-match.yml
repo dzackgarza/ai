@@ -1,0 +1,12 @@
+id: fraud-assert-string-match
+language: python
+rule:
+  any:
+  - pattern: assert str($X) == $S
+  - pattern: assert str($X) != $S
+  - pattern: assert $S in str($X)
+  - pattern: assert $S not in str($X)
+message: 'Assertion on string representation found. MUST review against the project''s
+  auditing guidelines for fraud: never assert on error message strings; use
+  pytest.raises(ExceptionType) to assert on the type of error instead.'
+severity: error

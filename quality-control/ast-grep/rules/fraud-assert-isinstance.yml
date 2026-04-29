@@ -1,0 +1,8 @@
+id: fraud-assert-isinstance
+language: python
+rule:
+  pattern: assert isinstance($X, $T)
+message: 'assert isinstance(...) found. MUST review against the project''s auditing
+  guidelines for fraud: this is type-narrowing disguised as an assertion; the input
+  type should be designed to be unambiguous without runtime probing.'
+severity: error

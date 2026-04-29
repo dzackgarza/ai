@@ -1,0 +1,8 @@
+id: fraud-vector-construction
+language: python
+rule:
+  pattern: vector($$$ARGS)
+message: 'vector(...) construction found. MUST review against the project''s auditing
+  guidelines for fraud: manual vector construction hides mathematical meaning; derive
+  vectors from canonical algebraic objects.'
+severity: warning

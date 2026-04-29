@@ -1,0 +1,14 @@
+id: fraud-pytest-skip-xfail
+language: python
+rule:
+  any:
+  - pattern: pytest.mark.xfail
+  - pattern: pytest.mark.skip
+  - pattern: pytest.mark.skipif
+  - pattern: '@pytest.mark.xfail'
+  - pattern: '@pytest.mark.skip'
+  - pattern: '@pytest.mark.skipif($$$ARGS)'
+message: 'pytest.mark.skip/xfail found. MUST review against the project''s auditing
+  guidelines for fraud: masking test failures is prohibited; suite status must
+  reflect 100% actual runtime reality.'
+severity: error

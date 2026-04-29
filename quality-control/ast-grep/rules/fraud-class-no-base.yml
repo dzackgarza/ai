@@ -1,0 +1,13 @@
+id: fraud-class-no-base
+language: python
+rule:
+  kind: class_definition
+  not:
+    has:
+      kind: argument_list
+      stopBy: end
+message: 'Class with no base class found. MUST review against the project''s auditing
+  guidelines for fraud: classes should extend a meaningful base (pydantic BaseModel,
+  ABC, or an upstream Sage type); a bare class likely misses existing structure
+  and semantics.'
+severity: warning

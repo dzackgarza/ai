@@ -1,0 +1,10 @@
+id: fraud-issubclass
+language: python
+rule:
+  pattern: issubclass($X, $Y)
+message: 'issubclass(...) found. MUST review against the project''s auditing guidelines
+  for fraud: subclass relationships are guaranteed by the type system; runtime
+  issubclass checks are likely theater to suppress vulture or bypass static analysis.
+  If silencing a vulture error, critically assess whether a nontrivial assertion
+  on real behavior is possible instead.'
+severity: warning

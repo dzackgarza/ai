@@ -1,0 +1,93 @@
+{
+  "n_samples": 1000,
+  "n_train": 800,
+  "n_test": 200,
+  "model_type": "ensemble",
+  "metrics": {
+    "random_forest": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "xgboost": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "ensemble": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    }
+  },
+  "model_path": "models/slop_classifier.pkl",
+  "feature_importance": [
+    [
+      "deep_nesting_count",
+      0.14
+    ],
+    [
+      "pattern_count_medium",
+      0.13
+    ],
+    [
+      "empty_lines",
+      0.12058133140119003
+    ],
+    [
+      "dead_code_count",
+      0.1111306660096016
+    ],
+    [
+      "ddc_score",
+      0.11
+    ],
+    [
+      "pattern_count_critical",
+      0.09
+    ],
+    [
+      "pattern_count_high",
+      0.09
+    ],
+    [
+      "ldr_score",
+      0.07
+    ],
+    [
+      "inflation_score",
+      0.07
+    ],
+    [
+      "god_function_count",
+      0.06
+    ],
+    [
+      "logic_lines",
+      0.008288002589208388
+    ],
+    [
+      "pattern_count_low",
+      0.0
+    ],
+    [
+      "avg_complexity",
+      0.0
+    ],
+    [
+      "cross_language_patterns",
+      0.0
+    ],
+    [
+      "hallucination_count",
+      0.0
+    ],
+    [
+      "total_lines",
+      0.0
+    ]
+  ]
+}

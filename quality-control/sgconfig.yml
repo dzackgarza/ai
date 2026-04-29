@@ -3,4 +3,3 @@ ruleDirs:
 languageGlobs:
   python:
   - '*.py'
-  - '*.sage'

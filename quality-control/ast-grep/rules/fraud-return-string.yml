@@ -1,0 +1,10 @@
+id: fraud-return-string
+language: python
+rule:
+  pattern: return "$S"
+message: 'Returning a string literal found. MUST review against the project''s auditing
+  guidelines for fraud: strings are not mathematical objects. Functions should return
+  typed mathematical values. If a string is needed for display or serialization,
+  that concern belongs outside the mathematical core — define a dedicated __repr__
+  or a separate formatting layer.'
+severity: warning

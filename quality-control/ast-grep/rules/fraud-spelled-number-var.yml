@@ -1,0 +1,11 @@
+id: fraud-spelled-number-var
+language: python
+rule:
+  kind: identifier
+  regex: '^(_*(ZERO|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN|ELEVEN|TWELVE|HUNDRED|THOUSAND|MILLION|NEGATIVE_ONE|MINUS_ONE)_*)+$'
+message: 'Variable with a spelled-out number in its name found. MUST review against
+  the project''s auditing guidelines for fraud: naming a variable ONE, TWO, NEGATIVE_ONE,
+  etc. is a common pattern for laundering banned numeric constants behind a named
+  alias. If this value is mathematically meaningful, cite the source and accompany
+  it with a structural claim that justifies the value.'
+severity: error

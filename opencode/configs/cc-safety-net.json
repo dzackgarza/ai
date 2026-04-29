@@ -3,20 +3,11 @@
   "version": 1,
   "rules": [
     {
-      "name": "block-git-checkout-ref-path",
+      "name": "block-git-checkout",
       "command": "git",
       "subcommand": "checkout",
       "block_args": [
-        "--"
-      ],
-      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. NEVER use git stash - review git guidelines skill immediately."
-    },
-    {
-      "name": "block-git-checkout-file-restore",
-      "command": "git",
-      "subcommand": "checkout",
-      "block_args": [
-        "--"
+        "checkout"
       ],
       "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. NEVER use git stash - review git guidelines skill immediately."
     },

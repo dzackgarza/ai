@@ -1,0 +1,12 @@
+id: fraud-zz-literal
+language: python
+rule:
+  any:
+  - pattern: ZZ($N)
+  - pattern: ZZ("$N")
+message: 'ZZ(...) wrapping of a literal found. MUST review against the project''s
+  auditing guidelines for fraud: ZZ(n) on a literal is a common pattern for laundering
+  banned numeric constants behind a type conversion. If a specific integer is
+  mathematically meaningful, cite the source and accompany it with a structural
+  claim that justifies the value.'
+severity: error

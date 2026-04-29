@@ -38,7 +38,6 @@ _python-qc-files:
 	set -euo pipefail
 	rg --files \
 		-g '*.py' \
-		-g '*.sage' \
 		-g '!*.sage.py' \
 		-g '!**/external/**' \
 		-g '!**/node_modules/**' \
@@ -52,6 +51,9 @@ _python-qc-files:
 _no-bypass:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: bypass comment detection (no pragma/noqa/type:ignore) ==="
+	echo "# Blocks staged changes from hiding QC issues via bypass comments (# pragma: no cover, // istanbul ignore, # noqa, # type: ignore, @ts-ignore, @ts-expect-error, // eslint-disable)"
 	# Block attempts to hide/launder QC issues via bypass comments
 	files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
 	[ -z "$files" ] && exit 0
@@ -98,33 +100,54 @@ _no-bypass:
 _venv:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	echo "Using uvx/npx tool runners; no local Python tool install step."
+	echo "============================="
+	echo "=== Running: uvx/npx tool runners setup ==="
+	echo "# Provides access to ruff, coverage, semgrep, and other Python/JS tools via uvx/npx without local installation"
 
 _install-tools: _venv
 	#!/usr/bin/env bash
 	set -euo pipefail
-	echo "Using uvx/npx tool runners; no local Python tool install step."
+	echo "============================="
+	echo "=== Running: tool installation ==="
+	echo "# Installs Python/JS tool dependencies to local cache for faster subsequent runs"
 
 _normalize: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: ruff format and check (auto-fix) ==="
+	echo "# Enforces PEP 8 style + auto-fixes common issues (import sorting, unused imports, pyupgrade patterns)"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "Skipping ruff normalization: no Python or Sage files found."
 		exit 0
 	fi
-	uvx --from ruff ruff check --fix \
-		--config {{justfile_directory()}}/ruff-global.toml \
-		--extension sage:python \
-		"${python_files[@]}"
-	uvx --from ruff ruff format \
-		--config {{justfile_directory()}}/ruff-global.toml \
-		--extension sage:python \
-		"${python_files[@]}"
+	if [ -n "${SAGE_PYTEST:-}" ]; then
+		sage -python -m ruff check --fix \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+		sage -python -m ruff format \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+	else
+		uvx --from ruff ruff check --fix \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+		uvx --from ruff ruff format \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+	fi
 
-_coverage: _install-tools
+_pytest_with_coverage: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: pytest with coverage measurement ==="
+	echo "# Runs pytest with coverage.py to enforce 100% line/branch coverage and generate coverage.xml"
 	if [ ! -f pyproject.toml ]; then
 		echo "Skipping coverage: no pyproject.toml found."
 		exit 0
@@ -136,9 +159,12 @@ _coverage: _install-tools
 	uvx --from coverage --with pytest --with-editable . coverage run -m pytest
 	uvx --from coverage coverage xml --fail-under=100 -o coverage.xml
 
-_diff-cover: _coverage
+_diff-cover: _pytest_with_coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: diff-cover against main branch ==="
+	echo "# Reports coverage gaps on code changed since main branch to ensure new code is tested"
 	if [ ! -f coverage.xml ]; then
 		echo "Skipping diff-cover: no coverage.xml generated."
 		exit 0
@@ -148,6 +174,9 @@ _diff-cover: _coverage
 _vulture: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: vulture dead code detection ==="
+	echo "# Finds unused code (functions, classes, variables) that can be safely removed"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
 	if [ "${#python_files[@]}" -eq 0 ]; then
@@ -162,6 +191,9 @@ _vulture: _install-tools
 _deptry: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: deptry dependency linting ==="
+	echo "# Checks for unused/missing dependencies in pyproject.toml, detects transitive deps, and verifies type checking"
 	if [ ! -f pyproject.toml ]; then
 		echo "Skipping deptry: no pyproject.toml found."
 		exit 0
@@ -171,6 +203,9 @@ _deptry: _install-tools
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: semgrep security pattern scanning ==="
+	echo "# Static analysis for code quality and fraud patterns (trivial functions, self-reinforcing comments, print/console statements)"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "Skipping semgrep: no Python or Sage files found."
@@ -186,6 +221,9 @@ _semgrep: _install-tools
 _ast-grep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: ast-grep code quality audit ==="
+	echo "# Custom AST rules for fraud detection (boolean assignment, loops without asserts, numeric bounds, self-reinforcing prints)"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "Skipping ast-grep: no Python or Sage files found."
@@ -205,6 +243,9 @@ _ast-grep: _install-tools
 _jscpd:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: jscpd copy-paste detection ==="
+	echo "# Finds duplicate code blocks across the codebase that may indicate copypaste or missing refactoring"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "Skipping jscpd: no Python or Sage files found."
@@ -219,6 +260,9 @@ _jscpd:
 _lizard: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: lizard complexity analysis ==="
+	echo "# Computes cyclomatic complexity number (CCN), line count, and parameter count to flag overly complex functions"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "Skipping lizard: no Python or Sage files found."
@@ -229,6 +273,9 @@ _lizard: _install-tools
 _import-linter: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: import-linter dependency rules ==="
+	echo "# Enforces layer-based import rules (e.g., core cannot import from plugins, data cannot import from domain)"
 	config=""
 	if [ -f .importlinter ]; then
 		config=".importlinter"
@@ -245,6 +292,9 @@ _import-linter: _install-tools
 _grain:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: grain unused code detection ==="
+	echo "# Finds unused imports and variables that can be safely removed"
 	cp {{justfile_directory()}}/grain.toml .grain.toml
 	uvx --from git+https://github.com/mmartoccia/grain grain check --all --fix
 	rm .grain.toml
@@ -252,6 +302,9 @@ _grain:
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: codeql security analysis ==="
+	echo "# GitHub's static analysis engine for code quality and security vulnerabilities"
 	if ! command -v codeql >/dev/null 2>&1; then
 		echo "Skipping CodeQL: codeql CLI is not installed."
 		exit 0
@@ -262,6 +315,9 @@ _codeql:
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: ai-slop-detector ML-based quality check ==="
+	echo "# ML classifier for detecting AI-generated code patterns and low-quality implementations"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "Skipping ai-slop-detector: no Python or Sage files found."
@@ -278,7 +334,7 @@ _slop:
 	done
 
 # public: all static checks run locally
-test: _normalize _no-bypass _coverage _diff-cover _vulture _deptry _semgrep _ast-grep _jscpd _lizard _import-linter _codeql _slop _grain
+test: _no-bypass _normalize _vulture _deptry _semgrep _ast-grep _jscpd _lizard _import-linter _codeql _slop _grain _diff-cover _pytest_with_coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

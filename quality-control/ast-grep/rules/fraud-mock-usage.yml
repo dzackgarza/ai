@@ -1,0 +1,15 @@
+id: fraud-mock-usage
+language: python
+rule:
+  any:
+  - pattern: from unittest.mock import $$$NAMES
+  - pattern: import unittest.mock
+  - pattern: MagicMock($$$ARGS)
+  - pattern: Mock($$$ARGS)
+  - pattern: patch($$$ARGS)
+  - pattern: '@patch($$$ARGS)'
+  - pattern: '@mock.patch($$$ARGS)'
+message: 'Mock/patch usage found. MUST review against the project''s auditing guidelines
+  for fraud: mocks only assert internal consistency, not real behavior; use real
+  fixtures, real test servers, or real ephemeral instances instead.'
+severity: error

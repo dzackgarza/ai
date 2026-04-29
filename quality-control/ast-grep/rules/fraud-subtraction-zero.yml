@@ -1,0 +1,11 @@
+id: fraud-subtraction-zero
+language: python
+rule:
+  any:
+  - pattern: ($X - $Y).is_zero()
+  - pattern: assert ($X - $Y).is_zero()
+message: 'Subtraction-zero equality check found. MUST review against the project''s
+  auditing guidelines for fraud: ($X - $Y).is_zero() is laundered equality ($X == $Y).
+  If equality is being checked, ensure it is accompanied by a structural witness —
+  an isomorphism, a morphism that is the identity, or an independent oracle.'
+severity: error

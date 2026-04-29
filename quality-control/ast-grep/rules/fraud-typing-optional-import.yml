@@ -1,0 +1,10 @@
+id: fraud-typing-optional-import
+language: python
+rule:
+  pattern: from typing import $$$NAMES
+  has:
+    regex: '\bOptional\b'
+    stopBy: end
+message: 'from typing import Optional found. MUST review against the project''s auditing
+  guidelines for fraud: use X | None syntax; Optional is banned.'
+severity: warning

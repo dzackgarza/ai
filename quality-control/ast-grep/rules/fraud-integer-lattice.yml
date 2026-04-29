@@ -1,0 +1,8 @@
+id: fraud-integer-lattice
+language: python
+rule:
+  pattern: IntegerLattice($$$ARGS)
+message: 'IntegerLattice(...) found. MUST review against the project''s auditing
+  guidelines for fraud: use IntegralLattice for indefinite forms; IntegerLattice
+  is the wrong class.'
+severity: warning

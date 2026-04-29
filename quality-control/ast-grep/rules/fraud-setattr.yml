@@ -1,0 +1,8 @@
+id: fraud-setattr
+language: python
+rule:
+  pattern: setattr($OBJ, $NAME, $VALUE)
+message: 'setattr(...) found. MUST review against the project''s auditing guidelines
+  for fraud: monkey-patching attributes is not proper noun/verb extension semantics;
+  define the behaviour on the type directly.'
+severity: error

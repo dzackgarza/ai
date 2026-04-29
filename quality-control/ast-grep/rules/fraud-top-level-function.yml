@@ -1,0 +1,16 @@
+id: fraud-top-level-function
+language: python
+rule:
+  kind: function_definition
+  not:
+    inside:
+      any:
+      - kind: class_definition
+      - kind: function_definition
+      stopBy: end
+message: 'Top-level function found. This MAY be a false positive — module-level
+  factory functions and routing constructors are sometimes legitimate. MUST review:
+  if this function is a thin dispatcher or factory, consider whether it belongs as
+  a @classmethod on the target type. If it is a standalone utility with no natural
+  home, consider whether a class with a clear mathematical noun is missing.'
+severity: warning
