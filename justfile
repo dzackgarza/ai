@@ -68,7 +68,8 @@ install:
 
     mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" "{{ qwen_home }}" \
              "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" "{{ agents_home }}" \
-             "{{ kilocode_home }}" "{{ opencode_root }}" "{{ cc_safety_net_home }}"
+             "{{ kilocode_home }}" "{{ opencode_root }}" "{{ cc_safety_net_home }}" \
+             "{{ home }}/.config/agents"
     
     ln -snf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
     ln -snf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
