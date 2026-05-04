@@ -54,11 +54,14 @@ The threshold is not "never ask when unsure." A second set of frontier eyes on a
 3. Verify against local facts.
    Treat the frontier response as guidance to check, not authority to obey. Accept, modify, or reject parts only for grounded reasons: repository evidence, failing tests, missing files, impossible commands, security constraints, or explicit project requirements.
 
-4. Execute boundedly.
+4. Read and think.
+   Do not immediately summarize the response to the user. Read the full response carefully, identify the plan, assumptions, gates, branch points, and any new questions it raises. If the response exposes an unresolved hard decision, ask a follow-up before acting.
+
+5. Execute boundedly.
    Implement only the next bounded phase or slice. Compare results to the stated gates.
 
-5. Reconsult only at meaningful boundaries.
-   Return to the frontier model if an assumption fails, evidence contradicts the plan, a listed decision point is reached, or the local agent cannot choose between materially different paths.
+6. Reconsult at meaningful boundaries.
+   Return to the frontier model if an assumption fails, evidence contradicts the plan, a listed decision point is reached, the response surfaces a hard choice, or the local agent cannot choose between materially different paths.
 
 ## Prompt Shape
 
@@ -98,6 +101,8 @@ Do not merely affirm the current plan. Improve it, reject unsound parts, and sta
 The first prompt should be broad in solution space but narrow in objective. Do not ask vague questions such as "what should I do?" Provide the real decision state and ask for a plan artifact.
 
 Highly specific initial queries can reduce value by forcing the model into a narrow channel before it can surface hidden structure, alternate framings, missing risks, or better questions. Broad first-pass answers are cheap for Codex to extract, summarize, highlight, or narrow in follow-up turns.
+
+Prefer forcing hard decisions onto the stronger model before implementation. If the local agent sees multiple plausible paths, unclear sequencing, ambiguous gates, or tradeoffs it cannot confidently evaluate, ask a follow-up that presents the options and asks for a recommendation, decision criteria, and evidence that would change the recommendation.
 
 ## Procedure Supporting the Consultation
 
@@ -199,7 +204,15 @@ A response is complete only when:
 
 ## Extraction Requirements
 
-Do not return a raw transcript as the final artifact. Extract the frontier response into an implementation-facing artifact.
+Do not return a raw transcript as the final artifact, and do not merely present the frontier response to the user. Record the conversation result in a local artifact file, then act on it.
+
+Default artifact path:
+
+```bash
+/tmp/frontier-model-consultation.md
+```
+
+Use a task-specific path if the user or project provides one. The artifact should preserve the full frontier response when practical, followed by the local agent's distilled action plan.
 
 The extracted result must include, when applicable:
 
@@ -240,7 +253,15 @@ Before closing, verify that the extracted text:
 - is not visibly truncated;
 - does not include account, sidebar, `Recents`, `Projects`, `GPTs`, or unrelated conversation history.
 
-Save or return the extracted response before closing.
+Save the extracted response to the artifact before closing. After saving, read the artifact and think through it before acting. Identify:
+
+- what the frontier model recommends;
+- what assumptions must be checked locally;
+- what new questions or ambiguities remain;
+- what follow-up turn, if any, would improve the result;
+- the first bounded local action to take.
+
+Only report the consultation to the user if the user explicitly requested the frontier response itself or if reporting is the task. Otherwise, use the artifact to guide the local work.
 
 ## Close and Cleanup
 
@@ -293,6 +314,8 @@ The result is successful only if:
 - the prompt exposed the real decision state;
 - the frontier answer addressed risks, assumptions, tests, and decision points;
 - the extracted artifact is actionable;
+- the full response was recorded in an artifact when practical;
+- the local agent read the artifact and converted it into local next actions;
 - sensitive data was not disclosed;
 - browser/session failures were not ignored;
 - the local agent can state what evidence would invalidate or modify the plan;
@@ -310,6 +333,8 @@ This skill was misused if:
 - the response was treated as a command without verification;
 - the response was rejected only because it differed from the local plan;
 - the final artifact was just a transcript or vague summary;
+- the agent simply reported the frontier response to the user instead of recording it, studying it, and acting on it;
+- the agent skipped a useful follow-up despite unresolved hard decisions, ambiguous sequencing, or unclear gates;
 - browser mechanics were completed but no executable plan, audit, or decision artifact was produced;
 - the agent continued after a browser/session/security failure.
 
