@@ -94,10 +94,44 @@ _coverage: _install-tools
 	uv run coverage run -m pytest
 	uv run coverage xml --fail-under=100 -o coverage.xml
 
-_diff-cover: _coverage
+_pytest_with_coverage: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
+	echo "============================="
+	echo "=== Running: pytest with coverage measurement ==="
+	echo "# Runs pytest with coverage.py to enforce 100% line/branch coverage and generate coverage.xml"
+	if [ ! -f pyproject.toml ]; then
+		echo "Skipping coverage: no pyproject.toml found."
+		exit 0
+	fi
+	if ! rg --files tests -g 'test_*.py' -g '*_test.py' >/dev/null 2>&1; then
+		echo "Skipping coverage: no pytest-style Python tests found."
+		exit 0
+	fi
+	project_root="$(pwd -P)"
+	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
+	coverage_root="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/coverage/$project_slug"
+	coverage_data="$coverage_root/.coverage"
+	coverage_xml="$coverage_root/coverage.xml"
+	mkdir -p "$coverage_root"
+	COVERAGE_FILE="$coverage_data" uvx --from coverage --with pytest --with-editable . coverage run -m pytest
+	COVERAGE_FILE="$coverage_data" uvx --from coverage coverage xml --fail-under=100 -o "$coverage_xml"
+	echo "Coverage XML report: $coverage_xml"
+
+_diff-cover: _pytest_with_coverage
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: diff-cover against main branch ==="
+	echo "# Reports coverage gaps on code changed since main branch to ensure new code is tested"
+	project_root="$(pwd -P)"
+	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
+	coverage_xml="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/coverage/$project_slug/coverage.xml"
+	if [ ! -f "$coverage_xml" ]; then
+		echo "Skipping diff-cover: no coverage.xml generated at $coverage_xml."
+		exit 0
+	fi
+	uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch ${DIFF_COVER_BASE:-main}
 
 _vulture: _install-tools
 	#!/usr/bin/env bash
@@ -169,21 +203,85 @@ _codeql:
 		echo "Skipping CodeQL: codeql CLI is not installed."
 		exit 0
 	fi
-	codeql database create codeql-db --overwrite --language=python --source-root=.
-	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
+	project_root="$(pwd -P)"
+	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
+	codeql_root="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/codeql/$project_slug"
+	db="$codeql_root/codeql-db"
+	report="$codeql_root/codeql-report.sarif"
+	mkdir -p "$codeql_root"
+	codeql database create "$db" --overwrite --language=python --source-root="$project_root"
+	codeql database analyze "$db" --format=sarif-latest --output="$report"
+	echo "CodeQL SARIF report: $report"
+	python3 - "$report" <<'PY'
+	import json
+	import sys
+	from pathlib import Path
+
+	report = Path(sys.argv[1])
+	if not report.exists():
+		print(f"CodeQL summary unavailable: report not found at {report}")
+		raise SystemExit(0)
+
+	data = json.loads(report.read_text())
+	rule_levels = {}
+	for run in data.get("runs", []):
+		for rule in run.get("tool", {}).get("driver", {}).get("rules", []):
+			level = rule.get("defaultConfiguration", {}).get("level")
+			if level:
+				rule_levels[rule.get("id")] = level
+
+	findings = []
+	for run in data.get("runs", []):
+		for result in run.get("results", []):
+			rule_id = result.get("ruleId", "unknown-rule")
+			level = result.get("level") or rule_levels.get(rule_id, "note")
+			message = result.get("message", {}).get("text", "").replace("\n", " ").strip()
+			location = result.get("locations", [{}])[0].get("physicalLocation", {})
+			artifact = location.get("artifactLocation", {})
+			uri = artifact.get("uri", "unknown-file")
+			region = location.get("region", {})
+			line = region.get("startLine")
+			file_ref = f"{uri}:{line}" if line else uri
+			findings.append((level, rule_id, file_ref, message))
+
+	print(f"CodeQL findings: {len(findings)}")
+	for level, rule_id, file_ref, message in findings[:50]:
+		print(f"- [{level}] {rule_id} {file_ref}: {message}")
+	if len(findings) > 50:
+		print(f"- ... {len(findings) - 50} more findings omitted; see SARIF report above.")
+	PY
 
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uvx ai-slop-detector --project . \
-		--config {{justfile_directory()}}/.slopconfig.yaml \
-		--verbose \
-		--ci-mode hard \
-		--ci-claims-strict \
-		--ci-report
+	echo "============================="
+	echo "=== Running: ai-slop-detector ML-based quality check ==="
+	echo "# ML classifier for detecting AI-generated code patterns and low-quality implementations"
+	project_root="$(pwd -P)"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping ai-slop-detector: no Python or Sage files found."
+		exit 0
+	fi
+	for file in "${python_files[@]}"; do
+		target="$file"
+		if [[ "$target" != /* ]]; then
+			target="$project_root/$target"
+		fi
+		(
+			cd {{justfile_directory()}}
+			uvx ai-slop-detector "$target" \
+			--config {{justfile_directory()}}/.slopconfig.yaml \
+			--verbose \
+			--ci-mode hard \
+			--ci-claims-strict \
+			--ci-report \
+			--no-color
+		)
+	done
 
 # public: all static checks run locally
-test: _no-bypass _coverage _diff-cover _vulture _deptry _semgrep _jscpd _lizard _import-linter _codeql _slop
+test: _no-bypass _normalize _vulture _deptry _semgrep _ast-grep _jscpd _lizard _import-linter _codeql _slop _grain _diff-cover _pytest_with_coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
