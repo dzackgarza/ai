@@ -203,7 +203,7 @@ Effective examples:
 **PDF Processing skill:**
 
 ```yaml  theme={null}
-description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+description: Extract text and tables from PDF files and merge documents. Use when working with PDF files or when the user mentions PDFs or document extraction.
 ```
 
 **Excel Analysis skill:**
@@ -250,19 +250,16 @@ A basic Skill starts with just a SKILL.md file containing metadata and instructi
 
 As your Skill grows, you can bundle additional content that Claude loads only when needed:
 
-<img src="https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=a5e0aa41e3d53985a7e3e43668a33ea3" alt="Bundling additional reference files like reference.md and forms.md." data-og-width="2048" width="2048" data-og-height="1327" height="1327" data-path="images/agent-skills-bundling-content.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=f8a0e73783e99b4a643d79eac86b70a2 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=dc510a2a9d3f14359416b706f067904a 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=82cd6286c966303f7dd914c28170e385 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=56f3be36c77e4fe4b523df209a6824c6 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=d22b5161b2075656417d56f41a74f3dd 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=3dd4bdd6850ffcc96c6c45fcb0acd6eb 2500w" />
+<img src="https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=a5e0aa41e3d53985a7e3e43668a33ea3" alt="Bundling additional reference files like reference.md and examples.md." data-og-width="2048" width="2048" data-og-height="1327" height="1327" data-path="images/agent-skills-bundling-content.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=f8a0e73783e99b4a643d79eac86b70a2 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=dc510a2a9d3f14359416b706f067904a 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=82cd6286c966303f7dd914c28170e385 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=56f3be36c77e4fe4b523df209a6824c6 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=d22b5161b2075656417d56f41a74f3dd 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-bundling-content.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=3dd4bdd6850ffcc96c6c45fcb0acd6eb 2500w" />
 
 The complete Skill directory structure might look like this:
 
 ```
 pdf/
 ├── SKILL.md              # Main instructions (loaded when triggered)
-├── FORMS.md              # Form-filling guide (loaded as needed)
 ├── reference.md          # API reference (loaded as needed)
 ├── examples.md           # Usage examples (loaded as needed)
 └── scripts/
-    ├── analyze_form.py   # Utility script (executed, not loaded)
-    ├── fill_form.py      # Form filling script
     └── validate.py       # Validation script
 ```
 
@@ -271,7 +268,7 @@ pdf/
 ````markdown  theme={null}
 ---
 name: PDF Processing
-description: Extracts text and tables from PDF files, fills forms, and merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+description: Extracts text and tables from PDF files and merges documents. Use when working with PDF files or when the user mentions PDFs or document extraction.
 ---
 
 # PDF Processing
@@ -287,12 +284,11 @@ with pdfplumber.open("file.pdf") as pdf:
 
 ## Advanced features
 
-**Form filling**: See [FORMS.md](FORMS.md) for complete guide
 **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
 **Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
 ````
 
-Claude loads FORMS.md, REFERENCE.md, or EXAMPLES.md only when needed.
+Claude loads REFERENCE.md or EXAMPLES.md only when needed.
 
 #### Pattern 2: Domain-specific organization
 
@@ -454,49 +450,6 @@ Check that every claim references the correct source document. If citations are 
 ````
 
 This example shows how workflows apply to analysis tasks that don't require code. The checklist pattern works for any complex, multi-step process.
-
-**Example 2: PDF form filling workflow** (for Skills with code):
-
-````markdown  theme={null}
-## PDF form filling workflow
-
-Copy this checklist and check off items as you complete them:
-
-```
-Task Progress:
-- [ ] Step 1: Analyze the form (run analyze_form.py)
-- [ ] Step 2: Create field mapping (edit fields.json)
-- [ ] Step 3: Validate mapping (run validate_fields.py)
-- [ ] Step 4: Fill the form (run fill_form.py)
-- [ ] Step 5: Verify output (run verify_output.py)
-```
-
-**Step 1: Analyze the form**
-
-Run: `python scripts/analyze_form.py input.pdf`
-
-This extracts form fields and their locations, saving to `fields.json`.
-
-**Step 2: Create field mapping**
-
-Edit `fields.json` to add values for each field.
-
-**Step 3: Validate mapping**
-
-Run: `python scripts/validate_fields.py fields.json`
-
-Fix any validation errors before continuing.
-
-**Step 4: Fill the form**
-
-Run: `python scripts/fill_form.py input.pdf fields.json output.pdf`
-
-**Step 5: Verify output**
-
-Run: `python scripts/verify_output.py output.pdf`
-
-If verification fails, return to Step 2.
-````
 
 Clear steps prevent Claude from skipping critical validation. The checklist helps both Claude and you track progress through multi-step workflows.
 
@@ -918,12 +871,12 @@ Even if Claude could write a script, pre-made scripts offer advantages:
 
 <img src="https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=4bbc45f2c2e0bee9f2f0d5da669bad00" alt="Bundling executable scripts alongside instruction files" data-og-width="2048" width="2048" data-og-height="1154" height="1154" data-path="images/agent-skills-executable-scripts.png" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=280&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=9a04e6535a8467bfeea492e517de389f 280w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=560&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=e49333ad90141af17c0d7651cca7216b 560w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=840&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=954265a5df52223d6572b6214168c428 840w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=1100&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=2ff7a2d8f2a83ee8af132b29f10150fd 1100w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=1650&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=48ab96245e04077f4d15e9170e081cfb 1650w, https://mintcdn.com/anthropic-claude-docs/4Bny2bjzuGBK7o00/images/agent-skills-executable-scripts.png?w=2500&fit=max&auto=format&n=4Bny2bjzuGBK7o00&q=85&s=0301a6c8b3ee879497cc5b5483177c90 2500w" />
 
-The diagram above shows how executable scripts work alongside instruction files. The instruction file (forms.md) references the script, and Claude can execute it without loading its contents into context.
+The diagram above shows how executable scripts work alongside instruction files. The instruction file references the script, and Claude can execute it without loading its contents into context.
 
 **Important distinction**: Make clear in your instructions whether Claude should:
 
-* **Execute the script** (most common): "Run `analyze_form.py` to extract fields"
-* **Read it as reference** (for complex logic): "See `analyze_form.py` for the field extraction algorithm"
+* **Execute the script** (most common): "Run `process_data.py` to transform the input"
+* **Read it as reference** (for complex logic): "See `process_data.py` for the transformation algorithm"
 
 For most utility scripts, execution is preferred because it's more reliable and efficient. See the [Runtime environment](#runtime-environment) section below for details on how script execution works.
 
@@ -932,31 +885,26 @@ For most utility scripts, execution is preferred because it's more reliable and 
 ````markdown  theme={null}
 ## Utility scripts
 
-**analyze_form.py**: Extract all form fields from PDF
+**transform.py**: Transform input data to desired format
 
 ```bash
-python scripts/analyze_form.py input.pdf > fields.json
+python scripts/transform.py input.csv > output.json
 ```
 
 Output format:
 ```json
 {
-  "field_name": {"type": "text", "x": 100, "y": 200},
-  "signature": {"type": "sig", "x": 150, "y": 500}
+  "id": "123",
+  "name": "Example",
+  "value": 42
 }
 ```
 
-**validate_boxes.py**: Check for overlapping bounding boxes
+**validate.py**: Check data integrity
 
 ```bash
-python scripts/validate_boxes.py fields.json
-# Returns: "OK" or lists conflicts
-```
-
-**fill_form.py**: Apply field values to PDF
-
-```bash
-python scripts/fill_form.py input.pdf fields.json output.pdf
+python scripts/validate.py output.json
+# Returns: "OK" or lists validation errors
 ```
 ````
 
@@ -986,9 +934,9 @@ Claude's vision capabilities help understand layouts and structures.
 
 When Claude performs complex, open-ended tasks, it can make mistakes. The "plan-validate-execute" pattern catches errors early by having Claude first create a plan in a structured format, then validate that plan with a script before executing it.
 
-**Example**: Imagine asking Claude to update 50 form fields in a PDF based on a spreadsheet. Without validation, Claude might reference non-existent fields, create conflicting values, miss required fields, or apply updates incorrectly.
+**Example**: Imagine asking Claude to update 50 records in a database based on a spreadsheet. Without validation, Claude might reference non-existent fields, create conflicting values, miss required columns, or apply updates incorrectly.
 
-**Solution**: Use the workflow pattern shown above (PDF form filling), but add an intermediate `changes.json` file that gets validated before applying changes. The workflow becomes: analyze → **create plan file** → **validate plan** → execute → verify.
+**Solution**: Use the workflow pattern with an intermediate `changes.json` file that gets validated before applying changes. The workflow becomes: analyze → **create plan file** → **validate plan** → execute → verify.
 
 **Why this pattern works:**
 
@@ -1024,15 +972,15 @@ Skills run in a code execution environment with filesystem access, bash commands
 4. **No context penalty for large files**: Reference files, data, or documentation don't consume context tokens until actually read
 
 * **File paths matter**: Claude navigates your skill directory like a filesystem. Use forward slashes (`reference/guide.md`), not backslashes
-* **Name files descriptively**: Use names that indicate content: `form_validation_rules.md`, not `doc2.md`
+* **Name files descriptively**: Use names that indicate content: `validation_rules.md`, not `doc2.md`
 * **Organize for discovery**: Structure directories by domain or feature
   * Good: `reference/finance.md`, `reference/sales.md`
   * Bad: `docs/file1.md`, `docs/file2.md`
 * **Bundle comprehensive resources**: Include complete API docs, extensive examples, large datasets; no context penalty until accessed
-* **Prefer scripts for deterministic operations**: Write `validate_form.py` rather than asking Claude to generate validation code
+* **Prefer scripts for deterministic operations**: Write `validate.py` rather than asking Claude to generate validation code
 * **Make execution intent clear**:
-  * "Run `analyze_form.py` to extract fields" (execute)
-  * "See `analyze_form.py` for the extraction algorithm" (read as reference)
+  * "Run `process.py` to transform data" (execute)
+  * "See `process.py` for the transformation algorithm" (read as reference)
 * **Test file access patterns**: Verify Claude can navigate your directory structure by testing with real requests
 
 **Example:**

@@ -240,7 +240,6 @@ When to do X vs Y:
 
 - Encode behavior, not reference
 - Keep under 500 lines
-- Use cross-references: `[See FORMS.md](FORMS.md)`
 - Avoid deeply nested references
 
 **REQUIRED: Load these skills before writing:**
