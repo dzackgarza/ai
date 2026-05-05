@@ -1,0 +1,69 @@
+type: phase
+displayName: Phase
+displayNamePlural: Phases
+icon: stepwise
+color: '#8b5cf6'
+modes:
+  inline: true
+  fullDocument: true
+idPrefix: PHASE
+fields:
+- name: id
+  type: string
+  readOnly: true
+  displayInline: false
+- name: parents
+  type: array
+  itemType: string
+  displayInline: false
+- name: dependsOn
+  type: array
+  itemType: string
+  displayInline: false
+- name: blocks
+  type: array
+  itemType: string
+  displayInline: false
+- name: title
+  type: string
+  required: true
+- name: status
+  type: select
+  default: unstarted
+  options:
+  - value: unstarted
+    label: Unstarted
+    icon: circle
+  - value: in-progress
+    label: In Progress
+    icon: motion_photos_on
+  - value: needs-review
+    label: Needs Review
+    icon: build
+  - value: complete
+    label: Complete
+    color: '#22c55e'
+  - value: blocked
+    label: Blocked
+    icon: block
+    color: '#dc2626'
+- name: description
+  type: text
+  required: true
+- name: successCriteria
+  type: array
+  itemType: string
+  required: true
+- name: tasks
+  type: array
+  itemType: string
+  displayInline: false
+- name: tags
+  type: array
+  itemType: string
+  displayInline: false
+inlineTemplate: '{icon} {title} {status}'
+roles:
+  title: title
+  workflowStatus: status
+  tags: tags
