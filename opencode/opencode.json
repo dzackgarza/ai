@@ -2,10 +2,12 @@
   "$schema": "https://opencode.ai/config.json",
   "snapshot": false,
   "disabled_providers": [
-    "groq",
-    "mistral",
     "cloudflare-ai-gateway",
-    "cloudflare-workers-ai"
+    "cloudflare-workers-ai",
+    "groq",
+    "huggingface",
+    "mistral",
+    "morph"
   ],
   "formatter": {
     "ruff-check": {
@@ -574,8 +576,6 @@
         "moonshotai/kimi-k2-0905",
         "moonshotai/kimi-k2-thinking",
         "moonshotai/kimi-k2.5",
-        "morph/morph-v3-fast",
-        "morph/morph-v3-large",
         "morph-warp-grep-v2",
         "giga-potato",
         "giga-potato-thinking",
@@ -1425,8 +1425,6 @@
         "google/palm-2-codechat-bison-32k",
         "gryphe/mythomax-l2-13b",
         "gryphe/mythomist-7b",
-        "huggingfaceh4/zephyr-7b-beta",
-        "huggingfaceh4/zephyr-orpo-141b-a35b",
         "ibm-granite/granite-4.0-h-micro",
         "inception/mercury",
         "inception/mercury-2",
@@ -1552,9 +1550,6 @@
         "moonshotai/kimi-k2.5",
         "moonshotai/kimi-vl-a3b-thinking",
         "moonshotai/moonlight-16b-a3b-instruct",
-        "morph/morph-v2",
-        "morph/morph-v3-fast",
-        "morph/morph-v3-large",
         "neversleep/llama-3-lumimaid-70b",
         "neversleep/llama-3-lumimaid-8b",
         "neversleep/llama-3.1-lumimaid-70b",
