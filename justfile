@@ -67,7 +67,7 @@ install:
     echo "✓ All repository targets exist."
 
     mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" "{{ qwen_home }}" \
-             "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" "{{ agents_home }}" \
+             "{{ kilo_home }}" "{{ amp_home }}" "{{ agents_home }}" \
              "{{ kilocode_home }}" "{{ opencode_root }}" "{{ cc_safety_net_home }}" \
              "{{ home }}/.config/agents"
     
@@ -78,7 +78,20 @@ install:
     ln -snf "{{ agents_md }}" "{{ kilo_home }}/AGENTS.md"
     ln -snf "{{ agents_md }}" "{{ amp_home }}/AGENTS.md"
     ln -snf "{{ agents_md }}" "{{ home }}/.config/AGENTS.md"
-    ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
+    if [ -d "{{ opencode_home }}" ] && [ ! -L "{{ opencode_home }}" ]; then
+        if [ -L "{{ opencode_home }}/opencode" ] && [ "$(readlink -f "{{ opencode_home }}/opencode")" = "{{ opencode_dir }}" ]; then
+            backup_path="{{ opencode_home }}.bak.$(date +%Y%m%d%H%M%S)"
+            mv "{{ opencode_home }}" "$backup_path"
+            echo "Backed up legacy {{ opencode_home }} directory to $backup_path"
+        elif [ -z "$(find "{{ opencode_home }}" -mindepth 1 -maxdepth 1 -not -name opencode -print -quit)" ]; then
+            find "{{ opencode_home }}" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+            rmdir "{{ opencode_home }}"
+        else
+            echo "Error: {{ opencode_home }} exists as a real directory with unexpected contents. Refusing to replace it."
+            exit 1
+        fi
+    fi
+    ln -snsf "{{ opencode_dir }}" "{{ opencode_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
     ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
     

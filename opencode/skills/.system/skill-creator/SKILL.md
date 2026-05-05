@@ -158,11 +158,12 @@ Extract text with pdfplumber:
 
 ## Advanced features
 
+- **Form filling**: See [FORMS.md](FORMS.md) for complete guide
 - **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
 - **Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
 ```
 
-Codex loads REFERENCE.md or EXAMPLES.md only when needed.
+Codex loads FORMS.md, REFERENCE.md, or EXAMPLES.md only when needed.
 
 **Pattern 2: Domain-specific organization**
 

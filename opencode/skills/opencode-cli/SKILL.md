@@ -39,16 +39,17 @@ The canonical OpenCode workspace is `~/ai/opencode`, **symlinked to `~/.config/o
 
 **DO NOT assume project-local `.opencode/` directories are the main config surface.** These are not picked up by the main `serve` instance and should be avoided. Use them only for deliberate per-repo overrides.
 
-| Location                                     | Purpose                                     |
-| -------------------------------------------- | ------------------------------------------- |
-| `~/ai/opencode/opencode.json`                | Effective global config                     |
-| `~/ai/opencode/configs/config_skeleton.json` | Source of truth for generated global config |
-| `~/ai/opencode/plugins/`                     | Global plugins loaded across sessions       |
-| `~/ai/opencode/skills/`                      | Shared OpenCode-facing skills               |
+| Location                                     | Purpose                                                  |
+| -------------------------------------------- | -------------------------------------------------------- |
+| `~/ai/opencode/opencode.json`                | Effective generated runtime config                       |
+| `~/ai/opencode/configs/config_skeleton.json` | Source of truth for generated top-level config defaults  |
+| `~/ai/opencode/agents/*.md`                  | Runtime Markdown agent definitions actually loaded       |
+| `~/ai/opencode/plugins/`                     | Global plugins loaded across sessions                    |
+| `~/ai/opencode/skills/`                      | Shared OpenCode-facing skills                            |
 
-All agents are defined in `~/ai/opencode/opencode.json` with prompts in `~/ai/prompts/`.
+On this system, agent behavior is maintained through version-controlled external Markdown prompt files and runtime Markdown agents, not by hand-authoring agent bodies inside `opencode.json`.
 
-Do not hand-edit `~/ai/opencode/opencode.json`. Rebuild it from `~/ai/opencode/configs/config_skeleton.json` with `just rebuild` from `~/ai/opencode/`.
+Do not hand-edit `~/ai/opencode/opencode.json`. Use the source config/prompt pathways and rebuild when you actually need generated config changes.
 
 ## Core Rules
 

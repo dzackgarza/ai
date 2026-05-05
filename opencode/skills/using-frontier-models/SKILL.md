@@ -7,19 +7,23 @@ description: Use this when a coding agent should consult a stronger frontier mod
 
 ## Purpose
 
-Use a frontier model to obtain senior-level planning, audit, and decision support for tasks where local reasoning may miss long-horizon consequences, hidden assumptions, sequencing risks, or verification gaps.
+Use a frontier model to obtain senior-level planning, audit, and decision support for tasks where local reasoning may miss long-horizon consequences, hidden assumptions, sequencing risks, verification gaps, or missing problem framing.
 
 This skill is not for outsourcing routine edits. It is for improving decisions before implementation cost accumulates.
 
-The expected output is not "an answer from ChatGPT." The expected output is an executable plan or audit artifact: assumptions, phases, acceptance criteria, risks, tests, decision gates, fallback paths, and reconsult conditions.
+The expected output is not "an answer from ChatGPT." The expected output is a stronger decision state: clarified problem framing, surfaced unknowns, challenged assumptions, candidate designs, and when appropriate an executable plan or audit artifact.
+
+The end result may be a concrete plan, but not every consultation should begin by asking for one. For under-specified design, workflow, ontology, or information-architecture problems, the first job is inquiry, not solution generation.
 
 ## Mental Model
 
-Treat the frontier model as a planning and audit counterpart with stronger horizon length, failure anticipation, and synthesis. The local agent's role is to provide grounded context, expose uncertainty, request structured guidance, and verify the resulting plan against repository facts.
+Treat the frontier model as a collaborative planning and audit partner with stronger horizon length, failure anticipation, and synthesis. The local agent's role is to provide grounded context, expose uncertainty, invite challenge, answer follow-up questions, and verify the resulting guidance against repository facts.
 
-Do not ask for affirmation. Do not ask the frontier model to merely contradict the current plan. Ask it to improve the decision: identify hidden assumptions, missing evidence, alternative designs, failure modes, and concrete checks.
+Do not ask for affirmation. Do not ask the frontier model to merely contradict the current plan. Ask it to improve the decision: identify hidden assumptions, missing evidence, alternative designs, failure modes, concrete checks, and missing questions that must be answered before a sound plan exists.
 
-The local agent does not need to know all of its own blind spots before consulting. The prompt should be shaped so the frontier model can surface blind spots directly.
+The local agent does not need to know all of its own blind spots before consulting. The prompt should be shaped so the frontier model can surface blind spots directly and push back when the problem is under-specified.
+
+Do not treat the frontier model as a plan oracle, approval oracle, or one-shot answer engine. For ambiguous or organizational problems, use it as a co-author of the plan: ask, answer, refine, challenge, and only then converge.
 
 Do not rush this workflow. A detailed 20-minute back-and-forth planning stage can prevent rework, weak audits, missed constraints, and technical debt.
 
@@ -35,6 +39,7 @@ Consult before committing to a plan when the task involves any of:
 - cross-file or cross-system consequences;
 - test strategy uncertainty;
 - competing implementation options;
+- organizational, taxonomy, tagging, workflow, or information-architecture questions where the right structure is unclear;
 - work likely to require rollback or staged deployment;
 - prior local attempts that produced conflicting evidence;
 - mathematical, theoretical, or research questions where subtle assumptions matter.
@@ -43,32 +48,75 @@ Do not use this skill for routine edits, trivial scripts, small isolated fixes, 
 
 The threshold is not "never ask when unsure." A second set of frontier eyes on an ambiguous decision often improves outcomes. The threshold is whether the consultation can materially improve plan quality, reduce rework, expose hidden risk, or clarify a difficult decision.
 
+## Consultation Modes
+
+Choose the consultation mode before writing the first prompt.
+
+### Inquiry-first mode
+
+Use this by default for under-specified problems such as:
+
+- organizational or ontology design;
+- tagging or metadata systems;
+- workflow redesign;
+- situations where the pain points, human queries, or current failure modes are not yet crisply stated;
+- cases where new structure is being considered and the burden of proof is on justifying added complexity.
+
+In inquiry-first mode, the first frontier turn should:
+
+- identify what is still unknown;
+- challenge whether the current system may already be sufficient;
+- ask clarifying questions about actual human workflows and recurring queries;
+- explicitly say what additional context it needs before a reliable recommendation exists;
+- distinguish between what it knows from the prompt, what it suspects but cannot justify yet, and what it cannot determine without more information;
+- state what evidence would justify adding new structure;
+- avoid recommending new fields, tags, tracker types, or process layers until the problem is better specified.
+
+### Plan-drafting mode
+
+Use this when the problem is already well specified and the main need is sequencing, risk analysis, verification design, or choosing among concrete alternatives.
+
+The first frontier turn may recommend a concrete phased plan only when the current problem framing is already strong enough to support one.
+
 ## Consultation Loop
 
-1. Frame the decision.
-   State the goal, constraints, known facts, candidate options, uncertainty, and what kind of output is needed.
+1. Choose the mode.
+   Decide whether this is inquiry-first or plan-drafting. If added structure is being considered and the current problem statement is still soft, use inquiry-first.
 
-2. Ask for structured guidance.
-   Request phases, assumptions, risks, acceptance criteria, tests, decision points, rollback conditions, and stop/reconsult triggers.
+2. Frame the real uncertainty.
+   State the goal, constraints, known facts, candidate options if any, what is still unclear, and what kind of collaboration is needed.
 
-3. Verify against local facts.
-   Treat the frontier response as guidance to check, not authority to obey. Accept, modify, or reject parts only for grounded reasons: repository evidence, failing tests, missing files, impossible commands, security constraints, or explicit project requirements.
+3. Run the first frontier turn.
+   In inquiry-first mode, ask the model to challenge the framing, identify missing information, state what it would need to know to answer well, and ask clarifying questions before proposing solutions. In plan-drafting mode, ask for structured guidance.
 
-4. Read and think.
-   Do not immediately summarize the response to the user. Read the full response carefully, identify the plan, assumptions, gates, branch points, and any new questions it raises. If the response exposes an unresolved hard decision, ask a follow-up before acting.
+4. Continue the dialogue.
+   Answer the frontier model's questions, narrow the problem, and ask follow-ups. Do not stop after the first complete response if the core framing is still weak.
 
-5. Execute boundedly.
-   Implement only the next bounded phase or slice. Compare results to the stated gates.
+5. Force adversarial refinement.
+   Once candidate designs exist, ask the frontier model to critique them: what current structure already solves, what new complexity each proposal adds, what exact recurring query each new axis would unlock, and what would falsify the proposal.
 
-6. Reconsult at meaningful boundaries.
+6. Verify against local facts.
+   Treat the frontier response as guidance to check, not authority to obey. Accept, modify, or reject parts only for grounded reasons: repository evidence, failing tests, missing files, impossible commands, security constraints, explicit project requirements, or redundancy with existing structure.
+
+7. Read and think locally.
+   Do not immediately summarize the response to the user or rush into implementation. Read the full exchange carefully, identify assumptions, open questions, branch points, and overlap with the current system. If a follow-up would materially improve the result, ask it before acting.
+
+8. Execute boundedly.
+   Implement only the next bounded phase or slice, if the consultation has actually converged to a justified plan. Compare results to the stated gates.
+
+9. Reconsult at meaningful boundaries.
    Return to the frontier model if an assumption fails, evidence contradicts the plan, a listed decision point is reached, the response surfaces a hard choice, or the local agent cannot choose between materially different paths.
 
 ## Prompt Shape
 
-Use this shape unless the task requires a narrower audit.
+Use inquiry-first by default for under-specified design problems. Use the plan-drafting prompt only after the problem is well framed.
 
 ```text
 I am a weaker coding agent seeking frontier-model planning/audit guidance.
+
+This problem may be under-specified. Do not jump straight to a solution if the framing is weak.
+
+If the prompt does not provide enough information for a well-grounded recommendation, say so explicitly, state what information is missing, and ask targeted follow-up questions before proposing new structure.
 
 Task goal:
 <desired outcome>
@@ -86,6 +134,31 @@ Uncertainty:
 <what may be wrong, risky, ambiguous, or under-specified>
 
 Please provide:
+1. The strongest reasons this problem may still be under-specified.
+2. The minimum clarifying questions needed before a sound recommendation exists.
+3. What you know from the prompt, what you tentatively suspect but cannot yet justify, and what you cannot determine without more context.
+4. What the current system may already solve, so we do not add structure prematurely.
+5. The exact evidence or recurring workflow pain that would justify adding new structure.
+6. Only if the framing is already sufficient: candidate designs, with arguments for and against each.
+
+Do not merely affirm the current direction. Push back on weak framing, ask for missing information, and avoid inventing ontology or process unless you can justify why the existing structure is insufficient. Prefer asking for real available context over making avoidable inferences.
+```
+
+For plan-drafting mode after discovery, use a second prompt shaped around the narrowed problem:
+
+```text
+Now that the framing is clearer, help draft a concrete plan.
+
+Current clarified problem:
+<succinct restatement>
+
+Confirmed constraints:
+<constraints>
+
+Rejected or weaker alternatives:
+<alternatives and why>
+
+Please provide:
 1. A recommended plan in bounded phases.
 2. Assumptions the plan depends on.
 3. Risks and likely failure modes.
@@ -93,16 +166,14 @@ Please provide:
 5. Tests/checks to run.
 6. Decision points and branch conditions.
 7. Stop/reconsult triggers.
-8. Any alternative design if the current direction is overcommitted.
-
-Do not merely affirm the current plan. Improve it, reject unsound parts, and state what evidence would distinguish the alternatives.
+8. The strongest argument against this plan.
 ```
 
-The first prompt should be broad in solution space but narrow in objective. Do not ask vague questions such as "what should I do?" Provide the real decision state and ask for a plan artifact.
+The first prompt should be broad in solution space but narrow in objective. Do not ask vague questions such as "what should I do?" Provide the real decision state and ask for the right kind of collaboration.
 
 Highly specific initial queries can reduce value by forcing the model into a narrow channel before it can surface hidden structure, alternate framings, missing risks, or better questions. Broad first-pass answers are cheap for Codex to extract, summarize, highlight, or narrow in follow-up turns.
 
-Prefer forcing hard decisions onto the stronger model before implementation. If the local agent sees multiple plausible paths, unclear sequencing, ambiguous gates, or tradeoffs it cannot confidently evaluate, ask a follow-up that presents the options and asks for a recommendation, decision criteria, and evidence that would change the recommendation.
+Prefer forcing hard decisions onto the stronger model before implementation. If the local agent sees multiple plausible paths, unclear sequencing, ambiguous gates, tradeoffs it cannot confidently evaluate, or a weakly specified problem statement, ask a follow-up that presents the options and asks for a recommendation, decision criteria, evidence that would change the recommendation, and reasons not to add more structure than necessary.
 
 ## Procedure Supporting the Consultation
 
@@ -202,9 +273,17 @@ A response is complete only when:
 - the latest assistant response text is stable across two checks separated by a short wait;
 - response actions are visible, or the latest assistant message is otherwise visibly complete.
 
+Important interpretation rule:
+
+- A visible `Thinking` state on a frontier model is positive evidence that work is still in progress, not evidence of stall.
+- Do not treat "same visible text as last snapshot" as failure while `Thinking` or `Stop answering` is still present.
+- Frontier reasoning models may spend several minutes in a thinking state before exposing substantial visible output.
+- While `Thinking` is present and the session/browser remains healthy, prefer long waits measured in minutes, not rapid retry/abort loops.
+- Only classify the run as stalled if there is evidence of an actual browser/session failure or if the response remains incomplete after a materially longer wait horizon appropriate for frontier reasoning.
+
 ## Extraction Requirements
 
-Do not return a raw transcript as the final artifact, and do not merely present the frontier response to the user. Record the conversation result in a local artifact file, then act on it.
+Do not return a raw transcript as the final artifact, and do not merely present the frontier response to the user. Record the conversation result in a local artifact file, then use it to decide whether more dialogue, local reflection, or bounded implementation is warranted.
 
 Default artifact path:
 
@@ -212,7 +291,7 @@ Default artifact path:
 /tmp/frontier-model-consultation.md
 ```
 
-Use a task-specific path if the user or project provides one. The artifact should preserve the full frontier response when practical, followed by the local agent's distilled action plan.
+Use a task-specific path if the user or project provides one. The artifact should preserve the full frontier response when practical, followed by the local agent's distilled current understanding. If the consultation required multiple rounds, preserve the relevant rounds rather than only the last answer.
 
 The extracted result must include, when applicable:
 
@@ -256,10 +335,14 @@ Before closing, verify that the extracted text:
 Save the extracted response to the artifact before closing. After saving, read the artifact and think through it before acting. Identify:
 
 - what the frontier model recommends;
+- what the frontier model challenged or refused to assume;
 - what assumptions must be checked locally;
 - what new questions or ambiguities remain;
 - what follow-up turn, if any, would improve the result;
+- what parts of the recommendation duplicate or conflict with existing structure;
 - the first bounded local action to take.
+
+Do not close the session merely because the first answer is complete if the consultation clearly needs another round to resolve framing gaps or challenge weak abstractions.
 
 Only report the consultation to the user if the user explicitly requested the frontier response itself or if reporting is the task. Otherwise, use the artifact to guide the local work.
 
@@ -295,6 +378,8 @@ Abort if:
 
 `Just a moment...` is not immediate failure; wait in bounded intervals and re-snapshot. If it remains on `Just a moment...` after about 60 seconds, report it as stuck and close the session.
 
+Do not abort merely because the visible assistant text has not expanded yet while `Thinking` remains visible. For frontier reasoning models, that is expected behavior. A long wait with an intact session is not, by itself, a failure signal.
+
 Do not fabricate or summarize a response that was not successfully extracted.
 
 If failure occurs, report:
@@ -307,15 +392,22 @@ If failure occurs, report:
 
 ## Success Criteria
 
-A successful use of this skill produces a plan or audit artifact that the local agent can execute without inventing missing strategy.
+A successful use of this skill produces either:
+
+- a clarified problem statement and the next questions needed for convergence; or
+- a plan or audit artifact that the local agent can execute without inventing missing strategy.
 
 The result is successful only if:
 
 - the prompt exposed the real decision state;
+- the chosen consultation mode matched the level of problem specification;
+- under-specified problems were challenged before solutions were proposed;
+- the frontier model was explicitly invited to ask for more context instead of inferring through missing information;
 - the frontier answer addressed risks, assumptions, tests, and decision points;
 - the extracted artifact is actionable;
 - the full response was recorded in an artifact when practical;
 - the local agent read the artifact and converted it into local next actions;
+- the local agent did not treat the first complete frontier answer as the end of thinking;
 - sensitive data was not disclosed;
 - browser/session failures were not ignored;
 - the local agent can state what evidence would invalidate or modify the plan;
@@ -329,9 +421,13 @@ If any step fails, report failure at that step. Partial output may be returned o
 This skill was misused if:
 
 - the frontier model was asked only "is this okay?";
+- the frontier model was used as a plan oracle or approval oracle;
+- an under-specified ontology, taxonomy, or workflow problem was presented as if a final plan should be emitted in one turn;
+- the prompt framed the model as if it should infer through missing context rather than ask for it;
 - the local agent hid uncertainty or presented a polished argument for affirmation;
 - the response was treated as a command without verification;
 - the response was rejected only because it differed from the local plan;
+- the first complete answer was treated as the end of the consultation despite unresolved framing gaps;
 - the final artifact was just a transcript or vague summary;
 - the agent simply reported the frontier response to the user instead of recording it, studying it, and acting on it;
 - the agent skipped a useful follow-up despite unresolved hard decisions, ambiguous sequencing, or unclear gates;
@@ -347,6 +443,7 @@ Before applying its output:
 - verify file paths exist;
 - verify commands locally before running destructive variants;
 - check library/API claims against local docs, installed versions, or authoritative sources when relevant;
+- for any proposed new field, type, tag class, or process layer, state the exact recurring human query or workflow pain it solves and why current structure does not already solve it;
 - convert plans into local tasks with acceptance criteria;
 - convert audits into concrete fixes and verification commands;
 - do not apply patches blindly;
