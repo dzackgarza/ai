@@ -6,7 +6,8 @@
     "cloudflare-ai-gateway",
     "cohere",
     "morph",
-    "huggingface"
+    "huggingface",
+    "cloudflare-workers-ai"
   ],
   "mcp": {
     "serena": {
@@ -599,8 +600,6 @@
         "moonshotai/kimi-k2-0905",
         "moonshotai/kimi-k2-thinking",
         "moonshotai/kimi-k2.5",
-        "morph/morph-v3-fast",
-        "morph/morph-v3-large",
         "nex-agi/deepseek-v3.1-nex-n1",
         "nousresearch/hermes-2-pro-llama-3-8b",
         "nousresearch/hermes-3-llama-3.1-405b",
@@ -1025,7 +1024,9 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": ["reasoning.encrypted_content"],
+        "include": [
+          "reasoning.encrypted_content"
+        ],
         "store": false
       },
       "models": {
@@ -1036,8 +1037,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "none": {
@@ -1074,8 +1080,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -1107,8 +1118,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -1140,8 +1156,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -1168,8 +1189,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "medium": {
@@ -1191,8 +1217,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "none": {
@@ -1494,8 +1525,6 @@
         "google/palm-2-codechat-bison-32k",
         "gryphe/mythomax-l2-13b",
         "gryphe/mythomist-7b",
-        "huggingfaceh4/zephyr-7b-beta",
-        "huggingfaceh4/zephyr-orpo-141b-a35b",
         "ibm-granite/granite-4.0-h-micro",
         "inception/mercury",
         "inception/mercury-2",
@@ -1621,9 +1650,6 @@
         "moonshotai/kimi-k2.5",
         "moonshotai/kimi-vl-a3b-thinking",
         "moonshotai/moonlight-16b-a3b-instruct",
-        "morph/morph-v2",
-        "morph/morph-v3-fast",
-        "morph/morph-v3-large",
         "neversleep/llama-3-lumimaid-70b",
         "neversleep/llama-3-lumimaid-8b",
         "neversleep/llama-3.1-lumimaid-70b",

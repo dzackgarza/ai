@@ -297,6 +297,137 @@ If an agent consistently produces weak output, strengthen prompts:
 - **Add examples**: "Good output looks like: [concrete example]"
 - **Add verification step**: "Before finishing, run [command] and include output in transcript"
 
+### Prompting From Atomic Task Cards
+
+When the delegated unit of work already exists as an approved atomic task card, do not prompt the subagent like a general-purpose assistant. Prompt it like an executor operating under a fixed contract.
+
+#### Core rule
+
+The task card is the contract. The delegate should not reinterpret the goal, broaden the scope, or re-plan the feature from scratch.
+
+Use task-card delegation only when the card is already operationally complete:
+
+- The target behavior is explicit.
+- Scope boundaries are explicit.
+- Success criteria are explicit.
+- The relevant files or surfaces are discoverable.
+- No unresolved design decisions remain.
+
+If those conditions are false, stop and fix the card or upstream plan first. Do not ask the delegate to invent missing decisions.
+
+#### What goes wrong with generic prompts
+
+Weak delegation prompts trigger generic assistant behavior:
+
+- Re-summarizing the task instead of executing it
+- Broad repo reconnaissance after enough context is already available
+- Running baseline tests too early "to understand the system"
+- Reopening settled design questions
+- Returning advice, options, or commentary instead of changed files
+
+The coordinator must constrain this explicitly.
+
+#### Required prompt shape for atomic task cards
+
+When delegating from an atomic task card, the prompt should include all of the following:
+
+- **Contract source**: give the exact task-card path and say it is authoritative
+- **Execution order**: read the card first, then inspect only the directly relevant code and tests, then write
+- **Bounded read scope**: name the expected files, directories, APIs, or proof surfaces
+- **No re-planning**: forbid feature-level or repo-wide exploration unless blocked
+- **No generic restatement**: forbid paraphrase-only progress or advisory output
+- **Edit trigger**: require the agent to move into edits as soon as the first targeted read pass is complete
+- **Verification target**: name the exact tests/commands/evidence expected before completion
+- **Deliverable format**: changed files, verification run, blockers, unresolved questions
+- **Non-goals**: name adjacent surfaces the delegate must not touch
+
+#### Required execution discipline
+
+For an atomic task card, the delegate should follow this sequence:
+
+1. Read the task card.
+2. Read only the directly relevant implementation and proof files.
+3. Form a brief edit plan tied to the card's success criteria.
+4. Edit immediately.
+5. Verify against the named proof surface.
+6. Report gaps only if blocked by a real missing dependency or contradiction.
+
+The delegate should not continue broadening context after step 2 unless a concrete blocker is found.
+
+#### Prompt clauses that prevent assistant drift
+
+Include clauses like these when the task is already fully specified:
+
+- "Use the task card as the contract. Do not reinterpret or expand it."
+- "After the initial targeted read pass, move directly into edits."
+- "Do not perform broad repo exploration unless you hit a specific blocker."
+- "Do not spend a turn re-summarizing the task back to me."
+- "Do not return advice or options in place of implementation."
+- "If you believe the card is underspecified, stop and report the exact missing decision instead of inventing one."
+
+#### Baseline tests vs post-edit verification
+
+Do not automatically tell the subagent to run tests before writing code. That often induces reconnaissance theater.
+
+Use pre-edit verification only when one of these is true:
+
+- The task explicitly requires capturing the current failing baseline
+- The current failure mode determines the implementation path
+- The delegate must confirm the harness works before editing
+
+Otherwise, for atomic task cards, prefer:
+
+1. targeted read pass
+2. edits
+3. post-edit verification
+
+#### Atomic task-card prompt template
+
+Use this as the default template:
+
+```text
+You are executing an approved atomic task card in <repo>.
+
+Authoritative contract:
+- Read this task card first and treat it as the contract: <task-card-path>
+
+Execution rules:
+- After reading the card, inspect only the directly relevant files listed below.
+- Do not broaden into repo-wide exploration unless you hit a specific blocker.
+- Do not re-plan the feature, re-open settled decisions, or restate the task as progress.
+- Once the first targeted read pass is complete, move directly into edits.
+- If the card is underspecified or contradictory, stop and report the exact missing decision.
+
+Relevant files / surfaces:
+- <file 1>
+- <file 2>
+- <test/proof surface>
+
+Non-goals:
+- Do not touch <adjacent area 1>
+- Do not touch <adjacent area 2>
+
+Done means:
+- <observable outcome 1>
+- <observable outcome 2>
+- <named verification command/test passes>
+
+Deliverable:
+- changed files
+- verification commands and results
+- blockers or unresolved questions
+```
+
+#### Coordinator review trigger
+
+If transcript review shows any of the following, tighten the prompt and resume rather than trusting the delegate to self-correct:
+
+- multiple turns of summary with no edits
+- repeated context expansion outside the named read scope
+- baseline testing without task-specific need
+- re-litigation of decisions the task card already settles
+- claimed completion without the named proof surface
+
 ---
 
 ## 2. Delegation Workflow
