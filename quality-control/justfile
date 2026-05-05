@@ -24,6 +24,7 @@
 #   .slopconfig.yaml → ai-slop-detector (explicit --config flag)
 #   semgrep.yml    → semgrep local rules (explicit --config flag)
 #   .jscpd.json    → jscpd (explicit --config flag)
+#   sgconfig.yml   → ast-grep (explicit --config flag)
 #   .coveragerc    → coverage.py reads .coveragerc from cwd (run from project root)
 # GLOBAL CONFIGS OK: vulture, deptry, diff-cover, ruff, black, mypy
 # all read from ~/.config/ or pyproject.toml [tool.*] sections.
@@ -32,9 +33,152 @@ default:
   @just test
 
 # private recipes (prefix with _ — never run individually)
+_python-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.py' \
+		-g '!*.sage.py' \
+		-g '!**/external/**' \
+		-g '!**/node_modules/**' \
+		-g '!**/__pycache__/**' \
+		-g '!**/.venv/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**' \
+		-g '!**/codeql-db/**'
+
+_python-syntax:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: Python syntax validation ==="
+	echo "# Compiles Python source with the configured target interpreter before linting or analysis"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping Python syntax validation: no Python files found."
+		exit 0
+	fi
+	uv run --python 3.14 --no-project python - "${python_files[@]}" <<'PY'
+	import sys
+	import tokenize
+	import warnings
+
+	warnings.simplefilter("error", SyntaxWarning)
+	failed = False
+	for file_name in sys.argv[1:]:
+	    try:
+	        with tokenize.open(file_name) as source_file:
+	            source = source_file.read()
+	        compile(source, file_name, "exec", dont_inherit=True)
+	    except SyntaxError as exc:
+	        line = exc.lineno or 0
+	        column = exc.offset or 0
+	        print(f"ERROR: Python syntax validation failed for {file_name}:{line}:{column}: {exc.msg}", file=sys.stderr)
+	        if exc.text:
+	            print(exc.text.rstrip(), file=sys.stderr)
+	            if column > 0:
+	                print(f"{' ' * (column - 1)}^", file=sys.stderr)
+	        failed = True
+	    except (OSError, UnicodeError) as exc:
+	        print(f"ERROR: Python syntax validation could not read {file_name}: {exc}", file=sys.stderr)
+	        failed = True
+
+	raise SystemExit(1 if failed else 0)
+	PY
+
+_sage-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.sage' \
+		-g '!*.sage.py' \
+		-g '!**/external/**' \
+		-g '!**/node_modules/**' \
+		-g '!**/__pycache__/**' \
+		-g '!**/.venv/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**' \
+		-g '!**/codeql-db/**'
+
+_sage-syntax:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: Sage syntax validation ==="
+	echo "# Preparses .sage files and byte-compiles the generated Python to catch syntax errors early"
+	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
+	if [ "${#sage_files[@]}" -eq 0 ]; then
+		echo "Skipping Sage syntax validation: no Sage files found."
+		exit 0
+	fi
+
+	sage_bin="${SAGE_BIN:-sage}"
+	if ! command -v "$sage_bin" >/dev/null 2>&1; then
+		echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+		exit 1
+	fi
+
+	sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-sage-syntax.XXXXXX")"
+	trap 'rm -rf "$sage_preparse_dir"' EXIT
+	echo "# Preparsing and compiling ${#sage_files[@]} Sage file(s)"
+	copied_sage_files=()
+	compile_args=()
+	failed=0
+	for sage_file in "${sage_files[@]}"; do
+		target="$sage_preparse_dir/$sage_file"
+		mkdir -p "$(dirname "$target")"
+		cp "$sage_file" "$target"
+		generated_file="$target.py"
+		copied_sage_files+=("$sage_file")
+		compile_args+=("$sage_file" "$generated_file")
+	done
+
+	(
+		cd "$sage_preparse_dir"
+		"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
+	)
+
+	for sage_file in "${sage_files[@]}"; do
+		generated_file="$sage_preparse_dir/$sage_file.py"
+		if [ ! -f "$generated_file" ]; then
+			echo "ERROR: Sage preparse did not produce $generated_file for $sage_file"
+			failed=1
+		fi
+	done
+	if [ "$failed" -ne 0 ]; then
+		exit 1
+	fi
+
+	if ! "$sage_bin" -python - "${compile_args[@]}" <<'PY'
+	import py_compile
+	import sys
+
+	args = sys.argv[1:]
+	failed = False
+	for index in range(0, len(args), 2):
+	    original = args[index]
+	    generated = args[index + 1]
+	    try:
+	        py_compile.compile(generated, doraise=True)
+	    except py_compile.PyCompileError as exc:
+	        print(exc.msg, file=sys.stderr, end="" if exc.msg.endswith("\n") else "\n")
+	        print(f"ERROR: Sage syntax validation failed for {original}", file=sys.stderr)
+	        failed = True
+
+	raise SystemExit(1 if failed else 0)
+	PY
+	then
+		exit 1
+	fi
+
 _no-bypass:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: bypass comment detection (no pragma/noqa/type:ignore) ==="
+	echo "# Blocks staged changes from hiding QC issues via bypass comments (# pragma: no cover, // istanbul ignore, # noqa, # type: ignore, @ts-ignore, @ts-expect-error, // eslint-disable)"
 	# Block attempts to hide/launder QC issues via bypass comments
 	files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
 	[ -z "$files" ] && exit 0
@@ -81,18 +225,62 @@ _no-bypass:
 _venv:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv venv --allow-existing
+	echo "============================="
+	echo "=== Running: uvx/npx tool runners setup ==="
+	echo "# Provides access to ruff, coverage, semgrep, and other Python/JS tools via uvx/npx without local installation"
 
 _install-tools: _venv
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv pip install coverage diff-cover vulture deptry semgrep lizard import-linter
+	echo "============================="
+	echo "=== Running: tool installation ==="
+	echo "# Installs Python/JS tool dependencies to local cache for faster subsequent runs"
 
-_coverage: _install-tools
+_mypy: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run coverage run -m pytest
-	uv run coverage xml --fail-under=100 -o coverage.xml
+	echo "============================="
+	echo "=== Running: mypy type checking ==="
+	echo "# Checks static typing after syntax validation and before lint/style normalization"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping mypy: no Python files found."
+		exit 0
+	fi
+	uvx --python 3.14 --from mypy mypy \
+		--config-file {{justfile_directory()}}/mypy-global.ini \
+		"${python_files[@]}"
+
+_normalize: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: ruff format and check (auto-fix) ==="
+	echo "# Enforces PEP 8 style + auto-fixes common issues (import sorting, unused imports, pyupgrade patterns)"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping ruff normalization: no Python or Sage files found."
+		exit 0
+	fi
+	if [ -n "${SAGE_PYTEST:-}" ]; then
+		sage -python -m ruff check --fix \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+		sage -python -m ruff format \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+	else
+		uvx --from ruff ruff check --fix \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+		uvx --from ruff ruff format \
+			--config {{justfile_directory()}}/ruff-global.toml \
+			--extension sage:python \
+			"${python_files[@]}"
+	fi
 
 _pytest_with_coverage: _install-tools
 	#!/usr/bin/env bash
@@ -136,53 +324,142 @@ _diff-cover: _pytest_with_coverage
 _vulture: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	args=(--min-confidence 60)
-	if [ -f pyproject.toml ]; then
-		args+=(--config pyproject.toml)
-	fi
-	paths=()
-	for path in src tests; do
-		if [ -e "$path" ]; then
-			paths+=("$path")
-		fi
-	done
-	if [ -f vulture_whitelist.py ]; then
-		paths+=(vulture_whitelist.py)
-	fi
-	if [ "${#paths[@]}" -eq 0 ]; then
-		echo "Skipping vulture: no src/tests paths found."
+	echo "============================="
+	echo "=== Running: vulture dead code detection ==="
+	echo "# Finds unused code (functions, classes, variables) that can be safely removed"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
+	generated_sage_python_files=()
+	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
+	if [ "${#python_files[@]}" -eq 0 ] && [ "${#sage_files[@]}" -eq 0 ]; then
+		echo "Skipping vulture: no Python or Sage files found."
 		exit 0
 	fi
-	uv run vulture "${args[@]}" "${paths[@]}"
+
+	if [ "${#sage_files[@]}" -gt 0 ]; then
+		sage_bin="${SAGE_BIN:-sage}"
+		if ! command -v "$sage_bin" >/dev/null 2>&1; then
+			echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+			exit 1
+		fi
+
+		sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-vulture-sage.XXXXXX")"
+		trap 'rm -rf "$sage_preparse_dir"' EXIT
+		echo "# Preparsing ${#sage_files[@]} Sage file(s) for vulture"
+		copied_sage_files=()
+		for sage_file in "${sage_files[@]}"; do
+			target="$sage_preparse_dir/$sage_file"
+			mkdir -p "$(dirname "$target")"
+			cp "$sage_file" "$target"
+			copied_sage_files+=("$sage_file")
+			generated_sage_python_files+=("$target.py")
+		done
+		(
+			cd "$sage_preparse_dir"
+			"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
+		)
+		for generated_file in "${generated_sage_python_files[@]}"; do
+			if [ ! -f "$generated_file" ]; then
+				echo "ERROR: Sage preparse did not produce $generated_file"
+				exit 1
+			fi
+		done
+	fi
+
+	uvx --from vulture vulture \
+		--config {{justfile_directory()}}/pyproject.toml \
+		"${python_files[@]}" \
+		"${generated_sage_python_files[@]}" \
+		"$whitelist_file"
 
 _deptry: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run deptry .
+	echo "============================="
+	echo "=== Running: deptry dependency linting ==="
+	echo "# Checks for unused/missing dependencies in pyproject.toml, detects transitive deps, and verifies type checking"
+	if [ ! -f pyproject.toml ]; then
+		echo "Skipping deptry: no pyproject.toml found."
+		exit 0
+	fi
+	uvx --from deptry deptry .
 
 _semgrep: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run semgrep --config={{justfile_directory()}}/semgrep.yml --config=p/ci
+	echo "============================="
+	echo "=== Running: semgrep security pattern scanning ==="
+	echo "# Static analysis for code quality and fraud patterns (trivial functions, self-reinforcing comments, print/console statements)"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping semgrep: no Python or Sage files found."
+		exit 0
+	fi
+	uvx --from semgrep semgrep scan \
+		--config={{justfile_directory()}}/semgrep.yml \
+		--config=p/ci \
+		--scan-unknown-extensions \
+		--autofix \
+		"${python_files[@]}"
+
+_ast-grep: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: ast-grep code quality audit ==="
+	echo "# Custom AST rules for fraud detection (boolean assignment, loops without asserts, numeric bounds, self-reinforcing prints)"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping ast-grep: no Python or Sage files found."
+		exit 0
+	fi
+	findings_file=$(mktemp)
+	trap 'rm -f "$findings_file"' EXIT
+	npx -y ast-grep scan \
+		--config {{justfile_directory()}}/sgconfig.yml \
+		--report-style short \
+		"${python_files[@]}" | tee "$findings_file"
+	if [ -s "$findings_file" ]; then
+		echo "Blocking just test: fraud-review warnings were found and must be reviewed against repository audit guidelines."
+		exit 1
+	fi
 
 _jscpd:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json
+	echo "============================="
+	echo "=== Running: jscpd copy-paste detection ==="
+	echo "# Finds duplicate code blocks across the codebase that may indicate copypaste or missing refactoring"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping jscpd: no Python or Sage files found."
+		exit 0
+	fi
+	npx -y jscpd \
+		--config {{justfile_directory()}}/.jscpd.json \
+		--format python \
+		--formats-exts python:py,sage \
+		"${python_files[@]}"
 
 _lizard: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uv run lizard src -l python -C 7 -L 100 -a 5 -i 0 \
-		-x "*/node_modules/*" \
-		-x "*/__pycache__/*" \
-		-x "*/.venv/*" \
-		-x "*/dist/*" \
-		-x "*/build/*"
+	echo "============================="
+	echo "=== Running: lizard complexity analysis ==="
+	echo "# Computes cyclomatic complexity number (CCN), line count, and parameter count to flag overly complex functions"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping lizard: no Python or Sage files found."
+		exit 0
+	fi
+	uvx --from lizard lizard -l python -C 7 -L 100 -a 5 -i 0 "${python_files[@]}"
 
 _import-linter: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: import-linter dependency rules ==="
+	echo "# Enforces layer-based import rules (e.g., core cannot import from plugins, data cannot import from domain)"
 	config=""
 	if [ -f .importlinter ]; then
 		config=".importlinter"
@@ -194,11 +471,24 @@ _import-linter: _install-tools
 		echo "Skipping import-linter: no project-specific import-linter config found."
 		exit 0
 	fi
-	uv run lint-imports --config "$config"
+	uvx --from import-linter --with-editable . lint-imports --config "$config"
+
+_grain:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: grain unused code detection ==="
+	echo "# Finds unused imports and variables that can be safely removed"
+	cp {{justfile_directory()}}/grain.toml .grain.toml
+	uvx --from git+https://github.com/mmartoccia/grain grain check --all --fix
+	rm .grain.toml
 
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: codeql security analysis ==="
+	echo "# GitHub's static analysis engine for code quality and security vulnerabilities"
 	if ! command -v codeql >/dev/null 2>&1; then
 		echo "Skipping CodeQL: codeql CLI is not installed."
 		exit 0
@@ -281,7 +571,7 @@ _slop:
 	done
 
 # public: all static checks run locally
-test: _no-bypass _normalize _vulture _deptry _semgrep _ast-grep _jscpd _lizard _import-linter _codeql _slop _grain _diff-cover _pytest_with_coverage
+test: _python-syntax _sage-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _codeql _pytest_with_coverage _diff-cover _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
