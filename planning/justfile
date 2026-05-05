@@ -1,0 +1,876 @@
+set script-interpreter := ['uvx', '--with', 'pyyaml', '--with', 'jsonschema', 'python']
+
+default_schema_dir := justfile_directory() / "schemas"
+
+default:
+  @just --list
+
+[script]
+install-schemas dest=".nimbalyst/trackers":
+  from pathlib import Path
+  import shutil
+
+  src = Path("{{default_schema_dir}}")
+  dest = Path("{{dest}}")
+  dest.mkdir(parents=True, exist_ok=True)
+
+  for schema in ["feature.yaml", "spec.yaml", "plan.yaml", "phase.yaml", "task.yaml", "decision.yaml"]:
+      source = src / schema
+      target = dest / schema
+      if not source.is_file():
+          raise FileNotFoundError(source)
+      shutil.copyfile(source, target)
+      print(f"Wrote {target}")
+
+[script]
+derive-tags target="plans/features":
+  import re
+  from pathlib import Path
+  from typing import Any, Dict, List, Set, Tuple
+
+  import yaml
+
+  TARGET = Path("{{target}}")
+  TAGGED_ANCESTOR_TYPES = {"feature", "plan", "phase"}
+
+
+  def load_frontmatter(md_path: Path) -> Tuple[Dict[str, Any], str, str]:
+      text = md_path.read_text(encoding="utf-8")
+      match = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n?", text, flags=re.S)
+      if not match:
+          raise ValueError(f"{md_path}: missing YAML frontmatter")
+      parsed = yaml.safe_load(match.group(1))
+      if parsed is None:
+          parsed = {}
+      if not isinstance(parsed, dict):
+          raise TypeError(f"{md_path}: frontmatter is not a mapping")
+      return parsed, match.group(1), text[match.end():]
+
+
+  def normalize_reference(value: str) -> str:
+      value = value.strip()
+      if value.startswith("[[") and value.endswith("]]"):
+          return value[2:-2]
+      return value
+
+
+  def references(value: Any) -> List[str]:
+      if value is None:
+          return []
+      if isinstance(value, str):
+          values = [value]
+      elif isinstance(value, list):
+          values = value
+      else:
+          return []
+      return [normalize_reference(raw) for raw in values if isinstance(raw, str) and normalize_reference(raw)]
+
+
+  records: Dict[str, Dict[str, Any]] = {}
+  paths: Dict[str, Path] = {}
+  bodies: Dict[str, str] = {}
+
+  if not TARGET.is_dir():
+      raise NotADirectoryError(TARGET)
+
+  for md in sorted(TARGET.rglob("*.md")):
+      if not md.is_file():
+          continue
+      frontmatter, _, body = load_frontmatter(md)
+      raw_id = frontmatter.get("id")
+      if not isinstance(raw_id, str) or not raw_id.strip():
+          raise ValueError(f"{md}: missing or invalid id")
+      node_id = normalize_reference(raw_id)
+      if node_id != md.stem:
+          raise ValueError(f"{md}: id '{node_id}' does not match filename '{md.stem}'")
+      if node_id in records:
+          raise ValueError(f"{md}: duplicate id '{node_id}' also found in {paths[node_id]}")
+      records[node_id] = frontmatter
+      paths[node_id] = md
+      bodies[node_id] = body
+
+
+  def tracker_type(node_id: str) -> str:
+      tracker_status = records[node_id].get("trackerStatus")
+      if isinstance(tracker_status, dict):
+          tracker_type = str(tracker_status.get("type", "")).strip()
+          if tracker_type:
+              return tracker_type
+      raise ValueError(f"{paths[node_id]}: missing or invalid trackerStatus.type")
+
+
+  def ancestor_chain(node_id: str, active: Set[str] | None = None) -> List[str]:
+      if active is None:
+          active = set()
+      if node_id in active:
+          raise ValueError(f"Cycle detected through {node_id}")
+      active.add(node_id)
+
+      chain: List[str] = []
+      for parent_id in references(records[node_id].get("parents")):
+          if parent_id not in records:
+              raise ValueError(f"{paths[node_id]}: parents references unknown id '{parent_id}'")
+          for ancestor_id in ancestor_chain(parent_id, set(active)):
+              if ancestor_id not in chain:
+                  chain.append(ancestor_id)
+          if parent_id not in chain:
+              chain.append(parent_id)
+      return chain
+
+
+  changed = 0
+  for node_id in sorted(records):
+      derived_tags = [
+          ancestor_id
+          for ancestor_id in ancestor_chain(node_id)
+          if ancestor_id in records and tracker_type(ancestor_id) in TAGGED_ANCESTOR_TYPES
+      ]
+
+      frontmatter = records[node_id]
+      old_tags = frontmatter.get("tags")
+      if derived_tags:
+          if old_tags == derived_tags:
+              continue
+          frontmatter["tags"] = derived_tags
+      else:
+          if "tags" not in frontmatter:
+              continue
+          del frontmatter["tags"]
+
+      dumped = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True).strip()
+      paths[node_id].write_text(f"---\n{dumped}\n---\n{bodies[node_id]}", encoding="utf-8")
+      changed += 1
+
+  print(f"Updated tags in {changed} card(s).")
+
+check-schema target="plans/features" schema_dir=default_schema_dir:
+  @just --justfile {{justfile()}} derive-tags {{target}}
+  @just --justfile {{justfile()}} _check-schema {{target}} {{schema_dir}}
+
+[script]
+_check-schema target="plans/features" schema_dir=default_schema_dir:
+  import re
+  import sys
+  from pathlib import Path
+  from typing import Any, Dict, List, Tuple
+
+  from jsonschema import Draft202012Validator
+  from yaml import safe_load
+
+  SCHEMA_DIR = Path("{{schema_dir}}")
+  TARGET = "{{target}}"
+
+
+  def _scalar_type(type_name: str) -> str:
+      if type_name in {"string", "text", "markdown", "select", "user"}:
+          return "string"
+      if type_name in {"number", "integer"}:
+          return "number" if type_name == "number" else "integer"
+      if type_name in {"boolean", "bool"}:
+          return "boolean"
+      if type_name in {"object", "map"}:
+          return "object"
+      return "string"
+
+
+  def to_json_schema(nimbalyst_schema: Dict[str, Any]) -> Dict[str, Any]:
+      fields = nimbalyst_schema.get("fields", [])
+      properties: Dict[str, Any] = {}
+      required: List[str] = []
+
+      for raw_field in fields:
+          if not isinstance(raw_field, dict):
+              continue
+
+          name = raw_field.get("name")
+          if not isinstance(name, str):
+              continue
+
+          f_type = str(raw_field.get("type", "string"))
+          field_schema: Dict[str, Any] = {}
+
+          if f_type == "array":
+              item_type = str(raw_field.get("itemType", "string"))
+              item_schema = {"type": _scalar_type(item_type)}
+              if item_schema["type"] == "object":
+                  item_schema["additionalProperties"] = True
+              field_schema = {"type": "array", "items": item_schema}
+          elif f_type == "select":
+              options = raw_field.get("options") or []
+              enum_values = [entry.get("value") for entry in options if isinstance(entry, dict) and "value" in entry]
+              field_schema = {"type": "string"}
+              if enum_values:
+                  field_schema["enum"] = enum_values
+          else:
+              field_schema = {"type": _scalar_type(f_type)}
+
+          if field_schema.get("type") in {"number", "integer"}:
+              if "min" in raw_field:
+                  field_schema["minimum"] = raw_field["min"]
+              if "max" in raw_field:
+                  field_schema["maximum"] = raw_field["max"]
+
+          if raw_field.get("required"):
+              required.append(name)
+
+          properties[name] = field_schema
+
+      id_prefix = nimbalyst_schema.get("idPrefix")
+      if isinstance(id_prefix, str) and id_prefix:
+          field_schema = properties.get("id")
+          if isinstance(field_schema, dict):
+              field_schema["pattern"] = f"^{re.escape(id_prefix)}"
+
+      properties["trackerStatus"] = {
+          "type": "object",
+          "properties": {"type": {"type": "string"}},
+          "required": ["type"],
+          "additionalProperties": True,
+      }
+
+      return {
+          "type": "object",
+          "properties": properties,
+          "required": required,
+          "additionalProperties": False,
+      }
+
+
+  def load_trackers(schema_dir: Path) -> Dict[str, Dict[str, Any]]:
+      schemas: Dict[str, Dict[str, Any]] = {}
+      for schema_file in sorted(schema_dir.glob("*.yaml")):
+          try:
+              raw = safe_load(schema_file.read_text(encoding="utf-8")) or {}
+          except Exception as exc:
+              print(f"Error reading schema {schema_file}: {exc}", file=sys.stderr)
+              raise
+
+          tracker_type = schema_file.stem
+          schemas[tracker_type] = to_json_schema(raw if isinstance(raw, dict) else {})
+      return schemas
+
+
+  def load_frontmatter(md_text: str) -> Dict[str, Any]:
+      match = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n?", md_text, flags=re.S)
+      if not match:
+          raise ValueError("Missing YAML frontmatter")
+
+      fm_raw = match.group(1)
+      parsed = safe_load(fm_raw)
+      if parsed is None:
+          return {}
+      if not isinstance(parsed, dict):
+          raise TypeError("Frontmatter is not a mapping")
+      return parsed
+
+
+  def iter_markdown_files(target: Path) -> List[Path]:
+      return [path for path in target.rglob("*.md") if path.is_file()]
+
+
+  def _json_path(err: Any) -> str:
+      if not err.path:
+          return ""
+      return "." + "".join(f"[{repr(part)}]" for part in err.path)
+
+
+  def normalize_reference(value: str) -> str:
+      value = value.strip()
+      if value.startswith("[[") and value.endswith("]]"):
+          return value[2:-2]
+      return value
+
+
+  def validate_references(
+      file_path: Path,
+      frontmatter: Dict[str, Any],
+      known_ids: Dict[str, Path],
+  ) -> int:
+      ref_fields = ("parents", "dependsOn", "plans", "phases", "tasks")
+      errors = 0
+
+      for field in ref_fields:
+          value = frontmatter.get(field, [])
+          if isinstance(value, str):
+              values = [value]
+          elif isinstance(value, list):
+              values = value
+          elif value is None:
+              values = []
+          else:
+              print(f"{file_path}: field '{field}' must be a string or list", file=sys.stderr)
+              errors += 1
+              continue
+
+          for raw_target in values:
+              if not isinstance(raw_target, str):
+                  print(f"{file_path}: {field} contains non-string value", file=sys.stderr)
+                  errors += 1
+                  continue
+              target_id = normalize_reference(raw_target)
+              if target_id and target_id not in known_ids:
+                  print(f"{file_path}: {field} references unknown id '{target_id}'", file=sys.stderr)
+                  errors += 1
+
+      return errors
+
+
+  def reference_values(value: Any) -> List[str]:
+      if isinstance(value, str):
+          values = [value]
+      elif isinstance(value, list):
+          values = value
+      elif value is None:
+          values = []
+      else:
+          return []
+      return [normalize_reference(raw) for raw in values if isinstance(raw, str) and normalize_reference(raw)]
+
+
+  def normalize_status(value: Any) -> str:
+      if not isinstance(value, str) or not value.strip():
+          raise ValueError("missing or invalid status")
+      value = re.sub(r"[^a-z0-9]+", "_", str(value).strip().lower()).strip("_")
+      if not value:
+          raise ValueError("missing or invalid status")
+      return value
+
+
+  def extract_status(frontmatter: Dict[str, Any]) -> str:
+      status = frontmatter.get("status")
+      if not isinstance(status, str) or not status.strip():
+          raise ValueError("missing or invalid status")
+      return status
+
+
+  def validate_required_status(file_path: Path, frontmatter: Dict[str, Any]) -> int:
+      status = frontmatter.get("status")
+      if not isinstance(status, str) or not status.strip():
+          print(f"{file_path}: missing or invalid status; DAG rendering requires explicit status", file=sys.stderr)
+          return 1
+      return 0
+
+
+  def validate_containment_hierarchy(records: List[Tuple[Path, Dict[str, Any]]]) -> int:
+      by_id: Dict[str, Tuple[Path, Dict[str, Any]]] = {}
+      errors = 0
+
+      for file_path, frontmatter in records:
+          node_id = normalize_reference(str(frontmatter.get("id", "")))
+          by_id[node_id] = (file_path, frontmatter)
+
+      required_parent_types = {
+          "feature": set(),
+          "spec": {"feature"},
+          "plan": {"feature"},
+          "phase": {"plan"},
+          "task": {"phase"},
+          "decision": {"feature"},
+      }
+
+      for file_path, frontmatter in records:
+          node_id = normalize_reference(str(frontmatter.get("id", "")))
+          tracker_status = frontmatter.get("trackerStatus")
+          tracker_type = tracker_status.get("type") if isinstance(tracker_status, dict) else None
+          if tracker_type not in required_parent_types:
+              print(f"{file_path}: unknown hierarchy type '{tracker_type}'", file=sys.stderr)
+              errors += 1
+              continue
+
+          parents = reference_values(frontmatter.get("parents"))
+          allowed_parent_types = required_parent_types[tracker_type]
+
+          if tracker_type == "feature":
+              if parents:
+                  print(f"{file_path}: feature cards must not have containment parents", file=sys.stderr)
+                  errors += 1
+              continue
+
+          if len(parents) != 1:
+              print(f"{file_path}: {tracker_type} cards must have exactly one containment parent", file=sys.stderr)
+              errors += 1
+              continue
+
+          parent_id = parents[0]
+          if parent_id not in by_id:
+              continue
+
+          parent_fm = by_id[parent_id][1]
+          parent_status = parent_fm.get("trackerStatus")
+          parent_type = parent_status.get("type") if isinstance(parent_status, dict) else None
+          if parent_type not in allowed_parent_types:
+              allowed = ", ".join(sorted(allowed_parent_types))
+              print(
+                  f"{file_path}: {tracker_type} parent '{parent_id}' has type '{parent_type}', expected {allowed}",
+                  file=sys.stderr,
+              )
+              errors += 1
+
+      return errors
+
+
+  def validate_filesystem_hierarchy(target: Path, records: List[Tuple[Path, Dict[str, Any]]]) -> int:
+      by_id: Dict[str, Tuple[Path, Dict[str, Any]]] = {}
+      errors = 0
+      planning_root = target.parent if target.name == "features" else target
+
+      for file_path, frontmatter in records:
+          node_id = normalize_reference(str(frontmatter.get("id", "")))
+          by_id[node_id] = (file_path, frontmatter)
+
+      def tracker_type(node_id: str) -> str:
+          frontmatter = by_id[node_id][1]
+          tracker_status = frontmatter.get("trackerStatus")
+          if isinstance(tracker_status, dict) and isinstance(tracker_status.get("type"), str):
+              return tracker_status["type"]
+          return ""
+
+      def parents_of(frontmatter: Dict[str, Any]) -> List[str]:
+          return reference_values(frontmatter.get("parents"))
+
+      def require_path(file_path: Path, expected: Path) -> None:
+          nonlocal errors
+          actual = file_path.resolve()
+          expected_resolved = expected.resolve()
+          if actual != expected_resolved:
+              print(f"{file_path}: expected path {expected_resolved}", file=sys.stderr)
+              errors += 1
+
+      for file_path, frontmatter in records:
+          node_id = normalize_reference(str(frontmatter.get("id", "")))
+          tracker_status = frontmatter.get("trackerStatus")
+          current_type = tracker_status.get("type") if isinstance(tracker_status, dict) else None
+          parents = parents_of(frontmatter)
+
+          if current_type == "feature":
+              require_path(file_path, planning_root / "features" / node_id / f"{node_id}.md")
+              continue
+
+          if len(parents) != 1 or parents[0] not in by_id:
+              continue
+
+          parent_id = parents[0]
+          parent_path = by_id[parent_id][0]
+          parent_type = tracker_type(parent_id)
+
+          if current_type == "spec":
+              require_path(file_path, planning_root / "features" / parent_id / "specs" / f"{node_id}.md")
+          elif current_type == "plan":
+              require_path(file_path, planning_root / "features" / parent_id / "plans" / node_id / f"{node_id}.md")
+          elif current_type == "phase" and parent_type == "plan":
+              require_path(file_path, parent_path.parent / node_id / f"{node_id}.md")
+          elif current_type == "task" and parent_type == "phase":
+              require_path(file_path, parent_path.parent / "tasks" / f"{node_id}.md")
+          elif current_type == "decision" and parent_type == "feature":
+              require_path(file_path, planning_root / "features" / parent_id / "decisions" / f"{node_id}.md")
+
+      return errors
+
+
+  def validate_status_hierarchy(records: List[Tuple[Path, Dict[str, Any]]]) -> int:
+      node_data: Dict[str, Dict[str, Any]] = {}
+      children_by_parent: Dict[str, List[str]] = {}
+
+      for file_path, frontmatter in records:
+          node_id = normalize_reference(str(frontmatter.get("id", "")))
+          tracker_status = frontmatter.get("trackerStatus")
+          tracker_type = ""
+          if isinstance(tracker_status, dict):
+              tracker_type = str(tracker_status.get("type", "")).strip()
+          node_data[node_id] = {
+              "path": file_path,
+              "type": tracker_type,
+              "status": extract_status(frontmatter),
+          }
+
+      for _, frontmatter in records:
+          child_id = normalize_reference(str(frontmatter.get("id", "")))
+          value = frontmatter.get("parents", [])
+          if isinstance(value, str):
+              values = [value]
+          elif isinstance(value, list):
+              values = value
+          elif value is None:
+              values = []
+          else:
+              values = []
+
+          for raw_parent in values:
+              if not isinstance(raw_parent, str):
+                  continue
+              parent_id = normalize_reference(raw_parent)
+              if parent_id in node_data and child_id in node_data:
+                  children_by_parent.setdefault(parent_id, []).append(child_id)
+
+      errors = 0
+      started_statuses = {"in_progress", "needs_review", "complete", "done", "blocked", "decided", "implemented"}
+      complete_statuses = {"complete", "done", "decided", "implemented"}
+
+      for parent_id, child_ids in children_by_parent.items():
+          parent = node_data[parent_id]
+          parent_status = normalize_status(parent["status"])
+          child_entries: List[Tuple[str, str, Path]] = []
+          for child_id in child_ids:
+              child = node_data[child_id]
+              child_status = normalize_status(child["status"])
+              child_entries.append((child_id, child_status, child["path"]))
+
+          if not child_entries:
+              continue
+
+          started_children = [entry for entry in child_entries if entry[1] in started_statuses]
+          incomplete_children = [entry for entry in child_entries if entry[1] not in complete_statuses]
+          unstarted_children = [entry for entry in child_entries if entry[1] in {"unstarted", "approved_and_unstarted"}]
+
+          if parent_status in {"unstarted", "approved_and_unstarted"} and started_children:
+              child_id, child_status, _ = started_children[0]
+              print(
+                  f"{parent['path']}: status '{parent['status']}' cannot contain started child '{child_id}' status '{child_status}'",
+                  file=sys.stderr,
+              )
+              errors += 1
+
+          if parent_status == "in_progress":
+              if len(unstarted_children) == len(child_entries):
+                  child_id, child_status, _ = unstarted_children[0]
+                  print(
+                      f"{parent['path']}: status '{parent['status']}' cannot contain only unstarted children; example child '{child_id}' is '{child_status}'",
+                      file=sys.stderr,
+                  )
+                  errors += 1
+              if not started_children:
+                  print(
+                      f"{parent['path']}: status '{parent['status']}' requires at least one started child",
+                      file=sys.stderr,
+                  )
+                  errors += 1
+
+          if parent_status == "complete" and incomplete_children:
+              child_id, child_status, _ = incomplete_children[0]
+              print(
+                  f"{parent['path']}: status '{parent['status']}' cannot be complete while child '{child_id}' is '{child_status}'",
+                  file=sys.stderr,
+              )
+              errors += 1
+
+      return errors
+
+
+  def validate_file(
+      file_path: Path,
+      frontmatter: Dict[str, Any],
+      schemas: Dict[str, Dict[str, Any]],
+      known_ids: Dict[str, Path],
+  ) -> int:
+      tracker_status = frontmatter.get("trackerStatus")
+      if not isinstance(tracker_status, dict) or not isinstance(tracker_status.get("type"), str):
+          print(
+              f"{file_path}: missing or invalid trackerStatus.type; expected trackerStatus.type to be a string",
+              file=sys.stderr,
+          )
+          return 1
+
+      tracker_type = tracker_status["type"]
+      schema = schemas.get(tracker_type)
+      if schema is None:
+          print(f"{file_path}: unknown tracker type '{tracker_type}'", file=sys.stderr)
+          return 1
+
+      errors = 0
+      validator = Draft202012Validator(schema)
+      schema_errors = sorted(validator.iter_errors(frontmatter), key=lambda e: e.path)
+      for error in schema_errors:
+          print(f"{file_path}: {_json_path(error)}: {error.message}", file=sys.stderr)
+      errors += len(schema_errors)
+      errors += validate_references(file_path, frontmatter, known_ids)
+      return errors
+
+
+  def record_id(
+      file_path: Path,
+      frontmatter: Dict[str, Any],
+      known_ids: Dict[str, Path],
+      duplicates: Dict[str, List[Path]],
+  ) -> bool:
+      raw_id = frontmatter.get("id")
+      if not isinstance(raw_id, str) or not raw_id.strip():
+          print(f"{file_path}: missing or invalid id; required identifier", file=sys.stderr)
+          return False
+
+      node_id = normalize_reference(raw_id)
+      if node_id != file_path.stem:
+          print(
+              f"{file_path}: id '{node_id}' does not match filename '{file_path.stem}'",
+              file=sys.stderr,
+          )
+          return False
+
+      if node_id in known_ids:
+          duplicates.setdefault(node_id, [known_ids[node_id]]).append(file_path)
+      else:
+          known_ids[node_id] = file_path
+
+      return True
+
+
+  def main() -> int:
+      target = Path(TARGET).resolve()
+      if not target.is_dir():
+          print(f"Error: {target} is not a directory", file=sys.stderr)
+          return 1
+
+      if not SCHEMA_DIR.is_dir():
+          print(f"Error: schema directory {SCHEMA_DIR} is not a directory", file=sys.stderr)
+          return 1
+
+      schemas = load_trackers(SCHEMA_DIR)
+      error_count = 0
+      records: List[Tuple[Path, Dict[str, Any]]] = []
+      known_ids: Dict[str, Path] = {}
+      duplicates: Dict[str, List[Path]] = {}
+
+      for md in iter_markdown_files(target):
+          try:
+              frontmatter = load_frontmatter(md.read_text(encoding="utf-8"))
+          except Exception as exc:
+              print(f"{md}: {exc}", file=sys.stderr)
+              error_count += 1
+              continue
+          if not isinstance(frontmatter, dict):
+              print(f"{md}: frontmatter is not a map", file=sys.stderr)
+              error_count += 1
+              continue
+
+          if not record_id(md, frontmatter, known_ids, duplicates):
+              error_count += 1
+              continue
+
+          records.append((md, frontmatter))
+
+      for node_id, paths in duplicates.items():
+          path_list = ", ".join(str(p) for p in paths)
+          print(f"Duplicate id '{node_id}' found in: {path_list}", file=sys.stderr)
+          error_count += 1
+
+      for md, frontmatter in records:
+          error_count += validate_file(md, frontmatter, schemas, known_ids)
+          error_count += validate_required_status(md, frontmatter)
+
+      if error_count:
+          print(f"\nFound {error_count} violation(s).", file=sys.stderr)
+          return 1
+
+      error_count += validate_containment_hierarchy(records)
+      error_count += validate_filesystem_hierarchy(target, records)
+      error_count += validate_status_hierarchy(records)
+
+      if error_count:
+          print(f"\nFound {error_count} violation(s).", file=sys.stderr)
+          return 1
+
+      print("All schemas valid.")
+      return 0
+
+
+  raise SystemExit(main())
+
+dag target="plans/features" out="plans/plan-dag.md" schema_dir=default_schema_dir:
+  @just --justfile {{justfile()}} check-schema {{target}} {{schema_dir}}
+  @just --justfile {{justfile()}} _dag-render {{target}} {{out}}
+
+[script]
+_dag-render target="plans/features" out="plans/plan-dag.md":
+  import re
+  from pathlib import Path
+  from typing import Any, Dict, List, Tuple
+
+  from yaml import safe_load
+
+  def load_frontmatter(md_path: Path) -> Dict[str, Any] | None:
+      text = md_path.read_text(encoding="utf-8")
+      match = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n?", text, flags=re.S)
+      if not match:
+          raise ValueError(f"{md_path}: missing YAML frontmatter")
+      parsed = safe_load(match.group(1))
+      if parsed is None or not isinstance(parsed, dict):
+          raise ValueError(f"{md_path}: frontmatter is not a mapping")
+      return parsed
+
+  def safe_node(node_id: str) -> str:
+      sanitized = re.sub(r"[^A-Za-z0-9_]", "_", node_id.strip())
+      if not sanitized:
+          sanitized = "node"
+      if sanitized[0].isdigit():
+          sanitized = f"n_{sanitized}"
+      return sanitized
+
+  def quote(text: str) -> str:
+      return text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
+
+  target = Path("{{target}}")
+  out_path = Path("{{out}}")
+  out_path.parent.mkdir(parents=True, exist_ok=True)
+
+  nodes: Dict[str, Dict[str, str]] = {}
+  dependency_edges: List[Tuple[str, str, str]] = []
+  containment_edges: List[Tuple[str, str, str]] = []
+  records: List[Tuple[str, Dict[str, Any]]] = []
+
+  def normalize_dependency(value: str) -> str:
+      value = value.strip()
+      if value.startswith("[[") and value.endswith("]]"):
+          return value[2:-2]
+      return value
+
+  def normalize_status(value: str) -> str:
+      value = str(value).strip().lower()
+      value = re.sub(r"[^a-z0-9]+", "_", value).strip("_")
+      if not value:
+          raise ValueError("Missing status")
+      return f"status_{value}"
+
+  def node_group(node_id: str) -> str:
+      info = nodes.get(node_id)
+      if info is None:
+          raise ValueError(f"Unknown node '{node_id}'")
+      tracker_type = info.get("type")
+      if tracker_type not in {"feature", "spec", "plan", "phase", "task", "decision"}:
+          raise ValueError(f"Node '{node_id}' has unknown tracker type '{tracker_type}'")
+      return tracker_type
+
+  group_labels = {
+      "feature": "Features",
+      "spec": "Specs",
+      "plan": "Plans",
+      "phase": "Phases",
+      "task": "Tasks",
+      "decision": "Decisions",
+  }
+
+  if not target.is_dir():
+      raise NotADirectoryError(target)
+
+  for md in target.rglob("*.md"):
+      if not md.is_file():
+          continue
+      fm = load_frontmatter(md)
+      raw_id = fm.get("id")
+      if not isinstance(raw_id, str) or not raw_id.strip():
+          raise ValueError(f"{md}: missing or invalid id; required identifier")
+
+      node_id = normalize_dependency(raw_id)
+      if node_id != md.stem:
+          raise ValueError(f"{md}: id '{node_id}' does not match filename '{md.stem}'")
+      records.append((node_id, fm))
+
+      tracker_status = fm.get("trackerStatus")
+      if not isinstance(tracker_status, dict) or not isinstance(tracker_status.get("type"), str):
+          raise ValueError(f"{md}: missing or invalid trackerStatus.type")
+
+      status = fm.get("status")
+      if not isinstance(status, str) or not status.strip():
+          raise ValueError(f"{md}: missing or invalid status")
+
+      if node_id in nodes:
+          raise ValueError(f"{md}: duplicate id '{node_id}'")
+
+      nodes[node_id] = {"label": node_id, "status": status, "type": tracker_status["type"]}
+
+  for node_id, fm in records:
+      depends_on = fm.get("dependsOn", []) or []
+      if isinstance(depends_on, str):
+          depends_on = [depends_on]
+      parents = fm.get("parents", []) or []
+      if isinstance(parents, str):
+          parents = [parents]
+
+      for raw_dep in depends_on:
+          if isinstance(raw_dep, str):
+              target_id = normalize_dependency(raw_dep)
+              if target_id not in nodes:
+                  raise ValueError(f"{node_id}: dependsOn references unknown id '{target_id}'")
+              dependency_edges.append((target_id, node_id, "depends"))
+
+      for raw_parent in parents:
+          if isinstance(raw_parent, str):
+              target_id = normalize_dependency(raw_parent)
+              if target_id not in nodes:
+                  raise ValueError(f"{node_id}: parents references unknown id '{target_id}'")
+              containment_edges.append((target_id, node_id, "parent"))
+
+  status_palette: Dict[str, str] = {
+      "status_needs_review": "fill:#fff1c2,stroke:#d97706,color:#7c2d12",
+      "status_in_progress": "fill:#d7f3ff,stroke:#0284c7,color:#0f172a",
+      "status_unstarted": "fill:#eef2f7,stroke:#64748b,color:#334155",
+      "status_complete": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
+      "status_done": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
+      "status_approved_and_unstarted": "fill:#d9f0ff,stroke:#0ea5e9,color:#0c4a6e",
+      "status_blocked": "fill:#fee2e2,stroke:#dc2626,color:#7f1d1d",
+      "status_decided": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
+      "status_implemented": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
+  }
+
+  def build_graph(node_ids: List[str], graph_edges: List[Tuple[str, str, str]], graph_direction: str) -> List[str]:
+      lines = [f"graph {graph_direction}"]
+      id_map: Dict[str, str] = {}
+      status_classes = set()
+      group_nodes: Dict[str, List[str]] = {}
+
+      for idx, node_id in enumerate(node_ids):
+          safe = safe_node(node_id)
+          while safe in id_map.values():
+              idx += 1
+              safe = safe_node(f"{node_id}_{idx}")
+          id_map[node_id] = safe
+          group = node_group(node_id)
+          group_nodes.setdefault(group, []).append(node_id)
+          info = nodes[node_id]
+          status_classes.add(normalize_status(info["status"]))
+
+      for group in ["feature", "spec", "plan", "phase", "task", "decision"]:
+          members = group_nodes.get(group, [])
+          if not members:
+              continue
+          lines.append(f'  subgraph {safe_node(f"group_{group}")}["{group_labels[group]}"]')
+          lines.append("    direction TB")
+          for node_id in members:
+              safe = id_map[node_id]
+              info = nodes[node_id]
+              status_class = normalize_status(info["status"])
+              lines.append(f'    {safe}["{quote(info["label"])} [{quote(info["status"])}]"]')
+              lines.append(f"    class {safe} internal-link")
+              lines.append(f"    class {safe} {status_class}")
+          lines.append("  end")
+
+      for src, dst, _ in graph_edges:
+          if src in id_map and dst in id_map:
+              lines.append(f"  {id_map[src]} --> {id_map[dst]}")
+
+      for status_class in sorted(status_classes):
+          if status_class not in status_palette:
+              raise ValueError(f"Unknown status class '{status_class}'")
+          style = status_palette[status_class]
+          lines.append(f"  classDef {status_class} {style}")
+
+      return lines
+
+  node_ids = [node_id for node_id, _ in records]
+  dependency_lines = build_graph(node_ids, dependency_edges, "LR")
+  containment_lines = build_graph(node_ids, containment_edges, "LR")
+
+  md_lines = [
+      "# Dependency DAG",
+      "```mermaid",
+      *dependency_lines,
+      "```",
+      "",
+      "# Containment DAG",
+      "```mermaid",
+      *containment_lines,
+      "```",
+  ]
+  out_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
+  print(f"Wrote DAG to {out_path}")
+
+validate target="plans/features" schema_dir=default_schema_dir out="plans/plan-dag.md":
+  @just --justfile {{justfile()}} dag {{target}} {{out}} {{schema_dir}}
