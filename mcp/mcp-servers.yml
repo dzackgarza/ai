@@ -3,40 +3,22 @@ common:
     description: Semantic code editing and navigation
     command: uvx
     args:
-    - --from
-    - git+https://github.com/oraios/serena
-    - serena
-    - start-mcp-server
-    - --project-from-cwd
-    enabled: true
-  cut-copy-paste-mcp:
-    description: Cross-session clipboard operations
-    command: npx
-    args:
-    - -y
-    - '@fastmcp-me/cut-copy-paste-mcp'
+      - --from
+      - git+https://github.com/oraios/serena
+      - serena
+      - start-mcp-server
+      - --project-from-cwd
     enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
     command: /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/.venv/bin/python
     args:
-    - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/server.py
+      - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/server.py
     enabled: true
     exclude_harnesses:
-    - opencode
+      - opencode
     env:
       SEARXNG_INSTANCE_URL: '{env:SEARXNG_INSTANCE_URL}'
-  opencode-memory:
-    description: Persistent, git-backed markdown memory store
-    command: uvx
-    args:
-    - --from
-    - git+https://github.com/dzackgarza/opencode-memory-plugin.git
-    - opencode-memory
-    - mcp
-    enabled: true
-    exclude_harnesses:
-    - opencode
 harnesses:
   opencode:
     enabled: true

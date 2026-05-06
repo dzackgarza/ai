@@ -214,7 +214,7 @@ build: build-config build-agents _build-opencode-agents-md
 #   2. _build-opencode-config-apply-policy — apply global permission baseline to compiled config
 build-config:
     @just --justfile {{ justfile() }} _build-opencode-config-compile
-    @just --justfile {{ justfile() }} _build-opencode-config-apply-policy
+    # @just --justfile {{ justfile() }} _build-opencode-config-apply-policy
 
 # Build only the managed OpenCode agent markdown files.
 # Usage: just build-agents

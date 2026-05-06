@@ -1,0 +1,1 @@
+/home/dzack/gitclones/ai/opencode/skills/lean4/skills/lean4/SKILL.md
