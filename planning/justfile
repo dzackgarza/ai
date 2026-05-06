@@ -805,6 +805,7 @@ _dag-render target="plans/features" out="plans/plan-dag.md":
       "status_complete": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
       "status_done": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
       "status_approved_and_unstarted": "fill:#d9f0ff,stroke:#0ea5e9,color:#0c4a6e",
+      "status_revision_required": "fill:#fff7ed,stroke:#f59e0b,color:#7c2d12",
       "status_blocked": "fill:#fee2e2,stroke:#dc2626,color:#7f1d1d",
       "status_decided": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
       "status_implemented": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
