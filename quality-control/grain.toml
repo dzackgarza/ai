@@ -18,7 +18,9 @@ exclude = [
   ".lake/**",
   "**/.lake/**",
   "src/external/**",
+  "src/backends/external/**",
   "theory/literature/**",
+  "theory/references/literature/**",
 ]
 
 [grain.python]

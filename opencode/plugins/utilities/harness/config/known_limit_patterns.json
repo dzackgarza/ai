@@ -1,0 +1,30 @@
+{
+  "opencode-minimax": {
+    "providerID": "opencode",
+    "modelID": "minimax-m2.5-free",
+    "match_regex": "Rate limit exceeded\\. Please try again later\\.",
+    "normalized_kind": "rate_limit",
+    "example_expected_substring": "Rate limit exceeded. Please try again later."
+  },
+  "opencode-big-pickle": {
+    "providerID": "opencode",
+    "modelID": "big-pickle",
+    "match_regex": "Rate limit exceeded\\. Please try again later\\.",
+    "normalized_kind": "rate_limit",
+    "example_expected_substring": "Rate limit exceeded. Please try again later."
+  },
+  "anthropic": {
+    "providerID": "anthropic",
+    "modelID": "claude-sonnet-4-5",
+    "match_regex": "would exceed your account's rate limit",
+    "normalized_kind": "rate_limit",
+    "example_expected_substring": "This request would exceed your account's rate limit."
+  },
+  "openai": {
+    "providerID": "openai",
+    "modelID": "gpt-5.3-codex",
+    "match_regex": "The usage limit has been reached",
+    "normalized_kind": "quota_exhausted",
+    "example_expected_substring": "The usage limit has been reached"
+  }
+}

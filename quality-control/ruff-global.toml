@@ -1,3 +1,6 @@
+# Global Ruff Configuration (Strict)
+
+# Exclude a variety of commonly ignored directories
 exclude = [
     ".bzr",
     ".direnv",
@@ -25,52 +28,19 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "**/*.sage",  # Sage files have non-Python syntax that ruff cannot parse
 ]
-line-length = 130
+
+# Standard formatting
+line-length = 88
 indent-width = 4
+
+# Target Python 3.14 (latest stable)
 target-version = "py314"
 
-# Tell ruff where to find source code for import resolution
-src = ["src"]
-
-builtins = [
-    "ZZ",
-    "QQ",
-    "RR",
-    "CC",
-    "AA",
-    "CDF",
-    "SR",
-    "var",
-    "vector",
-    "matrix",
-    "identity_matrix",
-    "zero_matrix",
-    "PolynomialRing",
-    "PowerSeriesRing",
-    "LaurentPolynomialRing",
-    "EllipticCurve",
-    "Graph",
-    "DiGraph",
-    "CyclicPermutationGroup",
-    "BilinearModule",
-    "CyclicGroup",
-    "IntegralLattice",
-]
-
 [lint]
-select = [
-    "E",
-    "F",
-    "I",
-    "UP",
-]
-ignore = [
-    "E743",
-    "E741",
-    "F403",  # star imports are allowed
-]
-fixable = [
-    "ALL",
-]
+# Enable standard rules
+select = ["E", "F", "I", "UP"]
+ignore = []
+
+# Enforce strictness: fix everything
+fixable = ["ALL"]

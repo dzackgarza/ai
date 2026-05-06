@@ -39,26 +39,25 @@ The canonical OpenCode workspace is `~/ai/opencode`, **symlinked to `~/.config/o
 
 **DO NOT assume project-local `.opencode/` directories are the main config surface.** These are not picked up by the main `serve` instance and should be avoided. Use them only for deliberate per-repo overrides.
 
-| Location                                     | Purpose                                     |
-| -------------------------------------------- | ------------------------------------------- |
-| `~/ai/opencode/opencode.json`                | Effective global config                     |
-| `~/ai/opencode/configs/config_skeleton.json` | Source of truth for generated global config |
-| `~/ai/opencode/plugins/`                     | Global plugins loaded across sessions       |
-| `~/ai/opencode/skills/`                      | Shared OpenCode-facing skills               |
+| Location                                     | Purpose                                                  |
+| -------------------------------------------- | -------------------------------------------------------- |
+| `~/ai/opencode/opencode.json`                | Effective generated runtime config                       |
+| `~/ai/opencode/configs/config_skeleton.json` | Source of truth for generated top-level config defaults  |
+| `~/ai/opencode/agents/*.md`                  | Runtime Markdown agent definitions actually loaded       |
+| `~/ai/opencode/plugins/`                     | Global plugins loaded across sessions                    |
+| `~/ai/opencode/skills/`                      | Shared OpenCode-facing skills                            |
 
-Managed agents are fetched from published `ai-prompts` slugs and written into
-`~/ai/opencode/agents/` by `just build-agents` from `~/ai`. Do not hand-edit
-those generated markdown files or `~/ai/opencode/opencode.json`.
+On this system, agent behavior is maintained through version-controlled external Markdown prompt files and runtime Markdown agents, not by hand-authoring agent bodies inside `opencode.json`.
+
+Do not hand-edit `~/ai/opencode/opencode.json`. Use the source config/prompt pathways and rebuild when you actually need generated config changes.
 
 ## Core Rules
 
 - Use `command opencode`, not a shell alias.
 - Resolve the binary from PATH. Do not introduce `OPENCODE_BIN` or hardcoded local binary paths.
-- Use the OpenCode manager for multi-turn session orchestration, transcript rendering, and diagnostics.
-- Transcript parsing goes through the manager's `transcript --json` surface only. Use either
-  `uvx git+https://github.com/dzackgarza/opencode-manager.git transcript ...` or
-  `uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm transcript ...`.
-  If that surface is insufficient, file an issue instead of inventing a local fallback parser.
+- Use `ocm` for multi-turn session orchestration, transcript rendering, and diagnostics.
+- Transcript parsing goes through `ocm transcript --json` only. If that surface is
+  insufficient, file an issue instead of inventing a local fallback parser.
 - If a workflow depends on repo-local config or env, start a repo-local `command opencode serve` inside that repo's `direnv`.
 - `opencode` is not stale. Config is reread on each invocation, so do not blame cache or
   restart loops.
@@ -97,25 +96,25 @@ direnv allow
 direnv exec . command opencode serve --hostname 127.0.0.1 --port 4198
 ```
 
-Then point the manager CLI at that server:
+Then point `ocm` at that server:
 
 ```bash
 OPENCODE_BASE_URL=http://127.0.0.1:4198 \
-  uvx git+https://github.com/dzackgarza/opencode-manager.git begin-session "Your prompt" --agent Minimal
+  uvx git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session "Your prompt" --agent Minimal
 ```
 
 ## Manager Commands
 
 ```bash
-uvx git+https://github.com/dzackgarza/opencode-manager.git one-shot "Your prompt"
-uvx git+https://github.com/dzackgarza/opencode-manager.git begin-session "Your prompt" --agent Minimal
-uvx git+https://github.com/dzackgarza/opencode-manager.git chat ses_123 "Follow-up prompt"
-uvx git+https://github.com/dzackgarza/opencode-manager.git chat ses_123 "System follow-up" --system
-uvx git+https://github.com/dzackgarza/opencode-manager.git transcript ses_123 --json
-uvx git+https://github.com/dzackgarza/opencode-manager.git final ses_123 "Wrap up"
-uvx git+https://github.com/dzackgarza/opencode-manager.git delete ses_123
-uvx git+https://github.com/dzackgarza/opencode-manager.git wait ses_123 --json
-uvx git+https://github.com/dzackgarza/opencode-manager.git doctor --json
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm one-shot "Your prompt"
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm begin-session "Your prompt" --agent Minimal
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm chat ses_123 "Follow-up prompt"
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm chat ses_123 "System follow-up" --system
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript ses_123 --json
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm final ses_123 "Wrap up"
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm delete ses_123
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm wait ses_123 --json
+uvx git+https://github.com/dzackgarza/opencode-manager.git ocm doctor --json
 ```
 
 **Command semantics:**
@@ -124,11 +123,11 @@ uvx git+https://github.com/dzackgarza/opencode-manager.git doctor --json
 - `chat` resumes the live agent turn by default. `chat --no-reply` queues only a user message without triggering a new assistant turn.
 - `chat --system` records an agent-only system prompt in the transcript; it is carried in session state but is not shown as a user-visible prompt line.
 - `chat --system --no-reply` queues an idle system message for the next continued turn to carry into the request.
-- `debug trace` has no manager equivalent — use `transcript` for diagnostics.
+- `debug trace` has no `ocm` equivalent — use `ocm transcript` for diagnostics.
 - `one-shot` takes only a prompt; the agent is determined by server config.
-- `begin-session` `--json` flag was removed; use `transcript` separately to inspect session state.
+- `begin-session` `--json` flag was removed; use `ocm transcript` separately to inspect session state.
 
-**Avoid using the OpenCode CLI for real LLM work.** Use the manager via `uvx` for chatting, testing, and session orchestration.
+**Avoid using the OpenCode CLI for real LLM work.** Use `ocm` via `uvx` for chatting, testing, and session orchestration.
 
 ## Web UI
 
@@ -148,14 +147,6 @@ uvx git+https://github.com/dzackgarza/opencode-manager.git doctor --json
 - If the wrong tools or agents appear, check `command opencode agent list` and the active config surface.
 - If repo-local behavior matters, verify which `OPENCODE_BASE_URL` and repo-local server you are talking to.
 - If a command or flag is uncertain, check `command opencode --help` before guessing.
-- If `transcript --json` or another manager surface is wrong, file an issue rather
+- If `ocm transcript --json` or another manager surface is wrong, file an issue rather
   than adding a transcript parsing fallback.
 - If you need proof or audit rules, switch to `opencode-plugin-development`.
-
-## Database Cleanup Invariant
-
-**After deleting sessions:** Foreign keys do not cascade (SQLite ignores `ON DELETE CASCADE` by default). You MUST:
-
-1. Inspect schema: `.schema` and grep for `session_id`
-2. Delete orphans from each child table
-3. Run `VACUUM` - space is not reclaimed otherwise

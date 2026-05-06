@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenCode headless server
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/opencode/opencode-serve.env
+ExecStart=/usr/bin/env opencode serve --hostname 127.0.0.1 --port 4096
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

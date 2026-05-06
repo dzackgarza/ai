@@ -24,7 +24,6 @@ disk-free:
     bun pm cache rm 2>/dev/null || true
     yarn cache clean 2>/dev/null || true
     pip cache purge 2>/dev/null || true
-    sudo journalctl --vacuum-size=100M
     df -h
 
 
@@ -59,17 +58,17 @@ usage-limits-json *ARGS="":
 # =============================================================================
 
 _opencode-rebuild:
-    @just --justfile {{ repo }}/justfile build
+    @just --justfile {{ repo }}/justfile rebuild
 
 opencode-rebuild: _opencode-rebuild opencode-clear-cache opencode-restart
 
-_opencode-build-agents:
-    @just --justfile {{ repo }}/justfile build-agents
+_opencode-build-permissions:
+    @just --justfile {{ repo }}/justfile permissions-apply
 
-opencode-build-agents: _opencode-build-agents opencode-clear-cache
+opencode-build-permissions: _opencode-build-permissions opencode-clear-cache
 
 _opencode-build-config:
-    @just --justfile {{ repo }}/justfile build-config
+    @just --justfile {{ repo }}/justfile config-build
 
 opencode-build-config: _opencode-build-config opencode-clear-cache
 

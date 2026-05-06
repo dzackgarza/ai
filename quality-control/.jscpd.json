@@ -11,8 +11,7 @@
     "**/coverage.xml",
     "**/codeql-db/**",
     "**/codeql-report.sarif",
-    "**/dist/**",
-    "**/*.sage.py"
+    "**/dist/**"
   ],
   "absolute": true,
   "gitignore": true

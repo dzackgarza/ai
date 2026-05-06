@@ -12,10 +12,11 @@ the owning subtrees instead of adding new root clutter.
 
 ### Source Of Truth
 
-- Managed markdown-agent generation: `../justfile` `build-agents`
+- Permissions and markdown-agent generation: `permissions/main.py`
 - Config assembly: `scripts/build_config.py`
 - Canonical prompt templating: `llm-templating-engine` (installed in `.venv` via `pyproject.toml`)
 - Canonical template-driven LLM execution: `llm-run` (installed in `.venv` via `pyproject.toml` and exposed locally through `just run-microagent`)
+- Permission policy: `docs/PERMISSION_SPEC.md`
 - Provider configs: `configs/providers/*.json`
 - Managed agent prompt slugs: resolved through the `ai-prompts` dependency
 - Generated OpenCode markdown agents: `agents/*.md`
@@ -33,8 +34,9 @@ the owning subtrees instead of adding new root clutter.
 ### Canonical Pathways
 
 - `just build-agents`
-- `just build-config`
-- `just build`
+- `just permissions-apply`
+- `just config-build`
+- `just rebuild`
 - `just providers-validate`
 - `just check-plugins`
 - `just opencode-harness run --help`
@@ -51,30 +53,20 @@ the owning subtrees instead of adding new root clutter.
 
 ### Prompt Templating
 
-- All prompt rendering is centralized in `llm-templating-engine`. Do not reimplement prompt parsing, frontmatter handling, Jinja rendering, or include semantics inside repo-local helper code, plugins, or ad hoc scripts.
+- All prompt rendering is centralized in `llm-templating-engine`. Do not reimplement prompt parsing, frontmatter handling, Jinja rendering, or include semantics inside `permissions/`, plugins, or ad hoc helper scripts.
 - `ai-prompts` is the canonical prompt source. Callers in this repo resolve prompt slugs through the dependency instead of reading workspace-local prompt files.
 - Prompt templates are markdown files with YAML frontmatter. The templating engine preserves frontmatter; runner-reserved execution fields such as `kind`, `models`, `system_template`, `temperature`, `max_tokens`, `retries`, `output_schema`, and `response_template` belong to `llm-runner`.
 - Jinja `{% include %}` and `{% import %}` are supported through the canonical `llm-templating-engine` environment. Included prompt templates contribute only their markdown body. Child frontmatter is ignored by design.
-- If a new use case needs different prompt composition or LLM execution semantics, extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second path. Verify there are no regressions for both template-defined runs (`llm-run` or `just run-microagent`) and managed agent generation (`just build-agents`).
+- If a new use case needs different prompt composition or LLM execution semantics, extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second path. Verify there are no regressions for both template-defined runs (`llm-run` or `just run-microagent`) and markdown-agent generation (`permissions/main.py`).
 
 ### Build Behavior
 
 - `just build-agents` is the canonical full build for managed agents. It:
-  1. Fetches published `ai-prompts` prompt slugs via `uvx`
-  2. Pipes each markdown prompt through `opencode-permission-policy-compiler`
-  3. Writes the resulting OpenCode agent markdown into `agents/*.md`
-- `just build-config` rebuilds `opencode.json` through `scripts/build_config.py` while ignoring any skeleton-level `permission` block, then applies the global permission baseline via `opencode-permission-policy-compiler set-global-policy global`
-- The permission-policy definition lives in `configs/opencode-permission-policy-compiler/config.toml`, and `just install` symlinks that repo directory into the XDG config location consumed by `opencode-permission-policy-compiler`.
-- `just build` runs the full repo-level flow (`check-plugins`, `build-config`, `build-agents`, `build-agents-md`)
+  1. Regenerates `agents/*.md` from `ai-prompts` prompt slugs
+  2. Rebuilds `opencode.json` through `scripts/build_config.py`
+  3. Validates the generated config against its schema
+  4. Verifies the expected generated agent names appear in `opencode agent list`
 - The builder also counts tokens for fully rendered prompts and warns when any generated agent exceeds the configured threshold (`OPENCODE_AGENT_TOKEN_WARNING_THRESHOLD`, default `5000`).
-
-### Permission Ownership
-
-- This repo does not own a local permission compiler implementation.
-- The global permission-policy definition lives in `configs/opencode-permission-policy-compiler/config.toml`.
-- Managed agent permission overlays are compiled by the external `opencode-permission-policy-compiler`.
-- `just install` symlinks that repo policy directory into `~/.config/opencode-permission-policy-compiler` for the external compiler.
-- Use `/*` suffixes for `external_directory` permission paths. The current OpenCode runtime asks for approvals using derived directory globs like `/path/to/dir/*`, so bare directory entries do not match those prompts.
 
 ---
 

@@ -17,6 +17,7 @@ def main() -> None:
             "uvx",
             "--from",
             OCM_PACKAGE,
+            "ocm",
             "transcript",
             args.session_id,
         ],

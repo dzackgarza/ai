@@ -3,11 +3,20 @@
   "version": 1,
   "rules": [
     {
-      "name": "block-git-checkout",
+      "name": "block-git-checkout-ref-path",
       "command": "git",
       "subcommand": "checkout",
       "block_args": [
-        "checkout"
+        "--"
+      ],
+      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. NEVER use git stash - review git guidelines skill immediately."
+    },
+    {
+      "name": "block-git-checkout-file-restore",
+      "command": "git",
+      "subcommand": "checkout",
+      "block_args": [
+        "--"
       ],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nTo revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. NEVER use git stash - review git guidelines skill immediately."
     },

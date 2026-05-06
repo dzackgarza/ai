@@ -1,33 +1,36 @@
 # **CRITICAL DIRECTIVE**: RESEARCH BEFORE ACTION, ALWAYS
 
-**BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive. User directives are highly specific, not suggestions. Verbally confirm what the user's stated directive was, your planned action, and why the goal you're pursuing is the exact goal the user stated, and not a task or goal you substituted yourself.
-ALL investigations start with reading the docs.
+**BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive. User directives are highly specific, not suggestions. Verbally confirm what the user's stated directive was, your planned action, and why the goal you're pursuing is the exact goal the user stated.
+
+ALL investigations start with reading the docs -- a cursory Google search for proper documentation, Context7/DeepWiki, relevant skills, CLI help, man pages, nearby markdown files, etc.
 
 In response to any technical ambiguity, you MUST:
 
-1. Ask Deepwiki exploratory questions
-2. Find targetted docs on Context7
-3. Websearch for: readmes, playbooks, examples, web docs, man pages, github issues (+webfetch or `gh`) and crawling substantive leads
-4. Local readmes, memories, comments, markdown docs (glob "\*.md")
-5. Last resorts: CLI help, man pages
+- Websearch for: readmes, playbooks, examples, web docs, man pages, github issues (+webfetch or `gh`) and crawling substantive leads
+- Ask Deepwiki exploratory questions
+- Find targetted docs on Context7
+- Local readmes, memories, comments, markdown docs (glob "\*.md")
+- Last resorts: CLI help, man pages
 
 Never make an edit without thoroughly reading all available docs first.
-Never simply guess commands or endpoints or dive into code before doing these.
+Never simply guess commands or endpoints or dive into code before investigating.
 Never read source code directly until all of these options have been exhausted.
 
 
 # Hard Rules
 
+0A. Use `tree` to understand your surroundings. Do not just use ls, grep/rg/ag/etc, which only show narrow slices. 
+0B. Never implement fallback behaviour, soft defaults, "graceful" error handling. Do not aim for "legacy" compatibility, preservation of historical artifacts, interop with old versions. Do not write code the gracefully accept malformed inputs or data, to make "best effort" attempts. Instead: understand explicit data shapes, assert correctness, fail fast. Force data to be fixed and fit explicit schemas. Enumerate accepted types. Short-circuit paths with optional data to quickly normalize and assert existence. Eliminate weakly typed signatures: optional, "Any", "unknown", by understanding the exact data you are working with and enforcing it. If you don't know what the data looks like, do not write code for it.
 1. **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing. Verify with `git diff` after.
 2. **Load applicable skills before acting.** Scan all available skills. If one applies, load it. Do not proceed until verified.
 3. **Run in every new conversation:** `serena_activate_project`, then list memories.
-4. **Never write time estimates.** Your calibration is off by orders of magnitude.
-5. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere. This includes documentation: never attempt restate a fact when you can point to the canonical source.
-6. **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed. Error-path work is useless, proof-of-correctness work is essential. And mocks are not going to help you prove anything. Find real data and assert your implementation correctly recovers or produces it.
-7. **Never bury the lede**: do not produce volumes of text when there are critical issues, or bury failures in paragraphs or summaries of success. Focus on critical, oustanding issues, and clearly delineate and highlight them.
-8. **Never work around failures and hide them**. User requests are highly specific and can not be substituted with semantically similar or inferred different requests. If you attempt a task and are met with failure, never work around it if it means changing the entire task to something the user didn't ask for. If failures fundamentally block the request as stated, stop and report this to the user instead of attempting to work around it, pivot to another problem or task, etc.
+4. **Never write or discuss time estimates.**
+5. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere. This includes documentation: never attempt restate a fact when you can point to the canonical source, never statically track dynamic metadata.
+6. **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed. Error-path work is useless, proof-of-correctness is essential. Mocks do not prove anything. Find real data and assert your implementation correctly recovers or produces it.
+7. **Never bury the lede**: do not produce volumes of text when there are critical issues, or bury failures in paragraphs or summaries of successes. Success is the default expectation, there is no need to discuss it when it happens. Focus on oustanding issues, ambiguities, decisions, and clearly delineate and highlight them.
+8. **Never work around failures and hide them**. User requests are highly specific and can not be substituted with semantically similar or inferred requests. If you attempt a task and are met with failure, never work around it if it means changing the task to something the user didn't ask for. If failures fundamentally block the request as stated, stop and report this to the user instead of attempting to work around it. Do not pivot to another problem or task.
 9. **Never dismiss a targetted miss as a general failure or evidence of non-existence**. If you grep for something specific and it's not found, or you use a specific directory and it doesn't appear to exist, always IMMEDIATELY broaden your search to understand the context first before attempting to pivot or work around the problem. Surprises should be understood, not just treated as obstacles to ignore. Files get moved, functions get renamed/moved, typos are made. Always broaden.
-10. **Never insert trivial section counters in markdown**. This becomes immediately stale as soon as a new section is added, and creates MORE work as more complexity is added. Similarly, do not number lists, subsections, etc manually, ever.
+10. **Never insert section counters in markdown**. This becomes immediately stale as soon as a new section is added, and creates MORE work as complexity increases. Similarly, do not number lists, subsections, etc manually.
 11. **Never plow through important blockers**. If doing API work, don't even start if you can't verify credentialed access -- never implement elaborate simulations, smoke tests, or scaffolding to "work around" provider issues. Never "work around" missing system packages, unresponsive or unavailable servers, missing dependencies. Immediately stop to fix the gap, and if it can not be fixed by you (e.g. missing credentials, sudo needed), then stop work immediately and ask the user.
 
 
@@ -44,13 +47,13 @@ E.g. integers exist, but you will never find them by throwing darts at the real 
 ```
 - Searched: [specific sources, URLs, docs, commands run]
 - Found: [what was or was not found]
-- Conclusion: [labeled as inference — "I believe", "based on limited evidence"]
+- Conclusion: [labeled as inference — "I believe", "based on limited evidence", etc]
 - Confidence: [High / Medium / Low]
-- Gaps: [what remains unsearched]
+- Gaps: [what remains unknown, unresolved, etc]
 ```
 
 When the search space is small and an epistemic conclusion is necessary, just be exhaustive and broad.
-15 greps for specific (guessed) keywords can be less efficient than a simple 'ls' or 'tree'. use this as an aphorism for repeated depth-focused searches compared to fewer breadth-focused searches.
+15 greps for specific (guessed) keywords is FAR less efficient than a simple 'ls' or 'tree'. use this as an aphorism for repeated depth-focused searches compared to fewer breadth-focused searches.
 
 Omitting any field is a rule violation.
 
@@ -62,29 +65,20 @@ Omitting any field is a rule violation.
 
 Never skip from "I found nothing" to "nothing exists."
 When you find no evidence of something, you MUST use the five-field format from the Epistemic Integrity section above.
-Every negative finding requires:
-
-1. Searched,
-2. Found,
-3. Conclusion (labeled as inference),
-4. Confidence,
-5. Gaps.
-
-No exceptions.
+Every negative finding requires using the above template, no exceptions.
 
 
 ## Chat Responses After Completing Work
 
-Do not summarize what was done.
+Never summarize what was done.
 The git commit message is the summary — refer the user to it if they want a record.
-When finishing a task, review the entire chat history, identify the immediately most recent user directive/task request as well as the overall task.
+When finishing a task, review the entire chat history, identify the most recent user directive/task request as well as the overall task, and if that communicated requirement has not been met, continue.
 
-**Then chat output should contain only:**
+**Your chat output should contain only the following, when applicable:**
 
-- Items NOT completed from the most recent task and why.
-- Gaps or open questions identified during the most recent task.
+- Gaps or questions identified during the most recent task.
 - Errors or surprises that were skipped and need revisiting
-- Decisions made that may need user review or signoff
+- Nontrivial decisions made that have not been documented or explicitly discussed with a user
 - Items NOT completed from the overall task, due to branching, tangents, goal substitution or relaxation, or divergence of work with literal content of user's requests.
 - Next actions, if any
 
@@ -103,31 +97,93 @@ Touch only the files you intended to change; verify with `git diff` before respo
 Do not act or use any tools until you have read this skill.
 Do not immediately pursue a new course of action.
 
-
-
 # System
 
 # Mathematics
 
 ## Lattices
 
+90% of the research done on this system involves lattices in algebraic geometry. 
 Note that `lattice` does NOT mean lattices related to cryptography in any meaningful sense.
-A lattice, by definition, is a free $R$-module of finite rank with a (usually nondegenerate) symmetric bilinear form.
-This may be definite or indefinite, and is NOT assumed to be positive-definite, embedding in a particular vector space, to have a "basis", to be unimodular, etc.
+A lattice, by definition, is a projective $R$-module of finite rank with a (usually nondegenerate) symmetric bilinear form.
+This may be definite or indefinite, and is NOT assumed to be positive-definite, embedded in a particular vector space, to have a "basis", to be unimodular, etc.
 
 # Engineering Rules
 
-- **Favor mature dependencies.** Do not reinvent wheels.
-- **Iterate, don't replace.** Writing an entire file is rarely correct.
-- Run `git diff` after rewrites — see what you lost. If valuable, restore it.
+- **Favor mature dependencies.** Outsource common patterns to minimize owned surface.
+- **Iterate, don't replace.** Writing an entire file is almost NEVER correct, unless greenfielding a new file.
+- Run `git diff` after rewrites — see what you lost semantically. If valuable or unintentional, restore it carefully before moving forward.
 
 # Memory
 
-Memories store durable, reusable agent context not captured in repository files.
+Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes. Each project contains a `.agents/memories/` directory with a `config.toml` and all memories stored as plain `.md` files. Memories are persistent, searchable, and cross-session.
 
-**Store:** Stable operational guidance, environment quirks, cross-session execution context.
+**Store:** Stable operational guidance, environment quirks, cross-session execution context, technical findings, decisions that outlive a single task.
 
-**Do not store:** Audit trails, decision logs, changelogs, work summaries. Those belong in git.
+**Do not store:** Audit trails, changelogs, work summaries. Those belong in git.
+
+**Organization:** Memories form a directed graph via markdown links. Hierarchy is declared with inclusion links (a link on its own line). A memory can appear in multiple contexts without duplication.
+
+### Quick Start
+
+```bash
+# Initialize the memory store in a project
+iwe init
+
+# Create a new memory
+iwe new "My Memory"
+
+# Retrieve a memory with surrounding context
+iwe retrieve -k my-memory
+
+# Search across all memories (fuzzy text + YAML field filters)
+iwe find "search term"
+
+# Count memories matching criteria
+iwe count --filter 'status: draft'
+
+# Normalize all memories to consistent formatting
+iwe normalize
+
+# View the hierarchy tree from any starting point
+iwe tree
+
+# Analyze the memory store
+iwe stats
+
+# Export the memory graph as DOT for visualization
+iwe export -f dot
+```
+
+### Mutations
+
+```bash
+# Rename a memory (all links update automatically)
+iwe rename old-key new-key
+
+# Delete a single memory (references cleaned up)
+iwe delete memory-key
+
+# Bulk delete by filter
+iwe delete --filter 'status: archived'
+
+# Overwrite a memory body
+iwe update -k memory-key -c "new content"
+
+# Update frontmatter fields
+iwe update --filter 'status: draft' --set reviewed=true
+
+# Extract a section into its own memory
+iwe extract memory-key --section "Title"
+
+# Inline a referenced memory back into its parent
+iwe inline memory-key --reference "other-memory"
+
+# Attach a memory via a configured action (e.g., daily notes)
+iwe attach --to today -k memory-key
+```
+
+Use `iwe --help` and `iwe <subcommand> --help` to discover the full set of commands and options.
 
 # Conventions for this system
 
@@ -135,7 +191,6 @@ Memories store durable, reusable agent context not captured in repository files.
 - There are many symlinks on this system, check the file type if you find confusing duplication. Reusable agent-facing prompts now live in the `ai-prompts` repo and are consumed by slug; `~/ai/prompts` is reserved for `local_context` overlays and repo-specific guidance.
 - Never store or use local secrets or inline them into any shell commands. They must be stored in ~/.envrc, trusted with `direnv allow`, and all projects should have a .envrc file that either sources ~/.envrc directly or uses the `source_up` directive.
   - Project-local envrc files should be tracked via git, and thus never store true secrets, only env vars. If a project truly needs a local secret (rare), then it should be in a gitignore .env file and the envrc file should source it.
-- Do not probe secrets files in `.env` and `~/.envrc`. If you need secrets/keys/etc, they will be in your env.
 - All projects must have centralized recipes in a justfile and be run with `just`. Always look for one and use its recipes, never bypass them.
   - In particular, all tests, type-checking, builds, publishing, etc must be routed through `just`, never run such processes or commands "manually".
 - Dependencies between projects should be routed through github and use `uvx`/`npx -y` calls when possible, or explicitly declared as dependencies. Do not tie across file system boundaries unless absolutely necessary.
@@ -147,6 +202,7 @@ Memories store durable, reusable agent context not captured in repository files.
 
 # Preferred Libraries and Tools
 
+- `iwe` for managing memories and agent-facing documentation 
 - `gh` for all Github operations (alternative to webfetching)
   - Never use backticks in text pushed through gh (or any other CLI tools), since this induces shell escaping.
 - `tree`, `exa` for exploration

@@ -189,7 +189,7 @@ mkdir -p ~/ai/opencode/skills/skill-name
 ### 4. Download and extract
 
 ```bash
-uvx --from httpie http --download --output /tmp/skill-name.zip GET "DOWNLOAD_URL"
+curl -fsSL "DOWNLOAD_URL" -o /tmp/skill-name.zip
 unzip -o /tmp/skill-name.zip -d /tmp/skill-name-extract
 cp -r /tmp/skill-name-extract/* ~/ai/opencode/skills/skill-name/
 ```

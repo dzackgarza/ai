@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(curl *)",
-      "Bash(systemctl *)"
-    ]
-  },
-  "$version": 3
-}

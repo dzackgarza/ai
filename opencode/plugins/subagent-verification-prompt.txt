@@ -1,7 +1,0 @@
-[SUBAGENT COMPLETED]
-
-Subagents can cheat, drift, or overstate progress in subtle ways. Treat the completion report as provisional until you decide whether the work needs further review.
-
-If `subagent-warnings` is not already in context, load it now.
-
-Then decide whether the subagent's work should be accepted as-is, reviewed further, or resumed with specific gaps.

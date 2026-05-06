@@ -1,4 +1,6 @@
 # Global Black Configuration
+# Reconciled from previous ~/.config/black, which used line-length = 70.
+# Keep the repository-wide default at 88 for consistency with modern Black defaults.
 [tool.black]
 line-length = 88
 target-version = ['py314']

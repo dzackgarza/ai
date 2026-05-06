@@ -134,6 +134,7 @@ The QC system uses these configs (all stored in `~/ai/quality-control/`):
 | `eslint.config.js` | ESLint | TypeScript/JS linting |
 | `knip.json` | Knip | TypeScript/JS dead code detection |
 | `semgrep.yml` | Semgrep | Custom security and quality rules |
+| `grain.toml` | Grain | Unused code and low-quality pattern detection |
 | `.jscpd.json` | jscpd | Copy-paste detection |
 | `sgconfig.yml` | ast-grep | Custom AST-based rules |
 | `.lintstagedrc.json` | lint-staged | Pre-commit hook staged file processing |

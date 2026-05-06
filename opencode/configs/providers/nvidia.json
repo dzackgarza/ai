@@ -6,53 +6,77 @@
     "apiKey": "{env:NVIDIA_API_KEY}"
   },
   "models": {
+    "deepseek-ai/deepseek-r1-0528": {
+      "name": "deepseek-r1-0528"
+    },
     "deepseek-ai/deepseek-v3.2": {
-      "name": "DeepSeek-V3.2 (2m)"
+      "name": "deepseek-v3.2"
+    },
+    "google/gemma-2-27b-it": {
+      "name": "gemma-2-27b-it"
+    },
+    "meta/codellama-70b": {
+      "name": "codellama-70b"
     },
     "meta/llama-3.1-405b-instruct": {
-      "name": "Llama-3.1-405B-Instruct (10s-50s)"
+      "name": "llama-3.1-405b-instruct"
+    },
+    "meta/llama-3.3-70b-instruct": {
+      "name": "llama-3.3-70b-instruct"
+    },
+    "meta/llama-4-maverick-17b-128e-instruct": {
+      "name": "llama-4-maverick-17b-128e-instruct"
+    },
+    "minimaxai/minimax-m2.1": {
+      "name": "minimax-m2.1"
     },
     "minimaxai/minimax-m2.5": {
-      "name": "Minimax-M2.5 (2s)"
+      "name": "minimax-m2.5"
     },
-    "mistralai/ministral-14b-instruct-2512": {
-      "name": "Ministral-14B-Instruct (3.5s)"
+    "mistralai/devstral-2-123b-instruct-2512": {
+      "name": "devstral-2-123b-instruct-2512"
     },
-    "mistralai/mistral-large-3-675b": {
-      "name": "Mistral-Large-3-675B (4.3s)"
+    "mistralai/mistral-large-3-675b-instruct-2512": {
+      "name": "mistral-large-3-675b-instruct-2512"
     },
-    "moonshotai/kimi-k2-instruct-0905": {
-      "name": "Kimi-K2-Instruct-0905 (2s)"
+    "mistralai/mistral-medium-3-instruct": {
+      "name": "mistral-medium-3-instruct"
+    },
+    "mistralai/mistral-nemotron": {
+      "name": "mistral-nemotron"
     },
     "moonshotai/kimi-k2.5": {
-      "name": "Kimi-K2.5 (30s)"
+      "name": "kimi-k2.5"
+    },
+    "nvidia/cosmos-nemotron-34b": {
+      "name": "cosmos-nemotron-34b"
+    },
+    "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
+      "name": "llama-3.1-nemotron-ultra-253b-v1"
     },
     "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
-      "name": "Llama-3.3-Nemotron-Super-49B-v1.5 (4s)"
+      "name": "llama-3.3-nemotron-super-49b-v1.5"
     },
     "nvidia/nemotron-3-nano-30b-a3b": {
-      "name": "Nemotron-3-Nano-30B-A3B (1.6s)"
+      "name": "nemotron-3-nano-30b-a3b"
     },
-    "nvidia/nemotron-3-super-120b-a12b": {
-      "name": "Nemotron-3-Super-120B (10s)"
-    },
-    "nvidia/nvidia-nemotron-nano-9b-v2": {
-      "name": "NVIDIA-Nemotron-Nano-9B-v2 (8s)"
+    "nvidia/nemotron-4-340b-instruct": {
+      "name": "nemotron-4-340b-instruct"
     },
     "openai/gpt-oss-120b": {
-      "name": "GPT-OSS-120B (6s)"
+      "name": "gpt-oss-120b"
+    },
+    "qwen/qwen3-coder-480b-a35b-instruct": {
+      "name": "qwen3-coder-480b-a35b-instruct"
     },
     "qwen/qwen3-next-80b-a3b-thinking": {
-      "name": "Qwen3-Next-80B-A3B-Thinking (3s)"
+      "name": "qwen3-next-80b-a3b-thinking"
     },
     "stepfun-ai/step-3.5-flash": {
-      "name": "Step-3.5-Flash (5s)"
-    },
-    "z-ai/glm4.7": {
-      "name": "GLM-4.7 (32s)"
+      "name": "step-3.5-flash"
     },
     "z-ai/glm5": {
-      "name": "GLM-5 (4s)"
+      "name": "glm5"
     }
   },
   "blacklist": [
@@ -63,7 +87,6 @@
     "deepseek-ai/deepseek-v3.1-terminus",
     "google/codegemma-1.1-7b",
     "google/codegemma-7b",
-    "google/gemma-2-27b-it",
     "google/gemma-2-2b-it",
     "google/gemma-3-12b-it",
     "google/gemma-3-1b-it",
@@ -84,13 +107,14 @@
     "microsoft/phi-3.5-moe-instruct",
     "microsoft/phi-3.5-vision-instruct",
     "microsoft/phi-4-mini-instruct",
-    "minimaxai/minimax-m2.1",
     "minimaxai/minimax-m2",
     "mistralai/codestral-22b-instruct-v0.1",
     "mistralai/mamba-codestral-7b-v0.1",
+    "mistralai/ministral-14b-instruct-2512",
     "mistralai/mistral-large-2-instruct",
     "mistralai/mistral-small-3.1-24b-instruct-2503",
     "moonshotai/kimi-k2-instruct",
+    "moonshotai/kimi-k2-instruct-0905",
     "moonshotai/kimi-k2-thinking",
     "nvidia/llama-3.1-nemotron-51b-instruct",
     "nvidia/llama-3.1-nemotron-70b-instruct",
@@ -98,25 +122,14 @@
     "nvidia/llama-embed-nemotron-8b",
     "nvidia/llama3-chatqa-1.5-70b",
     "nvidia/nemoretriever-ocr-v1",
+    "nvidia/nvidia-nemotron-nano-9b-v2",
     "nvidia/parakeet-tdt-0.6b-v2",
     "openai/whisper-large-v3",
     "qwen/qwen2.5-coder-32b-instruct",
     "qwen/qwen2.5-coder-7b-instruct",
     "qwen/qwen3-235b-a22b",
     "qwen/qwen3-next-80b-a3b-instruct",
-    "qwen/qwen3.5-397b-a17b",
     "qwen/qwq-32b",
-    "meta/llama-3.3-70b-instruct",
-    "meta/codellama-70b",
-    "deepseek-ai/deepseek-r1-0528",
-    "mistralai/devstral-2-123b-instruct-2512",
-    "meta/llama-4-maverick-17b-128e-instruct",
-    "mistralai/mistral-large-3-675b-instruct-2512",
-    "mistralai/mistral-medium-3-instruct",
-    "mistralai/mistral-nemotron",
-    "nvidia/nemotron-4-340b-instruct",
-    "nvidia/cosmos-nemotron-34b",
-    "nvidia/llama-3.1-nemotron-ultra-253b-v1",
-    "qwen/qwen3-coder-480b-a35b-instruct"
+    "z-ai/glm4.7"
   ]
 }

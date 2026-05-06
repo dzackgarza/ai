@@ -48,6 +48,131 @@ _python-qc-files:
 		-g '!**/coverage/**' \
 		-g '!**/codeql-db/**'
 
+_python-syntax:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: Python syntax validation ==="
+	echo "# Compiles Python source with the configured target interpreter before linting or analysis"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping Python syntax validation: no Python files found."
+		exit 0
+	fi
+	uv run --python 3.14 --no-project python - "${python_files[@]}" <<'PY'
+	import sys
+	import tokenize
+	import warnings
+
+	warnings.simplefilter("error", SyntaxWarning)
+	failed = False
+	for file_name in sys.argv[1:]:
+	    try:
+	        with tokenize.open(file_name) as source_file:
+	            source = source_file.read()
+	        compile(source, file_name, "exec", dont_inherit=True)
+	    except SyntaxError as exc:
+	        line = exc.lineno or 0
+	        column = exc.offset or 0
+	        print(f"ERROR: Python syntax validation failed for {file_name}:{line}:{column}: {exc.msg}", file=sys.stderr)
+	        if exc.text:
+	            print(exc.text.rstrip(), file=sys.stderr)
+	            if column > 0:
+	                print(f"{' ' * (column - 1)}^", file=sys.stderr)
+	        failed = True
+	    except (OSError, UnicodeError) as exc:
+	        print(f"ERROR: Python syntax validation could not read {file_name}: {exc}", file=sys.stderr)
+	        failed = True
+
+	raise SystemExit(1 if failed else 0)
+	PY
+
+_sage-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.sage' \
+		-g '!*.sage.py' \
+		-g '!**/external/**' \
+		-g '!**/node_modules/**' \
+		-g '!**/__pycache__/**' \
+		-g '!**/.venv/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**' \
+		-g '!**/codeql-db/**'
+
+_sage-syntax:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: Sage syntax validation ==="
+	echo "# Preparses .sage files and byte-compiles the generated Python to catch syntax errors early"
+	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
+	if [ "${#sage_files[@]}" -eq 0 ]; then
+		echo "Skipping Sage syntax validation: no Sage files found."
+		exit 0
+	fi
+
+	sage_bin="${SAGE_BIN:-sage}"
+	if ! command -v "$sage_bin" >/dev/null 2>&1; then
+		echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+		exit 1
+	fi
+
+	sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-sage-syntax.XXXXXX")"
+	trap 'rm -rf "$sage_preparse_dir"' EXIT
+	echo "# Preparsing and compiling ${#sage_files[@]} Sage file(s)"
+	copied_sage_files=()
+	compile_args=()
+	failed=0
+	for sage_file in "${sage_files[@]}"; do
+		target="$sage_preparse_dir/$sage_file"
+		mkdir -p "$(dirname "$target")"
+		cp "$sage_file" "$target"
+		generated_file="$target.py"
+		copied_sage_files+=("$sage_file")
+		compile_args+=("$sage_file" "$generated_file")
+	done
+
+	(
+		cd "$sage_preparse_dir"
+		"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
+	)
+
+	for sage_file in "${sage_files[@]}"; do
+		generated_file="$sage_preparse_dir/$sage_file.py"
+		if [ ! -f "$generated_file" ]; then
+			echo "ERROR: Sage preparse did not produce $generated_file for $sage_file"
+			failed=1
+		fi
+	done
+	if [ "$failed" -ne 0 ]; then
+		exit 1
+	fi
+
+	if ! "$sage_bin" -python - "${compile_args[@]}" <<'PY'
+	import py_compile
+	import sys
+
+	args = sys.argv[1:]
+	failed = False
+	for index in range(0, len(args), 2):
+	    original = args[index]
+	    generated = args[index + 1]
+	    try:
+	        py_compile.compile(generated, doraise=True)
+	    except py_compile.PyCompileError as exc:
+	        print(exc.msg, file=sys.stderr, end="" if exc.msg.endswith("\n") else "\n")
+	        print(f"ERROR: Sage syntax validation failed for {original}", file=sys.stderr)
+	        failed = True
+
+	raise SystemExit(1 if failed else 0)
+	PY
+	then
+		exit 1
+	fi
+
 _no-bypass:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -111,6 +236,21 @@ _install-tools: _venv
 	echo "=== Running: tool installation ==="
 	echo "# Installs Python/JS tool dependencies to local cache for faster subsequent runs"
 
+_mypy: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: mypy type checking ==="
+	echo "# Checks static typing after syntax validation and before lint/style normalization"
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping mypy: no Python files found."
+		exit 0
+	fi
+	uvx --python 3.14 --from mypy mypy \
+		--config-file {{justfile_directory()}}/mypy-global.ini \
+		"${python_files[@]}"
+
 _normalize: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -156,8 +296,15 @@ _pytest_with_coverage: _install-tools
 		echo "Skipping coverage: no pytest-style Python tests found."
 		exit 0
 	fi
-	uvx --from coverage --with pytest --with-editable . coverage run -m pytest
-	uvx --from coverage coverage xml --fail-under=100 -o coverage.xml
+	project_root="$(pwd -P)"
+	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
+	coverage_root="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/coverage/$project_slug"
+	coverage_data="$coverage_root/.coverage"
+	coverage_xml="$coverage_root/coverage.xml"
+	mkdir -p "$coverage_root"
+	COVERAGE_FILE="$coverage_data" uvx --from coverage --with pytest --with-editable . coverage run -m pytest
+	COVERAGE_FILE="$coverage_data" uvx --from coverage coverage xml --fail-under=100 -o "$coverage_xml"
+	echo "Coverage XML report: $coverage_xml"
 
 _diff-cover: _pytest_with_coverage
 	#!/usr/bin/env bash
@@ -165,11 +312,14 @@ _diff-cover: _pytest_with_coverage
 	echo "============================="
 	echo "=== Running: diff-cover against main branch ==="
 	echo "# Reports coverage gaps on code changed since main branch to ensure new code is tested"
-	if [ ! -f coverage.xml ]; then
-		echo "Skipping diff-cover: no coverage.xml generated."
+	project_root="$(pwd -P)"
+	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
+	coverage_xml="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/coverage/$project_slug/coverage.xml"
+	if [ ! -f "$coverage_xml" ]; then
+		echo "Skipping diff-cover: no coverage.xml generated at $coverage_xml."
 		exit 0
 	fi
-	uvx --from diff-cover diff-cover coverage.xml --compare-branch ${DIFF_COVER_BASE:-main}
+	uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch ${DIFF_COVER_BASE:-main}
 
 _vulture: _install-tools
 	#!/usr/bin/env bash
@@ -178,14 +328,48 @@ _vulture: _install-tools
 	echo "=== Running: vulture dead code detection ==="
 	echo "# Finds unused code (functions, classes, variables) that can be safely removed"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
+	generated_sage_python_files=()
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
-	if [ "${#python_files[@]}" -eq 0 ]; then
+	if [ "${#python_files[@]}" -eq 0 ] && [ "${#sage_files[@]}" -eq 0 ]; then
 		echo "Skipping vulture: no Python or Sage files found."
 		exit 0
 	fi
+
+	if [ "${#sage_files[@]}" -gt 0 ]; then
+		sage_bin="${SAGE_BIN:-sage}"
+		if ! command -v "$sage_bin" >/dev/null 2>&1; then
+			echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+			exit 1
+		fi
+
+		sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-vulture-sage.XXXXXX")"
+		trap 'rm -rf "$sage_preparse_dir"' EXIT
+		echo "# Preparsing ${#sage_files[@]} Sage file(s) for vulture"
+		copied_sage_files=()
+		for sage_file in "${sage_files[@]}"; do
+			target="$sage_preparse_dir/$sage_file"
+			mkdir -p "$(dirname "$target")"
+			cp "$sage_file" "$target"
+			copied_sage_files+=("$sage_file")
+			generated_sage_python_files+=("$target.py")
+		done
+		(
+			cd "$sage_preparse_dir"
+			"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
+		)
+		for generated_file in "${generated_sage_python_files[@]}"; do
+			if [ ! -f "$generated_file" ]; then
+				echo "ERROR: Sage preparse did not produce $generated_file"
+				exit 1
+			fi
+		done
+	fi
+
 	uvx --from vulture vulture \
 		--config {{justfile_directory()}}/pyproject.toml \
 		"${python_files[@]}" \
+		"${generated_sage_python_files[@]}" \
 		"$whitelist_file"
 
 _deptry: _install-tools
@@ -309,8 +493,53 @@ _codeql:
 		echo "Skipping CodeQL: codeql CLI is not installed."
 		exit 0
 	fi
-	codeql database create codeql-db --overwrite --language=python --source-root=.
-	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
+	project_root="$(pwd -P)"
+	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
+	codeql_root="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/codeql/$project_slug"
+	db="$codeql_root/codeql-db"
+	report="$codeql_root/codeql-report.sarif"
+	mkdir -p "$codeql_root"
+	codeql database create "$db" --overwrite --language=python --source-root="$project_root"
+	codeql database analyze "$db" --format=sarif-latest --output="$report"
+	echo "CodeQL SARIF report: $report"
+	python3 - "$report" <<'PY'
+	import json
+	import sys
+	from pathlib import Path
+
+	report = Path(sys.argv[1])
+	if not report.exists():
+		print(f"CodeQL summary unavailable: report not found at {report}")
+		raise SystemExit(0)
+
+	data = json.loads(report.read_text())
+	rule_levels = {}
+	for run in data.get("runs", []):
+		for rule in run.get("tool", {}).get("driver", {}).get("rules", []):
+			level = rule.get("defaultConfiguration", {}).get("level")
+			if level:
+				rule_levels[rule.get("id")] = level
+
+	findings = []
+	for run in data.get("runs", []):
+		for result in run.get("results", []):
+			rule_id = result.get("ruleId", "unknown-rule")
+			level = result.get("level") or rule_levels.get(rule_id, "note")
+			message = result.get("message", {}).get("text", "").replace("\n", " ").strip()
+			location = result.get("locations", [{}])[0].get("physicalLocation", {})
+			artifact = location.get("artifactLocation", {})
+			uri = artifact.get("uri", "unknown-file")
+			region = location.get("region", {})
+			line = region.get("startLine")
+			file_ref = f"{uri}:{line}" if line else uri
+			findings.append((level, rule_id, file_ref, message))
+
+	print(f"CodeQL findings: {len(findings)}")
+	for level, rule_id, file_ref, message in findings[:50]:
+		print(f"- [{level}] {rule_id} {file_ref}: {message}")
+	if len(findings) > 50:
+		print(f"- ... {len(findings) - 50} more findings omitted; see SARIF report above.")
+	PY
 
 _slop:
 	#!/usr/bin/env bash
@@ -318,23 +547,31 @@ _slop:
 	echo "============================="
 	echo "=== Running: ai-slop-detector ML-based quality check ==="
 	echo "# ML classifier for detecting AI-generated code patterns and low-quality implementations"
+	project_root="$(pwd -P)"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "Skipping ai-slop-detector: no Python or Sage files found."
 		exit 0
 	fi
 	for file in "${python_files[@]}"; do
-		uvx ai-slop-detector "$file" \
+		target="$file"
+		if [[ "$target" != /* ]]; then
+			target="$project_root/$target"
+		fi
+		(
+			cd {{justfile_directory()}}
+			uvx ai-slop-detector "$target" \
 			--config {{justfile_directory()}}/.slopconfig.yaml \
 			--verbose \
 			--ci-mode hard \
 			--ci-claims-strict \
 			--ci-report \
 			--no-color
+		)
 	done
 
 # public: all static checks run locally
-test: _no-bypass _normalize _vulture _deptry _semgrep _ast-grep _jscpd _lizard _import-linter _codeql _slop _grain _diff-cover _pytest_with_coverage
+test: _python-syntax _sage-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _codeql _pytest_with_coverage _diff-cover _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

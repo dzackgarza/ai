@@ -36,4 +36,3 @@ just openrouter-probe-tool-calling
 
 - Google Antigravity routing details: `notes/google-provider.md`
 - OpenRouter vetting notes: `notes/openrouter-model-vetting.md`
-- Free model tiers and stack: `FREE_MODELS.md`

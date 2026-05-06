@@ -1,25 +1,21 @@
 # Subagents
 
-This directory no longer holds the runtime subagent definitions.
+This directory no longer holds the active subagent definitions.
 
 ## Active Source Of Truth
 
-- Published prompt sources: `ai-prompts`
-- Managed runtime files: `../../agents/*.md`
-- Population workflow: `just build-agents` from `~/ai`
-- External compiler: `~/opencode-plugins/clis/opencode-permission-policy-compiler`
-- Policy definition: `../opencode-permission-policy-compiler/config.toml`
+- `ai-prompts`: canonical prompt library resolved by slug
+- `../../agents/*.md`: generated OpenCode markdown agents
+- `../../permissions/`: permission compiler and agent registry
 
-The repo-level build runs `just build-config` first so the compiled
-`opencode.json` receives the global permission baseline before agent markdown
-is regenerated.
+## Historical Material
+
+Legacy JSON subagent configs may still exist here for history or migration
+reference. They are not the runtime source of truth.
 
 ## Update Flow
 
-- update or publish the source prompt in `ai-prompts`
-- update the external policy compiler if permission behavior must change
-- edit `../opencode-permission-policy-compiler/config.toml` if the global baseline must change
-- run `just build-agents`
-
-Do not edit files in `../../agents/` directly. They are regenerated from the
-published prompt slugs.
+1. Edit the prompt in `ai-prompts`.
+2. If the change affects permissions, update `../../permissions/`.
+3. Run `uv run --python .venv/bin/python permissions/main.py --apply` from `opencode/`.
+4. Run `uv run --python .venv/bin/python scripts/build_config.py`.
