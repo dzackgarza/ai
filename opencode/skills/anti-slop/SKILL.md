@@ -173,7 +173,10 @@ Consult these comprehensive guides when working on specific domains:
 
 - **[text-patterns.md](references/text-patterns.md)** - Complete catalog of natural language slop patterns with detection rules and cleanup strategies
 
-- **[code-patterns.md](references/code-patterns.md)** - Programming antipatterns across languages with refactoring guidance
+- **[code-patterns.md](references/code-patterns.md)** - Programming antipatterns across languages with refactoring guidance.
+  Includes the **Introspection Red Flags** framework for `isinstance`, `hasattr`,
+  `getattr`, `type()`, `issubclass`, `callable()` — ask why the code is
+  guessing about shapes at runtime instead of asserting them through the type system.
 
 - **[test-patterns.md](references/test-patterns.md)** - Testing slop patterns (content-free checks, tautologies, masking)
 
@@ -185,6 +188,16 @@ Each reference includes:
 - Detection signals (high/medium confidence)
 - Context where patterns are acceptable
 - Specific cleanup strategies
+
+### Repo-Specific Extensions
+
+The global patterns in this skill are sharpened for specific repos:
+
+- **research repo** (`~/research`): Load `research-code-style` for repo-specific
+  rules on assertions, optional types, semantic membership checks, and mathematical
+  preconditions. Load `category-spec-style` for the audit rubric on runtime checks
+  outside categorical predicates. Load `jerry-behaviour` to prevent checklist
+  theater and paraphrase-as-review when evaluating agent-produced work.
 
 ## Scripts
 

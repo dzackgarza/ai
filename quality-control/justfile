@@ -46,7 +46,9 @@ _python-qc-files:
 		-g '!**/dist/**' \
 		-g '!**/build/**' \
 		-g '!**/coverage/**' \
-		-g '!**/codeql-db/**'
+		-g '!**/codeql-db/**' \
+		-g '!**/*.bak/**' \
+		-g '!**/*.bak/**'
 
 _python-syntax:
 	#!/usr/bin/env bash
@@ -100,7 +102,9 @@ _sage-qc-files:
 		-g '!**/dist/**' \
 		-g '!**/build/**' \
 		-g '!**/coverage/**' \
-		-g '!**/codeql-db/**'
+		-g '!**/codeql-db/**' \
+		-g '!**/*.bak/**' \
+		-g '!**/*.bak/**'
 
 _sage-syntax:
 	#!/usr/bin/env bash

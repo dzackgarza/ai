@@ -1,7 +1,7 @@
 ---
+name: plan
 description: Plan mode. Disallows all edit tools.
 mode: primary
-name: plan
 permission:
   read: &id001
     '*': allow

@@ -12,6 +12,7 @@ This reference documents common "AI slop" patterns in code that indicate low-qua
 - Comment Antipatterns
 - Structure Antipatterns
 - Implementation Antipatterns
+- Introspection Red Flags
 - Documentation Antipatterns
 
 ## Naming Antipatterns
@@ -39,6 +40,32 @@ Watch for repeated use of:
 - `test1`, `test2`, `test3` as function names
 - `MyClass`, `MyFunction`, `MyVariable` prefixes
 - `Helper`, `Manager`, `Handler` suffixes without specificity
+
+### Engineering Names in Mathematical Contexts
+
+Software engineering vocabulary smuggled into mathematical naming is a
+high-confidence slop signal. The agent is pattern-matching "define a class"
+instead of "define a property."
+
+**Signals:**
+- `FooBase`, `AbstractFoo`, `FooImpl` — class hierarchy thinking applied to
+  mathematical concepts. Mathematics has axioms, predicates, and categories,
+  not abstract base classes.
+- `FooManager`, `FooFactory`, `FooRegistry` — design-pattern thinking where
+  the task requires mathematical construction notation.
+- `Structured`, `Configurable`, `Parameterized`, `Polymorphic` — software
+  engineering adjectives applied to mathematical nouns.
+
+**Example:**
+- `FiniteTotallyOrderedBase` — "Base" is an engineering concept (base class).
+  The mathematical concept is "finite" and "totally ordered" applied as
+  axioms to the base set. The name should express the mathematical property,
+  not the implementation architecture.
+
+**Principle:** If the name contains a word that describes code structure
+rather than mathematical structure, the agent is thinking in implementation
+terms when it should be thinking in mathematical terms. Separate the
+mathematical claim from the implementation artifact.
 
 ## Comment Antipatterns
 
@@ -208,6 +235,84 @@ MAX_INPUT_LENGTH = 255  # Database column limit
 if len(input) > MAX_INPUT_LENGTH:
     raise ValueError(f"Input exceeds maximum length of {MAX_INPUT_LENGTH}")
 ```
+
+## Introspection Red Flags
+
+Runtime type/shape introspection — `isinstance`, `hasattr`, `getattr`, `type()`, `issubclass`, `callable()` — is a diagnostic signal that code is guessing about input shapes at runtime rather than having asserted and type-checked shapes up front.
+
+These are not banned. They are flags that should trigger a specific reasoning chain before acceptance.
+
+### The Core Signal
+
+Every use of these functions raises the same question: **why doesn't the code already know the shape of this object?**
+
+When a function takes a typed argument, the type system asserts the shape. When it dispatches on a tagged union, the tag selects the branch. When it interrogates an object's type or attributes at runtime, it is compensating for missing type information, missing categorical structure, or an unmodeled design distinction.
+
+### The Reasoning Chain
+
+For each occurrence, answer these questions in order:
+
+1. **Is this a legitimate boundary?** The code sits at a typed/untyped interface (e.g., wrapping an external library, deserializing JSON, a `__contains__` method that takes `Any`, a category boundary where untrusted objects arrive without project type information). If yes, proceed to question 2. If no, this is a design smell and questions 3-4 apply immediately.
+
+2. **Is the check minimal and localized?** Boundary checks should appear exactly once, at the entry point, and immediately narrow to a typed path. Repeated checks deeper in the call stack signal that the boundary was never properly crossed.
+
+3. **What is missing?** Ask whether the code should instead have:
+   - A typed signature that makes the check unnecessary
+   - A predicate subcategory or membership check (`C in Cat().JoinCategories()` rather than `isinstance(C, JoinCategory)`)
+   - An explicit overload or tagged union that selects the branch without introspection
+   - A constructor gate that validates the shape once
+
+4. **Could the shape be asserted instead of interrogated?** An `assert isinstance(x, T)` is sometimes the right call — it documents the precondition, fails loudly if violated, and does not silently recover with a fallback path. This is categorically different from a branch that produces two different behaviors based on type.
+
+### Flagged Functions and Their Specific Signals
+
+**`isinstance(obj, T)`**
+
+- **Signal**: Code doesn't trust the type system. Either the argument is too broad or the function is doing dispatch that should be handled by overloads.
+- **Boundary-justified**: `__contains__` (signature takes `Any`), interop wrappers at untyped library boundaries, constructor gates that validate once.
+- **Design smell elsewhere**.
+
+**`hasattr(obj, "attr")`**
+
+- **Signal**: Optional or undeclared attributes. Objects carry hidden state that callers must probe for.
+- Almost always a design smell. The attribute should either always exist (use typed access) or the optional case should be a separate type/constructor path.
+- Particularly dangerous in mathematical code: it means the spec doesn't declare what objects must provide.
+
+**`getattr(obj, "attr", default)`**
+
+- **Signal**: Combines the problems of `hasattr` with silent fallback. The code continues with a guessed default when structure is missing.
+- Almost always a design smell. The missing-attribute case should be a different code path or an explicit `None`-handling constructor.
+
+**`type(obj) is T` / `type(obj) == T`**
+
+- **Signal**: Exact-type checks that exclude subclasses. Usually means the code is working around a badly-modeled hierarchy.
+- If subclasses genuinely need different treatment, ask whether the base class should declare an abstract method instead.
+
+**`issubclass(T, U)`**
+
+- **Signal**: Metaclass-level reasoning in application code. Usually means a category or type hierarchy is missing.
+- **Boundary-justified**: class registration systems, plugin frameworks.
+
+**`callable(obj)`**
+
+- **Signal**: The code deals with a value-or-function ambiguity. Usually means a missing callable wrapper type or a delayed-evaluation pattern that should be explicit.
+- **Boundary-justified**: callback registration, some functional patterns where the distinction is part of the API contract.
+
+### Acceptance Criteria Table
+
+| Pattern | When Acceptable | Remediation When Not |
+|---------|----------------|---------------------|
+| `isinstance` | At a typed/untyped boundary, in `__contains__`, or as an `assert` guarding a precondition | Add type annotation, add overload, add predicate subcategory |
+| `hasattr` | Almost never (see notes) | Declare the attribute on the type; model optional structure as a separate type |
+| `getattr` with default | Interop with truly optional external data | Model the optionality explicitly (separate constructor, `None`-handling path) |
+| `type() is` | Plugin/registration systems | Replace with abstract method dispatch |
+| `issubclass` | Class registration, plugin frameworks | Add a category or type hierarchy |
+| `callable` | Callback registration, thunk/delayed-eval APIs | Use an explicit callable protocol type or a wrapper |
+
+### Cross-References
+
+- **Mathematical code**: Load `research-code-style` for the repo-specific policy on assertions over exceptions, semantic membership checks, and categorical predicates replacing `isinstance`.
+- **Category specs**: Load `category-spec-style` for the red-flag audit rubric on runtime checks outside categorical predicates, and the boundary-vs-interior distinction for Sage interop surfaces.
 
 ## Documentation Antipatterns
 
