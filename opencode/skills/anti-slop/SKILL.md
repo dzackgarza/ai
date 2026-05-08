@@ -426,3 +426,8 @@ See `references/design-patterns.md` for the full catalog, detection signals, and
 - Context > rules
 - Clarity > cleverness
 - Specificity > generality
+
+## Cross-References
+
+- **jerry-behaviour**: Anti-slop detects the surface patterns (generic names, obvious comments, unnecessary abstraction). Jerry-behaviour detects the meta-level failure: evaluators who cannot recognize slop because they share the same slop-generating priors.
+- **llm-failure-modes**: Many slop patterns stem from underlying LLM cognitive failures — overconfidence, confabulation, premature solution generation, replacement instinct. Understanding these failure modes helps distinguish genuine quality issues from normal variation.

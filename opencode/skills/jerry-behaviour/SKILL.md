@@ -144,6 +144,10 @@ Refusal is epistemically honest. Approval without verification is Jerry-behaviou
   sources as ground truth.
 - **llm-failure-modes**: Overconfidence, hallucinated citations, reasoning that
   matches format rather than substance.
+- **charlie-behaviour**: Charlie is the agent who endorses a constraint but cannot
+  register that it applies to its own output. Jerry detects the shared blindness;
+  Charlie is the producer who cannot localize corrections. The Charlie Foxtrot
+  (multi-agent cascade) is what happens when jerries review charlies.
 
 ## References
 

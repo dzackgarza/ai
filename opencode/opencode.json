@@ -1,59 +1,45 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "snapshot": false,
   "disabled_providers": [
     "groq",
     "mistral",
     "cloudflare-ai-gateway",
-    "cohere",
-    "morph",
+    "cloudflare-workers-ai",
     "huggingface",
-    "cloudflare-workers-ai"
-  ],
-  "mcp": {
-    "serena": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--project-from-cwd"
-      ]
-    }
-  },
-  "model": "opencode-go/deepseek-v4-flash",
-  "default_agent": "Interactive",
-  "experimental": {
-    "openTelemetry": true
-  },
-  "plugin": [
-    "cc-safety-net@latest",
-    "opencode-pty@latest",
-    "@hueyexe/opencode-ensemble@0.13.3",
+    "morph",
+    "kaggle-ollama"
   ],
   "permission": {
-    "read": "allow",
-    "glob": "allow",
-    "grep": "allow",
-    "edit": "deny",
-    "apply_patch": "deny",
-    "bash": {
-      "*sudo*": "deny",
-      "*": "deny"
-    },
-    "webfetch": "allow",
-    "websearch": "allow",
-    "todowrite": "allow",
-    "task": "allow",
-    "question": "allow",
     "external_directory": {
-      "*": "ask",
-      "/home/dzack/ai/*": "allow",
+      "*": "deny",
+      "~/.local/share/opencode/worktree/**": "allow",
+      "/home/dzack/.cache/*": "allow",
+      "/home/dzack/.cache/opencode-arxiv-library/*": "allow",
+      "/home/dzack/.cache/opencode-webfetch/*": "allow",
+      "/home/dzack/.config/agents/skills": "allow",
+      "/home/dzack/.config/agents/skills/*": "allow",
+      "/home/dzack/.config/amp/skills": "allow",
+      "/home/dzack/.config/amp/skills/*": "allow",
+      "/home/dzack/.config/opencode/skills": "allow",
+      "/home/dzack/.config/opencode/skills/*": "allow",
       "/home/dzack/.agents/*": "allow",
+      "/home/dzack/.agents/skills": "allow",
+      "/home/dzack/.agents/skills/*": "allow",
+      "/home/dzack/.claude/skills": "allow",
+      "/home/dzack/.claude/skills/*": "allow",
+      "/home/dzack/.codex/skills": "allow",
+      "/home/dzack/.codex/skills/*": "allow",
+      "/home/dzack/.kilocode/skills": "allow",
+      "/home/dzack/.kilocode/skills/*": "allow",
+      "/home/dzack/.local/share/opencode-memory/*": "allow",
       "/home/dzack/.plannotator/*": "allow",
-      "/tmp/*": "allow",
-      "~/.local/share/opencode/worktree/**": "allow"
+      "/home/dzack/.qwen/skills": "allow",
+      "/home/dzack/.qwen/skills/*": "allow",
+      "/home/dzack/ai/*": "allow",
+      "/home/dzack/pdf-extraction/*": "allow",
+      "/home/dzack/pdfs/*": "allow",
+      "/tmp/*": "allow"
     },
     "list_sessions": "allow",
     "introspection": "allow",
@@ -68,9 +54,9 @@
     "lsp": "allow",
     "pty_list": "allow",
     "pty_read": "allow",
-    "pty_spawn": "deny",
-    "pty_kill": "deny",
-    "pty_write": "deny",
+    "pty_spawn": "allow",
+    "pty_kill": "allow",
+    "pty_write": "allow",
     "submit_plan": "allow",
     "plannotator_review": "allow",
     "plannotator_annotate": "allow",
@@ -115,6 +101,112 @@
     "serena_switch_modes": "deny",
     "gemini_quota": "allow"
   },
+  "formatter": {
+    "ruff-check": {
+      "command": [
+        "uvx",
+        "ruff",
+        "check",
+        "--fix",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
+    },
+    "ruff-format": {
+      "command": [
+        "uvx",
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
+    },
+    "prettier": {
+      "command": [
+        "npx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
+      "extensions": [
+        ".js",
+        ".ts",
+        ".jsx",
+        ".tsx",
+        ".html",
+        ".css",
+        ".json",
+        ".yaml",
+        ".yml"
+      ]
+    },
+    "just": {
+      "command": [
+        "just",
+        "--unstable",
+        "--fmt",
+        "--justfile",
+        "$FILE"
+      ],
+      "extensions": [
+        "justfile"
+      ]
+    },
+    "flowmark": {
+      "command": [
+        "uvx",
+        "flowmark",
+        "--semantic",
+        "--inplace",
+        "$FILE"
+      ],
+      "extensions": [
+        ".md"
+      ]
+    }
+  },
+  "lsp": {
+    "texlab": {
+      "command": [
+        "texlab"
+      ],
+      "extensions": [
+        ".tex",
+        ".sty",
+        ".cls",
+        ".bib"
+      ]
+    }
+  },
+  "mcp": {
+    "serena": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--project-from-cwd"
+      ]
+    }
+  },
+  "default_agent": "Interactive",
+  "compaction": {
+    "reserved": 20000
+  },
+  "plugin": [
+    "opencode-gemini-auth@latest",
+    "@tarquinen/opencode-dcp@latest",
+    "@ramtinj95/opencode-tokenscope@latest",
+    "cc-safety-net@latest",
+    "opencode-pty@latest",
+    "@hueyexe/opencode-ensemble@0.13.3"
+  ],
   "provider": {
     "anthropic": {
       "blacklist": [
@@ -168,7 +260,6 @@
     },
     "github-copilot": {
       "blacklist": [
-        "gpt-5-mini",
         "claude-opus-4.5",
         "claude-opus-4.6-fast-mode-preview",
         "claude-sonnet-4",
@@ -553,6 +644,7 @@
         "meta-llama/llama-3-70b-instruct",
         "meta-llama/llama-3-8b-instruct",
         "meta-llama/llama-3.1-405b",
+        "meta-llama/llama-3.1-405b-instruct",
         "meta-llama/llama-3.1-70b-instruct",
         "meta-llama/llama-3.1-8b-instruct",
         "meta-llama/llama-3.2-11b-vision-instruct",
@@ -600,6 +692,11 @@
         "moonshotai/kimi-k2-0905",
         "moonshotai/kimi-k2-thinking",
         "moonshotai/kimi-k2.5",
+        "morph-warp-grep-v2",
+        "giga-potato",
+        "giga-potato-thinking",
+        "openrouter/healer-alpha",
+        "openrouter/hunter-alpha",
         "nex-agi/deepseek-v3.1-nex-n1",
         "nousresearch/hermes-2-pro-llama-3-8b",
         "nousresearch/hermes-3-llama-3.1-405b",
@@ -768,46 +865,37 @@
       ],
       "models": {
         "arcee-ai/trinity-large-preview:free": {
-          "name": "Trinity Large Preview:Free"
+          "name": "Trinity Large Preview (Free)"
         },
         "corethink:free": {
-          "name": "Corethink:Free"
-        },
-        "giga-potato": {
-          "name": "Giga Potato"
-        },
-        "giga-potato-thinking": {
-          "name": "Giga Potato Thinking"
+          "name": "Corethink (Free)"
         },
         "kilo-auto/free": {
-          "name": "Free"
+          "name": "Kilo-Auto (Free)"
         },
         "kilo/auto-free": {
-          "name": "Auto Free"
+          "name": "Kilo (Auto-Free)"
         },
         "minimax/minimax-m2.5:free": {
-          "name": "Minimax M2.5:Free"
-        },
-        "morph-warp-grep-v2": {
-          "name": "Morph Warp Grep V2"
+          "name": "Minimax M2.5 (Free)"
         },
         "nvidia/nemotron-3-super-120b-a12b:free": {
-          "name": "Nemotron 3 Super 120B A12B:Free"
+          "name": "Nemotron 3 Super 120B A12B (Free)"
         },
         "openrouter/free": {
           "name": "Free"
         },
-        "openrouter/healer-alpha": {
-          "name": "Healer Alpha"
-        },
-        "openrouter/hunter-alpha": {
-          "name": "Hunter Alpha"
-        },
         "stepfun/step-3.5-flash:free": {
-          "name": "Step 3.5 Flash:Free"
+          "name": "Step 3.5 Flash (Free)"
         },
         "x-ai/grok-code-fast-1:optimized:free": {
-          "name": "Grok Code Fast 1:Optimized:Free"
+          "name": "Grok Code Fast 1:Optimized (Free)"
+        },
+        "xiaomi/mimo-v2-omni:free": {
+          "name": "Mimo V2 Omni Free"
+        },
+        "xiaomi/mimo-v2-pro:free": {
+          "name": "Mimo V2 Pro Free"
         }
       }
     },
@@ -1270,6 +1358,7 @@
         "glm-5-free",
         "gpt-5",
         "gpt-5-mini",
+        "gpt-5-nano",
         "gpt-5-codex",
         "gpt-5.1",
         "gpt-5.1-codex",
@@ -1296,11 +1385,17 @@
         "big-pickle": {
           "name": "Big Pickle"
         },
-        "gpt-5-nano": {
-          "name": "GPT-5 Nano"
+        "mimo-v2-omni-free": {
+          "name": "Mimo V2 Omni Free"
+        },
+        "mimo-v2-pro-free": {
+          "name": "Mimo V2 Pro Free"
         },
         "minimax-m2.5-free": {
           "name": "MiniMax M2.5 Free"
+        },
+        "nemotron-3-super-free": {
+          "name": "Nemotron 3 Super Free"
         }
       }
     },
@@ -1980,31 +2075,6 @@
         "glm-4.7-flash": {
           "name": "GLM 4.7 Flash (Free)"
         }
-      }
-    }
-  },
-  "agent": {
-    "plugin-proof": {
-      "description": "Integration test agent: all standard tools denied. Per-plugin configs override specific tool permissions.",
-      "mode": "primary",
-      "model": "github-copilot/gpt-4.1",
-      "prompt": "You are a strict integration-test agent. Follow the requested protocol exactly. Call only the tools explicitly permitted. If a required tool is unavailable or denied, reply with ONLY: FAIL:PROOF_NOT_POSSIBLE",
-      "permission": {
-        "bash": "deny",
-        "read": "deny",
-        "write": "deny",
-        "glob": "deny",
-        "grep": "deny",
-        "list": "deny",
-        "question": "deny",
-        "task": "deny",
-        "webfetch": "deny",
-        "websearch": "deny",
-        "todoread": "deny",
-        "todowrite": "deny",
-        "skill": "deny",
-        "edit": "deny",
-        "apply_patch": "deny"
       }
     }
   }

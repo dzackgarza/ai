@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [code-review, security, verification, quality, pre-commit, auto-fix]
-    related_skills: [subagent-driven-development, writing-plans, test-driven-development, github-code-review]
+    related_skills: [subagent-driven-development, writing-plans, test-driven-development, github-code-review, llm-failure-modes]
 ---
 
 # Pre-Commit Code Verification
@@ -266,6 +266,11 @@ The two-stage review (spec compliance + code quality) uses this pipeline.
 tests exist, tests pass, no regressions.
 
 **writing-plans:** Validates implementation matches the plan requirements.
+
+**llm-failure-modes:** Reviewers should be aware of common LLM cognitive failures
+— overconfidence, confabulation, citation without comprehension, premature victory
+declaration, and tool output blindness. These patterns can corrupt the review
+process itself if the reviewer subagent exhibits them.
 
 ## How Not to Review: The Checkbox Anti-Pattern
 

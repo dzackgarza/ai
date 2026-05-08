@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [review, gate-protocol, code-review, mathematical-review, bug-hunting]
-    related_skills: [research-proof-auditing, research-state-machine, requesting-code-review]
+    related_skills: [research-proof-auditing, research-state-machine, requesting-code-review, llm-failure-modes]
 ---
 
 # Research Gate Review
@@ -237,4 +237,5 @@ When reviewing category specifications, check that axiom and category names desc
 - `research-state-machine/references/review-kernel.md`: the 6-gate protocol this skill operationalizes
 - `.agents/skills/research-proof-auditing/references/proof-auditing.md`: evidence sufficiency for mathematical claims
 - `requesting-code-review`: pre-commit code verification (complementary — runs before commit, not after)
+- `llm-failure-modes`: common LLM cognitive failures that can corrupt review processes — overconfidence, confabulation, premature victory declaration, tool output blindness
 - `references/batch-review-patterns.md`: concrete batch pipeline, context templates, and bug findings from the 2026-05-07 review session (15 cards reviewed, 14/15 successes, 18 real bugs found)

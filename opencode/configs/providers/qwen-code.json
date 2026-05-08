@@ -1,8 +1,0 @@
-{
-  "blacklist": [],
-  "models": {
-    "coder-model": {
-      "name": "Qwen Coder (Auto)"
-    }
-  }
-}

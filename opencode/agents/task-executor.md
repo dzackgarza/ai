@@ -4,13 +4,9 @@ description: "Use when executing an approved atomic task tied to a card. Pass th
 mode: subagent
 model: ollama-cloud/deepseek-v4-flash
 permission:
-  todowrite: allow
   task: deny
-  codesearch: allow
-  submit_plan: deny
-  plannotator_review: deny
-  plannotator_annotate: deny
-  tokenscope: deny
+  question: deny
+  doom_loop: deny
 ---
 
 # Atomic Task Executor

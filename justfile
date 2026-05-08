@@ -210,9 +210,11 @@ build: build-config build-agents _build-opencode-agents-md
 # Build only the compiled OpenCode config pipeline.
 # Usage: just build-config
 # Steps:
-#   1. _build-opencode-config-compile — compile opencode.json from source config fragments
-#   2. _build-opencode-config-apply-policy — apply global permission baseline to compiled config
+#   1. _build-opencode-inject-agent-ext-dirs — sync external_directory whitelist from skeleton into primary agents
+#   2. _build-opencode-config-compile — compile opencode.json from source config fragments
+#   3. _build-opencode-config-apply-policy — apply global permission baseline to compiled config
 build-config:
+    @just --justfile {{ justfile() }} _build-opencode-inject-agent-ext-dirs
     @just --justfile {{ justfile() }} _build-opencode-config-compile
     # @just --justfile {{ justfile() }} _build-opencode-config-apply-policy
 
@@ -224,6 +226,10 @@ build-config:
 #   - Write generated markdown to managed agents directory
 build-agents:
     @just --justfile {{ justfile() }} _build-opencode-managed-agents
+
+[private]
+_build-opencode-inject-agent-ext-dirs:
+    @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/inject_agent_permissions.py
 
 [private]
 _build-opencode-config-compile:
