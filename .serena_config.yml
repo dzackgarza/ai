@@ -120,10 +120,10 @@ projects:
 - /home/dzack/ai
 - /home/dzack/ai/opencode
 - /home/dzack/ai/opencode/agents
-- /home/dzack/ai/opencode/permissions
 - /home/dzack/ai/opencode/plugins
 - /home/dzack/archive/zotero-attachment-plugin
 - /home/dzack/lattice_interface
+- /home/dzack/notes
 - /home/dzack/opencode-git
 - /home/dzack/opencode-plugins
 - /home/dzack/opencode-plugins/clis/opencode-manager

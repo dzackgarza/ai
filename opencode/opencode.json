@@ -228,153 +228,6 @@
         "claude-sonnet-4-20250514"
       ]
     },
-    "github-copilot-enterprise": {
-      "blacklist": [
-        "claude-haiku-4.5",
-        "claude-opus-4.5",
-        "claude-opus-4.6",
-        "claude-opus-41",
-        "claude-sonnet-4",
-        "claude-sonnet-4.5",
-        "claude-sonnet-4.6",
-        "gemini-2.5-pro",
-        "gemini-3-flash-preview",
-        "gemini-3-pro-preview",
-        "gemini-3.1-pro-preview",
-        "gpt-4.1",
-        "gpt-4o",
-        "gpt-5",
-        "gpt-5-mini",
-        "gpt-5.1",
-        "gpt-5.1-codex",
-        "gpt-5.1-codex-max",
-        "gpt-5.1-codex-mini",
-        "gpt-5.2",
-        "gpt-5.2-codex",
-        "gpt-5.3-codex",
-        "gpt-5.4",
-        "gpt-5.4-mini",
-        "grok-code-fast-1"
-      ],
-      "models": {}
-    },
-    "github-copilot": {
-      "blacklist": [
-        "claude-opus-4.5",
-        "claude-opus-4.6-fast-mode-preview",
-        "claude-sonnet-4",
-        "claude-sonnet-4.5",
-        "claude-opus-41",
-        "gemini-2.5-pro",
-        "gemini-3-flash",
-        "gemini-3-flash-preview",
-        "gemini-3-pro",
-        "gemini-3-pro-preview",
-        "gemini-3.1-flash-lite-preview",
-        "gemini-3.1-pro",
-        "gemini-3.1-pro-preview",
-        "gemini-3.1-pro-preview-customtools",
-        "gpt-4o",
-        "gpt-5",
-        "gpt-5.1",
-        "gpt-5.1-codex",
-        "gpt-5.1-codex-max",
-        "gpt-5.2",
-        "gpt-5.2-codex",
-        "gpt-5.3-codex",
-        "raptor-mini",
-        "goldeneye"
-      ],
-      "models": {
-        "claude-haiku-4.5": {
-          "name": "Claude Haiku 4.5 (0.33x)"
-        },
-        "claude-opus-4.6": {
-          "name": "Claude Opus 4.6 (3x)"
-        },
-        "claude-sonnet-4.6": {
-          "name": "Claude Sonnet 4.6 (1x)"
-        },
-        "gpt-4.1": {
-          "name": "GPT-4.1 (Free)"
-        },
-        "gpt-5-mini": {
-          "name": "GPT-5 Mini (Free)"
-        },
-        "gpt-5.1-codex-mini": {
-          "name": "GPT-5.1 Codex Mini (0.33x)"
-        },
-        "grok-code-fast-1": {
-          "name": "Grok Code Fast 1 (0.25x)"
-        },
-        "gpt-5.4": {
-          "name": "GPT-5.4 (1x)"
-        },
-        "gpt-5.4-mini": {
-          "name": "GPT-5.4 Mini (0.33x)"
-        }
-      }
-    },
-    "github-models": {
-      "blacklist": [
-        "ai21-labs/ai21-jamba-1.5-large",
-        "ai21-labs/ai21-jamba-1.5-mini",
-        "cohere/cohere-command-a",
-        "cohere/cohere-command-r",
-        "cohere/cohere-command-r-08-2024",
-        "cohere/cohere-command-r-plus",
-        "cohere/cohere-command-r-plus-08-2024",
-        "core42/jais-30b-chat",
-        "deepseek/deepseek-r1",
-        "deepseek/deepseek-r1-0528",
-        "deepseek/deepseek-v3-0324",
-        "meta/llama-3.2-11b-vision-instruct",
-        "meta/llama-3.2-90b-vision-instruct",
-        "meta/llama-3.3-70b-instruct",
-        "meta/llama-4-maverick-17b-128e-instruct-fp8",
-        "meta/llama-4-scout-17b-16e-instruct",
-        "meta/meta-llama-3-70b-instruct",
-        "meta/meta-llama-3-8b-instruct",
-        "meta/meta-llama-3.1-405b-instruct",
-        "meta/meta-llama-3.1-70b-instruct",
-        "meta/meta-llama-3.1-8b-instruct",
-        "microsoft/mai-ds-r1",
-        "microsoft/phi-3-medium-128k-instruct",
-        "microsoft/phi-3-medium-4k-instruct",
-        "microsoft/phi-3-mini-128k-instruct",
-        "microsoft/phi-3-mini-4k-instruct",
-        "microsoft/phi-3-small-128k-instruct",
-        "microsoft/phi-3-small-8k-instruct",
-        "microsoft/phi-3.5-mini-instruct",
-        "microsoft/phi-3.5-moe-instruct",
-        "microsoft/phi-3.5-vision-instruct",
-        "microsoft/phi-4",
-        "microsoft/phi-4-mini-instruct",
-        "microsoft/phi-4-mini-reasoning",
-        "microsoft/phi-4-multimodal-instruct",
-        "microsoft/phi-4-reasoning",
-        "mistral-ai/codestral-2501",
-        "mistral-ai/ministral-3b",
-        "mistral-ai/mistral-large-2411",
-        "mistral-ai/mistral-medium-2505",
-        "mistral-ai/mistral-nemo",
-        "mistral-ai/mistral-small-2503",
-        "openai/gpt-4.1",
-        "openai/gpt-4.1-mini",
-        "openai/gpt-4.1-nano",
-        "openai/gpt-4o",
-        "openai/gpt-4o-mini",
-        "openai/o1",
-        "openai/o1-mini",
-        "openai/o1-preview",
-        "openai/o3",
-        "openai/o3-mini",
-        "openai/o4-mini",
-        "xai/grok-3",
-        "xai/grok-3-mini"
-      ],
-      "models": {}
-    },
     "google": {
       "blacklist": [
         "aqa",
@@ -1405,23 +1258,38 @@
         "arcee-ai/trinity-large-preview:free": {
           "name": "Trinity Large Preview"
         },
-        "nvidia/nemotron-3-nano-30b-a3b:free": {
-          "name": "Nemotron 3 Nano 30B A3B"
-        },
         "openai/gpt-oss-120b:free": {
           "name": "Openai/Gpt-Oss-120B (Free)"
         },
-        "qwen/qwen3-coder:free": {
-          "name": "Qwen/Qwen3-Coder (Free)"
-        },
-        "qwen/qwen3-next-80b-a3b-instruct:free": {
-          "name": "Qwen/Qwen3-Next-80B-A3B-Instruct (Free)"
-        },
-        "stepfun/step-3.5-flash:free": {
-          "name": "Stepfun/Step-3.5-Flash (Free)"
-        },
         "z-ai/glm-4.5-air:free": {
           "name": "Z-Ai/Glm-4.5-Air (Free)"
+        },
+        "meta-llama/llama-3.3-70b-instruct:free": {
+          "name": "Llama 3.3 70B Instruct (free)"
+        },
+        "minimax/minimax-m2.5:free": {
+          "name": "MiniMax M2.5 (free)"
+        },
+        "mistralai/mistral-small-3.1-24b-instruct": {
+          "name": "Mistral Small 3.1 24B Instruct"
+        },
+        "mistralai/mistral-small-3.2-24b-instruct": {
+          "name": "Mistral Small 3.2 24B Instruct"
+        },
+        "openrouter/elephant-alpha": {
+          "name": "Elephant (free)"
+        },
+        "openrouter/free": {
+          "name": "Free Models Router"
+        },
+        "poolside/laguna-m.1:free": {
+          "name": "Laguna M.1"
+        },
+        "poolside/laguna-xs.2:free": {
+          "name": "Laguna XS.2"
+        },
+        "openrouter/owl-alpha": {
+          "name": "Owl Alpha"
         }
       },
       "blacklist": [
@@ -1640,12 +1508,12 @@
         "latitudegames/wayfarer-large-70b-llama-3.3",
         "liquid/lfm-2-24b-a2b",
         "liquid/lfm-2.2-6b",
+        "liquid/lfm-2.5-1.2b-instruct:free",
+        "liquid/lfm-2.5-1.2b-thinking:free",
         "liquid/lfm-3b",
         "liquid/lfm-40b",
         "liquid/lfm-7b",
         "liquid/lfm2-8b-a1b",
-        "liquid/lfm-2.5-1.2b-instruct:free",
-        "liquid/lfm-2.5-1.2b-thinking:free",
         "liuhaotian/llava-13b",
         "liuhaotian/llava-yi-34b",
         "lizpreciatior/lzlv-70b-fp16-hf",
@@ -1668,15 +1536,15 @@
         "meta-llama/llama-3.1-8b-instruct",
         "meta-llama/llama-3.2-11b-vision-instruct",
         "meta-llama/llama-3.2-1b-instruct",
+        "meta-llama/llama-3.2-3b-instruct",
         "meta-llama/llama-3.2-90b-vision-instruct",
+        "meta-llama/llama-3.3-70b-instruct",
         "meta-llama/llama-3.3-8b-instruct",
         "meta-llama/llama-4-maverick",
         "meta-llama/llama-4-scout",
         "meta-llama/llama-guard-2-8b",
         "meta-llama/llama-guard-3-8b",
         "meta-llama/llama-guard-4-12b",
-        "meta-llama/llama-3.2-3b-instruct",
-        "meta-llama/llama-3.3-70b-instruct",
         "microsoft/mai-ds-r1",
         "microsoft/phi-3-medium-128k-instruct",
         "microsoft/phi-3-medium-4k-instruct",
@@ -1728,8 +1596,6 @@
         "mistralai/mistral-small",
         "mistralai/mistral-small-24b-instruct-2501",
         "mistralai/mistral-small-2603",
-        "mistralai/mistral-small-3.1-24b-instruct",
-        "mistralai/mistral-small-3.2-24b-instruct",
         "mistralai/mistral-small-creative",
         "mistralai/mistral-tiny",
         "mistralai/mixtral-8x22b",
@@ -1775,11 +1641,11 @@
         "nvidia/llama-3.1-nemotron-ultra-253b-v1",
         "nvidia/llama-3.3-nemotron-super-49b-v1",
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "nvidia/nemotron-3-nano-omni-30b-a3b",
         "nvidia/nemotron-3-super-120b-a12b",
         "nvidia/nemotron-4-340b-instruct",
-        "nvidia/nemotron-nano-9b-v2",
-        "nvidia/nemotron-3-nano-30b-a3b",
         "nvidia/nemotron-nano-12b-v2-vl",
+        "nvidia/nemotron-nano-9b-v2",
         "open-orca/mistral-7b-openorca",
         "open-r1/olympiccoder-32b",
         "openai/chatgpt-4o-latest",
@@ -1811,8 +1677,8 @@
         "openai/gpt-4o-mini",
         "openai/gpt-4o-mini-2024-07-18",
         "openai/gpt-4o-mini-search-preview",
-        "openai/gpt-4o:extended",
         "openai/gpt-4o-search-preview",
+        "openai/gpt-4o:extended",
         "openai/gpt-5",
         "openai/gpt-5-chat",
         "openai/gpt-5-codex",
@@ -1840,7 +1706,6 @@
         "openai/gpt-audio-mini",
         "openai/gpt-oss-120b",
         "openai/gpt-oss-20b",
-        "openai/gpt-oss-20b:free",
         "openai/gpt-oss-safeguard-20b",
         "openai/o1",
         "openai/o1-mini",
@@ -1871,7 +1736,6 @@
         "openrouter/bodybuilder",
         "openrouter/cinematika-7b",
         "openrouter/cypher-alpha",
-        "openrouter/free",
         "openrouter/horizon-alpha",
         "openrouter/horizon-beta",
         "openrouter/optimus-alpha",
@@ -2051,16 +1915,10 @@
         "z-ai/glm-4.7",
         "z-ai/glm-4.7-flash",
         "z-ai/glm-5",
-        "z-ai/glm-5-turbo"
+        "z-ai/glm-5-turbo",
+        "openai/gpt-oss-20b:free",
+        "nvidia/nemotron-3-nano-30b-a3b:free"
       ]
-    },
-    "qwen-code": {
-      "blacklist": [],
-      "models": {
-        "coder-model": {
-          "name": "Qwen Coder (Auto)"
-        }
-      }
     },
     "z-ai": {
       "blacklist": [

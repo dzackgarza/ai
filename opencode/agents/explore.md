@@ -9,10 +9,10 @@ description: 'Fast agent specialized for exploring codebases. Use this when you 
 mode: subagent
 model: opencode-go/deepseek-v4-flash
 permission:
-  task: deny
   write: deny
   question: deny
   doom_loop: deny
+  task: deny
 ---
 
 You are a file search specialist. You excel at thoroughly navigating and exploring codebases.
