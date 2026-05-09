@@ -1258,23 +1258,38 @@
         "arcee-ai/trinity-large-preview:free": {
           "name": "Trinity Large Preview"
         },
-        "nvidia/nemotron-3-nano-30b-a3b:free": {
-          "name": "Nemotron 3 Nano 30B A3B"
-        },
         "openai/gpt-oss-120b:free": {
           "name": "Openai/Gpt-Oss-120B (Free)"
         },
-        "qwen/qwen3-coder:free": {
-          "name": "Qwen/Qwen3-Coder (Free)"
-        },
-        "qwen/qwen3-next-80b-a3b-instruct:free": {
-          "name": "Qwen/Qwen3-Next-80B-A3B-Instruct (Free)"
-        },
-        "stepfun/step-3.5-flash:free": {
-          "name": "Stepfun/Step-3.5-Flash (Free)"
-        },
         "z-ai/glm-4.5-air:free": {
           "name": "Z-Ai/Glm-4.5-Air (Free)"
+        },
+        "meta-llama/llama-3.3-70b-instruct:free": {
+          "name": "Llama 3.3 70B Instruct (free)"
+        },
+        "minimax/minimax-m2.5:free": {
+          "name": "MiniMax M2.5 (free)"
+        },
+        "mistralai/mistral-small-3.1-24b-instruct": {
+          "name": "Mistral Small 3.1 24B Instruct"
+        },
+        "mistralai/mistral-small-3.2-24b-instruct": {
+          "name": "Mistral Small 3.2 24B Instruct"
+        },
+        "openrouter/elephant-alpha": {
+          "name": "Elephant (free)"
+        },
+        "openrouter/free": {
+          "name": "Free Models Router"
+        },
+        "poolside/laguna-m.1:free": {
+          "name": "Laguna M.1"
+        },
+        "poolside/laguna-xs.2:free": {
+          "name": "Laguna XS.2"
+        },
+        "openrouter/owl-alpha": {
+          "name": "Owl Alpha"
         }
       },
       "blacklist": [
@@ -1493,12 +1508,12 @@
         "latitudegames/wayfarer-large-70b-llama-3.3",
         "liquid/lfm-2-24b-a2b",
         "liquid/lfm-2.2-6b",
+        "liquid/lfm-2.5-1.2b-instruct:free",
+        "liquid/lfm-2.5-1.2b-thinking:free",
         "liquid/lfm-3b",
         "liquid/lfm-40b",
         "liquid/lfm-7b",
         "liquid/lfm2-8b-a1b",
-        "liquid/lfm-2.5-1.2b-instruct:free",
-        "liquid/lfm-2.5-1.2b-thinking:free",
         "liuhaotian/llava-13b",
         "liuhaotian/llava-yi-34b",
         "lizpreciatior/lzlv-70b-fp16-hf",
@@ -1521,15 +1536,15 @@
         "meta-llama/llama-3.1-8b-instruct",
         "meta-llama/llama-3.2-11b-vision-instruct",
         "meta-llama/llama-3.2-1b-instruct",
+        "meta-llama/llama-3.2-3b-instruct",
         "meta-llama/llama-3.2-90b-vision-instruct",
+        "meta-llama/llama-3.3-70b-instruct",
         "meta-llama/llama-3.3-8b-instruct",
         "meta-llama/llama-4-maverick",
         "meta-llama/llama-4-scout",
         "meta-llama/llama-guard-2-8b",
         "meta-llama/llama-guard-3-8b",
         "meta-llama/llama-guard-4-12b",
-        "meta-llama/llama-3.2-3b-instruct",
-        "meta-llama/llama-3.3-70b-instruct",
         "microsoft/mai-ds-r1",
         "microsoft/phi-3-medium-128k-instruct",
         "microsoft/phi-3-medium-4k-instruct",
@@ -1581,8 +1596,6 @@
         "mistralai/mistral-small",
         "mistralai/mistral-small-24b-instruct-2501",
         "mistralai/mistral-small-2603",
-        "mistralai/mistral-small-3.1-24b-instruct",
-        "mistralai/mistral-small-3.2-24b-instruct",
         "mistralai/mistral-small-creative",
         "mistralai/mistral-tiny",
         "mistralai/mixtral-8x22b",
@@ -1628,11 +1641,11 @@
         "nvidia/llama-3.1-nemotron-ultra-253b-v1",
         "nvidia/llama-3.3-nemotron-super-49b-v1",
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "nvidia/nemotron-3-nano-omni-30b-a3b",
         "nvidia/nemotron-3-super-120b-a12b",
         "nvidia/nemotron-4-340b-instruct",
-        "nvidia/nemotron-nano-9b-v2",
-        "nvidia/nemotron-3-nano-30b-a3b",
         "nvidia/nemotron-nano-12b-v2-vl",
+        "nvidia/nemotron-nano-9b-v2",
         "open-orca/mistral-7b-openorca",
         "open-r1/olympiccoder-32b",
         "openai/chatgpt-4o-latest",
@@ -1664,8 +1677,8 @@
         "openai/gpt-4o-mini",
         "openai/gpt-4o-mini-2024-07-18",
         "openai/gpt-4o-mini-search-preview",
-        "openai/gpt-4o:extended",
         "openai/gpt-4o-search-preview",
+        "openai/gpt-4o:extended",
         "openai/gpt-5",
         "openai/gpt-5-chat",
         "openai/gpt-5-codex",
@@ -1693,7 +1706,6 @@
         "openai/gpt-audio-mini",
         "openai/gpt-oss-120b",
         "openai/gpt-oss-20b",
-        "openai/gpt-oss-20b:free",
         "openai/gpt-oss-safeguard-20b",
         "openai/o1",
         "openai/o1-mini",
@@ -1724,7 +1736,6 @@
         "openrouter/bodybuilder",
         "openrouter/cinematika-7b",
         "openrouter/cypher-alpha",
-        "openrouter/free",
         "openrouter/horizon-alpha",
         "openrouter/horizon-beta",
         "openrouter/optimus-alpha",
@@ -1904,7 +1915,9 @@
         "z-ai/glm-4.7",
         "z-ai/glm-4.7-flash",
         "z-ai/glm-5",
-        "z-ai/glm-5-turbo"
+        "z-ai/glm-5-turbo",
+        "openai/gpt-oss-20b:free",
+        "nvidia/nemotron-3-nano-30b-a3b:free"
       ]
     },
     "z-ai": {
