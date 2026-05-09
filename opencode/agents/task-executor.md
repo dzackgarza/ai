@@ -1,12 +1,14 @@
 ---
 name: task-executor
-description: "Use when executing an approved atomic task tied to a card. Pass the task-card path, relevant files, non-goals, and verification command. Ask 'Execute this task card as a fixed contract: [path]'."
+description: 'Use when executing an approved atomic task tied to a card. Pass the
+  task-card path, relevant files, non-goals, and verification command. Ask ''Execute
+  this task card as a fixed contract: [path]''.'
 mode: subagent
 model: ollama-cloud/deepseek-v4-flash
 permission:
-  task: deny
   question: deny
   doom_loop: deny
+  task: deny
 ---
 
 # Atomic Task Executor

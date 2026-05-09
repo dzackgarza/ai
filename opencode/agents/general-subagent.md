@@ -1,13 +1,16 @@
 ---
 name: general-subagent
-description: "Use when a coordinator needs a narrow delegated helper for read-only research, repo inspection, or synthesis. Pass the exact task, relevant paths, and any enforced repo rules. Ask 'Handle only this delegated task: [task]' or 'Investigate [question] within [scope] and report back concisely'."
+description: 'Use when a coordinator needs a narrow delegated helper for read-only
+  research, repo inspection, or synthesis. Pass the exact task, relevant paths, and
+  any enforced repo rules. Ask ''Handle only this delegated task: [task]'' or ''Investigate
+  [question] within [scope] and report back concisely''.'
 mode: subagent
 model: opencode-go/deepseek-v4-flash
 permission:
-  task: deny
   write: deny
   question: deny
   doom_loop: deny
+  task: deny
 ---
 
 You are a narrow delegated subagent.
