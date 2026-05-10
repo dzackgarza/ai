@@ -1,9 +1,6 @@
 {
   "name": "OpenRouter",
   "models": {
-    "arcee-ai/trinity-large-preview:free": {
-      "name": "Trinity Large Preview"
-    },
     "openai/gpt-oss-120b:free": {
       "name": "Openai/Gpt-Oss-120B (Free)"
     },
@@ -16,15 +13,6 @@
     "minimax/minimax-m2.5:free": {
       "name": "MiniMax M2.5 (free)"
     },
-    "mistralai/mistral-small-3.1-24b-instruct": {
-      "name": "Mistral Small 3.1 24B Instruct"
-    },
-    "mistralai/mistral-small-3.2-24b-instruct": {
-      "name": "Mistral Small 3.2 24B Instruct"
-    },
-    "openrouter/elephant-alpha": {
-      "name": "Elephant (free)"
-    },
     "openrouter/free": {
       "name": "Free Models Router"
     },
@@ -36,6 +24,21 @@
     },
     "openrouter/owl-alpha": {
       "name": "Owl Alpha"
+    },
+    "baidu/cobuddy:free": {
+      "name": "Baidu CoBuddy (free)"
+    },
+    "google/gemma-4-31b-it:free": {
+      "name": "Gemma 4 31B (free)"
+    },
+    "inclusionai/ring-2.6-1t:free": {
+      "name": "Ring 2.6-1T (free)"
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+      "name": "Nemotron 3 Super (free)"
+    },
+    "qwen/qwen3-coder:free": {
+      "name": "Qwen3 Coder (free)"
     }
   },
   "blacklist": [
@@ -673,6 +676,10 @@
     "google/gemma-4-26b-a4b-it",
     "google/gemma-4-31b-it",
     "ibm-granite/granite-4.1-8b",
-    "inclusionai/ling-2.6-1t"
+    "inclusionai/ling-2.6-1t",
+    "arcee-ai/trinity-large-preview",
+    "mistralai/mistral-small-3.1-24b-instruct",
+    "mistralai/mistral-small-3.2-24b-instruct",
+    "openrouter/elephant-alpha"
   ]
 }
