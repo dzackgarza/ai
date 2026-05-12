@@ -7,6 +7,8 @@ description: Read, search, create, and edit notes in the Obsidian vault.
 
 Use this skill for filesystem-first Obsidian vault work: reading notes, listing notes, searching note files, creating notes, appending content, and adding wikilinks.
 
+For mathematical vault stewardship, inbox intake, source-backed semantic parsing, provenance-sensitive incorporation, or note-taxonomy decisions, load `mathematical-obsidian-vault-steward` as the canonical behavioral policy. This generic Obsidian skill only covers vault file mechanics.
+
 ## Vault path
 
 Use a known or resolved vault path before calling file tools.
