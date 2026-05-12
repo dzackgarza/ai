@@ -556,6 +556,134 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
       return errors
 
 
+  def validate_dependency_graph(records: List[Tuple[Path, Dict[str, Any]]]) -> int:
+      by_id: Dict[str, Tuple[Path, Dict[str, Any]]] = {}
+      edges: Dict[str, List[str]] = {}
+      errors = 0
+
+      for file_path, frontmatter in records:
+          node_id = normalize_reference(str(frontmatter.get("id", "")))
+          by_id[node_id] = (file_path, frontmatter)
+          edges[node_id] = reference_values(frontmatter.get("dependsOn"))
+
+      active: List[str] = []
+      active_set: set[str] = set()
+      visited: set[str] = set()
+      reported: set[Tuple[str, ...]] = set()
+
+      def report_cycle(cycle: List[str]) -> None:
+          nonlocal errors
+          canonical = cycle[:-1]
+          rotations = [tuple(canonical[idx:] + canonical[:idx]) for idx in range(len(canonical))]
+          key = min(rotations)
+          if key in reported:
+              return
+          reported.add(key)
+          path = " -> ".join(cycle)
+          first = cycle[0]
+          file_path = by_id.get(first, (Path(first), {}))[0]
+          print(f"{file_path}: dependsOn cycle detected: {path}", file=sys.stderr)
+          errors += 1
+
+      def visit(node_id: str) -> None:
+          if node_id in active_set:
+              start = active.index(node_id)
+              report_cycle(active[start:] + [node_id])
+              return
+          if node_id in visited:
+              return
+          active.append(node_id)
+          active_set.add(node_id)
+          for dependency_id in edges.get(node_id, []):
+              if dependency_id in by_id:
+                  visit(dependency_id)
+          active.pop()
+          active_set.remove(node_id)
+          visited.add(node_id)
+
+      for node_id in sorted(by_id):
+          visit(node_id)
+
+      return errors
+
+
+  def validate_sibling_ordering(records: List[Tuple[Path, Dict[str, Any]]]) -> int:
+      by_id: Dict[str, Tuple[Path, Dict[str, Any]]] = {}
+      children_by_parent: Dict[str, Dict[str, List[str]]] = {}
+
+      for file_path, frontmatter in records:
+          node_id = normalize_reference(str(frontmatter.get("id", "")))
+          by_id[node_id] = (file_path, frontmatter)
+
+      def tracker_type(node_id: str) -> str:
+          tracker_status = by_id[node_id][1].get("trackerStatus")
+          if isinstance(tracker_status, dict):
+              return str(tracker_status.get("type", "")).strip()
+          return ""
+
+      for _, frontmatter in records:
+          child_id = normalize_reference(str(frontmatter.get("id", "")))
+          child_type = tracker_type(child_id)
+          for parent_id in reference_values(frontmatter.get("parents")):
+              if parent_id in by_id:
+                  children_by_parent.setdefault(parent_id, {}).setdefault(child_type, []).append(child_id)
+
+      errors = 0
+
+      def ordered_children(parent_id: str, child_type: str, field_name: str) -> List[str]:
+          nonlocal errors
+          parent_path, parent_fm = by_id[parent_id]
+          children = children_by_parent.get(parent_id, {}).get(child_type, [])
+          if len(children) <= 1:
+              return children
+          declared = reference_values(parent_fm.get(field_name))
+          if not declared:
+              print(
+                  f"{parent_path}: parent with multiple {child_type} children must declare ordered '{field_name}' links",
+                  file=sys.stderr,
+              )
+              errors += 1
+              return children
+          missing = [child_id for child_id in children if child_id not in declared]
+          extras = [child_id for child_id in declared if child_id not in children]
+          if missing or extras:
+              if missing:
+                  print(
+                      f"{parent_path}: '{field_name}' omits {child_type} children: {', '.join(missing)}",
+                      file=sys.stderr,
+                  )
+                  errors += 1
+              if extras:
+                  print(
+                      f"{parent_path}: '{field_name}' references non-child {child_type} ids: {', '.join(extras)}",
+                      file=sys.stderr,
+                  )
+                  errors += 1
+              return children
+          return [child_id for child_id in declared if child_id in children]
+
+      for parent_id in sorted(by_id):
+          parent_type = tracker_type(parent_id)
+          if parent_type == "feature":
+              sequence = ordered_children(parent_id, "plan", "plans")
+          elif parent_type == "plan":
+              sequence = ordered_children(parent_id, "phase", "phases")
+          else:
+              continue
+
+          for previous_id, child_id in zip(sequence, sequence[1:]):
+              child_path, child_fm = by_id[child_id]
+              dependencies = reference_values(child_fm.get("dependsOn"))
+              if previous_id not in dependencies:
+                  print(
+                      f"{child_path}: sibling order requires dependsOn '{previous_id}'",
+                      file=sys.stderr,
+                  )
+                  errors += 1
+
+      return errors
+
+
   def validate_file(
       file_path: Path,
       frontmatter: Dict[str, Any],
@@ -663,6 +791,8 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
       error_count += validate_containment_hierarchy(records)
       error_count += validate_filesystem_hierarchy(target, records)
       error_count += validate_status_hierarchy(records)
+      error_count += validate_dependency_graph(records)
+      error_count += validate_sibling_ordering(records)
 
       if error_count:
           print(f"\nFound {error_count} violation(s).", file=sys.stderr)
