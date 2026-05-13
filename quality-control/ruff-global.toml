@@ -40,7 +40,7 @@ target-version = "py314"
 [lint]
 # Enable standard rules
 select = ["E", "F", "I", "UP"]
-ignore = []
+ignore = ["E741", "UP049"]  # see planning/README.md for justification
 
 # Enforce strictness: fix everything
 fixable = ["ALL"]
