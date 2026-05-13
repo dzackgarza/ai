@@ -20,6 +20,12 @@ If a vault has a different inbox root, preserve the raw, annotated, incorporated
 
 Before editing durable notes:
 
+- Run the analysis quality gate first. If the annotated source is mostly metadata, hashes, candidate target lists, broad section buckets, generic `accepted target` comments, or handoff prose, stop and mark incorporation blocked.
+- Verify that the annotated source reconstructs the mathematical story of the full source: surviving claims, false framings, conjectures, open questions, proof obligations, dead ends, and the resulting vault-level update.
+- Verify that routing decisions are grouped around mathematical objects and claims, not merely the order of headings in the source.
+- Verify that every existing target path actually exists in the vault. Correct plausible-but-wrong folder guesses before editing durable notes.
+- Verify that disputed source claims remain marked as disputed or needs-human unless the source itself resolves them.
+- Do not infer analysis from file existence, CriticMarkup count, hash preservation, source metadata, or another agent's claim that the pass was complete.
 - Read the whole annotated source, not only the CriticMarkup.
 - Check whether later source sections supersede earlier objections, corrections, or demotion suggestions.
 - Verify each proposed target note still exists and still means what the annotation assumes.
@@ -28,6 +34,8 @@ Before editing durable notes:
 - Check whether the same content has already been incorporated elsewhere.
 
 If turn 1 says a theorem is wrong and turn 10 resolves the issue, do not demote the theorem. Instead, consider whether the objection and resolution should become a prose remark near the theorem or a linked objection-resolution note when the exchange has future review value.
+
+If the analysis pass is shallow but the user explicitly asks you to repair it, switch roles and perform the missing whole-source synthesis before editing durable notes. Otherwise, leave the source in `.annotated` with `incorporation_status: blocked`.
 
 ## Editing Rules
 
@@ -56,6 +64,8 @@ For each annotation, choose one decision:
 - `blocked`: needs human or mathematical review before editing.
 
 Record decisions passage-locally when practical. Use CriticMarkup comments on the annotated source for decisions that differ from the analysis proposal.
+
+When rejecting or blocking shallow analysis, record the reason in terms of missing semantic work, not process receipts. Examples: "no synthesis of the conversation's final mathematical state", "source treated as independent snippets instead of a correction arc", "false start not routed as warning or rejection", or "target section not inspected".
 
 ## Durable Note Shape
 

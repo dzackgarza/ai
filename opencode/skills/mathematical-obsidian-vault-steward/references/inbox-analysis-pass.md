@@ -8,6 +8,10 @@ The analysis agent reads one inbox source deeply, researches the current vault f
 
 The output is an annotated source in `INBOX/.annotated/` with the original basename preserved. The source remains a source artifact; the annotated copy is not a durable note.
 
+This pass is allowed to fail. If you cannot reconstruct the mathematical story of the source and explain what should change in the vault, mark the source blocked and explain the blocker. Do not emit a plausible-looking annotated file whose only real content is metadata, target lists, hashes, or a few broad comments.
+
+Solution-shaped filler is harmful. A bad analysis pass can mislead the incorporation agent and bury the raw source under false confidence.
+
 ## Directory Contract
 
 - Input path: `INBOX/<original basename>`
@@ -15,6 +19,7 @@ The output is an annotated source in `INBOX/.annotated/` with the original basen
 - Do not write to `INBOX/.incorporated/`.
 - Do not create or edit permanent notes.
 - Do not delete, rename, retitle, or normalize the raw source for graph hygiene.
+- The annotated artifact is a full annotated copy of the source body, not a separate memo, digest, or selected-excerpt report. Add metadata, local CriticMarkup, and a handoff, but do not replace the source with a synthesized ledger.
 
 If the vault uses a different inbox root, map these stage names onto the existing root without changing their meaning: raw, annotated, incorporated.
 
@@ -39,20 +44,71 @@ blocked_targets: []
 delete_eligible: false
 ```
 
-Do not use metadata to replace source text. Metadata tracks lifecycle and provenance; it does not summarize the mathematical payload.
+Use `analysis_status: in-progress` while reading if the artifact is still being developed. Do not use metadata to replace source text. Metadata tracks lifecycle and provenance; it does not summarize the mathematical payload.
 
-## Required Source Pass
+Before final handoff, set `analysis_status` accurately:
 
-Read the source end-to-end before finalizing any routing suggestion.
+- `complete`: the whole source was synthesized and routing targets were checked;
+- `needs-human`: the source was read, but one or more mathematical or routing decisions remain disputed;
+- `blocked`: the source could not be processed without more information or a stronger pass.
 
-Process section by section:
+Do not leave `analysis_status: in-progress` on an artifact presented as final.
 
-- Assign a stable source-local locator to every meaningful section, turn, page, heading, paragraph cluster, figure, table, or displayed formula.
-- Extract semantically meaningful mathematical units before deciding note destinations.
-- Track later corrections in the same source. A suggestion from an early section can be superseded by a later turn, resolution, or retraction.
-- Keep discarded or superseded suggestions visible as analysis decisions, not as permanent-note edits.
+## Required Reading Posture
 
-For conversations and transcripts, every turn can change the status of earlier mathematical claims. Do not finalize a demotion, objection, or theorem update until the whole source has been checked for later resolution.
+Read the source end-to-end before writing incorporation suggestions. The first deliverable is understanding, not markup.
+
+Create the processed artifact early and use it as the working surface for understanding the source. Start with provenance and an `analysis_status: in-progress` header, then revise the artifact as the mathematical story becomes clear. Do not keep all analysis private until the end; if interrupted, the file should show what has actually been understood and what remains unresolved.
+
+Preserve the source text in the working artifact. A compact synthesis and routing ledger may be added for handoff, but selected representative passages are not a substitute for inline annotation of the source. If a test harness asks for a nonstandard output directory, keep the same artifact semantics there: full source body plus annotations.
+
+For chatlogs, transcripts, and iterative notes, reconstruct the whole mathematical conversation:
+
+- What mathematical objects, claims, constructions, proof ideas, examples, computations, objections, and dead ends appear?
+- Which statements survive the whole source as true, proved, usable, conjectural, open, false, superseded, or merely rhetoric?
+- What changed from the beginning of the source to the end?
+- Which false starts or incorrect framings are still useful as warnings, reviewer objections, or proof-gap remarks?
+- What would be lost if the raw source disappeared after incorporation?
+
+Only after answering those questions should you annotate. CriticMarkup is the visible trace of the synthesis; it is not a substitute for synthesis.
+
+Use two passes when the source is long:
+
+- **Story pass:** read through the whole source and write a compact narrative of the final mathematical state, including false starts and status changes.
+- **Routing pass:** search the vault and attach CriticMarkup near the passages that actually support each durable update, rejection, warning, or blocker.
+
+The story pass can be partial or in-progress. The routing pass cannot be marked complete until the whole source has been reconciled.
+
+Process source-local passages after the whole-source read:
+
+- Give stable locators to meaningful turns, sections, paragraph clusters, figures, tables, displayed formulas, and formal statements.
+- Route mathematical insights, not headings. A heading can help locate content, but it is not a unit of meaning.
+- Preserve the role of discarded material. A false theorem-shaped claim may become a warning remark, a rejected route, or an objection-resolution note, not simply disappear.
+- Keep repeated or near-duplicate passages only when they add a new status change, new evidence, or a useful formulation.
+- Treat disputes as first-class content. If the user challenges a claim and a later assistant defends it, do not automatically choose either side. Mark the issue as `needs-human` or preserve it as an objection-resolution thread unless the source itself settles it.
+- Do not make a giant exhaustive table to prove you read the source. Include enough local annotations and a short synthesis handoff that an incorporation agent can update the vault intelligently.
+
+## Quality Gate
+
+Before marking `analysis_status: complete`, inspect your own annotated source as if another agent produced it.
+
+The pass is not complete if any of these are true:
+
+- a reader could have written the annotations after skimming headings rather than understanding the mathematical development;
+- the handoff does not say what the source contributes mathematically after false starts and later corrections are reconciled;
+- true claims, false framings, conjectures, open questions, proof obligations, and dead ends are not distinguished;
+- comments say only `accepted target`, `route to`, `merge into`, or similarly vague phrases;
+- comments identify a note but not the mathematical payload, proposed vault action, status, and source-grounded reason;
+- the source is treated as a list of independent snippets when its value is the narrative of correction, refinement, or synthesis;
+- a disputed item is promoted to a proof obligation without acknowledging the dispute and whether the source resolves it;
+- any target path points to a folder where the note does not actually exist;
+- final metadata says `in-progress` while the handoff claims the pass is complete;
+- the output is a synthetic analysis memo, selected-excerpt report, or routing ledger rather than a full annotated copy of the source;
+- the handoff is doing all of the analytic work that should be visible beside the source passages;
+- the output mostly proves that files exist, hashes were computed, metadata was added, or target notes were listed;
+- duplicate or near-duplicate sources have not been cross-compared for substantive differences.
+
+When the pass fails this gate, set `analysis_status: blocked` or `needs-human`, leave the raw source unincorporated, and state exactly what remains unread, unclassified, or unresolved.
 
 ## Vault Research Protocol
 
@@ -69,6 +125,12 @@ Search at least:
 - source IDs or provenance packets already mentioned in the vault.
 
 Route content to the mathematical object it modifies. If a source raises concerns about an existing theorem, suggest updating that theorem's note. Do not suggest a new "Objection to theorem X" note unless the objection-resolution exchange is itself reusable enough to justify a separate linked note.
+
+Vault research must be visible in the annotation or handoff. Prefer a target section or heading, not just a note title. If the right target does not exist, say which nearby notes were checked and why the proposed new note passes the stable referent test.
+
+Organize routing around mathematical objects and claims, not source order alone. A long chat may contribute one coherent update spread across many turns; route that update once, with locators for the important turns.
+
+Target paths must be real. Before finalizing a wikilink or path, verify whether the target note already exists and use its actual vault location. If no matching note exists, label the target as proposed and state which existing notes were checked.
 
 ## Mathematical Units
 
@@ -99,11 +161,32 @@ Use CriticMarkup as passage-local editorial markup.
 
 Every routing comment should say:
 
-- target note or section;
-- mathematical unit type;
+- target note and section, or a specific proposed new-note title with a stable-referent reason;
+- mathematical role from `mathematical-unit-library.md` when a formal unit is being incorporated;
 - action: add, merge, demote, promote, split, reject, preserve-source-visible, or needs-human;
+- proof/status: proved, source-backed, conjectural, unproved, open, proof-sketch, contradicted, superseded, duplicate, rejected, disputed, needs-human, blocked, external, or source-uncertain;
 - reason grounded in the source;
 - source-local locator when the surrounding passage is not enough.
+
+Use exact CriticMarkup syntax. A comment starts with `{>>` and ends with `<<}`. Do not escape the closing marker, and do not end comments with `\}` or `}` alone.
+
+Keep status fields atomic. Do not write prose statuses such as `proven? no`, `accepted`, `preserved with reservation`, or `proved-in-source`; instead choose the nearest status from the list and put nuance in the reason.
+
+Keep mathematical unit fields atomic too. Do not write `fact/conjecture`, `construction/question`, or similar hybrid labels. Split the route into separate comments, or choose the primary unit and put the nuance in the reason.
+
+After the semantic pass is done, do a narrow markup hygiene pass: every `{>>` comment must close with `<<}`, no comment may close with `>>}` or `\}`, every `status:` value must come from the allowed list above, and every `unit:` value must come from `mathematical-unit-library.md`. This check does not prove quality; it only prevents malformed annotations from blocking incorporation.
+
+Bad comment:
+
+```markdown
+{>> route: accepted target [[Cusp data for polarized Coble moduli]] <<}
+```
+
+Good comment:
+
+```markdown
+{>> route: merge into [[Cusp data for polarized Coble moduli#Reduction to Sterk]]; unit: computation/proof obligation; status: unproved; reason: this passage says cusp counts require explicit orbit enumeration and rejects discriminant-form shortcuts; locator: section 2, incidence proof paragraph <<}
+```
 
 ## Handoff Output
 
@@ -112,11 +195,14 @@ At the end of the annotated source, add a concise handoff section only if the so
 Include:
 
 - source ID;
-- analysis scope and whether every section was reviewed;
-- candidate target notes;
+- a compact mathematical synthesis of the whole source: what survived, what failed, what remains open, and what the source contributes to the paper/vault;
+- candidate target notes and the existing headings or neighborhoods inspected;
+- routing decisions grouped by mathematical object or claim, with source locators for the passages that matter;
 - high-risk suggestions;
 - superseded suggestions and the later source location that superseded them;
 - suggested new notes, if any, with the stable referent test;
 - explicit blockers for the incorporation agent.
+
+If the synthesis is shallow, generic, or could have been written without reading the whole source, the pass is not complete. Mark it blocked instead of hiding the gap.
 
 Do not claim incorporation happened. The incorporation agent decides what to edit.

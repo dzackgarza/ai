@@ -20,6 +20,9 @@ Steward a mathematical Obsidian vault without mistaking structure for knowledge.
 - Prefer reversible transformations. If a change could alter meaning, label it, stage it, and keep the source.
 - Bias the failure mode toward preservation and review, not deletion and compression.
 - Never delete inbox source artifacts without explicit human approval after review.
+- A shallow annotated source is worse than no annotated source. If the agent cannot reconstruct the mathematical story and route its durable insights, mark the source blocked and leave it for a stronger pass.
+- An analysis-pass artifact must be a full annotated copy of the source body. A synthesized memo, routing ledger, or selected-excerpt report may supplement it but cannot replace it.
+- Never treat hashes, file existence, candidate target lists, or another agent's completion report as evidence that semantic extraction happened.
 
 ## Vault Model
 
@@ -50,8 +53,8 @@ Steward a mathematical Obsidian vault without mistaking structure for knowledge.
 Use this pipeline when an agent's sole job is long-form, intelligent, semantic parsing of inbox content into a current mathematical vault.
 
 - **Raw stage:** unprocessed material stays in `INBOX/` with original basename, source identity, and source integrity preserved.
-- **Analysis stage:** the analysis agent reads one source end-to-end, section by section, searches the vault for existing integration targets, and writes an annotated source to `INBOX/.annotated/`. It does not edit durable notes.
-- **Incorporation stage:** the incorporation agent treats analysis annotations as proposals, rereads the whole annotated source, verifies intra-source and vault-global consistency, edits durable notes, then moves the source to `INBOX/.incorporated/`.
+- **Analysis stage:** the analysis agent reads one source end-to-end, reconstructs the source's mathematical story, searches the vault for existing integration targets, and writes passage-local CriticMarkup routing to `INBOX/.annotated/`. It does not edit durable notes. If it cannot say what the source contributes after its false starts, corrections, and synthesis are understood, it marks the source blocked instead of producing filler.
+- **Incorporation stage:** the incorporation agent treats analysis annotations as proposals, first rejects or blocks shallow annotations, then rereads the whole annotated source, verifies intra-source and vault-global consistency, edits durable notes, and moves the source to `INBOX/.incorporated/` only after the source's mathematical contribution has been dispersed into the vault or explicitly rejected.
 - **Human review stage:** incorporated sources remain reviewable. Deletion is a separate human decision; agents do not infer deletion approval from successful incorporation.
 
 Load the reference files for role-specific work:
@@ -75,11 +78,11 @@ Load the reference files for role-specific work:
    - Classify modality: text, image, PDF, chat, code, transcript, mixed batch.
    - Classify mathematical role: definition, theorem, proof, example, counterexample, calculation, diagram, bibliography, project decision.
    - Assign risk: low, medium, high, critical.
-4. **Build an itemized extraction ledger**
-   - Break the source into semantically meaningful units before editing any durable note.
-   - Typical units include: claims, corrections, gaps, proof obligations, constructions, notation changes, examples, citations, tables, diagrams, and review-worthy ambiguities.
-   - Record source-local locations so every extracted unit can be traced back precisely.
-   - Do not collapse a whole source into one generic summary note.
+4. **Reconstruct the mathematical story**
+   - Identify the objects, claims, corrections, proof ideas, gaps, dead ends, examples, computations, diagrams, and review-worthy ambiguities that matter after the whole source is read.
+   - Distinguish what survived, what failed, what remains conjectural or open, and what should be preserved only as warning or provenance.
+   - Record source-local locations for passages that change the final mathematical state.
+   - Do not collapse a whole source into one generic summary note or one mechanical ledger.
 5. **Extract with fidelity**
    - Normalize formatting only when mathematical meaning is unchanged.
    - Preserve uncertainty explicitly.
@@ -106,6 +109,7 @@ Load the reference files for role-specific work:
    - Attach short CriticMarkup comments to the exact passage being routed, rejected, or flagged.
    - Mark local import decisions near the supporting text, e.g. route this paragraph to a canonical note, keep this table source-visible, or flag this claim for review.
    - If several adjacent sentences share one routing decision, one nearby comment is enough; keep it passage-local.
+   - A comment that says only "accepted target", "route to note", or "merge into X" is not sufficient. It must identify the mathematical payload, target note or section, action, status, and source-grounded reason.
    - Do not place a large CriticMarkup summary block at the top of the file.
    - Do not use CriticMarkup to replace the extraction ledger or source record; it is a local audit trail inside the source.
 12. **Retire or preserve dirty sources**
@@ -214,6 +218,14 @@ Use this adversarial check:
 - A dynamic query is not curated knowledge structure.
 - A preserved raw source in an inbox is not yet integrated knowledge.
 - A tidy manifest is not evidence that semantic extraction happened.
+- A hash proves byte identity, not semantic preservation or incorporation quality.
+- A candidate target list is not vault research.
+- A CriticMarkup count is not understanding.
+- A solution-shaped annotated file can be worse than an unprocessed source if it hides missing analysis.
+- A complete-looking ledger can still be slop if it does not explain the source's final mathematical contribution.
+- A selected-excerpt report is not an annotated source; it may hide the exact passages the incorporation agent needs to audit.
+- A wikilink to a plausible title is not a checked target. Verify the actual existing note path or mark it as proposed.
+- A disputed source claim is not automatically a proof obligation. Preserve the dispute unless the source resolves it.
 - Renaming a source file is not provenance preservation.
 - A note can be nonempty and still be fake if it contains only scaffolding.
 - Images, diagrams, and scanned math often carry information that prose extraction misses.
@@ -243,9 +255,16 @@ For high-risk ambiguities, produce a precise review packet:
 - [ ] Raw source preserved or explicitly unnecessary
 - [ ] Source record exists for nontrivial input
 - [ ] Each processed inbox source was read end-to-end in isolation
-- [ ] An itemized extraction ledger exists for each processed inbox source
+- [ ] Each processed inbox source has a compact synthesis of its final mathematical contribution
 - [ ] Existing notes searched before new notes were created
-- [ ] Routing was done per extracted unit, not per source file
+- [ ] Routing was organized around mathematical objects, claims, and proof obligations, not source files or headings
+- [ ] True claims, false framings, conjectures, open questions, proof obligations, dead ends, and reviewer-objection material were separated
+- [ ] No annotation pass is marked complete when it only contains metadata, candidate targets, high-level section buckets, hashes, generic "accepted target" comments, or a ledger without synthesis
+- [ ] Analysis-pass output preserves the full source body with inline CriticMarkup; any synthesis or ledger is supplementary
+- [ ] CriticMarkup comments use exact syntax and atomic `unit:`/`status:` values from the skill vocabulary
+- [ ] Existing target notes were verified at their actual vault paths; nonexistent targets were marked as proposed
+- [ ] Disputed claims were marked as disputed or needs-human unless the source itself resolves them
+- [ ] Final analysis metadata matches the artifact state; no final handoff is left `in-progress`
 - [ ] Analysis-pass agents annotated suggestions only and did not edit durable notes
 - [ ] Incorporation-pass agents verified annotations against the full source before editing durable notes
 - [ ] New notes have stable referents and real retrieval value
