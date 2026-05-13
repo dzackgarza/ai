@@ -103,35 +103,15 @@
   },
   "formatter": {
     "ruff-check": {
-      "command": [
-        "uvx",
-        "ruff",
-        "check",
-        "--fix",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
     },
     "ruff-format": {
-      "command": [
-        "uvx",
-        "ruff",
-        "format",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
     },
     "prettier": {
-      "command": [
-        "npx",
-        "prettier",
-        "--write",
-        "$FILE"
-      ],
+      "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [
         ".js",
         ".ts",
@@ -145,41 +125,18 @@
       ]
     },
     "just": {
-      "command": [
-        "just",
-        "--unstable",
-        "--fmt",
-        "--justfile",
-        "$FILE"
-      ],
-      "extensions": [
-        "justfile"
-      ]
+      "command": ["just", "--unstable", "--fmt", "--justfile", "$FILE"],
+      "extensions": ["justfile"]
     },
     "flowmark": {
-      "command": [
-        "uvx",
-        "flowmark",
-        "--semantic",
-        "--inplace",
-        "$FILE"
-      ],
-      "extensions": [
-        ".md"
-      ]
+      "command": ["uvx", "flowmark", "--semantic", "--inplace", "$FILE"],
+      "extensions": [".md"]
     }
   },
   "lsp": {
     "texlab": {
-      "command": [
-        "texlab"
-      ],
-      "extensions": [
-        ".tex",
-        ".sty",
-        ".cls",
-        ".bib"
-      ]
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
     }
   },
   "mcp": {
@@ -200,8 +157,6 @@
     "reserved": 20000
   },
   "plugin": [
-    "opencode-gemini-auth@latest",
-    "@tarquinen/opencode-dcp@latest",
     "@ramtinj95/opencode-tokenscope@latest",
     "cc-safety-net@latest",
     "opencode-pty@latest",

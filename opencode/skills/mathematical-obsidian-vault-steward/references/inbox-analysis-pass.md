@@ -20,6 +20,9 @@ Solution-shaped filler is harmful. A bad analysis pass can mislead the incorpora
 - Do not create or edit permanent notes.
 - Do not delete, rename, retitle, or normalize the raw source for graph hygiene.
 - The annotated artifact is a full annotated copy of the source body, not a separate memo, digest, or selected-excerpt report. Add metadata, local CriticMarkup, and a handoff, but do not replace the source with a synthesized ledger.
+- For text or markdown sources, create the annotated artifact by copying the raw source body first and then inserting CriticMarkup and handoff material into that copy. Do not ask the model to rewrite or regenerate the source body from memory.
+- A complete rewrite is invalid even when it is semantically faithful. The analysis pass preserves provenance by editing a source copy, not by producing a new document that restates the source.
+- Ground the analysis in the raw source and durable vault notes. Do not imitate prior processed copies or use them as format examples.
 
 If the vault uses a different inbox root, map these stage names onto the existing root without changing their meaning: raw, annotated, incorporated.
 
@@ -60,7 +63,9 @@ Read the source end-to-end before writing incorporation suggestions. The first d
 
 Create the processed artifact early and use it as the working surface for understanding the source. Start with provenance and an `analysis_status: in-progress` header, then revise the artifact as the mathematical story becomes clear. Do not keep all analysis private until the end; if interrupted, the file should show what has actually been understood and what remains unresolved.
 
-Preserve the source text in the working artifact. A compact synthesis and routing ledger may be added for handoff, but selected representative passages are not a substitute for inline annotation of the source. If a test harness asks for a nonstandard output directory, keep the same artifact semantics there: full source body plus annotations.
+Preserve the source text in the working artifact literally. The only routine body changes are inserted CriticMarkup comments, inserted additions/deletions/substitutions when explicitly proposing durable text, and appended handoff material. Do not reflow paragraphs, normalize Unicode, change quote characters, convert source frontmatter into headings, duplicate heading markers, rewrite citation formatting, or otherwise "clean up" the source body while annotating. A compact synthesis and routing ledger may be added for handoff, but selected representative passages are not a substitute for inline annotation of the source. If the requested output directory is nonstandard, keep the same artifact semantics there: full source body plus annotations.
+
+If you cannot insert annotations without regenerating or reformatting the source body, mark the pass `blocked`. A malformed but literal source copy is easier for a human to audit than a polished reconstruction that changes source text.
 
 For chatlogs, transcripts, and iterative notes, reconstruct the whole mathematical conversation:
 
@@ -99,11 +104,17 @@ The pass is not complete if any of these are true:
 - true claims, false framings, conjectures, open questions, proof obligations, and dead ends are not distinguished;
 - comments say only `accepted target`, `route to`, `merge into`, or similarly vague phrases;
 - comments identify a note but not the mathematical payload, proposed vault action, status, and source-grounded reason;
+- comments use shorthand targets such as "same note", "above note", or "this note" instead of naming the actual target note or section;
 - the source is treated as a list of independent snippets when its value is the narrative of correction, refinement, or synthesis;
 - a disputed item is promoted to a proof obligation without acknowledging the dispute and whether the source resolves it;
+- a disputed item is marked `needs-human` locally but then reappears in the handoff as an ordinary open proof obligation or conjecture;
 - any target path points to a folder where the note does not actually exist;
+- any `#Heading` or block anchor in a target link was not checked against the current target note;
 - final metadata says `in-progress` while the handoff claims the pass is complete;
 - the output is a synthetic analysis memo, selected-excerpt report, or routing ledger rather than a full annotated copy of the source;
+- the source body has been normalized, rewrapped, reformatted, or otherwise rewritten outside local CriticMarkup insertions and appended handoff material;
+- the artifact was produced by a whole-file write/regeneration path rather than by copying the source and applying targeted insertions;
+- the artifact is patterned on previous processed copies rather than grounded in the raw source and durable vault notes;
 - the handoff is doing all of the analytic work that should be visible beside the source passages;
 - the output mostly proves that files exist, hashes were computed, metadata was added, or target notes were listed;
 - duplicate or near-duplicate sources have not been cross-compared for substantive differences.
@@ -131,6 +142,8 @@ Vault research must be visible in the annotation or handoff. Prefer a target sec
 Organize routing around mathematical objects and claims, not source order alone. A long chat may contribute one coherent update spread across many turns; route that update once, with locators for the important turns.
 
 Target paths must be real. Before finalizing a wikilink or path, verify whether the target note already exists and use its actual vault location. If no matching note exists, label the target as proposed and state which existing notes were checked.
+
+Anchors must be real too. Before finalizing `[[Target#Heading]]` or a block reference, inspect the current target note's headings or blocks and verify the exact anchor exists. Use the displayed heading text, not a slugified or URL-style version. If the target note exists but the right heading does not, either route to the note without an anchor, propose the heading explicitly, or mark the route `needs-human`; do not invent an anchor.
 
 ## Mathematical Units
 
@@ -168,11 +181,13 @@ Every routing comment should say:
 - reason grounded in the source;
 - source-local locator when the surrounding passage is not enough.
 
+Repeat the actual target in each comment. Do not write "same note", "above note", "this note", or similar shorthand, because comments may be read out of order by the incorporation agent.
+
 Use exact CriticMarkup syntax. A comment starts with `{>>` and ends with `<<}`. Do not escape the closing marker, and do not end comments with `\}` or `}` alone.
 
-Keep status fields atomic. Do not write prose statuses such as `proven? no`, `accepted`, `preserved with reservation`, or `proved-in-source`; instead choose the nearest status from the list and put nuance in the reason.
+Keep status fields atomic. Do not write prose statuses such as `proven? no`, `accepted`, `preserved with reservation`, or `proved-in-source`; instead choose the nearest status from the list and put nuance in the reason. Slash-separated values such as `disputed/needs-human` are invalid. If a disputed passage needs human judgment, choose `needs-human` as the status and say in the reason that the passage is disputed; if the task is only to preserve the disagreement, choose `disputed`.
 
-Keep mathematical unit fields atomic too. Do not write `fact/conjecture`, `construction/question`, or similar hybrid labels. Split the route into separate comments, or choose the primary unit and put the nuance in the reason.
+Keep mathematical unit fields atomic too. Do not write `fact/conjecture`, `construction/question`, `remark/question`, or similar hybrid labels. Split the route into separate comments, or choose the primary unit and put the nuance in the reason.
 
 After the semantic pass is done, do a narrow markup hygiene pass: every `{>>` comment must close with `<<}`, no comment may close with `>>}` or `\}`, every `status:` value must come from the allowed list above, and every `unit:` value must come from `mathematical-unit-library.md`. This check does not prove quality; it only prevents malformed annotations from blocking incorporation.
 
@@ -185,7 +200,7 @@ Bad comment:
 Good comment:
 
 ```markdown
-{>> route: merge into [[Cusp data for polarized Coble moduli#Reduction to Sterk]]; unit: computation/proof obligation; status: unproved; reason: this passage says cusp counts require explicit orbit enumeration and rejects discriminant-form shortcuts; locator: section 2, incidence proof paragraph <<}
+{>> route: merge into [[Cusp data for polarized Coble moduli#Reduction to Sterk]]; unit: computation; status: unproved; reason: this passage says cusp counts require explicit orbit enumeration and rejects discriminant-form shortcuts; locator: section 2, incidence proof paragraph <<}
 ```
 
 ## Handoff Output

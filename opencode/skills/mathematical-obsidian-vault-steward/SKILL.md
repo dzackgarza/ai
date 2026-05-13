@@ -22,6 +22,11 @@ Steward a mathematical Obsidian vault without mistaking structure for knowledge.
 - Never delete inbox source artifacts without explicit human approval after review.
 - A shallow annotated source is worse than no annotated source. If the agent cannot reconstruct the mathematical story and route its durable insights, mark the source blocked and leave it for a stronger pass.
 - An analysis-pass artifact must be a full annotated copy of the source body. A synthesized memo, routing ledger, or selected-excerpt report may supplement it but cannot replace it.
+- Create text/markdown analysis artifacts by copying the raw source first, then inserting CriticMarkup and handoff material. Do not regenerate the source body from model output.
+- A complete rewrite is not source preservation, even if the rewrite is semantically faithful. The analysis pass edits a source copy; it does not author a replacement document.
+- Preserve the source body literally during analysis. Insert CriticMarkup and append handoff material; do not reflow, normalize, repair markdown, or clean up the source text.
+- Ground analysis in the raw source and durable vault notes. Do not imitate prior processed copies or use them as format examples.
+- A routing target is not verified until the actual note path and, when used, the exact displayed heading or block anchor exist. Never use shorthand such as "same note" in CriticMarkup; repeat the real target or mark the anchor proposed.
 - Never treat hashes, file existence, candidate target lists, or another agent's completion report as evidence that semantic extraction happened.
 
 ## Vault Model
@@ -224,7 +229,12 @@ Use this adversarial check:
 - A solution-shaped annotated file can be worse than an unprocessed source if it hides missing analysis.
 - A complete-looking ledger can still be slop if it does not explain the source's final mathematical contribution.
 - A selected-excerpt report is not an annotated source; it may hide the exact passages the incorporation agent needs to audit.
+- A rewrapped or normalized source body is not source preservation; it can destroy locators and make human audit harder.
+- A model-regenerated transcript is not a source copy, even when it contains all the same ideas.
+- A whole-file Write path is a red flag for analysis-pass work. Prefer constrained agents and targeted edits into a literal source copy.
+- An annotated artifact patterned on previous processed outputs is not independent evidence of source understanding. Analysis agents must work from the raw source and the durable vault unless comparative review is the explicit task.
 - A wikilink to a plausible title is not a checked target. Verify the actual existing note path or mark it as proposed.
+- A wikilink with a plausible heading is not a checked section. Verify every `#Heading` or block anchor against the target note's displayed heading text, never a slugified guess, and never write ambiguous references such as "same note#Heading".
 - A disputed source claim is not automatically a proof obligation. Preserve the dispute unless the source resolves it.
 - Renaming a source file is not provenance preservation.
 - A note can be nonempty and still be fake if it contains only scaffolding.
@@ -250,7 +260,7 @@ For high-risk ambiguities, produce a precise review packet:
 - options
 - recommendation with reason
 
-## Validation Checklist
+## Completion Checklist
 
 - [ ] Raw source preserved or explicitly unnecessary
 - [ ] Source record exists for nontrivial input
@@ -261,8 +271,13 @@ For high-risk ambiguities, produce a precise review packet:
 - [ ] True claims, false framings, conjectures, open questions, proof obligations, dead ends, and reviewer-objection material were separated
 - [ ] No annotation pass is marked complete when it only contains metadata, candidate targets, high-level section buckets, hashes, generic "accepted target" comments, or a ledger without synthesis
 - [ ] Analysis-pass output preserves the full source body with inline CriticMarkup; any synthesis or ledger is supplementary
+- [ ] Source text was not reflowed, normalized, heading-rewritten, or otherwise cleaned up outside explicit CriticMarkup insertions and appended handoff material
+- [ ] Text/markdown annotated artifacts began as a literal source copy, not as regenerated model prose
+- [ ] Analysis artifacts are grounded in the raw source and durable vault notes, not patterned on prior processed copies unless comparative review was explicitly requested
 - [ ] CriticMarkup comments use exact syntax and atomic `unit:`/`status:` values from the skill vocabulary
 - [ ] Existing target notes were verified at their actual vault paths; nonexistent targets were marked as proposed
+- [ ] Every anchored wikilink in CriticMarkup or handoff points to an existing heading/block in the named target; unverified anchors are omitted or explicitly marked proposed
+- [ ] No CriticMarkup uses shorthand targets such as "same note", "above note", or "this note"; every route repeats the actual target note or section
 - [ ] Disputed claims were marked as disputed or needs-human unless the source itself resolves them
 - [ ] Final analysis metadata matches the artifact state; no final handoff is left `in-progress`
 - [ ] Analysis-pass agents annotated suggestions only and did not edit durable notes
@@ -318,7 +333,7 @@ For high-risk ambiguities, produce a precise review packet:
 
 ## Reference Files
 
-- `references/inbox-analysis-pass.md`: analysis-agent prompt, constraints, CriticMarkup rules, and handoff artifact.
-- `references/inbox-incorporation-pass.md`: incorporation-agent prompt, validation rules, durable-note editing contract, and retirement criteria.
+- `references/inbox-analysis-pass.md`: analysis-agent constraints, CriticMarkup rules, and handoff artifact.
+- `references/inbox-incorporation-pass.md`: incorporation-agent consistency rules, durable-note editing contract, and retirement criteria.
 - `references/mathematical-unit-library.md`: canonical mathematical unit and callout vocabulary.
 - `references/original-draft.md`: original long-form draft. Treat it as background material, not the primary execution policy.
