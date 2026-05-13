@@ -40,16 +40,98 @@ fields:
   - value: needs-review
     label: Needs Review
     icon: build
+  - value: needs-human-input
+    label: Needs Human Input
+    icon: person
+    color: '#8b5cf6'
   - value: complete
     label: Complete
     color: '#22c55e'
+  - value: revision-required
+    label: Revision Required
+    icon: replay
+    color: '#f59e0b'
   - value: blocked
     label: Blocked
     icon: block
     color: '#dc2626'
+- name: blocked_reason
+  type: text
+  displayInline: false
+- name: priority
+  type: select
+  options:
+  - value: low
+    label: Low
+  - value: medium
+    label: Medium
+  - value: high
+    label: High
+  - value: critical
+    label: Critical
+- name: owner
+  type: user
 - name: description
   type: text
   required: true
+- name: phaseKind
+  type: select
+  options:
+  - value: milestone
+    label: Milestone
+  - value: intake
+    label: Intake
+  - value: workstream
+    label: Workstream
+  - value: review-cycle
+    label: Review Cycle
+  - value: synthesis
+    label: Synthesis
+  displayInline: true
+- name: branchType
+  type: select
+  options:
+  - value: not-applicable
+    label: Not Applicable
+  - value: prove
+    label: Prove
+  - value: disprove
+    label: Disprove
+  - value: literature
+    label: Literature
+  - value: theory
+    label: Theory
+  - value: computation
+    label: Computation
+  - value: implementation
+    label: Implementation
+  - value: formalization
+    label: Formalization
+  - value: synthesis
+    label: Synthesis
+  - value: audit
+    label: Audit
+  - value: exploration
+    label: Exploration
+  displayInline: true
+- name: agentRoster
+  type: array
+  itemType: string
+  displayInline: false
+- name: reportArtifact
+  type: string
+  displayInline: false
+- name: paperSections
+  type: array
+  itemType: string
+  displayInline: false
+- name: uncertaintySummary
+  type: text
+  displayInline: false
+- name: failedExplorations
+  type: array
+  itemType: string
+  displayInline: false
 - name: successCriteria
   type: array
   itemType: string

@@ -183,14 +183,22 @@ description: Use when [specific triggering conditions and symptoms]
 Since `SKILL.md` is a Markdown file with a YAML header, you must extract only the metadata block for validation:
 
 ```bash
-# Using python3 to parse only the frontmatter block
-python3 -c "import yaml; content = open('SKILL.md').read(); frontmatter = content.split('---')[1]; yaml.safe_load(frontmatter); print('YAML valid')"
+# Use yq (mikefarah/yq, the Go version) — ensures correct yq is used
+yq --front-matter=extract '.' SKILL.md > /dev/null 2>&1 && echo "YAML valid"
 ```
 
-**Or use yq (v4+):**
+Note: `--front-matter=extract` only checks that the YAML block parses. It will not reject files missing frontmatter entirely; pair with `head -1 SKILL.md | grep -q '^---$'` if that matters.
+
+**To query a specific frontmatter field:**
 
 ```bash
-yq --front-matter=extract '.' SKILL.md > /dev/null && echo "YAML valid"
+yq --front-matter=extract '.name' SKILL.md
+```
+
+**To modify a field in place (preserves markdown body):**
+
+```bash
+yq --front-matter=process -i '.name = "new-name"' SKILL.md
 ```
 
 **Body template:**
@@ -272,7 +280,7 @@ Success: Agent follows rule under maximum pressure.
 - [ ] No marketing or persuasive filler
 - [ ] Description: "Use when..." + triggers only
 - [ ] Under 500 lines
-- [ ] YAML frontmatter valid (tested with `python3 -c` or `yq`)
+- [ ] YAML frontmatter valid (tested with `yq --front-matter=extract`)
 - [ ] Tested with pressure scenarios
 - [ ] Addresses specific failure modes observed
 - [ ] Cross-references other skills where needed

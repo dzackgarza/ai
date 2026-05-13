@@ -45,9 +45,24 @@ fields:
     label: Needs Review
     icon: rate_review
     color: '#3b82f6'
-  - value: done
-    label: Done
+  - value: needs-human-input
+    label: Needs Human Input
+    icon: person
+    color: '#8b5cf6'
+  - value: complete
+    label: Complete
     icon: check_circle
+  - value: revision-required
+    label: Revision Required
+    icon: replay
+    color: '#f59e0b'
+  - value: blocked
+    label: Blocked
+    icon: block
+    color: '#dc2626'
+- name: blocked_reason
+  type: text
+  displayInline: false
 - name: priority
   type: select
   options:

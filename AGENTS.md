@@ -129,6 +129,15 @@ This may be definite or indefinite, and is NOT assumed to be positive-definite, 
 - **Favor mature dependencies.** Outsource common patterns to minimize owned surface.
 - **Iterate, don't replace.** Writing an entire file is almost NEVER correct, unless greenfielding a new file.
 - Run `git diff` after rewrites — see what you lost semantically. If valuable or unintentional, restore it carefully before moving forward.
+- After any knowledge-transfer edit, immediately perform an explicit semantic comparison
+  between the new destination doc(s) and the old source material. Knowledge transfer
+  includes moving instructions into skills, consolidating docs, retiring docs after
+  migration, rewriting prompts, or replacing local procedures with global guidance.
+  Check for lost endpoints, commands, hostnames, paths, credential models, state
+  machines, evidence requirements, examples, warnings, and operational constraints.
+  Any watering-down, vague summarization, generic regression-to-the-mean wording,
+  missing concrete procedure, or weakened prohibition is a defect. Rectify it
+  immediately before deleting, retiring, or relying on the old source.
 
 # Memory
 
@@ -372,4 +381,3 @@ PRs trigger rate-limited reviews — reserve them for changes where mistakes, re
 - Always follow the Read → Commit Checkpoint → Edit → Verify (git diff) workflow. NEVER write time estimates. Trigger: any edit or response. Verify: git commits/diffs in history.
 - Keep responses concise (under 3 lines of explanation), use `file_path:line_number` for code references, and no emojis/filler. Trigger: all responses. Verify: format in subsequent messages.
 - The 'ai' project is a centralized configuration hub for AI agent harnesses (Claude Code, Gemini CLI, etc.), using Markdown for prompts and YAML/JSON for config. Key directories include AGENTS.md, skills/, and opencode/.
-

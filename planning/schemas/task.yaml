@@ -40,16 +40,174 @@ fields:
   - value: needs-review
     label: Needs Review
     icon: build
+  - value: needs-human-input
+    label: Needs Human Input
+    icon: person
+    color: '#8b5cf6'
   - value: complete
     label: Complete
     color: '#22c55e'
+  - value: revision-required
+    label: Revision Required
+    icon: replay
+    color: '#f59e0b'
   - value: blocked
     label: Blocked
     icon: block
     color: '#dc2626'
+- name: blocked_reason
+  type: text
+  displayInline: false
+- name: priority
+  type: select
+  options:
+  - value: low
+    label: Low
+  - value: medium
+    label: Medium
+  - value: high
+    label: High
+  - value: critical
+    label: Critical
+- name: owner
+  type: user
 - name: description
   type: text
   required: true
+- name: activityType
+  type: select
+  options:
+  - value: intent-refinement
+    label: Intent Refinement
+  - value: literature-search
+    label: Literature Search
+  - value: source-mining
+    label: Source Mining
+  - value: brainstorming
+    label: Brainstorming
+  - value: conjecture-generation
+    label: Conjecture Generation
+  - value: counterexample-search
+    label: Counterexample Search
+  - value: proof-attempt
+    label: Proof Attempt
+  - value: proof-repair
+    label: Proof Repair
+  - value: formalization
+    label: Formalization
+  - value: computation
+    label: Computation
+  - value: numerical-experiment
+    label: Numerical Experiment
+  - value: simulation
+    label: Simulation
+  - value: implementation
+    label: Implementation
+  - value: validation
+    label: Validation
+  - value: citation-check
+    label: Citation Check
+  - value: synthesis
+    label: Synthesis
+  - value: exposition
+    label: Exposition
+  - value: review
+    label: Review
+  - value: failure-analysis
+    label: Failure Analysis
+  - value: user-escalation
+    label: User Escalation
+  - value: workflow-maintenance
+    label: Workflow Maintenance
+  displayInline: true
+- name: uncertaintyState
+  type: select
+  options:
+  - value: none-recorded
+    label: None Recorded
+  - value: ordinary-open
+    label: Ordinary Open
+  - value: contentious-claim
+    label: Contentious Claim
+  - value: missing-source
+    label: Missing Source
+  - value: computation-needs-replay
+    label: Computation Needs Replay
+  - value: review-stalled
+    label: Review Stalled
+  - value: human-judgment-needed
+    label: Human Judgment Needed
+  displayInline: true
+- name: workstream
+  type: string
+  displayInline: false
+- name: paperAnchors
+  type: array
+  itemType: string
+  displayInline: false
+- name: claimRefs
+  type: array
+  itemType: string
+  displayInline: false
+- name: workstreamRole
+  type: select
+  options:
+  - value: intake
+    label: Intake
+  - value: literature
+    label: Literature
+  - value: theory
+    label: Theory
+  - value: computation
+    label: Computation
+  - value: implementation
+    label: Implementation
+  - value: formalization
+    label: Formalization
+  - value: review
+    label: Review
+  - value: synthesis
+    label: Synthesis
+  - value: failure-record
+    label: Failure Record
+  displayInline: true
+- name: claimStatus
+  type: select
+  options:
+  - value: unexamined
+    label: Unexamined
+  - value: conjectural
+    label: Conjectural
+  - value: source-backed
+    label: Source Backed
+  - value: computationally-supported
+    label: Computationally Supported
+  - value: locally-proved
+    label: Locally Proved
+  - value: formally-verified
+    label: Formally Verified
+  - value: review-disputed
+    label: Review Disputed
+  - value: refuted
+    label: Refuted
+  - value: abandoned
+    label: Abandoned
+  - value: human-input-needed
+    label: Human Input Needed
+  - value: accepted-local-claim
+    label: Accepted Local Claim
+  displayInline: true
+- name: uncertaintyNotes
+  type: text
+  displayInline: false
+- name: reportArtifacts
+  type: array
+  itemType: string
+  displayInline: false
+- name: failedExplorations
+  type: array
+  itemType: string
+  displayInline: false
 - name: successCriteria
   type: array
   itemType: string

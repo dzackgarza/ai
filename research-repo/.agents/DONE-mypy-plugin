@@ -1,0 +1,4 @@
+The mypy plugin feature plan was fully carried out on 2026-05-10.
+All three phases implemented, 13 tests pass, repo committed.
+Blocked only on ~/.mypy.ini registration (user-denied).
+Do not re-execute. This goal is DONE.

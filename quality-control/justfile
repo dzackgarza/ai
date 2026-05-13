@@ -251,9 +251,18 @@ _mypy: _install-tools
 		echo "Skipping mypy: no Python files found."
 		exit 0
 	fi
-	uvx --python 3.14 --from mypy mypy \
-		--config-file {{justfile_directory()}}/mypy-global.ini \
-		"${python_files[@]}"
+	sage_bin="${SAGE_BIN:-sage}"
+	if command -v "$sage_bin" >/dev/null 2>&1; then
+		"$sage_bin" -python -m mypy \
+			--config-file {{justfile_directory()}}/mypy-global.ini \
+			--ignore-missing-imports \
+			--explicit-package-bases \
+			"${python_files[@]}"
+	else
+		uvx --python 3.14 --from mypy mypy \
+			--config-file {{justfile_directory()}}/mypy-global.ini \
+			"${python_files[@]}"
+	fi
 
 _normalize: _install-tools
 	#!/usr/bin/env bash

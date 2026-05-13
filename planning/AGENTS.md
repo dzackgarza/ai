@@ -33,9 +33,9 @@ Do not treat "card" as a UI-only object. If a file is tracked by the schema syst
 
 ## Schema Source
 
-Project-local tracker schemas normally live at the project root under `.nimbalyst/trackers/`. Check that directory before inferring fields from examples.
+Project-local tracker schemas live at the project root under `.nimbalyst/trackers/`, symlinked to `~/ai/planning/schemas/`. The canonical schemas live under `~/ai/planning/schemas/`. Schema edits go there with a git commit on that repo. Projects symlink and consume these schemas — local forks are never correct. If a schema is too restrictive, the fix is to add the field to the canonical schema, not to fork or relax the local copy.
 
-This reusable framework stores the canonical planning schemas under `planning/schemas/`:
+Install those files as symlinks into a project `.nimbalyst/trackers/` directory before creating cards. Use schemas as the source of truth for allowed fields, required fields, status values, display roles, and table columns.
 
 - `schemas/feature.yaml`
 - `schemas/spec.yaml`
@@ -46,7 +46,7 @@ This reusable framework stores the canonical planning schemas under `planning/sc
 
 Install, copy, or symlink those files into a project `.nimbalyst/trackers/` directory before creating cards. Use schemas as the source of truth for allowed fields, required fields, status values, display roles, and table columns.
 
-If a project symlinks schemas from this directory, edit the canonical schema under `planning/schemas/`. Do not replace a project symlink with a divergent local copy unless the project intentionally forks the framework.
+If a project symlinks schemas from this directory, edit the canonical schema here under `schemas/`. Do not replace a project symlink with a divergent local copy. The only path for schema changes is editing the canonical source.
 
 ## No Fallbacks
 
@@ -85,6 +85,12 @@ Responsibilities:
 - Task cards define executable work.
 
 Do not place plans above other plans to simulate feature hierarchy. A feature owns specs and plans. A plan owns phases. A phase owns tasks.
+
+Plan-level task directories are forbidden. A path such as
+`plans/features/FEATURE-ID/plans/PLAN-ID/tasks/TASK-ID.md` is not a shortcut or a
+temporary staging area; it means the phase gate was skipped. Do not create or continue
+from that path. Create or repair the phase card first, then place tasks under the
+phase's `tasks/` directory.
 
 Decision cards are top-level auxiliary feature cards, not a layer inside plans, phases, or tasks. Use them only when work cannot continue because a real decision cannot be resolved unambiguously from approved feature/spec/plan cards, repo conventions, or existing contracts.
 
@@ -138,6 +144,11 @@ Build the hierarchy top-down:
 - Then, break the approved feature into high-level plans and create the plan cards. Plans may depend on one another, but they remain siblings under the feature unless a different feature boundary is required. Each plan must design its phases before phase cards are created. Stop for approval before creating phases.
 - Then, break each approved plan into draft phases and create phase cards. Phases own local milestones and sequencing inside the plan. Stop for review of the phase breakdown before creating tasks.
 - Then, break accepted draft phases into task cards. Tasks are executable units with concrete verification. A phase is approved for execution only after its child tasks are fully specified and free of unresolved operational decisions.
+
+Before writing any task card, name the owning feature, plan, and phase, and confirm the
+phase card exists. If no phase owner exists, the next action is phase repair, not task
+creation. A plan-level `tasks/` directory is evidence of a process failure and must not
+receive additional cards.
 
 Do not create task cards first and backfill the feature. Do not let an implementation plan define the feature boundary. If a plan starts defining the feature, move that material into the feature card or spec cards.
 

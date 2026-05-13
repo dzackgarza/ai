@@ -33,12 +33,29 @@ fields:
   - value: in-progress
     label: Evaluating
     icon: psychology
+  - value: needs-human-input
+    label: Needs Human Input
+    icon: person
+    color: '#8b5cf6'
   - value: decided
     label: Decided
     icon: check_circle
   - value: implemented
     label: Implemented
     icon: done_all
+- name: description
+  type: text
+- name: priority
+  type: select
+  options:
+  - value: low
+    label: Low
+  - value: medium
+    label: Medium
+  - value: high
+    label: High
+  - value: critical
+    label: Critical
 - name: chosen
   type: string
   displayInline: true
@@ -54,6 +71,11 @@ fields:
   - name: cons
     type: array
     itemType: string
+- name: evidence
+  type: array
+  itemType: string
+- name: resolution
+  type: text
 - name: tags
   type: array
   itemType: string

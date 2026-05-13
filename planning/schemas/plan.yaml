@@ -39,6 +39,10 @@ fields:
     label: Needs Review
     icon: edit_note
     color: '#64748b'
+  - value: needs-human-input
+    label: Needs Human Input
+    icon: person
+    color: '#8b5cf6'
   - value: approved-and-unstarted
     label: Approved and Unstarted
     icon: check_circle
@@ -55,6 +59,19 @@ fields:
     label: Blocked
     icon: block
     color: '#dc2626'
+- name: priority
+  type: select
+  options:
+  - value: low
+    label: Low
+  - value: medium
+    label: Medium
+  - value: high
+    label: High
+  - value: critical
+    label: Critical
+- name: owner
+  type: user
 - name: tags
   type: array
   itemType: string
@@ -62,6 +79,33 @@ fields:
 - name: description
   type: text
   required: true
+- name: onboardingArtifact
+  type: string
+  displayInline: false
+- name: workingPaper
+  type: string
+  displayInline: false
+- name: agentOrganization
+  type: text
+  displayInline: false
+- name: intakeStatus
+  type: select
+  options:
+  - value: needs-intake
+    label: Needs Intake
+  - value: needs-human-approval
+    label: Needs Human Approval
+  - value: intake-approved
+    label: Intake Approved
+  - value: not-applicable
+    label: Not Applicable
+  displayInline: true
+- name: workstreamPolicy
+  type: text
+  displayInline: false
+- name: uncertaintyPolicy
+  type: text
+  displayInline: false
 - name: successCriteria
   type: array
   itemType: string
