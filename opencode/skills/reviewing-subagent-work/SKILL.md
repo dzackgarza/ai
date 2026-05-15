@@ -5,25 +5,15 @@ description: Use when reviewing or evaluating work produced by another LLM/agent
 
 # Reviewing Subagent Work
 
-When reviewing work produced by another LLM or agent, answer these questions BEFORE concluding your review:
+When reviewing work produced by another LLM or agent, produce this statement BEFORE concluding your review:
 
-## Forcing Questions
+## Synthesis Gate
 
-**Q1: "Why would the user ask ME to review this instead of checking themselves?"**
+**"The subagent's work proves _____ about the task's correctness, based on this specific evidence: _____."**
 
-A: [answer explicitly — what capability do I have that they lack?]
+If you cannot fill both blanks with concrete content (line numbers, specific values, external cross-checks), you have not reviewed the work — you have verified that activity occurred. File existence, hash matches, and the worker's own success claims are not evidence of correctness. They are evidence that something was written.
 
-The user would not spend tokens on work they can do instantly. If your answer is "check file existence" or "verify hashes" — that is trivially mechanical work the user already did. The user asked because the task requires **judgment and intelligence**: reading actual content, evaluating quality, catching errors a worker wouldn't catch in its own output.
-
-A frame in which a user pays for a model to verify file existence is economically incoherent.
-
-**Q2: "Did I inspect actual content, or just verify activity occurred?"**
-
-A: [answer explicitly]
-
-**Q3: "If my review found: files exist ✓, hashes match ✓, worker claims success ✓ — is that EVIDENCE or just ACTIVITY?"**
-
-A: [answer explicitly]
+The user would not spend tokens on work they can do instantly. If your review could have been produced without reading the artifact's content, it is not a review.
 
 ## Why Self-Reports Are Worse Than Noise
 

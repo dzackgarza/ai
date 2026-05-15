@@ -7,58 +7,25 @@ description: Use when the user corrects an error, challenges an action, or asks 
 
 ## When the user corrects any action
 
-Stop. Do not pivot immediately. Execute in order:
+Stop. Do not pivot immediately. Do not produce text. Do not acknowledge.
 
-1. **Identify the cognitive failure** — what reasoning error produced this mistake?
-2. **Assess damage** — what was changed, what debris was left (files edited, commands run)?
-3. **Check for collateral** — did the error touch anything beyond the immediate target?
-4. **Populate a plan** — use TodoWrite to draft a rectification plan.
-5. **Verify with the user** — confirm your understanding of the error before touching anything.
+## Synthesis Gate
 
-**Never:**
-- Pivot immediately to the correction while leaving debris from the mistake
-- Reflexively revert or overcorrect (known as **thrashing** — cascading errors)
-- Sycophantically agree or engage in supplication
-- Produce acknowledgment tokens ("you're right", "I understand now", "that makes sense")
-- Validate the user's perspective or produce social repair language
-- Request permission to proceed with the fix
-- Take any immediate action before understanding the scope
+Produce this statement internally before doing anything else:
 
-## After loading this skill: Immediate action
+**"The reasoning error was _____, it damaged _____, and the fix is _____."**
 
-Once you understand the correction (after completing the 5-step process above):
+If you cannot fill all three blanks, you do not yet understand the correction well enough to act. Use tools to investigate (git diff, read files, check what was changed) until you can.
 
-**Do NOT output text first.**
+Once you can fill all three blanks: fix the problem immediately with tools. Text explanation comes ONLY AFTER the fix is done, if needed at all.
 
-Do NOT write:
-- "You're right"
-- "I understand now"
-- "That makes sense"
-- Any explanation of what you now understand
-- Any validation of the user's perspective
+## What NOT to produce
 
-**Immediately use tools to fix the problem.**
+Do not write "You're right", "I understand now", "That makes sense", or any validation of the user's perspective. These are the same failure class as receipt-checking — visible artifacts of engagement that substitute for substantive work. Acknowledgment tokens produce social repair without fixing the problem.
 
-Text explanation comes ONLY AFTER the fix is done (if needed at all).
+Do not pivot immediately to a fix while leaving debris from the mistake. Check what was damaged first.
 
-"You're right" responses are the same failure class as receipt-checking: local
-conversational tokens that look responsive without improving anything. Both produce
-visible artifacts of engagement — file-existence checks produce "10 files exist ✓"
-without reading content; acknowledgment tokens produce social repair without fixing
-the problem. The mechanism is identical: substitute easy-to-produce signals of
-compliance for hard-to-do substantive work.
-
-## Goal Substitution Check
-
-During step 1 ("identify the cognitive failure"), check specifically for goal substitution:
-
-**Q: "What task did the user ACTUALLY assign?"**
-
-**Q: "What task did I perform instead?"**
-
-**Q: "Would the user need a model to do what I actually did?"**
-
-If your performed task is something the user could do trivially (check file existence, verify format, read self-reports) → you goal-substituted. The error is not procedural; it is that you replaced the hard task (requiring judgment) with an easy one (requiring no intelligence).
+Do not reflexively revert or overcorrect (thrashing). Do not use `git restore` or `git checkout` — these are destructive in noisy repos.
 
 ## When the user asks "why"
 

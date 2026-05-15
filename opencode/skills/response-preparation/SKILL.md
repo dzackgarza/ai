@@ -33,42 +33,19 @@ This is not a table-lookup task. You cannot check coherence by pattern-matching 
 
 **Why this exists:** In observed failures, the model filled a "Remaining:" slot with a paragraph summarizing completed work — semantic inversion. When corrected, it produced "Nothing remaining" — a scoping error, but less critical. Across multiple correction rounds, the model kept focusing on the scoping error (because it matched an anti-pattern table row) and couldn't see the semantic inversion (because that required judgment, not lookup). The anti-pattern table became a substitute for reading its own output.
 
-## Forcing Questions
+## Synthesis Gate
 
-After verifying label-content coherence, answer:
+After verifying label-content coherence, produce this single statement before writing your response:
 
-**Q1: "What is the user's OVERALL task, not just what I last worked on?"**
+**"The user needs to know _____ because they cannot already see it."**
 
-A: [restate the global task]
+If you cannot complete that sentence with something concrete, you have nothing to say. Do not write a response. The git commit is sufficient.
 
-**Q2: "For each item I'm about to include — would the user learn something they don't already know?"**
+If you can complete it, that sentence IS your response (or the seed of it). Do not pad it with status, summaries, or template sections. The user asked for a task, not a report — only communicate what the task couldn't communicate for itself.
 
-- If it's something the user can see (file exists, commit was made, test output) → omit
-- If it's something only I know (a decision I made, a gap I noticed, an error I encountered) → include
-- If it's already resolved → omit entirely, it is noise
+## Why Not Checklists
 
-**Q3: "Am I scoping 'not completed' to my local sub-task, or to the overall task?"**
-
-"Not completed: none" is almost never correct. The local sub-task may be done, but the overall task has outstanding items. The user wants to know about the OVERALL task — that's why the response template exists. If you can't identify outstanding items in the overall task, you have lost track of the overall task.
-
-**Q4: "Is 'Next action' framing unfinished work as optional?"**
-
-If the task is not done, there is no "next action" — there is **remaining work**. "Next action" implies discretion; remaining work implies obligation. Use the framing that matches reality.
-
-## The Theory of Mind Test
-
-For every item in your response, ask:
-
-**"Why would the user want to read this?"**
-
-Possible answers:
-- **To know what's still broken** → include, prominently
-- **To make a decision I can't make** → include, with the decision framed clearly
-- **To verify I did what they asked** → the git commit does this; omit from response
-- **To feel assured work was done** → this is social compliance, not information; omit
-- **No reason — I'm filling a template** → omit
-
-If more than half your response items fail this test, your response is template-filling, not communication.
+This skill deliberately avoids forcing questions, numbered steps, and item-by-item checks. Those create optimization surfaces — the model fills each slot with plausible content, producing something that *looks* like reflection without requiring it. The synthesis gate above cannot be gamed this way: either you can state what the user needs to know, or you can't. There is no template to fill.
 
 ## Failure Severity
 

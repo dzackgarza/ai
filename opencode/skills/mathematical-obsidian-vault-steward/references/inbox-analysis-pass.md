@@ -141,8 +141,9 @@ Process source-local passages after the whole-source read:
   questions, proof obligations, rejected claims, or different canonical vault notes,
   split the annotation by unit.
 - When the source has Roman-numeral sections, one section is the maximum normal
-  segment for a single pass. After editing one such section, stop rather than
-  sweeping adjacent sections or the rest of the turn.
+  segment. After a coherent improvement inside one such section, do not edit
+  adjacent sections or the rest of the turn. Similar defects elsewhere should
+  remain visible as future continuation state.
 - `status: duplicate` and `action: preserve-source-visible` do not relax the
   internal-item rule. A duplicate comment with one route may cover only the source item
   it is attached to. If the reason says the passage restates content from several
@@ -251,6 +252,8 @@ Important routing defaults:
 - Open criteria or unresolved decisions are questions or problems.
 - Established rules, criteria, implications, equivalences, and if-and-only-if statements that are not main theorems are propositions; unresolved ones are conjectures or questions.
 - Target-note proof status overrides source labels. If the target note's frontmatter, tags, type line, callout, or heading frames the item as a conjecture, proposed statement, open issue, or "why this is a conjecture", use `conjecture` or `question`, not `proposition`, even if the source label says "Theorem Statement".
+- Target-note proof obligations also override source certainty. If the durable note says an item is a checklist entry, obligation to prove, verification still needing proof, migrated research claim, or awaiting corroboration, do not label the source assertion as `fact`. Use `question` with `status: open` for proof or verification obligations, or `conjecture` with `status: conjectural` for intended theorem-like claims.
+- Do not let `duplicate` erase proof status. If a source item is already recorded in a target section that says it is pending verification, conjectural, disputed, or still needs proof, choose `status: conjectural`, `open`, `disputed`, or `needs-human` as appropriate and explain in `reason:` that the target already records it.
 - Definitions of terminology, named lattices, groups, divisors, moduli spaces, notation, or standing identifications are definitions.
 - Recipes, quotients, disjoint unions, normalizations, families, packages, models,
   procedures, construction steps, construction requirements, and explicit
@@ -312,14 +315,14 @@ object. A line asserting a rule, criterion, implication, equivalence, or
 if-and-only-if claim is usually `proposition` if established and `conjecture` or
 `question` if unresolved or target-framed as proposed; it is not `remark` merely
 because it is duplicate.
-Before leaving a handled segment, reread every newly inserted or touched
-`unit: fact` comment against the adjacent source label. If the label names a
-mathematical object, criterion, stratum, quotient, model, family, normalization,
-rule, construction step, or construction requirement, the comment probably needs
-`definition` or `construction`, not `fact`.
-Also reread every touched `unit: remark` comment whose adjacent source sentence
-contains a rule, criterion, implication, equivalence, or if-and-only-if claim;
-that comment probably needs `proposition`, `conjecture`, or `question`.
+Before leaving a handled segment, reread every CriticMarkup comment inside that
+source segment, including comments that were already present before the current
+edit. If the adjacent source label names a mathematical object, criterion,
+stratum, quotient, model, family, normalization, rule, construction step, or
+construction requirement, the comment probably needs `definition` or
+`construction`, not `fact`. If the adjacent source sentence contains a rule,
+criterion, implication, equivalence, or if-and-only-if claim, the comment
+probably needs `proposition`, `conjecture`, or `question`, not `remark`.
 Repairing local misclassified `fact` or `remark` comments is real analysis work;
 do not skip them to chase an untouched section.
 
@@ -334,6 +337,9 @@ Also audit the route and status fields before leaving the artifact. Any match fo
 `route: superseded`, `route: see`, `line ~`, `expanded annotation`,
 `status: source-verified`, or a title-only wikilink when the actual note path exists
 should be fixed in the handled segment or left visible for a later direct pass.
+If a reason says the payload is already covered in a named target section, the
+`route:` link should include that verified `#Heading`. If the section was not
+verified or does not exist, do not describe it as an existing target section.
 
 Bad comment:
 

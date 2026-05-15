@@ -29,49 +29,19 @@ The fix that eventually worked was simpler and sharper:
 
 The annotations are an *expression* of the analysis, not the analysis itself. If the agent can't produce the synthesis, no amount of structural scaffolding will create it.
 
-## Before Proposing Structural Fixes
+## Synthesis Gate
 
-Answer these questions EXPLICITLY before proposing any fix:
+Before proposing any fix for shallow work, produce this statement:
 
-**Q1: "Why would adding checklists/structure make shallow work WORSE?"**
+**"The shallow work skipped _____ (a cognitive operation), and the fix must require _____ as output that cannot be produced without doing that operation."**
 
-A: [answer explicitly - explain the gaming mechanism]
+If your proposed fix is structural (add rows, add gates, add inventories), it will be gamed the same way the original work was gamed. A fix for shallow work must require the agent to produce understanding — not fill a different template.
 
-**Q2: "What mental operation did the shallow work skip - synthesis, judgment, or checking facts?"**
+If your fix contains "require", "inventory", "every X has Y", or "verification gates" — you are creating new boxes. Start over.
 
-A: [answer explicitly - must be cognitive, not procedural]
+## This Skill Practices What It Preaches
 
-**Q3: "Can a checklist force that mental operation, or can it be gamed?"**
-
-Decision:
-- If operation is "synthesis" → NO, checklists can't force it
-- If operation is "holistic understanding" → NO, checklists can't force it
-- If operation is "judgment" → NO, checklists can't force it
-- If operation is "check specific fact" → YES, checklist might work
-
-A: [answer explicitly]
-
-**Q4: "If NO to Q3: What requirement would make shortcuts IMPOSSIBLE?"**
-
-A: [must require synthesis as OUTPUT, not boxes as INPUT]
-
-Only after answering all four questions: propose your fix.
-
-If your proposed fix contains: "require", "inventory", "every X has Y", "verification gates" → STOP. You're creating boxes to check. Start over.
-
-## Examples of WRONG Fixes
-
-- "Require inventory where every X has a Y" ← box-checking
-- "Every row must have research" ← can fake
-- "Add verification gates" ← can game
-- "Create structured audit trail" ← compliance theater
-
-## Examples of RIGHT Fixes
-
-- "Explain what mathematical understanding changed" ← requires synthesis
-- "Block if you cannot produce holistic summary" ← can't shortcut
-- "Compare final state to initial and justify every difference" ← forces thinking
-- "Produce a narrative thread that assembles ALL insights" ← can't fake
+This skill deliberately has no forcing questions, numbered steps, or item-by-item checks. Previous versions had Q1-Q4 forcing questions that asked the model to "answer explicitly" before proposing fixes. Those four slots were themselves boxes — they could be filled with plausible content that looked like analysis without requiring it. The synthesis gate above requires a single statement that demonstrates understanding of the failure. It cannot be filled mechanically.
 
 ## The Core Principle
 

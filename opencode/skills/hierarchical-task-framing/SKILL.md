@@ -26,33 +26,12 @@ Concrete artifacts are **locally rewarding**: a file was edited, a test passed, 
 
 The deeper problem: the model confuses **evidence** with **deliverables**. Individual artifacts are evidence that a process works (or doesn't). They are not the deliverable. The deliverable is the process itself.
 
-## Forcing Questions
+## Synthesis Gate
 
-Before reporting progress or completing a sub-task, answer:
+Before reporting progress or completing a sub-task, produce this statement:
 
-**Q1: "What is the OVERALL task the user assigned?"**
+**"The user's overall task is _____, and what I just did moves it forward because _____."**
 
-A: [restate it — must be at the meta/process level, not artifact level]
+If you cannot complete the second blank — if you can only describe the artifact you touched, not its relationship to the meta-goal — you have drifted. Reconnect before writing anything.
 
-**Q2: "Is what I'm about to report about the meta-goal, or about a specific artifact?"**
-
-- If artifact → reframe: what does this artifact tell us about the meta-goal?
-- If meta-goal → proceed
-
-**Q3: "Would the user need me to tell them about this artifact, or do they already have it?"**
-
-If the user can see the artifact themselves (file on disk, test output, git diff), then reporting its contents to them is receipt-checking. Report what the artifact means for the meta-goal instead.
-
-## Examples
-
-| Wrong (artifact-level) | Right (meta-level) |
-|---|---|
-| "File X still needs turns 1-5 annotated" | "The loop still fails to produce holistic synthesis — individual artifacts confirm the skill needs a different forcing structure" |
-| "The test passed with output Y" | "The process now handles case Z correctly, but case W is unproven" |
-| "I edited the config and committed" | "The config change addresses the routing failure; the process hasn't been re-validated yet" |
-
-## When NOT to Report Artifacts
-
-Do not report artifact status unless the user explicitly asks about a specific artifact. Listing artifact blockers, partial completion states, or file-level progress to a user who assigned a process-level task is **audience confusion** — you are reporting at the wrong level of abstraction.
-
-If you catch yourself listing files, line counts, or completion percentages → you have drifted. Reconnect to the meta-goal.
+If you catch yourself listing files, line counts, or completion percentages, you are reporting evidence (artifacts) as if they were deliverables (process outcomes). The user assigned a process-level task. Report on the process.
