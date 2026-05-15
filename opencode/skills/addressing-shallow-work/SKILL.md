@@ -15,12 +15,19 @@ More structure ≠ better work. The relationship is often inverted:
 - **More inventories** = more boxes to check without understanding
 - **More procedural gates** = more ways to produce solution-shaped filler
 
-When you add requirements like:
-- "Every X must have a Y"
-- "Require inventory where each row has..."
-- "Add verification gates"
+### Why This Happens
 
-You are giving the next agent boxes to check (easy, measurable) instead of forcing synthesis (hard, substantive).
+Adding requirements like "every X must have a Y" or "require inventory where each row has..." creates **measurable targets**. Measurable targets create optimization surfaces that bypass the actual cognitive work. The agent will produce rows with plausible-looking entries — optimizing for the measurable target (easy) — rather than genuine analysis (hard). The structure provides a template to fill, and filling templates is exactly what models are best at and most likely to default to.
+
+This was observed directly: a model responded to shallow mathematical analysis by proposing "require semantic inventory where every mathematical unit has a row, every row has target research, and every row has incorporation instructions." This would have given the next agent a spreadsheet to populate mechanically — the exact opposite of forcing the holistic mathematical reading that was missing.
+
+### What Was Actually Needed
+
+The fix that eventually worked was simpler and sharper:
+
+> "Read the whole source until you can explain what mathematical understanding changed. Then annotate only from that synthesized understanding. If the agent cannot produce the holistic synthesis, it should block — not compensate with inventories, hashes, or route comments."
+
+The annotations are an *expression* of the analysis, not the analysis itself. If the agent can't produce the synthesis, no amount of structural scaffolding will create it.
 
 ## Before Proposing Structural Fixes
 

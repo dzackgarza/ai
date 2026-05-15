@@ -42,7 +42,23 @@ Do NOT write:
 Text explanation comes ONLY AFTER the fix is done (if needed at all).
 
 "You're right" responses are the same failure class as receipt-checking: local
-conversational tokens that look responsive without improving anything.
+conversational tokens that look responsive without improving anything. Both produce
+visible artifacts of engagement — file-existence checks produce "10 files exist ✓"
+without reading content; acknowledgment tokens produce social repair without fixing
+the problem. The mechanism is identical: substitute easy-to-produce signals of
+compliance for hard-to-do substantive work.
+
+## Goal Substitution Check
+
+During step 1 ("identify the cognitive failure"), check specifically for goal substitution:
+
+**Q: "What task did the user ACTUALLY assign?"**
+
+**Q: "What task did I perform instead?"**
+
+**Q: "Would the user need a model to do what I actually did?"**
+
+If your performed task is something the user could do trivially (check file existence, verify format, read self-reports) → you goal-substituted. The error is not procedural; it is that you replaced the hard task (requiring judgment) with an easy one (requiring no intelligence).
 
 ## When the user asks "why"
 

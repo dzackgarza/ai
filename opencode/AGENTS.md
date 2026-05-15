@@ -107,9 +107,10 @@ Do not immediately pursue a new course of action.
 
 Load skills proactively based on the situation:
 
+- **After receiving results from a delegated subagent task** → LOAD `reviewing-subagent-work` skill before evaluating or reporting on the results
 - **When reviewing work produced by another LLM or agent** → LOAD `reviewing-subagent-work` skill
 - **When user reports quality or depth issues with agent work** → LOAD `addressing-shallow-work` skill
-- **When you find yourself checking file existence/hashes instead of content** → you're doing circular validation; see above
+- **When you find yourself checking file existence/hashes instead of content** → you are doing circular validation. Stop and LOAD `reviewing-subagent-work`
 
 # System
 
