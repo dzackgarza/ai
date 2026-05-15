@@ -136,6 +136,7 @@ Before adding content, ask:
 - Mandatory output structure
 - Anti-scope-drift constraints
 - Common failure patterns
+- Observed failures distilled into production rules
 - Local conventions differing from upstream docs
 - Forbidden shortcuts
 - Evidence required before marking done
@@ -254,6 +255,9 @@ When to do X vs Y:
 
 - **writing-for-agent-audiences** — How to write effective agent-facing documentation
 - **writing-clearly-and-concisely** — Concise prose techniques
+- **looped-task-skill-author** — Required for repeated one-shot loops, persistent state, or continuation workflows
+- **creating-subagents** — Required when the skill interacts with subagent or runtime-agent definitions
+- **prompt-engineering** — Required for system prompts, agent definitions, or prompt contracts adjacent to the skill
 
 ## Testing Skills
 
@@ -262,6 +266,19 @@ Test-Driven Development for skills:
 1. **RED**: Run scenario WITHOUT skill → document failures
 2. **GREEN**: Write minimal skill addressing failures → verify compliance
 3. **REFACTOR**: Close loopholes → re-test until bulletproof
+
+Transcript observations are raw evidence for the skill author, not prose to paste into
+the skill. Convert each useful observation into one of:
+
+- an object-level invariant;
+- a decision rule;
+- a validation step;
+- a concrete good/bad example.
+
+Do not put run numbers, model names, wrapper output formats, transcript mechanics, or
+evaluator complaints into an object-level skill unless those mechanics are themselves
+the task. Prior failures belong in the skill only after they have been generalized into
+normal task-facing behavior.
 
 **Test with pressure scenarios:**
 

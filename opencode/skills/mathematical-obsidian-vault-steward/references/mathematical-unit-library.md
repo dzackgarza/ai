@@ -64,7 +64,7 @@ Do not rewrite historical notes solely to remove existing remark callouts. Apply
 
 ## Unit Definitions
 
-- `definition`: introduces terminology, notation, object classes, equivalences used as definitions, or standing hypotheses.
+- `definition`: introduces terminology, notation, named lattices, groups, divisors, moduli spaces, object classes, equivalences used as definitions, or standing hypotheses.
 - `notation`: fixes symbols, conventions, coordinate choices, normalizations, or translation between source notation and vault notation.
 - `theorem`: a proved central result with exact hypotheses and a proof in the note, source, or clearly linked reference.
 - `lemma`: a proved supporting result used inside a larger proof or construction.
@@ -73,8 +73,8 @@ Do not rewrite historical notes solely to remove existing remark callouts. Apply
 - `conjecture`: a theorem-shaped claim intended to be true but not proved in the available source and vault context.
 - `question`: an unresolved mathematical query, criterion, or choice where the correct statement is not yet known.
 - `problem`: a larger open task or research problem with multiple subquestions or proof obligations.
-- `construction`: an explicit object, recipe, package, divisor, family, diagram, model, or procedure to build.
-- `fact`: a small source-backed assertion that is useful but not theorem-shaped.
+- `construction`: an explicit recipe, quotient, disjoint union, normalization, family, package, diagram, model, or procedure to build.
+- `fact`: a small source-backed assertion about an already-defined object that is useful but not theorem-shaped.
 - `example`: a concrete instance illustrating a definition, construction, theorem, or phenomenon.
 - `counterexample`: a concrete instance that refutes a claim or shows a hypothesis is necessary.
 - `calculation`: a hand calculation, local computation, displayed derivation, table derivation, or formula check.
@@ -87,7 +87,9 @@ Do not rewrite historical notes solely to remove existing remark callouts. Apply
 
 - If a statement lacks proof but is intended as a result, classify it as `conjecture`.
 - If the source is deciding what the correct result should be, classify it as `question` or `problem`.
+- If a source item introduces a named lattice, group, divisor, moduli space, or standing identification, classify it as `definition`.
 - If the source gives an object to build while its properties remain unproved, classify the object as `construction` and list the unproved properties as conjectures or questions.
+- Do not use `fact` for the act of defining or constructing a named object.
 - If a proof is partial, classify it as `proof-sketch` or a prose remark about a proof gap, not as `proof`.
 - If a small assertion is source-backed but not structurally important, classify it as `fact`.
 - If a claim is refuted later in the same source, do not incorporate it as a durable claim. Preserve it as an objection-resolution remark only when useful.

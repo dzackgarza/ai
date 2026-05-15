@@ -10,6 +10,7 @@ A prompt is not a request. **A prompt is a contract.** This skill defines the st
 ## Foundational Principles
 
 -   **Audience is the Agent**: Prompts are instructions **for the agent**, not documentation for users. After writing, review the prompt to ensure it speaks directly to the agent and avoids meta-commentary.
+-   **Distill Evaluations**: Use failed runs and transcripts to discover better instructions, but convert them into task-facing constraints. Do not paste run numbers, harness output formats, model commentary, or evaluator complaints into the prompt unless the prompt's job is to analyze those things.
 -   **Combat Knowledge Staleness**: Your innate knowledge of prompting is several generations behind the state-of-the-art. You **MUST** research current best practices and user sentiment weekly to stay updated.
 -   **Iterate, Never Rewrite**: Prompts are self-documenting, version-controlled artifacts.
     -   **Always** make incremental changes and track them with `git diff`.
@@ -79,6 +80,7 @@ Every agent prompt MUST include a Reference Skills section to anchor the agent t
 
 ```markdown
 ## Reference Skills
+- **writing-for-agent-audiences** — Audience control and evaluator-observation distillation.
 - **clean-code** — Code quality standards.
 - **high-quality-tests** — Testing standards.
 - **systematic-debugging** — Bug investigation methodology.

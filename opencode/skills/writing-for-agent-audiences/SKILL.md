@@ -65,6 +65,29 @@ If a skill is explicitly about agent behavior, failure modes, or introspection (
 
 Effectiveness varies by model. Skills that work for Claude Opus may need more detail for Claude Haiku.
 
+### Distill Evaluations Into Task Rules
+
+Use observed agent failures to improve instructions, but translate them into the
+worker's normal task language.
+
+Include evaluation-derived guidance when it becomes an object-level rule:
+
+```
+After replacing a source block, inspect the diff and repair any non-CriticMarkup
+source-line changes before continuing.
+```
+
+Do not include evaluator or harness trivia:
+
+```
+In trial 3, the agent changed a quote mark and then claimed the segment was
+source-faithful.
+```
+
+The agent-facing rule should say what good work requires in production. Keep run
+numbers, transcript postmortems, scoring rubrics, wrapper output formats, and evaluator
+complaints out of object-level skills unless those mechanics are themselves the task.
+
 ---
 
 ## Structure & Progressive Disclosure
@@ -290,8 +313,11 @@ Before writing extensive documentation:
 1. Identify gaps with LLM working without docs
 2. Create 3+ representative test cases
 3. Establish baseline performance
-4. Write minimal docs to address gaps
+4. Convert observed failures into object-level rules or examples
 5. Test and iterate based on results
+
+Evaluation notes are for the skill author. A worker-facing skill should receive the
+distilled invariant, not the test transcript or the evaluator's diagnosis.
 
 ### Develop iteratively with Claude
 
@@ -301,6 +327,13 @@ Before writing extensive documentation:
 4. Review for conciseness (remove explanations Claude already knows)
 5. Test docs with a fresh instance on similar tasks
 6. Iterate based on observations
+
+## Related Skills
+
+- **creating-skills** — REQUIRED when writing or editing `SKILL.md` files; covers what belongs in a skill.
+- **looped-task-skill-author** — REQUIRED when the agent-facing prose supports repeated one-shot loops or long-horizon continuation.
+- **creating-subagents** — REQUIRED when writing subagent descriptions or agent definitions.
+- **prompt-engineering** — Use for broader prompt contracts and reference-skill sections.
 
 ---
 

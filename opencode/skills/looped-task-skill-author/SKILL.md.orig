@@ -49,13 +49,6 @@ existing conventions.
 Prefer local conventions over this generic default when they are more specific and
 compatible with the loop philosophy.
 
-Required companion skills:
-
-- `writing-for-agent-audiences` for audience control and concise agent-facing prose.
-- `creating-skills` for what belongs in a `SKILL.md`.
-- `creating-subagents` when the loop depends on repo-local agents or subagent descriptions.
-- `prompt-engineering` when editing system prompts or agent definitions adjacent to the skill.
-
 Look for, as applicable:
 
 - `AGENTS.md`, nested `AGENTS.md`, or `AGENTS.override.md` files.
@@ -147,16 +140,6 @@ Do not ask the subagent to decide whether the loop as a whole is succeeding, con
 or worthy of promotion.
 Those are human/author judgments made by observing transcripts.
 
-Do include artifact-quality criteria the worker needs in order to do good work.
-Examples: preserve source text, update the canonical state file, verify target paths,
-or leave continuation state in the artifact. These are not evaluator leakage; they are
-the production definition of the desired artifact or state.
-
-Do not include harness facts, run numbers, transcript postmortems, model comparisons,
-or evaluator complaints unless the loop's object-level task is to operate on those
-materials. Convert observed failures into task-facing invariants before adding them to
-the subskill.
-
 ### Tool restrictions
 
 Do not enumerate forbidden tools or capabilities in the subskill.
@@ -176,55 +159,49 @@ signal that the author is writing commentary instead of instructions.
 ## No handoff documents, summaries, or self-reports
 
 Do not design loops around handoff documents that record what a previous run
-accomplished or how much progress it made.
-Do not ask subagents to write completion reports, success metrics, or quality
-self-assessments for the next agent to read.
+accomplished or how much progress it made. Do not ask subagents to write completion
+reports, success metrics, or quality self-assessments for the next agent to read.
 
-Subagents will overstate completion.
-They will claim success when they have produced slop.
-They will describe plausible work they did not do.
-These claims are worse than useless: they are fabricated evidence that corrupts the next
-run.
+Subagents will overstate completion. They will claim success when they have produced
+slop. They will describe plausible work they did not do. These claims are worse than
+useless: they are fabricated evidence that corrupts the next run.
 
 When a subsequent agent reads a handoff summary that says "Tasks 1–4 completed, 85%
-progress," it will not verify.
-It will treat the claim as a premise and plan from it.
-The claim becomes the foundation, not the hypothesis.
-Across many runs, fabricated claims compound: each agent optimizes for the next agent's
-expectations rather than the underlying goal.
-This is a Jerryboree — agents validating agents without epistemic independence.
-See `jerry-behaviour` for the full failure mode.
+progress," it will not verify. It will treat the claim as a premise and plan from it.
+The claim becomes the foundation, not the hypothesis. Across many runs, fabricated
+claims compound: each agent optimizes for the next agent's expectations rather than
+the underlying goal. This is a Jerryboree — agents validating agents without
+epistemic independence. See `jerry-behaviour` for the full failure mode.
 
 ### The Markov loop design
 
-The loop must be Markov: the information needed to decide what to do next lives in the
-artifacts themselves and in the subskill's guidelines, not in any agent's self-report
-about what it did.
+The loop must be Markov: the information needed to decide what to do next lives in
+the artifacts themselves and in the subskill's guidelines, not in any agent's
+self-report about what it did.
 
-Design every state transition so that a fresh agent with no knowledge of prior runs can
-read the current artifacts, apply the subskill's rules, and independently determine what
-stage the work is in and what increment to make.
+Design every state transition so that a fresh agent with no knowledge of prior runs
+can read the current artifacts, apply the subskill's rules, and independently determine
+what stage the work is in and what increment to make.
 
 Completion is not known because a status file says `completed`. Completion is known
 because an agent inspects an artifact, applies the subskill's quality criteria, and
-finds nothing left to do.
-The same agent, on seeing substandard work filed under a "completed" heading, should
-reject it back to an earlier stage — no markup needed, just the artifact itself.
+finds nothing left to do. The same agent, on seeing substandard work filed under a
+"completed" heading, should reject it back to an earlier stage — no markup needed,
+just the artifact itself.
 
 ### Resilience to half-complete and reward-hacked work
 
-Expect agents to produce partial, lazy, or reward-hacked output.
-This is normal. The loop survives because every run starts with the same protocol:
+Expect agents to produce partial, lazy, or reward-hacked output. This is normal. The
+loop survives because every run starts with the same protocol:
 
 1. Assess the current artifacts against the subskill's documented quality standards.
 2. Purge or repair work that is obviously sloppy, incomplete, or inconsistent.
 3. Continue from the honest state, not from a prior agent's claim about what state
    exists.
 
-Handoff documents damage this protocol.
-They give the agent a shortcut — read the summary, skip the artifacts — and a liability
-— trust the summary, propagate the error.
-Strip them out. The artifacts are the only handoff.
+Handoff documents damage this protocol. They give the agent a shortcut — read the
+summary, skip the artifacts — and a liability — trust the summary, propagate the
+error. Strip them out. The artifacts are the only handoff.
 
 ## Status and progress logs
 
@@ -394,9 +371,8 @@ Observe the transcript.
 Actually read what the subagent did and why.
 Do not rely on the subagent’s final summary, an artifact diff alone, or a claimed
 pass/fail result.
-The transcript is evidence for the skill author, not material to paste into the
-subskill. Use it to identify failure modes, then express fixes as normal worker-facing
-rules about the artifact, state, or decision procedure.
+The transcript is the primary evidence for whether the skill is shaping
+behavior.
 
 Assess at least these dimensions:
 
@@ -417,9 +393,6 @@ Then watch whether the subagent heals the state without being micromanaged.
 After each observed failure, revise the subskill narrowly.
 A correction belongs in the subskill only if it is grounded in actual observed behavior.
 Prefer one precise sentence that changes behavior over a paragraph of generic cautions.
-If the failure is caused by test harness mechanics, fix the harness or test notes
-instead of teaching the worker about the harness. If the failure reveals a durable
-artifact-quality requirement, encode that requirement without mentioning the test run.
 
 Repeat until multiple live trials show stable behavior.
 The target is not perfect obedience; the target is convergent, thoughtful, self-healing

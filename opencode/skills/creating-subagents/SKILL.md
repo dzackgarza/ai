@@ -14,6 +14,12 @@ description: "Use when creating new subagents or updating subagent descriptions 
 
 **Critical:** Subagent descriptions are **agent-facing prompts**, not user documentation. They follow **prompt engineering practices** (see `prompt-engineering` skill) and **skill description lessons** (see `creating-skills` skill for description writing principles).
 
+Also load `writing-for-agent-audiences` before editing subagent prompts or runtime
+agent definitions. Keep the description/prompt centered on the work the agent must do,
+the inputs it needs, and the artifact it must produce. Harness notes, prior test
+postmortems, model-run trivia, and evaluator complaints belong in test notes unless
+they have been distilled into normal task-facing constraints.
+
 ## When to Create Top-Level Agents
 
 **NEVER create top-level (primary) agents autonomously.**
@@ -222,6 +228,7 @@ Check that the description:
 
 - **prompt-engineering** — REQUIRED: Writing effective prompts. Subagent descriptions ARE prompts that prime delegating agents. Apply principles: be concrete, provide examples, use placeholders for variables.
 - **creating-skills** — REQUIRED: Skill description writing lessons. The "Use when" trigger pattern comes from skill description best practices. Adapt TDD approach: watch agents fail to delegate properly, write descriptions that prevent those failures.
+- **writing-for-agent-audiences** — REQUIRED: Audience control for agent-facing prose; convert test observations into task rules rather than leaking evaluator framing into the prompt.
 - **model-selection** — REQUIRED: Selecting appropriate models for subagent tasks. Match task complexity to model tier (S/A/B/C), and optimize for token efficiency.
 - **difficulty-and-time-estimation** — REQUIRED: Calibrating task difficulty without time-based thinking. Use multi-factor model (atomic steps, token burn, context pollution, success probability) to determine when subagent delegation is appropriate.
 - **subagent-delegation** — Operational lifecycle and review cycles for subagents.
@@ -232,6 +239,7 @@ Check that the description:
 |-------|-----------------|-------------------------------------|
 | `prompt-engineering` | Concrete examples, variable placeholders, priming context | Description format with "Ask '[pattern]'" and `[placeholders]` |
 | `creating-skills` | Description writing for tool selection | "Use when" trigger pattern, scenario-based framing |
+| `writing-for-agent-audiences` | Agent-facing audience control and evaluator-observation distillation | Keep descriptions/prompt bodies task-facing; exclude harness trivia unless it is the object of the task |
 | `creating-skills/anthropic-best-practices` | Description field guidelines | Keep descriptions concise but expository (1024 char max) |
 | `model-selection` | Model tier capabilities, task-to-tier matching | Match task complexity to S/A/B/C-tier models |
 | `difficulty-and-time-estimation` | Multi-factor difficulty model, avoiding time-based thinking | Calibrate when subagent overhead is justified |

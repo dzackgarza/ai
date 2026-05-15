@@ -13,9 +13,10 @@ provenance-sensitive incorporation, or note-taxonomy decisions, load
 
 For extracting, transforming, and integrating mathematical knowledge from raw source
 material (chat logs, transcripts, handwritten notes, theorem sketches, failed proof
-attempts) into durable structured notes, load `knowledge-extraction`. This skill covers
-what to preserve, how to classify claims, how to build dependency graphs and proof-gap
-ledgers, and how to reconcile new material with existing vault notes.
+attempts) into durable structured notes, load `knowledge-extraction`.
+This skill covers what to preserve, how to classify claims, how to build dependency
+graphs and proof-gap ledgers, and how to reconcile new material with existing vault
+notes.
 
 This generic Obsidian skill covers vault file mechanics and content syntax.
 
