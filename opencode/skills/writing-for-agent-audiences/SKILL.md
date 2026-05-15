@@ -319,6 +319,35 @@ Before writing extensive documentation:
 Evaluation notes are for the skill author. A worker-facing skill should receive the
 distilled invariant, not the test transcript or the evaluator's diagnosis.
 
+### Separate Worker Concerns from Orchestrator Concerns
+
+When writing agent-facing guidance, distinguish clearly:
+
+**Worker-useful** (belongs in agent skill):
+- What to read, what to preserve, what to annotate
+- Artifact constraints: "Do not append status claims to the output"
+- Decision criteria: "Block if you cannot produce holistic summary"
+- Output requirements specific to the task domain
+
+**Not worker-useful** (belongs in orchestrator notes):
+- Execution mechanics: "In `opencode run --format json`..."
+- Harness behavior: "every assistant text part is user-visible..."
+- How results are consumed by later stages
+- Wrapper trivia about how the tool runs
+
+Wrong: Writing in a vault-analysis skill:
+> In opencode run --format json, every assistant text part is user-visible output.
+
+Right: Writing in a vault-analysis skill:
+> Do not append handoffs or progress summaries to the annotated source.
+> Later analysis should proceed from the source body and passage-local comments.
+
+The first makes the worker think about execution plumbing. The second constrains
+the artifact at the object level.
+
+Rule: If your skill mentions the harness, runner, or execution wrapper, you are
+contaminating worker guidance with orchestrator concerns.
+
 ### Develop iteratively with Claude
 
 1. Complete a task with Claude without docs

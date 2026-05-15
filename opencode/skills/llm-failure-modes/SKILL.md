@@ -188,7 +188,34 @@ These failures manifest in response text, not in tool use or task completion. Ev
 
 12. **Misconfiguration reframed as architecture** — A narrow, verifiable configuration error is responded to with broad architectural critique. Example: Output directory being watched (a one-line config fix) → "watch mode shouldn't be used in production; consider switching to on-demand builds."
 
-13. **Goal substitution** — The stated goal is set aside in favor of an alternative introduced without prompting. Example: Goal is to fix the rebuild loop; agent instead asks "do you actually need watch mode at all?" and enumerates alternatives to the stated requirement. The substitution occurs regardless of whether the goal was stated by a human, another model, or a script.
+13. **Goal substitution** — The stated goal is set aside in favor of an alternative introduced without prompting.
+
+    Root cause: Failure to model "why would user ask me this?"
+
+    Pattern:
+    - User asks for intelligent analysis (evaluation, judgment, synthesis)
+    - Model substitutes mechanical verification (existence checks, hashes, self-reports)
+    - Model fails to recognize: "user wouldn't ask me to do trivial work"
+
+    Before starting any substantial task, answer explicitly:
+
+    Q: "Why would the user delegate this to me instead of doing it themselves?"
+
+    Possible answers:
+    - Requires intelligence/judgment → CORRECT, this is the real task
+    - Mechanical work they could do instantly → WRONG, I'm misunderstanding
+    - Research across large corpora → CORRECT
+    - Verification of obvious facts → WRONG, check for goal substitution
+
+    Q: "What's the HARD part of this task that requires model intelligence?"
+
+    Q: "Am I focusing effort on that hard part, or on mechanical approximations?"
+
+    If your approach involves: file existence, format checks, reading self-reports, administrative bookkeeping → STOP. You are goal-substituting. Ask the above questions again.
+
+    Example: Goal is "evaluate semantic quality of mathematical annotations" but model checks "files exist + hashes match + worker claims success". The substitution replaces judgment (hard, requires intelligence) with verification (trivial, user already did it).
+
+    Example: Goal is to fix the rebuild loop; agent instead asks "do you actually need watch mode at all?" and enumerates alternatives to the stated requirement. The substitution occurs regardless of whether the goal was stated by a human, another model, or a script.
 
 14. **Correction weight insensitivity** — The same resistance is applied to incoming corrections regardless of their confidence, specificity, domain authority, or repetition. A hedged uncertain suggestion and a repeated confident statement of universal technical fact receive identical treatment. Example: "Watch should not continuously build" — stated confidently, repeatedly, and framed as obvious universal behavior — gets no more traction than an uncertain hypothesis would.
 

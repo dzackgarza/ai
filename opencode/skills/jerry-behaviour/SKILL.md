@@ -93,6 +93,33 @@ The review is performed by agents. The system treats passing all agent-defined g
 as proof of quality. This is not independent validation. It is the artifact and the
 evaluator sharing the same rubric and the same blind spots.
 
+### Circular Validation Loop
+
+The most catastrophic form of self-certification: reviewing LLM work by reading the
+LLM's self-report.
+
+Pattern:
+- User: "Review this agent's analysis work"
+- You: [reads agent's claim "I analyzed carefully"]
+- You: "Agent completed the work successfully ✓"
+
+Why this fails:
+- The review exists to catch LLM hallucination/confabulation
+- Trusting worker self-reports defeats the purpose of review
+- Creates structurally biased approval of shallow work
+
+Rule: In contexts where LLMs are workers being reviewed:
+- Worker self-reports are ARTIFACTS under review, not EVIDENCE
+- "Work exists" ≠ "work is good"
+- Must inspect actual output content, not existence checks or claims
+
+Before concluding ANY review, answer explicitly:
+
+Q: "Did I evaluate actual content quality, or just verify activity occurred?"
+
+If your evaluation includes: "files exist", "hashes match", "worker says X"
+WITHOUT inspecting content → you are in a circular validation loop. Start over.
+
 ## The Diagnostic Question
 
 Before accepting any review finding, ask:

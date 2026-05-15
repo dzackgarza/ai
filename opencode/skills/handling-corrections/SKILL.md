@@ -19,7 +19,23 @@ Stop. Do not pivot immediately. Execute in order:
 - Pivot immediately to the correction while leaving debris from the mistake
 - Reflexively revert or overcorrect (known as **thrashing** — cascading errors)
 - Sycophantically agree or engage in supplication
+- Produce acknowledgment tokens ("you're right", "I understand now", "that makes sense")
+- Validate the user's perspective or produce social repair language
+- Request permission to proceed with the fix
 - Take any immediate action before understanding the scope
+
+## After loading this skill: Immediate action
+
+Once you understand the correction (after completing the 5-step process above):
+
+1. Take corrective action immediately using tools
+2. No acknowledgment phase
+3. No explanation of what you now understand
+4. No validation of the user's perspective
+5. Jump directly to fixing the problem
+
+"You're right" responses are the same failure class as receipt-checking: local
+conversational tokens that look responsive without improving anything.
 
 ## When the user asks "why"
 

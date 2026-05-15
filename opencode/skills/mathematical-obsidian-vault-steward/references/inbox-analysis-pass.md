@@ -131,6 +131,9 @@ Process source-local passages after the whole-source read:
   section, or run of bold-labeled items. If a list mixes constructions, conjectures,
   questions, proof obligations, rejected claims, or different canonical vault notes,
   split the annotation by unit.
+- When the source has Roman-numeral sections, one section is the maximum normal
+  segment for a single pass. After editing one such section, stop rather than
+  sweeping adjacent sections or the rest of the turn.
 - `status: duplicate` and `action: preserve-source-visible` do not relax the
   internal-item rule. A duplicate comment with one route may cover only the source item
   it is attached to. If the reason says the passage restates content from several
@@ -285,6 +288,18 @@ Do not damage adjacent source punctuation while inserting comments. If a paragra
 Keep status fields atomic. Do not write prose statuses such as `proven? no`, `accepted`, `preserved with reservation`, `proved-in-source`, or `source-verified`; instead choose the nearest status from the list and put nuance in the reason. Use `source-backed`, not `source-verified`. Slash-separated values such as `disputed/needs-human` are invalid. If a disputed passage needs human judgment, choose `needs-human` as the status and say in the reason that the passage is disputed; if the task is only to preserve the disagreement, choose `disputed`.
 
 Keep mathematical unit fields atomic too. Do not write `fact/conjecture`, `construction/question`, `remark/question`, or similar hybrid labels. Split the route into separate comments, or choose the primary unit and put the nuance in the reason.
+
+Do not let `fact` become the safe default. A line headed "Theorem Statement" is
+`theorem` only when proved and otherwise usually `conjecture`; a line defining
+cusp pairs, admissibility, strata, lattices, groups, divisors, or moduli spaces
+is usually `definition`; a line defining a trace rule, quotient, normalization,
+family, or model is usually `construction`. Use `fact` only for a small property
+of an already-defined object.
+
+CriticMarkup reasons are not a changelog. Do not write that a comment was split
+from an umbrella, that an existing annotation was refined, that a previous agent
+missed something, or that "this pass" did anything. The durable comment should
+explain the source claim, the vault target, and the incorporation action.
 
 After the semantic pass is done, do a narrow markup hygiene pass: every `{>>` comment must close with `<<}`, no comment may close with `>>}` or `\}`, every `status:` value must come from the allowed list above, and every `unit:` value must come from `mathematical-unit-library.md`. This check does not prove quality; it only prevents malformed annotations from blocking incorporation. Never treat this hygiene pass as evidence that the annotation is complete.
 

@@ -120,6 +120,7 @@ This may be definite or indefinite, and is NOT assumed to be positive-definite, 
 - **Favor mature dependencies.** Do not reinvent wheels.
 - **Iterate, don't replace.** Writing an entire file is rarely correct.
 - Run `git diff` after rewrites — see what you lost. If valuable, restore it.
+- **Maintain hierarchical task framing.** Distinguish meta-goals (process refinement, skill development, system improvement) from evidence artifacts (individual file outputs, test runs, intermediate products). When reporting progress, focus on the meta-goal state unless user explicitly asks about artifacts.
 
 # Memory
 
