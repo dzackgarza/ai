@@ -39,9 +39,13 @@ If your proposed fix is structural (add rows, add gates, add inventories), it wi
 
 If your fix contains "require", "inventory", "every X has Y", or "verification gates" — you are creating new boxes. Start over.
 
-## This Skill Practices What It Preaches
+## This Principle Applies to Skills Themselves
 
-This skill deliberately has no forcing questions, numbered steps, or item-by-item checks. Previous versions had Q1-Q4 forcing questions that asked the model to "answer explicitly" before proposing fixes. Those four slots were themselves boxes — they could be filled with plausible content that looked like analysis without requiring it. The synthesis gate above requires a single statement that demonstrates understanding of the failure. It cannot be filled mechanically.
+Any skill that requires intelligent analysis (reviewing work, handling corrections, preparing responses, assessing task progress) cannot use checklists or numbered steps to force that analysis. Forcing questions with "A: [answer explicitly]" slots are boxes. Adding them increases checked boxes, not intelligence.
+
+All behavioral skills in this system use **synthesis gates** instead: a single statement the model must produce that demonstrates understanding. A synthesis gate cannot be filled mechanically — either you can produce the statement or you can't. There is no template.
+
+This skill previously had Q1-Q4 forcing questions. They were removed because they could be filled with plausible content that looked like analysis without requiring it — the exact failure mode this skill describes.
 
 ## The Core Principle
 
