@@ -19,9 +19,23 @@ Models treat response templates ("Items NOT completed", "Gaps", "Next actions") 
 
 The common mechanism: the model fills the response template by scanning its most recent actions, not by asking **why the user would want each piece of information**.
 
+## Label-Content Coherence (MUST run first)
+
+Before anything else, re-read every labeled section of your draft response. For each label ("Remaining", "Not completed", "Open items", "Next actions", etc.):
+
+**Does the content actually mean what the label says?**
+
+- "Remaining" must contain work NOT YET DONE. If it contains a description of completed work, the label and content are semantically inverted — the output contradicts its own heading. This is worse than leaving the section empty. It is incoherent.
+- "Open items" must contain items that are actually unresolved. Resolved items listed under "Open" are noise.
+- "Completed" must contain things that were done. Aspirational or planned items listed here are false claims.
+
+This is not a table-lookup task. You cannot check coherence by pattern-matching against examples. You must read your own output and ask: **"Does this content mean what this label claims it means?"** If the answer is no, delete the section entirely. An absent section is better than an incoherent one.
+
+**Why this exists:** In observed failures, the model filled a "Remaining:" slot with a paragraph summarizing completed work — semantic inversion. When corrected, it produced "Nothing remaining" — a scoping error, but less critical. Across multiple correction rounds, the model kept focusing on the scoping error (because it matched an anti-pattern table row) and couldn't see the semantic inversion (because that required judgment, not lookup). The anti-pattern table became a substitute for reading its own output.
+
 ## Forcing Questions
 
-Before writing any response that reports status, completion, or progress, answer:
+After verifying label-content coherence, answer:
 
 **Q1: "What is the user's OVERALL task, not just what I last worked on?"**
 
@@ -56,15 +70,17 @@ Possible answers:
 
 If more than half your response items fail this test, your response is template-filling, not communication.
 
-## Anti-Patterns
+## Failure Severity
 
-| Pattern | Problem | Fix |
-|---|---|---|
-| "Not completed: none" | Scoped to micro-task, ignoring global task | Restate the global task; list what's outstanding globally |
-| Listing resolved items as "open" | Padding with noise | Only include items that require action |
-| Artifact-level status dump | Wrong abstraction level | Report on the process, not the file |
-| "Next action: X" for mandatory work | Frames obligation as optional | "Remaining work: X" or just continue doing it |
-| Summarizing what was done | User can see git log | Only report what the user CAN'T see |
+Not all response failures are equal. Severity depends on the degree of incoherence, not on how easily the failure matches a known pattern:
+
+**Semantic inversion** (label contradicts content) is the most critical failure. The output is not just unhelpful — it is self-contradictory. Example: "Remaining: [description of completed work]." The reader must notice that the label and content disagree, then guess which one is wrong. This is worse than omitting the section entirely.
+
+**Noise injection** (resolved items listed as open, summaries of visible work) wastes the reader's attention but is at least internally consistent. The content isn't wrong, it's just useless.
+
+**Scoping errors** ("Not completed: none" when the global task has open items) are the least severe — the content is locally true, just at the wrong scope.
+
+When self-correcting, address semantic inversions first. Do not fixate on a scoping error while a semantic inversion sits unexamined — that is table-lookup reasoning (the scoping error matches a known pattern; the inversion requires judgment to see).
 
 ## What Good Responses Contain
 
