@@ -63,6 +63,12 @@ you notice a harmless extra blank line, leave it. If you introduce a literal art
 such as a stray replacement token, remove only that exact token and then stop editing
 nearby source text.
 
+Prefer exact local replacement of the adjacent source line or paragraph over
+line-number range edits. If adding a comment requires line arithmetic,
+regenerating source lines, or replacing a broad block copied from model memory,
+leave the passage unresolved. A missing annotation is safer than duplicated or
+mutated source text.
+
 If you cannot insert annotations without regenerating or reformatting the source body, leave local evidence of the blocker if possible and do not manufacture a polished reconstruction. A malformed but literal source copy is easier for a human to audit than a polished reconstruction that changes source text.
 
 When inserting multiple comments into a copied source, first draft the full set of comments with stable surrounding passages. Then insert from the bottom of the file upward, or use a targeted replacement around an exact passage. Do not insert top-down from absolute line numbers and then chase shifted line numbers.

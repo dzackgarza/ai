@@ -28,11 +28,18 @@ Stop. Do not pivot immediately. Execute in order:
 
 Once you understand the correction (after completing the 5-step process above):
 
-1. Take corrective action immediately using tools
-2. No acknowledgment phase
-3. No explanation of what you now understand
-4. No validation of the user's perspective
-5. Jump directly to fixing the problem
+**Do NOT output text first.**
+
+Do NOT write:
+- "You're right"
+- "I understand now"
+- "That makes sense"
+- Any explanation of what you now understand
+- Any validation of the user's perspective
+
+**Immediately use tools to fix the problem.**
+
+Text explanation comes ONLY AFTER the fix is done (if needed at all).
 
 "You're right" responses are the same failure class as receipt-checking: local
 conversational tokens that look responsive without improving anything.

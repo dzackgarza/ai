@@ -103,7 +103,13 @@ Touch only the files you intended to change; verify with `git diff` before respo
 Do not act or use any tools until you have read this skill.
 Do not immediately pursue a new course of action.
 
+## Situation-Based Skill Loading
 
+Load skills proactively based on the situation:
+
+- **When reviewing work produced by another LLM or agent** → LOAD `reviewing-subagent-work` skill
+- **When user reports quality or depth issues with agent work** → LOAD `addressing-shallow-work` skill
+- **When you find yourself checking file existence/hashes instead of content** → you're doing circular validation; see above
 
 # System
 

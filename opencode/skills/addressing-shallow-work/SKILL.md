@@ -24,23 +24,33 @@ You are giving the next agent boxes to check (easy, measurable) instead of forci
 
 ## Before Proposing Structural Fixes
 
-Answer these questions EXPLICITLY:
+Answer these questions EXPLICITLY before proposing any fix:
 
-Q1: "What mental operation did the shallow work skip?"
+**Q1: "Why would adding checklists/structure make shallow work WORSE?"**
 
-A: [must be cognitive, not procedural - e.g., "synthesis", "holistic understanding", "judgment"]
+A: [answer explicitly - explain the gaming mechanism]
 
-Q2: "Can I write a checklist that forces that mental operation?"
+**Q2: "What mental operation did the shallow work skip - synthesis, judgment, or checking facts?"**
 
-Decision tree:
-- If operation is "synthesis" → NO, checklists won't help
-- If operation is "holistic understanding" → NO
-- If operation is "judgment" → NO
-- If operation is "check specific fact" → YES, checklist OK
+A: [answer explicitly - must be cognitive, not procedural]
 
-Q3: "If NO to Q2: What requirement would make shortcuts IMPOSSIBLE?"
+**Q3: "Can a checklist force that mental operation, or can it be gamed?"**
+
+Decision:
+- If operation is "synthesis" → NO, checklists can't force it
+- If operation is "holistic understanding" → NO, checklists can't force it
+- If operation is "judgment" → NO, checklists can't force it
+- If operation is "check specific fact" → YES, checklist might work
+
+A: [answer explicitly]
+
+**Q4: "If NO to Q3: What requirement would make shortcuts IMPOSSIBLE?"**
 
 A: [must require synthesis as OUTPUT, not boxes as INPUT]
+
+Only after answering all four questions: propose your fix.
+
+If your proposed fix contains: "require", "inventory", "every X has Y", "verification gates" → STOP. You're creating boxes to check. Start over.
 
 ## Examples of WRONG Fixes
 
