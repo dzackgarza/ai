@@ -64,18 +64,21 @@ such as a stray replacement token, remove only that exact token and then stop ed
 nearby source text.
 
 Prefer exact local replacement of the adjacent source line or paragraph over
-line-number range edits. If adding a comment requires line arithmetic,
-regenerating source lines, or replacing a broad block copied from model memory,
-leave the passage unresolved. A missing annotation is safer than duplicated or
-mutated source text.
+line-number range edits. Exact replacement means literal matching against a
+source block just read from the current artifact. Do not use regex mode, wildcard
+spans such as `.*`, anchors, capture groups, or replacement backreferences to
+insert CriticMarkup. If adding a comment requires line arithmetic, regex
+surgery, regenerating source lines, or replacing a broad block copied from model
+memory, leave the passage unresolved. A missing annotation is safer than
+duplicated or mutated source text.
 
 If you cannot insert annotations without regenerating or reformatting the source body, leave local evidence of the blocker if possible and do not manufacture a polished reconstruction. A malformed but literal source copy is easier for a human to audit than a polished reconstruction that changes source text.
 
-When inserting multiple comments into a copied source, first draft the full set of comments with stable surrounding passages. Then insert from the bottom of the file upward, or use a targeted replacement around an exact passage. Do not insert top-down from absolute line numbers and then chase shifted line numbers.
+When inserting multiple comments into a copied source, first draft the full set of comments with stable surrounding passages. Then use targeted literal replacements around exact passages. Do not insert top-down from absolute line numbers and then chase shifted line numbers.
 
-Do not batch several line-number insertions into the same local region in one tool
-step. Line numbers shift after each insertion. Use one exact block replacement, or
-insert one comment, reread the local region, then insert the next.
+Do not batch several insertions into the same local region in one tool step. Use one
+literal exact block replacement, reread the local region, then decide whether the next
+replacement is safe.
 
 For any exact block replacement, paste the existing source lines from the current
 artifact exactly as read. Do not retype source prose from memory. After the edit,
@@ -247,7 +250,9 @@ Important routing defaults:
 - Unproved theorem-shaped claims are conjectures.
 - Open criteria or unresolved decisions are questions or problems.
 - Definitions of terminology, named lattices, groups, divisors, moduli spaces, notation, or standing identifications are definitions.
-- Recipes, quotients, disjoint unions, normalizations, families, packages, models, procedures, and explicit constructions are constructions.
+- Recipes, quotients, disjoint unions, normalizations, families, packages, models,
+  procedures, construction steps, construction requirements, and explicit
+  constructions are constructions.
 - Local concerns, caveats, failed proof attempts, and provenance notes are usually prose remarks near the target statement.
 - A fact is a small source-backed assertion about an already-defined object that does not warrant theorem-like status. Do not use `fact` for the act of defining or constructing a named object.
 
@@ -299,12 +304,14 @@ Do not let `fact` become the safe default. A line headed "Theorem Statement" is
 `theorem` only when proved and otherwise usually `conjecture`; a line defining
 cusp pairs, admissibility, strata, lattices, groups, divisors, or moduli spaces
 is usually `definition`; a line defining a trace rule, quotient, normalization,
-family, or model is usually `construction`. Use `fact` only for a small property
-of an already-defined object.
+family, model, construction step, or construction requirement is usually
+`construction`. Use `fact` only for a small property of an already-defined
+object.
 Before leaving a handled segment, reread every newly inserted or touched
 `unit: fact` comment against the adjacent source label. If the label names a
 mathematical object, criterion, stratum, quotient, model, family, normalization,
-or rule, the comment probably needs `definition` or `construction`, not `fact`.
+rule, construction step, or construction requirement, the comment probably needs
+`definition` or `construction`, not `fact`.
 Repairing local misclassified `fact` or `remark` comments is real analysis work;
 do not skip them to chase an untouched section.
 

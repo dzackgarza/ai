@@ -73,7 +73,7 @@ Do not rewrite historical notes solely to remove existing remark callouts. Apply
 - `conjecture`: a theorem-shaped claim intended to be true but not proved in the available source and vault context.
 - `question`: an unresolved mathematical query, criterion, or choice where the correct statement is not yet known.
 - `problem`: a larger open task or research problem with multiple subquestions or proof obligations.
-- `construction`: an explicit recipe, quotient, disjoint union, normalization, family, package, diagram, model, or procedure to build.
+- `construction`: an explicit recipe, quotient, disjoint union, normalization, family, package, diagram, model, construction step, construction requirement, or procedure to build.
 - `fact`: a small source-backed assertion about an already-defined object that is useful but not theorem-shaped.
 - `example`: a concrete instance illustrating a definition, construction, theorem, or phenomenon.
 - `counterexample`: a concrete instance that refutes a claim or shows a hypothesis is necessary.
@@ -89,6 +89,7 @@ Do not rewrite historical notes solely to remove existing remark callouts. Apply
 - If the source is deciding what the correct result should be, classify it as `question` or `problem`.
 - If a source item introduces a named lattice, group, divisor, moduli space, or standing identification, classify it as `definition`.
 - If the source gives an object to build while its properties remain unproved, classify the object as `construction` and list the unproved properties as conjectures or questions.
+- If the source states a required construction step, such as choosing compatible auxiliary data, classify it as `construction`, even when the existence or compatibility proof remains open.
 - Do not use `fact` for the act of defining or constructing a named object.
 - If a proof is partial, classify it as `proof-sketch` or a prose remark about a proof gap, not as `proof`.
 - If a small assertion is source-backed but not structurally important, classify it as `fact`.
