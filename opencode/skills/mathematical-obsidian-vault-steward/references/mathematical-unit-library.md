@@ -87,6 +87,7 @@ Do not rewrite historical notes solely to remove existing remark callouts. Apply
 
 - If a statement lacks proof but is intended as a result, classify it as `conjecture`.
 - If the source is deciding what the correct result should be, classify it as `question` or `problem`.
+- If the source states a rule, criterion, implication, equivalence, or if-and-only-if result, classify it as `proposition` when established and as `conjecture` or `question` when unresolved; do not use `remark` only because the durable edit will be prose.
 - If a source item introduces a named lattice, group, divisor, moduli space, or standing identification, classify it as `definition`.
 - If the source gives an object to build while its properties remain unproved, classify the object as `construction` and list the unproved properties as conjectures or questions.
 - If the source states a required construction step, such as choosing compatible auxiliary data, classify it as `construction`, even when the existence or compatibility proof remains open.

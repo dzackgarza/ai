@@ -249,6 +249,7 @@ Important routing defaults:
 - Theorems, lemmas, propositions, and corollaries require exact hypotheses and proof status.
 - Unproved theorem-shaped claims are conjectures.
 - Open criteria or unresolved decisions are questions or problems.
+- Established rules, criteria, implications, equivalences, and if-and-only-if statements that are not main theorems are propositions; unresolved ones are conjectures or questions.
 - Definitions of terminology, named lattices, groups, divisors, moduli spaces, notation, or standing identifications are definitions.
 - Recipes, quotients, disjoint unions, normalizations, families, packages, models,
   procedures, construction steps, construction requirements, and explicit
@@ -306,12 +307,17 @@ cusp pairs, admissibility, strata, lattices, groups, divisors, or moduli spaces
 is usually `definition`; a line defining a trace rule, quotient, normalization,
 family, model, construction step, or construction requirement is usually
 `construction`. Use `fact` only for a small property of an already-defined
-object.
+object. A line asserting a rule, criterion, implication, equivalence, or
+if-and-only-if claim is usually `proposition` if established and `conjecture` or
+`question` if unresolved; it is not `remark` merely because it is duplicate.
 Before leaving a handled segment, reread every newly inserted or touched
 `unit: fact` comment against the adjacent source label. If the label names a
 mathematical object, criterion, stratum, quotient, model, family, normalization,
 rule, construction step, or construction requirement, the comment probably needs
 `definition` or `construction`, not `fact`.
+Also reread every touched `unit: remark` comment whose adjacent source sentence
+contains a rule, criterion, implication, equivalence, or if-and-only-if claim;
+that comment probably needs `proposition`, `conjecture`, or `question`.
 Repairing local misclassified `fact` or `remark` comments is real analysis work;
 do not skip them to chase an untouched section.
 
