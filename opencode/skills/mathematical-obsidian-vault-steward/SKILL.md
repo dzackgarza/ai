@@ -197,6 +197,7 @@ Use this adversarial check:
   - exact formal statement with proof elsewhere -> theorem/lemma/proposition/corollary as appropriate
 - Do not use `fact` for the act of defining a named object; use `definition` or `construction`.
 - When refining old annotations, do not preserve their `unit:` labels by inertia. Reclassify every visible source item from the source text itself. A unit is not `remark` merely because the incorporation edit will be prose rather than a callout.
+- Before leaving a handled segment, audit any newly inserted or touched `unit: fact` comments against adjacent bold labels. If the source label names a lattice, group, divisor, moduli space, cusp pair, admissibility criterion, stratum, quotient, normalization, trace rule, family, or model, use `definition` or `construction` instead. Fixing a local misclassified unit is valid loop progress.
 - CriticMarkup `reason:` fields should explain source/vault semantics only. Do not mention that a comment was split from an umbrella, that a previous annotation existed, that another agent missed it, or that "this pass" changed it.
 - If a note contains both a construction and an unresolved theorem about it, label the note by its main mathematical role and state the unresolved theorem separately as a `conjecture` or `question`.
 - Do **not** use fuzzy labels such as `open issue`, `framework`, `programmatic framework`, `target theorem`, `not yet settled`, `safe interim definition`, or similar as the primary mathematical status of a note.

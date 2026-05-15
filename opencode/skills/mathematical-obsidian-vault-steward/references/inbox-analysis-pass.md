@@ -295,6 +295,12 @@ cusp pairs, admissibility, strata, lattices, groups, divisors, or moduli spaces
 is usually `definition`; a line defining a trace rule, quotient, normalization,
 family, or model is usually `construction`. Use `fact` only for a small property
 of an already-defined object.
+Before leaving a handled segment, reread every newly inserted or touched
+`unit: fact` comment against the adjacent source label. If the label names a
+mathematical object, criterion, stratum, quotient, model, family, normalization,
+or rule, the comment probably needs `definition` or `construction`, not `fact`.
+Repairing local misclassified `fact` or `remark` comments is real analysis work;
+do not skip them to chase an untouched section.
 
 CriticMarkup reasons are not a changelog. Do not write that a comment was split
 from an umbrella, that an existing annotation was refined, that a previous agent
