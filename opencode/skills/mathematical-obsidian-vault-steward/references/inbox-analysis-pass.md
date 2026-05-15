@@ -250,6 +250,7 @@ Important routing defaults:
 - Unproved theorem-shaped claims are conjectures.
 - Open criteria or unresolved decisions are questions or problems.
 - Established rules, criteria, implications, equivalences, and if-and-only-if statements that are not main theorems are propositions; unresolved ones are conjectures or questions.
+- Target-note proof status overrides source labels. If the target note's frontmatter, tags, type line, callout, or heading frames the item as a conjecture, proposed statement, open issue, or "why this is a conjecture", use `conjecture` or `question`, not `proposition`, even if the source label says "Theorem Statement".
 - Definitions of terminology, named lattices, groups, divisors, moduli spaces, notation, or standing identifications are definitions.
 - Recipes, quotients, disjoint unions, normalizations, families, packages, models,
   procedures, construction steps, construction requirements, and explicit
@@ -309,7 +310,8 @@ family, model, construction step, or construction requirement is usually
 `construction`. Use `fact` only for a small property of an already-defined
 object. A line asserting a rule, criterion, implication, equivalence, or
 if-and-only-if claim is usually `proposition` if established and `conjecture` or
-`question` if unresolved; it is not `remark` merely because it is duplicate.
+`question` if unresolved or target-framed as proposed; it is not `remark` merely
+because it is duplicate.
 Before leaving a handled segment, reread every newly inserted or touched
 `unit: fact` comment against the adjacent source label. If the label names a
 mathematical object, criterion, stratum, quotient, model, family, normalization,
