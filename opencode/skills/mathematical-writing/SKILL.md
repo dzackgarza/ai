@@ -4,27 +4,99 @@ description: Use when producing mathematical content, proofs, problem solutions,
 ---
 # Dzack Mathematical Writing
 
-Override default mathematical conventions with dzack's specific style.
-All mathematical output must follow the conventions in `references/`.
+## Philosophy
 
-## Core Policy
+This skill exists because LLMs naturally produce sloppy, hand-wavy, generic mathematical
+output. They reward-hack with words like "clearly" and "obviously" to avoid hard
+arguments. They skip steps, leave variables unbound, invent inconsistent notation, and
+produce unreadable proofs that no human mathematician would accept.
 
-- **Never use "clearly" or "obviously" without explicit reasoning.** Every step must be
-  mathematically justified.
-- **One operation per numbered step.** Each step contains exactly one mathematical
-  operation or deduction.
-- **Inline justifications required.** End each non-definition step with `[By <reason>]`
-  in square brackets.
-- **Explicit quantifiers and types.** Never leave variables unbound.
-  Use `∀x ∈ X` or `∃x ∈ X`. Declare types: "Let n ∈ NN."
-- **NN excludes 0.** In this convention system, `NN` = {1, 2, 3, ...}. When 0 is needed,
-  use `ZZ_{≥0}`.
-- **Match Lean naming conventions.** `monoid` → `Monoid`, `is_subgroup` → `IsSubgroup`,
-  `ring_hom` → `RingHom`.
-- **Include verification code where appropriate.** SageMath or Lean 4 assertions
-  alongside proofs for computable claims.
-- **Use standard theorem formatting.** Italic environment names, no numbering:
-  `*Theorem.* [Statement]`.
+The goal is **elegant, rigorous, checkable mathematics** — not just "correct" answers.
+Every output should be readable without making the reader's eyes bleed.
+Every proof should be verifiable by a human reader.
+Every step should be justified.
+Every variable should be bound.
+Every claim should be proven, not asserted.
+
+This is a **behavioral intervention system**, not a style guide.
+The rules below exist to prevent specific, observed failure modes.
+
+## Core Policy: Why These Rules Exist
+
+### 1. Never use "clearly" or "obviously"
+
+**Failure mode:** Agents use these words to reward-hack past hard reasoning.
+They sound authoritative while hiding gaps.
+In real mathematics, nothing is obvious until proven.
+
+**Philosophy:** Every step must be mathematically justified.
+If you can't justify it explicitly, you don't understand it well enough to include it.
+State the lemma, theorem, or chain of reasoning instead.
+
+### 2. One operation per numbered step
+
+**Failure mode:** Agents compress multiple deductions into one step to save tokens or
+appear concise. This hides errors and makes formalization impossible.
+
+**Philosophy:** A proof is a chain of small, verifiable steps.
+Each step should be immediately checkable by a human reader.
+Multi-operation steps are where errors hide.
+
+### 3. Inline justifications required
+
+**Failure mode:** Agents present deductions without explaining why they follow.
+The reader must guess the reasoning.
+
+**Philosophy:** `[By <reason>]` forces explicit articulation of the logical connection.
+It also prevents the agent from hand-waving.
+If you can't state the reason concisely, the step is too big.
+
+### 4. Explicit quantifiers and types
+
+**Failure mode:** Agents write "x + y = y + x" without binding x and y, making the
+statement ambiguous and formalization impossible.
+
+**Philosophy:** Mathematical objects live in specific structures.
+A variable without a type is meaningless.
+`∀x ∈ G` is not pedantry — it is precision.
+
+### 5. NN excludes 0
+
+**Failure mode:** Agents default to `ℕ` including 0 (Lean/mathlib convention), which
+conflicts with classical number theory conventions where `NN` means positive integers.
+
+**Philosophy:** Consistency with classical mathematical conventions.
+When 0 is needed, use `ZZ_{≥0}`. Never silently redefine `NN`.
+
+### 6. Match Lean naming conventions
+
+**Failure mode:** Agents use snake_case or informal names (`monoid`, `is_subgroup`) that
+don't match mathlib's PascalCase conventions.
+
+**Philosophy:** Formalization requires name alignment.
+If the prose proof uses names that don't match the library, the formalization step
+becomes a translation burden.
+
+### 7. Include verification code
+
+**Failure mode:** Agents claim a result is true without ever checking it.
+They compute intermediate values but never assert the final claim.
+
+**Philosophy:** Verification means writing code that actively checks the claim — not
+just computing related values.
+Every verification block must end with `assert` or an explicit boolean check.
+Silent computation is not verification.
+
+### 8. Use standard theorem formatting
+
+**Failure mode:** Agents produce unmarked prose with no structural boundaries between
+theorem statements, proofs, and commentary.
+
+**Philosophy:** Mathematical documents use sociological conventions (`*Theorem.*`,
+`*Lemma.*`, `*Corollary.*`, `*Proposition.*`, `*Proof.*`, `*Remark.*`, `*Definition.*`,
+`*Example.*`) to signal the role of each block.
+These markers are not decorative — they create a parseable structure that humans and
+machines can navigate.
 
 ## Decision Procedures
 
@@ -49,7 +121,7 @@ All mathematical output must follow the conventions in `references/`.
   alignment.
 - Number important equations with `\tag{n}`.
 
-## Environment Traps
+## Environment Traps: Common Agent Failures
 
 - **Unbound variables in proofs:** Writing "x + y = y + x" without ∀ quantifier.
   Fix: prepend "∀x, y ∈ G:".
@@ -63,6 +135,12 @@ All mathematical output must follow the conventions in `references/`.
   Fix: enumerate all cases explicitly.
 - **Verification code without assertions:** Computing but never asserting.
   Fix: every verification block must end with an `assert` or explicit check.
+- **Missing sociological markers:** Writing proofs without `*Theorem.*`, `*Proof.*`,
+  etc. Fix: wrap every claim and every proof in the appropriate marker.
+- **Skipping base case in induction:** Going straight to the inductive step.
+  Fix: verify base case separately and explicitly.
+- **Using informal set builder notation in formalization:** Writing `{x | P(x)}` in
+  Lean. Fix: use explicit class/instance definitions.
 
 ## Required Outputs
 
@@ -91,6 +169,7 @@ Clear statement with all given information and constraints.
 1. Let [variable] ∈ [type].
 2. ⇒ [deduction] [Justification]
 3. ...
+∎
 ```
 
 ### Formalization (when requested)
@@ -98,6 +177,7 @@ Clear statement with all given information and constraints.
 Provide both mathematical prose and corresponding Lean 4 code.
 Match structure line-for-line.
 See `references/formalization-patterns.md` for paired examples.
+Load these patterns into context as one-shot demonstrations of the exact style expected.
 
 ## Validation Checklist
 
@@ -111,21 +191,44 @@ See `references/formalization-patterns.md` for paired examples.
 - [ ] No "clearly" or "obviously" without explicit reasoning
 - [ ] No skipped algebraic steps in derivations
 - [ ] Standard names match target formal library conventions
+- [ ] Sociological markers (`*Theorem.*`, `*Lemma.*`, `*Proof.*`) used consistently
+- [ ] Base case verified for induction proofs
 
 ## Anti-Patterns
 
 | Pattern | Why Bad | Do Instead |
 | --- | --- | --- |
-| "Clearly, ..." or "Obviously, ..." | Hides reasoning; often wrong | State explicit justification or lemma |
+| "Clearly, ..." or "Obviously, ..." | Hides reasoning; often wrong; reward-hacking | State explicit justification or lemma |
 | Unbound variables | Ambiguous scope; formalization fails | Add ∀ or ∃ quantifier, or type declaration |
-| Multi-operation steps | Hard to verify; hard to formalize | Split into one operation per numbered step |
-| Missing justifications | Reader must guess reasoning | End each step with `[By ...]` |
+| Multi-operation steps | Hard to verify; hard to formalize; errors hide | Split into one operation per numbered step |
+| Missing justifications | Reader must guess reasoning; agent hand-waving | End each step with `[By ...]` |
 | Text inside math mode | Typesetting errors; semantic confusion | Use `\text{...}` or move text outside `$...$` |
-| Verification without assertions | Silent failure possible | Always assert expected result |
+| Verification without assertions | Silent failure possible; not actually verified | Always assert expected result |
 | Inconsistent function notation | Confusion; formalization mismatch | Pick one convention and stick to it |
 | Skipping base case in induction | Invalid proof | Always verify base case separately |
 | Non-exhaustive cases | Missing paths; potential counterexample | List all cases explicitly |
 | Using informal set builder notation in formalization | Lean/mathlib mismatch | Use explicit class/instance definitions |
+| Missing sociological markers | Unparseable structure; indistinguishable prose | Wrap every claim and proof in italic markers |
+| Sloppy algebraic manipulation | Errors hide in skipped steps | Show every expansion, factorization, simplification |
+
+## One-Shot Training via Examples
+
+The `references/formalization-patterns.md` file contains explicit paired examples
+(mathematical prose + Lean 4 + SageMath verification) that serve as in-context
+demonstrations. Load these into context when producing mathematical output.
+The patterns demonstrate:
+
+- Induction (2ⁿ > n)
+- Contradiction (√2 irrational)
+- Existence (field inverse)
+- Definitions (subgroup)
+- Theorems (finite domain is field)
+- Group theory (cosets, normality)
+- Sum formulas (verification)
+
+These are not reference material — they are training data.
+Use them to push the model into the correct token space for rigorous mathematical
+writing.
 
 ## References
 
