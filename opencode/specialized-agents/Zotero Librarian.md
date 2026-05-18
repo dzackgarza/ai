@@ -137,7 +137,7 @@ Your goal is to maintain a library where:
   - Better plaintext search than PDF alone
 
 ### Organization
-- ✅ Items needing attention are tagged (`needs-pdf`, `needs-review`, `check-doi`, etc.)
+- ✅ Items needing attention are tagged (`needs-pdf`, `needs-agent-review`, `check-doi`, etc.)
 - ✅ All items know what they cite (`cites` relations)
 - ✅ All items know what cites them (`citedBy` relations)
 - ✅ Relations use canonical identifiers (DOIs, citation keys)

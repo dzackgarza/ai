@@ -39,7 +39,7 @@ Every new session must:
 2. Load the matching local skills from `.agents/skills/` by reading their SKILL.md
    files — especially `research-state-machine` (for plan-to-execution routing and
    the review protocol) and `research-project-workflow` (for Nimbalyst mechanics).
-3. Before touching any card in `needs-review` status, read
+3. Before touching any card in `needs-agent-review` status, read
    `research-state-machine/references/review-kernel.md` — it defines the 6-gate
    ordered protocol that must be applied by an independent reviewer.
 4. Read `plans/AGENTS.md` for planning workspace structure and DAG rules.
@@ -53,14 +53,14 @@ that cannot be resolved from the repo docs and established conventions. "Carry o
 all tasks" means do the work, not ask which to do first. A question signals a
 blocking ambiguity, not a polite default.
 
-## The needs-review protocol
+## The needs-agent-review protocol
 
-**Load `research-gate-review` BEFORE touching any card in `needs-review` status** — it contains
+**Load `research-gate-review` BEFORE touching any card in `needs-agent-review` status** — it contains
 anti-boxchecking rules, bug-pattern references, subagent dispatch mechanics, and review-log
 writing discipline that operationalize the abstract 6-gate protocol. Do not apply the gates
 inline in your own session; delegate to fresh-context subagents per the review kernel.
 
-A card in `needs-review` status is not just "waiting for a human." It needs the
+A card in `needs-agent-review` status is not waiting for a human. It needs the
 6-gate ordered protocol from `research-state-machine/references/review-kernel.md`
 applied by an independent reviewer (not the implementer):
 
@@ -116,7 +116,7 @@ things — they are normal repo hygiene.
 
 ## References
 
-- `references/review-workflow.md` — 6-gate ordered review protocol for needs-review cards
+- `references/review-workflow.md` — 6-gate ordered review protocol for needs-agent-review cards
 - `references/dag-completeness-audit.md` — methodology for verifying whether all DAG-executable work is exhausted; use when asked to "carry out all tasks" or verify goal completion
 
 ## Load with

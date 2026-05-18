@@ -35,7 +35,12 @@ Do not treat "card" as a UI-only object. If a file is tracked by the schema syst
 
 Project-local tracker schemas live at the project root under `.nimbalyst/trackers/`, symlinked to `~/ai/planning/schemas/`. The canonical schemas live under `~/ai/planning/schemas/`. Schema edits go there with a git commit on that repo. Projects symlink and consume these schemas — local forks are never correct. If a schema is too restrictive, the fix is to add the field to the canonical schema, not to fork or relax the local copy.
 
-Install those files as symlinks into a project `.nimbalyst/trackers/` directory before creating cards. Use schemas as the source of truth for allowed fields, required fields, status values, display roles, and table columns.
+Status definitions live in `status-catalog.yaml`. The checked-in schema status
+blocks are generated consumer state and must match that catalog exactly. Update status
+values, labels, icons, hierarchy roles, or DAG palette styles in the catalog first,
+then regenerate/install schemas through the planning justfile.
+
+Install those files as symlinks into a project `.nimbalyst/trackers/` directory before creating cards. Use schemas as the source of truth for allowed fields, required fields, display roles, and table columns; use `status-catalog.yaml` as the source of truth for status semantics shared across schemas, validation, and DAG rendering.
 
 - `schemas/feature.yaml`
 - `schemas/spec.yaml`
@@ -44,7 +49,7 @@ Install those files as symlinks into a project `.nimbalyst/trackers/` directory 
 - `schemas/task.yaml`
 - `schemas/decision.yaml`
 
-Install, copy, or symlink those files into a project `.nimbalyst/trackers/` directory before creating cards. Use schemas as the source of truth for allowed fields, required fields, status values, display roles, and table columns.
+Install, copy, or symlink those files into a project `.nimbalyst/trackers/` directory before creating cards. Use schemas as the source of truth for allowed fields, required fields, display roles, and table columns; status values are catalog-owned even when materialized into schema files.
 
 If a project symlinks schemas from this directory, edit the canonical schema here under `schemas/`. Do not replace a project symlink with a divergent local copy. The only path for schema changes is editing the canonical source.
 
@@ -217,7 +222,7 @@ Forbidden patterns:
 
 - A phase table that lists child tasks and manually writes each task's current status.
 - A plan summary that says a phase is `in-progress` because it copied the phase card's status.
-- A feature body that maintains counts such as "7 tasks complete, 3 needs-review".
+- A feature body that maintains counts such as "7 tasks complete, 3 needs-agent-review".
 - Any prose that must be updated only because a linked card changed metadata.
 
 Allowed patterns:
@@ -227,7 +232,7 @@ Allowed patterns:
 - A card records acceptance criteria, design nuance, activity logs, review comments, or durable decisions.
 - Generated views, kanban boards, DAGs, or short scripts aggregate child status dynamically from frontmatter.
 
-Static metadata rollups make ordinary local changes nonlocal: changing one task from `in-progress` to `needs-review` would require searching and editing every parent or sibling body that copied the old status. That creates large, opaque diffs and defeats the fixed hierarchy. Query the cards instead.
+Static metadata rollups make ordinary local changes nonlocal: changing one task from `in-progress` to `needs-agent-review` would require searching and editing every parent or sibling body that copied the old status. That creates large, opaque diffs and defeats the fixed hierarchy. Query the cards instead.
 
 ## Specification Cards
 
@@ -334,7 +339,7 @@ phases:
 - '[[PHASE-CONTRACTS]]'
 - '[[PHASE-IMPLEMENTATION]]'
 title: Feature implementation roadmap
-status: needs-review
+status: needs-agent-review
 description: Roadmap for taking FEATURE-ID from approved feature/spec contracts to releasable implementation.
 successCriteria:
 - The approved phases satisfy the feature and spec contracts.
@@ -397,7 +402,7 @@ Bad plan pattern:
 ## Task List
 
 - [[TASK-1]] status: in-progress
-- [[TASK-2]] status: needs-review
+- [[TASK-2]] status: needs-agent-review
 - [[TASK-3]] status: done
 ```
 

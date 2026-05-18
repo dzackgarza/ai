@@ -19,10 +19,10 @@ The gate protocol exists to find real issues, not to produce review logs.
 
 ## When to use
 
-**Load this skill at session start whenever any cards are in `needs-review` status.** The review kernel in `research-state-machine/references/review-kernel.md` defines the protocol; this skill operationalizes it. Do not rely on the kernel alone — this skill contains pitfall avoidance, anti-boxchecking rules, and the bug-pattern reference that the kernel intentionally leaves at a higher level of abstraction.
+**Load this skill at session start whenever any cards are in `needs-agent-review` status.** The review kernel in `research-state-machine/references/review-kernel.md` defines the protocol; this skill operationalizes it. Do not rely on the kernel alone — this skill contains pitfall avoidance, anti-boxchecking rules, and the bug-pattern reference that the kernel intentionally leaves at a higher level of abstraction.
 
-- Any card in `needs-review` status with the 6-gate protocol
-- After implementing a task, before marking it needs-review (self-check Gates 1-2)
+- Any card in `needs-agent-review` status with the 6-gate protocol
+- After implementing a task, before marking it needs-agent-review (self-check Gates 1-2)
 - When asked to "review" or "audit" implementation code
 
 ## The cardinal sin: checkboxing
@@ -37,14 +37,14 @@ Checkboxing looks like:
 
 This is NOT review. This is form-filling. The user will catch and correct this.
 
-## The cardinal confusion: needs-review vs needs-human-input
+## The cardinal confusion: needs-agent-review vs needs-human-input
 
-`needs-review` does NOT mean "waiting for a human." It means the card is ready for the ordered gate-based protocol (Gates 1-6), which an independent AGENT can execute. The review kernel explicitly states:
+`needs-agent-review` does NOT mean "waiting for a human." It means the card is ready for the ordered gate-based protocol (Gates 1-6), which an independent AGENT can execute. The review kernel explicitly states:
 
-- `needs-review`: the card is ready for the ordered gate-based protocol (Gates 1-6), which an independent agent can execute.
+- `needs-agent-review`: the card is ready for the ordered gate-based protocol (Gates 1-6), which an independent agent can execute.
 - `needs-human-input`: the card specifically requires human attention — a design decision, policy choice, or evaluation that cannot be delegated to an agent.
 
-If you treat `needs-review` as blocking on human input, the user will correct you. You MUST dispatch review to fresh-context subagents and advance cards that pass.
+If you treat `needs-agent-review` as blocking on human input, the user will correct you. You MUST dispatch review to fresh-context subagents and advance cards that pass.
 
 ## Subagent delegation (mandatory)
 
@@ -73,7 +73,7 @@ Group cards by type (SPEC, PHASE, TASK) for coherent context. Within a type, gro
 
 ### Outcome application
 
-- If all gates pass → outcome is `complete`. The coordinator changes `status: needs-review` to `status: complete`.
+- If all gates pass → outcome is `complete`. The coordinator changes `status: needs-agent-review` to `status: complete`.
 - If any gate fails → outcome is `revision-required`. Set `status: revision-required`, note what needs fixing, fix it, re-dispatch for review.
 - If a genuine human decision is required → outcome is `needs-human-input`. Set `status: needs-human-input` and record the specific question.
 
@@ -117,7 +117,7 @@ Phase cards are coordination/planning artifacts. The review is about child task 
 - G5 Dependency Correctness — child task dependencies form a valid DAG; no circular deps; no self-referential `dependsOn`; wrapup correctly depends on all work tasks
 - G6 No Weakening — feature-level acceptance criteria preserved; no smoke relaxation; phase-level criteria are operational gates, not workarounds
 
-**Key check:** If the phase card is `needs-review` but most child tasks are not `complete`, the phase is premature for review. Flag this as a finding — the phase should remain `in-progress` or `needs-human-input` until children are done.
+**Key check:** If the phase card is `needs-agent-review` but most child tasks are not `complete`, the phase is premature for review. Flag this as a finding — the phase should remain `in-progress` or `needs-human-input` until children are done.
 
 ### PLAN cards (plan-level review)
 
@@ -175,10 +175,10 @@ When a fresh-context subagent completes a review, it MUST write the review log i
 
 | Current status | After review passes | After review fails |
 |---------------|--------------------|--------------------| 
-| `needs-review` | `complete` (write review log + change status) | `revision-required` (write findings, fix, re-review) |
-| `revision-required` | Fix applied → `needs-review` → dispatch fresh review | Keep fixing |
+| `needs-agent-review` | `complete` (write review log + change status) | `revision-required` (write findings, fix, re-review) |
+| `revision-required` | Fix applied → `needs-agent-review` → dispatch fresh review | Keep fixing |
 
-Do NOT change `status: needs-review` to `status: complete` without writing the review evidence into the card body first. A status change without a review log is box-checking.
+Do NOT change `status: needs-agent-review` to `status: complete` without writing the review evidence into the card body first. A status change without a review log is box-checking.
 
 ### Review log format in card body
 
@@ -227,9 +227,9 @@ When reviewing category specifications, check that axiom and category names desc
 - **Routing through the most refined parent is not always correct.** The refined parent may override methods with different signatures. Verify the method you route to has the expected parameters.
 - **Large mapping specs time out at 600s.** SPEC-MAPPING-LATTICES (and similarly large specs >400 lines) will exhaust a subagent's time budget. For such cards, either split the review into focused chunks (e.g., "review only the lattice tier table" then "review only the constructor routes"), or give the subagent a more targeted prompt that skips source-verification busywork on already-verified sections.
 - **Self-referential `dependsOn` is common.** Many wrapup task cards list themselves in their own `dependsOn` array. Check for this on every PHASE review — it's a mechanical bug that Gate 5 catches.
-- **Phase prematurity.** A phase card in `needs-review` when most child tasks are not `complete` is premature. The phase review should wait until children are done. Flag the phase as `needs-human-input` with the finding rather than marking it `complete` with open children.
+- **Phase prematurity.** A phase card in `needs-agent-review` when most child tasks are not `complete` is premature. The phase review should wait until children are done. Flag the phase as `needs-human-input` with the finding rather than marking it `complete` with open children.
 - **Cards live under unexpected features.** Don't construct card paths from card IDs assuming a specific feature directory. Use `find plans/features -name 'CARD-ID*'` to locate the actual file. SPEC cards for forms and lattices live under `FEATURE-MODULES-WITH-FORMS-AND-LATTICES`, not `FEATURE-CATEGORY-SPECS-AND-SAGE-SURFACES`.
-- **Triage before dispatch.** Before dispatching reviews, scan all `needs-review` cards for existing review logs. Cards that already have substantive review logs but are still `needs-review` are almost always awaiting human signoff — move them to `needs-human-input` rather than redundantly re-reviewing. This single scan saved ~30 redundant subagent dispatches in one session.
+- **Triage before dispatch.** Before dispatching reviews, scan all `needs-agent-review` cards for existing review logs. Cards that already have substantive review logs but are still `needs-agent-review` are almost always awaiting human signoff — move them to `needs-human-input` rather than redundantly re-reviewing. This single scan saved ~30 redundant subagent dispatches in one session.
 - **Review log section header variance.** Subagents write `## 6-Gate Protocol Review Log` rather than the kernel's `## Review Log`. Accept either header when checking for review log presence. When writing the section header yourself, use `## 6-Gate Protocol Review Log` to match the subagent convention.
 
 ## References

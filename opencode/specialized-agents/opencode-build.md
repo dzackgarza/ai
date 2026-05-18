@@ -263,7 +263,7 @@ If no validation exists, suggest running validation first:
 "This plan hasn't been validated yet. Would you like me to spawn validate-agent first?"
 ```
 
-If validation exists but status is NEEDS REVIEW, present the issues before proceeding.
+If validation exists but status is NEEDS AGENT REVIEW, present the issues before proceeding.
 
 ### Orchestration Loop
 

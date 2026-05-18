@@ -33,12 +33,12 @@ fields:
 - name: status
   type: select
   required: true
-  default: needs-review
+  default: needs-agent-review
   options:
-  - value: needs-review
-    label: Needs Review
-    icon: edit_note
-    color: '#64748b'
+  - value: needs-agent-review
+    label: Needs Agent Review
+    icon: rate_review
+    color: '#3b82f6'
   - value: needs-human-input
     label: Needs Human Input
     icon: person
