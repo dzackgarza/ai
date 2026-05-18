@@ -503,7 +503,17 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
                   children_by_parent.setdefault(parent_id, []).append(child_id)
 
       errors = 0
-      started_statuses = {"in_progress", "needs_review", "complete", "done", "blocked", "decided", "implemented"}
+      started_statuses = {
+          "in_progress",
+          "needs_agent_review",
+          "needs_human_input",
+          "revision_required",
+          "complete",
+          "done",
+          "blocked",
+          "decided",
+          "implemented",
+      }
       complete_statuses = {"complete", "done", "decided", "implemented"}
 
       for parent_id, child_ids in children_by_parent.items():

@@ -39,7 +39,8 @@ fields:
     icon: motion_photos_on
   - value: needs-agent-review
     label: Needs Agent Review
-    icon: build
+    icon: rate_review
+    color: '#3b82f6'
   - value: needs-human-input
     label: Needs Human Input
     icon: person
