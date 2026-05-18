@@ -1,0 +1,139 @@
+statuses:
+  unstarted:
+    value: unstarted
+    label: Unstarted
+    icon: circle
+    palette: fill:#eef2f7,stroke:#64748b,color:#334155
+  in-progress:
+    value: in-progress
+    label: In Progress
+    icon: motion_photos_on
+    palette: fill:#d7f3ff,stroke:#0284c7,color:#0f172a
+  needs-agent-review:
+    value: needs-agent-review
+    label: Needs Agent Review
+    icon: rate_review
+    color: '#3b82f6'
+    palette: fill:#fff1c2,stroke:#d97706,color:#7c2d12
+  needs-human-input:
+    value: needs-human-input
+    label: Needs Human Input
+    icon: person
+    color: '#8b5cf6'
+    palette: fill:#ede9fe,stroke:#8b5cf6,color:#312e81
+  complete:
+    value: complete
+    label: Complete
+    palette: fill:#d8f5e7,stroke:#16a34a,color:#14532d
+  revision-required:
+    value: revision-required
+    label: Revision Required
+    icon: replay
+    color: '#f59e0b'
+    palette: fill:#fff7ed,stroke:#f59e0b,color:#7c2d12
+  blocked:
+    value: blocked
+    label: Blocked
+    icon: block
+    color: '#dc2626'
+    palette: fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+  approved-and-unstarted:
+    value: approved-and-unstarted
+    label: Approved and Unstarted
+    icon: check_circle
+    color: '#22c55e'
+    palette: fill:#d9f0ff,stroke:#0ea5e9,color:#0c4a6e
+  decided:
+    value: decided
+    label: Decided
+    icon: check_circle
+    palette: fill:#d8f5e7,stroke:#16a34a,color:#14532d
+  implemented:
+    value: implemented
+    label: Implemented
+    icon: done_all
+    palette: fill:#d8f5e7,stroke:#16a34a,color:#14532d
+  done:
+    value: done
+    label: Done
+    palette: fill:#d8f5e7,stroke:#16a34a,color:#14532d
+schemaStatusSets:
+  standard:
+    default: unstarted
+    options:
+    - status: unstarted
+    - status: in-progress
+    - status: needs-agent-review
+    - status: needs-human-input
+    - status: complete
+      overrides:
+        icon: check_circle
+    - status: revision-required
+    - status: blocked
+  standard-no-complete-icon:
+    default: unstarted
+    options:
+    - status: unstarted
+    - status: in-progress
+    - status: needs-agent-review
+    - status: needs-human-input
+    - status: complete
+      overrides:
+        color: '#22c55e'
+    - status: revision-required
+    - status: blocked
+  plan:
+    default: needs-agent-review
+    required: true
+    options:
+    - status: needs-agent-review
+    - status: needs-human-input
+    - status: approved-and-unstarted
+    - status: in-progress
+      overrides:
+        icon: construction
+        color: '#f59e0b'
+    - status: complete
+      overrides:
+        icon: task_alt
+        color: '#10b981'
+    - status: blocked
+  decision:
+    default: unstarted
+    options:
+    - status: unstarted
+      overrides:
+        icon: help
+    - status: in-progress
+      overrides:
+        label: Evaluating
+        icon: psychology
+    - status: needs-human-input
+    - status: decided
+    - status: implemented
+trackerStatusSets:
+  feature: standard
+  spec: standard
+  phase: standard-no-complete-icon
+  task: standard-no-complete-icon
+  plan: plan
+  decision: decision
+workflowRoles:
+  started:
+  - in-progress
+  - needs-agent-review
+  - needs-human-input
+  - revision-required
+  - complete
+  - done
+  - blocked
+  - decided
+  - implemented
+  complete:
+  - complete
+  - done
+  - decided
+  - implemented
+  unstarted:
+  - unstarted
+  - approved-and-unstarted

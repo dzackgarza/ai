@@ -1,25 +1,65 @@
 set script-interpreter := ['uvx', '--with', 'pyyaml', '--with', 'jsonschema', 'python']
 
 default_schema_dir := justfile_directory() / "schemas"
+default_status_catalog := justfile_directory() / "status-catalog.yaml"
 
 default:
   @just --list
 
 [script]
-install-schemas dest=".nimbalyst/trackers":
+install-schemas dest=".nimbalyst/trackers" status_catalog=default_status_catalog:
   from pathlib import Path
-  import shutil
+
+  import yaml
 
   src = Path("{{default_schema_dir}}")
   dest = Path("{{dest}}")
+  catalog = yaml.safe_load(Path("{{status_catalog}}").read_text(encoding="utf-8"))
   dest.mkdir(parents=True, exist_ok=True)
+
+  def status_options(tracker_type):
+      set_name = catalog["trackerStatusSets"][tracker_type]
+      status_set = catalog["schemaStatusSets"][set_name]
+      statuses = catalog["statuses"]
+      options = []
+      for entry in status_set["options"]:
+          status = statuses[entry["status"]]
+          option = {
+              "value": status["value"],
+              "label": status["label"],
+          }
+          for key in ("icon", "color"):
+              if key in status:
+                  option[key] = status[key]
+          option.update(entry.get("overrides", {}))
+          options.append(option)
+      return status_set, options
+
+  def hydrate_status_field(schema, tracker_type):
+      status_set, options = status_options(tracker_type)
+      for field in schema["fields"]:
+          if field.get("name") != "status":
+              continue
+          field["default"] = status_set["default"]
+          if status_set.get("required"):
+              field["required"] = True
+          else:
+              field.pop("required", None)
+          field["options"] = options
+          return schema
+      raise ValueError(f"{tracker_type}: missing status field")
 
   for schema in ["feature.yaml", "spec.yaml", "plan.yaml", "phase.yaml", "task.yaml", "decision.yaml"]:
       source = src / schema
       target = dest / schema
       if not source.is_file():
           raise FileNotFoundError(source)
-      shutil.copyfile(source, target)
+      raw = yaml.safe_load(source.read_text(encoding="utf-8"))
+      hydrated = hydrate_status_field(raw, source.stem)
+      target.write_text(
+          yaml.safe_dump(hydrated, sort_keys=False, allow_unicode=True),
+          encoding="utf-8",
+      )
       print(f"Wrote {target}")
 
 [script]
@@ -143,12 +183,12 @@ derive-tags target="plans/features":
 
   print(f"Updated tags in {changed} card(s).")
 
-check-schema target="plans/features" schema_dir=default_schema_dir:
+check-schema target="plans/features" schema_dir=default_schema_dir status_catalog=default_status_catalog:
   @just --justfile {{justfile()}} derive-tags {{target}}
-  @just --justfile {{justfile()}} _check-schema {{target}} {{schema_dir}}
+  @just --justfile {{justfile()}} _check-schema {{target}} {{schema_dir}} {{status_catalog}}
 
 [script]
-_check-schema target="plans/features" schema_dir=default_schema_dir:
+_check-schema target="plans/features" schema_dir=default_schema_dir status_catalog=default_status_catalog:
   import re
   import sys
   from pathlib import Path
@@ -158,7 +198,61 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
   from yaml import safe_load
 
   SCHEMA_DIR = Path("{{schema_dir}}")
+  STATUS_CATALOG = Path("{{status_catalog}}")
   TARGET = "{{target}}"
+
+
+  def load_status_catalog(path: Path) -> Dict[str, Any]:
+      raw = safe_load(path.read_text(encoding="utf-8")) or {}
+      if not isinstance(raw, dict):
+          raise TypeError(f"{path}: status catalog is not a mapping")
+      return raw
+
+
+  def status_options(catalog: Dict[str, Any], tracker_type: str) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+      set_name = catalog["trackerStatusSets"][tracker_type]
+      status_set = catalog["schemaStatusSets"][set_name]
+      statuses = catalog["statuses"]
+      options: List[Dict[str, Any]] = []
+      for entry in status_set["options"]:
+          status = statuses[entry["status"]]
+          option = {"value": status["value"], "label": status["label"]}
+          for key in ("icon", "color"):
+              if key in status:
+                  option[key] = status[key]
+          option.update(entry.get("overrides", {}))
+          options.append(option)
+      return status_set, options
+
+
+  def expected_status_metadata(catalog: Dict[str, Any], tracker_type: str) -> Dict[str, Any]:
+      status_set, options = status_options(catalog, tracker_type)
+      expected = {"default": status_set["default"], "options": options}
+      if status_set.get("required"):
+          expected["required"] = True
+      return expected
+
+
+  def hydrate_schema_status(
+      schema_file: Path,
+      nimbalyst_schema: Dict[str, Any],
+      catalog: Dict[str, Any],
+  ) -> Dict[str, Any]:
+      tracker_type = schema_file.stem
+      expected = expected_status_metadata(catalog, tracker_type)
+      for field in nimbalyst_schema.get("fields", []):
+          if not isinstance(field, dict) or field.get("name") != "status":
+              continue
+          actual = {key: field[key] for key in ("default", "required", "options") if key in field}
+          if actual != expected:
+              raise ValueError(
+                  f"{schema_file}: status field differs from planning/status-catalog.yaml"
+              )
+          field.update(expected)
+          if "required" not in expected:
+              field.pop("required", None)
+          return nimbalyst_schema
+      raise ValueError(f"{schema_file}: missing status field")
 
 
   def _scalar_type(type_name: str) -> str:
@@ -237,6 +331,7 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
 
 
   def load_trackers(schema_dir: Path) -> Dict[str, Dict[str, Any]]:
+      catalog = load_status_catalog(STATUS_CATALOG)
       schemas: Dict[str, Dict[str, Any]] = {}
       for schema_file in sorted(schema_dir.glob("*.yaml")):
           try:
@@ -246,7 +341,13 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
               raise
 
           tracker_type = schema_file.stem
-          schemas[tracker_type] = to_json_schema(raw if isinstance(raw, dict) else {})
+          if not isinstance(raw, dict):
+              raise TypeError(f"{schema_file}: schema is not a mapping")
+          if tracker_type in catalog.get("trackerStatusSets", {}):
+              hydrated = hydrate_schema_status(schema_file, raw, catalog)
+          else:
+              hydrated = raw
+          schemas[tracker_type] = to_json_schema(hydrated)
       return schemas
 
 
@@ -468,6 +569,8 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
 
 
   def validate_status_hierarchy(records: List[Tuple[Path, Dict[str, Any]]]) -> int:
+      catalog = load_status_catalog(STATUS_CATALOG)
+      workflow_roles = catalog["workflowRoles"]
       node_data: Dict[str, Dict[str, Any]] = {}
       children_by_parent: Dict[str, List[str]] = {}
 
@@ -503,18 +606,9 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
                   children_by_parent.setdefault(parent_id, []).append(child_id)
 
       errors = 0
-      started_statuses = {
-          "in_progress",
-          "needs_agent_review",
-          "needs_human_input",
-          "revision_required",
-          "complete",
-          "done",
-          "blocked",
-          "decided",
-          "implemented",
-      }
-      complete_statuses = {"complete", "done", "decided", "implemented"}
+      started_statuses = {normalize_status(value) for value in workflow_roles["started"]}
+      complete_statuses = {normalize_status(value) for value in workflow_roles["complete"]}
+      unstarted_statuses = {normalize_status(value) for value in workflow_roles["unstarted"]}
 
       for parent_id, child_ids in children_by_parent.items():
           parent = node_data[parent_id]
@@ -530,7 +624,7 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
 
           started_children = [entry for entry in child_entries if entry[1] in started_statuses]
           incomplete_children = [entry for entry in child_entries if entry[1] not in complete_statuses]
-          unstarted_children = [entry for entry in child_entries if entry[1] in {"unstarted", "approved_and_unstarted"}]
+          unstarted_children = [entry for entry in child_entries if entry[1] in unstarted_statuses]
 
           if parent_status in {"unstarted", "approved_and_unstarted"} and started_children:
               child_id, child_status, _ = started_children[0]
@@ -814,12 +908,12 @@ _check-schema target="plans/features" schema_dir=default_schema_dir:
 
   raise SystemExit(main())
 
-dag target="plans/features" out="plans/plan-dag.md" schema_dir=default_schema_dir:
-  @just --justfile {{justfile()}} check-schema {{target}} {{schema_dir}}
-  @just --justfile {{justfile()}} _dag-render {{target}} {{out}}
+dag target="plans/features" out="plans/plan-dag.md" schema_dir=default_schema_dir status_catalog=default_status_catalog:
+  @just --justfile {{justfile()}} check-schema {{target}} {{schema_dir}} {{status_catalog}}
+  @just --justfile {{justfile()}} _dag-render {{target}} {{out}} {{status_catalog}}
 
 [script]
-_dag-render target="plans/features" out="plans/plan-dag.md":
+_dag-render target="plans/features" out="plans/plan-dag.md" status_catalog=default_status_catalog:
   import re
   from pathlib import Path
   from typing import Any, Dict, List, Tuple
@@ -849,7 +943,25 @@ _dag-render target="plans/features" out="plans/plan-dag.md":
 
   target = Path("{{target}}")
   out_path = Path("{{out}}")
+  status_catalog = Path("{{status_catalog}}")
   out_path.parent.mkdir(parents=True, exist_ok=True)
+
+  def load_status_palette(path: Path) -> Dict[str, str]:
+      raw = safe_load(path.read_text(encoding="utf-8")) or {}
+      if not isinstance(raw, dict):
+          raise TypeError(f"{path}: status catalog is not a mapping")
+      statuses = raw.get("statuses")
+      if not isinstance(statuses, dict):
+          raise TypeError(f"{path}: missing statuses mapping")
+      palette: Dict[str, str] = {}
+      for value in statuses:
+          status = statuses[value]
+          if not isinstance(status, dict):
+              raise TypeError(f"{path}: status '{value}' is not a mapping")
+          style = status.get("palette")
+          if isinstance(style, str) and style.strip():
+              palette[normalize_status(value)] = style.strip()
+      return palette
 
   nodes: Dict[str, Dict[str, str]] = {}
   dependency_edges: List[Tuple[str, str, str]] = []
@@ -938,19 +1050,7 @@ _dag-render target="plans/features" out="plans/plan-dag.md":
                   raise ValueError(f"{node_id}: parents references unknown id '{target_id}'")
               containment_edges.append((target_id, node_id, "parent"))
 
-  status_palette: Dict[str, str] = {
-      "status_needs_agent_review": "fill:#fff1c2,stroke:#d97706,color:#7c2d12",
-      "status_needs_human_input": "fill:#ede9fe,stroke:#8b5cf6,color:#312e81",
-      "status_in_progress": "fill:#d7f3ff,stroke:#0284c7,color:#0f172a",
-      "status_unstarted": "fill:#eef2f7,stroke:#64748b,color:#334155",
-      "status_complete": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
-      "status_done": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
-      "status_approved_and_unstarted": "fill:#d9f0ff,stroke:#0ea5e9,color:#0c4a6e",
-      "status_revision_required": "fill:#fff7ed,stroke:#f59e0b,color:#7c2d12",
-      "status_blocked": "fill:#fee2e2,stroke:#dc2626,color:#7f1d1d",
-      "status_decided": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
-      "status_implemented": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",
-  }
+  status_palette = load_status_palette(status_catalog)
 
   def build_graph(node_ids: List[str], graph_edges: List[Tuple[str, str, str]], graph_direction: str) -> List[str]:
       lines = [f"graph {graph_direction}"]
@@ -1014,5 +1114,5 @@ _dag-render target="plans/features" out="plans/plan-dag.md":
   out_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
   print(f"Wrote DAG to {out_path}")
 
-validate target="plans/features" schema_dir=default_schema_dir out="plans/plan-dag.md":
-  @just --justfile {{justfile()}} dag {{target}} {{out}} {{schema_dir}}
+validate target="plans/features" schema_dir=default_schema_dir out="plans/plan-dag.md" status_catalog=default_status_catalog:
+  @just --justfile {{justfile()}} dag {{target}} {{out}} {{schema_dir}} {{status_catalog}}
