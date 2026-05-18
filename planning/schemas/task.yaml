@@ -37,8 +37,8 @@ fields:
   - value: in-progress
     label: In Progress
     icon: motion_photos_on
-  - value: needs-review
-    label: Needs Review
+  - value: needs-agent-review
+    label: Needs Agent Review
     icon: build
   - value: needs-human-input
     label: Needs Human Input

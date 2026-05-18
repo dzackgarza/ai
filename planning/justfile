@@ -929,7 +929,8 @@ _dag-render target="plans/features" out="plans/plan-dag.md":
               containment_edges.append((target_id, node_id, "parent"))
 
   status_palette: Dict[str, str] = {
-      "status_needs_review": "fill:#fff1c2,stroke:#d97706,color:#7c2d12",
+      "status_needs_agent_review": "fill:#fff1c2,stroke:#d97706,color:#7c2d12",
+      "status_needs_human_input": "fill:#ede9fe,stroke:#8b5cf6,color:#312e81",
       "status_in_progress": "fill:#d7f3ff,stroke:#0284c7,color:#0f172a",
       "status_unstarted": "fill:#eef2f7,stroke:#64748b,color:#334155",
       "status_complete": "fill:#d8f5e7,stroke:#16a34a,color:#14532d",

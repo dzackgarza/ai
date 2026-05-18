@@ -217,7 +217,7 @@ Forbidden patterns:
 
 - A phase table that lists child tasks and manually writes each task's current status.
 - A plan summary that says a phase is `in-progress` because it copied the phase card's status.
-- A feature body that maintains counts such as "7 tasks complete, 3 needs-review".
+- A feature body that maintains counts such as "7 tasks complete, 3 needs-agent-review".
 - Any prose that must be updated only because a linked card changed metadata.
 
 Allowed patterns:
@@ -227,7 +227,7 @@ Allowed patterns:
 - A card records acceptance criteria, design nuance, activity logs, review comments, or durable decisions.
 - Generated views, kanban boards, DAGs, or short scripts aggregate child status dynamically from frontmatter.
 
-Static metadata rollups make ordinary local changes nonlocal: changing one task from `in-progress` to `needs-review` would require searching and editing every parent or sibling body that copied the old status. That creates large, opaque diffs and defeats the fixed hierarchy. Query the cards instead.
+Static metadata rollups make ordinary local changes nonlocal: changing one task from `in-progress` to `needs-agent-review` would require searching and editing every parent or sibling body that copied the old status. That creates large, opaque diffs and defeats the fixed hierarchy. Query the cards instead.
 
 ## Specification Cards
 
@@ -334,7 +334,7 @@ phases:
 - '[[PHASE-CONTRACTS]]'
 - '[[PHASE-IMPLEMENTATION]]'
 title: Feature implementation roadmap
-status: needs-review
+status: needs-agent-review
 description: Roadmap for taking FEATURE-ID from approved feature/spec contracts to releasable implementation.
 successCriteria:
 - The approved phases satisfy the feature and spec contracts.
@@ -397,7 +397,7 @@ Bad plan pattern:
 ## Task List
 
 - [[TASK-1]] status: in-progress
-- [[TASK-2]] status: needs-review
+- [[TASK-2]] status: needs-agent-review
 - [[TASK-3]] status: done
 ```
 
