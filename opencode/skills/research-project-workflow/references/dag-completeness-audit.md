@@ -6,8 +6,9 @@ Use this when asked to "carry out all tasks from cards" or "continue until all t
 
 Does every card in the DAG fit into exactly one of these buckets?
 
-- **complete** — ACs satisfied, implementation done, human-accepted (or awaiting human acceptance with no further agent work)
-- **needs-review** — implementation/research done, ACs checked, but waiting for human signoff
+- **complete** — ACs satisfied, implementation done, and the workflow allows closure
+- **needs-agent-review** — implementation/research done and ACs checked, but waiting for independent agent review
+- **needs-human-input** — agent review passed or work otherwise requires human judgment, acceptance, or a decision
 - **blocked** — ready current-phase leaf stopped by an external prerequisite not satisfiable through the DAG
 - **unstarted with unmet dependsOn** — correctly placed as unstarted because declared dependencies are incomplete
 - **downstream-phase** — blocked by GOAL.md phase policy, not by a card-local dependency
@@ -21,12 +22,12 @@ If any card is **unstarted without unmet dependsOn** and within the active phase
 The plan-dag.md mermaid graph embeds statuses in bracket notation:
 
 ```bash
-grep -E '\[unstarted\]|\[in-progress\]|\[needs-review\]|\[complete\]' plans/plan-dag.md \
+grep -E '\[unstarted\]|\[in-progress\]|\[needs-agent-review\]|\[needs-human-input\]|\[complete\]' plans/plan-dag.md \
   | grep -v 'status_' \
   | sort | uniq -c | sort -rn
 ```
 
-The `| grep -v 'status_'` filter is critical — mermaid also emits CSS class labels like `status_needs_review` alongside the actual bracket status. Only the bracket notation represents the canonical DAG status.
+The `| grep -v 'status_'` filter is critical — mermaid also emits CSS class labels like `status_needs_agent_review` alongside the actual bracket status. Only the bracket notation represents the canonical DAG status.
 
 ### Step 2: Cross-reference with card-progress-report
 
@@ -45,16 +46,18 @@ Per the repo's AGENTS.md:
 
 ### Step 4: Check individual card bodies for actual AC progress
 
-For needs-review cards, the frontmatter status only tells you so much. Read the actual card body to verify:
+For needs-agent-review cards, the frontmatter status only tells you so much. Read the actual card body to verify:
 
 - Are ACs checked `[x]` or unchecked `[ ]`?
 - Is there a work log showing what was done?
 - Has a 6-gate review been applied and documented?
 - Has the card been reviewed by someone other than the implementer?
 
-A card marked needs-review with all ACs checked, a work log showing completed implementation, and a passing 6-gate review is **awaiting human acceptance** — no further agent work available.
+A card marked needs-agent-review with all ACs checked, a work log showing completed implementation, and no 6-gate review log still needs independent agent review.
 
-A card marked needs-review with unchecked ACs may have remaining executable work.
+A card marked needs-agent-review with a passing 6-gate review should not remain in that status. Move it to `complete` if the workflow permits agent closure; otherwise move it to `needs-human-input` with the concrete human signoff or decision required.
+
+A card marked needs-agent-review with unchecked ACs may have remaining executable work.
 
 ### Step 5: Verify the active phase boundary
 
@@ -77,8 +80,10 @@ But evaluate critically: are these actionable cleanup items, or intentional prov
 
 | DAG shows | Individual card shows | Meaning | Action |
 |-----------|----------------------|---------|--------|
-| needs-review | ACs all `[x]`, work log complete, 6-gate passed | Done; waiting for human acceptance | Do not promote to complete. Note the blocker and stop. |
-| needs-review | Some ACs `[ ]`, no review log | Work may be incomplete | Read the card and determine what remains. If dependencies are satisfied, execute the remaining work. |
+| needs-agent-review | ACs all `[x]`, work log complete, no review log | Agent review still required | Dispatch independent review. |
+| needs-agent-review | 6-gate passed but human acceptance required | Waiting for human input, not agent review | Move to `needs-human-input` with the concrete signoff question. |
+| needs-agent-review | Some ACs `[ ]`, no review log | Work may be incomplete | Read the card and determine what remains. If dependencies are satisfied, execute the remaining work. |
+| needs-human-input | Review passed or decision needed | Human judgment is required | Do not substitute agent review for the human decision. |
 | unstarted | No `dependsOn` or all deps complete | Needs work | Execute if within active phase and not blocked by policy. |
 | unstarted | has incomplete `dependsOn` | Correctly placed | Do not start. |
 | in-progress | — | Something is actively being worked on | Check current branch/worktree for in-progress state. |
@@ -86,7 +91,7 @@ But evaluate critically: are these actionable cleanup items, or intentional prov
 
 ## Pitfalls
 
-- **Do not conflate needs-review with incomplete.** Many needs-review cards have all implementation work done and are merely waiting for human signoff. The AGENTS.md rule "Do not mark work accepted, done, or closed without human approval" means you must not promote needs-review → complete autonomously.
+- **Do not conflate needs-agent-review with human signoff.** A card in `needs-agent-review` requires independent agent review. A reviewed card waiting for human approval belongs in `needs-human-input`.
 - **Do not conflate unstarted with blocked.** A card is unstarted because its declared dependencies are incomplete. It is not "blocked" in the DAG sense — it has simply not yet been reachable.
 - **Do not conflate downstream-phase with stuck.** Features in later GOAL.md phases are intentionally gated. Their unstarted status is correct per the staged program, not a sign of stalled work.
 - **The 6-gate review must be substantively reading code, not just checking metadata.** See research-gate-review skill for the non-checkboxing mandate.

@@ -114,7 +114,7 @@ is predicted by the setup, not by correctness.
 ### Structural Pattern
 
 ```
-Agent A writes plan    →  status: needs-review
+Agent A writes plan    →  status: needs-agent-review
 Agent B reviews plan   →  "all gates passed, looks good"
 Agent C audits review  →  "review is thorough, gates properly checked"
 Agent D summarizes     →  "consensus: plan is complete and rigorous"

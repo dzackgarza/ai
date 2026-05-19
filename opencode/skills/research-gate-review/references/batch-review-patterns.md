@@ -114,7 +114,7 @@ for root, dirs, files in os.walk('plans/features'):
         with open(path) as fh: content = fh.read()
         m = re.match(r'^---\s*\n(.*?)\n---', content, re.DOTALL)
         if not m: continue
-        if 'status: needs-review' not in m.group(1): continue
+        if 'status: needs-agent-review' not in m.group(1): continue
         if '## 6-Gate Protocol Review Log' in content or '## Review Log' in content:
             # Card already reviewed — check if waiting for human
             last_review = content[content.rfind('## '):]
@@ -126,7 +126,7 @@ for root, dirs, files in os.walk('plans/features'):
                 ...
 ```
 
-Cards already reviewed but not promoted are almost always awaiting human signoff. Moving them to `needs-human-input` prevents redundant re-review.
+Cards already reviewed but not promoted are almost always awaiting human signoff. Moving them from `needs-agent-review` to `needs-human-input` prevents redundant re-review.
 
 ## Large spec timeout recovery
 

@@ -93,7 +93,7 @@ Record the exact blocker and the smallest human action that would unblock the lo
 
 Exit to `CONSOLIDATE`.
 
-Common failure: vague blockers such as “needs review” without a concrete request.
+Common failure: vague blockers such as “needs agent review” without a concrete request.
 
 ### QUIESCENT
 

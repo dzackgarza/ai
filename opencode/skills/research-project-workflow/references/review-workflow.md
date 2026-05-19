@@ -1,6 +1,6 @@
 # Condensed Review Protocol (6-Gate Order)
 
-Use when a card is in `needs-review` status. Apply gates in order; stop at first failure.
+Use when a card is in `needs-agent-review` status. Apply gates in order; stop at first failure.
 
 ## Gate 1: Definition Grounding
 Every definition, type, predicate, constructor, method-owner claim traces to a source.
@@ -35,7 +35,7 @@ Work follows repo style and compliance rules.
 
 ## Outcomes
 - **complete/done**: All gates passed
-- **revision-required**: Fixable within card scope; rework → needs-review
+- **revision-required**: Fixable within card scope; rework → needs-agent-review
 - **blocked**: External prerequisite needed; set blocked_reason + create prerequisite card
 
 ## Review Log format
