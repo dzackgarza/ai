@@ -70,11 +70,9 @@ By the Fundamental Theorem of Arithmetic [Thm 2.3], n has a unique prime factori
 
 When introducing new variables, specify type and constraints in the same line:
 
-- **Good:** "Let `n ∈ NN` be odd.
-  Then `∃k ∈ NN` such that `n = 2k + 1`"
+- **Good:** "Let `n ∈ NN` be odd. Then `∃k ∈ NN` such that `n = 2k + 1`"
 - **Good:** "Let `m = 2k² + 2k`. Since `k ∈ ZZ`, `m ∈ ZZ` [Closure of ZZ under +, *]"
-- **Bad:** "Let `n` be odd.
-  Then `n = 2k + 1`" (k is unbound)
+- **Bad:** "Let `n` be odd. Then `n = 2k + 1`" (k is unbound)
 - **Bad:** "`m = 2k² + 2k ∈ ZZ`" (m was never introduced)
 
 ## Assumption Management

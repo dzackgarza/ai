@@ -131,7 +131,7 @@ A problem statement must include:
 ## Anti-Patterns in Exposition
 
 | Pattern | Why Bad | Do Instead |
-| --- | --- | --- |
+|---------|---------|------------|
 | Skipping algebraic steps | Reader cannot verify; gaps hide errors | Show every expansion, factorization, simplification |
 | Unstated domain restrictions | Solutions may be invalid outside domain | State domain at the beginning; check restrictions |
 | Inconsistent variable reuse | Confusion; "x" means two different things | Use distinct names; subscript if needed |

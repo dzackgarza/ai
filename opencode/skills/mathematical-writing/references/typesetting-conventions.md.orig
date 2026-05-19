@@ -211,7 +211,7 @@ c & d
 ## Common Pitfalls
 
 | Pitfall | Why Bad | Fix |
-| --- | --- | --- |
+|---------|---------|-----|
 | Text inside math mode | Typesetting errors; semantic confusion | Use `\text{...}` or move text outside `$...$` |
 | Unescaped special characters | Compilation errors; broken rendering | Escape `$`, `%`, `&`, `#`, `_`, `^`, `{`, `}` |
 | Mixed text and math without spacing | Cluttered; hard to read | Use `\quad`, `\qquad`, or `\text{...}` |

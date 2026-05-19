@@ -45,9 +45,9 @@ Check memories when starting related work:
 ## iWe Setup and Usage
 
 Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes.
-Each project contains a `.agents/memories/config.toml` after `iwe init`. The actual
-`.md` files are stored in iwe's internal graph — use `iwe find`, `iwe retrieve`, and
-`iwe tree` to inspect them, never raw file reads.
+Each project contains a `.agents/memories/config.toml` after `iwe init`.
+The actual `.md` files are stored in iwe's internal graph — use `iwe find`, `iwe retrieve`,
+and `iwe tree` to inspect them, never raw file reads.
 
 ### First-time setup in a project
 

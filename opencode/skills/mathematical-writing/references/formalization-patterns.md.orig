@@ -95,7 +95,7 @@ theorem example_by_induction (n : ℕ) : P n := by
 def verify_induction(max_n=10):
     # Base case
     assert P(0), "Base case failed"
-
+    
     # Inductive step
     for n in range(1, max_n + 1):
         if P(n-1):  # Induction hypothesis
@@ -105,7 +105,7 @@ def verify_induction(max_n=10):
             assert False, f"Induction failed at n={n}"
 ```
 
-* * *
+---
 
 ## Pattern: Induction
 
