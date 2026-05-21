@@ -260,15 +260,8 @@ _mypy: _install-tools
 	if [ -f "sage-mypy-plugin.ini" ]; then
 		merged_config=$(mktemp /tmp/mypy-merged-XXXXX.ini)
 		trap 'rm -f "$merged_config"' EXIT
-		python3 - "$global_config" "sage-mypy-plugin.ini" "$merged_config" <<'PY'
-import configparser, sys
-global_path, local_path, out_path = sys.argv[1], sys.argv[2], sys.argv[3]
-p = configparser.RawConfigParser()
-p.read_string(open(global_path).read())
-p.read_string(open(local_path).read())
-with open(out_path, "w") as f:
-    p.write(f)
-PY
+		python3 "{{justfile_directory()}}/scripts/merge_ini.py" \
+			"$global_config" "sage-mypy-plugin.ini" "$merged_config"
 		effective_config="$merged_config"
 	else
 		effective_config="$global_config"
