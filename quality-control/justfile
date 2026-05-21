@@ -251,16 +251,38 @@ _mypy: _install-tools
 		echo "Skipping mypy: no Python files found."
 		exit 0
 	fi
+	# If the project provides sage-mypy-plugin.ini, merge it with the global config.
+	# ConfigParser merge (read_string twice) handles duplicate sections correctly:
+	# later keys extend or override earlier ones.  This lets the project ini add
+	# [mypy] mypy_path for the plugin's generated stub root without forking the
+	# global config.
+	global_config="{{justfile_directory()}}/mypy-global.ini"
+	if [ -f "sage-mypy-plugin.ini" ]; then
+		merged_config=$(mktemp /tmp/mypy-merged-XXXXX.ini)
+		trap 'rm -f "$merged_config"' EXIT
+		python3 - "$global_config" "sage-mypy-plugin.ini" "$merged_config" <<'PY'
+import configparser, sys
+global_path, local_path, out_path = sys.argv[1], sys.argv[2], sys.argv[3]
+p = configparser.RawConfigParser()
+p.read_string(open(global_path).read())
+p.read_string(open(local_path).read())
+with open(out_path, "w") as f:
+    p.write(f)
+PY
+		effective_config="$merged_config"
+	else
+		effective_config="$global_config"
+	fi
 	sage_bin="${SAGE_BIN:-sage}"
 	if command -v "$sage_bin" >/dev/null 2>&1; then
 		"$sage_bin" -python -m mypy \
-			--config-file {{justfile_directory()}}/mypy-global.ini \
+			--config-file "$effective_config" \
 			--ignore-missing-imports \
 			--explicit-package-bases \
 			"${python_files[@]}"
 	else
 		uvx --python 3.14 --from mypy mypy \
-			--config-file {{justfile_directory()}}/mypy-global.ini \
+			--config-file "$effective_config" \
 			"${python_files[@]}"
 	fi
 
