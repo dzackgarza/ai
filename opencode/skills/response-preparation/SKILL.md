@@ -1,19 +1,19 @@
 ---
 name: response-preparation
-description: Use before writing any completion report, progress update, or status response to the user. Forces theory-of-mind reasoning about what the user needs to hear vs what the model is about to reflexively produce.
+description: Use before writing any completion report, progress update, or status response to the user. 
 ---
 
 # Response Preparation
 
 ## Why This Skill Exists
-
+Forces theory-of-mind reasoning about what the user needs to hear vs what the you are about to reflexively produce.
 Models treat response templates ("Items NOT completed", "Gaps", "Next actions") as boxes to fill. The result is mechanically correct but informationally useless:
 
 - **"Not completed: none."** — when the local sub-task was a tangent and the global task has many open items. The model scoped to the micro-task, declared victory, and the user had to say "That was all a tangent from the actual tests."
 
-- **Artifact-level status dumps** — listing file blockers, section counts, partial completion percentages — when the user assigned a process-level task. The user had to say "Did you lose sight of the task AGAIN? Why are you summarizing the artifact to ME?"
+- **Artifact-level status dumps** — listing file blockers, section counts, partial completion percentages — when the user assigned a process-level task. 
 
-- **"Next action: ..."** — framing unfinished mandatory work as an optional follow-up. The model itself later recognized: "'Next action' was bad framing; this is unfinished work, not an optional follow-up."
+- **"Next action: ..."** — framing unfinished mandatory work as an optional follow-up.
 
 - **Resolved items listed as open** — padding a response with items that are already addressed, producing incoherent noise that the user must mentally filter.
 
@@ -26,12 +26,10 @@ Before anything else, re-read every labeled section of your draft response. For 
 **Does the content actually mean what the label says?**
 
 - "Remaining" must contain work NOT YET DONE. If it contains a description of completed work, the label and content are semantically inverted — the output contradicts its own heading. This is worse than leaving the section empty. It is incoherent.
-- "Open items" must contain items that are actually unresolved. Resolved items listed under "Open" are noise.
+- "Open items" must contain items that are actually unresolved. Resolved items listed under "Open" are noise. Do not artificially restrict this to "locally" open items from only the last turn(s), which obfuscates higher-order global unfinished tasks.
 - "Completed" must contain things that were done. Aspirational or planned items listed here are false claims.
 
 This is not a table-lookup task. You cannot check coherence by pattern-matching against examples. You must read your own output and ask: **"Does this content mean what this label claims it means?"** If the answer is no, delete the section entirely. An absent section is better than an incoherent one.
-
-**Why this exists:** In observed failures, the model filled a "Remaining:" slot with a paragraph summarizing completed work — semantic inversion. When corrected, it produced "Nothing remaining" — a scoping error, but less critical. Across multiple correction rounds, the model kept focusing on the scoping error (because it matched an anti-pattern table row) and couldn't see the semantic inversion (because that required judgment, not lookup). The anti-pattern table became a substitute for reading its own output.
 
 ## Synthesis Gate
 

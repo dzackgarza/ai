@@ -26,6 +26,10 @@ Opinionated, modern Python patterns for building robust, efficient, and maintain
 8. **Always a justfile** — all dev commands go through `just`
 9. **Fail fast with asserts** — no speculative try/catch in greenfield code
 10. **Target latest Python** — no version guards, no `sys.version_info` checks
+11. **No `None` returns on deterministic paths** — if a function cannot return `None` given the invariants of the caller's context, the return type is not `T | None` and the body does not `return None`. If the allegedly-impossible case occurs, `assert False, f"invariant violated: {detail}"`. Silent `None` returns on paths that should be unreachable hide bugs rather than exposing them.
+12. **No `Any` in owned code without an explicit user decision** — `Any` opts the type checker out entirely. The two legitimate exceptions forced by Python's type system: (a) `__contains__` implementations (protocol requires `object`); (b) `*args`/`**kwargs` relay functions that forward to an upstream signature you cannot change. Every other use of `Any` requires an explicit comment explaining why the type system cannot express the constraint.
+13. **No variadics in owned function signatures** — no `*args`, no `**kwargs`, no positional-only parameters in code you write and own. All parameters must be named, typed, and keyword-accessible. Variadics make call sites opaque, resist static analysis, and turn every refactoring into a grep exercise. The only exceptions: (a) `__init_subclass__` / framework hooks where the framework mandates it; (b) genuine delegation wrappers like `functools.wraps` relay functions.
+14. **No defensive guards for conditions that have not been observed** — do not add `try/except SomeError` for an error that has never actually occurred in production or testing. Every error handler must be justified by a real, documented incident. A hard dependency that must be installed (`notify-send`, `systemctl`, `ags`) must not have a `FileNotFoundError` guard — if it is missing, the system is broken and the crash is the correct behavior. The `doctor` command exists to diagnose setup errors; runtime code does not.
 
 ## Core Principles
 
@@ -668,6 +672,55 @@ except:
 
 # Good: Assert + let it crash
 assert condition, f"Debug info: {relevant_data}"
+
+# ── New rules ────────────────────────────────────────────────────────────────
+
+# Bad: silent None return on a deterministic path
+def get_reminder(reminder_id: str) -> dict | None:
+    row = db.fetch(reminder_id)
+    if row is None:
+        return None   # wrong: caller already verified the ID exists
+    return row
+
+# Good: assert the invariant, crash loudly if violated
+def get_reminder(reminder_id: str) -> dict:
+    row = db.fetch(reminder_id)
+    assert row is not None, f"get_reminder called for unknown id: {reminder_id!r}"
+    return row
+
+# Bad: Any in owned code
+from typing import Any
+def process(data: Any) -> Any: ...   # type checker is now blind here
+
+# Good: name the actual type
+def process(data: dict[str, str]) -> list[str]: ...
+
+# Bad: variadics in owned code
+def send(*args: str, **kwargs: object) -> None: ...     # opaque, unrefactorable
+def configure(**options: object) -> None: ...           # same problem
+
+# Good: explicit named parameters
+def send(command: str, target: str, timeout: int = 5) -> None: ...
+def configure(debug: bool = False, workers: int = 4) -> None: ...
+
+# Bad: defensive guard for a hard dependency that must be installed
+import subprocess
+try:
+    subprocess.run(["notify-send", msg], check=True)
+except FileNotFoundError:
+    return False   # wrong: if notify-send is missing, the system is broken
+
+# Good: crash. The setup problem is real; hiding it is not.
+subprocess.run(["notify-send", msg], check=True)   # CalledProcessError propagates correctly
+
+# Bad: guard for an error that has never been observed
+try:
+    result = parse_date(user_input)
+except OverflowError:
+    return None   # wrong: has this ever actually happened? add it if/when it does.
+
+# Good: let it crash until you have a real incident to handle
+result = parse_date(user_input)
 ```
 
-**Remember**: Fail fast. Type everything. Use pydantic. Run `just check` before committing. No exceptions without evidence of a specific observed failure.
+**Remember**: Fail fast. Type everything. Use pydantic. Run `just check` before committing. No exceptions without evidence of a specific observed failure. No variadics, no `Any`, no silent `None` on deterministic paths.

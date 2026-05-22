@@ -50,3 +50,9 @@ harnesses:
     config_path: ~/.gemini/settings.json
     format: json
     json_path: mcpServers
+  antigravity-cli:
+    enabled: true
+    config_path: ~/.gemini/antigravity-cli/mcp_config.json
+    format: json
+    json_path: mcpServers
+

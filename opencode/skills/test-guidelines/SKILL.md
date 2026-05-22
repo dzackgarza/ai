@@ -153,9 +153,16 @@ This agent must follow these standards:
 
 ### 3. Strict Prohibitions (Zero Tolerance)
 
-- **NO MOCKS/SIMULATIONS**: Never use `unittest.mock`, `monkeypatch`, `patch`, stubs, fakes, or simulated environments. All tests must operate on real data and real objects. No exceptions.
-- **NO MASKING**: Never use `pytest.mark.xfail`, `skip`, or `skipif`. Suite status must reflect 100% actual runtime reality.
+- **NO MOCKS/SIMULATIONS**: Never use `unittest.mock`, `monkeypatch`, `patch`, stubs, fakes, or simulated environments. All tests must operate on real data and real objects. No exceptions. A mock-based test proves only that you wrote code that calls the mock — it says nothing about whether the real system works. Every hour spent on mock infrastructure is net-negative: the tests pass, the system is unproven, and the mocks must now be maintained.
+
+- **NO MASKING**: Never use `pytest.mark.xfail`, `pytest.mark.skip`, or `pytest.mark.skipif`. Suite status must reflect 100% actual runtime reality. `skipif` deserves special attention: it is almost always a hedge against a dependency not being installed or a service not being running. That is a *setup problem*, not a test design problem. Hard dependencies must be present; if they are not, the system is broken and the suite should fail loudly, not silently pass.
+
+- **NO COVERAGE SUPPRESSION**: Never add `# pragma: no cover` to production code. Coverage gaps are diagnostic signals, not noise to silence. If a branch is flagged as uncovered, the correct responses are: (a) write a test that covers it, (b) delete the branch if it is genuinely unreachable given the system's invariants, or (c) replace it with an `assert False` / `raise AssertionError` that documents the invariant explicitly. The only legitimate use of `# pragma: no cover` is entry-point boilerplate (`if __name__ == "__main__"` in `__main__.py`) that is structurally impossible to exercise in-process.
+
+- **NO IMPOSSIBLE-CONDITION TESTS**: Do not test error conditions that cannot occur at runtime given the system's hard dependencies and invariants. If `notify-send` is a required tool that `doctor` verifies on startup, writing a test for `FileNotFoundError: notify-send` is testing a condition that will never exist in production. It produces passing tests for behavior that is never exercised, creates maintenance burden, and gives false confidence. The regression rule applies: only add error-handling tests for specific, previously-observed failures.
+
 - **NO STRING MATCHING**: Never assert on error message strings. Use `pytest.raises(TypeError)` or similar to assert on the **TYPE** of error received.
+
 - **Expose Silent Errors**: Tests must be designed to catch swallowed or silent errors (e.g., empty catch blocks or hidden exceptions).
 
 ### 4. Coverage, Triage & Anti-Obfuscation

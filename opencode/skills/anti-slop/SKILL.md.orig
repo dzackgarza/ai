@@ -2,22 +2,20 @@
 name: anti-slop
 description: Comprehensive toolkit for detecting and eliminating "AI slop" - generic, low-quality AI-generated patterns in natural language, code, and design. Use when reviewing or improving content quality, preventing generic AI patterns, cleaning up existing content, or enforcing quality standards in writing, code, or design work.
 ---
+
 # Anti-Slop Skill
 
-Detect and eliminate generic AI-generated patterns ("slop") across natural language,
-code, and design.
+Detect and eliminate generic AI-generated patterns ("slop") across natural language, code, and design.
 
 ## What is AI Slop?
 
-AI slop refers to telltale patterns that signal low-quality, generic AI-generated
-content:
+AI slop refers to telltale patterns that signal low-quality, generic AI-generated content:
 
 - **Text**: Overused phrases like "delve into," excessive buzzwords, meta-commentary
 - **Code**: Generic variable names, obvious comments, unnecessary abstraction
 - **Design**: Cookie-cutter layouts, generic gradients, overused visual patterns
 
-This skill helps identify and remove these patterns to create authentic, high-quality
-content.
+This skill helps identify and remove these patterns to create authentic, high-quality content.
 
 ## When to Use This Skill
 
@@ -46,7 +44,8 @@ This analyzes text and provides:
 - Specific pattern findings
 - Actionable recommendations
 
-**Manual detection:** Read the appropriate reference file for detailed patterns:
+**Manual detection:**
+Read the appropriate reference file for detailed patterns:
 
 - `references/text-patterns.md` - Natural language slop patterns
 - `references/code-patterns.md` - Programming slop patterns
@@ -67,8 +66,8 @@ python scripts/clean_slop.py <file> --save
 python scripts/clean_slop.py <file> --save --aggressive
 ```
 
-**Manual cleanup:** Apply strategies from the reference files based on detected
-patterns.
+**Manual cleanup:**
+Apply strategies from the reference files based on detected patterns.
 
 ## Text Slop Detection & Cleanup
 
@@ -172,20 +171,16 @@ user = User()
 
 Consult these comprehensive guides when working on specific domains:
 
-- **[text-patterns.md](references/text-patterns.md)** - Complete catalog of natural
-  language slop patterns with detection rules and cleanup strategies
+- **[text-patterns.md](references/text-patterns.md)** - Complete catalog of natural language slop patterns with detection rules and cleanup strategies
 
-- **[code-patterns.md](references/code-patterns.md)** - Programming antipatterns across
-  languages with refactoring guidance.
+- **[code-patterns.md](references/code-patterns.md)** - Programming antipatterns across languages with refactoring guidance.
   Includes the **Introspection Red Flags** framework for `isinstance`, `hasattr`,
-  `getattr`, `type()`, `issubclass`, `callable()` — ask why the code is guessing about
-  shapes at runtime instead of asserting them through the type system.
+  `getattr`, `type()`, `issubclass`, `callable()` — ask why the code is
+  guessing about shapes at runtime instead of asserting them through the type system.
 
-- **[test-patterns.md](references/test-patterns.md)** - Testing slop patterns
-  (content-free checks, tautologies, masking)
+- **[test-patterns.md](references/test-patterns.md)** - Testing slop patterns (content-free checks, tautologies, masking)
 
-- **[design-patterns.md](references/design-patterns.md)** - Visual and UX design slop
-  patterns with improvement strategies
+- **[design-patterns.md](references/design-patterns.md)** - Visual and UX design slop patterns with improvement strategies
 
 Each reference includes:
 
@@ -198,12 +193,11 @@ Each reference includes:
 
 The global patterns in this skill are sharpened for specific repos:
 
-- **research repo** (`~/research`): Load `research-code-style` for repo-specific rules
-  on assertions, optional types, semantic membership checks, and mathematical
+- **research repo** (`~/research`): Load `research-code-style` for repo-specific
+  rules on assertions, optional types, semantic membership checks, and mathematical
   preconditions. Load `category-spec-style` for the audit rubric on runtime checks
-  outside categorical predicates.
-  Load `jerry-behaviour` to prevent checklist theater and paraphrase-as-review when
-  evaluating agent-produced work.
+  outside categorical predicates. Load `jerry-behaviour` to prevent checklist
+  theater and paraphrase-as-review when evaluating agent-produced work.
 
 ## Scripts
 
@@ -423,8 +417,8 @@ Create project-specific thresholds:
 - Refactor over-engineered code last
 - Test after each significant change
 
-**For design cleanup:** See `references/design-patterns.md` for the full catalog,
-detection signals, and cleanup strategies.
+**For design cleanup:**
+See `references/design-patterns.md` for the full catalog, detection signals, and cleanup strategies.
 
 **General principles:**
 
@@ -435,16 +429,6 @@ detection signals, and cleanup strategies.
 
 ## Cross-References
 
-- **jerry-behaviour**: Anti-slop detects the surface patterns (generic names, obvious
-  comments, unnecessary abstraction).
-  Jerry-behaviour detects the meta-level failure: evaluators who cannot recognize slop
-  because they share the same slop-generating priors.
-- **llm-failure-modes**: Many slop patterns stem from underlying LLM cognitive failures
-  — overconfidence, confabulation, premature solution generation, replacement instinct.
-  Understanding these failure modes helps distinguish genuine quality issues from normal
-  variation.
-- **addressing-shallow-work** → "Recognizing Structurally Wrong Code": The deepest form
-  of slop is code that destroys the abstraction before operating (regex-on-HTML,
-  serialization-before-search).
-  Surface-level cleanup (renaming variables, removing obvious comments) cannot fix
-  structurally wrong approaches.
+- **jerry-behaviour**: Anti-slop detects the surface patterns (generic names, obvious comments, unnecessary abstraction). Jerry-behaviour detects the meta-level failure: evaluators who cannot recognize slop because they share the same slop-generating priors.
+- **llm-failure-modes**: Many slop patterns stem from underlying LLM cognitive failures — overconfidence, confabulation, premature solution generation, replacement instinct. Understanding these failure modes helps distinguish genuine quality issues from normal variation.
+- **addressing-shallow-work** → "Recognizing Structurally Wrong Code": The deepest form of slop is code that destroys the abstraction before operating (regex-on-HTML, serialization-before-search). Surface-level cleanup (renaming variables, removing obvious comments) cannot fix structurally wrong approaches.
