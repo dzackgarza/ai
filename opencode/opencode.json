@@ -10,108 +10,37 @@
     "morph",
     "kaggle-ollama"
   ],
-  "permission": {
-    "external_directory": {
-      "*": "deny",
-      "~/.local/share/opencode/worktree/**": "allow",
-      "/home/dzack/.cache/*": "allow",
-      "/home/dzack/.cache/opencode-arxiv-library/*": "allow",
-      "/home/dzack/.cache/opencode-webfetch/*": "allow",
-      "/home/dzack/.config/agents/skills": "allow",
-      "/home/dzack/.config/agents/skills/*": "allow",
-      "/home/dzack/.config/amp/skills": "allow",
-      "/home/dzack/.config/amp/skills/*": "allow",
-      "/home/dzack/.config/opencode/skills": "allow",
-      "/home/dzack/.config/opencode/skills/*": "allow",
-      "/home/dzack/.agents/*": "allow",
-      "/home/dzack/.agents/skills": "allow",
-      "/home/dzack/.agents/skills/*": "allow",
-      "/home/dzack/.claude/skills": "allow",
-      "/home/dzack/.claude/skills/*": "allow",
-      "/home/dzack/.codex/skills": "allow",
-      "/home/dzack/.codex/skills/*": "allow",
-      "/home/dzack/.kilocode/skills": "allow",
-      "/home/dzack/.kilocode/skills/*": "allow",
-      "/home/dzack/.local/share/opencode-memory/*": "allow",
-      "/home/dzack/.plannotator/*": "allow",
-      "/home/dzack/.qwen/skills": "allow",
-      "/home/dzack/.qwen/skills/*": "allow",
-      "/home/dzack/ai/*": "allow",
-      "/home/dzack/pdf-extraction/*": "allow",
-      "/home/dzack/pdfs/*": "allow",
-      "/tmp/*": "allow"
-    },
-    "list_sessions": "allow",
-    "introspection": "allow",
-    "read_transcript": "allow",
-    "remember": "allow",
-    "forget": "allow",
-    "list_memories": "allow",
-    "skill": "allow",
-    "sleep": "allow",
-    "sleep_until": "allow",
-    "codesearch": "allow",
-    "lsp": "allow",
-    "pty_list": "allow",
-    "pty_read": "allow",
-    "pty_spawn": "allow",
-    "pty_kill": "allow",
-    "pty_write": "allow",
-    "submit_plan": "allow",
-    "plannotator_review": "allow",
-    "plannotator_annotate": "allow",
-    "write": "allow",
-    "tokenscope": "allow",
-    "invalid": "deny",
-    "cut-copy-paste-mcp_cut_lines": "allow",
-    "cut-copy-paste-mcp_copy_lines": "allow",
-    "cut-copy-paste-mcp_paste_lines": "allow",
-    "cut-copy-paste-mcp_get_operation_history": "allow",
-    "cut-copy-paste-mcp_show_clipboard": "allow",
-    "cut-copy-paste-mcp_undo_last_paste": "allow",
-    "serena_read_file": "deny",
-    "serena_list_dir": "deny",
-    "serena_find_file": "deny",
-    "serena_search_for_pattern": "deny",
-    "serena_get_symbols_overview": "deny",
-    "serena_find_symbol": "deny",
-    "serena_find_referencing_symbols": "allow",
-    "serena_create_text_file": "deny",
-    "serena_replace_content": "deny",
-    "serena_replace_symbol_body": "allow",
-    "serena_insert_after_symbol": "allow",
-    "serena_insert_before_symbol": "allow",
-    "serena_rename_symbol": "allow",
-    "serena_read_memory": "deny",
-    "serena_list_memories": "deny",
-    "serena_write_memory": "deny",
-    "serena_edit_memory": "deny",
-    "serena_delete_memory": "deny",
-    "serena_rename_memory": "deny",
-    "serena_activate_project": "allow",
-    "serena_check_onboarding_performed": "deny",
-    "serena_get_current_config": "deny",
-    "serena_onboarding": "deny",
-    "serena_prepare_for_new_conversation": "deny",
-    "serena_initial_instructions": "deny",
-    "serena_think_about_collected_information": "deny",
-    "serena_think_about_task_adherence": "deny",
-    "serena_think_about_whether_you_are_done": "deny",
-    "serena_execute_shell_command": "deny",
-    "serena_switch_modes": "deny",
-    "gemini_quota": "allow"
-  },
   "formatter": {
     "ruff-check": {
-      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "check",
+        "--fix",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "ruff-format": {
-      "command": ["uvx", "ruff", "format", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "prettier": {
-      "command": ["npx", "prettier", "--write", "$FILE"],
+      "command": [
+        "npx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
       "extensions": [
         ".js",
         ".ts",
@@ -125,18 +54,41 @@
       ]
     },
     "just": {
-      "command": ["just", "--unstable", "--fmt", "--justfile", "$FILE"],
-      "extensions": ["justfile"]
+      "command": [
+        "just",
+        "--unstable",
+        "--fmt",
+        "--justfile",
+        "$FILE"
+      ],
+      "extensions": [
+        "justfile"
+      ]
     },
     "flowmark": {
-      "command": ["uvx", "flowmark", "--semantic", "--inplace", "$FILE"],
-      "extensions": [".md"]
+      "command": [
+        "uvx",
+        "flowmark",
+        "--semantic",
+        "--inplace",
+        "$FILE"
+      ],
+      "extensions": [
+        ".md"
+      ]
     }
   },
   "lsp": {
     "texlab": {
-      "command": ["texlab"],
-      "extensions": [".tex", ".sty", ".cls", ".bib"]
+      "command": [
+        "texlab"
+      ],
+      "extensions": [
+        ".tex",
+        ".sty",
+        ".cls",
+        ".bib"
+      ]
     }
   },
   "mcp": {
@@ -920,7 +872,9 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": ["reasoning.encrypted_content"],
+        "include": [
+          "reasoning.encrypted_content"
+        ],
         "store": false
       },
       "models": {
@@ -931,8 +885,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "none": {
@@ -969,8 +928,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -1002,8 +966,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -1035,8 +1004,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "low": {
@@ -1063,8 +1037,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "medium": {
@@ -1086,8 +1065,13 @@
             "output": 128000
           },
           "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
           "variants": {
             "none": {
@@ -1207,9 +1191,6 @@
         },
         "google/gemma-4-31b-it:free": {
           "name": "Gemma 4 31B (free)"
-        },
-        "inclusionai/ring-2.6-1t:free": {
-          "name": "Ring 2.6-1T (free)"
         },
         "nvidia/nemotron-3-super-120b-a12b:free": {
           "name": "Nemotron 3 Super (free)"
@@ -1893,7 +1874,15 @@
         "~google/gemini-pro-latest",
         "~moonshotai/kimi-latest",
         "~openai/gpt-latest",
-        "~openai/gpt-mini-latest"
+        "~openai/gpt-mini-latest",
+        "anthropic/claude-opus-4.7-fast",
+        "baidu/qianfan-ocr-fast",
+        "google/gemini-3.5-flash",
+        "inclusionai/ring-2.6-1t",
+        "perceptron/perceptron-mk1",
+        "qwen/qwen3.7-max",
+        "x-ai/grok-build-0.1",
+        "inclusionai/ring-2.6-1t:free"
       ]
     },
     "z-ai": {

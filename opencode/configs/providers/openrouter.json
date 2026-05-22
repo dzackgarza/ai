@@ -31,9 +31,6 @@
     "google/gemma-4-31b-it:free": {
       "name": "Gemma 4 31B (free)"
     },
-    "inclusionai/ring-2.6-1t:free": {
-      "name": "Ring 2.6-1T (free)"
-    },
     "nvidia/nemotron-3-super-120b-a12b:free": {
       "name": "Nemotron 3 Super (free)"
     },
@@ -716,6 +713,14 @@
     "~google/gemini-pro-latest",
     "~moonshotai/kimi-latest",
     "~openai/gpt-latest",
-    "~openai/gpt-mini-latest"
+    "~openai/gpt-mini-latest",
+    "anthropic/claude-opus-4.7-fast",
+    "baidu/qianfan-ocr-fast",
+    "google/gemini-3.5-flash",
+    "inclusionai/ring-2.6-1t",
+    "perceptron/perceptron-mk1",
+    "qwen/qwen3.7-max",
+    "x-ai/grok-build-0.1",
+    "inclusionai/ring-2.6-1t:free"
   ]
 }
