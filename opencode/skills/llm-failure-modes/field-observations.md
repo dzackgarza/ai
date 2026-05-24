@@ -131,40 +131,43 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
     degrades the behavior that made the original code correct.
     Observed behaviors:
 
-    - **Outlier replacement**: Bespoke logic (precisely the most common content in real
-      codebases, being edge-of-training-data) is recognized as anomalous and replaced
-      with nearest-mean alternatives.
-      Example: A web scraping tool with a bespoke Reddit handler that routes through
-      apify for sophisticated scraping is "refactored" to hit Reddit's JSON endpoints
-      directly — because that's what the training data says Reddit handlers look like.
-      The scraping capability silently vanishes.
-    - **Test expectation modification**: When the new implementation produces different
-      results, agents modify tests and quality checks to match the rewritten behavior
-      rather than the original specification.
-      Expectations are relaxed or rewritten to pass against the new code.
-      The agent sometimes explicitly observes that results differ and treats this as
-      confirmation that the original tests were "too strict" rather than that the
-      implementation regressed.
-    - **Domain conflation**: Agents import algorithms and patterns from the nearest
-      named concept in training data without verifying domain applicability.
-      Example: Agent is asked to refactor code for indefinite lattices in SageMath.
-      The training data's strongest association with "lattice" is positive-definite
-      (cryptography, ML). The agent replaces sophisticated algorithms for indefinite
-      forms with well-known algorithms for positive-definite lattices — algorithms that
-      are provably wrong for the actual domain.
-      The code is cleaner, better-documented, and completely broken.
-    - **Justified degradation**: The replacement is explicitly framed as an improvement.
-      Agents cite reasons like "removes unnecessary complexity," "uses standard
-      patterns," or "simplifies the implementation" — language that is factually correct
-      about the syntactic transformation but inverts the semantic one.
-      The complexity existed for a reason; removing it is the regression.
+- **Outlier replacement**: Bespoke logic (precisely the most common content in real
+  codebases, being edge-of-training-data) is recognized as anomalous and replaced with
+  nearest-mean alternatives.
+  Example: A web scraping tool with a bespoke Reddit handler that routes through apify
+  for sophisticated scraping is "refactored" to hit Reddit's JSON endpoints directly —
+  because that's what the training data says Reddit handlers look like.
+  The scraping capability silently vanishes.
 
-    **Core pattern:** The model's prior for "what this code should look like" overpowers
-    its ability to preserve what this code actually does.
-    Refactoring becomes reconstruction from memory, with the memory biased toward
-    training-distribution-typical examples.
-    The more bespoke the original code, the more likely the refactoring will silently
-    replace it with something that works differently.
+- **Test expectation modification**: When the new implementation produces different
+  results, agents modify tests and quality checks to match the rewritten behavior rather
+  than the original specification.
+  Expectations are relaxed or rewritten to pass against the new code.
+  The agent sometimes explicitly observes that results differ and treats this as
+  confirmation that the original tests were "too strict" rather than that the
+  implementation regressed.
+
+- **Domain conflation**: Agents import algorithms and patterns from the nearest named
+  concept in training data without verifying domain applicability.
+  Example: Agent is asked to refactor code for indefinite lattices in SageMath.
+  The training data's strongest association with "lattice" is positive-definite
+  (cryptography, ML). The agent replaces sophisticated algorithms for indefinite forms
+  with well-known algorithms for positive-definite lattices — algorithms that are
+  provably wrong for the actual domain.
+  The code is cleaner, better-documented, and completely broken.
+
+- **Justified degradation**: The replacement is explicitly framed as an improvement.
+  Agents cite reasons like "removes unnecessary complexity," "uses standard patterns,"
+  or "simplifies the implementation" — language that is factually correct about the
+  syntactic transformation but inverts the semantic one.
+  The complexity existed for a reason; removing it is the regression.
+
+**Core pattern:** The model's prior for "what this code should look like" overpowers its
+ability to preserve what this code actually does.
+Refactoring becomes reconstruction from memory, with the memory biased toward
+training-distribution-typical examples.
+The more bespoke the original code, the more likely the refactoring will silently
+replace it with something that works differently.
 
 21. **Hot-path defensive programming** — Agents insert redundant null checks, type
     guards, try-catch blocks, and validation gates inside performance-critical inner
