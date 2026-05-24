@@ -2,14 +2,15 @@
 name: systematic-debugging
 description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
 ---
-
 # Systematic Debugging
 
 ## Overview
 
-Random fixes waste time and create new bugs. Quick patches mask underlying issues.
+Random fixes waste time and create new bugs.
+Quick patches mask underlying issues.
 
-**Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
+**Core principle:** ALWAYS find root cause before attempting fixes.
+Symptom fixes are failure.
 
 **Violating the letter of this process is violating the spirit of debugging.**
 
@@ -71,7 +72,8 @@ You MUST complete each phase before proceeding to the next.
 
 4. **Gather Evidence in Multi-Component Systems**
 
-   **WHEN system has multiple components (CI → build → signing, API → service → database):**
+   **WHEN system has multiple components (CI → build → signing, API → service →
+   database):**
 
    **BEFORE proposing fixes, add diagnostic instrumentation:**
    ```
@@ -111,7 +113,8 @@ You MUST complete each phase before proceeding to the next.
 
    **WHEN error is deep in call stack:**
 
-   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.
+   See `root-cause-tracing.md` in this directory for the complete backward tracing
+   technique.
 
    **Quick version:**
    - Where does bad value originate?
@@ -206,7 +209,8 @@ You MUST complete each phase before proceeding to the next.
    **STOP and question fundamentals:**
    - Is this pattern fundamentally sound?
    - Are we "sticking with it through sheer inertia"?
-   - Should we refactor architecture vs. continue fixing symptoms?
+   - Should we refactor architecture vs.
+     continue fixing symptoms?
 
    **Discuss with your human partner before attempting more fixes**
 
@@ -234,7 +238,8 @@ If you catch yourself thinking:
 ## your human partner's Signals You're Doing It Wrong
 
 **Watch for these redirections:**
-- "Is that not happening?" - You assumed without verifying
+- "Is that not happening?"
+  - You assumed without verifying
 - "Will it show us...?" - You should have added evidence gathering
 - "Stop guessing" - You're proposing fixes without understanding
 - "Ultrathink this" - Question fundamentals, not just symptoms
@@ -245,7 +250,7 @@ If you catch yourself thinking:
 ## Common Rationalizations
 
 | Excuse | Reality |
-|--------|---------|
+| --- | --- |
 | "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
 | "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
 | "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
@@ -258,7 +263,7 @@ If you catch yourself thinking:
 ## Quick Reference
 
 | Phase | Key Activities | Success Criteria |
-|-------|---------------|------------------|
+| --- | --- | --- |
 | **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
 | **2. Pattern** | Find working examples, compare | Identify differences |
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
@@ -266,7 +271,8 @@ If you catch yourself thinking:
 
 ## When Process Reveals "No Root Cause"
 
-If systematic investigation reveals issue is truly environmental, timing-dependent, or external:
+If systematic investigation reveals issue is truly environmental, timing-dependent, or
+external:
 
 1. You've completed the process
 2. Document what you investigated
@@ -279,13 +285,16 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 These techniques are part of systematic debugging and available in this directory:
 
-- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
+- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original
+  trigger
 - **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
 - **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
 
 **Related standards:**
-- **Test Guidelines** - For creating failing test cases (Phase 4, Step 1) and verifying success
-- **subagent-delegation** - For orchestrating fix and review cycles
+- → **test-guidelines** — Load alongside in Phase 4 (Step 1) for creating failing test
+  cases and verifying success.
+- → **subagent-delegation** — Load alongside when orchestrating fix and review cycles
+  across multiple agents.
 
 ## Real-World Impact
 

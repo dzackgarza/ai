@@ -16,22 +16,20 @@ triggers:
   - dashboard design
   - website styled like
 ---
-
 # Popular Web Designs
 
-54 real-world design systems ready for use when generating HTML/CSS. Each template captures a
-site's complete visual language: color palette, typography hierarchy, component styles, spacing
-system, shadows, responsive behavior, and practical agent prompts with exact CSS values.
+54 real-world design systems ready for use when generating HTML/CSS. Each template
+captures a site's complete visual language: color palette, typography hierarchy,
+component styles, spacing system, shadows, responsive behavior, and practical agent
+prompts with exact CSS values.
 
 ## Related design skills
 
-- **`claude-design`** — use for the design *process and taste* (scoping a brief,
-  producing variants, verifying a local HTML artifact, avoiding AI-design slop).
-  Pair it with this skill when the user wants a thoughtfully-designed page styled
-  after a known brand: `claude-design` drives the workflow, this skill supplies
-  the visual vocabulary.
-- **`design-md`** — use when the deliverable is a formal DESIGN.md token spec
-  file, not a rendered artifact.
+- → **`claude-design`** — Load alongside when scoping a design brief, producing
+  variants, or verifying a rendered HTML artifact.
+  Covers design process and taste, avoiding AI-design slop.
+- → **`design-md`** — Load alongside when the deliverable is a formal DESIGN.md token
+  spec file, not a rendered artifact.
 
 ## How to Use
 
@@ -81,16 +79,18 @@ Each template includes a **Hermes Implementation Notes** block at the top with:
 </html>
 ```
 
-Write the file with `write_file`, serve with the `generative-widgets` workflow (cloudflared tunnel),
-and verify the result with `browser_vision` to confirm visual accuracy.
+Write the file with `write_file`, serve with the `generative-widgets` workflow
+(cloudflared tunnel), and verify the result with `browser_vision` to confirm visual
+accuracy.
 
 ## Font Substitution Reference
 
-Most sites use proprietary fonts unavailable via CDN. Each template maps to a Google Fonts
-substitute that preserves the design's character. Common mappings:
+Most sites use proprietary fonts unavailable via CDN. Each template maps to a Google
+Fonts substitute that preserves the design's character.
+Common mappings:
 
 | Proprietary Font | CDN Substitute | Character |
-|---|---|---|
+| --- | --- | --- |
 | Geist / Geist Sans | Geist (on Google Fonts) | Geometric, compressed tracking |
 | Geist Mono | Geist Mono (on Google Fonts) | Clean monospace, ligatures |
 | sohne-var (Stripe) | Source Sans 3 | Light weight elegance |
@@ -108,16 +108,17 @@ substitute that preserves the design's character. Common mappings:
 | Rubik (Sentry) | Rubik | Available on Google Fonts |
 
 When a template's CDN font matches the original (Inter, IBM Plex, Rubik, Geist), no
-substitution loss occurs. When a substitute is used (DM Sans for Circular, Source Sans 3
-for sohne-var), follow the template's weight, size, and letter-spacing values closely —
-those carry more visual identity than the specific font face.
+substitution loss occurs.
+When a substitute is used (DM Sans for Circular, Source Sans 3 for sohne-var), follow
+the template's weight, size, and letter-spacing values closely — those carry more visual
+identity than the specific font face.
 
 ## Design Catalog
 
 ### AI & Machine Learning
 
 | Template | Site | Style |
-|---|---|---|
+| --- | --- | --- |
 | `claude.md` | Anthropic Claude | Warm terracotta accent, clean editorial layout |
 | `cohere.md` | Cohere | Vibrant gradients, data-rich dashboard aesthetic |
 | `elevenlabs.md` | ElevenLabs | Dark cinematic UI, audio-waveform aesthetics |
@@ -134,7 +135,7 @@ those carry more visual identity than the specific font face.
 ### Developer Tools & Platforms
 
 | Template | Site | Style |
-|---|---|---|
+| --- | --- | --- |
 | `cursor.md` | Cursor | Sleek dark interface, gradient accents |
 | `expo.md` | Expo | Dark theme, tight letter-spacing, code-centric |
 | `linear.app.md` | Linear | Ultra-minimal dark-mode, precise, purple accent |
@@ -153,7 +154,7 @@ those carry more visual identity than the specific font face.
 ### Infrastructure & Cloud
 
 | Template | Site | Style |
-|---|---|---|
+| --- | --- | --- |
 | `clickhouse.md` | ClickHouse | Yellow-accented, technical documentation style |
 | `composio.md` | Composio | Modern dark with colorful integration icons |
 | `hashicorp.md` | HashiCorp | Enterprise-clean, black and white |
@@ -164,7 +165,7 @@ those carry more visual identity than the specific font face.
 ### Design & Productivity
 
 | Template | Site | Style |
-|---|---|---|
+| --- | --- | --- |
 | `airtable.md` | Airtable | Colorful, friendly, structured data aesthetic |
 | `cal.md` | Cal.com | Clean neutral UI, developer-oriented simplicity |
 | `clay.md` | Clay | Organic shapes, soft gradients, art-directed layout |
@@ -179,7 +180,7 @@ those carry more visual identity than the specific font face.
 ### Fintech & Crypto
 
 | Template | Site | Style |
-|---|---|---|
+| --- | --- | --- |
 | `coinbase.md` | Coinbase | Clean blue identity, trust-focused, institutional feel |
 | `kraken.md` | Kraken | Purple-accented dark UI, data-dense dashboards |
 | `revolut.md` | Revolut | Sleek dark interface, gradient cards, fintech precision |
@@ -188,7 +189,7 @@ those carry more visual identity than the specific font face.
 ### Enterprise & Consumer
 
 | Template | Site | Style |
-|---|---|---|
+| --- | --- | --- |
 | `airbnb.md` | Airbnb | Warm coral accent, photography-driven, rounded UI |
 | `apple.md` | Apple | Premium white space, SF Pro, cinematic imagery |
 | `bmw.md` | BMW | Dark premium surfaces, precise engineering aesthetic |
