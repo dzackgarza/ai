@@ -158,13 +158,20 @@ Signs that an approach destroys the abstraction before operating:
 
 ## Cross-References
 
-- **jerry-behaviour**: Checklist Theater and Paraphrase-as-Review patterns.
-  Also: a Jerry reviewer cannot recognize structurally wrong code because it has the
-  surface appearance of work (it runs, it produces output, it tokenizes effort).
-- **llm-failure-modes**: Compliance-shaped output and reward hacking.
-  See also: the inability to recognize that code is structurally wrong without empirical
-  verification — an epistemic failure mode distinct from "didn't test enough."
-- **reviewing-subagent-work**: The Synthesis Gate here extends to code review.
-  Before inspecting specific implementations, check whether the approach survives
-  structural scrutiny.
-- **prompt-engineering**: Constraint-based instruction that forces thinking
+- **jerry-behaviour** → Load alongside when reviewing agent output that has the surface
+  appearance of correctness.
+  A Jerry reviewer cannot recognize structurally wrong code because it matches format
+  expectations (it runs, it produces output, it tokenizes effort).
+  Also catalogs Checklist Theater and Paraphrase-as-Review patterns.
+- **llm-failure-modes** → Load alongside when investigating why an agent cannot
+  recognize that an approach is structurally wrong.
+  The inability to recognize structural wrongness without empirical verification is an
+  epistemic failure mode distinct from "didn't test enough."
+  Also catalogs compliance-shaped output and reward hacking.
+- **reviewing-subagent-work** → Load alongside when conducting a Synthesis Gate review.
+  The Synthesis Gate extends this skill's structural-scrutiny approach to subagent
+  output: before inspecting specific implementations, check whether the approach
+  survives structural scrutiny.
+- **prompt-engineering** → Load alongside when writing instructions that must prevent
+  shallow work proactively.
+  Constraint-based instruction forces thinking rather than pattern completion.

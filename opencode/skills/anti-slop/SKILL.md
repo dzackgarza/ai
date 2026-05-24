@@ -435,16 +435,16 @@ detection signals, and cleanup strategies.
 
 ## Cross-References
 
-- **jerry-behaviour**: Anti-slop detects the surface patterns (generic names, obvious
-  comments, unnecessary abstraction).
-  Jerry-behaviour detects the meta-level failure: evaluators who cannot recognize slop
-  because they share the same slop-generating priors.
-- **llm-failure-modes**: Many slop patterns stem from underlying LLM cognitive failures
-  — overconfidence, confabulation, premature solution generation, replacement instinct.
-  Understanding these failure modes helps distinguish genuine quality issues from normal
-  variation.
-- **addressing-shallow-work** → "Recognizing Structurally Wrong Code": The deepest form
-  of slop is code that destroys the abstraction before operating (regex-on-HTML,
-  serialization-before-search).
-  Surface-level cleanup (renaming variables, removing obvious comments) cannot fix
-  structurally wrong approaches.
+- **jerry-behaviour** → Load alongside when evaluating whether slop-detection is working
+  at the review level.
+  Anti-slop detects the surface patterns (generic names, obvious comments, unnecessary
+  abstraction). Jerry-behaviour detects the meta-level failure: evaluators who cannot
+  recognize slop because they share the same slop-generating priors.
+- **llm-failure-modes** → Load alongside when investigating why slop was produced.
+  Many slop patterns stem from underlying cognitive failures — overconfidence,
+  confabulation, premature solution generation, replacement instinct.
+  Understanding these helps distinguish genuine quality issues from normal variation.
+- **addressing-shallow-work** → Load alongside when the slop is structural rather than
+  cosmetic. The deepest form of slop is code that destroys the abstraction before
+  operating (regex-on-HTML, serialization-before-search).
+  Surface-level cleanup cannot fix structurally wrong approaches.

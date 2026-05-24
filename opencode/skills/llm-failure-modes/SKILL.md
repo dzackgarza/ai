@@ -105,16 +105,16 @@ Load the relevant section for your context:
 
 ### Cross-References
 
-- **addressing-shallow-work** → "Recognizing Structurally Wrong Code": The inability to
-  recognize when an approach is structurally incapable of correctness — even without
-  empirical verification.
-  The regex-on-HTML canonical example: an agent produces code that flattens a semantic
-  tree into bytes before searching, guaranteeing garbage output regardless of input.
-  This failure mode is distinct from "didn't test enough" — it's a failure of structural
-  reasoning about abstractions.
-  Also describes the evaluation-failure mode where fluency masks structural wrongness.
-- **anti-slop**: Surface-level slop patterns (generic names, boilerplate) that often
-  mask deeper structural wrongness.
-- **reviewing-subagent-work**: Synthesis Gate forces content-level evaluation.
-  Structural-wrongness recognition is the prerequisite gate before content evaluation.
-  Directly references the jerry-behaviour subfile in this skill.
+- **addressing-shallow-work** → Load alongside when investigating failure modes that
+  produce structurally wrong code.
+  The inability to recognize when an approach is structurally incapable of correctness —
+  even without empirical verification — is a failure mode distinct from "didn't test
+  enough." The regex-on-HTML example (flattening a semantic tree into bytes before
+  searching) illustrates fluency masking structural wrongness.
+- **anti-slop** → Load alongside when the failure mode produces surface-level quality
+  issues (generic names, boilerplate) alongside deeper epistemic failures.
+  Surface patterns often mask the structural wrongness cataloged here.
+- **reviewing-subagent-work** → Load alongside when designing review processes that must
+  detect the failures cataloged in this skill.
+  The Synthesis Gate forces content-level evaluation; structural-wrongness recognition
+  is its prerequisite gate.

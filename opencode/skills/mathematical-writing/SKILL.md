@@ -245,8 +245,18 @@ writing.
 
 ## Cross-References
 
-- **lean4** — For editing .lean files, debugging builds, searching mathlib
-- **lattices** — For lattice-specific notation and conventions
-- **sagemath** — For SageMath computations and verification
-- **theorem-proving-and-counterexamples** — For broader formalization strategies
-- **mathematical-testing** — For writing failing test suites before implementation
+- **lean4** → Load alongside when formalizing definitions or theorems in Lean.
+  Covers editing .lean files, debugging type errors, searching mathlib for existing
+  lemmas.
+- **lattices** → Load alongside when the mathematical content involves quadratic forms,
+  root systems, or lattice-theoretic objects.
+  Provides notation conventions and domain constraints.
+- **sagemath** → Load alongside when writing SageMath code for computation or
+  verification alongside prose.
+  Covers Sage-specific patterns and integration.
+- **theorem-proving-and-counterexamples** → Load alongside when the writing target is a
+  formal proof or when counterexample search is needed.
+  Covers broader formalization strategies across multiple provers.
+- **mathematical-testing** → Load alongside when developing SageMath implementations
+  that need correctness verification.
+  Covers writing failing test suites before implementation.

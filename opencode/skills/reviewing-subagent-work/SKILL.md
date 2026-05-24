@@ -72,7 +72,12 @@ Do not respond to shallow work by adding more structure — that makes it worse.
 
 ## Cross-References
 
-- LOAD `jerry-behaviour` for the full catalog of review anti-patterns (Checklist
-  Theater, Paraphrase-as-Review, Consensus-as-Evidence, etc.)
-- LOAD `addressing-shallow-work` when you need to fix a process that produced shallow
-  output
+- **jerry-behaviour** → LOAD alongside when reviewing agent output and you suspect the
+  evaluation itself is shallow.
+  Catalogs Checklist Theater, Paraphrase-as-Review, Consensus-as-Evidence, and other
+  patterns where evaluators produce the appearance of oversight without epistemic
+  independence.
+- **addressing-shallow-work** → LOAD alongside when you need to fix a process that
+  produced shallow output.
+  Provides structural-scrutiny patterns for detecting and correcting work that satisfies
+  format without satisfying intent.
