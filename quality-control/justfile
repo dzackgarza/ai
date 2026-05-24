@@ -569,6 +569,34 @@ _codeql:
 		print(f"- ... {len(findings) - 50} more findings omitted; see SARIF report above.")
 	PY
 
+_js-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.ts' \
+		-g '*.tsx' \
+		-g '*.js' \
+		-g '*.jsx' \
+		-g '*.mjs' \
+		-g '*.cjs' \
+		-g '!**/node_modules/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**'
+
+_slop-scan:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: slop-scan JS/TS anti-pattern detection ==="
+	echo "# Scans JS/TS files for AI-associated slop patterns (error-swallowing, duplicate signatures, generic casts, etc.)"
+	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
+	if [ "${#js_files[@]}" -eq 0 ]; then
+		echo "Skipping slop-scan: no JS/TS files found."
+		exit 0
+	fi
+	npx -y slop-scan scan --lint .
+
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -599,7 +627,7 @@ _slop:
 	done
 
 # public: all static checks run locally
-test: _python-syntax _sage-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _codeql _pytest_with_coverage _diff-cover _slop
+test: _python-syntax _sage-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _codeql _pytest_with_coverage _diff-cover _slop _slop-scan
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
