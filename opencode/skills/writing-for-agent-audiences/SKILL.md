@@ -2,10 +2,10 @@
 name: writing-for-agent-audiences
 description: Use when writing or editing prose intended to be consumed by AI agents — prompts, instructions, SKILL.md bodies, system prompts, subagent task descriptions, or any agent-facing documentation.
 ---
-
 # Writing Documentation for LLMs
 
-> Guidance for creating effective documentation and instructions that LLMs can discover, understand, and use successfully.
+> Guidance for creating effective documentation and instructions that LLMs can discover,
+> understand, and use successfully.
 
 ## Contents
 
@@ -15,13 +15,15 @@ description: Use when writing or editing prose intended to be consumed by AI age
 - [Anti-patterns](#anti-patterns)
 - [Testing & Iteration](#testing--iteration)
 
----
+* * *
 
 ## Core Principles
 
 ### Assume competence
 
-The LLM is already very smart. Only add information the LLM doesn't have. Challenge every piece:
+The LLM is already very smart.
+Only add information the LLM doesn't have.
+Challenge every piece:
 
 - "Does the LLM really need this explanation?"
 - "Can I assume the LLM knows this?"
@@ -46,24 +48,34 @@ with pdfplumber.open("file.pdf") as pdf:
 
 ### Meta-Commentary and Framing
 
-**Rule:** Meta-commentary belongs _only_ in skills where the task is explicitly meta. Otherwise, the skill should be purely prescriptive.
+**Rule:** Meta-commentary belongs *only* in skills where the task is explicitly meta.
+Otherwise, the skill should be purely prescriptive.
 
-Most skills operate at the object level (e.g., extracting a PDF, writing a test, compiling LaTeX). In these skills, do not explain the psychology of LLMs to an LLM. State the rule directly. Avoid meta-writing like "LLMs often struggle with..." or "This rule exists because models tend to...".
+Most skills operate at the object level (e.g., extracting a PDF, writing a test,
+compiling LaTeX). In these skills, do not explain the psychology of LLMs to an LLM.
+State the rule directly.
+Avoid meta-writing like "LLMs often struggle with..." or "This rule exists because
+models tend to...".
 
 **Verbose/Meta example (Wrong for an object-level skill)**:
 
-> LLMs often resort to simple fallbacks like pdftotext or pymupdf when dealing with PDFs. To catch this common failure mode, you must use MinerU.
+> LLMs often resort to simple fallbacks like pdftotext or pymupdf when dealing with
+> PDFs. To catch this common failure mode, you must use MinerU.
 
 **Concise/Prescriptive example (Correct for an object-level skill)**:
 
-> Never use simple fallbacks like pdftotext or pymupdf. Use MinerU for PDF extraction.
+> Never use simple fallbacks like pdftotext or pymupdf.
+> Use MinerU for PDF extraction.
 
-**When Meta-Commentary is Appropriate:**
-If a skill is explicitly about agent behavior, failure modes, or introspection (e.g., an `llm-failure-modes` skill or an `agent-orchestration` skill), then discussing LLM behavior, tendencies, and failure patterns is completely appropriate and necessary for the task context.
+**When Meta-Commentary is Appropriate:** If a skill is explicitly about agent behavior,
+failure modes, or introspection (e.g., an `llm-failure-modes` skill or an
+`agent-orchestration` skill), then discussing LLM behavior, tendencies, and failure
+patterns is completely appropriate and necessary for the task context.
 
 ### Test across models
 
-Effectiveness varies by model. Skills that work for Claude Opus may need more detail for Claude Haiku.
+Effectiveness varies by model.
+Skills that work for Claude Opus may need more detail for Claude Haiku.
 
 ### Distill Evaluations Into Task Rules
 
@@ -84,17 +96,19 @@ In trial 3, the agent changed a quote mark and then claimed the segment was
 source-faithful.
 ```
 
-The agent-facing rule should say what good work requires in production. Keep run
-numbers, transcript postmortems, scoring rubrics, wrapper output formats, and evaluator
-complaints out of object-level skills unless those mechanics are themselves the task.
+The agent-facing rule should say what good work requires in production.
+Keep run numbers, transcript postmortems, scoring rubrics, wrapper output formats, and
+evaluator complaints out of object-level skills unless those mechanics are themselves
+the task.
 
----
+* * *
 
 ## Structure & Progressive Disclosure
 
 ### Organize like a table of contents
 
-Main file provides overview and points to detailed materials. LLM reads additional files only when needed.
+Main file provides overview and points to detailed materials.
+LLM reads additional files only when needed.
 
 **Pattern**:
 
@@ -136,7 +150,7 @@ Choose one term per concept and use it throughout:
 - Always "field" (not "box", "element", "control")
 - Always "extract" (not "pull", "get", "retrieve")
 
----
+* * *
 
 ## Content Patterns
 
@@ -261,7 +275,7 @@ The v1 API used: `api.example.com/v1/messages`
 </details>
 ```
 
----
+* * *
 
 ## Anti-patterns
 
@@ -285,7 +299,8 @@ For scanned PDFs requiring OCR, use pdf2image with pytesseract.
 
 ### Deeply nested references
 
-Keep references one level deep. Nested chains (file A → file B → file C) cause partial reads and missed context.
+Keep references one level deep.
+Nested chains (file A → file B → file C) cause partial reads and missed context.
 
 ### Vague trigger terms
 
@@ -293,7 +308,8 @@ Be specific in descriptions for discovery:
 
 **Vague**: `Helps with data`
 
-**Specific**: `Analyze Excel spreadsheets, generate pivot tables, create charts. Use when working with Excel files, spreadsheets, or .xlsx files.`
+**Specific**: `Analyze Excel spreadsheets, generate pivot tables, create charts.
+Use when working with Excel files, spreadsheets, or .xlsx files.`
 
 ### Windows-style paths
 
@@ -302,7 +318,7 @@ Always use forward slashes (Unix style):
 - ✓ Good: `scripts/helper.py`
 - ✗ Wrong: `scripts\helper.py`
 
----
+* * *
 
 ## Testing & Iteration
 
@@ -316,8 +332,9 @@ Before writing extensive documentation:
 4. Convert observed failures into object-level rules or examples
 5. Test and iterate based on results
 
-Evaluation notes are for the skill author. A worker-facing skill should receive the
-distilled invariant, not the test transcript or the evaluator's diagnosis.
+Evaluation notes are for the skill author.
+A worker-facing skill should receive the distilled invariant, not the test transcript or
+the evaluator's diagnosis.
 
 ### Separate Worker Concerns from Orchestrator Concerns
 
@@ -342,8 +359,8 @@ Right: Writing in a vault-analysis skill:
 > Do not append handoffs or progress summaries to the annotated source.
 > Later analysis should proceed from the source body and passage-local comments.
 
-The first makes the worker think about execution plumbing. The second constrains
-the artifact at the object level.
+The first makes the worker think about execution plumbing.
+The second constrains the artifact at the object level.
 
 Rule: If your skill mentions the harness, runner, or execution wrapper, you are
 contaminating worker guidance with orchestrator concerns.
@@ -359,13 +376,21 @@ contaminating worker guidance with orchestrator concerns.
 
 ## Related Skills
 
-- **creating-skills** — REQUIRED when writing or editing `SKILL.md` files; covers what belongs in a skill.
-- **looped-task-skill-author** — REQUIRED when the agent-facing prose supports repeated one-shot loops or long-horizon continuation.
-- **creating-subagents** — REQUIRED when writing subagent descriptions or agent definitions.
-- **prompt-engineering** — Use for broader prompt contracts and reference-skill sections.
+- → **creating-skills** — REQUIRED: Load alongside when writing or editing `SKILL.md`
+  files. Covers what belongs in a skill, description writing guidelines.
+- → **looped-task-skill-author** — REQUIRED: Load alongside when the agent-facing prose
+  supports repeated one-shot loops or long-horizon continuation.
+  Covers progress logs, self-correcting state machines.
+- → **creating-subagents** — REQUIRED: Load alongside when writing subagent descriptions
+  or agent definitions.
+- → **prompt-engineering** — Load alongside when writing broader prompt contracts and
+  reference-skill sections.
+  Covers concrete examples, variable placeholders, priming context.
 
----
+* * *
 
 ## Key Takeaway
 
-Effective LLM documentation assumes intelligence, uses examples over explanation, organizes for progressive discovery, and validates critical workflows. Test with target models and iterate based on real usage patterns.
+Effective LLM documentation assumes intelligence, uses examples over explanation,
+organizes for progressive discovery, and validates critical workflows.
+Test with target models and iterate based on real usage patterns.
