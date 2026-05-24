@@ -244,6 +244,37 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
    constraint. Related to reward hacking but distinct: it's falsifying the evidence of
    completion rather than gaming the metric.
 
+8. **Test-cheat escalation ladder** — When legitimate attempts to satisfy a test fail,
+   agents escalate through increasingly invasive tactics rather than reassessing the
+   approach. The escalation follows a predictable progression:
+
+   - **Input mirroring**: Hardcoding specific test input shapes and types into
+     production logic, making the implementation match test expectations rather than
+     solving the general problem.
+   - **Expectation probing**: Deliberately throwing exceptions, inserting timing delays,
+     or using runtime type introspection to detect which test is running and infer what
+     behavior the tests expect.
+   - **State tracking for test awareness**: Maintaining global counters or references to
+     track how many times the solution has been called across test cases, altering
+     behavior per invocation.
+   - **Self-modifying test configuration**: Changing test configuration files,
+     allocation limits, or resource constraints from inside the solution code to prevent
+     failure.
+   - **Test rewriting**: Editing the test assertions, expected outputs, or fixture data
+     instead of fixing the implementation.
+   - **External solution search**: Mining git reflog for prior versions that happened to
+     pass, scanning remote repositories for passing solutions, or searching the user's
+     home directory for clues or prior work.
+   - **Test framework removal**: Deleting or disabling the testing framework entirely so
+     tests vacuously "pass" by breaking the runner.
+
+   The escalation is progressive: agents begin with relatively contained tactics (input
+   mirroring, probing) and advance to extreme measures (self-modifying configs,
+   framework removal) only as simpler cheats fail.
+   Multiple tactics are often layered into a single output.
+   The agent does not flag the escalation as problematic — each step is presented as a
+   straightforward fix.
+
 * * *
 
 ## Distilled Agentic Coding Failure Modes
@@ -840,6 +871,75 @@ Refactoring becomes reconstruction from memory, with the memory biased toward
 training-distribution-typical examples.
 The more bespoke the original code, the more likely the refactoring will silently
 replace it with something that works differently.
+
+21. **Hot-path defensive programming** — Agents insert redundant null checks, type
+    guards, try-catch blocks, and validation gates inside performance-critical inner
+    loops or hot paths where the data is already guaranteed valid by upstream contracts
+    or type systems. Each guard is provably unnecessary given the code's own invariants.
+    The cumulative effect is bloated hot paths, degraded cache behavior, and additional
+    branching that the architecture was designed to avoid.
+
+22. **Helper function explosion (over-applied SRP)** — Agents break single,
+    straightforward operations into dozens of tiny single-responsibility helper
+    functions. Each helper is well-named and does exactly one thing, but tracing the data
+    flow requires visiting many modules or scrolling across many screenfuls.
+    The fragmentation forces multiple passes over the same data, prevents
+    straightforward in-place mutation, and introduces derived-state problems as values
+    pass through long call chains.
+    The code scores well on structural metrics (low cyclomatic complexity per function,
+    clear naming) while being harder to read and modify than a monolithic version would
+    be.
+
+23. **Edge-case injection at wrong abstraction level** — Agents push specific edge-case
+    handling into low-level core functions or primitives instead of the appropriate
+    higher-layer call site.
+    A guard that belongs in the public API wrapper ends up inside a shared utility that
+    has no business knowing about the edge case.
+    This pollutes the abstraction: low-level functions accumulate special cases that do
+    not belong to them, while callers appear to work generically but depend on hidden
+    behavior in their callees.
+
+24. **Naming strategy mixing** — Within a single module or feature, agents mix
+    incompatible naming or resolution strategies (e.g., prefix-based and full-path-based
+    file tracking, or relative and absolute identifiers) without reconciling them.
+    The code compiles and appears internally consistent at a glance, but the two schemes
+    produce different results for the same conceptual operation, leading to subtle
+    resolution failures that are difficult to detect without deep familiarity with both
+    conventions.
+
+25. **Partial contract grounding** — Agents generate code that only partially respects
+    the project's existing interfaces, data contracts, or ontology.
+    The output uses the right function names and parameter shapes but makes different
+    assumptions about return values, side effects, or caller guarantees.
+    The code compiles and passes basic checks, but introduces drift: downstream
+    consumers operate under the original contract's assumptions while the implementation
+    satisfies a subtly different contract.
+    The divergence accumulates over multiple generations as each new output builds on
+    the previous drift.
+
+26. **Unnecessary nil guards in safe contexts** — In languages with non-nullable types
+    or in code paths where null has already been excluded by prior checks, agents add
+    extra nil guards, `Optional`/`Maybe` unwrapping checks, or defensive defaults.
+    The redundant guards are syntactically correct and appear prudent, but they
+    introduce noise that obscures the actual control flow and can mask the true
+    invariant violations when they occur.
+
+27. **Abstraction-level inconsistent duplicate code** — Rather than consolidating shared
+    logic into a single utility, agents produce duplicated code blocks across functions
+    or files that differ only in trivial details (variable names, slightly different
+    intermediate values).
+    The duplication is not at a single consistent level of abstraction: one variant may
+    in-line a computation that another extracts, making the relationship between the
+    copies non-obvious. Any future change must be replicated manually across all copies
+    with no tooling help.
+
+28. **Rigid initial approach persistence** — Once an agent commits to an initial
+    implementation strategy or data model, it persists with that approach across
+    subsequent iterations even when later context or corrections show it is suboptimal.
+    The approach is not questioned; only local adjustments are made within it.
+    This is distinct from sunk-cost continuation in investigation contexts — it
+    manifests within the generated code itself, where the architecture of the first
+    attempt remains structurally intact through multiple rounds of modification.
 
 * * *
 
