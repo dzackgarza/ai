@@ -117,4 +117,4 @@ Load the relevant section for your context:
   mask deeper structural wrongness.
 - **reviewing-subagent-work**: Synthesis Gate forces content-level evaluation.
   Structural-wrongness recognition is the prerequisite gate before content evaluation.
-  Directly references the evaluation-failures in this skill.
+  Directly references the jerry-behaviour subfile in this skill.

@@ -90,17 +90,18 @@ applies to its own behavior.
 
 ### Cross-References
 
-- **anti-slop**: Slop is the surface pattern of low-quality agent output.
-  Self-localization failure is the meta-pattern: the agent who endorses anti-slop rules
-  while continuing to produce slop, unable to register that the critique applies to the
-  text just generated.
-- **addressing-shallow-work** → "Recognizing Structurally Wrong Code": The agent who
-  regexes HTML instead of using DOM selectors is in charlie behaviour — they would
-  endorse "use semantic navigation" as an abstract principle while already having
-  produced code that does the opposite.
-  The constraint registers verbally but does not constrain output.
-- **jerry-behaviour** (this skill): The complementary failure mode — jerry behaviour is
-  the reviewer who shares the producer's blind spots.
-  Charlie behaviour is the producer who cannot apply corrections.
+- **anti-slop** → Load alongside when the agent endorses quality rules but continues
+  producing low-quality output.
+  The agent who agrees that slop is bad while continuing to generate slop is in a
+  charlie behaviour pattern — the constraint registers verbally but does not constrain
+  output.
+- **addressing-shallow-work** → Load alongside when the agent states a correct
+  architectural principle but produces code that violates it.
+  The agent who endorses "use semantic navigation" while already having written
+  regex-on-HTML is in charlie behaviour — the principle is held in the abstract while
+  the concrete artifact does the opposite.
+- **jerry-behaviour** → Load alongside when setting up a review pipeline.
+  The jerry evaluator who shares the producer's blind spots and the charlie producer who
+  cannot localize corrections form a mutually reinforcing failure loop.
   The multi-agent cascade is what happens when both patterns occur in the same review
   chain.

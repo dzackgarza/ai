@@ -85,16 +85,20 @@ approval is not evidence of correctness.
 
 ### Cross-References
 
-- **anti-slop**: Surface-level slop patterns (generic names, boilerplate) that are the
-  raw material evaluation failures should catch.
-  An evaluator who cannot detect slop because it shares the same generic-text priors is
-  in a fluency-bias or paraphrase-as-review failure mode.
-- **addressing-shallow-work** → "Recognizing Structurally Wrong Code": The evaluation
-  failure of approving structurally wrong code (e.g., regex-on-HTML, byte-level tree
-  flattening) because it has the surface appearance of work — it runs, produces output,
-  tokenizes effort. Structural wrongness does not require empirical verification to
-  disqualify, but an evaluator in checklist-theater mode will miss it.
-- **charlie-behaviour** (this skill): The complementary failure mode — the producer who
-  cannot localize corrections to their own output.
+- **anti-slop** → Load alongside when reviewing agent output for content quality.
+  Surface-level slop patterns (generic names, boilerplate) are the raw material a
+  Jerry-style evaluator should catch.
+  If the evaluator cannot detect slop because it shares the same generic-text priors,
+  that is a fluency-bias or paraphrase-as-review failure mode.
+- **addressing-shallow-work** → Load alongside when evaluating whether a solution
+  approach is structurally wrong.
+  The inability to recognize code that is wrong at the abstraction level (e.g.,
+  regex-on-HTML where DOM selectors exist) is a Jerry failure — the evaluator approves
+  because it has the surface appearance of work.
+  Structural wrongness does not require empirical verification to disqualify, but a
+  checklist-theater evaluator will miss it.
+- **charlie-behaviour** → Load alongside when reviewing agents that have received
+  corrections. The producer who cannot localize corrections to their own output
+  complements the Jerry who approves bad work.
   The multi-agent cascade happens when jerry-behaviour agents review charlie-behaviour
   agents: both patterns reinforce each other.
