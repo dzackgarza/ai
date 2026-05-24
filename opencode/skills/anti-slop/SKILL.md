@@ -168,6 +168,81 @@ user = User()
 - Skip documentation for self-evident code
 - Focus documentation on public APIs and complex logic
 
+## UX Anti-Pattern Detection
+
+Frontend UX anti-patterns that cause measurable user harm.
+Full detection heuristics with code examples in
+[`references/ux-antipatterns.md`](references/ux-antipatterns.md).
+
+### Core Axioms
+
+Before checking individual rules, internalize these.
+They are the "why" behind every item.
+
+| # | Axiom | One-liner |
+| --- | --- | --- |
+| 1 | **Acknowledge every action** | Every user action must produce visible feedback within 100ms, even if the result takes seconds. |
+| 2 | **Never destroy user input** | Not on error, not on navigation, not on timeout, not on refresh. |
+| 3 | **State survives the unexpected** | Refresh, double-clicks, network loss — code must handle edge cases. |
+| 4 | **Most recent intent wins** | Stale responses must never overwrite a newer user action. |
+| 5 | **Explain every constraint** | If it's disabled, say why. If it failed, say how to fix it. |
+| 6 | **Don't fight the platform** | Browser conventions, OS gestures, native controls, and accessibility APIs encode billions of hours of UX research. |
+
+### Anti-Pattern Categories
+
+| # | Category | User Harm |
+| --- | --- | --- |
+| 1 | Layout Stability | Click target moves; wrong thing clicked. |
+| 2 | Feedback & Responsiveness | Action feels ignored; user retries or loses trust. |
+| 3 | Error Handling & Recovery | User stuck with no way forward; input destroyed. |
+| 4 | Forms & Input Interference | Platform fights the user's typing; data mangled. |
+| 5 | Focus | User is typing and the UI yanks them elsewhere. |
+| 6 | Notifications, Interruptions & Dialogs | User's flow broken; forced to parse ambiguous choices under pressure. |
+| 7 | Navigation, Routing & State Persistence | User can't go back; context evaporates on refresh or redirect. |
+| 8 | Scroll & Viewport | Content unreachable or unstable; user fights the interface to see what they came for. |
+| 9 | Timing, Debounce & Race Conditions | Actions fire twice, responses arrive stale. |
+| 10 | Accessibility as UX | Entire interaction modes broken — keyboard users can't navigate, touch users locked out. |
+| 11 | Visual Layering & Rendering | UI elements overlap, clip, or hide each other. |
+| 12 | Mobile & Viewport-Specific | Keyboard covers input, layout jumps on scroll. |
+| 13 | Cumulative Decay & Long-Term UX | App degrades over time; preferences lost, performance rots. |
+
+### Symptom → Category Quick Reference
+
+| User complaint / code smell | Category |
+| --- | --- |
+| "Button does nothing when I click it" | 2. Feedback & Responsiveness |
+| "I clicked the wrong thing — it moved" | 1. Layout Stability |
+| "I lost my form data" | 4. Forms & Input Interference |
+| "It says 'Something went wrong' with no explanation" | 3. Error Handling & Recovery |
+| "The page jumped while I was typing" | 5. Focus |
+| "I got the same notification 5 times" | 6. Notifications & Dialogs |
+| "I logged in and it forgot where I was going" | 7. Navigation & State Persistence |
+| "I scrolled back and lost my place" | 8. Scroll & Viewport |
+| "My order was placed twice" | 9. Timing & Race Conditions |
+| "I clicked delete and it just... deleted it" | 6. Notifications & Dialogs |
+| "It's been loading for 2 minutes with no progress bar" | 2. Feedback & Responsiveness |
+| "I can't use this with my keyboard" | 10. Accessibility as UX |
+| "The dropdown is hidden behind the modal" | 11. Visual Layering |
+| "The keyboard covers the input on my phone" | 12. Mobile & Viewport-Specific |
+| "The app gets slower over time" | 13. Cumulative Decay |
+
+### Common Mistakes
+
+- **Flagging style preferences as anti-patterns.** A non-standard button shape is a
+  design choice, not a UX violation.
+  Only flag patterns that cause measurable user harm per the axioms.
+- **Ignoring context.** A disabled button inside a wizard step IS explained by the
+  wizard's own flow. Check for nearby explanatory elements before reporting.
+- **Suggesting fixes that break accessibility.** A fix that adds a visual indicator but
+  removes keyboard access trades one violation for another.
+  Verify fixes against Axiom 6.
+- **Over-reporting on handled edge cases.** If the code already has an AbortController,
+  don't flag it for race conditions.
+  Read the implementation before reporting.
+- **Reporting framework internals as violations.** React's `key` prop remounts, Next.js
+  loading states, or SvelteKit form actions may handle anti-patterns at the framework
+  level. Understand the framework before flagging.
+
 ## Reference Files
 
 Consult these comprehensive guides when working on specific domains:
@@ -186,6 +261,12 @@ Consult these comprehensive guides when working on specific domains:
 
 - **[design-patterns.md](references/design-patterns.md)** - Visual and UX design slop
   patterns with improvement strategies
+
+- **[ux-antipatterns.md](references/ux-antipatterns.md)** - Frontend UX anti-pattern
+  detection heuristics covering layout shifts, silent failures, double-submits, focus
+  theft, missing feedback, and cumulative decay — with code-level detection signals and
+  concrete fixes. (Source:
+  [cassiozen/UX-antipatterns](https://github.com/cassiozen/UX-antipatterns))
 
 Each reference includes:
 
@@ -396,7 +477,19 @@ Create project-specific thresholds:
 5. Suggest concrete alternatives
 ```
 
-### Scenario 4: Establish Quality Standards
+### Scenario 4: Frontend UX Review
+
+```bash
+# User asks: "Review this React component for UX issues"
+1. Load references/ux-antipatterns.md for the full detection heuristics
+2. Check each applicable anti-pattern category against the code
+3. For each finding, state: the anti-pattern name, the user harm, and a concrete fix
+4. Reference the core axioms to explain *why* it's a problem
+5. Verify fixes don't violate other axioms (especially accessibility)
+6. If no anti-patterns are found, state that the code is clean
+```
+
+### Scenario 5: Establish Quality Standards
 
 ```bash
 # User asks: "Help me create quality standards for our team"
@@ -448,3 +541,7 @@ detection signals, and cleanup strategies.
   cosmetic. The deepest form of slop is code that destroys the abstraction before
   operating (regex-on-HTML, serialization-before-search).
   Surface-level cleanup cannot fix structurally wrong approaches.
+- **ux-antipatterns** (reference) → Load alongside when reviewing frontend UI code.
+  Detects user-facing patterns (layout shifts, silent failures, focus theft) that
+  frustrate users but may not look like "code slop" to a reviewer focused on naming or
+  abstraction quality.
