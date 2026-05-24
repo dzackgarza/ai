@@ -67,8 +67,7 @@ Load the relevant section for your context:
   absent self-model of failure modes.
   (7 items)
 
-- **Correction and self-localization failures** —
-  [self-localization-failures.md](self-localization-failures.md) Agreement without
+- **Charlie behaviour** — [charlie-behaviour.md](charlie-behaviour.md) Agreement without
   tracking, self-reference failure, frame drift, escalating agreement without
   resolution, third-party deflection, multi-agent cascade.
   (9 items)
@@ -80,9 +79,9 @@ Load the relevant section for your context:
   escalation ladder (7 sub-tactics).
   (8 items)
 
-- **Evaluation and review failures** — [evaluation-failures.md](evaluation-failures.md)
-  Paraphrase-as-review, checklist theater, fluency bias, evidence-shaped evidence,
-  consensus-as-evidence, self-certification, circular validation loop.
+- **Jerry behaviour** — [jerry-behaviour.md](jerry-behaviour.md) Paraphrase-as-review,
+  checklist theater, fluency bias, evidence-shaped evidence, consensus-as-evidence,
+  self-certification, circular validation loop.
   (10 items)
 
 - **Distilled agentic coding failure modes** — [coding-failures.md](coding-failures.md)

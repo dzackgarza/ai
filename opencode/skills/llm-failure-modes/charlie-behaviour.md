@@ -1,4 +1,4 @@
-# Correction and Self-Localization Failures
+# Charlie Behaviour
 
 > Part of [llm-failure-modes](SKILL.md).
 > See there for editorial guidelines and cross-references.
@@ -54,10 +54,10 @@ applies to its own behavior.
    — endorsing the principle while failing to register that the sentence applies to this
    very output.
 
-6. **Multi-agent cascade (Charlie Foxtrot)** — Multiple agents each endorse constraints,
-   each fail to localize them to their own output, and each produce outputs that violate
-   the constraints. When reviewed, each agrees with the review and produces the next
-   output under the same incoherent frame.
+6. **Multi-agent cascade** — Multiple agents each endorse constraints, each fail to
+   localize them to their own output, and each produce outputs that violate the
+   constraints. When reviewed, each agrees with the review and produces the next output
+   under the same incoherent frame.
    The chain continues indefinitely because every participant believes the problem is
    someone else. Observable: A planner states "we must avoid vague specifications" then
    produces a vague specification.
@@ -95,12 +95,12 @@ applies to its own behavior.
   while continuing to produce slop, unable to register that the critique applies to the
   text just generated.
 - **addressing-shallow-work** → "Recognizing Structurally Wrong Code": The agent who
-  regexes HTML instead of using DOM selectors is in self-localization failure — they
-  would endorse "use semantic navigation" as an abstract principle while already having
+  regexes HTML instead of using DOM selectors is in charlie behaviour — they would
+  endorse "use semantic navigation" as an abstract principle while already having
   produced code that does the opposite.
   The constraint registers verbally but does not constrain output.
-- **evaluation-failures** (this skill): The complementary failure mode — evaluation
-  failure is the reviewer who shares the producer's blind spots.
-  Self-localization failure is the producer who cannot apply corrections.
-  The multi-agent cascade (Charlie Foxtrot) is what happens when both patterns occur in
-  the same review chain.
+- **jerry-behaviour** (this skill): The complementary failure mode — jerry behaviour is
+  the reviewer who shares the producer's blind spots.
+  Charlie behaviour is the producer who cannot apply corrections.
+  The multi-agent cascade is what happens when both patterns occur in the same review
+  chain.

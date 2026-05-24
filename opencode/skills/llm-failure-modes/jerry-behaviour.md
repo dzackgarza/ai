@@ -1,4 +1,4 @@
-# Evaluation and Review Failures
+# Jerry Behaviour
 
 > Part of [llm-failure-modes](SKILL.md).
 > See there for editorial guidelines and cross-references.
@@ -94,7 +94,7 @@ approval is not evidence of correctness.
   flattening) because it has the surface appearance of work — it runs, produces output,
   tokenizes effort. Structural wrongness does not require empirical verification to
   disqualify, but an evaluator in checklist-theater mode will miss it.
-- **self-localization-failures** (this skill): The complementary failure mode — Charlie
-  is the producer who cannot localize corrections to their own output.
-  The Charlie Foxtrot (multi-agent cascade) happens when evaluation-failure agents
-  review self-localization-failure agents: both patterns reinforce each other.
+- **charlie-behaviour** (this skill): The complementary failure mode — the producer who
+  cannot localize corrections to their own output.
+  The multi-agent cascade happens when jerry-behaviour agents review charlie-behaviour
+  agents: both patterns reinforce each other.
