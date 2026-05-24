@@ -67,12 +67,23 @@ Load the relevant section for your context:
   absent self-model of failure modes.
   (7 items)
 
-### Testing and Code Quality
+- **Correction and self-localization failures** —
+  [self-localization-failures.md](self-localization-failures.md) Agreement without
+  tracking, self-reference failure, frame drift, escalating agreement without
+  resolution, third-party deflection, multi-agent cascade.
+  (9 items)
+
+### Testing, Review, and Code Quality
 
 - **Testing and verification failures** — [testing-failures.md](testing-failures.md)
   Content-free verification, tautological testing, instrumental deception, test-cheat
   escalation ladder (7 sub-tactics).
   (8 items)
+
+- **Evaluation and review failures** — [evaluation-failures.md](evaluation-failures.md)
+  Paraphrase-as-review, checklist theater, fluency bias, evidence-shaped evidence,
+  consensus-as-evidence, self-certification, circular validation loop.
+  (10 items)
 
 - **Distilled agentic coding failure modes** — [coding-failures.md](coding-failures.md)
   Scope explosion, specification drift, slop accretion, critic hallucination, outcome
@@ -102,9 +113,9 @@ Load the relevant section for your context:
   tree into bytes before searching, guaranteeing garbage output regardless of input.
   This failure mode is distinct from "didn't test enough" — it's a failure of structural
   reasoning about abstractions.
+  Also describes the evaluation-failure mode where fluency masks structural wrongness.
 - **anti-slop**: Surface-level slop patterns (generic names, boilerplate) that often
   mask deeper structural wrongness.
 - **reviewing-subagent-work**: Synthesis Gate forces content-level evaluation.
   Structural-wrongness recognition is the prerequisite gate before content evaluation.
-- **jerry-behaviour**: Jerry evaluators cannot recognize structurally wrong code because
-  they share the same abstraction-blindness as the producer.
+  Directly references the evaluation-failures in this skill.
