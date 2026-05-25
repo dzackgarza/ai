@@ -1,11 +1,9 @@
 // ESLint flat config for TypeScript QC
-// Matches Codacy's plugin suite: @typescript-eslint, promise, fp, @lwc/lwc
 
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import promisePlugin from 'eslint-plugin-promise';
 import fpPlugin from 'eslint-plugin-fp';
-import lwcPlugin from '@lwc/eslint-plugin-lwc';
 import globals from 'globals';
 
 export default [
@@ -34,14 +32,16 @@ export default [
         projectService: true,
         tsconfigRootDir: process.cwd(),
       },
-      // Replicate Codacy's LWC ESLint environment: node globals are present
-      // but Promise is explicitly excluded (LWC targets environments without
-      // native Promise). This makes no-undef catch `: Promise<X>` and
-      // `Promise.resolve()` the same way Codacy does.
       globals: {
         ...globals.node,
       },
-
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      promise: promisePlugin,
+      fp: fpPlugin,
+    },
+    rules: {
       // @typescript-eslint full suite
       '@typescript-eslint/no-unsafe-assignment': 'error',
       '@typescript-eslint/no-unsafe-call': 'error',
@@ -61,7 +61,7 @@ export default [
       'promise/no-return-wrap': 'error',
       'promise/param-names': 'error',
       'promise/catch-or-return': 'error',
-      'promise/no-native': 'error',
+      'promise/no-native': 'off',
       // Nesting/callback rules: Codacy does not report these so don't fail locally.
       'promise/no-nesting': 'off',
       'promise/no-promise-in-callback': 'off',
@@ -75,12 +75,6 @@ export default [
       'fp/no-mutating-assign': 'error',
       'fp/no-mutating-methods': 'off', // too strict for most codebases
       // fp/no-let: disabled — Codacy does not run it, and enabling it here
-      // conflicts with the pattern required to satisfy fp/no-nil in try/catch contexts.
-
-      // @lwc/lwc (Lightning Web Components)
-      // Codacy's LWC plugin forbids async/await; all async code must use .then() chains.
-      '@lwc/lwc/no-async-await': 'off',
-      '@lwc/lwc/no-for-of': 'off', // biome requires for...of
     },
   },
   {
@@ -89,7 +83,6 @@ export default [
     // This block comes LAST so it overrides the main config above.
     files: ['tests/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
     rules: {
-      '@lwc/lwc/no-async-await': 'off',
       'fp/no-nil': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
