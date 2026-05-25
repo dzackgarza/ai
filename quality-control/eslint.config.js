@@ -28,7 +28,9 @@ export default [
         sourceType: 'module',
         // projectService: true uses TypeScript's project service, which handles
         // files not explicitly listed in tsconfig.json without a hard parse error.
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ['**/*.tsx', '**/vitest.config.ts'],
+        },
         tsconfigRootDir: process.cwd(),
       },
       // Replicate Codacy's LWC ESLint environment: node globals are present
