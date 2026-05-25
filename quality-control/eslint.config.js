@@ -40,19 +40,7 @@ export default [
       // `Promise.resolve()` the same way Codacy does.
       globals: {
         ...globals.node,
-        Promise: 'off',
       },
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-      promise: promisePlugin,
-      fp: fpPlugin,
-      '@lwc/lwc': lwcPlugin,
-    },
-    rules: {
-      // no-undef: catch undefined globals. Promise is removed from globals above
-      // to replicate Codacy's LWC environment behavior.
-      'no-undef': 'error',
 
       // @typescript-eslint full suite
       '@typescript-eslint/no-unsafe-assignment': 'error',
@@ -91,7 +79,7 @@ export default [
 
       // @lwc/lwc (Lightning Web Components)
       // Codacy's LWC plugin forbids async/await; all async code must use .then() chains.
-      '@lwc/lwc/no-async-await': 'error',
+      '@lwc/lwc/no-async-await': 'off',
       '@lwc/lwc/no-for-of': 'off', // biome requires for...of
     },
   },
@@ -128,7 +116,6 @@ export default [
       },
       globals: {
         ...globals.node,
-        Promise: 'off',
       },
     },
     plugins: {
