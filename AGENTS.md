@@ -244,6 +244,7 @@ This may be definite or indefinite, and is NOT assumed to be positive-definite, 
 
 - **Favor mature dependencies.** Outsource common patterns to minimize owned surface.
 - **Iterate, don't replace.** Writing an entire file is almost NEVER correct, unless greenfielding a new file.
+- **Use PTYs for long-running commands.** NEVER wrap ordinary shell commands in short `timeout` calls unless the task specifically asks for a timeout or the command itself requires one. Run long-running work in an async PTY/session and poll it until it exits. If a timeout is genuinely required, it should usually be measured in minutes, not seconds. No research or engineering task is so time sensitive that impatience is worth corrupting the result: premature timeouts more than double the work by forcing agents to discover the artificial failure, reconcile partial state, and rerun the same command correctly.
 - Run `git diff` after rewrites — see what you lost semantically. If valuable or unintentional, restore it carefully before moving forward.
 - After any knowledge-transfer edit, immediately perform an explicit semantic comparison
   between the new destination doc(s) and the old source material. Knowledge transfer

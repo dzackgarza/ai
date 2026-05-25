@@ -2,6 +2,7 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@babel/core": "^7.29.7",
     "@lwc/eslint-plugin-lwc": "^3.4.0",
     "@typescript-eslint/eslint-plugin": "^8.57.2",
     "@typescript-eslint/parser": "^8.57.2",

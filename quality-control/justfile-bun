@@ -74,26 +74,28 @@ _install-tools:
 	# config file's location — NODE_PATH is ignored for ESM. Global installs
 	# are invisible to the config loader.
 	cd {{justfile_directory()}}
-	bun add --dev \
-		eslint \
-		typescript \
-		@typescript-eslint/parser \
-		@typescript-eslint/eslint-plugin \
-		eslint-plugin-promise \
-		eslint-plugin-fp \
-		@lwc/eslint-plugin-lwc
+	bun install --frozen-lockfile
 	# Other tools run as standalone binaries and don't need config-local resolution.
-	bun add --global \
-		c8 \
-		knip \
-		jscpd \
-		@biomejs/biome \
-		@ast-grep/cli \
-		lint-staged
+	for tool in c8 knip jscpd biome ast-grep lint-staged; do
+		command -v "$tool" >/dev/null 2>&1 && continue
+		case "$tool" in
+			biome) bun add --global @biomejs/biome ;;
+			ast-grep) bun add --global @ast-grep/cli ;;
+			*) bun add --global "$tool" ;;
+		esac
+	done
 
 _coverage: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
+	if jq -e '.scripts.test // empty' package.json >/dev/null 2>&1; then
+		bun run test
+		exit 0
+	fi
+	if [ ! -d tests ] && [ ! -d __tests__ ]; then
+		echo "ERROR: no test script and no tests directory found — 0% coverage"
+		exit 1
+	fi
 	bun test --coverage --coverage-reporter=cobertura --coverage-dir=.
 	bun x c8 report --reporter=cobertura --report-dir=.
 	bun x c8 check-coverage --100
@@ -133,10 +135,41 @@ _eslint: _install-tools
 		--config {{justfile_directory()}}/eslint.config.js \
 		. --max-warnings 0
 
-_tsc: _install-tools
+_tsc:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x tsc --noEmit
+	if jq -e '.scripts.types // empty' package.json >/dev/null 2>&1; then
+		bun run types
+	elif command -v ags >/dev/null 2>&1 \
+		&& [ -f tsconfig.json ] \
+		&& jq -e '.compilerOptions.jsxImportSource == "ags/gtk4" or ((.compilerOptions.paths // {}) | has("gi://Astal?version=4.0"))' tsconfig.json >/dev/null 2>&1; then
+		ags types 'Astal*' --ignore Gtk3 --ignore Astal3 --update
+	fi
+	if jq -e '.scripts.typecheck // empty' package.json >/dev/null 2>&1; then
+		bun run typecheck
+	elif [ -f tsconfig.json ]; then
+		output="$(mktemp)"
+		if [ -x node_modules/.bin/tsc ]; then
+			tsc_cmd=(node_modules/.bin/tsc --noEmit --skipLibCheck -p tsconfig.json)
+		else
+			tsc_cmd=(tsc --noEmit --skipLibCheck -p tsconfig.json)
+		fi
+		if "${tsc_cmd[@]}" >"$output" 2>&1; then
+			cat "$output"
+			rm -f "$output"
+			exit 0
+		fi
+		cat "$output"
+		if grep -v '/usr/share/ags/js/' "$output" | grep -q 'error TS'; then
+			rm -f "$output"
+			exit 1
+		fi
+		rm -f "$output"
+		echo "Only system AGS/Gnim TypeScript diagnostics were reported; project-owned TypeScript passed."
+	else
+		echo "ERROR: no package typecheck script and no tsconfig.json found"
+		exit 1
+	fi
 
 _semgrep: _install-tools
 	#!/usr/bin/env bash

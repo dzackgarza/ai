@@ -316,12 +316,13 @@ _pytest_with_coverage: _install-tools
 	echo "============================="
 	echo "=== Running: pytest with coverage measurement ==="
 	echo "# Runs pytest with coverage.py to enforce 100% line/branch coverage and generate coverage.xml"
-	if [ ! -f pyproject.toml ]; then
-		echo "Skipping coverage: no pyproject.toml found."
-		exit 0
-	fi
 	if ! rg --files tests -g 'test_*.py' -g '*_test.py' >/dev/null 2>&1; then
 		echo "Skipping coverage: no pytest-style Python tests found."
+		exit 0
+	fi
+	if [ ! -f pyproject.toml ]; then
+		echo "No pyproject.toml found; running pytest without editable install or coverage."
+		uvx --with pytest pytest tests
 		exit 0
 	fi
 	project_root="$(pwd -P)"
