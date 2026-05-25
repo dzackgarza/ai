@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
   "files": {
-    "ignore": ["**/@girs/**"]
+    "maxSize": 10485760
   },
   "assist": {
     "actions": {
