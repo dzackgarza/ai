@@ -28,9 +28,7 @@ export default [
         sourceType: 'module',
         // projectService: true uses TypeScript's project service, which handles
         // files not explicitly listed in tsconfig.json without a hard parse error.
-        projectService: {
-          allowDefaultProject: ['**/*.tsx', '**/vitest.config.ts'],
-        },
+        projectService: true,
         tsconfigRootDir: process.cwd(),
       },
       // Replicate Codacy's LWC ESLint environment: node globals are present
@@ -115,16 +113,32 @@ export default [
   },
   {
     // AGS/GJS files: Gtk runtime types cannot be statically resolved by TSC.
-    // @typescript-eslint/no-unsafe-* rules produce false positives on method
-    // calls to GJS-provided types (Astal.Window, Gtk.Box, etc.).
-    // This applies to all .tsx files (AGS uses JSX for widget trees) and
-    // any file importing from ags/ or @girs/.
+    // Parse without TypeScript project service (these files are excluded from
+    // tsconfig because AGS module types are unresolvable by tsc).
     files: ['**/*.tsx'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        projectService: false,
+      },
+      globals: {
+        ...globals.node,
+        Promise: 'off',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      fp: fpPlugin,
+    },
     rules: {
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      'fp/no-nil': 'off',
+      'fp/no-this': 'warn',
     },
   },
 ];
