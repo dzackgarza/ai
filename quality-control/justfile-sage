@@ -1,0 +1,179 @@
+# justfile-sage — SageMath-specific quality control
+#
+# Builds on the standard Python justfile and adds Sage-specific checks.
+# Sage projects should use this file instead of the standard justfile.
+#
+# Standard QC recipes are delegated to justfile via `just -f`.
+# Sage projects can still provide sage-mypy-plugin.ini to add the
+# sage_mypy_category_plugin to mypy's config via the standard merge logic.
+#
+# Usage:
+#   just -f ~/ai/quality-control/justfile-sage test
+#   just -f ~/ai/quality-control/justfile-sage test-ci
+
+std := justfile_directory() + "/justfile"
+
+_sage-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.sage' \
+		-g '!*.sage.py' \
+		-g '!**/external/**' \
+		-g '!**/node_modules/**' \
+		-g '!**/__pycache__/**' \
+		-g '!**/.venv/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**' \
+		-g '!**/codeql-db/**' \
+		-g '!**/*.bak/**' \
+		-g '!**/*.bak/**' || true
+
+_sage-syntax:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: Sage syntax validation ==="
+	echo "# Preparses .sage files and byte-compiles the generated Python to catch syntax errors early"
+	mapfile -t sage_files < <(just -f {{justfile_directory()}}/justfile-sage -d . _sage-qc-files)
+	if [ "${#sage_files[@]}" -eq 0 ]; then
+		echo "Skipping Sage syntax validation: no Sage files found."
+		exit 0
+	fi
+
+	sage_bin="${SAGE_BIN:-sage}"
+	if ! command -v "$sage_bin" >/dev/null 2>&1; then
+		echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+		exit 1
+	fi
+
+	sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-sage-syntax.XXXXXX")"
+	trap 'rm -rf "$sage_preparse_dir"' EXIT
+	echo "# Preparsing and compiling ${#sage_files[@]} Sage file(s)"
+	copied_sage_files=()
+	compile_args=()
+	failed=0
+	for sage_file in "${sage_files[@]}"; do
+		target="$sage_preparse_dir/$sage_file"
+		mkdir -p "$(dirname "$target")"
+		cp "$sage_file" "$target"
+		generated_file="$target.py"
+		copied_sage_files+=("$sage_file")
+		compile_args+=("$sage_file" "$generated_file")
+	done
+
+	(
+		cd "$sage_preparse_dir"
+		"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
+	)
+
+	for sage_file in "${sage_files[@]}"; do
+		generated_file="$sage_preparse_dir/$sage_file.py"
+		if [ ! -f "$generated_file" ]; then
+			echo "ERROR: Sage preparse did not produce $generated_file for $sage_file"
+			failed=1
+		fi
+	done
+	if [ "$failed" -ne 0 ]; then
+		exit 1
+	fi
+
+	if ! "$sage_bin" -python - "${compile_args[@]}" <<'PY'
+	import py_compile
+	import sys
+
+	args = sys.argv[1:]
+	failed = False
+	for index in range(0, len(args), 2):
+	    original = args[index]
+	    generated = args[index + 1]
+	    try:
+	        py_compile.compile(generated, doraise=True)
+	    except py_compile.PyCompileError as exc:
+	        print(exc.msg, file=sys.stderr, end="" if exc.msg.endswith("\n") else "\n")
+	        print(f"ERROR: Sage syntax validation failed for {original}", file=sys.stderr)
+	        failed = True
+
+	raise SystemExit(1 if failed else 0)
+	PY
+	then
+		exit 1
+	fi
+
+_vulture: _sage-qc-files
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: vulture dead code detection (Sage-aware) ==="
+	echo "# Finds unused code in Python and Sage files"
+	mapfile -t python_files < <(just -f {{std}} -d . _python-qc-files)
+	mapfile -t sage_files < <(just -f {{justfile_directory()}}/justfile-sage -d . _sage-qc-files)
+	generated_sage_python_files=()
+	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
+	if [ "${#python_files[@]}" -eq 0 ] && [ "${#sage_files[@]}" -eq 0 ]; then
+		echo "Skipping vulture: no Python or Sage files found."
+		exit 0
+	fi
+
+	if [ "${#sage_files[@]}" -gt 0 ]; then
+		sage_bin="${SAGE_BIN:-sage}"
+		if ! command -v "$sage_bin" >/dev/null 2>&1; then
+			echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+			exit 1
+		fi
+
+		sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-vulture-sage.XXXXXX")"
+		trap 'rm -rf "$sage_preparse_dir"' EXIT
+		echo "# Preparsing ${#sage_files[@]} Sage file(s) for vulture"
+		copied_sage_files=()
+		for sage_file in "${sage_files[@]}"; do
+			target="$sage_preparse_dir/$sage_file"
+			mkdir -p "$(dirname "$target")"
+			cp "$sage_file" "$target"
+			copied_sage_files+=("$sage_file")
+			generated_sage_python_files+=("$target.py")
+		done
+		(
+			cd "$sage_preparse_dir"
+			"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
+		)
+		for generated_file in "${generated_sage_python_files[@]}"; do
+			if [ ! -f "$generated_file" ]; then
+				echo "ERROR: Sage preparse did not produce $generated_file"
+				exit 1
+			fi
+		done
+	fi
+
+	uvx --from vulture vulture \
+		--config {{justfile_directory()}}/pyproject.toml \
+		"${python_files[@]}" \
+		"${generated_sage_python_files[@]}" \
+		"$whitelist_file"
+
+test: _sage-syntax _vulture
+	#!/usr/bin/env bash
+	set -euo pipefail
+	just -f {{std}} _python-syntax
+	just -f {{std}} _no-bypass
+	just -f {{std}} _mypy
+	just -f {{std}} _normalize
+	just -f {{std}} _deptry
+	just -f {{std}} _import-linter
+	just -f {{std}} _semgrep
+	just -f {{std}} _ast-grep
+	just -f {{std}} _jscpd
+	just -f {{std}} _lizard
+	just -f {{std}} _grain
+	just -f {{std}} _codeql
+	just -f {{std}} _pytest_with_coverage
+	just -f {{std}} _diff-cover
+	just -f {{std}} _slop
+	just -f {{std}} _slop-scan
+	echo "Sage QC checks completed"
+
+test-ci: test
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "Sage CI checks completed"
