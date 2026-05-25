@@ -110,7 +110,7 @@ _diff-cover: _coverage
 _knip: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x knip --config {{justfile_directory()}}/knip.json
+	bun x knip --config {{justfile_directory()}}/knip.json --hints warn
 
 _biome: _install-tools
 	#!/usr/bin/env bash
