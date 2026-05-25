@@ -1,12 +1,5 @@
 {
-  "entry": [
-    "src/index.ts",
-    "src/**/*.ts",
-    "app.tsx",
-    "app.ts",
-    "lib/**/*.ts",
-    "lib/**/*.tsx"
-  ],
+  "entry": ["src/index.ts", "src/**/*.ts", "app.tsx", "lib/**/*.ts"],
   "project": [
     "src/**/*.ts",
     "src/**/*.tsx",
@@ -14,8 +7,7 @@
     "lib/**/*.tsx",
     "widget/**/*.tsx",
     "services/**/*.ts",
-    "app.tsx",
-    "app.ts"
+    "app.tsx"
   ],
   "ignore": [
     "**/*.test.ts",
@@ -25,6 +17,6 @@
     "**/__stubs__/**",
     "**/env.d.ts"
   ],
-  "ignoreDependencies": ["gi", "@girs", "@logtape/logtape", "ags", "gnim"],
+  "ignoreDependencies": ["gi", "@girs", "@logtape/logtape"],
   "ignoreExportsUsedInFile": true
 }
