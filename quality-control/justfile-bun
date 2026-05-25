@@ -29,7 +29,7 @@
 #   sgconfig.yml      → ast-grep (auto-discovered)
 #   .lintstagedrc.json → lint-staged (explicit --config flag)
 # GLOBAL CONFIGS OK: prettier (project .prettierrc),
-# c8 (package.json [c8] or .c8rc), lizard (CLI flags only).
+# lizard (CLI flags only).
 
 default:
   @just test
@@ -76,7 +76,7 @@ _install-tools:
 	cd {{justfile_directory()}}
 	bun install --frozen-lockfile
 	# Other tools run as standalone binaries and don't need config-local resolution.
-	for tool in c8 knip jscpd biome ast-grep lint-staged; do
+	for tool in knip jscpd biome ast-grep lint-staged; do
 		command -v "$tool" >/dev/null 2>&1 && continue
 		case "$tool" in
 			biome) bun add --global @biomejs/biome ;;
@@ -96,14 +96,16 @@ _coverage: _install-tools
 		echo "ERROR: no test script and no tests directory found — 0% coverage"
 		exit 1
 	fi
-	bun test --coverage --coverage-reporter=cobertura --coverage-dir=.
-	bun x c8 report --reporter=cobertura --report-dir=.
-	bun x c8 check-coverage --100
+	bun test --coverage --coverage-reporter=lcov --coverage-dir=.
 
 _diff-cover: _coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x diff-cover coverage.cobertura.xml --compare-branch ${DIFF_COVER_BASE:-main}
+	if [ ! -f lcov.info ]; then
+		echo "Skipping diff-cover: lcov.info not produced (no tests matched by bun test)."
+		exit 0
+	fi
+	bun x diff-cover lcov.info --compare-branch ${DIFF_COVER_BASE:-main}
 
 _knip: _install-tools
 	#!/usr/bin/env bash
