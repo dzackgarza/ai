@@ -15,7 +15,8 @@
     "**/__tests__/**",
     "**/@girs/**",
     "**/__stubs__/**",
-    "**/env.d.ts"
+    "**/env.d.ts",
+    "**/*.tsx"
   ],
   "ignoreDependencies": ["gi", "@girs", "@logtape/logtape"],
   "ignoreExportsUsedInFile": true
