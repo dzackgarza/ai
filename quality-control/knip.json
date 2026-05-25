@@ -18,6 +18,6 @@
     "**/env.d.ts",
     "**/*.tsx"
   ],
-  "ignoreDependencies": ["gi", "@girs", "@logtape/logtape"],
+  "ignoreDependencies": ["gi", "@girs", "@logtape/logtape", "@ags/shared"],
   "ignoreExportsUsedInFile": true
 }
