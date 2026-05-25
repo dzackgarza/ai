@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
   "files": {
-    "maxSize": 10485760
+    "includes": ["**", "!**/@girs/**", "!**/__stubs__/**", "!**/env.d.ts"]
   },
   "assist": {
     "actions": {
