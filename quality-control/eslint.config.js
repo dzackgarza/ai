@@ -17,6 +17,9 @@ export default [
       'coverage/**',
       '.venv/**',
       '_ci-support/**',
+      '**/@girs/**',
+      '**/__stubs__/**',
+      '**/env.d.ts',
     ],
   },
   {
@@ -133,10 +136,17 @@ export default [
       fp: fpPlugin,
     },
     rules: {
+      // Disable all type-aware rules — .tsx files have no project service
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
       'fp/no-nil': 'off',
       'fp/no-this': 'warn',
     },
