@@ -101,7 +101,12 @@ Load the relevant section for your context:
   shotgun, plausible fixture injection, checker removal, deep-context quality collapse,
   progress theater, refactoring to the mean, hot-path defensive programming, helper
   function explosion, partial contract grounding.
-  (28 items)
+  (33 items)
+
+- **Behavioral detection methodology** —
+  [references/behavioral-detection-methodology.md](references/behavioral-detection-methodology.md)
+  Concrete anchors and review tactics for identifying behavioral failures without
+  turning observations into interaction-specific narratives.
 
 ### Cross-References
 

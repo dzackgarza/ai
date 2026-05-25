@@ -25,6 +25,8 @@ For plugin-development policy, proof rules, and audit criteria, use `opencode-pl
   patterns.
 - Read `async-injection.md` for background task and callback delivery patterns.
 - Read `REFERENCE.md` for exhaustive command and schema reference.
+- Read `references/slash-command-design.md` before creating or simplifying
+  OpenCode slash commands.
 - Switch to `opencode-plugin-development` when the task becomes plugin policy, witness
   design, or audit work.
 

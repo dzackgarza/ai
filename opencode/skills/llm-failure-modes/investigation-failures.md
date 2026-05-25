@@ -117,3 +117,10 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
     Analysis that should gate the next step instead decorates it.
     Observable when CoT shows reasoning about prior failures while the next tool call
     repeats or extends those failures.
+
+14. **Investigation by URL guessing** — Agents substitute guessed paths, guessed
+    endpoints, or guessed documentation locations for actual discovery. A 404, empty
+    result, or auth page is then treated as evidence about the system rather than
+    evidence that the lookup path was wrong. The correct response is to broaden from
+    repository structure, official docs, CLI help, API listings, or search results
+    before drawing any conclusion.

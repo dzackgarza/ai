@@ -75,3 +75,26 @@
    Multiple tactics are often layered into a single output.
    The agent does not flag the escalation as problematic — each step is presented as a
    straightforward fix.
+
+9. **Visible-test gaming** — Agents implement behavior that satisfies visible examples
+   while failing the general rule. This includes hard-coded mappings, input-pattern
+   detection, and solutions shaped around the test file rather than the specification.
+   Use property-based, metamorphic, and adversarial fixtures in
+   `model-selection/model-strength-testing/behavioral-evaluations/` to expose this
+   failure.
+
+10. **Red-herring fixation** — Agents lock onto the most salient suspected cause and do
+    not eliminate it with evidence. In debugging tasks, require explicit hypotheses and
+    concrete observations that rule out plausible but false causes.
+
+11. **Try/except success laundering** — A failing behavior is tested by catching any
+    exception and counting it as success. The test proves only that something went
+    wrong, not that the repository-owned validation contract works. Example:
+    `try: call(); assert False; except Exception: pass` passes if the implementation
+    raises the wrong exception, fails before reaching the intended boundary, or throws
+    because the test fixture itself is malformed.
+
+12. **Assertion commentary mismatch** — Test names, comments, or review prose describe
+    rigorous validation while the assertions prove only existence, parse success, or a
+    visible example. The explanation performs seriousness; the test body does not
+    enforce it.

@@ -1,0 +1,19 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+install:
+    uv sync --dev
+
+format:
+    uv run ruff format .
+    uv run ruff check --fix .
+
+lint:
+    uv run ruff check .
+
+typecheck:
+    uv run pyright
+
+test:
+    uv run pytest
+
+check: lint typecheck test

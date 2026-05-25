@@ -237,3 +237,26 @@ replace it with something that works differently.
     This is distinct from sunk-cost continuation in investigation contexts — it
     manifests within the generated code itself, where the architecture of the first
     attempt remains structurally intact through multiple rounds of modification.
+
+29. **Reasonable-sounding implementation fabrication** — Agents invent implementation
+    details, algorithms, weights, thresholds, or architecture facts because they sound
+    plausible for the named domain. The wording is technical and coherent, but no code,
+    documentation, or runtime evidence supports it.
+
+30. **Demo overfitting** — Agents optimize for an impressive demonstration path while
+    leaving the real workflow unproved. The demo succeeds because inputs, state, or
+    presentation were chosen to avoid the hard boundary the project actually owns.
+
+31. **False-understanding receipt** — Agents emit "I understand" or equivalent
+    alignment language while their next action proves the task frame is still wrong.
+    The receipt substitutes for the cognitive operation of mapping the directive to the
+    concrete workflow.
+
+32. **Validation theater** — Agents run commands, count files, compare hashes, or cite
+    self-reports as if those mechanics prove semantic migration, correctness, or
+    usefulness. The activity proves something happened, not that the right thing
+    happened.
+
+33. **Citation fabrication pressure** — Agents fill source-backed sections with
+    plausible references or paraphrases before verifying that the source actually
+    supports the claim. The failure can appear even when the cited source exists.

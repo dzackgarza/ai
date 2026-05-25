@@ -178,6 +178,26 @@ Outputs appear under `~/pdf-extraction/artifacts/` and `~/pdf-extraction/outputs
 
 **Do not** create a separate venv or install ad hoc — let the recipes manage the environment.
 
+When only structured extraction data is needed, prefer a recipe that emits the
+minimal MinerU JSON artifacts (`middle.json` and `content_list.json`) without
+generating extra rendered PDFs or Markdown. The recipe should own that mode;
+do not run private one-off extraction scripts. After extraction, verify the
+expected output files and keep the run log with the artifacts.
+
+## Zotero and MinerU Artifacts
+
+MinerU markdown/JSON are external research artifacts, not repository source.
+Preserve that separation:
+
+- Original PDFs belong under `~/pdfs` or Zotero storage, not in agent/code repos.
+- Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant
+  Zotero attachment path, not in Git LFS.
+- When Zotero already has a PDF, prefer resolving the local attachment path via
+  the `zotero-api` skill before downloading a duplicate.
+- When attaching existing MinerU output back to Zotero, verify against the
+  running Zotero local API and Better BibTeX key; do not infer matches from
+  filenames alone.
+
 ## Notes
 
 - The OCR handles complex documents including tables, math equations, and multi-column layouts
