@@ -10,7 +10,15 @@ import globals from 'globals';
 
 export default [
   // Global ignores: apply before any rule config
-  { ignores: ['node_modules/**', 'dist/**', 'coverage/**', '.venv/**', '_ci-support/**'] },
+  {
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'coverage/**',
+      '.venv/**',
+      '_ci-support/**',
+    ],
+  },
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
@@ -101,6 +109,20 @@ export default [
       'promise/catch-or-return': 'off',
       'promise/no-native': 'off',
       'no-undef': 'off',
+    },
+  },
+  {
+    // AGS/GJS files: Gtk runtime types cannot be statically resolved by TSC.
+    // @typescript-eslint/no-unsafe-* rules produce false positives on method
+    // calls to GJS-provided types (Astal.Window, Gtk.Box, etc.).
+    // This applies to all .tsx files (AGS uses JSX for widget trees) and
+    // any file importing from ags/ or @girs/.
+    files: ['**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
     },
   },
 ];
