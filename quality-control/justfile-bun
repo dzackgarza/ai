@@ -162,7 +162,7 @@ _tsc:
 			exit 0
 		fi
 		cat "$output"
-		if grep -v '/usr/share/ags/js/' "$output" | grep -q 'error TS'; then
+		if grep -vE '/usr/share/ags/js/|\.\./.*usr/share/ags/js/' "$output" | grep -q 'error TS'; then
 			rm -f "$output"
 			exit 1
 		fi
