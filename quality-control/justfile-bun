@@ -197,6 +197,10 @@ _lizard: _install-tools
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	if ! command -v codeql >/dev/null 2>&1; then
+		echo "Skipping CodeQL: codeql CLI is not installed."
+		exit 0
+	fi
 	codeql database create codeql-db --overwrite --language=typescript --source-root=.
 	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif
 
