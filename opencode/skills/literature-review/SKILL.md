@@ -11,6 +11,8 @@ Help write academic literature reviews using a multi-engine search integration (
 ## Capabilities
 
 - **Multi-Source Search**: Find relevant academic papers using Semantic Scholar (S2), OpenAlex (OA), Crossref (CR), and PubMed (PM).
+- **Mathematics Paper Discovery**: For mathematics, combine general metadata sources with arXiv, zbMATH/OpenAlex/Semantic Scholar, DOI lookup, Zotero, and the local PDF workflow.
+- **Web Research Extraction**: For high-rate web-informed research, prefer a self-hostable extraction stack only when the built-in web/search tools are insufficient; see `references/web-research-extraction-stack.md`.
 - **Full Abstracts**: All sources now return complete abstracts (PubMed uses `efetch` for full XML records).
 - **DOI Extraction**: DOIs are extracted from all sources for cross-referencing and deduplication.
 - **Automatic Deduplication**: When searching multiple sources (`--source all` or `--source both`), results are automatically deduplicated by DOI.
@@ -70,6 +72,15 @@ python3 scripts/lit_search.py details "DOI:10.1016/j.foodchem.2023.136000"
 2.  **Organize**: Group findings into a logical structure (e.g., chronological or thematic).
 3.  **Draft**: Use the "Think step-by-step" approach to synthesize multiple sources into a coherent narrative.
 
+### 6. Mathematics Paper Retrieval
+
+For mathematics literature work, use `references/math-paper-retrieval.md` as the workflow:
+
+- search metadata with this skill and `arxiv`,
+- resolve DOI/arXiv/Zotero identity before downloading,
+- store PDFs through `~/pdfs` and extract through `~/pdf-extraction`,
+- use `reading-pdfs` for local paper reading.
+
 ## Output Format
 
 Each result includes:
@@ -90,3 +101,8 @@ Each result includes:
 - **Filtering**: Focus on papers with higher `citationCount` or recent years for a more modern review.
 - **PubMed for Medicine**: Use `--source pm` for the most reliable biomedical literature.
 - **Deduplication**: Multi-source searches automatically remove duplicates; use single sources if you need raw counts.
+
+## References
+
+- `references/math-paper-retrieval.md` — canonical mathematics paper retrieval workflow.
+- `references/web-research-extraction-stack.md` — high-volume web extraction stack notes.

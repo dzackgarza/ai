@@ -19,6 +19,23 @@ description: Use when you need to query Zotero data, find references, export cit
 
 Do not attempt to write Python wrappers. Use these exact `curl` and `jq` pipelines.
 
+### Local Better BibTeX and Fulltext Attachments
+
+For workflows that need to attach existing extraction output back to Zotero, use
+Zotero's local client APIs, not the read-only cache:
+
+- Better BibTeX JSON-RPC and local Zotero endpoints run at
+  `http://localhost:23119` when Zotero is open and local API permissions are
+  enabled.
+- The relevant write path is the local `fulltext-attach` endpoint.
+- This is separate from `https://zotero.dzackgarza.com`, which is read-only and
+  cannot attach files.
+
+Before using the local write path, verify Zotero is running, Better BibTeX is
+enabled, and the item key or Better BibTeX citation key resolves to the intended
+attachment. Do not upload extraction artifacts based only on normalized titles
+or years.
+
 ### 0. Basic Item Retrieval
 
 ```bash

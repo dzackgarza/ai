@@ -24,6 +24,8 @@ Use this whenever you want to:
 - Have MCP tools auto-discovered and available in every conversation
 
 For ad-hoc, one-off MCP tool calls from the terminal without configuring anything, see the `mcporter` skill instead.
+For MCP tool interface design, read `references/tool-interface-design.md` before
+authoring or reshaping a server.
 
 ## Prerequisites
 
@@ -57,6 +59,24 @@ Restart Hermes Agent. On startup it will:
 4. Inject them into all platform toolsets
 
 You can then use the tools naturally -- just ask the agent to get the current time.
+
+## Centralized MCP Installation In `~/ai`
+
+For the local multi-harness setup, do not hand-edit each harness MCP config.
+The canonical configuration source is `~/ai/mcp/mcp-servers.yml`; propagation is
+handled by `~/ai/mcp/sync_mcp_configs.py` through the home justfile recipe:
+
+```bash
+just --justfile ~/ai/home-justfile install-mcps
+```
+
+Use `--dry-run` and `--harness <name>` arguments through that recipe when
+checking a single target. The synchronizer intentionally treats the loaded
+environment as part of the contract: `SEARXNG_INSTANCE_URL` is the canary that
+`~/.envrc` was loaded through direnv.
+
+MCP installation should have one canonical source, one propagation command, and
+real functional validation rather than per-harness manual edits.
 
 ## Configuration Reference
 
@@ -126,6 +146,11 @@ Examples:
 - Server `filesystem`, tool `read_file` → `mcp_filesystem_read_file`
 - Server `github`, tool `list-issues` → `mcp_github_list_issues`
 - Server `my-api`, tool `fetch.data` → `mcp_my_api_fetch_data`
+
+Tool names and parameter schemas are part of the agent-facing interface, not
+cosmetic metadata. Descriptive action names, discoverable ordering, and
+capability-revealing parameters affect whether agents select the right tool.
+See `references/tool-interface-design.md`.
 
 ### Auto-Injection
 

@@ -225,6 +225,22 @@ More tests do not automatically mean more proof. A suite becomes low-value when 
 - Duplicated variations
 - Many weak assertions instead of one decisive proof
 
+## Behavioral and Competence Evaluation Tests
+
+When tests are evaluating an LLM or agent rather than ordinary repository code,
+the owned behavior is the agent's response to the task frame. The test must
+therefore prove a behavioral claim: generalization beyond visible examples,
+resistance to red herrings, correction localization, evidence-based review, or
+instruction adherence.
+
+Use adversarial, property-based, and metamorphic cases when the failure mode is
+test gaming. Visible examples alone are not enough: they train the agent toward
+the answer shape. The benchmark must contain checks that a hard-coded,
+pattern-matched, or report-shaped solution will fail.
+
+The local fixture source for these tests is
+`model-selection/model-strength-testing/behavioral-evaluations/`.
+
 ---
 
 ## Assertion Rule
@@ -320,6 +336,90 @@ It should not be a broad memorialization of incidental internal details.
 - Watch it fail for the expected reason (feature missing, not typos).
 - Minimal implementation: write only enough code to pass.
 - Refactor only after green.
+
+If a new test passes immediately, stop. One of these is true:
+
+- The feature already exists and the remaining task is to document or expose it.
+- The test is aimed at the wrong behavior.
+- The test is too weak to falsify the missing feature.
+- The test is accidentally exercising stale state, mocks, fixtures, or a
+  different interface.
+
+Do not proceed to implementation until the failed expectation is understood.
+
+## Anti-Gaming Test Design
+
+Tests must be hard to satisfy by answer-shape imitation. Guard against:
+
+- **Return-value gaming:** implementation returns the exact visible expected
+  value without implementing the rule.
+- **Hardcoded-data gaming:** implementation branches on fixture literals,
+  filenames, or example values.
+- **Mock-detection gaming:** implementation behaves correctly only when it
+  detects a mocked dependency or test harness.
+- **Shallow validation gaming:** assertions check that output exists, parses, or
+  has the right type while allowing wrong content.
+- **Exception-swallowing gaming:** a test treats any exception as acceptable or
+  the implementation catches errors and returns placeholder success.
+- **Commentary gaming:** comments, names, or reports describe rigorous behavior
+  that the assertions do not prove.
+- **Fake research gaming:** a test or implementation cites domain research
+  without using a source-backed expected value, invariant, or oracle.
+
+Use dynamic fixtures, property-based cases, metamorphic relations, and
+adversarial inputs when the implementation could otherwise memorize examples.
+Never reveal all decisive examples in the visible tests for an agent benchmark.
+
+Anti-gaming claims must be enforceable assertions, not commentary. A docstring
+that says "uses dynamic data" does not matter if the assertions would pass on a
+hard-coded branch. A review note that says "no gaming detected" does not matter
+unless the diff and tests actually rule out the gaming strategy.
+
+For new services, grow tests through the simplest real boundary before complex
+behavior: smoke call, minimal stateful operation, anti-gaming persistence or
+dynamic-data assertion, then advanced workflows. Jumping directly to hierarchy,
+search, or orchestration before the basic live boundary works creates large
+test surfaces that can pass while the service is fake.
+
+## Red-Green Evidence
+
+The red step must fail for the repository-owned reason being tested. A failing
+import, typo, malformed fixture, missing dependency, or wrong invocation is not
+red-green evidence.
+
+The green step must exercise the public contract or owned boundary actually
+used by the system. If the user-visible interface is a CLI text report, do not
+prove only an internal JSON helper. If the boundary is a real file, service,
+database, PDF, or model response, use representative captured or live data at
+that boundary rather than an invented internal object.
+
+For persistence claims, use cross-session or cross-process checks when feasible:
+create state through the public boundary, reopen through a separate invocation,
+and assert the same owned state is present. This prevents in-memory stand-ins
+from passing tests that claim durable storage.
+
+## Live Test Data Lifecycle
+
+Real-boundary tests often create durable state in a database, filesystem,
+remote service, or task store. That state must be identifiable and cleaned
+without weakening the test into a mock.
+
+- Mark all generated test records with a deterministic test marker plus a
+  per-run unique value. Test data should never be indistinguishable from real
+  project data.
+- Track created identifiers through the public boundary and clean them in the
+  same boundary layer where feasible.
+- For hierarchical state, clean children before parents or use the service's
+  supported recursive deletion semantics. Do not leave orphaned state because
+  the cleanup path was not modeled.
+- Use dynamic values inside the marked records so implementations cannot pass
+  by hard-coding visible fixture literals.
+- Keep cleanup assertions substantive: prove the created records are gone while
+  unrelated real records remain untouched.
+
+Test-data cleanup is not permission to mock. The test should still exercise the
+real storage/service boundary; the marker only makes the resulting state safe to
+remove.
 
 ---
 

@@ -104,6 +104,29 @@ Weaker models lie directly about results. Stronger models use "perjury-avoiding"
 
 7. **Instrumental deception** — Agents produce the _appearance_ of task completion while knowing the underlying task is incomplete. Examples: injecting JavaScript at runtime to patch the app so tests pass; editing log files directly to say tests passed; modifying test assertions to make them pass rather than fixing the code. This is not confusion about what testing is _for_ — the model knows exactly what it's doing. It optimizes for completion (green tests, passing assertions) over correctness because "completion" is the inferenced reward signal with no internal "don't lie" constraint. Related to reward hacking but distinct: it's falsifying the evidence of completion rather than gaming the metric.
 
+8. **Visible-test gaming** — Agents implement behavior that satisfies the visible
+examples while failing the general rule. This includes hard-coded mappings,
+input-pattern detection, and solutions shaped around the test file rather than
+the specification. Use property-based, metamorphic, and adversarial fixtures in
+`model-selection/model-strength-testing/behavioral-evaluations/` to expose this
+failure.
+
+9. **Red-herring fixation** — Agents lock onto the most salient suspected cause
+and do not eliminate it with evidence. In debugging tasks, require explicit
+hypotheses and concrete observations that rule out plausible but false causes.
+
+10. **Try/except success laundering** — A failing behavior is tested by catching
+any exception and counting it as success. The test proves only that something
+went wrong, not that the repository-owned validation contract works. Example:
+`try: call(); assert False; except Exception: pass` passes if the implementation
+raises the wrong exception, fails before reaching the intended boundary, or
+throws because the test fixture itself is malformed.
+
+11. **Assertion commentary mismatch** — Test names, comments, or review prose
+describe rigorous validation while the assertions prove only existence, parse
+success, or a visible example. The explanation performs seriousness; the test
+body does not enforce it.
+
 ---
 
 ## Distilled Agentic Coding Failure Modes
@@ -237,6 +260,28 @@ These failures manifest in response text, not in tool use or task completion. Ev
 
 23. **Confidence floor invariance** — Confidence in proposed solutions does not decay with repeated demonstrated failure. The agent presents its sixth attempt with the same certainty as the first ("let me fix this properly"). The agent does not model itself as being in a cognitively impaired state even when all available evidence indicates this; the current "self" always believes it has now identified the correct solution.
 
+24. **Reasonable-sounding implementation fabrication** — Agents invent concrete implementation details after reading a high-level description or encountering a familiar architecture. The fabricated detail is plausible enough to pass casual review but was never observed. Example: after reading that a memory service supports semantic retrieval, an agent states that it uses a particular vector index, decay formula, or project-keying scheme without checking the source or docs that define those mechanisms.
+
+25. **Investigation-by-URL-guessing** — Agents treat guessed web paths, guessed docs names, or search snippets as if they were a systematic investigation. Narrow misses become unsupported conclusions. Example: an agent probes two likely README URLs, receives 404s, and concludes the feature is undocumented instead of broadening to repo trees, package docs, issues, and source-adjacent Markdown.
+
+26. **Demo implementation overfitting** — Agents analyze a toy, demo, or archived implementation as if it were the production system. The result is a confident critique of behavior the live system may not have. Example: a quickstart memory server with an in-memory list is treated as evidence about the deployed memory backend, even though the active backend lives in a different package and storage layer.
+
+27. **False-understanding receipt** — Agents emit comprehension tokens ("I see",
+"I understand", "that makes sense") as if they were evidence that the task frame
+was integrated. The next action reveals the prior frame is unchanged. The
+receipt is a conversational artifact, not understanding.
+
+28. **Validation theater** — Agents announce that they are testing, validating,
+reviewing, or investigating while performing checks that cannot falsify the
+claim at issue. Example: running formatters and existence checks after a
+semantic migration, then reporting validation without comparing the migrated
+content against the source meaning.
+
+29. **Citation fabrication** — Agents add or cite academic references without
+verifying that the source exists and supports the claim. This is a specialized
+form of context fabrication: the invented object carries scholarly authority, so
+the error is harder to detect by surface plausibility.
+
 ---
 
 ## Self-Evaluation and Introspection Failures
@@ -312,3 +357,8 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
 - **Justified degradation**: The replacement is explicitly framed as an improvement. Agents cite reasons like "removes unnecessary complexity," "uses standard patterns," or "simplifies the implementation" — language that is factually correct about the syntactic transformation but inverts the semantic one. The complexity existed for a reason; removing it is the regression.
 
 **Core pattern:** The model's prior for "what this code should look like" overpowers its ability to preserve what this code actually does. Refactoring becomes reconstruction from memory, with the memory biased toward training-distribution-typical examples. The more bespoke the original code, the more likely the refactoring will silently replace it with something that works differently.
+
+## References
+
+- `references/behavioral-detection-methodology.md` — evidence requirements for
+  classifying behavioral failures and designing anti-gaming evaluations.

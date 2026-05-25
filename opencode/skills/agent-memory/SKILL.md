@@ -218,6 +218,13 @@ Why does it matter?
 - **Git history duplicates** — "Commit abc changed parser logic"
 - **Contentless summaries** — Accomplishments without reusable guidance
 
+## Related Design Notes
+
+- `references/opencode-memory-design-notes.md` records durable design ideas
+  salvaged from older Claude-local assistant and hook systems. Use it when
+  designing or reviewing OpenCode memory/todo tooling; do not reintroduce the
+  retired hook/session implementations.
+
 ## Transforming Notes into Memory
 
 ### Guidelines

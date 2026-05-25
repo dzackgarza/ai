@@ -161,6 +161,118 @@ Completed work history belongs in commits, never in repo docs. **See: `agent-mem
 
 For nontrivial features: branch + PR → tag `@codex review` → wait 3–5 min for automated reviewers (Codex, Qodo, etc.) to post.
 
+### Publish review guidance before submission
+
+Before opening a PR, updating a PR for review, or tagging automated reviewers,
+ensure the target repo's local `AGENTS.md` contains the canonical review
+guidance from `~/ai/PR_GUIDANCE.md`.
+
+`~/ai/PR_GUIDANCE.md` is the source of truth. The repo-local `AGENTS.md` copy is
+a required distribution copy because Codex and other review agents read the
+target repo's local guidance. Do not replace it with a link, summary, or
+paraphrase.
+
+Required handling:
+
+- If the target repo has no local `AGENTS.md`, create one containing the
+  canonical `# Review Guidelines` section from `~/ai/PR_GUIDANCE.md`.
+- If local `AGENTS.md` already has a top-level `# Review Guidelines` section,
+  replace that section with the current contents of `~/ai/PR_GUIDANCE.md`.
+- If local `AGENTS.md` lacks that section, append the current contents of
+  `~/ai/PR_GUIDANCE.md`.
+- Do not create duplicate `# Review Guidelines` sections.
+- Verify with `git diff` that the section is present, current, and the only
+  local `AGENTS.md` change unless the user requested other edits.
+
+If repo policy or permissions prevent updating local `AGENTS.md`, do not request
+review yet. Report the blocker and the exact repo policy or permission issue.
+
+### Review feedback is a judgment task
+
+Review comments are not administrative obstacles to clear. They are claims about
+the work that must be understood, accepted or rejected, and made legible to the
+human maintainer.
+
+Before resolving a thread, reporting a PR as clean, or moving to check polling,
+you must be able to state:
+
+> The reviewer is asking us to change or believe ___. The repo rule or project
+> norm in tension is ___. The purpose of that rule is ___. My disposition is ___
+> because ___. The user can audit this in ___.
+
+If you cannot fill those blanks with concrete evidence from the diff, source,
+repo policy, or review text, you have not handled the feedback. Read more,
+inspect the code, or stop and report the blocker.
+
+Use Socratic pressure to test the disposition:
+
+- What would be false or missing if I simply marked this resolved?
+- What evidence would convince the user that I understood the suggestion?
+- Which repo rule's purpose would be harmed by literal compliance?
+- Which repo rule's purpose would be harmed by ignoring the suggestion?
+- If I reject this advice, what concrete source or policy fact defeats it?
+
+If any answer is scanner status, check status, process compliance, or a claim
+that a bot will re-review later, stop. That is not judgment.
+
+### Interpret policy by purpose
+
+Repo rules exist to protect the work, not to excuse abandoning it. When review
+feedback conflicts with a literal reading of repo guidance, do judicial analysis:
+
+- Identify the substantive concern raised by the reviewer.
+- Identify the literal repo rule, hook, or policy that appears to block the fix.
+- State the purpose of that rule.
+- Decide which action best preserves that purpose and the project objective.
+- Leave the reasoning in the thread response or commit message.
+
+Some correct decisions may contradict a literal reading of a repo rule. That is
+allowed only when the decision preserves the rule's purpose, is source-backed,
+and leaves a clear audit trail. Never use this to bypass hard safety constraints
+such as secrets handling, destructive git operations, or explicit user refusal.
+
+### Thread responses are audit notes for users
+
+A review reply is not a conversation with the bot. Automated reviewers usually
+will not return to debate the point. Write every reply for the human maintainer
+who needs to understand exactly why the suggestion was accepted, modified, or
+rejected.
+
+Each substantive reply must include:
+
+- Disposition: accepted, accepted with modification, or rejected.
+- Reason: the source evidence, repo policy, and tradeoff that determined the
+  decision.
+- Audit anchor: the commit, file, line, command output, or linked issue where
+  the user can verify the disposition.
+- Policy interpretation: when repo guidance is involved, explain how the action
+  follows the spirit of the rule, not merely its literal text.
+
+Do not write replies like "fixed", "done", "addressed", "acknowledged", or
+"will follow up" unless the surrounding text contains the actual disposition and
+evidence. Do not address the reviewer as if it is waiting to chat.
+
+Never resolve a review thread without first posting a visible human-readable
+reply on that thread. The resolve-tool justification is not an audit trail; it is
+hidden from the user in the normal PR reading flow. Resolving without a visible
+reply hides feedback and is banned, even if the code was changed correctly.
+
+### Banned PR-review behavior
+
+- Treating `NOT RESOLVED: 0`, green checks, or a clean scanner as proof that
+  review advice was understood.
+- Treating a hook, policy, or tool rejection as a terminal reason to abandon
+  source-backed feedback without interpreting the rule's purpose.
+- Resolving a review comment without a visible thread response that records the
+  disposition, evidence, and policy reasoning.
+- Resolving a thread before the code, commit message, or thread response shows
+  the disposition and reasoning.
+- Polling checks while any review, top-level comment, check annotation, or
+  summary comment has not been substantively dispositioned.
+- Reporting "remaining: none" when only inline threads were scanned.
+- Laundering feedback through process language such as "scanner clean",
+  "thread resolved", or "bot pending" instead of stating the judgment made.
+
 ### Scan ALL comment surfaces
 
 `gh pr view` only returns issue-level comments, not inline review thread comments. To properly parse and summarize all PR feedback, **use the bundled CLI tool**:
@@ -181,13 +293,15 @@ This tool automatically pulls:
 - Inline code review threads
 - Automated check-run errors (like Codacy static analysis)
 
-Address every unresolved issue, reply with the fix commit, then resolve the thread using the tool's `resolve` command:
+Disposition every feedback item. For accepted inline feedback, reply with the
+human-readable disposition and fix commit, then resolve the thread using the
+tool's `resolve` command:
 
 ```bash
-uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues resolve <COMMENT_ID> "Fixed in commit 1234abc"
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues resolve <COMMENT_ID> "Accepted in commit 1234abc. Reason: <why this satisfies the review concern and repo policy>."
 ```
 
-**The script never produces stale output.** Automated bots (Codacy, Gemini, kilo-code-bot) update their comments in place when new commits land. Open review threads stay listed until the "Resolve Conversation" button is clicked. Every item in the output requires action — there is no such thing as an already-handled item that still appears.
+**The script never produces stale output.** Automated bots (Codacy, Gemini, kilo-code-bot) update their comments in place when new commits land. Open review threads stay listed until the "Resolve Conversation" button is clicked. Every item in the output requires disposition — fix it, reject it with evidence, or report why it is blocked. There is no such thing as an already-handled item that still appears.
 
 **All checks, warnings, and notices must be resolved before the PR can be accepted.** This includes low-severity notices from automated tools. If a check is failing, the PR is blocked regardless of how many threads have been resolved.
 

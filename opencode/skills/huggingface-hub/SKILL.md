@@ -61,6 +61,29 @@ The `hf` command is the modern command-line interface for interacting with the H
 *   **Jobs:** Run compute tasks on HF infrastructure. Includes `hf jobs uv` for running Python scripts with inline dependencies and `stats` for resource monitoring.
 *   **Spaces:** Manage interactive apps. Includes `dev-mode` and `hot-reload` for Python files without full restarts.
 
+### Spaces MCP Caution
+
+Treat Hugging Face Spaces MCP integrations as volatile:
+
+*   Configure and verify one Space at a time; multi-space MCP configurations can
+    connect while exposing no usable tools.
+*   Create the configured work directory before relying on the server.
+*   Test each Space with a real tool call before using it in a workflow; search
+    visibility does not prove the Gradio endpoint works.
+*   Check direct Gradio MCP endpoints before concluding the wrapper surface is
+    limited: `/gradio_api/mcp/sse` and `/gradio_api/mcp/http` can expose richer
+    toolsets than a generated adapter.
+*   Validate the response shape of each tool. Spaces often expose heterogeneous
+    strings, JSON-like dictionaries, binary artifacts, or disabled endpoints
+    behind similar client calls.
+*   Bound request size, timeout, retry, and cache behavior explicitly. Space
+    latency, GPU quota, and cold starts are part of the integration contract.
+*   Treat working-space lists as stale quickly. Re-run discovery and a live
+    smoke call before reporting that a Space is available.
+
+For MCP-specific tool-surface design, use the `native-mcp` skill and its
+`references/tool-interface-design.md` note.
+
 ### Storage & Automation
 *   **Buckets:** Full S3-like bucket management (`create`, `cp`, `mv`, `rm`, `sync`).
 *   **Cache:** Manage local storage with `list`, `prune` (remove detached revisions), and `verify` (checksum checks).

@@ -196,6 +196,14 @@ Some tests require a restricted workspace where the model can only read a specif
 - `model-strength-testing/folder-tasks/workflow-adherence-git-checkpoints/README.md`
 - `model-strength-testing/folder-tasks/arxiv-proof-fidelity-2312-03638/README.md`
 
+## Behavioral Evaluations
+
+Use `model-strength-testing/behavioral-evaluations/` for fixtures that test
+agent behavior rather than raw answer quality: anti-gaming tests, red-herring
+debugging, correction localization, and evidence-based review competence. These
+fixtures should be scored by concrete behavioral evidence, not by whether the
+agent produced a plausible completion report.
+
 ## Adding Tasks
 
 1. Add task above with:

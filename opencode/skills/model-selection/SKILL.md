@@ -182,6 +182,13 @@ Recommended process:
 Use `~/ai/opencode/skills/model-selection/scripts/fetch_provider_models.py` when you need a current provider-by-provider model inventory (cross-referenced with `models.dev`) from keys present in `~/.envrc`.
 For invocation and options, use the script help: `python3 ~/ai/opencode/skills/model-selection/scripts/fetch_provider_models.py --help`.
 
+## Local Behavioral Evaluation Fixtures
+
+Use `model-strength-testing/behavioral-evaluations/` when model choice depends
+on behavioral competence rather than benchmark tier alone. The migrated fixtures
+cover visible-test gaming, property-based anti-gaming checks, red-herring
+debugging, and evidence-based review behavior.
+
 ---
 
 ## Local Models

@@ -220,6 +220,19 @@ curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:2402.03300/referen
 curl -s "https://api.semanticscholar.org/graph/v1/paper/search?query=GRPO+reinforcement+learning&limit=5&fields=title,authors,year,citationCount,externalIds" | python3 -m json.tool
 ```
 
+## Mathematics Literature Routing
+
+For mathematics papers, arXiv is only one source. Use it together with the
+`literature-review` skill's multi-source search and Zotero/PDF workflows:
+
+- arXiv for preprints and TeX/PDF identifiers,
+- Semantic Scholar/OpenAlex/Crossref for citation and DOI metadata,
+- Zotero for local library identity and attachments,
+- `~/pdfs` and `~/pdf-extraction` for stored PDFs and extraction artifacts.
+
+The canonical workflow is documented in
+`../literature-review/references/math-paper-retrieval.md`.
+
 ### Get paper recommendations
 
 ```bash
