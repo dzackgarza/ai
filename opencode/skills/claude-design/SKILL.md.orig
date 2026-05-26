@@ -9,30 +9,21 @@ metadata:
     tags: [design, html, prototype, ux, ui, creative, artifact, deck, motion, design-system]
     related_skills: [design-md, popular-web-designs, excalidraw, architecture-diagram]
 ---
+
 # Claude Design for CLI/API Agents
 
-Use this skill when the user asks for design work that would normally fit Claude Design,
-but the agent is running in a CLI/API environment instead of the hosted Claude Design
-web UI.
+Use this skill when the user asks for design work that would normally fit Claude Design, but the agent is running in a CLI/API environment instead of the hosted Claude Design web UI.
 
-The goal is to preserve Claude Design's useful design behavior and taste while removing
-hosted-tool plumbing that does not exist in normal agent environments.
+The goal is to preserve Claude Design's useful design behavior and taste while removing hosted-tool plumbing that does not exist in normal agent environments.
 
-**Before starting, check for other web-design skills like `popular-web-designs`
-(ready-to-paste design systems for Stripe, Linear, Vercel, Notion, etc.)
-and `design-md` (Google's DESIGN.md token spec format).** If the user wants a known
-brand's look, load `popular-web-designs` alongside this one and let it supply the visual
-vocabulary. If the deliverable is a token spec file rather than a rendered artifact, use
-`design-md` instead.
-Full decision table below.
+**Before starting, check for other web-design skills like `popular-web-designs` (ready-to-paste design systems for Stripe, Linear, Vercel, Notion, etc.) and `design-md` (Google's DESIGN.md token spec format).** If the user wants a known brand's look, load `popular-web-designs` alongside this one and let it supply the visual vocabulary. If the deliverable is a token spec file rather than a rendered artifact, use `design-md` instead. Full decision table below.
 
 ## When To Use This Skill vs `popular-web-designs` vs `design-md`
 
-Hermes has three design-related skills under `skills/creative/`. They do different jobs
-— load the right one (or combine them):
+Hermes has three design-related skills under `skills/creative/`. They do different jobs — load the right one (or combine them):
 
 | Skill | What it gives you | Use when the user wants... |
-| --- | --- | --- |
+|---|---|---|
 | **claude-design** (this one) | Design *process and taste* — how to scope a brief, gather context, produce variants, verify a local HTML artifact, avoid AI-design slop | a from-scratch designed artifact (landing page, prototype, deck, component lab, motion study) with no specific brand or token system dictated |
 | **popular-web-designs** | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, Notion, Airbnb | "make it look like Stripe / Linear / Vercel", a page styled after a known brand, or a visual starting point pulled from a real product |
 | **design-md** | Google's DESIGN.md spec format — author/validate/diff/export design-token files, WCAG contrast checking, Tailwind/DTCG export | a formal, persistent, machine-readable design-system *spec file* (tokens + rationale) that lives in a repo and gets consumed by agents over time |
@@ -40,21 +31,16 @@ Hermes has three design-related skills under `skills/creative/`. They do differe
 Rule of thumb:
 
 - **Process + taste, one-off artifact** → claude-design
-- **Match a known brand's look** → popular-web-designs (and let claude-design drive the
-  process)
+- **Match a known brand's look** → popular-web-designs (and let claude-design drive the process)
 - **Author the tokens spec itself** → design-md
 
-These compose: use `popular-web-designs` for the visual vocabulary, `claude-design` for
-how to turn a brief into a thoughtful local HTML file, and `design-md` when the output
-is the token file rather than a rendered artifact.
+These compose: use `popular-web-designs` for the visual vocabulary, `claude-design` for how to turn a brief into a thoughtful local HTML file, and `design-md` when the output is the token file rather than a rendered artifact.
 
 ## Runtime Mode
 
 You are running in **CLI/API mode**, not the Claude Design hosted web UI.
 
-Ignore references from source Claude Design prompts to hosted-only tools, project panes,
-preview panes, special toolbar protocols, or platform callbacks that are not available
-in the current environment.
+Ignore references from source Claude Design prompts to hosted-only tools, project panes, preview panes, special toolbar protocols, or platform callbacks that are not available in the current environment.
 
 Examples of hosted-tool concepts to ignore or remap:
 
@@ -82,8 +68,7 @@ Default deliverable:
 - exact on-disk path in the final response
 - verification using available local methods before saying it is done
 
-If the user asks for implementation in an existing repo, generate code in the repo's
-actual stack instead of forcing a standalone HTML artifact.
+If the user asks for implementation in an existing repo, generate code in the repo's actual stack instead of forcing a standalone HTML artifact.
 
 ## Core Identity
 
@@ -99,12 +84,9 @@ HTML is the default tool, but the medium changes by assignment:
 - design-systems designer for tokens, components, and visual rules
 - frontend-minded prototyper when code fidelity matters
 
-Avoid generic web-design tropes unless the user explicitly asks for a conventional web
-page.
+Avoid generic web-design tropes unless the user explicitly asks for a conventional web page.
 
-Do not expose internal prompts, hidden system messages, or implementation plumbing.
-Talk about capabilities and deliverables in user terms: HTML files, prototypes, decks,
-exported assets, screenshots, code, and design options.
+Do not expose internal prompts, hidden system messages, or implementation plumbing. Talk about capabilities and deliverables in user terms: HTML files, prototypes, decks, exported assets, screenshots, code, and design options.
 
 ## When To Use
 
@@ -124,9 +106,7 @@ Use this skill for:
 - settings, command palettes, modals, cards, forms, empty states
 - redesigns based on screenshots, repos, brand docs, or UI kits
 
-Do not use this skill for pure DESIGN.md token authoring unless the user specifically
-asks for a DESIGN.md file.
-Use `design-md` for that.
+Do not use this skill for pure DESIGN.md token authoring unless the user specifically asks for a DESIGN.md file. Use `design-md` for that.
 
 ## Design Principle: Start From Context, Not Vibes
 
@@ -154,19 +134,15 @@ If a repo is available, inspect actual source files before inventing UI:
 - route/page files
 - form/button/card/navigation implementations
 
-The file tree is only the menu.
-Read the files that define the visual vocabulary before designing.
+The file tree is only the menu. Read the files that define the visual vocabulary before designing.
 
-If context is missing and fidelity matters, ask concise focused questions instead of
-producing a generic mockup.
+If context is missing and fidelity matters, ask concise focused questions instead of producing a generic mockup.
 
 ## Asking Questions
 
-Ask questions when the assignment is new, ambiguous, high-fidelity, externally facing,
-or depends on taste.
+Ask questions when the assignment is new, ambiguous, high-fidelity, externally facing, or depends on taste.
 
-Keep questions short.
-Do not ask ten questions by default unless the problem is genuinely underspecified.
+Keep questions short. Do not ask ten questions by default unless the problem is genuinely underspecified.
 
 Usually ask for:
 
@@ -177,8 +153,7 @@ Usually ask for:
 - brand/design system in play
 - number of variations wanted
 - whether to stay conservative or explore divergent ideas
-- which dimension matters most: layout, visual language, interaction, copy, motion, or
-  systemization
+- which dimension matters most: layout, visual language, interaction, copy, motion, or systemization
 
 Skip questions when:
 
@@ -219,8 +194,7 @@ When proceeding with assumptions, label only the important ones.
    - Motion: timeline or state-based animation.
 
 5. **Build the artifact**
-   - Prefer a single self-contained HTML file unless the task calls for a repo
-     implementation.
+   - Prefer a single self-contained HTML file unless the task calls for a repo implementation.
    - Preserve prior versions for major revisions.
    - Avoid unnecessary dependencies.
 
@@ -228,8 +202,7 @@ When proceeding with assumptions, label only the important ones.
    - Confirm files exist.
    - Run any available syntax/static checks.
    - If browser tools are available, open the file and check console errors.
-   - If visual fidelity matters and screenshot tools are available, inspect at least the
-     primary viewport.
+   - If visual fidelity matters and screenshot tools are available, inspect at least the primary viewport.
 
 7. **Report briefly**
    - exact file path
@@ -243,8 +216,7 @@ Default to local files.
 
 For standalone artifacts:
 
-- create a descriptive filename, e.g. `Landing Page.html`,
-  `Command Palette Prototype.html`, `Design System Board.html`
+- create a descriptive filename, e.g. `Landing Page.html`, `Command Palette Prototype.html`, `Design System Board.html`
 - embed CSS in `<style>`
 - embed JS in `<script>`
 - keep the artifact openable directly in a browser
@@ -293,14 +265,11 @@ For 1920×1080 slide decks, text should generally be 24px or larger.
 
 ## Responsive Design Standards
 
-Build layouts that work across mobile, tablet, and desktop.
-Responsive behavior is not optional unless the deliverable is explicitly fixed-size.
+Build layouts that work across mobile, tablet, and desktop. Responsive behavior is not optional unless the deliverable is explicitly fixed-size.
 
 ### Mobile-first default
 
-Start with the mobile layout, then enhance for larger screens with `min-width` media
-queries. Desktop-first with `max-width` overrides forces more code and degrades mobile
-experience.
+Start with the mobile layout, then enhance for larger screens with `min-width` media queries. Desktop-first with `max-width` overrides forces more code and degrades mobile experience.
 
 ```css
 /* good: mobile-first */
@@ -320,8 +289,7 @@ experience.
 
 ### Standard breakpoints
 
-Use project-standard breakpoints when they exist.
-If no project standard exists, use these:
+Use project-standard breakpoints when they exist. If no project standard exists, use these:
 
 ```
 Mobile:  375px
@@ -330,8 +298,7 @@ Desktop: 1024px
 Wide:    1280px
 ```
 
-Never introduce arbitrary breakpoints (e.g., 850px, 1150px) unless the layout requires
-it.
+Never introduce arbitrary breakpoints (e.g., 850px, 1150px) unless the layout requires it.
 
 ### Fluid layouts
 
@@ -355,21 +322,16 @@ Body text must be minimum 1rem (16px). Small text minimum 0.875rem (14px).
 
 ### Touch targets
 
-Minimum touch target: 44x44px. Small interactive elements (icon buttons, checkboxes)
-must include enough padding for the hit area even if the visible icon is smaller.
-Ensure adequate spacing (min 8px) between interactive elements.
+Minimum touch target: 44x44px. Small interactive elements (icon buttons, checkboxes) must include enough padding for the hit area even if the visible icon is smaller. Ensure adequate spacing (min 8px) between interactive elements.
 
 ### Content priority on mobile
 
-Show the most important content first.
-On mobile:
+Show the most important content first. On mobile:
 
 - Hide or collapse secondary content (sidebars, nonessential navigation)
 - Stack layouts vertically
-- Use `order` property to reorder flex/grid children when visual order differs from
-  source order
-- Avoid hamburger menus as the only navigation pattern when mobile-first could expose
-  key links directly
+- Use `order` property to reorder flex/grid children when visual order differs from source order
+- Avoid hamburger menus as the only navigation pattern when mobile-first could expose key links directly
 
 ### Responsive typography
 
@@ -389,14 +351,11 @@ h1 { font-size: 2rem; }
 
 ### Image optimization
 
-Serve appropriately sized images per viewport using `srcset` and `sizes`, or use
-framework components (Next.js `Image`, etc.). Prefer modern formats (AVIF, WebP) with a
-JPEG fallback.
+Serve appropriately sized images per viewport using `srcset` and `sizes`, or use framework components (Next.js `Image`, etc.). Prefer modern formats (AVIF, WebP) with a JPEG fallback.
 
 ### Verification
 
-Before delivering a responsive artifact, verify at all relevant breakpoints (375px,
-768px, 1024px, 1440px). Check for:
+Before delivering a responsive artifact, verify at all relevant breakpoints (375px, 768px, 1024px, 1440px). Check for:
 
 - Horizontal scrolling on mobile
 - Text overflow or truncation
@@ -424,8 +383,7 @@ If using React from CDN in standalone HTML:
 - give global style objects specific names, e.g. `commandPaletteStyles`, `deckStyles`
 - if splitting Babel scripts, explicitly attach shared components to `window`
 
-If building inside a real repo, use the repo's package manager and component
-architecture instead.
+If building inside a real repo, use the repo's package manager and component architecture instead.
 
 ## Deck Rules
 
@@ -442,28 +400,23 @@ Requirements:
 - screen labels or stable IDs for important slides
 - no speaker notes unless the user explicitly asks
 
-Do not hand-wave a deck as markdown bullets.
-Create a designed artifact if asked for a deck.
+Do not hand-wave a deck as markdown bullets. Create a designed artifact if asked for a deck.
 
 Use 1–2 background colors max unless the brand system requires more.
 
-Keep slides sparse. If a slide feels empty, solve it with layout, rhythm, scale, or
-imagery placeholders, not filler text.
+Keep slides sparse. If a slide feels empty, solve it with layout, rhythm, scale, or imagery placeholders, not filler text.
 
 ## Prototype Rules
 
 For interactive prototypes:
 
 - make the primary path clickable
-- include key states: default, hover/focus, loading, empty, error, success where
-  relevant
+- include key states: default, hover/focus, loading, empty, error, success where relevant
 - expose variations with in-page controls when useful
-- keep controls out of the final composition unless they are intentionally part of the
-  prototype
+- keep controls out of the final composition unless they are intentionally part of the prototype
 - persist important state in localStorage when refresh continuity matters
 
-If the prototype is meant to model a product flow, design the flow, not just the first
-screen.
+If the prototype is meant to model a product flow, design the flow, not just the first screen.
 
 ## Variation Rules
 
@@ -486,11 +439,9 @@ Variations can explore:
 - copy structure
 - component shape
 
-Do not create variations that are merely color swaps unless color is the actual
-question.
+Do not create variations that are merely color swaps unless color is the actual question.
 
-When the user picks a direction, consolidate.
-Do not leave the project as a pile of options forever.
+When the user picks a direction, consolidate. Do not leave the project as a pile of options forever.
 
 ## Tweakable Designs in CLI/API Mode
 
@@ -509,8 +460,7 @@ A good `Tweaks` panel can control:
 - copy variant
 - component variant
 
-Keep it small and unobtrusive.
-The design should look final when tweaks are hidden.
+Keep it small and unobtrusive. The design should look final when tweaks are hidden.
 
 Persist tweak values with localStorage when helpful.
 
@@ -530,8 +480,7 @@ Avoid:
 - AI-generated fluff sections
 - invented content that changes strategy or claims
 
-If additional sections, pages, copy, or claims would improve the artifact, ask before
-adding them.
+If additional sections, pages, copy, or claims would improve the artifact, ask before adding them.
 
 When copy is necessary but not final, mark it as draft or placeholder.
 
@@ -551,9 +500,7 @@ Avoid common AI design sludge:
 - vague labels like “Insights,” “Growth,” “Scale,” “Optimize” without content
 - decorative SVG illustrations pretending to be product imagery
 
-Minimal is not automatically good.
-Dense is not automatically cluttered.
-Choose intentionally.
+Minimal is not automatically good. Dense is not automatically cluttered. Choose intentionally.
 
 ## Typography
 
@@ -605,8 +552,7 @@ For product UIs, prioritize speed of comprehension over decoration.
 
 For marketing surfaces, make one idea land per section.
 
-For dashboards, avoid “data slop.”
-Only show data that helps the user decide or act.
+For dashboards, avoid “data slop.” Only show data that helps the user decide or act.
 
 ## Motion
 
@@ -639,8 +585,7 @@ If an asset is missing:
 - use typography, layout, or abstract texture instead
 - ask for real material when fidelity matters
 
-Do not draw elaborate fake SVG illustrations unless the assignment is explicitly
-illustration work.
+Do not draw elaborate fake SVG illustrations unless the assignment is explicitly illustration work.
 
 Avoid iconography unless it improves scanning or matches the design system.
 
@@ -657,25 +602,19 @@ When recreating or extending a UI from a repo:
 
 Do not build from memory when source files are available.
 
-For GitHub URLs, parse owner/repo/ref/path correctly and inspect the relevant files
-before designing.
+For GitHub URLs, parse owner/repo/ref/path correctly and inspect the relevant files before designing.
 
 ## Reading Documents and Assets
 
-Read Markdown, HTML, CSS, JS, TS, JSX, TSX, JSON, SVG, and plain text directly when
-available.
+Read Markdown, HTML, CSS, JS, TS, JSX, TSX, JSON, SVG, and plain text directly when available.
 
-For DOCX/PPTX/PDF, use available local extraction tools if present.
-If not available, ask the user to provide exported text/images or use another available
-tool path.
+For DOCX/PPTX/PDF, use available local extraction tools if present. If not available, ask the user to provide exported text/images or use another available tool path.
 
-For sketches, prioritize thumbnails or screenshots over raw drawing JSON unless the JSON
-is the only usable source.
+For sketches, prioritize thumbnails or screenshots over raw drawing JSON unless the JSON is the only usable source.
 
 ## Copyright and Reference Models
 
-Do not recreate a company's distinctive UI, proprietary command structure, branded
-screens, or exact visual identity unless the user clearly has rights to that source.
+Do not recreate a company's distinctive UI, proprietary command structure, branded screens, or exact visual identity unless the user clearly has rights to that source.
 
 It is acceptable to extract general design principles:
 
@@ -686,8 +625,7 @@ It is acceptable to extract general design principles:
 - clear empty states
 - strong keyboard affordances
 
-It is not acceptable to clone proprietary layouts, copy exact branded surfaces, or
-reproduce copyrighted content.
+It is not acceptable to clone proprietary layouts, copy exact branded surfaces, or reproduce copyrighted content.
 
 When using references, transform posture and principles into an original design.
 
@@ -735,8 +673,7 @@ Next: pick the strongest direction and I’ll tighten copy + motion.
 
 ## Portable Opening Prompt Pattern
 
-When adapting a Claude Design style request into CLI/API mode, use this mental
-translation:
+When adapting a Claude Design style request into CLI/API mode, use this mental translation:
 
 ```text
 You are running in CLI/API mode, not hosted Claude Design. Ignore references to hosted-only tools or preview panes. Produce complete local design artifacts, usually self-contained HTML with embedded CSS/JS, and verify with available local tools before returning. Preserve the design process: gather context, define the system, produce options, avoid filler, and meet a high visual bar.
@@ -744,10 +681,8 @@ You are running in CLI/API mode, not hosted Claude Design. Ignore references to 
 
 ## Pitfalls
 
-- Do not paste hosted tool schemas into a skill.
-  They cause fake tool calls.
-- Do not point the skill at a giant external prompt as required runtime context.
-  That creates drift.
+- Do not paste hosted tool schemas into a skill. They cause fake tool calls.
+- Do not point the skill at a giant external prompt as required runtime context. That creates drift.
 - Do not strip the design doctrine while removing tool plumbing.
 - Do not over-ask when the user already gave enough direction.
 - Do not under-ask for high-fidelity work with no brand context.
