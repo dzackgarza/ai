@@ -44,9 +44,9 @@ Never read source code directly until all of these options have been exhausted.
 
 # Hard Rules
 
-0A. Use `tree` to understand your surroundings.
+Use `tree` to understand your surroundings.
 Do not just use ls, grep/rg/ag/etc, which only show narrow slices.
-0B. Never implement fallback behaviour, soft defaults, “graceful” error handling.
+Never implement fallback behaviour, soft defaults, “graceful” error handling.
 Do not aim for “legacy” compatibility, preservation of historical artifacts, interop
 with old versions. Do not write code the gracefully accept malformed inputs or data, to
 make “best effort” attempts.
@@ -58,39 +58,39 @@ Eliminate weakly typed signatures: optional, “Any”, “unknown”, by unders
 exact data you are working with and enforcing it.
 If you don’t know what the data looks like, do not write code for it.
 
-1. **Checkpoint before every edit.** `git commit` (or `git add`) the current state
+**Checkpoint before every edit.** `git commit` (or `git add`) the current state
    BEFORE editing. Verify with `git diff` after.
 
-2. **Never use `rm`.** Use `trash` or `gio trash`. Deletions must be recoverable.
+**Never use `rm`.** Use `trash` or `gio trash`. Deletions must be recoverable.
 
-3. **Load applicable skills before acting.** Scan all available skills.
+**Load applicable skills before acting.** Scan all available skills.
    If one applies, load it.
    Do not proceed until verified.
 
-4. **Run in every new conversation:** `serena_activate_project`, then list memories
+**Run in every new conversation:** `serena_activate_project`, then list memories
    using `iwe` (see `Memories` section below).
    Initialize a memories directory for the project if not already present.
 
-5. **Never write or discuss time estimates for work you suggest.**
+**Never write or discuss time estimates for work you suggest.**
 
-6. **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be
+**OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be
    defined in one canonical place and referenced elsewhere.
    This includes documentation: never attempt restate a fact when you can point to the
    canonical source, never statically track dynamic metadata.
 
-7. **Tests are meant to prove correctness**. Not assert coverage of errors, especially
+**Tests are meant to prove correctness**. Not assert coverage of errors, especially
    those that have never been observed.
    Error-path work is useless, proof-of-correctness is essential.
    Mocks do not prove anything.
    Find real data and assert your implementation correctly recovers or produces it.
 
-8. **Never bury the lede**: do not produce volumes of text when there are critical
+**Never bury the lede**: do not produce volumes of text when there are critical
    issues, or bury failures in paragraphs or summaries of successes.
    Success is the default expectation, there is no need to discuss it when it happens.
    Focus on oustanding issues, ambiguities, decisions, and clearly delineate and
    highlight them.
 
-9. **Never work around failures and hide them**. User requests are highly specific and
+**Never work around failures and hide them**. User requests are highly specific and
    can not be substituted with semantically similar or inferred requests.
    If you attempt a task and are met with failure, never work around it if it means
    changing the task to something the user didn’t ask for.
@@ -98,7 +98,7 @@ If you don’t know what the data looks like, do not write code for it.
    user instead of attempting to work around it.
    Do not pivot to another problem or task.
 
-10. **Never dismiss a targetted miss as a general failure or evidence of
+**Never dismiss a targetted miss as a general failure or evidence of
     non-existence**. If you grep for something specific and it’s not found, or you use a
     specific directory and it doesn’t appear to exist, always IMMEDIATELY broaden your
     search to understand the context first before attempting to pivot or work around the
@@ -106,11 +106,11 @@ If you don’t know what the data looks like, do not write code for it.
     Files get moved, functions get renamed/moved, typos are made.
     Always broaden.
 
-11. **Never insert section counters in markdown**. This becomes immediately stale as
+**Never insert section counters in markdown**. This becomes immediately stale as
     soon as a new section is added, and creates MORE work as complexity increases.
     Similarly, do not number lists, subsections, etc manually.
 
-12. **Never plow through important blockers**. If doing API work, don’t even start if
+**Never plow through important blockers**. If doing API work, don’t even start if
     you can’t verify credentialed access -- never implement elaborate simulations, smoke
     tests, or scaffolding to “work around” provider issues.
     Never “work around” missing system packages, unresponsive or unavailable servers,
