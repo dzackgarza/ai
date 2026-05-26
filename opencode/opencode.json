@@ -12,35 +12,15 @@
   ],
   "formatter": {
     "ruff-check": {
-      "command": [
-        "uvx",
-        "ruff",
-        "check",
-        "--fix",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
     },
     "ruff-format": {
-      "command": [
-        "uvx",
-        "ruff",
-        "format",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
     },
     "prettier": {
-      "command": [
-        "npx",
-        "prettier",
-        "--write",
-        "$FILE"
-      ],
+      "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [
         ".js",
         ".ts",
@@ -54,41 +34,18 @@
       ]
     },
     "just": {
-      "command": [
-        "just",
-        "--unstable",
-        "--fmt",
-        "--justfile",
-        "$FILE"
-      ],
-      "extensions": [
-        "justfile"
-      ]
+      "command": ["just", "--unstable", "--fmt", "--justfile", "$FILE"],
+      "extensions": ["justfile"]
     },
     "flowmark": {
-      "command": [
-        "uvx",
-        "flowmark",
-        "--semantic",
-        "--inplace",
-        "$FILE"
-      ],
-      "extensions": [
-        ".md"
-      ]
+      "command": ["uvx", "flowmark", "--auto", "--list-spacing", "loose", "$FILE"],
+      "extensions": [".md"]
     }
   },
   "lsp": {
     "texlab": {
-      "command": [
-        "texlab"
-      ],
-      "extensions": [
-        ".tex",
-        ".sty",
-        ".cls",
-        ".bib"
-      ]
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
     }
   },
   "mcp": {
@@ -872,9 +829,7 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ],
+        "include": ["reasoning.encrypted_content"],
         "store": false
       },
       "models": {
@@ -885,13 +840,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "none": {
@@ -928,13 +878,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -966,13 +911,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -1004,13 +944,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "low": {
@@ -1037,13 +972,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "medium": {
@@ -1065,13 +995,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": {
             "none": {
