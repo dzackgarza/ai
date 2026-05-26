@@ -505,6 +505,10 @@ It should capture:
 
 It should not be a broad memorialization of incidental internal details.
 
+Regression tests are for unintentional broken behavior (bugs), not for intentional
+design decisions. Intentional feature removals, deprecations, or breaking changes do not
+need regression tests — these are design choices, not defects.
+
 * * *
 
 ## The Iron Law of TDD
