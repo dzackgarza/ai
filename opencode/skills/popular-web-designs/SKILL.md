@@ -25,8 +25,8 @@ prompts with exact CSS values.
 
 ## Related design skills
 
-- → **`claude-design`** — Load alongside when scoping a design brief, producing
-  variants, or verifying a rendered HTML artifact.
+- → **`design`** — Load alongside when scoping a design brief, producing variants, or
+  verifying a rendered HTML artifact.
   Covers design process and taste, avoiding AI-design slop.
 - → **`design-md`** — Load alongside when the deliverable is a formal DESIGN.md token
   spec file, not a rendered artifact.
