@@ -1,37 +1,53 @@
 ## WebGL2 Adaptation Requirements
 
-**IMPORTANT: GLSL Type Strictness**: float and vec types cannot be implicitly converted. `vec3 v = 1.0;` is illegal; you must use the vector form (e.g., `vec3(1.0)`, `vec3(1.0) * x`, `value * vec3(1.0)`).
+**IMPORTANT: GLSL Type Strictness**: float and vec types cannot be implicitly converted.
+`vec3 v = 1.0;` is illegal; you must use the vector form (e.g., `vec3(1.0)`,
+`vec3(1.0) * x`, `value * vec3(1.0)`).
 
-The code templates in this document use ShaderToy GLSL style. When generating standalone HTML pages, you must adapt for WebGL2:
+The code templates in this document use ShaderToy GLSL style.
+When generating standalone HTML pages, you must adapt for WebGL2:
 
 - Use `canvas.getContext("webgl2")`
+
 - Shader first line: `#version 300 es`, add `precision highp float;` in fragment shader
+
 - Vertex shader: `attribute` -> `in`, `varying` -> `out`
-- Fragment shader: `varying` -> `in`, `gl_FragColor` -> custom `out vec4 fragColor`, `texture2D()` -> `texture()`
-- ShaderToy's `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to the standard `void main()` entry point
+
+- Fragment shader: `varying` -> `in`, `gl_FragColor` -> custom `out vec4 fragColor`,
+  `texture2D()` -> `texture()`
+
+- ShaderToy’s `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to
+  the standard `void main()` entry point
 
 # SDF Ambient Occlusion
 
 ## Use Cases
 
 - Simulating indirect light occlusion in raymarching / SDF scenes
+
 - Adding spatial depth and contact shadows (darkening in concavities and crevices)
+
 - From 5 samples (performance priority) to 32 hemisphere samples (quality priority)
 
 ## Core Principles
 
-Sample the SDF along the surface normal direction at multiple distances, comparing the "expected distance" with the "actual distance" to estimate occlusion.
+Sample the SDF along the surface normal direction at multiple distances, comparing the
+“expected distance” with the “actual distance” to estimate occlusion.
 
 For surface point P, normal N, and sampling distance h:
+
 - Expected distance = h (SDF should equal h when surroundings are open)
+
 - Actual distance = map(P + N * h)
+
 - Occlusion contribution = h - map(P + N * h) (larger difference = stronger occlusion)
 
 ```
 AO = 1 - k * sum(weight_i * max(0, h_i - map(P + N * h_i)))
 ```
 
-Result: 1.0 = no occlusion, 0.0 = fully occluded. Weights decay exponentially (closer samples have higher weight).
+Result: 1.0 = no occlusion, 0.0 = fully occluded.
+Weights decay exponentially (closer samples have higher weight).
 
 ## Implementation Steps
 
@@ -250,7 +266,8 @@ float calcAO_multiplicative(vec3 pos, vec3 nor) {
 
 ### Multi-Scale Separated AO (Protophore / Eric Heitz)
 
-Exponentially increasing sampling distances, separating short-range contact shadows from long-range ambient occlusion, fully unrolled without loops.
+Exponentially increasing sampling distances, separating short-range contact shadows from
+long-range ambient occlusion, fully unrolled without loops.
 
 ```glsl
 float calcAO_multiscale(vec3 pos, vec3 nor) {
@@ -290,7 +307,8 @@ float calcAO_jittered(vec3 pos, vec3 nor, float maxDist) {
 
 ### Hemisphere Random Direction AO
 
-Random direction sampling within the normal hemisphere, closer to physically accurate, requires 32 samples.
+Random direction sampling within the normal hemisphere, closer to physically accurate,
+requires 32 samples.
 
 ```glsl
 vec2 hash2(float n) {
@@ -312,7 +330,8 @@ float calcAO_hemisphere(vec3 pos, vec3 nor, float seed) {
 
 ### Fibonacci Sphere Uniform Hemisphere AO
 
-Fibonacci sphere points for quasi-uniform hemisphere sampling, avoiding random clustering.
+Fibonacci sphere points for quasi-uniform hemisphere sampling, avoiding random
+clustering.
 
 ```glsl
 vec3 forwardSF(float i, float n) {
@@ -343,22 +362,37 @@ float calcAO_fibonacci(vec3 pos, vec3 nor) {
 
 ### Performance Tips
 
-- **Bottleneck**: Number of `map()` calls. Each AO sample = one full SDF evaluation
-- **Sample count selection**: Classic normal-direction 3~5 samples is sufficient; hemisphere sampling needs 16~32
+- **Bottleneck**: Number of `map()` calls.
+  Each AO sample = one full SDF evaluation
+
+- **Sample count selection**: Classic normal-direction 3~~5 samples is sufficient;
+  hemisphere sampling needs 16~~32
+
 - **Early exit**: `if (occ > 0.35) break;` skips over heavily occluded regions
+
 - **Unroll loops**: Fixed iteration count (4~7) manually unrolled is more GPU-friendly
+
 - **Distance degradation**: `float aoSteps = mix(5.0, 2.0, clamp(t / 50.0, 0.0, 1.0));`
+
 - **Preprocessor toggle**: `#ifdef ENABLE_AMBIENT_OCCLUSION` for on/off control
-- **SDF simplification**: AO sampling can use a simplified `map()`, ignoring fine details
+
+- **SDF simplification**: AO sampling can use a simplified `map()`, ignoring fine
+  details
 
 ### Composition Tips
 
 - **AO + Soft Shadow**: `col = diffuse * sha + ambient * ao;`
+
 - **AO + Sky Visibility**: `col += skyColor * ao * (0.5 + 0.5 * nor.y);`
+
 - **AO + Bounce Light/SSS**: `col += bounceColor * bou * ao;`
+
 - **AO + Convexity Detection**: Sample along both +N/-N to get both AO and convexity
-- **AO + Fresnel Reflection**: `col += envColor * fre * ao;` reduces environment reflection in occluded areas
+
+- **AO + Fresnel Reflection**: `col += envColor * fre * ao;` reduces environment
+  reflection in occluded areas
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/ambient-occlusion.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/ambient-occlusion.md)

@@ -1,37 +1,63 @@
 # GPT-5.4 prompting upgrade guide
 
-Use this guide when prompts written for older models need to be adapted for GPT-5.4 during an upgrade. Start lean: keep the model-string change narrow, preserve the original task intent, and add only the smallest prompt changes needed to recover behavior.
+Use this guide when prompts written for older models need to be adapted for GPT-5.4
+during an upgrade.
+Start lean: keep the model-string change narrow, preserve the original
+task intent, and add only the smallest prompt changes needed to recover behavior.
 
 ## Default upgrade posture
 
-- Start with `model string only` whenever the old prompt is already short, explicit, and task-bounded.
-- Move to `model string + light prompt rewrite` only when regressions appear in completeness, persistence, citation quality, verification, or verbosity.
+- Start with `model string only` whenever the old prompt is already short, explicit, and
+  task-bounded.
+
+- Move to `model string + light prompt rewrite` only when regressions appear in
+  completeness, persistence, citation quality, verification, or verbosity.
+
 - Prefer one or two targeted prompt additions over a broad rewrite.
-- Treat reasoning effort as a last-mile knob. Start lower, then increase only after prompt-level fixes and evals.
-- Before increasing reasoning effort, first add a completeness contract, a verification loop, and tool persistence rules - depending on the usage case.
-- If the workflow clearly depends on implementation changes rather than prompt changes, treat it as blocked for prompt-only upgrade guidance.
-- Do not classify a case as blocked just because the workflow uses tools; block only if the upgrade requires changing tool definitions, wiring, or other implementation details.
+
+- Treat reasoning effort as a last-mile knob.
+  Start lower, then increase only after prompt-level fixes and evals.
+
+- Before increasing reasoning effort, first add a completeness contract, a verification
+  loop, and tool persistence rules - depending on the usage case.
+
+- If the workflow clearly depends on implementation changes rather than prompt changes,
+  treat it as blocked for prompt-only upgrade guidance.
+
+- Do not classify a case as blocked just because the workflow uses tools; block only if
+  the upgrade requires changing tool definitions, wiring, or other implementation
+  details.
 
 ## Behavioral differences to account for
 
 Current GPT-5.4 upgrade guidance suggests these strengths:
 
 - stronger personality and tone adherence, with less drift over long answers
+
 - better long-horizon and agentic workflow stamina
+
 - stronger spreadsheet, finance, and formatting tasks
+
 - more efficient tool selection and fewer unnecessary calls by default
+
 - stronger structured generation and classification reliability
 
 The main places where prompt guidance still helps are:
 
 - retrieval-heavy workflows that need persistent tool use and explicit completeness
+
 - research and citation discipline
+
 - verification before irreversible or high-impact actions
+
 - terminal and tool workflow hygiene
+
 - defaults and implied follow-through
+
 - verbosity control for compact, information-dense answers
 
-Start with the smallest set of instructions that preserves correctness. Add the prompt blocks below only for workflows that actually need them.
+Start with the smallest set of instructions that preserves correctness.
+Add the prompt blocks below only for workflows that actually need them.
 
 ## Prompt rewrite patterns
 
@@ -49,14 +75,17 @@ Start with the smallest set of instructions that preserves correctness. Add the 
 
 ## Prompt blocks
 
-Use these selectively. Do not add all of them by default.
+Use these selectively.
+Do not add all of them by default.
 
 ### `output_verbosity_spec`
 
 Use when:
 
 - the upgraded model gets too wordy
+
 - the host needs compact, information-dense answers
+
 - the workflow benefits from a short overview plus a checklist
 
 ```text
@@ -76,6 +105,7 @@ Use when:
 Use when:
 
 - the host expects the model to proceed on reversible, low-risk steps
+
 - the upgraded model becomes too conservative or asks for confirmation too often
 
 ```text
@@ -94,6 +124,7 @@ Use when:
 Use when:
 
 - users often change task shape, format, or tone mid-conversation
+
 - the host needs an explicit override policy instead of relying on defaults
 
 ```text
@@ -110,6 +141,7 @@ Use when:
 Use when:
 
 - the workflow needs multiple retrieval or verification steps
+
 - the model starts stopping too early because it is trying to save tool calls
 
 ```text
@@ -128,7 +160,9 @@ Use when:
 Use when:
 
 - the model is too literal or stops at the first plausible answer
-- the task is safety- or accuracy-sensitive and needs a small initiative nudge before raising reasoning effort
+
+- the task is safety- or accuracy-sensitive and needs a small initiative nudge before
+  raising reasoning effort
 
 ```text
 <dig_deeper_nudge>
@@ -143,7 +177,9 @@ Use when:
 Use when:
 
 - later actions depend on prerequisite lookup, memory retrieval, or discovery steps
-- the model may be tempted to skip prerequisite work because the intended end state seems obvious
+
+- the model may be tempted to skip prerequisite work because the intended end state
+  seems obvious
 
 ```text
 <dependency_checks>
@@ -158,6 +194,7 @@ Use when:
 Use when:
 
 - the workflow has multiple independent retrieval steps
+
 - wall-clock time matters but some steps still need sequencing
 
 ```text
@@ -174,6 +211,7 @@ Use when:
 Use when:
 
 - the task involves batches, lists, enumerations, or multiple deliverables
+
 - missing items are a common failure mode
 
 ```text
@@ -193,6 +231,7 @@ Use when:
 Use when:
 
 - the workflow frequently performs search, CRM, logs, or retrieval steps
+
 - no-results failures are often false negatives
 
 ```text
@@ -209,6 +248,7 @@ If a lookup returns empty or suspiciously small results:
 Use when:
 
 - the workflow has downstream impact
+
 - accuracy, formatting, or completeness regressions matter
 
 ```text
@@ -226,6 +266,7 @@ Before finalizing:
 Use when:
 
 - required context is sometimes missing early in the workflow
+
 - the model should prefer retrieval over guessing
 
 ```text
@@ -241,6 +282,7 @@ Use when:
 Use when:
 
 - the agent will actively take actions through tools
+
 - the host benefits from a short pre-flight and post-flight execution frame
 
 ```text
@@ -256,6 +298,7 @@ Use when:
 Use when:
 
 - the workflow produces cited answers
+
 - fabricated citations or wrong citation formats are costly
 
 ```text
@@ -274,6 +317,7 @@ Use when:
 Use when:
 
 - the workflow is research-heavy
+
 - the host uses web search or retrieval tools
 
 ```text
@@ -286,7 +330,8 @@ Use when:
 </research_mode>
 ```
 
-If your host environment uses a specific research tool or requires a submit step, combine this with the host's finalization contract.
+If your host environment uses a specific research tool or requires a submit step,
+combine this with the host’s finalization contract.
 
 ### `structured_output_contract`
 
@@ -309,6 +354,7 @@ Use when:
 Use when:
 
 - the workflow extracts OCR boxes, document regions, or other coordinates
+
 - layout drift or missed dense regions are common failure modes
 
 ```text
@@ -325,6 +371,7 @@ Use when:
 Use when:
 
 - the prompt belongs to a terminal-based or coding-agent workflow
+
 - tool misuse or shell misuse has been observed
 
 ```text
@@ -353,81 +400,133 @@ Use when:
 </user_updates_spec>
 ```
 
-If you are using [Compaction](https://developers.openai.com/api/docs/guides/compaction) in the Responses API, compact after major milestones, treat compacted items as opaque state, and keep prompts functionally identical after compaction.
+If you are using [Compaction](https://developers.openai.com/api/docs/guides/compaction)
+in the Responses API, compact after major milestones, treat compacted items as opaque
+state, and keep prompts functionally identical after compaction.
 
 ## Responses `phase` guidance
 
-For long-running Responses workflows, preambles, or tool-heavy agents that replay assistant items, review whether `phase` is already preserved.
+For long-running Responses workflows, preambles, or tool-heavy agents that replay
+assistant items, review whether `phase` is already preserved.
 
 - If the host already round-trips `phase`, keep it intact during the upgrade.
-- If the host uses `previous_response_id` and does not manually replay assistant items, note that this may reduce manual `phase` handling needs.
-- If reliable GPT-5.4 behavior would require adding or preserving `phase` and that would need code edits, treat the case as blocked for prompt-only or model-string-only migration guidance.
+
+- If the host uses `previous_response_id` and does not manually replay assistant items,
+  note that this may reduce manual `phase` handling needs.
+
+- If reliable GPT-5.4 behavior would require adding or preserving `phase` and that would
+  need code edits, treat the case as blocked for prompt-only or model-string-only
+  migration guidance.
 
 ## Example upgrade profiles
 
 ### GPT-5.2
 
 - Use `gpt-5.4`
+
 - Match the current reasoning effort first
+
 - Preserve the existing latency and quality profile before tuning prompt blocks
-- If the repo does not expose the exact setting, emit `same` as the starting recommendation
+
+- If the repo does not expose the exact setting, emit `same` as the starting
+  recommendation
 
 ### GPT-5.3-Codex
 
 - Use `gpt-5.4`
+
 - Match the current reasoning effort first
-- If you need Codex-style speed and efficiency, add verification blocks before increasing reasoning effort
-- If the repo does not expose the exact setting, emit `same` as the starting recommendation
+
+- If you need Codex-style speed and efficiency, add verification blocks before
+  increasing reasoning effort
+
+- If the repo does not expose the exact setting, emit `same` as the starting
+  recommendation
 
 ### GPT-4o or GPT-4.1 assistant
 
 - Use `gpt-5.4`
+
 - Start with `none` reasoning effort
+
 - Add `output_verbosity_spec` only if output becomes too verbose
 
 ### Long-horizon agent
 
 - Use `gpt-5.4`
+
 - Start with `medium` reasoning effort
+
 - Add `tool_persistence_rules`
+
 - Add `completeness_contract`
+
 - Add `verification_loop`
 
 ### Research workflow
 
 - Use `gpt-5.4`
+
 - Start with `medium` reasoning effort
+
 - Add `research_mode`
+
 - Add `citation_rules`
+
 - Add `empty_result_handling`
+
 - Add `tool_persistence_rules` when the host already uses web or retrieval tools
+
 - Add `parallel_tool_calling` when the retrieval steps are independent
 
 ### Support triage or multi-agent workflow
 
 - Use `gpt-5.4`
+
 - Prefer `model string + light prompt rewrite` over `model string only`
-- Add at least one of `tool_persistence_rules`, `completeness_contract`, or `verification_loop`
+
+- Add at least one of `tool_persistence_rules`, `completeness_contract`, or
+  `verification_loop`
+
 - Add more only if evals show a real regression
 
 ### Coding or terminal workflow
 
 - Use `gpt-5.4`
+
 - Keep the model-string change narrow
+
 - Match the current reasoning effort first if you are upgrading from GPT-5.3-Codex
+
 - Add `terminal_tool_hygiene`
+
 - Add `verification_loop`
+
 - Add `dependency_checks` when actions depend on prerequisite lookup or discovery
+
 - Add `tool_persistence_rules` if the agent stops too early
-- Review whether `phase` is already preserved for long-running Responses flows or assistant preambles
-- Do not classify this as blocked just because the workflow uses tools; block only if the upgrade requires changing tool definitions or wiring
-- If the repo already uses Responses plus tools and no required host-side change is shown, prefer `model_string_plus_light_prompt_rewrite` over `blocked`
+
+- Review whether `phase` is already preserved for long-running Responses flows or
+  assistant preambles
+
+- Do not classify this as blocked just because the workflow uses tools; block only if
+  the upgrade requires changing tool definitions or wiring
+
+- If the repo already uses Responses plus tools and no required host-side change is
+  shown, prefer `model_string_plus_light_prompt_rewrite` over `blocked`
 
 ## Prompt regression checklist
 
 - Check whether the upgraded prompt still preserves the original task intent.
+
 - Check whether the new prompt is leaner, not just longer.
-- Check completeness, citation quality, dependency handling, verification behavior, and verbosity.
-- For long-running Responses agents, check whether `phase` handling is already in place or needs implementation work.
+
+- Check completeness, citation quality, dependency handling, verification behavior, and
+  verbosity.
+
+- For long-running Responses agents, check whether `phase` handling is already in place
+  or needs implementation work.
+
 - Confirm that each added prompt block addresses an observed regression.
+
 - Remove prompt blocks that are not earning their keep.

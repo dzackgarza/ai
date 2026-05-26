@@ -2,29 +2,52 @@
 
 ## Use Cases
 
-- Procedural generation of natural landscapes (mountains, canyons, dunes, etc.) in ShaderToy / Fragment Shaders
+- Procedural generation of natural landscapes (mountains, canyons, dunes, etc.)
+  in ShaderToy / Fragment Shaders
+
 - Complete 3D terrain flythrough scenes in a single pixel shader, without geometry
+
 - Cinematic aerial perspective, soft shadows, and layered material effects
 
 ## Core Principles
 
-Rendering pipeline: height field definition → ray marching intersection → normals & materials → lighting → atmospheric effects
+Rendering pipeline: height field definition → ray marching intersection → normals &
+materials → lighting → atmospheric effects
 
-- **FBM**: `f(p) = Σ (aⁿ × noise(2ⁿ × R × p))`, a=0.5, R=rotation matrix, 2ⁿ=frequency doubling
-- **Derivative erosion**: `f(p) = Σ (aⁿ × noise(p) / (1 + dot(d,d)))`, d=accumulated gradient, suppresses detail on steep slopes
+- **FBM**: `f(p) = Σ (aⁿ × noise(2ⁿ × R × p))`, a=0.5, R=rotation matrix, 2ⁿ=frequency
+  doubling
+
+- **Derivative erosion**: `f(p) = Σ (aⁿ × noise(p) / (1 + dot(d,d)))`, d=accumulated
+  gradient, suppresses detail on steep slopes
+
 - **Adaptive step size**: `step = factor × (ray.y - terrain_height)`
 
 ## Implementation Steps
 
-1. **Noise & hash** — sin-free hash + Value Noise with analytic derivatives (`noised` returns value + partial derivatives)
-2. **FBM terrain** — derivative erosion FBM, `mat2(0.8,-0.6,0.6,0.8)` per-layer rotation to eliminate banding; LOD tiers (L=3/M=9/H=16 octaves)
-3. **Ray marching** — upper bound clipping + adaptive step `STEP_FACTOR * h` + distance-adaptive precision `abs(h) < 0.0015*t`
-4. **Normals** — finite differences, epsilon increases with distance to avoid distant aliasing, using high-precision `terrainH`
+1. **Noise & hash** — sin-free hash + Value Noise with analytic derivatives (`noised`
+   returns value + partial derivatives)
+
+2. **FBM terrain** — derivative erosion FBM, `mat2(0.8,-0.6,0.6,0.8)` per-layer rotation
+   to eliminate banding; LOD tiers (L=3/M=9/H=16 octaves)
+
+3. **Ray marching** — upper bound clipping + adaptive step `STEP_FACTOR * h` +
+   distance-adaptive precision `abs(h) < 0.0015*t`
+
+4. **Normals** — finite differences, epsilon increases with distance to avoid distant
+   aliasing, using high-precision `terrainH`
+
 5. **Soft shadows** — march toward sun, track `min(k*h/t)` to estimate penumbra
+
 6. **Materials** — blend rock/grass/snow/sand by height + slope + noise
-7. **Lighting** — Lambert diffuse + hemisphere ambient + backlight + Fresnel rim light + Blinn-Phong specular
-8. **Atmospheric fog** — wavelength-dependent attenuation `exp(-t*k*vec3(1,1.5,4))` + sun scatter fog color
+
+7. **Lighting** — Lambert diffuse + hemisphere ambient + backlight + Fresnel rim light +
+   Blinn-Phong specular
+
+8. **Atmospheric fog** — wavelength-dependent attenuation `exp(-t*k*vec3(1,1.5,4))` +
+   sun scatter fog color
+
 9. **Sky** — zenith-to-horizon gradient + sun disk/halo
+
 10. **Camera** — Look-At matrix + path-following flight, height tracks terrain
 
 ## Complete Code Template
@@ -283,7 +306,8 @@ float terrainSignFlip(in vec2 p) {
 
 ### Canyon Style (Texture-Driven + 3D Displacement)
 
-Texture sampling + 3D FBM displacement, supporting cliffs/caves and other non-heightfield formations.
+Texture sampling + 3D FBM displacement, supporting cliffs/caves and other
+non-heightfield formations.
 
 ```glsl
 float noise3D(in vec3 x) {
@@ -313,7 +337,8 @@ float mapCanyon(vec3 p) {
 
 ### Directional Erosion Noise
 
-Slope direction drives Gabor noise projection, producing realistic dendritic drainage patterns.
+Slope direction drives Gabor noise projection, producing realistic dendritic drainage
+patterns.
 
 ```glsl
 #define EROSION_BRANCH 1.5
@@ -389,20 +414,37 @@ vec4 raymarchClouds(vec3 ro, vec3 rd) {
 ## Performance & Composition
 
 **Performance:**
-- LOD tiers: low octaves for marching (3-9), high octaves for normals (16), lowest for camera (3)
+
+- LOD tiers: low octaves for marching (3-9), high octaves for normals (16), lowest for
+  camera (3)
+
 - Upper bound clipping: intersect ray with terrain max height plane before marching
+
 - Adaptive precision: hit threshold `abs(h) < k * t`, tolerates larger error at distance
+
 - Texture instead of noise: `textureLod` sampling of pre-baked noise, 2-3x speed
+
 - Early exit: `t > MAX_DIST`, `alpha > 0.99`, shadow `h < 0`
+
 - Dithered start: `t += hash(fragCoord) * step_size` to eliminate banding artifacts
 
 **Composition:**
-- Terrain + water: water at a fixed y-plane, multi-frequency noise perturbing normals, Fresnel controlling reflection/refraction
-- Terrain + volumetric clouds: render terrain first, then march cloud slab, front-to-back alpha compositing
-- Terrain + volumetric fog: additionally sample 3D FBM density field along ray, decay with distance
-- Terrain + SDF objects: `floor(p.xz/gridSize)` grid placement, `hash(cell)` randomization
+
+- Terrain + water: water at a fixed y-plane, multi-frequency noise perturbing normals,
+  Fresnel controlling reflection/refraction
+
+- Terrain + volumetric clouds: render terrain first, then march cloud slab,
+  front-to-back alpha compositing
+
+- Terrain + volumetric fog: additionally sample 3D FBM density field along ray, decay
+  with distance
+
+- Terrain + SDF objects: `floor(p.xz/gridSize)` grid placement, `hash(cell)`
+  randomization
+
 - Terrain + TAA: inter-frame reprojection blending, ~10% new frame + 90% history frame
 
 ## Further Reading
 
-For full step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/terrain-rendering.md)
+For full step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/terrain-rendering.md)

@@ -81,17 +81,18 @@ permission:
   serena_switch_modes: allow
   gemini_quota: allow
 ---
-
-
 **SYSTEM_ID: UNRESTRICTED_TEST_MD**
 
-This agent exists only for testing OpenCode permission behavior with a fully permissive rule set.
+This agent exists only for testing OpenCode permission behavior with a fully permissive
+rule set.
 
 - All managed permissions are enabled
+
 - All external directories are allowed
+
 - Use only in controlled test scenarios
 
----
+* * *
 
 ${AgentSkills}
 

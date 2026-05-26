@@ -1,30 +1,48 @@
-- **IMPORTANT:** All declared `uniform` variables must be used in the shader code, otherwise the compiler will optimize them away. After optimization, `gl.getUniformLocation()` returns `null`, and setting that uniform triggers a WebGL `INVALID_OPERATION` error, which may cause rendering failure. Ensure uniforms like `iTime` are actually used in `main()` (e.g., `float t = iTime * 1.0;`)
+- **IMPORTANT:** All declared `uniform` variables must be used in the shader code,
+  otherwise the compiler will optimize them away.
+  After optimization, `gl.getUniformLocation()` returns `null`, and setting that uniform
+  triggers a WebGL `INVALID_OPERATION` error, which may cause rendering failure.
+  Ensure uniforms like `iTime` are actually used in `main()` (e.g.,
+  `float t = iTime * 1.0;`)
 
 # Voronoi & Cellular Noise
 
 ## Use Cases
+
 - Natural textures: cells, cracked soil, stone, skin pores
+
 - Structured patterns: crystals, honeycombs, shattered glass, mosaics
+
 - Effects: fire/nebula (fBm stacking), crack generation
+
 - Procedural materials: cloud noise, terrain height maps, stylized partitioning
 
 ## Core Principles
 
-Voronoi noise = **spatial partitioning**: scatter feature points, assign each pixel to the "cell" of its nearest feature point.
+Voronoi noise = **spatial partitioning**: scatter feature points, assign each pixel to
+the “cell” of its nearest feature point.
 
 Algorithm flow:
-1. `floor` divides into an integer grid; each cell contains a randomly offset feature point
+
+1. `floor` divides into an integer grid; each cell contains a randomly offset feature
+   point
+
 2. Search the 3x3 (2D) or 3x3x3 (3D) neighborhood for all feature points
+
 3. Record the nearest distance F1 (optionally second-nearest F2)
+
 4. Map F1, F2, or F2-F1 to color/height/shape
 
 Distance metrics:
+
 - Euclidean: `dot(r,r)` (squared, fast) -> final `sqrt`
+
 - Manhattan: `abs(r.x)+abs(r.y)`
+
 - Chebyshev: `max(abs(r.x), abs(r.y))`
 
-Exact border distance (two-pass algorithm): `dot(0.5*(mr+r), normalize(r-mr))`
-Rounded borders (harmonic mean): `1/(1/(d2-d1) + 1/(d3-d1))`
+Exact border distance (two-pass algorithm): `dot(0.5*(mr+r), normalize(r-mr))` Rounded
+borders (harmonic mean): `1/(1/(d2-d1) + 1/(d3-d1))`
 
 ## Implementation Steps
 
@@ -440,19 +458,32 @@ float remap(float x, float a, float b, float c, float d) {
 ## Performance & Composition
 
 **Performance:**
+
 - Use `dot(r,r)` instead of `length` during comparison; only `sqrt` for final output
+
 - 3D loops can be manually unrolled along the z-axis to reduce nesting
+
 - Search range: basic F1 uses 3x3; exact borders/Voronoise/extended jitter uses 5x5
-- Hash choice: `sin(dot(...))` is fastest; integer hash is more uniform but requires ES 3.0+
+
+- Hash choice: `sin(dot(...))` is fastest; integer hash is more uniform but requires ES
+  3.0+
+
 - fBm layers: 3 is sufficient, 5 is the upper limit
 
 **Combinations:**
+
 - **+fBm distortion**: `uv + 0.5*fbm22(uv*2.0)` -> organic cell shapes
+
 - **+Bump Mapping**: finite-difference normal computation -> pseudo-3D bumps
+
 - **+Palette**: `0.5+0.5*cos(6.2831*(t+vec3(0,0.33,0.67)))` -> rich colors
+
 - **+Raymarching**: Voronoi distance as part of the SDF -> cellular surfaces
-- **+Multi-scale stacking**: Voronoi at different frequencies stacked -> primary structure + fine detail
+
+- **+Multi-scale stacking**: Voronoi at different frequencies stacked -> primary
+  structure + fine detail
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/voronoi-cellular-noise.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/voronoi-cellular-noise.md)

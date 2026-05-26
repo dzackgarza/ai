@@ -2,12 +2,13 @@
 name: developing-linux-guis
 description: Build GUI applications for Linux desktop environments using AGS. Use when creating desktop applications, system tray tools, bars, or native Linux UI components.
 ---
-
 # Developing Linux GUIs
 
 ## Core Policy
 
-**Use AGS (Aylur's GTK Shell)** for all Linux GUI development. AGS provides JavaScript/TypeScript-based development with React-like JSX syntax, GTK/CSS styling, and built-in bindings for system integration.
+**Use AGS (Aylur’s GTK Shell)** for all Linux GUI development.
+AGS provides JavaScript/TypeScript-based development with React-like JSX syntax, GTK/CSS
+styling, and built-in bindings for system integration.
 
 ## Quick Start
 
@@ -77,7 +78,8 @@ Generates a template with TypeScript configuration.
 ags types -u -d /path/to/project/root
 ```
 
-Generates types from GObject-based libraries. Run after adding dependencies.
+Generates types from GObject-based libraries.
+Run after adding dependencies.
 
 ### Bundle for distribution
 
@@ -169,16 +171,24 @@ button {
 
 ## Workflow
 
-1. **Quick start**: Create single `.tsx` file with shebang, run with `ags run ./file.tsx`
+1. **Quick start**: Create single `.tsx` file with shebang, run with
+   `ags run ./file.tsx`
+
 2. **Project setup**: `ags init -d /path/to/project` for TypeScript environment
+
 3. **Generate types**: `ags types -u -d /path/to/project/root` after adding dependencies
+
 4. **Develop**: Run with `ags run` for hot reload
+
 5. **Style**: Use GTK4 CSS properties for theming and animations
+
 6. **Bundle**: `ags bundle` for production deployment
 
 ## AGS Version Contract
 
-**Always target AGS v2 / Astal / Gnim / Gtk4.** The legacy AGS v1 API is officially deprecated; the legacy docs redirect to v2. Never use v1 patterns unless the project explicitly pins AGS v1.
+**Always target AGS v2 / Astal / Gnim / Gtk4.** The legacy AGS v1 API is officially
+deprecated; the legacy docs redirect to v2. Never use v1 patterns unless the project
+explicitly pins AGS v1.
 
 Allowed imports:
 ```
@@ -191,17 +201,27 @@ ags/process
 ```
 
 Required app patterns:
+
 - `app.start({ main, requestHandler })`
+
 - Named windows with `name` before `application` (props are set sequentially)
+
 - `application={app}` or `app.add_window(self)`
+
 - `ags request` for external commands
+
 - `ags toggle <WindowName>` for Waybar toggling
+
 - `execAsync` only for CLI calls
+
 - `monitorFile` or explicit refresh for state updates
 
 Forbidden patterns:
+
 - `imports.gi.Ags`, `Service.import`, `Widget.`, `App.config` (AGS v1 API)
+
 - Synchronous `exec(` for CRUD actions — blocks IO, freezes the shell
+
 - `systemctl`, `sqlite`, `better-sqlite`, `OnCalendar` inside AGS source
 
 Static contract tests (add to `tests/contract/`):
@@ -230,11 +250,16 @@ def test_no_sync_exec_in_ags():
 
 AGS work requires **two independent feedback channels**. Neither replaces the other.
 
-**Structural observability** — proves the AGS code uses the documented widget/app model. Catches missing windows, wrong button labels, empty lists, duplicate rows, hidden editors, incorrect request handler routing.
+**Structural observability** — proves the AGS code uses the documented widget/app model.
+Catches missing windows, wrong button labels, empty lists, duplicate rows, hidden
+editors, incorrect request handler routing.
 
-**Visual observability** — proves the rendered panel is not incoherent. Catches invisible elements, wrong anchoring, overlapping rows, text clipped to background color, fullscreen accidents, zero-size panels.
+**Visual observability** — proves the rendered panel is not incoherent.
+Catches invisible elements, wrong anchoring, overlapping rows, text clipped to
+background color, fullscreen accidents, zero-size panels.
 
-Typechecking alone is insufficient. A GUI task is not complete without both channels producing evidence.
+Typechecking alone is insufficient.
+A GUI task is not complete without both channels producing evidence.
 
 ## Structural Observability: debug-tree via requestHandler
 
@@ -248,7 +273,9 @@ ags request open-test-state fixtures/three-reminders.json
 ags request ping
 ```
 
-The `requestHandler` mechanism in `app.start` is the documented channel for CLI-to-running-instance messages. Example implementation:
+The `requestHandler` mechanism in `app.start` is the documented channel for
+CLI-to-running-instance messages.
+Example implementation:
 
 ```tsx
 app.start({
@@ -304,7 +331,8 @@ def test_debug_tree_contains_required_widgets():
 
 ## Visual Observability: Real Wayland Screenshots
 
-Use `grim` to capture real compositor screenshots. Its documented usage:
+Use `grim` to capture real compositor screenshots.
+Its documented usage:
 
 ```bash
 grim output.png                          # capture all outputs
@@ -368,13 +396,16 @@ kill "$AGS_PID"
 
 ## Visual Oracle Layers
 
-Raw pixel diffs are brittle. Use layered oracles:
+Raw pixel diffs are brittle.
+Use layered oracles:
 
-**A. Process oracle** — AGS starts, stays alive, `ags request ping` returns `ok`, `ags toggle Reminders` succeeds.
+**A. Process oracle** — AGS starts, stays alive, `ags request ping` returns `ok`,
+`ags toggle Reminders` succeeds.
 
 **B. Structural oracle** — `debug-tree` contains expected widgets and labels.
 
-**C. Geometry oracle** — screenshot exists; non-transparent bounding box has sane dimensions; rows do not overlap; editor is inside monitor bounds.
+**C. Geometry oracle** — screenshot exists; non-transparent bounding box has sane
+dimensions; rows do not overlap; editor is inside monitor bounds.
 
 ```python
 def test_panel_not_empty_or_fullscreen(img):
@@ -385,11 +416,14 @@ def test_panel_not_empty_or_fullscreen(img):
     assert bbox.height < 900
 ```
 
-**D. Image oracle** — perceptual hash close to baseline; SSIM above threshold; OCR optional as weak check.
+**D. Image oracle** — perceptual hash close to baseline; SSIM above threshold; OCR
+optional as weak check.
 
-**E. Triage artifact** — on failure, save `actual.png`, `expected.png`, `diff.png`, `debug-tree.json`, AGS logs.
+**E. Triage artifact** — on failure, save `actual.png`, `expected.png`, `diff.png`,
+`debug-tree.json`, AGS logs.
 
-For visual failures requiring triage, pass the artifacts to a multimodal model with only a narrow question:
+For visual failures requiring triage, pass the artifacts to a multimodal model with only
+a narrow question:
 ```
 Compare expected.png and actual.png.
 List concrete visual differences only: missing elements, overlap/clipping,
@@ -422,30 +456,45 @@ def test_ags_uses_only_allowed_intrinsics_initially():
     assert tags <= ALLOWED_INTRINSICS, f"Non-allowlist widgets: {tags - ALLOWED_INTRINSICS}"
 ```
 
-Do not invent custom layout systems or widget abstractions before the basic UI passes visual tests.
+Do not invent custom layout systems or widget abstractions before the basic UI passes
+visual tests.
 
 ## CI Tiers
 
 **Tier 1 — Static contract** (always runs, no compositor needed):
+
 - `npm typecheck`, eslint/biome
+
 - Forbidden API scan (v1 imports, systemctl, sqlite, sync exec)
+
 - Allowed widget scan
+
 - Pure helper unit tests
 
 **Tier 2 — Headless structural** (start AGS, no screenshots):
+
 - `ags run` process stays alive
+
 - `ags request ping` returns `ok`
+
 - `ags request debug-tree` returns expected widget tree
+
 - Fixture-driven state tests via `open-test-state`
 
 **Tier 3 — Real visual compositor** (required for GUI acceptance):
+
 - Start compositor/session
+
 - Start AGS with fixed fixture
+
 - Capture PNG with `grim`
+
 - Compare geometry/perceptual baseline
+
 - Archive screenshots and logs
 
-Do not block development on Tier 3 if CI cannot provide Wayland, but require it before claiming the GUI is correct.
+Do not block development on Tier 3 if CI cannot provide Wayland, but require it before
+claiming the GUI is correct.
 
 ## Required justfile Recipes
 
@@ -482,16 +531,32 @@ A GUI task is incomplete unless the agent provides evidence for all of the follo
 10. Code uses patterns from official docs or local allowed-patterns doc
 ```
 
-"GUI works" is not a valid claim without screenshots. Typechecking passing is not evidence the panel renders correctly.
+“GUI works” is not a valid claim without screenshots.
+Typechecking passing is not evidence the panel renders correctly.
 
 ## Reference
 
 - [AGS Documentation](https://aylur.github.io/ags/) - Web version (v2)
-- [AGS App and CLI guide](https://aylur.github.io/ags/guide/app-cli.html) - `app.start`, `requestHandler`, named windows, `ags toggle`
-- [AGS Utilities](https://aylur.github.io/ags/guide/utilities.html) - `execAsync`, `monitorFile`, `createPoll`
-- [AGS Intrinsics](https://aylur.github.io/ags/guide/intrinsics.html) - Allowed built-in elements
-- [AGS Full Documentation](https://github.com/Aylur/ags/tree/main/docs) - Complete API reference
-- [GTK4 CSS Properties](https://docs.gtk.org/gtk4/css-properties.html) - Supported CSS features
+
+- [AGS App and CLI guide](https://aylur.github.io/ags/guide/app-cli.html) - `app.start`,
+  `requestHandler`, named windows, `ags toggle`
+
+- [AGS Utilities](https://aylur.github.io/ags/guide/utilities.html) - `execAsync`,
+  `monitorFile`, `createPoll`
+
+- [AGS Intrinsics](https://aylur.github.io/ags/guide/intrinsics.html) - Allowed built-in
+  elements
+
+- [AGS Full Documentation](https://github.com/Aylur/ags/tree/main/docs) - Complete API
+  reference
+
+- [GTK4 CSS Properties](https://docs.gtk.org/gtk4/css-properties.html) - Supported CSS
+  features
+
 - [grim](https://github.com/emersion/grim) - Wayland screenshot tool
-- [Marble Shell](https://github.com/Aylur/marble-shell) - Reference implementation by AGS author
-- [OkPanel](https://github.com/JohnOberhauser/OkPanel) - Mature AGS-based panel implementation
+
+- [Marble Shell](https://github.com/Aylur/marble-shell) - Reference implementation by
+  AGS author
+
+- [OkPanel](https://github.com/JohnOberhauser/OkPanel) - Mature AGS-based panel
+  implementation

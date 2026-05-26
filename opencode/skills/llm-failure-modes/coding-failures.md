@@ -74,7 +74,7 @@
     previous version accurate.
 
 15. **Reimplementation impulse** - When a mature dependency exists for a problem (date
-    parsing, URL handling, serialization, regex), agents hand-roll a "simple" solution
+    parsing, URL handling, serialization, regex), agents hand-roll a “simple” solution
     instead. This increases code surface area, proliferates tests the dependency already
     handles, and introduces edge-case bugs the dependency already solved.
     The result is more code — and more test surface — than the import would have

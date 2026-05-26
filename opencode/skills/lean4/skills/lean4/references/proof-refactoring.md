@@ -44,34 +44,58 @@ When extracting:
 7. Test compilation after each extraction (Pattern 5.1: lean_diagnostic_messages)
 ```
 
----
+* * *
 
 ## When to Refactor
 
-**Sweet spot:** Proofs between 60-200 lines benefit most from refactoring. Under 60 lines, overhead exceeds benefit. Over 200 lines, multiple refactorings needed.
+**Sweet spot:** Proofs between 60-200 lines benefit most from refactoring.
+Under 60 lines, overhead exceeds benefit.
+Over 200 lines, multiple refactorings needed.
 
 **Refactor when:**
-- Proof exceeds 100 lines (or 60+ with repetitive structure)
-- Multiple conceptually distinct steps
-- Intermediate results would be useful elsewhere
-- Hard to understand/maintain
-- Repeated patterns (especially lhs/rhs with near-identical proofs)
-- Large preliminary calculations (50+ line `have` statements)
-- Property bundling opportunities (multiple properties proven separately, used together)
-- **Elaboration timeouts from nested lemma applications** (see [performance-optimization.md](performance-optimization.md) Pattern 2)
 
-**Don't refactor when:**
+- Proof exceeds 100 lines (or 60+ with repetitive structure)
+
+- Multiple conceptually distinct steps
+
+- Intermediate results would be useful elsewhere
+
+- Hard to understand/maintain
+
+- Repeated patterns (especially lhs/rhs with near-identical proofs)
+
+- Large preliminary calculations (50+ line `have` statements)
+
+- Property bundling opportunities (multiple properties proven separately, used together)
+
+- **Elaboration timeouts from nested lemma applications** (see
+  [performance-optimization.md](performance-optimization.md) Pattern 2)
+
+**Don’t refactor when:**
+
 - Proof is short and linear (< 50 lines, no repetition)
+
 - No natural intermediate milestones
+
 - Extraction would require too many parameters
+
 - **Proof is already well-factored** (see signs below)
 
 **Signs of a well-factored proof (skip these):**
-- **Clear section comments** delineate logical steps (e.g., "-- Step 1: Establish bounds", "-- Step 2: Apply induction")
+
+- **Clear section comments** delineate logical steps (e.g., “-- Step 1: Establish
+  bounds”, “-- Step 2: Apply induction”)
+
 - **Natural linear flow** without tangents or backtracking
-- **Core mathematical argument dominates** (e.g., induction structure, case analysis, algebraic manipulation is the bulk)
-- **No large extractable blocks** - all `have` statements are short (< 20 lines) or inherently tied to the main flow
-- **Readable without refactoring** - you can follow the proof logic by reading comments and goals
+
+- **Core mathematical argument dominates** (e.g., induction structure, case analysis,
+  algebraic manipulation is the bulk)
+
+- **No large extractable blocks** - all `have` statements are short (< 20 lines) or
+  inherently tied to the main flow
+
+- **Readable without refactoring** - you can follow the proof logic by reading comments
+  and goals
 
 **Example of already-clean proof:**
 ```lean
@@ -96,53 +120,84 @@ theorem foo : Result := by
   exact result
 ```
 
-**Why not refactor:** The induction structure IS the content. Extracting pieces would obscure the mathematical flow. Comments already clarify structure.
+**Why not refactor:** The induction structure IS the content.
+Extracting pieces would obscure the mathematical flow.
+Comments already clarify structure.
 
----
+* * *
 
 ## Pattern Quick Reference
 
 **When refactoring, ask yourself:**
 
 1. **Identify opportunities** (Pattern 1): What signals extraction?
-   - 50+ line preliminary? → 1.1
+
+   - 50+ line preliminary?
+     → 1.1
+
    - Mixing domains? → 1.2
-   - Repetitive structure (lhs/rhs, symmetric args, large case splits)? → 1.3
+
+   - Repetitive structure (lhs/rhs, symmetric args, large case splits)?
+     → 1.3
+
    - Witness extraction? → 1.4
-   - Properties always together? → 1.5
-   - Recurring conversion? → 1.6
+
+   - Properties always together?
+     → 1.5
+
+   - Recurring conversion?
+     → 1.6
 
 2. **Design helpers** (Pattern 2): How to make them reusable?
+
    - Generalize constraints → 2.1
+
    - Minimize assumptions → 2.2
+
    - Avoid let bindings → 2.3
+
    - Separate math from engineering → 2.4
 
 3. **Follow conventions** (Pattern 3): Lean-specific rules?
+
    - Private? Use `--` not `/-- -/` → 3.1
+
    - Unused param? Add `_` prefix → 3.2
+
    - Omega failing? Add intermediate steps → 3.3
+
    - Measure theory? Watch definitional equality → 3.4
 
 4. **Structure main proof** (Pattern 4): After extraction?
+
    - Named steps with comments → 4.1
-   - Explain "why" not "what" → 4.2
+
+   - Explain “why” not “what” → 4.2
 
 5. **Safe workflow** (Pattern 5): How to refactor safely?
+
    - Test after each extraction → 5.1
+
    - Check goals at 4-5 points → 5.2
+
    - One at a time → 5.3
+
    - Use LSP for fast feedback → 5.4
 
 6. **Document** (Pattern 6): What to explain?
-   - What it proves → 6.1
-   - Why it's true → 6.2
-   - How it's used → 6.3
 
----
+   - What it proves → 6.1
+
+   - Why it’s true → 6.2
+
+   - How it’s used → 6.3
+
+* * *
 ## LSP-Based Refactoring Workflow
 
-**Strategy:** Use `lean_goal` (from Lean LSP MCP) to inspect proof state at different locations, then subdivide at natural breakpoints where intermediate goals are clean and reusable.
+**Strategy:** Use `lean_goal` (from Lean LSP MCP) to inspect proof state at different
+locations, then subdivide at natural breakpoints where intermediate goals are clean and
+reusable.
 
 ### Step 1: Survey the Proof
 
@@ -158,32 +213,51 @@ lean_goal(file, line=155)  # Near end
 ```
 
 **What to look for:**
+
 - Clean, self-contained intermediate goals
+
 - Natural mathematical milestones
+
 - Points where context significantly changes
+
 - Repetitive structure (same proof pattern for lhs/rhs)
 
 ### Step 2: Identify Extraction Points
 
 Look for locations where:
+
 - **Goal is clean:** Self-contained statement with clear meaning
+
 - **Dependencies are local:** Depends only on earlier hypotheses (no forward references)
+
 - **Useful elsewhere:** Goal would be reusable in other contexts
+
 - **Natural meaning:** Intermediate state has clear mathematical interpretation
 
 **Good breakpoints:**
+
 - After establishing key inequalities or bounds
+
 - After case splits (before/after `by_cases`)
+
 - After measurability/integrability proofs
+
 - Where intermediate result has a clear name
+
 - After computing/simplifying expressions
+
 - Before/after applying major lemmas
 
 **Bad breakpoints:**
+
 - Mid-calculation (no clear intermediate goal)
+
 - Where helper would need 10+ parameters
+
 - Where context is too tangled to separate cleanly
+
 - In the middle of a `calc` chain
+
 - Where goal depends on later bindings
 
 ### Step 3: Extract Helper Lemma
@@ -231,17 +305,20 @@ lean_goal(file, line=new_h1_line)
 # → Should show `h1 : IntermediateGoal1` available
 ```
 
----
+* * *
 
 ## Non-LSP Refactoring (Manual)
 
-If you don't have LSP access, use this manual workflow:
+If you don’t have LSP access, use this manual workflow:
 
 ### Step 1: Read and Understand
 
 Read through the proof identifying conceptual sections:
+
 - What is the proof trying to establish?
+
 - What are the major steps?
+
 - Are there repeated patterns?
 
 ### Step 2: Mark Candidates
@@ -261,46 +338,65 @@ theorem big_result : ... := by
 ### Step 3: Extract One at a Time
 
 Extract one helper at a time, compile after each:
+
 1. Copy `have` proof to new lemma
+
 2. Identify required parameters
+
 3. Replace original with `have h := helper args`
-4. `lean_diagnostic_messages(file)` per-edit, `lake env lean <path/to/File.lean>` for file gate (from project root)
+
+4. `lean_diagnostic_messages(file)` per-edit, `lake env lean <path/to/File.lean>` for
+   file gate (from project root)
+
 5. Commit if successful
 
 ### Step 4: Iterate
 
 Repeat until proof is manageable.
 
----
+* * *
 
 ## Naming Extracted Helpers
 
 **Good names describe what the lemma establishes:**
+
 - `bounded_by_integral` - establishes bound
+
 - `measurable_composition` - proves measurability
+
 - `convergence_ae` - proves a.e. convergence
 
 **Avoid vague names:**
+
 - `helper1`, `aux_lemma` - meaningless
+
 - `part_one`, `step_2` - based on structure, not content
+
 - `temp`, `tmp` - should be permanent
 
 **Mathlib-style conventions:**
+
 - Use snake_case
+
 - Include key concepts: `integral`, `measure`, `continuous`, etc.
+
 - Add context if needed: `of_`, `_of`, `_iff`
 
----
+* * *
 
 ## Real Refactoring Example
 
-**Context:** 63-line monolithic proof about exchangeable measures with strict monotone functions.
+**Context:** 63-line monolithic proof about exchangeable measures with strict monotone
+functions.
 
 **Step 1: Identify natural boundaries**
 
 Using `lean_goal` at different points revealed:
+
 - Line 15: After establishing `hk_bound : ∀ i, k i < n` (clean arithmetic result)
+
 - Line 35: After constructing permutation (conceptually distinct)
+
 - Line 50: After projection proof (measure theory manipulation)
 
 **Step 2: Extract arithmetic helper**
@@ -337,19 +433,23 @@ lean_goal(file, line=15)        # Shows helper available ✓
 ```
 
 **Final structure:**
+
 - Original: 63 lines monolithic
+
 - Refactored: 45 lines main + 33 lines helpers = 78 lines total
+
 - **Success:** Much clearer structure, each piece testable independently
 
 **Key insight:** Success measured by clarity, not brevity.
 
----
+* * *
 
 ## Refactoring Patterns
 
-**6 high-level patterns** cover all refactoring scenarios. Each contains specific sub-patterns you can apply directly.
+**6 high-level patterns** cover all refactoring scenarios.
+Each contains specific sub-patterns you can apply directly.
 
----
+* * *
 
 ### Pattern 1: Identify Extraction Opportunities
 
@@ -371,21 +471,26 @@ theorem main_result ... := by
 
 **Action:** Extract to `private lemma preliminary_bound ...`
 
-**Why:** Preliminary fact has independent mathematical interest, makes main proof immediately visible, enables testing the preliminary calculation separately.
+**Why:** Preliminary fact has independent mathematical interest, makes main proof
+immediately visible, enables testing the preliminary calculation separately.
 
 #### 1.2. Domain Separation
 
-**Trigger:** Proof mixes independent mathematical domains (combinatorics + functional analysis, algebra + topology).
+**Trigger:** Proof mixes independent mathematical domains (combinatorics + functional
+analysis, algebra + topology).
 
-**Example:** 130-line proof mixing finite probability distributions (combinatorics) with L² bounds (functional analysis).
+**Example:** 130-line proof mixing finite probability distributions (combinatorics) with
+L² bounds (functional analysis).
 
-**Action:** Extract each domain's logic into separate helpers.
+**Action:** Extract each domain’s logic into separate helpers.
 
-**Why:** Each helper uses only tools from its domain, main theorem reads at correct abstraction level, helpers highly reusable.
+**Why:** Each helper uses only tools from its domain, main theorem reads at correct
+abstraction level, helpers highly reusable.
 
 #### 1.3. Repetitive Structure (lhs/rhs and Case Splits)
 
-**Trigger:** Nearly identical proofs for both sides of equation, symmetric arguments, or multiple cases with same structure.
+**Trigger:** Nearly identical proofs for both sides of equation, symmetric arguments, or
+multiple cases with same structure.
 
 **Basic pattern (literal repetition):**
 ```lean
@@ -402,7 +507,8 @@ have hQ : Property Q := by [14 lines, exact duplicate!]
 
 **Single large case split (even if not repeated):**
 
-Even a SINGLE 30+ line case split should be extracted if it proves a standalone mathematical fact.
+Even a SINGLE 30+ line case split should be extracted if it proves a standalone
+mathematical fact.
 
 **Trigger:** One large case analysis (30+ lines) that proves a reusable identity.
 
@@ -425,13 +531,19 @@ have h := prod_indicators_eq_indicator_intersection X k B
 ```
 
 **When to extract single case splits:** The case analysis proves a fact that:
+
 - Could be stated as a standalone lemma with clear mathematical meaning
-- Doesn't depend on specific context of the current proof
+
+- Doesn’t depend on specific context of the current proof
+
 - Would be reusable in other proofs
 
 **Advanced pattern (abstract structural repetition):**
 
-When the same case-split structure appears multiple times for slightly different goals, extract the shared structure. The key is recognizing that the *proof pattern* is the same even if the specific goals differ.
+When the same case-split structure appears multiple times for slightly different goals,
+extract the shared structure.
+The key is recognizing that the *proof pattern* is the same even if the specific goals
+differ.
 
 **Example: Same 4-case structure for different goals**
 ```lean
@@ -470,18 +582,32 @@ have h2 := indicator_mul_eq_indicator (f⁻¹'A) (g⁻¹'B) x
 ```
 
 **Why this works:**
+
 - The mathematical structure (4-case split on membership) is identical
+
 - Only the specific sets differ (A×B vs A∩B, direct sets vs preimages)
+
 - Helper captures the abstract pattern, works for any sets
+
 - Main theorem reads at higher level of abstraction
 
-**Recognition pattern:** If you find yourself writing the same `by_cases` structure multiple times with the same number of cases and similar reasoning in each case, even if the goals look different on the surface, there's likely an abstract pattern to extract.
+**Recognition pattern:** If you find yourself writing the same `by_cases` structure
+multiple times with the same number of cases and similar reasoning in each case, even if
+the goals look different on the surface, there’s likely an abstract pattern to extract.
 
 **Summary rules:**
-- **Literal repetition**: Copy-paste with only variable names changed (lhs/rhs, P/Q) → extract
-- **Single large case split**: 30+ line case analysis proving reusable fact → extract even if not repeated
-- **Abstract structural repetition**: Same case-split structure for different goals → extract abstract pattern
-- **Why:** Write logic once, changes apply automatically, helpers reusable, main proof reads at higher abstraction level
+
+- **Literal repetition**: Copy-paste with only variable names changed (lhs/rhs, P/Q) →
+  extract
+
+- **Single large case split**: 30+ line case analysis proving reusable fact → extract
+  even if not repeated
+
+- **Abstract structural repetition**: Same case-split structure for different goals →
+  extract abstract pattern
+
+- **Why:** Write logic once, changes apply automatically, helpers reusable, main proof
+  reads at higher abstraction level
 
 #### 1.4. Witness Extraction
 
@@ -495,7 +621,8 @@ choose T hTmeas hspre using this
 
 **Action:** Extract `obtain ⟨T, hTmeas, hspre⟩ := witnesses_helper ...`
 
-**Why:** Clear input/output contract (hypotheses → witnesses), helper testable independently, construction logic reusable.
+**Why:** Clear input/output contract (hypotheses → witnesses), helper testable
+independently, construction logic reusable.
 
 #### 1.5. Property Bundling
 
@@ -511,7 +638,8 @@ exact final_lemma h1 h2 h3  -- Always used together
 
 **Action:** Bundle with `∧`, extract `obtain ⟨h1, h2, h3⟩ := bundle_properties x`
 
-**When to bundle:** Properties share hypotheses, always proven together, conceptually related.
+**When to bundle:** Properties share hypotheses, always proven together, conceptually
+related.
 
 **When NOT:** Different hypotheses, sometimes used independently.
 
@@ -520,15 +648,18 @@ exact final_lemma h1 h2 h3  -- Always used together
 **Trigger:** Same 5-10 line conversion between notations repeated multiple times.
 
 **Common conversions:**
+
 - Set builder ↔ pi notation: `{x | ∀ i, x i ∈ s i}` ↔ `Set.univ.pi s`
+
 - Measure ↔ integral: `μ s` ↔ `∫⁻ x, s.indicator 1 ∂μ`
+
 - Preimage ↔ set comprehension
 
 **Action:** Extract conversion helper with clear purpose.
 
 **Why:** Conversion written once, main proof focuses on mathematics not notation.
 
----
+* * *
 
 ### Pattern 2: Design Reusable Helpers
 
@@ -539,10 +670,14 @@ exact final_lemma h1 h2 h3  -- Always used together
 **Principle:** Remove proof-specific constraints when extracting.
 
 **Techniques:**
+
 1. **Relax equality to inequality:** `n = 42` → `1 ≤ n`
+
 2. **Remove specific values:** Use parameters instead of constants
-3. **Weaken hypotheses:** Use only what's needed in proof
-4. **Broaden types:** `Fin 10` → `Fin n` if bound doesn't matter
+
+3. **Weaken hypotheses:** Use only what’s needed in proof
+
+4. **Broaden types:** `Fin 10` → `Fin n` if bound doesn’t matter
 
 **Example:**
 ```lean
@@ -553,45 +688,57 @@ private lemma helper (n : ℕ) (hn : n = 42) : Property n
 private lemma helper (n : ℕ) (hn : 1 ≤ n) : Property n
 ```
 
-**Balance:** Don't over-generalize to 10+ parameters.
+**Balance:** Don’t over-generalize to 10+ parameters.
 
 #### 2.2. Isolate Hypothesis Usage
 
 **Principle:** Extract helpers with minimal assumptions for maximum reusability.
 
-**Example:** In a proof using surjectivity, only ONE helper needs it - others work without.
+**Example:** In a proof using surjectivity, only ONE helper needs it - others work
+without.
 
 **Practice:**
+
 - Extract helper with minimal assumptions first
+
 - Build specialized helpers on top
+
 - Creates reusability hierarchy
 
 #### 2.3. Avoid Let Bindings in Helper Signatures
 
-**Problem:** Let bindings create definitional inequality - helper's `let proj` ≠ main's `let proj` even if syntactically identical.
+**Problem:** Let bindings create definitional inequality - helper’s `let proj` ≠ main’s
+`let proj` even if syntactically identical.
 
 **Solutions:**
+
 - **Option A:** Explicit parameters with equality proofs
   ```lean
   private lemma helper (μX : Measure α) (hμX : μX = pathLaw μ X) ...
   -- Call site: helper μX rfl  -- ✓ Unifies perfectly
   ```
+
 - **Option B:** Inline the proof (for measure theory manipulations)
 
-**Why:** Definitional inequality causes rewrite failures even with identical-looking expressions.
+**Why:** Definitional inequality causes rewrite failures even with identical-looking
+expressions.
 
-#### 2.4. "All Equal, Pick One" Pattern
+#### 2.4. “All Equal, Pick One” Pattern
 
-**Pattern:** "All things are equal, so pick one canonical representative."
+**Pattern:** “All things are equal, so pick one canonical representative.”
 
 **Structure:**
+
 1. **Mathematical content** (all candidates equal) → Extract to helper
+
 2. **Proof engineering** (choice of which to use) → Keep in main
+
 3. Use equality from helper → Main proof
 
-**Why separate:** Equality proof has mathematical content worth reusing. Choice is arbitrary proof engineering.
+**Why separate:** Equality proof has mathematical content worth reusing.
+Choice is arbitrary proof engineering.
 
----
+* * *
 
 ### Pattern 3: Lean-Specific Conventions
 
@@ -611,7 +758,8 @@ private lemma helper ...
 private lemma helper ...
 ```
 
-**Why:** Doc comments are for public API. Private declarations don't appear in generated docs.
+**Why:** Doc comments are for public API. Private declarations don’t appear in generated
+docs.
 
 #### 3.2. Unused Parameters Need Underscore
 
@@ -622,13 +770,15 @@ private lemma helper ...
 ∀ n (S : Set (Fin n → α)) (_hS : MeasurableSet S), ...
 ```
 
-**Why:** Signals "intentionally unused" to linter. Parameter required in signature but proof doesn't explicitly reference it.
+**Why:** Signals “intentionally unused” to linter.
+Parameter required in signature but proof doesn’t explicitly reference it.
 
 #### 3.3. Omega Limitations
 
 **Problem:** `omega` fails on arithmetic goals that seem obvious.
 
-**Solution:** Provide intermediate steps with `calc` or explicit equalities as hypotheses.
+**Solution:** Provide intermediate steps with `calc` or explicit equalities as
+hypotheses.
 
 **Example:**
 ```lean
@@ -643,11 +793,13 @@ have (h_last_eq : last.val + 1 = m) : m ≤ k last + 1 := by
 
 #### 3.4. Measure Theory Requires Exact Alignment
 
-**Problem:** Measure theory lemmas sensitive to definitional equality. `Measure.map` compositions must align exactly.
+**Problem:** Measure theory lemmas sensitive to definitional equality.
+`Measure.map` compositions must align exactly.
 
-**Solution:** For measure manipulations with `let` bindings, prefer inlining over extraction (definitional inequality issues).
+**Solution:** For measure manipulations with `let` bindings, prefer inlining over
+extraction (definitional inequality issues).
 
----
+* * *
 
 ### Pattern 4: Structure the Main Proof
 
@@ -655,7 +807,9 @@ have (h_last_eq : last.val + 1 = m) : m ≤ k last + 1 := by
 
 #### 4.1. Named Steps with Comments
 
-**Pattern:** Use semantically meaningful names for intermediate results. Only use generic names like `step1`, `step2` when there's no better alternative and the results are private to this proof.
+**Pattern:** Use semantically meaningful names for intermediate results.
+Only use generic names like `step1`, `step2` when there’s no better alternative and the
+results are private to this proof.
 
 **Prefer meaningful names:**
 ```lean
@@ -670,7 +824,7 @@ theorem main_result ... := by
   calc ...
 ```
 
-**When meaningful names aren't obvious, use generic sequence:**
+**When meaningful names aren’t obvious, use generic sequence:**
 ```lean
 theorem main_result ... := by
   -- Step 1: E(∑cᵢξᵢ)² = E(∑cᵢ(ξᵢ-m))² using ∑cⱼ = 0
@@ -684,18 +838,27 @@ theorem main_result ... := by
 ```
 
 **Use `step1`, `step2` only when:**
+
 - Results are private to this proof (not extracted as helpers)
+
 - Used sequentially in a linear chain
+
 - No clear mathematical names suggest themselves
+
 - Proof is exploratory and may be refactored later
 
-**Benefits:** Meaningful names aid comprehension, generic names show sequencing. Reads like textbook proof either way, mathematical narrative clear, easy to locate issues.
+**Benefits:** Meaningful names aid comprehension, generic names show sequencing.
+Reads like textbook proof either way, mathematical narrative clear, easy to locate
+issues.
 
-#### 4.2. Structural Comments Explain "Why"
+#### 4.2. Structural Comments Explain “Why”
 
 **Good comments:**
+
 - Explain mathematical goal (not Lean syntax)
+
 - Highlight where key hypotheses are used
+
 - Make proof understandable from comments alone
 
 **Examples:**
@@ -707,7 +870,7 @@ theorem main_result ... := by
 -- Choose the witnesses Tᵢ along with measurability
 ```
 
----
+* * *
 
 ### Pattern 5: Safe Refactoring Workflow
 
@@ -729,7 +892,8 @@ lean_goal(file_path, line)
 lake env lean FILE.lean  # After each extraction (run from project root)
 ```
 
-**Why:** Errors compound. One error at a time is faster than five mixed together.
+**Why:** Errors compound.
+One error at a time is faster than five mixed together.
 
 #### 5.2. Examine Goal States at Key Points
 
@@ -744,30 +908,42 @@ lean_goal(file, line=155)  # Near end
 ```
 
 **What to look for:**
+
 - Clean, self-contained intermediate goals
+
 - Natural mathematical milestones
+
 - Points where context significantly changes
+
 - Repetitive structure (same pattern for lhs/rhs)
 
 #### 5.3. One Helper at a Time
 
 **Workflow:**
+
 1. Extract one helper
+
 2. Verify with `lean_diagnostic_messages`
+
 3. Update main theorem
+
 4. Verify again
+
 5. Commit if successful
+
 6. Repeat
 
-**Don't:** Make multiple changes then check - errors compound!
+**Don’t:** Make multiple changes then check - errors compound!
 
 #### 5.4. LSP Works Even When Build Fails
 
-**Observation:** `lean_diagnostic_messages` works even when `lake build` fails due to dependency issues.
+**Observation:** `lean_diagnostic_messages` works even when `lake build` fails due to
+dependency issues.
 
-**Why useful:** Verify refactoring locally using LSP at file/module level, don't wait for full project build.
+**Why useful:** Verify refactoring locally using LSP at file/module level, don’t wait
+for full project build.
 
----
+* * *
 
 ### Pattern 6: Document Helpers
 
@@ -782,7 +958,7 @@ In mathematical terms, what does this lemma establish?
 private lemma strictMono_length_le_max_succ ...
 ```
 
-#### 6.2. Why It's True
+#### 6.2. Why It’s True
 
 Key insight or technique used.
 
@@ -790,7 +966,7 @@ Key insight or technique used.
 -- This uses the fact that strictly monotone functions satisfy i ≤ k(i) for all i
 ```
 
-#### 6.3. How It's Used
+#### 6.3. How It’s Used
 
 If not obvious from context.
 
@@ -809,59 +985,84 @@ This uses the fact that strictly monotone functions satisfy `i ≤ k(i)` for all
 private lemma strictMono_length_le_max_succ ...
 ```
 
----
-
+* * *
 
 ## Benefits of Refactoring
 
 **Maintainability:**
+
 - Easier to understand small proofs
+
 - Easier to modify without breaking
+
 - Clear dependencies between lemmas
 
 **Reusability:**
+
 - Helper lemmas useful in other contexts
+
 - Avoid reproving same intermediate results
+
 - Build library of project-specific lemmas
 
 **Testing:**
+
 - Test helpers independently
+
 - Isolate errors to specific lemmas
+
 - Faster compilation (smaller units)
 
 **Collaboration:**
+
 - Easier to review small lemmas
+
 - Clear boundaries for parallel work
+
 - Better documentation opportunities
 
----
+* * *
 
 ## Anti-Patterns
 
 **❌ Over-refactoring:**
+
 - Creating helpers used only once
+
 - Extracting every `have` statement
+
 - Too many small lemmas (harder to navigate)
 
 **❌ Under-refactoring:**
+
 - 500+ line proofs
+
 - Multiple independent results in one theorem
+
 - Repeated code instead of shared helpers
 
 **❌ Poor parameter choices:**
+
 - Extracting with 15+ parameters
+
 - Including unnecessary generality
+
 - Making helpers too specific to one use case
 
 **✅ Good balance:**
+
 - Extract when reusable or conceptually distinct
+
 - Aim for 20-80 line helpers
+
 - Parameters capture essential dependencies only
 
----
+* * *
 
 ## See Also
 
 - [lean-lsp-tools-api.md](lean-lsp-tools-api.md) - LSP tools for goal inspection
+
 - [proof-golfing.md](proof-golfing.md) - Simplifying proofs after compilation
+
 - [mathlib-style.md](mathlib-style.md) - Naming conventions

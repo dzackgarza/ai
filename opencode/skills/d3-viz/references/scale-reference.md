@@ -22,15 +22,23 @@ scale.invert(250); // Returns 50
 ```
 
 **Use cases:**
+
 - Most common scale for quantitative data
+
 - Axes, bar lengths, position encoding
+
 - Temperature, prices, counts, measurements
 
 **Methods:**
+
 - `.domain([min, max])` - Set input domain
+
 - `.range([min, max])` - Set output range
+
 - `.invert(value)` - Get domain value from range value
+
 - `.clamp(true)` - Restrict output to range bounds
+
 - `.nice()` - Extend domain to nice round values
 
 ### Power scale
@@ -55,8 +63,11 @@ const sqrtScale2 = d3.scaleSqrt()
 ```
 
 **Use cases:**
+
 - Perceptual scaling (human perception is non-linear)
+
 - Area encoding (use square root to map values to circle radii)
+
 - Emphasising differences in small or large values
 
 ### Logarithmic scale
@@ -75,9 +86,13 @@ logScale(1000); // Returns 500
 ```
 
 **Use cases:**
+
 - Data spanning multiple orders of magnitude
+
 - Population, GDP, wealth distributions
+
 - Logarithmic axes
+
 - Exponential growth visualisations
 
 **Important:** Domain values must be strictly positive (>0).
@@ -98,14 +113,21 @@ timeScale.invert(400); // Returns Date object for mid-2022
 ```
 
 **Use cases:**
+
 - Time series visualisations
+
 - Timeline axes
+
 - Temporal animations
+
 - Date-based interactions
 
 **Methods:**
+
 - `.nice()` - Extend domain to nice time intervals
+
 - `.ticks(count)` - Generate nicely-spaced tick values
+
 - All linear scale methods apply
 
 ### Quantize scale
@@ -126,9 +148,13 @@ quantizeScale.thresholds(); // Returns [33.33, 66.67]
 ```
 
 **Use cases:**
+
 - Binning continuous data
+
 - Heat map colours
+
 - Risk categories (low/medium/high)
+
 - Age groups, income brackets
 
 ### Quantile scale
@@ -145,8 +171,11 @@ quantileScale.quantiles(); // Returns quantile thresholds
 ```
 
 **Use cases:**
+
 - Equal-size groups regardless of distribution
+
 - Percentile-based categorisation
+
 - Handling skewed distributions
 
 ### Threshold scale
@@ -165,9 +194,13 @@ thresholdScale(25);  // Returns 'hot'
 ```
 
 **Use cases:**
+
 - Custom breakpoints
+
 - Grade boundaries (A, B, C, D, F)
+
 - Temperature categories
+
 - Air quality indices
 
 ## Sequential scales
@@ -188,17 +221,25 @@ colourScale(100); // Returns darkest blue
 **Available interpolators:**
 
 **Single hue:**
+
 - `d3.interpolateBlues`, `d3.interpolateGreens`, `d3.interpolateReds`
+
 - `d3.interpolateOranges`, `d3.interpolatePurples`, `d3.interpolateGreys`
 
 **Multi-hue:**
+
 - `d3.interpolateViridis`, `d3.interpolateInferno`, `d3.interpolateMagma`
+
 - `d3.interpolatePlasma`, `d3.interpolateWarm`, `d3.interpolateCool`
+
 - `d3.interpolateCubehelixDefault`, `d3.interpolateTurbo`
 
 **Use cases:**
+
 - Heat maps, choropleth maps
+
 - Continuous data visualisation
+
 - Temperature, elevation, density
 
 ### Diverging colour scale
@@ -215,20 +256,33 @@ divergingScale(10);  // Returns blue
 ```
 
 **Available interpolators:**
+
 - `d3.interpolateRdBu` - Red to blue
+
 - `d3.interpolateRdYlBu` - Red, yellow, blue
+
 - `d3.interpolateRdYlGn` - Red, yellow, green
+
 - `d3.interpolatePiYG` - Pink, yellow, green
+
 - `d3.interpolateBrBG` - Brown, blue-green
+
 - `d3.interpolatePRGn` - Purple, green
+
 - `d3.interpolatePuOr` - Purple, orange
+
 - `d3.interpolateRdGy` - Red, grey
+
 - `d3.interpolateSpectral` - Rainbow spectrum
 
 **Use cases:**
+
 - Data with meaningful midpoint (zero, average, neutral)
+
 - Positive/negative values
+
 - Above/below comparisons
+
 - Correlation matrices
 
 ### Sequential quantile scale
@@ -243,8 +297,11 @@ const sequentialQuantileScale = d3.scaleSequentialQuantile(d3.interpolateBlues)
 ```
 
 **Use cases:**
+
 - Perceptually uniform binning
+
 - Handling outliers
+
 - Skewed distributions
 
 ## Ordinal scales
@@ -268,15 +325,23 @@ bandScale.paddingOuter(); // Returns outer padding (at edges)
 ```
 
 **Use cases:**
+
 - Bar charts (most common use case)
+
 - Grouped elements
+
 - Categorical axes
+
 - Heat map cells
 
 **Padding options:**
+
 - `.padding(value)` - Sets both inner and outer padding (0-1)
+
 - `.paddingInner(value)` - Padding between bands (0-1)
+
 - `.paddingOuter(value)` - Padding at edges (0-1)
+
 - `.align(value)` - Alignment of bands (0-1, default 0.5)
 
 ### Point scale
@@ -297,9 +362,13 @@ pointScale.step(); // Returns distance between points
 ```
 
 **Use cases:**
+
 - Line chart categorical x-axis
+
 - Scatter plot with categorical axis
+
 - Node positions in network graphs
+
 - Any point positioning for categories
 
 ### Ordinal colour scale
@@ -322,21 +391,35 @@ const customScale = d3.scaleOrdinal()
 **Built-in colour schemes:**
 
 **Categorical:**
+
 - `d3.schemeCategory10` - 10 colours
+
 - `d3.schemeAccent` - 8 colours
+
 - `d3.schemeDark2` - 8 colours
+
 - `d3.schemePaired` - 12 colours
+
 - `d3.schemePastel1` - 9 colours
+
 - `d3.schemePastel2` - 8 colours
+
 - `d3.schemeSet1` - 9 colours
+
 - `d3.schemeSet2` - 8 colours
+
 - `d3.schemeSet3` - 12 colours
+
 - `d3.schemeTableau10` - 10 colours
 
 **Use cases:**
+
 - Category colours
+
 - Legend items
+
 - Multi-series charts
+
 - Network node types
 
 ## Scale utilities
@@ -484,14 +567,14 @@ circle.attr("r", d => radiusScale(d.value));
 function createAdaptiveScale(data) {
   const extent = d3.extent(data);
   const range = extent[1] - extent[0];
-  
+
   // Use log scale if data spans >2 orders of magnitude
   if (extent[1] / extent[0] > 100) {
     return d3.scaleLog()
       .domain(extent)
       .range([0, width]);
   }
-  
+
   // Otherwise use linear
   return d3.scaleLinear()
     .domain(extent)

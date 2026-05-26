@@ -9,15 +9,15 @@ metadata:
     tags: [Research, Arxiv, Papers, Academic, Science, API]
     related_skills: [ocr-and-documents]
 ---
-
 # arXiv Research
 
-Search and retrieve academic papers from arXiv via their free REST API. No API key, no dependencies — just curl.
+Search and retrieve academic papers from arXiv via their free REST API. No API key, no
+dependencies — just curl.
 
 ## Quick Reference
 
 | Action | Command |
-|--------|---------|
+| --- | --- |
 | Search papers | `curl "https://export.arxiv.org/api/query?search_query=all:QUERY&max_results=5"` |
 | Get specific paper | `curl "https://export.arxiv.org/api/query?id_list=2402.03300"` |
 | Read abstract (web) | `web_extract(urls=["https://arxiv.org/abs/2402.03300"])` |
@@ -25,7 +25,8 @@ Search and retrieve academic papers from arXiv via their free REST API. No API k
 
 ## Searching Papers
 
-The API returns Atom XML. Parse with `grep`/`sed` or pipe through `python3` for clean output.
+The API returns Atom XML. Parse with `grep`/`sed` or pipe through `python3` for clean
+output.
 
 ### Basic search
 
@@ -59,7 +60,7 @@ for i, entry in enumerate(root.findall('a:entry', ns)):
 ## Search Query Syntax
 
 | Prefix | Searches | Example |
-|--------|----------|---------|
+| --- | --- | --- |
 | `all:` | All fields | `all:transformer+attention` |
 | `ti:` | Title | `ti:large+language+models` |
 | `au:` | Author | `au:vaswani` |
@@ -89,7 +90,7 @@ search_query=au:hinton+AND+cat:cs.LG
 ## Sort and Pagination
 
 | Parameter | Options |
-|-----------|---------|
+| --- | --- |
 | `sortBy` | `relevance`, `lastUpdatedDate`, `submittedDate` |
 | `sortOrder` | `ascending`, `descending` |
 | `start` | Result offset (0-based) |
@@ -159,7 +160,7 @@ For local PDF processing, see the `ocr-and-documents` skill.
 ## Common Categories
 
 | Category | Field |
-|----------|-------|
+| --- | --- |
 | `cs.AI` | Artificial Intelligence |
 | `cs.CL` | Computation and Language (NLP) |
 | `cs.CV` | Computer Vision |
@@ -186,11 +187,13 @@ python scripts/search_arxiv.py --id 2402.03300,2401.12345
 
 No dependencies — uses only Python stdlib.
 
----
+* * *
 
 ## Semantic Scholar (Citations, Related Papers, Author Profiles)
 
-arXiv doesn't provide citation data or recommendations. Use the **Semantic Scholar API** for that — free, no key needed for basic use (1 req/sec), returns JSON.
+arXiv doesn’t provide citation data or recommendations.
+Use the **Semantic Scholar API** for that — free, no key needed for basic use (1
+req/sec), returns JSON.
 
 ### Get paper details + citations
 
@@ -222,12 +225,16 @@ curl -s "https://api.semanticscholar.org/graph/v1/paper/search?query=GRPO+reinfo
 
 ## Mathematics Literature Routing
 
-For mathematics papers, arXiv is only one source. Use it together with the
-`literature-review` skill's multi-source search and Zotero/PDF workflows:
+For mathematics papers, arXiv is only one source.
+Use it together with the `literature-review` skill’s multi-source search and Zotero/PDF
+workflows:
 
 - arXiv for preprints and TeX/PDF identifiers,
+
 - Semantic Scholar/OpenAlex/Crossref for citation and DOI metadata,
+
 - Zotero for local library identity and attachments,
+
 - `~/pdfs` and `~/pdf-extraction` for stored PDFs and extraction artifacts.
 
 The canonical workflow is documented in
@@ -249,46 +256,72 @@ curl -s "https://api.semanticscholar.org/graph/v1/author/search?query=Yann+LeCun
 
 ### Useful Semantic Scholar fields
 
-`title`, `authors`, `year`, `abstract`, `citationCount`, `referenceCount`, `influentialCitationCount`, `isOpenAccess`, `openAccessPdf`, `fieldsOfStudy`, `publicationVenue`, `externalIds` (contains arXiv ID, DOI, etc.)
+`title`, `authors`, `year`, `abstract`, `citationCount`, `referenceCount`,
+`influentialCitationCount`, `isOpenAccess`, `openAccessPdf`, `fieldsOfStudy`,
+`publicationVenue`, `externalIds` (contains arXiv ID, DOI, etc.)
 
----
+* * *
 
 ## Complete Research Workflow
 
 1. **Discover**: `python scripts/search_arxiv.py "your topic" --sort date --max 10`
-2. **Assess impact**: `curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:ID?fields=citationCount,influentialCitationCount"`
+
+2. **Assess impact**:
+   `curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:ID?fields=citationCount,influentialCitationCount"`
+
 3. **Read abstract**: `web_extract(urls=["https://arxiv.org/abs/ID"])`
+
 4. **Read full paper**: `web_extract(urls=["https://arxiv.org/pdf/ID"])`
-5. **Find related work**: `curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:ID/references?fields=title,citationCount&limit=20"`
+
+5. **Find related work**:
+   `curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:ID/references?fields=title,citationCount&limit=20"`
+
 6. **Get recommendations**: POST to Semantic Scholar recommendations endpoint
-7. **Track authors**: `curl -s "https://api.semanticscholar.org/graph/v1/author/search?query=NAME"`
+
+7. **Track authors**:
+   `curl -s "https://api.semanticscholar.org/graph/v1/author/search?query=NAME"`
 
 ## Rate Limits
 
 | API | Rate | Auth |
-|-----|------|------|
+| --- | --- | --- |
 | arXiv | ~1 req / 3 seconds | None needed |
 | Semantic Scholar | 1 req / second | None (100/sec with API key) |
 
 ## Notes
 
 - arXiv returns Atom XML — use the helper script or parsing snippet for clean output
+
 - Semantic Scholar returns JSON — pipe through `python3 -m json.tool` for readability
+
 - arXiv IDs: old format (`hep-th/0601001`) vs new (`2402.03300`)
+
 - PDF: `https://arxiv.org/pdf/{id}` — Abstract: `https://arxiv.org/abs/{id}`
+
 - HTML (when available): `https://arxiv.org/html/{id}`
+
 - For local PDF processing, see the `ocr-and-documents` skill
 
 ## ID Versioning
 
 - `arxiv.org/abs/1706.03762` always resolves to the **latest** version
+
 - `arxiv.org/abs/1706.03762v1` points to a **specific** immutable version
-- When generating citations, preserve the version suffix you actually read to prevent citation drift (a later version may substantially change content)
-- The API `<id>` field returns the versioned URL (e.g., `http://arxiv.org/abs/1706.03762v7`)
+
+- When generating citations, preserve the version suffix you actually read to prevent
+  citation drift (a later version may substantially change content)
+
+- The API `<id>` field returns the versioned URL (e.g.,
+  `http://arxiv.org/abs/1706.03762v7`)
 
 ## Withdrawn Papers
 
-Papers can be withdrawn after submission. When this happens:
-- The `<summary>` field contains a withdrawal notice (look for "withdrawn" or "retracted")
+Papers can be withdrawn after submission.
+When this happens:
+
+- The `<summary>` field contains a withdrawal notice (look for “withdrawn” or
+  “retracted”)
+
 - Metadata fields may be incomplete
+
 - Always check the summary before treating a result as a valid paper

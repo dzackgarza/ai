@@ -5,9 +5,13 @@ Source anchors: section 4, subsections 4.1-4.6.7 (approx lines 939-1238).
 ## Incrementality and Scope
 
 Tutorial workflow:
+
 - add baseline assertions,
+
 - call `check()`,
+
 - add temporary assumptions under `push()` scope,
+
 - `pop()` to retract local additions.
 
 ```python
@@ -28,7 +32,9 @@ print(s.check())
 ## Assumptions API
 
 Alternative to scopes for one-off checks:
+
 - `s.check(lit1, lit2, ...)`
+
 - `assert_and_track(formula, tracker_literal)`
 
 ```python
@@ -59,7 +65,9 @@ if s.check() == unsat:
 ```
 
 Important tutorial constraints:
+
 - `unsat_core()` valid only after `check()` returned `unsat`.
+
 - core minimization is optional (`sat.core.minimize`, `smt.core.minimize`).
 
 ## Models and Evaluation
@@ -82,19 +90,29 @@ if s.check() == sat:
 ```
 
 Interpretation notes from tutorial:
+
 - constants map to values;
+
 - functions map to finite entries + default `else` interpretation.
 
 ## Other Solver Methods Worth Keeping Handy
 
 From tutorial section 4.6:
+
 - `s.statistics()` - search/procedure counters
+
 - `s.proof()` (requires `produce-proofs`)
+
 - `s.assertions()`, `s.units()`, `s.non_units()`
+
 - `s.sexpr()` - SMT-LIB dump of solver state
+
 - `s.translate(ctx)` - clone solver state into new context
+
 - `s.from_file(...)`, `s.from_string(...)`
+
 - `s.consequences(assumptions, candidates)`
+
 - `s.cube()` for cube-and-conquer style case splits
 
 ## Consequences / Backbone Pattern
@@ -111,15 +129,21 @@ print(s.consequences([a, c], [b, c, d]))
 ## Cubing Pattern
 
 Tutorial presents recursive cube-and-conquer style usage; practical notes:
+
 - empty cube can indicate unsupported cubing or resource limits,
+
 - SAT/SMT core support cubing; generic tactic-based solvers may not.
 
 ## Interface Checklist
 
 Before heavy loops:
+
 - decide if assumptions or push/pop is cleaner;
+
 - decide whether core extraction is required;
+
 - decide if context cloning (`translate`) is needed for parallel search.
 
 During diagnosis:
+
 - inspect `statistics()` and `sexpr()` before changing encoding.

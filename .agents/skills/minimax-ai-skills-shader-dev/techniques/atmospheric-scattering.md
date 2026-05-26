@@ -1,28 +1,38 @@
 # Atmospheric & Subsurface Scattering
 
 ## Use Cases
+
 - Sky rendering (sunrise/sunset/noon/night)
+
 - Aerial perspective
+
 - Sun halo (Mie scattering haze)
+
 - Planetary atmosphere rim glow
+
 - Translucent material SSS (candles, skin, jelly)
+
 - Volumetric light (God rays)
 
 ## Core Principles
 
 Three physical mechanisms:
 
-**Rayleigh scattering** — molecular-scale particles, β_R(λ) ∝ 1/λ⁴, shorter wavelengths scatter more strongly (blue sky / red sunset).
-Sea-level values: `vec3(5.5e-6, 13.0e-6, 22.4e-6)` m⁻¹.
-Phase function: `P_R(θ) = 3/(16π) × (1 + cos²θ)`, symmetric forward-backward.
+**Rayleigh scattering** — molecular-scale particles, β_R(λ) ∝ 1/λ⁴, shorter wavelengths
+scatter more strongly (blue sky / red sunset).
+Sea-level values: `vec3(5.5e-6, 13.0e-6, 22.4e-6)` m⁻¹. Phase function:
+`P_R(θ) = 3/(16π) × (1 + cos²θ)`, symmetric forward-backward.
 
-**Mie scattering** — aerosol particles, wavelength-independent, strong forward scattering (sun halo).
-Sea-level value: `vec3(21e-6)` m⁻¹.
-Phase function: Henyey-Greenstein, `g ≈ 0.76~0.88`.
+**Mie scattering** — aerosol particles, wavelength-independent, strong forward
+scattering (sun halo).
+Sea-level value: `vec3(21e-6)` m⁻¹. Phase function: Henyey-Greenstein, `g ≈ 0.76~0.88`.
 
-**Beer-Lambert attenuation** — `T(A→B) = exp(-∫ σ_e(s) ds)`, exponential decay of light through a medium.
+**Beer-Lambert attenuation** — `T(A→B) = exp(-∫ σ_e(s) ds)`, exponential decay of light
+through a medium.
 
-**Algorithm flow**: ray march along the view ray; at each sample point: compute density → compute optical depth toward the sun → Beer-Lambert attenuation → phase function weighting → accumulate.
+**Algorithm flow**: ray march along the view ray; at each sample point: compute density
+→ compute optical depth toward the sun → Beer-Lambert attenuation → phase function
+weighting → accumulate.
 
 ## Implementation Steps
 
@@ -347,9 +357,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ## Advanced Fog Models
 
-Three progressive fog techniques, from simple to physically motivated. These can be used standalone or combined with the full atmospheric scattering above.
+Three progressive fog techniques, from simple to physically motivated.
+These can be used standalone or combined with the full atmospheric scattering above.
 
 ### Level 1: Basic Exponential Fog
+
 ```glsl
 vec3 applyFog(vec3 col, float t) {
     float fogAmount = 1.0 - exp(-t * density);
@@ -359,7 +371,9 @@ vec3 applyFog(vec3 col, float t) {
 ```
 
 ### Level 2: Sun-Aware Fog (Scattering Tint)
-Fog color shifts warm when looking toward the sun — creates a very natural light dispersion effect:
+
+Fog color shifts warm when looking toward the sun — creates a very natural light
+dispersion effect:
 ```glsl
 vec3 applyFogSun(vec3 col, float t, vec3 rd, vec3 sunDir) {
     float fogAmount = 1.0 - exp(-t * density);
@@ -374,7 +388,10 @@ vec3 applyFogSun(vec3 col, float t, vec3 rd, vec3 sunDir) {
 ```
 
 ### Level 3: Height-Based Fog (Analytical Integration)
-Density decreases exponentially with altitude: `d(y) = a * exp(-b * y)`. The formula is an exact analytical integral along the ray, not an approximation — fog pools in valleys and clears at altitude:
+
+Density decreases exponentially with altitude: `d(y) = a * exp(-b * y)`. The formula is
+an exact analytical integral along the ray, not an approximation — fog pools in valleys
+and clears at altitude:
 ```glsl
 vec3 applyFogHeight(vec3 col, float t, vec3 ro, vec3 rd) {
     float a = 0.5;    // density multiplier
@@ -387,7 +404,9 @@ vec3 applyFogHeight(vec3 col, float t, vec3 ro, vec3 rd) {
 ```
 
 ### Level 4: Extinction + Inscattering Separation
-Independent RGB coefficients for absorption and scattering — allows chromatic fog effects where different wavelengths scatter differently:
+
+Independent RGB coefficients for absorption and scattering — allows chromatic fog
+effects where different wavelengths scatter differently:
 ```glsl
 vec3 applyFogPhysical(vec3 col, float t, vec3 fogCol) {
     vec3 be = vec3(0.02, 0.025, 0.03);   // extinction coefficients (RGB)
@@ -434,11 +453,14 @@ vec3 getAtmosphericScattering(vec2 screenPos, vec2 lightPos) {
 
 ### Variant 2: Ozone Absorption Layer
 
-Already integrated in the complete template. Set `BETA_OZONE` to a non-zero value to enable, producing a deeper blue zenith and purple tones at sunset.
+Already integrated in the complete template.
+Set `BETA_OZONE` to a non-zero value to enable, producing a deeper blue zenith and
+purple tones at sunset.
 
 ### Variant 3: Subsurface Scattering (SSS)
 
-For translucent materials (candles/skin/jelly), using SDF-estimated thickness to control light transmission.
+For translucent materials (candles/skin/jelly), using SDF-estimated thickness to control
+light transmission.
 
 ```glsl
 float subsurface(vec3 p, vec3 viewDir, vec3 normal) {
@@ -461,7 +483,8 @@ float subsurface(vec3 p, vec3 viewDir, vec3 normal) {
 
 ### Variant 4: LUT Precomputation Pipeline (Production Grade)
 
-Precompute Transmittance/Multiple Scattering/Sky-View into LUTs, only table lookups at runtime.
+Precompute Transmittance/Multiple Scattering/Sky-View into LUTs, only table lookups at
+runtime.
 
 ```glsl
 // Transmittance LUT query (Hillaire 2020)
@@ -480,7 +503,8 @@ vec3 getValFromTLUT(sampler2D tex, vec2 bufferRes, vec3 pos, vec3 sunDir) {
 
 ### Variant 5: Analytic Fast Atmosphere (with Aerial Perspective)
 
-Analytic exponential approximation replacing ray march, with distance attenuation support.
+Analytic exponential approximation replacing ray march, with distance attenuation
+support.
 
 ```glsl
 void getRayleighMie(float opticalDepth, float densityR, float densityM, out vec3 R, out vec3 M) {
@@ -505,18 +529,35 @@ vec3 getLightTransmittance(vec3 lightDir) {
 ## Performance & Composition
 
 ### Performance Tips
-- **Nested ray march (O(N*M))**: reduce step counts (mobile: PRIMARY=12, LIGHT=4), use analytic approximation instead of light march, precompute Transmittance LUT
-- **Dense exp()/pow()**: Schlick approximation replacing HG phase function — `k = 1.55*g - 0.55*g³; phase = (1-k²) / (4π*(1+k*cosθ)²)`
-- **Full-screen per-pixel**: Sky-View LUT (200x200) table lookup, half-resolution rendering + bilinear upsampling
+
+- **Nested ray march (O(N*M))**: reduce step counts (mobile: PRIMARY=12, LIGHT=4), use
+  analytic approximation instead of light march, precompute Transmittance LUT
+
+- **Dense exp()/pow()**: Schlick approximation replacing HG phase function —
+  `k = 1.55*g - 0.55*g³; phase = (1-k²) / (4π*(1+k*cosθ)²)`
+
+- **Full-screen per-pixel**: Sky-View LUT (200x200) table lookup, half-resolution
+  rendering + bilinear upsampling
+
 - **Banding dithering**: non-uniform step offset of 0.3, temporal blue noise dithering
 
 ### Composition Tips
-- **+ Volumetric clouds**: atmospheric transmittance determines sun color reaching the cloud layer, set `maxDist` to cloud distance
-- **+ SDF scene**: SDF hit distance → `maxDist`, scene color → `sceneColor`, automatic aerial perspective
-- **+ God Rays**: add occlusion to scattering integration (shadow map or additional ray march)
+
+- **+ Volumetric clouds**: atmospheric transmittance determines sun color reaching the
+  cloud layer, set `maxDist` to cloud distance
+
+- **+ SDF scene**: SDF hit distance → `maxDist`, scene color → `sceneColor`, automatic
+  aerial perspective
+
+- **+ God Rays**: add occlusion to scattering integration (shadow map or additional ray
+  march)
+
 - **+ Terrain**: `finalColor = terrainColor * transmittance + inscattering`
-- **+ PBR/SSS**: `diffuse = mix(lambert, sss, 0.7); final = ambient + albedo*diffuse + specular + fresnel*env`
+
+- **+ PBR/SSS**:
+  `diffuse = mix(lambert, sss, 0.7); final = ambient + albedo*diffuse + specular + fresnel*env`
 
 ## Further Reading
 
-For full step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/atmospheric-scattering.md)
+For full step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/atmospheric-scattering.md)

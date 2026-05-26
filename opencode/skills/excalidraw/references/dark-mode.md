@@ -1,6 +1,8 @@
 # Excalidraw Dark Mode Diagrams
 
-To create a dark-themed diagram, use a massive dark background rectangle as the **first element** in the array. Make it large enough to cover any viewport:
+To create a dark-themed diagram, use a massive dark background rectangle as the **first
+element** in the array.
+Make it large enough to cover any viewport:
 
 ```json
 {
@@ -16,7 +18,7 @@ Then use the following color palettes for elements on the dark background.
 ## Text Colors (on dark)
 
 | Color | Hex | Use |
-|-------|-----|-----|
+| --- | --- | --- |
 | White | `#e5e5e5` | Primary text, titles |
 | Muted | `#a0a0a0` | Secondary text, annotations |
 | NEVER | `#555` or darker | Invisible on dark bg! |
@@ -24,7 +26,7 @@ Then use the following color palettes for elements on the dark background.
 ## Shape Fills (on dark)
 
 | Color | Hex | Good For |
-|-------|-----|----------|
+| --- | --- | --- |
 | Dark Blue | `#1e3a5f` | Primary nodes |
 | Dark Green | `#1a4d2e` | Success, output |
 | Dark Purple | `#2d1b69` | Processing, special |
@@ -34,14 +36,17 @@ Then use the following color palettes for elements on the dark background.
 
 ## Stroke and Arrow Colors (on dark)
 
-Use the standard Primary Colors from the main color palette -- they're bright enough on dark backgrounds:
+Use the standard Primary Colors from the main color palette -- they’re bright enough on
+dark backgrounds:
+
 - Blue `#4a9eed`, Amber `#f59e0b`, Green `#22c55e`, Red `#ef4444`, Purple `#8b5cf6`
 
 For subtle shape borders, use `#555555`.
 
 ## Example: Dark mode labeled rectangle
 
-Use container binding (NOT the `"label"` property, which doesn't work). On dark backgrounds, set text `strokeColor` to `"#e5e5e5"` so it's visible:
+Use container binding (NOT the `"label"` property, which doesn’t work).
+On dark backgrounds, set text `strokeColor` to `"#e5e5e5"` so it’s visible:
 
 ```json
 [
@@ -64,5 +69,6 @@ Use container binding (NOT the `"label"` property, which doesn't work). On dark 
 ]
 ```
 
-Note: For standalone text elements on dark backgrounds, always set `"strokeColor": "#e5e5e5"` explicitly. The default `#1e1e1e` is invisible on dark.
-
+Note: For standalone text elements on dark backgrounds, always set
+`"strokeColor": "#e5e5e5"` explicitly.
+The default `#1e1e1e` is invisible on dark.

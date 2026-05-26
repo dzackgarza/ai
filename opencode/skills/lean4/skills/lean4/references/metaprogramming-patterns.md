@@ -1,17 +1,24 @@
 # Metaprogramming Patterns
 
-> **Scope:** Not part of the prove/autoprove default loop. Consulted when building Lean 4 DSLs, macros, elaborators, or custom pretty-printing.
+> **Scope:** Not part of the prove/autoprove default loop.
+> Consulted when building Lean 4 DSLs, macros, elaborators, or custom pretty-printing.
 
 > **Version metadata:**
+>
 > - **Verified on:** Lean reference + release notes through `v4.27.0`
+>
 > - **Last validated:** 2026-02-17
+>
 > - **Confidence:** low (MetaM/TacticM APIs are drift-prone across toolchains)
 
 ## When to Use
 
 - Defining new syntax or a DSL
+
 - Validating DSL inputs with precise error spans
+
 - Needing type- or environment-aware parsing
+
 - Adding custom pretty-printing
 
 ## Decision Tree
@@ -28,15 +35,23 @@
 Think in small blocks you can reuse across DSLs:
 
 - `SyntaxCat` = syntax categories and terminals
+
 - `ValueParser` = parse literal or antiquotation to `term`
+
 - `Validator` = reject invalid literal values with precise spans
+
 - `Bridge` = build Lean terms from parsed pieces
+
 - `ElabBridge` = type-aware elaboration when needed
+
 - `PrettyBridge` = unexpanders or delabs for readable output
 
 Each block should accept `Syntax` (or `TSyntax`) and produce either:
+
 - a `term`, or
+
 - a `MacroM/ElabM Unit` side effect (validation), or
+
 - an error attached to the smallest syntax node
 
 ## Minimal DSL Pattern
@@ -72,7 +87,9 @@ macro_rules
 ```
 
 Notes:
+
 - Use `throwErrorAt` on the smallest syntax node (`v.raw` here)
+
 - Use `stx.reprint` in messages if you need the original user text
 
 ## Interpolation with Antiquotation
@@ -108,7 +125,9 @@ elab_rules : term
 ## Hygiene and Name Control
 
 - Macros are hygienic by default
+
 - To keep user-facing names, use `mkIdentFrom` or `withFreshMacroScope`
+
 - When you want the exact user text, use `stx.reprint`
 
 ## Unexpanders and Delaborators
@@ -126,13 +145,17 @@ Use `@[app_delab]` when matching is more complex (implicit args, dependent types
 ## Debugging Checklist
 
 - `set_option trace.Macro.expand true` to see macro expansions
+
 - `set_option trace.Elab.step true` for elaboration steps
+
 - `set_option pp.all true` to inspect implicit arguments
 
 ## Common Gotchas
 
 - Left recursion in syntax causes parse loops; use precedence or `:n` annotations
+
 - `getString` loses formatting; prefer `stx.reprint`
+
 - If an unexpander does not fire, check the head constant and arity
 
 ## Recommended Structure
@@ -146,13 +169,23 @@ MyDSL/
 
 ## Composition Recipes
 
-1. **DSL + validation + pretty printing:** SyntaxCat + ValueParser + Validator + Bridge + PrettyBridge
-2. **DSL with type-aware checks:** SyntaxCat + ValueParser + ElabBridge (+ Validator if needed)
-3. **Readable error spans:** Validator uses `throwErrorAt` on literal token, not the whole macro
+1. **DSL + validation + pretty printing:** SyntaxCat + ValueParser + Validator + Bridge
+   \+ PrettyBridge
+
+2. **DSL with type-aware checks:** SyntaxCat + ValueParser + ElabBridge (+ Validator if
+   needed)
+
+3. **Readable error spans:** Validator uses `throwErrorAt` on literal token, not the
+   whole macro
 
 ## See Also
 
-- [lean4-custom-syntax.md](lean4-custom-syntax.md) — notations, macros, elaborators from the user perspective
+- [lean4-custom-syntax.md](lean4-custom-syntax.md) — notations, macros, elaborators from
+  the user perspective
+
 - [scaffold-dsl.md](scaffold-dsl.md) — copy-paste DSL template
+
 - [Lean 4 Reference Manual: Notations and Macros](https://lean-lang.org/doc/reference/latest/)
-- [lean4-metaprogramming-book](https://github.com/leanprover-community/lean4-metaprogramming-book) (community)
+
+- [lean4-metaprogramming-book](https://github.com/leanprover-community/lean4-metaprogramming-book)
+  (community)

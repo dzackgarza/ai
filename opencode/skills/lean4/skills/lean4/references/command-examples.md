@@ -2,7 +2,7 @@
 
 Extended examples and session transcripts for Lean4 plugin commands.
 
----
+* * *
 
 ## draft
 
@@ -58,7 +58,7 @@ What next?
 - [save to scratch] Write to scratch file
 ````
 
----
+* * *
 
 ## formalize
 
@@ -135,7 +135,7 @@ What next?
 - [deeper] Explore the p-adic metric construction
 ````
 
----
+* * *
 
 ## prove
 
@@ -234,7 +234,7 @@ Building... ✓
 - `rollback N` - Undo last N commits
 ```
 
----
+* * *
 
 ## autoformalize
 
@@ -294,7 +294,7 @@ Sorry-free. Queue empty.
 - All sorries filled. Run /lean4:checkpoint to save.
 ```
 
----
+* * *
 
 ## autoprove
 
@@ -339,7 +339,8 @@ Replanning: Search Mathlib.Topology.Order for tendsto variants
 [continues autonomously...]
 ```
 
-See [cycle-engine.md](cycle-engine.md#stuck-definition) for stuck detection logic and [deep mode](cycle-engine.md#deep-mode) for escalation behavior.
+See [cycle-engine.md](cycle-engine.md#stuck-definition) for stuck detection logic and
+[deep mode](cycle-engine.md#deep-mode) for escalation behavior.
 
 ### Stop Condition Example
 
@@ -407,7 +408,7 @@ Regression detected (--deep-regression-gate=strict):
   Marking stuck: "deep: regression — new errors"
 ```
 
----
+* * *
 
 ## checkpoint
 
@@ -469,7 +470,7 @@ git reset HEAD~1
 git reset HEAD~N
 ```
 
----
+* * *
 
 ## review
 
@@ -547,7 +548,8 @@ Claude: Running review with Codex integration...
 
 ### Custom Hook Interface
 
-See [review-hook-schema.md](review-hook-schema.md) for full input/output schemas and example scripts.
+See [review-hook-schema.md](review-hook-schema.md) for full input/output schemas and
+example scripts.
 
 ### Stuck Review Example
 
@@ -610,7 +612,7 @@ Claude: Golfing Core.lean...
 
 See [cycle-engine.md](cycle-engine.md#falsification-artifacts) for artifact templates.
 
-```
+````
 Claude: Working on Core.lean:42 - `naive_bound`...
 
 Goal: ⊢ ∀ n : Fin 5, n.val < 3
@@ -628,14 +630,17 @@ Creating counterexample lemma...
 /-- Counterexample to naive_bound -/
 theorem naive_bound_counterexample : ∃ n : Fin 5, ¬ (n.val < 3) := by
   exact ⟨3, by decide⟩
-```
+````
 
-Create salvage lemma? [yes/no]
+Create salvage lemma?
+[yes/no]
 
 User: yes
 
 Claude: What correction makes it true?
+
 - Option A: Restrict domain to `Fin 3` (all values < 3)
+
 - Option B: Weaken bound to `n.val < 5` (trivially true for `Fin 5`)
 
 User: A
@@ -647,7 +652,7 @@ theorem naive_bound_salvaged : ∀ n : Fin 3, n.val < 3 := by
   intro n; exact n.isLt
 ```
 
-Committing: "disprove: naive_bound - counterexample at n=3"
+Committing: “disprove: naive_bound - counterexample at n=3”
 ```
 
 ---
@@ -667,26 +672,32 @@ Use the lightest tool that answers the question:
 Run `lake env lean` from the Lean project root; pass repo-relative file paths.
 
 ### Anti-Pattern: `lake build` with File Arguments
-
 ```
 # ✗ Wrong — lake build does not accept file path arguments
-lake build InfinitaryLogic/Scott/Sentence.lean
-→ error: unknown target 'InfinitaryLogic/Scott/Sentence.lean'
+
+lake build InfinitaryLogic/Scott/Sentence.lean → error: unknown target
+‘InfinitaryLogic/Scott/Sentence.lean’
 
 # ✓ Correct — use lake env lean for single-file compilation
-lake env lean InfinitaryLogic/Scott/Sentence.lean
-→ (compiles single file with lake environment)
+
+lake env lean InfinitaryLogic/Scott/Sentence.lean → (compiles single file with lake
+environment)
 ```
 
 ### Typical Verification Flow
-
 ```
+
 1. Edit proof
-2. lean_diagnostic_messages(file)    # immediate feedback
+
+2. lean_diagnostic_messages(file) # immediate feedback
+
 3. Fix any issues
-4. lake env lean path/to/File.lean   # file-level gate (from project root)
-5. Continue editing...
-6. lake build                        # project gate at checkpoint only
+
+4. lake env lean path/to/File.lean # file-level gate (from project root)
+
+5. Continue editing …
+
+6. lake build # project gate at checkpoint only
 ```
 
 
@@ -695,10 +706,9 @@ lake env lean InfinitaryLogic/Scott/Sentence.lean
 ## refactor
 
 ### Basic Usage
-
 ```
 User: /lean4:refactor ForwardEuler/Main.lean
-```
+````
 
 ```markdown
 ## Refactor Plan — ForwardEuler/Main.lean
@@ -721,7 +731,7 @@ User: /lean4:refactor ForwardEuler/Main.lean
 - Mathlib lemmas newly applied: 3
 
 Apply batch 1 (3 changes)? [yes / skip / stop]
-```
+````
 
 ### Dry Run
 
@@ -731,7 +741,7 @@ User: /lean4:refactor --scope=changed --dry-run
 
 Reports opportunities without editing files.
 
----
+* * *
 
 ## golf
 
@@ -1055,7 +1065,7 @@ Total savings: 8 lines (~15%)
 Build status: ✓ passing
 ````
 
----
+* * *
 
 ## learn
 
@@ -1191,7 +1201,7 @@ Want to see this formalized in Lean to make it concrete?
 [deeper / show source / formalize → /lean4:formalize]
 ````
 
----
+* * *
 
 ## doctor
 

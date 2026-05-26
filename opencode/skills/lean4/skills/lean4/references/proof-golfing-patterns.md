@@ -1,27 +1,45 @@
 # Proof Golfing Patterns
 
-**Detailed pattern explanations for proof optimization. For quick reference table and overview, see [proof-golfing.md](proof-golfing.md).**
+**Detailed pattern explanations for proof optimization.
+For quick reference table and overview, see [proof-golfing.md](proof-golfing.md).**
 
 ## Contents
+
 - [High-Priority Patterns (⭐⭐⭐⭐⭐)](#high-priority-patterns-)
+
 - [Conditional Patterns](#conditional-patterns)
+
 - [Medium-Priority Patterns (⭐⭐⭐⭐)](#medium-priority-patterns-)
+
 - [Medium-Priority Patterns (⭐⭐⭐)](#medium-priority-patterns--1)
+
 - [Documentation Quality Patterns (⭐⭐)](#documentation-quality-patterns-)
 
----
+* * *
 
 ## Tactic Complexity Ladder
 
-Heuristic for judging inference burden and readability (not a measured performance ordering — we use the tactic identity as a proxy, not benchmarks):
+Heuristic for judging inference burden and readability (not a measured performance
+ordering — we use the tactic identity as a proxy, not benchmarks):
 
-`rfl`/`exact` < `rw`/`apply` < `simp only` < `simpa`/`rwa` < broad `simp`/`decide`/`omega`/`grind`
+`rfl`/`exact` < `rw`/`apply` < `simp only` < `simpa`/`rwa` < broad
+`simp`/`decide`/`omega`/`grind`
 
-This ladder feeds the golf scoring order: correctness → directness → inference burden → perf/determinism → length. A transform that moves UP the ladder requires more than a 1-line win. A transform that moves DOWN is preferred even if it doesn't save lines. Length remains a core golf goal — but a tiebreaker among acceptable proofs.
+This ladder feeds the golf scoring order: correctness → directness → inference burden →
+perf/determinism → length.
+A transform that moves UP the ladder requires more than a 1-line win.
+A transform that moves DOWN is preferred even if it doesn’t save lines.
+Length remains a core golf goal — but a tiebreaker among acceptable proofs.
 
-Separately, **performance wins** come from narrowing `simp` to `simp only`, using direct lemmas over automation, and avoiding search-heavy tactics in coercion-heavy goals — these are always worth pursuing regardless of line count. **Exception:** terminal `simp` → `simp only` is a style split (some prefer terminal `simp` for resilience to simp-set changes — the converse of the [FlexibleLinter](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Tactic/Linter/FlexibleLinter.html) concern). Requires user confirmation.
+Separately, **performance wins** come from narrowing `simp` to `simp only`, using direct
+lemmas over automation, and avoiding search-heavy tactics in coercion-heavy goals —
+these are always worth pursuing regardless of line count.
+**Exception:** terminal `simp` → `simp only` is a style split (some prefer terminal
+`simp` for resilience to simp-set changes — the converse of the
+[FlexibleLinter](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Tactic/Linter/FlexibleLinter.html)
+concern). Requires user confirmation.
 
----
+* * *
 
 ## High-Priority Patterns (⭐⭐⭐⭐⭐)
 
@@ -34,7 +52,11 @@ simp only [decide_eq_false_iff_not, decide_eq_true_eq]
 simp only [decide_eq_true_eq]
 ```
 
-Remove unused `simp` arguments flagged by linter. Zero risk (compiler-verified), faster elaboration. Note: this is about removing unused lemma arguments from `simp only [...]` calls, not about narrowing `simp` → `simp only` (see terminal `simp only` caveat in the ladder above).
+Remove unused `simp` arguments flagged by linter.
+Zero risk (compiler-verified), faster elaboration.
+Note: this is about removing unused lemma arguments from `simp only [...]` calls, not
+about narrowing `simp` → `simp only` (see terminal `simp only` caveat in the ladder
+above).
 
 ### Pattern 0: `by rfl` → `rfl` (Directness)
 
@@ -50,7 +72,8 @@ theorem count : a = 9 ∧ b = 2 := by constructor <;> rfl
 theorem count : a = 9 ∧ b = 2 := ⟨rfl, rfl⟩
 ```
 
-Term mode for definitional equalities. Use `⟨_, _⟩` instead of `constructor <;> rfl`. Zero risk.
+Term mode for definitional equalities.
+Use `⟨_, _⟩` instead of `constructor <;> rfl`. Zero risk.
 
 ### Pattern 2: `ext + rfl` → `rfl`
 
@@ -61,7 +84,8 @@ have h : f = g := by ext x; rfl
 have h : f = g := rfl
 ```
 
-When terms are definitionally equal, `rfl` suffices. Low risk - test with build, revert if fails.
+When terms are definitionally equal, `rfl` suffices.
+Low risk - test with build, revert if fails.
 
 ### Pattern 2B: Eta-Reduction (Simplicity)
 
@@ -83,7 +107,8 @@ have h : U.Nonempty := by rwa [nonempty_iff_ne_empty]
 have h : U.Nonempty := nonempty_iff_ne_empty.mpr h_ne
 ```
 
-When `rwa` does trivial work, use direct term application. Zero risk.
+When `rwa` does trivial work, use direct term application.
+Zero risk.
 
 ### Pattern 2D: `intro-dsimp-exact` → Lambda (Directness)
 
@@ -94,7 +119,8 @@ have h : ∀ i : Fin m, p (ι i) := by intro i; dsimp [p, ι]; exact i.isLt
 have h : ∀ i : Fin m, p (ι i) := fun i => i.isLt
 ```
 
-Convert `intro x; dsimp; exact term` to direct lambda. 75% reduction.
+Convert `intro x; dsimp; exact term` to direct lambda.
+75% reduction.
 
 ### Pattern 3: let+have+exact Inline (Conciseness)
 
@@ -108,7 +134,8 @@ lemma foo := by
 lemma foo := by exact hX m (fun i => (k i).val) (fun i j hij => ...)
 ```
 
-**⚠️ HIGH RISK:** 60-80% reduction but 93% false positive rate! MUST verify let used ≤2 times.
+**⚠️ HIGH RISK:** 60-80% reduction but 93% false positive rate!
+MUST verify let used ≤2 times.
 
 ### Pattern 3A: Single-Use `have` Inline (Clarity)
 
@@ -120,7 +147,8 @@ rw [← Measure.map_map hproj h_meas]
 rw [← Measure.map_map hproj (measurable_pi_lambda _ ...)]
 ```
 
-Inline `have` used once if term < 40 chars and no semantic value. 30-50% reduction.
+Inline `have` used once if term < 40 chars and no semantic value.
+30-50% reduction.
 
 ### Pattern 3B: Remove `by exact` Wrapper (Directness)
 
@@ -131,7 +159,8 @@ have hζ_compProd : ... := by exact compProd_map_condDistrib hξ.aemeasurable
 have hζ_compProd : ... := compProd_map_condDistrib hξ.aemeasurable
 ```
 
-`by exact foo` is redundant - use term mode directly. Zero risk.
+`by exact foo` is redundant - use term mode directly.
+Zero risk.
 
 ### Pattern 3C: Dot Notation for Constructors (Conciseness)
 
@@ -143,7 +172,8 @@ exact EventuallyEq.rfl
 exact hIH.mul .rfl
 ```
 
-Use `.rfl`, `.symm`, `.trans` instead of full constructor names. Zero risk.
+Use `.rfl`, `.symm`, `.trans` instead of full constructor names.
+Zero risk.
 
 ### Pattern 3D: Calc Blocks → `.trans` Chains (Conciseness)
 
@@ -154,7 +184,8 @@ calc ∫ ω, ... = ... := step1 _ = ... := step2
 (step1.trans step2).symm
 ```
 
-When calc chains are short (2-3 steps), `.trans` chains can be more concise. Low risk.
+When calc chains are short (2-3 steps), `.trans` chains can be more concise.
+Low risk.
 
 ### Pattern 3E: Inline `show` in Rewrites (Conciseness)
 
@@ -216,22 +247,49 @@ apply Continuous.comp
 exact continuous_neg.comp hf
 ```
 
-Typically 30–60% reduction. Low risk (same proof terms, reorganized).
+Typically 30–60% reduction.
+Low risk (same proof terms, reorganized).
 
 **Detection & workflow:**
 
-- **Anchors:** 2–7 tactic lines, starts with `apply`, contains `exact` on branches. Skip `calc`, `cases`/`induction`/`match` (multi-goal), blocks with `simp`/`omega`/`decide`/`norm_num` (non-collapsible), semicolon-heavy (>3), blocks with `have`/`refine` (too complex to collapse mechanically). `constructor`+`exact`+`exact` is already an instant win, handled separately.
-- **Mechanical pass** (≤30 anchors/file): Construct collapsed `exact` from tactic structure → verify with `lean_multi_attempt` + `lean_diagnostic_messages` baseline check.
-- **Exploratory pass** (when `--search≠off`): Build candidate `exact` terms from three sources: (1) chain lemmas with different argument order or dot notation, (2) local hypotheses that unify with the goal, (3) known dot-notation rewrites (`.comp`, `.trans`, `.symm`, `.mul`, etc.). Test via `lean_multi_attempt`.
-- **Regression gate:** Every accepted collapse must pass `lean_diagnostic_messages` baseline check — no new diagnostics, no sorry increase. Not just "compiles in lean_multi_attempt."
+- **Anchors:** 2–7 tactic lines, starts with `apply`, contains `exact` on branches.
+  Skip `calc`, `cases`/`induction`/`match` (multi-goal), blocks with
+  `simp`/`omega`/`decide`/`norm_num` (non-collapsible), semicolon-heavy (>3), blocks
+  with `have`/`refine` (too complex to collapse mechanically).
+  `constructor`+`exact`+`exact` is already an instant win, handled separately.
+
+- **Mechanical pass** (≤30 anchors/file): Construct collapsed `exact` from tactic
+  structure → verify with `lean_multi_attempt` + `lean_diagnostic_messages` baseline
+  check.
+
+- **Exploratory pass** (when `--search≠off`): Build candidate `exact` terms from three
+  sources: (1) chain lemmas with different argument order or dot notation, (2) local
+  hypotheses that unify with the goal, (3) known dot-notation rewrites (`.comp`,
+  `.trans`, `.symm`, `.mul`, etc.). Test via `lean_multi_attempt`.
+
+- **Regression gate:** Every accepted collapse must pass `lean_diagnostic_messages`
+  baseline check — no new diagnostics, no sorry increase.
+  Not just “compiles in lean_multi_attempt.”
+
 - **Reject heuristics:**
-  - Reject if collapse introduces `simpa`/`rwa` from a direct explicit proof (moves up the tactic complexity ladder)
+
+  - Reject if collapse introduces `simpa`/`rwa` from a direct explicit proof (moves up
+    the tactic complexity ladder)
+
   - Reject if collapsed term length > ~80 chars
+
   - Reject if dot-chain depth > 2
-  - Reject if it removes meaningful intermediate names (named `have` with semantic value)
+
+  - Reject if it removes meaningful intermediate names (named `have` with semantic
+    value)
+
   - Reject if it only saves 1 line and raises inference burden
+
 - **Processing order:** Bottom-up to avoid line drift.
-- **Budget:** Mechanical ≤30 anchors/file. Exploratory per-anchor ≤2 probes, per-file: `quick` ≤5 probes/30s, `full` ≤15 probes/60s (shared with lemma replacement).
+
+- **Budget:** Mechanical ≤30 anchors/file.
+  Exploratory per-anchor ≤2 probes, per-file: `quick` ≤5 probes/30s, `full` ≤15
+  probes/60s (shared with lemma replacement).
 
 ### Pattern 7A: `simpa using` → `exact` (Directness)
 
@@ -242,13 +300,16 @@ simpa using h
 exact h
 ```
 
-When `simpa` does no simplification, prefer `exact` — it is lower on the tactic complexity ladder and makes intent explicit. Zero risk.
+When `simpa` does no simplification, prefer `exact` — it is lower on the tactic
+complexity ladder and makes intent explicit.
+Zero risk.
 
----
+* * *
 
 ## Conditional Patterns
 
-Patterns that improve code only in specific contexts. Apply only when the scoring order clearly favors the replacement.
+Patterns that improve code only in specific contexts.
+Apply only when the scoring order clearly favors the replacement.
 
 ### Pattern 1: `rw; exact` → `rwa` (Conditional)
 
@@ -259,7 +320,10 @@ rw [h1, h2] at h; exact h
 rwa [h1, h2] at h
 ```
 
-**Conditional:** `rwa` is a standard mathlib idiom, but as a golfing transform it moves UP the tactic complexity ladder (`rw`+`exact` → `rwa`). Only apply when `rwa` genuinely deletes surrounding boilerplate (extra `simp`/`change` blocks), not as a default 1-line compression. See golf.md `simpa`/`rwa` direction rule.
+**Conditional:** `rwa` is a standard mathlib idiom, but as a golfing transform it moves
+UP the tactic complexity ladder (`rw`+`exact` → `rwa`). Only apply when `rwa` genuinely
+deletes surrounding boilerplate (extra `simp`/`change` blocks), not as a default 1-line
+compression. See golf.md `simpa`/`rwa` direction rule.
 
 ### Pattern 2A: `rw; simp_rw` → `rw; simpa` (Conditional)
 
@@ -275,9 +339,14 @@ rw [compl_iInter] at h
 simpa [compl_compl] using h
 ```
 
-**Conditional:** `simpa using` is only a win when it deletes surrounding boilerplate (an extra `rw`, `change`, or `simp` block). Never replace `exact t` with `simpa using t` unless `exact t` fails. In coercion-heavy or subtype-heavy proofs, test `exact` first; only fall back to `simpa using` if transport is actually needed. Note: `simp using` is NOT a drop-in for `simpa using` — they have different semantics.
+**Conditional:** `simpa using` is only a win when it deletes surrounding boilerplate (an
+extra `rw`, `change`, or `simp` block).
+Never replace `exact t` with `simpa using t` unless `exact t` fails.
+In coercion-heavy or subtype-heavy proofs, test `exact` first; only fall back to
+`simpa using` if transport is actually needed.
+Note: `simp using` is NOT a drop-in for `simpa using` — they have different semantics.
 
----
+* * *
 
 ## Medium-Priority Patterns (⭐⭐⭐⭐)
 
@@ -290,7 +359,8 @@ have h : (⟨i.val, ...⟩ : Fin n) = ι i := by apply Fin.ext; simp [ι]
 have h : (⟨i.val, ...⟩ : Fin n) = ι i := by simp [ι]
 ```
 
-For Fin/Prod/Subtype, `simp` handles extensionality automatically. 50% reduction.
+For Fin/Prod/Subtype, `simp` handles extensionality automatically.
+50% reduction.
 
 ### Pattern 5: `congr; ext; rw` → `simp only` (Simplicity)
 
@@ -301,7 +371,11 @@ lemma foo : Measure.map ... := by congr 1; ext ω i; rw [h]
 lemma foo : Measure.map ... := by simp only [h]
 ```
 
-`simp` handles congruence and extensionality automatically. 67% reduction. **Caveat:** If `simp only` would be terminal (closing the goal), this is subject to the terminal `simp only` style split — ask for user confirmation in interactive mode, skip in non-interactive unless project already uses terminal `simp only` nearby.
+`simp` handles congruence and extensionality automatically.
+67% reduction. **Caveat:** If `simp only` would be terminal (closing the goal), this is
+subject to the terminal `simp only` style split — ask for user confirmation in
+interactive mode, skip in non-interactive unless project already uses terminal
+`simp only` nearby.
 
 ### Pattern 5A: Remove Redundant `show` Wrappers (Simplicity)
 
@@ -312,7 +386,8 @@ rw [show X = Y by simp, other]; simp [...]
 simp [...]
 ```
 
-Remove `show X by simp` wrappers when simp handles the equality directly. 50-75% reduction.
+Remove `show X by simp` wrappers when simp handles the equality directly.
+50-75% reduction.
 
 ### Pattern 5B: Convert-Based Helper Inlining (Directness)
 
@@ -336,7 +411,8 @@ def All := allData.toFinset
 def All := (allTilings.map Tiling.data).toFinset
 ```
 
-Inline definitions used exactly once. 3-4 lines saved.
+Inline definitions used exactly once.
+3-4 lines saved.
 
 ### Pattern 6: Smart `ext` (Simplicity)
 
@@ -347,7 +423,8 @@ apply Subtype.ext; apply Fin.ext; simp [ι]
 ext; simp [ι]
 ```
 
-`ext` handles multiple nested extensionality layers automatically. 50% reduction.
+`ext` handles multiple nested extensionality layers automatically.
+50% reduction.
 
 ### Pattern 7: `simp` Closes Goals Directly (Simplicity)
 
@@ -358,9 +435,10 @@ have h : a < b := by simp [defs]; exact lemma
 have h : a < b := by simp [defs]
 ```
 
-Skip explicit `exact` when simp makes goal trivial. 67% reduction.
+Skip explicit `exact` when simp makes goal trivial.
+67% reduction.
 
----
+* * *
 
 ## Medium-Priority Patterns (⭐⭐⭐)
 
@@ -431,7 +509,8 @@ constructor; · intro k hk; exact hX m k hk; · intro ν hν; have h := ...; exa
 constructor; · intro k hk; exact hX m k hk; · intro ν hν; exact (...).symm
 ```
 
-Inline simple constructor branches. 30-57% reduction.
+Inline simple constructor branches.
+30-57% reduction.
 
 ### Pattern 10: Direct Lemma Over Automation (Simplicity)
 
@@ -453,7 +532,8 @@ cases n with | zero => ... | succ n' => cases n' with ...
 match n with | 0 | 1 | 2 => omega | _+3 => rfl
 ```
 
-Replace nested cases with flat match. ~7 lines saved.
+Replace nested cases with flat match.
+~7 lines saved.
 
 ### Pattern 12: Successor Pattern (n+k) (Clarity)
 
@@ -464,7 +544,8 @@ cases i with | zero => ... | succ i' => cases i' with ...
 match i with | 0 => omega | 1 | 2 => rfl | n+3 => [proof]
 ```
 
-Use `| n+k =>` for "n ≥ k" range cases. ~25 lines saved.
+Use `| n+k =>` for “n ≥ k” range cases.
+~25 lines saved.
 
 ### Pattern 13: Symmetric Cases with `<;>` (Conditional)
 
@@ -475,7 +556,10 @@ cases h with | inl => simp | inr => simp
 cases h <;> simp
 ```
 
-**Conditional:** `<;>` is allowed only when applying a single identical tactic to literally identical goals (its intended purpose). Do not introduce `<;>` to compress non-identical branches. When counting savings, each `;`-separated tactic counts as its own line.
+**Conditional:** `<;>` is allowed only when applying a single identical tactic to
+literally identical goals (its intended purpose).
+Do not introduce `<;>` to compress non-identical branches.
+When counting savings, each `;`-separated tactic counts as its own line.
 
 ### Pattern 14: Inline omega (Conciseness)
 
@@ -500,7 +584,7 @@ ext n; match n with | 0 => exact ha0 | 1 => ... | n+2 => ...
 
 Use `match` after `ext` instead of nested `cases`. ~3 lines saved.
 
----
+* * *
 
 ## Documentation Quality Patterns (⭐⭐)
 
@@ -522,6 +606,6 @@ calc Measure.map ...
 **When to apply:** Comprehensive docstring already explains the proof strategy.
 **When NOT to apply:** Inline comments provide details NOT in docstring.
 
----
+* * *
 
 **Related:** [proof-golfing.md](proof-golfing.md) (quick reference, safety & workflow)

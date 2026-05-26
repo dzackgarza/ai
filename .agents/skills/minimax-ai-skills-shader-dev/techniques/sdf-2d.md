@@ -2,20 +2,30 @@
 
 ## Use Cases
 
-- 2D shape rendering: circles, rectangles, triangles, ellipses, line segments, Bezier curves, etc.
+- 2D shape rendering: circles, rectangles, triangles, ellipses, line segments, Bezier
+  curves, etc.
+
 - UI elements and icons: drawn with math functions, naturally resolution-independent
+
 - Anti-aliased graphics, shape boolean operations, outlines and glow
+
 - Motion graphics and animation, 2D soft shadows and lighting
 
 ## Core Principles
 
-For each pixel, compute the signed distance `d` to the shape boundary: `d < 0` inside, `d = 0` boundary, `d > 0` outside.
+For each pixel, compute the signed distance `d` to the shape boundary: `d < 0` inside,
+`d = 0` boundary, `d > 0` outside.
 
 Map to color via `smoothstep`/`clamp`:
+
 - **Fill**: color when `d < 0`
+
 - **Anti-aliasing**: `smoothstep(-aa, aa, d)`
+
 - **Stroke**: apply smoothstep to `abs(d) - strokeWidth`
-- **Boolean operations**: `min(d1, d2)` union, `max(d1, d2)` intersection, `max(-d1, d2)` subtraction
+
+- **Boolean operations**: `min(d1, d2)` union, `max(d1, d2)` intersection,
+  `max(-d1, d2)` subtraction
 
 Key formulas:
 ```
@@ -613,19 +623,36 @@ vec2 opMirror2D(vec2 p, vec2 dir) {
 ## Performance & Composition Tips
 
 **Performance:**
+
 - In polygon SDFs, compare squared distances first; use a single `sqrt` at the end
-- For simple scenes, use fixed `px = 2.0/iResolution.y` instead of `fwidth(d)`; use `fwidth` when coordinate scaling is involved
+
+- For simple scenes, use fixed `px = 2.0/iResolution.y` instead of `fwidth(d)`; use
+  `fwidth` when coordinate scaling is involved
+
 - For many primitives, spatially partition and skip distant ones early
-- Supersampling (2x2/3x3) only for offline rendering; for real-time, single-pixel AA with `smoothstep`/`fwidth` is sufficient
+
+- Supersampling (2x2/3x3) only for offline rendering; for real-time, single-pixel AA
+  with `smoothstep`/`fwidth` is sufficient
+
 - For 2D soft shadow marching, use adaptive step size `dt += max(1.0, abs(sd))`
 
 **Composition:**
+
 - **SDF + Noise**: `d += noise(p * 10.0 + iTime) * 0.05` to create organic edges
-- **SDF + 2D Lighting**: cone marching for soft shadows, query occlusion via `sceneDist()`
-- **SDF + Normal Mapping**: finite differences for normals + Blinn-Phong lighting to simulate bump effects
-- **SDF + Domain Repetition**: `fract`/`mod` for infinite repetition, `floor` for cell ID
-- **SDF + Animation**: parameters driven by `sin/cos` periodic motion, `exp` decay, `mod` looping
+
+- **SDF + 2D Lighting**: cone marching for soft shadows, query occlusion via
+  `sceneDist()`
+
+- **SDF + Normal Mapping**: finite differences for normals + Blinn-Phong lighting to
+  simulate bump effects
+
+- **SDF + Domain Repetition**: `fract`/`mod` for infinite repetition, `floor` for cell
+  ID
+
+- **SDF + Animation**: parameters driven by `sin/cos` periodic motion, `exp` decay,
+  `mod` looping
 
 ## Further Reading
 
-Full step-by-step tutorials, mathematical derivations, and advanced usage in [reference](../reference/sdf-2d.md)
+Full step-by-step tutorials, mathematical derivations, and advanced usage in
+[reference](../reference/sdf-2d.md)

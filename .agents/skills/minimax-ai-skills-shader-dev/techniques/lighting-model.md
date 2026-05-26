@@ -1,18 +1,26 @@
 # Lighting Models Skill
 
 ## Use Cases
+
 - Adding realistic lighting to raymarched or rasterized scenes
-- Simulating light interaction with various materials (metal, dielectric, water, skin, etc.)
+
+- Simulating light interaction with various materials (metal, dielectric, water, skin,
+  etc.)
+
 - From simple diffuse/specular to full PBR
+
 - Multi-light compositing (sun, sky, ambient)
+
 - Adding material appearance to SDF scenes in ShaderToy
 
 ## Core Principles
 
 Lighting = Diffuse + Specular Reflection:
 
-- **Diffuse**: Lambert's law `I = max(0, N·L)`
-- **Specular**: Empirical model uses Blinn-Phong `pow(max(0, N·H), shininess)`; physically-based model uses Cook-Torrance BRDF
+- **Diffuse**: Lambert’s law `I = max(0, N·L)`
+
+- **Specular**: Empirical model uses Blinn-Phong `pow(max(0, N·H), shininess)`;
+  physically-based model uses Cook-Torrance BRDF
 
 ### Key Formulas
 
@@ -24,8 +32,11 @@ Fresnel:        F = F0 + (1 - F0) * (1 - V·H)^5
 ```
 
 - **D** = GGX/Trowbridge-Reitz normal distribution
+
 - **F** = Schlick Fresnel approximation
+
 - **G** = Smith geometric shadowing
+
 - F0: dielectric ~0.04, metals use baseColor
 
 ## Implementation Steps
@@ -215,7 +226,9 @@ specularLight *= clamp(pow(NdotV + ao, roughness * roughness) - 1.0 + ao, 0.0, 1
 
 ### Outdoor Three-Light Model
 
-The go-to lighting setup for outdoor SDF scenes. Uses three directional sources to approximate full global illumination with minimal cost:
+The go-to lighting setup for outdoor SDF scenes.
+Uses three directional sources to approximate full global illumination with minimal
+cost:
 
 ```glsl
 // === Outdoor Three-Light Lighting ===
@@ -239,10 +252,20 @@ vec3 color = material * lin;
 ```
 
 Key principles:
-- **Colored shadow penumbra**: `pow(vec3(sha), vec3(1.0, 1.2, 1.5))` makes shadow edges slightly blue/cool, mimicking real subsurface scattering in penumbra regions
-- **Material albedo rule**: Keep diffuse albedo ≤ 0.2; adjust light intensities for brightness, not material values. Real-world surfaces rarely exceed 0.3 albedo
-- **Linear workflow**: All computations in linear space, apply gamma `pow(color, vec3(1.0/2.2))` at the very end
-- **Sky light approximation**: `0.5 + 0.5 * nor.y` is a cheap hemisphere integral — surfaces pointing up get full sky, pointing down get none
+
+- **Colored shadow penumbra**: `pow(vec3(sha), vec3(1.0, 1.2, 1.5))` makes shadow edges
+  slightly blue/cool, mimicking real subsurface scattering in penumbra regions
+
+- **Material albedo rule**: Keep diffuse albedo ≤ 0.2; adjust light intensities for
+  brightness, not material values.
+  Real-world surfaces rarely exceed 0.3 albedo
+
+- **Linear workflow**: All computations in linear space, apply gamma
+  `pow(color, vec3(1.0/2.2))` at the very end
+
+- **Sky light approximation**: `0.5 + 0.5 * nor.y` is a cheap hemisphere integral —
+  surfaces pointing up get full sky, pointing down get none
+
 - Do NOT apply ambient occlusion to the sun/key light — shadows handle that
 
 ## Complete Code Template
@@ -496,7 +519,7 @@ float sssAmount = HenyeyGreenstein(dot(V, L), 0.5);
 color += sssColor * sssAmount * NdotL;
 ```
 
-### Variant 5: Beer's Law Water Lighting
+### Variant 5: Beer’s Law Water Lighting
 
 ```glsl
 vec3 waterExtinction(float depth) {
@@ -512,16 +535,33 @@ underwaterColor += inscatter;
 ## Performance & Composition
 
 - **Fresnel optimization**: Use `x2*x2*x` instead of `pow(x, 5.0)`
-- **Visibility term**: Use `V_SmithGGX` to directly return `G/(4*NdotV*NdotL)`, avoiding separate division
+
+- **Visibility term**: Use `V_SmithGGX` to directly return `G/(4*NdotV*NdotL)`, avoiding
+  separate division
+
 - **AO sampling**: 5 samples is sufficient; can reduce to 3 at far distances
-- **Soft shadow**: `clamp(h, 0.02, 0.2)` limits step size; 14~24 steps usually sufficient; `8.0*h/t` controls softness
-- **Simplified IBL**: Without cubemap, approximate with `mix(groundColor, skyColor, R.y*0.5+0.5)`
+
+- **Soft shadow**: `clamp(h, 0.02, 0.2)` limits step size; 14~24 steps usually
+  sufficient; `8.0*h/t` controls softness
+
+- **Simplified IBL**: Without cubemap, approximate with
+  `mix(groundColor, skyColor, R.y*0.5+0.5)`
+
 - **Branch culling**: Skip specular calculation when `NdotL <= 0`
-- **Raymarching integration**: Use SDF finite differences for normals, query SDF directly for AO/shadows
-- **Volume rendering integration**: Beer's Law attenuation + Henyey-Greenstein phase function; FBM noise procedural normals can be passed directly to lighting functions
-- **Post-processing integration**: ACES `(col*(2.51*col+0.03))/(col*(2.43*col+0.59)+0.14)` / Reinhard `col/(col+1)` + Gamma
-- **Reflection integration**: `reflect(rd, N)` to query scene again, blend result with Fresnel weighting
+
+- **Raymarching integration**: Use SDF finite differences for normals, query SDF
+  directly for AO/shadows
+
+- **Volume rendering integration**: Beer’s Law attenuation + Henyey-Greenstein phase
+  function; FBM noise procedural normals can be passed directly to lighting functions
+
+- **Post-processing integration**: ACES
+  `(col*(2.51*col+0.03))/(col*(2.43*col+0.59)+0.14)` / Reinhard `col/(col+1)` + Gamma
+
+- **Reflection integration**: `reflect(rd, N)` to query scene again, blend result with
+  Fresnel weighting
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/lighting-model.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/lighting-model.md)

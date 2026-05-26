@@ -19,7 +19,7 @@ triggers:
 # Popular Web Designs
 
 54 real-world design systems ready for use when generating HTML/CSS. Each template
-captures a site's complete visual language: color palette, typography hierarchy,
+captures a site’s complete visual language: color palette, typography hierarchy,
 component styles, spacing system, shadows, responsive behavior, and practical agent
 prompts with exact CSS values.
 
@@ -28,19 +28,26 @@ prompts with exact CSS values.
 - → **`design`** — Load alongside when scoping a design brief, producing variants, or
   verifying a rendered HTML artifact.
   Covers design process and taste, avoiding AI-design slop.
+
 - → **`design-md`** — Load alongside when the deliverable is a formal DESIGN.md token
   spec file, not a rendered artifact.
 
 ## How to Use
 
 1. Pick a design from the catalog below
+
 2. Load it: `skill_view(name="popular-web-designs", file_path="templates/<site>.md")`
+
 3. Use the design tokens and component specs when generating HTML
+
 4. Pair with the `generative-widgets` skill to serve the result via cloudflared tunnel
 
 Each template includes a **Hermes Implementation Notes** block at the top with:
+
 - CDN font substitute and Google Fonts `<link>` tag (ready to paste)
+
 - CSS font-family stacks for primary and monospace
+
 - Reminders to use `write_file` for HTML creation and `browser_vision` for verification
 
 ## HTML Generation Pattern
@@ -86,7 +93,7 @@ accuracy.
 ## Font Substitution Reference
 
 Most sites use proprietary fonts unavailable via CDN. Each template maps to a Google
-Fonts substitute that preserves the design's character.
+Fonts substitute that preserves the design’s character.
 Common mappings:
 
 | Proprietary Font | CDN Substitute | Character |
@@ -107,10 +114,10 @@ Common mappings:
 | IBM Plex Sans/Mono | IBM Plex Sans/Mono | Available on Google Fonts |
 | Rubik (Sentry) | Rubik | Available on Google Fonts |
 
-When a template's CDN font matches the original (Inter, IBM Plex, Rubik, Geist), no
+When a template’s CDN font matches the original (Inter, IBM Plex, Rubik, Geist), no
 substitution loss occurs.
 When a substitute is used (DM Sans for Circular, Source Sans 3 for sohne-var), follow
-the template's weight, size, and letter-spacing values closely — those carry more visual
+the template’s weight, size, and letter-spacing values closely — those carry more visual
 identity than the specific font face.
 
 ## Design Catalog
@@ -204,11 +211,19 @@ identity than the specific font face.
 Match the design to the content:
 
 - **Developer tools / dashboards:** Linear, Vercel, Supabase, Raycast, Sentry
+
 - **Documentation / content sites:** Mintlify, Notion, Sanity, MongoDB
+
 - **Marketing / landing pages:** Stripe, Framer, Apple, SpaceX
+
 - **Dark mode UIs:** Linear, Cursor, ElevenLabs, Warp, Superhuman
+
 - **Light / clean UIs:** Vercel, Stripe, Notion, Cal.com, Replicate
+
 - **Playful / friendly:** PostHog, Figma, Lovable, Zapier, Miro
+
 - **Premium / luxury:** Apple, BMW, Stripe, Superhuman, Revolut
+
 - **Data-dense / dashboards:** Sentry, Kraken, Cohere, ClickHouse
+
 - **Monospace / terminal aesthetic:** Ollama, OpenCode, x.ai, VoltAgent

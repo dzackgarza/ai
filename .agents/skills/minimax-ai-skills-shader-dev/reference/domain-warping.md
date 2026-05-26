@@ -1,22 +1,35 @@
 # Domain Warping — Detailed Reference
 
-This document contains the complete step-by-step tutorial, mathematical derivations, and advanced usage for domain warping techniques. See [SKILL.md](SKILL.md) for the condensed version.
+This document contains the complete step-by-step tutorial, mathematical derivations, and
+advanced usage for domain warping techniques.
+See [SKILL.md](SKILL.md) for the condensed version.
 
 ## Prerequisites
 
-- **GLSL Basics**: uniform variables, built-in functions (`mix`, `smoothstep`, `fract`, `floor`, `sin`, `dot`)
+- **GLSL Basics**: uniform variables, built-in functions (`mix`, `smoothstep`, `fract`,
+  `floor`, `sin`, `dot`)
+
 - **Vector Math**: dot product, matrix multiplication, 2D rotation matrix
-- **Noise Function Concepts**: understanding the basic principle of value noise (lattice interpolation)
-- **fBM (Fractal Brownian Motion)**: superposition of multiple noise layers at different frequencies/amplitudes
+
+- **Noise Function Concepts**: understanding the basic principle of value noise (lattice
+  interpolation)
+
+- **fBM (Fractal Brownian Motion)**: superposition of multiple noise layers at different
+  frequencies/amplitudes
+
 - **ShaderToy Environment**: meaning of `iTime`, `iResolution`, `fragCoord`
 
 ## Implementation Steps in Detail
 
 ### Step 1: Hash Function
 
-**What**: Implement a hash function that maps 2D integer coordinates to a pseudo-random float.
+**What**: Implement a hash function that maps 2D integer coordinates to a pseudo-random
+float.
 
-**Why**: This is the foundation of noise functions — producing deterministic "random" values at each lattice point. The `sin-dot` trick compresses 2D input to 1D then takes the fractional part, using sin's high-frequency oscillation to produce a chaotic distribution.
+**Why**: This is the foundation of noise functions — producing deterministic “random”
+values at each lattice point.
+The `sin-dot` trick compresses 2D input to 1D then takes the fractional part, using
+sin’s high-frequency oscillation to produce a chaotic distribution.
 
 **Code**:
 ```glsl
@@ -27,13 +40,18 @@ float hash(vec2 p) {
 }
 ```
 
-> Note: The classic `fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453)` version can also be used, but the sin-free version above is more stable in precision on some GPUs.
+> Note: The classic `fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453)` version can
+> also be used, but the sin-free version above is more stable in precision on some GPUs.
 
 ### Step 2: Value Noise
 
-**What**: Implement 2D value noise — take hash values at integer lattice points and interpolate between them with Hermite smoothing.
+**What**: Implement 2D value noise — take hash values at integer lattice points and
+interpolate between them with Hermite smoothing.
 
-**Why**: Value noise is the simplest continuous noise, producing smooth, jump-free output suitable as the foundation for fBM. Hermite interpolation `f*f*(3.0-2.0*f)` ensures the derivative is zero at lattice points, avoiding the angular appearance of linear interpolation.
+**Why**: Value noise is the simplest continuous noise, producing smooth, jump-free
+output suitable as the foundation for fBM. Hermite interpolation `f*f*(3.0-2.0*f)`
+ensures the derivative is zero at lattice points, avoiding the angular appearance of
+linear interpolation.
 
 **Code**:
 ```glsl
@@ -52,9 +70,13 @@ float noise(vec2 p) {
 
 ### Step 3: fBM (Fractal Brownian Motion)
 
-**What**: Superpose multiple noise layers at different frequencies/amplitudes to create fractal noise with self-similar properties.
+**What**: Superpose multiple noise layers at different frequencies/amplitudes to create
+fractal noise with self-similar properties.
 
-**Why**: A single noise layer is too uniform. fBM superimposes multiple "octaves" to simulate nature's fractal structures. Each layer doubles in frequency (lacunarity ~ 2.0), halves in amplitude (persistence = 0.5), and uses a rotation matrix to break lattice alignment.
+**Why**: A single noise layer is too uniform.
+fBM superimposes multiple “octaves” to simulate nature’s fractal structures.
+Each layer doubles in frequency (lacunarity ~ 2.0), halves in amplitude (persistence =
+0.5), and uses a rotation matrix to break lattice alignment.
 
 **Code**:
 ```glsl
@@ -72,13 +94,20 @@ float fbm(vec2 p) {
 }
 ```
 
-> Using lacunarity values of 2.01~2.04 rather than exact 2.0 is to **avoid visual artifacts caused by lattice regularity**. This is a widely adopted trick in classic implementations.
+> Using lacunarity values of 2.01~2.04 rather than exact 2.0 is to **avoid visual
+> artifacts caused by lattice regularity**. This is a widely adopted trick in classic
+> implementations.
 
 ### Step 4: Domain Warping (Core)
 
-**What**: Use fBM output as a coordinate offset, recursively nesting to form multi-level warping.
+**What**: Use fBM output as a coordinate offset, recursively nesting to form multi-level
+warping.
 
-**Why**: This is the core of the entire technique. `fbm(p)` generates a scalar field; adding it to the coordinate `p` is equivalent to "pulling and stretching space according to the noise field's shape." Multi-level nesting makes the deformation more complex and organic — each warping level operates in space already deformed by the previous level.
+**Why**: This is the core of the entire technique.
+`fbm(p)` generates a scalar field; adding it to the coordinate `p` is equivalent to
+“pulling and stretching space according to the noise field’s shape.”
+Multi-level nesting makes the deformation more complex and organic — each warping level
+operates in space already deformed by the previous level.
 
 **Code**:
 ```glsl
@@ -87,7 +116,8 @@ float pattern(vec2 p) {
 }
 ```
 
-This single line is the classic three-level domain warping. It can be decomposed for understanding:
+This single line is the classic three-level domain warping.
+It can be decomposed for understanding:
 
 ```glsl
 float pattern(vec2 p) {
@@ -102,7 +132,10 @@ float pattern(vec2 p) {
 
 **What**: Inject `iTime` into specific fBM octaves so the warp field evolves over time.
 
-**Why**: Directly offsetting all octaves causes uniform translation, lacking organic feel. The classic approach is to inject time only in the lowest frequency (first layer) and highest frequency (last layer) — low frequency drives overall flow, high frequency adds detail variation.
+**Why**: Directly offsetting all octaves causes uniform translation, lacking organic
+feel. The classic approach is to inject time only in the lowest frequency (first layer)
+and highest frequency (last layer) — low frequency drives overall flow, high frequency
+adds detail variation.
 
 **Code**:
 ```glsl
@@ -123,7 +156,10 @@ float fbm(vec2 p) {
 
 **What**: Map the scalar output of the warp field to colors.
 
-**Why**: Domain warping outputs a scalar field (0~1 range) that needs to be mapped to visually meaningful colors. The classic method uses a `mix` chain — interpolating between multiple preset colors using the warp value.
+**Why**: Domain warping outputs a scalar field (0~1 range) that needs to be mapped to
+visually meaningful colors.
+The classic method uses a `mix` chain — interpolating between multiple preset colors
+using the warp value.
 
 **Code**:
 ```glsl
@@ -140,7 +176,11 @@ vec3 palette(float t) {
 
 ### Variant 1: Multi-Resolution Layered Warping
 
-**Difference from the basic version**: Uses different octave counts for different warping layers — coarse layers use 4 octaves (fast, low frequency), detail layers use 6 octaves (fine, high frequency). Outputs `vec2` for two-dimensional displacement rather than scalar offset. Intermediate variables participate in coloring, producing richer color gradients.
+**Difference from the basic version**: Uses different octave counts for different
+warping layers — coarse layers use 4 octaves (fast, low frequency), detail layers use 6
+octaves (fine, high frequency).
+Outputs `vec2` for two-dimensional displacement rather than scalar offset.
+Intermediate variables participate in coloring, producing richer color gradients.
 
 **Key modified code**:
 ```glsl
@@ -197,7 +237,10 @@ col *= f * 2.0;
 
 ### Variant 2: Turbulence / Ridge Warping (Electric Arc / Plasma Effect)
 
-**Difference from the basic version**: Takes the absolute value of noise `abs(noise - 0.5)` inside fBM, producing sharp ridge textures instead of smooth waves. Dual-axis independent fBM displacement (separate x/y offsets) combined with reverse time drift creates turbulence.
+**Difference from the basic version**: Takes the absolute value of noise
+`abs(noise - 0.5)` inside fBM, producing sharp ridge textures instead of smooth waves.
+Dual-axis independent fBM displacement (separate x/y offsets) combined with reverse time
+drift creates turbulence.
 
 **Key modified code**:
 ```glsl
@@ -232,7 +275,11 @@ vec3 col = vec3(0.2, 0.1, 0.4) / rz;
 
 ### Variant 3: Domain Warping with Pseudo-3D Lighting
 
-**Difference from the basic version**: Estimates screen-space normals from the warp field using finite differences, then applies directional lighting, giving the 2D warp field a 3D relief appearance. Combined with color inversion and square compression to produce a characteristic dark tone.
+**Difference from the basic version**: Estimates screen-space normals from the warp
+field using finite differences, then applies directional lighting, giving the 2D warp
+field a 3D relief appearance.
+Combined with color inversion and square compression to produce a characteristic dark
+tone.
 
 **Key modified code**:
 ```glsl
@@ -257,7 +304,9 @@ col = 1.1 * col * col;  // Square compression, increases dark contrast
 
 ### Variant 4: Flow Field Iterative Warping (Gas Giant Planet Effect)
 
-**Difference from the basic version**: Instead of directly nesting fBM, computes the fBM gradient field and iteratively advances coordinates via Euler integration. Simulates fluid advection, producing vortex-like planetary atmospheric banding.
+**Difference from the basic version**: Instead of directly nesting fBM, computes the fBM
+gradient field and iteratively advances coordinates via Euler integration.
+Simulates fluid advection, producing vortex-like planetary atmospheric banding.
 
 **Key modified code**:
 ```glsl
@@ -285,7 +334,10 @@ vec3 distort(vec2 p) {
 
 ### Variant 5: 3D Volumetric Domain Warping (Explosion / Fireball Effect)
 
-**Difference from the basic version**: Extends domain warping from 2D to 3D, using 3D fBM to displace a sphere's distance field, then rendering via sphere tracing or volumetric ray marching. Produces volcanic eruptions, solar surface, and other volumetric effects.
+**Difference from the basic version**: Extends domain warping from 2D to 3D, using 3D
+fBM to displace a sphere’s distance field, then rendering via sphere tracing or
+volumetric ray marching.
+Produces volcanic eruptions, solar surface, and other volumetric effects.
 
 **Key modified code**:
 ```glsl
@@ -333,31 +385,39 @@ float distanceFunc(vec3 p, out float displace) {
 
 ### Bottleneck Analysis
 
-The main performance bottleneck of domain warping is **repeated noise sampling**. Three warping levels times 6 octaves = 18 noise samples per pixel, plus finite differences for lighting (2 additional full warping computations), totaling up to **54 noise samples/pixel**.
+The main performance bottleneck of domain warping is **repeated noise sampling**. Three
+warping levels times 6 octaves = 18 noise samples per pixel, plus finite differences for
+lighting (2 additional full warping computations), totaling up to **54 noise
+samples/pixel**.
 
 ### Optimization Techniques
 
-1. **Reduce octave count**: Using 4 octaves instead of 6 shows little visual difference but improves performance by ~33%
+1. **Reduce octave count**: Using 4 octaves instead of 6 shows little visual difference
+   but improves performance by ~33%
    ```glsl
    // Use 4 octaves for coarse layers, only 6 octaves for fine layers
    ```
 
-2. **Reduce warping depth**: Two-level warping `fbm(p + fbm(p))` already produces organic results, saving ~33% performance over three levels
+2. **Reduce warping depth**: Two-level warping `fbm(p + fbm(p))` already produces
+   organic results, saving ~33% performance over three levels
 
-3. **Use sin-product noise instead of value noise**: `sin(p.x)*sin(p.y)` is completely branch-free with no memory access, suitable for mobile
+3. **Use sin-product noise instead of value noise**: `sin(p.x)*sin(p.y)` is completely
+   branch-free with no memory access, suitable for mobile
    ```glsl
    float noise(vec2 p) {
        return sin(p.x) * sin(p.y); // Minimal version, no hash needed
    }
    ```
 
-4. **GPU built-in derivatives instead of finite differences**: Saves 2 extra full warping computations
+4. **GPU built-in derivatives instead of finite differences**: Saves 2 extra full
+   warping computations
    ```glsl
    // Use dFdx/dFdy instead of manual finite differences (slightly lower quality but 3x faster)
    vec3 nor = normalize(vec3(dFdx(shade) * iResolution.x, 6.0, dFdy(shade) * iResolution.y));
    ```
 
-5. **Texture noise**: Pre-bake noise textures and use `texture()` instead of procedural noise, converting computation to memory reads
+5. **Texture noise**: Pre-bake noise textures and use `texture()` instead of procedural
+   noise, converting computation to memory reads
    ```glsl
    float noise(vec2 x) {
        return texture(iChannel0, x * 0.01).x;
@@ -369,7 +429,8 @@ The main performance bottleneck of domain warping is **repeated noise sampling**
    int octaves = int(mix(float(NUM_OCTAVES), 2.0, length(uv) / 5.0));
    ```
 
-7. **Supersampling strategy**: Only use 2x2 supersampling when anti-aliasing is needed (4x performance cost)
+7. **Supersampling strategy**: Only use 2x2 supersampling when anti-aliasing is needed
+   (4x performance cost)
    ```glsl
    #if HW_PERFORMANCE == 0
    #define AA 1
@@ -381,7 +442,10 @@ The main performance bottleneck of domain warping is **repeated noise sampling**
 ## Combination Suggestions with Complete Code Examples
 
 ### Combining with Ray Marching
-The scalar field generated by domain warping can serve directly as an SDF displacement function, deforming smooth geometry into organic forms. Used for flames, explosions, alien creatures, etc.
+
+The scalar field generated by domain warping can serve directly as an SDF displacement
+function, deforming smooth geometry into organic forms.
+Used for flames, explosions, alien creatures, etc.
 ```glsl
 float sdf(vec3 p) {
     return length(p) - 1.0 + fbm3D(p * 4.0) * 0.3;
@@ -389,14 +453,18 @@ float sdf(vec3 p) {
 ```
 
 ### Combining with Polar Coordinate Transform
-Perform domain warping in polar coordinate space to produce vortices, nebulae, spirals, and other effects.
+
+Perform domain warping in polar coordinate space to produce vortices, nebulae, spirals,
+and other effects.
 ```glsl
 vec2 polar = vec2(length(uv), atan(uv.y, uv.x));
 float shade = pattern(polar);
 ```
 
 ### Combining with Cosine Color Palette
-The cosine palette `a + b*cos(2*pi*(c*t+d))` is more flexible than a fixed mix chain. By adjusting four vec3 parameters, you can quickly switch color schemes.
+
+The cosine palette `a + b*cos(2*pi*(c*t+d))` is more flexible than a fixed mix chain.
+By adjusting four vec3 parameters, you can quickly switch color schemes.
 ```glsl
 vec3 palette(float t) {
     vec3 a = vec3(0.5); vec3 b = vec3(0.5);
@@ -406,9 +474,13 @@ vec3 palette(float t) {
 ```
 
 ### Combining with Post-Processing Effects
+
 - **Bloom/Glow**: Blur and overlay high-brightness areas to enhance glow effects
+
 - **Tone Mapping**: `col = col / (1.0 + col)` to compress HDR range
-- **Chromatic Aberration**: Sample the warp field at offset positions for R/G/B channels separately
+
+- **Chromatic Aberration**: Sample the warp field at offset positions for R/G/B channels
+  separately
 ```glsl
 float r = pattern(uv + vec2(0.003, 0.0));
 float g = pattern(uv);
@@ -416,4 +488,6 @@ float b = pattern(uv - vec2(0.003, 0.0));
 ```
 
 ### Combining with Particle Systems / Geometry
-The domain warping scalar field can drive particle velocity fields, mesh vertex displacement, or UV animation deformation — not limited to pure fragment shader usage.
+
+The domain warping scalar field can drive particle velocity fields, mesh vertex
+displacement, or UV animation deformation — not limited to pure fragment shader usage.

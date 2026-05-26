@@ -20,7 +20,7 @@
    original system.
 
 4. **Self-authored debris accumulates** - Code just written gets defended as backwards
-   compatibility, memorialized in comments, or preserved "just in case".
+   compatibility, memorialized in comments, or preserved “just in case”.
    Each defense adds maintenance burden and blocks deletion.
 
 5. **Error suppression plus blame shifting prevents signal** - Reframing new errors as

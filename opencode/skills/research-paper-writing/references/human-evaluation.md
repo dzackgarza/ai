@@ -1,45 +1,57 @@
 # Human Evaluation Guide for ML/AI Research
 
-Comprehensive guide for designing, running, and reporting human evaluations in ML/AI papers. Human evaluation is the primary evidence for many NLP, HCI, and alignment papers, and is increasingly expected as complementary evidence at all ML venues.
+Comprehensive guide for designing, running, and reporting human evaluations in ML/AI
+papers.
+Human evaluation is the primary evidence for many NLP, HCI, and alignment papers,
+and is increasingly expected as complementary evidence at all ML venues.
 
----
+* * *
 
 ## Contents
 
 - [When Human Evaluation Is Needed](#when-human-evaluation-is-needed)
+
 - [Study Design](#study-design)
+
 - [Annotation Guidelines](#annotation-guidelines)
+
 - [Platforms and Recruitment](#platforms-and-recruitment)
+
 - [Quality Control](#quality-control)
+
 - [Agreement Metrics](#agreement-metrics)
+
 - [Statistical Analysis for Human Eval](#statistical-analysis-for-human-eval)
+
 - [Reporting Requirements](#reporting-requirements)
+
 - [IRB and Ethics](#irb-and-ethics)
+
 - [Common Pitfalls](#common-pitfalls)
 
----
+* * *
 
 ## When Human Evaluation Is Needed
 
 | Scenario | Human Eval Required? | Notes |
-|----------|---------------------|-------|
+| --- | --- | --- |
 | Text generation quality (fluency, coherence) | **Yes** | Automated metrics (BLEU, ROUGE) correlate poorly with human judgment |
 | Factual accuracy of generated text | **Strongly recommended** | Automated fact-checking is unreliable |
 | Safety/toxicity evaluation | **Yes for nuanced cases** | Classifiers miss context-dependent harm |
 | Preference between two systems | **Yes** | Most reliable method for comparing LLM outputs |
-| Summarization quality | **Yes** | ROUGE doesn't capture faithfulness or relevance well |
+| Summarization quality | **Yes** | ROUGE doesn’t capture faithfulness or relevance well |
 | Task completion (UI, agents) | **Yes** | User studies are the gold standard |
 | Classification accuracy | **Usually no** | Ground truth labels suffice; human eval adds cost without insight |
 | Perplexity or loss comparisons | **No** | Automated metrics are the correct evaluation |
 
----
+* * *
 
 ## Study Design
 
 ### Evaluation Types
 
 | Type | When to Use | Pros | Cons |
-|------|-------------|------|------|
+| --- | --- | --- | --- |
 | **Pairwise comparison** | Comparing two systems | Most reliable, minimizes scale bias | Only compares pairs, quadratic in systems |
 | **Likert scale** (1-5 or 1-7) | Rating individual outputs | Easy to aggregate | Subjective anchoring, scale compression |
 | **Ranking** | Ordering 3+ systems | Captures full preference order | Cognitive load increases with items |
@@ -47,14 +59,16 @@ Comprehensive guide for designing, running, and reporting human evaluations in M
 | **Binary judgment** | Yes/no decisions (grammatical? factual?) | Simple, high agreement | Loses nuance |
 | **Error annotation** | Identifying specific error types | Rich diagnostic information | Expensive, requires trained annotators |
 
-**Recommendation for most ML papers**: Pairwise comparison is the most defensible. Reviewers rarely question its validity. For Likert scales, always report both mean and distribution.
+**Recommendation for most ML papers**: Pairwise comparison is the most defensible.
+Reviewers rarely question its validity.
+For Likert scales, always report both mean and distribution.
 
 ### Sample Size Planning
 
 **Minimum viable sample sizes:**
 
 | Study Type | Minimum Items | Minimum Annotators | Notes |
-|------------|--------------|-------------------|-------|
+| --- | --- | --- | --- |
 | Pairwise comparison | 100 pairs | 3 per pair | Detects ~10% win rate difference at p<0.05 |
 | Likert rating | 100 items | 3 per item | Enough for meaningful averages |
 | Ranking | 50 sets | 3 per set | Each set contains all systems being compared |
@@ -86,18 +100,19 @@ print(f"Sample size for 20% effect: {sample_size_pairwise(0.20)}")  # ~50
 ### Controlling for Bias
 
 | Bias | Mitigation |
-|------|-----------|
+| --- | --- |
 | **Order bias** (first item preferred) | Randomize presentation order for each annotator |
 | **Length bias** (longer = better) | Control for length or analyze separately |
 | **Anchoring** (first annotation sets scale) | Include warm-up items (not counted) |
 | **Fatigue** (quality drops over time) | Limit session length (30-45 min max), randomize item order |
 | **Annotator expertise** | Report annotator background; use qualification tasks |
 
----
+* * *
 
 ## Annotation Guidelines
 
-Well-written annotation guidelines are the single biggest factor in evaluation quality. Invest significant time here.
+Well-written annotation guidelines are the single biggest factor in evaluation quality.
+Invest significant time here.
 
 ### Structure of Good Guidelines
 
@@ -148,18 +163,23 @@ Explanation: [why this is a 2]
 ### Pilot Testing
 
 **Always run a pilot** before the full study:
+
 1. 3-5 annotators, 20-30 items
+
 2. Compute agreement metrics
+
 3. Discuss disagreements in group session
+
 4. Revise guidelines based on confusion points
+
 5. Run second pilot if agreement was poor (<0.40 kappa)
 
----
+* * *
 
 ## Platforms and Recruitment
 
 | Platform | Best For | Cost | Quality |
-|----------|----------|------|---------|
+| --- | --- | --- | --- |
 | **Prolific** | General annotation, surveys | $8-15/hr | High (academic-focused pool) |
 | **Amazon MTurk** | Large-scale simple tasks | $5-12/hr | Variable (needs strong QC) |
 | **Surge AI** | NLP-specific annotation | $15-25/hr | Very high (trained annotators) |
@@ -167,16 +187,24 @@ Explanation: [why this is a 2]
 | **Internal team** | Domain expertise required | Varies | Highest for specialized tasks |
 | **Upwork/contractors** | Long-term annotation projects | $10-30/hr | Depends on hiring |
 
-**Fair compensation**: Always pay at least the equivalent of local minimum wage for the annotator's location. Many conferences (ACL in particular) now ask about annotator compensation. Paying below minimum wage is an ethics risk.
+**Fair compensation**: Always pay at least the equivalent of local minimum wage for the
+annotator’s location.
+Many conferences (ACL in particular) now ask about annotator compensation.
+Paying below minimum wage is an ethics risk.
 
 **Prolific setup (recommended for most ML papers):**
-1. Create study on prolific.co
-2. Set prescreening filters (language, country, approval rate >95%)
-3. Estimate time per task from pilot → set fair payment
-4. Use Prolific's built-in attention checks or add your own
-5. Collect Prolific IDs for quality tracking (but don't share in paper)
 
----
+1. Create study on prolific.co
+
+2. Set prescreening filters (language, country, approval rate >95%)
+
+3. Estimate time per task from pilot → set fair payment
+
+4. Use Prolific’s built-in attention checks or add your own
+
+5. Collect Prolific IDs for quality tracking (but don’t share in paper)
+
+* * *
 
 ## Quality Control
 
@@ -216,56 +244,58 @@ Qualification Task Design:
 def monitor_quality(annotations):
     """Check for annotation quality issues during collection."""
     issues = []
-    
+
     # 1. Check for straight-lining (same answer for everything)
     for annotator_id, items in annotations.groupby('annotator'):
         if items['rating'].nunique() <= 1:
             issues.append(f"Annotator {annotator_id}: straight-lining detected")
-    
+
     # 2. Check time per item (too fast = not reading)
     median_time = annotations['time_seconds'].median()
     fast_annotators = annotations.groupby('annotator')['time_seconds'].median()
     for ann_id, time in fast_annotators.items():
         if time < median_time * 0.3:
             issues.append(f"Annotator {ann_id}: suspiciously fast ({time:.0f}s vs median {median_time:.0f}s)")
-    
+
     # 3. Check attention check performance
     checks = annotations[annotations['is_attention_check']]
     for ann_id, items in checks.groupby('annotator'):
         accuracy = (items['rating'] == items['gold_rating']).mean()
         if accuracy < 0.80:
             issues.append(f"Annotator {ann_id}: failing attention checks ({accuracy:.0%})")
-    
+
     return issues
 ```
 
----
+* * *
 
 ## Agreement Metrics
 
 ### Which Metric to Use
 
 | Metric | When to Use | Interpretation |
-|--------|-------------|---------------|
-| **Cohen's kappa (κ)** | Exactly 2 annotators, categorical | Chance-corrected agreement |
-| **Fleiss' kappa** | 3+ annotators, all rate same items, categorical | Multi-annotator extension of Cohen's |
-| **Krippendorff's alpha (α)** | Any number of annotators, handles missing data | Most general; recommended default |
+| --- | --- | --- |
+| **Cohen’s kappa (κ)** | Exactly 2 annotators, categorical | Chance-corrected agreement |
+| **Fleiss’ kappa** | 3+ annotators, all rate same items, categorical | Multi-annotator extension of Cohen’s |
+| **Krippendorff’s alpha (α)** | Any number of annotators, handles missing data | Most general; recommended default |
 | **ICC (Intraclass Correlation)** | Continuous ratings (Likert) | Consistency among raters |
 | **Percent agreement** | Reporting alongside kappa/alpha | Raw agreement (not chance-corrected) |
-| **Kendall's W** | Rankings | Concordance among rankers |
+| **Kendall’s W** | Rankings | Concordance among rankers |
 
-**Always report at least two**: one chance-corrected metric (kappa or alpha) AND raw percent agreement.
+**Always report at least two**: one chance-corrected metric (kappa or alpha) AND raw
+percent agreement.
 
 ### Interpretation Guide
 
-| Value | Krippendorff's α / Cohen's κ | Quality |
-|-------|-------------------------------|---------|
+| Value | Krippendorff’s α / Cohen’s κ | Quality |
+| --- | --- | --- |
 | > 0.80 | Excellent agreement | Reliable for most purposes |
 | 0.67 - 0.80 | Good agreement | Acceptable for most ML papers |
 | 0.40 - 0.67 | Moderate agreement | Borderline; discuss in paper |
 | < 0.40 | Poor agreement | Revise guidelines and redo annotation |
 
-**Note**: Krippendorff recommends α > 0.667 as minimum for tentative conclusions. NLP tasks with subjective judgments (fluency, helpfulness) typically achieve 0.40-0.70.
+**Note**: Krippendorff recommends α > 0.667 as minimum for tentative conclusions.
+NLP tasks with subjective judgments (fluency, helpfulness) typically achieve 0.40-0.70.
 
 ### Implementation
 
@@ -280,13 +310,13 @@ def compute_agreement(annotations_matrix):
     Values: ratings (int or float). Use np.nan for missing.
     """
     results = {}
-    
+
     # Krippendorff's alpha (handles missing data, any number of annotators)
     results['krippendorff_alpha'] = krippendorff.alpha(
         annotations_matrix.T,  # krippendorff expects (annotators, items)
         level_of_measurement='ordinal'  # or 'nominal', 'interval', 'ratio'
     )
-    
+
     # Pairwise Cohen's kappa (for 2 annotators at a time)
     n_annotators = annotations_matrix.shape[1]
     kappas = []
@@ -300,7 +330,7 @@ def compute_agreement(annotations_matrix):
                 )
                 kappas.append(k)
     results['mean_pairwise_kappa'] = np.mean(kappas) if kappas else None
-    
+
     # Raw percent agreement
     agree_count = 0
     total_count = 0
@@ -312,11 +342,11 @@ def compute_agreement(annotations_matrix):
                 agree_count += 1
             total_count += 1
     results['percent_agreement'] = agree_count / total_count if total_count > 0 else None
-    
+
     return results
 ```
 
----
+* * *
 
 ## Statistical Analysis for Human Eval
 
@@ -333,10 +363,10 @@ def analyze_pairwise(wins_a, wins_b, ties=0):
     ties: number of ties (excluded from sign test)
     """
     n = wins_a + wins_b  # exclude ties
-    
+
     # Sign test (exact binomial)
     p_value = stats.binom_test(wins_a, n, 0.5, alternative='two-sided')
-    
+
     # Win rate with 95% CI (Wilson score interval)
     win_rate = wins_a / n if n > 0 else 0.5
     z = 1.96
@@ -345,7 +375,7 @@ def analyze_pairwise(wins_a, wins_b, ties=0):
     margin = z * np.sqrt((win_rate * (1 - win_rate) + z**2 / (4 * n)) / n) / denominator
     ci_lower = center - margin
     ci_upper = center + margin
-    
+
     return {
         'win_rate_a': win_rate,
         'win_rate_b': 1 - win_rate,
@@ -364,11 +394,11 @@ def analyze_likert(ratings_a, ratings_b):
     """Compare Likert ratings between two systems (paired)."""
     # Wilcoxon signed-rank test (non-parametric, paired)
     stat, p_value = stats.wilcoxon(ratings_a, ratings_b, alternative='two-sided')
-    
+
     # Effect size (rank-biserial correlation)
     n = len(ratings_a)
     r = 1 - (2 * stat) / (n * (n + 1))
-    
+
     return {
         'mean_a': np.mean(ratings_a),
         'mean_b': np.mean(ratings_b),
@@ -394,11 +424,12 @@ rejected, corrected_p, _, _ = multipletests(p_values, method='holm')
 # Use corrected p-values in your paper
 ```
 
----
+* * *
 
 ## Reporting Requirements
 
-Reviewers at NLP venues (ACL, EMNLP, NAACL) check for all of these. ML venues (NeurIPS, ICML) increasingly expect them too.
+Reviewers at NLP venues (ACL, EMNLP, NAACL) check for all of these.
+ML venues (NeurIPS, ICML) increasingly expect them too.
 
 ### Mandatory Reporting
 
@@ -431,21 +462,23 @@ Appendix: Human Evaluation Details
 - IRB approval number (if applicable)
 ```
 
----
+* * *
 
 ## IRB and Ethics
 
 ### When IRB Approval Is Needed
 
 | Situation | IRB Required? |
-|-----------|---------------|
-| Crowdworkers rating text quality | **Usually no** (not "human subjects research" at most institutions) |
+| --- | --- |
+| Crowdworkers rating text quality | **Usually no** (not “human subjects research” at most institutions) |
 | User study with real users | **Yes** at most US/EU institutions |
 | Collecting personal information | **Yes** |
 | Studying annotator behavior/cognition | **Yes** (they become the subject) |
 | Using existing annotated data | **Usually no** (secondary data analysis) |
 
-**Check your institution's policy.** The definition of "human subjects research" varies. When in doubt, submit an IRB protocol — the review is often fast for minimal-risk studies.
+**Check your institution’s policy.** The definition of “human subjects research” varies.
+When in doubt, submit an IRB protocol — the review is often fast for minimal-risk
+studies.
 
 ### Ethics Checklist for Human Evaluation
 
@@ -460,17 +493,17 @@ Appendix: Human Evaluation Details
 - [ ] IRB approval obtained if required by institution
 ```
 
----
+* * *
 
 ## Common Pitfalls
 
 | Pitfall | Problem | Fix |
-|---------|---------|-----|
+| --- | --- | --- |
 | Too few annotators (1-2) | No agreement metric possible | Minimum 3 annotators per item |
-| No attention checks | Can't detect low-quality annotations | Include 10-15% attention checks |
+| No attention checks | Can’t detect low-quality annotations | Include 10-15% attention checks |
 | Not reporting compensation | Reviewers flag as ethics concern | Always report hourly rate |
 | Using only automated metrics for generation | Reviewers will ask for human eval | Add at least pairwise comparison |
 | Not piloting guidelines | Low agreement, wasted budget | Always pilot with 3-5 people first |
 | Reporting only averages | Hides annotator disagreement | Report distribution and agreement |
 | Not controlling for order/position | Position bias inflates results | Randomize presentation order |
-| Conflating annotator agreement with ground truth | High agreement doesn't mean correct | Validate against expert judgments |
+| Conflating annotator agreement with ground truth | High agreement doesn’t mean correct | Validate against expert judgments |

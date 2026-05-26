@@ -1,48 +1,76 @@
 # Anti-Slop: AI Content Quality Toolkit
 
-A comprehensive Claude Code skill for detecting and eliminating generic AI-generated patterns ("AI slop") in natural language, code, and design.
+A comprehensive Claude Code skill for detecting and eliminating generic AI-generated
+patterns ("AI slop") in natural language, code, and design.
 
 ## What You Get
 
 ### 1. Anti-Slop Skill (`anti-slop.skill`)
+
 A complete Claude Code skill package containing:
 
 - **SKILL.md**: Main skill documentation with workflows and best practices
+
 - **3 Comprehensive Reference Guides**:
+
   - `text-patterns.md`: Natural language slop patterns (5.5KB)
+
   - `code-patterns.md`: Programming antipatterns (9.5KB)
+
   - `design-patterns.md`: Visual/UX design slop patterns (10KB)
+
 - **2 Python Scripts**:
+
   - `detect_slop.py`: Automated slop detection for text files
+
   - `clean_slop.py`: Automated slop cleanup with safety features
 
 ### 2. CLAUDE.md Updates (`CLAUDE_MD_UPDATES.md`)
+
 Proposed system-level integration updates including:
+
 - Core behavior modifications to prevent slop generation
+
 - Quality standards for text, code, and design
+
 - Proactive trigger patterns for the anti-slop skill
+
 - Integration with existing Claude workflows
 
 ## What is AI Slop?
 
-"AI slop" refers to telltale patterns that signal generic, low-quality AI-generated content:
+“AI slop” refers to telltale patterns that signal generic, low-quality AI-generated
+content:
 
 ### Text Slop
-- Overused phrases: "delve into", "navigate the complexities", "in today's fast-paced world"
-- Excessive buzzwords: "leverage", "synergistic", "paradigm shift"
-- Meta-commentary: "In this article, we will discuss..."
-- Generic hedging: "may or may not", "could potentially"
+
+- Overused phrases: “delve into”, “navigate the complexities”, “in today’s fast-paced
+  world”
+
+- Excessive buzzwords: “leverage”, “synergistic”, “paradigm shift”
+
+- Meta-commentary: “In this article, we will discuss …”
+
+- Generic hedging: “may or may not”, “could potentially”
 
 ### Code Slop
+
 - Generic variable names: `data`, `result`, `temp`, `item`
+
 - Obvious comments that restate code
+
 - Unnecessary abstraction layers
+
 - Over-engineered solutions for simple problems
 
 ### Design Slop
+
 - Cookie-cutter layouts and generic templates
+
 - Purple/pink/cyan gradient backgrounds
-- Generic marketing copy: "Empower Your Business"
+
+- Generic marketing copy: “Empower Your Business”
+
 - Overuse of trendy effects without purpose
 
 ## Quick Start
@@ -91,16 +119,25 @@ python scripts/clean_slop.py article.md --save
 The `detect_slop.py` script analyzes text files and provides:
 
 **Slop Score (0-100):**
+
 - 0-20: Low slop (authentic writing)
+
 - 20-40: Moderate slop (some patterns present)
+
 - 40-60: High slop (many patterns found)
+
 - 60+: Severe slop (heavily generic)
 
 **Pattern Categories:**
+
 - High-risk phrases (nearly always slop)
+
 - Buzzwords and jargon
+
 - Meta-commentary
+
 - Excessive hedging
+
 - Structural issues
 
 **Example output:**
@@ -149,12 +186,19 @@ python scripts/clean_slop.py article.md --output cleaned_article.md
 ```
 
 **What it cleans:**
+
 - High-risk phrases → removed or simplified
+
 - Wordy constructions → replaced with concise alternatives
+
 - Meta-commentary → removed entirely
+
 - Excessive hedging → reduced to single qualifiers
+
 - Buzzwords → replaced with specific terms
+
 - Redundant qualifiers → fixed
+
 - Empty intensifiers → removed
 
 ### Code Review
@@ -173,9 +217,13 @@ view references/code-patterns.md
 ```
 
 **Common fixes:**
+
 - `data` → `userPreferences`, `transactionHistory`, `searchResults`
+
 - `result` → `parsedDocument`, `filteredItems`, `validationError`
+
 - Remove comments like `# Create a user` before `user = User()`
+
 - Simplify complex implementations of simple tasks
 
 ### Design Review
@@ -187,73 +235,120 @@ view references/design-patterns.md
 ```
 
 **Key checks:**
+
 - Is the color palette generic (purple/pink/cyan)?
+
 - Does layout follow a template or serve content?
+
 - Is copy specific or generic marketing speak?
+
 - Are visual effects purposeful or decorative?
+
 - Does design reflect brand or look like any AI startup?
 
 ## Reference Guides
 
 ### text-patterns.md
+
 Comprehensive guide to natural language slop:
+
 - Overused transition phrases
+
 - Generic hedge language
+
 - Unnecessary meta-commentary
+
 - Corporate buzzword clusters
+
 - Redundant qualifiers
+
 - Empty intensifiers
+
 - Filler constructions
+
 - Detection patterns and cleanup strategies
 
 ### code-patterns.md
+
 Programming antipatterns across languages:
+
 - Naming antipatterns
+
 - Comment antipatterns
+
 - Structure antipatterns
+
 - Implementation antipatterns
+
 - Documentation antipatterns
+
 - Language-specific slop (Python, JS, Java)
+
 - Detection signals and refactoring strategies
 
 ### design-patterns.md
+
 Visual and UX design slop patterns:
+
 - Visual design slop (gradients, effects, motifs)
+
 - Color and typography issues
+
 - Layout antipatterns
+
 - Component overuse
+
 - UX writing slop
+
 - Animation and interaction patterns
+
 - Platform-specific issues
+
 - Quality improvement strategies
 
 ## Integration with CLAUDE.md
 
-The `CLAUDE_MD_UPDATES.md` file contains proposed system-level changes that would make Claude naturally avoid slop patterns.
+The `CLAUDE_MD_UPDATES.md` file contains proposed system-level changes that would make
+Claude naturally avoid slop patterns.
 
 **Key updates:**
+
 1. **Anti-slop awareness** - Core patterns to avoid
+
 2. **Quality principles** - Direct, specific, authentic writing
+
 3. **Code quality standards** - Meaningful names, appropriate comments
+
 4. **Design quality standards** - Content-first, intentional choices
+
 5. **Proactive triggers** - When to use anti-slop skill automatically
 
 **Implementation approaches:**
 
 **Option 1: Gradual Integration**
+
 - Start by making Claude aware the skill exists
+
 - Add proactive triggers for common scenarios
+
 - Integrate quality principles over time
+
 - Monitor and refine based on usage
 
 **Option 2: Full Integration**
+
 - Add all updates to CLAUDE.md at once
+
 - Claude becomes naturally anti-slop in all outputs
+
 - Skill becomes both prevention and cure tool
 
 **Option 3: User-Controlled**
+
 - Keep skill as opt-in tool
+
 - Users explicitly invoke when needed
+
 - No changes to core Claude behavior
 
 ## Best Practices
@@ -261,40 +356,61 @@ The `CLAUDE_MD_UPDATES.md` file contains proposed system-level changes that woul
 ### For Prevention
 
 **When creating content:**
+
 1. Write with specific audience in mind
+
 2. Use concrete examples over abstractions
+
 3. Lead with the point, skip preambles
+
 4. Choose words for precision, not impression
+
 5. Review against slop patterns before finalizing
 
 ### For Detection
 
 **Run detection when:**
-- Content feels generic or "AI-like"
+
+- Content feels generic or “AI-like”
+
 - Before delivering client work
+
 - During content review processes
+
 - Establishing quality standards
+
 - Training teams on quality
 
 ### For Cleanup
 
 **Cleanup workflow:**
+
 1. Run detection to understand scope
+
 2. Preview automated cleanup
+
 3. Apply safe automated changes
+
 4. Manually review and refine
+
 5. Verify meaning preserved
 
 **Safety notes:**
+
 - Always preview before saving
+
 - Review automated changes carefully
+
 - Use non-aggressive mode for important content
+
 - Keep backups of originals
+
 - Exercise judgment on context-dependent patterns
 
 ## Common Scenarios
 
 ### Scenario 1: Content Review
+
 ```
 User: "Can you review this article for AI slop?"
 
@@ -308,6 +424,7 @@ Claude:
 ```
 
 ### Scenario 2: Code Cleanup
+
 ```
 User: "Help me remove generic patterns from my code"
 
@@ -321,6 +438,7 @@ Claude:
 ```
 
 ### Scenario 3: Design Audit
+
 ```
 User: "Does this design look too generic?"
 
@@ -334,6 +452,7 @@ Claude:
 ```
 
 ### Scenario 4: Quality Standards
+
 ```
 User: "Help me create quality standards for our team"
 
@@ -349,50 +468,79 @@ Claude:
 ## Limitations
 
 **Current scope:**
+
 - Detection scripts only work on text files
+
 - Code slop detection is manual process
+
 - Design slop detection is manual process
+
 - Patterns optimized for English
+
 - Code patterns focus on Python, JS, Java
 
 **Context sensitivity:**
-- Scripts can't understand all contexts
-- Some "slop" may be appropriate in specific domains
+
+- Scripts can’t understand all contexts
+
+- Some “slop” may be appropriate in specific domains
+
 - Always review automated changes
+
 - Exercise judgment on recommendations
 
 **Not a replacement for:**
+
 - Domain expertise
+
 - Human judgment
+
 - Editorial review
+
 - Code review process
+
 - Design critique
 
 ## Technical Details
 
 ### Script Requirements
+
 - Python 3.6+
+
 - No external dependencies
+
 - Works on Linux, macOS, Windows
 
 ### Script Architecture
 
 **detect_slop.py:**
+
 - Pattern-based text analysis
+
 - Multiple slop categories
+
 - Configurable scoring
+
 - Detailed reporting
 
 **clean_slop.py:**
+
 - Regex-based pattern replacement
+
 - Safe/aggressive modes
+
 - Backup creation
+
 - Preview functionality
 
 ### Performance
+
 - Detection: ~50ms per 1000 words
+
 - Cleanup: ~100ms per 1000 words
+
 - Memory: Minimal (loads file once)
+
 - Output: Detailed reports or cleaned text
 
 ## Examples
@@ -456,33 +604,41 @@ Screenshot of actual interface
 To extend the skill:
 
 1. **Add new patterns** to reference files
+
 2. **Update detection regex** in detect_slop.py
+
 3. **Add cleanup rules** to clean_slop.py
+
 4. **Test thoroughly** with real examples
+
 5. **Document patterns** with examples
 
 ## Support
 
 For issues or questions:
+
 - Review the comprehensive reference guides
+
 - Check example scenarios in SKILL.md
+
 - Test with the provided scripts
+
 - Consider context when applying rules
 
 ## License
 
 See LICENSE.txt for complete terms.
 
----
+* * *
 
 ## Summary
 
 The Anti-Slop skill provides:
 
-✅ **Detection**: Automated scanning for slop patterns in text
-✅ **Cleanup**: Safe automated removal of common patterns
-✅ **Prevention**: Reference guides for all content types
-✅ **Integration**: System-level updates for Claude
-✅ **Flexibility**: Use as tool or integrate into behavior
+✅ **Detection**: Automated scanning for slop patterns in text ✅ **Cleanup**: Safe
+automated removal of common patterns ✅ **Prevention**: Reference guides for all content
+types ✅ **Integration**: System-level updates for Claude ✅ **Flexibility**: Use as tool
+or integrate into behavior
 
-The goal: Create authentic, high-quality content that serves users rather than following generic AI patterns.
+The goal: Create authentic, high-quality content that serves users rather than following
+generic AI patterns.

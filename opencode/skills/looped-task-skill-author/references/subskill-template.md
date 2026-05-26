@@ -1,6 +1,8 @@
 # Template for a looped-task subskill
 
-Copy and adapt this only after inspecting local repo conventions. Remove irrelevant sections. Keep the final subskill shorter than this template when possible.
+Copy and adapt this only after inspecting local repo conventions.
+Remove irrelevant sections.
+Keep the final subskill shorter than this template when possible.
 
 ```markdown
 ---

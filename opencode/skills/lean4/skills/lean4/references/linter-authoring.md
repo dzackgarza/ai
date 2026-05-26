@@ -1,16 +1,22 @@
 # Linter Authoring
 
-> **Scope:** Not part of the prove/autoprove default loop. Consulted when writing or maintaining project-specific Lean 4 linters.
+> **Scope:** Not part of the prove/autoprove default loop.
+> Consulted when writing or maintaining project-specific Lean 4 linters.
 
 > **Version metadata:**
+>
 > - **Verified on:** Lean reference + release notes through `v4.27.0`
+>
 > - **Last validated:** 2026-02-17
+>
 > - **Confidence:** medium (docs reviewed; snippets not batch-compiled)
 
 ## When to Use
 
 - Project-specific style or safety checks
+
 - Fast feedback before runtime bugs (slow paths, unsafe usage)
+
 - Consistent policy enforcement across a codebase
 
 ## Composable Rule Blocks
@@ -18,9 +24,13 @@
 Build linters from small parts you can reuse:
 
 - `Option`: `register_option linter.myRule`
+
 - `Finder`: `findBad : Syntax -> Array Syntax`
+
 - `Filter`: file or namespace exclusions
+
 - `Action`: `logWarningAt` vs `throwErrorAt`
+
 - `Registration`: `initialize addLinter ...`
 
 Each rule should be a thin layer over these blocks.
@@ -73,6 +83,7 @@ initialize addLinter myRuleLinter
 ## Warnings vs Errors
 
 - Use `logWarningAt` for style or best-practice rules
+
 - Use `throwErrorAt` for correctness or safety rules
 
 ## File-Based Exclusions
@@ -91,6 +102,7 @@ if isBenchOrTest (← getFileName) then return
 ## Project-Wide Enablement
 
 - Import linters in a common module (e.g., `Basic.lean`) so they run everywhere
+
 - Enable them in `lakefile.lean` using weak options:
 
 ```lean
@@ -111,7 +123,9 @@ set_option linter.myRule false in
 ## Good Linter Messages
 
 - Explain the why, not just the what
+
 - Provide a concrete fix snippet
+
 - Keep the message stable so users can search it
 
 ## Linter Test File
@@ -127,12 +141,18 @@ This helps prevent regressions when refactoring syntax traversal.
 ## Checklist
 
 - Rule has a clear safety or style goal
+
 - Finder returns the smallest offending node
+
 - False positives are minimized (or skipped by file path)
+
 - Option exists and defaults to a sensible value
+
 - Error span is attached to the exact syntax node
 
 ## See Also
 
-- [metaprogramming-patterns.md](metaprogramming-patterns.md) — MetaM/TacticM API for building linter logic
+- [metaprogramming-patterns.md](metaprogramming-patterns.md) — MetaM/TacticM API for
+  building linter logic
+
 - [lean4-custom-syntax.md](lean4-custom-syntax.md) — syntax traversal primitives

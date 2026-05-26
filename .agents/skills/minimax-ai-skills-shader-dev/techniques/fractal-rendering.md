@@ -1,17 +1,26 @@
 # Fractal Rendering Skill
 
 ## Use Cases
-- Rendering self-similar mathematical structures: Mandelbrot/Julia sets (2D), Mandelbulb (3D), IFS fractals (Menger/Apollonian)
+
+- Rendering self-similar mathematical structures: Mandelbrot/Julia sets (2D), Mandelbulb
+  (3D), IFS fractals (Menger/Apollonian)
+
 - Procedural textures or backgrounds requiring infinite detail
-- Real-time generation of complex geometric visual effects (music visualization, sci-fi scenes, abstract art)
+
+- Real-time generation of complex geometric visual effects (music visualization, sci-fi
+  scenes, abstract art)
+
 - Suitable for ShaderToy, demo scene, procedural content generation
 
 ## Core Principles
 
-Fractal rendering is essentially **visualization of iterative systems**, falling into three categories:
+Fractal rendering is essentially **visualization of iterative systems**, falling into
+three categories:
 
 ### 1. Escape-Time Algorithm
-Iterate `Z <- Z^2 + c`, count escape steps. Distance estimation by simultaneously tracking the derivative `Z'`:
+
+Iterate `Z <- Z^2 + c`, count escape steps.
+Distance estimation by simultaneously tracking the derivative `Z'`:
 ```
 Z  <- Z^2 + c
 Z' <- 2*Z*Z' + 1
@@ -19,6 +28,7 @@ d(c) = |Z|*log|Z| / |Z'|
 ```
 
 ### 2. Iterated Function System (IFS / KIFS)
+
 Fold-sort-scale-offset iteration produces self-similar structures:
 ```
 p = abs(p)                          // fold
@@ -27,6 +37,7 @@ p = Scale * p - Offset * (Scale-1)  // scale and offset
 ```
 
 ### 3. Spherical Inversion Fractals
+
 `fract()` space folding + spherical inversion `p *= s/dot(p,p)`:
 ```
 p = -1.0 + 2.0 * fract(0.5*p + 0.5)
@@ -39,11 +50,13 @@ All 3D fractals are rendered via **Sphere Tracing (Ray Marching)**.
 ## Implementation Steps
 
 ### Step 1: Coordinate Normalization
+
 ```glsl
 vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
 ```
 
 ### Step 2: 2D Mandelbrot Escape-Time Iteration
+
 ```glsl
 float distanceToMandelbrot(in vec2 c) {
     vec2 z  = vec2(0.0);
@@ -64,6 +77,7 @@ float distanceToMandelbrot(in vec2 c) {
 ```
 
 ### Step 3: Mandelbulb Distance Field (Spherical Coordinate Power-N)
+
 ```glsl
 float mandelbulb(vec3 p) {
     vec3 z = p;
@@ -88,6 +102,7 @@ float mandelbulb(vec3 p) {
 ```
 
 ### Step 4: Menger Sponge Distance Field (KIFS)
+
 ```glsl
 float mengerDE(vec3 z) {
     z = abs(1.0 - mod(z, 2.0));  // infinite tiling
@@ -108,6 +123,7 @@ float mengerDE(vec3 z) {
 ```
 
 ### Step 5: Apollonian Distance Field (Spherical Inversion)
+
 ```glsl
 vec4 orb;  // orbit trap
 
@@ -128,6 +144,7 @@ float apollonianDE(vec3 p, float s) {
 ```
 
 ### Step 6: Ray Marching
+
 ```glsl
 float rayMarch(vec3 ro, vec3 rd) {
     float t = 0.01;
@@ -142,6 +159,7 @@ float rayMarch(vec3 ro, vec3 rd) {
 ```
 
 ### Step 7: Normal Calculation
+
 ```glsl
 // 4-tap tetrahedral method (recommended)
 vec3 calcNormal(vec3 pos, float t) {
@@ -156,6 +174,7 @@ vec3 calcNormal(vec3 pos, float t) {
 ```
 
 ### Step 8: Shading & Lighting
+
 ```glsl
 vec3 shade(vec3 pos, vec3 nor, vec3 rd, vec4 trap) {
     vec3 light1 = normalize(LIGHT_DIR);
@@ -173,6 +192,7 @@ vec3 shade(vec3 pos, vec3 nor, vec3 rd, vec4 trap) {
 ```
 
 ### Step 9: Camera
+
 ```glsl
 void setupCamera(vec2 uv, vec3 ro, vec3 ta, float cr, out vec3 rd) {
     vec3 cw = normalize(ta - ro);
@@ -185,7 +205,8 @@ void setupCamera(vec2 uv, vec3 ro, vec3 ta, float cr, out vec3 rd) {
 
 ## Complete Code Template
 
-3D Apollonian fractal (spherical inversion type) with full ray marching pipeline, orbit trap coloring, and AO. Ready to run in ShaderToy.
+3D Apollonian fractal (spherical inversion type) with full ray marching pipeline, orbit
+trap coloring, and AO. Ready to run in ShaderToy.
 
 ```glsl
 // Fractal Rendering — Apollonian (Spherical Inversion) Template
@@ -304,7 +325,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### 1. 2D Mandelbrot (Distance Estimation Coloring)
-Pure 2D, no ray marching needed. Complex iteration + distance coloring.
+
+Pure 2D, no ray marching needed.
+Complex iteration + distance coloring.
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 p = (2.0*fragCoord - iResolution.xy) / iResolution.y;
@@ -326,6 +349,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### 2. Mandelbulb Power-N
+
 Spherical coordinate trigonometric functions; `POWER` parameter controls morphology.
 ```glsl
 #define POWER 8.0       // Tunable: 2-16
@@ -349,6 +373,7 @@ float mandelbulbDE(vec3 p) {
 ```
 
 ### 3. Menger Sponge (KIFS)
+
 `abs()` folding + conditional sorting, regular geometric fractal.
 ```glsl
 #define SCALE 3.0
@@ -373,7 +398,9 @@ float mengerDE(vec3 z) {
 ```
 
 ### 4. Quaternion Julia Set
-Quaternion `Z <- Z^2 + c` (4D), with fixed `c` parameter; visualized by taking a 3D slice.
+
+Quaternion `Z <- Z^2 + c` (4D), with fixed `c` parameter; visualized by taking a 3D
+slice.
 ```glsl
 vec4 qsqr(vec4 a) {
     return vec4(a.x*a.x - a.y*a.y - a.z*a.z - a.w*a.w,
@@ -395,6 +422,7 @@ float juliaDE(vec3 p, vec4 c) {
 ```
 
 ### 5. Minimal IFS Field (2D, No Ray Marching)
+
 `abs(p)/dot(p,p) + offset` iteration, weighted accumulation produces a density field.
 ```glsl
 float field(vec3 p) {
@@ -415,22 +443,38 @@ float field(vec3 p) {
 ## Performance & Composition
 
 ### Performance Tips
-- Core bottleneck: outer ray marching x inner fractal iteration (e.g., `200 x 8 = 1600` map calls per pixel)
+
+- Core bottleneck: outer ray marching x inner fractal iteration (e.g., `200 x 8 = 1600`
+  map calls per pixel)
+
 - Reduce `MAX_STEPS` to 60-100, compensate with fudge factor 0.7-0.9
+
 - Hit threshold `precis = 0.001 * t` relaxes with distance
+
 - Fractal iteration: break immediately when `|z|^2 > bailout`
+
 - Reducing iterations from 8 to 4-5 has minimal visual impact
+
 - Use 4-tap normals instead of 6-tap to save 33%
+
 - Use AA=1 during development, AA=2 for release (AA=3 = 9x overhead)
+
 - Avoid `pow()` inside loops; manually expand for low powers
 
 ### Composition Techniques
+
 - **Volumetric light**: accumulate `exp(-10.0 * h)` during ray march for god rays
+
 - **Tone Mapping**: ACES + sRGB gamma for handling high-frequency detail
-- **Transparent refraction**: negative distance field reverse ray march + Beer's law absorption
+
+- **Transparent refraction**: negative distance field reverse ray march + Beer’s law
+  absorption
+
 - **Orbit Trap coloring**: map trap values to HSV or emissive colors
+
 - **Soft shadows**: ray march toward light, accumulate `min(k * h / t)` for soft shadows
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/fractal-rendering.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/fractal-rendering.md)

@@ -1,10 +1,14 @@
 # Chapter 6: Objects and Data Structures
 
-Why do we keep variables private? To prevent others from depending on them—to keep freedom to change implementation. Why, then, do so many programmers add getters and setters, exposing private variables as if public?
+Why do we keep variables private?
+To prevent others from depending on them—to keep freedom to change implementation.
+Why, then, do so many programmers add getters and setters, exposing private variables as
+if public?
 
 ## Data Abstraction
 
-Hiding implementation isn't just putting functions between variables—it's about **abstractions**.
+Hiding implementation isn’t just putting functions between variables—it’s about
+**abstractions**.
 
 ```java
 // Concrete - exposes implementation (rectangular coordinates)
@@ -24,7 +28,8 @@ public interface Point {
 }
 ```
 
-The abstract version enforces an access policy: read coordinates independently, but set them together atomically.
+The abstract version enforces an access policy: read coordinates independently, but set
+them together atomically.
 
 ```java
 // Concrete - obviously just accessor to gallons
@@ -39,25 +44,29 @@ public interface Vehicle {
 }
 ```
 
-**Don't blithely add getters and setters.** Think about the best way to represent data.
+**Don’t blithely add getters and setters.** Think about the best way to represent data.
 
 ## Data/Object Anti-Symmetry
 
 Objects and data structures are virtual opposites:
 
 | Concept | Hides | Exposes |
-|---------|-------|---------|
+| --- | --- | --- |
 | **Objects** | Data | Functions that operate on data |
 | **Data Structures** | Nothing | Data (no meaningful functions) |
 
 ### The Fundamental Dichotomy
 
 **Procedural code** (using data structures):
+
 - Easy to add new functions without changing data structures
+
 - Hard to add new data structures (all functions must change)
 
 **OO code** (using objects):
+
 - Easy to add new classes without changing functions
+
 - Hard to add new functions (all classes must change)
 
 ```java
@@ -85,19 +94,25 @@ public class Circle implements Shape {
 }
 ```
 
-**Mature programmers know that the idea that everything is an object is a myth.** Sometimes you want simple data structures with procedures operating on them.
+**Mature programmers know that the idea that everything is an object is a myth.**
+Sometimes you want simple data structures with procedures operating on them.
 
 ## The Law of Demeter
 
 A module should not know about the innards of objects it manipulates.
 
 **A method `f` of class `C` should only call methods of:**
+
 - `C` itself
+
 - Objects created by `f`
+
 - Objects passed as arguments to `f`
+
 - Objects held in instance variables of `C`
 
-**Don't call methods on objects returned by allowed functions.** Talk to friends, not strangers.
+**Don’t call methods on objects returned by allowed functions.** Talk to friends, not
+strangers.
 
 ### Train Wrecks
 
@@ -113,20 +128,23 @@ final String outputDir = scratchDir.getAbsolutePath();
 
 Whether this violates Demeter depends on whether these are objects or data structures.
 
-**If data structures:** Demeter doesn't apply—they naturally expose internal structure.
+**If data structures:** Demeter doesn’t apply—they naturally expose internal structure.
 **If objects:** Clear violation—should hide internal structure.
 
 ### Hybrids Are Bad
 
 Hybrids (half object, half data structure) have the worst of both worlds:
+
 - Hard to add new functions
+
 - Hard to add new data structures
 
-They indicate muddled design. Avoid creating them.
+They indicate muddled design.
+Avoid creating them.
 
 ### Hiding Structure
 
-If objects have real behavior, ask them to *do something*, don't navigate through them.
+If objects have real behavior, ask them to *do something*, don’t navigate through them.
 
 ```java
 // Bad - asking for internals, then using them
@@ -137,11 +155,12 @@ FileOutputStream fout = new FileOutputStream(outFile);
 BufferedOutputStream bos = ctxt.createScratchFileStream(classFileName);
 ```
 
-`ctxt` hides its internals and we don't violate Demeter.
+`ctxt` hides its internals and we don’t violate Demeter.
 
 ## Data Transfer Objects (DTOs)
 
-A class with public variables and no functions—useful for database communication, parsing messages, etc.
+A class with public variables and no functions—useful for database communication,
+parsing messages, etc.
 
 ```java
 // Bean form (quasi-encapsulation, no real benefit over public fields)
@@ -158,17 +177,21 @@ public class Address {
 
 ### Active Records
 
-DTOs with navigational methods like `save` and `find`. Usually direct translations from database tables.
+DTOs with navigational methods like `save` and `find`. Usually direct translations from
+database tables.
 
 **Problem:** Developers put business rules in them, creating hybrids.
 
-**Solution:** Treat Active Records as data structures. Create separate objects for business rules that hide their data (probably instances of the Active Record).
+**Solution:** Treat Active Records as data structures.
+Create separate objects for business rules that hide their data (probably instances of
+the Active Record).
 
 ## Conclusion
 
-| Want to add... | Prefer... |
-|----------------|-----------|
+| Want to add … | Prefer … |
+| --- | --- |
 | New data types | Objects and OO |
 | New behaviors | Data structures and procedures |
 
-Good developers understand this without prejudice and choose the approach best for the job.
+Good developers understand this without prejudice and choose the approach best for the
+job.

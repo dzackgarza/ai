@@ -1,22 +1,38 @@
 # Heightfield Ray Marching Terrain Rendering — Detailed Reference
 
-> This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites, complete explanations for each step (what/why), variant details, in-depth performance optimization analysis, and complete code examples for combination suggestions.
+> This document is a detailed supplement to [SKILL.md](SKILL.md), covering
+> prerequisites, complete explanations for each step (what/why), variant details,
+> in-depth performance optimization analysis, and complete code examples for combination
+> suggestions.
 
 ## Prerequisites
 
-- **GLSL Fundamentals**: uniforms, varyings, built-in functions (mix, smoothstep, clamp, fract, floor)
+- **GLSL Fundamentals**: uniforms, varyings, built-in functions (mix, smoothstep, clamp,
+  fract, floor)
+
 - **Vector Math**: dot product, cross product, matrix transforms, normal calculation
-- **Basic Ray Marching Concepts**: casting rays from the camera, advancing along rays, detecting intersections
-- **Noise Functions**: basic principles of Value Noise / Gradient Noise (grid sampling + interpolation)
-- **FBM (Fractal Brownian Motion)**: layering multiple noise octaves to build fractal detail
+
+- **Basic Ray Marching Concepts**: casting rays from the camera, advancing along rays,
+  detecting intersections
+
+- **Noise Functions**: basic principles of Value Noise / Gradient Noise (grid sampling +
+  interpolation)
+
+- **FBM (Fractal Brownian Motion)**: layering multiple noise octaves to build fractal
+  detail
 
 ## Implementation Steps
 
 ### Step 1: Noise and Hash Functions
 
-**What**: Implement 2D Value Noise, providing the fundamental sampling capability for FBM.
+**What**: Implement 2D Value Noise, providing the fundamental sampling capability for
+FBM.
 
-**Why**: Terrain shaders build terrain from noise. Value Noise generates a continuous pseudo-random field through grid point hashing + bilinear interpolation. A rotation-based hash avoids precision issues with `sin()` on some GPUs. Interpolation uses Hermite smoothstep `3t²-2t³` to ensure C¹ continuity.
+**Why**: Terrain shaders build terrain from noise.
+Value Noise generates a continuous pseudo-random field through grid point hashing +
+bilinear interpolation.
+A rotation-based hash avoids precision issues with `sin()` on some GPUs.
+Interpolation uses Hermite smoothstep `3t²-2t³` to ensure C¹ continuity.
 
 **Code**:
 ```glsl
@@ -47,9 +63,14 @@ float noise(in vec2 p) {
 
 ### Step 2: Noise with Analytical Derivatives (Advanced)
 
-**What**: Return the noise value along with its analytical partial derivatives `∂n/∂x` and `∂n/∂y`.
+**What**: Return the noise value along with its analytical partial derivatives `∂n/∂x`
+and `∂n/∂y`.
 
-**Why**: Analytical derivatives are key to implementing "eroded terrain" — accumulating derivatives in FBM can suppress detail layering on steep slopes (used in Step 3). This technique is widely used in terrain shaders. The derivative formula comes from chain rule differentiation of Hermite interpolation: `du = 6f(1-f)`.
+**Why**: Analytical derivatives are key to implementing “eroded terrain” — accumulating
+derivatives in FBM can suppress detail layering on steep slopes (used in Step 3). This
+technique is widely used in terrain shaders.
+The derivative formula comes from chain rule differentiation of Hermite interpolation:
+`du = 6f(1-f)`.
 
 **Code**:
 ```glsl
@@ -77,13 +98,21 @@ vec3 noised(in vec2 p) {
 
 ### Step 3: FBM Terrain Heightfield (with Derivative Erosion)
 
-**What**: Layer multiple noise octaves to build a terrain heightfield, using derivative accumulation to simulate erosion effects.
+**What**: Layer multiple noise octaves to build a terrain heightfield, using derivative
+accumulation to simulate erosion effects.
 
-**Why**: FBM is the terrain generation core. The key difference is **whether derivative suppression is used**:
-- **Without derivatives**: simple layering, terrain appears more "rough"
-- **With derivative suppression**: the `1/(1+dot(d,d))` term suppresses high-frequency detail on steep slopes, producing realistic ridge/valley structures
+**Why**: FBM is the terrain generation core.
+The key difference is **whether derivative suppression is used**:
 
-The rotation matrix `m2` rotates sampling coordinates between each layer, breaking axis-aligned visual banding. `mat2(0.8,-0.6, 0.6,0.8)` rotates approximately 37° with unit determinant (pure rotation, no scaling) — a standard choice for terrain FBM.
+- **Without derivatives**: simple layering, terrain appears more “rough”
+
+- **With derivative suppression**: the `1/(1+dot(d,d))` term suppresses high-frequency
+  detail on steep slopes, producing realistic ridge/valley structures
+
+The rotation matrix `m2` rotates sampling coordinates between each layer, breaking
+axis-aligned visual banding.
+`mat2(0.8,-0.6, 0.6,0.8)` rotates approximately 37° with unit determinant (pure
+rotation, no scaling) — a standard choice for terrain FBM.
 
 **Code**:
 ```glsl
@@ -120,7 +149,11 @@ float terrain(in vec2 p) {
 
 **What**: Create terrain functions at different precision levels for different purposes.
 
-**Why**: This is a classic optimization — ray marching only needs rough height (fewer FBM layers), normal calculation needs detail (more FBM layers), and camera placement only needs the coarsest estimate. A dual-function scheme (coarse for marching, fine for normals) is standard practice in terrain shaders.
+**Why**: This is a classic optimization — ray marching only needs rough height (fewer
+FBM layers), normal calculation needs detail (more FBM layers), and camera placement
+only needs the coarsest estimate.
+A dual-function scheme (coarse for marching, fine for normals) is standard practice in
+terrain shaders.
 
 **Code**:
 ```glsl
@@ -176,14 +209,24 @@ float terrainH(in vec2 p) {
 
 ### Step 5: Adaptive Step Size Ray Marching
 
-**What**: Cast rays from the camera and advance along the ray with adaptive steps, finding the intersection with the terrain heightfield.
+**What**: Cast rays from the camera and advance along the ray with adaptive steps,
+finding the intersection with the terrain heightfield.
 
-**Why**: Terrain is a heightfield (not an arbitrary SDF), so `ray.y - terrain(ray.xz)` can be used as a conservative step size estimate. Common terrain shaders employ three strategies:
-- **Conservative factor approach**: `step = 0.4 × h` (conservative factor 0.4, prevents overshooting sharp ridges, 300 steps)
-- **Relaxation marching**: `step = h × max(t×0.02, 1.0)`, step size automatically increases with distance (90 steps covering greater range)
-- **Adaptive marching + binary refinement**: adaptive marching + 5 binary refinement steps (150 steps + precise intersection)
+**Why**: Terrain is a heightfield (not an arbitrary SDF), so `ray.y - terrain(ray.xz)`
+can be used as a conservative step size estimate.
+Common terrain shaders employ three strategies:
 
-This template uses the conservative factor approach + distance-adaptive precision threshold, balancing accuracy and efficiency.
+- **Conservative factor approach**: `step = 0.4 × h` (conservative factor 0.4, prevents
+  overshooting sharp ridges, 300 steps)
+
+- **Relaxation marching**: `step = h × max(t×0.02, 1.0)`, step size automatically
+  increases with distance (90 steps covering greater range)
+
+- **Adaptive marching + binary refinement**: adaptive marching + 5 binary refinement
+  steps (150 steps + precise intersection)
+
+This template uses the conservative factor approach + distance-adaptive precision
+threshold, balancing accuracy and efficiency.
 
 **Code**:
 ```glsl
@@ -221,9 +264,12 @@ float raymarch(in vec3 ro, in vec3 rd) {
 
 ### Step 6: Binary Refinement (Optional)
 
-**What**: Perform binary search near the rough intersection found by ray marching to precisely locate the terrain surface.
+**What**: Perform binary search near the rough intersection found by ray marching to
+precisely locate the terrain surface.
 
-**Why**: Ray marching only guarantees the intersection is within some interval; binary search converges the error by 2^5=32x. This is especially important for sharp ridge silhouettes. A similar "step-back-and-halve" strategy is common in terrain shaders.
+**Why**: Ray marching only guarantees the intersection is within some interval; binary
+search converges the error by 2^5=32x. This is especially important for sharp ridge
+silhouettes. A similar “step-back-and-halve” strategy is common in terrain shaders.
 
 **Code**:
 ```glsl
@@ -249,9 +295,13 @@ float bisect(in vec3 ro, in vec3 rd, float tNear, float tFar) {
 
 ### Step 7: Normal Calculation
 
-**What**: Compute terrain surface normals at the intersection point using finite differences.
+**What**: Compute terrain surface normals at the intersection point using finite
+differences.
 
-**Why**: Normals are the foundation of all lighting calculations. A key optimization is **epsilon increasing with distance** — using coarser epsilon at distance avoids aliasing from high-frequency noise. The high-precision terrain function `terrainH` is used here for normal detail.
+**Why**: Normals are the foundation of all lighting calculations.
+A key optimization is **epsilon increasing with distance** — using coarser epsilon at
+distance avoids aliasing from high-frequency noise.
+The high-precision terrain function `terrainH` is used here for normal detail.
 
 **Code**:
 ```glsl
@@ -272,15 +322,22 @@ vec3 calcNormal(in vec3 pos, float t) {
 
 ### Step 8: Material and Color Assignment
 
-**What**: Blend different material colors based on height, slope, noise, and other conditions.
+**What**: Blend different material colors based on height, slope, noise, and other
+conditions.
 
-**Why**: Natural terrain color layering is key to visual convincingness. Nearly all terrain shaders follow this layering logic:
+**Why**: Natural terrain color layering is key to visual convincingness.
+Nearly all terrain shaders follow this layering logic:
+
 - **Rock**: steep surfaces (small normal y component) → gray rock
+
 - **Grass**: flat low-altitude surfaces → green
+
 - **Snow**: high-altitude flat surfaces → white
+
 - **Sand**: near water level → sand color
 
-Use `smoothstep` for smooth transitions between layers and FBM noise to break up transition line regularity.
+Use `smoothstep` for smooth transitions between layers and FBM noise to break up
+transition line regularity.
 
 **Code**:
 ```glsl
@@ -332,13 +389,19 @@ vec3 getMaterial(in vec3 pos, in vec3 nor) {
 
 ### Step 9: Lighting Model
 
-**What**: Implement multi-component lighting: sun diffuse + hemisphere ambient light + backlight fill + specular.
+**What**: Implement multi-component lighting: sun diffuse + hemisphere ambient light +
+backlight fill + specular.
 
 **Why**: Terrain lighting models share consistent core components:
+
 - **Lambert Diffuse**: `dot(N, L)` — fundamental component
+
 - **Hemisphere Ambient**: `0.5 + 0.5 * N.y` — standard terrain ambient lighting
+
 - **Backlight**: fill light from the horizontal direction opposite the sun
+
 - **Fresnel Rim Light**: `pow(1+dot(rd,N), 2~5)` — edge glow effect
+
 - **Specular**: Phong/Blinn-Phong, power ranging from 3 to 500
 
 **Code**:
@@ -383,9 +446,14 @@ vec3 calcLighting(in vec3 pos, in vec3 nor, in vec3 rd, float shadow) {
 
 ### Step 10: Soft Shadows
 
-**What**: Cast a shadow ray from the surface intersection point toward the sun, computing soft shadows with penumbra.
+**What**: Cast a shadow ray from the surface intersection point toward the sun,
+computing soft shadows with penumbra.
 
-**Why**: Soft shadows greatly enhance terrain spatial depth. The classic technique — during shadow ray marching, track `min(k*h/t)`, where h is the height distance from the terrain and t is the march distance. A smaller ratio = the ray grazes the terrain surface = penumbra region. The k parameter controls penumbra softness (k=16 for soft, k=64 for hard).
+**Why**: Soft shadows greatly enhance terrain spatial depth.
+The classic technique — during shadow ray marching, track `min(k*h/t)`, where h is the
+height distance from the terrain and t is the march distance.
+A smaller ratio = the ray grazes the terrain surface = penumbra region.
+The k parameter controls penumbra softness (k=16 for soft, k=64 for hard).
 
 **Code**:
 ```glsl
@@ -415,12 +483,20 @@ float calcShadow(in vec3 pos, in vec3 sunDir) {
 
 ### Step 11: Aerial Perspective and Fog
 
-**What**: Blend terrain color toward fog color with increasing distance, achieving an aerial perspective effect.
+**What**: Blend terrain color toward fog color with increasing distance, achieving an
+aerial perspective effect.
 
-**Why**: Atmospheric effects are the key visual cue for "pushing" pixels into the distance. Common approaches range from simple to complex:
+**Why**: Atmospheric effects are the key visual cue for “pushing” pixels into the
+distance. Common approaches range from simple to complex:
+
 - **Exponential fog**: `exp(-0.00005 * t^2)` — simplest
-- **Exponential + height-decay fog**: `exp(-pow(k*t, 1.5))` — denser at low altitude, thinner at high altitude
-- **Wavelength-dependent fog**: `exp(-t * vec3(1,1.5,4) * k)` — blue light attenuates faster, red light travels further, realistic atmospheric dispersion
+
+- **Exponential + height-decay fog**: `exp(-pow(k*t, 1.5))` — denser at low altitude,
+  thinner at high altitude
+
+- **Wavelength-dependent fog**: `exp(-t * vec3(1,1.5,4) * k)` — blue light attenuates
+  faster, red light travels further, realistic atmospheric dispersion
+
 - **Full Rayleigh+Mie scattering**: physically accurate but expensive
 
 **Code**:
@@ -448,9 +524,14 @@ vec3 applyFog(in vec3 col, float t, in vec3 rd) {
 
 **What**: Draw the background sky, including gradients, sun disk, and horizon glow.
 
-**Why**: The sky is an important component of atmospheric mood. All terrain shaders with 3D viewpoints include sky rendering. Key components:
+**Why**: The sky is an important component of atmospheric mood.
+All terrain shaders with 3D viewpoints include sky rendering.
+Key components:
+
 - Zenith-to-horizon blue→white gradient
+
 - Horizon glow band (`pow(1-rd.y, n)` family)
+
 - Sun disk and halo (`pow(sundot, high power)` family)
 
 **Code**:
@@ -478,7 +559,9 @@ vec3 getSky(in vec3 rd) {
 
 **What**: Build a Look-At camera matrix and define a flight path.
 
-**Why**: Terrain flythrough cameras typically follow Lissajous curves or arc paths, with altitude following the terrain. The Look-At matrix maps screen coordinates to world-space ray directions.
+**Why**: Terrain flythrough cameras typically follow Lissajous curves or arc paths, with
+altitude following the terrain.
+The Look-At matrix maps screen coordinates to world-space ray directions.
 
 **Code**:
 ```glsl
@@ -507,7 +590,10 @@ mat3 setCamera(in vec3 ro, in vec3 ta) {
 
 ### Variant 1: Relaxation Marching
 
-**Difference from the base version**: Step size automatically increases with distance, covering greater range but with slightly reduced precision. The conservative factor is replaced with a distance-adaptive relaxation factor, while the height estimate is scaled down to prevent penetration.
+**Difference from the base version**: Step size automatically increases with distance,
+covering greater range but with slightly reduced precision.
+The conservative factor is replaced with a distance-adaptive relaxation factor, while
+the height estimate is scaled down to prevent penetration.
 
 **Key code**:
 ```glsl
@@ -532,7 +618,10 @@ float raymarchRelax(in vec3 ro, in vec3 rd) {
 
 ### Variant 2: Sign-Alternating FBM
 
-**Difference from the base version**: Flips the amplitude sign each layer (`w = -w * 0.4`), producing unique alternating ridge/valley patterns. Does not use derivative suppression — the style is distinctly different from the erosion version, producing a more "jagged and twisted" appearance.
+**Difference from the base version**: Flips the amplitude sign each layer
+(`w = -w * 0.4`), producing unique alternating ridge/valley patterns.
+Does not use derivative suppression — the style is distinctly different from the erosion
+version, producing a more “jagged and twisted” appearance.
 
 **Key code**:
 ```glsl
@@ -552,7 +641,11 @@ float terrainSignFlip(in vec2 p) {
 
 ### Variant 3: Texture-Driven Heightfield + 3D Displacement
 
-**Difference from the base version**: Uses texture sampling as the base heightfield, with 3D FBM displacement layered on top to produce cliffs, caves, and other non-heightfield formations. Requires additional texture channel inputs but can create far more terrain diversity than pure FBM. Marching becomes true SDF sphere tracing.
+**Difference from the base version**: Uses texture sampling as the base heightfield,
+with 3D FBM displacement layered on top to produce cliffs, caves, and other
+non-heightfield formations.
+Requires additional texture channel inputs but can create far more terrain diversity
+than pure FBM. Marching becomes true SDF sphere tracing.
 
 **Key code**:
 ```glsl
@@ -590,7 +683,10 @@ float mapCanyon(vec3 p) {
 
 ### Variant 4: Directional Erosion Noise
 
-**Difference from the base version**: Uses slope direction as the projection direction for Gabor noise. Each erosion layer adjusts the "water flow direction" based on the previous layer's derivatives, producing realistic dendritic drainage patterns. Requires multi-pass height map precomputation.
+**Difference from the base version**: Uses slope direction as the projection direction
+for Gabor noise. Each erosion layer adjusts the “water flow direction” based on the
+previous layer’s derivatives, producing realistic dendritic drainage patterns.
+Requires multi-pass height map precomputation.
 
 **Key code**:
 ```glsl
@@ -637,7 +733,10 @@ float terrainErosion(vec2 p, vec2 baseSlope) {
 
 ### Variant 5: Volumetric Clouds + God Rays
 
-**Difference from the base version**: Adds a volumetric cloud layer above the terrain using front-to-back alpha compositing, with god ray factor accumulated during marching. Requires 3D noise and more steps, significantly increasing cost but with excellent visual results.
+**Difference from the base version**: Adds a volumetric cloud layer above the terrain
+using front-to-back alpha compositing, with god ray factor accumulated during marching.
+Requires 3D noise and more steps, significantly increasing cost but with excellent
+visual results.
 
 **Key code**:
 ```glsl
@@ -694,41 +793,64 @@ vec4 raymarchClouds(vec3 ro, vec3 rd) {
 ## In-Depth Performance Optimization
 
 ### 1. LOD Layering (Most Important Optimization)
-**Bottleneck**: Each FBM layer requires an independent noise sample; octave count is a direct performance multiplier.
-**Optimization**: Use low octaves for ray marching (3-9 layers), high octaves for normal calculation (16 layers), and lowest for camera placement (3 layers). This is standard practice in terrain shaders.
+
+**Bottleneck**: Each FBM layer requires an independent noise sample; octave count is a
+direct performance multiplier.
+**Optimization**: Use low octaves for ray marching (3-9 layers), high octaves for normal
+calculation (16 layers), and lowest for camera placement (3 layers).
+This is standard practice in terrain shaders.
 
 ### 2. Upper Bound Clipping (Bounding Plane)
+
 **Bottleneck**: Rays waste iterations stepping through open air.
-**Optimization**: Precompute the maximum terrain height and intersect the ray with that plane before starting to march.
+**Optimization**: Precompute the maximum terrain height and intersect the ray with that
+plane before starting to march.
 ```glsl
 if (ro.y > maxHeight && rd.y >= 0.0) return -1.0; // Skip entirely
 t = (ro.y - maxHeight) / (-rd.y); // Jump to upper bound
 ```
 
 ### 3. Adaptive Precision Threshold
+
 **Bottleneck**: Distant pixels still use near-field precision, wasting iterations.
-**Optimization**: Hit threshold grows with distance: `abs(h) < 0.001 * t`. This is common practice, with the coefficient typically ranging from 0.0001 to 0.002.
+**Optimization**: Hit threshold grows with distance: `abs(h) < 0.001 * t`. This is
+common practice, with the coefficient typically ranging from 0.0001 to 0.002.
 
 ### 4. Texture Instead of Procedural Noise
+
 **Bottleneck**: Procedural noise requires multiple hash and interpolation operations.
-**Optimization**: Pre-bake a 256x256 noise texture and sample with `textureLod`. Provides approximately 2-3x speedup over procedural noise.
+**Optimization**: Pre-bake a 256x256 noise texture and sample with `textureLod`.
+Provides approximately 2-3x speedup over procedural noise.
 
 ### 5. Early Exit
+
 **Bottleneck**: Rays continue iterating after exceeding range.
 **Optimization**:
+
 - `t > MAX_DIST` break out
+
 - `alpha > 0.99` break out in volumetric rendering
+
 - `h < 0` immediately return 0 in shadow rays
 
 ### 6. Jittered Start
+
 **Bottleneck**: Uniform stepping produces visible banding artifacts.
-**Optimization**: Add per-pixel random offset to the starting t: `t += hash(fragCoord) * step_size`. Adds no computational cost but significantly improves visual quality.
+**Optimization**: Add per-pixel random offset to the starting t:
+`t += hash(fragCoord) * step_size`. Adds no computational cost but significantly
+improves visual quality.
 
 ## Complete Combination Code Examples
 
 ### 1. Terrain + Water Surface
-The most common terrain rendering combination. The water surface serves as a fixed y-plane — march the terrain first, and if the ray intersects terrain below the water surface, render underwater effects; otherwise render water surface reflection/refraction.
-- Key: Water surface normals use multi-frequency noise perturbation to simulate waves; Fresnel controls reflection/refraction mixing
+
+The most common terrain rendering combination.
+The water surface serves as a fixed y-plane — march the terrain first, and if the ray
+intersects terrain below the water surface, render underwater effects; otherwise render
+water surface reflection/refraction.
+
+- Key: Water surface normals use multi-frequency noise perturbation to simulate waves;
+  Fresnel controls reflection/refraction mixing
 
 ```glsl
 #define WATER_LEVEL 5.0
@@ -777,8 +899,12 @@ if (tWater > 0.0 && (tTerrain < 0.0 || tWater < tTerrain)) {
 ```
 
 ### 2. Terrain + Volumetric Clouds
-Render the terrain first to get color and depth, then march the cloud slab along the ray, compositing onto the terrain using front-to-back alpha blending.
-- Key: Cloud self-shadowing (offset sampling toward light direction), god ray accumulation
+
+Render the terrain first to get color and depth, then march the cloud slab along the
+ray, compositing onto the terrain using front-to-back alpha blending.
+
+- Key: Cloud self-shadowing (offset sampling toward light direction), god ray
+  accumulation
 
 ```glsl
 // In the main function:
@@ -804,12 +930,21 @@ col = col * (1.0 - clouds.a) + clouds.rgb;
 ```
 
 ### 3. Terrain + Volumetric Fog/Dust
-Volumetric dust fog can be added after the main marching is complete, additionally sample a 3D FBM density field along the ray with distance-based attenuation. Suitable for desert, volcanic, and similar scenes.
+
+Volumetric dust fog can be added after the main marching is complete, additionally
+sample a 3D FBM density field along the ray with distance-based attenuation.
+Suitable for desert, volcanic, and similar scenes.
+
 - Key: Step size adapts to density — smaller steps in dense regions
 
 ### 4. Terrain + SDF Object Placement
-SDF ellipsoids can be placed as trees on the terrain. Terrain marching and object marching can be separated or combined. Objects are placed on a 2D grid with hash-based jitter.
-- Key: `floor(p.xz/gridSize)` determines the grid cell, `hash(cell)` determines tree position/size
+
+SDF ellipsoids can be placed as trees on the terrain.
+Terrain marching and object marching can be separated or combined.
+Objects are placed on a 2D grid with hash-based jitter.
+
+- Key: `floor(p.xz/gridSize)` determines the grid cell, `hash(cell)` determines tree
+  position/size
 
 ```glsl
 #define TREE_GRID 30.0
@@ -835,5 +970,11 @@ float mapTrees(vec3 p) {
 ```
 
 ### 5. Terrain + Temporal Anti-Aliasing (TAA)
-Inter-frame reprojection blending can be used for temporal anti-aliasing. The current frame's camera matrix is stored in buffer pixels, and the next frame uses it to reproject 3D points back to the previous frame's screen coordinates, blending historical colors.
-- Key: blend ratio ~10% new frame + 90% history frame, with increased new frame weight in motion areas
+
+Inter-frame reprojection blending can be used for temporal anti-aliasing.
+The current frame’s camera matrix is stored in buffer pixels, and the next frame uses it
+to reproject 3D points back to the previous frame’s screen coordinates, blending
+historical colors.
+
+- Key: blend ratio ~10% new frame + 90% history frame, with increased new frame weight
+  in motion areas

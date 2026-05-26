@@ -1,44 +1,75 @@
 ## WebGL2 Adaptation Requirements
 
-Code templates in this document use ShaderToy GLSL style. When generating standalone HTML pages, you must adapt to WebGL2:
+Code templates in this document use ShaderToy GLSL style.
+When generating standalone HTML pages, you must adapt to WebGL2:
 
 - Use `canvas.getContext("webgl2")`
-- **IMPORTANT: Version directive must strictly be on the first line**: When injecting shader code into HTML, ensure nothing precedes `#version 300 es` — no newlines, spaces, comments, or other characters. Common pitfall: accidentally adding `\n` when concatenating template strings, causing the version directive to appear on line 2-3
-- First line of shader: `#version 300 es`, add `precision highp float;` for fragment shaders
+
+- **IMPORTANT: Version directive must strictly be on the first line**: When injecting
+  shader code into HTML, ensure nothing precedes `#version 300 es` — no newlines,
+  spaces, comments, or other characters.
+  Common pitfall: accidentally adding `\n` when concatenating template strings, causing
+  the version directive to appear on line 2-3
+
+- First line of shader: `#version 300 es`, add `precision highp float;` for fragment
+  shaders
+
 - Vertex shader: `attribute` → `in`, `varying` → `out`
-- Fragment shader: `varying` → `in`, `gl_FragColor` → custom `out vec4 fragColor`, `texture2D()` → `texture()`
-- ShaderToy's `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to standard `void main()` entry
+
+- Fragment shader: `varying` → `in`, `gl_FragColor` → custom `out vec4 fragColor`,
+  `texture2D()` → `texture()`
+
+- ShaderToy’s `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to
+  standard `void main()` entry
 
 **IMPORTANT: GLSL Type Strictness Warning**:
-- `vec2 = float` is illegal: types must match exactly, e.g., `float r = length(uv)` not `vec2 r = length(uv)`
-- Function return types must match: commonly used `fbm()` / `noise()` return `float`, cannot be assigned to `vec2`
+
+- `vec2 = float` is illegal: types must match exactly, e.g., `float r = length(uv)` not
+  `vec2 r = length(uv)`
+
+- Function return types must match: commonly used `fbm()` / `noise()` return `float`,
+  cannot be assigned to `vec2`
+
 - If you need a vec2 type, use `vec2(fbm(...), fbm(...))` or `vec2(value)` constructor
 
 # Polar Coordinates & UV Manipulation
 
 ## Use Cases
+
 - Radially symmetric effects: flowers, kaleidoscopes, gears, radial patterns
+
 - Spiral patterns: galaxies, vortices, spiral staircases
+
 - Ring/tunnel effects: tube flying, torus twisting, circular UI elements
-- Polar coordinate shapes: cardioid, rose curves, stars, and other shapes defined by r(θ)
+
+- Polar coordinate shapes: cardioid, rose curves, stars, and other shapes defined by
+  r(θ)
+
 - Vortex animations: swirls, rotational warping, card game backgrounds (e.g., Balatro)
-- Fractal/repetitive structures: recursive symmetric patterns based on angular subdivision
+
+- Fractal/repetitive structures: recursive symmetric patterns based on angular
+  subdivision
 
 ## Core Principles
 
 Polar coordinates convert (x, y) to (r, θ):
+
 - **r = length(p)** — distance to origin
+
 - **θ = atan(y, x)** — angle from positive x-axis, range [-π, π]
 
 Inverse transform: x = r·cos(θ), y = r·sin(θ)
 
 Manipulation effects:
+
 - Modifying θ → rotation, warping, kaleidoscope
+
 - Modifying r → scaling, radial ripples
+
 - θ += f(r) → spiral effect
 
 | Spiral Type | Equation | Code |
-|------------|----------|------|
+| --- | --- | --- |
 | Archimedean spiral | r = a + bθ | `theta += radius` |
 | Logarithmic spiral | r = ae^(bθ) | `theta += log(radius)` |
 | Rose curve | r = cos(nθ) | `r - A*sin(n*theta)` |
@@ -46,6 +77,7 @@ Manipulation effects:
 ## Implementation Steps
 
 ### Step 1: UV Normalization and Centering
+
 ```glsl
 // Range [-1, 1], most commonly used
 vec2 uv = (2.0 * fragCoord - iResolution.xy) / min(iResolution.x, iResolution.y);
@@ -59,6 +91,7 @@ vec2 uv = (floor(fragCoord * (1.0/pixel_size)) * pixel_size - 0.5*iResolution.xy
 ```
 
 ### Step 2: Cartesian → Polar Coordinates
+
 ```glsl
 float r = length(uv);
 float theta = atan(uv.y, uv.x); // [-PI, PI]
@@ -116,6 +149,7 @@ float arm_density = 1.0 + NB_ARMS * COMPR * sin(phase);
 ```
 
 ### Step 4: Polar → Cartesian Reconstruction
+
 ```glsl
 vec2 new_uv = vec2(r * cos(new_theta), r * sin(new_theta));
 
@@ -127,6 +161,7 @@ vec2 warped_uv = vec2(r * cos(new_theta) + mid.x, r * sin(new_theta) + mid.y) - 
 ```
 
 ### Step 5: Polar Coordinate Shape SDF
+
 ```glsl
 // Cardioid
 float a = atan(p.x, p.y) / 3.141593; // atan(x,y) makes the heart face upward
@@ -142,6 +177,7 @@ float shape = smoothstep(0.01, -0.01, dist);
 ```
 
 ### Step 6: Coloring and Anti-Aliasing
+
 ```glsl
 // fwidth adaptive anti-aliasing
 float aa = smoothstep(-1.0, 1.0, value / fwidth(value));
@@ -283,6 +319,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### Variant 1: Dynamic Vortex Background (Balatro Style)
+
 Cartesian→Polar→Cartesian round-trip + iterative domain warping
 ```glsl
 float new_angle = atan(uv.y, uv.x) + speed
@@ -300,6 +337,7 @@ for (int i = 0; i < 5; i++) {
 ```
 
 ### Variant 2: Polar Torus Twist (Ring Twister Style)
+
 Direct rendering in polar space, angular slicing to simulate 3D torus
 ```glsl
 vec2 uvr = vec2(length(uv), atan(uv.y, uv.x) + PI);
@@ -314,6 +352,7 @@ for (int i = 0; i < NUM_FACES; i++) {
 ```
 
 ### Variant 3: Galaxy / Logarithmic Spiral (Galaxy Style)
+
 `log(r)` equiangular spiral + FBM noise + spiral arm compression
 ```glsl
 float rho = length(uv);
@@ -327,6 +366,7 @@ float gaz = fbm_noise(0.09 * R * uv);
 ```
 
 ### Variant 4: Archimedean Spiral Band (Wave Greek Frieze Style)
+
 Polar unwrap into spiral band, creating vortex animation within the band
 ```glsl
 vec2 U = vec2(atan(U.y, U.x)/TAU + 0.5, length(U));
@@ -340,6 +380,7 @@ float vortex = dot(cell_uv,
 ```
 
 ### Variant 5: Complex / Polar Duality (Jeweled Vortex Style)
+
 Complex arithmetic replaces explicit trigonometric functions for conformal mapping
 ```glsl
 float e = n * 2.0;
@@ -355,19 +396,37 @@ col *= pow(abs(sin((r - a/TAU) * PI)), abs(e) + 5.0);
 ## Performance & Composition
 
 ### Performance Tips
+
 - **Pole safety**: `float r = max(length(uv), 1e-6);` to avoid division by zero
-- **Trigonometric optimization**: When both sin/cos are needed, use a rotation matrix `mat2 ROT(float a) { float c=cos(a),s=sin(a); return mat2(c,s,-s,c); }`
-- **Kaleidoscope is naturally optimized**: All expensive computation happens in a single sector, visual complexity ×N
-- **Loop control**: Rose curves and other multi-loop effects work well with 4-8 loops; don't go too high
-- **Pixel downsampling**: `floor(fragCoord / pixel_size) * pixel_size` quantizes coordinates to reduce computation
+
+- **Trigonometric optimization**: When both sin/cos are needed, use a rotation matrix
+  `mat2 ROT(float a) { float c=cos(a),s=sin(a); return mat2(c,s,-s,c); }`
+
+- **Kaleidoscope is naturally optimized**: All expensive computation happens in a single
+  sector, visual complexity ×N
+
+- **Loop control**: Rose curves and other multi-loop effects work well with 4-8 loops;
+  don’t go too high
+
+- **Pixel downsampling**: `floor(fragCoord / pixel_size) * pixel_size` quantizes
+  coordinates to reduce computation
 
 ### Composition Tips
+
 - **Polar + FBM**: Sample noise in transformed space → organic spiral textures
-- **Polar + Truchet**: Lay Truchet tiles after kaleidoscope folding → geometric tunnel effects
+
+- **Polar + Truchet**: Lay Truchet tiles after kaleidoscope folding → geometric tunnel
+  effects
+
 - **Polar + SDF**: `r(θ)` defines contour + SDF boolean operations / glow
-- **Polar + Checkerboard**: `sign(sin(u*PI*4.0)*cos(uvr.y*16.0))` → circular checkerboard
-- **Polar + Post-Processing**: Gamma + vignette + contrast enhancement for improved visual quality
+
+- **Polar + Checkerboard**: `sign(sin(u*PI*4.0)*cos(uvr.y*16.0))` → circular
+  checkerboard
+
+- **Polar + Post-Processing**: Gamma + vignette + contrast enhancement for improved
+  visual quality
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/polar-uv-manipulation.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/polar-uv-manipulation.md)

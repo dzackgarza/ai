@@ -1,11 +1,16 @@
 # SWE-bench Verified Estimates (Feb 2026)
 
-*Note: These tables are a reference file containing both reported SWE-bench Verified (pass@1 % resolved) scores and speculative/inferred estimates for internal agent model-selection heuristics. “Reported” means the % appears explicitly in a primary source or benchmark; “Inferred” means a version/alias mapping; “Speculative” means an extrapolation based on family size/tier.*
+*Note: These tables are a reference file containing both reported SWE-bench Verified
+(pass@1 % resolved) scores and speculative/inferred estimates for internal agent
+model-selection heuristics.
+“Reported” means the % appears explicitly in a primary source or benchmark; “Inferred”
+means a version/alias mapping; “Speculative” means an extrapolation based on family
+size/tier.*
 
 ## OPENAI
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | GPT 4.1 | 39.58 | Reported | SWE-bench |
 | GPT 4.1 Mini | 23.94 | Reported | SWE-bench |
 | GPT 5 | 65.00 | Reported | SWE-bench |
@@ -29,34 +34,25 @@
 | GPT Oss Safeguard 20B | 10–20 (est) | Speculative | — |
 | O4 Mini | 0–15 (est) | Speculative | — |
 
-
-| GPT 3.5 Turbo | 10–20 (est) | Speculative | — |
-| GPT 3.5 Turbo Instruct | 10–20 (est) | Speculative | — |
-| GPT 4 0314 | 10–20 (est) | Speculative | — |
-| GPT 4 1106 Preview | 10–20 (est) | Speculative | — |
-| GPT 4 Turbo | 10–20 (est) | Speculative | — |
-| GPT 4 Turbo Preview | 10–20 (est) | Speculative | — |
-| GPT 4O 2024 05 13 | 10–20 (est) | Speculative | — |
-| GPT 4O 2024 08 06 | 10–20 (est) | Speculative | — |
-| GPT 4O 2024 11 20 | 10–20 (est) | Speculative | — |
-| GPT 4O Mini 2024 07 18 | 0–15 (est) | Speculative | — |
-| GPT 4O Mini Search Preview | 0–15 (est) | Speculative | — |
-| GPT 4O Search Preview | 10–20 (est) | Speculative | — |
-| GPT 4O Extended | 10–20 (est) | Speculative | — |
-| O1 | 10–20 (est) | Speculative | — |
-| O3 Deep Research | 10–20 (est) | Speculative | — |
-| O3 Mini High | 0–15 (est) | Speculative | — |
-| O4 Mini Deep Research | 0–15 (est) | Speculative | — |
-| L3 Euryale 70B | 10–20 (est) | Speculative | — |
-| L3 Lunaris 8B | 0–15 (est) | Speculative | — |
-| L3.1 70B Hanami X1 | 10–20 (est) | Speculative | — |
-| L3.1 Euryale 70B | 10–20 (est) | Speculative | — |
-| L3.3 Euryale 70B | 10–20 (est) | Speculative | — |
+| GPT 3.5 Turbo | 10–20 (est) | Speculative | — | | GPT 3.5 Turbo Instruct | 10–20 (est)
+| Speculative | — | | GPT 4 0314 | 10–20 (est) | Speculative | — | | GPT 4 1106 Preview
+| 10–20 (est) | Speculative | — | | GPT 4 Turbo | 10–20 (est) | Speculative | — | | GPT
+4 Turbo Preview | 10–20 (est) | Speculative | — | | GPT 4O 2024 05 13 | 10–20 (est) |
+Speculative | — | | GPT 4O 2024 08 06 | 10–20 (est) | Speculative | — | | GPT 4O 2024 11
+20 | 10–20 (est) | Speculative | — | | GPT 4O Mini 2024 07 18 | 0–15 (est) | Speculative
+| — | | GPT 4O Mini Search Preview | 0–15 (est) | Speculative | — | | GPT 4O Search
+Preview | 10–20 (est) | Speculative | — | | GPT 4O Extended | 10–20 (est) | Speculative
+| — | | O1 | 10–20 (est) | Speculative | — | | O3 Deep Research | 10–20 (est) |
+Speculative | — | | O3 Mini High | 0–15 (est) | Speculative | — | | O4 Mini Deep
+Research | 0–15 (est) | Speculative | — | | L3 Euryale 70B | 10–20 (est) | Speculative |
+— | | L3 Lunaris 8B | 0–15 (est) | Speculative | — | | L3.1 70B Hanami X1 | 10–20 (est)
+| Speculative | — | | L3.1 Euryale 70B | 10–20 (est) | Speculative | — | | L3.3 Euryale
+70B | 10–20 (est) | Speculative | — |
 
 ## ANTHROPIC
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Claude 3 Haiku (20240307) | 7.20 | Reported | ANT1 |
 | Claude 3 Opus (20240229) | 22.20 | Reported | ANT1 |
 | Claude 3.5 Haiku (20241022) | 40.60 | Reported | ANT1 |
@@ -95,15 +91,13 @@
 | Claude Sonnet 4 5 | 10–20 (est) | Speculative | — |
 | Claude Sonnet 4 6 | 10–20 (est) | Speculative | — |
 
-
-| Claude 3 Haiku | 10–20 (est) | Speculative | — |
-| Claude 3.5 Sonnet | 45–60 (est) | Inferred | — |
-| Claude 3.7 Sonnet Thinking | 60–70 (est) | Inferred | — |
+| Claude 3 Haiku | 10–20 (est) | Speculative | — | | Claude 3.5 Sonnet | 45–60 (est) |
+Inferred | — | | Claude 3.7 Sonnet Thinking | 60–70 (est) | Inferred | — |
 
 ## GOOGLE DEEPMIND (GEMINI / GEMMA)
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Gemini 2.0 Flash | 13.52 | Reported | SWE-bench |
 | Gemini 2.5 Flash | 59.60 | Reported | G2 |
 | Gemini 2.5 Flash Lite | 31.60 | Reported | G4 |
@@ -141,15 +135,13 @@
 | Gemma3 27B | 0–15 (est) | Speculative | — |
 | Gemma3 4B | 10–20 (est) | Speculative | — |
 
-
-| Gemini 2.0 Flash Lite 001 | 0–15 (est) | Speculative | — |
-| Gemini 3 Flash Preview | 70–78 (est) | Inferred | — |
-| Gemini 3.1 Pro Preview | 70–80 (est) | Inferred | — |
+| Gemini 2.0 Flash Lite 001 | 0–15 (est) | Speculative | — | | Gemini 3 Flash Preview |
+70–78 (est) | Inferred | — | | Gemini 3.1 Pro Preview | 70–80 (est) | Inferred | — |
 
 ## MISTRAL AI
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Devstral 2512 | 53.80 | Reported | SWE-bench |
 | Devstral Small 2512 | 56.40 | Reported | SWE-bench |
 | Codestral 22B Instruct V0.1 | 0–15 (est) | Speculative | — |
@@ -197,24 +189,20 @@
 | Pixtral 12B | 0–15 (est) | Speculative | — |
 | Pixtral Large Latest | 10–20 (est) | Speculative | — |
 
-
-| Ministral 14B 2512 | 0–15 (est) | Speculative | — |
-| Ministral 3B 2512 | 0–15 (est) | Speculative | — |
-| Ministral 8B 2512 | 0–15 (est) | Speculative | — |
-| Mistral Large 2407 | 10–20 (est) | Speculative | — |
-| Mistral Saba | 10–20 (est) | Speculative | — |
-| Mistral Small 24B Instruct 2501 | 10–20 (est) | Speculative | — |
-| Mistral Small Creative | 10–20 (est) | Speculative | — |
-| Mixtral 8X22B Instruct | 0–15 (est) | Speculative | — |
-| Mixtral 8X7B Instruct | 0–15 (est) | Speculative | — |
-| Pixtral Large 2411 | 10–20 (est) | Speculative | — |
-| Voxtral Small 24B 2507 | 10–20 (est) | Speculative | — |
+| Ministral 14B 2512 | 0–15 (est) | Speculative | — | | Ministral 3B 2512 | 0–15 (est) |
+Speculative | — | | Ministral 8B 2512 | 0–15 (est) | Speculative | — | | Mistral Large
+2407 | 10–20 (est) | Speculative | — | | Mistral Saba | 10–20 (est) | Speculative | — |
+| Mistral Small 24B Instruct 2501 | 10–20 (est) | Speculative | — | | Mistral Small
+Creative | 10–20 (est) | Speculative | — | | Mixtral 8X22B Instruct | 0–15 (est) |
+Speculative | — | | Mixtral 8X7B Instruct | 0–15 (est) | Speculative | — | | Pixtral
+Large 2411 | 10–20 (est) | Speculative | — | | Voxtral Small 24B 2507 | 10–20 (est) |
+Speculative | — |
 
 | Mistral Large 675B | 58.00 | Reported | SWE-bench |
 ## MOONSHOT AI (KIMI)
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Kimi K2 Instruct | 65.80 | Reported | SWE-bench |
 | Kimi K2 Thinking | 63.40 | Reported | SWE-bench |
 | Kimi K2.5 | 70.80 | Reported | SWE-bench |
@@ -223,12 +211,10 @@
 | Kimi K2 1T | 10–20 (est) | Speculative | — |
 | Kimi K2 Free | 10–20 (est) | Speculative | — |
 
-
-
 ## DEEPSEEK
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | DeepSeek V3.1 Terminus | 68.40 | Reported | SWE-bench |
 | DeepSeek V3.2 | 70.00 | Reported | SWE-bench |
 | DeepSeek V3.2 Reasoner | 60.00 | Reported | SWE-bench |
@@ -244,28 +230,24 @@
 | Deepseek V3 Base Free | 10–20 (est) | Speculative | — |
 | Deepseek V3.1 671B | 60–70 (est) | Inferred | — |
 
-
-| Deepseek R1 Distill Qwen 32B | 0–15 (est) | Speculative | — |
-| Deepseek V3.2 Speciale | 70–80 (est) | Inferred | — |
-| Deepseek V3.1 Nex N1 | 60–70 (est) | Inferred | — |
+| Deepseek R1 Distill Qwen 32B | 0–15 (est) | Speculative | — | | Deepseek V3.2 Speciale
+| 70–80 (est) | Inferred | — | | Deepseek V3.1 Nex N1 | 60–70 (est) | Inferred | — |
 
 | R1 Distill 8B | 28.20 | Reported | SWE-bench |
 ## MINIMAX
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | MiniMax M2 | 61.00 | Reported | SWE-bench |
 | MiniMax M2.1 | 74.00 | Reported | SWE-bench |
 | MiniMax M2.5 | 75.80 | Reported | SWE-bench |
 | Minimax 01 | 0–15 (est) | Speculative | — |
 | Minimax M1 | 0–15 (est) | Speculative | — |
 
-
-
 ## ZHIPU AI (GLM)
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | GLM 4.5 | 54.20 | Reported | SWE-bench |
 | GLM 4.6 (T=1) | 55.40 | Reported | SWE-bench |
 | GLM 4.7 | 73.80 | Reported | SWE-bench |
@@ -273,15 +255,13 @@
 | Glm 4.6 Exacto | 70–80 (est) | Inferred | — |
 | Glm Z1 32B Free | 0–15 (est) | Speculative | — |
 
-
-| Glm 4 32B | 0–15 (est) | Speculative | — |
-| Glm4.7 | 10–20 (est) | Speculative | — |
+| Glm 4 32B | 0–15 (est) | Speculative | — | | Glm4.7 | 10–20 (est) | Speculative | — |
 | Glm5 | 10–20 (est) | Speculative | — |
 
 ## ALIBABA (QWEN)
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Qwen2.5 Coder 32B Instruct | 9.00 | Reported | SWE-bench |
 | Qwen3 235B | 70.00 | Reported | SWE-bench |
 | Qwen3 Coder 480B | 70.60 | Reported | SWE-bench |
@@ -312,27 +292,21 @@
 | Qwen3.5 Plus 02 15 | 10–20 (est) | Speculative | — |
 | Qwq 32B | 0–15 (est) | Speculative | — |
 
+| Qwen 2.5 72B Instruct | 0–15 (est) | Speculative | — | | Qwen 2.5 7B Instruct | 0–15
+(est) | Speculative | — | | Qwen 2.5 Coder 32B Instruct | 0–15 (est) | Speculative | — |
+| Qwen Max | 10–20 (est) | Speculative | — | | Qwen Plus | 10–20 (est) | Speculative | —
+| | Qwen Plus 2025 07 28 | 10–20 (est) | Speculative | — | | Qwen Plus 2025 07 28
+Thinking | 10–20 (est) | Speculative | — | | Qwen Turbo | 10–20 (est) | Speculative | —
+| | Qwen3 Max Thinking | 10–20 (est) | Speculative | — | | Qwen3.5 122B A10B | 70–78
+(est) | Inferred | — | | Qwen3.5 27B | 70–78 (est) | Inferred | — | | Qwen3.5 35B A3B |
+70–78 (est) | Inferred | — | | Qwen3.5 Flash 02 23 | 70–78 (est) | Inferred | — |
 
-| Qwen 2.5 72B Instruct | 0–15 (est) | Speculative | — |
-| Qwen 2.5 7B Instruct | 0–15 (est) | Speculative | — |
-| Qwen 2.5 Coder 32B Instruct | 0–15 (est) | Speculative | — |
-| Qwen Max | 10–20 (est) | Speculative | — |
-| Qwen Plus | 10–20 (est) | Speculative | — |
-| Qwen Plus 2025 07 28 | 10–20 (est) | Speculative | — |
-| Qwen Plus 2025 07 28 Thinking | 10–20 (est) | Speculative | — |
-| Qwen Turbo | 10–20 (est) | Speculative | — |
-| Qwen3 Max Thinking | 10–20 (est) | Speculative | — |
-| Qwen3.5 122B A10B | 70–78 (est) | Inferred | — |
-| Qwen3.5 27B | 70–78 (est) | Inferred | — |
-| Qwen3.5 35B A3B | 70–78 (est) | Inferred | — |
-| Qwen3.5 Flash 02 23 | 70–78 (est) | Inferred | — |
-
-| Qwen3 80B Instruct | 65.00 | Reported | SWE-bench |
-| Qwen3 80B Thinking | 68.00 | Reported | SWE-bench |
+| Qwen3 80B Instruct | 65.00 | Reported | SWE-bench | | Qwen3 80B Thinking | 68.00 |
+Reported | SWE-bench |
 ## META (LLAMA)
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Llama 4 Maverick | 21.04 | Reported | SWE-bench |
 | Llama 4 Scout | 9.06 | Reported | SWE-bench |
 | Codellama 70B | 10–20 (est) | Speculative | — |
@@ -360,23 +334,19 @@
 | Nemotron 3 Nano 30B | 0–15 (est) | Speculative | — |
 | Rnj 1 8B | 0–15 (est) | Speculative | — |
 
-
-| Aion Rp Llama 3.1 8B | 0–15 (est) | Speculative | — |
-| Codellama 7B Instruct Solidity | 0–15 (est) | Speculative | — |
-| Llama 3 70B Instruct | 10–20 (est) | Speculative | — |
-| Llama 3 8B Instruct | 0–15 (est) | Speculative | — |
-| Llama 3.1 405B | 10–20 (est) | Speculative | — |
-| Llama 3.1 8B Instruct | 0–15 (est) | Speculative | — |
-| Llama Guard 2 8B | 0–15 (est) | Speculative | — |
-| Llama Guard 3 8B | 0–15 (est) | Speculative | — |
-| Llama 3.1 Lumimaid 8B | 0–15 (est) | Speculative | — |
-| Hermes 2 Pro Llama 3 8B | 0–15 (est) | Speculative | — |
-| Hermes 3 Llama 3.1 70B | 10–20 (est) | Speculative | — |
+| Aion Rp Llama 3.1 8B | 0–15 (est) | Speculative | — | | Codellama 7B Instruct Solidity
+| 0–15 (est) | Speculative | — | | Llama 3 70B Instruct | 10–20 (est) | Speculative | —
+| | Llama 3 8B Instruct | 0–15 (est) | Speculative | — | | Llama 3.1 405B | 10–20 (est)
+| Speculative | — | | Llama 3.1 8B Instruct | 0–15 (est) | Speculative | — | | Llama
+Guard 2 8B | 0–15 (est) | Speculative | — | | Llama Guard 3 8B | 0–15 (est) |
+Speculative | — | | Llama 3.1 Lumimaid 8B | 0–15 (est) | Speculative | — | | Hermes 2
+Pro Llama 3 8B | 0–15 (est) | Speculative | — | | Hermes 3 Llama 3.1 70B | 10–20 (est) |
+Speculative | — |
 
 ## OTHER / OPEN SOURCE
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Aurora Alpha | 10–20 (est) | Speculative | — |
 | Big Pickle | 10–20 (est) | Speculative | — |
 | Free | 10–20 (est) | Speculative | — |
@@ -404,93 +374,68 @@
 | Step 3.5 Flash | 10–20 (est) | Speculative | — |
 | Tng R1T Chimera Free | 10–20 (est) | Speculative | — |
 
-
-| Jamba Large 1.7 | 10–20 (est) | Speculative | — |
-| Aion 1.0 | 10–20 (est) | Speculative | — |
-| Aion 2.0 | 10–20 (est) | Speculative | — |
-| Tongyi Deepresearch 30B A3B | 0–15 (est) | Speculative | — |
-| Goliath 120B | 10–20 (est) | Speculative | — |
-| Magnum V4 72B | 0–15 (est) | Speculative | — |
-| Coder Large | 10–20 (est) | Speculative | — |
-| Seed 1.6 | 10–20 (est) | Speculative | — |
-| Ui Tars 1.5 7B | 0–15 (est) | Speculative | — |
-| Corethink Free | 10–20 (est) | Speculative | — |
-| Cogito V2.1 671B | 0–15 (est) | Speculative | — |
-| Llemma_7B | 0–15 (est) | Speculative | — |
-| Rnj 1 Instruct | 10–20 (est) | Speculative | — |
-| Giga Potato | 10–20 (est) | Speculative | — |
-| Giga Potato Thinking | 10–20 (est) | Speculative | — |
-| Mythomax L2 13B | 0–15 (est) | Speculative | — |
-| Granite 4.0 H Micro | 0–15 (est) | Speculative | — |
-| Mercury | 10–20 (est) | Speculative | — |
-| Inflection 3 Pi | 10–20 (est) | Speculative | — |
-| Inflection 3 Productivity | 10–20 (est) | Speculative | — |
-| Auto | 10–20 (est) | Speculative | — |
-| Lfm 2 24B A2B | 0–15 (est) | Speculative | — |
-| Lfm 2.2 6B | 10–20 (est) | Speculative | — |
-| Lfm2 8B A1B | 60–70 (est) | Inferred | — |
-| Weaver | 10–20 (est) | Speculative | — |
-| Longcat Flash Chat | 10–20 (est) | Speculative | — |
-| Morph V3 Fast | 10–20 (est) | Speculative | — |
-| Morph V3 Large | 10–20 (est) | Speculative | — |
-| Noromaid 20B | 10–20 (est) | Speculative | — |
-| Bodybuilder | 10–20 (est) | Speculative | — |
-| Sonar | 10–20 (est) | Speculative | — |
-| Sonar Deep Research | 10–20 (est) | Speculative | — |
-| Sonar Pro Search | 10–20 (est) | Speculative | — |
-| Sonar Reasoning Pro | 10–20 (est) | Speculative | — |
-| Sorcererlm 8X22B | 0–15 (est) | Speculative | — |
-| Relace Apply 3 | 10–20 (est) | Speculative | — |
-| Relace Search | 10–20 (est) | Speculative | — |
-| Router | 10–20 (est) | Speculative | — |
-| Hunyuan A13B Instruct | 0–15 (est) | Speculative | — |
-| Cydonia 24B V4.1 | 30–45 (est) | Inferred | — |
-| Rocinante 12B | 0–15 (est) | Speculative | — |
-| Skyfall 36B V2 | 10–20 (est) | Speculative | — |
-| Unslopnemo 12B | 0–15 (est) | Speculative | — |
-| Remm Slerp L2 13B | 0–15 (est) | Speculative | — |
-| Palmyra X5 | 10–20 (est) | Speculative | — |
-| Sarvam M Free | 10–20 (est) | Speculative | — |
+| Jamba Large 1.7 | 10–20 (est) | Speculative | — | | Aion 1.0 | 10–20 (est) |
+Speculative | — | | Aion 2.0 | 10–20 (est) | Speculative | — | | Tongyi Deepresearch 30B
+A3B | 0–15 (est) | Speculative | — | | Goliath 120B | 10–20 (est) | Speculative | — | |
+Magnum V4 72B | 0–15 (est) | Speculative | — | | Coder Large | 10–20 (est) | Speculative
+| — | | Seed 1.6 | 10–20 (est) | Speculative | — | | Ui Tars 1.5 7B | 0–15 (est) |
+Speculative | — | | Corethink Free | 10–20 (est) | Speculative | — | | Cogito V2.1 671B
+| 0–15 (est) | Speculative | — | | Llemma_7B | 0–15 (est) | Speculative | — | | Rnj 1
+Instruct | 10–20 (est) | Speculative | — | | Giga Potato | 10–20 (est) | Speculative | —
+| | Giga Potato Thinking | 10–20 (est) | Speculative | — | | Mythomax L2 13B | 0–15
+(est) | Speculative | — | | Granite 4.0 H Micro | 0–15 (est) | Speculative | — | |
+Mercury | 10–20 (est) | Speculative | — | | Inflection 3 Pi | 10–20 (est) | Speculative
+| — | | Inflection 3 Productivity | 10–20 (est) | Speculative | — | | Auto | 10–20 (est)
+| Speculative | — | | Lfm 2 24B A2B | 0–15 (est) | Speculative | — | | Lfm 2.2 6B |
+10–20 (est) | Speculative | — | | Lfm2 8B A1B | 60–70 (est) | Inferred | — | | Weaver |
+10–20 (est) | Speculative | — | | Longcat Flash Chat | 10–20 (est) | Speculative | — | |
+Morph V3 Fast | 10–20 (est) | Speculative | — | | Morph V3 Large | 10–20 (est) |
+Speculative | — | | Noromaid 20B | 10–20 (est) | Speculative | — | | Bodybuilder | 10–20
+(est) | Speculative | — | | Sonar | 10–20 (est) | Speculative | — | | Sonar Deep
+Research | 10–20 (est) | Speculative | — | | Sonar Pro Search | 10–20 (est) |
+Speculative | — | | Sonar Reasoning Pro | 10–20 (est) | Speculative | — | | Sorcererlm
+8X22B | 0–15 (est) | Speculative | — | | Relace Apply 3 | 10–20 (est) | Speculative | —
+| | Relace Search | 10–20 (est) | Speculative | — | | Router | 10–20 (est) | Speculative
+| — | | Hunyuan A13B Instruct | 0–15 (est) | Speculative | — | | Cydonia 24B V4.1 |
+30–45 (est) | Inferred | — | | Rocinante 12B | 0–15 (est) | Speculative | — | | Skyfall
+36B V2 | 10–20 (est) | Speculative | — | | Unslopnemo 12B | 0–15 (est) | Speculative | —
+| | Remm Slerp L2 13B | 0–15 (est) | Speculative | — | | Palmyra X5 | 10–20 (est) |
+Speculative | — | | Sarvam M Free | 10–20 (est) | Speculative | — |
 
 ## NVIDIA (NEMOTRON)
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Cosmos Nemotron 34B | 10–20 (est) | Speculative | — |
 | Nemotron 3 Nano 30B A3B | 0–15 (est) | Speculative | — |
 | Nemotron 4 340B Instruct | 10–20 (est) | Speculative | — |
 | Nemotron Nano 9B V2 Free | 0–15 (est) | Speculative | — |
 | Nvidia Nemotron Nano 9B V2 | 0–15 (est) | Speculative | — |
 
-
 | Parakeet Tdt 0.6B V2 | 10–20 (est) | Speculative | — |
 
-| Stockmark 100B | 36.00 | Reported | SWE-bench |
-| Nemotron Nano 30B | 43.00 | Reported | SWE-bench |
+| Stockmark 100B | 36.00 | Reported | SWE-bench | | Nemotron Nano 30B | 43.00 | Reported
+| SWE-bench |
 ## ARCEE AI
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Trinity Large Preview Free | 10–20 (est) | Speculative | — |
 | Trinity Mini Free | 0–15 (est) | Speculative | — |
 
-
-| Maestro Reasoning | 10–20 (est) | Speculative | — |
-| Spotlight | 10–20 (est) | Speculative | — |
-| Virtuoso Large | 10–20 (est) | Speculative | — |
+| Maestro Reasoning | 10–20 (est) | Speculative | — | | Spotlight | 10–20 (est) |
+Speculative | — | | Virtuoso Large | 10–20 (est) | Speculative | — |
 
 ## UPSTAGE
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Solar Pro 3 Free | 10–20 (est) | Speculative | — |
-
-
 
 ## MICROSOFT
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Phi 3 Medium 128K Instruct | 10–20 (est) | Speculative | — |
 | Phi 3 Medium 4K Instruct | 10–20 (est) | Speculative | — |
 | Phi 3 Small 128K Instruct | 10–20 (est) | Speculative | — |
@@ -498,14 +443,13 @@
 | Phi 3.5 Moe Instruct | 10–20 (est) | Speculative | — |
 | Phi 4 Mini Instruct | 0–15 (est) | Speculative | — |
 
-| Phi 4 | 0–15 (est) | Speculative | — |
-| Wizardlm 2 8X22B | 0–15 (est) | Speculative | — |
-
+| Phi 4 | 0–15 (est) | Speculative | — | | Wizardlm 2 8X22B | 0–15 (est) | Speculative |
+— |
 
 ## ALLEN AI
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Olmo 2 0325 32B Instruct | 0–15 (est) | Speculative | — |
 | Olmo 3 32B Think | 0–15 (est) | Speculative | — |
 | Olmo 3 7B Instruct | 0–15 (est) | Speculative | — |
@@ -513,40 +457,36 @@
 | Olmo 3.1 32B Instruct | 0–15 (est) | Speculative | — |
 | Olmo 3.1 32B Think | 0–15 (est) | Speculative | — |
 
-
 ## AMAZON
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Nova 2 Lite V1 | 0–15 (est) | Speculative | — |
 | Nova Lite V1 | 0–15 (est) | Speculative | — |
 | Nova Micro V1 | 0–15 (est) | Speculative | — |
 | Nova Premier V1 | 10–20 (est) | Speculative | — |
 | Nova Pro V1 | 70–80 (est) | Inferred | — |
 
-
 ## BAIDU
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Ernie 4.5 21B A3B | 70–78 (est) | Inferred | — |
 | Ernie 4.5 21B A3B Thinking | 70–78 (est) | Inferred | — |
 | Ernie 4.5 300B A47B | 70–78 (est) | Inferred | — |
 
-
 ## COHERE
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Command A | 10–20 (est) | Speculative | — |
 | Command R 08 2024 | 10–20 (est) | Speculative | — |
 | Command R Plus 08 2024 | 10–20 (est) | Speculative | — |
 | Command R7B 12 2024 | 0–15 (est) | Speculative | — |
 
-
 ## STEPFUN
 
 | Model Name | SWE-bench Verified % | Status | Source key |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Step 3.5 Flash | 74.40 | Reported | SWE-bench |
 | Step 3.5 Flash (free) | 74.40 | Inferred | — |

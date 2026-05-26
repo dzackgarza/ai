@@ -10,28 +10,39 @@ approved, or blacklisted, and why.
 
 * * *
 
-## ✅ The "Approved for Subagents" Roster
+## ✅ The “Approved for Subagents” Roster
 
 These models have passed strict testing.
 They successfully handle standard text generation AND they correctly output
 syntactically valid JSON tool calls matching the OpenCode schemas.
 
 - `openrouter/arcee-ai/trinity-large-preview:free`
+
 - `openrouter/arcee-ai/trinity-mini:free`
+
 - `openrouter/meta-llama/llama-3.3-70b-instruct:free`
+
 - `openrouter/minimax/minimax-m2.5:free`
+
 - `openrouter/mistralai/mistral-small-3.1-24b-instruct`
+
 - `openrouter/mistralai/mistral-small-3.2-24b-instruct`
+
 - `openrouter/openai/gpt-oss-120b:free`
+
 - `openrouter/openrouter/elephant-alpha`
+
 - `openrouter/openrouter/free`
+
 - `openrouter/openrouter/owl-alpha`
+
 - `openrouter/poolside/laguna-xs.2:free`
+
 - `openrouter/z-ai/glm-4.5-air:free`
 
 * * *
 
-## 🟡 The "Useful but Non-Agentic" Roster
+## 🟡 The “Useful but Non-Agentic” Roster
 
 These models are active on the free tier but **failed** strict tool-calling validation.
 They should NOT be assigned to subagents (like `Reviewer: Code` or
@@ -44,11 +55,13 @@ classification, translation, transcript compression) if invoked directly via
 **Failed Tool/JSON Formatting (Output strings instead of booleans, broke JSON syntax):**
 
 - `nvidia/nemotron-nano-9b-v2:free` (Output invalid JSON arguments)
+
 - `nvidia/nemotron-nano-12b-v2-vl:free` (Output invalid JSON arguments)
 
 **API Explicitly Denies Tool Use:**
 
 - `cognitivecomputations/dolphin-mistral-24b-venice-edition:free`
+
 - `liquid/lfm-2.5-1.2b-thinking:free`
 
 * * *
@@ -59,59 +72,94 @@ classification, translation, transcript compression) if invoked directly via
 
 Models below ~35B are systematically blacklisted unless they have proven exceptional
 tuning.
-Small models fall into infinite tool loops, ignore negative constraints (e.g. "Do
-not use bash"), and suffer rapid context degradation.
+Small models fall into infinite tool loops, ignore negative constraints (e.g. “Do
+not use bash”), and suffer rapid context degradation.
 
 - `allenai/molmo-2-8b:free`
+
 - `deepseek/deepseek-r1-0528-qwen3-8b:free`
+
 - `google/gemma-3-12b-it:free`
+
 - `google/gemma-3-4b-it:free`
+
 - `google/gemma-3n-e2b-it:free`
+
 - `google/gemma-3n-e4b-it:free`
+
 - `liquid/lfm-2.5-1.2b-instruct:free`
+
 - `meta-llama/llama-3.2-3b-instruct:free`
+
 - `mistralai/mistral-7b-instruct:free`
+
 - `google/gemma-3-27b-it:free` (Moved to free tier but failed validation) - removed
   2026-05-09
+
 - `qwen/qwen-2.5-vl-7b-instruct:free`
+
 - `qwen/qwen2.5-vl-32b-instruct:free`
+
 - `qwen/qwen3-14b:free`
+
 - `qwen/qwen3-4b:free`
+
 - `qwen/qwen3-8b:free`
+
 - `qwen/qwq-32b:free`
 
 ### 2. Dead Endpoints (404 No Endpoints)
 
-These models are technically documented as "free" somewhere on OpenRouter or third-party
+These models are technically documented as “free” somewhere on OpenRouter or third-party
 lists, but pinging the API returns a hard 404. OpenRouter has likely rotated them out.
 
 - `deepseek/deepseek-r1-0528:free`
+
 - `deepseek/deepseek-r1:free`
+
 - `deepseek/deepseek-v3-base:free`
+
 - `google/gemini-2.0-flash-exp:free`
+
 - `meta-llama/llama-3.1-405b-instruct:free`
+
 - `meta-llama/llama-4-scout:free`
+
 - `microsoft/mai-ds-r1:free`
+
 - `mistralai/devstral-small-2505:free`
+
 - `mistralai/mistral-nemo:free`
+
 - `moonshotai/kimi-dev-72b:free`
+
 - `moonshotai/kimi-k2:free`
+
 - `qwen/qwen2.5-vl-72b-instruct:free`
+
 - `qwen/qwen3-235b-a22b-07-25:free`
+
 - `qwen/qwen3-235b-a22b:free`
+
 - `sarvamai/sarvam-m:free`
+
 - `tngtech/deepseek-r1t2-chimera:free`
+
 - `tngtech/tng-r1t-chimera:free`
+
 - `qwen/qwen3-30b-a3b:free`
+
 - `qwen/qwen3-32b:free`
+
 - `thudm/glm-z1-32b:free`
 
 ### 3. Expired Free Periods
 
-These models return explicit HTTP 400 API errors stating "The free period has ended.
-To continue using this model, please migrate to the paid slug."
+These models return explicit HTTP 400 API errors stating “The free period has ended.
+To continue using this model, please migrate to the paid slug.”
 
 - `kwaipilot/kat-coder-pro:free`
+
 - `mistralai/devstral-2512:free`
 
 ### 4. Paid / Premium Models (All)
@@ -123,6 +171,6 @@ via OpenRouter.
 
 * * *
 
-*Note: OpenRouter's free tier rotates frequently.
+*Note: OpenRouter’s free tier rotates frequently.
 To validate a new free model, run it through `test_models2.py` which forces a strict
 JSON schema validation for tool-calling capabilities.*

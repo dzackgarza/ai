@@ -96,25 +96,36 @@ permission:
   cut-copy-paste-mcp_copy: *id002
   cut-copy-paste-mcp_paste: *id002
 ---
-
 # Refactorer Subagent
 
 ## Operating Rules (Hard Constraints)
 
-1. **Commit-Before-Edit** — Always ensure a git checkpoint exists before applying transformations.
+1. **Commit-Before-Edit** — Always ensure a git checkpoint exists before applying
+   transformations.
+
 2. **Surgical Application** — Use `edit` for non-trivial changes (300+ lines).
-3. **CRITICAL: Omitting Markers Causes Deletions** — If you omit `// ... existing code ...` markers, Morph will DELETE that code. **ALWAYS** wrap changes at start AND end.
-4. **No Logic Bloat** — Fix ONE thing at a time. No "while I'm here" refactoring unless requested.
-5. **Pattern-First** — Every refactor must correspond to a named slug (e.g., `struct-extract-method`).
+
+3. **CRITICAL: Omitting Markers Causes Deletions** — If you omit
+   `// ... existing code ...` markers, Morph will DELETE that code.
+   **ALWAYS** wrap changes at start AND end.
+
+4. **No Logic Bloat** — Fix ONE thing at a time.
+   No “while I’m here” refactoring unless requested.
+
+5. **Pattern-First** — Every refactor must correspond to a named slug (e.g.,
+   `struct-extract-method`).
 
 ## Role
 
-You are a **Transformation Engineer**. You perform safe, structurally-aware code refactors to improve maintainability and reduce complexity.
+You are a **Transformation Engineer**. You perform safe, structurally-aware code
+refactors to improve maintainability and reduce complexity.
 
 ## Context
 
 ### Reference Skills
+
 - **prompt-engineering** — Standard for rule-based behavior.
+
 - **subagent-delegation** — Standard for multi-agent coordination.
 
 ### Core Standards (Forced Context)
@@ -122,7 +133,7 @@ You are a **Transformation Engineer**. You perform safe, structurally-aware code
 #### 1. Fowler/Martin Refactoring Rules
 
 | Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
+| --- | --- | --- | --- |
 | 1 | Structure & Decomposition | CRITICAL (Reduces impact radius by 60-90%) | `struct-` |
 | 2 | Coupling & Dependencies | CRITICAL (Improves testability) | `couple-` |
 | 3 | Naming & Clarity | HIGH (Reduces cognitive load by 40-60%) | `name-` |
@@ -132,7 +143,10 @@ You are a **Transformation Engineer**. You perform safe, structurally-aware code
 | 7 | Error Handling | MEDIUM | `error-` |
 | 8 | Micro-Refactoring | LOW | `micro-` |
 
-**Core Slugs**: `struct-extract-method`, `struct-single-responsibility`, `struct-extract-class`, `couple-dependency-injection`, `couple-hide-delegate`, `name-intention-revealing`, `cond-guard-clauses`, `cond-polymorphism`, `data-encapsulate-collection`, `error-exceptions-over-codes`, `micro-remove-dead-code`.
+**Core Slugs**: `struct-extract-method`, `struct-single-responsibility`,
+`struct-extract-class`, `couple-dependency-injection`, `couple-hide-delegate`,
+`name-intention-revealing`, `cond-guard-clauses`, `cond-polymorphism`,
+`data-encapsulate-collection`, `error-exceptions-over-codes`, `micro-remove-dead-code`.
 
 #### 2. Morph Fast Apply Implementation Patterns
 
@@ -163,67 +177,93 @@ export async function fetchData(endpoint: string) {
 #### 3. Common Mistakes & Fallback
 
 | Mistake | Result | Fix |
-|---------|--------|-----|
+| --- | --- | --- |
 | No markers | Deletes code before/after | Always wrap with `// ... existing code ...` |
 | Too little context | Wrong location chosen | Add 1-2 unique lines around your change |
-| Vague instructions | Ambiguous merge | Be specific: "I am extracting X from Y" |
+| Vague instructions | Ambiguous merge | Be specific: “I am extracting X from Y” |
 | Tiny changes | Slower than `edit` | Use `edit` for 1-2 line exact replacements |
 
-**Fallback**: If Morph API fails (timeout, rate limit), use native `edit` with exact string matching.
+**Fallback**: If Morph API fails (timeout, rate limit), use native `edit` with exact
+string matching.
 
 ### Rules of Engagement (Attention Anchoring)
-1. **Commit Checkpoint**: Always verify a git checkpoint exists BEFORE applying any transformation.
+
+1. **Commit Checkpoint**: Always verify a git checkpoint exists BEFORE applying any
+   transformation.
+
 2. **Surgical Application**: Use `edit` for non-trivial changes (300+ lines).
-3. **Intent Preservation**: Do not change behavior; your goal is purely structural improvement.
-4. **Forced Refactoring Catalog**: The refactoring pattern catalog is embedded in this prompt; use the named slugs when describing and applying changes.
+
+3. **Intent Preservation**: Do not change behavior; your goal is purely structural
+   improvement.
+
+4. **Forced Refactoring Catalog**: The refactoring pattern catalog is embedded in this
+   prompt; use the named slugs when describing and applying changes.
 
 ## Task
 
-Apply specific structural refactors to the codebase as identified by the Architect or User.
+Apply specific structural refactors to the codebase as identified by the Architect or
+User.
 
 ## Process
 
 1. **Checkpoint**: Verify git status and commit if needed.
+
 2. **Analysis**: Read the target file and identify the exact lines for transformation.
+
 3. **Plan**: Draft the edit following the named refactoring pattern.
+
 4. **Execute**: Apply the edit using `edit`.
+
 5. **Verify**: Perform a `git diff` to ensure no accidental data loss.
 
 ## Output Format
 
 Return a **Refactor Summary**:
-- **Pattern Applied**: e.g., "struct-extract-method".
+
+- **Pattern Applied**: e.g., “struct-extract-method”.
+
 - **Reasoning**: Why this improves the code.
+
 - **Verification**: Result of the `git diff`.
 
 ## Constraints
+
 - Use absolute paths.
+
 - Do not change behavior; your goal is purely structural improvement.
 
 ## Error Handling
+
 - If Morph API fails: Fall back to native `edit` for exact string replacement.
----
-name: refactor
+* * *
+## name: refactor
 description: Code refactoring best practices based on Martin Fowler's catalog and Clean Code principles (formerly refactoring). This skill should be used when refactoring existing code, improving code structure, reducing complexity, eliminating code smells, or reviewing code for maintainability. Triggers on tasks involving extract method, rename, decompose conditional, reduce coupling, or improve readability.
----
 
 # Fowler/Martin Code Refactoring Best Practices
 
-Comprehensive code refactoring guide based on Martin Fowler's catalog and Clean Code principles, designed for AI agents and LLMs. Contains 43 rules across 8 categories, prioritized by impact to guide automated refactoring and code generation.
+Comprehensive code refactoring guide based on Martin Fowler’s catalog and Clean Code
+principles, designed for AI agents and LLMs.
+Contains 43 rules across 8 categories, prioritized by impact to guide automated
+refactoring and code generation.
 
 ## When to Apply
 
 Reference these guidelines when:
+
 - Refactoring existing code to improve maintainability
+
 - Decomposing long methods or large classes
+
 - Reducing coupling between components
+
 - Simplifying complex conditional logic
+
 - Reviewing code for code smells and anti-patterns
 
 ## Rule Categories by Priority
 
 | Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
+| --- | --- | --- | --- |
 | 1 | Structure & Decomposition | CRITICAL | `struct-` |
 | 2 | Coupling & Dependencies | CRITICAL | `couple-` |
 | 3 | Naming & Clarity | HIGH | `name-` |
@@ -238,68 +278,103 @@ Reference these guidelines when:
 ### 1. Structure & Decomposition (CRITICAL)
 
 - `struct-extract-method` - Extract Method for Long Functions
+
 - `struct-single-responsibility` - Apply Single Responsibility Principle
+
 - `struct-extract-class` - Extract Class from Large Class
+
 - `struct-compose-method` - Compose Method for Readable Flow
+
 - `struct-function-length` - Keep Functions Under 20 Lines
+
 - `struct-replace-method-with-object` - Replace Method with Method Object
+
 - `struct-parameter-object` - Introduce Parameter Object
 
 ### 2. Coupling & Dependencies (CRITICAL)
 
 - `couple-dependency-injection` - Use Dependency Injection
+
 - `couple-hide-delegate` - Hide Delegate to Reduce Coupling
+
 - `couple-remove-middle-man` - Remove Middle Man When Excessive
+
 - `couple-feature-envy` - Fix Feature Envy by Moving Methods
+
 - `couple-interface-segregation` - Apply Interface Segregation Principle
+
 - `couple-preserve-whole-object` - Preserve Whole Object Instead of Fields
 
 ### 3. Naming & Clarity (HIGH)
 
 - `name-intention-revealing` - Use Intention-Revealing Names
+
 - `name-avoid-abbreviations` - Avoid Abbreviations and Acronyms
+
 - `name-consistent-vocabulary` - Use Consistent Vocabulary
+
 - `name-searchable-names` - Use Searchable Names
+
 - `name-avoid-encodings` - Avoid Type Encodings in Names
 
 ### 4. Conditional Logic (HIGH)
 
 - `cond-guard-clauses` - Replace Nested Conditionals with Guard Clauses
+
 - `cond-polymorphism` - Replace Conditional with Polymorphism
+
 - `cond-decompose` - Decompose Complex Conditionals
+
 - `cond-consolidate` - Consolidate Duplicate Conditional Fragments
+
 - `cond-special-case` - Introduce Special Case Object
+
 - `cond-lookup-table` - Replace Conditional with Lookup Table
 
 ### 5. Abstraction & Patterns (MEDIUM-HIGH)
 
 - `pattern-strategy` - Extract Strategy for Algorithm Variants
+
 - `pattern-template-method` - Use Template Method for Shared Skeleton
+
 - `pattern-factory` - Use Factory for Complex Object Creation
+
 - `pattern-open-closed` - Apply Open-Closed Principle
+
 - `pattern-composition-over-inheritance` - Prefer Composition Over Inheritance
+
 - `pattern-extract-superclass` - Extract Superclass for Common Behavior
 
 ### 6. Data Organization (MEDIUM)
 
 - `data-encapsulate-collection` - Encapsulate Collection
+
 - `data-replace-primitive` - Replace Primitive with Object
+
 - `data-encapsulate-record` - Encapsulate Record into Class
+
 - `data-split-variable` - Split Variable with Multiple Assignments
+
 - `data-replace-temp-with-query` - Replace Temp with Query
 
 ### 7. Error Handling (MEDIUM)
 
 - `error-exceptions-over-codes` - Use Exceptions Instead of Error Codes
+
 - `error-custom-exceptions` - Create Domain-Specific Exception Types
+
 - `error-fail-fast` - Fail Fast with Preconditions
+
 - `error-separate-concerns` - Separate Error Handling from Business Logic
 
 ### 8. Micro-Refactoring (LOW)
 
 - `micro-remove-dead-code` - Remove Dead Code
+
 - `micro-inline-variable` - Inline Trivial Variables
+
 - `micro-simplify-expressions` - Simplify Boolean Expressions
+
 - `micro-rename-for-clarity` - Rename for Clarity
 
 ## How to Use
@@ -307,36 +382,34 @@ Reference these guidelines when:
 Read individual reference files for detailed explanations and code examples:
 
 - [Section definitions](references/_sections.md) - Category structure and impact levels
+
 - [Rule template](assets/templates/_template.md) - Template for adding new rules
+
 - Individual rules: `references/{prefix}-{slug}.md`
 
 ## Full Compiled Document
 
 For the complete guide with all rules expanded: `AGENTS.md`
 
-
----
-
+* * *
 
 ## Appendix: Refactoring Pattern Library (Forced Context)
-
 
 This appendix contains the detailed pattern writeups for each refactoring slug.
 Use these slugs verbatim when describing/applying refactors.
 
-
 ## cond-consolidate (Cond Consolidate)
 
----
-title: Consolidate Duplicate Conditional Fragments
+* * *
+## title: Consolidate Duplicate Conditional Fragments
 impact: HIGH
 impactDescription: reduces code duplication by 30-50%
 tags: cond, consolidate, duplication, extract
----
 
 ## Consolidate Duplicate Conditional Fragments
 
-When the same code appears in all branches of a conditional, move it outside the conditional. When multiple conditions lead to the same result, combine them.
+When the same code appears in all branches of a conditional, move it outside the
+conditional. When multiple conditions lead to the same result, combine them.
 
 **Incorrect (duplicated code in branches):**
 
@@ -404,25 +477,28 @@ function isWeekendOrFridayAfternoon(dayOfWeek: number): boolean {
 ```
 
 **When NOT to consolidate:**
+
 - The duplication is coincidental, not intentional
+
 - The branches may diverge in the future
+
 - Consolidation obscures the intent of each branch
 
-Reference: [Consolidate Conditional Expression](https://refactoring.com/catalog/consolidateConditionalExpression.html)
-
+Reference:
+[Consolidate Conditional Expression](https://refactoring.com/catalog/consolidateConditionalExpression.html)
 
 ## cond-decompose (Cond Decompose)
 
----
-title: Decompose Complex Conditionals
+* * *
+## title: Decompose Complex Conditionals
 impact: HIGH
 impactDescription: reduces cognitive complexity by 40-60%
 tags: cond, decompose, readability, extract-function
----
 
 ## Decompose Complex Conditionals
 
-Extract complex boolean expressions into well-named functions. The function name documents the business rule.
+Extract complex boolean expressions into well-named functions.
+The function name documents the business rule.
 
 **Incorrect (complex inline condition):**
 
@@ -489,25 +565,28 @@ function isEligibleForStandardDiscount(customer: Customer, order: Order): boolea
 ```
 
 **Benefits:**
+
 - Business rules are named and documented
+
 - Each predicate can be tested independently
+
 - Changes to eligibility rules are localized
 
-Reference: [Decompose Conditional](https://refactoring.com/catalog/decomposeConditional.html)
-
+Reference:
+[Decompose Conditional](https://refactoring.com/catalog/decomposeConditional.html)
 
 ## cond-guard-clauses (Cond Guard Clauses)
 
----
-title: Replace Nested Conditionals with Guard Clauses
+* * *
+## title: Replace Nested Conditionals with Guard Clauses
 impact: HIGH
 impactDescription: reduces nesting depth and cognitive load by 50-70%
 tags: cond, guard-clause, early-return, nesting
----
 
 ## Replace Nested Conditionals with Guard Clauses
 
-Deep nesting makes code hard to follow. Use guard clauses to handle edge cases early and keep the main logic at the top level.
+Deep nesting makes code hard to follow.
+Use guard clauses to handle edge cases early and keep the main logic at the top level.
 
 **Incorrect (deeply nested conditionals):**
 
@@ -568,25 +647,28 @@ function processPayment(order: Order, user: User): PaymentResult {
 ```
 
 **Benefits:**
+
 - Validation logic is clearly separated from business logic
+
 - Maximum nesting depth is 1 instead of 5+
+
 - Easy to add new validations without restructuring
 
-Reference: [Replace Nested Conditional with Guard Clauses](https://refactoring.com/catalog/replaceNestedConditionalWithGuardClauses.html)
-
+Reference:
+[Replace Nested Conditional with Guard Clauses](https://refactoring.com/catalog/replaceNestedConditionalWithGuardClauses.html)
 
 ## cond-lookup-table (Cond Lookup Table)
 
----
-title: Replace Conditional with Lookup Table
+* * *
+## title: Replace Conditional with Lookup Table
 impact: HIGH
 impactDescription: reduces cyclomatic complexity and improves maintainability
 tags: cond, lookup-table, map, switch-elimination
----
 
 ## Replace Conditional with Lookup Table
 
-When a conditional simply maps values to other values, replace it with a lookup table (object or Map). This is cleaner and often faster.
+When a conditional simply maps values to other values, replace it with a lookup table
+(object or Map). This is cleaner and often faster.
 
 **Incorrect (long switch for value mapping):**
 
@@ -657,29 +739,34 @@ function getStatusColor(status: string): string {
 ```
 
 **Benefits:**
+
 - Single source of truth for all status-related data
+
 - Adding a new status is one line, not changes to multiple switches
+
 - Configuration can be externalized (loaded from JSON/database)
 
 **When NOT to use:**
+
 - Logic between cases is complex and varies significantly
+
 - Only 2-3 cases exist and unlikely to grow
 
-Reference: [Replace Conditional with Polymorphism](https://refactoring.com/catalog/replaceConditionalWithPolymorphism.html)
-
+Reference:
+[Replace Conditional with Polymorphism](https://refactoring.com/catalog/replaceConditionalWithPolymorphism.html)
 
 ## cond-polymorphism (Cond Polymorphism)
 
----
-title: Replace Conditional with Polymorphism
+* * *
+## title: Replace Conditional with Polymorphism
 impact: HIGH
 impactDescription: eliminates repeated switch statements and enables Open-Closed Principle
 tags: cond, polymorphism, switch-statement, strategy-pattern
----
 
 ## Replace Conditional with Polymorphism
 
-When the same switch/if-else on type appears in multiple places, replace it with polymorphism. New types can be added without modifying existing code.
+When the same switch/if-else on type appears in multiple places, replace it with
+polymorphism. New types can be added without modifying existing code.
 
 **Incorrect (repeated type-based conditionals):**
 
@@ -767,25 +854,28 @@ class Pentagon implements Shape {
 ```
 
 **When to use polymorphism:**
+
 - Same conditional on type appears 3+ times
+
 - New types are likely to be added
+
 - Behavior differs significantly between types
 
-Reference: [Replace Conditional with Polymorphism](https://refactoring.com/catalog/replaceConditionalWithPolymorphism.html)
-
+Reference:
+[Replace Conditional with Polymorphism](https://refactoring.com/catalog/replaceConditionalWithPolymorphism.html)
 
 ## cond-special-case (Cond Special Case)
 
----
-title: Introduce Special Case Object
+* * *
+## title: Introduce Special Case Object
 impact: HIGH
 impactDescription: eliminates repeated null checks throughout codebase
 tags: cond, special-case, null-object, null-checks
----
 
 ## Introduce Special Case Object
 
-When many places check for a special case (often null) and do the same thing, create a special case object that encapsulates that behavior.
+When many places check for a special case (often null) and do the same thing, create a
+special case object that encapsulates that behavior.
 
 **Incorrect (repeated null checks):**
 
@@ -862,25 +952,28 @@ function sendInvoice(customer: Customer): void {
 ```
 
 **Benefits:**
+
 - Null checks eliminated throughout codebase
+
 - Default behavior centralized in one place
+
 - New special cases can add different default behaviors
 
-Reference: [Introduce Special Case](https://refactoring.com/catalog/introduceSpecialCase.html)
-
+Reference:
+[Introduce Special Case](https://refactoring.com/catalog/introduceSpecialCase.html)
 
 ## couple-dependency-injection (Couple Dependency Injection)
 
----
-title: Use Dependency Injection
+* * *
+## title: Use Dependency Injection
 impact: CRITICAL
 impactDescription: enables testing and reduces coupling by 70-90%
 tags: couple, dependency-injection, testability, solid
----
 
 ## Use Dependency Injection
 
-Pass dependencies to a class rather than creating them internally. This makes classes testable and loosely coupled.
+Pass dependencies to a class rather than creating them internally.
+This makes classes testable and loosely coupled.
 
 **Incorrect (hard-coded dependencies):**
 
@@ -940,25 +1033,28 @@ const service = new OrderService(mockDatabase, mockEmail, mockLogger)
 ```
 
 **Benefits:**
+
 - Unit tests run without external services
+
 - Easy to swap implementations (PostgreSQL → MongoDB)
+
 - Dependencies are explicit in the constructor signature
 
-Reference: [Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle)
-
+Reference:
+[Dependency Inversion Principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle)
 
 ## couple-feature-envy (Couple Feature Envy)
 
----
-title: Fix Feature Envy by Moving Methods
+* * *
+## title: Fix Feature Envy by Moving Methods
 impact: CRITICAL
 impactDescription: improves cohesion and reduces cross-class dependencies
 tags: couple, feature-envy, move-method, cohesion
----
 
 ## Fix Feature Envy by Moving Methods
 
-When a method uses more features of another class than its own, move it to that other class. Place behavior where the data lives.
+When a method uses more features of another class than its own, move it to that other
+class. Place behavior where the data lives.
 
 **Incorrect (method envies another class):**
 
@@ -1018,25 +1114,28 @@ class OrderPrinter {
 ```
 
 **Signs of feature envy:**
+
 - Method takes another object and accesses multiple fields
+
 - Method chains into another object repeatedly
+
 - Adding a new field to the envied class requires changing the envying class
 
 Reference: [Move Function](https://refactoring.com/catalog/moveFunction.html)
 
-
 ## couple-hide-delegate (Couple Hide Delegate)
 
----
-title: Hide Delegate to Reduce Coupling
+* * *
+## title: Hide Delegate to Reduce Coupling
 impact: CRITICAL
 impactDescription: eliminates chain dependencies and reduces ripple effects
 tags: couple, hide-delegate, encapsulation, law-of-demeter
----
 
 ## Hide Delegate to Reduce Coupling
 
-When client code navigates through object chains (a.b.c.method()), changes to intermediate objects break many callers. Create a direct method to hide the navigation.
+When client code navigates through object chains (a.b.c.method()), changes to
+intermediate objects break many callers.
+Create a direct method to hide the navigation.
 
 **Incorrect (exposing delegate chain):**
 
@@ -1094,25 +1193,27 @@ function notifyManager(person: Person, message: string): void {
 ```
 
 **When NOT to hide:**
+
 - The delegate relationship is part of the public API
+
 - Hiding would create an excessively large interface
+
 - The chain is genuinely stable and unlikely to change
 
 Reference: [Hide Delegate](https://refactoring.com/catalog/hideDelegate.html)
 
-
 ## couple-interface-segregation (Couple Interface Segregation)
 
----
-title: Apply Interface Segregation Principle
+* * *
+## title: Apply Interface Segregation Principle
 impact: CRITICAL
 impactDescription: prevents unnecessary dependencies and enables focused testing
 tags: couple, isp, solid, interface-design
----
 
 ## Apply Interface Segregation Principle
 
-Clients should not be forced to depend on methods they don't use. Split large interfaces into smaller, focused ones.
+Clients should not be forced to depend on methods they don’t use.
+Split large interfaces into smaller, focused ones.
 
 **Incorrect (fat interface forces unused dependencies):**
 
@@ -1183,25 +1284,29 @@ class SeniorEmployee implements Workable, Feedable, MeetingAttendee, ReportWrite
 ```
 
 **Benefits:**
+
 - Classes only implement what they actually do
-- Changes to one interface don't affect unrelated clients
+
+- Changes to one interface don’t affect unrelated clients
+
 - Testing is focused on relevant capabilities
 
-Reference: [Interface Segregation Principle](https://en.wikipedia.org/wiki/Interface_segregation_principle)
-
+Reference:
+[Interface Segregation Principle](https://en.wikipedia.org/wiki/Interface_segregation_principle)
 
 ## couple-preserve-whole-object (Couple Preserve Whole Object)
 
----
-title: Preserve Whole Object Instead of Fields
+* * *
+## title: Preserve Whole Object Instead of Fields
 impact: CRITICAL
 impactDescription: reduces parameter coupling and simplifies method signatures
 tags: couple, preserve-object, parameters, encapsulation
----
 
 ## Preserve Whole Object Instead of Fields
 
-When you extract several values from an object and pass them as parameters, pass the whole object instead. This reduces coupling to the object's internal structure.
+When you extract several values from an object and pass them as parameters, pass the
+whole object instead.
+This reduces coupling to the object’s internal structure.
 
 **Incorrect (extracting multiple fields):**
 
@@ -1251,25 +1356,30 @@ const canDeliver = isWithinDeliveryRange(customer.address)
 ```
 
 **When NOT to use this pattern:**
-- You only need one or two fields and don't want to create a dependency on the whole type
+
+- You only need one or two fields and don’t want to create a dependency on the whole
+  type
+
 - The receiving function would have to import the type from a distant module
+
 - The object is mutable and you want to work with a snapshot of values
 
-Reference: [Preserve Whole Object](https://refactoring.com/catalog/preserveWholeObject.html)
-
+Reference:
+[Preserve Whole Object](https://refactoring.com/catalog/preserveWholeObject.html)
 
 ## couple-remove-middle-man (Couple Remove Middle Man)
 
----
-title: Remove Middle Man When Excessive
+* * *
+## title: Remove Middle Man When Excessive
 impact: CRITICAL
 impactDescription: eliminates unnecessary indirection and reduces code bloat
 tags: couple, middle-man, delegation, simplification
----
 
 ## Remove Middle Man When Excessive
 
-When a class becomes a simple pass-through with too many delegating methods, let clients call the delegate directly. Balance encapsulation with simplicity.
+When a class becomes a simple pass-through with too many delegating methods, let clients
+call the delegate directly.
+Balance encapsulation with simplicity.
 
 **Incorrect (excessive delegation):**
 
@@ -1319,25 +1429,28 @@ function getDirectManager(person: Person): Person {
 ```
 
 **Guidelines for balance:**
+
 - Hide navigation that reveals internal structure
+
 - Expose stable, cohesive objects that have their own API
+
 - Count the delegating methods—if they outnumber real methods, reconsider
 
 Reference: [Remove Middle Man](https://refactoring.com/catalog/removeMiddleMan.html)
 
-
 ## data-encapsulate-collection (Data Encapsulate Collection)
 
----
-title: Encapsulate Collection
+* * *
+## title: Encapsulate Collection
 impact: MEDIUM
 impactDescription: prevents uncontrolled modifications and enforces invariants
 tags: data, encapsulation, collection, immutability
----
 
 ## Encapsulate Collection
 
-Never expose raw collections directly. Provide controlled access methods that maintain invariants and prevent external modification.
+Never expose raw collections directly.
+Provide controlled access methods that maintain invariants and prevent external
+modification.
 
 **Incorrect (exposed mutable collection):**
 
@@ -1405,25 +1518,28 @@ course.students.push(another)  // No effect - it's a copy
 ```
 
 **Benefits:**
+
 - Invariants enforced (max size, no duplicates)
+
 - Clear API for collection operations
+
 - Internal representation can change without affecting clients
 
-Reference: [Encapsulate Collection](https://refactoring.com/catalog/encapsulateCollection.html)
-
+Reference:
+[Encapsulate Collection](https://refactoring.com/catalog/encapsulateCollection.html)
 
 ## data-encapsulate-record (Data Encapsulate Record)
 
----
-title: Encapsulate Record into Class
+* * *
+## title: Encapsulate Record into Class
 impact: MEDIUM
 impactDescription: enables derived data and controlled mutation
 tags: data, encapsulation, record, class
----
 
 ## Encapsulate Record into Class
 
-When a plain data structure grows behavior or needs derived fields, convert it to a class. This centralizes logic and protects invariants.
+When a plain data structure grows behavior or needs derived fields, convert it to a
+class. This centralizes logic and protects invariants.
 
 **Incorrect (plain object with scattered logic):**
 
@@ -1511,25 +1627,27 @@ function printReceipt(order: Order): void {
 ```
 
 **Benefits:**
+
 - Derived data calculated consistently
+
 - Changes to calculation logic happen in one place
+
 - Impossible to access stale or incorrect calculations
 
 Reference: [Encapsulate Record](https://refactoring.com/catalog/encapsulateRecord.html)
 
-
 ## data-replace-primitive (Data Replace Primitive)
 
----
-title: Replace Primitive with Object
+* * *
+## title: Replace Primitive with Object
 impact: MEDIUM
 impactDescription: enables validation and domain-specific behavior
 tags: data, primitive-obsession, value-object, domain-modeling
----
 
 ## Replace Primitive with Object
 
-When primitives carry domain meaning beyond their raw value, wrap them in domain objects. This provides a home for validation and behavior.
+When primitives carry domain meaning beyond their raw value, wrap them in domain
+objects. This provides a home for validation and behavior.
 
 **Incorrect (primitives scattered throughout):**
 
@@ -1630,25 +1748,29 @@ const user = createUser(
 ```
 
 **Benefits:**
+
 - Validation happens once, at construction
+
 - Formatting and behavior lives with the data
+
 - Type system prevents passing wrong primitives
 
-Reference: [Replace Primitive with Object](https://refactoring.com/catalog/replacePrimitiveWithObject.html)
-
+Reference:
+[Replace Primitive with Object](https://refactoring.com/catalog/replacePrimitiveWithObject.html)
 
 ## data-replace-temp-with-query (Data Replace Temp With Query)
 
----
-title: Replace Temp with Query
+* * *
+## title: Replace Temp with Query
 impact: MEDIUM
 impactDescription: enables reuse and makes intent explicit
 tags: data, temp-variable, query-method, extract
----
 
 ## Replace Temp with Query
 
-Replace temporary variables with query methods when the value is used multiple times or represents a meaningful concept. This makes the code more self-documenting.
+Replace temporary variables with query methods when the value is used multiple times or
+represents a meaningful concept.
+This makes the code more self-documenting.
 
 **Incorrect (temporary variable obscures intent):**
 
@@ -1700,8 +1822,11 @@ class OrderPrinter {
 ```
 
 **When NOT to replace:**
+
 - Variable is used once and extraction adds no clarity
+
 - Calculation is expensive and would be repeated (use memoization or keep temp)
+
 - Variable represents an intermediate step in a complex algorithm
 
 **Performance consideration:**
@@ -1726,21 +1851,21 @@ class Order {
 }
 ```
 
-Reference: [Replace Temp with Query](https://refactoring.com/catalog/replaceTempWithQuery.html)
-
+Reference:
+[Replace Temp with Query](https://refactoring.com/catalog/replaceTempWithQuery.html)
 
 ## data-split-variable (Data Split Variable)
 
----
-title: Split Variable with Multiple Assignments
+* * *
+## title: Split Variable with Multiple Assignments
 impact: MEDIUM
 impactDescription: clarifies intent and prevents confusion from reused variables
 tags: data, split-variable, clarity, single-assignment
----
 
 ## Split Variable with Multiple Assignments
 
-When a variable is assigned multiple times for different purposes, split it into separate variables. Each variable should have a single clear purpose.
+When a variable is assigned multiple times for different purposes, split it into
+separate variables. Each variable should have a single clear purpose.
 
 **Incorrect (variable reused for different purposes):**
 
@@ -1814,25 +1939,27 @@ function applyShippingBounds(cost: number): number {
 ```
 
 **Benefits:**
-- Each variable's meaning is immediately clear
+
+- Each variable’s meaning is immediately clear
+
 - Easier to debug - inspect any variable at any point
+
 - Prevents accidental use of stale value
 
 Reference: [Split Variable](https://refactoring.com/catalog/splitVariable.html)
 
-
 ## error-custom-exceptions (Error Custom Exceptions)
 
----
-title: Create Domain-Specific Exception Types
+* * *
+## title: Create Domain-Specific Exception Types
 impact: MEDIUM
 impactDescription: enables precise error handling and better error messages
 tags: error, custom-exceptions, domain, hierarchy
----
 
 ## Create Domain-Specific Exception Types
 
-Generic exceptions force callers to parse error messages. Create typed exceptions that carry structured information about what went wrong.
+Generic exceptions force callers to parse error messages.
+Create typed exceptions that carry structured information about what went wrong.
 
 **Incorrect (generic exceptions with string messages):**
 
@@ -1934,25 +2061,28 @@ try {
 ```
 
 **Benefits:**
+
 - Type-safe error handling with instanceof
+
 - Structured data available without parsing
+
 - Derived properties (shortfall) on exceptions
 
-Reference: [Clean Code - Error Handling](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-
+Reference:
+[Clean Code - Error Handling](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## error-exceptions-over-codes (Error Exceptions Over Codes)
 
----
-title: Use Exceptions Instead of Error Codes
+* * *
+## title: Use Exceptions Instead of Error Codes
 impact: MEDIUM
 impactDescription: separates error handling from happy path and prevents ignored errors
 tags: error, exceptions, error-codes, control-flow
----
 
 ## Use Exceptions Instead of Error Codes
 
-Error codes mix error handling with normal flow and can be silently ignored. Exceptions clearly separate the error path and force handling.
+Error codes mix error handling with normal flow and can be silently ignored.
+Exceptions clearly separate the error path and force handling.
 
 **Incorrect (error codes mixed with return value):**
 
@@ -2037,25 +2167,28 @@ function checkout(cart: Cart): void {
 ```
 
 **When error codes are appropriate:**
+
 - Performance-critical code where exceptions are too expensive
+
 - Interoperating with languages/systems that use error codes
-- Expected failure cases that aren't exceptional (e.g., user input validation)
 
-Reference: [Clean Code - Error Handling](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
+- Expected failure cases that aren’t exceptional (e.g., user input validation)
 
+Reference:
+[Clean Code - Error Handling](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## error-fail-fast (Error Fail Fast)
 
----
-title: Fail Fast with Preconditions
+* * *
+## title: Fail Fast with Preconditions
 impact: MEDIUM
 impactDescription: reduces debugging time by 50-70%
 tags: error, fail-fast, preconditions, validation
----
 
 ## Fail Fast with Preconditions
 
-Check preconditions at the start of functions and fail immediately if they're violated. Don't let invalid data propagate through the system.
+Check preconditions at the start of functions and fail immediately if they’re violated.
+Don’t let invalid data propagate through the system.
 
 **Incorrect (late validation allows corruption to spread):**
 
@@ -2122,25 +2255,28 @@ function assertPositive(value: number, message: string): void {
 ```
 
 **Benefits:**
+
 - Errors caught at the source, not deep in the call stack
+
 - Error messages point directly to the problem
+
 - Invalid state never enters the system
 
 Reference: [Fail Fast Principle](https://martinfowler.com/ieeeSoftware/failFast.pdf)
 
-
 ## error-separate-concerns (Error Separate Concerns)
 
----
-title: Separate Error Handling from Business Logic
+* * *
+## title: Separate Error Handling from Business Logic
 impact: MEDIUM
 impactDescription: reduces function complexity by 30-50%
 tags: error, separation, clean-code, try-catch
----
 
 ## Separate Error Handling from Business Logic
 
-Functions should do one thing. Mixing error handling with business logic obscures both. Extract error handling to wrapper functions or middleware.
+Functions should do one thing.
+Mixing error handling with business logic obscures both.
+Extract error handling to wrapper functions or middleware.
 
 **Incorrect (error handling mixed with logic):**
 
@@ -2240,25 +2376,28 @@ function handleUserCreationError(error: Error, data: UserData): null {
 ```
 
 **Benefits:**
+
 - Business logic is clear and testable
+
 - Error handling is consistent and centralized
+
 - Easy to modify error handling without touching business logic
 
-Reference: [Clean Code - Error Handling](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-
+Reference:
+[Clean Code - Error Handling](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## micro-inline-variable (Micro Inline Variable)
 
----
-title: Inline Trivial Variables
+* * *
+## title: Inline Trivial Variables
 impact: LOW
 impactDescription: reduces indirection and visual clutter
 tags: micro, inline, variable, simplification
----
 
 ## Inline Trivial Variables
 
-When a variable is used only once and its expression is just as clear, inline it. Extra variables add cognitive overhead without adding clarity.
+When a variable is used only once and its expression is just as clear, inline it.
+Extra variables add cognitive overhead without adding clarity.
 
 **Incorrect (unnecessary intermediate variables):**
 
@@ -2306,9 +2445,13 @@ function getDiscount(customer: Customer): number {
 ```
 
 **When NOT to inline:**
+
 - Variable name adds significant clarity to a complex expression
+
 - Variable is used multiple times
+
 - Expression has side effects (should only execute once)
+
 - Debugging benefits from inspecting intermediate values
 
 **Keep the variable when it documents intent:**
@@ -2326,19 +2469,18 @@ function shouldShowWarning(user: User, action: Action): boolean {
 
 Reference: [Inline Variable](https://refactoring.com/catalog/inlineVariable.html)
 
-
 ## micro-remove-dead-code (Micro Remove Dead Code)
 
----
-title: Remove Dead Code
+* * *
+## title: Remove Dead Code
 impact: LOW
 impactDescription: reduces cognitive load and maintenance burden
 tags: micro, dead-code, cleanup, unused
----
 
 ## Remove Dead Code
 
-Code that is never executed confuses readers and creates maintenance burden. Delete it; version control preserves history if needed.
+Code that is never executed confuses readers and creates maintenance burden.
+Delete it; version control preserves history if needed.
 
 **Incorrect (dead code left in place):**
 
@@ -2392,32 +2534,39 @@ class UserService {
 ```
 
 **Signs of dead code:**
+
 - Methods with no callers (IDE can detect)
+
 - Commented-out code blocks
+
 - Feature flags that are always false
+
 - Catch blocks that can never execute
+
 - Conditions that are always true/false
 
 **When NOT to delete:**
+
 - API endpoints that external systems might call
+
 - Hooks/callbacks registered with external frameworks
+
 - Code that appears dead but is invoked via reflection
 
 Reference: [Remove Dead Code](https://refactoring.com/catalog/removeDeadCode.html)
 
-
 ## micro-rename-for-clarity (Micro Rename For Clarity)
 
----
-title: Rename for Clarity
+* * *
+## title: Rename for Clarity
 impact: LOW
 impactDescription: makes code self-documenting and reduces need for comments
 tags: micro, rename, clarity, refactoring
----
 
 ## Rename for Clarity
 
-When a name doesn't clearly convey meaning, rename it. Good names eliminate the need for explanatory comments.
+When a name doesn’t clearly convey meaning, rename it.
+Good names eliminate the need for explanatory comments.
 
 **Incorrect (unclear or misleading names):**
 
@@ -2484,25 +2633,27 @@ if (shouldProcessItems) {
 ```
 
 **Rename method:**
-1. Use IDE's rename refactoring (updates all references)
+
+1. Use IDE’s rename refactoring (updates all references)
+
 2. Run tests to verify nothing broke
+
 3. If the name appears in logs/databases, plan migration
 
 Reference: [Rename Variable](https://refactoring.com/catalog/renameVariable.html)
 
-
 ## micro-simplify-expressions (Micro Simplify Expressions)
 
----
-title: Simplify Boolean Expressions
+* * *
+## title: Simplify Boolean Expressions
 impact: LOW
 impactDescription: improves readability and reduces cognitive load
 tags: micro, boolean, simplification, expressions
----
 
 ## Simplify Boolean Expressions
 
-Complex boolean expressions can often be simplified. Apply boolean algebra and use language features to make conditions clearer.
+Complex boolean expressions can often be simplified.
+Apply boolean algebra and use language features to make conditions clearer.
 
 **Incorrect (overly complex boolean logic):**
 
@@ -2575,27 +2726,32 @@ const label = roleLabels[user.role] ?? 'Guest'
 ```
 
 **Common simplifications:**
+
 - `if (x === true)` → `if (x)`
+
 - `if (x === false)` → `if (!x)`
+
 - `if (arr.length !== 0)` → `if (arr.length)`
+
 - `x ? true : false` → `Boolean(x)` or `!!x`
+
 - `!(!x)` → `x`
 
-Reference: [Simplify Conditional Expression](https://refactoring.com/catalog/consolidateConditionalExpression.html)
-
+Reference:
+[Simplify Conditional Expression](https://refactoring.com/catalog/consolidateConditionalExpression.html)
 
 ## name-avoid-abbreviations (Name Avoid Abbreviations)
 
----
-title: Avoid Abbreviations and Acronyms
+* * *
+## title: Avoid Abbreviations and Acronyms
 impact: HIGH
 impactDescription: eliminates guesswork and reduces onboarding time
 tags: name, abbreviations, clarity, consistency
----
 
 ## Avoid Abbreviations and Acronyms
 
-Abbreviated names save keystrokes but cost comprehension time. Write out full words unless the abbreviation is universally understood.
+Abbreviated names save keystrokes but cost comprehension time.
+Write out full words unless the abbreviation is universally understood.
 
 **Incorrect (cryptic abbreviations):**
 
@@ -2642,31 +2798,38 @@ const applicationConfig = getApplicationConfig()
 ```
 
 **Acceptable abbreviations:**
+
 - Universally understood: `id`, `url`, `http`, `html`, `api`
+
 - Domain-specific standards: `isbn`, `sku`, `vin`
+
 - Loop counters: `i`, `j` in short loops
+
 - Well-established: `min`, `max`, `avg`, `prev`, `next`
 
 **When to keep abbreviations:**
+
 - External API uses them and consistency matters
+
 - Domain experts universally use the abbreviation
+
 - Full name would be excessively long (>30 characters)
 
-Reference: [Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-
+Reference:
+[Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## name-avoid-encodings (Name Avoid Encodings)
 
----
-title: Avoid Type Encodings in Names
+* * *
+## title: Avoid Type Encodings in Names
 impact: HIGH
 impactDescription: prevents name staleness and reduces visual clutter
 tags: name, encodings, hungarian-notation, prefixes
----
 
 ## Avoid Type Encodings in Names
 
-Don't embed type information in variable names. Modern IDEs show types on hover, and encoded types become lies when refactored.
+Don’t embed type information in variable names.
+Modern IDEs show types on hover, and encoded types become lies when refactored.
 
 **Incorrect (type encodings in names):**
 
@@ -2711,29 +2874,36 @@ class DefaultUserService implements UserService {  // Descriptive, not 'Impl'
 ```
 
 **Modern alternatives to prefixes:**
-- Instead of `IUserService`: Just `UserService` for interface, `HttpUserService` for implementation
-- Instead of `Impl` suffix: Use descriptive names like `CachedUserService`, `MockUserService`
+
+- Instead of `IUserService`: Just `UserService` for interface, `HttpUserService` for
+  implementation
+
+- Instead of `Impl` suffix: Use descriptive names like `CachedUserService`,
+  `MockUserService`
+
 - Instead of Hungarian notation: Let the type system and IDE show types
 
 **When encodings are acceptable:**
+
 - Language conventions require them (C# interfaces commonly use `I`)
+
 - Distinguishing otherwise identical names (`abstract class User` vs `class UserEntity`)
 
-Reference: [Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-
+Reference:
+[Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## name-consistent-vocabulary (Name Consistent Vocabulary)
 
----
-title: Use Consistent Vocabulary
+* * *
+## title: Use Consistent Vocabulary
 impact: HIGH
 impactDescription: eliminates confusion from synonyms and reduces mental mapping
 tags: name, consistency, vocabulary, ubiquitous-language
----
 
 ## Use Consistent Vocabulary
 
-Pick one word for each concept and stick to it throughout the codebase. Mixing synonyms forces readers to wonder if different words mean different things.
+Pick one word for each concept and stick to it throughout the codebase.
+Mixing synonyms forces readers to wonder if different words mean different things.
 
 **Incorrect (inconsistent terms for same concept):**
 
@@ -2786,26 +2956,30 @@ class UserRepository {
 ```
 
 **Establish conventions for:**
+
 - CRUD operations: `create/get/update/delete` or `add/fetch/modify/remove`
+
 - Collections: `list/find/search/filter` - pick one set
+
 - Status changes: `activate/deactivate` or `enable/disable`
+
 - Entity names: `user` vs `customer` vs `account`
 
-Reference: [Domain-Driven Design - Ubiquitous Language](https://martinfowler.com/bliki/UbiquitousLanguage.html)
-
+Reference:
+[Domain-Driven Design - Ubiquitous Language](https://martinfowler.com/bliki/UbiquitousLanguage.html)
 
 ## name-intention-revealing (Name Intention Revealing)
 
----
-title: Use Intention-Revealing Names
+* * *
+## title: Use Intention-Revealing Names
 impact: HIGH
 impactDescription: reduces code comprehension time by 40-60%
 tags: name, intention, readability, self-documenting
----
 
 ## Use Intention-Revealing Names
 
-Names should reveal why something exists, what it does, and how it is used. A reader should understand the purpose without reading the implementation.
+Names should reveal why something exists, what it does, and how it is used.
+A reader should understand the purpose without reading the implementation.
 
 **Incorrect (cryptic or generic names):**
 
@@ -2848,26 +3022,31 @@ if (isApproved) {
 ```
 
 **Naming guidelines:**
+
 - Variables: Describe what they hold (`customerEmail`, not `str` or `data`)
+
 - Functions: Describe what they do (`calculateShippingCost`, not `calc`)
+
 - Booleans: Use `is`, `has`, `can`, `should` prefixes (`isValid`, `hasPermission`)
+
 - Collections: Use plural nouns (`users`, `orderItems`)
 
-Reference: [Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-
+Reference:
+[Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## name-searchable-names (Name Searchable Names)
 
----
-title: Use Searchable Names
+* * *
+## title: Use Searchable Names
 impact: HIGH
 impactDescription: enables quick codebase navigation and reduces debugging time
 tags: name, searchable, constants, magic-numbers
----
 
 ## Use Searchable Names
 
-Single-letter names and numeric constants are impossible to search for. Use named constants and descriptive variable names that can be grepped across the codebase.
+Single-letter names and numeric constants are impossible to search for.
+Use named constants and descriptive variable names that can be grepped across the
+codebase.
 
 **Incorrect (unnamed constants and short names):**
 
@@ -2909,27 +3088,32 @@ function calculatePrice(quantity: number, unitPrice: number): number {
 ```
 
 **Name everything that has meaning:**
+
 - Thresholds and limits
+
 - Configuration values
+
 - Status codes and error codes
+
 - Array indices with special meaning
+
 - Regex patterns
 
-Reference: [Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-
+Reference:
+[Clean Code - Meaningful Names](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## pattern-composition-over-inheritance (Pattern Composition Over Inheritance)
 
----
-title: Prefer Composition Over Inheritance
+* * *
+## title: Prefer Composition Over Inheritance
 impact: MEDIUM-HIGH
 impactDescription: enables flexible behavior combination without class explosion
 tags: pattern, composition, inheritance, flexibility
----
 
 ## Prefer Composition Over Inheritance
 
-Inheritance creates tight coupling and can lead to fragile base class problems. Compose objects by combining behaviors at runtime.
+Inheritance creates tight coupling and can lead to fragile base class problems.
+Compose objects by combining behaviors at runtime.
 
 **Incorrect (inheritance hierarchy for behavior combinations):**
 
@@ -3009,25 +3193,28 @@ penguin.addBehavior(new WalkingBehavior())
 ```
 
 **When inheritance is appropriate:**
-- True "is-a" relationship with LSP compliance
+
+- True “is-a” relationship with LSP compliance
+
 - Behavior rarely changes between subclasses
+
 - Framework requires it (React class components, etc.)
 
-Reference: [Composition Over Inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance)
-
+Reference:
+[Composition Over Inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance)
 
 ## pattern-extract-superclass (Pattern Extract Superclass)
 
----
-title: Extract Superclass for Common Behavior
+* * *
+## title: Extract Superclass for Common Behavior
 impact: MEDIUM-HIGH
 impactDescription: eliminates duplication across related classes
 tags: pattern, extract-superclass, inheritance, duplication
----
 
 ## Extract Superclass for Common Behavior
 
-When two classes have similar features, extract common behavior into a superclass. This is appropriate when the classes represent variations of the same concept.
+When two classes have similar features, extract common behavior into a superclass.
+This is appropriate when the classes represent variations of the same concept.
 
 **Incorrect (duplicated behavior across classes):**
 
@@ -3127,25 +3314,28 @@ function calculateTotalMonthlyCost(workers: Worker[]): number {
 ```
 
 **When NOT to use:**
-- Classes don't represent the same conceptual category
+
+- Classes don’t represent the same conceptual category
+
 - Would violate Liskov Substitution Principle
+
 - Composition would be more flexible
 
 Reference: [Extract Superclass](https://refactoring.com/catalog/extractSuperclass.html)
 
-
 ## pattern-factory (Pattern Factory)
 
----
-title: Use Factory for Complex Object Creation
+* * *
+## title: Use Factory for Complex Object Creation
 impact: MEDIUM-HIGH
 impactDescription: reduces duplication by 40-60% and enables isolated testing
 tags: pattern, factory, creation, encapsulation
----
 
 ## Use Factory for Complex Object Creation
 
-When object creation involves complex logic, validation, or conditional instantiation, encapsulate it in a factory. This separates creation concerns from business logic.
+When object creation involves complex logic, validation, or conditional instantiation,
+encapsulate it in a factory.
+This separates creation concerns from business logic.
 
 **Incorrect (complex creation scattered throughout codebase):**
 
@@ -3231,25 +3421,28 @@ class OrderService {
 ```
 
 **Benefits:**
+
 - Creation logic centralized and testable
+
 - Easy to create test doubles (TestOrderFactory)
+
 - Services focus on business logic, not object construction
 
-Reference: [Factory Method Pattern](https://refactoring.guru/design-patterns/factory-method)
-
+Reference:
+[Factory Method Pattern](https://refactoring.guru/design-patterns/factory-method)
 
 ## pattern-open-closed (Pattern Open Closed)
 
----
-title: Apply Open-Closed Principle
+* * *
+## title: Apply Open-Closed Principle
 impact: MEDIUM-HIGH
 impactDescription: enables extension without modifying existing tested code
 tags: pattern, ocp, solid, extensibility
----
 
 ## Apply Open-Closed Principle
 
-Classes should be open for extension but closed for modification. Design so that new behavior can be added without changing existing code.
+Classes should be open for extension but closed for modification.
+Design so that new behavior can be added without changing existing code.
 
 **Incorrect (requires modification for new types):**
 
@@ -3341,25 +3534,29 @@ const calculator = new DiscountCalculator([
 ```
 
 **Benefits:**
+
 - New discount rules added without risk to existing rules
+
 - Each rule can be tested independently
+
 - Rules can be conditionally included at runtime
 
-Reference: [Open-Closed Principle](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)
-
+Reference:
+[Open-Closed Principle](https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle)
 
 ## pattern-strategy (Pattern Strategy)
 
----
-title: Extract Strategy for Algorithm Variants
+* * *
+## title: Extract Strategy for Algorithm Variants
 impact: MEDIUM-HIGH
 impactDescription: enables runtime algorithm swapping and isolated testing
 tags: pattern, strategy, algorithm, composition
----
 
 ## Extract Strategy for Algorithm Variants
 
-When a class supports multiple algorithms for the same operation, extract each algorithm into its own strategy class. This allows runtime switching and independent testing.
+When a class supports multiple algorithms for the same operation, extract each algorithm
+into its own strategy class.
+This allows runtime switching and independent testing.
 
 **Incorrect (algorithm variants embedded in class):**
 
@@ -3432,25 +3629,27 @@ class PaymentProcessor {
 ```
 
 **Benefits:**
+
 - Each strategy can be unit tested independently
+
 - New payment methods added without modifying PaymentProcessor
+
 - Strategies can be swapped at runtime (A/B testing)
 
 Reference: [Strategy Pattern](https://refactoring.guru/design-patterns/strategy)
 
-
 ## pattern-template-method (Pattern Template Method)
 
----
-title: Use Template Method for Shared Skeleton
+* * *
+## title: Use Template Method for Shared Skeleton
 impact: MEDIUM-HIGH
 impactDescription: eliminates duplicate control flow across similar algorithms
 tags: pattern, template-method, inheritance, skeleton
----
 
 ## Use Template Method for Shared Skeleton
 
-When multiple classes have similar algorithms with different steps, define the skeleton in a base class and let subclasses override specific steps.
+When multiple classes have similar algorithms with different steps, define the skeleton
+in a base class and let subclasses override specific steps.
 
 **Incorrect (duplicated algorithm structure):**
 
@@ -3550,25 +3749,28 @@ class ExcelReportGenerator extends ReportGenerator {
 ```
 
 **Benefits:**
+
 - Algorithm skeleton defined once
-- Subclasses focus on what's different
+
+- Subclasses focus on what’s different
+
 - Adding new report types only requires implementing abstract methods
 
-Reference: [Template Method Pattern](https://refactoring.guru/design-patterns/template-method)
-
+Reference:
+[Template Method Pattern](https://refactoring.guru/design-patterns/template-method)
 
 ## struct-compose-method (Struct Compose Method)
 
----
-title: Compose Method for Readable Flow
+* * *
+## title: Compose Method for Readable Flow
 impact: CRITICAL
 impactDescription: reduces cognitive load by 40-60%
 tags: struct, compose-method, readability, abstraction-levels
----
 
 ## Compose Method for Readable Flow
 
-Transform a method so that its body reads like a series of steps at the same level of abstraction. Each step should have a clear name that reveals its intent.
+Transform a method so that its body reads like a series of steps at the same level of
+abstraction. Each step should have a clear name that reveals its intent.
 
 **Incorrect (mixed abstraction levels):**
 
@@ -3644,25 +3846,27 @@ function generateSlug(title: string): string {
 ```
 
 **Benefits:**
+
 - Main method reads like documentation
+
 - Each helper can be tested independently
+
 - Easy to modify individual steps without affecting others
 
 Reference: [Compose Method Pattern](https://wiki.c2.com/?ComposeMethod)
 
-
 ## struct-extract-class (Struct Extract Class)
 
----
-title: Extract Class from Large Class
+* * *
+## title: Extract Class from Large Class
 impact: CRITICAL
 impactDescription: improves testability and reduces cognitive load by 40-60%
 tags: struct, extract-class, decomposition, large-class
----
 
 ## Extract Class from Large Class
 
-When a class grows too large, it becomes difficult to understand and maintain. Extract cohesive groups of fields and methods into separate classes.
+When a class grows too large, it becomes difficult to understand and maintain.
+Extract cohesive groups of fields and methods into separate classes.
 
 **Incorrect (class doing too much):**
 
@@ -3747,25 +3951,28 @@ class ContactInfo {
 ```
 
 **Signs you need to extract:**
+
 - Groups of fields that are always used together
+
 - Methods that operate on a subset of fields
+
 - Fields with common prefixes (address_, contact_)
 
 Reference: [Extract Class](https://refactoring.com/catalog/extractClass.html)
 
-
 ## struct-extract-method (Struct Extract Method)
 
----
-title: Extract Method for Long Functions
+* * *
+## title: Extract Method for Long Functions
 impact: CRITICAL
 impactDescription: reduces function complexity by 50-80%
 tags: struct, extract-method, decomposition, readability
----
 
 ## Extract Method for Long Functions
 
-Long functions are the most common source of code complexity. Extract cohesive blocks of code into well-named methods to improve readability and enable reuse.
+Long functions are the most common source of code complexity.
+Extract cohesive blocks of code into well-named methods to improve readability and
+enable reuse.
 
 **Incorrect (monolithic function with multiple responsibilities):**
 
@@ -3834,25 +4041,27 @@ function formatOrderItems(items: OrderItem[]): FormattedItem[] {
 ```
 
 **When to extract:**
+
 - Code block has a clear single purpose
+
 - Block is reusable in other contexts
+
 - Block requires its own documentation/testing
 
 Reference: [Extract Function](https://refactoring.com/catalog/extractFunction.html)
 
-
 ## struct-function-length (Struct Function Length)
 
----
-title: Keep Functions Under 20 Lines
+* * *
+## title: Keep Functions Under 20 Lines
 impact: CRITICAL
 impactDescription: reduces cognitive load and bug density by 30-50%
 tags: struct, function-length, readability, complexity
----
 
 ## Keep Functions Under 20 Lines
 
-Functions longer than 20 lines are harder to understand, test, and maintain. Research shows bug density increases with function length.
+Functions longer than 20 lines are harder to understand, test, and maintain.
+Research shows bug density increases with function length.
 
 **Incorrect (long function requiring scrolling):**
 
@@ -3940,25 +4149,28 @@ function handlePaymentResult(order: Order, result: PaymentResult): PaymentResult
 ```
 
 **When longer functions are acceptable:**
+
 - Complex algorithms that lose clarity when split
+
 - State machines with necessary sequential steps
+
 - Generated code or configuration
 
-Reference: [Clean Code by Robert C. Martin](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-
+Reference:
+[Clean Code by Robert C. Martin](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
 
 ## struct-parameter-object (Struct Parameter Object)
 
----
-title: Introduce Parameter Object
+* * *
+## title: Introduce Parameter Object
 impact: CRITICAL
 impactDescription: reduces parameter count and enables behavior grouping
 tags: struct, parameter-object, data-clumps, api-design
----
 
 ## Introduce Parameter Object
 
-When multiple parameters frequently appear together, bundle them into a single object. This simplifies signatures and provides a home for related behavior.
+When multiple parameters frequently appear together, bundle them into a single object.
+This simplifies signatures and provides a home for related behavior.
 
 **Incorrect (long parameter list with data clumps):**
 
@@ -4046,25 +4258,29 @@ class ProductFilter {
 ```
 
 **Benefits:**
+
 - Related parameters travel together
+
 - Validation logic has a natural home
-- Adding new parameters doesn't change function signatures
 
-Reference: [Introduce Parameter Object](https://refactoring.com/catalog/introduceParameterObject.html)
+- Adding new parameters doesn’t change function signatures
 
+Reference:
+[Introduce Parameter Object](https://refactoring.com/catalog/introduceParameterObject.html)
 
 ## struct-replace-method-with-object (Struct Replace Method With Object)
 
----
-title: Replace Method with Method Object
+* * *
+## title: Replace Method with Method Object
 impact: CRITICAL
 impactDescription: enables extraction from complex methods with many local variables
 tags: struct, method-object, decomposition, local-variables
----
 
 ## Replace Method with Method Object
 
-When a long method has many local variables that make extraction difficult, turn the method into its own class. Local variables become instance fields, enabling easy decomposition.
+When a long method has many local variables that make extraction difficult, turn the
+method into its own class.
+Local variables become instance fields, enabling easy decomposition.
 
 **Incorrect (method with many interdependent locals):**
 
@@ -4179,25 +4395,29 @@ class PriceCalculation {
 ```
 
 **Benefits:**
+
 - Each calculation step can be tested independently
+
 - Easy to add new discount types without modifying existing code
+
 - Local variables become visible state that can be inspected during debugging
 
-Reference: [Replace Method with Method Object](https://refactoring.com/catalog/replaceFunctionWithCommand.html)
-
+Reference:
+[Replace Method with Method Object](https://refactoring.com/catalog/replaceFunctionWithCommand.html)
 
 ## struct-single-responsibility (Struct Single Responsibility)
 
----
-title: Apply Single Responsibility Principle
+* * *
+## title: Apply Single Responsibility Principle
 impact: CRITICAL
 impactDescription: reduces change impact radius by 60-90%
 tags: struct, srp, solid, class-design
----
 
 ## Apply Single Responsibility Principle
 
-A class should have only one reason to change. When a class handles multiple responsibilities, changes to one responsibility risk breaking others.
+A class should have only one reason to change.
+When a class handles multiple responsibilities, changes to one responsibility risk
+breaking others.
 
 **Incorrect (class with multiple responsibilities):**
 
@@ -4266,8 +4486,12 @@ class NotificationService {
 ```
 
 **Benefits:**
+
 - Each class can change independently
+
 - Classes are easier to test in isolation
+
 - Code is more reusable across different contexts
 
-Reference: [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle)
+Reference:
+[Single Responsibility Principle](https://en.wikipedia.org/wiki/Single-responsibility_principle)

@@ -1,15 +1,21 @@
 # Subagent Workflows for Lean 4 Development
 
-**For Claude Code users:** This guide shows how to leverage subagents to automate mechanical tasks while keeping your main conversation focused on proof strategy.
+**For Claude Code users:** This guide shows how to leverage subagents to automate
+mechanical tasks while keeping your main conversation focused on proof strategy.
 
 ## Overview
 
-**Core principle:** Delegate mechanical tasks to specialized subagents, keep proof development in main conversation.
+**Core principle:** Delegate mechanical tasks to specialized subagents, keep proof
+development in main conversation.
 
 **Benefits:**
+
 - **6x token reduction** vs running scripts directly
+
 - **Parallel execution** - subagent runs while you continue working
+
 - **Cleaner conversation** - focus on proof strategy, not script output
+
 - **Consistent patterns** - all scripts designed for subagent delegation
 
 ## Quick Reference
@@ -17,69 +23,102 @@
 **Key takeaways:**
 
 1. **Delegate mechanical tasks** - search, analysis, verification
+
 2. **Keep strategic work** - proof development, design decisions
+
 3. **Use Explore agents** - for most script execution (fast, cheap)
+
 4. **Be specific** - tell agent exactly what to report
+
 5. **Batch operations** - combine related tasks in one dispatch
+
 6. **6x token savings** - measured benefit across typical session
 
-**Remember:** The goal is to keep your main conversation focused on **proof strategy and tactics**, while automating everything else.
+**Remember:** The goal is to keep your main conversation focused on **proof strategy and
+tactics**, while automating everything else.
 
 ## When to Dispatch Subagents
 
 ### ✅ Dispatch Subagents For
 
 **Search tasks:**
+
 - Finding mathlib lemmas by keyword or pattern
+
 - Discovering type class instances
+
 - Locating similar proofs or patterns
 
 **Analysis tasks:**
+
 - Proof complexity metrics across files
+
 - Dependency graph generation
+
 - Sorry reports and statistics
 
 **Verification tasks:**
+
 - Checking axioms across multiple files
+
 - Batch compilation verification
+
 - Import consistency checks
 
 **Exploratory tasks:**
+
 - Understanding unfamiliar codebase structure
+
 - Finding all usages of a definition
+
 - Discovering available tactics or notation
 
 ### ❌ Keep in Main Conversation
 
 **Proof development:**
+
 - Writing tactics and structuring arguments
+
 - Responding to type checker errors
+
 - Making tactical decisions (which tactic to try next)
 
 **Design decisions:**
+
 - Choosing between proof approaches
+
 - Breaking theorems into subgoals
+
 - Architectural decisions
 
 **Error debugging:**
-- Interpreting "failed to synthesize instance" errors
+
+- Interpreting “failed to synthesize instance” errors
+
 - Understanding type mismatches
+
 - Resolving compilation errors
 
 **Strategic planning:**
+
 - Planning proof outline
+
 - Identifying helper lemmas needed
+
 - Deciding which sorry to tackle next
 
----
+* * *
 
 ## Agent Types
 
 ### Explore Agent (Fast, Lightweight)
 
 **Use for:**
+
 - Quick searches and file discovery
+
 - Running single scripts with straightforward output
+
 - Pattern matching and grepping
 
 **Tools available:** Glob, Grep, Read, Bash
@@ -87,15 +126,21 @@
 **Cost:** Low (lightweight model)
 
 **When to use:**
-- "Find all files using MeasurableSpace"
-- "Run $LEAN4_SCRIPTS/sorry_analyzer.py and report count"
-- "Search mathlib for continuous function lemmas"
+
+- “Find all files using MeasurableSpace”
+
+- “Run $LEAN4_SCRIPTS/sorry_analyzer.py and report count”
+
+- “Search mathlib for continuous function lemmas”
 
 ### General-Purpose Agent (Thorough, Multi-Step)
 
 **Use for:**
+
 - Complex searches requiring judgment
+
 - Multi-step analysis workflows
+
 - Tasks that need interpretation
 
 **Tools available:** Full toolset including Task
@@ -103,24 +148,34 @@
 **Cost:** Moderate (full-featured model)
 
 **When to use:**
-- "Search mathlib, evaluate which lemmas apply, recommend best 3"
-- "Analyze proof complexity and suggest refactoring priorities with reasoning"
-- "Compare multiple proof approaches and explain tradeoffs"
+
+- “Search mathlib, evaluate which lemmas apply, recommend best 3”
+
+- “Analyze proof complexity and suggest refactoring priorities with reasoning”
+
+- “Compare multiple proof approaches and explain tradeoffs”
 
 ### Specialized Workflows (Integrated)
 
-The lean4 plugin includes internal workflows for complex tasks, orchestrated automatically by `/lean4:prove`, `/lean4:autoprove`, and `/lean4:golf`.
+The lean4 plugin includes internal workflows for complex tasks, orchestrated
+automatically by `/lean4:prove`, `/lean4:autoprove`, and `/lean4:golf`.
 
 **What prove/autoprove may delegate:**
+
 - Deep sorry-filling (when `--deep` enabled and fast path fails)
+
 - Proof repair (compiler-guided fixes)
+
 - Axiom elimination (when custom axioms detected)
+
 - Proof golfing (optional cleanup for verbose proofs)
 
 **What golf may delegate:**
+
 - Proof optimization with safety checks
 
-You do not invoke these directly. See [agent-workflows.md](agent-workflows.md) for workflow details.
+You do not invoke these directly.
+See [agent-workflows.md](agent-workflows.md) for workflow details.
 
 **When to use commands vs general subagents:**
 ```
@@ -169,7 +224,7 @@ Claude (in main conversation):
 
 ### Finding Mathlib Lemmas
 
-**Task:** "I need lemmas about continuous functions on compact spaces"
+**Task:** “I need lemmas about continuous functions on compact spaces”
 
 **Efficient approach:**
 ```
@@ -187,11 +242,12 @@ Claude: "I'm dispatching an Explore agent to search for relevant lemmas..."
 Claude: "Perfect! Let's use Continuous.isCompact_range. Let me add the import..."
 ```
 
-**Token savings:** ~600 tokens (script output + explanation) → ~100 tokens (dispatch + summary)
+**Token savings:** ~600 tokens (script output + explanation) → ~100 tokens (dispatch +
+summary)
 
 ### Analyzing Proof Complexity
 
-**Task:** "Which proofs should I refactor first?"
+**Task:** “Which proofs should I refactor first?”
 
 **Efficient approach:**
 ```
@@ -217,7 +273,7 @@ Looking at the structure, I can see 3 natural subgoals we can extract..."
 
 ### Pre-Commit Verification
 
-**Task:** "Ready to commit - verify everything is clean"
+**Task:** “Ready to commit - verify everything is clean”
 
 **Efficient batch approach:**
 ```
@@ -240,7 +296,7 @@ Claude: "Excellent! All verification checks passed. Let's commit with message:
 
 ### Interactive Sorry Selection
 
-**Task:** "What should I work on next?"
+**Task:** “What should I work on next?”
 
 **Hybrid approach (user-interactive):**
 ```
@@ -357,20 +413,31 @@ to find the right mathlib lemma..."
 **Scenario:** Running $LEAN4_SCRIPTS/sorry_analyzer.py on a medium project
 
 **Without subagent (direct execution):**
+
 - Script output: ~500 tokens (100 lines @ 5 tokens/line)
+
 - Claude explanation: ~200 tokens
+
 - **Total: ~700 tokens**
+
 - Uses main conversation tokens (expensive)
 
 **With subagent delegation:**
+
 - Dispatch prompt: ~50 tokens
+
 - Agent summary: ~50 tokens
+
 - Claude response: ~50 tokens
+
 - **Total: ~150 tokens in main conversation**
+
 - Agent uses fast/lightweight model (cheap)
+
 - **Savings: 700 → 150 = 78% reduction**
 
-**Multiplied across a session:** 10 searches = 7000 tokens → 1500 tokens = **5500 tokens saved**
+**Multiplied across a session:** 10 searches = 7000 tokens → 1500 tokens = **5500 tokens
+saved**
 
 ### When NOT to Use Subagents
 
@@ -402,15 +469,29 @@ to find the right mathlib lemma..."
 
 **Main thread:** Prefer MCP tools over scripts for all interactive proof work.
 
-**Specialized proof-editing subagents:** Start from parent-provided pre-collected context (see [cycle-engine.md § Pre-flight Context](cycle-engine.md#pre-flight-context-for-subagent-dispatch)). Direct MCP access in the subagent is opportunistic, not assumed — if the startup canary detects MCP is unavailable, the agent commits to its fallback behavior immediately.
+**Specialized proof-editing subagents:** Start from parent-provided pre-collected
+context (see
+[cycle-engine.md § Pre-flight Context](cycle-engine.md#pre-flight-context-for-subagent-dispatch)).
+Direct MCP access in the subagent is opportunistic, not assumed — if the startup canary
+detects MCP is unavailable, the agent commits to its fallback behavior immediately.
 
-See [SKILL.md § Operating Profiles](../SKILL.md#operating-profiles) for the full profile definitions.
+See [SKILL.md § Operating Profiles](../SKILL.md#operating-profiles) for the full profile
+definitions.
 
 **Hierarchy:**
+
 1. **Main thread + MCP** (best) — direct LSP integration, real-time feedback
-2. **Subagent with pre-collected context** (normal for sorry-filler-deep, proof-golfer, axiom-eliminator) — parent collects MCP results, agent starts from that state; MCP in subagent is a bonus if available
-3. **Subagent returning to caller** (proof-repair) — if MCP canary fails, returns no diff and lets the caller escalate rather than operating in fallback mode
-4. **Subagent + scripts only** (fallback) — batch operations or when pre-collected context is insufficient
+
+2. **Subagent with pre-collected context** (normal for sorry-filler-deep, proof-golfer,
+   axiom-eliminator) — parent collects MCP results, agent starts from that state; MCP in
+   subagent is a bonus if available
+
+3. **Subagent returning to caller** (proof-repair) — if MCP canary fails, returns no
+   diff and lets the caller escalate rather than operating in fallback mode
+
+4. **Subagent + scripts only** (fallback) — batch operations or when pre-collected
+   context is insufficient
+
 5. **Direct script execution** (non-Claude hosts) — when not using Claude Code
 
 **Pre-collected context dispatch pattern:**
@@ -431,22 +512,45 @@ lean_local_search("keyword")       # Search results
 ```
 
 **Why pre-collect context?**
+
 - MCP tools may not be available in subagents (see Known Limitation below)
+
 - Pre-collecting gives the agent a working starting state even without MCP
+
 - The agent can still use `lake env lean` via Bash for post-edit validation
-- See [cycle-engine.md § Pre-flight Context](cycle-engine.md#pre-flight-context-for-subagent-dispatch) for per-agent context specs
+
+- See
+  [cycle-engine.md § Pre-flight Context](cycle-engine.md#pre-flight-context-for-subagent-dispatch)
+  for per-agent context specs
 
 ### Known Limitation: MCP in Plugin Subagents
 
-In current Claude Code versions, plugin-defined subagents may fail to inherit MCP server connections from the parent thread (upstream: anthropics/claude-code#39962). Each agent has a startup canary that detects this; the fallback behavior varies by agent (proof-repair returns no diff and lets the caller escalate; sorry-filler-deep and axiom-eliminator fall back to scripts and `lake build`; proof-golfer limits to syntactic patterns with `lake env lean` per-hunk verification).
+In current Claude Code versions, plugin-defined subagents may fail to inherit MCP server
+connections from the parent thread (upstream: anthropics/claude-code#39962). Each agent
+has a startup canary that detects this; the fallback behavior varies by agent
+(proof-repair returns no diff and lets the caller escalate; sorry-filler-deep and
+axiom-eliminator fall back to scripts and `lake build`; proof-golfer limits to syntactic
+patterns with `lake env lean` per-hunk verification).
 
 **Mitigations (built into the plugin):**
-- **Pre-flight context:** The parent thread collects goal state, diagnostics, and search results before dispatch and includes them in the agent prompt. See [cycle-engine.md § Pre-flight Context](cycle-engine.md#pre-flight-context-for-subagent-dispatch).
-- **No-MCP hygiene:** Each agent's canary block enforces: no invoking MCP tool names via Bash, no retrying MCP after canary fails, use Read/Grep for file inspection (not scripts or temp files).
+
+- **Pre-flight context:** The parent thread collects goal state, diagnostics, and search
+  results before dispatch and includes them in the agent prompt.
+  See
+  [cycle-engine.md § Pre-flight Context](cycle-engine.md#pre-flight-context-for-subagent-dispatch).
+
+- **No-MCP hygiene:** Each agent’s canary block enforces: no invoking MCP tool names via
+  Bash, no retrying MCP after canary fails, use Read/Grep for file inspection (not
+  scripts or temp files).
 
 **Additional workarounds:**
-- Prefer **user-scoped** MCP server (`claude mcp add --transport stdio --scope user lean-lsp -- ...`) over project-scoped — user-scoped servers have been more reliable
-- For work that critically depends on live MCP feedback, run in the main conversation thread rather than delegating
+
+- Prefer **user-scoped** MCP server
+  (`claude mcp add --transport stdio --scope user lean-lsp -- ...`) over project-scoped
+  — user-scoped servers have been more reliable
+
+- For work that critically depends on live MCP feedback, run in the main conversation
+  thread rather than delegating
 
 ## Multi-Branch Workflows
 
@@ -458,21 +562,28 @@ git worktree add ../project-branch-a branch-a
 git worktree add ../project-branch-b branch-b
 ```
 
-Each worktree is a full working directory on its own branch. Agents can operate in
-different worktrees without interfering.
+Each worktree is a full working directory on its own branch.
+Agents can operate in different worktrees without interfering.
 
 **Rules:**
+
 - Keep each agent pinned to one worktree
+
 - **Do not use `git stash` to shuttle agent work across branches** — stash/pop cycles
   create merge conflicts, cross-branch contamination, and silent data loss (#66)
+
 - **Checkpoint or commit before cleanup** — never delete a worktree until results are
   committed on the target branch
+
 - **Before any branch switch** in the main checkout: run `/lean4:checkpoint` or
   `git commit` to persist all pending work
 
 **Worktree handoff:** When an agent produces results in a worktree, import them by:
-- Committing on that worktree's branch, then merging/cherry-picking
+
+- Committing on that worktree’s branch, then merging/cherry-picking
+
 - Extracting a patch (`git diff > patch`) and applying it
+
 - Explicit file copy to the target branch
 
 Never by stashing in one worktree and popping in another.
@@ -481,56 +592,68 @@ Never by stashing in one worktree and popping in another.
 [Cold start / fresh worktree](../SKILL.md) for setup.
 
 > **Claude Code note:** `isolation: "worktree"` runs an agent in a temporary git
-> worktree automatically. The worktree persists if the agent makes changes — commit
-> or import results before cleanup.
+> worktree automatically.
+> The worktree persists if the agent makes changes — commit or import results before
+> cleanup.
 
-When using `run_in_background: true` for agents that edit files, prefer `isolation: "worktree"` to prevent branch-switch or concurrent-edit conflicts.
+When using `run_in_background: true` for agents that edit files, prefer
+`isolation: "worktree"` to prevent branch-switch or concurrent-edit conflicts.
 
 ## Same-File Parallel Dispatch
 
-Never dispatch multiple proof-editing agents that edit the same file in parallel. The Edit tool uses string replacement — if two agents read the same file at dispatch time and edit different regions, the last agent to write silently overwrites the first agent's changes.
+Never dispatch multiple proof-editing agents that edit the same file in parallel.
+The Edit tool uses string replacement — if two agents read the same file at dispatch
+time and edit different regions, the last agent to write silently overwrites the first
+agent’s changes.
 
 **Safe patterns:**
+
 - One agent per file (agent owns all sorrys in that file)
+
 - Sequential dispatch with commits between agents
+
 - `isolation: "worktree"` for agents on different branches
 
 **Unsafe:**
+
 - Two sorry-filler agents targeting different sorrys in the same file
-- `git checkout` while a background agent is editing files (destroys work silently — use `isolation: "worktree"` for background agents that edit files)
+
+- `git checkout` while a background agent is editing files (destroys work silently — use
+  `isolation: "worktree"` for background agents that edit files)
 
 ## Best Practices
 
 ### Do
 
-✅ **Dispatch early and often** - Don't wait until script output overwhelms conversation
+✅ **Dispatch early and often** - Don’t wait until script output overwhelms conversation
 
-✅ **Be specific about what you need** - "report top 3 results" not "run and show me everything"
+✅ **Be specific about what you need** - “report top 3 results” not “run and show me
+everything”
 
-✅ **Use Explore agents for scripts** - They're designed for tool execution
+✅ **Use Explore agents for scripts** - They’re designed for tool execution
 
 ✅ **Batch related tasks** - Combine multiple scripts in one dispatch
 
 ✅ **Request summaries** - Ask agent to synthesize, not just dump output
 
-### Don't
+### Don’t
 
-❌ **Don't dispatch for trivial tasks** - Use tools directly when simpler
+❌ **Don’t dispatch for trivial tasks** - Use tools directly when simpler
 
-❌ **Don't dispatch for proof tactics** - Keep proof development in main conversation
+❌ **Don’t dispatch for proof tactics** - Keep proof development in main conversation
 
-❌ **Don't forget to specify output** - Agent needs to know what to report back
+❌ **Don’t forget to specify output** - Agent needs to know what to report back
 
-❌ **Don't dispatch when you have the answer** - Only delegate actual work
+❌ **Don’t dispatch when you have the answer** - Only delegate actual work
 
-❌ **Don't use general-purpose for simple scripts** - Explore agent is faster
+❌ **Don’t use general-purpose for simple scripts** - Explore agent is faster
 
 ## V4 Commands
 
 The lean4 plugin provides these main commands:
 
 | Command | Purpose |
-|---------|---------|
+| --- | --- |
 | `/lean4:draft` | Skeleton drafting from informal claims |
 | `/lean4:formalize` | Interactive synthesis (draft + guided prove) |
 | `/lean4:autoformalize` | Autonomous synthesis (draft → prove loop with claim queue) |
@@ -543,7 +666,9 @@ The lean4 plugin provides these main commands:
 | `/lean4:learn` | Interactive teaching and mathlib exploration |
 | `/lean4:doctor` | Diagnostics and migration |
 
-**Note:** Individual operations like "search mathlib" or "analyze sorries" are now internal workflows within `/lean4:prove` (or `/lean4:autoprove`) rather than separate commands. This simplifies the UX while preserving all functionality.
+**Note:** Individual operations like “search mathlib” or “analyze sorries” are now
+internal workflows within `/lean4:prove` (or `/lean4:autoprove`) rather than separate
+commands. This simplifies the UX while preserving all functionality.
 
 ### Using LSP Tools Directly
 
@@ -590,30 +715,38 @@ and report total sorry count"
 and show a prioritized list before asking how to proceed"
 ```
 
-**Key difference:** The proving commands provide interpretation and planning, scripts provide raw data.
+**Key difference:** The proving commands provide interpretation and planning, scripts
+provide raw data.
 
 ## Troubleshooting
 
-### "Agent didn't find what I expected"
+### “Agent didn’t find what I expected”
 
 **Problem:** Search came back empty or wrong results
 
 **Solutions:**
+
 - Check script arguments - did you pass the right pattern?
+
 - Try different search mode (name vs content vs type)
+
 - Dispatch with more specific instructions
+
 - Fall back to MCP server tools if available
 
-### "Agent output was too verbose"
+### “Agent output was too verbose”
 
 **Problem:** Got 50 lines when you needed 5
 
 **Solutions:**
-- Be more specific: "report top 3" not "report all"
-- Ask for summary: "summarize findings" not "show full output"
-- Use filtering: "only report sorries with no TODO comments"
 
-### "Not sure which agent type to use"
+- Be more specific: “report top 3” not “report all”
+
+- Ask for summary: “summarize findings” not “show full output”
+
+- Use filtering: “only report sorries with no TODO comments”
+
+### “Not sure which agent type to use”
 
 **Decision tree:**
 ```

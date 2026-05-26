@@ -2,27 +2,37 @@
 
 ## Use Cases
 
-- **Infinite repeating scenes**: render infinitely extending geometry from a single SDF primitive (corridors, cities, star fields)
-- **Kaleidoscope/symmetry effects**: N-fold rotational symmetry, mirror symmetry, polyhedral symmetry
-- **Fractal geometry**: generate self-similar structures through iterative space folding (Apollonian, Kali-set)
-- **Architectural/mechanical structures**: build complex yet regular scenes using repetition + variation
+- **Infinite repeating scenes**: render infinitely extending geometry from a single SDF
+  primitive (corridors, cities, star fields)
+
+- **Kaleidoscope/symmetry effects**: N-fold rotational symmetry, mirror symmetry,
+  polyhedral symmetry
+
+- **Fractal geometry**: generate self-similar structures through iterative space folding
+  (Apollonian, Kali-set)
+
+- **Architectural/mechanical structures**: build complex yet regular scenes using
+  repetition + variation
+
 - **Spiral/toroidal topology**: repeat geometry along polar or spiral paths
 
 Core value: **define geometry in a single cell, render infinite space**.
 
 ## Core Principles
 
-The essence of domain repetition is **coordinate transformation**: before computing the SDF, fold/map point `p` into a finite "fundamental domain".
+The essence of domain repetition is **coordinate transformation**: before computing the
+SDF, fold/map point `p` into a finite “fundamental domain”.
 
 **Three fundamental operations:**
 
 | Operation | Formula | Effect |
-|-----------|---------|--------|
+| --- | --- | --- |
 | **mod repetition** | `p = mod(p + c/2, c) - c/2` | Infinite translational repetition along an axis |
 | **abs mirroring** | `p = abs(p)` | Mirror symmetry across an axis plane |
 | **Rotational folding** | `angle = mod(atan(p.y,p.x), TAU/N)` | N-fold rotational symmetry |
 
-Key math: `mod(x,c)` -> periodic mapping to `[0,c)`; `abs(x)` -> reflection symmetry; `fract(x)` = `mod(x,1.0)` -> normalized period.
+Key math: `mod(x,c)` -> periodic mapping to `[0,c)`; `abs(x)` -> reflection symmetry;
+`fract(x)` = `mod(x,1.0)` -> normalized period.
 
 ## Implementation Steps
 
@@ -165,7 +175,8 @@ float salt = fract(sin(cellID * 127.1) * 43758.5453);
 
 ## Full Code Template
 
-Combined demo: Cartesian repetition + angular repetition + IFS folding. Runs directly in ShaderToy.
+Combined demo: Cartesian repetition + angular repetition + IFS folding.
+Runs directly in ShaderToy.
 
 ```glsl
 #define PI 3.14159265359
@@ -315,19 +326,37 @@ vec3 q = domainRepeatLimited(p, 2.0, vec3(2.0, 1.0, 1.0));
 ## Performance & Composition Tips
 
 **Performance:**
-- 5-8 fractal iterations are typically sufficient; use `vec4.w` to track scaling and avoid extra variables
+
+- 5-8 fractal iterations are typically sufficient; use `vec4.w` to track scaling and
+  avoid extra variables
+
 - Ensure geometry radius < period/2 to prevent inaccurate SDF at cell boundaries
-- Volumetric light step size should increase with distance: `t += dist * (0.3 + t * 0.02)`
+
+- Volumetric light step size should increase with distance:
+  `t += dist * (0.3 + t * 0.02)`
+
 - Use `clamp(dot(p,p), min, max)` to prevent numerical explosion
+
 - Avoid `normalize()` inside loops; manually divide by length instead
 
 **Composition:**
-- **Domain Repetition + Ray Marching**: the most fundamental combination, used by all reference shaders
-- **Domain Repetition + Orbit Trap Coloring**: record `min(orb, abs(p))` during fractal iteration for coloring
-- **Domain Repetition + Toroidal Warping**: `displaceLoop` to bend space before applying linear/angular repetition
-- **Domain Repetition + Noise Variation**: cell ID -> pseudo-random number -> modulate geometry parameters
-- **Domain Repetition + Polar Spiral**: `cartToPolar` combined with `pMod1` for spiral path repetition
+
+- **Domain Repetition + Ray Marching**: the most fundamental combination, used by all
+  reference shaders
+
+- **Domain Repetition + Orbit Trap Coloring**: record `min(orb, abs(p))` during fractal
+  iteration for coloring
+
+- **Domain Repetition + Toroidal Warping**: `displaceLoop` to bend space before applying
+  linear/angular repetition
+
+- **Domain Repetition + Noise Variation**: cell ID -> pseudo-random number -> modulate
+  geometry parameters
+
+- **Domain Repetition + Polar Spiral**: `cartToPolar` combined with `pMod1` for spiral
+  path repetition
 
 ## Further Reading
 
-Full step-by-step tutorials, mathematical derivations, and advanced usage in [reference](../reference/domain-repetition.md)
+Full step-by-step tutorials, mathematical derivations, and advanced usage in
+[reference](../reference/domain-repetition.md)

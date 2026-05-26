@@ -13,10 +13,10 @@
    contradictory reasoning (e.g., knowing the date but treating past events as future)
 
 4. **Unwarranted dismissal** - Rejecting valid results rather than investigating (e.g.,
-   dismissing a valid result as "speculative" without checking)
+   dismissing a valid result as “speculative” without checking)
 
 5. **Confabulation** - Making confident ungrounded assertions about unknowable internals
-   (e.g., "the subagent likely used stale data" without evidence)
+   (e.g., “the subagent likely used stale data” without evidence)
 
 6. **Premature victory declaration** - Concluding that a hypothesis is confirmed before
    eliminating all alternatives.
@@ -32,7 +32,7 @@
    contradict knowledge they demonstrably possess, without registering the
    contradiction. The active frame determines what prior knowledge is treated as relevant
    and suppresses facts that would falsify the current hypothesis.
-   Example: An agent states that continuous rebuilds are "expected watch mode behavior"
+   Example: An agent states that continuous rebuilds are “expected watch mode behavior”
    while its training data encodes the universal fact that file watchers do not fire
    without file changes — and does not notice the contradiction.
 
@@ -40,6 +40,6 @@
     certainty regardless of the underlying epistemic state.
     Hypotheses, evidence-consistent-with-hypotheses, and established facts are all
     stated with identical confidence.
-    Example: "The problem IS the output directory being watched" — stated with full
+    Example: “The problem IS the output directory being watched” — stated with full
     certainty based on directory timestamps, which are consistent with the hypothesis
     but do not establish it.

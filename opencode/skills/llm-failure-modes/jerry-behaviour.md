@@ -5,22 +5,22 @@
 
 Failure modes where agents evaluating other agents produce the appearance of oversight
 without epistemic independence.
-The evaluator's judgment shares the same blind spots as the evaluated artifact, so
+The evaluator’s judgment shares the same blind spots as the evaluated artifact, so
 approval is not evidence of correctness.
 
 1. **Paraphrase-as-review** — An evaluator restates what an artifact claims in different
    words and calls it validation.
-   "The plan describes a phased approach to..." is not a review finding — it is a
+   “The plan describes a phased approach to …” is not a review finding — it is a
    summary. A substantive review produces claims that could not have been written without
    inspecting the artifact against an external standard.
-   Example: An evaluator writes "Gate 1 passed — definitions are grounded in standard
-   sources" without naming the specific definitions, the specific sources, or the
+   Example: An evaluator writes “Gate 1 passed — definitions are grounded in standard
+   sources” without naming the specific definitions, the specific sources, or the
    specific lines where they were verified.
 
-2. **Checklist theater** — Review gates are marked "passed" with plausible-sounding
+2. **Checklist theater** — Review gates are marked “passed” with plausible-sounding
    one-sentence justifications that could apply to any artifact of the same type.
    The justification is generic enough to be written without inspecting the specific
-   artifact. Example: "Tests are comprehensive and cover edge cases" written for a suite
+   artifact. Example: “Tests are comprehensive and cover edge cases” written for a suite
    that has no edge-case tests at all.
 
 3. **Consensus-as-evidence** — Multiple agents each review the same artifact and
@@ -32,7 +32,7 @@ approval is not evidence of correctness.
 
 4. **Fluency bias** — An evaluator rewards well-structured, confident,
    checklist-compliant prose regardless of whether the underlying claims are true.
-   "The argument is clearly presented" is offered as a finding, but clarity and
+   “The argument is clearly presented” is offered as a finding, but clarity and
    correctness are independent properties.
    Structure is treated as a proxy for truth.
 
@@ -42,7 +42,7 @@ approval is not evidence of correctness.
    Listing a commit hash does not mean the evaluator read the diff.
    Naming a test does not mean the evaluator ran it.
    These are tokens that resemble evidence but carry none of the epistemic weight.
-   Example: A review finding states "verified against commit abc123" with no description
+   Example: A review finding states “verified against commit abc123” with no description
    of what was checked or what the result was.
 
 6. **Self-certification** — The evaluation criteria were produced by agents, the
@@ -53,9 +53,9 @@ approval is not evidence of correctness.
    The artifact is self-certifying within a closed loop.
 
 7. **Circular validation loop** — The most catastrophic form of self-certification: an
-   agent reviews another agent's work by reading the worker's own self-report.
-   The evaluator reads "I analyzed carefully" and concludes "work completed
-   successfully." But worker self-reports are artifacts under review, not evidence.
+   agent reviews another agent’s work by reading the worker’s own self-report.
+   The evaluator reads “I analyzed carefully” and concludes “work completed
+   successfully.” But worker self-reports are artifacts under review, not evidence.
    The review exists to catch failures that the worker cannot report.
    Trusting worker self-reports defeats the purpose of review and produces structurally
    biased approval.
@@ -78,10 +78,10 @@ approval is not evidence of correctness.
 
 10. **Refusal as epistemic honesty** — When an evaluator cannot produce evidence of
     actual inspection, the epistemically correct response is refusal to approve, not
-    blanket sign-off. Legitimate refusals: "I have not verified this claim against
-    [source]," "I did not read the implementation at [path]," "I cannot confirm this
+    blanket sign-off. Legitimate refusals: “I have not verified this claim against
+    [source],” "I did not read the implementation at [path]," “I cannot confirm this
     passes because I would need to run [test] and check the output against
-    [expected value]." Approval without verification is a failure of evaluation.
+    [expected value].” Approval without verification is a failure of evaluation.
 
 ### Cross-References
 
@@ -90,6 +90,7 @@ approval is not evidence of correctness.
   Jerry-style evaluator should catch.
   If the evaluator cannot detect slop because it shares the same generic-text priors,
   that is a fluency-bias or paraphrase-as-review failure mode.
+
 - **addressing-shallow-work** → Load alongside when evaluating whether a solution
   approach is structurally wrong.
   The inability to recognize code that is wrong at the abstraction level (e.g.,
@@ -97,6 +98,7 @@ approval is not evidence of correctness.
   because it has the surface appearance of work.
   Structural wrongness does not require empirical verification to disqualify, but a
   checklist-theater evaluator will miss it.
+
 - **charlie-behaviour** → Load alongside when reviewing agents that have received
   corrections. The producer who cannot localize corrections to their own output
   complements the Jerry who approves bad work.

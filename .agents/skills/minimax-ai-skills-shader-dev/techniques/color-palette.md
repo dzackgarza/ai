@@ -1,9 +1,15 @@
 # Color Palette & Color Space
 
 ## Use Cases
-- Mapping scalar values (distance, temperature, time, iteration count) to continuous color ramps
+
+- Mapping scalar values (distance, temperature, time, iteration count) to continuous
+  color ramps
+
 - Perceptually uniform color interpolation/gradients
-- HDR rendering with linear-space workflow (sRGB decode -> shading -> tone mapping -> sRGB encode)
+
+- HDR rendering with linear-space workflow (sRGB decode -> shading -> tone mapping ->
+  sRGB encode)
+
 - Physically realistic glow/flame/blackbody radiation colors
 
 ## Core Principles
@@ -11,26 +17,36 @@
 Core: **map a scalar t in [0,1] to an RGB vec3**.
 
 ### Cosine Palette
+
 ```
 color(t) = a + b * cos(2pi * (c * t + d))
 ```
-- **a** = brightness offset (~0.5), **b** = amplitude (~0.5), **c** = frequency, **d** = phase (the key parameter controlling color style)
+
+- **a** = brightness offset (~0.5), **b** = amplitude (~0.5), **c** = frequency, **d** =
+  phase (the key parameter controlling color style)
 
 ### HSV/HSL Branchless Conversion
+
 ```
 rgb = clamp(abs(mod(H*6 + vec3(0,4,2), 6) - 3) - 1, 0, 1)
 ```
-Uses piecewise linear functions to approximate RGB variation with hue. C1 continuity can be achieved via `rgb*rgb*(3-2*rgb)`.
+Uses piecewise linear functions to approximate RGB variation with hue.
+C1 continuity can be achieved via `rgb*rgb*(3-2*rgb)`.
 
 ### CIE Lab/Lch Perceptually Uniform Interpolation
-RGB -> XYZ -> Lab -> Lch pipeline; interpolate in perceptually uniform space to avoid brightness discontinuities in RGB/HSV.
+
+RGB -> XYZ -> Lab -> Lch pipeline; interpolate in perceptually uniform space to avoid
+brightness discontinuities in RGB/HSV.
 
 ### Blackbody Radiation Palette
-Temperature T -> Planckian locus approximation -> CIE chromaticity -> XYZ -> RGB, with Stefan-Boltzmann (T^4) controlling brightness.
+
+Temperature T -> Planckian locus approximation -> CIE chromaticity -> XYZ -> RGB, with
+Stefan-Boltzmann (T^4) controlling brightness.
 
 ## Implementation
 
 ### Cosine Palette
+
 ```glsl
 // a: offset, b: amplitude, c: frequency, d: phase, t: input scalar
 vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
@@ -39,6 +55,7 @@ vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
 ```
 
 ### Classic Preset Parameters
+
 ```glsl
 // Rainbow: d=(0.0, 0.33, 0.67)
 // Warm: d=(0.0, 0.10, 0.20)
@@ -56,6 +73,7 @@ vec3 palette(float t) {
 ```
 
 ### HSV -> RGB (Standard + Smooth)
+
 ```glsl
 // Standard HSV -> RGB (branchless)
 vec3 hsv2rgb(vec3 c) {
@@ -72,6 +90,7 @@ vec3 hsv2rgb_smooth(vec3 c) {
 ```
 
 ### HSL -> RGB
+
 ```glsl
 vec3 hue2rgb(float h) {
     return clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
@@ -84,6 +103,7 @@ vec3 hsl2rgb(float h, float s, float l) {
 ```
 
 ### RGB -> HSV
+
 ```glsl
 // Sam Hocevar branchless method
 vec3 rgb2hsv(vec3 c) {
@@ -97,6 +117,7 @@ vec3 rgb2hsv(vec3 c) {
 ```
 
 ### CIE Lab/Lch Conversion Pipeline
+
 ```glsl
 float xyzF(float t) { return mix(pow(t, 1.0/3.0), 7.787037 * t + 0.139731, step(t, 0.00885645)); }
 float xyzR(float t) { return mix(t * t * t, 0.1284185 * (t - 0.139731), step(t, 0.20689655)); }
@@ -135,6 +156,7 @@ vec3 lerpLch(vec3 a, vec3 b, float x) {
 ```
 
 ### sRGB Gamma & Tone Mapping
+
 ```glsl
 // Precise sRGB encoding
 float sRGB_encode(float t) {
@@ -153,6 +175,7 @@ vec3 tonemap_reinhard(vec3 col) {
 ```
 
 ### Blackbody Radiation Palette
+
 ```glsl
 #define TEMP_MAX 4000.0 // Tunable: maximum temperature (K)
 vec3 blackbodyPalette(float t) {
@@ -278,6 +301,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### Multi-Harmonic Cosine Palette (Anti-Aliased)
+
 ```glsl
 vec3 fcos(vec3 x) {
     vec3 w = fwidth(x);
@@ -300,6 +324,7 @@ vec3 getColor(float t) {
 ```
 
 ### Hash-Driven Per-Tile Color
+
 ```glsl
 float hash12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -312,6 +337,7 @@ vec3 tileColor = palette(hash12(tileId));
 ```
 
 ### Saturation-Preserving Improved RGB Interpolation
+
 ```glsl
 float getsat(vec3 c) {
     float mi = min(min(c.x, c.y), c.z);
@@ -333,6 +359,7 @@ vec3 iLerp(vec3 a, vec3 b, float x) {
 ```
 
 ### Circular Hue Interpolation
+
 ```glsl
 // HSV space (hue [0,1])
 vec3 lerpHSV(vec3 a, vec3 b, float x) {
@@ -348,6 +375,7 @@ float lerpAngle(float a, float b, float x) {
 ```
 
 ### Additive Color Stacking (Glow/HDR)
+
 ```glsl
 vec3 finalColor = vec3(0.0);
 for (int i = 0; i < 4; i++) {
@@ -361,20 +389,37 @@ finalColor = finalColor / (1.0 + finalColor); // Reinhard tonemap
 ## Performance & Composition
 
 **Performance tips:**
+
 - Cosine Palette: ~3-4 clock cycles (1 MAD + 1 COS + 1 MAD)
+
 - HSV/HSL conversion: fully branchless using `mod`/`abs`/`clamp` vectorization
-- Multi-harmonic band-limited filtering: `fwidth()` + `smoothstep` adds ~2 extra instructions to eliminate aliasing
-- Lch pipeline ~57 instructions; if you only need "slightly better than RGB", use `iLerp` (~15 instructions) instead
+
+- Multi-harmonic band-limited filtering: `fwidth()` + `smoothstep` adds ~2 extra
+  instructions to eliminate aliasing
+
+- Lch pipeline ~57 instructions; if you only need “slightly better than RGB”, use
+  `iLerp` (~15 instructions) instead
+
 - sRGB approximation `pow(c, 2.2)` has <0.4% error and optimizes better in the compiler
 
 **Common combinations:**
+
 - **Cosine Palette + SDF Raymarching**: normals/distance/attributes as t input
-- **HSL/HSV + Data Visualization**: iteration count -> hue, saturation/brightness encode other dimensions
-- **Cosine Palette + Fractals/Noise**: `length(uv)` or `fbm(p)` + `iTime` driving dynamic colors
-- **Blackbody + Volume Rendering/Fire**: temperature field -> `blackbodyPalette()` -> physically plausible colors
+
+- **HSL/HSV + Data Visualization**: iteration count -> hue, saturation/brightness encode
+  other dimensions
+
+- **Cosine Palette + Fractals/Noise**: `length(uv)` or `fbm(p)` + `iTime` driving
+  dynamic colors
+
+- **Blackbody + Volume Rendering/Fire**: temperature field -> `blackbodyPalette()` ->
+  physically plausible colors
+
 - **Linear space workflow**: sRGB decode -> linear shading -> tonemap -> sRGB encode
+
 - **Hash + Palette + Tiling**: `hash(tileID)` as palette input for unified color harmony
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/color-palette.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/color-palette.md)

@@ -1,7 +1,7 @@
 # OpenCode Automation Harness (`opx`)
 
-This directory is in retirement mode. The primary harness now lives in the private
-repo `dzackgarza/opencode-manager`.
+This directory is in retirement mode.
+The primary harness now lives in the private repo `dzackgarza/opencode-manager`.
 
 Use these entrypoints:
 

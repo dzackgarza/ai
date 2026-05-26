@@ -1,16 +1,32 @@
 # Particle System
 
-**IMPORTANT: GLSL ES 3.0 return values**: All code paths in non-void functions must return a value. Every branch of an if statement must have a return.
+**IMPORTANT: GLSL ES 3.0 return values**: All code paths in non-void functions must
+return a value. Every branch of an if statement must have a return.
 
-**IMPORTANT: Particle system time cycling**: Must use `mod(time - offset, period)` for cycle computation. **Never use `floor(time / period) * period`**! The latter causes all particles to have negative time initially, resulting in startup delay or blank rendering.
+**IMPORTANT: Particle system time cycling**: Must use `mod(time - offset, period)` for
+cycle computation. **Never use `floor(time / period) * period`**! The latter causes all
+particles to have negative time initially, resulting in startup delay or blank
+rendering.
 
-**IMPORTANT: Brightness budget (most common failure cause!)**: Each particle's `numerator / (dist² + epsilon)` peak = `numerator / epsilon`. **Total peak = N_particles x (numerator / epsilon) must be < 5.0** (single pass). Exceeding this budget causes washout even with Reinhard. See specific reference values in the comments of each template below. Multi-pass ping-pong systems have a stricter budget, see below.
+**IMPORTANT: Brightness budget (most common failure cause!)**: Each particle’s
+`numerator / (dist² + epsilon)` peak = `numerator / epsilon`. **Total peak = N_particles
+x (numerator / epsilon) must be < 5.0** (single pass).
+Exceeding this budget causes washout even with Reinhard.
+See specific reference values in the comments of each template below.
+Multi-pass ping-pong systems have a stricter budget, see below.
 
-**IMPORTANT: Particle color vs background contrast**: When particle color is close to the background (sand dust/snow/fog), visibility must be enhanced through at least one method: (1) brightness significantly higher than background (2) different hue (3) visible motion trail.
+**IMPORTANT: Particle color vs background contrast**: When particle color is close to
+the background (sand dust/snow/fog), visibility must be enhanced through at least one
+method: (1) brightness significantly higher than background (2) different hue (3)
+visible motion trail.
 
-**IMPORTANT: Elongated glow (meteor/trail lines)**: Do not use `1/(distPerp² + tiny_epsilon)` for line glow — too-small epsilon makes the line center extremely bright. Correct approach: use `smoothstep` or `exp(-dist)` for lines, see meteor template below.
+**IMPORTANT: Elongated glow (meteor/trail lines)**: Do not use
+`1/(distPerp² + tiny_epsilon)` for line glow — too-small epsilon makes the line center
+extremely bright. Correct approach: use `smoothstep` or `exp(-dist)` for lines, see
+meteor template below.
 
 ### Correct Pattern
+
 ```glsl
 // Vertex shader
 #version 300 es
@@ -202,7 +218,10 @@ requestAnimationFrame(render);
 
 ### Stateful Particle System HTML Template (Multi-Pass Ping-Pong)
 
-Stateful particles (Boids, cloth, fluid particles, etc.) need Buffers for inter-frame state storage. The following JS skeleton demonstrates the correct WebGL2 multi-pass ping-pong structure; shader code is in Steps 4-5 below:
+Stateful particles (Boids, cloth, fluid particles, etc.)
+need Buffers for inter-frame state storage.
+The following JS skeleton demonstrates the correct WebGL2 multi-pass ping-pong
+structure; shader code is in Steps 4-5 below:
 
 ```html
 <!DOCTYPE html>
@@ -330,7 +349,11 @@ requestAnimationFrame(render);
 
 ### Star Field Function Template (For Meteors, Fireworks, and Other Night Sky Scenes)
 
-**IMPORTANT: Star visibility**: Stars must be clearly visible in screenshots as individual light points. Use `exp(-dist*dist*k)` for sharp Gaussian dots rather than `1/(dist²+eps)` broad glow. Each star's peak brightness should be at least 0.3 to be visible against a dark background.
+**IMPORTANT: Star visibility**: Stars must be clearly visible in screenshots as
+individual light points.
+Use `exp(-dist*dist*k)` for sharp Gaussian dots rather than `1/(dist²+eps)` broad glow.
+Each star’s peak brightness should be at least 0.3 to be visible against a dark
+background.
 
 ```glsl
 #define NUM_STARS 200
@@ -358,6 +381,7 @@ vec3 starField(vec2 uv) {
 ```
 
 ### Incorrect Pattern (Do Not Do This)
+
 ```glsl
 // WRONG: cannot write this in standalone HTML
 void mainImage(out vec4 fragColor, in vec2 fragCoord) { ... }
@@ -368,35 +392,53 @@ void main() {
 
 ## ShaderToy vs Standalone HTML Code Templates
 
-The following code examples fall into two categories; be sure to use the correct template:
+The following code examples fall into two categories; be sure to use the correct
+template:
 
 ### Standalone HTML Template (complete example provided above)
 
 ### ShaderToy Template (for the ShaderToy website)
 
 ## Use Cases
-- **Stateless particle effects**: fireworks, starfields, campfire/flames (flying embers), orbiting light points, and other decorative effects that don't need inter-frame memory
-- **Stateful physics particles**: flocking/boids, raindrops, cloth, fluids, and other simulations requiring persistent position and velocity
+
+- **Stateless particle effects**: fireworks, starfields, campfire/flames (flying
+  embers), orbiting light points, and other decorative effects that don’t need
+  inter-frame memory
+
+- **Stateful physics particles**: flocking/boids, raindrops, cloth, fluids, and other
+  simulations requiring persistent position and velocity
+
 - **Motion blur and trails**: particle trajectories needing afterglow or halo effects
-- **Large-scale particle management**: real-time rendering and interaction with hundreds to thousands of particles
-- **Weather/atmospheric effects**: sandstorms, blizzards, volcanic ash, and other vortex-driven particle systems
-- **Magic/geometric arrays**: magic dust, spiraling ascending light points, magic circle rings, iridescent shimmering particles
+
+- **Large-scale particle management**: real-time rendering and interaction with hundreds
+  to thousands of particles
+
+- **Weather/atmospheric effects**: sandstorms, blizzards, volcanic ash, and other
+  vortex-driven particle systems
+
+- **Magic/geometric arrays**: magic dust, spiraling ascending light points, magic circle
+  rings, iridescent shimmering particles
 
 Core decision tree: Do particles need inter-frame memory?
+
 - **No** → Single-pass stateless system (using loops + hash functions)
+
 - **Yes** → Multi-pass stateful system (using Buffer for position/velocity storage)
 
 ## Core Principles
 
-Particle systems manage collections of many independent entities, each with position, velocity, lifetime, and other attributes.
+Particle systems manage collections of many independent entities, each with position,
+velocity, lifetime, and other attributes.
 
-**Stateless paradigm**: All attributes are recomputed each frame from particle ID and time, no Buffer needed.
+**Stateless paradigm**: All attributes are recomputed each frame from particle ID and
+time, no Buffer needed.
 ```
 position_i = trajectory(id_i, time) + randomOffset(hash(id_i))
 lifetime_i = fract((time - spawnTime_i) / lifeDuration_i)
 ```
 
-**Stateful paradigm**: Particle state is stored in Buffer texture pixels, each frame reading → computing → writing back.
+**Stateful paradigm**: Particle state is stored in Buffer texture pixels, each frame
+reading → computing → writing back.
 ```
 // Euler method
 velocity += acceleration * dt
@@ -406,11 +448,13 @@ position += velocity * dt
 newPos = 2 * currentPos - previousPos + acceleration * dt²
 ```
 
-**Rendering**: Distance-based falloff `intensity = brightness / (dist² + epsilon)`, with multi-particle superposition creating metaball fusion effects.
+**Rendering**: Distance-based falloff `intensity = brightness / (dist² + epsilon)`, with
+multi-particle superposition creating metaball fusion effects.
 
 ## Implementation Steps
 
 ### Step 1: Hash Random Functions
+
 ```glsl
 // 1D -> 1D hash, returns [0, 1)
 float hash11(float p) {
@@ -433,6 +477,7 @@ vec3 hash33(vec3 p) {
 ```
 
 ### Step 2: Particle Lifecycle Management
+
 ```glsl
 #define NUM_PARTICLES 100
 #define LIFETIME_MIN 1.0
@@ -450,6 +495,7 @@ vec2 particleAge(int id, float time) {
 ```
 
 ### Step 3: Stateless Particle Position Computation
+
 ```glsl
 #define GRAVITY vec2(0.0, -4.5)
 #define DRIFT_MAX vec2(0.28, 0.28)
@@ -482,6 +528,7 @@ vec2 particlePosition(int id, float time) {
 ```
 
 ### Step 4: Buffer-Stored Particle State (Stateful System)
+
 ```glsl
 // === Buffer A: Particle Physics Update ===
 // IMPORTANT: Multi-pass system warning: each fragment shader is compiled independently, helper functions must be redefined in each shader!
@@ -547,7 +594,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### Step 5: Particle Rendering — Metaball Style
-// IMPORTANT: Multi-pass system warning: Image shader must define all the following helper functions (compiled independently)!
+
+// IMPORTANT: Multi-pass system warning: Image shader must define all the following
+helper functions (compiled independently)!
 ```glsl
 #define BRIGHTNESS 0.002
 #define COLOR_START vec3(0.0, 0.64, 0.2)
@@ -594,6 +643,7 @@ vec3 renderParticles(vec2 uv) {
 ```
 
 ### Step 6: Frame Feedback Motion Blur
+
 ```glsl
 // IMPORTANT: Ping-pong brightness budget (most common washout cause!):
 // Steady-state brightness = singleFrameContribution / (1 - TRAIL_DECAY)
@@ -620,6 +670,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### Step 7: HSV Coloring & Star Glare Effect
+
 ```glsl
 // HSV to RGB (correct implementation)
 vec3 hsv2rgb(vec3 c) {
@@ -646,7 +697,7 @@ float starGlare(vec2 relPos, float intensity) {
 
 ## Complete Code Template
 
-Single-pass stateless particle system, runs directly in ShaderToy's Image tab:
+Single-pass stateless particle system, runs directly in ShaderToy’s Image tab:
 
 ```glsl
 // === Particle System — Stateless Single-Pass Template ===
@@ -767,6 +818,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### Variant 1: Metaball Polar Coordinate Particles
+
 ```glsl
 float d = fract(time * 0.51 + 48934.4238 * sin(float(i) * 692.7398));
 float angle = TAU * float(i) / float(NUM_PARTICLES);
@@ -778,6 +830,7 @@ col = mix(col, mix(startColor, endColor, d), mb / totalSum);
 ```
 
 ### Variant 2: Buffer Storage + Boids Flocking Behavior
+
 ```glsl
 vec2 sumForce = vec2(0.0);
 for (float j = 0.0; j < NUM_PARTICLES; j++) {
@@ -791,6 +844,7 @@ sumForce -= vel * 0.2 / dt;
 ```
 
 ### Variant 3: Verlet Integration Cloth Simulation
+
 ```glsl
 vec2 newPos = 2.0 * particle.xy - particle.zw + vec2(0.0, -0.6) * dt * dt;
 particle.zw = particle.xy;
@@ -804,6 +858,7 @@ particle.xy += 0.1 * (dist - restLength) * (delta / dist);
 ```
 
 ### Variant 4: 3D Particles + Ray Rendering
+
 ```glsl
 vec3 ro = vec3(0.0, 0.0, 2.5);
 vec3 rd = normalize(vec3(uv, -0.5));
@@ -817,6 +872,7 @@ for (int i = 0; i < numParticles; i++) {
 ```
 
 ### Variant 5: Raindrop Particles (3D Scene Integration)
+
 ```glsl
 float speedScale = 0.0015 * (0.1 + 1.9 * sin(PI * 0.5 * pow(age / lifetime, 2.0)));
 particle.x += (windShieldOffset.x + windIntensity * dot(rayRight, windDir)) * fallSpeed * speedScale * dt;
@@ -831,7 +887,9 @@ if (particle.z > particle.a) {
 
 ### Variant 6: Vortex/Storm Particle System (Sandstorm, Blizzard, Whirlwind, etc.)
 
-Uses stateless single pass. Key: spiral trajectory + high-visibility particles + vortex eye dark zone + separated background fog layer.
+Uses stateless single pass.
+Key: spiral trajectory + high-visibility particles + vortex eye dark zone + separated
+background fog layer.
 
 ```glsl
 // IMPORTANT: Particle color must be 2-3x brighter than background to be visible (sand-colored particles on sand-colored background easily disappear)
@@ -884,9 +942,16 @@ void main() {
 
 ### Variant 7: Meteor/Trail Line Rendering (Single-Pass Stateless)
 
-Meteors, magic projectiles, etc. need elongated glow (stretched luminous lines). **Do not use `1/(distPerp² + tiny_epsilon)` for lines** — too-small epsilon makes line centers extremely bright and washed out. Use `exp(-dist)` or `smoothstep` for safe line glow.
+Meteors, magic projectiles, etc.
+need elongated glow (stretched luminous lines).
+**Do not use `1/(distPerp² + tiny_epsilon)` for lines** — too-small epsilon makes line
+centers extremely bright and washed out.
+Use `exp(-dist)` or `smoothstep` for safe line glow.
 
-**IMPORTANT: Common meteor failures**: (1) Star background too dark to see — must call `starField()` above and ensure stars use Gaussian dots `exp(-dist²*k)` for rendering (2) Meteor trail too faint — `core` multiplier should be at least 0.15, each step after dividing by `NUM_TRAIL_STEPS` still needs >= 0.005 contribution
+**IMPORTANT: Common meteor failures**: (1) Star background too dark to see — must call
+`starField()` above and ensure stars use Gaussian dots `exp(-dist²*k)` for rendering (2)
+Meteor trail too faint — `core` multiplier should be at least 0.15, each step after
+dividing by `NUM_TRAIL_STEPS` still needs >= 0.005 contribution
 
 ```glsl
 #define NUM_METEORS 6
@@ -957,9 +1022,16 @@ void main() {
 
 ### Variant 8: Fountain/Upward Jet Particle System (Single-Pass Stateless)
 
-Water/sparks jetting upward from a point, parabolic descent. Key: **Particles must be sharp, individually visible points** (small epsilon), not just a diffuse glow blob. Must include: (1) main water column particles (upward jet + parabola) (2) splash particles (spread sideways after hitting water) (3) water surface/pool visuals.
+Water/sparks jetting upward from a point, parabolic descent.
+Key: **Particles must be sharp, individually visible points** (small epsilon), not just
+a diffuse glow blob.
+Must include: (1) main water column particles (upward jet + parabola) (2) splash
+particles (spread sideways after hitting water) (3) water surface/pool visuals.
 
-**IMPORTANT: Most common fountain failure**: Only produces blurry glow without visible individual water droplet trajectories! Must use small epsilon (<=0.002) so each particle is clearly visible as an individual light point. Numerator must also be proportionally reduced to control total brightness.
+**IMPORTANT: Most common fountain failure**: Only produces blurry glow without visible
+individual water droplet trajectories!
+Must use small epsilon (<=0.002) so each particle is clearly visible as an individual
+light point. Numerator must also be proportionally reduced to control total brightness.
 
 ```glsl
 #define NUM_WATER 60
@@ -1040,9 +1112,14 @@ void main() {
 
 ### Variant 9: Campfire/Flame Particle System (Single-Pass Stateless)
 
-Flame effects must include **two layers**: (1) smooth flame body at the base (noise-driven cone gradient) (2) many **discrete ember/spark particles** above, drifting upward and gradually extinguishing. Using only a smooth gradient will be judged as "no particle system."
+Flame effects must include **two layers**: (1) smooth flame body at the base
+(noise-driven cone gradient) (2) many **discrete ember/spark particles** above, drifting
+upward and gradually extinguishing.
+Using only a smooth gradient will be judged as “no particle system.”
 
-**IMPORTANT: Most common flame failure**: Only draws a smooth gradient without discrete particles! Must have NUM_SPARKS individual point-like particles drifting out from the flame top.
+**IMPORTANT: Most common flame failure**: Only draws a smooth gradient without discrete
+particles! Must have NUM_SPARKS individual point-like particles drifting out from the
+flame top.
 
 ```glsl
 #define NUM_SPARKS 60
@@ -1110,9 +1187,17 @@ void main() {
 
 ### Variant 10: Spiral Array/Magic Particle System (Single-Pass Stateless)
 
-Magic effects, spiral ascent, magic circles, etc. require particles arranged in **geometric arrays** with **iridescent shimmer**. Key: particles must be individually visible glowing points (not a blurry glow blob), and the spiral structure must be clearly discernible.
+Magic effects, spiral ascent, magic circles, etc.
+require particles arranged in **geometric arrays** with **iridescent shimmer**. Key:
+particles must be individually visible glowing points (not a blurry glow blob), and the
+spiral structure must be clearly discernible.
 
-**IMPORTANT: Most common magic failure**: Only produces a blob of blurry light (diffuse glow blob) without visible individual particles or geometric structure! Ensure each particle is an independently visible small light point, and the overall arrangement forms spiral/ring/other geometric shapes. Reduce epsilon to make each particle sharper (small light dot) rather than a large blurry halo.
+**IMPORTANT: Most common magic failure**: Only produces a blob of blurry light (diffuse
+glow blob) without visible individual particles or geometric structure!
+Ensure each particle is an independently visible small light point, and the overall
+arrangement forms spiral/ring/other geometric shapes.
+Reduce epsilon to make each particle sharper (small light dot) rather than a large
+blurry halo.
 
 ```glsl
 #define NUM_SPIRAL 80
@@ -1184,20 +1269,40 @@ void main() {
 ## Performance & Composition
 
 **Performance**:
-- Particle count is the biggest performance lever; use early exit `if (dist > threshold) continue;` for optimization
-- Frame feedback trails (`prev * 0.95 + current`) can achieve high visual density with fewer particles
-- N-body O(N²) interaction: reduce to O(1) neighbor queries using spatial grid partitioning or Voronoi tracking
+
+- Particle count is the biggest performance lever; use early exit
+  `if (dist > threshold) continue;` for optimization
+
+- Frame feedback trails (`prev * 0.95 + current`) can achieve high visual density with
+  fewer particles
+
+- N-body O(N²) interaction: reduce to O(1) neighbor queries using spatial grid
+  partitioning or Voronoi tracking
+
 - High-speed particles use sub-frame stepping to eliminate trajectory gaps
-- Velocity/acceleration need clamp to prevent numerical explosion; Verlet is more stable than Euler
--
+
+- Velocity/acceleration need clamp to prevent numerical explosion; Verlet is more stable
+  than Euler
+
 
 **Composition**:
-- **Raymarching**: sample particle density during march steps, or particles in separate Buffer then composited
-- **Noise / Flow Field**: use noise gradients to drive particle velocity, producing organic flow effects
-- **Post-Processing**: Bloom (Gaussian blur overlay), chromatic aberration, Reinhard tone mapping
-- **SDF shapes**: rotate local coordinates based on velocity direction to render fish/droplet specific shapes
-- **Voronoi acceleration**: large-scale particles use Voronoi tracking, reducing rendering and physics queries from O(N) to O(1)
+
+- **Raymarching**: sample particle density during march steps, or particles in separate
+  Buffer then composited
+
+- **Noise / Flow Field**: use noise gradients to drive particle velocity, producing
+  organic flow effects
+
+- **Post-Processing**: Bloom (Gaussian blur overlay), chromatic aberration, Reinhard
+  tone mapping
+
+- **SDF shapes**: rotate local coordinates based on velocity direction to render
+  fish/droplet specific shapes
+
+- **Voronoi acceleration**: large-scale particles use Voronoi tracking, reducing
+  rendering and physics queries from O(N) to O(1)
 
 ## Further Reading
 
-Full step-by-step tutorial, mathematical derivations, and advanced usage in [reference](../reference/particle-system.md)
+Full step-by-step tutorial, mathematical derivations, and advanced usage in
+[reference](../reference/particle-system.md)

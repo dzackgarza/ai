@@ -1,40 +1,67 @@
 # The `grind` Tactic
 
-> **Scope:** Not part of the prove/autoprove default loop. Consulted when the agent encounters goals that `simp` cannot close, or when cross-domain reasoning is needed.
+> **Scope:** Not part of the prove/autoprove default loop.
+> Consulted when the agent encounters goals that `simp` cannot close, or when
+> cross-domain reasoning is needed.
 
 > **Version metadata:**
+>
 > - **Verified on:** Lean reference + release notes through `v4.27.0`
+>
 > - **Last validated:** 2026-02-17
-> - **Confidence:** medium (mixed: official docs + targeted examples, not full snippet CI)
+>
+> - **Confidence:** medium (mixed: official docs + targeted examples, not full snippet
+>   CI)
 
 ## Table of Contents
 
 - [Quick Path](#quick-path)
+
 - [What `grind` Does](#what-grind-does)
+
 - [Version Matrix](#version-matrix)
+
 - [Usage Patterns](#usage-patterns)
+
 - [Controls and Performance](#controls-and-performance)
-- [The `@[grind]` and `@[grind_pattern]` Attributes](#the-grind-and-grind_pattern-attributes)
+
+- [The `@[grind]` and `@[grind_pattern]`
+  Attributes](#the-grind-and-grind_pattern-attributes)
+
 - [Common Gotchas](#common-gotchas)
+
 - [Interactive Mode](#interactive-mode)
+
 - [Known Limitations](#known-limitations)
+
 - [Suggestions and Locals](#suggestions-and-locals)
+
 - [Simproc Escalation](#simproc-escalation)
+
 - [Anti-Patterns](#anti-patterns)
+
 - [Related References](#related-references)
 
 ## Quick Path
 
 Use `grind` when:
+
 - `simp` normalizes but does not close
+
 - the goal mixes equalities, inequalities, and algebraic facts
+
 - finite-domain reasoning is involved (`Fin`, `Bool`, small enums)
 
 Use specialized tactics when one domain is dominant:
+
 - integer linear arithmetic -> `omega`
+
 - real/rational linear arithmetic -> `linarith`
+
 - nonlinear arithmetic -> `nlinarith`
+
 - pure rewriting -> `simp` / `simp only`
+
 - combinatorial bit-level search -> `bv_decide`
 
 ### Single Decision Flow
@@ -67,13 +94,20 @@ grind (splits := 0)
 
 ## What `grind` Does
 
-`grind` is SMT-style automation for Lean goals. It coordinates:
+`grind` is SMT-style automation for Lean goals.
+It coordinates:
+
 - congruence closure
+
 - E-matching
+
 - case splitting
+
 - arithmetic/algebraic sub-solvers
 
-The tactic works by contradiction over a shared fact store. Compared to `simp` (local rewrite normalization), `grind` is designed for mixed-constraint closure.
+The tactic works by contradiction over a shared fact store.
+Compared to `simp` (local rewrite normalization), `grind` is designed for
+mixed-constraint closure.
 
 ```lean
 example (h1 : a = b) (h2 : b = c) : a = c := by
@@ -89,7 +123,7 @@ example : (5 : Fin 3) = 2 := by
 ## Version Matrix
 
 | Feature | Available Since | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `grind?` companion tactic | `v4.17.0` | Reimplemented in `v4.26.0` using newer suggestion infra |
 | `grind -splitMatch` / `grind -splitIte` | `v4.17.0` | Disable selected case-splitting sources |
 | `grind +splitImp` | `v4.20.0` | Allow implication splitting |
@@ -173,10 +207,15 @@ grind (splits := 4) (ematch := 3) (instances := 300) (gen := 5) -splitIte -split
 ```
 
 Performance tips:
+
 1. Start with `simp`/`simp only` to reduce term size.
+
 2. Keep splitting bounded before adding large hint sets.
+
 3. Disable subsystems you do not need (`-ring`, `-linarith`, etc.).
+
 4. Prefer specialized tactics when a single theory dominates.
+
 5. Use traces to diagnose search behavior:
 
 ```lean
@@ -201,15 +240,24 @@ grind
 ```
 
 Full attribute variant list:
+
 - `@[grind]`: default pattern inference
+
 - `@[grind =]`, `@[grind =_]`, `@[grind _=_]`: equality-oriented matching
+
 - `@[grind →]`, `@[grind ←]`: forward/backward oriented matching
+
 - `@[grind cases]`, `@[grind cases eager]`: split guidance for inductive predicates
+
 - `@[grind intro]`: use constructors of an inductive predicate as matching rules
+
 - `@[grind inj]`, `@[grind ext]`, `@[grind funCC]`, `@[grind norm]`, `@[grind unfold]`
+
 - `@[grind!]`: minimal indexable subexpression pattern selection
 
-Use `@[grind]` sparingly on lemmas with stable, reusable patterns. Keep exploratory annotations local first (`@[local grind ...]`); promote to global only after repeated wins across files.
+Use `@[grind]` sparingly on lemmas with stable, reusable patterns.
+Keep exploratory annotations local first (`@[local grind ...]`); promote to global only
+after repeated wins across files.
 
 ### `@[grind_pattern]` for E-matching Shape
 
@@ -222,9 +270,12 @@ grind_pattern myThm => f x, g y where
   depth x < 8
 ```
 
-Supported constraints: `guard`, `check`, `size`, `depth`, `gen`, `max_insts`, value/ground predicates (`is_ground`, `is_value`, `is_strict_value`, `not_value`, `not_strict_value`), and definitional equality/inequality guards (`x =?= t`, `x =/= t`).
+Supported constraints: `guard`, `check`, `size`, `depth`, `gen`, `max_insts`,
+value/ground predicates (`is_ground`, `is_value`, `is_strict_value`, `not_value`,
+`not_strict_value`), and definitional equality/inequality guards (`x =?= t`, `x =/= t`).
 
-Use this only when ordinary `@[grind]` registration is insufficient and profiling shows matching misses.
+Use this only when ordinary `@[grind]` registration is insufficient and profiling shows
+matching misses.
 
 ## Common Gotchas
 
@@ -256,7 +307,8 @@ example [CommRing R] [NoZeroDivisors R] (h : x * y = 0) (hx : x ≠ 0) : y = 0 :
 
 ## Interactive Mode
 
-Use `grind => ...` as the default development mode — it is the most observable and steerable path.
+Use `grind => ...` as the default development mode — it is the most observable and
+steerable path.
 
 ```lean
 example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c := by
@@ -266,10 +318,15 @@ example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c := by
 ```
 
 Common commands:
+
 - `show_state`, `show_eqcs`, `show_cases`, `show_asserted`
+
 - `cases?`, `cases_next`
+
 - `instantiate [thm]`
+
 - `have` (inject missing intermediate facts)
+
 - `done` / `finish` / `finish?`
 
 ### Debugging Loop
@@ -292,7 +349,10 @@ grind =>
     (skip)
 ```
 
-Note: on well-annotated goals, `instantiate` may close the goal entirely. Guard trailing steps with `first ... (skip)` to avoid "no goals to be solved" errors. Once stable, replace ad-hoc `have` steps with annotations or `grind_pattern` so the proof can collapse toward `grind`/`grind only [...]`.
+Note: on well-annotated goals, `instantiate` may close the goal entirely.
+Guard trailing steps with `first ... (skip)` to avoid “no goals to be solved” errors.
+Once stable, replace ad-hoc `have` steps with annotations or `grind_pattern` so the
+proof can collapse toward `grind`/`grind only [...]`.
 
 ### Version-Sensitive `instantiate`
 
@@ -305,7 +365,8 @@ example (f : Nat → Nat) (h : ∀ n, f n = n + 1) : f 0 = 1 := by
     done
 ```
 
-If your toolchain reports `Unknown constant` for locals, fall back to global `@[grind]` lemmas or plain `grind`/`simp`.
+If your toolchain reports `Unknown constant` for locals, fall back to global `@[grind]`
+lemmas or plain `grind`/`simp`.
 
 ## Known Limitations
 
@@ -318,7 +379,8 @@ example (x : Int) (h1 : 0 ≤ x) (h2 : x < 10) : x * x < 100 := by
   nlinarith [h1, h2]
 ```
 
-2. Bit-level/algebraic bitvector goals are often better with `bv_decide` or `native_decide`.
+2. Bit-level/algebraic bitvector goals are often better with `bv_decide` or
+   `native_decide`.
 
 ```lean
 example : ∀ x : BitVec 64, (x &&& 0) = 0 := by
@@ -328,31 +390,47 @@ example : ∀ x : BitVec 64, (x &&& 0) = 0 := by
 
 3. Large case-splitting spaces may blow up; cap `splits` first.
 
-4. Structural proofs (e.g., injectivity with induction/extensionality) usually need explicit proof structure.
+4. Structural proofs (e.g., injectivity with induction/extensionality) usually need
+   explicit proof structure.
 
 ## Suggestions and Locals
 
-`grind` supports premise selection via `+suggestions` and local-library harvesting via `+locals`.
+`grind` supports premise selection via `+suggestions` and local-library harvesting via
+`+locals`.
 
 Staged workflow:
+
 1. Prototype: `grind +suggestions +locals`
+
 2. Minimize: run `grind?`, adopt `grind only [...]` when stable
-3. Stabilize: convert repeatedly selected lemmas into `@[local grind ...]` / `@[local simp]`
+
+3. Stabilize: convert repeatedly selected lemmas into `@[local grind ...]` /
+   `@[local simp]`
+
 4. Promote to global annotations only after repeated success across files
 
-In large API files, prefer aggressive local annotations first so repetitive theorem arguments disappear. This keeps exploration fast while converging to deterministic proofs.
+In large API files, prefer aggressive local annotations first so repetitive theorem
+arguments disappear.
+This keeps exploration fast while converging to deterministic proofs.
 
 ## Simproc Escalation
 
 Create a simproc only when all are true:
+
 - the same rewrite pattern recurs across multiple goals/files
+
 - `simp` lemmas are noisy, fragile, or expensive
+
 - the reduction is deterministic and terminating
 
 For each simproc:
+
 - guard on expression head/arity
+
 - return `.continue` when not applicable
+
 - prefer definitional reduction via `whnf` (`dsimproc`)
+
 - keep the scope local unless reuse is proven
 
 Template:
@@ -371,14 +449,24 @@ dsimproc [simp] reduceFoo (Foo _ _) := fun e => do
 ## Anti-Patterns
 
 - Running `grind` first on unsimplified goals with large contexts
+
 - Adding broad global simp lemmas to help one stubborn goal
+
 - Introducing simprocs for one-off rewrites
+
 - Keeping fallback tactic chains in final proof scripts
-- Long-term dependence on `+suggestions` when stable annotations would make proofs deterministic
+
+- Long-term dependence on `+suggestions` when stable annotations would make proofs
+  deterministic
 
 ## Related References
 
-- [tactics-reference.md](tactics-reference.md) - Compact tactic catalog with quick `grind` entry
+- [tactics-reference.md](tactics-reference.md) - Compact tactic catalog with quick
+  `grind` entry
+
 - [simp-reference.md](simp-reference.md) - Simp hygiene + deterministic rewrite patterns
+
 - [Lean 4 Reference: The grind tactic](https://lean-lang.org/doc/reference/latest/The--grind--tactic/)
-- [Lean Releases](https://lean-lang.org/doc/reference/latest/releases/) - version-specific behavior
+
+- [Lean Releases](https://lean-lang.org/doc/reference/latest/releases/) -
+  version-specific behavior

@@ -11,11 +11,12 @@ metadata:
 ---
 # DESIGN.md Skill
 
-DESIGN.md is Google's open spec (Apache-2.0, `google-labs-code/design.md`) for
+DESIGN.md is Google’s open spec (Apache-2.0, `google-labs-code/design.md`) for
 describing a visual identity to coding agents.
 One file combines:
 
 - **YAML front matter** — machine-readable design tokens (normative values)
+
 - **Markdown body** — human-readable rationale, organized into canonical sections
 
 Tokens give exact values.
@@ -26,9 +27,13 @@ regressions, and exports to Tailwind or W3C DTCG JSON.
 ## When to use this skill
 
 - User asks for a DESIGN.md file, design tokens, or a design system spec
+
 - User wants consistent UI/brand across multiple projects or tools
+
 - User pastes an existing DESIGN.md and asks to lint, diff, export, or extend it
+
 - User asks to port a style guide into a format agents can consume
+
 - User wants contrast / WCAG accessibility validation on their color palette
 
 For purely visual inspiration or layout examples, use `popular-web-designs` instead.
@@ -113,13 +118,20 @@ Sections are optional, but present ones MUST appear in this order.
 Duplicate headings reject the file.
 
 1. Overview (alias: Brand & Style)
+
 2. Colors
+
 3. Typography
+
 4. Layout (alias: Layout & Spacing)
+
 5. Elevation & Depth (alias: Elevation)
+
 6. Shapes
+
 7. Components
-8. Do's and Don'ts
+
+8. Do’s and Don’ts
 
 Unknown sections are preserved, not errored.
 Unknown token names are accepted if the value type is valid.
@@ -129,13 +141,17 @@ Unknown component properties produce a warning.
 
 1. **Ask the user** (or infer) the brand tone, accent color, and typography direction.
    If they provided a site, image, or vibe, translate it to the token shape above.
+
 2. **Write `DESIGN.md`** in their project root using `write_file`. Always include
    `name:` and `colors:`; other sections optional but encouraged.
+
 3. **Use token references** (`{colors.primary}`) in the `components:` section instead of
    re-typing hex values.
    Keeps the palette single-source.
+
 4. **Lint it** (see below).
    Fix any broken references or WCAG failures before returning.
+
 5. **If the user has an existing project**, also write Tailwind or DTCG exports next to
    the file (`tailwind.theme.json`, `tokens.json`).
 
@@ -169,10 +185,14 @@ structurally.
 ### Lint rule reference (what the 7 rules catch)
 
 - `broken-ref` (error) — `{colors.missing}` points at a non-existent token
+
 - `duplicate-section` (error) — same `## Heading` appears twice
+
 - `invalid-color`, `invalid-dimension`, `invalid-typography` (error)
+
 - `wcag-contrast` (warning/info) — component `textColor` vs `backgroundColor` ratio
   against WCAG AA (4.5:1) and AAA (7:1)
+
 - `unknown-component-property` (warning) — outside the whitelist above
 
 When the user cares about accessibility, call this out explicitly in your summary — WCAG
@@ -180,22 +200,29 @@ findings are the most load-bearing reason to use the CLI.
 
 ## Pitfalls
 
-- **Don't nest component variants.** `button-primary.hover` is wrong;
+- **Don’t nest component variants.** `button-primary.hover` is wrong;
   `button-primary-hover` as a sibling key is right.
+
 - **Hex colors must be quoted strings.** YAML will otherwise choke on `#` or truncate
   values like `#1A1C1E` oddly.
+
 - **Negative dimensions need quotes too.** `letterSpacing: -0.02em` parses as a YAML
   flow — write `letterSpacing: "-0.02em"`.
+
 - **Section order is enforced.** If the user gives you prose in a random order, reorder
   it to match the canonical list before saving.
+
 - **`version: alpha` is the current spec version** (as of Apr 2026). The spec is marked
   alpha — watch for breaking changes.
+
 - **Token references resolve by dotted path.** `{colors.primary}` works; `{primary}`
   does not.
 
 ## Spec source of truth
 
 - Repo: https://github.com/google-labs-code/design.md (Apache-2.0)
+
 - CLI: `@google/design.md` on npm
-- License of generated DESIGN.md files: whatever the user's project uses; the spec
+
+- License of generated DESIGN.md files: whatever the user’s project uses; the spec
   itself is Apache-2.0.

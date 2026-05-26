@@ -1,16 +1,21 @@
 # Advanced Texture Mapping Techniques
 
 ## Use Cases
+
 - Texturing 3D surfaces without UV seams (triplanar/biplanar mapping)
+
 - Eliminating visible tiling repetition on large surfaces
+
 - Proper texture filtering in ray-marched scenes (mip-level selection)
+
 - Combining procedural and sampled textures
 
 ## Techniques
 
 ### 1. Biplanar Mapping (Optimized Triplanar)
 
-Uses only 2 texture fetches instead of 3, selecting the two most relevant projection axes:
+Uses only 2 texture fetches instead of 3, selecting the two most relevant projection
+axes:
 
 ```glsl
 vec4 biplanar(sampler2D sam, vec3 p, vec3 n, float k) {
@@ -43,13 +48,16 @@ vec4 biplanar(sampler2D sam, vec3 p, vec3 n, float k) {
 // Usage: vec4 col = biplanar(tex, worldPos * scale, worldNormal, 8.0);
 ```
 
-**Why biplanar over triplanar**: Saves one texture fetch (bandwidth-bound advantage), with k=8 visually equivalent to triplanar. The `dFdx/dFdy` gradient propagation prevents mipmap seams at axis-switching boundaries.
+**Why biplanar over triplanar**: Saves one texture fetch (bandwidth-bound advantage),
+with k=8 visually equivalent to triplanar.
+The `dFdx/dFdy` gradient propagation prevents mipmap seams at axis-switching boundaries.
 
 ### 2. Texture Repetition Avoidance
 
 Three approaches to eliminate visible tiling patterns:
 
 #### Method A: Per-Tile Random Offset (4 fetches)
+
 ```glsl
 vec4 textureNoTile(sampler2D sam, vec2 uv) {
     vec2 iuv = floor(uv);
@@ -75,6 +83,7 @@ vec4 textureNoTile(sampler2D sam, vec2 uv) {
 ```
 
 #### Method B: Virtual Pattern (2 fetches, cheapest)
+
 ```glsl
 vec4 textureNoTileCheap(sampler2D sam, vec2 uv) {
     float k = texture(iChannel1, 0.005 * uv).x;  // low-freq variation index
@@ -116,6 +125,8 @@ vec2 duvdy = dposdy.xz * textureScale;
 vec4 color = textureGrad(tex, pos.xz * textureScale, duvdx, duvdy);
 ```
 
-This provides correct mip-level selection for procedural and sampled textures on ray-marched surfaces, eliminating shimmer and aliasing at distance.
+This provides correct mip-level selection for procedural and sampled textures on
+ray-marched surfaces, eliminating shimmer and aliasing at distance.
 
-→ For deeper details, see [reference/texture-mapping-advanced.md](../reference/texture-mapping-advanced.md)
+→ For deeper details, see
+[reference/texture-mapping-advanced.md](../reference/texture-mapping-advanced.md)

@@ -2,33 +2,42 @@
 name: python-project-structure
 description: Use when setting up new projects, organizing modules, defining public interfaces with __all__, or planning directory layouts
 ---
-
 # Python Project Structure & Module Architecture
 
-Design well-organized Python projects with clear module boundaries, explicit public interfaces, and maintainable directory structures. Good organization makes code discoverable and changes predictable.
+Design well-organized Python projects with clear module boundaries, explicit public
+interfaces, and maintainable directory structures.
+Good organization makes code discoverable and changes predictable.
 
 ## When to Use This Skill
 
 - Starting a new Python project from scratch
+
 - Reorganizing an existing codebase for clarity
+
 - Defining module public APIs with `__all__`
+
 - Deciding between flat and nested directory structures
+
 - Determining test file placement strategies
+
 - Creating reusable library packages
 
 ## Core Concepts
 
 ### 1. Module Cohesion
 
-Group related code that changes together. A module should have a single, clear purpose.
+Group related code that changes together.
+A module should have a single, clear purpose.
 
 ### 2. Explicit Interfaces
 
-Define what's public with `__all__`. Everything not listed is an internal implementation detail.
+Define what’s public with `__all__`. Everything not listed is an internal implementation
+detail.
 
 ### 3. Flat Hierarchies
 
-Prefer shallow directory structures. Add depth only for genuine sub-domains.
+Prefer shallow directory structures.
+Add depth only for genuine sub-domains.
 
 ### 4. Consistent Conventions
 
@@ -53,10 +62,13 @@ myproject/
 
 ### Pattern 1: One Concept Per File
 
-Each file should focus on a single concept or closely related set of functions. Consider splitting when a file:
+Each file should focus on a single concept or closely related set of functions.
+Consider splitting when a file:
 
 - Handles multiple unrelated responsibilities
+
 - Grows beyond 300-500 lines (varies by complexity)
+
 - Contains classes that change for different reasons
 
 ```python
@@ -71,7 +83,8 @@ Each file should focus on a single concept or closely related set of functions. 
 
 ### Pattern 2: Explicit Public APIs with `__all__`
 
-Define the public interface for every module. Unlisted members are internal implementation details.
+Define the public interface for every module.
+Unlisted members are internal implementation details.
 
 ```python
 # mypackage/services/__init__.py
@@ -92,7 +105,8 @@ __all__ = [
 
 ### Pattern 3: Flat Directory Structure
 
-Prefer minimal nesting. Deep hierarchies make imports verbose and navigation difficult.
+Prefer minimal nesting.
+Deep hierarchies make imports verbose and navigation difficult.
 
 ```
 # Preferred: Flat structure
@@ -113,7 +127,7 @@ project/
 project/core/internal/services/impl/user/
 ```
 
-Add sub-packages only when there's a genuine sub-domain requiring isolation.
+Add sub-packages only when there’s a genuine sub-domain requiring isolation.
 
 ### Pattern 4: Test File Organization
 
@@ -129,7 +143,8 @@ src/
 └── test_order_service.py
 ```
 
-Benefits: Tests live next to the code they verify. Easy to see coverage gaps.
+Benefits: Tests live next to the code they verify.
+Easy to see coverage gaps.
 
 **Option B: Parallel Test Directory**
 
@@ -144,7 +159,8 @@ tests/
 │   └── test_order_service.py
 ```
 
-Benefits: Clean separation between production and test code. Standard for larger projects.
+Benefits: Clean separation between production and test code.
+Standard for larger projects.
 
 ## Advanced Patterns
 
@@ -221,7 +237,9 @@ ecommerce/
 ### Conventions
 
 - Use `snake_case` for all file and module names: `user_repository.py`
+
 - Avoid abbreviations that obscure meaning: `user_repository.py` not `usr_repo.py`
+
 - Match class names to file names: `UserService` in `user_service.py`
 
 ### Import Style
@@ -242,11 +260,19 @@ Relative imports can break when modules are moved or reorganized.
 
 ## Best Practices Summary
 
-1. **Keep files focused** - One concept per file, consider splitting at 300-500 lines (varies by complexity)
+1. **Keep files focused** - One concept per file, consider splitting at 300-500 lines
+   (varies by complexity)
+
 2. **Define `__all__` explicitly** - Make public interfaces clear
+
 3. **Prefer flat structures** - Add depth only for genuine sub-domains
+
 4. **Use absolute imports** - More reliable and clearer
+
 5. **Be consistent** - Apply patterns uniformly across the project
+
 6. **Match names to content** - File names should describe their purpose
+
 7. **Separate concerns** - Keep layers distinct and dependencies flowing one direction
+
 8. **Document your structure** - Include a README explaining the organization

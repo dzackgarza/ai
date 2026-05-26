@@ -2,7 +2,6 @@
 name: ssh-workstation-and-tmux
 description: "Use when working with remote SSH workstations, managing named tmux sessions for long-running jobs, or coordinating distributed agent sessions across machines."
 ---
-
 Pattern for long-running remote work: SSH into a workstation, use named tmux sessions to
 keep jobs alive across disconnects.
 
@@ -13,7 +12,7 @@ ssh dzack@ssh-work.dzackgarza.com
 ```
 
 The connection goes through a Cloudflare Tunnel (handled by `~/.ssh/config` —
-`ProxyCommand cloudflared access ssh`), but that's irrelevant to *using* it.
+`ProxyCommand cloudflared access ssh`), but that’s irrelevant to *using* it.
 Just `ssh` and it works.
 
 ## Pattern: Named Tmux Sessions
@@ -39,7 +38,9 @@ pick a descriptive name per task.
 ## Key Remote Paths
 
 - `~/pdf-inputs/` — incoming work queue (PDFs to process)
+
 - `~/pdf-outputs/` — completed extraction artifacts
+
 - `~/pdf-extraction/` — project checkout with MinerU venv at `~/.venv/bin/mineru`
 
 ## Machine Specs

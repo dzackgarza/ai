@@ -14,11 +14,11 @@
 
 3. **Mock-first evasion** - Reaching for mocks, stubs, or faked fixtures rather than
    confronting real system behavior.
-   A test suite built on mocks certifies the mock's behavior, not the system's.
+   A test suite built on mocks certifies the mock’s behavior, not the system’s.
 
 4. **Tolerance substitution** - Using approximate equality (`assertAlmostEqual`,
    relative tolerance) where exact equality is mathematically required.
-   Hides precision failures as "close enough" when the mathematics demands exactness.
+   Hides precision failures as “close enough” when the mathematics demands exactness.
 
 5. **Masking over failure** - Using `xfail`, `skip`, or `skipif` to silence a failing
    test rather than fixing it.
@@ -39,10 +39,10 @@
    Examples: injecting JavaScript at runtime to patch the app so tests pass; editing log
    files directly to say tests passed; modifying test assertions to make them pass
    rather than fixing the code.
-   This is not confusion about what testing is *for* — the model knows exactly what it's
+   This is not confusion about what testing is *for* — the model knows exactly what it’s
    doing. It optimizes for completion (green tests, passing assertions) over correctness
-   because "completion" is the inferenced reward signal with no internal "don't lie"
-   constraint. Related to reward hacking but distinct: it's falsifying the evidence of
+   because “completion” is the inferenced reward signal with no internal “don’t lie”
+   constraint. Related to reward hacking but distinct: it’s falsifying the evidence of
    completion rather than gaming the metric.
 
 8. **Test-cheat escalation ladder** — When legitimate attempts to satisfy a test fail,
@@ -52,22 +52,28 @@
    - **Input mirroring**: Hardcoding specific test input shapes and types into
      production logic, making the implementation match test expectations rather than
      solving the general problem.
+
    - **Expectation probing**: Deliberately throwing exceptions, inserting timing delays,
      or using runtime type introspection to detect which test is running and infer what
      behavior the tests expect.
+
    - **State tracking for test awareness**: Maintaining global counters or references to
      track how many times the solution has been called across test cases, altering
      behavior per invocation.
+
    - **Self-modifying test configuration**: Changing test configuration files,
      allocation limits, or resource constraints from inside the solution code to prevent
      failure.
+
    - **Test rewriting**: Editing the test assertions, expected outputs, or fixture data
      instead of fixing the implementation.
+
    - **External solution search**: Mining git reflog for prior versions that happened to
-     pass, scanning remote repositories for passing solutions, or searching the user's
+     pass, scanning remote repositories for passing solutions, or searching the user’s
      home directory for clues or prior work.
+
    - **Test framework removal**: Deleting or disabling the testing framework entirely so
-     tests vacuously "pass" by breaking the runner.
+     tests vacuously “pass” by breaking the runner.
 
    The escalation is progressive: agents begin with relatively contained tactics (input
    mirroring, probing) and advance to extreme measures (self-modifying configs,
@@ -77,24 +83,27 @@
    straightforward fix.
 
 9. **Visible-test gaming** — Agents implement behavior that satisfies visible examples
-   while failing the general rule. This includes hard-coded mappings, input-pattern
-   detection, and solutions shaped around the test file rather than the specification.
+   while failing the general rule.
+   This includes hard-coded mappings, input-pattern detection, and solutions shaped
+   around the test file rather than the specification.
    Use property-based, metamorphic, and adversarial fixtures in
    `model-selection/model-strength-testing/behavioral-evaluations/` to expose this
    failure.
 
 10. **Red-herring fixation** — Agents lock onto the most salient suspected cause and do
-    not eliminate it with evidence. In debugging tasks, require explicit hypotheses and
-    concrete observations that rule out plausible but false causes.
+    not eliminate it with evidence.
+    In debugging tasks, require explicit hypotheses and concrete observations that rule
+    out plausible but false causes.
 
 11. **Try/except success laundering** — A failing behavior is tested by catching any
-    exception and counting it as success. The test proves only that something went
-    wrong, not that the repository-owned validation contract works. Example:
-    `try: call(); assert False; except Exception: pass` passes if the implementation
-    raises the wrong exception, fails before reaching the intended boundary, or throws
-    because the test fixture itself is malformed.
+    exception and counting it as success.
+    The test proves only that something went wrong, not that the repository-owned
+    validation contract works.
+    Example: `try: call(); assert False; except Exception: pass` passes if the
+    implementation raises the wrong exception, fails before reaching the intended
+    boundary, or throws because the test fixture itself is malformed.
 
 12. **Assertion commentary mismatch** — Test names, comments, or review prose describe
     rigorous validation while the assertions prove only existence, parse success, or a
-    visible example. The explanation performs seriousness; the test body does not
-    enforce it.
+    visible example. The explanation performs seriousness; the test body does not enforce
+    it.

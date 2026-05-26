@@ -9,10 +9,15 @@ Batch process multiple repositories (local or remote) using the repomix CLI tool
 ### Features
 
 - Process multiple repositories in one command
+
 - Support local and remote repositories
+
 - Configurable output formats (XML, Markdown, JSON, Plain)
+
 - Environment variable loading from multiple .env file locations
+
 - Comprehensive error handling
+
 - Progress reporting
 
 ### Installation
@@ -85,9 +90,13 @@ Create `repos.json` with repository configurations:
 ### Environment Variables
 
 Loads .env files in order of precedence:
+
 1. Process environment (highest priority)
+
 2. `./repomix/.env` (skill-specific)
+
 3. `./skills/.env` (skills directory)
+
 4. `./.claude/.env` (lowest priority)
 
 ### Command Line Options
@@ -155,6 +164,7 @@ Current coverage: 99%
 ### Exit Codes
 
 - `0` - All repositories processed successfully
+
 - `1` - One or more repositories failed or error occurred
 
 ### Troubleshooting
@@ -170,10 +180,15 @@ chmod +x repomix_batch.py
 ```
 
 **Timeout errors:**
+
 - Default timeout: 5 minutes per repository
+
 - Reduce scope with `--include` patterns
+
 - Exclude large directories with `--ignore`
 
 **No repositories specified:**
+
 - Provide repository paths as arguments
+
 - Or use `-f` flag with JSON config file

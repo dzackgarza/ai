@@ -3,7 +3,9 @@
 Quick reference for mathlib style conventions when writing Lean 4 proofs.
 
 **Official documentation:**
+
 - [Library Style Guidelines](https://leanprover-community.github.io/contribute/style.html)
+
 - [Naming Conventions](https://leanprover-community.github.io/contribute/naming.html)
 
 ## Essential Rules
@@ -26,11 +28,17 @@ import Mathlib.Bar
 ```
 
 **Key points:**
+
 - Goes at the very top (first line)
+
 - No blank line between copyright and imports
+
 - Authors line has no period at the end
+
 - Use `Authors:` even for single author
+
 - Imports follow immediately after copyright (no blank line)
+
 - Blank line between imports and module docstring
 
 ### 2. Module Docstrings (REQUIRED)
@@ -61,8 +69,11 @@ Brief description of what this file does.
 ### 3. Naming Conventions
 
 **Case conventions:**
+
 - `snake_case`: Theorems, lemmas, proofs (anything returning `Prop`)
+
 - `UpperCamelCase`: Types, structures, classes, inductive types
+
 - `lowerCamelCase`: Functions returning non-Prop types, definitions
 
 **When UpperCamelCase appears in snake_case names, use lowerCamelCase:**
@@ -76,11 +87,15 @@ def IIDProjectiveFamily    -- Don't use uppercase in function names
 ```
 
 **Prop-valued classes:**
+
 - If the class is a noun: `IsProbabilityMeasure`, `IsNormal`
-- If it's an adjective: `Normal` (no Is prefix needed)
+
+- If it’s an adjective: `Normal` (no Is prefix needed)
 
 **Inequality naming:**
+
 - Use `le`/`lt` (not `ge`/`gt`) for first occurrence of ≤/<
+
 - Use `ge`/`gt` to indicate arguments are swapped
 
 ### 4. Line Length
@@ -195,20 +210,29 @@ calc expression
 ```
 
 **Key points:**
+
 - Align relation symbols (=, ≤, <)
+
 - Justify each step
+
 - Can use `by` for rewrites or direct proof terms
 
 ### 8. Implicit Parameters
 
 **Use `{param : Type}` when:**
+
 - Type is inferrable from other parameters
+
 - Parameter appears in types but not needed at call site
 
 **Use `(param : Type)` when:**
+
 - Primary data arguments
+
 - Parameter used in function body, not in types
+
 - Named hypotheses/proofs
+
 - Parameters in return types
 
 **Example:**
@@ -224,13 +248,14 @@ def baz (n : ℕ) (F : Ω[α] → ℝ) : Ω[α] → ℝ :=
   fun ω => F ((shift^[n]) ω)
 ```
 
-See [domain-patterns.md](domain-patterns.md) for detailed implicit parameter conversion patterns.
+See [domain-patterns.md](domain-patterns.md) for detailed implicit parameter conversion
+patterns.
 
 ## Documentation Content Guidelines
 
 ### Avoid Development History References
 
-**Don't reference "earlier drafts", "previous versions", or development history:**
+**Don’t reference “earlier drafts”, “previous versions”, or development history:**
 
 ```lean
 -- ❌ BAD
@@ -243,11 +268,13 @@ See [domain-patterns.md](domain-patterns.md) for detailed implicit parameter con
 /-- Constructs via the Koopman representation. -/
 ```
 
-**Rationale:** Comments should be timeless documentation of current state. History belongs in git commits.
+**Rationale:** Comments should be timeless documentation of current state.
+History belongs in git commits.
 
 ### Avoid Discussing Lean `axiom` Declarations (After Proved)
 
-Once a theorem has been proved (removing the `axiom` keyword), don't highlight that it no longer uses axioms:
+Once a theorem has been proved (removing the `axiom` keyword), don’t highlight that it
+no longer uses axioms:
 
 ```lean
 -- ❌ BAD (after development complete)
@@ -264,7 +291,8 @@ Once a theorem has been proved (removing the `axiom` keyword), don't highlight t
 axiom conditionallyIID_of_exchangeable : ...
 ```
 
-**Note:** Discussion of *mathematical* axioms (Choice, etc.) is perfectly acceptable when mathematically relevant.
+**Note:** Discussion of *mathematical* axioms (Choice, etc.)
+is perfectly acceptable when mathematically relevant.
 
 ## Code Quality Checks
 
@@ -304,20 +332,31 @@ grep -n "\\lambda" **/*.lean  # Should use fun
 ```
 
 Should show only standard mathlib axioms:
+
 - `Classical.choice`
+
 - `propext`
+
 - `Quot.sound`
 
 ## Quick Checklist for New Files
 
 - [ ] Copyright header at top
+
 - [ ] Imports immediately after copyright (no blank line)
+
 - [ ] Module docstring with `/-!` delimiter
+
 - [ ] Naming: `snake_case` theorems, `UpperCamelCase` types, `lowerCamelCase` functions
+
 - [ ] Lines ≤ 100 chars
+
 - [ ] `by` at end of line (not alone)
+
 - [ ] Docstrings on main declarations
+
 - [ ] No development history references
+
 - [ ] No sorries in committed code (unless explicitly documented WIP)
 
 ## Common Formatting Examples
@@ -367,12 +406,17 @@ theorem main_theorem : ... := by
 ## Resources
 
 - **Official Style Guide:** https://leanprover-community.github.io/contribute/style.html
+
 - **Naming Conventions:** https://leanprover-community.github.io/contribute/naming.html
+
 - **How to Contribute:** https://leanprover-community.github.io/contribute/index.html
+
 - **Mathlib Zulip:** https://leanprover.zulipchat.com/ (#mathlib4 channel)
 
 ## Related References
 
 - [domain-patterns.md](domain-patterns.md) - Implicit parameter conversion patterns
+
 - [proof-golfing.md](proof-golfing.md) - Simplifying proofs after compilation
+
 - [compilation-errors.md](compilation-errors.md) - Debugging common errors

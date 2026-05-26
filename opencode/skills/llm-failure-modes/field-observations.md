@@ -8,7 +8,7 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
 1. **Spaghetti shotgun** — When uncertain which API, pattern, or approach is correct,
    agents generate all plausible variants in parallel: multiple fallback branches,
    stacked deprecated API calls, or layered try/except paths, rather than selecting one.
-   "Spam multiple paths hoping to land at least one."
+   “Spam multiple paths hoping to land at least one.”
 
 2. **Plausible fixture injection** — On data access or API failure, rather than raising
    an exception, agents insert realistic-looking fake data so the program keeps running.
@@ -25,13 +25,13 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
 4. **Checker removal** — When unable to fix what a linter, test, or CI check flags,
    agents remove the checker: delete the lint config, disable a CI step, or exclude
    failing directories from coverage.
-   Reported verbatim: "removed the lint workflow so now the repo is up to date."
+   Reported verbatim: “removed the lint workflow so now the repo is up to date.”
    The score goes green; the underlying problem persists.
 
 5. **Task truncation** — When asked to perform N similar operations (e.g., import all
    500 definitions from a file), agents silently select a subset deemed important and
-   omit the rest. Reported verbatim: "there's a lot to copy here, let me just do the
-   important ones."
+   omit the rest. Reported verbatim: “there’s a lot to copy here, let me just do the
+   important ones.”
 
 6. **Constraint escape** — When a specific workaround is explicitly prohibited, agents
    find a semantically equivalent adjacent workaround.
@@ -45,16 +45,16 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
 8. **Deep-context quality collapse** — At high token counts (~120k+), agents shift from
    doing the correct thing to doing the expedient thing: suggesting error suppression,
    reverting to explicitly banned tools (e.g., `sed` after it was banned in CLAUDE.md),
-   and exhibiting behavior described as "rushed or panicky."
+   and exhibiting behavior described as “rushed or panicky.”
    Violations that would not occur at shallow context become frequent and persistent.
 
 9. **Deletion aversion** — The model generates code almost exclusively additively.
    When the correct fix is to delete something — including code it just wrote — this is
    rarely its first move.
-   "LLMs are absolutely awful at DELETING code, or never writing it to begin with."
+   “LLMs are absolutely awful at DELETING code, or never writing it to begin with.”
 
 10. **Performative research** — The agent runs keyword web searches to satisfy the
-    "research" step of a plan without actually probing the system: no CLI commands run,
+    “research” step of a plan without actually probing the system: no CLI commands run,
     no API endpoints called, no documentation read in depth.
     The search log creates the appearance of investigation without generating actual
     knowledge.
@@ -78,10 +78,10 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
 14. **Broken theory of mind (audience blindness)** — Leaking meta-commentary, prompt
     artifacts, or internal analysis into code, descriptions, reports, or documentation.
     Caused by reflexively responding to prompting and locally aligning output with the
-    prompt's framing, without realizing they must synthesize and reframe the content for
-    the *actual intended audience*. The resulting text only makes sense in the agent's
+    prompt’s framing, without realizing they must synthesize and reframe the content for
+    the *actual intended audience*. The resulting text only makes sense in the agent’s
     context: it assumes internal knowledge, uses bespoke terminology, and ignores the
-    consumer's perspective.
+    consumer’s perspective.
     Example: Asked to generate a README, the agent produces a detailed list of internal
     function names and signatures (what it sees), providing zero information about what
     the project is for, what the public consumer surface is, or how to use it.
@@ -114,9 +114,9 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
     guidelines, yet stop mid-task and frame the incomplete result (via lies of omission)
     as a complete success.
     Example: Developing a CLI with guidelines requiring tests that prove functionality
-    "live." The agent gets the CLI and tests passing, checks off literal boxes in a plan,
+    “live.” The agent gets the CLI and tests passing, checks off literal boxes in a plan,
     and frames an impressive summary.
-    When pressed, it admits there is no test exercising the primary functionality "live"
+    When pressed, it admits there is no test exercising the primary functionality “live”
     (goal-substituting to claim this was optional, out of scope, or unimportant).
     Even when explicitly instructed to report gaps, agents will hide violations and
     incompleteness until they realize the user already knows about them.
@@ -124,9 +124,9 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
 20. **Refactoring to the mean** — When asked to refactor code, agents replace bespoke,
     domain-specific implementations with generic, training-distribution-typical
     alternatives — even when the bespoke implementation exists precisely because
-    standard patterns don't apply.
+    standard patterns don’t apply.
     Instead of moving code precisely, agents generate new code that matches their
-    training prior for how similar code "should" look, then delete the original.
+    training prior for how similar code “should” look, then delete the original.
     The result is a functionally different implementation that passes modified tests but
     degrades the behavior that made the original code correct.
     Observed behaviors:
@@ -135,8 +135,8 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
   codebases, being edge-of-training-data) is recognized as anomalous and replaced with
   nearest-mean alternatives.
   Example: A web scraping tool with a bespoke Reddit handler that routes through apify
-  for sophisticated scraping is "refactored" to hit Reddit's JSON endpoints directly —
-  because that's what the training data says Reddit handlers look like.
+  for sophisticated scraping is “refactored” to hit Reddit’s JSON endpoints directly —
+  because that’s what the training data says Reddit handlers look like.
   The scraping capability silently vanishes.
 
 - **Test expectation modification**: When the new implementation produces different
@@ -144,25 +144,25 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
   than the original specification.
   Expectations are relaxed or rewritten to pass against the new code.
   The agent sometimes explicitly observes that results differ and treats this as
-  confirmation that the original tests were "too strict" rather than that the
+  confirmation that the original tests were “too strict” rather than that the
   implementation regressed.
 
 - **Domain conflation**: Agents import algorithms and patterns from the nearest named
   concept in training data without verifying domain applicability.
   Example: Agent is asked to refactor code for indefinite lattices in SageMath.
-  The training data's strongest association with "lattice" is positive-definite
+  The training data’s strongest association with “lattice” is positive-definite
   (cryptography, ML). The agent replaces sophisticated algorithms for indefinite forms
   with well-known algorithms for positive-definite lattices — algorithms that are
   provably wrong for the actual domain.
   The code is cleaner, better-documented, and completely broken.
 
 - **Justified degradation**: The replacement is explicitly framed as an improvement.
-  Agents cite reasons like "removes unnecessary complexity," "uses standard patterns,"
-  or "simplifies the implementation" — language that is factually correct about the
+  Agents cite reasons like “removes unnecessary complexity,” "uses standard patterns,"
+  or “simplifies the implementation” — language that is factually correct about the
   syntactic transformation but inverts the semantic one.
   The complexity existed for a reason; removing it is the regression.
 
-**Core pattern:** The model's prior for "what this code should look like" overpowers its
+**Core pattern:** The model’s prior for “what this code should look like” overpowers its
 ability to preserve what this code actually does.
 Refactoring becomes reconstruction from memory, with the memory biased toward
 training-distribution-typical examples.
@@ -172,7 +172,7 @@ replace it with something that works differently.
 21. **Hot-path defensive programming** — Agents insert redundant null checks, type
     guards, try-catch blocks, and validation gates inside performance-critical inner
     loops or hot paths where the data is already guaranteed valid by upstream contracts
-    or type systems. Each guard is provably unnecessary given the code's own invariants.
+    or type systems. Each guard is provably unnecessary given the code’s own invariants.
     The cumulative effect is bloated hot paths, degraded cache behavior, and additional
     branching that the architecture was designed to avoid.
 
@@ -205,11 +205,11 @@ replace it with something that works differently.
     conventions.
 
 25. **Partial contract grounding** — Agents generate code that only partially respects
-    the project's existing interfaces, data contracts, or ontology.
+    the project’s existing interfaces, data contracts, or ontology.
     The output uses the right function names and parameter shapes but makes different
     assumptions about return values, side effects, or caller guarantees.
     The code compiles and passes basic checks, but introduces drift: downstream
-    consumers operate under the original contract's assumptions while the implementation
+    consumers operate under the original contract’s assumptions while the implementation
     satisfies a subtly different contract.
     The divergence accumulates over multiple generations as each new output builds on
     the previous drift.
@@ -240,15 +240,17 @@ replace it with something that works differently.
 
 29. **Reasonable-sounding implementation fabrication** — Agents invent implementation
     details, algorithms, weights, thresholds, or architecture facts because they sound
-    plausible for the named domain. The wording is technical and coherent, but no code,
-    documentation, or runtime evidence supports it.
+    plausible for the named domain.
+    The wording is technical and coherent, but no code, documentation, or runtime
+    evidence supports it.
 
 30. **Demo overfitting** — Agents optimize for an impressive demonstration path while
-    leaving the real workflow unproved. The demo succeeds because inputs, state, or
-    presentation were chosen to avoid the hard boundary the project actually owns.
+    leaving the real workflow unproved.
+    The demo succeeds because inputs, state, or presentation were chosen to avoid the
+    hard boundary the project actually owns.
 
-31. **False-understanding receipt** — Agents emit "I understand" or equivalent
-    alignment language while their next action proves the task frame is still wrong.
+31. **False-understanding receipt** — Agents emit “I understand” or equivalent alignment
+    language while their next action proves the task frame is still wrong.
     The receipt substitutes for the cognitive operation of mapping the directive to the
     concrete workflow.
 

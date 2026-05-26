@@ -10,9 +10,13 @@ description: Use when writing or editing prose intended to be consumed by AI age
 ## Contents
 
 - [Core Principles](#core-principles)
+
 - [Structure & Progressive Disclosure](#structure--progressive-disclosure)
+
 - [Content Patterns](#content-patterns)
+
 - [Anti-patterns](#anti-patterns)
+
 - [Testing & Iteration](#testing--iteration)
 
 * * *
@@ -22,12 +26,14 @@ description: Use when writing or editing prose intended to be consumed by AI age
 ### Assume competence
 
 The LLM is already very smart.
-Only add information the LLM doesn't have.
+Only add information the LLM doesn’t have.
 Challenge every piece:
 
-- "Does the LLM really need this explanation?"
-- "Can I assume the LLM knows this?"
-- "Does this justify its token cost?"
+- “Does the LLM really need this explanation?”
+
+- “Can I assume the LLM knows this?”
+
+- “Does this justify its token cost?”
 
 **Verbose example** (~150 tokens):
 
@@ -54,8 +60,8 @@ Otherwise, the skill should be purely prescriptive.
 Most skills operate at the object level (e.g., extracting a PDF, writing a test,
 compiling LaTeX). In these skills, do not explain the psychology of LLMs to an LLM.
 State the rule directly.
-Avoid meta-writing like "LLMs often struggle with..." or "This rule exists because
-models tend to...".
+Avoid meta-writing like “LLMs often struggle with …” or “This rule exists because models
+tend to...”.
 
 **Verbose/Meta example (Wrong for an object-level skill)**:
 
@@ -80,7 +86,7 @@ Skills that work for Claude Opus may need more detail for Claude Haiku.
 ### Distill Evaluations Into Task Rules
 
 Use observed agent failures to improve instructions, but translate them into the
-worker's normal task language.
+worker’s normal task language.
 
 Include evaluation-derived guidance when it becomes an object-level rule:
 
@@ -113,7 +119,9 @@ LLM reads additional files only when needed.
 **Pattern**:
 
 - Main file: high-level guide with references (< 500 lines)
+
 - Reference files: one per domain or topic
+
 - Keep references one level deep (avoid chains: A → B → C)
 
 **Example structure**:
@@ -146,9 +154,11 @@ For any file over 100 lines, include a TOC at the top so LLM sees full scope:
 
 Choose one term per concept and use it throughout:
 
-- Always "API endpoint" (not "URL", "route", "path")
-- Always "field" (not "box", "element", "control")
-- Always "extract" (not "pull", "get", "retrieve")
+- Always “API endpoint” (not “URL”, “route”, “path”)
+
+- Always “field” (not “box”, “element”, “control”)
+
+- Always “extract” (not “pull”, “get”, “retrieve”)
 
 * * *
 
@@ -159,6 +169,7 @@ Choose one term per concept and use it throughout:
 Enable discovery with concrete descriptions:
 
 1. **What it does**: The concrete capability
+
 2. **When to use it**: Specific triggers and contexts
 
 **Good example**:
@@ -260,7 +271,7 @@ For complex tasks, create verifiable intermediate formats:
 
 ### Avoid time-sensitive information
 
-Use "old patterns" sections for deprecated approaches:
+Use “old patterns” sections for deprecated approaches:
 
 ```markdown
 ## Current method
@@ -281,7 +292,7 @@ The v1 API used: `api.example.com/v1/messages`
 
 ### Too many options
 
-Don't present multiple approaches unless necessary.
+Don’t present multiple approaches unless necessary.
 
 **Bad**:
 
@@ -316,6 +327,7 @@ Use when working with Excel files, spreadsheets, or .xlsx files.`
 Always use forward slashes (Unix style):
 
 - ✓ Good: `scripts/helper.py`
+
 - ✗ Wrong: `scripts\helper.py`
 
 * * *
@@ -327,29 +339,41 @@ Always use forward slashes (Unix style):
 Before writing extensive documentation:
 
 1. Identify gaps with LLM working without docs
+
 2. Create 3+ representative test cases
+
 3. Establish baseline performance
+
 4. Convert observed failures into object-level rules or examples
+
 5. Test and iterate based on results
 
 Evaluation notes are for the skill author.
 A worker-facing skill should receive the distilled invariant, not the test transcript or
-the evaluator's diagnosis.
+the evaluator’s diagnosis.
 
 ### Separate Worker Concerns from Orchestrator Concerns
 
 When writing agent-facing guidance, distinguish clearly:
 
 **Worker-useful** (belongs in agent skill):
+
 - What to read, what to preserve, what to annotate
-- Artifact constraints: "Do not append status claims to the output"
-- Decision criteria: "Block if you cannot produce holistic summary"
+
+- Artifact constraints: “Do not append status claims to the output”
+
+- Decision criteria: “Block if you cannot produce holistic summary”
+
 - Output requirements specific to the task domain
 
 **Not worker-useful** (belongs in orchestrator notes):
-- Execution mechanics: "In `opencode run --format json`..."
-- Harness behavior: "every assistant text part is user-visible..."
+
+- Execution mechanics: “In `opencode run --format json`…”
+
+- Harness behavior: “every assistant text part is user-visible …”
+
 - How results are consumed by later stages
+
 - Wrapper trivia about how the tool runs
 
 Wrong: Writing in a vault-analysis skill:
@@ -368,21 +392,29 @@ contaminating worker guidance with orchestrator concerns.
 ### Develop iteratively with Claude
 
 1. Complete a task with Claude without docs
+
 2. Identify the reusable pattern
+
 3. Ask Claude to create docs capturing that pattern
+
 4. Review for conciseness (remove explanations Claude already knows)
+
 5. Test docs with a fresh instance on similar tasks
+
 6. Iterate based on observations
 
 ## Related Skills
 
 - → **creating-skills** — REQUIRED: Load alongside when writing or editing `SKILL.md`
   files. Covers what belongs in a skill, description writing guidelines.
+
 - → **looped-task-skill-author** — REQUIRED: Load alongside when the agent-facing prose
   supports repeated one-shot loops or long-horizon continuation.
   Covers progress logs, self-correcting state machines.
+
 - → **creating-subagents** — REQUIRED: Load alongside when writing subagent descriptions
   or agent definitions.
+
 - → **prompt-engineering** — Load alongside when writing broader prompt contracts and
   reference-skill sections.
   Covers concrete examples, variable placeholders, priming context.

@@ -47,7 +47,8 @@ Use `search_files` with `target: "files"` and the resolved vault path.
 Prefer this over `find` or `ls`.
 
 - To list all markdown notes, use `pattern: "*.md"` under the vault path.
-- To list a subfolder, search under that subfolder's absolute path.
+
+- To list a subfolder, search under that subfolder’s absolute path.
 
 ## Search
 
@@ -55,6 +56,7 @@ Use `search_files` for both filename and content searches.
 Prefer this over `grep`, `find`, or `ls`.
 
 - For filenames, use `search_files` with `target: "files"` and a filename `pattern`.
+
 - For note contents, use `search_files` with `target: "content"`, the content regex as
   `pattern`, and `file_glob: "*.md"` when you want to restrict matches to markdown
   notes.
@@ -73,8 +75,10 @@ footnotes -- see `references/obsidian-markdown.md`.
 Prefer a native file-tool workflow when it is not awkward:
 
 - Read the target note with `read_file`.
+
 - Use `patch` for an anchored append when there is stable context, such as adding a
   section after an existing heading or appending before a known trailing block.
+
 - Use `write_file` when rewriting the whole note is clearer than constructing a fragile
   patch.
 

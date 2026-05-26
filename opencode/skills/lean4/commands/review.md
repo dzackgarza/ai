@@ -3,7 +3,6 @@ name: review
 description: Read-only code review of Lean proofs
 user_invocable: true
 ---
-
 # Lean4 Review
 
 Read-only review of Lean proofs for quality, style, and optimization opportunities.
@@ -23,7 +22,7 @@ Read-only review of Lean proofs for quality, style, and optimization opportuniti
 ## Inputs
 
 | Arg | Required | Description |
-|-----|----------|-------------|
+| --- | --- | --- |
 | target | No | File or directory to review |
 | --scope | No | `sorry`, `deps`, `file`, `changed`, or `project` |
 | --line | No | Line number for single-sorry scope |
@@ -35,22 +34,24 @@ Read-only review of Lean proofs for quality, style, and optimization opportuniti
 
 ## Scope Behavior
 
-**Scope levels:**
-| Scope | Description |
-|-------|-------------|
-| `sorry` | Single sorry at --line (requires target file + --line) |
-| `deps` | Sorry + same-file helpers and directly referenced lemmas (requires target file + --line) |
-| `file` | All sorries in target file |
-| `changed` | Files modified since last commit (git diff) |
-| `project` | Entire project (requires confirmation) |
+**Scope levels:** | Scope | Description | |-------|-------------| | `sorry` | Single
+sorry at --line (requires target file + --line) | | `deps` | Sorry + same-file helpers
+and directly referenced lemmas (requires target file + --line) | | `file` | All sorries
+in target file | | `changed` | Files modified since last commit (git diff) | | `project`
+| Entire project (requires confirmation) |
 
 **Defaults:**
+
 - No args → `--scope=changed`
+
 - Target file provided → `--scope=file`
+
 - Target + `--line` → `--scope=sorry`
+
 - Triggered by prove/autoprove → matches current focus (`sorry` or `file`)
 
-**Note:** Scope filtering is implemented by the reviewing agent, not the underlying scripts. The agent reads script output and filters results to match the requested scope.
+**Note:** Scope filtering is implemented by the reviewing agent, not the underlying
+scripts. The agent reads script output and filters results to match the requested scope.
 
 **Project-wide confirmation:**
 ```
@@ -67,15 +68,24 @@ Proceed? (yes / no)
 ## Review Modes
 
 **Batch mode (default):**
-- Purpose: "What changed in this batch" + basic hygiene
+
+- Purpose: “What changed in this batch” + basic hygiene
+
 - Output: Full review report with all sections
+
 - Use: Regular cadence reviews, manual quality checks
 
 **Stuck mode:**
-- Trigger: prove/autoprove invokes stuck mode per its detection triggers. Can also be invoked manually.
-- Purpose: "What's blocking progress on current focus"
+
+- Trigger: prove/autoprove invokes stuck mode per its detection triggers.
+  Can also be invoked manually.
+
+- Purpose: “What’s blocking progress on current focus”
+
 - Output: Top 3 blockers with actionable next steps
+
 - Use: Triggered by prove/autoprove when no progress detected
+
 - Lightweight: Skips full golf analysis and complexity metrics; focuses on blockers only
 
 **Stuck mode output format:**
@@ -93,36 +103,62 @@ Proceed? (yes / no)
 **next_action:** continue
 ```
 
-**next_action classification (stuck mode):** `continue` (retryable), `deep` (needs escalation), `repair` (compiler blocker), `redraft` (statement-shape blocker), `golf` (sorry-free), `stop` (no path). Informational unless autoprove outer loop is active.
+**next_action classification (stuck mode):** `continue` (retryable), `deep` (needs
+escalation), `repair` (compiler blocker), `redraft` (statement-shape blocker), `golf`
+(sorry-free), `stop` (no path).
+Informational unless autoprove outer loop is active.
 
 **Falsification flag:** Include when analysis suggests statement may be false:
+
 - Decidable goal that failed `decide` or `native_decide`
+
 - Repeated proof failures with no viable approach
+
 - prove/autoprove passed falsification signal from earlier preflight
 
 Example: `**Flag:** Statement may be false (decidable goal failed decide)`
 
 **Blocker priority (stuck mode):**
+
 1. Build errors/diagnostics in focus
+
 2. Sorries on critical path (target line or its dependencies)
+
 3. Custom axioms introduced in focus
+
 4. Long/fragile proofs (performance risk)
+
 5. Falsification signals (decidable goal that failed `decide`, repeated proof failures)
 
-For strategy-level proof simplification (mathlib leverage, helper extraction, congr-lemma patterns), run `/lean4:refactor` or `/lean4:refactor --dry-run`.
+For strategy-level proof simplification (mathlib leverage, helper extraction,
+congr-lemma patterns), run `/lean4:refactor` or `/lean4:refactor --dry-run`.
 
 ## Actions
 
-The agent selects files based on scope, then runs these analyses (per file or directory):
+The agent selects files based on scope, then runs these analyses (per file or
+directory):
 
-1. **Build Status** - `lake build` (project-wide); for scoped review (`--scope=file`), use `lean_diagnostic_messages(file)` + `lake env lean <path/to/File.lean>` (run from project root) first
-2. **Sorry Audit** - `${LEAN4_PYTHON_BIN:-python3} "$LEAN4_SCRIPTS/sorry_analyzer.py" <target> --format=json --report-only`
-3. **Axiom Check** - `bash "$LEAN4_SCRIPTS/check_axioms_inline.sh" <target> --report-only`
-4. **Style Review** - Check mathlib conventions (naming, structure, tactics, 100-char line width). Flag lines wrapped under 100 chars that fit on one line (common: `mkAppM` calls, short struct literals, single-expression tactic lines).
-5. **Golfing Opportunities** - `${LEAN4_PYTHON_BIN:-python3} "$LEAN4_SCRIPTS/find_golfable.py" <target> --filter-false-positives`
+1. **Build Status** - `lake build` (project-wide); for scoped review (`--scope=file`),
+   use `lean_diagnostic_messages(file)` + `lake env lean <path/to/File.lean>` (run from
+   project root) first
+
+2. **Sorry Audit** -
+   `${LEAN4_PYTHON_BIN:-python3} "$LEAN4_SCRIPTS/sorry_analyzer.py" <target> --format=json --report-only`
+
+3. **Axiom Check** -
+   `bash "$LEAN4_SCRIPTS/check_axioms_inline.sh" <target> --report-only`
+
+4. **Style Review** - Check mathlib conventions (naming, structure, tactics, 100-char
+   line width). Flag lines wrapped under 100 chars that fit on one line (common: `mkAppM`
+   calls, short struct literals, single-expression tactic lines).
+
+5. **Golfing Opportunities** -
+   `${LEAN4_PYTHON_BIN:-python3} "$LEAN4_SCRIPTS/find_golfable.py" <target> --filter-false-positives`
+
 6. **Complexity Metrics** - Proof sizes, longest proofs, tactic patterns
 
-**Stuck mode:** Steps 5–6 are skipped; focus is on blockers (steps 1–4) for quick triage.
+**Stuck mode:** Steps 5–6 are skipped; focus is on blockers (steps 1–4) for quick
+triage.
 
 ## Output
 
@@ -153,9 +189,11 @@ The agent selects files based on scope, then runs these analyses (per file or di
 
 ## External Hooks
 
-Custom hooks receive structured JSON on stdin with file information, sorries, axioms, and build status. They return JSON with a `suggestions` array.
+Custom hooks receive structured JSON on stdin with file information, sorries, axioms,
+and build status. They return JSON with a `suggestions` array.
 
-See [review-hook-schema.md](../skills/lean4/references/review-hook-schema.md) for full input/output schemas, examples, and performance tips for rate-limited APIs.
+See [review-hook-schema.md](../skills/lean4/references/review-hook-schema.md) for full
+input/output schemas, examples, and performance tips for rate-limited APIs.
 
 ## External Review Handoff
 
@@ -199,16 +237,25 @@ Would you like me to create an action plan from the review findings?
 - [no] — End review, return to conversation
 ```
 
-If "yes":
+If “yes”:
+
 1. Enter plan mode
+
 2. Create plan with one task per high-priority suggestion
+
 3. Get user approval before execution
+
 4. Route to the appropriate command (review itself remains read-only):
+
    - Missing proofs / build blockers → `/lean4:prove`
+
    - Strategy simplification opportunities → `/lean4:refactor`
+
    - Tactic-level brevity cleanup → `/lean4:golf`
 
-**Note:** When `--mode=stuck` is triggered by prove/autoprove, skip this prompt—the proving command handles the follow-up with its own "Apply this plan? [yes/no]" prompt.
+**Note:** When `--mode=stuck` is triggered by prove/autoprove, skip this prompt—the
+proving command handles the follow-up with its own “Apply this plan?
+[yes/no]” prompt.
 
 ## JSON Output Schema
 
@@ -240,19 +287,27 @@ When using `--json`, output follows this structure:
 }
 ```
 
-**Stuck mode only:** The `summary` object includes `"next_action": "continue"` (or other value) when `--mode=stuck`. Absent in batch mode.
+**Stuck mode only:** The `summary` object includes `"next_action": "continue"` (or other
+value) when `--mode=stuck`. Absent in batch mode.
 
 ## Codex Integration
 
-**Note:** Codex CLI's `/review` command is interactive-only. There's no `codex review <sha>` CLI command for automation. Two approaches are available:
+**Note:** Codex CLI’s `/review` command is interactive-only.
+There’s no `codex review <sha>` CLI command for automation.
+Two approaches are available:
 
 ### Option A: Interactive Handoff (Recommended)
 
 1. Run `codex` in the project directory
+
 2. Type `/review` and select:
-   - "Review uncommitted changes" — for working tree
-   - "Review a commit" — select SHA from list
-   - "Review against a base branch" — for PR-style diff
+
+   - “Review uncommitted changes” — for working tree
+
+   - “Review a commit” — select SHA from list
+
+   - “Review against a base branch” — for PR-style diff
+
 3. Copy suggestions back to this session
 
 **Tip:** Use `/diff` after `/review` to see exact file changes.
@@ -296,27 +351,44 @@ $(cat Core.lean)
 }
 ```
 
-See [Codex SDK Cookbook](https://cookbook.openai.com/examples/codex/build_code_review_with_codex_sdk) for CI integration patterns.
+See
+[Codex SDK Cookbook](https://cookbook.openai.com/examples/codex/build_code_review_with_codex_sdk)
+for CI integration patterns.
 
-> **Future autonomous external review:** External review is currently manual-handoff only. Future versions may support autonomous external review via non-interactive CLI execution (e.g., `codex exec`) behind an explicit opt-in flag (`--external-autonomous`). Until then, unattended autoprove runs default to internal review.
->
+> **Future autonomous external review:** External review is currently manual-handoff
+> only. Future versions may support autonomous external review via non-interactive CLI
+> execution (e.g., `codex exec`) behind an explicit opt-in flag
+> (`--external-autonomous`). Until then, unattended autoprove runs default to internal
+> review.
+> 
 > Requirements for autonomous external review:
+>
 > 1. Stable JSON input/output contract
+>
 > 2. Timeout + retry + cost budgets
+>
 > 3. Safe fallback to internal review on external failure
+>
 > 4. Explicit opt-in flag, not default behavior
 
 ## Safety
 
 - Read-only (does not modify files permanently)
+
 - Axiom check temporarily appends `#print axioms`, then restores
+
 - Does not create commits
+
 - Does not apply fixes
 
 ## See Also
 
 - `/lean4:prove` - Guided cycle-by-cycle proving
+
 - `/lean4:autoprove` - Autonomous multi-cycle proving
+
 - `/lean4:golf` - Apply golfing optimizations
+
 - [mathlib-style.md](../skills/lean4/references/mathlib-style.md)
+
 - [Examples](../skills/lean4/references/command-examples.md#review)

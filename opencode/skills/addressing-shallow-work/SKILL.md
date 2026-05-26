@@ -13,13 +13,15 @@ More structure ≠ better work.
 The relationship is often inverted:
 
 - **More checklists** = more opportunities to game via compliance
+
 - **More inventories** = more boxes to check without understanding
+
 - **More procedural gates** = more ways to produce solution-shaped filler
 
 ### Why This Happens
 
-Adding requirements like "every X must have a Y" or "require inventory where each row
-has..." creates **measurable targets**. Measurable targets create optimization surfaces
+Adding requirements like “every X must have a Y” or “require inventory where each row
+has …” creates **measurable targets**. Measurable targets create optimization surfaces
 that bypass the actual cognitive work.
 The agent will produce rows with plausible-looking entries — optimizing for the
 measurable target (easy) — rather than genuine analysis (hard).
@@ -27,8 +29,8 @@ The structure provides a template to fill, and filling templates is exactly what
 are best at and most likely to default to.
 
 This was observed directly: a model responded to shallow mathematical analysis by
-proposing "require semantic inventory where every mathematical unit has a row, every row
-has target research, and every row has incorporation instructions."
+proposing “require semantic inventory where every mathematical unit has a row, every row
+has target research, and every row has incorporation instructions.”
 This would have given the next agent a spreadsheet to populate mechanically — the exact
 opposite of forcing the holistic mathematical reading that was missing.
 
@@ -36,28 +38,28 @@ opposite of forcing the holistic mathematical reading that was missing.
 
 The fix that eventually worked was simpler and sharper:
 
-> "Read the whole source until you can explain what mathematical understanding changed.
+> “Read the whole source until you can explain what mathematical understanding changed.
 > Then annotate only from that synthesized understanding.
 > If the agent cannot produce the holistic synthesis, it should block — not compensate
-> with inventories, hashes, or route comments."
+> with inventories, hashes, or route comments.”
 
 The annotations are an *expression* of the analysis, not the analysis itself.
-If the agent can't produce the synthesis, no amount of structural scaffolding will
+If the agent can’t produce the synthesis, no amount of structural scaffolding will
 create it.
 
 ## Synthesis Gate
 
 Before proposing any fix for shallow work, produce this statement:
 
-**"The shallow work skipped _____ (a cognitive operation), and the fix must require
-_____ as output that cannot be produced without doing that operation."**
+**“The shallow work skipped _____ (a cognitive operation), and the fix must require
+_____ as output that cannot be produced without doing that operation.”**
 
 If your proposed fix is structural (add rows, add gates, add inventories), it will be
 gamed the same way the original work was gamed.
 A fix for shallow work must require the agent to produce understanding — not fill a
 different template.
 
-If your fix contains "require", "inventory", "every X has Y", or "verification gates" —
+If your fix contains “require”, “inventory”, “every X has Y”, or “verification gates” —
 you are creating new boxes.
 Start over.
 
@@ -66,13 +68,13 @@ Start over.
 Any skill that requires intelligent analysis (reviewing work, handling corrections,
 preparing responses, assessing task progress) cannot use checklists or numbered steps to
 force that analysis.
-Forcing questions with "A: [answer explicitly]" slots are boxes.
+Forcing questions with “A: [answer explicitly]” slots are boxes.
 Adding them increases checked boxes, not intelligence.
 
 All behavioral skills in this system use **synthesis gates** instead: a single statement
 the model must produce that demonstrates understanding.
 A synthesis gate cannot be filled mechanically — either you can produce the statement or
-you can't. There is no template.
+you can’t. There is no template.
 
 This skill previously had Q1-Q4 forcing questions.
 They were removed because they could be filled with plausible content that looked like
@@ -86,8 +88,8 @@ compliance paths.
 If you find yourself writing structural requirements after shallow work was detected,
 STOP. You are likely making the problem worse.
 
-Ask: "Does this requirement force synthesis that cannot be faked, or does it give the
-next agent a template to fill?"
+Ask: “Does this requirement force synthesis that cannot be faked, or does it give the
+next agent a template to fill?”
 
 ## Recognizing Structurally Wrong Code
 
@@ -109,13 +111,13 @@ raw HTML:
 
 The third pattern matches **every page served by a modern webapp** — pricing tier
 labels, inline scripts with `$` variable names, JSON blobs, bundle hashes, transaction
-history. It's structurally guaranteed to produce a value; it's also structurally
+history. It’s structurally guaranteed to produce a value; it’s also structurally
 guaranteed that the value has no relationship to the intended data.
 
-The idiocy is not "regex is the wrong tool for HTML." The idiocy is **flattening a
+The idiocy is not “regex is the wrong tool for HTML.” The idiocy is **flattening a
 semantic tree into an unstructured byte stream before searching it** — destroying the
 abstraction that exists precisely to make the data machine-findable.
-The correct approach was obvious from the page's structure:
+The correct approach was obvious from the page’s structure:
 `document.querySelector('[data-slot="zen-balance"]').textContent` or
 `soup.find(attrs={"data-slot": "zen-balance"}).get_text()`. The DOM already identified
 the target element.
@@ -126,16 +128,16 @@ A corollary: the third fallback pattern makes the first two pure decoration.
 The script always returns some random `$` amount from the page.
 No amount of testing against specific pages, adding more regex patterns, or stripping
 HTML comments can fix this — the approach is wrong at the abstraction level.
-Capabilities-limited agents who cannot introspect their own strategies tend to see "code
-that does something" and accept it as "code that does the right thing."
+Capabilities-limited agents who cannot introspect their own strategies tend to see “code
+that does something” and accept it as “code that does the right thing.”
 Structurally wrong code requires *no empirical verification* to disqualify.
 
 ### Synthesis Gate
 
 Before evaluating whether code works, ask:
 
-**"Is this approach structurally capable of producing a correct result, regardless of
-the specific inputs?"**
+**“Is this approach structurally capable of producing a correct result, regardless of
+the specific inputs?”**
 
 If the answer is no (as with regex-on-HTML when semantic selectors exist), stop.
 No testing, no data inspection, no further investigation is needed.
@@ -147,11 +149,14 @@ Signs that an approach destroys the abstraction before operating:
 
 - **Serialization before search**: Converting a tree to text, a typed object to JSON, or
   structured data to bytes before searching or matching
+
 - **Fallback-to-anything**: A final fallback pattern that matches universally (any `$`,
   any number, any string) — this guarantees the first specific patterns will never be
   the ones that fire
+
 - **Literal-text-in-markup**: Assuming English sentences appear verbatim in HTML or JSON
   where tags, attributes, and encoding interleave with the visible text
+
 - **Abstraction-fighting**: Stripping parts of the format (HTML comments, escaping) to
   make the flat-text search work, rather than using a parser that ignores those parts
   automatically
@@ -163,15 +168,18 @@ Signs that an approach destroys the abstraction before operating:
   A Jerry reviewer cannot recognize structurally wrong code because it matches format
   expectations (it runs, it produces output, it tokenizes effort).
   Also catalogs Checklist Theater and Paraphrase-as-Review patterns.
+
 - **llm-failure-modes** → Load alongside when investigating why an agent cannot
   recognize that an approach is structurally wrong.
   The inability to recognize structural wrongness without empirical verification is an
-  epistemic failure mode distinct from "didn't test enough."
+  epistemic failure mode distinct from “didn’t test enough.”
   Also catalogs compliance-shaped output and reward hacking.
+
 - **reviewing-subagent-work** → Load alongside when conducting a Synthesis Gate review.
-  The Synthesis Gate extends this skill's structural-scrutiny approach to subagent
+  The Synthesis Gate extends this skill’s structural-scrutiny approach to subagent
   output: before inspecting specific implementations, check whether the approach
   survives structural scrutiny.
+
 - **prompt-engineering** → Load alongside when writing instructions that must prevent
   shallow work proactively.
   Constraint-based instruction forces thinking rather than pattern completion.

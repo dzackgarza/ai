@@ -1,37 +1,49 @@
 # Water & Ocean Rendering Skill
 
 ## Use Cases
+
 - Rendering water body surfaces such as oceans, lakes, and rivers
+
 - Water surface reflection/refraction, Fresnel effects
+
 - Underwater caustics lighting effects
+
 - Waves, foam, and water flow animation
 
 ## Core Principles
 
-Water rendering solves three problems: **water surface shape generation**, **light-water surface interaction**, and **water body color compositing**.
+Water rendering solves three problems: **water surface shape generation**, **light-water
+surface interaction**, and **water body color compositing**.
 
 ### Wave Generation: Exponential Sine Stacking + Derivative Domain Warping
 
-`wave(x) = exp(sin(x) - 1)` — sharp wave crests (`exp(0)=1`), broad flat troughs (`exp(-2)≈0.135`), similar to a trochoidal profile but at much lower computational cost than Gerstner waves.
+`wave(x) = exp(sin(x) - 1)` — sharp wave crests (`exp(0)=1`), broad flat troughs
+(`exp(-2)≈0.135`), similar to a trochoidal profile but at much lower computational cost
+than Gerstner waves.
 
 When stacking multiple waves, use **derivative domain warping (Drag)**:
 ```
 position += direction * derivative * weight * DRAG_MULT
 ```
-Small ripples cluster on the crests of large waves, simulating capillary waves riding on gravity waves.
+Small ripples cluster on the crests of large waves, simulating capillary waves riding on
+gravity waves.
 
 ### Lighting: Schlick Fresnel + Subsurface Scattering
 
 - **Schlick Fresnel**: `F = F0 + (1-F0) * (1-dot(N,V))^5`, water F0 ≈ 0.04
-- **SSS approximation**: thicker water layer at troughs → stronger blue-green scattering; thinner layer at crests → weaker scattering
+
+- **SSS approximation**: thicker water layer at troughs → stronger blue-green
+  scattering; thinner layer at crests → weaker scattering
 
 ### Water Surface Intersection: Bounded Height Field Marching
 
-The water surface is constrained within a `[0, -WATER_DEPTH]` bounding box, with adaptive step size: `step = ray_y - wave_height`.
+The water surface is constrained within a `[0, -WATER_DEPTH]` bounding box, with
+adaptive step size: `step = ray_y - wave_height`.
 
 ## Implementation Steps
 
 ### Step 1: Exponential Sine Wave Function
+
 ```glsl
 // Single wave: exp(sin(x)-1) produces sharp peaks and broad troughs, returns (value, negative derivative)
 vec2 wavedx(vec2 position, vec2 direction, float frequency, float timeshift) {
@@ -43,6 +55,7 @@ vec2 wavedx(vec2 position, vec2 direction, float frequency, float timeshift) {
 ```
 
 ### Step 2: Multi-Octave Wave Stacking with Domain Warping
+
 ```glsl
 #define DRAG_MULT 0.38  // Domain warp strength, 0=none, 0.5=strong clustering
 
@@ -70,6 +83,7 @@ float getwaves(vec2 position, int iterations) {
 ```
 
 ### Step 3: Bounded Bounding Box Ray Marching
+
 ```glsl
 #define WATER_DEPTH 1.0
 
@@ -92,6 +106,7 @@ float raymarchwater(vec3 camera, vec3 start, vec3 end, float depth) {
 ```
 
 ### Step 4: Normal Calculation and Distance Smoothing
+
 ```glsl
 #define ITERATIONS_RAYMARCH 12  // For marching (fewer = faster)
 #define ITERATIONS_NORMAL 36    // For normals (more = finer detail)
@@ -113,6 +128,7 @@ vec3 calcNormal(vec2 pos, float e, float depth) {
 ```
 
 ### Step 5: Fresnel Reflection and Subsurface Scattering
+
 ```glsl
 float fresnel = 0.04 + 0.96 * pow(1.0 - max(0.0, dot(-N, ray)), 5.0);
 
@@ -128,6 +144,7 @@ vec3 C = fresnel * reflection + scattering;
 ```
 
 ### Step 6: Atmosphere and Tone Mapping
+
 ```glsl
 vec3 extra_cheap_atmosphere(vec3 raydir, vec3 sundir) {
     float special_trick = 1.0 / (raydir.y * 1.0 + 0.1);
@@ -162,7 +179,8 @@ vec3 aces_tonemap(vec3 color) {
 
 ## Complete Code Template
 
-Can be pasted directly into ShaderToy to run. Distilled from `afl_ext`'s "Very fast procedural ocean".
+Can be pasted directly into ShaderToy to run.
+Distilled from `afl_ext`’s “Very fast procedural ocean”.
 
 ```glsl
 // Water & Ocean Rendering — ShaderToy Template
@@ -350,6 +368,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### Variant 1: 2D Underwater Caustic Texture
+
 ```glsl
 #define TAU 6.28318530718
 #define MAX_ITER 5
@@ -376,6 +395,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### Variant 2: FBM Bump-Mapped Lake Surface
+
 ```glsl
 float waterMap(vec2 pos) {
     mat2 m2 = mat2(0.60, -0.80, 0.80, 0.60);
@@ -399,6 +419,7 @@ vec3 refracted = refract(rd, normal, 1.0 / 1.333);
 ```
 
 ### Variant 3: Ridge Noise Coastal Waves
+
 ```glsl
 float sea(vec2 p) {
     float f = 1.0;
@@ -421,6 +442,7 @@ if (dh < 0.0 && dh > -0.02) {
 ```
 
 ### Variant 4: Flow Map Water Animation
+
 ```glsl
 vec3 FBM_DXY(vec2 p, vec2 flow, float persistence, float domainWarp) {
     vec3 f = vec3(0.0);
@@ -448,7 +470,8 @@ float weight = abs(t0 - 0.5) * 2.0;
 vec4 result = mix(sample0, sample1, weight);
 ```
 
-### Variant 5: Beer's Law Water Absorption
+### Variant 5: Beer’s Law Water Absorption
+
 ```glsl
 vec3 GetWaterExtinction(float dist) {
     float fOpticalDepth = dist * 6.0;
@@ -466,25 +489,43 @@ vec3 finalColor = mix(underwaterColor, reflectionColor, fresnel);
 ## Performance & Composition
 
 ### Performance Tips
-- **Dual iteration count strategy**: 12 iterations for marching, 36 for normals — halves render time with virtually no visual loss
-- **Distance-adaptive normal smoothing**: `N = mix(N, up, 0.8 * min(1.0, sqrt(dist*0.01)*1.1))`, eliminates distant flickering
-- **Bounding box clipping**: pre-compute upper/lower plane intersections, early-out for sky directions
+
+- **Dual iteration count strategy**: 12 iterations for marching, 36 for normals — halves
+  render time with virtually no visual loss
+
+- **Distance-adaptive normal smoothing**:
+  `N = mix(N, up, 0.8 * min(1.0, sqrt(dist*0.01)*1.1))`, eliminates distant flickering
+
+- **Bounding box clipping**: pre-compute upper/lower plane intersections, early-out for
+  sky directions
+
 - **Adaptive step size**: `pos += dir * (pos.y - height)`, 3-5x faster than fixed steps
+
 - **Filter-width-aware decay**: `dFdx/dFdy` driven normal LOD
+
 - **LOD conditional detail**: only compute high-frequency displacement at close range
 
 ### Composition Tips
-- **Volumetric clouds**: ray march clouds along reflection direction `R`, blend into reflection term
+
+- **Volumetric clouds**: ray march clouds along reflection direction `R`, blend into
+  reflection term
+
 - **Terrain coastline**: `dh = waterSDF - terrainSDF`, render foam when `dh ≈ 0`
-- **Caustics overlay**: project Variant 1 onto underwater terrain, `caustic * exp(-depth * absorption)` depth attenuation
+
+- **Caustics overlay**: project Variant 1 onto underwater terrain,
+  `caustic * exp(-depth * absorption)` depth attenuation
+
 - **Fog/atmosphere**: independent extinction + in-scatter, per-channel RGB decay:
   ```glsl
   vec3 fogExtinction = exp2(fogExtCoeffs * -distance);
   vec3 fogInscatter = fogColor * (1.0 - exp2(fogInCoeffs * -distance));
   finalColor = finalColor * fogExtinction + fogInscatter;
   ```
-- **Post-processing**: Bloom (Fibonacci spiral blur), ACES tone mapping, depth of field (DOF)
+
+- **Post-processing**: Bloom (Fibonacci spiral blur), ACES tone mapping, depth of field
+  (DOF)
 
 ## Further Reading
 
-For full step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/water-ocean.md)
+For full step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/water-ocean.md)

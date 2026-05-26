@@ -17,12 +17,16 @@ solve(f(f(x)) == x, f(f(f(x))) == x)
 solve(f(f(x)) == x, f(f(f(x))) == x, f(x) != x)
 ```
 
-Key takeaway from tutorial: congruence closure drives equalities through function applications.
+Key takeaway from tutorial: congruence closure drives equalities through function
+applications.
 
 ## Arithmetic Fragments Matter
 
-Tutorial distinguishes fragments and their solving styles (LRA, LIA, mixed, difference logics, NRA, NIA). Practical implication:
+Tutorial distinguishes fragments and their solving styles (LRA, LIA, mixed, difference
+logics, NRA, NIA). Practical implication:
+
 - model in the strongest supported simple fragment you can;
+
 - avoid accidentally introducing harder nonlinear structures.
 
 Example linear real arithmetic style:
@@ -39,10 +43,15 @@ solve([x >= 0,
 ## Arrays
 
 Core combinators:
+
 - `Select(a, i)` / `a[i]`
+
 - `Store(a, i, v)`
+
 - `K(domain, value)`
+
 - `Map(f, a)`
+
 - extensional reasoning (`Ext` in theory notes)
 
 ```python
@@ -97,7 +106,8 @@ prove(t != Tree.Node(t, 0, t))
 
 ## Sequences and Strings
 
-Z3 supports sequence/string operations (`PrefixOf`, `SuffixOf`, `Length`, `Concat`, `Unit`).
+Z3 supports sequence/string operations (`PrefixOf`, `SuffixOf`, `Length`, `Concat`,
+`Unit`).
 
 ```python
 from z3 import *
@@ -110,16 +120,22 @@ prove(Implies(And(PrefixOf(s, t),
 ```
 
 String backend parameter from tutorial:
+
 - `s.set("smt.string_solver", "seq")`
+
 - `s.set("smt.string_solver", "z3str3")`
 
 ## Special Relations
 
 Tutorial warns against expensive axiom expansions for partial/total/tree-like orders.
 Prefer built-in relation constructors when available:
+
 - `PartialOrder(A, idx)`
+
 - `TotalLinearOrder(A, idx)`
+
 - `TreeOrder(A, idx)`
+
 - `PiecewiseLinearOrder(A, idx)`
 
 This avoids large transitive-closure axiom blowups.
@@ -145,5 +161,9 @@ print(s.check())  # unsat
 ## Modeling Heuristics
 
 - Prefer built-ins over manual axiom systems when the tutorial provides one.
-- Keep fragment boundaries intentional (especially arithmetic/nonlinear and finite-domain choices).
-- When combining theories, keep terms purified/simple where possible to reduce integration overhead.
+
+- Keep fragment boundaries intentional (especially arithmetic/nonlinear and
+  finite-domain choices).
+
+- When combining theories, keep terms purified/simple where possible to reduce
+  integration overhead.

@@ -147,13 +147,18 @@ Inline footnote.^[This is inline.]
 ## Workflow: Creating an Obsidian Note
 
 1. **Add frontmatter** with properties (title, tags, aliases) at the top of the file.
+
 2. **Write content** using standard Markdown for structure, plus Obsidian-specific
    syntax above.
+
 3. **Link related notes** using wikilinks (`[[Note]]`) for internal vault connections,
    or standard Markdown links for external URLs.
+
 4. **Embed content** from other notes, images, or PDFs using the `![[embed]]` syntax.
+
 5. **Add callouts** for highlighted information using `> [!type]` syntax.
-6. **Verify** the note renders correctly in Obsidian's reading view.
+
+6. **Verify** the note renders correctly in Obsidian’s reading view.
 
 > When choosing between wikilinks and Markdown links: use `[[wikilinks]]` for notes
 > within the vault (Obsidian tracks renames automatically) and `[text](url)` for

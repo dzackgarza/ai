@@ -2,64 +2,77 @@
 name: share-insight
 description: Draft a shareable insight from your session as a GitHub issue
 ---
-
 # Share Insight
 
-Draft and submit a reusable insight (pattern, antipattern, or mixed) as a
-GitHub issue on `cameronfreer/lean4-skills`.
+Draft and submit a reusable insight (pattern, antipattern, or mixed) as a GitHub issue
+on `cameronfreer/lean4-skills`.
 
 ## Precondition
 
-Invoke this command only if the user explicitly ran it or explicitly agreed to
-draft a shareable insight. If invoked without prior opt-in, ask:
+Invoke this command only if the user explicitly ran it or explicitly agreed to draft a
+shareable insight. If invoked without prior opt-in, ask:
 
-> That seems reusable beyond this task. Want me to draft a shareable insight?
+> That seems reusable beyond this task.
+> Want me to draft a shareable insight?
 
 If the user explicitly ran `/lean4-contribute:share-insight`, treat that as opt-in.
-Do not proceed unless the user confirms. Do not mine git diff, infer insight
-candidates, or ask structured questions until consent is given.
+Do not proceed unless the user confirms.
+Do not mine git diff, infer insight candidates, or ask structured questions until
+consent is given.
 
 ## Discovering Candidates
 
 Once the user has opted in (see [Precondition](#precondition) above), look at:
 
 - Current conversation / session context
+
 - Current git diff (`git diff` and `git diff --cached`)
+
 - Recently touched `.lean` files
 
 From these, infer **1–5 candidate insights**. For each candidate, note:
 
-- A one-line title (keep titles generic — avoid project-specific names, paths, or identifiers)
-- Classification: **pattern** (what worked), **antipattern** (what failed), or
-  **mixed** (worked in some contexts, failed in others)
+- A one-line title (keep titles generic — avoid project-specific names, paths, or
+  identifiers)
 
-Present the candidates as a numbered list and ask the user to pick one (or
-describe a different insight). Proceed with the selected insight.
+- Classification: **pattern** (what worked), **antipattern** (what failed), or **mixed**
+  (worked in some contexts, failed in others)
+
+Present the candidates as a numbered list and ask the user to pick one (or describe a
+different insight). Proceed with the selected insight.
 
 ## Gathering Context
 
 For the chosen insight, collect or infer:
 
 1. **Kind** — pattern / antipattern / mixed
+
 2. **Title** — Concise, descriptive title
+
 3. **Context** — What were you working on when you discovered this?
+
 4. **Symptom / trigger** — What behavior or error led to the discovery?
+
 5. **What worked / what failed** — The core lesson
-6. **Why it matters** — Impact on proving, performance, readability, or
-   correctness
+
+6. **Why it matters** — Impact on proving, performance, readability, or correctness
+
 7. **Minimal example** — Smallest Lean snippet illustrating the insight (strip
    project-specific details)
+
 8. **When to use / when not to** — Applicability boundaries
+
 9. **Confidence** — High / medium / low — how sure are you this generalizes?
-10. **Privacy / redaction check** — Scan for filesystem paths, usernames, API
-    keys, or other sensitive data and redact them. Flag anything you redacted so
-    the user can verify.
+
+10. **Privacy / redaction check** — Scan for filesystem paths, usernames, API keys, or
+    other sensitive data and redact them.
+    Flag anything you redacted so the user can verify.
 
 ## Drafting the Issue
 
 Compose the issue using this template:
 
-```
+````
 Title: [Insight] <title>
 Labels: insight
 
@@ -81,15 +94,17 @@ Labels: insight
 ## Minimal Example
 ```lean
 <minimal Lean snippet>
-```
+````
 
 ## When to Use / When Not To
+
 <applicability boundaries>
 
 ## Confidence
+
 <high / medium / low>
 
----
+* * *
 *Drafted via [lean4-contribute](https://github.com/cameronfreer/lean4-skills)*
 ```
 
@@ -127,3 +142,4 @@ After confirmation, submit using the first available method:
 
 Report the result (issue URL, fallback URL, or email draft) and confirm
 completion.
+```

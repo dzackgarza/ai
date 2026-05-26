@@ -9,17 +9,17 @@ concluding your review:
 
 ## Synthesis Gate
 
-**"The subagent's work proves _____ about the task's correctness, based on this specific
-evidence: _____."**
+**“The subagent’s work proves _____ about the task’s correctness, based on this specific
+evidence: _____.”**
 
 If you cannot fill both blanks with concrete content (line numbers, specific values,
 external cross-checks), you have not reviewed the work — you have verified that activity
-occurred. File existence, hash matches, and the worker's own success claims are not
+occurred. File existence, hash matches, and the worker’s own success claims are not
 evidence of correctness.
 They are evidence that something was written.
 
 The user would not spend tokens on work they can do instantly.
-If your review could have been produced without reading the artifact's content, it is
+If your review could have been produced without reading the artifact’s content, it is
 not a review.
 
 ## Why Self-Reports Are Worse Than Noise
@@ -27,16 +27,19 @@ not a review.
 Worker self-reports are not merely unreliable — they are **structurally biased toward
 approval**:
 
-- "Files exist" proves only that something was written
-- "Hashes match" proves only that written files reference the inputs
-- "The worker says it checked X" proves only that the worker knows what a good report
+- “Files exist” proves only that something was written
+
+- “Hashes match” proves only that written files reference the inputs
+
+- “The worker says it checked X” proves only that the worker knows what a good report
   should say
+
 - None of this proves the work is correct, useful, or intelligent
 
 The worker knows what a successful report *looks like* and will produce that report
 regardless of actual work quality.
 In contexts where hallucination/confabulation is the failure mode being checked for, the
-worker's self-report is **the artifact under review, not evidence about the artifact**.
+worker’s self-report is **the artifact under review, not evidence about the artifact**.
 
 This is not just low-signal; it is structurally biased toward approving shallow work.
 Trusting it creates a circular validation loop: LLM validates LLM validates LLM.
@@ -44,27 +47,34 @@ Trusting it creates a circular validation loop: LLM validates LLM validates LLM.
 ## What Real Review Requires
 
 Before concluding, your review MUST contain:
+
 - Specific findings from actual content (line numbers, concrete values)
+
 - Quality assessment of the work itself (not just that it exists)
+
 - Problems found, or explicit statement of what you verified and how
 
-If your review could have been written without reading the artifact → you didn't review
+If your review could have been written without reading the artifact → you didn’t review
 it.
 
 ## Routing: Detecting Shallow Work
 
-After answering the forcing questions, assess whether the subagent's output shows these
+After answering the forcing questions, assess whether the subagent’s output shows these
 patterns:
 
 - Contains no specific findings (no line numbers, no concrete values, no external
   cross-checks)
+
 - Paraphrases the task description instead of showing results
+
 - Self-reports effort ("I analyzed carefully") without evidence of that analysis
+
 - Lists what *could* be checked without actually checking
+
 - **Structurally wrong at the abstraction level** — the approach destroys the
   abstraction before operating (e.g., regex-on-HTML where semantic DOM selectors exist).
   This can be recognized without data or execution; see `addressing-shallow-work` →
-  "Recognizing Structurally Wrong Code".
+  “Recognizing Structurally Wrong Code”.
 
 If the output shows these patterns → LOAD `addressing-shallow-work` skill before
 proposing any fixes.
@@ -77,6 +87,7 @@ Do not respond to shallow work by adding more structure — that makes it worse.
   Catalogs Checklist Theater, Paraphrase-as-Review, Consensus-as-Evidence, and other
   patterns where evaluators produce the appearance of oversight without epistemic
   independence.
+
 - **addressing-shallow-work** → LOAD alongside when you need to fix a process that
   produced shallow output.
   Provides structural-scrutiny patterns for detecting and correcting work that satisfies

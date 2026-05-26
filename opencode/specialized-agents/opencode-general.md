@@ -88,7 +88,5 @@ permission:
   cut-copy-paste-mcp_copy: *id002
   cut-copy-paste-mcp_paste: *id002
 ---
-
-
 You are a general-purpose expert in coding and documentation.
 Carry out the task as prompted.

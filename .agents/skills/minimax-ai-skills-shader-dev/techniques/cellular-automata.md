@@ -1,43 +1,55 @@
 # Cellular Automata & Reaction-Diffusion
 
 ## Use Cases
+
 - GPU grid evolution simulation (cellular automata, reaction-diffusion)
+
 - Organic texture generation: spots, stripes, mazes, coral, vein patterns
-- Conway's Game of Life and variants (custom B/S rule sets)
+
+- Conway’s Game of Life and variants (custom B/S rule sets)
+
 - Gray-Scott reaction-diffusion real-time visualization
+
 - Using simulation results to drive 3D surface displacement, lighting, or coloring
 
 ## Core Principles
 
 ### Cellular Automata (CA)
-Each cell on a discrete grid updates based on **its own state** and **neighbor states** according to fixed rules. Conway B3/S23 rules:
+
+Each cell on a discrete grid updates based on **its own state** and **neighbor states**
+according to fixed rules.
+Conway B3/S23 rules:
+
 - Dead cell with exactly 3 live neighbors → birth
+
 - Live cell with 2 or 3 live neighbors → survival
+
 - Otherwise → death
 
 Neighbor computation (Moore neighborhood, 8 neighbors): `k = Σ cell(px + offset)`
 
 ### Reaction-Diffusion (RD)
+
 Gray-Scott model — two substances u (activator) and v (inhibitor) diffuse and react:
 ```
 ∂u/∂t = Du·∇²u - u·v² + F·(1-u)
 ∂v/∂t = Dv·∇²v + u·v² - (F+k)·v
 ```
+
 - `Du, Dv`: diffusion coefficients (Du > Dv produces patterns)
+
 - `F`: feed rate, `k`: kill rate
+
 - `∇²`: Laplacian, discretized using a nine-point stencil
 
-Key parameters `(F, k)` determine the pattern:
-| F | k | Pattern |
-|---|---|---------|
-| 0.035 | 0.065 | spots |
-| 0.040 | 0.060 | stripes |
-| 0.025 | 0.055 | labyrinthine |
-| 0.050 | 0.065 | solitons |
+Key parameters `(F, k)` determine the pattern: | F | k | Pattern | |---|---|---------| |
+0.035 | 0.065 | spots | | 0.040 | 0.060 | stripes | | 0.025 | 0.055 | labyrinthine | |
+0.050 | 0.065 | solitons |
 
 ## Implementation Steps
 
 ### Step 1: Grid State Storage & Self-Feedback
+
 ```glsl
 // Buffer A: iChannel0 bound to Buffer A itself (self-feedback)
 vec4 prevState = texelFetch(iChannel0, ivec2(fragCoord), 0);
@@ -47,6 +59,7 @@ vec4 prevSmooth = texture(iChannel0, uv);
 ```
 
 ### Step 2: Initialization (Noise Seeding)
+
 ```glsl
 float hash1(float n) {
     return fract(sin(n) * 138.5453123);
@@ -68,6 +81,7 @@ if (iFrame < 2) {
 ```
 
 ### Step 3: Neighbor Sampling & Laplacian
+
 ```glsl
 // --- Method A: Discrete CA neighbor counting ---
 int cell(in ivec2 p) {
@@ -113,6 +127,7 @@ float blur3x3(vec2 uv) {
 ```
 
 ### Step 4: State Update Rules
+
 ```glsl
 // --- CA: Conway B3/S23 ---
 int e = cell(px);
@@ -147,6 +162,7 @@ newRD += dot(texture(iChannel0, uv + (noise.xy - 0.5) / iResolution.xy).xy, vec2
 ```
 
 ### Step 5: Visualization & Coloring
+
 ```glsl
 // Color mapping
 float c = 1.0 - texture(iChannel0, uv).y;
@@ -172,11 +188,14 @@ fragColor = vec4(sqrt(min(col, 1.0)), 1.0);
 
 ## Complete Code Template
 
-ShaderToy setup: Buffer A's iChannel0 = Buffer A (self-feedback, linear filtering). Image's iChannel0 = Buffer A.
+ShaderToy setup: Buffer A’s iChannel0 = Buffer A (self-feedback, linear filtering).
+Image’s iChannel0 = Buffer A.
 
 ### Standalone HTML JS Skeleton (Ping-Pong Render Pipeline)
 
-CA/RD requires framebuffer self-feedback. The following JS skeleton demonstrates the correct WebGL2 multi-pass ping-pong structure:
+CA/RD requires framebuffer self-feedback.
+The following JS skeleton demonstrates the correct WebGL2 multi-pass ping-pong
+structure:
 
 ```javascript
 <script>
@@ -291,6 +310,7 @@ requestAnimationFrame(render);
 ```
 
 ### Buffer A (Simulation Computation)
+
 ```glsl
 // Gray-Scott Reaction-Diffusion — Buffer A (Simulation)
 // iChannel0 = Buffer A (self-feedback, linear filtering)
@@ -365,6 +385,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### Image (Visualization Output)
+
 ```glsl
 // Gray-Scott Reaction-Diffusion — Image (Visualization)
 // iChannel0 = Buffer A (linear filtering)
@@ -409,7 +430,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ## Common Variants
 
-### Variant 1: Conway's Game of Life (Discrete CA)
+### Variant 1: Conway’s Game of Life (Discrete CA)
+
 ```glsl
 int cell(in ivec2 p) {
     ivec2 r = ivec2(textureSize(iChannel0, 0));
@@ -431,6 +453,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### Variant 2: Configurable Rule Set CA (B/S Bitmask)
+
 ```glsl
 #define BORN_SET  8        // birth bitmask, 8 = B3
 #define STAY_SET  12       // survival bitmask, 12 = S23
@@ -448,6 +471,7 @@ if (ev > 0.5) {
 ```
 
 ### Variant 3: Separable Gaussian Blur RD (Multi-Buffer)
+
 ```glsl
 // Buffer B: horizontal blur (reads Buffer A)
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -470,6 +494,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### Variant 4: Continuous Differential Operator CA (Vein/Fluid Style)
+
 ```glsl
 #define STEPS 40       // advection step count (10~60)
 #define ts    0.2      // advection rotation strength
@@ -496,6 +521,7 @@ for (int i = 0; i < STEPS; i++) {
 ```
 
 ### Variant 5: RD-Driven 3D Surface (Raymarched RD)
+
 ```glsl
 // Image pass: use RD texture for displacement in SDF
 vec2 map(in vec3 pos) {
@@ -513,19 +539,36 @@ vec2 map(in vec3 pos) {
 ## Performance & Composition
 
 ### Performance Tips
-- **texelFetch vs texture**: Use `texelFetch` for discrete CA (exact pixel reads), `texture` for continuous RD (bilinear interpolation)
-- **Separable blur replaces large kernels**: For large diffusion radii, use two-pass separable Gaussian (O(2N)) instead of NxN Laplacian (O(N²))
+
+- **texelFetch vs texture**: Use `texelFetch` for discrete CA (exact pixel reads),
+  `texture` for continuous RD (bilinear interpolation)
+
+- **Separable blur replaces large kernels**: For large diffusion radii, use two-pass
+  separable Gaussian (O(2N)) instead of NxN Laplacian (O(N²))
+
 - **Sub-iterations**: Multiple small DT steps within a single frame improves stability
+
 - **Reduced resolution**: Low-resolution buffer simulation + Image pass upsampling
+
 - **Avoid branching**: Use `step()/mix()/clamp()` instead of `if/else`
 
 ### Composition Directions
+
 - **RD + Raymarching**: RD as heightmap mapped onto 3D surface for displacement modeling
-- **CA/RD + Particle Systems**: Field used as velocity field or spawn probability field to drive particles
-- **RD + Bump Lighting**: Compute normals from RD values, combine with environment maps for metallic etching/ripple effects
-- **CA + Color Decay Trails**: After death, fade per-frame with different RGB decay rates producing colored trails
-- **RD + Domain Transforms**: Apply vortex/spiral transforms before sampling, producing spiral swirl patterns
+
+- **CA/RD + Particle Systems**: Field used as velocity field or spawn probability field
+  to drive particles
+
+- **RD + Bump Lighting**: Compute normals from RD values, combine with environment maps
+  for metallic etching/ripple effects
+
+- **CA + Color Decay Trails**: After death, fade per-frame with different RGB decay
+  rates producing colored trails
+
+- **RD + Domain Transforms**: Apply vortex/spiral transforms before sampling, producing
+  spiral swirl patterns
 
 ## Further Reading
 
-Full step-by-step tutorial, mathematical derivations, and advanced usage in [reference](../reference/cellular-automata.md)
+Full step-by-step tutorial, mathematical derivations, and advanced usage in
+[reference](../reference/cellular-automata.md)

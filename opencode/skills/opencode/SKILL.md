@@ -9,29 +9,40 @@ metadata:
     tags: [Coding-Agent, OpenCode, Autonomous, Refactoring, Code-Review]
     related_skills: [claude-code, codex, hermes-agent]
 ---
-
 # OpenCode CLI
 
-Use [OpenCode](https://opencode.ai) as an autonomous coding worker orchestrated by Hermes terminal/process tools. OpenCode is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
+Use [OpenCode](https://opencode.ai) as an autonomous coding worker orchestrated by
+Hermes terminal/process tools.
+OpenCode is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
 
 ## When to Use
 
 - User explicitly asks to use OpenCode
+
 - You want an external coding agent to implement/refactor/review code
+
 - You need long-running coding sessions with progress checks
+
 - You want parallel task execution in isolated workdirs/worktrees
 
 ## Prerequisites
 
-- OpenCode installed: `npm i -g opencode-ai@latest` or `brew install anomalyco/tap/opencode`
-- Auth configured: `opencode auth login` or set provider env vars (OPENROUTER_API_KEY, etc.)
+- OpenCode installed: `npm i -g opencode-ai@latest` or
+  `brew install anomalyco/tap/opencode`
+
+- Auth configured: `opencode auth login` or set provider env vars (OPENROUTER_API_KEY,
+  etc.)
+
 - Verify: `opencode auth list` should show at least one provider
+
 - Git repository for code tasks (recommended)
+
 - `pty=true` for interactive TUI sessions
 
 ## Binary Resolution (Important)
 
-Shell environments may resolve different OpenCode binaries. If behavior differs between your terminal and Hermes, check:
+Shell environments may resolve different OpenCode binaries.
+If behavior differs between your terminal and Hermes, check:
 
 ```
 terminal(command="which -a opencode")
@@ -94,12 +105,14 @@ process(action="write", session_id="<id>", data="\x03")
 process(action="kill", session_id="<id>")
 ```
 
-**Important:** Do NOT use `/exit` — it is not a valid OpenCode command and will open an agent selector dialog instead. Use Ctrl+C (`\x03`) or `process(action="kill")` to exit.
+**Important:** Do NOT use `/exit` — it is not a valid OpenCode command and will open an
+agent selector dialog instead.
+Use Ctrl+C (`\x03`) or `process(action="kill")` to exit.
 
 ### TUI Keybindings
 
 | Key | Action |
-|-----|--------|
+| --- | --- |
 | `Enter` | Submit message (press twice if needed) |
 | `Tab` | Switch between agents (build/plan) |
 | `Ctrl+P` | Open command palette |
@@ -121,7 +134,7 @@ terminal(command="opencode -s ses_abc123", workdir="~/project", background=true,
 ## Common Flags
 
 | Flag | Use |
-|------|-----|
+| --- | --- |
 | `run 'prompt'` | One-shot execution and exit |
 | `--continue` / `-c` | Continue the last OpenCode session |
 | `--session <id>` / `-s` | Continue a specific session |
@@ -137,13 +150,21 @@ terminal(command="opencode -s ses_abc123", workdir="~/project", background=true,
 ## Procedure
 
 1. Verify tool readiness:
+
    - `terminal(command="opencode --version")`
+
    - `terminal(command="opencode auth list")`
+
 2. For bounded tasks, use `opencode run '...'` (no pty needed).
+
 3. For iterative tasks, start `opencode` with `background=true, pty=true`.
+
 4. Monitor long tasks with `process(action="poll"|"log")`.
+
 5. If OpenCode asks for input, respond via `process(action="submit", ...)`.
+
 6. Exit with `process(action="write", data="\x03")` or `process(action="kill")`.
+
 7. Summarize file changes, test results, and next steps back to user.
 
 ## PR Review Workflow
@@ -187,13 +208,22 @@ terminal(command="opencode stats --days 7 --models anthropic/claude-sonnet-4")
 
 ## Pitfalls
 
-- Interactive `opencode` (TUI) sessions require `pty=true`. The `opencode run` command does NOT need pty.
-- `/exit` is NOT a valid command — it opens an agent selector. Use Ctrl+C to exit the TUI.
+- Interactive `opencode` (TUI) sessions require `pty=true`. The `opencode run` command
+  does NOT need pty.
+
+- `/exit` is NOT a valid command — it opens an agent selector.
+  Use Ctrl+C to exit the TUI.
+
 - PATH mismatch can select the wrong OpenCode binary/model config.
+
 - If OpenCode appears stuck, inspect logs before killing:
+
   - `process(action="log", session_id="<id>")`
+
 - Avoid sharing one working directory across parallel OpenCode sessions.
-- Enter may need to be pressed twice to submit in the TUI (once to finalize text, once to send).
+
+- Enter may need to be pressed twice to submit in the TUI (once to finalize text, once
+  to send).
 
 ## Verification
 
@@ -204,15 +234,23 @@ terminal(command="opencode run 'Respond with exactly: OPENCODE_SMOKE_OK'")
 ```
 
 Success criteria:
+
 - Output includes `OPENCODE_SMOKE_OK`
+
 - Command exits without provider/model errors
+
 - For code tasks: expected files changed and tests pass
 
 ## Rules
 
-1. Prefer `opencode run` for one-shot automation — it's simpler and doesn't need pty.
+1. Prefer `opencode run` for one-shot automation — it’s simpler and doesn’t need pty.
+
 2. Use interactive background mode only when iteration is needed.
+
 3. Always scope OpenCode sessions to a single repo/workdir.
+
 4. For long tasks, provide progress updates from `process` logs.
+
 5. Report concrete outcomes (files changed, tests, remaining risks).
+
 6. Exit interactive sessions with Ctrl+C or kill, never `/exit`.

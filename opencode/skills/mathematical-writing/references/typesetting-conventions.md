@@ -32,7 +32,9 @@ header-includes:
 ## Section Headers
 
 - Use ATX-style headers with `#` for sections
+
 - Use title case for section headers
+
 - Include a blank line before and after headers
 
 ## Mathematical Notation
@@ -40,7 +42,9 @@ header-includes:
 ### Inline Math
 
 - Use `$...$` for inline math
+
 - Use proper spacing around operators
+
 - Use `\,` for thin spaces in math mode when needed
 
 **Example:**
@@ -51,7 +55,9 @@ Find the derivative of $f(x) = x^2 + 3x + 2$.
 ### Display Math
 
 - Use `$$...$$` for displayed equations
+
 - Number important equations using `\tag{n}`
+
 - Align equations at the equals sign when appropriate
 
 **Example:**
@@ -77,7 +83,9 @@ Equation \eqref{eq:derivative} shows the limit definition of the derivative.
 ### Problem Statements
 
 - Use clear, concise problem statements
+
 - Include all necessary information
+
 - Use consistent numbering
 
 ```markdown
@@ -92,7 +100,9 @@ $$\lim_{x\to 0} \frac{\sin(3x)}{x}$$
 ### Solutions
 
 - Show all steps clearly
+
 - Use aligned environments for multi-step solutions
+
 - Include brief explanations for non-obvious steps
 
 ```markdown
@@ -116,7 +126,9 @@ f'(x) &= \lim_{h\to 0} \frac{\sqrt{(x+h)^2 + 1} - \sqrt{x^2 + 1}}{h} \\
 ### Tables
 
 - Use pipe tables for simple tables
+
 - Align columns with colons
+
 - Use LaTeX math in tables when needed
 
 ```markdown
@@ -132,7 +144,9 @@ f'(x) &= \lim_{h\to 0} \frac{\sqrt{(x+h)^2 + 1} - \sqrt{x^2 + 1}}{h} \\
 ### Figures
 
 - Use descriptive captions
+
 - Reference figures in the text
+
 - Use vector graphics (PDF, SVG) for diagrams
 
 ```markdown
@@ -145,6 +159,7 @@ f'(x) &= \lim_{h\to 0} \frac{\sqrt{(x+h)^2 + 1} - \sqrt{x^2 + 1}}{h} \\
 ### Internal Links
 
 - Use Markdown-style links for internal references
+
 - Use descriptive link text
 
 ```markdown
@@ -184,28 +199,43 @@ c & d
 ## Line Length and Wrapping
 
 - Keep source lines under 80 characters where possible
+
 - Break long equations at natural points (before `=`, `+`)
+
 - Use `\continuedline` or `\quad` for visual indentation on continuation lines
 
 ## Typesetting Checklist
 
 - [ ] YAML header includes all required macros
+
 - [ ] Inline math uses `$...$`, display math uses `$$...$$`
+
 - [ ] Important equations are numbered with `\tag{n}`
+
 - [ ] Multi-step derivations use `aligned` environment
+
 - [ ] Tables use pipe syntax with aligned columns
+
 - [ ] Figures have descriptive captions and are referenced in text
+
 - [ ] Internal cross-references use Markdown links
+
 - [ ] Equation references use `\label` / `\eqref`
+
 - [ ] No text mode inside math mode
+
 - [ ] Proper spacing around all operators
+
 - [ ] Source lines under 80 characters
+
 - [ ] Consistent notation throughout
 
 ## Version Control for Mathematical Documents
 
-- Use meaningful commit messages (e.g., "fix: correct base case in Thm 3.2")
+- Use meaningful commit messages (e.g., “fix: correct base case in Thm 3.2”)
+
 - Keep source lines under 80 characters
+
 - Use descriptive file names (e.g., `problem-set-1-derivatives.md`)
 
 ## Common Pitfalls

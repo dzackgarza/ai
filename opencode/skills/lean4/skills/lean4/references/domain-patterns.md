@@ -2,20 +2,25 @@
 
 ## TLDR
 
-**Purpose:** Quick reference for common proof patterns and tactics across mathematical domains.
+**Purpose:** Quick reference for common proof patterns and tactics across mathematical
+domains.
 
-**When to use:** When working in a specific domain (measure theory, analysis, algebra, etc.) and need proven patterns for common tasks.
+**When to use:** When working in a specific domain (measure theory, analysis, algebra,
+etc.) and need proven patterns for common tasks.
 
-**Coverage:** Measure theory (12 patterns), analysis & topology (3 patterns), geometry (8 patterns), algebra (3 patterns), number theory (3 patterns), plus cross-domain tactics.
+**Coverage:** Measure theory (12 patterns), analysis & topology (3 patterns), geometry
+(8 patterns), algebra (3 patterns), number theory (3 patterns), plus cross-domain
+tactics.
 
-**For deep measure theory patterns (sub-σ-algebras, conditional expectation, type class errors):** See `references/measure-theory.md`
+**For deep measure theory patterns (sub-σ-algebras, conditional expectation, type class
+errors):** See `references/measure-theory.md`
 
 ## Quick Reference by Domain
 
 ### Measure Theory & Probability (12 Patterns)
 
 | Pattern | Task | Key Tactic/Approach |
-|---------|------|---------------------|
+| --- | --- | --- |
 | 1. Proving Integrability | Show function integrable | `bounded + measurable + finite measure` |
 | 2. Conditional Expectation | Prove μ[f\|m] = g | Uniqueness theorem (3 conditions) |
 | 3. Sub-σ-Algebras | Type class management | See measure-theory.md |
@@ -34,7 +39,7 @@
 ### Analysis & Topology (3 Patterns)
 
 | Pattern | Task | Key Tactic/Approach |
-|---------|------|---------------------|
+| --- | --- | --- |
 | 1. Continuity | Prove continuous | `continuity`, `continuous_def` |
 | 2. Compactness | Finite subcover, min/max | `IsCompact.exists_isMinOn` |
 | 3. Limits | ε-δ via filters | `Metric.tendsto_atTop` |
@@ -44,7 +49,7 @@
 ### Geometry (8 Patterns)
 
 | Pattern | Task | Key Tactic/Approach |
-|---------|------|---------------------|
+| --- | --- | --- |
 | 1. Betweenness | Strict betweenness proofs | `Sbtw.sbtw_lineMap_iff` |
 | 2. Triangle angles | Angle sum at vertex | `angle_add_angle_add_angle_eq_pi` |
 | 3. Segment to betweenness | Convert membership to Wbtw | `mem_segment_iff_wbtw` |
@@ -59,7 +64,7 @@
 ### Algebra (3 Patterns)
 
 | Pattern | Task | Key Tactic/Approach |
-|---------|------|---------------------|
+| --- | --- | --- |
 | 1. Algebraic Instances | Build Ring/CommRing | `inferInstance` or manual |
 | 2. Quotients | Define quotient homs | Universal property |
 | 3. Universal Properties | Unique morphisms | Existence + uniqueness |
@@ -69,7 +74,7 @@
 ### Number Theory & Combinatorics (3 Patterns)
 
 | Pattern | Task | Key Tactic/Approach |
-|---------|------|---------------------|
+| --- | --- | --- |
 | 1. Induction | Lists/Nats | `induction` with cases |
 | 2. Divisibility | Prove n ∣ m | `rcases even_or_odd`, `use` |
 | 3. List Counting | Complex counting proofs | Positional splitting, complementary counting |
@@ -78,11 +83,12 @@
 
 ### Cross-Domain
 
-**Essential tactics:** `simp only`, `by_cases`, `rcases`, `rw`, `ext`, `apply`, `exact`, `refine`, `grind` (for mixed-constraint cleanup)
+**Essential tactics:** `simp only`, `by_cases`, `rcases`, `rw`, `ext`, `apply`, `exact`,
+`refine`, `grind` (for mixed-constraint cleanup)
 
 **Equality via uniqueness:** Works across all domains (measures, functions, homs)
 
----
+* * *
 
 ## Measure Theory & Probability
 
@@ -101,14 +107,19 @@ lemma integrable_of_bounded_measurable
 ```
 
 **Key variations:**
+
 - AE bound: Use `AEMeasurable` and `∀ᵐ x ∂μ, ‖f x‖ ≤ C`
+
 - Indicator: `hf.indicator hA` when `hf : Integrable f μ`
 
 ### Pattern 2: Conditional Expectation Equality
 
 **Uniqueness theorem:** To show μ[f | m] = g, prove all three:
+
 1. g is m-measurable
+
 2. g is integrable
+
 3. ∀ B (m-measurable set): ∫ x in B, g x ∂μ = ∫ x in B, f x ∂μ
 
 ```lean
@@ -126,8 +137,11 @@ lemma condExp_eq_of_integral_eq
 ### Pattern 3: Sub-σ-Algebras and Type Class Management
 
 **Critical issues:**
+
 - Binder order: instance parameters before plain parameters
+
 - Never use `‹_›` for ambient space (resolves incorrectly)
+
 - Provide trimmed measure instances with `haveI`
 
 ```lean
@@ -140,7 +154,8 @@ lemma my_condexp_lemma {Ω : Type*} {m₀ : MeasurableSpace Ω}
   -- Now call mathlib lemmas
 ```
 
-**For complete coverage:** See `references/measure-theory.md` for sub-σ-algebra patterns, condExpWith, debugging type class errors, and binder order requirements.
+**For complete coverage:** See `references/measure-theory.md` for sub-σ-algebra
+patterns, condExpWith, debugging type class errors, and binder order requirements.
 
 ### Pattern 4: Almost Everywhere Properties
 
@@ -211,7 +226,8 @@ end IntegrationHelpers
 
 **Critical:** `omit [...] in` must appear **before** docstring, not after.
 
-**When to use:** Lemma doesn't use section variable, or variable causes unwanted instance requirements.
+**When to use:** Lemma doesn’t use section variable, or variable causes unwanted
+instance requirements.
 
 ### Pattern 8: Automating Measurability Proofs
 
@@ -254,21 +270,29 @@ lemma measurable_myFunc : Measurable myFunc := by measurability
 ```
 
 **When automation works well:**
+
 - ✅ Product types and compositions
+
 - ✅ Pi-type projections
+
 - ✅ Coordinate permutations
+
 - ✅ After adding `@[measurability]` attributes
 
-**When automation doesn't work:**
+**When automation doesn’t work:**
+
 - ⚠️ Complex set operations (can timeout)
+
 - ⚠️ Custom definitions unknown to fun_prop
+
 - **Solution:** Break into smaller steps or use direct proof
 
 **Real-world results:** Simplified 33 proofs, eliminated ~90 lines of boilerplate.
 
 ### Pattern 9: Implicit vs Explicit Parameters
 
-**Core principle:** `{param}` when inferrable, `(param)` when primary data or not inferrable.
+**Core principle:** `{param}` when inferrable, `(param)` when primary data or not
+inferrable.
 
 **Use implicit `{param}` when:**
 ```lean
@@ -292,11 +316,13 @@ def shiftedCylinder (n : ℕ) (F : Ω[α] → ℝ) : Ω[α] → ℝ :=
 lemma foo (n : ℕ) : Fin n → α := ...
 ```
 
-**When in doubt, keep explicit.** See [mathlib-style.md](mathlib-style.md) for conventions.
+**When in doubt, keep explicit.** See [mathlib-style.md](mathlib-style.md) for
+conventions.
 
 ### Pattern 10: Measurable Structure Must Match Goal
 
-When using `Measurable.const_mul` with sums, structure must match goal's parenthesization.
+When using `Measurable.const_mul` with sums, structure must match goal’s
+parenthesization.
 
 ```lean
 -- ❌ WRONG: constant inside each term
@@ -330,7 +356,8 @@ filter_upwards with ω; simp [Real.norm_eq_abs]
 -- Matches exactly after simp!
 ```
 
-**Rule:** Use canonical forms: `(m:ℝ)⁻¹` not `1/(m:ℝ)`. See [calc-patterns.md](calc-patterns.md).
+**Rule:** Use canonical forms: `(m:ℝ)⁻¹` not `1/(m:ℝ)`. See
+[calc-patterns.md](calc-patterns.md).
 
 ### Pattern 12: Pointwise Inequalities
 
@@ -349,7 +376,9 @@ exact abs_sub_le _ _ _
 ```
 
 **When to use:**
+
 - `intro ω`: Simple pointwise inequalities, just applying lemmas
+
 - `filter_upwards`: Combining multiple ae conditions, measure theory structure
 
 ### Common Measure Theory Tactics
@@ -362,10 +391,13 @@ filter_upwards   -- Combine ae properties
 ```
 
 **Automation philosophy:**
-- ✅ Use for: boilerplate (measurability), trivial arithmetic (omega/linarith)
-- ❌ Don't hide: key mathematical insights, proof architecture, non-obvious lemma applications
 
----
+- ✅ Use for: boilerplate (measurability), trivial arithmetic (omega/linarith)
+
+- ❌ Don’t hide: key mathematical insights, proof architecture, non-obvious lemma
+  applications
+
+* * *
 
 ## Analysis & Topology
 
@@ -405,13 +437,16 @@ lemma tendsto_of_forall_eventually
 
 **Common tactics:** `continuity`, `fun_prop`
 
----
+* * *
 
 ## Geometry
 
 ### Pattern 1: Betweenness via Line Parameters
 
-**Key lemma:** `Sbtw.sbtw_lineMap_iff` characterizes strict betweenness: `Sbtw ℝ A (lineMap A B s) B ↔ A ≠ B ∧ s ∈ Set.Ioo 0 1`. Eliminates manual field-by-field Sbtw proofs - parameter in (0,1) gives betweenness, then `Sbtw.angle₁₂₃_eq_pi` yields straight angle.
+**Key lemma:** `Sbtw.sbtw_lineMap_iff` characterizes strict betweenness:
+`Sbtw ℝ A (lineMap A B s) B ↔ A ≠ B ∧ s ∈ Set.Ioo 0 1`. Eliminates manual field-by-field
+Sbtw proofs - parameter in (0,1) gives betweenness, then `Sbtw.angle₁₂₃_eq_pi` yields
+straight angle.
 
 ```lean
 -- Two-liner instead of 50+ lines
@@ -421,7 +456,9 @@ have : ∠ A H B = π := h_sbtw.angle₁₂₃_eq_pi
 
 ### Pattern 2: Triangle Angle Sum
 
-`angle_add_angle_add_angle_eq_pi` gives sum at specified vertex. Order adapts to input - no canonical form fighting. Use directly without rearrangement.
+`angle_add_angle_add_angle_eq_pi` gives sum at specified vertex.
+Order adapts to input - no canonical form fighting.
+Use directly without rearrangement.
 
 ```lean
 have angle_sum : ∠ B H C + ∠ H C B + ∠ C B H = π := angle_add_angle_add_angle_eq_pi C ⟨h_ne_BC, h_ne_CH, h_ne_HB⟩
@@ -429,7 +466,8 @@ have angle_sum : ∠ B H C + ∠ H C B + ∠ C B H = π := angle_add_angle_add_a
 
 ### Pattern 3: Segment Membership to Betweenness
 
-**Replace parametric obtains with direct mathlib conversion.** `mem_segment_iff_wbtw` converts `x ∈ segment ℝ A B` to `Wbtw ℝ A x B` in one step.
+**Replace parametric obtains with direct mathlib conversion.** `mem_segment_iff_wbtw`
+converts `x ∈ segment ℝ A B` to `Wbtw ℝ A x B` in one step.
 
 ```lean
 -- ❌ BAD: 70 lines extracting parameters, proving strict bounds
@@ -443,7 +481,8 @@ have : Sbtw ℝ A H B := ⟨mem_segment_iff_wbtw.mp h_H_on_AB, h_H_ne_A, h_H_ne_
 
 ### Pattern 4: Collinearity from Betweenness
 
-**Direct collinearity proof.** `Wbtw.mem_affineSpan` proves `G ∈ affineSpan ℝ {A, C}` from `Wbtw ℝ A G C` without parametric machinery.
+**Direct collinearity proof.** `Wbtw.mem_affineSpan` proves `G ∈ affineSpan ℝ {A, C}`
+from `Wbtw ℝ A G C` without parametric machinery.
 
 ```lean
 -- ❌ BAD: Manual lineMap construction (10+ lines)
@@ -458,7 +497,8 @@ have : G ∈ affineSpan ℝ {A, C} := (mem_segment_iff_wbtw.mp h_G_on_AC).mem_af
 
 ### Pattern 5: Angle Proofs from Betweenness
 
-**Combine with Pattern 3 for instant angle proofs.** Chain `mem_segment_iff_wbtw` → `Sbtw` → `Sbtw.angle₁₂₃_eq_pi`.
+**Combine with Pattern 3 for instant angle proofs.** Chain `mem_segment_iff_wbtw` →
+`Sbtw` → `Sbtw.angle₁₂₃_eq_pi`.
 
 ```lean
 have angle_AHB_eq_pi : ∠ A H B = π :=
@@ -467,7 +507,8 @@ have angle_AHB_eq_pi : ∠ A H B = π :=
 
 ### Pattern 6: Infrastructure Wrappers for Missing Lemmas
 
-**Create thin wrappers with documented sorries.** When mathlib lacks domain-specific lemmas, isolate missing pieces with clear documentation and alternatives.
+**Create thin wrappers with documented sorries.** When mathlib lacks domain-specific
+lemmas, isolate missing pieces with clear documentation and alternatives.
 
 ```lean
 namespace AngleTools
@@ -490,13 +531,15 @@ have angle_ABD : ∠ A B D = π / 3 := by
 
 ### Pattern 7: Deep Context Timeouts
 
-**After ~1000 lines, standard lemmas can timeout.** Use cheaper alternatives or document strategy.
+**After ~1000 lines, standard lemmas can timeout.** Use cheaper alternatives or document
+strategy.
 
 #### Technique A: Non-Degeneracy via `angle_self_right`
 
 **Problem:** In deep contexts, `angle_self_of_ne` times out in contradiction proofs.
 
-**Key insight:** The unoriented angle ∠ P X X = π/2 (not 0). This comes from `angle_self_right`, a cheap `[simp]` lemma that avoids the expensive `angle_self_of_ne`.
+**Key insight:** The unoriented angle ∠ P X X = π/2 (not 0). This comes from
+`angle_self_right`, a cheap `[simp]` lemma that avoids the expensive `angle_self_of_ne`.
 
 ```lean
 -- General pattern: Given h_angle : ∠ P X Y = α where α ≠ π/2
@@ -533,18 +576,28 @@ lemma pi_div_nine_ne_pi_div_two :
 ```
 
 **Why this works:**
+
 - `angle_self_right` is marked `[simp]`, so `simp` resolves it instantly (no timeout)
+
 - Avoids expensive `angle_self_of_ne` which requires non-degeneracy proof
+
 - Works entirely in Real.Angle (quotient group), no `toReal` unwrapping
+
 - Helper lemmas (like `pi_div_nine_ne_pi_div_two`) proved once, reused everywhere
 
-**Applicability:** Works when α ≠ π/2. For most angle values this is true (π/9, π/3, π/4, 2π/3, etc.).
+**Applicability:** Works when α ≠ π/2. For most angle values this is true (π/9, π/3,
+π/4, 2π/3, etc.).
 
 **General pattern:** To prove Y ≠ X when you know ∠ P X Y = α:
+
 1. Assume Y = X for contradiction
+
 2. Substitute: get ∠ P X X = α
+
 3. Apply `angle_self_right`: get ∠ P X X = π/2
+
 4. Derive impossible equation: α = π/2 in Real.Angle
+
 5. Apply contradiction helper lemma that proves α ≠ π/2
 
 #### Technique B: Document and Continue
@@ -559,13 +612,17 @@ have h_DB_ne : D ≠ B := by
   sorry
 ```
 
-**When to use:** Proof >1000 lines, simple logic times out. Try cheap lemmas first (Technique A), then document strategy.
+**When to use:** Proof >1000 lines, simple logic times out.
+Try cheap lemmas first (Technique A), then document strategy.
 
 ### Pattern 8: Angle Arithmetic at Quotient Level
 
-**Work with Real.Angle's group structure directly.** Don't unwrap to ℝ via `toReal` for arithmetic—the quotient handles algebra automatically.
+**Work with Real.Angle’s group structure directly.** Don’t unwrap to ℝ via `toReal` for
+arithmetic—the quotient handles algebra automatically.
 
-**Key insight:** Real.Angle ≃ ℝ / (2π) is a group. Addition, subtraction, and linear algebra work directly at the quotient level. Only use `toReal` when you need real number properties (like `< π`), not for algebra.
+**Key insight:** Real.Angle ≃ ℝ / (2π) is a group.
+Addition, subtraction, and linear algebra work directly at the quotient level.
+Only use `toReal` when you need real number properties (like `< π`), not for algebra.
 
 ```lean
 -- ❌ BAD: Unwrap to ℝ, prove bounds, wrap back up
@@ -578,12 +635,17 @@ calc ∠ABD = (4*π/9 : Real.Angle) - (π/9 : Real.Angle) := by linarith [split]
   _ = π/3 := by ring
 ```
 
-**Why `linarith` works:** It operates on ANY additive group, not just ℝ. Given `a + b = c` in any group, `linarith` derives `a = c - b`, `b = c - a`, etc.
+**Why `linarith` works:** It operates on ANY additive group, not just ℝ. Given
+`a + b = c` in any group, `linarith` derives `a = c - b`, `b = c - a`, etc.
 
-**Type coercion spam = code smell:** If you need `((π/3 : ℝ) : Real.Angle)` everywhere, you're fighting the type system. Let Lean's coercion work—write `4*π/9 - π/9` and Lean infers Real.Angle from context.
+**Type coercion spam = code smell:** If you need `((π/3 : ℝ) : Real.Angle)` everywhere,
+you’re fighting the type system.
+Let Lean’s coercion work—write `4*π/9 - π/9` and Lean infers Real.Angle from context.
 
 **Separation of concerns:**
+
 - **Group level** (Real.Angle): `+`, `-`, equality via `linarith`
+
 - **Arithmetic level** (ℝ component): `4*π/9 - π/9 = π/3` via `ring`
 
 ```lean
@@ -594,11 +656,14 @@ calc (x : Real.Angle)
   _ = c := by ring                        -- arithmetic on ℝ component
 ```
 
-**Infrastructure lemma strategy:** One infrastructure admit (e.g., `angle_split_external`) with clean pattern everywhere beats many scattered admits at call sites. Infrastructure admits are well-isolated, documented, and can be proven later without touching call sites.
+**Infrastructure lemma strategy:** One infrastructure admit (e.g.,
+`angle_split_external`) with clean pattern everywhere beats many scattered admits at
+call sites. Infrastructure admits are well-isolated, documented, and can be proven later
+without touching call sites.
 
 **Common tactics:** `norm_num` (for angle comparisons), `linarith` (for angle algebra)
 
----
+* * *
 
 ## Algebra
 
@@ -642,7 +707,7 @@ lemma exists_unique_hom (h : ...) : ∃! φ : A →+* B, ... := by
 
 **Common tactics:** `ring`, `field_simp`, `group`
 
----
+* * *
 
 ## Number Theory & Combinatorics
 
@@ -681,7 +746,7 @@ have h := countElem_union l.take i l.drop (i+1)
 -- Then count each part separately
 ```
 
-**Complementary counting:** Count what's NOT in a set when direct counting is hard.
+**Complementary counting:** Count what’s NOT in a set when direct counting is hard.
 
 ```lean
 -- Total pairs - pairs_with_property = pairs_without_property
@@ -689,11 +754,12 @@ calc l.countPairs P
     = l.length.choose 2 - l.countPairs (¬P ∘₂ ·) := by ...
 ```
 
-**When to use:** Proofs requiring counting list elements with complex predicates, especially when witnesses appear at multiple positions.
+**When to use:** Proofs requiring counting list elements with complex predicates,
+especially when witnesses appear at multiple positions.
 
 **Common tactics:** `linarith`, `norm_num`, `omega`
 
----
+* * *
 
 ## Cross-Domain Tactics
 
@@ -736,16 +802,24 @@ lemma my_eq : f = g := by
 ```
 
 **Examples:**
+
 - **Measures:** Equal if agree on π-system
+
 - **Conditional expectations:** Equal if same integrals on all measurable sets
+
 - **Functions:** Equal if continuous and agree on dense subset
+
 - **Group homomorphisms:** Equal if agree on generators
 
----
+* * *
 
 ## Related References
 
-- [measure-theory.md](measure-theory.md) - Deep dive on sub-σ-algebras, conditional expectation, type class errors
+- [measure-theory.md](measure-theory.md) - Deep dive on sub-σ-algebras, conditional
+  expectation, type class errors
+
 - [tactics-reference.md](tactics-reference.md) - Comprehensive tactic catalog
+
 - [mathlib-style.md](mathlib-style.md) - Mathlib conventions
+
 - [calc-patterns.md](calc-patterns.md) - Calculation chains and canonical forms

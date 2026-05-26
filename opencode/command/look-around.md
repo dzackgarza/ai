@@ -1,12 +1,11 @@
 ---
 description: Orient to the current repository before acting
 ---
+The user’s directive is to look around the current repository before narrowing or
+editing. Start broad, then report the project shape and the next targeted reads.
 
-The user's directive is to look around the current repository before narrowing
-or editing. Start broad, then report the project shape and the next targeted
-reads.
-
-Run only lightweight orientation commands. Prefer:
+Run only lightweight orientation commands.
+Prefer:
 
 ```bash
 pwd
@@ -20,10 +19,14 @@ test -f justfile && just --list
 Then print:
 
 - repository purpose inferred from docs,
+
 - important subtrees,
+
 - current git state relevant to safe edits,
+
 - canonical commands or recipes found,
+
 - targeted files to read next.
 
-Do not run dependency installs, test suites, servers, or cleanup commands from
-this command.
+Do not run dependency installs, test suites, servers, or cleanup commands from this
+command.

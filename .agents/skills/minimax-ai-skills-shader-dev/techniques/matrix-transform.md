@@ -3,17 +3,24 @@
 ## Use Cases
 
 - Camera systems in 3D scenes (orbit camera, fly camera, path camera)
+
 - SDF object domain transforms via translation, rotation, and scale matrices
+
 - Generating 3D rays from screen pixels (perspective / orthographic projection)
+
 - Hierarchical rotation transforms for joint animation
+
 - Rotation in noise domain warping, IFS fractal iterations
 
 ## Core Principles
 
-The essence of matrix transforms is coordinate system transformation. In a ray marching pipeline:
+The essence of matrix transforms is coordinate system transformation.
+In a ray marching pipeline:
 
 1. **Camera matrix**: Screen pixels → world-space ray direction (view-to-world)
-2. **Object transform matrix**: World-space sample point → object local space (world-to-local, domain transform)
+
+2. **Object transform matrix**: World-space sample point → object local space
+   (world-to-local, domain transform)
 
 ### Key Formulas
 
@@ -212,7 +219,8 @@ float d = sdEllipsoid(limbPos, limbSize);
 
 ## Complete Code Template
 
-Can be run directly in ShaderToy, demonstrating LookAt camera + multi-object domain transforms + mouse interaction.
+Can be run directly in ShaderToy, demonstrating LookAt camera + multi-object domain
+transforms + mouse interaction.
 
 ```glsl
 // === Matrix Transforms & Camera - Complete Template ===
@@ -437,19 +445,35 @@ vec3 rd = (viewToWorld * normalize(vec4(uv, 1.0, 0.0))).xyz;
 ## Performance & Composition
 
 **Performance**:
-- Compute `sin/cos` of the same angle only once: `vec2 sc = sin(vec2(a, a + 1.5707963));`
+
+- Compute `sin/cos` of the same angle only once:
+  `vec2 sc = sin(vec2(a, a + 1.5707963));`
+
 - Use `mat3` instead of `mat4` for pure rotation (saves 7 multiply-adds)
+
 - Inverse of orthogonal rotation matrix = transpose; use `transpose(m)` or `v * m`
-- Pre-compute matrices that don't depend on `p` outside `map()`
+
+- Pre-compute matrices that don’t depend on `p` outside `map()`
+
 - Pre-multiply multiple rotations into a single matrix
 
 **Composition**:
-- **SDF / Ray Marching**: Camera generates rays + domain transforms place objects (fundamental pipeline)
-- **Noise / fBm**: Rotate sampling coordinates to break axis-aligned regularity `fbm(rot * p)`
+
+- **SDF / Ray Marching**: Camera generates rays + domain transforms place objects
+  (fundamental pipeline)
+
+- **Noise / fBm**: Rotate sampling coordinates to break axis-aligned regularity
+  `fbm(rot * p)`
+
 - **Fractals / IFS**: Embed rotation in iterations to create complex geometry
-- **Lighting**: Normal transform for pure rotation matrices is the same as vertex transform
-- **Post-Processing**: FOV for depth of field; `mat2` for chromatic aberration/motion blur direction
+
+- **Lighting**: Normal transform for pure rotation matrices is the same as vertex
+  transform
+
+- **Post-Processing**: FOV for depth of field; `mat2` for chromatic aberration/motion
+  blur direction
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/matrix-transform.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/matrix-transform.md)

@@ -5,7 +5,7 @@ Standard Gmail search operators work in the `query` argument.
 ## Common Operators
 
 | Operator | Example | Description |
-|----------|---------|-------------|
+| --- | --- | --- |
 | `is:unread` | `is:unread` | Unread messages |
 | `is:starred` | `is:starred` | Starred messages |
 | `is:important` | `is:important` | Important messages |
@@ -27,7 +27,7 @@ Standard Gmail search operators work in the `query` argument.
 ## Date Operators
 
 | Operator | Example | Description |
-|----------|---------|-------------|
+| --- | --- | --- |
 | `newer_than:` | `newer_than:7d` | Within last N days (d), months (m), years (y) |
 | `older_than:` | `older_than:30d` | Older than N days/months/years |
 | `after:` | `after:2026/02/01` | After date (YYYY/MM/DD) |
@@ -36,7 +36,7 @@ Standard Gmail search operators work in the `query` argument.
 ## Combining
 
 | Syntax | Example | Description |
-|--------|---------|-------------|
+| --- | --- | --- |
 | space | `from:alice subject:meeting` | AND (implicit) |
 | `OR` | `from:alice OR from:bob` | OR |
 | `-` | `-from:noreply@` | NOT (exclude) |

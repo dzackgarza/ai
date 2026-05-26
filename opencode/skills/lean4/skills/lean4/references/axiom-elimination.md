@@ -5,12 +5,17 @@ Quick reference for systematically eliminating custom axioms from Lean 4 proofs.
 ## Standard vs Custom Axioms
 
 **Standard mathlib axioms (ACCEPTABLE):**
+
 - `Classical.choice` (axiom of choice)
+
 - `propext` (propositional extensionality)
+
 - `quot.sound` / `Quot.sound` (quotient soundness)
 
 **Custom axioms (MUST ELIMINATE):**
+
 - Any `axiom` declarations in your code
+
 - Dependencies on unproven theorems
 
 ## Verification
@@ -39,15 +44,23 @@ $LEAN4_SCRIPTS/check_axioms_inline.sh src/   # scan directory recursively
 The script handles namespace inference and filters standard axioms automatically.
 
 **Why use the script:**
+
 - Automatically detects the namespace from the file
+
 - Filters out standard mathlib axioms (propext, quot.sound, Classical.choice)
+
 - Provides clear reporting of non-standard axiom usage
+
 - Handles cleanup of temporary modifications
 
 **Limitations:**
-- Private/protected/local declarations cannot be checked (they're not exported)
+
+- Private/protected/local declarations cannot be checked (they’re not exported)
+
 - Only detects the first namespace and top-level declarations at column 0
+
 - Nested namespaces may be missed
+
 - Declarations with access modifiers will show warnings (not errors)
 
 **If you must check manually:**
@@ -60,8 +73,11 @@ end MyNamespace
 Note: Private declarations will still fail with `unknownIdentifier` - this is expected.
 
 **DO NOT create manual axiom-checking files like `/tmp/check_axioms.lean`:**
+
 - The script is more reliable and handles edge cases
+
 - Manual files often miss namespace context
+
 - Manual files need cleanup afterward
 
 ## Elimination Workflow
@@ -69,8 +85,11 @@ Note: Private declarations will still fail with `unknownIdentifier` - this is ex
 ### Phase 1: Audit Current State
 
 1. Run axiom checker on all files
+
 2. List all custom axioms with locations
+
 3. Identify dependencies (which theorems use which axioms)
+
 4. Prioritize by impact (eliminate high-usage axioms first)
 
 ### Phase 2: Document Elimination Plan
@@ -109,34 +128,50 @@ bash $LEAN4_SCRIPTS/smart_search.sh "type signature pattern" --source=loogle
 
 **Five common patterns:**
 
-**Pattern 1: "It's in mathlib" (60%)**
+**Pattern 1: “It’s in mathlib” (60%)**
+
 - Search finds existing theorem
+
 - Replace `axiom` with `theorem` and import
+
 - Replace body with `:= mathlib_lemma`
 
-**Pattern 2: "Compositional proof" (30%)**
+**Pattern 2: “Compositional proof” (30%)**
+
 - Combine 2-3 existing mathlib lemmas
+
 - Prove using standard tactics
+
 - Replace axiom with actual proof
 
-**Pattern 3: "Needs domain expertise" (9%)**
+**Pattern 3: “Needs domain expertise” (9%)**
+
 - Break into smaller lemmas
+
 - Prove components using mathlib
+
 - Combine for final result
 
-**Pattern 4: "Actually false" (1%)**
+**Pattern 4: “Actually false” (1%)**
+
 - Original axiom too strong
+
 - Weaken to provable version
+
 - Update dependent theorems
 
-**Pattern 5: "Placeholder for sorry" (common during development)**
+**Pattern 5: “Placeholder for sorry” (common during development)**
+
 - Convert `axiom` to `theorem` with `sorry`
+
 - Fill using sorry-filling workflow
+
 - See sorry-filling.md
 
 ## Elimination Strategies by Type
 
 ### Simple Lemmas
+
 ```lean
 -- Before
 axiom simple_fact : A → B
@@ -147,6 +182,7 @@ theorem simple_fact : A → B := mathlib_existing_lemma
 ```
 
 ### Compositional Proofs
+
 ```lean
 -- Before
 axiom complex_fact : Big_Statement
@@ -159,6 +195,7 @@ theorem complex_fact : Big_Statement := by
 ```
 
 ### Structural Refactors
+
 ```lean
 -- Before
 axiom infrastructure : Property
@@ -177,9 +214,13 @@ theorem infrastructure : Property := by
 ## Handling Dependencies
 
 **If axiom A depends on axiom B:**
+
 1. Eliminate B first (bottom-up approach)
+
 2. Document dependency chain
-3. Verify elimination doesn't break A
+
+3. Verify elimination doesn’t break A
+
 4. Then eliminate A
 
 **Dependency tracking:**
@@ -202,8 +243,11 @@ echo "Eliminated: $((N - M))"
 ```
 
 **Expected elimination rate:**
+
 - Easy axioms: 2-3 per hour
+
 - Medium axioms: 1-2 per day
+
 - Hard axioms: 2-5 days each
 
 ## Migration Plan Template
@@ -233,57 +277,90 @@ Estimated total: X+Y+Z days
 
 ## Common Pitfalls
 
-❌ **Don't:**
+❌ **Don’t:**
+
 - Add new axioms while eliminating old ones
+
 - Skip mathlib search (60% hit rate!)
+
 - Eliminate without testing dependents
+
 - Give up after first search failure
+
 - Use stronger axiom to replace weaker one
 
 ✅ **Do:**
+
 - Search thoroughly (multiple strategies)
+
 - Test with `lake build` after each elimination
+
 - Track progress (axiom count trending down)
+
 - Document hard cases for future work
+
 - Prove shims for backward compatibility
 
 ## When to Keep Axioms
 
 **Rare acceptable cases (WITH user approval):**
+
 1. Foundational axioms for new domain (e.g., new mathematical structure)
+
 2. Interface with external systems (FFI, oracles)
+
 3. Temporary scaffolding with CLEAR timeline
 
 **Requires:**
+
 - Explicit user approval
+
 - Documented elimination plan
+
 - Timeline for removal
+
 - Not acceptable for mathlib contributions
 
 ## Integration with Subagents
 
 **axiom-eliminator agent can:**
+
 - Search mathlib exhaustively for each axiom
+
 - Try multiple proof strategies
+
 - Generate elimination patches
+
 - Track progress across batch
 
 **Use for:**
+
 - Projects with 10+ axioms
+
 - Systematic cleanup work
+
 - When you need to focus on other tasks
 
 **Keep human for:**
+
 - Novel mathematical insights
+
 - Design decisions
+
 - Hard cases needing creativity
 
 ## Output Expectations
 
 **Agent output expectations:**
+
 - Outline plan FIRST (bullet points)
+
 - Show search results
+
 - Propose elimination strategy
+
 - Apply in small batches
+
 - Report progress after each batch
+
 - Total output: ~2000-3000 tokens per axiom

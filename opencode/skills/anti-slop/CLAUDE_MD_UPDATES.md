@@ -2,12 +2,12 @@
 name: anti-slop-CLAUDE_MD_UPDATES
 description: CLAUDE.md Updates for Anti-Slop Integration
 ---
-
 # CLAUDE.md Updates for Anti-Slop Integration
 
-This document contains proposed updates to CLAUDE.md to integrate anti-slop awareness and prevention into Claude's core behavior.
+This document contains proposed updates to CLAUDE.md to integrate anti-slop awareness
+and prevention into Claude’s core behavior.
 
----
+* * *
 
 ## Section 1: Add to `<behavior_instructions>` - New Subsection
 
@@ -128,9 +128,9 @@ Claude does not mention "anti-slop" terminology to users unless they use it firs
 </anti_slop_awareness>
 ```
 
----
+* * *
 
-## Section 2: Update to `<tone_and_formatting>` 
+## Section 2: Update to `<tone_and_formatting>`
 
 **Add to end of existing `<tone_and_formatting>` section:**
 
@@ -148,7 +148,7 @@ This awareness doesn't make Claude overly casual or cryptic - it simply ensures 
 </avoiding_generic_patterns>
 ```
 
----
+* * *
 
 ## Section 3: Add to Computer Use Section - Update to `<file_creation_advice>`
 
@@ -197,7 +197,7 @@ Claude should read appropriate SKILL.md files before creating substantial conten
 </file_creation_advice>
 ```
 
----
+* * *
 
 ## Section 4: New Entry in `<available_skills>` Section
 
@@ -217,7 +217,7 @@ Comprehensive toolkit for detecting and eliminating "AI slop" - generic, low-qua
 </skill>
 ```
 
----
+* * *
 
 ## Section 5: Additional Context for `<artifacts>` Section
 
@@ -249,54 +249,85 @@ Claude reviews artifacts against these standards before presenting them, especia
 </artifact_quality_standards>
 ```
 
----
+* * *
 
 ## Implementation Notes
 
 ### Priority
+
 These changes should be considered **high priority** for integration as they:
+
 1. Directly address a common user concern about AI-generated content quality
-2. Align with Claude's existing emphasis on helpfulness and quality
+
+2. Align with Claude’s existing emphasis on helpfulness and quality
+
 3. Provide concrete, actionable guidance
-4. Distinguish Claude's outputs from generic AI content
+
+4. Distinguish Claude’s outputs from generic AI content
 
 ### Backward Compatibility
+
 These updates:
-- Don't conflict with existing behavior guidelines
+
+- Don’t conflict with existing behavior guidelines
+
 - Enhance rather than replace current quality standards
+
 - Work alongside existing skills and workflows
-- Maintain Claude's helpful, clear communication style
+
+- Maintain Claude’s helpful, clear communication style
 
 ### Testing Considerations
+
 After integration, verify:
+
 1. Claude naturally avoids high-risk phrases in responses
+
 2. Code outputs use descriptive names and appropriate comments
+
 3. Artifacts (presentations, docs, HTML) avoid generic patterns
+
 4. Anti-slop skill is triggered appropriately when users need it
-5. Quality improvements don't make responses overly terse or cryptic
+
+5. Quality improvements don’t make responses overly terse or cryptic
 
 ### User Experience
+
 Users should notice:
+
 - More specific, direct responses
-- Code with better names and clearer structure  
+
+- Code with better names and clearer structure
+
 - Designs that feel less template-driven
+
 - Content that sounds more authentic
+
 - Proactive quality improvements without being prompted
 
 Users should NOT notice:
+
 - Responses becoming overly casual or cryptic
+
 - Loss of helpfulness or clarity
+
 - Awkward avoidance of legitimate terminology
-- Responses mentioning "anti-slop" unprompted
+
+- Responses mentioning “anti-slop” unprompted
 
 ### Gradual Rollout Recommendation
+
 Consider phased integration:
+
 1. **Phase 1:** Add anti-slop skill to available skills, make Claude aware it exists
+
 2. **Phase 2:** Add proactive triggers so Claude uses skill when appropriate
+
 3. **Phase 3:** Integrate quality principles into core behavior instructions
+
 4. **Phase 4:** Monitor and refine based on user feedback and output quality
 
----
+* * *
 
 ## Example Before/After Scenarios
 
@@ -360,16 +391,23 @@ Subheading: "Extract data from PDFs and sync to QuickBooks in seconds"
 CTA button: "Try 50 invoices free"
 ```
 
----
+* * *
 
 ## Summary
 
-These CLAUDE.md updates integrate anti-slop awareness throughout Claude's behavior system, ensuring high-quality, authentic outputs across text, code, and design. The changes are:
+These CLAUDE.md updates integrate anti-slop awareness throughout Claude’s behavior
+system, ensuring high-quality, authentic outputs across text, code, and design.
+The changes are:
 
 - **Comprehensive**: Cover all major content types
+
 - **Actionable**: Provide specific patterns to avoid
-- **Balanced**: Maintain Claude's helpful, clear style
+
+- **Balanced**: Maintain Claude’s helpful, clear style
+
 - **Integrated**: Work with existing skills and workflows
+
 - **User-focused**: Improve quality without requiring prompting
 
-The anti-slop skill becomes a powerful tool for both prevention (through integrated awareness) and cure (through explicit detection and cleanup capabilities).
+The anti-slop skill becomes a powerful tool for both prevention (through integrated
+awareness) and cure (through explicit detection and cleanup capabilities).

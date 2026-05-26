@@ -1,4 +1,6 @@
-Path tracing requires multi-pass rendering: Buffer A traces and accumulates samples each frame (iChannel0=self), Image Pass reads accumulated data and applies tone mapping for display. Below is the JS skeleton for standalone HTML:
+Path tracing requires multi-pass rendering: Buffer A traces and accumulates samples each
+frame (iChannel0=self), Image Pass reads accumulated data and applies tone mapping for
+display. Below is the JS skeleton for standalone HTML:
 
 ### Standalone HTML Multi-Pass Template (Ping-Pong Accumulation)
 
@@ -131,26 +133,39 @@ requestAnimationFrame(render);
 # Path Tracing & Global Illumination
 
 ## Use Cases
+
 - Physically accurate global illumination: indirect lighting, color bleeding, caustics
+
 - Complex light transport with reflection, refraction, and diffuse interreflection
+
 - Progressive high-quality rendering with multi-frame accumulation in ShaderToy
+
 - Scenes requiring precise light interactions such as Cornell Box and glassware
 
 ## Core Principles
 
-Path tracing solves the rendering equation via Monte Carlo methods. For each pixel, a ray is cast from the camera and bounced through the scene; at each bounce: intersect -> shade -> sample next direction -> accumulate contribution.
+Path tracing solves the rendering equation via Monte Carlo methods.
+For each pixel, a ray is cast from the camera and bounced through the scene; at each
+bounce: intersect -> shade -> sample next direction -> accumulate contribution.
 
 Core formulas:
+
 - **Rendering equation**: $L_o = L_e + \int f_r \cdot L_i \cdot \cos\theta \, d\omega$
-- **MC estimate**: $L \approx \frac{1}{N} \sum \frac{f_r \cdot L_i \cdot \cos\theta}{p(\omega)}$
+
+- **MC estimate**: $L \approx \frac{1}{N} \sum \frac{f_r \cdot L_i \cdot
+  \cos\theta}{p(\omega)}$
+
 - **Schlick Fresnel**: $F = F_0 + (1 - F_0)(1 - \cos\theta)^5$
+
 - **Cosine-weighted PDF**: $p(\omega) = \cos\theta / \pi$
 
-Use iterative loops instead of recursion: `acc` (accumulated radiance) and `throughput` (path attenuation) track path contributions.
+Use iterative loops instead of recursion: `acc` (accumulated radiance) and `throughput`
+(path attenuation) track path contributions.
 
 ## Implementation Steps
 
 ### Step 1: PRNG
+
 ```glsl
 // Integer hash (recommended, good quality)
 int iSeed;
@@ -172,6 +187,7 @@ float rand() { return fract(sin(seed++) * 43758.5453123); }
 ```
 
 ### Step 2: Ray-Scene Intersection
+
 ```glsl
 // Analytic sphere intersection
 struct Ray { vec3 o, d; };
@@ -210,6 +226,7 @@ vec3 calcNormal(vec3 p) {
 ```
 
 ### Step 3: Cosine-Weighted Hemisphere Sampling
+
 ```glsl
 // fizzer method (most concise)
 vec3 cosineDirection(vec3 n) {
@@ -231,6 +248,7 @@ vec3 cosineDirectionONB(vec3 n) {
 ```
 
 ### Step 4: Materials and BRDF
+
 ```glsl
 #define MAT_DIFF 0
 #define MAT_SPEC 1
@@ -258,6 +276,7 @@ void handleDielectric(inout Ray r, vec3 n, vec3 x, float ior, vec3 albedo, inout
 ```
 
 ### Step 5: Direct Light Sampling (NEE)
+
 ```glsl
 // Spherical light solid angle sampling
 vec3 coneSample(vec3 d, float phi, float sina, float cosa) {
@@ -278,6 +297,7 @@ vec3 directLight = lightEmission * clamp(dot(l, nl), 0., 1.) * omega / PI;
 ```
 
 ### Step 6: Path Tracing Main Loop
+
 ```glsl
 #define MAX_BOUNCES 8
 
@@ -317,6 +337,7 @@ vec3 pathtrace(Ray r) {
 ```
 
 ### Step 7: Progressive Accumulation and Display
+
 ```glsl
 // Buffer A: path tracing + accumulation
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -346,7 +367,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ## Complete Code Template
 
-ShaderToy dual pass: Buffer A (path tracing + accumulation, iChannel0=self), Image (display).
+ShaderToy dual pass: Buffer A (path tracing + accumulation, iChannel0=self), Image
+(display).
 
 **Buffer A:**
 ```glsl
@@ -530,6 +552,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### 1. SDF Scene Path Tracing
+
 ```glsl
 float map(vec3 p) {
     float d = p.y + 0.5;
@@ -548,6 +571,7 @@ float intersectScene(vec3 ro, vec3 rd, float tmax) {
 ```
 
 ### 2. Disney BRDF Path Tracing
+
 ```glsl
 struct Material { vec3 albedo; float metallic, roughness; };
 
@@ -575,6 +599,7 @@ vec3 SampleGGXVNDF(vec3 V, float ax, float ay, float r1, float r2) {
 ```
 
 ### 3. Depth of Field
+
 ```glsl
 #define APERTURE 0.12
 #define FOCUS_DIST 8.0
@@ -591,6 +616,7 @@ rd = normalize(focalPoint - ro);
 ```
 
 ### 4. MIS (Multiple Importance Sampling)
+
 ```glsl
 float misWeight(float pdfA, float pdfB) {
     float a2 = pdfA * pdfA, b2 = pdfB * pdfB;
@@ -601,6 +627,7 @@ float misWeight(float pdfA, float pdfB) {
 ```
 
 ### 5. Volumetric Path Tracing (Participating Media)
+
 ```glsl
 vec3 transmittance = exp(-extinction * distance);
 float scatterDist = -log(frand()) / extinctionMajorant;
@@ -613,11 +640,20 @@ if (scatterDist < hitDist) {
 
 ## Performance & Composition
 
-- 1-4 spp per frame + inter-frame accumulation for convergence; Russian roulette from bounce 3-4, survival probability = max throughput component
-- NEE significantly accelerates small light sources; offset along normal by 1e-3~1e-4 or record hit ID to prevent self-intersection
-- `min(color, 10.)` to prevent fireflies; SDF limited to 128-256 steps + reasonable tmax; integer hash preferred over sin-hash
-- **Composition**: SDF modeling / HDR environment maps / Disney BRDF (GGX+VNDF) / volume rendering (Beer-Lambert) / spectral rendering (Sellmeier+CIE XYZ) / TAA (temporal reprojection)
+- 1-4 spp per frame + inter-frame accumulation for convergence; Russian roulette from
+  bounce 3-4, survival probability = max throughput component
+
+- NEE significantly accelerates small light sources; offset along normal by 1e-3~1e-4 or
+  record hit ID to prevent self-intersection
+
+- `min(color, 10.)` to prevent fireflies; SDF limited to 128-256 steps + reasonable
+  tmax; integer hash preferred over sin-hash
+
+- **Composition**: SDF modeling / HDR environment maps / Disney BRDF (GGX+VNDF) / volume
+  rendering (Beer-Lambert) / spectral rendering (Sellmeier+CIE XYZ) / TAA (temporal
+  reprojection)
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/path-tracing-gi.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/path-tracing-gi.md)

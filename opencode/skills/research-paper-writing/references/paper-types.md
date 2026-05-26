@@ -1,26 +1,36 @@
 # Paper Types Beyond Empirical ML
 
-Guide for writing non-standard paper types: theory papers, survey/tutorial papers, benchmark/dataset papers, and position papers. Each type has distinct structure, evidence standards, and venue expectations.
+Guide for writing non-standard paper types: theory papers, survey/tutorial papers,
+benchmark/dataset papers, and position papers.
+Each type has distinct structure, evidence standards, and venue expectations.
 
----
+* * *
 
 ## Contents
 
 - [Theory Papers](#theory-papers)
+
 - [Survey and Tutorial Papers](#survey-and-tutorial-papers)
+
 - [Benchmark and Dataset Papers](#benchmark-and-dataset-papers)
+
 - [Position Papers](#position-papers)
+
 - [Reproducibility and Replication Papers](#reproducibility-and-replication-papers)
 
----
+* * *
 
 ## Theory Papers
 
 ### When to Write a Theory Paper
 
 Your paper should be a theory paper if:
-- The main contribution is a theorem, bound, impossibility result, or formal characterization
+
+- The main contribution is a theorem, bound, impossibility result, or formal
+  characterization
+
 - Experiments are supplementary validation, not the core evidence
+
 - The contribution advances understanding rather than achieving state-of-the-art numbers
 
 ### Structure
@@ -86,14 +96,20 @@ $\epsilon$-stationary point.
 ```
 
 **Rules for theorem statements:**
+
 - State all assumptions explicitly (numbered, with names)
-- Include the formal bound, not just "converges at rate O(·)"
-- Add a plain-language corollary: "In particular, this means..."
-- Compare to known bounds: "This improves over [prior work]'s bound of O(·) by a factor of..."
+
+- Include the formal bound, not just “converges at rate O(·)”
+
+- Add a plain-language corollary: “In particular, this means …”
+
+- Compare to known bounds: “This improves over [prior work]'s bound of O(·) by a factor
+  of …”
 
 ### Proof Sketches
 
-The proof sketch is the most important part of the main text for a theory paper. Reviewers evaluate whether you have genuine insight or just mechanical derivation.
+The proof sketch is the most important part of the main text for a theory paper.
+Reviewers evaluate whether you have genuine insight or just mechanical derivation.
 
 **Good proof sketch pattern:**
 
@@ -120,7 +136,8 @@ appears in Appendix~\ref{app:proofs}.
 \end{proof}
 ```
 
-**Bad proof sketch**: Restating the theorem with slightly different notation, or just saying "the proof follows standard techniques."
+**Bad proof sketch**: Restating the theorem with slightly different notation, or just
+saying “the proof follows standard techniques.”
 
 ### Full Proofs in Appendix
 
@@ -149,10 +166,10 @@ f(x_{t+1}) \leq f(x_t) - \frac{\eta}{2}\|\nabla f(x_t)\|^2 + \frac{\eta^2 L}{2}\
 ### Common Theory Paper Pitfalls
 
 | Pitfall | Problem | Fix |
-|---------|---------|-----|
+| --- | --- | --- |
 | Assumptions too strong | Trivializes the result | Discuss which assumptions are necessary; prove lower bounds |
-| No comparison to existing bounds | Reviewers can't assess contribution | Add a comparison table of bounds |
-| Proof sketch is just the full proof shortened | Doesn't convey insight | Focus on the 1-2 key ideas; defer mechanics to appendix |
+| No comparison to existing bounds | Reviewers can’t assess contribution | Add a comparison table of bounds |
+| Proof sketch is just the full proof shortened | Doesn’t convey insight | Focus on the 1-2 key ideas; defer mechanics to appendix |
 | No experimental validation | Reviewers question practical relevance | Add synthetic experiments testing predictions |
 | Notation inconsistency | Confuses reviewers | Create a notation table in Preliminaries |
 | Overly complex proofs where simple ones exist | Reviewers suspect error | Prefer clarity over generality |
@@ -160,7 +177,7 @@ f(x_{t+1}) \leq f(x_t) - \frac{\eta}{2}\|\nabla f(x_t)\|^2 + \frac{\eta^2 L}{2}\
 ### Venues for Theory Papers
 
 | Venue | Theory Acceptance Rate | Notes |
-|-------|----------------------|-------|
+| --- | --- | --- |
 | **NeurIPS** | Moderate | Values theory with practical implications |
 | **ICML** | High | Strong theory track |
 | **ICLR** | Moderate | Prefers theory with empirical validation |
@@ -169,18 +186,23 @@ f(x_{t+1}) \leq f(x_t) - \frac{\eta}{2}\|\nabla f(x_t)\|^2 + \frac{\eta^2 L}{2}\
 | **STOC/FOCS** | For TCS-flavored results | If contribution is primarily combinatorial/algorithmic |
 | **JMLR** | High | No page limit; good for long proofs |
 
----
+* * *
 
 ## Survey and Tutorial Papers
 
 ### When to Write a Survey
 
 - A subfield has matured enough that synthesis is valuable
-- You've identified connections between works that individual papers don't make
+
+- You’ve identified connections between works that individual papers don’t make
+
 - Newcomers to the area have no good entry point
+
 - The landscape has changed significantly since the last survey
 
-**Warning**: Surveys require genuine expertise. A survey by someone outside the field, however comprehensive, will miss nuances and mischaracterize work.
+**Warning**: Surveys require genuine expertise.
+A survey by someone outside the field, however comprehensive, will miss nuances and
+mischaracterize work.
 
 ### Structure
 
@@ -220,31 +242,45 @@ f(x_{t+1}) \leq f(x_t) - \frac{\eta}{2}\|\nabla f(x_t)\|^2 + \frac{\eta^2 L}{2}\
 
 ### Taxonomy Design
 
-The taxonomy is the core intellectual contribution of a survey. It should:
+The taxonomy is the core intellectual contribution of a survey.
+It should:
 
-- **Be meaningful**: Categories should correspond to real methodological differences, not arbitrary groupings
+- **Be meaningful**: Categories should correspond to real methodological differences,
+  not arbitrary groupings
+
 - **Be exhaustive**: Every relevant paper should fit somewhere
+
 - **Be mutually exclusive** (ideally): Each paper belongs to one primary category
-- **Have informative names**: "Attention-based methods" > "Category 3"
+
+- **Have informative names**: “Attention-based methods” > “Category 3”
+
 - **Be visualized**: A figure showing the taxonomy is almost always helpful
 
-**Example taxonomy axes for "LLM Reasoning" survey:**
+**Example taxonomy axes for “LLM Reasoning” survey:**
+
 - By technique: chain-of-thought, tree-of-thought, self-consistency, tool use
+
 - By training requirement: prompting-only, fine-tuned, RLHF
+
 - By reasoning type: mathematical, commonsense, logical, causal
 
 ### Writing Standards
 
 - **Cite every relevant paper** — authors will check if their work is included
-- **Be fair** — don't dismiss methods you don't prefer
-- **Synthesize, don't just list** — identify patterns, trade-offs, open questions
+
+- **Be fair** — don’t dismiss methods you don’t prefer
+
+- **Synthesize, don’t just list** — identify patterns, trade-offs, open questions
+
 - **Include a comparison table** — even if qualitative (features/properties checklist)
-- **Update before submission** — check arXiv for papers published since you started writing
+
+- **Update before submission** — check arXiv for papers published since you started
+  writing
 
 ### Venues for Surveys
 
 | Venue | Notes |
-|-------|-------|
+| --- | --- |
 | **TMLR** (Survey track) | Dedicated survey submissions; no page limit |
 | **JMLR** | Long format, well-respected |
 | **Foundations and Trends in ML** | Invited, but can be proposed |
@@ -252,15 +288,18 @@ The taxonomy is the core intellectual contribution of a survey. It should:
 | **arXiv** (standalone) | No peer review but high visibility if well-done |
 | **Conference tutorials** | Present as tutorial at NeurIPS/ICML/ACL; write up as paper |
 
----
+* * *
 
 ## Benchmark and Dataset Papers
 
 ### When to Write a Benchmark Paper
 
-- Existing benchmarks don't measure what you think matters
+- Existing benchmarks don’t measure what you think matters
+
 - A new capability has emerged with no standard evaluation
+
 - Existing benchmarks are saturated (all methods score >95%)
+
 - You want to standardize evaluation in a fragmented subfield
 
 ### Structure
@@ -305,8 +344,8 @@ The taxonomy is the core intellectual contribution of a survey. It should:
 Reviewers evaluate benchmarks on different criteria than methods papers:
 
 | Criterion | What Reviewers Check |
-|-----------|---------------------|
-| **Novelty of evaluation** | Does this measure something existing benchmarks don't? |
+| --- | --- |
+| **Novelty of evaluation** | Does this measure something existing benchmarks don’t? |
 | **Construct validity** | Does the benchmark actually measure the stated capability? |
 | **Difficulty calibration** | Not too easy (saturated) or too hard (random performance) |
 | **Annotation quality** | Agreement metrics, annotator qualifications, guidelines |
@@ -362,22 +401,25 @@ Datasheet Questions:
 ### Venues for Benchmark Papers
 
 | Venue | Notes |
-|-------|-------|
+| --- | --- |
 | **NeurIPS Datasets & Benchmarks** | Dedicated track; best venue for this |
 | **ACL** (Resource papers) | NLP-focused datasets |
 | **LREC-COLING** | Language resources |
 | **TMLR** | Good for benchmarks with analysis |
 
----
+* * *
 
 ## Position Papers
 
 ### When to Write a Position Paper
 
 - You have an argument about how the field should develop
+
 - You want to challenge a widely-held assumption
+
 - You want to propose a research agenda based on analysis
-- You've identified a systematic problem in current methodology
+
+- You’ve identified a systematic problem in current methodology
 
 ### Structure
 
@@ -413,31 +455,39 @@ Datasheet Questions:
 
 ### Writing Standards
 
-- **Lead with the strongest version of your argument** — don't hedge in the first paragraph
-- **Engage with counterarguments honestly** — the best position papers address the strongest objections, not the weakest
+- **Lead with the strongest version of your argument** — don’t hedge in the first
+  paragraph
+
+- **Engage with counterarguments honestly** — the best position papers address the
+  strongest objections, not the weakest
+
 - **Provide evidence** — a position paper without evidence is an editorial
-- **Be concrete** — "the field should do X" is better than "more work is needed"
-- **Don't straw-man existing work** — characterize opposing positions fairly
+
+- **Be concrete** — “the field should do X” is better than “more work is needed”
+
+- **Don’t straw-man existing work** — characterize opposing positions fairly
 
 ### Venues for Position Papers
 
 | Venue | Notes |
-|-------|-------|
+| --- | --- |
 | **ICML** (Position track) | Dedicated track for position papers |
 | **NeurIPS** (Workshop papers) | Workshops often welcome position pieces |
 | **ACL** (Theme papers) | When your position aligns with the conference theme |
 | **TMLR** | Accepts well-argued position papers |
 | **CACM** | For broader CS audience |
 
----
+* * *
 
 ## Reproducibility and Replication Papers
 
 ### When to Write a Reproducibility Paper
 
 - You attempted to reproduce a published result and succeeded/failed
+
 - You want to verify claims under different conditions
-- You've identified that a popular method's performance depends on unreported details
+
+- You’ve identified that a popular method’s performance depends on unreported details
 
 ### Structure
 
@@ -474,7 +524,7 @@ Datasheet Questions:
 ### Venues
 
 | Venue | Notes |
-|-------|-------|
+| --- | --- |
 | **ML Reproducibility Challenge** | Annual challenge at NeurIPS |
 | **ReScience** | Journal dedicated to replications |
 | **TMLR** | Accepts reproductions with analysis |

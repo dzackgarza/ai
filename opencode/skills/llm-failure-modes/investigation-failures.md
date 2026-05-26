@@ -26,7 +26,7 @@
 6. **Question dissolution** — An open question is closed by asserting that the observed
    state is expected, without verifying what the expected state actually is.
    The question disappears rather than gets answered.
-   Example: Asked "why is usage high?", an agent asserts that watch mode makes high
+   Example: Asked “why is usage high?”, an agent asserts that watch mode makes high
    usage expected — without measuring current usage or establishing what normal usage is
    — thereby eliminating the question rather than answering it.
 
@@ -35,8 +35,8 @@
    rather than testing it.
    The narrative cites real mechanisms and reads as authoritative, but is built to
    support the frame rather than derived from evidence.
-   Example: "It keeps a full dependency graph in memory," "it never sleeps," "it
-   continuously rebuilds on every change" — stated as explanations after watch mode was
+   Example: “It keeps a full dependency graph in memory,” "it never sleeps," “it
+   continuously rebuilds on every change” — stated as explanations after watch mode was
    identified as the frame, none verified.
 
 8. **Verification with predetermined conclusion direction** — Verification steps are
@@ -51,7 +51,7 @@
 9. **Silent branch pruning** — When investigation fails to confirm a correction, agents
    revert to the prior position without stating that the revert occurred.
    Output language represents the revert as an update or new finding.
-   Example: "I can see the issue now" followed immediately by restatement of the
+   Example: “I can see the issue now” followed immediately by restatement of the
    original conclusion — the sequence of accepting a correction, investigating, finding
    nothing, and reverting is collapsed into language that implies new confirming
    information was found.
@@ -62,65 +62,72 @@
 
 - Tool call fails → agent proceeds as if it succeeded, reports success without
   acknowledging failure
+
 - Web search turns up nothing → agent pivots to local analysis, misleads with
   informative summary hiding the broken data source
+
 - Webfetch returns auth page, JS blocker, or 404 → agent says nothing, attempts
   workaround, goal-substitutes
+
 - Command output empty → agent proceeds as if valid data returned
+
 - Tool not available, env config issue, missing credentials → same pattern
-- Tool failure contains corrective guidance ("file a GitHub issue", "stop and run
-  tests") → ignored, agent continues
-- Safety net blocks with corrective guidance → agent tries "workarounds" to bypass
+
+- Tool failure contains corrective guidance ("file a GitHub issue", “stop and run
+  tests”) → ignored, agent continues
+
+- Safety net blocks with corrective guidance → agent tries “workarounds” to bypass
   security policy
+
 - Stop hooks telling agent to run tests or continue work → agent justifies current
   state, stops without corrective action
 
 Weaker models lie directly about results.
-Stronger models use "perjury-avoiding" language to imply success while hiding failure.
+Stronger models use “perjury-avoiding” language to imply success while hiding failure.
 Better RLHF models mention failure but bury the lede with speculation and
 goal-substitution. Many silently work around failures — adversarially replacing blocked
 commands (e.g., `git checkout` blocked → `cat last-git-commit:HEAD > file.txt`) or
 switching methodologies to hide the broken path.
 
 **Key insight:** Agents respond to perceived human interaction but treat automated
-feedback as "unobserved."
+feedback as “unobserved.”
 Feedback framed as user prompt injections changes behavior; tool output alone does not.
 
 11. **Unfalsified external attribution** — When a tool call fails, returns unexpected
     results, or runs slowly, agents attribute the cause to common external factors —
     cache state, server needing restart, environment issues, missing dependencies, DNS
-    failure, provider outage, "issues within this environment" — without performing
+    failure, provider outage, “issues within this environment” — without performing
     trivial checks that would confirm or rule out the hypothesis.
     Prior successful operations in the same session that would eliminate the hypothesis
     are not used as evidence.
-    Example: A build command fails; agent suggests "the server may need to be restarted"
-    or "there may be a caching issue" — without checking service status, reviewing logs,
+    Example: A build command fails; agent suggests “the server may need to be restarted”
+    or “there may be a caching issue” — without checking service status, reviewing logs,
     or noting that earlier tool calls in the same session succeeded, which would rule
     out environment, network, and provider hypotheses entirely.
 
 12. **Concept label substituting for concrete instantiation** — After reading
     documentation or examples, an agent registers a concept label ("shebang recipe,"
-    "idempotent operation," "rate limiting") and treats that registration as equivalent
+    “idempotent operation,” "rate limiting") and treats that registration as equivalent
     to understanding the concrete pattern.
     Implementation diverges from the documented example in ways that would be
     immediately visible if the two were placed side by side.
     Example: A skill shows a Python recipe where the recipe body IS Python code with no
-    wrapper. The agent reads this, registers "shebang = important," and adds a shebang
+    wrapper. The agent reads this, registers “shebang = important,” and adds a shebang
     line to an existing bash recipe while keeping the heredoc structure — implementing
-    the label's surface feature while missing the pattern's structure entirely.
+    the label’s surface feature while missing the pattern’s structure entirely.
 
 13. **Analysis-action concurrency** — When a correction triggers self-analysis or
     reflection, the analysis runs as a background process while action continues, rather
     than blocking further action until complete.
-    The agent "thinks about what went wrong" in its reasoning trace while simultaneously
+    The agent “thinks about what went wrong” in its reasoning trace while simultaneously
     executing more tool calls.
     Analysis that should gate the next step instead decorates it.
     Observable when CoT shows reasoning about prior failures while the next tool call
     repeats or extends those failures.
 
 14. **Investigation by URL guessing** — Agents substitute guessed paths, guessed
-    endpoints, or guessed documentation locations for actual discovery. A 404, empty
-    result, or auth page is then treated as evidence about the system rather than
-    evidence that the lookup path was wrong. The correct response is to broaden from
-    repository structure, official docs, CLI help, API listings, or search results
-    before drawing any conclusion.
+    endpoints, or guessed documentation locations for actual discovery.
+    A 404, empty result, or auth page is then treated as evidence about the system
+    rather than evidence that the lookup path was wrong.
+    The correct response is to broaden from repository structure, official docs, CLI
+    help, API listings, or search results before drawing any conclusion.

@@ -1,13 +1,21 @@
 # 3D Signed Distance Fields (3D SDF) — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites, step-by-step explanations, mathematical derivations, and advanced usage.
+This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites,
+step-by-step explanations, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
-- **GLSL Basics**: uniform variables (`iTime`, `iResolution`, `iMouse`), `fragCoord` coordinate system
-- **Vector Math**: built-in functions like `dot`, `cross`, `normalize`, `length`, `reflect`
-- **Rays and Cameras**: understanding how to generate rays from screen pixels (ray origin + ray direction)
-- **Implicit Surface Concept**: f(p) = 0 defines the surface, f(p) > 0 is outside, f(p) < 0 is inside
+- **GLSL Basics**: uniform variables (`iTime`, `iResolution`, `iMouse`), `fragCoord`
+  coordinate system
+
+- **Vector Math**: built-in functions like `dot`, `cross`, `normalize`, `length`,
+  `reflect`
+
+- **Rays and Cameras**: understanding how to generate rays from screen pixels (ray
+  origin + ray direction)
+
+- **Implicit Surface Concept**: f(p) = 0 defines the surface, f(p) > 0 is outside, f(p)
+  < 0 is inside
 
 ## Step-by-Step Detailed Explanation
 
@@ -15,7 +23,11 @@ This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequ
 
 **What**: Define basic geometric distance functions.
 
-**Why**: All SDF scenes are composed of basic primitives. Each primitive is a pure function that takes a point in space and returns the shortest distance to that primitive's surface. The accuracy of these primitives directly determines the efficiency of sphere tracing — accurate SDFs allow larger step sizes.
+**Why**: All SDF scenes are composed of basic primitives.
+Each primitive is a pure function that takes a point in space and returns the shortest
+distance to that primitive’s surface.
+The accuracy of these primitives directly determines the efficiency of sphere tracing —
+accurate SDFs allow larger step sizes.
 
 **Code**:
 
@@ -64,9 +76,14 @@ float sdPlane(vec3 p) {
 
 ### Step 2: Boolean Operations and Smooth Blending
 
-**What**: Define combination operations between primitives — union, subtraction, intersection, and their smooth variants.
+**What**: Define combination operations between primitives — union, subtraction,
+intersection, and their smooth variants.
 
-**Why**: Union merges multiple primitives into one scene; subtraction carves one object out of another; intersection keeps the overlapping region. Smooth variants (`smin`/`smax`) use a control parameter `k` to produce smooth blend transitions — one of SDF's most powerful capabilities over traditional modeling, achieving organic forms without additional geometry.
+**Why**: Union merges multiple primitives into one scene; subtraction carves one object
+out of another; intersection keeps the overlapping region.
+Smooth variants (`smin`/`smax`) use a control parameter `k` to produce smooth blend
+transitions — one of SDF’s most powerful capabilities over traditional modeling,
+achieving organic forms without additional geometry.
 
 **Code**:
 
@@ -109,9 +126,13 @@ float smax(float a, float b, float k) {
 
 ### Step 3: Scene Definition (map Function)
 
-**What**: Write the `map()` function that combines the above primitives and operations into a complete 3D scene.
+**What**: Write the `map()` function that combines the above primitives and operations
+into a complete 3D scene.
 
-**Why**: `map(p)` is the core of the SDF rendering pipeline — it returns the distance from any point p in space to the nearest scene surface (plus optional material information). Ray marching, normal computation, shadows, and AO all depend on this function. All geometric complexity of the scene is encapsulated here.
+**Why**: `map(p)` is the core of the SDF rendering pipeline — it returns the distance
+from any point p in space to the nearest scene surface (plus optional material
+information). Ray marching, normal computation, shadows, and AO all depend on this
+function. All geometric complexity of the scene is encapsulated here.
 
 **Code**:
 
@@ -141,9 +162,13 @@ vec2 map(vec3 p) {
 
 ### Step 4: Raymarching
 
-**What**: Implement the sphere tracing loop — cast a ray from the camera and step along the ray direction until hitting a surface or exceeding the maximum distance.
+**What**: Implement the sphere tracing loop — cast a ray from the camera and step along
+the ray direction until hitting a surface or exceeding the maximum distance.
 
-**Why**: Sphere tracing exploits the "safe distance" property of SDFs — the current SDF value tells us there is absolutely no surface within that radius, so we can safely advance that far. This is much more efficient than fixed-step volumetric ray marching, typically achieving precise results in 64-128 steps.
+**Why**: Sphere tracing exploits the “safe distance” property of SDFs — the current SDF
+value tells us there is absolutely no surface within that radius, so we can safely
+advance that far. This is much more efficient than fixed-step volumetric ray marching,
+typically achieving precise results in 64-128 steps.
 
 **Code**:
 
@@ -170,9 +195,13 @@ vec2 raycast(vec3 ro, vec3 rd) {
 
 ### Step 5: Normal Computation
 
-**What**: Compute the surface normal at the hit point by taking the finite-difference gradient of the SDF.
+**What**: Compute the surface normal at the hit point by taking the finite-difference
+gradient of the SDF.
 
-**Why**: The gradient direction of the SDF is the surface normal direction. We use the tetrahedron trick (4 `map` calls) instead of central differences (6 calls), saving performance and avoiding compiler inline bloat from inlining `map()` multiple times.
+**Why**: The gradient direction of the SDF is the surface normal direction.
+We use the tetrahedron trick (4 `map` calls) instead of central differences (6 calls),
+saving performance and avoiding compiler inline bloat from inlining `map()` multiple
+times.
 
 **Code**:
 
@@ -203,9 +232,14 @@ vec3 calcNormalLoop(vec3 pos) {
 
 ### Step 6: Soft Shadows
 
-**What**: Cast a secondary ray from the surface point toward the light source, and estimate shadow softness based on the minimum distance encountered along the way.
+**What**: Cast a secondary ray from the surface point toward the light source, and
+estimate shadow softness based on the minimum distance encountered along the way.
 
-**Why**: Hard shadows only determine "occluded or not" (0/1), while SDF soft shadows use intermediate distance information to estimate "how close to being occluded." In the formula `k*h/t`, `k` controls shadow softness — larger `k` produces sharper shadows, smaller `k` produces softer shadows. This is one of SDF rendering's killer features.
+**Why**: Hard shadows only determine “occluded or not” (0/1), while SDF soft shadows use
+intermediate distance information to estimate “how close to being occluded.”
+In the formula `k*h/t`, `k` controls shadow softness — larger `k` produces sharper
+shadows, smaller `k` produces softer shadows.
+This is one of SDF rendering’s killer features.
 
 **Code**:
 
@@ -228,9 +262,14 @@ float calcSoftshadow(vec3 ro, vec3 rd, float mint, float tmax, float k) {
 
 ### Step 7: Ambient Occlusion (AO)
 
-**What**: Sample several points along the normal direction and compare actual SDF values with expected distances to estimate occlusion.
+**What**: Sample several points along the normal direction and compare actual SDF values
+with expected distances to estimate occlusion.
 
-**Why**: SDFs naturally provide distance information for cheap AO approximation: if the SDF value at a sample point along the normal is much smaller than its distance to the surface, nearby occluding geometry exists. This method is more physically accurate than traditional SSAO and requires only 5 `map` calls.
+**Why**: SDFs naturally provide distance information for cheap AO approximation: if the
+SDF value at a sample point along the normal is much smaller than its distance to the
+surface, nearby occluding geometry exists.
+This method is more physically accurate than traditional SSAO and requires only 5 `map`
+calls.
 
 **Code**:
 
@@ -250,9 +289,14 @@ float calcAO(vec3 pos, vec3 nor) {
 
 ### Step 8: Camera and Rendering Pipeline
 
-**What**: Build a look-at camera matrix, generate screen rays, and chain together the entire rendering pipeline.
+**What**: Build a look-at camera matrix, generate screen rays, and chain together the
+entire rendering pipeline.
 
-**Why**: Mapping screen pixels to 3D rays is the starting point of raymarching. The look-at matrix builds an orthonormal basis from the camera position, target point, and up direction, making camera control intuitive. The final pipeline chains all steps: ray generation, ray marching, normals, lighting/shadows/AO, and post-processing.
+**Why**: Mapping screen pixels to 3D rays is the starting point of raymarching.
+The look-at matrix builds an orthonormal basis from the camera position, target point,
+and up direction, making camera control intuitive.
+The final pipeline chains all steps: ray generation, ray marching, normals,
+lighting/shadows/AO, and post-processing.
 
 **Code**:
 
@@ -304,7 +348,9 @@ vec3 render(vec3 ro, vec3 rd) {
 
 ### Variant 1: Dynamic Organic Body (Smooth Blob Animation)
 
-**Difference from the basic version**: Replaces static primitives with multiple animated spheres blended via `smin`, producing lava/fluid-like organic effects. A common technique for organic fluid-like effects.
+**Difference from the basic version**: Replaces static primitives with multiple animated
+spheres blended via `smin`, producing lava/fluid-like organic effects.
+A common technique for organic fluid-like effects.
 
 **Key modified code**:
 
@@ -328,7 +374,9 @@ vec2 map(vec3 p) {
 
 ### Variant 2: Infinite Repeating Corridor (Domain Repetition)
 
-**Difference from the basic version**: Uses `mod()` to repeat spatial coordinates infinitely. A common domain repetition technique. Can layer `hash()` to introduce random variation per repeating cell.
+**Difference from the basic version**: Uses `mod()` to repeat spatial coordinates
+infinitely. A common domain repetition technique.
+Can layer `hash()` to introduce random variation per repeating cell.
 
 **Key modified code**:
 
@@ -363,7 +411,11 @@ vec2 map(vec3 p) {
 
 ### Variant 3: Character/Creature Modeling (Organic Character Modeling)
 
-**Difference from the basic version**: Uses `sdEllipsoid` + `sdCapsule` (sdStick) to compose body parts, `smin` to connect with smooth transitions, and `smax` to carve indentations (mouth). Combined with procedural animation to drive joints. A standard approach for character SDF modeling.
+**Difference from the basic version**: Uses `sdEllipsoid` + `sdCapsule` (sdStick) to
+compose body parts, `smin` to connect with smooth transitions, and `smax` to carve
+indentations (mouth).
+Combined with procedural animation to drive joints.
+A standard approach for character SDF modeling.
 
 **Key modified code**:
 
@@ -399,7 +451,10 @@ vec2 map(vec3 pos) {
 
 ### Variant 4: Symmetry Exploitation
 
-**Difference from the basic version**: Leverages geometric symmetry (mirror/rotational invariance) to reduce N repeated elements' SDF evaluations to N/k. For example, octahedral symmetry can reduce 18 elements to 4 evaluations. The key is mapping the input point to the symmetry's fundamental domain.
+**Difference from the basic version**: Leverages geometric symmetry (mirror/rotational
+invariance) to reduce N repeated elements’ SDF evaluations to N/k. For example,
+octahedral symmetry can reduce 18 elements to 4 evaluations.
+The key is mapping the input point to the symmetry’s fundamental domain.
 
 **Key modified code**:
 
@@ -438,7 +493,10 @@ vec2 map(vec3 p) {
 
 ### Variant 5: PBR Material Rendering Pipeline
 
-**Difference from the basic version**: Replaces simplified Blinn-Phong with GGX microfacet BRDF, combined with a material ID system to assign different roughness/metalness to each primitive. A standard approach for PBR raymarching.
+**Difference from the basic version**: Replaces simplified Blinn-Phong with GGX
+microfacet BRDF, combined with a material ID system to assign different
+roughness/metalness to each primitive.
+A standard approach for PBR raymarching.
 
 **Key modified code**:
 
@@ -481,7 +539,10 @@ vec3 pbrLighting(vec3 pos, vec3 nor, vec3 rd, vec3 albedo, float roughness, floa
 
 ### 1. Bounding Volume Acceleration
 
-Use an overall AABB or bounding sphere to constrain the search range. Perform analytical ray intersection first to narrow the `tmin`/`tmax` range, avoiding wasted steps in empty regions. A common optimization in advanced raymarching shaders.
+Use an overall AABB or bounding sphere to constrain the search range.
+Perform analytical ray intersection first to narrow the `tmin`/`tmax` range, avoiding
+wasted steps in empty regions.
+A common optimization in advanced raymarching shaders.
 
 ```glsl
 // Ray-AABB intersection (call before raycast)
@@ -498,7 +559,9 @@ vec2 iBox(vec3 ro, vec3 rd, vec3 rad) {
 
 ### 2. Per-Object Bounding
 
-In `map()`, first check with a cheap sdBox whether the current point is near a primitive. Only compute the precise SDF when close. A standard per-object culling technique.
+In `map()`, first check with a cheap sdBox whether the current point is near a
+primitive. Only compute the precise SDF when close.
+A standard per-object culling technique.
 
 ```glsl
 // Inside map():
@@ -510,11 +573,14 @@ if (sdBox(pos - objectCenter, boundingSize) < res.x) {
 
 ### 3. Adaptive Step Size
 
-Allow larger precision tolerance at distance, stricter up close. Based on the `abs(h.x) < (0.0001 * t)` check found in nearly all advanced shaders.
+Allow larger precision tolerance at distance, stricter up close.
+Based on the `abs(h.x) < (0.0001 * t)` check found in nearly all advanced shaders.
 
 ### 4. Preventing Compiler Inlining
 
-Complex `map()` functions get inlined 4 times inside `calcNormal`, causing compilation time to explode. Use a loop + `ZERO` macro to prevent inlining. A well-known technique to prevent excessive compiler inlining.
+Complex `map()` functions get inlined 4 times inside `calcNormal`, causing compilation
+time to explode. Use a loop + `ZERO` macro to prevent inlining.
+A well-known technique to prevent excessive compiler inlining.
 
 ```glsl
 #define ZERO (min(iFrame, 0)) // Compiler cannot prove this is 0 at compile time, so it won't unroll the loop
@@ -522,13 +588,16 @@ Complex `map()` functions get inlined 4 times inside `calcNormal`, causing compi
 
 ### 5. Symmetry Exploitation
 
-If the scene has rotational/mirror symmetry, fold the point into the fundamental domain and evaluate only once. Achieves significant speedup (e.g., 18-to-4 reduction) or infinite repetition.
+If the scene has rotational/mirror symmetry, fold the point into the fundamental domain
+and evaluate only once.
+Achieves significant speedup (e.g., 18-to-4 reduction) or infinite repetition.
 
 ## Combination Suggestions in Detail
 
 ### 1. SDF + Noise Displacement
 
-Add noise on top of the `map()` return value to add organic details to smooth surfaces (terrain, skin textures).
+Add noise on top of the `map()` return value to add organic details to smooth surfaces
+(terrain, skin textures).
 
 ```glsl
 float d = sdSphere(p, 1.0);
@@ -536,11 +605,14 @@ d += 0.05 * (sin(p.x * 10.0) * sin(p.y * 10.0) * sin(p.z * 10.0)); // Simple dis
 // Or use fbm noise: d += 0.1 * fbm(p * 4.0);
 ```
 
-**Note**: Noise displacement breaks the SDF's Lipschitz condition (|grad f| <= 1). You need to multiply the step size by a safety factor (e.g., 0.5~0.7) to avoid penetration.
+**Note**: Noise displacement breaks the SDF’s Lipschitz condition (|grad f| <= 1). You
+need to multiply the step size by a safety factor (e.g., 0.5~0.7) to avoid penetration.
 
 ### 2. SDF + Bump Mapping
 
-Instead of modifying the SDF itself, add detail perturbation only in the normal computation. Better performance than noise displacement since it doesn't affect ray marching. A common technique in SDF rendering.
+Instead of modifying the SDF itself, add detail perturbation only in the normal
+computation. Better performance than noise displacement since it doesn’t affect ray
+marching. A common technique in SDF rendering.
 
 ```glsl
 vec3 calcNormalBumped(vec3 pos) {
@@ -553,7 +625,9 @@ vec3 calcNormalBumped(vec3 pos) {
 
 ### 3. SDF + Domain Warping
 
-Warp spatial coordinates before entering `map()` to achieve bending, twisting, polar coordinate transforms, and other effects. A common spatial warping technique.
+Warp spatial coordinates before entering `map()` to achieve bending, twisting, polar
+coordinate transforms, and other effects.
+A common spatial warping technique.
 
 ```glsl
 // Cartesian to polar ring space: straight corridor becomes a ring structure
@@ -564,7 +638,9 @@ vec2 displaceLoop(vec2 p, float r) {
 
 ### 4. SDF + Procedural Animation
 
-Bone/joint angles vary with time, driving SDF primitive positions. `smin` ensures smooth transitions at joints. Common techniques for procedural character animation (squash & stretch, bone chain IK).
+Bone/joint angles vary with time, driving SDF primitive positions.
+`smin` ensures smooth transitions at joints.
+Common techniques for procedural character animation (squash & stretch, bone chain IK).
 
 ```glsl
 // Squash and stretch deformation
@@ -577,7 +653,8 @@ float d = sdEllipsoid(q, vec3(0.25, 0.25 * sy, 0.25 * sz));
 
 ### 5. SDF + Motion Blur
 
-Average multiple frames sampled across the time dimension. A standard temporal supersampling technique.
+Average multiple frames sampled across the time dimension.
+A standard temporal supersampling technique.
 
 ```glsl
 // Randomly offset time in mainImage
@@ -592,101 +669,135 @@ float time = iTime;
 ### Rounded Box — `sdRoundBox(vec3 p, vec3 b, float r)`
 
 - `p`: sample point
+
 - `b`: half-size dimensions (before rounding)
+
 - `r`: rounding radius — edges and corners are rounded by this amount
 
 ### Box Frame — `sdBoxFrame(vec3 p, vec3 b, float e)`
 
 - `p`: sample point
+
 - `b`: outer half-size dimensions
+
 - `e`: edge thickness — the wireframe thickness of the box edges
 
 ### Cone — `sdCone(vec3 p, vec2 c, float h)`
 
 - `p`: sample point
-- `c`: vec2(sin, cos) of the cone's opening angle
+
+- `c`: vec2(sin, cos) of the cone’s opening angle
+
 - `h`: height of the cone
 
 ### Capped Cone — `sdCappedCone(vec3 p, float h, float r1, float r2)`
 
 - `p`: sample point
+
 - `h`: half-height
+
 - `r1`: bottom radius
+
 - `r2`: top radius
 
 ### Round Cone — `sdRoundCone(vec3 p, float r1, float r2, float h)`
 
 - `p`: sample point
+
 - `r1`: bottom sphere radius
+
 - `r2`: top sphere radius
+
 - `h`: height between sphere centers
 
 ### Solid Angle — `sdSolidAngle(vec3 p, vec2 c, float ra)`
 
 - `p`: sample point
+
 - `c`: vec2(sin, cos) of the solid angle
+
 - `ra`: radius
 
 ### Octahedron — `sdOctahedron(vec3 p, float s)`
 
 - `p`: sample point
+
 - `s`: size (distance from center to vertex)
 
 ### Pyramid — `sdPyramid(vec3 p, float h)`
 
 - `p`: sample point
+
 - `h`: height of the pyramid (base is a unit square centered at origin)
 
 ### Hex Prism — `sdHexPrism(vec3 p, vec2 h)`
 
 - `p`: sample point
+
 - `h.x`: hexagonal radius (circumradius)
+
 - `h.y`: half-height along z axis
 
 ### Cut Sphere — `sdCutSphere(vec3 p, float r, float h)`
 
 - `p`: sample point
+
 - `r`: sphere radius
+
 - `h`: cut plane height (cuts sphere at y=h)
 
 ### Capped Torus — `sdCappedTorus(vec3 p, vec2 sc, float ra, float rb)`
 
 - `p`: sample point
+
 - `sc`: vec2(sin, cos) of the cap angle
+
 - `ra`: major radius
+
 - `rb`: tube radius
 
 ### Link — `sdLink(vec3 p, float le, float r1, float r2)`
 
 - `p`: sample point
+
 - `le`: half-length of the elongation
+
 - `r1`: major radius of the torus cross-section
+
 - `r2`: tube radius
 
 ### Plane (arbitrary) — `sdPlane(vec3 p, vec3 n, float h)`
 
 - `p`: sample point
+
 - `n`: plane normal (must be normalized)
+
 - `h`: offset from origin along the normal
 
 ### Rhombus — `sdRhombus(vec3 p, float la, float lb, float h, float ra)`
 
 - `p`: sample point
+
 - `la`, `lb`: half-diagonals of the rhombus in XZ plane
+
 - `h`: half-height (extrusion in Y)
+
 - `ra`: rounding radius
 
 ### Triangle (unsigned) — `udTriangle(vec3 p, vec3 a, vec3 b, vec3 c)`
 
 - `p`: sample point
+
 - `a`, `b`, `c`: triangle vertex positions
+
 - Returns unsigned (non-negative) distance
 
 ## Deformation Operators Reference
 
 ### Round — `opRound(float d, float r)`
 
-Softens edges of any SDF by subtracting a radius. Apply to the result of any SDF.
+Softens edges of any SDF by subtracting a radius.
+Apply to the result of any SDF.
 
 ```glsl
 // Round a box with radius 0.1
@@ -706,7 +817,8 @@ float d = opOnion(opOnion(sdSphere(p, 1.0), 0.1), 0.05);
 
 ### Elongate — `opElongate(vec3 p, vec3 h, vec3 center, vec3 size)`
 
-Stretches a shape along one or more axes by `h`. The shape is stretched without distortion — it inserts a linear segment.
+Stretches a shape along one or more axes by `h`. The shape is stretched without
+distortion — it inserts a linear segment.
 
 ```glsl
 // Elongate along Y to stretch a box
@@ -716,7 +828,8 @@ float d = sdBox(max(q, 0.0), vec3(0.3)) + min(max(q.x, max(q.y, q.z)), 0.0);
 
 ### Twist — `opTwist(vec3 p, float k)`
 
-Rotates the XZ cross-section around the Y axis proportionally to height. Returns transformed coordinates to pass into any SDF.
+Rotates the XZ cross-section around the Y axis proportionally to height.
+Returns transformed coordinates to pass into any SDF.
 
 ```glsl
 // Twisted box: k controls twist rate (radians per unit height)
@@ -726,7 +839,8 @@ float d = sdBox(q, vec3(0.5));
 
 ### Cheap Bend — `opCheapBend(vec3 p, float k)`
 
-Bends geometry along the X axis. Returns transformed coordinates.
+Bends geometry along the X axis.
+Returns transformed coordinates.
 
 ```glsl
 // Bent box
@@ -736,7 +850,8 @@ float d = sdBox(q, vec3(0.5, 0.3, 0.5));
 
 ### Displacement — `opDisplace(float d, vec3 p)`
 
-Adds procedural sinusoidal surface detail. Breaks Lipschitz bound, so reduce ray march step size by 0.5-0.7.
+Adds procedural sinusoidal surface detail.
+Breaks Lipschitz bound, so reduce ray march step size by 0.5-0.7.
 
 ```glsl
 float d = sdSphere(p, 1.0);
@@ -747,7 +862,8 @@ d = opDisplace(d, p); // Adds bumpy surface detail
 
 ### Revolution — `opRevolution(vec3 p, float sdf2d_result, float o)`
 
-Creates a 3D solid of revolution by rotating a 2D SDF around the Y axis. Compute the 2D SDF at `vec2(length(p.xz) - o, p.y)` and pass the result.
+Creates a 3D solid of revolution by rotating a 2D SDF around the Y axis.
+Compute the 2D SDF at `vec2(length(p.xz) - o, p.y)` and pass the result.
 
 ```glsl
 // Create a torus-like shape by revolving a 2D circle
@@ -758,7 +874,8 @@ float d3d = opRevolution(p, d2d, 1.0);   // revolve around Y
 
 ### Extrusion — `opExtrusion(vec3 p, float d2d, float h)`
 
-Extends any 2D SDF along the Z axis with finite height `h`. The 2D SDF is evaluated in the XY plane and capped at `+/- h` along Z.
+Extends any 2D SDF along the Z axis with finite height `h`. The 2D SDF is evaluated in
+the XY plane and capped at `+/- h` along Z.
 
 ```glsl
 // Extrude a 2D shape 0.2 units in both directions
@@ -770,7 +887,8 @@ float d3d = opExtrusion(p, d2d, 0.2);    // finite extrusion
 
 ### Mirror X — `opSymX(vec3 p)`
 
-Mirrors across the X axis using `abs(p.x)`. Model only one half and get bilateral symmetry for free. Place at the start of `map()`.
+Mirrors across the X axis using `abs(p.x)`. Model only one half and get bilateral
+symmetry for free. Place at the start of `map()`.
 
 ```glsl
 vec2 map(vec3 p) {
@@ -783,7 +901,8 @@ vec2 map(vec3 p) {
 
 ### Mirror XZ — `opSymXZ(vec3 p)`
 
-Four-fold symmetry across both X and Z axes. Model one quadrant, get four copies.
+Four-fold symmetry across both X and Z axes.
+Model one quadrant, get four copies.
 
 ```glsl
 vec2 map(vec3 p) {
@@ -796,7 +915,8 @@ vec2 map(vec3 p) {
 
 ### Arbitrary Mirror — `opMirror(vec3 p, vec3 dir)`
 
-Mirrors across an arbitrary plane defined by its normal `dir` (must be normalized). Reflects any point on the negative side to the positive side.
+Mirrors across an arbitrary plane defined by its normal `dir` (must be normalized).
+Reflects any point on the negative side to the positive side.
 
 ```glsl
 // Mirror across a 45-degree plane

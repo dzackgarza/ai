@@ -1,37 +1,65 @@
 # Analytic Ray Tracing - Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisite knowledge, step-by-step tutorial, mathematical derivations, and advanced usage.
+This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisite
+knowledge, step-by-step tutorial, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
-- **Vector math fundamentals**: Dot product `dot()`, cross product `cross()`, vector normalization `normalize()`
+- **Vector math fundamentals**: Dot product `dot()`, cross product `cross()`, vector
+  normalization `normalize()`
+
 - **Quadratic equation solving**: Discriminant `b²-4ac`, meaning of the two roots
-- **Ray parametric representation**: `P(t) = ro + t * rd`, where `ro` is the ray origin, `rd` is the direction, `t` is the distance
+
+- **Ray parametric representation**: `P(t) = ro + t * rd`, where `ro` is the ray origin,
+  `rd` is the direction, `t` is the distance
+
 - **GLSL fundamentals**: `struct`, `inout` parameters, `vec3`/`vec4` operations
-- **ShaderToy framework**: `mainImage()` function, `iResolution`, `iTime`, and other uniforms
+
+- **ShaderToy framework**: `mainImage()` function, `iResolution`, `iTime`, and other
+  uniforms
 
 ## Use Cases (Complete List)
 
-- When rendering scenes composed of geometric primitives (spheres, planes, boxes, cylinders, tori, etc.)
-- When precise surface intersection points, normals, and distances are needed (no iterative approximation required)
-- When efficient ray intersection is needed in real-time rendering (several times faster than ray marching)
+- When rendering scenes composed of geometric primitives (spheres, planes, boxes,
+  cylinders, tori, etc.)
+
+- When precise surface intersection points, normals, and distances are needed (no
+  iterative approximation required)
+
+- When efficient ray intersection is needed in real-time rendering (several times faster
+  than ray marching)
+
 - Building the underlying geometric engine for ray tracers and path tracers
-- Creating visualization effects for hard-surface modeling (jewelry, mechanical parts, chess scenes, etc.)
-- Scenes requiring precise shadows, reflections, and refractions (analytic solutions have no sampling error)
+
+- Creating visualization effects for hard-surface modeling (jewelry, mechanical parts,
+  chess scenes, etc.)
+
+- Scenes requiring precise shadows, reflections, and refractions (analytic solutions
+  have no sampling error)
 
 ## Core Principles in Detail
 
-The core idea of analytic ray tracing is: substitute the ray equation `P(t) = O + tD` into the implicit equation of the geometric body, obtaining an algebraic equation in `t`, then solve it using closed-form formulas.
+The core idea of analytic ray tracing is: substitute the ray equation `P(t) = O + tD`
+into the implicit equation of the geometric body, obtaining an algebraic equation in
+`t`, then solve it using closed-form formulas.
 
 ### Unified Framework
 
 All analytic intersection functions follow the same pattern:
 
-1. **Set up equation**: Substitute the ray parametric form into the geometry's implicit equation
-2. **Simplify and solve**: Use algebraic identities to reduce to a standard form (quadratic/quartic equation)
+1. **Set up equation**: Substitute the ray parametric form into the geometry’s implicit
+   equation
+
+2. **Simplify and solve**: Use algebraic identities to reduce to a standard form
+   (quadratic/quartic equation)
+
 3. **Discriminant check**: Discriminant < 0 indicates no intersection
-4. **Select nearest intersection**: Take the smallest positive root satisfying distance constraints
-5. **Compute normal**: Evaluate the gradient of the implicit equation at the intersection point
+
+4. **Select nearest intersection**: Take the smallest positive root satisfying distance
+   constraints
+
+5. **Compute normal**: Evaluate the gradient of the implicit equation at the
+   intersection point
 
 ### Key Mathematical Formulas
 
@@ -39,7 +67,8 @@ All analytic intersection functions follow the same pattern:
 
 **Plane** `N·P + d = 0` → linear equation: `t = -(N·O + d) / (N·D)`
 
-**Box** Intersection of three pairs of parallel planes → Slab Method: `tN = max(t1.x, t1.y, t1.z), tF = min(t2.x, t2.y, t2.z)`
+**Box** Intersection of three pairs of parallel planes → Slab Method:
+`tN = max(t1.x, t1.y, t1.z), tF = min(t2.x, t2.y, t2.z)`
 
 **Ellipsoid** `|P/R|² = 1` → sphere intersection in scaled space
 
@@ -51,7 +80,10 @@ All analytic intersection functions follow the same pattern:
 
 **What**: Generate a ray from the camera position through each pixel.
 
-**Why**: This is the starting point of ray tracing. Each pixel corresponds to a ray from the camera through the near plane. The standard approach is to construct a camera coordinate system (right, up, forward) and map normalized screen coordinates to world-space directions.
+**Why**: This is the starting point of ray tracing.
+Each pixel corresponds to a ray from the camera through the near plane.
+The standard approach is to construct a camera coordinate system (right, up, forward)
+and map normalized screen coordinates to world-space directions.
 
 ```glsl
 // Construct camera ray
@@ -71,9 +103,13 @@ vec3 generateRay(vec2 fragCoord, vec2 resolution, vec3 ro, vec3 ta) {
 
 ### Step 2: Ray-Sphere Intersection
 
-**What**: Compute the exact intersection of a ray with a sphere. This is the most fundamental and commonly used intersection function.
+**What**: Compute the exact intersection of a ray with a sphere.
+This is the most fundamental and commonly used intersection function.
 
-**Why**: Substituting the ray `P = O + tD` into the sphere equation `|P - C|² = r²` and expanding yields a quadratic equation in `t`. The discriminant `h = b² - c` determines the number of intersections (0, 1, or 2); the smallest positive root is the nearest intersection.
+**Why**: Substituting the ray `P = O + tD` into the sphere equation `|P - C|² = r²` and
+expanding yields a quadratic equation in `t`. The discriminant `h = b² - c` determines
+the number of intersections (0, 1, or 2); the smallest positive root is the nearest
+intersection.
 
 This is a ubiquitous technique, with two common variants:
 
@@ -124,7 +160,10 @@ float sphIntersect(vec3 ro, vec3 rd, vec4 sph) {
 
 **What**: Compute the intersection of a ray with an infinite plane.
 
-**Why**: The plane equation `N·P + d = 0` substituted with the ray yields a linear equation, solved directly by division. This is the simplest intersection primitive, commonly used for floors, walls, Cornell Boxes, etc. Note: when `N·D ≈ 0`, the ray is parallel to the plane.
+**Why**: The plane equation `N·P + d = 0` substituted with the ray yields a linear
+equation, solved directly by division.
+This is the simplest intersection primitive, commonly used for floors, walls, Cornell
+Boxes, etc. Note: when `N·D ≈ 0`, the ray is parallel to the plane.
 
 ```glsl
 // Ray-plane intersection
@@ -154,7 +193,11 @@ float iGroundPlane(vec3 ro, vec3 rd, float height) {
 
 **What**: Compute the intersection of a ray with an axis-aligned bounding box (AABB).
 
-**Why**: The Slab Method treats the box as the intersection of three pairs of parallel planes. It computes the ray's intersection with each pair of planes `(tmin, tmax)`, then takes the maximum of all `tmin` values and the minimum of all `tmax` values. If `tN > tF` or `tF < 0`, there is no intersection. The normal is determined by which face was hit first.
+**Why**: The Slab Method treats the box as the intersection of three pairs of parallel
+planes. It computes the ray’s intersection with each pair of planes `(tmin, tmax)`, then
+takes the maximum of all `tmin` values and the minimum of all `tmax` values.
+If `tN > tF` or `tF < 0`, there is no intersection.
+The normal is determined by which face was hit first.
 
 ```glsl
 // Ray-box intersection (Slab Method, optimized version)
@@ -188,7 +231,11 @@ float iBox(vec3 ro, vec3 rd, vec2 distBound, inout vec3 normal, vec3 boxSize) {
 
 **What**: Compute the intersection of a ray with an ellipsoid.
 
-**Why**: An ellipsoid can be viewed as a sphere scaled differently along each axis. By dividing both the ray origin and direction by the ellipsoid radii `R`, a sphere intersection is performed in scaled space, then the normal is transformed back to the original space. This "space transformation" technique is one of the core ideas of analytic intersection.
+**Why**: An ellipsoid can be viewed as a sphere scaled differently along each axis.
+By dividing both the ray origin and direction by the ellipsoid radii `R`, a sphere
+intersection is performed in scaled space, then the normal is transformed back to the
+original space. This “space transformation” technique is one of the core ideas of
+analytic intersection.
 
 ```glsl
 // Ray-ellipsoid intersection
@@ -219,7 +266,10 @@ float iEllipsoid(vec3 ro, vec3 rd, vec2 distBound, inout vec3 normal, vec3 rad) 
 
 **What**: Compute the intersection of a ray with a finite cylinder (with end caps).
 
-**Why**: Cylinder intersection has two parts: (1) project the problem onto a plane perpendicular to the axis, solving a quadratic equation for side surface intersections; (2) check if the intersection is within the finite length, and if not, test the end cap planes.
+**Why**: Cylinder intersection has two parts: (1) project the problem onto a plane
+perpendicular to the axis, solving a quadratic equation for side surface intersections;
+(2) check if the intersection is within the finite length, and if not, test the end cap
+planes.
 
 ```glsl
 // Ray-capped cylinder intersection
@@ -265,9 +315,13 @@ float iCylinder(vec3 ro, vec3 rd, vec2 distBound, inout vec3 normal,
 
 ### Step 7: Scene Intersection & Shading
 
-**What**: Traverse all objects in the scene, find the nearest intersection, and compute lighting.
+**What**: Traverse all objects in the scene, find the nearest intersection, and compute
+lighting.
 
-**Why**: Scene traversal in analytic ray tracing is linear — each ray tests all objects sequentially. Through the unified intersection API (`distBound` parameter), each time a nearer intersection is found, the search range is automatically shortened, achieving implicit culling.
+**Why**: Scene traversal in analytic ray tracing is linear — each ray tests all objects
+sequentially. Through the unified intersection API (`distBound` parameter), each time a
+nearer intersection is found, the search range is automatically shortened, achieving
+implicit culling.
 
 ```glsl
 #define MAX_DIST 1e10
@@ -311,7 +365,10 @@ vec3 shade(vec3 pos, vec3 normal, vec3 rd, vec3 albedo) {
 
 **What**: Implement iterative reflection/refraction for non-recursive ray bounces.
 
-**Why**: GLSL does not support recursion, so loops are used to simulate multiple bounces. At each bounce, the intersection point plus offset (epsilon) serves as the new ray origin, with the reflected/refracted direction as the new direction. The Fresnel term determines the energy distribution between reflection and refraction.
+**Why**: GLSL does not support recursion, so loops are used to simulate multiple
+bounces. At each bounce, the intersection point plus offset (epsilon) serves as the new
+ray origin, with the reflected/refracted direction as the new direction.
+The Fresnel term determines the energy distribution between reflection and refraction.
 
 ```glsl
 #define MAX_BOUNCES 4       // Adjustable: number of reflection bounces (more = more realistic but slower)
@@ -357,12 +414,14 @@ vec3 radiance(vec3 ro, vec3 rd) {
 
 ## Complete Code Template
 
-For a complete runnable ShaderToy template, see the "Complete Code Template" section in [SKILL.md](SKILL.md), which includes sphere, plane, and box primitives with support for reflections and Blinn-Phong shading.
+For a complete runnable ShaderToy template, see the “Complete Code Template” section in
+[SKILL.md](SKILL.md), which includes sphere, plane, and box primitives with support for
+reflections and Blinn-Phong shading.
 
 The following table describes the adjustable parameters in the template:
 
 | Parameter | Default | Description |
-|-----------|---------|-------------|
+| --- | --- | --- |
 | `MAX_DIST` | `1e10` | Maximum trace distance |
 | `EPSILON` | `0.001` | Self-intersection offset |
 | `MAX_BOUNCES` | `4` | Maximum number of reflections |
@@ -375,7 +434,9 @@ The following table describes the adjustable parameters in the template:
 
 ### Variant 1: Path Tracing
 
-Difference from base version: Replaces deterministic reflection with random hemisphere sampling to achieve global illumination. Requires multi-frame accumulation and random number generation.
+Difference from base version: Replaces deterministic reflection with random hemisphere
+sampling to achieve global illumination.
+Requires multi-frame accumulation and random number generation.
 
 Key code:
 ```glsl
@@ -399,7 +460,8 @@ mask *= mat.albedo; // No Fresnel weighting
 
 ### Variant 2: Analytical Soft Shadow
 
-Difference from base version: Uses the analytical distance from a sphere to the ray to compute soft shadow gradients, without additional sampling.
+Difference from base version: Uses the analytical distance from a sphere to the ray to
+compute soft shadow gradients, without additional sampling.
 
 Key code:
 ```glsl
@@ -418,7 +480,8 @@ float sphSoftShadow(vec3 ro, vec3 rd, vec4 sph) {
 
 ### Variant 3: Analytical Antialiasing
 
-Difference from base version: Uses the analytical distance from a sphere to the ray to compute pixel coverage, achieving edge smoothing without multi-sampling.
+Difference from base version: Uses the analytical distance from a sphere to the ray to
+compute pixel coverage, achieving edge smoothing without multi-sampling.
 
 Key code:
 ```glsl
@@ -439,9 +502,10 @@ float coverage = 1.0 - clamp(dt.x / (dt.y * px), 0.0, 1.0);
 col = mix(bgColor, sphereColor, coverage);
 ```
 
-### Variant 4: Refraction (with Snell's Law)
+### Variant 4: Refraction (with Snell’s Law)
 
-Difference from base version: Adds refracted rays; requires detecting whether the ray hits the surface from outside or inside, and flipping the normal accordingly.
+Difference from base version: Adds refracted rays; requires detecting whether the ray
+hits the surface from outside or inside, and flipping the normal accordingly.
 
 Key code:
 ```glsl
@@ -467,7 +531,9 @@ ro = hitPos + rd * EPSILON;
 
 ### Variant 5: Higher-Order Algebraic Surfaces (Quartic Surfaces - Sphere4, Goursat, Torus)
 
-Difference from base version: Substitutes the ray into quartic equations, solving via the resolvent cubic method. Suitable for tori, super-ellipsoids, and similar shapes.
+Difference from base version: Substitutes the ray into quartic equations, solving via
+the resolvent cubic method.
+Suitable for tori, super-ellipsoids, and similar shapes.
 
 Key code:
 ```glsl
@@ -515,7 +581,9 @@ float iSphere4(vec3 ro, vec3 rd, vec2 distBound, inout vec3 normal, float ra) {
 
 ### 1. Distance Bound Pruning
 
-The most important optimization. Each time a nearer intersection is found, `distBound.y` is shortened, and subsequent objects are automatically skipped:
+The most important optimization.
+Each time a nearer intersection is found, `distBound.y` is shortened, and subsequent
+objects are automatically skipped:
 ```glsl
 // distBound.y continuously shrinks with opU
 d = opU(d, iSphere(..., d.xy, ...), matId);
@@ -524,7 +592,8 @@ d = opU(d, iBox(..., d.xy, ...), matId);   // Automatically skips objects farthe
 
 ### 2. Bounding Sphere / Bounding Box Pre-Test
 
-For complex geometry (tori, Goursat surfaces, etc.), test a simple bounding sphere first to check for possible intersection:
+For complex geometry (tori, Goursat surfaces, etc.), test a simple bounding sphere first
+to check for possible intersection:
 ```glsl
 // Test bounding sphere before torus intersection
 if (iSphere(ro, rd, distBound, tmpNormal, torus.x + torus.y) > distBound.y) {
@@ -534,7 +603,8 @@ if (iSphere(ro, rd, distBound, tmpNormal, torus.x + torus.y) > distBound.y) {
 
 ### 3. Shadow Ray Early Exit
 
-Shadow detection only needs to know "whether there is an occluder," not the nearest intersection, so a simplified intersection function can be used:
+Shadow detection only needs to know “whether there is an occluder,” not the nearest
+intersection, so a simplified intersection function can be used:
 ```glsl
 // Fast sphere occlusion test (only checks for intersection, no normal computation)
 float fastSphIntersect(vec3 ro, vec3 rd, vec3 center, float r) {
@@ -554,7 +624,8 @@ float fastSphIntersect(vec3 ro, vec3 rd, vec3 center, float r) {
 
 ### 4. Grid Acceleration Structure
 
-For large numbers of identical primitives (e.g., hundreds of spheres), use a spatial grid to accelerate ray traversal:
+For large numbers of identical primitives (e.g., hundreds of spheres), use a spatial
+grid to accelerate ray traversal:
 ```glsl
 // 3D DDA grid traversal (for scenes with many spheres)
 vec3 pos = floor(ro / GRIDSIZE) * GRIDSIZE;
@@ -574,7 +645,8 @@ for (int i = 0; i < MAX_STEPS; i++) {
 
 ### 5. Avoiding Unnecessary sqrt
 
-Return early when the discriminant is negative, avoiding `sqrt()` on negative numbers. In some scenarios, the discriminant's sign can be used for coarse pre-filtering:
+Return early when the discriminant is negative, avoiding `sqrt()` on negative numbers.
+In some scenarios, the discriminant’s sign can be used for coarse pre-filtering:
 ```glsl
 // Check if ray is heading toward sphere and not inside it
 if (c > 0.0 && b > 0.0) return MAX_DIST; // Fast cull
@@ -584,7 +656,10 @@ if (c > 0.0 && b > 0.0) return MAX_DIST; // Fast cull
 
 ### 1. Analytic Intersection + Raymarching SDF
 
-Use analytic primitives for large simple geometry (ground, bounding boxes), and SDF raymarching for complex details (fractals, smooth boolean operations). Analytic intersection provides precise start/end distances, accelerating marching convergence:
+Use analytic primitives for large simple geometry (ground, bounding boxes), and SDF
+raymarching for complex details (fractals, smooth boolean operations).
+Analytic intersection provides precise start/end distances, accelerating marching
+convergence:
 ```glsl
 float d = iBox(ro, rd, distBound, normal, boxSize); // Analytic box
 if (d < MAX_DIST) {
@@ -600,7 +675,8 @@ if (d < MAX_DIST) {
 
 ### 2. Analytic Intersection + Volumetric Effects
 
-Use analytic intersection to obtain precise entry/exit distances, then perform volumetric sampling (clouds, fog, subsurface scattering) within that range:
+Use analytic intersection to obtain precise entry/exit distances, then perform
+volumetric sampling (clouds, fog, subsurface scattering) within that range:
 ```glsl
 // Use analytic ellipsoid intersection to obtain volume bounds
 float tEnter = (-b - sqrt(h)) / a;
@@ -618,7 +694,8 @@ for (int i = 0; i < VOLUME_STEPS; i++) {
 
 ### 3. Analytic Intersection + PBR Material System
 
-Analytic intersection provides precise normals and intersection positions, feeding directly into Cook-Torrance and other PBR shading models:
+Analytic intersection provides precise normals and intersection positions, feeding
+directly into Cook-Torrance and other PBR shading models:
 ```glsl
 // Cook-Torrance BRDF (requires precise normals)
 float D = beckmannDistribution(NdotH, roughness);
@@ -629,7 +706,8 @@ vec3 specular = vec3(D * G * F) / (4.0 * NdotV * NdotL);
 
 ### 4. Analytic Intersection + Spatial Transforms
 
-Reuse the same intersection function for transformed geometry by rotating/translating/scaling the ray:
+Reuse the same intersection function for transformed geometry by
+rotating/translating/scaling the ray:
 ```glsl
 // Rotate object: rotate the ray instead of the object
 vec3 localRo = rotateY(ro - objectPos, angle);
@@ -641,7 +719,8 @@ normal = rotateY(localNormal, -angle);
 
 ### 5. Analytic Intersection + Analytical AO / Soft Shadow / Antialiasing
 
-A fully analytic rendering pipeline: intersection, shadows, occlusion, and edge smoothing all use closed-form formulas, producing zero noise:
+A fully analytic rendering pipeline: intersection, shadows, occlusion, and edge
+smoothing all use closed-form formulas, producing zero noise:
 ```glsl
 // Fully analytic pipeline (no random sampling, no noise)
 float t = sphIntersect(ro, rd, sph);        // Analytic intersection

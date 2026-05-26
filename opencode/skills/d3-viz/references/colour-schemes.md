@@ -13,9 +13,13 @@ d3.schemeCategory10
 ```
 
 **Characteristics:**
+
 - 10 distinct colours
+
 - Good colour-blind accessibility
+
 - Default choice for most categorical data
+
 - Balanced saturation and brightness
 
 **Use cases:** General purpose categorical encoding, legend items, multiple data series
@@ -27,8 +31,11 @@ d3.schemeTableau10
 ```
 
 **Characteristics:**
+
 - 10 colours optimised for data visualisation
+
 - Professional appearance
+
 - Excellent distinguishability
 
 **Use cases:** Business dashboards, professional reports, presentations
@@ -41,8 +48,11 @@ d3.schemeAccent
 ```
 
 **Characteristics:**
+
 - Bright, vibrant colours
+
 - High contrast
+
 - Modern aesthetic
 
 **Use cases:** Highlighting important categories, modern web applications
@@ -55,8 +65,11 @@ d3.schemeDark2
 ```
 
 **Characteristics:**
+
 - Subdued palette
+
 - Professional appearance
+
 - Good for dark backgrounds
 
 **Use cases:** Dark mode visualisations, professional contexts
@@ -69,8 +82,11 @@ d3.schemePaired
 ```
 
 **Characteristics:**
+
 - Pairs of light and dark variants
+
 - Useful for nested categories
+
 - 12 distinct colours
 
 **Use cases:** Grouped bar charts, hierarchical categories, before/after comparisons
@@ -83,8 +99,11 @@ d3.schemePastel2 // 8 colours
 ```
 
 **Characteristics:**
+
 - Soft, low-saturation colours
+
 - Gentle appearance
+
 - Good for large areas
 
 **Use cases:** Background colours, subtle categorisation, calming visualisations
@@ -98,15 +117,19 @@ d3.schemeSet3 // 12 colours - pastel
 ```
 
 **Characteristics:**
+
 - Set1: High saturation, maximum distinction
+
 - Set2: Professional, balanced
+
 - Set3: Subtle, many categories
 
 **Use cases:** Varied based on visual hierarchy needs
 
 ## Sequential colour schemes
 
-Sequential schemes map continuous data from low to high values using a single hue or gradient.
+Sequential schemes map continuous data from low to high values using a single hue or
+gradient.
 
 ### Single-hue sequential
 
@@ -117,16 +140,25 @@ d3.schemeBlues[9] // 9-step discrete version
 ```
 
 **Other single-hue options:**
+
 - `d3.interpolateGreens` / `d3.schemeGreens`
+
 - `d3.interpolateOranges` / `d3.schemeOranges`
+
 - `d3.interpolatePurples` / `d3.schemePurples`
+
 - `d3.interpolateReds` / `d3.schemeReds`
+
 - `d3.interpolateGreys` / `d3.schemeGreys`
 
 **Use cases:**
+
 - Simple heat maps
+
 - Choropleth maps
+
 - Density plots
+
 - Single-metric visualisations
 
 ### Multi-hue sequential
@@ -137,16 +169,25 @@ d3.interpolateViridis
 ```
 
 **Characteristics:**
+
 - Perceptually uniform
+
 - Colour-blind friendly
+
 - Print-safe
+
 - No visual dead zones
+
 - Monotonically increasing perceived lightness
 
 **Other perceptually-uniform options:**
+
 - `d3.interpolatePlasma` - Purple to yellow
+
 - `d3.interpolateInferno` - Black to white through red/orange
+
 - `d3.interpolateMagma` - Black to white through purple
+
 - `d3.interpolateCividis` - Colour-blind optimised
 
 **Colour-blind accessible:**
@@ -157,9 +198,13 @@ d3.interpolateWarm  // Orange to yellow
 ```
 
 **Use cases:**
+
 - Scientific visualisation
+
 - Medical imaging
+
 - Any high-precision data visualisation
+
 - Accessible visualisations
 
 ### Traditional sequential
@@ -177,18 +222,29 @@ d3.schemeYlGnBu[9]
 ```
 
 **Other multi-hue:**
+
 - `d3.interpolateBuGn` - Blue to green
+
 - `d3.interpolateBuPu` - Blue to purple
+
 - `d3.interpolateGnBu` - Green to blue
+
 - `d3.interpolateOrRd` - Orange to red
+
 - `d3.interpolatePuBu` - Purple to blue
+
 - `d3.interpolatePuBuGn` - Purple to blue-green
+
 - `d3.interpolatePuRd` - Purple to red
+
 - `d3.interpolateRdPu` - Red to purple
+
 - `d3.interpolateYlGn` - Yellow to green
+
 - `d3.interpolateYlOrBr` - Yellow to orange-brown
 
-**Use cases:** Traditional data visualisation, familiar colour associations (temperature, vegetation, water)
+**Use cases:** Traditional data visualisation, familiar colour associations
+(temperature, vegetation, water)
 
 ## Diverging colour schemes
 
@@ -202,8 +258,11 @@ d3.schemeRdBu[11]
 ```
 
 **Characteristics:**
+
 - Intuitive temperature metaphor
+
 - Strong contrast
+
 - Clear positive/negative distinction
 
 **Use cases:** Temperature, profit/loss, above/below average, correlation
@@ -216,8 +275,11 @@ d3.schemeRdYlBu[11]
 ```
 
 **Characteristics:**
+
 - Three-colour gradient
+
 - Softer transition through yellow
+
 - More visual steps
 
 **Use cases:** When extreme values need emphasis and middle needs visibility
@@ -235,10 +297,15 @@ d3.interpolateSpectral // Full spectrum
 ```
 
 **Other options:**
+
 - `d3.interpolateBrBG` - Brown to blue-green
+
 - `d3.interpolatePiYG` - Pink to yellow-green
+
 - `d3.interpolatePRGn` - Purple to green
+
 - `d3.interpolatePuOr` - Purple to orange
+
 - `d3.interpolateRdGy` - Red to grey
 
 **Use cases:** Choose based on semantic meaning and accessibility needs
@@ -248,8 +315,11 @@ d3.interpolateSpectral // Full spectrum
 ### General guidelines
 
 1. **Avoid red-green combinations** (most common colour blindness)
+
 2. **Use blue-orange diverging** instead of red-green
+
 3. **Add texture or patterns** as redundant encoding
+
 4. **Test with simulation tools**
 
 ### Recommended colour-blind safe schemes
@@ -330,28 +400,43 @@ const colourScale = d3.scaleOrdinal()
 ### Universal colour meanings
 
 **Red:**
+
 - Danger, error, negative
+
 - High temperature
+
 - Debt, loss
 
 **Green:**
+
 - Success, positive
+
 - Growth, vegetation
+
 - Profit, gain
 
 **Blue:**
+
 - Trust, calm
+
 - Water, cold
+
 - Information, neutral
 
 **Yellow/Orange:**
+
 - Warning, caution
+
 - Energy, warmth
+
 - Attention
 
 **Grey:**
+
 - Neutral, inactive
+
 - Missing data
+
 - Background
 
 ### Context-specific palettes
@@ -400,8 +485,11 @@ const highContrast = {
 ```
 
 **WCAG guidelines:**
+
 - Normal text: 4.5:1 minimum
+
 - Large text: 3:1 minimum
+
 - UI components: 3:1 minimum
 
 ### Redundant encoding
@@ -420,8 +508,11 @@ const symbols = ['circle', 'square', 'triangle', 'diamond'];
 ### Testing
 
 Test visualisations for colour blindness:
+
 - Chrome DevTools (Rendering > Emulate vision deficiencies)
+
 - Colour Oracle (free desktop application)
+
 - Coblis (online simulator)
 
 ## Professional colour recommendations
@@ -483,7 +574,7 @@ function selectColourScheme(data) {
   const extent = d3.extent(data);
   const hasNegative = extent[0] < 0;
   const hasPositive = extent[1] > 0;
-  
+
   if (hasNegative && hasPositive) {
     // Diverging: data crosses zero
     return d3.scaleSequentialSymlog(d3.interpolateRdBu)
@@ -501,7 +592,7 @@ function selectColourScheme(data) {
 ```javascript
 function selectCategoricalScheme(categories) {
   const n = categories.length;
-  
+
   if (n <= 10) {
     return d3.scaleOrdinal(d3.schemeTableau10);
   } else if (n <= 12) {
@@ -518,47 +609,73 @@ function selectCategoricalScheme(categories) {
 ## Common colour mistakes to avoid
 
 1. **Rainbow gradients for sequential data**
+
    - Problem: Not perceptually uniform, hard to read
+
    - Solution: Use Viridis, Blues, or other uniform schemes
 
 2. **Red-green for diverging (colour blindness)**
-   - Problem: 8% of males can't distinguish
+
+   - Problem: 8% of males can’t distinguish
+
    - Solution: Use blue-orange or purple-green
 
 3. **Too many categorical colours**
+
    - Problem: Hard to distinguish and remember
+
    - Solution: Limit to 5-8 categories, use grouping
 
 4. **Insufficient contrast**
+
    - Problem: Poor readability
+
    - Solution: Test contrast ratios, use darker colours on light backgrounds
 
 5. **Culturally inconsistent colours**
+
    - Problem: Confusing semantic meaning
+
    - Solution: Research colour associations for target audience
 
 6. **Inverted temperature scales**
+
    - Problem: Counterintuitive (red = cold)
+
    - Solution: Red/orange = hot, blue = cold
 
 ## Quick reference guide
 
-**Need to show...**
+**Need to show …**
 
 - **Categories (≤10):** `d3.schemeCategory10` or `d3.schemeTableau10`
+
 - **Categories (>10):** `d3.schemePaired` or group categories
+
 - **Sequential (general):** `d3.interpolateViridis`
+
 - **Sequential (scientific):** `d3.interpolateViridis` or `d3.interpolatePlasma`
+
 - **Sequential (temperature):** `d3.interpolateRdYlBu` (inverted)
+
 - **Diverging (zero):** `d3.interpolateRdBu` or `d3.interpolateBrBG`
+
 - **Diverging (good/bad):** `d3.interpolateRdYlGn` (inverted)
+
 - **Colour-blind safe (categorical):** Okabe-Ito palette (shown above)
+
 - **Colour-blind safe (sequential):** `d3.interpolateCividis` or `d3.interpolateBlues`
+
 - **Colour-blind safe (diverging):** `d3.interpolatePuOr` or `d3.interpolateBrBG`
 
 **Always remember:**
+
 1. Test for colour-blindness
+
 2. Ensure sufficient contrast
+
 3. Use semantic colours appropriately
+
 4. Add redundant encoding (patterns, labels)
+
 5. Keep it simple (fewer colours = clearer visualisation)

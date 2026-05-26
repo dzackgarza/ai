@@ -1,61 +1,109 @@
 # Multi-Pass Buffer Techniques — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites, in-depth explanations of each step, complete variant descriptions, performance optimization analysis, and full combination code examples.
+This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites,
+in-depth explanations of each step, complete variant descriptions, performance
+optimization analysis, and full combination code examples.
 
 ## Prerequisites
 
 ### GLSL Fundamentals
 
 - GLSL basic syntax: `uniform`, `varying`, `sampler2D`
-- ShaderToy execution model: `iChannel0-3` texture inputs, `iResolution`, `iTime`, `iFrame`, `iMouse`
+
+- ShaderToy execution model: `iChannel0-3` texture inputs, `iResolution`, `iTime`,
+  `iFrame`, `iMouse`
+
 - Difference between `texture()` and `texelFetch()`:
-  - `texture()` performs interpolated sampling (bilinear filtering), suitable for continuous field sampling
-  - `texelFetch()` reads a specific texel exactly, without interpolation, suitable for data storage reads
-- `textureLod()` is used for explicit MIP level sampling, avoiding the blur caused by automatic MIP selection
-- Buffer A/B/C/D concept in ShaderToy: each buffer is an independent render pass that outputs to a corresponding texture, which can be read by other passes or itself via iChannel
+
+  - `texture()` performs interpolated sampling (bilinear filtering), suitable for
+    continuous field sampling
+
+  - `texelFetch()` reads a specific texel exactly, without interpolation, suitable for
+    data storage reads
+
+- `textureLod()` is used for explicit MIP level sampling, avoiding the blur caused by
+  automatic MIP selection
+
+- Buffer A/B/C/D concept in ShaderToy: each buffer is an independent render pass that
+  outputs to a corresponding texture, which can be read by other passes or itself via
+  iChannel
 
 ### Basic Math
 
 - Basic vector math and matrix transforms
-- Finite difference method: using neighboring pixels to approximate gradients and the Laplacian operator
-- Iterative mapping: the concept of `x(n+1) = f(x(n))`, the mathematical basis for self-feedback
+
+- Finite difference method: using neighboring pixels to approximate gradients and the
+  Laplacian operator
+
+- Iterative mapping: the concept of `x(n+1) = f(x(n))`, the mathematical basis for
+  self-feedback
 
 ## Implementation Steps
 
 ### Step 1: Establish a Minimal Self-Feedback Loop
 
-**What**: Create a Buffer that reads its own previous frame output, adds new content, and outputs the result. The Image pass simply displays the Buffer result.
+**What**: Create a Buffer that reads its own previous frame output, adds new content,
+and outputs the result.
+The Image pass simply displays the Buffer result.
 
-**Why**: This is the cornerstone of all multi-pass techniques. Once you understand self-feedback loops, fluid simulation, temporal accumulation, etc. are all extensions of this foundation. An initialization guard (`iFrame == 0` or `iFrame < N`) prevents reading uninitialized data.
+**Why**: This is the cornerstone of all multi-pass techniques.
+Once you understand self-feedback loops, fluid simulation, temporal accumulation, etc.
+are all extensions of this foundation.
+An initialization guard (`iFrame == 0` or `iFrame < N`) prevents reading uninitialized
+data.
 
-**iChannel Binding**: Buffer A's iChannel0 → Buffer A (self-feedback); Image's iChannel0 → Buffer A
+**iChannel Binding**: Buffer A’s iChannel0 → Buffer A (self-feedback); Image’s iChannel0
+→ Buffer A
 
 **Key Points**:
-- `exp(-33.0 / iResolution.y)` controls the decay rate; higher values produce faster decay
+
+- `exp(-33.0 / iResolution.y)` controls the decay rate; higher values produce faster
+  decay
+
 - The `fragCoord + vec2(1.0, sin(iTime))` offset creates motion effects
+
 - The `iFrame < 4` guard ensures stable initial values for the first few frames
 
 ### Step 2: Implement Self-Advection
 
-**What**: Building on self-feedback, interpret the buffer values as a velocity field and implement self-advection — each pixel offsets its sampling position based on the local velocity.
+**What**: Building on self-feedback, interpret the buffer values as a velocity field and
+implement self-advection — each pixel offsets its sampling position based on the local
+velocity.
 
-**Why**: Self-advection is the core of all Eulerian grid fluid simulations. By accumulating rotational information across multiple scales through rotational sampling, rich vortex structures can be produced without a complete Navier-Stokes solver.
+**Why**: Self-advection is the core of all Eulerian grid fluid simulations.
+By accumulating rotational information across multiple scales through rotational
+sampling, rich vortex structures can be produced without a complete Navier-Stokes
+solver.
 
 **Parameter Tuning**:
-- `ROT_NUM` (rotation sample count): Affects the sampling accuracy of the rotation field; 5 is a good balance
-- `SCALE_NUM` (number of scale levels): Affects the detail level of vortices; 20 levels produce rich multi-scale structures
+
+- `ROT_NUM` (rotation sample count): Affects the sampling accuracy of the rotation
+  field; 5 is a good balance
+
+- `SCALE_NUM` (number of scale levels): Affects the detail level of vortices; 20 levels
+  produce rich multi-scale structures
+
 - `bbMax = 0.7 * iResolution.y`: Adaptive loop termination threshold
 
 **Mathematical Principles**:
-- The `getRot` function samples the velocity field at ROT_NUM equally spaced angular directions around a given position
+
+- The `getRot` function samples the velocity field at ROT_NUM equally spaced angular
+  directions around a given position
+
 - Computes the rotational component via `dot(velocity - 0.5, perpendicular)`
-- The multi-scale loop `b *= 2.0` progressively enlarges the sampling radius, capturing vortices at different scales
+
+- The multi-scale loop `b *= 2.0` progressively enlarges the sampling radius, capturing
+  vortices at different scales
 
 ### Step 3: Navier-Stokes Fluid Solver
 
-**What**: Implement velocity field solving based on the paper "Simple and fast fluids" (Guay, Colin, Egli, 2011), including advection, viscous forces, and vorticity confinement.
+**What**: Implement velocity field solving based on the paper “Simple and fast fluids”
+(Guay, Colin, Egli, 2011), including advection, viscous forces, and vorticity
+confinement.
 
-**Why**: More physically accurate than pure rotational self-advection, supporting low-viscosity fluid simulation (e.g., smoke, fire). Vorticity is stored in the alpha channel to avoid extra buffer overhead.
+**Why**: More physically accurate than pure rotational self-advection, supporting
+low-viscosity fluid simulation (e.g., smoke, fire).
+Vorticity is stored in the alpha channel to avoid extra buffer overhead.
 
 **Complete `solveFluid` Function Breakdown**:
 
@@ -121,37 +169,58 @@ vec4 solveFluid(sampler2D smp, vec2 uv, vec2 w, float time, vec3 mouse, vec3 las
 ```
 
 **RGBA Channel Packing Strategy**:
+
 - `xy` = velocity components (vx, vy)
+
 - `z` = density
+
 - `w` = vorticity (curl)
 
 A single vec4 carries the complete fluid state without needing extra buffers.
 
 ### Step 4: Chained Buffers for Accelerated Simulation
 
-**What**: Execute the same simulation code in a chain through Buffer A → B → C, completing multiple simulation sub-steps per frame.
+**What**: Execute the same simulation code in a chain through Buffer A → B → C,
+completing multiple simulation sub-steps per frame.
 
-**Why**: Each ShaderToy buffer executes only once per frame. By chaining identical code (A reads itself → B reads A → C reads B), three iterations are completed in a single frame, significantly increasing simulation speed without adding buffer count. Use the Common tab to avoid code duplication.
+**Why**: Each ShaderToy buffer executes only once per frame.
+By chaining identical code (A reads itself → B reads A → C reads B), three iterations
+are completed in a single frame, significantly increasing simulation speed without
+adding buffer count.
+Use the Common tab to avoid code duplication.
 
 **iChannel Binding**:
-- Buffer A: iChannel0 → Buffer C (reads previous frame's final result)
-- Buffer B: iChannel0 → Buffer A (reads current frame's first step result)
-- Buffer C: iChannel0 → Buffer B (reads current frame's second step result)
+
+- Buffer A: iChannel0 → Buffer C (reads previous frame’s final result)
+
+- Buffer B: iChannel0 → Buffer A (reads current frame’s first step result)
+
+- Buffer C: iChannel0 → Buffer B (reads current frame’s second step result)
 
 **Mouse State Inter-Frame Transfer**:
-- `if (fragCoord.y < 1.0) data = iMouse;` writes the current frame's mouse state into the first row of pixels
-- `texelFetch(iChannel0, ivec2(0, 0), 0)` reads the previous frame's mouse state in the next frame
-- The delta between two frames' mouse positions gives mouse velocity, used to calculate the direction and magnitude of applied forces
+
+- `if (fragCoord.y < 1.0) data = iMouse;` writes the current frame’s mouse state into
+  the first row of pixels
+
+- `texelFetch(iChannel0, ivec2(0, 0), 0)` reads the previous frame’s mouse state in the
+  next frame
+
+- The delta between two frames’ mouse positions gives mouse velocity, used to calculate
+  the direction and magnitude of applied forces
 
 ### Step 5: Separable Gaussian Blur Pipeline
 
 **What**: Use two Buffers to implement horizontal and vertical separable Gaussian blur.
 
-**Why**: A 2D Gaussian kernel can be separated into the product of two 1D kernels. An NxN kernel drops from N² samples to 2N. This is the standard implementation for Bloom, the diffusion term in reaction-diffusion, and various post-processing blurs.
+**Why**: A 2D Gaussian kernel can be separated into the product of two 1D kernels.
+An NxN kernel drops from N² samples to 2N. This is the standard implementation for
+Bloom, the diffusion term in reaction-diffusion, and various post-processing blurs.
 
-**iChannel Binding**: Buffer B: iChannel0 → Buffer A (source); Buffer C: iChannel0 → Buffer B (horizontal blur result)
+**iChannel Binding**: Buffer B: iChannel0 → Buffer A (source); Buffer C: iChannel0 →
+Buffer B (horizontal blur result)
 
-**Vertical blur complete code** (horizontal version in SKILL.md; vertical version symmetrically replaces the y-axis):
+**Vertical blur complete code** (horizontal version in SKILL.md; vertical version
+symmetrically replaces the y-axis):
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 pixelSize = 1.0 / iResolution.xy;
@@ -174,40 +243,68 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 **9-tap Weight Explanation**:
-- Weights [0.05, 0.09, 0.12, 0.15, 0.16, 0.15, 0.12, 0.09, 0.05] approximate a Gaussian distribution with sigma≈2.0
+
+- Weights [0.05, 0.09, 0.12, 0.15, 0.16, 0.15, 0.12, 0.09, 0.05] approximate a Gaussian
+  distribution with sigma≈2.0
+
 - Total sum is 0.98, divided by 0.98 for normalization
+
 - `fract()` implements wrap addressing
 
 ### Step 6: Structured State Storage (Texel-Addressed Registers)
 
-**What**: Use specific pixels in a Buffer as named registers to store non-image data (positions, velocities, scores, etc.).
+**What**: Use specific pixels in a Buffer as named registers to store non-image data
+(positions, velocities, scores, etc.).
 
-**Why**: GPUs have no global variables. By assigning semantic meaning to specific texel positions, arbitrary structured state can be persisted in a buffer. This enables complete game logic, particle system state, etc. to be implemented in shaders.
+**Why**: GPUs have no global variables.
+By assigning semantic meaning to specific texel positions, arbitrary structured state
+can be persisted in a buffer.
+This enables complete game logic, particle system state, etc.
+to be implemented in shaders.
 
 **Design Pattern Details**:
 
-1. **Address Constants**: Use `const ivec2` to define the texel address for each state variable
-2. **Load Function**: `texelFetch(iChannel0, addr, 0)` for exact reads (no interpolation)
-3. **Store Function**: Use conditional assignment `fragColor = (px == addr) ? val : fragColor`, ensuring each pixel only writes data belonging to its own address
-4. **Region Storage**: `ivec4 rect` defines rectangular regions for grid-like data (e.g., brick matrices)
-5. **Discard outside data region**: `if (fragCoord.x > 14.0 || fragCoord.y > 14.0) discard;` skips unnecessary computation
+1. **Address Constants**: Use `const ivec2` to define the texel address for each state
+   variable
+
+2. **Load Function**: `texelFetch(iChannel0, addr, 0)` for exact reads (no
+   interpolation)
+
+3. **Store Function**: Use conditional assignment
+   `fragColor = (px == addr) ? val : fragColor`, ensuring each pixel only writes data
+   belonging to its own address
+
+4. **Region Storage**: `ivec4 rect` defines rectangular regions for grid-like data
+   (e.g., brick matrices)
+
+5. **Discard outside data region**:
+   `if (fragCoord.x > 14.0 || fragCoord.y > 14.0) discard;` skips unnecessary
+   computation
 
 **Notes**:
-- `ivec2(fragCoord - 0.5)` ensures correct integer texel coordinates (fragCoord's center offset)
+
+- `ivec2(fragCoord - 0.5)` ensures correct integer texel coordinates (fragCoord’s center
+  offset)
+
 - Initialization must set all state values when `iFrame == 0`
+
 - Default behavior `fragColor = loadValue(px)` keeps unmodified state unchanged
 
 ### Step 7: Inter-Frame Mouse State Tracking
 
-**What**: Store the mouse position in specific pixels of a Buffer, and compute mouse movement delta by reading the previous frame's value.
+**What**: Store the mouse position in specific pixels of a Buffer, and compute mouse
+movement delta by reading the previous frame’s value.
 
-**Why**: ShaderToy does not directly provide mouse velocity. Storing the current frame's `iMouse` in a fixed pixel allows calculating the delta in the next frame. This is critical for fluid interaction — mouse velocity is needed to apply forces.
+**Why**: ShaderToy does not directly provide mouse velocity.
+Storing the current frame’s `iMouse` in a fixed pixel allows calculating the delta in
+the next frame. This is critical for fluid interaction — mouse velocity is needed to
+apply forces.
 
 **Comparison of Two Methods**:
 
 | Feature | Method 1 (First Row Pixel) | Method 2 (Fixed UV Region) |
-|---------|---------------------------|---------------------------|
-| Source | Chimera's Breath | Reaction-Diffusion |
+| --- | --- | --- |
+| Source | Chimera’s Breath | Reaction-Diffusion |
 | Storage Location | `fragCoord.y < 1.0` | Fixed UV coordinate |
 | Read Method | `texelFetch(ch, ivec2(0,0), 0)` | `texture(ch, vec2(7.5/8, 2.5/8))` |
 | Advantage | Simple, suitable for fluids | Resolution-independent |
@@ -217,12 +314,20 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Variant 1: Temporal Accumulation Anti-Aliasing (TAA)
 
-**Difference from basic version**: The Buffer does not perform physics simulation, but instead renders a jittered image and blends it with history frames to achieve supersampling. Uses YCoCg color space neighborhood clamping to prevent ghosting.
+**Difference from basic version**: The Buffer does not perform physics simulation, but
+instead renders a jittered image and blends it with history frames to achieve
+supersampling. Uses YCoCg color space neighborhood clamping to prevent ghosting.
 
 **How It Works**:
+
 1. Buffer A renders the scene with sub-pixel level random jitter
-2. New frames are blended with history frames at a 10:90 ratio, accumulating supersampling over time
-3. The TAA buffer performs YCoCg neighborhood clamping: constraining the history frame color to the statistical range of the current frame's 3x3 neighborhood
+
+2. New frames are blended with history frames at a 10:90 ratio, accumulating
+   supersampling over time
+
+3. The TAA buffer performs YCoCg neighborhood clamping: constraining the history frame
+   color to the statistical range of the current frame’s 3x3 neighborhood
+
 4. A 0.75 sigma clamping range balances ghost removal and detail preservation
 
 **Complete TAA Flow**:
@@ -232,26 +337,39 @@ Buffer A (render+jitter) → Buffer B (motion vectors, optional) → Buffer C (T
 
 ### Variant 2: Deferred Rendering G-Buffer Pipeline
 
-**Difference from basic version**: Buffers do not use self-feedback, but instead process in stages within a single frame: geometry → edge detection → post-processing.
+**Difference from basic version**: Buffers do not use self-feedback, but instead process
+in stages within a single frame: geometry → edge detection → post-processing.
 
 **G-Buffer Encoding Scheme**:
-- `col.xy`: View-space normal xy components (multiplied by camMat to convert to screen space)
+
+- `col.xy`: View-space normal xy components (multiplied by camMat to convert to screen
+  space)
+
 - `col.z`: Linear depth (normalized to [0,1])
+
 - `col.w`: Diffuse lighting + shadow information
 
 **Edge Detection Principle**:
+
 - The `checkSame` function compares normal and depth differences between adjacent pixels
+
 - `Sensitivity.x` controls normal edge sensitivity
+
 - `Sensitivity.y` controls depth edge sensitivity
+
 - Threshold 0.1 determines the edge detection criterion
 
 ### Variant 3: HDR Bloom Post-Processing Pipeline
 
-**Difference from basic version**: Uses Buffers to build a MIP pyramid, achieving wide-range glow through multiple levels of downsampling and blur.
+**Difference from basic version**: Uses Buffers to build a MIP pyramid, achieving
+wide-range glow through multiple levels of downsampling and blur.
 
 **MIP Pyramid Packing Strategy**:
+
 - All MIP levels are packed into a single texture
+
 - `CalcOffset` computes the offset position of each level within the texture
+
 - Each level is half the size, with padding to prevent inter-level leakage
 
 **Complete Bloom Pipeline**:
@@ -268,31 +386,51 @@ color = color / (1.0 + color);  // Reinhard compression
 
 ### Variant 4: Reaction-Diffusion System
 
-**Difference from basic version**: Simulates chemical reaction-diffusion (e.g., Gray-Scott model). Diffusion is implemented via separable blur, and the reaction term is computed in the main buffer.
+**Difference from basic version**: Simulates chemical reaction-diffusion (e.g.,
+Gray-Scott model). Diffusion is implemented via separable blur, and the reaction term is
+computed in the main buffer.
 
 **Gray-Scott Equations**:
+
 - `∂u/∂t = Du∇²u - uv² + F(1-u)` — Diffusion and reaction of chemical substance u
+
 - `∂v/∂t = Dv∇²v + uv² - (F+k)v` — Diffusion and reaction of chemical substance v
+
 - `Du`, `Dv` are diffusion coefficients, `F` is the feed rate, `k` is the kill rate
 
 **Implementation Strategy**:
-- The diffusion term is implemented via separable blur buffers (reusing the blur pipeline from Step 5)
+
+- The diffusion term is implemented via separable blur buffers (reusing the blur
+  pipeline from Step 5)
+
 - The reaction term is computed in the main buffer
+
 - The offset of `uv_red` implements diffusion expansion
+
 - Random noise decay prevents pattern stagnation
 
 ### Variant 5: Multi-Scale MIP Fluid
 
-**Difference from basic version**: Uses `textureLod` to explicitly sample different MIP levels, achieving O(n) complexity multi-scale computation (turbulence, vorticity confinement, Poisson solving), with each physical quantity in its own buffer.
+**Difference from basic version**: Uses `textureLod` to explicitly sample different MIP
+levels, achieving O(n) complexity multi-scale computation (turbulence, vorticity
+confinement, Poisson solving), with each physical quantity in its own buffer.
 
 **Core Advantage**:
-- Traditional multi-scale computation requires O(N²) samples (sampling N neighbors at each scale)
-- MIP sampling leverages hardware automatic averaging; a single `textureLod` at high MIP levels is equivalent to a large-range mean
+
+- Traditional multi-scale computation requires O(N²) samples (sampling N neighbors at
+  each scale)
+
+- MIP sampling leverages hardware automatic averaging; a single `textureLod` at high MIP
+  levels is equivalent to a large-range mean
+
 - Total complexity drops to O(NUM_SCALES × 9) (3x3 neighborhood per scale)
 
 **Weight Function Choices**:
+
 - `1.0/float(i+1)`: Logarithmic decay, reduces large-scale influence
+
 - `1.0/float(1<<i)`: Exponential decay, rapidly suppresses large scales
+
 - Constant: Equal weight for all scales
 
 ## In-Depth Performance Optimization
@@ -300,8 +438,12 @@ color = color / (1.0 + color);  // Reinhard compression
 ### 1. Reduce Texture Samples
 
 **Separable Blur**:
-- Principle: The 2D Gaussian function G(x,y) = G(x) × G(y) can be separated into two 1D convolutions
+
+- Principle: The 2D Gaussian function G(x,y) = G(x) × G(y) can be separated into two 1D
+  convolutions
+
 - An NxN kernel drops from N² to 2N samples
+
 - 9-tap example: 81 → 18 samples
 
 **Bilinear Tap Trick**:
@@ -315,8 +457,11 @@ vec4 s1 = texture(smp, uv + vec2(offset1, 0) * texelSize);
 ```
 
 **MIP Sampling Replaces Large Kernels**:
+
 - `textureLod(smp, uv, 3.0)` samples MIP level 3, equivalent to an 8×8 area mean
+
 - A single sample replaces 64 samples
+
 - Suitable for coarse-scale approximation in multi-scale computation
 
 ### 2. Limit Computation Region
@@ -338,17 +483,17 @@ data.y *= smoothstep(0.5, 0.48, abs(uv.y - 0.5));
 
 ### 3. Reduce Buffer Count
 
-**RGBA Channel Packing**:
-| Channel | Fluid Simulation | G-Buffer | Particle System |
-|---------|-----------------|----------|----------------|
-| R | Velocity x | Normal x | Position x |
-| G | Velocity y | Normal y | Position y |
-| B | Density | Depth | Lifetime |
-| A | Vorticity | Diffuse | Type ID |
+**RGBA Channel Packing**: | Channel | Fluid Simulation | G-Buffer | Particle System |
+|---------|-----------------|----------|----------------| | R | Velocity x | Normal x |
+Position x | | G | Velocity y | Normal y | Position y | | B | Density | Depth | Lifetime
+| | A | Vorticity | Diffuse | Type ID |
 
 **Chained Sub-Steps**:
+
 - 3 buffers running identical code = 3 iterations per frame
+
 - Equivalent to 3x time step, but more stable (each step is still a small step)
+
 - Code is shared via the Common tab, zero maintenance cost
 
 ### 4. Reduce Iteration/Sample Count
@@ -366,8 +511,11 @@ for (int l = 0; l < SCALE_NUM; l++) {
 ```
 
 **MIP Level Count Adjustment**:
+
 - `TURBULENCE_SCALES = 11`: Full multi-scale, highest quality
+
 - `TURBULENCE_SCALES = 7`: Removes the largest scales, minimal quality loss
+
 - `TURBULENCE_SCALES = 5`: Noticeable speedup, suitable for mobile
 
 ### 5. Initialization Strategy
@@ -377,14 +525,18 @@ for (int l = 0; l < SCALE_NUM; l++) {
 // Output stable initial values for the first 20 frames
 if (iFrame < 20) data = vec4(0.5, 0, 0, 0);
 ```
+
 - Why not `iFrame == 0`? Because some buffers depend on the output of other buffers
+
 - 20 frames ensures all buffers complete initialization propagation
 
 **Tiny Noise Initialization**:
 ```glsl
 if (iFrame == 0) fragColor = 1e-6 * noise;
 ```
+
 - Avoids exact zero values causing `0/0` or `normalize(vec2(0))` problems
+
 - Tiny noise breaks symmetry, allowing vortices to develop naturally
 
 ## Combination Examples with Complete Code
@@ -454,9 +606,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ### 3. Scene Rendering + Bloom + TAA Post-Processing Chain
 
 Four-Buffer pipeline:
+
 - **Buffer A**: Scene rendering (with sub-pixel jitter for TAA)
+
 - **Buffer B**: Brightness extraction + downsampling to build bloom pyramid
+
 - **Buffer C/D**: Separable Gaussian blur
+
 - **Image**: Bloom compositing + tone mapping + chromatic aberration + vignette
 
 ```glsl
@@ -497,8 +653,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ### 4. G-Buffer + Screen-Space Effects
 
 Two-Buffer pipeline, no temporal feedback:
+
 - **Buffer A**: Output normals + depth + diffuse to G-Buffer
+
 - **Buffer B**: Screen-space edge detection / SSAO / SSR
+
 - **Image**: Stylized compositing (e.g., hand-drawn style, noise distortion)
 
 ```glsl
@@ -524,9 +683,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### 5. State Storage + Visualization Separation
 
-Standard pattern for games/particle systems. Logic and rendering are fully separated:
+Standard pattern for games/particle systems.
+Logic and rendering are fully separated:
+
 - **Buffer A**: Pure logic computation, state stored in fixed texel positions
-- **Image**: Pure rendering, reads state via `texelFetch`, draws visuals using distance fields/rasterization
+
+- **Image**: Pure rendering, reads state via `texelFetch`, draws visuals using distance
+  fields/rasterization
 
 ```glsl
 // Image: Read game state from Buffer A and render

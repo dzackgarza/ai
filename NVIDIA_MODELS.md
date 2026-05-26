@@ -6,6 +6,7 @@ using `NVIDIA_API_KEY` from the environment.
 Prompt shapes:
 
 - `small`: `Reply with OK and nothing else.`
+
 - `large`: real harness-shaped prompt built from
   `/home/dzack/pdf-extraction/.opencode/agents/zotero-steward.md` plus
   `/home/dzack/pdf-extraction/.agents/skills/zotero-pdf-extraction-maintainer/SKILL.md`
@@ -14,11 +15,13 @@ Prompt shapes:
 Prompt sizes:
 
 - `small`: 31 chars
+
 - `large`: 1,829 system chars + 31,631 user chars
 
 Timeout policy:
 
 - Each request was allowed a full 90s response window.
+
 - Single sample per model/prompt pair.
 
 ## Shortlist
@@ -27,19 +30,33 @@ These 15 were tested after discarding obvious non-contenders: embeddings, rerank
 vision/image/audio models, safety/guard models, tiny models, and stale utility models.
 
 - `deepseek-ai/deepseek-r1-0528`
+
 - `deepseek-ai/deepseek-v3.2`
+
 - `deepseek-ai/deepseek-v4-flash`
+
 - `deepseek-ai/deepseek-v4-pro`
+
 - `meta/llama-3.1-405b-instruct`
+
 - `minimaxai/minimax-m2.5`
+
 - `minimaxai/minimax-m2.7`
+
 - `mistralai/devstral-2-123b-instruct-2512`
+
 - `mistralai/mistral-large-3-675b-instruct-2512`
+
 - `moonshotai/kimi-k2.6`
+
 - `nvidia/nemotron-4-340b-instruct`
+
 - `qwen/qwen3-coder-480b-a35b-instruct`
+
 - `qwen/qwen3-next-80b-a3b-thinking`
+
 - `qwen/qwen3.5-397b-a17b`
+
 - `z-ai/glm-5.1`
 
 ## Results
@@ -67,7 +84,9 @@ vision/image/audio models, safety/guard models, tiny models, and stale utility m
 Best operational choices from this sweep:
 
 1. `mistralai/mistral-large-3-675b-instruct-2512`
+
 2. `z-ai/glm-5.1`
+
 3. `moonshotai/kimi-k2.6`
 
 If code-specialization matters more than raw latency:
@@ -77,6 +96,7 @@ If code-specialization matters more than raw latency:
 Not recommended for these cron jobs right now:
 
 - `deepseek-ai/deepseek-v4-flash`
+
 - `deepseek-ai/deepseek-v4-pro`
 
 Reason:
@@ -85,9 +105,9 @@ Reason:
 
 ## Capability Signals
 
-Latency and calibre are different questions. The table above is runtime behavior
-through NVIDIA's endpoint on this machine. The signals below are benchmark/model-card
-evidence for relative capability.
+Latency and calibre are different questions.
+The table above is runtime behavior through NVIDIA’s endpoint on this machine.
+The signals below are benchmark/model-card evidence for relative capability.
 
 | Model | Public capability signals | Read |
 | --- | --- | --- |
@@ -101,12 +121,16 @@ evidence for relative capability.
 
 ## Takeaway
 
-If the requirement is "highest real capability while still returning promptly on this
-machine through NVIDIA," the best supported choices are:
+If the requirement is “highest real capability while still returning promptly on this
+machine through NVIDIA,” the best supported choices are:
 
 1. `moonshotai/kimi-k2.6`
-2. `z-ai/glm-5.1`
-3. `qwen/qwen3.5-397b-a17b` or `qwen/qwen3-coder-480b-a35b-instruct`, depending on whether you want broader agent capability or code specialization
 
-If the requirement were capability only, ignoring response latency, `deepseek-ai/deepseek-v4-pro`
-would remain a serious contender by published benchmark scores.
+2. `z-ai/glm-5.1`
+
+3. `qwen/qwen3.5-397b-a17b` or `qwen/qwen3-coder-480b-a35b-instruct`, depending on
+   whether you want broader agent capability or code specialization
+
+If the requirement were capability only, ignoring response latency,
+`deepseek-ai/deepseek-v4-pro` would remain a serious contender by published benchmark
+scores.

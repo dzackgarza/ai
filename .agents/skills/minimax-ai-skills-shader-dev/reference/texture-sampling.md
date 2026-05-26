@@ -1,13 +1,23 @@
 # Texture Sampling Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites, step-by-step explanations, mathematical derivations, variant details, and complete combination code examples.
+This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites,
+step-by-step explanations, mathematical derivations, variant details, and complete
+combination code examples.
 
 ## Prerequisites
 
-- **GLSL Basic Syntax**: `vec2`/`vec3`/`vec4`, `uniform sampler2D`, and other types and declarations
-- **UV Coordinate System**: `fragCoord / iResolution.xy` normalizes to `[0,1]`, with origin at the bottom-left corner
-- **Mipmap Concept**: A multi-resolution pyramid of the texture, with each level at half the resolution. The GPU automatically selects the appropriate level based on screen-space derivatives to avoid aliasing
-- **ShaderToy Multi-Pass Architecture**: Image pass is the final output, Buffer A/B/C/D are intermediate computation passes, bound to textures or buffers via `iChannel0~3`
+- **GLSL Basic Syntax**: `vec2`/`vec3`/`vec4`, `uniform sampler2D`, and other types and
+  declarations
+
+- **UV Coordinate System**: `fragCoord / iResolution.xy` normalizes to `[0,1]`, with
+  origin at the bottom-left corner
+
+- **Mipmap Concept**: A multi-resolution pyramid of the texture, with each level at half
+  the resolution. The GPU automatically selects the appropriate level based on
+  screen-space derivatives to avoid aliasing
+
+- **ShaderToy Multi-Pass Architecture**: Image pass is the final output, Buffer A/B/C/D
+  are intermediate computation passes, bound to textures or buffers via `iChannel0~3`
 
 ## Implementation Steps
 
@@ -15,7 +25,9 @@ This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequ
 
 **What**: Convert screen pixel coordinates to UV coordinates and read texture data.
 
-**Why**: `texture()` accepts UV coordinates in the `[0,1]` range. ShaderToy provides pixel coordinates `fragCoord`, which need to be normalized by dividing by the resolution.
+**Why**: `texture()` accepts UV coordinates in the `[0,1]` range.
+ShaderToy provides pixel coordinates `fragCoord`, which need to be normalized by
+dividing by the resolution.
 
 ```glsl
 // Normalize UV
@@ -25,17 +37,27 @@ vec2 uv = fragCoord / iResolution.xy;
 vec4 col = texture(iChannel0, uv);
 ```
 
-Hardware bilinear filtering automatically performs linear interpolation between the nearest 4 texels. When the UV lands exactly at a texel center, the exact value is returned; when it falls between texels, a weighted average of the surrounding four points is returned.
+Hardware bilinear filtering automatically performs linear interpolation between the
+nearest 4 texels. When the UV lands exactly at a texel center, the exact value is
+returned; when it falls between texels, a weighted average of the surrounding four
+points is returned.
 
 ### Step 2: Using textureLod to Control Mipmap Level
 
-**What**: Explicitly specify the LOD level to control sampling resolution, achieving blur or avoiding automatic mip selection in ray marching.
+**What**: Explicitly specify the LOD level to control sampling resolution, achieving
+blur or avoiding automatic mip selection in ray marching.
 
-**Why**: In ray marching, the GPU cannot correctly estimate screen-space derivatives, which leads to incorrect mip level selection and artifacts. Using `textureLod(..., 0.0)` forces sampling at the highest resolution level; using higher LOD values produces blur effects (e.g., depth of field, bloom).
+**Why**: In ray marching, the GPU cannot correctly estimate screen-space derivatives,
+which leads to incorrect mip level selection and artifacts.
+Using `textureLod(..., 0.0)` forces sampling at the highest resolution level; using
+higher LOD values produces blur effects (e.g., depth of field, bloom).
 
 Physical meaning of LOD values:
+
 - `lod = 0.0`: Original resolution (mip 0)
+
 - `lod = 1.0`: Half resolution (mip 1), equivalent to a 2x2 area average
+
 - `lod = N`: Resolution is 1/2^N of the original
 
 ```glsl
@@ -59,9 +81,13 @@ bloom /= 3.0;
 
 ### Step 3: Using texelFetch for Exact Pixel Data Access
 
-**What**: Read the value of a specific texel using integer coordinates, bypassing all filtering.
+**What**: Read the value of a specific texel using integer coordinates, bypassing all
+filtering.
 
-**Why**: When textures are used as data storage (game state, precomputed LUTs, keyboard input), exact values of specific pixels must be read — hardware filtering would corrupt data integrity. `texelFetch` uses `ivec2` integer coordinates instead of `vec2` float UVs, accessing pixels directly by address, similar to array indexing.
+**Why**: When textures are used as data storage (game state, precomputed LUTs, keyboard
+input), exact values of specific pixels must be read — hardware filtering would corrupt
+data integrity. `texelFetch` uses `ivec2` integer coordinates instead of `vec2` float
+UVs, accessing pixels directly by address, similar to array indexing.
 
 ```glsl
 // Define data storage addresses (from Bricks Game)
@@ -86,20 +112,29 @@ float key = texelFetch(iChannel1, ivec2(KEY_SPACE, 0), 0).x;
 
 ### Step 4: Manual Bilinear Interpolation + Quintic Hermite Smoothing
 
-**What**: Bypass hardware bilinear filtering by manually sampling 4 texels and interpolating with a quintic Hermite polynomial for C² continuity.
+**What**: Bypass hardware bilinear filtering by manually sampling 4 texels and
+interpolating with a quintic Hermite polynomial for C² continuity.
 
-**Why**: Hardware bilinear interpolation is linear (C⁰ continuous), which produces visible grid-like seams when layering noise FBM. Quintic Hermite interpolation has zero first and second derivatives at sample points, eliminating these artifacts.
+**Why**: Hardware bilinear interpolation is linear (C⁰ continuous), which produces
+visible grid-like seams when layering noise FBM. Quintic Hermite interpolation has zero
+first and second derivatives at sample points, eliminating these artifacts.
 
 **Mathematical Derivation**:
 
-Standard bilinear interpolation uses linear weight `u = f` (where `f = fract(x)`), which causes derivative discontinuity at boundaries.
+Standard bilinear interpolation uses linear weight `u = f` (where `f = fract(x)`), which
+causes derivative discontinuity at boundaries.
 
 Quintic Hermite polynomial: `u = f³(6f² - 15f + 10)`
 
 Verifying C² continuity:
+
 - `u(0) = 0`, `u(1) = 1` — Correct interpolation boundaries
-- `u'(f) = 30f²(f-1)²` → `u'(0) = 0`, `u'(1) = 0` — First derivative is zero at boundaries
-- `u''(f) = 60f(f-1)(2f-1)` → `u''(0) = 0`, `u''(1) = 0` — Second derivative is zero at boundaries
+
+- `u'(f) = 30f²(f-1)²` → `u'(0) = 0`, `u'(1) = 0` — First derivative is zero at
+  boundaries
+
+- `u''(f) = 60f(f-1)(2f-1)` → `u''(0) = 0`, `u''(1) = 0` — Second derivative is zero at
+  boundaries
 
 ```glsl
 // Manual four-point sampling + quintic Hermite interpolation (from up in the cloud sea)
@@ -124,15 +159,25 @@ float noise(vec2 x) {
 
 ### Step 5: FBM (Fractional Brownian Motion) Noise from Textures
 
-**What**: Build multi-scale procedural noise by layering multiple texture samples at different frequencies.
+**What**: Build multi-scale procedural noise by layering multiple texture samples at
+different frequencies.
 
-**Why**: A single noise sample lacks the multi-scale detail found in nature. FBM simulates the 1/f spectral characteristics of natural textures by layering at doubling frequencies with halving amplitudes. Most natural textures (terrain, clouds, rocks) exhibit 1/f noise characteristics — low frequencies contain most of the energy, high frequencies add detail.
+**Why**: A single noise sample lacks the multi-scale detail found in nature.
+FBM simulates the 1/f spectral characteristics of natural textures by layering at
+doubling frequencies with halving amplitudes.
+Most natural textures (terrain, clouds, rocks) exhibit 1/f noise characteristics — low
+frequencies contain most of the energy, high frequencies add detail.
 
 FBM formula: `fbm(x) = Σ (persistence^i × noise(2^i × x))` for i = 0..N-1
 
 Parameter effects:
-- **OCTAVES (number of layers)**: More layers add more detail, but each additional layer adds one complete noise call
-- **PERSISTENCE**: Controls the amplitude decay rate at higher frequencies. 0.5 is the classic value; higher values (0.6-0.7) produce rougher textures; lower values (0.3-0.4) produce smoother textures
+
+- **OCTAVES (number of layers)**: More layers add more detail, but each additional layer
+  adds one complete noise call
+
+- **PERSISTENCE**: Controls the amplitude decay rate at higher frequencies.
+  0.5 is the classic value; higher values (0.6-0.7) produce rougher textures; lower
+  values (0.3-0.4) produce smoother textures
 
 ```glsl
 #define FBM_OCTAVES 5       // Adjustable: number of layers, more = richer detail
@@ -154,11 +199,18 @@ float fbm(vec2 x) {
 
 ### Step 6: Separable Gaussian Blur (Multi-Pass Convolution)
 
-**What**: Decompose a 2D Gaussian blur into horizontal and vertical passes, each performing a 1D convolution.
+**What**: Decompose a 2D Gaussian blur into horizontal and vertical passes, each
+performing a 1D convolution.
 
-**Why**: A direct NxN 2D convolution requires N² samples; after separation, only 2N are needed. This leverages the separability of the Gaussian kernel — a 2D Gaussian function can be decomposed into the product of two 1D Gaussian functions: `G(x,y) = G(x) × G(y)`. `fract()` wraps coordinates to implement torus boundary conditions, avoiding edge artifacts.
+**Why**: A direct NxN 2D convolution requires N² samples; after separation, only 2N are
+needed. This leverages the separability of the Gaussian kernel — a 2D Gaussian function
+can be decomposed into the product of two 1D Gaussian functions: `G(x,y) = G(x) × G(y)`.
+`fract()` wraps coordinates to implement torus boundary conditions, avoiding edge
+artifacts.
 
-Optimization trick: Leveraging the "free" interpolation of hardware bilinear filtering — sampling between two texels gives a single `texture()` call the weighted average of both texels, achieving an N-tap effect with `(N+1)/2` samples.
+Optimization trick: Leveraging the “free” interpolation of hardware bilinear filtering —
+sampling between two texels gives a single `texture()` call the weighted average of both
+texels, achieving an N-tap effect with `(N+1)/2` samples.
 
 ```glsl
 // Horizontal blur pass (from expansive reaction-diffusion)
@@ -184,14 +236,24 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Step 7: Dispersion Sampling (Wavelength-Dependent Displacement)
 
-**What**: Sample a texture multiple times along a displacement vector with different offsets, weighted by spectral response curves, to simulate prismatic dispersion.
+**What**: Sample a texture multiple times along a displacement vector with different
+offsets, weighted by spectral response curves, to simulate prismatic dispersion.
 
-**Why**: Different wavelengths of real light have different refractive indices, causing spatial color separation. By progressively offsetting UV along the displacement direction and accumulating with different weights per RGB channel, this physical phenomenon can be simulated.
+**Why**: Different wavelengths of real light have different refractive indices, causing
+spatial color separation.
+By progressively offsetting UV along the displacement direction and accumulating with
+different weights per RGB channel, this physical phenomenon can be simulated.
 
 Design principles of spectral response weights:
-- **Red channel** `t²`: Enhanced at the long wavelength end; red light is at the far end of the spectrum
-- **Green channel** `46.6666 × ((1-t) × t)³`: Peak at middle wavelengths, simulating the human eye's greatest sensitivity to green
-- **Blue channel** `(1-t)²`: Enhanced at the short wavelength end; blue light is at the near end of the spectrum
+
+- **Red channel** `t²`: Enhanced at the long wavelength end; red light is at the far end
+  of the spectrum
+
+- **Green channel** `46.6666 × ((1-t) × t)³`: Peak at middle wavelengths, simulating the
+  human eye’s greatest sensitivity to green
+
+- **Blue channel** `(1-t)²`: Enhanced at the short wavelength end; blue light is at the
+  near end of the spectrum
 
 ```glsl
 #define DISP_SAMPLES 64  // Adjustable: dispersion sample count, more = smoother
@@ -221,13 +283,22 @@ vec3 sampleDisp(sampler2D tex, vec2 uv, vec2 disp) {
 
 ### Step 8: IBL Environment Sampling (textureLod + Roughness Mapping)
 
-**What**: Select the cubemap mipmap level based on surface roughness for image-based lighting.
+**What**: Select the cubemap mipmap level based on surface roughness for image-based
+lighting.
 
-**Why**: In PBR, rough surfaces need to gather lighting from a wider range of the environment (equivalent to a blurred environment map). High mipmap levels naturally correspond to blurred versions of the environment map, so roughness can be directly mapped to LOD level. This is the split-sum approximation method popularized by Epic Games in UE4.
+**Why**: In PBR, rough surfaces need to gather lighting from a wider range of the
+environment (equivalent to a blurred environment map).
+High mipmap levels naturally correspond to blurred versions of the environment map, so
+roughness can be directly mapped to LOD level.
+This is the split-sum approximation method popularized by Epic Games in UE4.
 
 Complete split-sum IBL workflow:
-1. Pre-filter environment map: different roughness values correspond to different mip levels
+
+1. Pre-filter environment map: different roughness values correspond to different mip
+   levels
+
 2. Pre-compute BRDF LUT: `vec2(NdotV, roughness)` -> `vec2(scale, bias)`
+
 3. Final compositing: `specular = envColor * (F * brdf.x + brdf.y)`
 
 ```glsl
@@ -254,7 +325,12 @@ vec3 specular = envColor * (F * brdf.x + brdf.y);
 
 ### Variant 1: Anisotropic Flow Field Blur
 
-**Difference from basic version**: Instead of uniform Gaussian blur, performs directional blur along a noise-driven direction field, producing a flowing brushstroke effect. The direction field can come from a noise texture, velocity field, or user-defined vector field. The parabolic weight `4h(1-h)` makes the blur strongest at the path center and weakest at both ends, producing a more natural trailing effect.
+**Difference from basic version**: Instead of uniform Gaussian blur, performs
+directional blur along a noise-driven direction field, producing a flowing brushstroke
+effect. The direction field can come from a noise texture, velocity field, or
+user-defined vector field.
+The parabolic weight `4h(1-h)` makes the blur strongest at the path center and weakest
+at both ends, producing a more natural trailing effect.
 
 ```glsl
 #define BLUR_ITERATIONS 32  // Adjustable: number of samples along flow field
@@ -278,11 +354,18 @@ vec3 flowBlur(vec2 uv) {
 
 ### Variant 2: Texture as Data Storage (Buffer-as-Data)
 
-**Difference from basic version**: Textures store structured data (positions, velocities, state) instead of colors, using `texelFetch` for exact reads to achieve inter-frame persistent state.
+**Difference from basic version**: Textures store structured data (positions,
+velocities, state) instead of colors, using `texelFetch` for exact reads to achieve
+inter-frame persistent state.
 
-The key to this pattern is the "address-value" mapping: each pixel coordinate is an "address", and the `vec4` is the stored "value". In a buffer pass, the shader executes for every pixel, but only writes a new value when `fragPos == addr`; all other pixels retain their old values. This implements selective writing.
+The key to this pattern is the “address-value” mapping: each pixel coordinate is an
+“address”, and the `vec4` is the stored “value”.
+In a buffer pass, the shader executes for every pixel, but only writes a new value when
+`fragPos == addr`; all other pixels retain their old values.
+This implements selective writing.
 
-Applicable scenarios: Game state (health, score, position), particle system parameters, physics simulation global variables.
+Applicable scenarios: Game state (health, score, position), particle system parameters,
+physics simulation global variables.
 
 ```glsl
 // Address definitions
@@ -312,7 +395,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Variant 3: Chromatic Dispersion
 
-**Difference from basic version**: Samples multiple times along a displacement vector, each at a different offset with wavelength-dependent weighted RGB accumulation, producing a prismatic dispersion effect. `DISP_STRENGTH` controls the spatial range of dispersion — larger values produce more pronounced RGB separation.
+**Difference from basic version**: Samples multiple times along a displacement vector,
+each at a different offset with wavelength-dependent weighted RGB accumulation,
+producing a prismatic dispersion effect.
+`DISP_STRENGTH` controls the spatial range of dispersion — larger values produce more
+pronounced RGB separation.
 
 ```glsl
 #define DISP_SAMPLES 64     // Adjustable: sample count
@@ -333,11 +420,17 @@ vec3 dispersion(vec2 uv, vec2 displacement) {
 
 ### Variant 4: Triplanar Texture Mapping
 
-**Difference from basic version**: For 3D surfaces, samples textures using three projection directions (X/Y/Z axes) and blends by normal weights, avoiding seam issues with traditional UV mapping.
+**Difference from basic version**: For 3D surfaces, samples textures using three
+projection directions (X/Y/Z axes) and blends by normal weights, avoiding seam issues
+with traditional UV mapping.
 
-`TRIPLANAR_SHARPNESS` controls the blend transition sharpness: higher values produce sharper transitions between projection faces; a value of 1.0 provides the smoothest but potentially blurry transitions. Typical values are 2.0-4.0.
+`TRIPLANAR_SHARPNESS` controls the blend transition sharpness: higher values produce
+sharper transitions between projection faces; a value of 1.0 provides the smoothest but
+potentially blurry transitions.
+Typical values are 2.0-4.0.
 
-Applicable scenarios: Procedural terrain (where UV unwrapping cannot be done in advance), geometry generated by SDF ray marching.
+Applicable scenarios: Procedural terrain (where UV unwrapping cannot be done in
+advance), geometry generated by SDF ray marching.
 
 ```glsl
 #define TRIPLANAR_SHARPNESS 2.0  // Adjustable: blend sharpness
@@ -356,9 +449,16 @@ vec3 triplanarSample(sampler2D tex, vec3 pos, vec3 normal, float scale) {
 
 ### Variant 5: Temporal Reprojection (TAA)
 
-**Difference from basic version**: Calculates the current frame pixel's UV position in the previous frame, samples the previous frame data from the buffer, and blends to achieve temporal anti-aliasing or accumulation effects.
+**Difference from basic version**: Calculates the current frame pixel’s UV position in
+the previous frame, samples the previous frame data from the buffer, and blends to
+achieve temporal anti-aliasing or accumulation effects.
 
-`TAA_BLEND` controls the history frame weight: higher values (e.g., 0.95) provide better temporal stability but more motion trailing; lower values (e.g., 0.8) provide faster response but more flickering. The clamp operation prevents ghosting — when the history color exceeds the current frame's neighborhood range, it indicates a large scene change, and history weight should be reduced.
+`TAA_BLEND` controls the history frame weight: higher values (e.g., 0.95) provide better
+temporal stability but more motion trailing; lower values (e.g., 0.8) provide faster
+response but more flickering.
+The clamp operation prevents ghosting — when the history color exceeds the current
+frame’s neighborhood range, it indicates a large scene change, and history weight should
+be reduced.
 
 ```glsl
 #define TAA_BLEND 0.9  // Adjustable: history frame blend ratio (higher = smoother but more trailing)
@@ -377,39 +477,77 @@ vec3 temporalBlend(vec2 currUv, vec2 prevUv, vec3 currColor) {
 
 ### Bottleneck 1: Texture Sampling Bandwidth
 
-- **Problem**: A large number of `texture()` calls (e.g., 64 dispersion samples) is a GPU bandwidth-intensive operation
-- **Optimization**: Reduce sample count and compensate with smarter weight functions; use mipmap (`textureLod` at high LOD) to reduce cache misses
-- **Details**: GPU texture cache works in cache lines; cache hit rates are high when adjacent pixels access similar texture regions. Higher LOD level textures are smaller and more likely to fit entirely in cache. For dispersion sampling, consider performing dispersion in a low-resolution buffer first, then bilinearly upsampling
+- **Problem**: A large number of `texture()` calls (e.g., 64 dispersion samples) is a
+  GPU bandwidth-intensive operation
+
+- **Optimization**: Reduce sample count and compensate with smarter weight functions;
+  use mipmap (`textureLod` at high LOD) to reduce cache misses
+
+- **Details**: GPU texture cache works in cache lines; cache hit rates are high when
+  adjacent pixels access similar texture regions.
+  Higher LOD level textures are smaller and more likely to fit entirely in cache.
+  For dispersion sampling, consider performing dispersion in a low-resolution buffer
+  first, then bilinearly upsampling
 
 ### Bottleneck 2: Separable Blur
 
 - **Problem**: A 2D Gaussian blur requires N² samples
-- **Optimization**: Always use a separable two-pass approach (horizontal + vertical), reducing complexity from O(N²) to O(2N)
-- **Advanced trick**: Leverage hardware bilinear filtering's "free" interpolation — sampling between two texels causes the hardware to automatically return the weighted average, achieving an N-tap effect with `(N+1)/2` samples. For example, a 9-tap Gaussian requires only 5 texture samples
+
+- **Optimization**: Always use a separable two-pass approach (horizontal + vertical),
+  reducing complexity from O(N²) to O(2N)
+
+- **Advanced trick**: Leverage hardware bilinear filtering’s “free” interpolation —
+  sampling between two texels causes the hardware to automatically return the weighted
+  average, achieving an N-tap effect with `(N+1)/2` samples.
+  For example, a 9-tap Gaussian requires only 5 texture samples
 
 ### Bottleneck 3: Mip Selection in Ray Marching
 
-- **Problem**: The GPU's screen-space derivatives (`dFdx`/`dFdy`) are incorrect inside ray march loops, because adjacent pixels may be at completely different ray march steps, causing incorrect automatic mip level selection
-- **Optimization**: Use `textureLod(..., 0.0)` in all texture queries within ray march loops to force the base level
-- **Alternative**: If mipmap anti-aliasing is needed, manually compute the LOD: estimate screen-space coverage based on ray length and surface tilt angle, then convert to LOD with `log2()`
+- **Problem**: The GPU’s screen-space derivatives (`dFdx`/`dFdy`) are incorrect inside
+  ray march loops, because adjacent pixels may be at completely different ray march
+  steps, causing incorrect automatic mip level selection
+
+- **Optimization**: Use `textureLod(..., 0.0)` in all texture queries within ray march
+  loops to force the base level
+
+- **Alternative**: If mipmap anti-aliasing is needed, manually compute the LOD: estimate
+  screen-space coverage based on ray length and surface tilt angle, then convert to LOD
+  with `log2()`
 
 ### Bottleneck 4: Manual Interpolation for High-Frequency Noise
 
-- **Problem**: Manual four-point sampling + Hermite interpolation is approximately 4x slower than hardware bilinear (4 `texture()` calls + math vs. 1 hardware-filtered `texture()` call)
-- **Optimization**: Only use it when the visual difference is noticeable (first 1-2 octaves of FBM); higher-frequency octaves can fall back to `texture()` since the difference is no longer visible
-- **Tradeoff**: For a 6-octave FBM, using Hermite for the first 2 octaves (8 samples) and hardware bilinear for the last 4 (4 samples) totals 12 samples — half of the 24 samples needed for full Hermite
+- **Problem**: Manual four-point sampling + Hermite interpolation is approximately 4x
+  slower than hardware bilinear (4 `texture()` calls + math vs.
+  1 hardware-filtered `texture()` call)
+
+- **Optimization**: Only use it when the visual difference is noticeable (first 1-2
+  octaves of FBM); higher-frequency octaves can fall back to `texture()` since the
+  difference is no longer visible
+
+- **Tradeoff**: For a 6-octave FBM, using Hermite for the first 2 octaves (8 samples)
+  and hardware bilinear for the last 4 (4 samples) totals 12 samples — half of the 24
+  samples needed for full Hermite
 
 ### Bottleneck 5: Multi-Buffer Feedback Latency
 
-- **Problem**: Each buffer in a multi-pass feedback loop adds one frame of latency (because a buffer's output is only readable in the next frame)
-- **Optimization**: Combine mergeable operations into a single pass whenever possible; use `texelFetch` instead of `texture` to read buffer data to avoid unnecessary filtering overhead
-- **Architecture suggestion**: When designing buffer topology, minimize feedback chain length. If A→B→C→A forms a three-frame delay loop, consider whether B and C can be merged into a single pass
+- **Problem**: Each buffer in a multi-pass feedback loop adds one frame of latency
+  (because a buffer’s output is only readable in the next frame)
+
+- **Optimization**: Combine mergeable operations into a single pass whenever possible;
+  use `texelFetch` instead of `texture` to read buffer data to avoid unnecessary
+  filtering overhead
+
+- **Architecture suggestion**: When designing buffer topology, minimize feedback chain
+  length. If A→B→C→A forms a three-frame delay loop, consider whether B and C can be
+  merged into a single pass
 
 ## Complete Combination Code Examples
 
 ### Combining with SDF Ray Marching
 
-Texture sampling provides surface detail for SDF scenes: sampling noise textures for displacement mapping, material lookup. Key: `textureLod(..., 0.0)` must be used inside ray march loops.
+Texture sampling provides surface detail for SDF scenes: sampling noise textures for
+displacement mapping, material lookup.
+Key: `textureLod(..., 0.0)` must be used inside ray march loops.
 
 ```glsl
 // Using texture noise for detail displacement in an SDF scene
@@ -437,7 +575,10 @@ vec3 getMaterial(vec3 p, vec3 n) {
 
 ### Combining with Procedural Noise (Domain Warping)
 
-Texture-based noise (manual Hermite + FBM) serves as the driver for domain warping, used to generate terrain, clouds, flames, and other natural effects. Texture noise is faster than pure mathematical noise (one texture sample vs. multiple hash calculations).
+Texture-based noise (manual Hermite + FBM) serves as the driver for domain warping, used
+to generate terrain, clouds, flames, and other natural effects.
+Texture noise is faster than pure mathematical noise (one texture sample vs.
+multiple hash calculations).
 
 ```glsl
 // Domain warping: use FBM to warp FBM's input coordinates
@@ -456,7 +597,9 @@ float domainWarp(vec2 p) {
 
 ### Combining with Post-Processing Pipeline
 
-Multi-LOD sampling for bloom, separable Gaussian blur for depth of field, dispersion sampling for chromatic aberration. These techniques can be chained into a complete post-processing pipeline.
+Multi-LOD sampling for bloom, separable Gaussian blur for depth of field, dispersion
+sampling for chromatic aberration.
+These techniques can be chained into a complete post-processing pipeline.
 
 ```glsl
 // Complete post-processing chain (single-pass simplified version)
@@ -491,7 +634,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Combining with PBR/IBL Lighting
 
-`textureLod` samples the cubemap by roughness for image-based lighting, combined with a precomputed BRDF LUT (queried via `texelFetch` or `texture`), forming a complete split-sum IBL pipeline.
+`textureLod` samples the cubemap by roughness for image-based lighting, combined with a
+precomputed BRDF LUT (queried via `texelFetch` or `texture`), forming a complete
+split-sum IBL pipeline.
 
 ```glsl
 // Complete IBL lighting computation
@@ -522,7 +667,10 @@ vec3 computeIBL(vec3 N, vec3 V, vec3 albedo, float roughness, float metallic) {
 
 ### Combining with Simulation/Feedback Systems
 
-Multi-buffer texture sampling for reaction-diffusion, fluid simulation, and other iterative systems. Buffer A stores state, Buffer B/C perform separable blur diffusion, and the Image pass handles final visualization. `fract()` wraps coordinates for torus boundaries.
+Multi-buffer texture sampling for reaction-diffusion, fluid simulation, and other
+iterative systems. Buffer A stores state, Buffer B/C perform separable blur diffusion,
+and the Image pass handles final visualization.
+`fract()` wraps coordinates for torus boundaries.
 
 ```glsl
 // Buffer A: Reaction-diffusion state update

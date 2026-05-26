@@ -154,10 +154,15 @@ capability.
 
 - **S+ tier:** Complex refactors, multi-file architectural changes, debugging across
   subsystems
+
 - **S tier:** Significant features, complex bug fixes, substantial code generation
+
 - **A+ tier:** Targeted features, moderate refactoring, well-scoped tasks
+
 - **A tier:** Bug fixes, code reviews, smaller features
+
 - **A−/B+ tier:** Simple code generation, documentation, smaller tasks
+
 - **B/C tier:** Code completion, simple scripts only
 
 * * *
@@ -168,19 +173,27 @@ When the task is summarization (papers, long markdown, search snippets, technica
 reports), prioritize:
 
 - **Context window headroom:** target at least 2x expected prompt size
+
 - **Stability under load:** prefer models with fewer transient 429s in your provider
+
 - **Output consistency:** prefer models that return direct `content` (not reasoning-only
   partials)
+
 - **Cost tier constraints:** if free-tier only, pin a concrete free model and live-ping
   it before use
 
 Recommended process:
 
 1. List candidate models for your provider/tier.
+
 2. Filter by context limit and pricing constraints.
+
 3. Live-ping each candidate with a trivial prompt.
+
 4. Run a small summarization smoke test.
+
 5. Run one realistic long-context test.
+
 6. Pin the winner in config (avoid router aliases for repeatable behavior).
 
 * * *
@@ -197,9 +210,9 @@ from keys present in `~/.envrc`. For invocation and options, use the script help
 ## Local Behavioral Evaluation Fixtures
 
 Use `model-strength-testing/behavioral-evaluations/` when model choice depends on
-behavioral competence rather than benchmark tier alone. The fixtures cover
-visible-test gaming, property-based anti-gaming checks, red-herring debugging, and
-evidence-based review behavior.
+behavioral competence rather than benchmark tier alone.
+The fixtures cover visible-test gaming, property-based anti-gaming checks, red-herring
+debugging, and evidence-based review behavior.
 
 * * *
 
@@ -211,11 +224,14 @@ before committing to a model.
 `llmfit` benchmarks models against your hardware and estimates:
 
 - **Throughput** (tokens/second)
+
 - **Memory requirements**
+
 - **Time to first token** latency
+
 - **Whether the model can run at all** on your setup
 
-Don't guess — run `llmfit` to verify a local model will actually work for agentic tasks.
+Don’t guess — run `llmfit` to verify a local model will actually work for agentic tasks.
 
 * * *
 
@@ -224,10 +240,13 @@ Don't guess — run `llmfit` to verify a local model will actually work for agen
 - → **creating-subagents** — Load alongside when creating subagent descriptions that
   reference model tiers.
   Covers the Use when/Pass/Ask format for agent-facing delegation instructions.
+
 - → **prompt-engineering** — Load alongside when writing prompts that depend on model
   capabilities. Covers effective prompt construction, priming context.
+
 - → **subagent-delegation** — Load alongside when selecting models for delegated tasks.
   Covers subagent lifecycle, review cycles, verifying output.
+
 - → **test-guidelines** — Load alongside when writing tests that verify model output
   meets expected quality.
   Covers test patterns for model-dependent behavior.

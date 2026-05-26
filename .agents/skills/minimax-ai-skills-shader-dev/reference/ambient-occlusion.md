@@ -1,26 +1,43 @@
 # SDF Ambient Occlusion — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), containing a complete step-by-step tutorial, mathematical derivations, variant analysis, and advanced usage.
+This document is a detailed supplement to [SKILL.md](SKILL.md), containing a complete
+step-by-step tutorial, mathematical derivations, variant analysis, and advanced usage.
 
 ## Prerequisites
 
 - GLSL basic syntax (uniform, varying, function definitions)
-- **Signed Distance Field (SDF)** concept: `map(p)` returns the distance from point p to the nearest surface
+
+- **Signed Distance Field (SDF)** concept: `map(p)` returns the distance from point p to
+  the nearest surface
+
 - **Raymarching** basic loop: marching along a ray to find surface intersections
-- **Surface normal computation**: Obtaining the normal direction via SDF gradient (finite differences)
+
+- **Surface normal computation**: Obtaining the normal direction via SDF gradient
+  (finite differences)
+
 - Vector math fundamentals: dot product, normalization, vector addition/subtraction
 
 ## Core Principles in Detail
 
-The core idea of SDF ambient occlusion: **Sample the SDF at multiple distances along the surface normal and compare the "expected distance" with the "actual distance" to estimate the degree of occlusion.**
+The core idea of SDF ambient occlusion: **Sample the SDF at multiple distances along the
+surface normal and compare the “expected distance” with the “actual distance” to
+estimate the degree of occlusion.**
 
 For a point P on the surface with normal N, at distance h:
-- **Expected distance** = h (if the surroundings are completely open, the SDF value should equal the distance to the surface)
-- **Actual distance** = map(P + N × h) (real SDF value)
-- **Occlusion contribution** = h - map(P + N × h) (the larger the difference, the more nearby geometry is occluding)
 
-The final result is a weighted sum of occlusion contributions from multiple sample points, yielding a [0, 1] occlusion factor:
+- **Expected distance** = h (if the surroundings are completely open, the SDF value
+  should equal the distance to the surface)
+
+- **Actual distance** = map(P + N × h) (real SDF value)
+
+- **Occlusion contribution** = h - map(P + N × h) (the larger the difference, the more
+  nearby geometry is occluding)
+
+The final result is a weighted sum of occlusion contributions from multiple sample
+points, yielding a [0, 1] occlusion factor:
+
 - 1.0 = no occlusion (bright)
+
 - 0.0 = fully occluded (dark corner)
 
 Key mathematical formula (additive accumulation form):
@@ -29,15 +46,18 @@ Key mathematical formula (additive accumulation form):
 AO = 1 - k × Σ(weight_i × max(0, h_i - map(P + N × h_i)))
 ```
 
-Where `weight_i` typically decays exponentially or geometrically (closer samples have higher weight), and `k` is a global intensity coefficient.
+Where `weight_i` typically decays exponentially or geometrically (closer samples have
+higher weight), and `k` is a global intensity coefficient.
 
 ## Implementation Steps in Detail
 
 ### Step 1: Build the Base SDF Scene
 
-**What**: Define a `map()` function that returns the signed distance value for any point in space.
+**What**: Define a `map()` function that returns the signed distance value for any point
+in space.
 
-**Why**: AO computation relies entirely on SDF queries, so a working distance field is needed first.
+**Why**: AO computation relies entirely on SDF queries, so a working distance field is
+needed first.
 
 ```glsl
 float map(vec3 p) {
@@ -50,9 +70,11 @@ float map(vec3 p) {
 
 ### Step 2: Compute Surface Normal
 
-**What**: Compute the normal direction via finite difference approximation of the SDF gradient.
+**What**: Compute the normal direction via finite difference approximation of the SDF
+gradient.
 
-**Why**: AO sampling probes outward along the normal direction; the normal determines the sampling direction.
+**Why**: AO sampling probes outward along the normal direction; the normal determines
+the sampling direction.
 
 ```glsl
 vec3 calcNormal(vec3 p) {
@@ -67,9 +89,13 @@ vec3 calcNormal(vec3 p) {
 
 ### Step 3: Implement Classic Normal-Direction AO (Additive Accumulation)
 
-**What**: Sample the SDF at 5 distances along the normal direction, accumulating occlusion.
+**What**: Sample the SDF at 5 distances along the normal direction, accumulating
+occlusion.
 
-**Why**: This is a classic method — the most concise and efficient SDF-AO implementation. 5 samples strike an excellent balance between quality and performance. The weight decays at 0.95 exponentially, giving closer samples more influence (near-surface occlusion is more perceptually important).
+**Why**: This is a classic method — the most concise and efficient SDF-AO
+implementation. 5 samples strike an excellent balance between quality and performance.
+The weight decays at 0.95 exponentially, giving closer samples more influence
+(near-surface occlusion is more perceptually important).
 
 ```glsl
 // Classic AO
@@ -90,7 +116,11 @@ float calcAO(vec3 pos, vec3 nor) {
 
 **What**: Multiply the AO factor into ambient and indirect light components.
 
-**Why**: AO simulates the degree to which indirect light is occluded. Physically, it should only affect ambient/indirect light, not the direct light source's diffuse and specular (direct light occlusion is handled by shadows). However, in practice AO is often multiplied into all lighting for a stronger visual effect.
+**Why**: AO simulates the degree to which indirect light is occluded.
+Physically, it should only affect ambient/indirect light, not the direct light source’s
+diffuse and specular (direct light occlusion is handled by shadows).
+However, in practice AO is often multiplied into all lighting for a stronger visual
+effect.
 
 ```glsl
 float ao = calcAO(pos, nor);
@@ -111,7 +141,8 @@ vec3 color = diffuse * shadow + ambient * ao * skyVis;
 
 **What**: Integrate AO into the complete raymarching pipeline.
 
-**Why**: AO is part of the lighting computation and needs to be calculated after hitting a surface but before final output.
+**Why**: AO is part of the lighting computation and needs to be calculated after hitting
+a surface but before final output.
 
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -149,7 +180,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Variant 1: Multiplicative AO
 
-**Difference from base version**: Starts at 1.0 and progressively multiplies down, rather than using additive accumulation then inverting. The multiplicative form naturally guarantees the result stays in [0, 1], avoids the need for clamping, and provides more natural falloff for multiple overlapping occlusions.
+**Difference from base version**: Starts at 1.0 and progressively multiplies down,
+rather than using additive accumulation then inverting.
+The multiplicative form naturally guarantees the result stays in [0, 1], avoids the need
+for clamping, and provides more natural falloff for multiple overlapping occlusions.
 
 **Source**: Multiplicative accumulation approach
 
@@ -169,7 +203,11 @@ float calcAO_multiplicative(vec3 pos, vec3 nor) {
 
 ### Variant 2: Multi-Scale AO
 
-**Difference from base version**: Exponentially increases sampling distances (0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4), computing short-range and long-range occlusion separately. Short-range AO reveals contact shadows and surface detail; long-range AO reveals large-scale environmental occlusion. Fully unrolled with no loops, making it GPU-efficient.
+**Difference from base version**: Exponentially increases sampling distances (0.1, 0.2,
+0.4, 0.8, 1.6, 3.2, 6.4), computing short-range and long-range occlusion separately.
+Short-range AO reveals contact shadows and surface detail; long-range AO reveals
+large-scale environmental occlusion.
+Fully unrolled with no loops, making it GPU-efficient.
 
 **Source**: Multi-scale sampling approach
 
@@ -195,7 +233,9 @@ float calcAO_multiscale(vec3 pos, vec3 nor) {
 
 ### Variant 3: Jittered Sampling AO
 
-**Difference from base version**: Adds hash-based jitter on top of uniform sample positions, breaking the banding artifacts caused by fixed sample spacing. Also uses a `1/(1+l)` distance-decay weight so farther samples have less influence.
+**Difference from base version**: Adds hash-based jitter on top of uniform sample
+positions, breaking the banding artifacts caused by fixed sample spacing.
+Also uses a `1/(1+l)` distance-decay weight so farther samples have less influence.
 
 **Source**: Jittered sampling approach
 
@@ -217,7 +257,11 @@ float calcAO_jittered(vec3 pos, vec3 nor, float maxDist) {
 
 ### Variant 4: Hemispherical Random Direction AO
 
-**Difference from base version**: Instead of sampling only along the normal direction, generates multiple random directions within the normal hemisphere. Closer to the true physical model of ambient occlusion (light arriving from all directions in the hemisphere), but requires more samples (typically 32) for smooth results.
+**Difference from base version**: Instead of sampling only along the normal direction,
+generates multiple random directions within the normal hemisphere.
+Closer to the true physical model of ambient occlusion (light arriving from all
+directions in the hemisphere), but requires more samples (typically 32) for smooth
+results.
 
 **Source**: Hemispherical random direction approach
 
@@ -242,7 +286,11 @@ float calcAO_hemisphere(vec3 pos, vec3 nor, float seed) {
 
 ### Variant 5: Fibonacci Sphere Uniform Hemisphere AO
 
-**Difference from base version**: Uses Fibonacci sphere points instead of random directions, achieving quasi-uniform hemisphere sampling distribution. Avoids the clustering problem of pure random sampling, yielding higher quality at the same sample count. Can also be paired with a separate directional occlusion function (e.g., SSS/soft shadow) for multi-level occlusion.
+**Difference from base version**: Uses Fibonacci sphere points instead of random
+directions, achieving quasi-uniform hemisphere sampling distribution.
+Avoids the clustering problem of pure random sampling, yielding higher quality at the
+same sample count. Can also be paired with a separate directional occlusion function
+(e.g., SSS/soft shadow) for multi-level occlusion.
 
 **Source**: Fibonacci sphere sampling approach
 
@@ -276,17 +324,22 @@ float calcAO_fibonacci(vec3 pos, vec3 nor) {
 
 ### Bottleneck Analysis
 
-The performance bottleneck of SDF-AO lies almost entirely in **SDF sample count** — each `map()` call is a full scene distance computation. For complex scenes, this can be very expensive.
+The performance bottleneck of SDF-AO lies almost entirely in **SDF sample count** — each
+`map()` call is a full scene distance computation.
+For complex scenes, this can be very expensive.
 
 ### Optimization Techniques
 
 #### 1. Reduce Sample Count
 
-Classic normal-direction AO only needs 3~5 samples for acceptable quality. Hemispherical sampling is more physically correct but requires 16~32 samples; use it when the performance budget allows.
+Classic normal-direction AO only needs 3~~5 samples for acceptable quality.
+Hemispherical sampling is more physically correct but requires 16~~32 samples; use it
+when the performance budget allows.
 
 #### 2. Early Exit Optimization
 
-Exit the loop early when accumulated occlusion is already large enough, avoiding unnecessary SDF computations.
+Exit the loop early when accumulated occlusion is already large enough, avoiding
+unnecessary SDF computations.
 
 ```glsl
 if (occ > 0.35) break; // Early exit when heavily occluded
@@ -294,7 +347,9 @@ if (occ > 0.35) break; // Early exit when heavily occluded
 
 #### 3. Unroll Loops
 
-For fixed sample counts (especially 4~7), manually unrolling loops avoids branch overhead and is GPU-friendly. The multi-scale AO variant fully unrolls 7 samples.
+For fixed sample counts (especially 4~7), manually unrolling loops avoids branch
+overhead and is GPU-friendly.
+The multi-scale AO variant fully unrolls 7 samples.
 
 #### 4. Simplify AO for Distant Objects
 
@@ -318,7 +373,8 @@ Use `#ifdef` to disable AO in debug or low-performance modes.
 
 #### 6. Hand-Painted Pseudo-AO Blending
 
-For static or semi-static scenes, pseudo-AO values (based on material ID or position) can be precomputed and blended with real-time AO to reduce runtime computation.
+For static or semi-static scenes, pseudo-AO values (based on material ID or position)
+can be precomputed and blended with real-time AO to reduce runtime computation.
 
 ```glsl
 float focc = /* preset occlusion based on material */;
@@ -327,13 +383,16 @@ float finalAO = calcAO(pos, nor) * focc;
 
 #### 7. SDF Simplification
 
-A simplified version of `map()` (ignoring small details) can be used for AO sampling, since AO is inherently low-frequency information.
+A simplified version of `map()` (ignoring small details) can be used for AO sampling,
+since AO is inherently low-frequency information.
 
 ## Combination Suggestions in Detail
 
 ### 1. AO + Soft Shadow
 
-The most common combination. AO handles indirect light occlusion (corners, crevices); soft shadows handle direct light occlusion. Simply multiply the two:
+The most common combination.
+AO handles indirect light occlusion (corners, crevices); soft shadows handle direct
+light occlusion. Simply multiply the two:
 
 ```glsl
 float sha = calcShadow(pos, lightDir, 0.02, 20.0, 8.0);
@@ -345,7 +404,8 @@ col = lighting * sha * ao;
 
 ### 2. AO + Sky Visibility
 
-Use the normal's y component to estimate the degree of upward-facing, multiplied with AO to simulate sky light occlusion:
+Use the normal’s y component to estimate the degree of upward-facing, multiplied with AO
+to simulate sky light occlusion:
 
 ```glsl
 float skyVis = 0.5 + 0.5 * nor.y;
@@ -354,7 +414,8 @@ col += skyColor * ao * skyVis;
 
 ### 3. AO + Subsurface Scattering / Bounce Light
 
-AO can modulate bounce light and SSS intensity (occluded areas also don't receive bounce light):
+AO can modulate bounce light and SSS intensity (occluded areas also don’t receive bounce
+light):
 
 ```glsl
 float bou = clamp(-nor.y, 0.0, 1.0); // Downward-facing surfaces receive ground bounce
@@ -364,7 +425,8 @@ col += sssColor * sss * (0.05 + 0.95 * ao); // SSS also modulated by AO
 
 ### 4. AO + Convexity / Corner Detection
 
-The same SDF probing loop can sample both outward (+N) and inward (-N), yielding AO and convexity information respectively, useful for edge highlights or wear effects:
+The same SDF probing loop can sample both outward (+N) and inward (-N), yielding AO and
+convexity information respectively, useful for edge highlights or wear effects:
 
 ```glsl
 vec2 aoAndCorner = getOcclusion(pos, nor); // .x = AO, .y = convexity
@@ -374,7 +436,8 @@ col = mix(col, edgeColor, aoAndCorner.y);   // Convexity coloring
 
 ### 5. AO + Fresnel Environment Reflection
 
-AO should also modulate the environment reflection term; otherwise concave areas will show unnatural bright environment reflections:
+AO should also modulate the environment reflection term; otherwise concave areas will
+show unnatural bright environment reflections:
 
 ```glsl
 float fre = pow(1.0 - max(dot(rd, nor), 0.0), 5.0);

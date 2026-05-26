@@ -2,41 +2,77 @@
 
 ## Use Cases
 
-- Real-time rendering of 3D geometry in ShaderToy / fragment shaders (no traditional meshes needed)
+- Real-time rendering of 3D geometry in ShaderToy / fragment shaders (no traditional
+  meshes needed)
+
 - Complex scenes composed from basic primitives (sphere, box, cylinder, torus, etc.)
+
 - Smooth organic blending (character modeling, fluid blobs, biological forms)
+
 - Infinitely repeating architectural/pattern structures (corridors, gear arrays, grids)
-- Precise boolean operations (drilling holes, cutting, intersection) for sculpting geometry
+
+- Precise boolean operations (drilling holes, cutting, intersection) for sculpting
+  geometry
 
 ## Core Principles
 
-An SDF returns the **signed distance** from any point in space to the nearest surface: positive = outside, negative = inside, zero = surface.
+An SDF returns the **signed distance** from any point in space to the nearest surface:
+positive = outside, negative = inside, zero = surface.
 
-**Sphere Tracing**: advance along a ray, stepping by the current SDF value (the safe marching distance) at each step. The SDF guarantees no surface exists within that radius. A hit is registered when the distance falls below epsilon.
+**Sphere Tracing**: advance along a ray, stepping by the current SDF value (the safe
+marching distance) at each step.
+The SDF guarantees no surface exists within that radius.
+A hit is registered when the distance falls below epsilon.
 
 Key math:
+
 - Sphere: `f(p) = |p| - r`
+
 - Box: `f(p) = |max(|p|-b, 0)| + min(max(|p-b|), 0)`
+
 - Union: `min(d1, d2)` / Subtraction: `max(d1, -d2)`
+
 - Smooth union: `min(d1,d2) - h^2/4k`, `h = max(k-|d1-d2|, 0)`
-- Normal = SDF gradient: `n = normalize(gradient of f(p))` (finite difference approximation)
+
+- Normal = SDF gradient: `n = normalize(gradient of f(p))` (finite difference
+  approximation)
 
 ## Rendering Pipeline Overview
 
-1. **SDF Primitive Library** -- `sdSphere`, `sdBox`, `sdEllipsoid`, `sdTorus`, `sdCapsule`, `sdCylinder`
-2. **Boolean Operations** -- `opUnion`/`opSubtraction`/`opIntersection` + smooth variants `smin`/`smax`
-3. **Scene Definition** -- `map(p)` returns `vec2(distance, materialID)`, combining all primitives
-4. **Ray Marching** -- `raycast(ro, rd)` sphere tracing loop (128 steps, adaptive threshold `SURF_DIST * t`)
-5. **Normal Calculation** -- tetrahedral differencing (4 map calls, ZERO macro to prevent inlining)
-6. **Soft Shadows** -- quadratic stepping with `k*h/t` to estimate occlusion softness, Hermite smoothing
-7. **Ambient Occlusion** -- 5-layer sampling along the normal, comparing SDF values with expected distances
-8. **Camera + Rendering** -- look-at matrix, multiple lights (sun + sky + SSS), gamma correction, fog
+1. **SDF Primitive Library** -- `sdSphere`, `sdBox`, `sdEllipsoid`, `sdTorus`,
+   `sdCapsule`, `sdCylinder`
+
+2. **Boolean Operations** -- `opUnion`/`opSubtraction`/`opIntersection` + smooth
+   variants `smin`/`smax`
+
+3. **Scene Definition** -- `map(p)` returns `vec2(distance, materialID)`, combining all
+   primitives
+
+4. **Ray Marching** -- `raycast(ro, rd)` sphere tracing loop (128 steps, adaptive
+   threshold `SURF_DIST * t`)
+
+5. **Normal Calculation** -- tetrahedral differencing (4 map calls, ZERO macro to
+   prevent inlining)
+
+6. **Soft Shadows** -- quadratic stepping with `k*h/t` to estimate occlusion softness,
+   Hermite smoothing
+
+7. **Ambient Occlusion** -- 5-layer sampling along the normal, comparing SDF values with
+   expected distances
+
+8. **Camera + Rendering** -- look-at matrix, multiple lights (sun + sky + SSS), gamma
+   correction, fog
 
 ## Full Code Template
 
-Runs directly in ShaderToy. Includes multi-primitive scene, smooth blending, soft shadows, AO, and material system.
+Runs directly in ShaderToy.
+Includes multi-primitive scene, smooth blending, soft shadows, AO, and material system.
 
-**IMPORTANT:** When using the `vec2(distance, materialID)` material system, `smin` needs to handle `vec2` types. The template includes a `vec2 smin(vec2 a, vec2 b, float k)` overload that ensures the material ID is correctly passed through during smooth blending (taking the material of the closer distance).
+**IMPORTANT:** When using the `vec2(distance, materialID)` material system, `smin` needs
+to handle `vec2` types.
+The template includes a `vec2 smin(vec2 a, vec2 b, float k)` overload that ensures the
+material ID is correctly passed through during smooth blending (taking the material of
+the closer distance).
 
 ```glsl
 // 3D SDF Full Rendering Pipeline Template - Runs in ShaderToy
@@ -570,20 +606,38 @@ vec3 pbrLighting(vec3 pos, vec3 nor, vec3 rd, vec3 albedo, float roughness, floa
 
 ### Performance Optimization Tips
 
-- **Bounding volume acceleration**: test ray against AABB first to narrow `tmin/tmax`, avoiding wasted steps in empty regions
-- **Sub-scene bounding**: in `map()`, use a cheap `sdBox` to check proximity before computing the precise SDF
-- **Adaptive step size**: `abs(h.x) < SURF_DIST * t` -- looser tolerance at distance, stricter up close
-- **Prevent compiler inlining**: `#define ZERO (min(iFrame, 0))` + loop prevents `calcNormal` from inlining map 4 times
+- **Bounding volume acceleration**: test ray against AABB first to narrow `tmin/tmax`,
+  avoiding wasted steps in empty regions
+
+- **Sub-scene bounding**: in `map()`, use a cheap `sdBox` to check proximity before
+  computing the precise SDF
+
+- **Adaptive step size**: `abs(h.x) < SURF_DIST * t` -- looser tolerance at distance,
+  stricter up close
+
+- **Prevent compiler inlining**: `#define ZERO (min(iFrame, 0))` + loop prevents
+  `calcNormal` from inlining map 4 times
+
 - **Exploit symmetry**: fold into the fundamental domain, reducing 18 evaluations to 4
 
 ### Common Composition Techniques
 
-- **Noise displacement**: `d += 0.05 * sin(p.x*10.)*sin(p.y*10.)*sin(p.z*10.)` adds organic detail; breaks the Lipschitz condition, so step size should be multiplied by 0.5~0.7
-- **Bump mapping**: perturb only during normal calculation, leaving ray marching unaffected for better performance
-- **Domain transforms**: warp coordinates before entering map (bending, polar coordinate transforms, etc.)
-- **Procedural animation**: bone angles driven by time to position primitives, `smin` ensures smooth joints
+- **Noise displacement**: `d += 0.05 * sin(p.x*10.)*sin(p.y*10.)*sin(p.z*10.)` adds
+  organic detail; breaks the Lipschitz condition, so step size should be multiplied by
+  0.5~0.7
+
+- **Bump mapping**: perturb only during normal calculation, leaving ray marching
+  unaffected for better performance
+
+- **Domain transforms**: warp coordinates before entering map (bending, polar coordinate
+  transforms, etc.)
+
+- **Procedural animation**: bone angles driven by time to position primitives, `smin`
+  ensures smooth joints
+
 - **Motion blur**: multi-frame temporal sampling averaged
 
 ## Further Reading
 
-Full step-by-step tutorials, mathematical derivations, and advanced usage in [reference](../reference/sdf-3d.md)
+Full step-by-step tutorials, mathematical derivations, and advanced usage in
+[reference](../reference/sdf-3d.md)

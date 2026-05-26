@@ -25,12 +25,16 @@ For every extracted claim, preserve:
 
 - **Objects**: the exact spaces, schemes, categories, lattices, complexes, morphisms,
   functors, hypotheses under discussion.
+
 - **Status**: definition, observation, proved lemma, conjecture, heuristic, example,
   counterexample, failed assertion, repaired assertion, open question.
+
 - **Dependencies**: which definitions support which lemmas, which lemmas require which
   hypotheses, which claims depend on references, which conclusions are conditional.
+
 - **Failures**: which approaches were tried, why they failed, whether the failure was
   formal, computational, definitional, notational, or merely unresolved.
+
 - **Epistemic level**: known, suspected, plausible, contradicted, unchecked.
 
 ## What to produce
@@ -53,15 +57,17 @@ Related reference 9.
 
 The agent must preserve what was mathematically learned, not the order or wording in
 which it was learned.
-The chronological record answers "How was this discovered?"
-The mathematical artifact answers "What is now known, under what hypotheses, by what
-argument, and with what caveats?"
+The chronological record answers “How was this discovered?”
+The mathematical artifact answers “What is now known, under what hypotheses, by what
+argument, and with what caveats?”
 Both may matter, but they are different artifacts.
 
 Produce these research-state artifacts:
 
 - Definitions index (objects, structures, conventions, notation)
+
 - Theorem/lemma inventory with precise statements and full hypotheses
+
 - Dependency graph showing what depends on what, in explicit form:
   ```
   Definition A depends on convention C.
@@ -71,7 +77,9 @@ Produce these research-state artifacts:
   primitivity.
   Open gap G blocks Theorem E but not Lemma B.
   ```
+
 - Proof-gap ledger (missing proofs, missing computations, source-check queues)
+
 - Failed-approaches ledger, using this format for each entry:
   ```
   Failed approach.
@@ -85,9 +93,13 @@ Produce these research-state artifacts:
   Consequence.
   Any proof of X must either avoid this reduction or add a rigidity datum.
   ```
+
 - Claims-status audit (proved / conditional / conjectural / false / open)
+
 - Notation reconciliation table (same object under different names)
+
 - Source-provenance table (where each claim came from)
+
 - Paper-readiness classification (raw → parsed → structured → checked → citable →
   paper-ready → internal-only → rejected)
 
@@ -95,11 +107,13 @@ Produce these research-state artifacts:
 
 - Never produce a compressed transcript or summary.
   Produce structured mathematical artifacts.
+
 - Never collapse uncertainty.
   Every claim must have an explicit status.
-  "Maybe" must not become "yes."
+  “Maybe” must not become “yes.”
+
 - Never replace niche, specific, or delicate mathematical content with general textbook
-  explanations. A chat log saying "this should follow from Torelli somehow" should
+  explanations. A chat log saying “this should follow from Torelli somehow” should
   become:
   ```
   Open gap.
@@ -108,7 +122,7 @@ Produce these research-state artifacts:
   chosen lattice marking and involution data determine the required morphism. A
   source check is required.
   ```
-  Not the original sentence preserved verbatim, and not a generic "Topic: Torelli"
+  Not the original sentence preserved verbatim, and not a generic “Topic: Torelli”
   summary. The mathematical content and the uncertainty are both preserved.
   Similarly, do not replace:
   ```
@@ -116,29 +130,38 @@ Produce these research-state artifacts:
   degree-2 Enriques period domain, and the unresolved issue is how to express that
   polarization in the blowup model over P^2
   ```
-  with "The discussion was about moduli spaces and period maps."
+  with “The discussion was about moduli spaces and period maps.”
   The first form preserves the research object; the second discards it.
+
 - Never create a new note for every fragment.
   Integrate into existing structures.
   Ask: what existing mathematical object does this refine?
+
 - Never append blindly.
   Compare new material against current state.
   Reconcile: confirm, refine, weaken, contradict, or supersede existing notes.
   Examples of reconciliation actions:
-  - A new chat log proves that an earlier "open gap" is now closed → close the gap, link
+
+  - A new chat log proves that an earlier “open gap” is now closed → close the gap, link
     to the proof.
+
   - A new computation shows a conjectured isometry type was wrong → update the claim,
     note the correction.
+
   - A source check shows a cited theorem applies only under an extra hypothesis → add
     the hypothesis, mark the claim as conditional.
+
   - A failed proof attempt explains why an earlier lemma statement was too strong →
     weaken the lemma or record the obstruction.
+
   - A notation change means two notes refer to the same object under different names →
     merge or add a reconciliation entry.
     Preserve history where useful, but the current mathematical state must remain
     coherent.
+
 - Never discard failed avenues.
   Record them with the attempt, the failure reason, and the mathematical consequence.
+
 - Never reorder material to create a false narrative of discovery.
   False starts must stay separate from final claims.
   Repaired arguments must not be merged with unrepaired ones.
@@ -150,13 +173,21 @@ Produce these research-state artifacts:
 Every mathematical assertion must carry one of:
 
 - `proved in source` — explicitly proved in the source material
+
 - `proved modulo cited theorem` — conditional on a citation
+
 - `proved modulo computation` — conditional on an unperformed computation
+
 - `plausible but unproved` — suggested but not established
+
 - `suggested by examples` — evidence exists but no proof
+
 - `false as stated but repairable` — wrong formulation, correctable
+
 - `false and not useful` — discarded
+
 - `ambiguous (notation changed)` — meaning unstable
+
 - `unresolved (source incomplete)` — cannot determine
 
 ### Agent reasoning
@@ -164,7 +195,9 @@ Every mathematical assertion must carry one of:
 Distinguish source content from agent reconstruction:
 
 - `Source-supported` — explicitly present in the source material.
+
 - `Agent reconstruction` — inferred, completed, or repaired by the agent.
+
 - `Status` — what remains to be verified before promotion.
 
 ### Provenance
@@ -172,9 +205,13 @@ Distinguish source content from agent reconstruction:
 For each important claim, record:
 
 - Which source it came from
+
 - Whether it was asserted, proved, corrected, or inferred
+
 - Whether the source itself was reliable
+
 - Whether an external citation is required
+
 - Whether the statement is paper-ready or internal-only
 
 ## Decision procedures
@@ -197,15 +234,25 @@ For each important claim, record:
 Categorize every extracted item:
 
 - Definition — introduces objects, structures, conventions, or notation
+
 - Construction — builds one object from another
+
 - Claim — asserts a mathematical fact
+
 - Proof step — justifies a claim
+
 - Example — instantiates a definition or tests a claim
+
 - Counterexample — refutes a claim or delimits hypotheses
+
 - Obstruction — identifies why a proposed claim or proof cannot work
+
 - Warning — records a common mistake, false analogy, or unstable notation
+
 - Reference — connects a claim to a citable source
+
 - Open gap — marks missing proof, missing computation, or missing source check
+
 - Editorial — possible paper structure, motivation, exposition
 
 ### Paper-readiness spectrum
@@ -213,12 +260,19 @@ Categorize every extracted item:
 Classify every item along:
 
 - Raw — copied or transcribed source material
+
 - Parsed — mathematical objects and claims identified
+
 - Structured — definitions, claims, examples, gaps, dependencies separated
+
 - Checked — internally consistent and source-aligned
+
 - Citable — linked to a reliable reference or proved in notes
+
 - Paper-ready — written with precise hypotheses, notation, and proof
+
 - Internal-only — useful for research memory, not publication
+
 - Rejected — false, obsolete, or superseded (may retain as warning)
 
 ## Handling images and diagrams
@@ -228,9 +282,12 @@ Interpret, transcribe, and check them.
 
 - Convert diagrams to durable forms when possible: TikZ, commutative diagram code,
   explicit matrices, adjacency data, equations, tables, or structured descriptions.
+
 - Keep the original image linked until the transcription has been audited.
+
 - Distinguish: what is visibly present, what is inferred, what is mathematically
   reconstructed, what remains ambiguous.
+
 - Do not silently convert a diagrammatic argument into a theorem unless missing formal
   steps are supplied or marked.
 
@@ -252,24 +309,45 @@ Interpret, transcribe, and check them.
 Before considering extraction complete:
 
 - [ ] Every claim has an explicit status label
+
 - [ ] Dependencies between claims are recorded
+
 - [ ] Failed avenues are preserved with failure reasons
+
 - [ ] Agent reasoning is explicitly labeled as such
+
 - [ ] Source provenance is recorded for key claims
+
 - [ ] New material is reconciled with existing state (not blindly appended)
+
 - [ ] Niche mathematical content is preserved, not generalized
+
 - [ ] Images/diagrams are transcribed and linked, not merely described
+
 - [ ] Paper-readiness level is assigned to each item
+
 - [ ] Output answers these continuation questions:
+
   - What objects are being studied?
+
   - What is currently defined?
+
   - What is currently proved?
+
   - What is conjectured?
+
   - What failed?
+
   - What remains open?
+
   - What depends on what?
+
   - What sources support which claims?
+
   - What computations must be reproduced?
+
   - What notation is fixed?
+
   - What material is paper-ready?
+
   - What material is internal research memory?

@@ -1,17 +1,24 @@
 # CLI reference (`scripts/image_gen.py`)
 
-This file is for the fallback CLI mode only. Read it only after the user explicitly asks to use `scripts/image_gen.py` instead of the built-in `image_gen` tool.
+This file is for the fallback CLI mode only.
+Read it only after the user explicitly asks to use `scripts/image_gen.py` instead of the
+built-in `image_gen` tool.
 
-`generate-batch` is a CLI subcommand in this fallback path. It is not a top-level mode of the skill.
+`generate-batch` is a CLI subcommand in this fallback path.
+It is not a top-level mode of the skill.
 
 ## What this CLI does
+
 - `generate`: generate a new image from a prompt
+
 - `edit`: edit one or more existing images
+
 - `generate-batch`: run many generation jobs from a JSONL file
 
 Real API calls require **network access** + `OPENAI_API_KEY`. `--dry-run` does not.
 
 ## Quick start (works from any repo)
+
 Set a stable path to the skill CLI (default `CODEX_HOME` is `~/.codex`):
 
 ```
@@ -19,7 +26,8 @@ export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 export IMAGE_GEN="$CODEX_HOME/skills/imagegen/scripts/image_gen.py"
 ```
 
-Install dependencies into that environment with its package manager. In uv-managed environments, `uv pip install ...` remains the preferred path.
+Install dependencies into that environment with its package manager.
+In uv-managed environments, `uv pip install ...` remains the preferred path.
 
 ## Quick start
 
@@ -33,7 +41,9 @@ python "$IMAGE_GEN" generate \
 ```
 
 Notes:
+
 - One-off dry-runs print the API payload and the computed output path(s).
+
 - Repo-local finals should live under `output/imagegen/`.
 
 Generate (requires `OPENAI_API_KEY` + network):
@@ -55,24 +65,41 @@ python "$IMAGE_GEN" edit \
 ```
 
 ## Guardrails
-- Use the bundled CLI directly (`python "$IMAGE_GEN" ...`) after activating the correct environment.
-- Do **not** create one-off runners (for example `gen_images.py`) unless the user explicitly asks for a custom wrapper.
-- **Never modify** `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+
+- Use the bundled CLI directly (`python "$IMAGE_GEN" ...`) after activating the correct
+  environment.
+
+- Do **not** create one-off runners (for example `gen_images.py`) unless the user
+  explicitly asks for a custom wrapper.
+
+- **Never modify** `scripts/image_gen.py`. If something is missing, ask the user before
+  doing anything else.
 
 ## Defaults
+
 - Model: `gpt-image-1.5`
+
 - Supported model family for this CLI: GPT Image models (`gpt-image-*`)
+
 - Size: `1024x1024`
+
 - Quality: `auto`
+
 - Output format: `png`
+
 - Default one-off output path: `output/imagegen/output.png`
+
 - Background: unspecified unless `--background` is set
 
 ## Quality, input fidelity, and masks (CLI fallback only)
-These are explicit CLI controls. They are not built-in `image_gen` tool arguments.
+
+These are explicit CLI controls.
+They are not built-in `image_gen` tool arguments.
 
 - `--quality` works for `generate`, `edit`, and `generate-batch`: `low|medium|high|auto`
+
 - `--input-fidelity` is **edit-only** and validated as `low|high`
+
 - `--mask` is **edit-only**
 
 Example:
@@ -87,16 +114,28 @@ python "$IMAGE_GEN" edit \
 ```
 
 Mask notes:
-- For multi-image edits, pass repeated `--image` flags. Their order is meaningful, so describe each image by index and role in the prompt.
+
+- For multi-image edits, pass repeated `--image` flags.
+  Their order is meaningful, so describe each image by index and role in the prompt.
+
 - The CLI accepts a single `--mask`.
-- Use a PNG mask when possible; the script treats mask handling as best-effort and does not perform full preflight validation beyond file checks/warnings.
-- In the edit prompt, repeat invariants (`change only the background; keep the subject unchanged`) to reduce drift.
+
+- Use a PNG mask when possible; the script treats mask handling as best-effort and does
+  not perform full preflight validation beyond file checks/warnings.
+
+- In the edit prompt, repeat invariants
+  (`change only the background; keep the subject unchanged`) to reduce drift.
 
 ## Output handling
+
 - Use `tmp/imagegen/` for temporary JSONL inputs or scratch files.
+
 - Use `output/imagegen/` for final outputs.
+
 - Reruns fail if a target file already exists unless you pass `--force`.
+
 - `--out-dir` changes one-off naming to `image_1.<ext>`, `image_2.<ext>`, and so on.
+
 - Downscaled copies use the default suffix `-web` unless you override it.
 
 ## Common recipes
@@ -141,20 +180,38 @@ rm -f tmp/imagegen/prompts.jsonl
 ```
 
 Notes:
+
 - `generate-batch` requires `--out-dir`.
+
 - generate-batch requires --out-dir.
+
 - Use `--concurrency` to control parallelism (default `5`).
-- Per-job overrides are supported in JSONL (for example `size`, `quality`, `background`, `output_format`, `output_compression`, `moderation`, `n`, `model`, `out`, and prompt-augmentation fields).
-- `--n` generates multiple variants for a single prompt; `generate-batch` is for many different prompts.
+
+- Per-job overrides are supported in JSONL (for example `size`, `quality`, `background`,
+  `output_format`, `output_compression`, `moderation`, `n`, `model`, `out`, and
+  prompt-augmentation fields).
+
+- `--n` generates multiple variants for a single prompt; `generate-batch` is for many
+  different prompts.
+
 - In batch mode, per-job `out` is treated as a filename under `--out-dir`.
 
 ## CLI notes
+
 - Supported sizes: `1024x1024`, `1536x1024`, `1024x1536`, or `auto`.
+
 - Transparent backgrounds require `output_format` to be `png` or `webp`.
-- `--prompt-file`, `--output-compression`, `--moderation`, `--max-attempts`, `--fail-fast`, `--force`, and `--no-augment` are supported.
-- This CLI is intended for GPT Image models. Do not assume older non-GPT image-model behavior applies here.
+
+- `--prompt-file`, `--output-compression`, `--moderation`, `--max-attempts`,
+  `--fail-fast`, `--force`, and `--no-augment` are supported.
+
+- This CLI is intended for GPT Image models.
+  Do not assume older non-GPT image-model behavior applies here.
 
 ## See also
+
 - API parameter quick reference for fallback CLI mode: `references/image-api.md`
+
 - Prompt examples shared across both top-level modes: `references/sample-prompts.md`
+
 - Network/sandbox notes for fallback CLI mode: `references/codex-network.md`

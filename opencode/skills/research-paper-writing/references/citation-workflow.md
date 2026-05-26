@@ -1,53 +1,70 @@
 # Citation Management & Hallucination Prevention
 
-This reference provides a complete workflow for managing citations programmatically, preventing AI-generated citation hallucinations, and maintaining clean bibliographies.
+This reference provides a complete workflow for managing citations programmatically,
+preventing AI-generated citation hallucinations, and maintaining clean bibliographies.
 
----
+* * *
 
 ## Contents
 
 - [Why Citation Verification Matters](#why-citation-verification-matters)
+
 - [Citation APIs Overview](#citation-apis-overview)
+
 - [Verified Citation Workflow](#verified-citation-workflow)
+
 - [Python Implementation](#python-implementation)
+
 - [BibTeX Management](#bibtex-management)
+
 - [Common Citation Formats](#common-citation-formats)
+
 - [Troubleshooting](#troubleshooting)
 
----
+* * *
 
 ## Why Citation Verification Matters
 
 ### The Hallucination Problem
 
 Research has documented significant issues with AI-generated citations:
+
 - **~40% error rate** in AI-generated citations (Enago Academy research)
+
 - NeurIPS 2025 found **100+ hallucinated citations** slipped through review
+
 - Common errors include:
+
   - Fabricated paper titles with real author names
+
   - Wrong publication venues or years
+
   - Non-existent papers with plausible metadata
+
   - Incorrect DOIs or arXiv IDs
 
 ### Consequences
 
 - Desk rejection at some venues
+
 - Loss of credibility with reviewers
+
 - Potential retraction if published
+
 - Wasted time chasing non-existent sources
 
 ### Solution
 
 **Never generate citations from memory—always verify programmatically.**
 
----
+* * *
 
 ## Citation APIs Overview
 
 ### Primary APIs
 
 | API | Coverage | Rate Limits | Best For |
-|-----|----------|-------------|----------|
+| --- | --- | --- | --- |
 | **Semantic Scholar** | 214M papers | 1 RPS (free key) | ML/AI papers, citation graphs |
 | **CrossRef** | 140M+ DOIs | Polite pool with mailto | DOI lookup, BibTeX retrieval |
 | **arXiv** | Preprints | 3-second delays | ML preprints, PDF access |
@@ -64,9 +81,10 @@ Need open data, bulk access? → OpenAlex
 
 ### No Official Google Scholar API
 
-Google Scholar has no official API. Scraping violates ToS. Use SerpApi ($75-275/month) only if Semantic Scholar coverage is insufficient.
+Google Scholar has no official API. Scraping violates ToS. Use SerpApi ($75-275/month)
+only if Semantic Scholar coverage is insufficient.
 
----
+* * *
 
 ## Verified Citation Workflow
 
@@ -209,7 +227,7 @@ def generate_citation_key(bibtex: str) -> str:
     return f"{first_author.lower()}_{year}_{first_word}"
 ```
 
----
+* * *
 
 ## Python Implementation
 
@@ -406,20 +424,23 @@ def batch_cite(queries: List[str], output_file: str = "references.bib"):
     print(f"Saved {len(bibtex_entries)} citations to {output_file}")
 ```
 
----
+* * *
 
 ## BibTeX Management
 
 ### BibTeX vs BibLaTeX
 
 | Feature | BibTeX | BibLaTeX |
-|---------|--------|----------|
+| --- | --- | --- |
 | Unicode support | Limited | Full |
 | Entry types | Standard | Extended (@online, @dataset) |
 | Customization | Limited | Highly flexible |
 | Backend | bibtex | Biber (recommended) |
 
-**Recommendation**: Use natbib with BibTeX for conference submissions — all major venue templates (NeurIPS, ICML, ICLR, ACL, AAAI, COLM) ship with natbib and `.bst` files. BibLaTeX with Biber is an option for journals or personal projects where you control the template.
+**Recommendation**: Use natbib with BibTeX for conference submissions — all major venue
+templates (NeurIPS, ICML, ICLR, ACL, AAAI, COLM) ship with natbib and `.bst` files.
+BibLaTeX with Biber is an option for journals or personal projects where you control the
+template.
 
 ### LaTeX Setup
 
@@ -459,7 +480,7 @@ devlin_2019_bert
 brown_2020_language
 ```
 
----
+* * *
 
 ## Common Citation Formats
 
@@ -506,30 +527,42 @@ brown_2020_language
 }
 ```
 
----
+* * *
 
 ## Troubleshooting
 
 ### Common Issues
 
 **Issue: Semantic Scholar returns no results**
+
 - Try more specific keywords
+
 - Check spelling of author names
+
 - Use quotation marks for exact phrases
 
-**Issue: DOI doesn't resolve to BibTeX**
+**Issue: DOI doesn’t resolve to BibTeX**
+
 - DOI may be registered but not linked to CrossRef
+
 - Try arXiv ID instead if available
+
 - Generate BibTeX from metadata manually
 
 **Issue: Rate limiting errors**
+
 - Add delays between requests (1-3 seconds)
+
 - Use API key if available
+
 - Cache results to avoid repeat queries
 
 **Issue: Encoding problems in BibTeX**
+
 - Use proper LaTeX escaping: `{\"u}` for ü
+
 - Ensure file is UTF-8 encoded
+
 - Use BibLaTeX with Biber for better Unicode
 
 ### Verification Checklist
@@ -537,28 +570,43 @@ brown_2020_language
 Before adding a citation:
 
 - [ ] Paper found in at least 2 sources
+
 - [ ] DOI or arXiv ID verified
+
 - [ ] BibTeX retrieved (not generated from memory)
+
 - [ ] Entry type correct (@inproceedings vs @article)
+
 - [ ] Author names complete and correctly formatted
+
 - [ ] Year and venue verified
+
 - [ ] Citation key follows consistent format
 
----
+* * *
 
 ## Additional Resources
 
 **APIs:**
+
 - Semantic Scholar: https://api.semanticscholar.org/api-docs/
+
 - CrossRef: https://www.crossref.org/documentation/retrieve-metadata/rest-api/
+
 - arXiv: https://info.arxiv.org/help/api/basics.html
+
 - OpenAlex: https://docs.openalex.org/
 
 **Python Libraries:**
+
 - `semanticscholar`: https://pypi.org/project/semanticscholar/
+
 - `arxiv`: https://pypi.org/project/arxiv/
+
 - `habanero` (CrossRef): https://github.com/sckott/habanero
 
 **Verification Tools:**
+
 - Citely: https://citely.ai/citation-checker
+
 - ReciteWorks: https://reciteworks.com/

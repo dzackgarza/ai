@@ -1,27 +1,44 @@
 # 2D SDF Detailed Reference
 
-This file contains the complete step-by-step tutorial, mathematical derivations, detailed explanations, and advanced usage for [SKILL.md](SKILL.md).
+This file contains the complete step-by-step tutorial, mathematical derivations,
+detailed explanations, and advanced usage for [SKILL.md](SKILL.md).
 
 ## Prerequisites
 
-- **GLSL Basics**: uniforms, varyings, built-in functions (length, dot, clamp, mix, smoothstep, step, sign, abs, max, min)
+- **GLSL Basics**: uniforms, varyings, built-in functions (length, dot, clamp, mix,
+  smoothstep, step, sign, abs, max, min)
+
 - **Vector Math**: 2D vector operations, geometric meaning of dot and cross products
-- **Coordinate Systems**: conversion from screen coordinates to normalized device coordinates (NDC), aspect ratio correction
-- **Signed Distance Field Concept**: the function returns the signed distance to the shape boundary — negative inside, zero on the boundary, positive outside
+
+- **Coordinate Systems**: conversion from screen coordinates to normalized device
+  coordinates (NDC), aspect ratio correction
+
+- **Signed Distance Field Concept**: the function returns the signed distance to the
+  shape boundary — negative inside, zero on the boundary, positive outside
 
 ## Core Principles in Detail
 
-The core idea of 2D SDF: **for each pixel on screen, compute its shortest signed distance `d` to the target shape boundary**.
+The core idea of 2D SDF: **for each pixel on screen, compute its shortest signed
+distance `d` to the target shape boundary**.
 
 - `d < 0`: pixel is inside the shape
+
 - `d = 0`: pixel is exactly on the boundary
+
 - `d > 0`: pixel is outside the shape
 
-Once you have the distance value `d`, use functions like `smoothstep` and `clamp` to map it to color/opacity, enabling:
+Once you have the distance value `d`, use functions like `smoothstep` and `clamp` to map
+it to color/opacity, enabling:
+
 - **Fill**: color when `d < 0`
-- **Anti-aliased edges**: `smoothstep(-aa, aa, d)` for sub-pixel smoothing at the boundary
+
+- **Anti-aliased edges**: `smoothstep(-aa, aa, d)` for sub-pixel smoothing at the
+  boundary
+
 - **Stroke**: apply smoothstep again on `abs(d) - strokeWidth`
-- **Boolean operations**: `min(d1, d2)` = union, `max(d1, d2)` = intersection, `max(-d1, d2)` = subtraction
+
+- **Boolean operations**: `min(d1, d2)` = union, `max(d1, d2)` = intersection,
+  `max(-d1, d2)` = subtraction
 
 Key mathematical formulas:
 ```
@@ -38,9 +55,13 @@ Smooth union: d = mix(d2, d1, h) - k*h*(1-h),  h = clamp(0.5 + 0.5*(d2-d1)/k, 0,
 
 ### Step 1: Coordinate Normalization and Aspect Ratio Correction
 
-**What**: Convert screen pixel coordinates to normalized coordinates centered at the screen center, with the y range of [-1, 1].
+**What**: Convert screen pixel coordinates to normalized coordinates centered at the
+screen center, with the y range of [-1, 1].
 
-**Why**: Pixel coordinates depend on resolution. After normalization, SDF parameters (such as radius) have resolution-independent physical meaning. Dividing by `iResolution.y` (not `.x`) ensures correct aspect ratio so circles don't become ellipses.
+**Why**: Pixel coordinates depend on resolution.
+After normalization, SDF parameters (such as radius) have resolution-independent
+physical meaning. Dividing by `iResolution.y` (not `.x`) ensures correct aspect ratio so
+circles don’t become ellipses.
 
 **Code**:
 ```glsl
@@ -57,9 +78,13 @@ vec2 uv = fragCoord.xy / iResolution.xy;
 
 ### Step 2: Defining SDF Primitive Functions
 
-**What**: Write basic primitive functions that return signed distances. Each function takes the current point `p` and shape parameters, and returns a `float` distance value.
+**What**: Write basic primitive functions that return signed distances.
+Each function takes the current point `p` and shape parameters, and returns a `float`
+distance value.
 
-**Why**: These are the atomic building blocks for all 2D SDF graphics. Encapsulating them as independent functions allows free combination, transformation, and reuse.
+**Why**: These are the atomic building blocks for all 2D SDF graphics.
+Encapsulating them as independent functions allows free combination, transformation, and
+reuse.
 
 **Code**:
 ```glsl
@@ -119,9 +144,14 @@ float sdEllipse(vec2 p, vec2 center, float a, float b) {
 
 ### Step 3: CSG Boolean Operations
 
-**What**: Combine two SDF distance values using min/max operations to achieve union, subtraction, and intersection of shapes.
+**What**: Combine two SDF distance values using min/max operations to achieve union,
+subtraction, and intersection of shapes.
 
-**Why**: This is the most powerful capability of SDFs — building arbitrarily complex shapes from simple primitives. `min` takes the smaller of the two field values to produce a union (since smaller distance means "closer" to the shape interior); `max` takes the larger value for intersection; `max(a, -b)` inverts b's inside/outside and intersects for subtraction.
+**Why**: This is the most powerful capability of SDFs — building arbitrarily complex
+shapes from simple primitives.
+`min` takes the smaller of the two field values to produce a union (since smaller
+distance means “closer” to the shape interior); `max` takes the larger value for
+intersection; `max(a, -b)` inverts b’s inside/outside and intersects for subtraction.
 
 **Code**:
 ```glsl
@@ -154,9 +184,13 @@ float opXor(float d1, float d2) {
 
 ### Step 4: Coordinate Transforms
 
-**What**: Transform coordinates before computing the SDF so that shapes appear at desired positions and angles.
+**What**: Transform coordinates before computing the SDF so that shapes appear at
+desired positions and angles.
 
-**Why**: SDF functions define shapes centered at the origin by default. By transforming the input coordinates (rather than the shape itself), you can freely place and rotate multiple primitives in the scene without affecting the mathematical properties of the distance field.
+**Why**: SDF functions define shapes centered at the origin by default.
+By transforming the input coordinates (rather than the shape itself), you can freely
+place and rotate multiple primitives in the scene without affecting the mathematical
+properties of the distance field.
 
 **Code**:
 ```glsl
@@ -177,9 +211,14 @@ float d = sdBox(rotateCCW(translate(p, vec2(0.5, 0.3)), iTime), vec2(0.2), 0.05)
 
 ### Step 5: Distance Field Visualization and Rendering
 
-**What**: Convert the SDF distance value to final color output. Includes fill, anti-aliasing, stroke, contour lines, and other visualization methods.
+**What**: Convert the SDF distance value to final color output.
+Includes fill, anti-aliasing, stroke, contour lines, and other visualization methods.
 
-**Why**: The distance value itself is just a scalar that needs a mapping strategy to become a visual effect. `smoothstep` creates sub-pixel smooth transitions at the boundary, avoiding aliasing from hard edges. The `fwidth` function uses screen-space derivatives to automatically calculate pixel width, achieving resolution-independent anti-aliasing.
+**Why**: The distance value itself is just a scalar that needs a mapping strategy to
+become a visual effect.
+`smoothstep` creates sub-pixel smooth transitions at the boundary, avoiding aliasing
+from hard edges. The `fwidth` function uses screen-space derivatives to automatically
+calculate pixel width, achieving resolution-independent anti-aliasing.
 
 **Code**:
 ```glsl
@@ -207,9 +246,12 @@ col = mix(col, vec3(1.0), smoothstep(1.5*px, 0.0, abs(d) - 0.002)); // Zero cont
 
 ### Step 6: Stroke and Border Rendering
 
-**What**: Use the absolute value of the distance field to extract the shape's outline, or render inner/outer borders separately.
+**What**: Use the absolute value of the distance field to extract the shape’s outline,
+or render inner/outer borders separately.
 
-**Why**: Strokes are a natural byproduct of SDFs — `abs(d)` gives unsigned distance, and subtracting the stroke width yields the "stroke shape" SDF. Unlike rasterized strokes that require geometry expansion, SDF strokes need only one line of math.
+**Why**: Strokes are a natural byproduct of SDFs — `abs(d)` gives unsigned distance, and
+subtracting the stroke width yields the “stroke shape” SDF. Unlike rasterized strokes
+that require geometry expansion, SDF strokes need only one line of math.
 
 **Code**:
 ```glsl
@@ -241,9 +283,14 @@ float outerBorderMask(float d, float width) {
 
 ### Step 7: Multi-Layer Compositing
 
-**What**: Render multiple SDF shapes as layers with alpha channels, then blend them back-to-front using `mix`.
+**What**: Render multiple SDF shapes as layers with alpha channels, then blend them
+back-to-front using `mix`.
 
-**Why**: Complex 2D scenes typically contain backgrounds, multiple shapes, strokes, and other visual layers. Rendering each SDF as an independent RGBA layer and compositing them layer by layer with standard alpha blending (`mix(bottom, top, top.a)`) is both intuitive and gives precise control over stacking order.
+**Why**: Complex 2D scenes typically contain backgrounds, multiple shapes, strokes, and
+other visual layers.
+Rendering each SDF as an independent RGBA layer and compositing them layer by layer with
+standard alpha blending (`mix(bottom, top, top.a)`) is both intuitive and gives precise
+control over stacking order.
 
 **Code**:
 ```glsl
@@ -270,7 +317,8 @@ fragColor = vec4(col, 1.0);
 
 ### Variant 1: Solid Fill + Stroke Mode
 
-**Difference from the basic version**: Instead of showing distance field debug colors, renders solid shapes with clean strokes, suitable for UI and icons.
+**Difference from the basic version**: Instead of showing distance field debug colors,
+renders solid shapes with clean strokes, suitable for UI and icons.
 
 **Key modified code**:
 ```glsl
@@ -285,7 +333,10 @@ col = mix(col, shape.rgb, shape.a);
 
 ### Variant 2: Multi-Layer CSG Illustration
 
-**Difference from the basic version**: Combines multiple SDF primitives through boolean operations into complex patterns (e.g., an umbrella, a logo), with each layer independently colored and composited layer by layer. Suitable for 2D illustrations and icon construction.
+**Difference from the basic version**: Combines multiple SDF primitives through boolean
+operations into complex patterns (e.g., an umbrella, a logo), with each layer
+independently colored and composited layer by layer.
+Suitable for 2D illustrations and icon construction.
 
 **Key modified code**:
 ```glsl
@@ -310,7 +361,10 @@ col = mix(col, layer1.rgb, layer1.a);
 
 ### Variant 3: Hexagonal Grid Tiling
 
-**Difference from the basic version**: Uses non-orthogonal coordinate system domain repetition to tile SDFs across the screen, with each cell having an independent ID for differentiated coloring. Suitable for background textures and geometric patterns.
+**Difference from the basic version**: Uses non-orthogonal coordinate system domain
+repetition to tile SDFs across the screen, with each cell having an independent ID for
+differentiated coloring.
+Suitable for background textures and geometric patterns.
 
 **Key modified code**:
 ```glsl
@@ -339,7 +393,10 @@ col *= smoothstep(0.10, 0.11, h.w);                   // Center falloff
 
 ### Variant 4: Organic Shapes (Polar Coordinate SDF)
 
-**Difference from the basic version**: Uses polar coordinates `(atan, length)` to define shape boundary functions, enabling creation of hearts, petals, stars, and other non-polygonal organic shapes. Supports pulsing animations.
+**Difference from the basic version**: Uses polar coordinates `(atan, length)` to define
+shape boundary functions, enabling creation of hearts, petals, stars, and other
+non-polygonal organic shapes.
+Supports pulsing animations.
 
 **Key modified code**:
 ```glsl
@@ -361,7 +418,9 @@ vec3 col = mix(bgCol, heartCol, smoothstep(-0.01, 0.01, d - r));
 
 ### Variant 5: Bezier Curve SDF
 
-**Difference from the basic version**: Computes the exact signed distance from a point to a quadratic Bezier curve by solving a cubic equation (Cardano's formula). Suitable for curved text, path rendering, and similar scenarios.
+**Difference from the basic version**: Computes the exact signed distance from a point
+to a quadratic Bezier curve by solving a cubic equation (Cardano’s formula).
+Suitable for curved text, path rendering, and similar scenarios.
 
 **Key modified code**:
 ```glsl
@@ -399,7 +458,9 @@ float sdBezier(vec2 A, vec2 B, vec2 C, vec2 p) {
 
 ### 1. Reducing sqrt Calls
 
-In polygon SDFs (such as triangles), by comparing squared distance values first and only taking `sqrt` on the minimum distance at the end, multiple `sqrt` calls are reduced to one. This is the core optimization idea behind the triangle SDF implementation.
+In polygon SDFs (such as triangles), by comparing squared distance values first and only
+taking `sqrt` on the minimum distance at the end, multiple `sqrt` calls are reduced to
+one. This is the core optimization idea behind the triangle SDF implementation.
 
 ```glsl
 // Bad: sqrt on every edge
@@ -413,11 +474,18 @@ return -sqrt(min(d0, d1)) * sign(...);
 
 ### 2. fwidth vs Fixed Pixel Width
 
-`fwidth(d)` invokes screen-space partial derivatives. In simple scenes, a fixed `px = 2.0/iResolution.y` can replace it to reduce GPU derivative computation overhead. However, in scenes with coordinate scaling/distortion (such as the hexagonal grid's `pos *= 1.2 + 0.15*length(pos)`), `fwidth` must be used to ensure correct anti-aliasing width.
+`fwidth(d)` invokes screen-space partial derivatives.
+In simple scenes, a fixed `px = 2.0/iResolution.y` can replace it to reduce GPU
+derivative computation overhead.
+However, in scenes with coordinate scaling/distortion (such as the hexagonal grid’s
+`pos *= 1.2 + 0.15*length(pos)`), `fwidth` must be used to ensure correct anti-aliasing
+width.
 
 ### 3. Avoiding Excessive Boolean Operation Nesting
 
-Large amounts of `min`/`max` nesting are correct but computing distances for all primitives per pixel per frame can be expensive. You can skip distant primitives by checking rough bounding boxes:
+Large amounts of `min`/`max` nesting are correct but computing distances for all
+primitives per pixel per frame can be expensive.
+You can skip distant primitives by checking rough bounding boxes:
 
 ```glsl
 // Only compute precisely when near the shape
@@ -428,7 +496,8 @@ if (length(p - shapeCenter) < shapeRadius + margin) {
 
 ### 4. Supersampling AA Trade-off
 
-Multiple samples (e.g., 2x2 supersampling) yield higher quality anti-aliasing but multiply the fragment shader computation by 4:
+Multiple samples (e.g., 2x2 supersampling) yield higher quality anti-aliasing but
+multiply the fragment shader computation by 4:
 
 ```glsl
 #define AA 2  // Adjustable: 1 = no supersampling, 2 = 4x, 3 = 9x
@@ -441,11 +510,14 @@ for (int n = 0; n < AA; n++) {
 tot /= float(AA * AA);
 ```
 
-For most real-time scenes, single-pixel AA with `smoothstep` or `fwidth` is sufficient. Supersampling is mainly for offline rendering or showcase scenes.
+For most real-time scenes, single-pixel AA with `smoothstep` or `fwidth` is sufficient.
+Supersampling is mainly for offline rendering or showcase scenes.
 
 ### 5. Step Size Optimization for 2D Soft Shadows
 
-In cone marching 2D soft shadows, use `max(1.0, abs(sd))` instead of a fixed step size to take large leaps in open areas and small precise steps near shapes. Typically 64 steps can cover a large scene:
+In cone marching 2D soft shadows, use `max(1.0, abs(sd))` instead of a fixed step size
+to take large leaps in open areas and small precise steps near shapes.
+Typically 64 steps can cover a large scene:
 
 ```glsl
 dt += max(1.0, abs(sd));  // Adaptive step size
@@ -456,7 +528,8 @@ if (dt > dl) break;       // Early exit after reaching the light source
 
 ### 1. SDF + Noise Textures
 
-Adding noise values to the distance field creates dissolve, erosion, and organic edge effects:
+Adding noise values to the distance field creates dissolve, erosion, and organic edge
+effects:
 
 ```glsl
 float d = sdCircle(p, 0.4);
@@ -465,7 +538,10 @@ d += noise(p * 10.0 + iTime) * 0.05;  // Organic jittery edges
 
 ### 2. SDF + 2D Lighting and Shadows
 
-Cone marching based on the distance field implements real-time soft shadows and multi-light lighting for 2D scenes. The distance field provides "scene query" capability, using `sceneDist()` during ray marching to check occlusion:
+Cone marching based on the distance field implements real-time soft shadows and
+multi-light lighting for 2D scenes.
+The distance field provides “scene query” capability, using `sceneDist()` during ray
+marching to check occlusion:
 
 ```glsl
 // 2D soft shadow (see 4dfXDn for full implementation)
@@ -488,7 +564,9 @@ float shadow(vec2 p, vec2 lightPos, float radius) {
 
 ### 3. SDF + Normal Mapping / Bump Mapping
 
-By computing normals via finite differences on the distance field, then applying standard lighting models, you can simulate 3D bump/highlight effects on 2D SDFs (as done in the DVD Bounce shader):
+By computing normals via finite differences on the distance field, then applying
+standard lighting models, you can simulate 3D bump/highlight effects on 2D SDFs (as done
+in the DVD Bounce shader):
 
 ```glsl
 vec2 e = vec2(0.8, 0.0) / iResolution.y;
@@ -502,7 +580,9 @@ float dif = clamp(dot(lig, nor), 0.0, 1.0);
 
 ### 4. SDF + Domain Repetition (Spatial Tiling)
 
-Use `fract` or `mod` on coordinates for infinite repetition; use `floor` to get cell IDs for differentiated coloring. Suitable for background patterns, particle arrays, etc.:
+Use `fract` or `mod` on coordinates for infinite repetition; use `floor` to get cell IDs
+for differentiated coloring.
+Suitable for background patterns, particle arrays, etc.:
 
 ```glsl
 vec2 cellSize = vec2(0.5);
@@ -513,7 +593,10 @@ float d = sdCircle(cellP, 0.15 + 0.05 * sin(iTime + cellID.x * 3.0));
 
 ### 5. SDF + Animation
 
-Distance field parameters (position, radius, rotation angle) naturally support continuous animation. Combine with `sin/cos` periodic motion, `exp` decay, `mod` looping, and other time functions:
+Distance field parameters (position, radius, rotation angle) naturally support
+continuous animation.
+Combine with `sin/cos` periodic motion, `exp` decay, `mod` looping, and other time
+functions:
 
 ```glsl
 // Bouncing
@@ -535,49 +618,68 @@ float d = sdBox(rotateCCW(p, iTime), vec2(0.2), 0.03);
 **Signature**: `float sdRoundedBox(vec2 p, vec2 b, vec4 r)`
 
 - `p`: query point
+
 - `b`: half-size of the box
+
 - `r`: corner radii as `vec4(top-right, bottom-right, top-left, bottom-left)`
 
-Selects the appropriate corner radius based on the quadrant of `p`, then computes a standard rounded box distance. Useful for UI elements where each corner needs a different rounding.
+Selects the appropriate corner radius based on the quadrant of `p`, then computes a
+standard rounded box distance.
+Useful for UI elements where each corner needs a different rounding.
 
 ### sdOrientedBox — Oriented Box
 
 **Signature**: `float sdOrientedBox(vec2 p, vec2 a, vec2 b, float th)`
 
 - `p`: query point
-- `a`, `b`: endpoints defining the box's center axis
+
+- `a`, `b`: endpoints defining the box’s center axis
+
 - `th`: thickness (full width perpendicular to the axis)
 
-Constructs a local coordinate frame aligned with segment `a`-to-`b`, then evaluates a standard box SDF. Useful for drawing thick line-like rectangles at arbitrary angles without manual rotation.
+Constructs a local coordinate frame aligned with segment `a`-to-`b`, then evaluates a
+standard box SDF. Useful for drawing thick line-like rectangles at arbitrary angles
+without manual rotation.
 
 ### sdArc — Arc
 
 **Signature**: `float sdArc(vec2 p, vec2 sc, float ra, float rb)`
 
 - `p`: query point
+
 - `sc`: `vec2(sin, cos)` of the half-aperture angle
+
 - `ra`: arc radius
+
 - `rb`: arc thickness
 
-Computes distance to an arc segment. The aperture is symmetric about the y-axis. Combines angular clamping with radial distance.
+Computes distance to an arc segment.
+The aperture is symmetric about the y-axis.
+Combines angular clamping with radial distance.
 
 ### sdPie — Pie / Sector
 
 **Signature**: `float sdPie(vec2 p, vec2 c, float r)`
 
 - `p`: query point
+
 - `c`: `vec2(sin, cos)` of the half-aperture angle
+
 - `r`: radius
 
-Returns the signed distance to a filled pie-slice (sector) shape. The sector is symmetric about the y-axis.
+Returns the signed distance to a filled pie-slice (sector) shape.
+The sector is symmetric about the y-axis.
 
 ### sdRing — Ring
 
 **Signature**: `float sdRing(vec2 p, vec2 n, float r, float th)`
 
 - `p`: query point
+
 - `n`: `vec2(sin, cos)` of the half-aperture angle
+
 - `r`: ring radius
+
 - `th`: ring thickness
 
 Similar to `sdArc` but with capped endpoints and full ring behavior within the aperture.
@@ -587,11 +689,15 @@ Similar to `sdArc` but with capped endpoints and full ring behavior within the a
 **Signature**: `float sdMoon(vec2 p, float d, float ra, float rb)`
 
 - `p`: query point
+
 - `d`: distance between circle centers
+
 - `ra`: radius of outer circle
+
 - `rb`: radius of inner (subtracted) circle
 
-Creates a crescent/moon shape by subtracting one circle from another. The two circles are offset by distance `d` along the x-axis.
+Creates a crescent/moon shape by subtracting one circle from another.
+The two circles are offset by distance `d` along the x-axis.
 
 ### sdHeart — Heart (Approximate)
 
@@ -599,34 +705,43 @@ Creates a crescent/moon shape by subtracting one circle from another. The two ci
 
 - `p`: query point (centered at origin, roughly unit scale)
 
-An approximate heart SDF composed of two geometric regions stitched together. The shape extends roughly from (0,0) to (0,1) vertically.
+An approximate heart SDF composed of two geometric regions stitched together.
+The shape extends roughly from (0,0) to (0,1) vertically.
 
 ### sdVesica — Vesica / Lens Shape
 
 **Signature**: `float sdVesica(vec2 p, float w, float h)`
 
 - `p`: query point
+
 - `w`: width of the vesica
+
 - `h`: height of the vesica
 
-A lens-shaped figure (vesica piscis) formed by the intersection of two circles. Symmetric about both axes.
+A lens-shaped figure (vesica piscis) formed by the intersection of two circles.
+Symmetric about both axes.
 
 ### sdEgg — Egg Shape
 
 **Signature**: `float sdEgg(vec2 p, float he, float ra, float rb)`
 
 - `p`: query point
+
 - `he`: half-height of the straight section
+
 - `ra`: radius at bottom
+
 - `rb`: radius at top
 
-Produces an egg-like shape with different radii at top and bottom, connected by a straight vertical section.
+Produces an egg-like shape with different radii at top and bottom, connected by a
+straight vertical section.
 
 ### sdEquilateralTriangle — Equilateral Triangle
 
 **Signature**: `float sdEquilateralTriangle(vec2 p, float r)`
 
 - `p`: query point
+
 - `r`: side length / scale
 
 An exact SDF for an equilateral triangle centered at the origin using symmetry folding.
@@ -636,24 +751,29 @@ An exact SDF for an equilateral triangle centered at the origin using symmetry f
 **Signature**: `float sdPentagon(vec2 p, float r)`
 
 - `p`: query point
+
 - `r`: circumscribed radius
 
-Regular pentagon SDF using mirror-fold operations along pentagon edge normals. The constants encode cos/sin of 72-degree angles.
+Regular pentagon SDF using mirror-fold operations along pentagon edge normals.
+The constants encode cos/sin of 72-degree angles.
 
 ### sdHexagon — Hexagon
 
 **Signature**: `float sdHexagon(vec2 p, float r)`
 
 - `p`: query point
+
 - `r`: circumscribed radius
 
-Regular hexagon SDF. Constants encode cos(30), sin(30), and tan(30). Uses a single mirror fold.
+Regular hexagon SDF. Constants encode cos(30), sin(30), and tan(30). Uses a single
+mirror fold.
 
 ### sdOctagon — Octagon
 
 **Signature**: `float sdOctagon(vec2 p, float r)`
 
 - `p`: query point
+
 - `r`: circumscribed radius
 
 Regular octagon SDF. Uses two mirror folds at 22.5-degree and 67.5-degree angles.
@@ -663,39 +783,52 @@ Regular octagon SDF. Uses two mirror folds at 22.5-degree and 67.5-degree angles
 **Signature**: `float sdStar(vec2 p, float r, int n, float m)`
 
 - `p`: query point
+
 - `r`: outer radius
+
 - `n`: number of points
+
 - `m`: inner radius ratio (controls pointiness; typical range 2.0-6.0)
 
-A general n-pointed star using angular repetition (`mod(atan(...))`) and edge projection. Higher `m` values produce sharper, thinner points.
+A general n-pointed star using angular repetition (`mod(atan(...))`) and edge
+projection. Higher `m` values produce sharper, thinner points.
 
 ### sdBezier (Extended) — Quadratic Bezier Curve SDF
 
 **Signature**: `float sdBezier(vec2 pos, vec2 A, vec2 B, vec2 C)`
 
 - `pos`: query point
+
 - `A`, `B`, `C`: control points of the quadratic Bezier
 
-An alternative Bezier SDF formulation that solves for the closest point on the curve using the cubic formula. Returns unsigned distance (no sign). Note the different parameter order from the Variant 5 version.
+An alternative Bezier SDF formulation that solves for the closest point on the curve
+using the cubic formula.
+Returns unsigned distance (no sign).
+Note the different parameter order from the Variant 5 version.
 
 ### sdParabola — Parabola
 
 **Signature**: `float sdParabola(vec2 pos, float k)`
 
 - `pos`: query point
+
 - `k`: curvature coefficient (y = k * x^2)
 
-Signed distance to a parabola. Uses a cubic root solution to find the closest point on the curve.
+Signed distance to a parabola.
+Uses a cubic root solution to find the closest point on the curve.
 
 ### sdCross — Cross Shape
 
 **Signature**: `float sdCross(vec2 p, vec2 b, float r)`
 
 - `p`: query point
+
 - `b`: half-extents of each arm (b.x = length, b.y = width)
+
 - `r`: corner rounding offset
 
-A plus/cross shape formed by the union of two perpendicular rectangles, with an optional rounding parameter.
+A plus/cross shape formed by the union of two perpendicular rectangles, with an optional
+rounding parameter.
 
 ## 2D SDF Modifiers Reference
 
@@ -703,22 +836,30 @@ A plus/cross shape formed by the union of two perpendicular rectangles, with an 
 
 **Signature**: `float opRound2D(float d, float r)`
 
-Subtracts `r` from any SDF, effectively expanding the shape boundary outward by `r` and rounding all corners/edges. Apply to any existing SDF to add uniform rounding.
+Subtracts `r` from any SDF, effectively expanding the shape boundary outward by `r` and
+rounding all corners/edges.
+Apply to any existing SDF to add uniform rounding.
 
 ### opAnnular2D — Annular (Hollowing) Modifier
 
 **Signature**: `float opAnnular2D(float d, float r)`
 
-Takes the absolute value of the distance and subtracts thickness `r`, converting any filled shape into a ring/outline version with wall thickness `2*r`. Stackable: applying twice creates concentric rings.
+Takes the absolute value of the distance and subtracts thickness `r`, converting any
+filled shape into a ring/outline version with wall thickness `2*r`. Stackable: applying
+twice creates concentric rings.
 
 ### opRepeat2D — Grid Repetition
 
 **Signature**: `vec2 opRepeat2D(vec2 p, float s)`
 
-Applies `mod` to fold coordinates into a repeating grid cell of size `s`. Apply to `p` before passing to any SDF to create infinite tiling. Use `floor(p / s)` to obtain cell IDs for per-cell variation.
+Applies `mod` to fold coordinates into a repeating grid cell of size `s`. Apply to `p`
+before passing to any SDF to create infinite tiling.
+Use `floor(p / s)` to obtain cell IDs for per-cell variation.
 
 ### opMirror2D — Arbitrary Mirror
 
 **Signature**: `vec2 opMirror2D(vec2 p, vec2 dir)`
 
-Mirrors coordinates across a line through the origin with direction `dir` (should be normalized). Any point on the negative side of the line is reflected to the positive side, effectively creating bilateral symmetry along any arbitrary axis.
+Mirrors coordinates across a line through the origin with direction `dir` (should be
+normalized). Any point on the negative side of the line is reflected to the positive
+side, effectively creating bilateral symmetry along any arbitrary axis.

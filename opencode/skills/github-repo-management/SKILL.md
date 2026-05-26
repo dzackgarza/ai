@@ -9,10 +9,10 @@ metadata:
     tags: [GitHub, Repositories, Git, Releases, Secrets, Configuration]
     related_skills: [github-auth, github-pr-workflow, github-issues]
 ---
-
 # GitHub Repository Management
 
-Create, clone, fork, configure, and manage GitHub repositories. Each section shows `gh` first, then the `git` + `curl` fallback.
+Create, clone, fork, configure, and manage GitHub repositories.
+Each section shows `gh` first, then the `git` + `curl` fallback.
 
 ## Prerequisites
 
@@ -42,7 +42,7 @@ else
 fi
 ```
 
-If you're inside a repo already:
+If you’re inside a repo already:
 
 ```bash
 REMOTE_URL=$(git remote get-url origin)
@@ -51,7 +51,7 @@ OWNER=$(echo "$OWNER_REPO" | cut -d/ -f1)
 REPO=$(echo "$OWNER_REPO" | cut -d/ -f2)
 ```
 
----
+* * *
 
 ## 1. Cloning Repositories
 
@@ -311,7 +311,7 @@ gh secret delete API_KEY
 
 **With curl:**
 
-Secrets require encryption with the repo's public key — more involved via API:
+Secrets require encryption with the repo’s public key — more involved via API:
 
 ```bash
 # Get the repo's public key for encrypting secrets
@@ -354,7 +354,9 @@ for s in json.load(sys.stdin)['secrets']:
     print(f\"  {s['name']:30}  updated: {s['updated_at']}\")"
 ```
 
-Note: For secrets, `gh secret set` is dramatically simpler. If setting secrets is needed and `gh` isn't available, recommend installing it for just that operation.
+Note: For secrets, `gh secret set` is dramatically simpler.
+If setting secrets is needed and `gh` isn’t available, recommend installing it for just
+that operation.
 
 ## 8. Releases
 
@@ -503,7 +505,7 @@ for g in json.load(sys.stdin):
 ## Quick Reference Table
 
 | Action | gh | git + curl |
-|--------|-----|-----------|
+| --- | --- | --- |
 | Clone | `gh repo clone o/r` | `git clone https://github.com/o/r.git` |
 | Create repo | `gh repo create name --public` | `curl POST /user/repos` |
 | Fork | `gh repo fork o/r --clone` | `curl POST /repos/o/r/forks` + `git clone` |

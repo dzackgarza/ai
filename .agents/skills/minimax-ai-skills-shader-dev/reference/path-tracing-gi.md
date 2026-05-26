@@ -1,42 +1,68 @@
 # Path Tracing & Global Illumination - Detailed Reference
 
-This document is a complete reference for [SKILL.md](SKILL.md), covering prerequisite knowledge, step-by-step detailed explanations, mathematical derivations, and advanced usage.
+This document is a complete reference for [SKILL.md](SKILL.md), covering prerequisite
+knowledge, step-by-step detailed explanations, mathematical derivations, and advanced
+usage.
 
 ## Prerequisites
 
 - **GLSL basic syntax**: ShaderToy multi-pass (Buffer A/B/Image) architecture
+
 - **Vector math**: Dot product, cross product, reflection/refraction vector computation
-- **Probability fundamentals**: PDF (probability density function), Monte Carlo integration, importance sampling
-- **Rendering equation** basic form: $L_o = L_e + \int f_r \cdot L_i \cdot \cos\theta \, d\omega$
+
+- **Probability fundamentals**: PDF (probability density function), Monte Carlo
+  integration, importance sampling
+
+- **Rendering equation** basic form: $L_o = L_e + \int f_r \cdot L_i \cdot \cos\theta \,
+  d\omega$
+
 - **Ray-geometry intersection** methods (spheres, planes, SDF)
 
 ## Core Principles in Detail
 
-Path tracing solves the rendering equation via Monte Carlo methods. For each pixel, a ray is emitted from the camera and bounces through the scene. At each bounce:
+Path tracing solves the rendering equation via Monte Carlo methods.
+For each pixel, a ray is emitted from the camera and bounces through the scene.
+At each bounce:
 
 1. **Intersection**: Find the nearest intersection of the ray with the scene
-2. **Shading**: Compute the lighting contribution at the current node based on material type (diffuse/specular/refractive)
+
+2. **Shading**: Compute the lighting contribution at the current node based on material
+   type (diffuse/specular/refractive)
+
 3. **Sample next direction**: Generate the next bounce ray according to the BRDF/BSDF
+
 4. **Accumulate**: Add the weighted lighting contributions from all nodes along the path
 
 ### Core Mathematics
 
-- **Rendering equation**: $L_o(x, \omega_o) = L_e(x, \omega_o) + \int_\Omega f_r(x, \omega_i, \omega_o) L_i(x, \omega_i) (\omega_i \cdot n) d\omega_i$
-- **Monte Carlo estimate**: $L \approx \frac{1}{N} \sum \frac{f_r \cdot L_i \cdot \cos\theta}{p(\omega)}$
+- **Rendering equation**: $L_o(x, \omega_o) = L_e(x, \omega_o) + \int_\Omega f_r(x,
+  \omega_i, \omega_o) L_i(x, \omega_i) (\omega_i \cdot n) d\omega_i$
+
+- **Monte Carlo estimate**: $L \approx \frac{1}{N} \sum \frac{f_r \cdot L_i \cdot
+  \cos\theta}{p(\omega)}$
+
 - **Schlick Fresnel**: $F = F_0 + (1 - F_0)(1 - \cos\theta)^5$
+
 - **Cosine-weighted sampling PDF**: $p(\omega) = \frac{\cos\theta}{\pi}$
 
 ### Key Design
 
-An **iterative loop** replaces recursion, using two variables — `acc` (accumulated radiance) and `mask/throughput` (path attenuation) — to track path contributions. At each bounce, the material color is multiplied into the throughput, and self-emission and direct lighting are added to acc.
+An **iterative loop** replaces recursion, using two variables — `acc` (accumulated
+radiance) and `mask/throughput` (path attenuation) — to track path contributions.
+At each bounce, the material color is multiplied into the throughput, and self-emission
+and direct lighting are added to acc.
 
 ## Implementation Steps in Detail
 
 ### Step 1: Pseudorandom Number Generator
 
-**What**: Provide a different random number sequence per pixel per frame, driving all Monte Carlo sampling.
+**What**: Provide a different random number sequence per pixel per frame, driving all
+Monte Carlo sampling.
 
-**Why**: All random decisions in path tracing (direction sampling, Russian roulette, Fresnel selection) depend on random numbers. The seed must be sufficiently decorrelated between pixels and frames; otherwise structured noise will appear.
+**Why**: All random decisions in path tracing (direction sampling, Russian roulette,
+Fresnel selection) depend on random numbers.
+The seed must be sufficiently decorrelated between pixels and frames; otherwise
+structured noise will appear.
 
 **Method 1: sin-hash (simple, good for getting started)**
 ```glsl
@@ -61,13 +87,18 @@ void srand(ivec2 p, int frame) {
 }
 ```
 
-The sin-hash may produce periodic artifacts on some GPUs (due to inconsistent sin precision across hardware). The integer hash is more reliable and uniform. The Visual Studio LCG (`0x343fd`) is a commonly used linear congruential generator.
+The sin-hash may produce periodic artifacts on some GPUs (due to inconsistent sin
+precision across hardware).
+The integer hash is more reliable and uniform.
+The Visual Studio LCG (`0x343fd`) is a commonly used linear congruential generator.
 
 ### Step 2: Ray-Scene Intersection
 
-**What**: Given a ray origin and direction, find the nearest intersection along with normal and material information at the intersection point.
+**What**: Given a ray origin and direction, find the nearest intersection along with
+normal and material information at the intersection point.
 
-**Why**: This is the fundamental operation of path tracing. Either analytic geometry (spheres, planes) or SDF ray marching can be used.
+**Why**: This is the fundamental operation of path tracing.
+Either analytic geometry (spheres, planes) or SDF ray marching can be used.
 
 **Analytic sphere intersection (classic smallpt approach)**
 ```glsl
@@ -87,7 +118,9 @@ float intersectSphere(Sphere s, Ray r) {
 }
 ```
 
-Derivation: Ray $r(t) = o + td$, sphere $|p - c|^2 = R^2$, substitution yields quadratic $t^2 - 2b \cdot t + c = 0$, where $b = (c - o) \cdot d$, discriminant $\Delta = b^2 - |c - o|^2 + R^2$. The epsilon of `1e-3` prevents self-intersection.
+Derivation: Ray $r(t) = o + td$, sphere $|p - c|^2 = R^2$, substitution yields quadratic
+$t^2 - 2b \cdot t + c = 0$, where $b = (c - o) \cdot d$, discriminant $\Delta = b^2 - |c
+\- o|^2 + R^2$. The epsilon of `1e-3` prevents self-intersection.
 
 **SDF ray marching (for complex geometry)**
 ```glsl
@@ -112,15 +145,23 @@ vec3 calcNormal(vec3 p) {
 }
 ```
 
-The principle of SDF marching: each step safely advances by the "distance to the nearest surface," ensuring no surface is crossed. The step count (128-256) and threshold (0.0001) represent a tradeoff between accuracy and performance.
+The principle of SDF marching: each step safely advances by the “distance to the nearest
+surface,” ensuring no surface is crossed.
+The step count (128-256) and threshold (0.0001) represent a tradeoff between accuracy
+and performance.
 
 ### Step 3: Cosine-Weighted Hemisphere Sampling
 
-**What**: Generate a random direction distributed according to cosine weighting on the hemisphere above the surface normal, used for diffuse bounces.
+**What**: Generate a random direction distributed according to cosine weighting on the
+hemisphere above the surface normal, used for diffuse bounces.
 
-**Why**: Cosine-weighted sampling (Malley's method) matches the Lambertian BRDF distribution with PDF $\cos\theta / \pi$, simplifying BRDF/PDF to just the albedo and greatly reducing variance.
+**Why**: Cosine-weighted sampling (Malley’s method) matches the Lambertian BRDF
+distribution with PDF $\cos\theta / \pi$, simplifying BRDF/PDF to just the albedo and
+greatly reducing variance.
 
-With uniform hemisphere sampling (PDF = $1/2\pi$), each bounce would need an extra multiplication by $\cos\theta \cdot 2$, and variance would be higher since many sample directions contribute very little to the integral.
+With uniform hemisphere sampling (PDF = $1/2\pi$), each bounce would need an extra
+multiplication by $\cos\theta \cdot 2$, and variance would be higher since many sample
+directions contribute very little to the integral.
 
 **Method 1: fizzer method (most concise)**
 ```glsl
@@ -134,7 +175,10 @@ vec3 cosineDirection(vec3 nor) {
 }
 ```
 
-Principle: Uniformly sampling a point on the unit sphere and adding the normal direction, then normalizing, naturally produces a cosine distribution. This works because uniform points on the unit sphere, projected onto the hemisphere above the normal, naturally form a cosine distribution.
+Principle: Uniformly sampling a point on the unit sphere and adding the normal
+direction, then normalizing, naturally produces a cosine distribution.
+This works because uniform points on the unit sphere, projected onto the hemisphere
+above the normal, naturally form a cosine distribution.
 
 **Method 2: Classic ONB construction (more intuitive)**
 ```glsl
@@ -150,13 +194,18 @@ vec3 cosineDirectionONB(vec3 n) {
 }
 ```
 
-Principle: First build an orthonormal basis (ONB) with n as the z-axis, then sample in local coordinates using Malley's method: map uniform random numbers onto the unit disk ($r = \sqrt{\xi_2}$, $\phi = 2\pi\xi_1$), with z-component $\sqrt{1 - r^2}$.
+Principle: First build an orthonormal basis (ONB) with n as the z-axis, then sample in
+local coordinates using Malley’s method: map uniform random numbers onto the unit disk
+($r = \sqrt{\xi_2}$, $\phi = 2\pi\xi_1$), with z-component $\sqrt{1 - r^2}$.
 
 ### Step 4: Material System and BRDF Evaluation
 
-**What**: Based on the material type at the intersection (diffuse, specular, refractive), determine the ray's next direction and energy attenuation.
+**What**: Based on the material type at the intersection (diffuse, specular,
+refractive), determine the ray’s next direction and energy attenuation.
 
-**Why**: Different materials respond to light completely differently. Diffuse scatters randomly, specular reflects perfectly, and refractive materials follow Snell's law. The Fresnel effect determines the reflection/refraction ratio.
+**Why**: Different materials respond to light completely differently.
+Diffuse scatters randomly, specular reflects perfectly, and refractive materials follow
+Snell’s law. The Fresnel effect determines the reflection/refraction ratio.
 
 ```glsl
 #define MAT_DIFFUSE  0
@@ -165,14 +214,21 @@ Principle: First build an orthonormal basis (ONB) with n as the z-axis, then sam
 ```
 
 **Diffuse**:
+
 - New direction = `cosineDirection(normal)`
+
 - `throughput *= albedo`
-- Because cosine-weighted sampling is used, BRDF($1/\pi$) * $\cos\theta$ / PDF($\cos\theta/\pi$) = 1, so throughput only needs to be multiplied by albedo
+
+- Because cosine-weighted sampling is used, BRDF($1/\pi$) * $\cos\theta$ /
+  PDF($\cos\theta/\pi$) = 1, so throughput only needs to be multiplied by albedo
 
 **Specular**:
+
 - New direction = `reflect(rd, normal)`
+
 - `throughput *= albedo`
-- A perfect mirror's BRDF is a delta function; only one direction contributes
+
+- A perfect mirror’s BRDF is a delta function; only one direction contributes
 
 **Refractive (glass)**:
 ```glsl
@@ -204,15 +260,24 @@ void handleDielectric(inout Ray r, vec3 n, vec3 x, float ior,
 ```
 
 Key points:
-- **Snell's law**: $n_1 \sin\theta_1 = n_2 \sin\theta_2$; total internal reflection occurs when $\sin\theta_2 > 1$
-- **Schlick approximation**: $R(\theta) = R_0 + (1-R_0)(1-\cos\theta)^5$, where $R_0 = ((n_1-n_2)/(n_1+n_2))^2$
-- **Russian Roulette selection**: Instead of selecting directly by `Re`, an adjusted probability `P = 0.25 + 0.5 * Re` is used, then compensated through the mask. This avoids the problem of almost always choosing refraction when Re is low
+
+- **Snell’s law**: $n_1 \sin\theta_1 = n_2 \sin\theta_2$; total internal reflection
+  occurs when $\sin\theta_2 > 1$
+
+- **Schlick approximation**: $R(\theta) = R_0 + (1-R_0)(1-\cos\theta)^5$, where $R_0 =
+  ((n_1-n_2)/(n_1+n_2))^2$
+
+- **Russian Roulette selection**: Instead of selecting directly by `Re`, an adjusted
+  probability `P = 0.25 + 0.5 * Re` is used, then compensated through the mask.
+  This avoids the problem of almost always choosing refraction when Re is low
 
 ### Step 5: Direct Light Sampling (Next Event Estimation)
 
-**What**: At each diffuse intersection, directly cast a shadow ray toward the light source to compute direct lighting contribution.
+**What**: At each diffuse intersection, directly cast a shadow ray toward the light
+source to compute direct lighting contribution.
 
-**Why**: Purely random paths are unlikely to hit small-area light sources. Directly sampling light sources greatly reduces variance and accelerates convergence.
+**Why**: Purely random paths are unlikely to hit small-area light sources.
+Directly sampling light sources greatly reduces variance and accelerates convergence.
 
 ```glsl
 // Solid angle sampling of spherical light source
@@ -241,17 +306,27 @@ vec3 directLighting(vec3 x, vec3 n, vec3 albedo,
 ```
 
 Mathematical derivation:
-- Solid angle subtended by spherical light at the shading point: $\omega = 2\pi(1 - \cos\alpha_{max})$, where $\cos\alpha_{max} = \sqrt{1 - R^2/d^2}$
-- PDF for uniform sampling within the cone: $p = 1/\omega$
-- Direct lighting contribution: $L_{direct} = \frac{f_r \cdot L_e \cdot \cos\theta_{light}}{p} = albedo \cdot L_e \cdot \cos\theta \cdot \omega / \pi$
 
-Note: With NEE enabled, indirect bounces that hit the light source should **not** accumulate its emission again (to avoid double-counting). However, in smallpt-style implementations where the light source is large, this double-counting has negligible impact. The strict approach is to skip the indirect hit light emission when NEE is active.
+- Solid angle subtended by spherical light at the shading point: $\omega = 2\pi(1 -
+  \cos\alpha_{max})$, where $\cos\alpha_{max} = \sqrt{1 - R^2/d^2}$
+
+- PDF for uniform sampling within the cone: $p = 1/\omega$
+
+- Direct lighting contribution: $L_{direct} = \frac{f_r \cdot L_e \cdot
+  \cos\theta_{light}}{p} = albedo \cdot L_e \cdot \cos\theta \cdot \omega / \pi$
+
+Note: With NEE enabled, indirect bounces that hit the light source should **not**
+accumulate its emission again (to avoid double-counting).
+However, in smallpt-style implementations where the light source is large, this
+double-counting has negligible impact.
+The strict approach is to skip the indirect hit light emission when NEE is active.
 
 ### Step 6: Path Tracing Main Loop
 
 **What**: Combine all the above modules into a complete path tracer.
 
-**Why**: The iterative structure avoids GLSL's lack of recursion support, while the throughput/acc pattern is the standard path tracing implementation paradigm.
+**Why**: The iterative structure avoids GLSL’s lack of recursion support, while the
+throughput/acc pattern is the standard path tracing implementation paradigm.
 
 ```glsl
 #define MAX_BOUNCES 8       // Adjustable: max bounce count; more = more accurate indirect lighting
@@ -304,15 +379,24 @@ vec3 pathtrace(Ray r) {
 ```
 
 Key design points:
-- `acc` accumulates the final color, `throughput` records the attenuation from all materials along the path
-- Russian roulette maintains **unbiasedness**: termination probability is $1-p$, surviving paths divide throughput by $p$, so the expected value is unchanged
-- Normal offset (`x + nl * 1e-3`) prevents self-intersection due to floating-point precision
+
+- `acc` accumulates the final color, `throughput` records the attenuation from all
+  materials along the path
+
+- Russian roulette maintains **unbiasedness**: termination probability is $1-p$,
+  surviving paths divide throughput by $p$, so the expected value is unchanged
+
+- Normal offset (`x + nl * 1e-3`) prevents self-intersection due to floating-point
+  precision
 
 ### Step 7: Progressive Accumulation and Display
 
-**What**: Perform weighted averaging of multi-frame results, progressively converging to a noise-free image. Apply tone mapping and gamma correction for display.
+**What**: Perform weighted averaging of multi-frame results, progressively converging to
+a noise-free image. Apply tone mapping and gamma correction for display.
 
-**Why**: A single frame of path tracing is extremely noisy. Through multi-frame accumulation, sample count grows linearly and noise decreases as $1/\sqrt{N}$.
+**Why**: A single frame of path tracing is extremely noisy.
+Through multi-frame accumulation, sample count grows linearly and noise decreases as
+$1/\sqrt{N}$.
 
 **Buffer A (path tracing + accumulation)**
 ```glsl
@@ -328,7 +412,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 }
 ```
 
-Accumulation strategy: Store each frame's color and sample count in RGBA (RGB = color accumulation, A = sample count accumulation). Divide by A when displaying to get the average. Clear to zero when `iFrame == 0` to handle ShaderToy's edit reset.
+Accumulation strategy: Store each frame’s color and sample count in RGBA (RGB = color
+accumulation, A = sample count accumulation).
+Divide by A when displaying to get the average.
+Clear to zero when `iFrame == 0` to handle ShaderToy’s edit reset.
 
 **Image Pass (tone mapping + gamma)**
 ```glsl
@@ -352,17 +439,25 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 }
 ```
 
-ACES tone mapping compresses HDR radiance values into the [0,1] LDR range while preserving detail in highlights and shadows. Gamma correction (2.2) converts linear color space to sRGB display space.
+ACES tone mapping compresses HDR radiance values into the [0,1] LDR range while
+preserving detail in highlights and shadows.
+Gamma correction (2.2) converts linear color space to sRGB display space.
 
 ## Common Variants in Detail
 
 ### 1. SDF Scene Path Tracing
 
-**Difference from base version**: Replaces analytic sphere intersection with SDF ray marching, supporting arbitrarily complex geometry (fractals, boolean operations, etc.).
+**Difference from base version**: Replaces analytic sphere intersection with SDF ray
+marching, supporting arbitrarily complex geometry (fractals, boolean operations, etc.).
 
 Challenges of SDF path tracing:
-- SDF marching is much slower than analytic intersection (each step requires 128+ iterations)
-- Numerical normals (central difference) are needed at each bounce, adding 6 extra `map()` calls
+
+- SDF marching is much slower than analytic intersection (each step requires 128+
+  iterations)
+
+- Numerical normals (central difference) are needed at each bounce, adding 6 extra
+  `map()` calls
+
 - Self-intersection issues are more severe, requiring larger epsilon offsets
 
 ```glsl
@@ -387,13 +482,21 @@ float intersectScene(vec3 ro, vec3 rd, float tmax) {
 
 ### 2. Disney BRDF Path Tracing
 
-**Difference from base version**: Replaces simple Lambert + perfect mirror with the Disney principled BRDF, supporting metallic/roughness parameterized PBR materials.
+**Difference from base version**: Replaces simple Lambert + perfect mirror with the
+Disney principled BRDF, supporting metallic/roughness parameterized PBR materials.
 
 Core components of the Disney BRDF:
-- **GGX normal distribution (D)**: Describes the statistical distribution of microsurface normals; higher roughness = wider distribution
+
+- **GGX normal distribution (D)**: Describes the statistical distribution of
+  microsurface normals; higher roughness = wider distribution
+
 - **Smith occlusion function (G)**: Accounts for self-shadowing between microsurfaces
-- **Fresnel term (F)**: Schlick approximation; metallic controls F0 (metals: F0 = albedo, dielectrics: F0 = 0.04)
-- **VNDF sampling**: Visible Normal Distribution Function sampling, more efficient than traditional GGX sampling
+
+- **Fresnel term (F)**: Schlick approximation; metallic controls F0 (metals: F0 =
+  albedo, dielectrics: F0 = 0.04)
+
+- **VNDF sampling**: Visible Normal Distribution Function sampling, more efficient than
+  traditional GGX sampling
 
 ```glsl
 struct Material {
@@ -432,15 +535,22 @@ vec3 SampleGGXVNDF(vec3 V, float ax, float ay, float r1, float r2) {
 ```
 
 When using the Disney BRDF in path tracing, the sampling strategy typically is:
+
 - Use metallic as the probability to choose between diffuse and specular
+
 - Diffuse uses cosine-weighted sampling
+
 - Specular uses VNDF sampling for GGX
 
 ### 3. Depth of Field
 
-**Difference from base version**: Uses a thin lens model to simulate the bokeh effect of real cameras.
+**Difference from base version**: Uses a thin lens model to simulate the bokeh effect of
+real cameras.
 
-Principle of the thin lens model: All rays passing through the focal point converge to the same point. By randomly offsetting the ray origin within the aperture while keeping the target point on the focal plane unchanged, the depth of field effect can be simulated.
+Principle of the thin lens model: All rays passing through the focal point converge to
+the same point. By randomly offsetting the ray origin within the aperture while keeping
+the target point on the focal plane unchanged, the depth of field effect can be
+simulated.
 
 ```glsl
 #define APERTURE 0.12    // Adjustable: aperture size; larger = stronger bokeh
@@ -460,15 +570,25 @@ vec2 uniformDisk() {
 ```
 
 Parameter tuning suggestions:
+
 - `APERTURE`: 0.01 (almost no bokeh) to 0.5 (strong bokeh)
-- `FOCUS_DIST`: Set to the distance from the camera to the object you want in sharp focus
-- Bokeh effects require more samples to converge (since an extra random dimension is added)
+
+- `FOCUS_DIST`: Set to the distance from the camera to the object you want in sharp
+  focus
+
+- Bokeh effects require more samples to converge (since an extra random dimension is
+  added)
 
 ### 4. Multiple Importance Sampling (MIS)
 
-**Difference from base version**: Uses both BRDF sampling and light source sampling simultaneously, combining them with the power heuristic, achieving low variance across all scene configurations.
+**Difference from base version**: Uses both BRDF sampling and light source sampling
+simultaneously, combining them with the power heuristic, achieving low variance across
+all scene configurations.
 
-Core idea of MIS: A single sampling strategy may have high variance in certain scene configurations (e.g., NEE performs poorly on glossy surfaces, BRDF sampling performs poorly with small light sources). MIS combines multiple strategies to compensate for each other's weaknesses.
+Core idea of MIS: A single sampling strategy may have high variance in certain scene
+configurations (e.g., NEE performs poorly on glossy surfaces, BRDF sampling performs
+poorly with small light sources).
+MIS combines multiple strategies to compensate for each other’s weaknesses.
 
 ```glsl
 // Power heuristic (beta=2)
@@ -484,17 +604,27 @@ float misWeight(float pdfA, float pdfB) {
 // Sum of both replaces the single sampling strategy
 ```
 
-The power heuristic ($\beta=2$) formula: $w_A = p_A^2 / (p_A^2 + p_B^2)$. Veach proved in his thesis that this is nearly optimal.
+The power heuristic ($\beta=2$) formula: $w_A = p_A^2 / (p_A^2 + p_B^2)$. Veach proved
+in his thesis that this is nearly optimal.
 
 ### 5. Volumetric Path Tracing (Participating Media)
 
-**Difference from base version**: Performs random walks inside the medium, simulating translucent/subsurface scattering effects via Beer-Lambert attenuation and scattering events.
+**Difference from base version**: Performs random walks inside the medium, simulating
+translucent/subsurface scattering effects via Beer-Lambert attenuation and scattering
+events.
 
 Core concepts of volumetric rendering:
+
 - **Extinction coefficient** = absorption + scattering
+
 - **Beer-Lambert law**: Transmittance $T = e^{-\sigma_t \cdot d}$
-- **Scattering event**: Scattering occurs with probability $\sigma_s / \sigma_t$ (vs. absorption)
-- **Phase function**: Determines the distribution of scattering directions. Uniform sphere sampling = isotropic scattering, Henyey-Greenstein = controllable forward/backward scattering
+
+- **Scattering event**: Scattering occurs with probability $\sigma_s / \sigma_t$ (vs.
+  absorption)
+
+- **Phase function**: Determines the distribution of scattering directions.
+  Uniform sphere sampling = isotropic scattering, Henyey-Greenstein = controllable
+  forward/backward scattering
 
 ```glsl
 // Beer-Lambert transmittance attenuation
@@ -512,50 +642,94 @@ if (scatterDist < hitDist) {
 ```
 
 Henyey-Greenstein phase function:
-- Parameter g in [-1, 1]: g > 0 forward scattering, g < 0 backward scattering, g = 0 isotropic
+
+- Parameter g in [-1, 1]: g > 0 forward scattering, g < 0 backward scattering, g = 0
+  isotropic
+
 - $p(\cos\theta) = \frac{1-g^2}{4\pi(1+g^2-2g\cos\theta)^{3/2}}$
 
 ## Performance Optimization Details
 
 ### 1. Sampling Strategy
-1-4 samples per pixel per frame, relying on inter-frame accumulation for convergence. This maintains real-time frame rates while eventually reaching high quality. For ShaderToy, `SAMPLES_PER_FRAME = 1` or `2` is usually the best choice, since more samples per frame lower the frame rate without accelerating visual convergence.
+
+1-4 samples per pixel per frame, relying on inter-frame accumulation for convergence.
+This maintains real-time frame rates while eventually reaching high quality.
+For ShaderToy, `SAMPLES_PER_FRAME = 1` or `2` is usually the best choice, since more
+samples per frame lower the frame rate without accelerating visual convergence.
 
 ### 2. Russian Roulette
-Starting from bounce 3-4, use the maximum throughput component as the survival probability. This terminates low-energy paths early while maintaining unbiasedness.
+
+Starting from bounce 3-4, use the maximum throughput component as the survival
+probability. This terminates low-energy paths early while maintaining unbiasedness.
 ```glsl
 float p = max(throughput.r, max(throughput.g, throughput.b));
 if (frand() > p) break;
 throughput /= p;
 ```
-Mathematical guarantee: Termination probability $q = 1 - p$, surviving path throughput multiplied by $1/p$, so the expected value $E[L] = p \cdot L/p + (1-p) \cdot 0 = L$, unbiased.
+Mathematical guarantee: Termination probability $q = 1 - p$, surviving path throughput
+multiplied by $1/p$, so the expected value $E[L] = p \cdot L/p + (1-p) \cdot 0 = L$,
+unbiased.
 
 ### 3. Direct Light Sampling (NEE)
-Always explicitly sample the light source on diffuse surfaces, avoiding dependence on random paths hitting the light. Particularly significant for small-area light sources. When the light source subtends a very small fraction of the hemisphere's solid angle, pure BRDF sampling can almost never hit the light; NEE is essential.
+
+Always explicitly sample the light source on diffuse surfaces, avoiding dependence on
+random paths hitting the light.
+Particularly significant for small-area light sources.
+When the light source subtends a very small fraction of the hemisphere’s solid angle,
+pure BRDF sampling can almost never hit the light; NEE is essential.
 
 ### 4. Avoiding Self-Intersection
-Offset the intersection point along the normal direction (epsilon = 1e-3 ~ 1e-4), or record the last-hit object ID and skip self-intersection. Both approaches have tradeoffs:
+
+Offset the intersection point along the normal direction (epsilon = 1e-3 ~ 1e-4), or
+record the last-hit object ID and skip self-intersection.
+Both approaches have tradeoffs:
+
 - Normal offset: Simple and universal, but may penetrate thin objects
-- ID skipping: Precise, but not suitable for concave objects (which may need self-intersection)
+
+- ID skipping: Precise, but not suitable for concave objects (which may need
+  self-intersection)
 
 ### 5. Firefly Suppression
-Clamp extreme brightness with `min(color, 10.)` to prevent firefly noise spots. ACES tone mapping also helps compress high dynamic range. The root cause of fireflies is that certain paths find high-energy but low-probability light transport paths, resulting in extremely large Monte Carlo estimate values.
+
+Clamp extreme brightness with `min(color, 10.)` to prevent firefly noise spots.
+ACES tone mapping also helps compress high dynamic range.
+The root cause of fireflies is that certain paths find high-energy but low-probability
+light transport paths, resulting in extremely large Monte Carlo estimate values.
 
 ### 6. SDF Scene Optimization
+
 - Limit the maximum marching steps (128-256); treat exceeding the limit as a miss
+
 - Set a reasonable maximum trace distance (tmax) to cull distant objects
-- Use larger epsilon during bounces (SDF numerical precision is typically worse than analytic geometry)
-- "Relaxed sphere tracing" can be used to increase step size when safe
+
+- Use larger epsilon during bounces (SDF numerical precision is typically worse than
+  analytic geometry)
+
+- “Relaxed sphere tracing” can be used to increase step size when safe
 
 ### 7. High-Quality PRNG
-Use integer hashes (such as Visual Studio LCG or Wang hash) instead of sin-hash to avoid periodic artifacts on some GPUs. The problem with sin-hash is that sin precision differs across GPUs (some use only mediump), which can produce visible structured noise.
+
+Use integer hashes (such as Visual Studio LCG or Wang hash) instead of sin-hash to avoid
+periodic artifacts on some GPUs.
+The problem with sin-hash is that sin precision differs across GPUs (some use only
+mediump), which can produce visible structured noise.
 
 ## Combination Suggestions in Detail
 
 ### 1. Path Tracing + SDF Modeling
-Use SDF to define complex scene geometry (fractals, smooth boolean operations) while path tracing handles lighting computation. This is the most common combination on ShaderToy. SDF's advantage is the ability to easily create shapes difficult to express with traditional meshes (Mandelbulb, Menger sponge, etc.), while path tracing provides physically accurate lighting for these complex geometries.
+
+Use SDF to define complex scene geometry (fractals, smooth boolean operations) while
+path tracing handles lighting computation.
+This is the most common combination on ShaderToy.
+SDF’s advantage is the ability to easily create shapes difficult to express with
+traditional meshes (Mandelbulb, Menger sponge, etc.), while path tracing provides
+physically accurate lighting for these complex geometries.
 
 ### 2. Path Tracing + Environment Maps
-Use an HDR cubemap as an infinitely distant environment light source. When a path shoots into the sky, sample the environment map for incident radiance. Can be combined with atmospheric scattering models for a more physically accurate sky.
+
+Use an HDR cubemap as an infinitely distant environment light source.
+When a path shoots into the sky, sample the environment map for incident radiance.
+Can be combined with atmospheric scattering models for a more physically accurate sky.
 ```glsl
 // When path misses the scene:
 if (!hit) {
@@ -565,10 +739,17 @@ if (!hit) {
 ```
 
 ### 3. Path Tracing + PBR Materials
-The Disney BRDF/BSDF provides metallic/roughness parameterized material models, combined with GGX microsurface distribution and VNDF importance sampling for production-quality results. In ShaderToy, material parameters can be generated procedurally (based on position, noise, etc.).
+
+The Disney BRDF/BSDF provides metallic/roughness parameterized material models, combined
+with GGX microsurface distribution and VNDF importance sampling for production-quality
+results. In ShaderToy, material parameters can be generated procedurally (based on
+position, noise, etc.).
 
 ### 4. Path Tracing + Volumetric Rendering
-Add participating media to the path tracing framework, using Beer-Lambert law for transmittance and random walks for scattering, to achieve clouds, smoke, subsurface scattering, and other effects.
+
+Add participating media to the path tracing framework, using Beer-Lambert law for
+transmittance and random walks for scattering, to achieve clouds, smoke, subsurface
+scattering, and other effects.
 ```glsl
 // Add volume check in the path tracing loop:
 if (insideVolume) {
@@ -584,19 +765,38 @@ if (insideVolume) {
 ```
 
 ### 5. Path Tracing + Spectral Rendering
-Each path samples a single wavelength instead of RGB, using Sellmeier/Cauchy equations to compute wavelength-dependent index of refraction, and finally converts to sRGB through CIE XYZ color matching functions. This correctly simulates dispersion and rainbow caustics.
+
+Each path samples a single wavelength instead of RGB, using Sellmeier/Cauchy equations
+to compute wavelength-dependent index of refraction, and finally converts to sRGB
+through CIE XYZ color matching functions.
+This correctly simulates dispersion and rainbow caustics.
 
 Basic spectral rendering workflow:
+
 1. Each path randomly selects a wavelength λ in [380, 780] nm
-2. Compute the index of refraction for that wavelength using the Sellmeier equation: $n^2 = 1 + \sum B_i \lambda^2 / (\lambda^2 - C_i)$
-3. All color computations in path tracing become single-channel (spectral power at that wavelength)
-4. Finally convert spectral radiance to XYZ via CIE XYZ color matching functions, then to sRGB
+
+2. Compute the index of refraction for that wavelength using the Sellmeier equation:
+   $n^2 = 1 + \sum B_i \lambda^2 / (\lambda^2 - C_i)$
+
+3. All color computations in path tracing become single-channel (spectral power at that
+   wavelength)
+
+4. Finally convert spectral radiance to XYZ via CIE XYZ color matching functions, then
+   to sRGB
 
 ### 6. Path Tracing + Temporal Accumulation / TAA
-Leverage ShaderToy's inter-frame buffer feedback mechanism for progressive rendering. Can be further extended to temporal reprojection, reusing historical frame data during camera movement to accelerate convergence.
+
+Leverage ShaderToy’s inter-frame buffer feedback mechanism for progressive rendering.
+Can be further extended to temporal reprojection, reusing historical frame data during
+camera movement to accelerate convergence.
 
 Basic temporal reprojection:
-1. Store the previous frame's camera matrix
-2. Reproject the current pixel into the previous frame's screen space
-3. If the position is valid and geometrically consistent, blend the historical frame with the current frame
+
+1. Store the previous frame’s camera matrix
+
+2. Reproject the current pixel into the previous frame’s screen space
+
+3. If the position is valid and geometrically consistent, blend the historical frame
+   with the current frame
+
 4. Otherwise discard historical data and restart accumulation

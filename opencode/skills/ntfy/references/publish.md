@@ -5,10 +5,15 @@ Canonical docs: `https://docs.ntfy.sh/publish/`
 ## Core Endpoints
 
 - `POST|PUT /<topic>`: publish a message.
+
 - `POST|PUT /<topic>/<sequence_id>`: publish/update an existing notification sequence.
+
 - `POST /` with JSON body: publish as JSON (`topic` field required).
+
 - `GET /<topic>/publish` (aliases: `/send`, `/trigger`): webhook-style publishing.
+
 - `PUT /<topic>/<sequence_id>/clear` (alias: `/read`): clear notification.
+
 - `DELETE /<topic>/<sequence_id>`: delete notification.
 
 ## Minimum Working Calls
@@ -31,10 +36,11 @@ ntfy trigger mytopic
 
 ## Publish Parameters (Headers / Query Params)
 
-Headers are case-insensitive. Query parameters must be lowercase.
+Headers are case-insensitive.
+Query parameters must be lowercase.
 
 | Canonical | Common aliases | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `X-Message` | `Message`, `m` | Message body |
 | `X-Title` | `Title`, `t` | Notification title |
 | `X-Sequence-ID` | `Sequence-ID`, `SID` | Sequence for update/clear/delete |
@@ -58,9 +64,13 @@ Headers are case-insensitive. Query parameters must be lowercase.
 ## Priority Mapping
 
 - `5` / `max` / `urgent`
+
 - `4` / `high`
+
 - `3` / `default`
+
 - `2` / `low`
+
 - `1` / `min`
 
 Example:
@@ -87,6 +97,7 @@ curl -sS \
 ### Attachments
 
 - Local file upload: `PUT` body + `Filename` header.
+
 - External URL: `Attach: https://...`.
 
 ```bash
@@ -97,6 +108,7 @@ curl -sS -H "Attach: https://example.com/incident.png" https://ntfy.sh/alerts
 ### Action buttons
 
 - Up to 3 actions.
+
 - Action types: `view`, `broadcast` (Android), `http`, `copy`.
 
 Header format:
@@ -108,18 +120,25 @@ action=<type>, label=<label>, ... ; action=<type>, label=<label>, ...
 Short format examples:
 
 - `view, Open dashboard, https://status.example.com, clear=true`
+
 - `http, Retry, https://api.example.com/retry, method=POST, clear=true`
+
 - `copy, Copy ID, 12345, clear=true`
 
 ### Scheduled delivery
 
 Use `Delay`/`At`/`In` aliases with:
+
 - Unix timestamp
+
 - duration (`30m`, `2h`, `1 day`)
+
 - natural language (`10am`, `tomorrow`, `Tuesday`)
 
 Docs state current limits are typically:
+
 - minimum delay: 10 seconds
+
 - maximum delay: 3 days
 
 ```bash
@@ -130,6 +149,7 @@ curl -sS -H "At: tomorrow, 10am" -d "Daily check" https://ntfy.sh/reminders
 #### Update/cancel scheduled messages
 
 - Re-publish same sequence to replace scheduled message.
+
 - Cancel by deleting sequence:
 
 ```bash
@@ -155,9 +175,13 @@ curl -sS https://ntfy.sh \
 ```
 
 Key JSON fields:
+
 - Required: `topic`
+
 - Common: `message`, `title`, `tags`, `priority`, `actions`, `click`
-- Also supported: `attach`, `filename`, `markdown`, `icon`, `delay`, `email`, `call`, `sequence_id`
+
+- Also supported: `attach`, `filename`, `markdown`, `icon`, `delay`, `email`, `call`,
+  `sequence_id`
 
 ## Update, Clear, Delete Existing Notifications
 
@@ -212,12 +236,19 @@ Use raw base64 of the full `Authorization` header value (without trailing `=`).
 From docs (defaults plus ntfy.sh notes):
 
 - Message length: 4096 bytes (larger content treated as attachment).
+
 - Request burst: 60 per visitor, refilling at 1 request / 5s.
+
 - Daily messages: on `ntfy.sh`, 250/day (default behavior can be request-limit derived).
+
 - Email: burst 16 then 1/hour; on `ntfy.sh`, daily email limit is 5.
+
 - Subscriptions: 30 concurrent per visitor by default.
+
 - Attachments (default server): 15 MB/file, 100 MB/visitor, 5 GB total cache.
+
 - Attachments (`ntfy.sh`): 2 MB/file, 20 MB/visitor total.
+
 - Attachment bandwidth: default 500 MB/day per visitor; `ntfy.sh` 200 MB/day.
 
 Design automation to surface non-2xx status immediately (especially `429`).
@@ -225,5 +256,7 @@ Design automation to surface non-2xx status immediately (especially `429`).
 ## Related Docs
 
 - `https://docs.ntfy.sh/publish/`
+
 - `https://docs.ntfy.sh/publish/template-functions/`
+
 - `https://docs.ntfy.sh/emojis/`

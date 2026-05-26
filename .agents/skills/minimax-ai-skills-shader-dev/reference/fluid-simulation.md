@@ -1,23 +1,36 @@
 # Fluid Simulation — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), containing prerequisite knowledge, step-by-step tutorials, mathematical derivations, and advanced usage.
+This document is a detailed supplement to [SKILL.md](SKILL.md), containing prerequisite
+knowledge, step-by-step tutorials, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
 ### GLSL Basics
+
 - `texture`/`texelFetch` sampling, `iChannel0` buffer feedback, multi-pass rendering
+
 - ShaderToy multi-buffer architecture: data flow between Buffer A/B/C/D
 
 ### Vector Calculus Basics
-- Gradient: the spatial rate of change of a scalar field, pointing in the direction of greatest increase
-- Divergence: the "source/sink" strength of a vector field
+
+- Gradient: the spatial rate of change of a scalar field, pointing in the direction of
+  greatest increase
+
+- Divergence: the “source/sink” strength of a vector field
+
 - Curl: the local rotational strength of a vector field
-- Laplacian: the second derivative of a scalar field, measuring deviation from the neighborhood mean
+
+- Laplacian: the second derivative of a scalar field, measuring deviation from the
+  neighborhood mean
 
 ### Data Encoding Paradigm
-Understanding the paradigm of "encoding physical quantities into texture RGBA channels":
+
+Understanding the paradigm of “encoding physical quantities into texture RGBA channels”:
+
 - `.xy` = velocity
+
 - `.z` = pressure / density
+
 - `.w` = passive scalar, e.g., ink concentration
 
 ## Implementation Steps in Detail
@@ -26,7 +39,9 @@ Understanding the paradigm of "encoding physical quantities into texture RGBA ch
 
 **What**: Encode fluid physical quantities into the RGBA channels of a texture.
 
-**Why**: GPU textures serve as the storage medium for fluid state. Each pixel is a grid cell, with channels storing different physical quantities, enabling full fluid state persistence.
+**Why**: GPU textures serve as the storage medium for fluid state.
+Each pixel is a grid cell, with channels storing different physical quantities, enabling
+full fluid state persistence.
 
 **Code**:
 ```glsl
@@ -48,9 +63,12 @@ vec4 w = T(p - vec2(1, 0));       // west
 
 ### Step 2: Discrete Differential Operators
 
-**What**: Compute gradient, Laplacian, divergence, and curl over a 3x3 pixel neighborhood.
+**What**: Compute gradient, Laplacian, divergence, and curl over a 3x3 pixel
+neighborhood.
 
-**Why**: These operators are the foundation for discretizing the Navier-Stokes equations. A 3x3 stencil is more isotropic than a simple cross stencil, reducing grid-direction artifacts.
+**Why**: These operators are the foundation for discretizing the Navier-Stokes
+equations. A 3x3 stencil is more isotropic than a simple cross stencil, reducing
+grid-direction artifacts.
 
 **Code**:
 ```glsl
@@ -78,9 +96,13 @@ float curl = dx.y - dy.x;  // ∂vy/∂x - ∂vx/∂y
 
 ### Step 3: Initial Frame and Noise
 
-**What**: Initialize the fluid state and inject a small amount of noise to avoid symmetry lock.
+**What**: Initialize the fluid state and inject a small amount of noise to avoid
+symmetry lock.
 
-**Why**: If the initial state is entirely zero (zero velocity), the fluid equations will maintain this symmetric state and never move. Adding a small amount of random noise breaks the symmetry, allowing turbulence to develop naturally.
+**Why**: If the initial state is entirely zero (zero velocity), the fluid equations will
+maintain this symmetric state and never move.
+Adding a small amount of random noise breaks the symmetry, allowing turbulence to
+develop naturally.
 
 **Code**:
 ```glsl
@@ -96,9 +118,13 @@ if (iFrame < 10) {
 
 ### Step 4: Semi-Lagrangian Advection
 
-**What**: Trace backward along the velocity field and sample from the upstream position to update the current pixel.
+**What**: Trace backward along the velocity field and sample from the upstream position
+to update the current pixel.
 
-**Why**: This is the standard method for handling the `-(v·∇)v` advection term. Direct forward advection on an Eulerian grid leads to instability, while the semi-Lagrangian method is unconditionally stable — it won't blow up regardless of time step size.
+**Why**: This is the standard method for handling the `-(v·∇)v` advection term.
+Direct forward advection on an Eulerian grid leads to instability, while the
+semi-Lagrangian method is unconditionally stable — it won’t blow up regardless of time
+step size.
 
 **Code**:
 ```glsl
@@ -116,7 +142,10 @@ c.xyw = advected.xyw;
 
 **What**: Apply Laplacian diffusion to the velocity field to simulate viscosity.
 
-**Why**: Corresponds to the `ν∇²v` term. Viscosity smooths the velocity field, dissipating small-scale vortices. The parameter `ν` controls whether the fluid behaves like "water" (low viscosity) or "honey" (high viscosity).
+**Why**: Corresponds to the `ν∇²v` term.
+Viscosity smooths the velocity field, dissipating small-scale vortices.
+The parameter `ν` controls whether the fluid behaves like “water” (low viscosity) or
+“honey” (high viscosity).
 
 **Code**:
 ```glsl
@@ -129,9 +158,14 @@ c.w   += DT * KAPPA * laplacian.w;   // ink diffusion
 
 ### Step 6: Pressure Projection
 
-**What**: Compute the gradient of the pressure field and subtract it from the velocity field to enforce the incompressibility constraint.
+**What**: Compute the gradient of the pressure field and subtract it from the velocity
+field to enforce the incompressibility constraint.
 
-**Why**: This is the core of Helmholtz-Hodge decomposition — decomposing the velocity field into a divergence-free part (what we want) and a curl-free part. By projecting out the divergence component via `v = v - K·∇p`, we ensure `∇·v ≈ 0`. In ShaderToy, the per-frame buffer feedback itself constitutes an implicit Jacobi iteration.
+**Why**: This is the core of Helmholtz-Hodge decomposition — decomposing the velocity
+field into a divergence-free part (what we want) and a curl-free part.
+By projecting out the divergence component via `v = v - K·∇p`, we ensure `∇·v ≈ 0`. In
+ShaderToy, the per-frame buffer feedback itself constitutes an implicit Jacobi
+iteration.
 
 **Code**:
 ```glsl
@@ -149,7 +183,9 @@ c.z -= DT * (dx.z * c.x + dy.z * c.y + div * c.z);
 
 **What**: Inject velocity and ink into the fluid based on mouse input.
 
-**Why**: The external force term `f` is the entry point for user interaction. The typical approach is to apply a Gaussian-decaying velocity impulse and ink injection near the mouse position.
+**Why**: The external force term `f` is the entry point for user interaction.
+The typical approach is to apply a Gaussian-decaying velocity impulse and ink injection
+near the mouse position.
 
 **Code**:
 ```glsl
@@ -170,7 +206,8 @@ if (iMouse.z > 0.0) {
 
 **What**: Handle boundary pixels, clamp numerical ranges, and apply dissipation.
 
-**Why**: Without boundary conditions, the fluid "leaks" off-screen; without dissipation, fluid energy accumulates indefinitely, causing numerical explosion.
+**Why**: Without boundary conditions, the fluid “leaks” off-screen; without dissipation,
+fluid energy accumulates indefinitely, causing numerical explosion.
 
 **Code**:
 ```glsl
@@ -191,7 +228,10 @@ c = clamp(c, vec4(-5, -5, 0.5, 0), vec4(5, 5, 3, 5));
 
 **What**: Map physical quantities from the buffer to visible colors.
 
-**Why**: Raw physical data (velocity, pressure) needs artistic color mapping to produce visual effects. Common techniques include: mapping velocity direction to hue, pressure to brightness, and overlaying ink concentration.
+**Why**: Raw physical data (velocity, pressure) needs artistic color mapping to produce
+visual effects.
+Common techniques include: mapping velocity direction to hue, pressure to
+brightness, and overlaying ink concentration.
 
 **Code**:
 ```glsl
@@ -217,9 +257,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Variant 1: Rotational Self-Advection
 
-**Difference from base version**: Instead of pressure projection, uses multi-scale rotational sampling to achieve natural divergence-free advection. Simpler computation, suitable for purely decorative fluid effects.
+**Difference from base version**: Instead of pressure projection, uses multi-scale
+rotational sampling to achieve natural divergence-free advection.
+Simpler computation, suitable for purely decorative fluid effects.
 
-**Core idea**: Compute local rotation (curl) at different scales, then use rotationally offset sampling positions for advection.
+**Core idea**: Compute local rotation (curl) at different scales, then use rotationally
+offset sampling positions for advection.
 
 **Key code**:
 ```glsl
@@ -262,9 +305,12 @@ fragColor = texture(iChannel0, fract(uv + v * 3.0 / iResolution.x));
 
 ### Variant 2: Vorticity Confinement
 
-**Difference from base version**: Adds vorticity confinement force on top of the base solver to prevent small vortices from dissipating too quickly due to numerical diffusion. Suitable for smoke, fire, and other scenes that need rich detail.
+**Difference from base version**: Adds vorticity confinement force on top of the base
+solver to prevent small vortices from dissipating too quickly due to numerical
+diffusion. Suitable for smoke, fire, and other scenes that need rich detail.
 
-**Core idea**: Compute the gradient direction of the vorticity field (the direction where vorticity concentrates), then apply a restoring force along that direction.
+**Core idea**: Compute the gradient direction of the vorticity field (the direction
+where vorticity concentrates), then apply a restoring force along that direction.
 
 **Key code**:
 ```glsl
@@ -286,9 +332,12 @@ c.xy += DT * conf;
 
 ### Variant 3: Viscous Fingering / Reaction-Diffusion Style
 
-**Difference from base version**: No advection; instead uses rotation-driven self-amplification and Laplacian diffusion to produce organic patterns resembling reaction-diffusion. Suitable for abstract art generation.
+**Difference from base version**: No advection; instead uses rotation-driven
+self-amplification and Laplacian diffusion to produce organic patterns resembling
+reaction-diffusion. Suitable for abstract art generation.
 
-**Core idea**: Compute a rotation angle from curl, apply 2D rotation to velocity components, and combine with Laplacian diffusion and divergence feedback.
+**Core idea**: Compute a rotation angle from curl, apply 2D rotation to velocity
+components, and combine with Laplacian diffusion and divergence feedback.
 
 **Key code**:
 ```glsl
@@ -314,9 +363,13 @@ fragColor = clamp(vec4(a, b, div, 1), -1.0, 1.0);
 
 ### Variant 4: Gaussian Kernel SPH Particle Fluid
 
-**Difference from base version**: Completely abandons grid advection, instead using Gaussian kernel functions to estimate density and velocity at each grid point. Minimal (about 20 lines of core code), suitable for rapid prototyping and teaching.
+**Difference from base version**: Completely abandons grid advection, instead using
+Gaussian kernel functions to estimate density and velocity at each grid point.
+Minimal (about 20 lines of core code), suitable for rapid prototyping and teaching.
 
-**Core idea**: For all pixels in the neighborhood, perform mass-weighted velocity blending using Gaussian weights based on velocity + displacement. This is essentially a grid-based approximation of SPH.
+**Core idea**: For all pixels in the neighborhood, perform mass-weighted velocity
+blending using Gaussian weights based on velocity + displacement.
+This is essentially a grid-based approximation of SPH.
 
 **Key code**:
 ```glsl
@@ -335,9 +388,14 @@ r.xy /= r.z + 1e-6;  // mass-weighted average velocity
 
 ### Variant 5: Lagrangian Vortex Particle Method
 
-**Difference from base version**: Instead of solving on a grid, tracks discrete vortex particles with their positions and vorticities. Uses the Biot-Savart law to compute the velocity field directly from the vorticity distribution. Suitable for precise simulation of a small number of vortices.
+**Difference from base version**: Instead of solving on a grid, tracks discrete vortex
+particles with their positions and vorticities.
+Uses the Biot-Savart law to compute the velocity field directly from the vorticity
+distribution. Suitable for precise simulation of a small number of vortices.
 
-**Core idea**: Each particle carries a position and vorticity. Induced velocity is computed through N-body summation. Uses Heun (semi-implicit) time integration for improved accuracy.
+**Core idea**: Each particle carries a position and vorticity.
+Induced velocity is computed through N-body summation.
+Uses Heun (semi-implicit) time integration for improved accuracy.
 
 **Key code**:
 ```glsl
@@ -361,34 +419,63 @@ position += velocity * dt;
 ## Performance Optimization Details
 
 ### Bottleneck 1: Neighborhood Sample Count
+
 - The basic 5-point stencil (cross) is fastest but has poor isotropy
+
 - A 3x3 stencil (9 samples) is the best balance between accuracy and performance
-- The `N×N` search radius in the SPH variant is extremely expensive; anything above 7 becomes slow
-- **Optimization**: Use `texelFetch` instead of `texture` (skips filtering), or use `textureLod` to lock the mip level
+
+- The `N×N` search radius in the SPH variant is extremely expensive; anything above 7
+  becomes slow
+
+- **Optimization**: Use `texelFetch` instead of `texture` (skips filtering), or use
+  `textureLod` to lock the mip level
 
 ### Bottleneck 2: Multi-Pass Overhead
+
 - Classic solvers need 2-4 buffer passes (velocity, pressure, vorticity, visualization)
-- **Optimization**: Merge multiple steps into a single pass. Pressure projection can leverage inter-frame feedback as implicit Jacobi iteration, eliminating the need for dedicated iteration passes
-- For decorative effects that don't require strict incompressibility, rotational self-advection (Variant 1) can completely eliminate pressure projection
+
+- **Optimization**: Merge multiple steps into a single pass.
+  Pressure projection can leverage inter-frame feedback as implicit Jacobi iteration,
+  eliminating the need for dedicated iteration passes
+
+- For decorative effects that don’t require strict incompressibility, rotational
+  self-advection (Variant 1) can completely eliminate pressure projection
 
 ### Bottleneck 3: Advection Accuracy vs. Performance
+
 - Single-step advection loses detail in high-velocity regions
-- **Optimization**: Multi-step advection (`ADVECTION_STEPS = 3`) uses 3 small steps instead of 1 large step, at the cost of 3x the sampling
-- Compromise: pre-compute offsets then uniformly subdivide sampling (avoid recalculating offsets at each step)
+
+- **Optimization**: Multi-step advection (`ADVECTION_STEPS = 3`) uses 3 small steps
+  instead of 1 large step, at the cost of 3x the sampling
+
+- Compromise: pre-compute offsets then uniformly subdivide sampling (avoid recalculating
+  offsets at each step)
 
 ### Bottleneck 4: Mipmap as Alternative to Multi-Scale Traversal
-- Multi-scale fluid requires computation at different spatial scales. The brute-force approach is multiple large-radius samples
-- **Optimization**: Leverage GPU-generated mipmaps for O(1) multi-scale reads, using `textureLod(channel, uv, mip)` to directly read at different scales
+
+- Multi-scale fluid requires computation at different spatial scales.
+  The brute-force approach is multiple large-radius samples
+
+- **Optimization**: Leverage GPU-generated mipmaps for O(1) multi-scale reads, using
+  `textureLod(channel, uv, mip)` to directly read at different scales
 
 ### General Tips
-- Add tiny noise on the initial frame (`1e-6 * noise`) to avoid symmetry lock caused by numerical precision issues
-- Use `fract(uv + offset)` for periodic boundaries (torus topology), eliminating boundary check branches
-- Multiply the pressure field by a near-1 decay factor (e.g., `0.9999`) to prevent pressure drift
+
+- Add tiny noise on the initial frame (`1e-6 * noise`) to avoid symmetry lock caused by
+  numerical precision issues
+
+- Use `fract(uv + offset)` for periodic boundaries (torus topology), eliminating
+  boundary check branches
+
+- Multiply the pressure field by a near-1 decay factor (e.g., `0.9999`) to prevent
+  pressure drift
 
 ## Combination Suggestions
 
 ### 1. Fluid + Normal Map Lighting
-Treat the fluid velocity/density field as a height map, compute normals, and apply Phong/GGX lighting to produce a liquid metal visual effect.
+
+Treat the fluid velocity/density field as a height map, compute normals, and apply
+Phong/GGX lighting to produce a liquid metal visual effect.
 ```glsl
 // Compute normals from the density field
 vec2 dxy = vec2(
@@ -400,7 +487,10 @@ vec3 normal = normalize(vec3(-BUMP * dxy, 1.0));
 ```
 
 ### 2. Fluid + Particle Tracing
-Scatter passive particles in the fluid velocity field, updating particle positions each frame according to the flow velocity. Suitable for visualizing streamlines and creating ink diffusion effects.
+
+Scatter passive particles in the fluid velocity field, updating particle positions each
+frame according to the flow velocity.
+Suitable for visualizing streamlines and creating ink diffusion effects.
 ```glsl
 // Particle position update (in a separate buffer)
 vec2 pos = texture(particleBuf, id).xy;
@@ -410,10 +500,14 @@ pos = mod(pos, iResolution.xy);  // periodic boundary
 ```
 
 ### 3. Fluid + Color Advection
-Store RGB colors in extra channels or buffers and perform semi-Lagrangian advection synchronized with the velocity field, producing colorful ink mixing effects.
+
+Store RGB colors in extra channels or buffers and perform semi-Lagrangian advection
+synchronized with the velocity field, producing colorful ink mixing effects.
 
 ### 4. Fluid + Audio Response
-Map audio spectrum low-frequency energy to force intensity and high frequencies to vorticity injection, creating music-driven fluid visualization.
+
+Map audio spectrum low-frequency energy to force intensity and high frequencies to
+vorticity injection, creating music-driven fluid visualization.
 ```glsl
 float bass = texture(iChannel1, vec2(0.05, 0.0)).x;   // low frequency
 float treble = texture(iChannel1, vec2(0.8, 0.0)).x;   // high frequency
@@ -422,4 +516,7 @@ c.xy += bass * radialForce + treble * randomVortex;
 ```
 
 ### 5. Fluid + 3D Volume Rendering
-Extend 2D fluid to 3D (using 2D texture slice packing to store 3D voxels) and render semi-transparent volumes via ray marching. Suitable for clouds and explosion effects.
+
+Extend 2D fluid to 3D (using 2D texture slice packing to store 3D voxels) and render
+semi-transparent volumes via ray marching.
+Suitable for clouds and explosion effects.

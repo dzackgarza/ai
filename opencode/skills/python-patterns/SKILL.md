@@ -2,34 +2,76 @@
 name: python-patterns
 description: Use when writing Python code - for projects using pydantic, uv, justfile, and modern Python conventions
 ---
-
 # Python Development Patterns
 
-Opinionated, modern Python patterns for building robust, efficient, and maintainable applications. Targets the **latest Python** — no backwards compatibility hedging.
+Opinionated, modern Python patterns for building robust, efficient, and maintainable
+applications. Targets the **latest Python** — no backwards compatibility hedging.
 
 ## When to Activate
 
 - Writing new Python code
+
 - Reviewing Python code
+
 - Refactoring existing Python code
+
 - Designing Python packages/modules
 
 ## Non-Negotiable Rules
 
 1. **Always `from __future__ import annotations`** as the first import in every file
-2. **Always fully typed** — every function signature, every variable where not trivially obvious. No `Any` unless interfacing with untyped externals
+
+2. **Always fully typed** — every function signature, every variable where not trivially
+   obvious. No `Any` unless interfacing with untyped externals
+
 3. **Always pydantic** — never `dataclasses`, never `NamedTuple` for data containers
-4. **Always `X | None`** — never `Optional[X]`, never `Union[X, Y]`, always use `|` syntax
-5. **Always uv** — never pip, never pip-tools, never poetry. Use `uv run` with `# /// script` metadata blocks for standalone scripts with external dependencies.
+
+4. **Always `X | None`** — never `Optional[X]`, never `Union[X, Y]`, always use `|`
+   syntax
+
+5. **Always uv** — never pip, never pip-tools, never poetry.
+   Use `uv run` with `# /// script` metadata blocks for standalone scripts with external
+   dependencies.
+
 6. **Always a venv** — managed by uv
+
 7. **Always pyproject.toml** — all config lives here (ruff, mypy, pytest, etc.)
+
 8. **Always a justfile** — all dev commands go through `just`
+
 9. **Fail fast with asserts** — no speculative try/catch in greenfield code
+
 10. **Target latest Python** — no version guards, no `sys.version_info` checks
-11. **No `None` returns on deterministic paths** — if a function cannot return `None` given the invariants of the caller's context, the return type is not `T | None` and the body does not `return None`. If the allegedly-impossible case occurs, `assert False, f"invariant violated: {detail}"`. Silent `None` returns on paths that should be unreachable hide bugs rather than exposing them.
-12. **No `Any` in owned code without an explicit user decision** — `Any` opts the type checker out entirely. The two legitimate exceptions forced by Python's type system: (a) `__contains__` implementations (protocol requires `object`); (b) `*args`/`**kwargs` relay functions that forward to an upstream signature you cannot change. Every other use of `Any` requires an explicit comment explaining why the type system cannot express the constraint.
-13. **No variadics in owned function signatures** — no `*args`, no `**kwargs`, no positional-only parameters in code you write and own. All parameters must be named, typed, and keyword-accessible. Variadics make call sites opaque, resist static analysis, and turn every refactoring into a grep exercise. The only exceptions: (a) `__init_subclass__` / framework hooks where the framework mandates it; (b) genuine delegation wrappers like `functools.wraps` relay functions.
-14. **No defensive guards for conditions that have not been observed** — do not add `try/except SomeError` for an error that has never actually occurred in production or testing. Every error handler must be justified by a real, documented incident. A hard dependency that must be installed (`notify-send`, `systemctl`, `ags`) must not have a `FileNotFoundError` guard — if it is missing, the system is broken and the crash is the correct behavior. The `doctor` command exists to diagnose setup errors; runtime code does not.
+
+11. **No `None` returns on deterministic paths** — if a function cannot return `None`
+    given the invariants of the caller’s context, the return type is not `T | None` and
+    the body does not `return None`. If the allegedly-impossible case occurs,
+    `assert False, f"invariant violated: {detail}"`. Silent `None` returns on paths that
+    should be unreachable hide bugs rather than exposing them.
+
+12. **No `Any` in owned code without an explicit user decision** — `Any` opts the type
+    checker out entirely.
+    The two legitimate exceptions forced by Python’s type system: (a) `__contains__`
+    implementations (protocol requires `object`); (b) `*args`/`**kwargs` relay functions
+    that forward to an upstream signature you cannot change.
+    Every other use of `Any` requires an explicit comment explaining why the type system
+    cannot express the constraint.
+
+13. **No variadics in owned function signatures** — no `*args`, no `**kwargs`, no
+    positional-only parameters in code you write and own.
+    All parameters must be named, typed, and keyword-accessible.
+    Variadics make call sites opaque, resist static analysis, and turn every refactoring
+    into a grep exercise.
+    The only exceptions: (a) `__init_subclass__` / framework hooks where the framework
+    mandates it; (b) genuine delegation wrappers like `functools.wraps` relay functions.
+
+14. **No defensive guards for conditions that have not been observed** — do not add
+    `try/except SomeError` for an error that has never actually occurred in production
+    or testing. Every error handler must be justified by a real, documented incident.
+    A hard dependency that must be installed (`notify-send`, `systemctl`, `ags`) must
+    not have a `FileNotFoundError` guard — if it is missing, the system is broken and
+    the crash is the correct behavior.
+    The `doctor` command exists to diagnose setup errors; runtime code does not.
 
 ## Core Principles
 
@@ -68,11 +110,16 @@ some_module.setup()  # What does this do?
 
 ### 3. Fail Fast — No Speculative Exception Handling
 
-Greenfield code should **NOT** use exceptions for flow control. Instead:
+Greenfield code should **NOT** use exceptions for flow control.
+Instead:
 
 - **Assert semantic invariants** to catch bugs immediately
-- **Let errors propagate** — an unhandled crash with a traceback is better than a silently swallowed error
-- **Only add try/catch AFTER** you have observed a specific error in practice, then handle that specific case
+
+- **Let errors propagate** — an unhandled crash with a traceback is better than a
+  silently swallowed error
+
+- **Only add try/catch AFTER** you have observed a specific error in practice, then
+  handle that specific case
 
 ```python
 from __future__ import annotations
@@ -116,7 +163,8 @@ def get_value_optional(dictionary: dict[str, str], key: str) -> str | None:
 
 ### When to Use Exceptions
 
-Exception handling is appropriate **only** at system boundaries and for **observed, specific** errors:
+Exception handling is appropriate **only** at system boundaries and for **observed,
+specific** errors:
 
 ```python
 from __future__ import annotations
@@ -543,7 +591,8 @@ uv add --group dev pytest pytest-cov ruff mypy
 
 ## Assert Patterns — Fail Fast
 
-The assert pattern is the primary error-handling mechanism for greenfield code. Asserts document semantic invariants and dump relevant debugging data when they fire.
+The assert pattern is the primary error-handling mechanism for greenfield code.
+Asserts document semantic invariants and dump relevant debugging data when they fire.
 
 ```python
 from __future__ import annotations
@@ -583,7 +632,10 @@ def merge_datasets(a: list[dict[str, str]], b: list[dict[str, str]]) -> list[dic
 ### When NOT to Assert
 
 - **User input validation** — use pydantic validators, they produce structured errors
-- **System boundaries** (network, filesystem at runtime) — these fail in expected ways, use specific try/catch only after observing the failure
+
+- **System boundaries** (network, filesystem at runtime) — these fail in expected ways,
+  use specific try/catch only after observing the failure
+
 - **Library APIs** consumed by others — raise proper exceptions for public interfaces
 
 ## Memory and Performance
@@ -605,22 +657,22 @@ result = "".join(str(item) for item in items)
 
 ## Quick Reference
 
-| Pattern         | Rule                                                   |
-| --------------- | ------------------------------------------------------ |
-| Imports         | `from __future__ import annotations` first, always     |
-| Data models     | Pydantic `BaseModel`, never dataclasses                |
-| Unions          | `X \| None`, never `Optional[X]`                       |
-| Error handling  | Assert invariants, fail fast, no speculative try/catch |
-| Package manager | `uv` only                                              |
-| Environment     | `uv venv`, always                                      |
-| Config          | All in `pyproject.toml`                                |
-| Dev commands    | All in `justfile`, run via `just`                      |
-| Formatting      | `ruff format` via `just fmt`                           |
-| Linting         | `ruff check` via `just lint`                           |
-| Type checking   | `mypy --strict` via `just typecheck`                   |
-| Testing         | `pytest` via `just test`                               |
-| Full check      | `just check` (lint + typecheck + test)                 |
-| Target Python   | Latest (3.13+), no backwards compat                    |
+| Pattern | Rule |
+| --- | --- |
+| Imports | `from __future__ import annotations` first, always |
+| Data models | Pydantic `BaseModel`, never dataclasses |
+| Unions | `X \| None`, never `Optional[X]` |
+| Error handling | Assert invariants, fail fast, no speculative try/catch |
+| Package manager | `uv` only |
+| Environment | `uv venv`, always |
+| Config | All in `pyproject.toml` |
+| Dev commands | All in `justfile`, run via `just` |
+| Formatting | `ruff format` via `just fmt` |
+| Linting | `ruff check` via `just lint` |
+| Type checking | `mypy --strict` via `just typecheck` |
+| Testing | `pytest` via `just test` |
+| Full check | `just check` (lint + typecheck + test) |
+| Target Python | Latest (3.13+), no backwards compat |
 
 ## Anti-Patterns to Avoid
 
@@ -723,4 +775,8 @@ except OverflowError:
 result = parse_date(user_input)
 ```
 
-**Remember**: Fail fast. Type everything. Use pydantic. Run `just check` before committing. No exceptions without evidence of a specific observed failure. No variadics, no `Any`, no silent `None` on deterministic paths.
+**Remember**: Fail fast.
+Type everything. Use pydantic.
+Run `just check` before committing.
+No exceptions without evidence of a specific observed failure.
+No variadics, no `Any`, no silent `None` on deterministic paths.

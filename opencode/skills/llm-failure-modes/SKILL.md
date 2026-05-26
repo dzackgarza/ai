@@ -20,15 +20,18 @@ metadata:
 When contributing to this document:
 
 - **Objective failures only.** Describe what happens; do not posit why or attribute
-  motivations. "Agents assert authority before investigation" — not "Agents assert
-  authority *to save face*."
+  motivations. “Agents assert authority before investigation” — not “Agents assert
+  authority *to save face*.”
+
 - **General, not interaction-specific.** These are properties of model behavior
   observable in any interaction — with humans, other models, or automated scripts.
-  Write "agents" not "the agent"; write "when a claim is made" not "when the user says."
+  Write “agents” not “the agent”; write “when a claim is made” not “when the user says.”
   The other party in any documented failure could be anything.
+
 - **Examples over observables.** A concrete example illustrates a failure pattern more
-  reliably than an abstract "Observable:" clause, which tends to restate the definition.
+  reliably than an abstract “Observable:” clause, which tends to restate the definition.
   Show what the failure looks like in actual output.
+
 - **Intrinsic, not reactive.** Behaviors like goal substitution or authority assertion
   are not responses to a particular kind of interlocutor — they are properties of model
   behavior that emerge regardless of what the other party is.
@@ -113,12 +116,14 @@ Load the relevant section for your context:
 - **addressing-shallow-work** → Load alongside when investigating failure modes that
   produce structurally wrong code.
   The inability to recognize when an approach is structurally incapable of correctness —
-  even without empirical verification — is a failure mode distinct from "didn't test
-  enough." The regex-on-HTML example (flattening a semantic tree into bytes before
+  even without empirical verification — is a failure mode distinct from “didn’t test
+  enough.” The regex-on-HTML example (flattening a semantic tree into bytes before
   searching) illustrates fluency masking structural wrongness.
+
 - **anti-slop** → Load alongside when the failure mode produces surface-level quality
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
+
 - **reviewing-subagent-work** → Load alongside when designing review processes that must
   detect the failures cataloged in this skill.
   The Synthesis Gate forces content-level evaluation; structural-wrongness recognition

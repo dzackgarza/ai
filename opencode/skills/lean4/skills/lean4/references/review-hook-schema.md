@@ -2,11 +2,13 @@
 
 JSON schema for `/lean4:review` external hooks and Codex integration.
 
----
+* * *
 
 ## Hook Input Schema
 
-Input sent to custom hooks via stdin. For `--codex`, this context is displayed for manual copy/paste to Codex CLI (see [Codex Integration](#codex-integration)):
+Input sent to custom hooks via stdin.
+For `--codex`, this context is displayed for manual copy/paste to Codex CLI (see
+[Codex Integration](#codex-integration)):
 
 ```json
 {
@@ -52,14 +54,14 @@ Input sent to custom hooks via stdin. For `--codex`, this context is displayed f
 ### Field Descriptions
 
 | Field | Type | Description |
-|-------|------|-------------|
-| `version` | string | Schema version (currently "1.0") |
-| `request_type` | string | Always "review" for review hooks |
+| --- | --- | --- |
+| `version` | string | Schema version (currently “1.0”) |
+| `request_type` | string | Always “review” for review hooks |
 | `focus` | object | Scope of this review |
-| `focus.scope` | string | "sorry", "deps", "file", "changed", or "project" |
+| `focus.scope` | string | “sorry”, “deps”, “file”, “changed”, or “project” |
 | `focus.file` | string | Target file (if applicable) |
 | `focus.line` | number | Target line (for sorry/deps scope) |
-| `mode` | string | "batch" (default) or "stuck" (triage) — top-level field |
+| `mode` | string | “batch” (default) or “stuck” (triage) — top-level field |
 | `files` | array | Files being reviewed |
 | `files[].path` | string | Relative path to file |
 | `files[].content` | string | Full file content |
@@ -70,11 +72,11 @@ Input sent to custom hooks via stdin. For `--codex`, this context is displayed f
 | `files[].sorries[].hypotheses` | array | Available hypotheses |
 | `files[].axioms` | array | Custom axioms used |
 | `files[].diagnostics` | array | Compiler warnings/errors |
-| `build_status` | string | "passing" or "failing" |
-| `preferences.focus` | string | "completeness", "style", or "performance" |
-| `preferences.verbosity` | string | "minimal", "normal", or "detailed" |
+| `build_status` | string | “passing” or “failing” |
+| `preferences.focus` | string | “completeness”, “style”, or “performance” |
+| `preferences.verbosity` | string | “minimal”, “normal”, or “detailed” |
 
----
+* * *
 
 ## Hook Output Schema
 
@@ -114,27 +116,33 @@ Output returned by hooks (via stdout):
 ### Suggestion Fields
 
 | Field | Type | Required | Description |
-|-------|------|----------|-------------|
+| --- | --- | --- | --- |
 | `file` | string | Yes | File the suggestion applies to |
 | `line` | number | Yes | Line number (1-indexed) |
 | `column` | number | No | Column number (0-indexed) |
-| `severity` | string | Yes | "error", "warning", "hint", or "style" |
-| `category` | string | No | "sorry", "axiom", "naming", "golf", "import" |
+| `severity` | string | Yes | “error”, “warning”, “hint”, or “style” |
+| `category` | string | No | “sorry”, “axiom”, “naming”, “golf”, “import” |
 | `message` | string | Yes | Human-readable suggestion |
 | `fix` | string | No | Suggested code (internal hooks only; external reviews omit this) |
 
----
+* * *
 
 ## Codex Integration
 
-**Note:** Codex CLI's `/review` command is interactive-only—there's no `codex review --stdin` for automation. When using `--codex`, the review command:
+**Note:** Codex CLI’s `/review` command is interactive-only—there’s no
+`codex review --stdin` for automation.
+When using `--codex`, the review command:
 
 1. Collects file context using the input schema above
+
 2. Displays formatted context for manual handoff to Codex CLI
+
 3. User runs `codex` → `/review` interactively, or uses `codex exec` with a prompt
+
 4. User pastes suggestions back; review command parses and merges them
 
-For CI automation, use `codex exec` with structured output. See [review.md](../../../commands/review.md#codex-integration) for details.
+For CI automation, use `codex exec` with structured output.
+See [review.md](../../../commands/review.md#codex-integration) for details.
 
 ### Example Custom Hook Script
 
@@ -214,7 +222,7 @@ if __name__ == "__main__":
 /lean4:review --json > review.json
 ```
 
----
+* * *
 
 ## Error Handling
 
@@ -233,20 +241,24 @@ Hooks should handle errors gracefully:
 
 The review command will report hook errors but continue with other analysis.
 
----
+* * *
 
 ## Hook Performance Tips
 
 For rate-limited APIs (Codex, etc.):
+
 - **Trim content:** Include only ±50 lines around each sorry, not full file
+
 - **Batch sorries:** Group multiple sorries per API call when possible
+
 - **Cache by goal:** Same goal/context → same suggestions
 
 Use `preferences.verbosity` to signal desired response detail level.
 
----
+* * *
 
 ## See Also
 
 - [`/lean4:review`](../../../commands/review.md) - Review command documentation
+
 - [mathlib-style.md](mathlib-style.md) - Style guidelines for suggestions

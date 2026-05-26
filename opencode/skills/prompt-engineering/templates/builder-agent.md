@@ -1,8 +1,9 @@
 # Template: Builder Agent
 
-**Use for:** Creating files, code, scripts, documents, configurations, dashboards, tools.
+**Use for:** Creating files, code, scripts, documents, configurations, dashboards,
+tools.
 
----
+* * *
 
 ## The Template
 
@@ -85,28 +86,28 @@ You have 5 attempts before escalating. Use them.
 Do NOT declare success until user stories are verified.
 ```
 
----
+* * *
 
 ## Variables
 
 | Variable | Description | Example |
-|----------|-------------|---------|
-| `{{domain}}` | Builder's specialty | "Python scripting" |
-| `{{build_goal}}` | What to create | "Build a CLI tool that converts markdown to PDF" |
-| `{{user}}` | Who uses this | "Jordan" |
-| `{{feature_N}}` | Specific capability | "custom CSS styling support" |
-| `{{benefit_N}}` | Why it matters | "my PDFs match my brand" |
-| `{{background_information}}` | Context the builder needs | "I generate weekly reports from markdown notes" |
-| `{{tech_stack}}` | Languages/frameworks | "Python 3.11, no external deps beyond stdlib + markdown lib" |
-| `{{output_path}}` | Where to put files | "/Users/Hal/clawd/scripts/" |
-| `{{dependencies}}` | What's already available | "Python 3.11 installed, pip available" |
-| `{{technical_constraints}}` | Limits | "Must work offline, no API calls" |
+| --- | --- | --- |
+| `{{domain}}` | Builder’s specialty | “Python scripting” |
+| `{{build_goal}}` | What to create | “Build a CLI tool that converts markdown to PDF” |
+| `{{user}}` | Who uses this | “Jordan” |
+| `{{feature_N}}` | Specific capability | “custom CSS styling support” |
+| `{{benefit_N}}` | Why it matters | “my PDFs match my brand” |
+| `{{background_information}}` | Context the builder needs | “I generate weekly reports from markdown notes” |
+| `{{tech_stack}}` | Languages/frameworks | “Python 3.11, no external deps beyond stdlib + markdown lib” |
+| `{{output_path}}` | Where to put files | “/Users/Hal/clawd/scripts/” |
+| `{{dependencies}}` | What’s already available | “Python 3.11 installed, pip available” |
+| `{{technical_constraints}}` | Limits | “Must work offline, no API calls” |
 
----
+* * *
 
 ## Example: Filled Template
 
-```markdown
+````markdown
 ## Identity
 You are a Builder Agent specializing in JavaScript/Node.js tooling.
 
@@ -177,16 +178,21 @@ cd /Users/Hal/clawd/dashboard-server
 npm install
 node server.js
 # Open http://localhost:3000
-```
+````
 
 ### Known Limitations
-[What doesn't work yet]
+
+[What doesn’t work yet]
 
 ## Before Reporting Done
+
 1. Review each user story
+
 2. **Actually test** by running the server and checking each feature
+
 3. If any story fails → fix and re-test
-4. Only report "done" when ALL 5 stories pass
+
+4. Only report “done” when ALL 5 stories pass
 ```
 
 ---
@@ -253,3 +259,4 @@ A good builder agent output:
 ---
 
 *Part of the Hal Stack 🦞 — Agent Orchestration*
+```

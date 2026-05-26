@@ -39,7 +39,9 @@ Proof delimiters:
 
 - **One operation per step.** Each step contains exactly one mathematical operation or
   deduction.
+
 - **Implication chains.** Use `⇒` between related steps.
+
 - **Justifications required.** Every non-definition step ends with `[By ...]`.
 
 ### Justification Format
@@ -70,12 +72,15 @@ By the Fundamental Theorem of Arithmetic [Thm 2.3], n has a unique prime factori
 
 When introducing new variables, specify type and constraints in the same line:
 
-- **Good:** "Let `n ∈ NN` be odd.
-  Then `∃k ∈ NN` such that `n = 2k + 1`"
-- **Good:** "Let `m = 2k² + 2k`. Since `k ∈ ZZ`, `m ∈ ZZ` [Closure of ZZ under +, *]"
-- **Bad:** "Let `n` be odd.
-  Then `n = 2k + 1`" (k is unbound)
-- **Bad:** "`m = 2k² + 2k ∈ ZZ`" (m was never introduced)
+- **Good:** “Let `n ∈ NN` be odd.
+  Then `∃k ∈ NN` such that `n = 2k + 1`”
+
+- **Good:** “Let `m = 2k² + 2k`. Since `k ∈ ZZ`, `m ∈ ZZ` [Closure of ZZ under +, *]”
+
+- **Bad:** “Let `n` be odd.
+  Then `n = 2k + 1`” (k is unbound)
+
+- **Bad:** “`m = 2k² + 2k ∈ ZZ`” (m was never introduced)
 
 ## Assumption Management
 
@@ -115,18 +120,22 @@ Always number cases explicitly and verify exhaustiveness:
 ### Exhaustiveness Checklist
 
 - [ ] All cases are listed
+
 - [ ] Cases are mutually exclusive (no overlap)
+
 - [ ] Cases are jointly exhaustive (cover all possibilities)
+
 - [ ] Each case concludes with the desired result
+
 - [ ] Final step notes that cases are exhaustive
 
 ## Common Pitfalls
 
 | Pitfall | Example | Fix |
 | --- | --- | --- |
-| Unbound variable | "`n = 2k + 1`" (k not introduced) | "`∃k ∈ ZZ` such that `n = 2k + 1`" |
-| Missing justification | "`x + y ∈ 2ZZ`" (why?) | "`x + y = 2(k+m) ∈ 2ZZ` [Closure under +]" |
-| Multi-operation step | "`n² = (2k+1)² = 4k²+4k+1 = 2(2k²+2k)+1 ∈ 2ZZ+1`" | Split into 3-4 separate steps |
-| Implicit assumption | "Since G is abelian..." (not stated) | "Let G be an abelian group. Then..." |
+| Unbound variable | “`n = 2k + 1`” (k not introduced) | “`∃k ∈ ZZ` such that `n = 2k + 1`” |
+| Missing justification | “`x + y ∈ 2ZZ`” (why?) | “`x + y = 2(k+m) ∈ 2ZZ` [Closure under +]” |
+| Multi-operation step | “`n² = (2k+1)² = 4k²+4k+1 = 2(2k²+2k)+1 ∈ 2ZZ+1`” | Split into 3-4 separate steps |
+| Implicit assumption | “Since G is abelian...” (not stated) | “Let G be an abelian group. Then …” |
 | Non-exhaustive cases | Only proving the easy case | List all cases; verify exhaustiveness |
-| Missing base case | "By induction..." (no n=0 check) | Always verify base case separately |
+| Missing base case | “By induction...” (no n=0 check) | Always verify base case separately |
