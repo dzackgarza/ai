@@ -18,6 +18,7 @@ export default [
       '**/@girs/**',
       '**/__stubs__/**',
       '**/env.d.ts',
+      '**/codeql-db/**',
     ],
   },
   {

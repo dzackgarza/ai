@@ -1,7 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
   "files": {
-    "includes": ["**", "!**/@girs/**", "!**/__stubs__/**", "!**/env.d.ts"]
+    "includes": [
+      "**",
+      "!**/@girs/**",
+      "!**/__stubs__/**",
+      "!**/env.d.ts",
+      "!**/codeql-db/**",
+      "!tsconfig.json",
+      "!**/tsconfig.json"
+    ]
   },
   "assist": {
     "actions": {
