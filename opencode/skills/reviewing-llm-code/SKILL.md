@@ -225,84 +225,74 @@ The skills are curriculum, not reference.
 Read them to learn the patterns, then apply that learning to the code.
 If you skip reading the skills first, you will miss slop that you did not know to look for.
 
-## Systematic Analysis Procedure (Mandatory)
+## How To Find Slop (Mandatory)
 
-**Do NOT start producing findings after a cursory scan.** LLM slop hides in the structures the agent built, not in individual lines.
-You cannot find it by skimming, grepping for "bad patterns," or reading the files you think are suspicious.
-You must systematically understand the entire codebase before producing a single finding.
+**ASSUME THE CODE WAS WRITTEN BY A BRAINDEAD IDIOT.** Not figuratively.
+Literally.
+The agent did not think before writing.
+It did not search for existing solutions.
+It did not ask "is there a library for this?"
+It did not ask "why would I write this when I could just import X?" It wrote code because writing code is what it does.
+That is the failure mode you are looking for.
 
-### Phase 1: Map the Codebase
+**You cannot find slop by skimming.** Slop hides in the STRUCTURES the agent built — the infrastructure it created to cope with its own earlier mistakes.
+Grepping for "bad patterns" and reading the files you think are suspicious is how you produce linter output, not agent-failure audits.
+You must understand the entire codebase before producing a single finding.
 
-Start with a broad structural survey.
-Use `tree` (not `ls`, not `grep`) to understand the full layout:
+### Step 1: Map the entire codebase
 
-```
+```bash
 tree -I node_modules --dirsfirst -L 3
 ```
 
-Then identify:
-- Total LOC and language breakdown (use `cloc` or `pygount` if available)
-- The entrypoint(s) — what does the user actually run?
-- The dependency graph — what imports what?
-- File modification dates — where has churn happened?
-  (use `exa -l --sort=modified` or `ls -lt` on key directories)
+Then:
+- What does the user actually run?
+  (the entrypoint)
+- What imports what?
+  (the dependency graph)
+- Where has churn happened?
+  (`exa -l --sort=modified` or `ls -lt`)
 
-**Do NOT skip this step.** If you do not know the full shape of the codebase, you cannot distinguish design choices from slop, and you will produce findings about symptoms instead of root causes.
+**Do NOT skip this.** If you don't know the full shape, you will produce findings about symptoms instead of root causes.
 
-### Phase 2: Understand the Git History
+### Step 2: Read the git history for churn
 
-LLM slop often appears as churn — layers of additions without refactoring.
-Check:
+LLM slop appears as layers of additions without refactoring.
 
 ```bash
-git log --oneline -30          # recent commits
-git log --stat -10             # what files changed most
+git log --oneline -30
+git log --stat -10
 git log --diff-filter=A --name-only --pretty=format: | sort | uniq -c | sort -rn | head -20
-                               # most-added files (evidence of ground-up generation)
 ```
 
-Look for:
-- Commits that add entire files instead of editing existing ones (ground-up bias)
-- Files that were added, then modified repeatedly without consolidation (patch accretion)
-- Large diffs where surgical edits would suffice (regeneration vs.
-  mutation)
-- Features that were added and then immediately needed fixes (reflexive implementation)
+Look for: commits that add entire files (ground-up bias), files modified repeatedly without consolidation (patch accretion), large diffs where surgical edits would suffice (regeneration vs.
+mutation).
 
-### Phase 3: Read the Actual Code
+### Step 3: Read the actual code
 
 Do NOT grep for keywords and call it analysis.
-Read the files that matter, in order:
+Read the files that matter:
 
-1. The entrypoint(s) — understand what the app actually does
-2. The core logic files — where does nontrivial computation happen?
-3. The configuration and setup — what decisions did the agent make?
-4. The test files — what is actually being proven?
+1. The entrypoint — what does the app actually do?
+2. The core logic — where is nontrivial computation happening?
+3. The config — what decisions did the agent make?
+4. The tests — what is actually being proven?
 
-For each file, ask:
-- **Why does this file exist?** Could its contents be 5 lines of imports and composition?
-- **Why does this function exist?** Is there a library that does this?
-- **Why is this logic HERE instead of in a dependency?** What justifies bespoke code?
-- **Where is the churn?** Which files have been modified most recently?
-  What changed?
+For EVERY function, EVERY file, ask: **"Why does this exist?
+Is there a library that does this?
+Why did the agent write this instead of importing something?"**
 
-### Phase 4: Identify the Slope of the Code
+### Step 4: Fill in the blank
 
-Before producing findings, answer these questions in writing:
+Before producing findings, answer this for the entire codebase:
 
-1. **What is the simplest possible version of this app?** If you were rewriting it from scratch using only imports, compositions of existing tools, and minimal glue code — what would it look like?
-   How many files?
-   How many lines?
+**"This app is incredibly stupid.
+Why would you ever do _____ when you could just _____?"**
 
-2. **What code in this app has no justification for existing?** Where did the agent write something that a library, CLI tool, or API call already handles?
-   Where did the agent reinvent a solved problem?
+Fill in the blank for every nontrivial block of code.
+Where the answer is "use a library," "call a CLI tool," "change the data model," or "don't write this at all" — that is the slop.
 
-3. **Where is the nontrivial logic, and why does it need to exist?** Most of this app should be trivial composition.
-   Where is it not?
-   What makes those parts necessary?
-
-4. **What would this app look like if the agent had searched for existing solutions before writing code?** The gap between that vision and the current codebase IS the slop.
-
-**If you cannot answer these questions, you are not ready to produce findings.** Go back to Phase 1.
+The gap between "what this app does" and "what this app would look like if the agent had searched for existing solutions" IS the finding.
 
 ## Synthesis Gate
 
@@ -338,35 +328,50 @@ Have arbitrary-seeming but deliberate behavioral constraints?
 If ANY of these are true, the finding is a design choice.
 Drop it.
 
-## Existential Justification Gate (Mandatory)
+## The Idiot Test (Mandatory)
 
-Before producing ANY finding, you must answer this question for the code in question:
+Before producing ANY finding, you must pass this test for the code in question:
 
-**"Why does this code exist at all?"**
+**"This is incredibly stupid.
+Why would you ever do _____ when you could just _____?"**
 
-Not "what does it do" — that is obvious from reading it.
-But WHY was it written?
-What justified its existence?
-Could the entire block be replaced by:
+Fill in the first blank with what the agent did.
+Fill in the second blank with the trivial solution the agent should have used.
 
-- A single import from an existing library?
-- A call to an external CLI tool?
-- A composition of 2-3 existing functions?
-- A configuration change that eliminates the need for the code entirely?
-- A data model change that makes the logic unnecessary?
+Examples:
+- "This is incredibly stupid.
+  Why would you ever write a custom CLI argument parser when you could just use `minimist`?"
+- "This is incredibly stupid.
+  Why would you ever store tilde paths at runtime when you could just normalize once at config load?"
+- "This is incredibly stupid.
+  Why would you ever parse a command string in 4 places when you could just store structured data?"
+- "This is incredibly stupid.
+  Why would you ever write a bespoke `resolveTilde` function when you could just import `expand-home-dir`?"
 
-**Every nontrivial line of code must justify its existence to survive this review unscathed.** If the answer is "the agent wrote it because it didn't search for an existing solution," that is dependency aversion — the most common and most damaging LLM failure mode.
+If you cannot fill in both blanks, you have not found slop.
+You have found a style preference or a design choice.
+Drop it.
 
-**The review must also answer:** Even after refactoring, why MUST this functionality still be owned by THIS app?
+**The second blank must be a TRIVIAL solution.** Not "refactor to a shared module."
+Not "extract a common interface."
+The answer should be one of:
+- "use [library name]"
+- "call [CLI tool]"
+- "change the data model so the logic disappears"
+- "don't write this at all"
+
+If your solution is more complex than that, you are LAUNDERING the finding — swapping one implementation for another while keeping the same design-level red flag.
+Go back and ask "why does this code exist at all?"
+again.
+
+**Every finding must also answer:** Even after the trivial fix, why MUST this functionality be owned by THIS app?
 Can it be:
-
+- Eliminated entirely by changing the data model?
+- Delegated to a dependency that already handles this?
 - Replaced by an external tool or API?
-- Consolidated into a standalone module that other projects could use?
-- Eliminated entirely by changing the data model or configuration?
-- Delegated to a dependency that already handles this concern?
 
 If the answer is "the agent could have avoided writing this by doing X," the finding is not about code quality — it is about the agent's failure to think before writing.
-That is the finding.
+That IS the finding.
 
 **This is the difference between a linter report and an agent-failure audit.** A linter says "this line could be shorter."
 This audit says "this line should never have been written, and the fact that it exists proves the agent did not search for an existing solution."
@@ -479,69 +484,60 @@ The user asked for it.
 Move on.
 
 **Do not bring trivial nits.** This review is NOT about:
-- "This function could be a one-liner" (unless the one-liner is a library call that
-  eliminates the function entirely)
-- "This switch could be a Record lookup" (style preference, not slop)
-- "This loop could be map/filter" (unless the loop is 50+ lines of bespoke logic that
-  a library already handles)
-- "This variable name could be better" (linter output, not analysis)
-- "This file is too long" (unless the length is caused by scattered truth or patch
-  accretion)
-- "This code duplicates X" (only a finding if the duplication is caused by the agent
-  creating a problem and then writing bespoke code to solve it, or by dependency
-  aversion)
+- "This function could be a one-liner" — WRONG. The question is "why does this function exist at all?"
+- "This switch could be a Record" — WRONG. The question is "why did the agent write a switch when a library call replaces the entire function?"
+- "This loop could be map/filter" — WRONG. The question is "why is the agent iterating at all when a dependency handles this?"
+- "This variable name could be better" — LINTER OUTPUT. Not analysis.
+- "This file is too long" — WRONG. The question is "why does this file have 500 lines of code that a library call eliminates?"
+- "This code duplicates X" — Only a finding if the duplication exists because the agent created a problem and then wrote bespoke code to solve it.
 
-**The bar for findings is high.** A finding must name a pattern from the loaded skills
-that explains WHY the code is shaped this way, not just THAT it could be different.
-If you can only say "this could be shorter," you have not found slop — you have found a
-style preference. Drop it.
+**The bar is: "this is incredibly stupid, why would you ever do X when you could just Y?"** If you cannot fill in that blank with a TRIVIAL alternative, you have not found slop.
+You have found a style preference.
+Drop it.
 
-**LLM slop is not the same as human bad code.** Human developers write verbose code
-because they are careful, because they are learning, or because the codebase evolved
-organically. LLMs write verbose code because they did not search for existing solutions,
-because they reinvented solved problems, or because they built infrastructure to cope
-with their own earlier mistakes. The review must distinguish these. A human wrote a
-long function because the logic is genuinely complex? Not slop. An LLM wrote a long
-function because it didn't know about a library that does the same thing in one call?
-That IS slop. The difference is whether the complexity is justified by the domain or
-caused by the agent's failure to search.
+**LLM slop is not the same as human bad code.** A human wrote a long function because the logic is genuinely complex?
+Not slop.
+An LLM wrote a long function because it didn't know about a library that does the same thing in one call?
+That IS slop.
+The difference is whether the complexity is justified by the domain or caused by the agent's failure to search.
+If you cannot prove the agent failed to search, the finding is invalid.
 
 Bad review shape:
 
-- “This command failed.”
+- "This command failed."
   (bug review, not this review)
 
-- “This line is formatted wrong.”
+- "This line is formatted wrong."
   (linter output, not analysis)
 
-- “This function should handle edge cases.”
+- "This function should handle edge cases."
   (the skill says not to)
 
-- “This path is hard-coded.”
+- "This path is hard-coded."
   (may be a deliberate local invariant)
 
-- “This test could use more coverage.”
-  (not this review’s scope)
+- "This test could use more coverage."
+  (not this review's scope)
 
-- “This couples the GUI to an internal command” (user asked for that coupling)
+- "This couples the GUI to an internal command" (user asked for that coupling)
 
-- “This feature scope seems oddly specific” (user asked for that specific feature)
+- "This feature scope seems oddly specific" (user asked for that specific feature)
 
-- “This external dependency seems unnecessary” (user wanted that integration)
+- "This external dependency seems unnecessary" (user wanted that integration)
 
-- “This code freezes the server / is slow / has bad performance” (performance review, not this review)
+- "This code freezes the server / is slow / has bad performance" (performance review, not this review)
 
-- “This code is missing feature X” (feature request, not this review)
+- "This code is missing feature X" (feature request, not this review)
 
-- “This code has a bug in edge case Y” (bug review, not this review)
+- "This code has a bug in edge case Y" (bug review, not this review)
 
-- “This component is a god object / monolithic” (aesthetic judgment, not a pattern match unless you can point to the specific pattern)
+- "This component is a god object / monolithic" (aesthetic judgment, not a pattern match unless you can point to the specific pattern)
 
 - "The code should be refactored to be cleaner" (opinion, not a finding from the loaded skills)
 
-- "This function could be a one-liner" (style nit, unless the one-liner is a library call)
+- "This function could be a one-liner" (style nit — the question is why it exists at all)
 
-- "This switch could be a Record" (style preference)
+- "This switch could be a Record" (style preference — the question is why it exists at all)
 
 - "This loop could be map/filter" (only if the loop is bespoke logic a library handles)
 
@@ -551,19 +547,14 @@ Bad review shape:
 
 Useful review shape:
 
-- “This standalone recipe bypasses the unified gate, so agents can validate a subset and present it as project proof.”
+- "This is incredibly stupid.
+  Why would you ever write a custom CLI argument parser when `minimist` parses `--flag=value` into a structured object in one call?"
 
-- “Runtime and tests call the same cached external package, so both can pass while local integration is broken.”
+- "This is incredibly stupid.
+  Why would you ever store tilde paths at runtime and write 40 LOC of expansion logic when you could just normalize once at config load and the entire infrastructure disappears?"
 
-- “The UI has two overlapping usage surfaces; behavior is wired to the old hidden one while the visible one only changes state.”
-
-- “The test declares missing provider icons unacceptable, but runtime has a generic fallback, so the invariant is split.”
-
-Do not critique intentional machine-local contracts as portability bugs.
-Critique hard-coding when it splits truth, hides data ownership, or launders failure, not when it states a deliberate local invariant.
-Do not ask for defensive branches around owned providers or owned scripts.
-Do not invent edge-case work unless it ties to an observed failure or an invariant the repo actually owns.
-Do not call a review complete because you found command output, hashes, file existence, or test counts.
+- "This is incredibly stupid.
+  Why would you ever parse a command string in 4 places when you could just store structured data and serialize to a string only at execution time?"
 
 ## Review Procedure
 
@@ -639,8 +630,7 @@ dependency, or eliminated by changing the data model?]
 Failure mode: [name from loaded failure-mode skills]
 ```
 
-If a finding cannot fill “Pattern”, “Why this matters”, and “Existential justification”,
-it is probably a nitpick.
+If a finding cannot fill “Pattern”, “Why this matters”, and “Existential justification”, it is probably a nitpick.
 Drop it or merge it into a larger pattern.
 
 ## Required Negative Finding Format
@@ -731,30 +721,19 @@ Treat these as weak findings unless tied to a larger mechanism:
 
 ## Completion Standard
 
-A useful LLM-code review should leave the user knowing:
+A useful review leaves the user knowing:
 
-- which patterns make the work untrustworthy;
-
-- the concrete code examples proving those patterns;
-
-- which proof surfaces are false or incomplete;
-
-- what kind of corrective work would remove the pattern;
-
-- which underlying app/code issues remain unfixed;
-
-- for each finding, WHY the code exists at all and whether it can be eliminated,
-  not just refactored;
-
-- what the app would look like if the agent had searched for existing solutions
-  before writing code (the gap between that vision and the current code IS the slop).
+- "This is incredibly stupid.
+  Why would you ever do X when you could just Y?" — for every nontrivial block of code
+- The concrete code proving the agent failed to search for existing solutions
+- What the app would look like if the agent had used libraries, CLIs, and composition instead of bespoke code
+- What can be ELIMINATED, not just refactored
 
 If the review could have been produced by reading a linter output, a test log, or an agent summary, it is not a useful review.
 
 A review that lists findings without explaining why the code exists is incomplete.
 The user does not need to know that a switch could be a Record.
-The user needs to know that the switch should never have been written because a
-library call replaces the entire function.
+The user needs to know that the switch should never have been written because a library call replaces the entire function.
 
 ## Findings Are Flags, Not Directives
 
@@ -796,3 +775,22 @@ Do not skip steps.
 Do not revert a correct change because a brittle test failed.
 Do not change test expectations to match a new implementation.
 The test must prove the implementation is correct, not the other way around.
+
+## Do Not Revert to Weaker Solutions
+
+**When you identify the correct solution, DO NOT lose it.**
+
+A common failure: the agent identifies the root cause in one turn ("parse once at config load time, eliminate 3 of 4 sites"), then reverts to a weaker version in the next turn ("create a centralized parser module and replace all 4 copies"). The agent goes from "eliminate the infrastructure" to "make the infrastructure nicer."
+
+This happens because the agent didn't INTERNALIZE the insight.
+It identified the correct solution intellectually but didn't hold onto it when planning the work.
+
+**The test:** If your plan involves "extract a shared module" or "centralize the logic," ask: does the logic NEED to exist at all?
+If the answer is "no, the logic exists because the agent created a problem and then wrote code to solve it," then the fix is to ELIMINATE the logic, not to centralize it.
+
+- "Centralize the parser" is WRONG if the parser should not exist.
+- "Extract a shared utility" is WRONG if the utility exists because the agent stored the wrong data shape.
+- "Create a common interface" is WRONG if the interface exists because the agent built infrastructure to cope with its own earlier mistakes.
+
+The correct fix is almost always: change the data model, change the configuration, or use a dependency — so the logic DISAPPEARS entirely.
+Not "make the logic nicer."
