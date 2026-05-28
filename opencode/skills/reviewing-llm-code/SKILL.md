@@ -487,6 +487,8 @@ Each finding must explain how the pattern can produce more bad work, not merely 
 Load [`references/pattern-catalog.md`](references/pattern-catalog.md) before producing findings.
 It is the canonical list for automaton-grade code, test, QC, and documentation patterns, including regex against semantic formats, developer-controlled test assertions, fallback laundering, recipe bypasses, fake data, no-op behavior, and stale documentation.
 
+Load [`references/case-studies.md`](references/case-studies.md) to inspect real-world case studies detailing how idiotic LLM code decisions, dependency aversion, and event-loop starvation anti-patterns were identified and remediated with simple, robust alternatives.
+
 ## What Not To Do
 
 Do not write a linter report.
