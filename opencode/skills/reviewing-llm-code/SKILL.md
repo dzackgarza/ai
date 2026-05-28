@@ -352,6 +352,22 @@ If you cannot fill in both blanks, you have not found slop.
 You have found a style preference or a design choice.
 Drop it.
 
+**Theory-of-mind priming:** Before reporting a finding, imagine the user's reaction.
+The expected reaction is: "You're right, that's incredibly stupid code.
+Here is the obvious simple solution that a smart person would have written: _____"
+If you cannot imagine the user having that reaction — if the user would instead say
+"hmm, that's a style preference" or "that's a design choice" or "that's fine, I asked
+for that" — the finding is either trivial or was analyzed with the wrong framing.
+
+**If the finding is trivial, do NOT just drop it and move on.** Dropping a trivial
+finding is a SIGNAL that your analysis was not framed correctly. Go back to the
+beginning. Re-read the code with the correct framing: "assume the agent was a
+braindead idiot." Ask again: "Why would you ever do X when you could just Y?" The
+trivial finding is evidence that you were looking at the wrong level — you were looking
+at symptoms (style, formatting, minor duplication) instead of root causes (dependency
+aversion, ground-up bias, patch accretion). The fix is not to drop the finding. The
+fix is to reframe the analysis until you find the real slop underneath.
+
 **The second blank must be a TRIVIAL solution.** Not "refactor to a shared module."
 Not "extract a common interface."
 The answer should be one of:
@@ -361,8 +377,7 @@ The answer should be one of:
 - "don't write this at all"
 
 If your solution is more complex than that, you are LAUNDERING the finding — swapping one implementation for another while keeping the same design-level red flag.
-Go back and ask "why does this code exist at all?"
-again.
+Go back and ask "why does this code exist at all?" again.
 
 **Every finding must also answer:** Even after the trivial fix, why MUST this functionality be owned by THIS app?
 Can it be:
