@@ -229,6 +229,17 @@ subdirectory.
 
 - `model-strength-testing/folder-tasks/arxiv-proof-fidelity-2312-03638/README.md`
 
+## Field Benchmarks
+
+Real-world test data from provider API sweeps, recording which models actually respond
+to trivial autonomous prompts and at what latency.
+
+- `model-strength-testing/nvidia-latency-sweep.md` — 15 models tested through
+  `integrate.api.nvidia.com/v1` on a 31‑char `Reply with OK` prompt.
+  Documents availability (404/410), end‑of‑life status, and wall‑clock response times.
+  Useful for sanity‑checking which NVIDIA‑hosted models are actually operational for
+  minimal autonomous tasks.
+
 ## Behavioral Evaluations
 
 Use `model-strength-testing/behavioral-evaluations/` for fixtures that test agent

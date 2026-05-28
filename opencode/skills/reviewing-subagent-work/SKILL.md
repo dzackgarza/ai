@@ -92,3 +92,23 @@ Do not respond to shallow work by adding more structure — that makes it worse.
   produced shallow output.
   Provides structural-scrutiny patterns for detecting and correcting work that satisfies
   format without satisfying intent.
+
+- **reviewing-llm-code** → LOAD alongside when the subagent produced code, tests, QC, or
+  documentation. Provides the canonical pattern catalog for LLM code artifacts and the
+  review procedure. Do not review code without loading this skill first.
+
+- **anti-slop** → LOAD alongside when the subagent output shows generated-code residue:
+  generic wrappers, no-op UI, debug debris, boilerplate, or local patches with no real
+  abstraction. Provides the Dependency Inversion Rule and structural analysis frame.
+
+- **llm-failure-modes** → LOAD alongside when you need to name the specific cognitive
+  failure mode that produced the shallow work (goal substitution, overconfidence,
+  confabulation, replacement instinct, dependency aversion bias, meta-artifact
+  delegation, scale-complexity confusion).
+
+- **test-guidelines** → LOAD alongside when reviewing subagent-produced tests, QC, smoke
+  checks, CI, or proof surfaces.
+
+- **thermo-nuclear-code-quality-review** → LOAD alongside when the subagent output shows
+  maintainability, architecture, or abstraction problems (giant files, spaghetti
+  condition growth, premature abstraction).

@@ -797,3 +797,11 @@ or LLM failure modes are more likely.
   Instead, always determine *what* necessitated the original code/tests/etc, what the
   correct INTENDED outcome was, and REPLACE the misaligned code with an aligned
   correction.
+
+Do not define tasks as paperwork production when the real objective is fixing the defect.
+
+Enumeration, audits, inventories, tables, reports, and classifications are subordinate tools, not completion criteria. They are acceptable only insofar as they directly enable concrete fixes.
+
+Do not label tasks as "complete" by producing more artifacts that describe the problem while leaving the problem intact.
+
+A valid plan must make “fix the issue” the acceptance condition, not “produce an audit artifact.”

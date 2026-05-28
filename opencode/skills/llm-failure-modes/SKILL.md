@@ -90,8 +90,9 @@ Load the relevant section for your context:
 - **Distilled agentic coding failure modes** — [coding-failures.md](coding-failures.md)
   Scope explosion, specification drift, slop accretion, critic hallucination, outcome
   blindness in review, failure mode inversion, impact miscalibration, replacement
-  instinct, reimplementation impulse.
-  (15 items)
+  instinct, reimplementation impulse, dependency aversion bias, meta-artifact
+  delegation, scale-complexity confusion, ground-up bias (churn-first workflow).
+  (19 items)
 
 ### Structural and Behavioral Observations
 
@@ -123,6 +124,14 @@ Load the relevant section for your context:
 - **anti-slop** → Load alongside when the failure mode produces surface-level quality
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
+
+- **reviewing-llm-code pattern catalog** →
+  [../reviewing-llm-code/references/pattern-catalog.md](../reviewing-llm-code/references/pattern-catalog.md)
+  is the canonical catalog for concrete code, test, QC, and documentation patterns that
+  instantiate these failure modes.
+  Use it when the failure mode appears in artifacts: regex against semantic formats,
+  developer-controlled assertions, fallback laundering, no-op behavior, QC appeasement
+  code, and recipe bypasses.
 
 - **reviewing-subagent-work** → Load alongside when designing review processes that must
   detect the failures cataloged in this skill.

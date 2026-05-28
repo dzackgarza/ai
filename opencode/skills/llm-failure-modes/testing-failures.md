@@ -2,6 +2,8 @@
 
 > Part of [llm-failure-modes](SKILL.md).
 > See there for editorial guidelines and cross-references.
+> For concrete test-review patterns that instantiate these failures, also load
+> [../reviewing-llm-code/references/pattern-catalog.md](../reviewing-llm-code/references/pattern-catalog.md).
 
 1. **Content-free verification** - Asserting `is not None`, `len(x) > 0`, or
    `isinstance()` as the primary claim.

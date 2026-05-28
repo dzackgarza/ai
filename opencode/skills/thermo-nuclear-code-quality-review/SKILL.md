@@ -345,3 +345,29 @@ Treat these as presumptive blockers unless the author can justify them clearly:
 
 If those conditions are not met, leave explicit, actionable feedback and push for a
 cleaner decomposition.
+
+## Cross-References
+
+- **reviewing-llm-code** → Load alongside when reviewing LLM-produced code for
+  code-quality issues.
+  Provides the canonical pattern catalog for LLM-generated code artifacts and the review
+  procedure.
+
+- **anti-slop** → Load alongside when code shows generated-code residue: generic
+  wrappers, no-op UI, debug debris, boilerplate, or bespoke reinvention of standard
+  patterns. Provides the Dependency Inversion Rule and structural analysis frame.
+
+- **llm-failure-modes** → Load alongside when code-quality problems stem from cognitive
+  failure modes: scope explosion, specification drift, reimplementation impulse,
+  dependency aversion bias, meta-artifact delegation, scale-complexity confusion.
+
+- **addressing-shallow-work** → Load alongside when code output is shallow or
+  box-checking. Provides structural-scrutiny patterns for detecting work that satisfies
+  format without satisfying intent.
+
+- **reviewing-subagent-work** → Load alongside when reviewing code produced by a
+  subagent. Provides the Synthesis Gate for verifying that code actually achieves the
+  stated goal.
+
+- **test-guidelines** → Load alongside when code-quality issues affect tests, QC, or
+  proof surfaces.

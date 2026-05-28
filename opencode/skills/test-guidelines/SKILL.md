@@ -796,3 +796,25 @@ code.**
   suites, CI configuration, or error-handling code.
   Catalogs field-observed testing failures: checker removal, test expectation
   modification, and plausible fixture injection.
+
+- **reviewing-llm-code** → Load alongside when reviewing tests or test-related
+  documentation produced by an LLM. Provides the canonical pattern catalog for
+  LLM-generated test artifacts: developer-controlled assertions, fallback laundering,
+  no-op behavior, and recipe bypasses.
+
+- **anti-slop** → Load alongside when tests show generated-code residue: tautological
+  assertions, mock-first evasion, content-free verification, or test-cheat escalation.
+  Provides the Dependency Inversion Rule and structural analysis frame for evaluating
+  whether tests prove real behavior or merely hack the proof loop.
+
+- **reviewing-subagent-work** → Load alongside when reviewing tests produced by a
+  subagent. Provides the Synthesis Gate for verifying that tests actually prove
+  correctness rather than just existing.
+
+- **thermo-nuclear-code-quality-review** → Load alongside when test code itself has
+  maintainability problems: giant test files, spaghetti condition growth, duplicated
+  setup logic, or abstraction inflation in test utilities.
+
+- **addressing-shallow-work** → Load alongside when test output is shallow, superficial,
+  or box-checking. Provides structural-scrutiny patterns for detecting tests that satisfy
+  coverage metrics without proving real behavior.

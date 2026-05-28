@@ -7,6 +7,11 @@ description: Reference guide for detecting AI slop patterns in testing, includin
 This reference documents common “AI slop” patterns in tests that indicate low-quality,
 AI-generated content that provides the illusion of coverage without actual verification.
 
+For adversarial review of LLM-produced test suites, also load
+[`../../reviewing-llm-code/references/pattern-catalog.md`](../../reviewing-llm-code/references/pattern-catalog.md).
+That file is the central catalog for developer-controlled assertions, regex
+meta-testing, fake-data confidence, inflated suites, and QC bypasses.
+
 ## Table of Contents
 
 - Content-Free Verification

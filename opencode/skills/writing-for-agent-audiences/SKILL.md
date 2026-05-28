@@ -78,6 +78,47 @@ failure modes, or introspection (e.g., an `llm-failure-modes` skill or an
 `agent-orchestration` skill), then discussing LLM behavior, tendencies, and failure
 patterns is completely appropriate and necessary for the task context.
 
+### Theory-of-Mind Gap: Don’t Write Instructions the Agent Can’t Act On
+
+The most dangerous skill-writing mistake is writing instructions that assume the agent
+has self-awareness about its own failure modes.
+This creates a catch-22: the skill exists because the agent DOES NOT understand these
+patterns, so instructions that assume it does are circular.
+If the agent could recognize the failure mode in itself, it wouldn’t need the skill.
+
+**The pattern to avoid:** meta-warnings about agent psychology that the agent cannot act
+on because the very blindness the warning describes prevents it from recognizing when
+it’s doing the thing.
+
+**Bad (assumes self-awareness the agent doesn’t have):**
+
+> Do not mechanically run through checklists without genuine consideration.
+> That is checklist theater — the exact failure mode described in
+> addressing-shallow-work.
+
+This fails because: the agent cannot recognize “checklist theater” in itself.
+The warning is addressed to a capacity the agent lacks.
+The agent will either ignore the warning or, worse, treat it as another box to check —
+producing checklist-theater about not-doing-checklist-theater.
+
+**Good (structural constraint the agent CAN follow):**
+
+> This is a single-gate test, not a sequential checklist.
+> If ANY signal matches, STOP immediately — do not continue evaluating remaining
+> signals. One match is total.
+> Do not narrate your evaluation of each signal.
+
+This works because: it describes an observable behavior (stop on first match) without
+requiring self-awareness.
+The agent can follow the instruction mechanically.
+The structural constraint does the work that the meta-warning cannot.
+
+**The principle:** when you know an agent has a failure mode, do not explain the failure
+mode to the agent. Instead, write the instruction so that the failure mode is
+structurally impossible.
+The theory-of-mind gap is something to account for in how you write instructions, not
+something to explain to the agent.
+
 ### Test across models
 
 Effectiveness varies by model.
@@ -319,8 +360,8 @@ Be specific in descriptions for discovery:
 
 **Vague**: `Helps with data`
 
-**Specific**: `Analyze Excel spreadsheets, generate pivot tables, create charts.
-Use when working with Excel files, spreadsheets, or .xlsx files.`
+**Specific**:
+`Analyze Excel spreadsheets, generate pivot tables, create charts. Use when working with Excel files, spreadsheets, or .xlsx files.`
 
 ### Windows-style paths
 
