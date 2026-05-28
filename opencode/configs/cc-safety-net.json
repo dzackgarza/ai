@@ -6,319 +6,239 @@
       "name": "block-git-checkout-ref-path",
       "command": "git",
       "subcommand": "checkout",
-      "block_args": [
-        "--"
-      ],
-      "reason": "To revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. NEVER use git stash - review git guidelines skill immediately."
+      "block_args": ["--"],
+      "reason": "To revert state (files or branch point), maintain an audit trail: commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
     },
     {
       "name": "block-git-checkout-file-restore",
       "command": "git",
       "subcommand": "checkout",
-      "block_args": [
-        "--"
-      ],
-      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nTo revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. NEVER use git stash - review git guidelines skill immediately."
+      "block_args": ["--"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nTo revert state (files or branch point), maintain an audit trail: commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
     },
     {
       "name": "block-rm",
       "command": "rm",
-      "block_args": [
-        "-r",
-        "-rf",
-        "-fr",
-        "-f"
-      ],
+      "block_args": ["-r", "-rf", "-fr", "-f"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nUse recoverable deletion (`trash` or `gio trash`) instead of `rm`."
     },
     {
       "name": "block-find-delete",
       "command": "find",
-      "block_args": [
-        "-delete"
-      ],
+      "block_args": ["-delete"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nDestructive deletion is blocked. Use 'trash' instead of 'find ... -delete'."
     },
     {
       "name": "block-trash-empty",
       "command": "trash-empty",
-      "block_args": [
-        "trash-empty"
-      ],
+      "block_args": ["trash-empty"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nEmptying the trash is not allowed by security policy. No agent may permanently delete any files from the system. All permanent deletions must be user choices. If permanent deletion is needed, the agent must explicitly ask the user to perform it."
     },
     {
       "name": "block-sed",
       "command": "sed",
-      "block_args": [
-        "sed"
-      ],
+      "block_args": ["sed"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nDirect file manipulation with sed is banned. Agents must use proper editing tools (like Edit or Write) so that changes produce clear diffs for user review in chat."
     },
     {
       "name": "block-git-switch",
       "command": "git",
       "subcommand": "switch",
-      "block_args": [
-        "switch",
-        "-c",
-        "-C"
-      ],
-      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nTo revert state (files or branch point), maintain an audit trail: commit work, diff to identify the rollback point, and apply the reverse diff. New feature work should be PR-driven via the GitHub CLI."
+      "block_args": ["switch", "-c", "-C"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nTo revert state (files or branch point), maintain an audit trail: commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes. New feature work should be PR-driven via the GitHub CLI."
     },
     {
       "name": "block-git-branch",
       "command": "git",
       "subcommand": "branch",
-      "block_args": [
-        "branch",
-        "-m",
-        "-M",
-        "-d",
-        "-D",
-        "-c",
-        "-C"
-      ],
+      "block_args": ["branch", "-m", "-M", "-d", "-D", "-c", "-C"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nBranch management should be PR-driven. Create branches for feature work via \"gh pr create\"."
     },
     {
       "name": "block-git-add-all",
       "command": "git",
       "subcommand": "add",
-      "block_args": [
-        ".",
-        "-A",
-        "--all"
-      ],
+      "block_args": [".", "-A", "--all"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nBlanket staging risks committing secrets. Use targeted \"git add\", or \"git add -u\" for snapshots/checkpoints of tracked files."
     },
     {
       "name": "block-git-add-interactive",
       "command": "git",
       "subcommand": "add",
-      "block_args": [
-        "-i",
-        "--interactive"
-      ],
+      "block_args": ["-i", "--interactive"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nInteractive staging is blocked. Review changes with 'git status' and 'git diff' before adding."
     },
     {
       "name": "block-git-stash",
       "command": "git",
       "subcommand": "stash",
-      "block_args": [
-        "stash",
-        "save"
-      ],
-      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nStashing is discouraged. Use \"checkpoint\" commits to save work. To clear the deck, use the audit-trail rollback: commit the mess, then apply a reverse diff of the mess."
+      "block_args": ["stash", "save"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nStashing is discouraged. Use checkpoint commits to save work: commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
     },
     {
       "name": "block-git-stash-pop",
       "command": "git",
       "subcommand": "stash",
-      "block_args": [
-        "pop",
-        "apply"
-      ],
+      "block_args": ["pop", "apply"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nStashing is banned as it leads to surprising hidden states that can get lost. Review the git guidelines skill immediately."
     },
     {
       "name": "block-git-revert",
       "command": "git",
       "subcommand": "revert",
-      "block_args": [
-        "revert"
-      ],
-      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
+      "block_args": ["revert"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. Commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
     },
     {
       "name": "block-git-reset",
       "command": "git",
       "subcommand": "reset",
-      "block_args": [
-        "reset",
-        "--hard",
-        "--mixed",
-        "--soft"
-      ],
-      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
+      "block_args": ["reset", "--hard", "--mixed", "--soft"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. Commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
     },
     {
       "name": "block-git-clean",
       "command": "git",
       "subcommand": "clean",
-      "block_args": [
-        "clean",
-        "-f",
-        "-fd",
-        "-fx",
-        "-fdx"
-      ],
-      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
+      "block_args": ["clean", "-f", "-fd", "-fx", "-fdx"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. Commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
     },
     {
       "name": "block-git-restore",
       "command": "git",
       "subcommand": "restore",
-      "block_args": [
-        "restore"
-      ],
-      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. To roll back, commit your current work, diff the commits to identify the rollback point, and apply the reverse diff to a new commit."
+      "block_args": ["restore"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. Commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
+    },
+    {
+      "name": "block-git-clean",
+      "command": "git",
+      "subcommand": "clean",
+      "block_args": ["clean", "-f", "-fd", "-fx", "-fdx"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. Commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
+    },
+    {
+      "name": "block-git-restore",
+      "command": "git",
+      "subcommand": "restore",
+      "block_args": ["restore"],
+      "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nMaintaining an audit trail is required. Commit the current state (including any mistakes) as a checkpoint, then create a new commit with the desired changes."
     },
     {
       "name": "block-git-rebase",
       "command": "git",
       "subcommand": "rebase",
-      "block_args": [
-        "rebase"
-      ],
+      "block_args": ["rebase"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nHistory rewrites can disrupt collaborators. Use the GitHub PR interface to handle merges and rebases."
     },
     {
       "name": "block-git-merge",
       "command": "git",
       "subcommand": "merge",
-      "block_args": [
-        "merge"
-      ],
+      "block_args": ["merge"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nHistory rewrites can disrupt collaborators. Use the GitHub PR interface to handle merges and rebases."
     },
     {
       "name": "block-git-commit-no-verify",
       "command": "git",
       "subcommand": "commit",
-      "block_args": [
-        "--no-verify"
-      ],
+      "block_args": ["--no-verify"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nSkipping hooks is blocked."
     },
     {
       "name": "block-git-commit-no-gpg-sign",
       "command": "git",
       "subcommand": "commit",
-      "block_args": [
-        "--no-gpg-sign"
-      ],
+      "block_args": ["--no-gpg-sign"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nBypassing signing is blocked."
     },
     {
       "name": "block-npm-test",
       "command": "npm",
       "subcommand": "test",
-      "block_args": [
-        "test"
-      ],
+      "block_args": ["test"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nAll tests must be routed through a justfile recipe which properly initializes the testing env."
     },
     {
       "name": "block-pytest",
       "command": "pytest",
-      "block_args": [
-        "test"
-      ],
+      "block_args": ["test"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nAll tests must be routed through a justfile recipe which properly initializes the testing env."
     },
     {
       "name": "block-vitest",
       "command": "vitest",
-      "block_args": [
-        "test"
-      ],
+      "block_args": ["test"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nAll tests must be routed through a justfile recipe which properly initializes the testing env."
     },
     {
       "name": "block-direnv-tests",
       "command": "direnv",
       "subcommand": "exec",
-      "block_args": [
-        "bun",
-        "npm",
-        "pytest",
-        "vitest"
-      ],
+      "block_args": ["bun", "npm", "pytest", "vitest"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\ndirenv exec bypasses justfile env initialization. Use 'just test' instead."
     },
     {
       "name": "block-uv-pytest",
       "command": "uv",
       "subcommand": "run",
-      "block_args": [
-        "pytest"
-      ],
+      "block_args": ["pytest"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nAll tests must be routed through a justfile recipe which properly initializes the testing env."
     },
     {
       "name": "block-uv-vitest",
       "command": "uv",
       "subcommand": "run",
-      "block_args": [
-        "vitest"
-      ],
+      "block_args": ["vitest"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nAll tests must be routed through a justfile recipe which properly initializes the testing env."
     },
     {
       "name": "block-just-typecheck",
       "command": "just",
       "subcommand": "typecheck",
-      "block_args": [
-        "typecheck"
-      ],
+      "block_args": ["typecheck"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nUse \"just test\" which includes typecheck as a dependency. Do not bypass the full test suite."
     },
     {
       "name": "block-just-check",
       "command": "just",
       "subcommand": "check",
-      "block_args": [
-        "check"
-      ],
+      "block_args": ["check"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nUse \"just test\" which includes check as a dependency. Do not bypass the full test suite."
     },
     {
       "name": "block-npm-install-global",
       "command": "npm",
       "subcommand": "install",
-      "block_args": [
-        "-g",
-        "--global"
-      ],
+      "block_args": ["-g", "--global"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nGlobal package installation is banned. All CLIs should be run using npx/uvx/bunx. If needed as a dependency, it must be recorded in package.json and installed via justfile recipe. Agents may not mutate global packages."
     },
     {
       "name": "block-pip-install-global",
       "command": "pip",
       "subcommand": "install",
-      "block_args": [
-        "--user"
-      ],
+      "block_args": ["--user"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nGlobal package installation is banned. All CLIs should be run using uvx/npx. If needed as a dependency, it must be recorded in pyproject.toml and installed via justfile recipe. Agents may not mutate global packages."
     },
     {
       "name": "block-yarn-global",
       "command": "yarn",
       "subcommand": "global",
-      "block_args": [
-        "add"
-      ],
+      "block_args": ["add"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nGlobal package installation is banned. All CLIs should be run using npx/uvx/bunx. If needed as a dependency, it must be recorded in package.json and installed via justfile recipe. Agents may not mutate global packages."
     },
     {
       "name": "block-npm-uninstall-global",
       "command": "npm",
       "subcommand": "uninstall",
-      "block_args": [
-        "-g",
-        "--global"
-      ],
+      "block_args": ["-g", "--global"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nGlobal package removal is banned. Agents may not mutate global packages. If a global package is problematic, alert the user to manually uninstall it."
     },
     {
       "name": "block-pip-uninstall-global",
       "command": "pip",
       "subcommand": "uninstall",
-      "block_args": [
-        "--user"
-      ],
+      "block_args": ["--user"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nGlobal package removal is banned. Agents may not mutate global packages. If a global package is problematic, alert the user to manually uninstall it."
     },
     {
@@ -337,162 +257,121 @@
     {
       "name": "block-uvx-ruff",
       "command": "uvx",
-      "block_args": [
-        "ruff"
-      ],
+      "block_args": ["ruff"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just lint-python' or 'just fmt-python' instead."
     },
     {
       "name": "block-uvx-mypy",
       "command": "uvx",
-      "block_args": [
-        "mypy"
-      ],
+      "block_args": ["mypy"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just mypy' instead."
     },
     {
       "name": "block-npx-eslint",
       "command": "npx",
-      "block_args": [
-        "eslint"
-      ],
+      "block_args": ["eslint"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just lint-js' instead."
     },
     {
       "name": "block-npx-prettier",
       "command": "npx",
-      "block_args": [
-        "prettier"
-      ],
+      "block_args": ["prettier"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just fmt-js' instead."
     },
     {
       "name": "block-bunx-eslint",
       "command": "bunx",
-      "block_args": [
-        "eslint"
-      ],
+      "block_args": ["eslint"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just lint-js' instead."
     },
     {
       "name": "block-bunx-prettier",
       "command": "bunx",
-      "block_args": [
-        "prettier"
-      ],
+      "block_args": ["prettier"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just fmt-js' instead."
     },
     {
       "name": "block-python-module",
       "command": "python",
-      "block_args": [
-        "-m"
-      ],
+      "block_args": ["-m"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nDirect python -m execution is banned. Use 'uv run' or 'uvx' for Python CLI tools to ensure proper environment isolation."
     },
     {
       "name": "block-uvx-vulture",
       "command": "uvx",
-      "block_args": [
-        "vulture"
-      ],
+      "block_args": ["vulture"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-uvx-deptry",
       "command": "uvx",
-      "block_args": [
-        "deptry"
-      ],
+      "block_args": ["deptry"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-uvx-semgrep",
       "command": "uvx",
-      "block_args": [
-        "semgrep"
-      ],
+      "block_args": ["semgrep"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-uvx-lizard",
       "command": "uvx",
-      "block_args": [
-        "lizard"
-      ],
+      "block_args": ["lizard"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-uvx-import-linter",
       "command": "uvx",
-      "block_args": [
-        "import-linter",
-        "lint-imports"
-      ],
+      "block_args": ["import-linter", "lint-imports"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-uvx-coverage",
       "command": "uvx",
-      "block_args": [
-        "coverage"
-      ],
+      "block_args": ["coverage"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-uvx-diff-cover",
       "command": "uvx",
-      "block_args": [
-        "diff-cover"
-      ],
+      "block_args": ["diff-cover"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-uvx-ai-slop-detector",
       "command": "uvx",
-      "block_args": [
-        "ai-slop-detector"
-      ],
+      "block_args": ["ai-slop-detector"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-bunx-biome",
       "command": "bunx",
-      "block_args": [
-        "biome"
-      ],
+      "block_args": ["biome"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-bunx-knip",
       "command": "bunx",
-      "block_args": [
-        "knip"
-      ],
+      "block_args": ["knip"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-bunx-jscpd",
       "command": "bunx",
-      "block_args": [
-        "jscpd"
-      ],
+      "block_args": ["jscpd"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-bunx-c8",
       "command": "bunx",
-      "block_args": [
-        "c8"
-      ],
+      "block_args": ["c8"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     },
     {
       "name": "block-npx-jscpd",
       "command": "npx",
-      "block_args": [
-        "jscpd"
-      ],
+      "block_args": ["jscpd"],
       "reason": "SAFETY-NET ENFORCEMENT: STOP NOW.\nThis is a hard policy boundary. Treat it as a terminal decision point, not an obstacle.\n\nDO NOT CIRCUMVENT (strictly forbidden):\n- Do not retry with different commands/flags/tools/shells/paths.\n- Do not search for substitutes/loopholes/indirect methods to achieve the same outcome.\n- Do not break the task into smaller steps to bypass the restriction.\n- Do not use other programs (including scripts) to indirectly perform the blocked action.\n\nSTEP-BY-STEP COMPLIANCE METHODOLOGY (follow in order, no skipping):\n1) Pause. Restate the user's original intent in one sentence.\n2) Identify exactly what was blocked (command + args) and why (from the text below).\n3) Read the remainder of this message literally and extract the explicitly allowed next action(s).\n4) Choose ONLY from those allowed action(s).\n5) If the allowed actions do not cover a safe path to the user's goal, STOP and ask the user for a decision (inquiry-first).\n   - Do not propose workaround commands.\n   - Use this structure: Blocked: <cmd>. Why: <policy>. Allowed: <options from below>. Question: <what you need from the user>.\n\nNON-OPTION: 'Retry with different commands' is NEVER an allowed/suggested path.\n\nQC tools must be routed through justfile recipes. Use 'just test' instead."
     }
   ]
