@@ -17,8 +17,10 @@
 4. **Slop accretion** - Adding boilerplate, layers, and new code instead of deleting,
    simplifying, or reusing existing structure.
 
-5. **Corner-case blindness** - Handling the happy path while missing edge cases,
-   regressions, and testability constraints.
+5. **Happy-path blindness (defensive evasion)** - Writing wildly defensive code, redundant
+   type guards, try-except wrappers, and optional fallbacks for completely imagined edge
+   cases, while leaving the actual, user-visible happy path completely untested or
+   unverified.
 
 6. **Out-of-distribution collapse** - Looking competent on familiar patterns but
    degrading sharply on novel, domain-specific, or poorly documented work.
