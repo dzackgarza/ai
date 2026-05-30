@@ -64,18 +64,6 @@
       "extensions": [
         "justfile"
       ]
-    },
-    "flowmark": {
-      "command": [
-        "uvx",
-        "flowmark",
-        "--semantic",
-        "--inplace",
-        "$FILE"
-      ],
-      "extensions": [
-        ".md"
-      ]
     }
   },
   "lsp": {

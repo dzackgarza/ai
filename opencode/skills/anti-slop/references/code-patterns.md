@@ -8,32 +8,51 @@ description: |
   inversion failures. Use alongside the anti-slop SKILL.md, which governs the
   analytical frame.
 ---
+
 # Code Slop Patterns
 
 This reference documents structural failure modes in **LLM-produced code**.
 
-**This is not a standard code review.** The code works on at least one user-requested
-happy path.
-You are reviewing implementation quality beneath correct behavior, not design
-validity.
-Any seemingly strange choice about features, behavior, or coupling to externals
-is almost certainly a user-driven design decision — an LLM would never voluntarily make
-out-of-distribution design choices in isolation.
+**This is not a standard code review.** The code works on at least one user-requested happy path.
+You are reviewing implementation quality beneath correct behavior, not design validity.
+Any seemingly strange choice about features, behavior, or coupling to externals is almost certainly a user-driven design decision — an LLM would never voluntarily make out-of-distribution design choices in isolation.
 Design choices are premises; do not critique them.
 The patterns below apply to implementation quality only.
 
-For the canonical catalog of LLM code-review patterns, load
-[`../../reviewing-llm-code/references/pattern-catalog.md`](../../reviewing-llm-code/references/pattern-catalog.md).
-That file covers regex against semantic formats, fallback laundering, no-op behavior, QC
-appeasement code, and recipe bypasses.
+For the canonical catalog of LLM code-review patterns, load [`../../reviewing-llm-code/references/pattern-catalog.md`](../../reviewing-llm-code/references/pattern-catalog.md).
+That file covers regex against semantic formats, fallback laundering, no-op behavior, QC appeasement code, and recipe bypasses.
 
-This file covers patterns specific to **code shape and structure** that arise from LLM
-generation: dependency aversion, myopic patching, patch accretion, dead control flow,
-and bespoke reinvention of standard patterns.
+This file covers patterns specific to **code shape and structure** that arise from LLM generation: dependency aversion, myopic patching, patch accretion, dead control flow, and bespoke reinvention of standard patterns.
 
 ## Table of Contents
 
+- Hollow Facade
+
+- Pattern Replication Without Abstraction
+
+- Nontrivial Logic is Suspect (The Dependency-Failure Signal)
+
+- Agent Psychology as a Diagnostic Tool
+
 - Dependency Aversion & Bespoke Reinvention
+
+- Complexity as a Dependency-Detection Signal
+
+- LOC Reduction Through Idiomatic Patterns
+
+- Enterprise Patterns in Bespoke Software
+
+- Fail-Open Logic (Antipathy Toward Assertion)
+
+- No Shared Type Language (Islands of Code)
+
+- Tests That Don't Exercise Real Workflows
+
+- No Clear Contracts (Undelineated Happy Paths)
+
+- Kitchen Sink Accumulation (Monolithic Recipes, Utilities, and Docs)
+
+- Brittleness as Blast-Radius Smell
 
 - Dead Control Flow Inside Active Files
 
@@ -47,12 +66,475 @@ and bespoke reinvention of standard patterns.
 
 - Introspection Red Flags
 
+## Hollow Facade
+
+### The only question that matters
+
+Why does this code exist?
+
+Not "does it compile?"
+Not "does it exit 0?" Not "is the logic correct?"
+**Why does it exist at all?**
+
+The default answer is: **it should not.** Every line of code is an unforced error until proven otherwise.
+The ideal state is a one-line file that stitches dependencies together.
+Everything beyond that is debt that must be actively justified.
+
+Every nontrivial entity (function over 5 lines, public recipe, exported symbol, component, class, route handler) must answer the existential question on sight.
+If it cannot, it is a hollow facade — regardless of whether its body "works."
+
+### The accretion mechanism
+
+The logic inside a hollow facade is almost never wrong.
+It is almost always needed *somewhere*. The problem is **placement**, not correctness.
+
+Here is what happened:
+
+1. A user made a request: "add QC to the build pipeline" or "generate macros before compiling" or "sync the output to the server."
+
+2. The agent looked at the existing `build` recipe, saw it was already doing things, and — rather than refine it — took the path of least resistance: add a new recipe.
+   A new file.
+   A new function.
+   A new component.
+   Anything but touch existing code.
+
+3. The new entity "works."
+   Tests pass.
+   The user gets their feature.
+
+4. Now there are two entities where one suffices.
+   The new one is a facade for a concern the old one should have owned.
+   The old one is a hollow facade for a pipeline it no longer fully describes.
+   Neither is wrong.
+   Neither will be caught by any proof loop.
+   Both are technical debt.
+
+The pattern is **accretion without refinement**: every agent response adds, never consolidates.
+The result is a codebase that grows monotonically toward maximal entropy where every concern has its own entry point and nothing owns the full pipeline.
+
+### The corrective: reconstruct the chain
+
+Do not read the entity and ask "does this work?"
+It works.
+That is not the question.
+
+Reconstruct the chain of agent decisions that led to it.
+For each entity ask:
+
+- What user request originally motivated this code?
+- Was the intent to add new behavior, or was it to modify existing behavior by creating a parallel path of least resistance?
+- If this entity were deleted, would the intended behavior still exist (possibly in a differently organized form elsewhere)?
+- Did creating this entity avoid touching an existing entity that should have been extended?
+  If so, the correct fix is to inline the logic into that existing entity and delete this one.
+
+You are looking for a specific failure mode: **an agent that needed to modify `A`, found it easier to create `A'` alongside it, and left both as the permanent architecture.** Deleting `A'` and folding its logic into `A` restores the architecture that should have existed.
+
+### The detection heuristic list
+
+For every entity that claims ownership of behavior:
+
+| If... | Then... |
+| --- | --- |
+| It names a step, not a concern (`assemble`, `sync`, `generate-macros`) | It should be private or inlined. |
+| It overlaps another entry (`build` and `assemble` both exist) | One is a facade. Merge. |
+| It requires a doc comment to explain what it's for | It does not belong in the public interface. |
+| Deleting it would leave no gap — the work still happens through other paths | It is a hollow facade. |
+| It is 5+ lines and the logic could be expressed as a dependency invocation | It is unjustified code. Delete or inline. |
+
+### Broader instances
+
+- **`validateInput()` that returns `true` without checking anything** — accreted to satisfy a type signature or lint rule.
+  The logic that should exist (validation) was never written.
+  The facade is the placeholder that never got replaced.
+- **`build` that just depends on `test`** — accreted because "we need a build recipe."
+  The agent created a name matching the request, wired it to whatever already worked, and declared victory.
+- **`cleanup()` that only calls `rm -rf` on a hardcoded path** — accreted because "cleanup was needed."
+  The hardcoded path avoids computing it from config.
+  The facade is the name pretending this is a reusable utility.
+- **API handler at `DELETE /resource/:id` returning 200 without touching the database** — accreted to complete the CRUD scaffold.
+  The route exists, the handler exists, the delete does not.
+- **`ErrorBoundary` rendering `{children}` without error handling** — accreted because "add an error boundary."
+  The component exists, the name says error handling, the children render as if nothing is wrong.
+- **`onClick={() => {}}`** — accreted to satisfy a required prop interface.
+
+### Why this pattern is hard to see
+
+You will read `assemble` next to `build` and not think twice.
+You will scan a recipe list of 15 entries and treat every one as equally legitimate.
+This is the blind spot the pattern targets: **you have no reflex to ask the existential question.**
+
+The accretion mechanism is invisible because each individual addition was reasonable: "add a recipe for assembly logic."
+The pattern only emerges when you step back and see the accumulated surface — the proliferation of entry points where a few would do, the gaps where logic should live but was never consolidated.
+
+You must actively override this.
+Before reading any body, scan the interface for entries that should not exist.
+The four heuristics above are your checklist.
+
+### Sub-pattern: Self-affirming output (declarations of victory)
+
+A hardcoded success message printed as if it were reporting dynamic state — the same existential failure, but in a one-liner.
+The output is code that exists because the agent needed to *appear* to report something.
+
+```justfile
+build: test
+    @echo "Build complete (synced to /var/www/html/website/ by the test gate)."
+```
+
+The path `/var/www/html/website/` is a hardcoded literal.
+Not derived from `OUTPUT_DIR`. Not derived from the sync recipe's default.
+A static string dressed up as a status report.
+If the sync target changes, this line will print the old path while rsync writes to the new one.
+Wrong silently, forever.
+
+The real work already produces output: `sync` prints rsync transfer stats, `vitest` prints test results, `playwright` prints verification.
+The echo adds nothing — except the appearance that something is being reported.
+It is self-congratulation masquerading as status reporting.
+
+**Signals:**
+- A success message that hardcodes a path, URL, or identifier that exists as a configurable parameter elsewhere
+- A status line that would remain correct if printed ten years later — because it does not reference anything that actually changes
+- A log line whose removal would lose no diagnostic information — it only celebrates
+
+**Correct approach:**
+- Derive the message from actual state: `@echo "Built to {{OUTPUT_DIR}}"`
+- Or print nothing.
+  Silence is better than a hardcoded declaration of victory.
+
+* * *
+
+## Pattern Replication Without Abstraction
+
+The most common production mechanism for all other slop patterns in this file.
+
+### The pattern
+
+An agent encounters an existing antipattern — scattered truth, duplicated logic, a chain of `if/else if` arms where a data structure should be, an accreted justfile with 40 recipes — and **extends it** instead of **extracting from it.**
+
+The agent sees:
+
+```typescript
+if (type === 'tikz')   { /* tikz logic */ }
+else if (type === 'svg') { /* svg logic */ }
+else if (type === 'xopp') { /* xopp logic */ }
+```
+
+And adds:
+
+```typescript
+else if (type === 'ipe') { /* ipe logic */ }
+```
+
+It does not stop to observe: "this is an `if/else if` chain that will grow forever.
+Every arm differs only in the literal values.
+The entire chain should be a lookup table or a data structure."
+Instead, it replicates the existing shape, matching the "convention" of the file it is editing.
+
+Then it commits the same pattern across every scattered location — `index.ts:1060` gets a new arm, `index.ts:1133` gets a new arm, `DiagramModal.tsx:20` gets a new entry.
+Each edit is "consistent."
+Each is "idiomatic."
+Each makes the codebase marginally worse by reinforcing the scattered structure that should never have existed.
+
+### The cognitive failure
+
+The agent mistakes **consistency with the existing slop** for **correctness.**
+
+The agent evaluates:
+- Does the new code match the surrounding conventions?
+  Yes.
+- Does it exit 0 / pass tests?
+  Yes.
+- Does it satisfy the user request?
+  Yes.
+- Then it is correct.
+
+What the agent does not evaluate:
+- Does the aggregate pattern (the sum of all `else if` arms, all scattered locations) form a data structure that should be extracted?
+- Is the "convention" I am matching actually an antipattern?
+- Would this be easier to read, maintain, and extend as a data structure instead of code?
+
+The agent cannot see the aggregate.
+It sees one `if/else` block, one file, one task.
+The aggregate pattern only exists in the reviewer's perspective.
+
+### Why it is invisible
+
+Each individual extension is reasonable.
+Adding a new tool?
+Add it to the tool list.
+The agent is doing exactly what it was asked.
+It is being thorough — it updated the server, the client, the type definitions, all the scattered locations.
+
+The problem is that the *location list itself* is the defect.
+The agent did not create the scattered locations, but it did not fix them either.
+It added one more entry to each, making the abstraction ever so slightly more necessary and ever so slightly harder to extract later.
+
+This is how a codebase degrades: not through bad code, but through **a thousand reasonable extensions that never consolidate.**
+
+### Detection
+
+For every edit that adds a branch, case, or entry to an existing conditional or lookup structure:
+
+- **Read ALL the existing branches/cases/entries.** Do not just find the one you are extending.
+  Read them all.
+  Does the aggregate form a pattern that could be data?
+
+- **Ask: is this `if/else if` chain a lookup table waiting to be born?** If every arm differs only in hardcoded values (template strings, file extensions, labels, URLs), the chain is a code-level antipattern that should be a data structure.
+
+- **Count the scattered locations.** If this concept is encoded in 7 places and you are about to make it 8, stop.
+  The fix is not to add the 8th — it is to consolidate the 7 into one and then add the new entry to that single source.
+
+- **Check whether you are matching "convention" or matching slop.** If the existing pattern looks like it should have been abstracted but never was, do not replicate it.
+  Extract it.
+
+### The meta-pattern
+
+Pattern replication without abstraction is the engine that produces:
+- **Scattered truth** (every new tool adds another location to the list)
+- **Bespoke reinvention** (every new `else if` arm is a micro-reimplementation)
+- **Kitchen sink accumulation** (every new recipe just goes at the bottom of the justfile)
+- **Hollow facades** (every new recipe is another name that owns nothing)
+- **No shared type language** (every new type is defined in the module that needs it)
+
+It is the one pattern that predicts all others.
+If you see scattered truth, ask: "how many times did an agent replicate this before I arrived?"
+
+### The feature-simulation detection technique
+
+The easiest way to find pattern replication without abstraction requires no architectural analysis at all.
+Do this:
+
+1. **Invent 5-10 realistic feature requests or changes** a user might make.
+   Not bugs — straightforward extensions or modifications a real user would ask for.
+   E.g.: "add support for Dia diagrams," "add a dark mode toggle," "support exporting to PNG."
+
+2. **Simulate implementing one.** Read enough code to understand exactly how you would do it — what files you would touch, what lines you would add or change, what new entries you would create.
+
+3. **Write down the blast radius.** List every file and every location within each file that would need to change.
+   Be concrete: "add a new `else if` arm at `server.ts:1060-1098`, add a new entry in the type union at `DiagramModal.tsx:20-27`, add a new entry in the extension map at `DiagramModal.tsx:163-166`..."
+
+4. **Ask: does this make sense?** For the conceptual simplicity of the change (add a new drawing tool), does it make sense that the logical mutation lives across N scattered locations?
+   If N > 3 and the change is conceptually atomic, the scattering IS the slop.
+
+5. **Repeat for a second feature.** If the same N scattered locations reappear, the accretion pattern is confirmed.
+   You have found the structural defect without reading a single line of architecture — you only needed to simulate extending the system.
+
+The technique works because it reproduces the agent's behavior. An agent assigned "add
+IPE support" goes through steps 1-3 and produces exactly this list of locations. The
+agent then dutifully makes all N edits and calls it success. The thought exercise forces
+you to see the aggregate that the agent could not: the absurd blast radius. **You write
+nothing. You implement nothing. The plan itself is the diagnosis.**
+
+* * *
+
+## Nontrivial Logic is Suspect (The Dependency-Failure Signal)
+
+### The principle
+
+Any nontrivial code in a codebase on this machine is suspect until proven otherwise.
+
+The default assumption: **the agent did not search for existing solutions.** It saw the problem, decided it "knew" how to solve it (from training data), and wrote bespoke code.
+It did not google.
+It did not check `npm`, `pypi`, `crates.io`, the installed dependencies, the existing codebase, or a single README. It generated the cheapest thing that exits 0.
+
+Apps on this machine are NOT novel.
+They are not complex.
+They are ideally 100-LOC glue frameworks that stitch together dozens or hundreds of existing programs and libraries.
+When you see 10+ lines of nontrivial logic, you must immediately ask:
+
+> **Did the agent research dependencies, online examples, and existing code, and conclude that this problem has NEVER been solved in the history of the world?**
+
+The answer is almost certainly no.
+The agent did not research.
+It wrote code because writing code is the path of least resistance for a language model.
+
+### The diagnostic chain
+
+For every nontrivial block of code:
+
+1. **Stop.** Do not review the code on its own terms.
+   Do not ask "does it work?"
+   It works.
+   That is not the question.
+
+2. **Search.** Check: language standard library, installed dependencies (`package.json`, `requirements.txt`, `Cargo.toml`, `go.mod`), well-known domain libraries (lodash, pandas, itertools, etc.), the existing codebase for similar functionality, and a quick web search for "how to X in <language>".
+
+3. **If a dependency or existing code does the same thing:** the new code is slop.
+   It exists because the agent did not look.
+   The fix is to delete it and use the dependency.
+
+4. **If no dependency exists:** the code may be justified, but still ask whether it is actually needed or whether the entire feature could be expressed as a 1-line invocation of a program or library that the user already has installed but isn't imported yet.
+
+### The red flag
+
+The red flag is **any nontrivial logic at all.** Not complex logic. Not poorly structured
+logic. *Any* logic that is not a direct composition or invocation of existing tools.
+The absence of an import is the defect, not the presence of the dependency.
+
+The ideal app is trivial glue between dependencies and binaries. Anything that isn't glue
+is suspect. The concrete signals — glance at the imports and the code, stop if you see
+any of these:
+
+- **Low-level primitives in application code.** Process management, syscalls, manual
+  memory allocation, signal handling, raw socket operations, direct filesystem control.
+  These belong inside a dependency, a framework, or the language runtime — never in
+  application code. If the app is spawning processes, killing pids, or managing child
+  lifecycles, it is doing infrastructure work that a framework should own.
+
+- **Zero-import modules.** A file with substantial logic and no imports — or imports
+  only from the standard library when a domain library exists. The agent didn't search.
+
+- **Zero-dependency packages.** A `Cargo.toml`, `package.json`, or `requirements.txt`
+  with no domain-specific entries despite nontrivial functionality. The agent wrote
+  everything itself.
+
+- **Platform-specific code paths.** `#ifdef`, `process.platform` switches, OS detection
+  branches. On a fixed system, there is one platform. Code hedging across platforms is
+  enterprise debris or dependency aversion — use the cross-platform library that already
+  abstracts this.
+
+- **Resource lifecycle management.** Code that manages file descriptors, sockets,
+  subprocess handles, or GPU contexts directly. These are framework responsibilities.
+  Application code should request resources, not manage their lifecycles.
+
+* * *
+
+## Agent Psychology as a Diagnostic Tool
+
+Understanding how agents think is a diagnostic weapon. Agents have predictable biases.
+You can use those biases to find slop without reading a single line of code.
+
+### What "minimal" actually means
+
+Agents have an inverted definition of "minimal." An agent thinks minimal means "least
+code I write right now, using language primitives." The correct definition is "least
+code in this app, period, by offloading everything to dependencies."
+
+An agent will write 50 LOC of bespoke implementation using language primitives and
+call it "clean and minimal." The correct answer is 5 LOC that invokes a framework.
+The agent measures framework size ("Tauri is 2GB with 10 million features we don't
+use") when the only thing that matters is **app size** — the code you own and maintain.
+The framework is someone else's problem. The bespoke 50 LOC is yours forever.
+
+This inversion is the root cause of dependency aversion. Every time you see code that
+"doesn't need a whole framework for this," recalibrate: the framework IS the minimal
+answer. The code is bloat.
+
+### Agent biases that produce slop
+
+These are not things you find in code. They are things agents reflexively do, and
+knowing them lets you predict what slop to look for:
+
+- **Ground-up bias.** The agent implements from first principles because it can see the
+  language primitives. Frameworks are invisible to its immediate context. The result:
+  app-owned implementations of problems that entire ecosystems have already solved.
+
+- **Immediate-problem bias.** The agent solves the problem directly in front of it and
+  stops. It cannot see that tomorrow's features will need the same framework. The result:
+  a bespoke implementation that grows toward the framework's surface area, badly, over
+  many sessions.
+
+- **Inverted-design bias.** The agent wants a minimal implementation today and will
+  "add what's needed later." Correct design does the opposite: use the off-the-shelf
+  solution today, let the app evolve within the framework over time, and only in a
+  refactoring step move away from the framework to own the minimal core actually used.
+  The agent's approach makes the app exponentially harder to maintain. The correct
+  approach makes it easier.
+
+- **Knowledge-progression bias.** An agent reaches for low-level primitives because
+  they are atomic and well-defined in training data. A human learning the same language
+  learns the high-level abstractions first — they'd encounter the framework long before
+  they'd encounter the syscall. Code that requires expert-level knowledge of language
+  primitives is a red flag, because the user would have used the framework instead.
+
+- **"Ownership" bias.** The agent wants to "own" the logic — to have it in the app,
+  under control, visible. The ideal app lets dependencies own most of the logic.
+  Application code should be glue, not infrastructure.
+
+- **Phased-decision laundering.** The agent knows the correct answer but frames it as
+  "a migration, not an addition" and proposes slop as an "immediate milestone" with
+  the correct answer deferred. The deferred milestone will never arrive. The slop
+  milestone adds code that makes the correct answer harder. The agent believes it is
+  being pragmatic. It is deferring correctness into a future it is simultaneously
+  making less likely.
+
+- **Honesty-as-absolution.** The agent accurately diagnoses its own slop — enumerates
+  the exact failure modes, calls it "fragile in practice" — and then chooses it anyway.
+  The honesty creates the illusion of rigor. The analysis looks balanced, so the
+  decision feels considered. The agent used its own correct diagnosis as cover to
+  pick the wrong answer.
+
+- **Deferred-correctness fallacy.** "Do it right later" is never a real strategy.
+  Agents that produce slop now will produce slop next session. The correct answer,
+  deferred, becomes fiction. The slop becomes permanent. An agent that says "milestone 2
+  will be the framework migration" has guaranteed that milestone 2 will never happen.
+
+- **Inverted cost model.** The agent front-loads the framework's cost (one-time,
+  absorbs future needs) where it looks expensive and amortizes the slop's cost
+  (accrued with every session, grows toward the framework's surface area) where it
+  is invisible. The correct cost model: framework cost is paid once and shrinks
+  future work. Slop cost grows forever.
+
+- **Reliability-sourcing inversion (probability blindness).** The agent cannot distinguish
+  between two fundamentally different probability classes:
+
+  *Framework path*: near-certain success. Documented integration patterns, GitHub
+  examples known to work, teams and corporations behind maintenance and testing, build
+  chains that are the most reproducible code on the planet, billions of prior executions.
+  The probability of everything working if you follow the documented pattern is absurdly
+  high.
+
+  *Bespoke path*: unknown, but effectively near-certain failure. Generated from training
+  data, never run on this system, zero documentation, zero prior testing. The probability
+  of a correct one-shot implementation is laughably small — lower than the agent can
+  predict, because it cannot see the bugs it has not yet produced.
+
+  The agent treats these as equivalent bets and picks the one with smaller apparent cost.
+  The probability inversion makes the cost comparison irrelevant: the framework is the
+  only bet with a known, high probability of working. The bespoke code's cost is
+  unknowable because you don't know how many bugs you're buying.
+
+  **Triviality blindness.** The agent frames completely standard, trivially solved
+  operations as difficult or risky: adding a build dependency, compiling to a binary,
+  adjusting a recipe. These operations have been done millions of times. Following the
+  documented pattern is nearly guaranteed to work. The agent treats a one-line dependency
+  addition as "introducing risk" and a 50-line bespoke reimplementation as "safe" because
+  it "owns" the code. The framework is guaranteed by teams and corporations. The bespoke
+  code is guaranteed by nothing.
+
+### Diagnostic criteria (applied to code artifacts)
+
+Given these biases, when you encounter code, ask:
+
+- **Was this code written to avoid a dependency?** If the feature this code implements
+  is solved by a well-known framework or library, and that framework is absent from
+  `package.json`/`Cargo.toml`/`requirements.txt`, the code is dependency aversion.
+  You can be certain the agent knew about the framework and rejected it.
+
+- **Is the obvious dependency large or featureful?** If yes, you can be ASSURED the
+  code is slop. The agent rejected the dependency because it was "too much" and wrote
+  a bespoke substitute. The substitute will grow toward the framework's surface area.
+  The larger the framework, the more certain the slop.
+
+- **Does it require low-level knowledge?** If a human would need to understand language
+  primitives, syscalls, or platform internals to read this code — rather than reading
+  framework docs — the code is slop. Framework docs are written for humans. Source code
+  is written for experts. The user wants the former.
+
+- **Does it "own" logic that should belong to a dependency?** If the code is managing
+  process lifecycles, handling platform-specific details, or doing resource management,
+  it is doing infrastructure work. Infrastructure belongs in frameworks.
+
+- **Will this code need to grow?** If today's feature is "open a webview" and the code
+  implements exactly that, it is actively harmful. Tomorrow's feature will be "add a
+  menu bar" or "handle window positioning" — and the bespoke implementation will accrete
+  hacks. The framework would have absorbed both for free.
+
+* * *
+
 ## Dependency Aversion & Bespoke Reinvention
 
-The primary LLM failure mode: **reinventing something to solve a problem that is already
-solved**. This is embarrassing.
-In a code review, the immediate feedback would be: **why the fuck did you even write
-this at all when you could have imported something that exists?**
+The primary LLM failure mode: **reinventing something to solve a problem that is already solved**. This is embarrassing.
+In a code review, the immediate feedback would be: **why the fuck did you even write this at all when you could have imported something that exists?**
 
 ### The Pattern
 
@@ -60,8 +542,7 @@ The LLM generates custom code for a problem that a known dependency solves:
 
 - Custom `AcademicCard.tsx` (~60 LOC) when `card.tsx` exists in the UI inventory
 
-- Custom `FilterControls.tsx` with hand-rolled popover logic when `select.tsx`,
-  `dropdown-menu.tsx`, and `scroll-area.tsx` already exist
+- Custom `FilterControls.tsx` with hand-rolled popover logic when `select.tsx`, `dropdown-menu.tsx`, and `scroll-area.tsx` already exist
 
 - Custom `PaginatedScroller.tsx` with bespoke scroll logic when `scroll-area.tsx`
 
@@ -69,8 +550,7 @@ The LLM generates custom code for a problem that a known dependency solves:
 
 - Custom string-concatenated YAML generation when a YAML library is installed
 
-- Custom hand-rolled AST stringifier when the parser library (`Pandoc`, `remark`,
-  `markdown-it`) already provides stringification
+- Custom hand-rolled AST stringifier when the parser library (`Pandoc`, `remark`, `markdown-it`) already provides stringification
 
 ### Why It Happens
 
@@ -79,30 +559,25 @@ Dependencies are “black boxes.”
 Custom code feels “simpler” because it is local and visible.
 The model treats local code as minimal and imported code as bloat.
 
-This is the **dependency inversion failure**: the model perceives the generic, tested
-solution as “abstraction layer bloat” and the bespoke reinvention as “clean, minimal
-code.”
+This is the **dependency inversion failure**: the model perceives the generic, tested solution as “abstraction layer bloat” and the bespoke reinvention as “clean, minimal code.”
 
 ### Detection
 
-For every custom function or component, ask: **“Is there a standard library or installed
-dependency that already solves this?”**
+For every custom function or component, ask: **“Is there a standard library or installed dependency that already solves this?”**
 
 If yes, the custom code is slop.
 The absence of an import is the defect, not the presence of the dependency.
 
 ### Correct Response
 
-**REFINE, REPLACE, REFACTOR** — migrate the bespoke implementation to use the
-dependency. Do not delete the dependency because it is “unused.”
+**REFINE, REPLACE, REFACTOR** — migrate the bespoke implementation to use the dependency.
+Do not delete the dependency because it is “unused.”
 
 * * *
 
 ## Complexity as a Dependency-Detection Signal
 
-**Complexity itself is the red flag.** When application code is structurally complex,
-the reviewer’s FIRST question must be: “Is there a known library, language primitive, or
-installed dependency that collapses this entire block into a one-liner?”
+**Complexity itself is the red flag.** When application code is structurally complex, the reviewer’s FIRST question must be: “Is there a known library, language primitive, or installed dependency that collapses this entire block into a one-liner?”
 
 The overwhelming majority of coding tasks are trivially gluing together known solutions.
 When the code does not look trivial, the agent almost certainly missed an existing tool.
@@ -124,23 +599,17 @@ Do not review complex code on its own terms first — stop and search for the de
 
 When you encounter ANY of these red flags:
 
-1. **Stop reviewing the complex code.** Do not evaluate whether the complex code is
-   “correct” — that is the wrong frame.
+1. **Stop reviewing the complex code.** Do not evaluate whether the complex code is “correct” — that is the wrong frame.
 
-2. **Search for the dependency.** Check: language standard library, installed
-   dependencies (package.json, requirements.txt, Cargo.toml, go.mod), well-known domain
-   libraries, and language primitives that express the operation directly.
+2. **Search for the dependency.** Check: language standard library, installed dependencies (package.json, requirements.txt, Cargo.toml, go.mod), well-known domain libraries, and language primitives that express the operation directly.
 
 3. **If a dependency exists:** the complex code is the slop.
    The dependency is the solution.
    The finding is “bespoke reinvention of [dependency name]'s [feature].”
 
-4. **If no dependency exists:** the complexity may be justified, but still ask whether
-   the operation can be expressed more directly with language primitives (pattern
-   matching, destructuring, generator expressions, comprehensions, method chaining).
+4. **If no dependency exists:** the complexity may be justified, but still ask whether the operation can be expressed more directly with language primitives (pattern matching, destructuring, generator expressions, comprehensions, method chaining).
 
-5. **If neither applies:** the complexity is genuinely domain-driven, and the review
-   should focus on whether the proof loop verifies the complex behavior correctly.
+5. **If neither applies:** the complexity is genuinely domain-driven, and the review should focus on whether the proof loop verifies the complex behavior correctly.
 
 ### Examples
 
@@ -181,27 +650,19 @@ const grouped = groupBy(items, 'category');
 
 ### Why This Matters
 
-Every line of complex application code is a line that must be tested, maintained, and
-understood by future reviewers.
-A dependency that does the same thing in one line has already been tested by its
-maintainers, documented, and optimized.
-The complex code is not just “ugly” — it is a liability that exists because the agent
-did not search for the right tool.
+Every line of complex application code is a line that must be tested, maintained, and understood by future reviewers.
+A dependency that does the same thing in one line has already been tested by its maintainers, documented, and optimized.
+The complex code is not just “ugly” — it is a liability that exists because the agent did not search for the right tool.
 
-This is the most common form of **ground-up bias**: the agent generates from scratch
-because it can see the code it is generating, and dependencies are invisible to its
-immediate context.
-The result is codebases full of hand-rolled logic that a single import
-would eliminate.
+This is the most common form of **ground-up bias**: the agent generates from scratch because it can see the code it is generating, and dependencies are invisible to its immediate context.
+The result is codebases full of hand-rolled logic that a single import would eliminate.
 
 * * *
 
 ## LOC Reduction Through Idiomatic Patterns
 
-**The review should actively look for opportunities to reduce LOC through idiomatic
-language patterns.** This is NOT about making code shorter for its own sake.
-It is about whether the code is expressing a simple operation in a complex way because
-the agent does not know the idiomatic pattern.
+**The review should actively look for opportunities to reduce LOC through idiomatic language patterns.** This is NOT about making code shorter for its own sake.
+It is about whether the code is expressing a simple operation in a complex way because the agent does not know the idiomatic pattern.
 
 ### Key Transformations
 
@@ -215,11 +676,10 @@ the agent does not know the idiomatic pattern.
 
 ### Dependencies Reduce LOC
 
-Offloading logic to a dependency is almost always better than hand-rolling the same
-logic. The process is:
+Offloading logic to a dependency is almost always better than hand-rolling the same logic.
+The process is:
 
-1. Create a regression test asserting behavioral equivalence between the bespoke
-   implementation and the dependency.
+1. Create a regression test asserting behavioral equivalence between the bespoke implementation and the dependency.
 
 2. Replace the bespoke implementation with the dependency call.
 
@@ -228,143 +688,598 @@ logic. The process is:
 4. The dependency is now the maintained, tested implementation.
    The bespoke code is gone.
 
-**Before writing a finding about complex code, ask: could this be expressed in fewer
-lines using the idiomatic patterns of this language?** If yes, the complexity is slop —
-the agent did not know the idiom and wrote the operation longhand.
+**Before writing a finding about complex code, ask: could this be expressed in fewer lines using the idiomatic patterns of this language?** If yes, the complexity is slop — the agent did not know the idiom and wrote the operation longhand.
 
 * * *
 
 ## Enterprise Patterns in Bespoke Software
 
-**Most software this LLM reviews is ONE USER’S BESPOKE SOFTWARE, running on THEIR
-SYSTEM.** It is not an enterprise product for unknown users.
-It is private, on this system, designed to tightly couple to this system’s programs and
-dependencies. The audience is future-me or future-agents.
+**Most software this LLM reviews is ONE USER’S BESPOKE SOFTWARE, running on THEIR SYSTEM.** It is not an enterprise product for unknown users.
+It is private, on this system, designed to tightly couple to this system’s programs and dependencies.
+The audience is future-me or future-agents.
 It will likely never be “distributed.”
 
 The bad patterns are the OPPOSITE of what a normal code review would flag:
 
 ### The Pattern
 
-- **Graceful degradation when dependencies are missing**: the code tries to “work” even
-  when its required tools are not installed.
-  WRONG for bespoke software.
-  Fail loudly. The dependency IS available.
-  This is enterprise thinking for unknown deployment targets.
+- **Graceful degradation when dependencies are missing**: the code tries to "work" even when its required tools are not installed.
 
-- **Squishy input shapes**: the code accepts many different input formats, “normalizes”
-  them, handles “various” data shapes.
+  **Any "graceful" failure is slop on a system like this.** An app that still runs with
+  a broken dependency is broken in a far worse way than one that crashes — it is silently
+  wrong, with no indication that a feature degraded or disappeared, and the bugs it
+  produces are undiscoverable because nothing logged the degradation event.
+
+  There is nothing to be uncertain about. This code runs on *this system* — the one it is
+  being written on right now, as you are reading it. It will never run on a random machine.
+  The dependency IS on this system. If it breaks or goes missing, that blocks the entire
+  feature. The app must crash loudly and immediately until it is fixed. A fallback
+  launders a broken system into a mysterious correctness gap.
+
+  ```javascript
+  // BAD: encodes uncertainty that does not exist on this system
+  const xournalCmd = isCommandAvailable('xournalpp') ? 'xournalpp' : 'xournal';
+  ```
+
+  The user requested `xournalpp` as a feature. Both binaries exist. The dependency is hard.
+  The ternary is a fallback the agent added because "prevent a crash" is an LLM reflex.
+  If `xournalpp` disappears, the code silently degrades to `xournal` — no error, no log,
+  no evidence the user's requested feature is broken. The bug, when it surfaces weeks
+  later as subtly wrong behavior, is undiscoverable.
+
+  The fix declares the hard dependency and fails loudly if it is missing. If the user
+  actually needed both binaries (they don't — `xournalpp` replaced `xournal`), the
+  correct shape is a tool-config record (`executables: ['xournalpp', 'xournal']` probed in
+  order), not a ternary embedded in control flow. The agent patched the control flow
+  because it refused to update the data model.
+
+- **Squishy input shapes**: the code accepts many different input formats, “normalizes” them, handles “various” data shapes.
   WRONG for bespoke software.
-  Enforce the shape. Fail loudly on wrong input.
+  Enforce the shape.
+  Fail loudly on wrong input.
   Do not write defensive code for data that should never arrive.
 
-- **Over-generalization to other platforms or users**: the code tries to work on Windows
-  AND Linux AND macOS, or for multiple user personas, or with multiple backends.
+- **Over-generalization to other platforms or users**: the code tries to work on Windows AND Linux AND macOS, or for multiple user personas, or with multiple backends.
   WRONG for bespoke software.
   Target THIS system, THIS user.
   If it needs to work elsewhere later, that is a future problem.
 
-- **Enterprise-grade edge-case handling**: the code catches every possible error, wraps
-  everything in try/catch, handles every conceivable malformed input.
+- **Enterprise-grade edge-case handling**: the code catches every possible error, wraps everything in try/catch, handles every conceivable malformed input.
   WRONG for bespoke software.
   Work on the happy path, fail loudly outside of it.
 
-### Detection
+### Detection (litmus tests)
 
-For every defensive pattern (try/catch, input normalization, platform detection,
-fallback paths):
+The following are immediate red flags that surface slop without requiring you to read a body:
 
-- Is this defending against a failure that cannot happen on this system?
+- **Code that is conditional on a binary or dependency.** Any `isCommandAvailable()`,
+  `which`, `command -v`, `require.resolve()`, `import()` wrapped in try/catch — the
+  code is uncertain about its environment. On a system where the environment is fixed
+  and known, uncertainty is never legitimate.
 
-- Is this accommodating a user or platform that does not exist?
+- **Almost any try/catch block.** Why are you not letting errors surface to the user?
+  If a dependency fails, the app should crash. The user owns the system, they can fix
+  the dependency. A caught error hides the broken state.
 
-- Is this “graceful degradation” for a dependency that IS available?
+- **Any hard-coding of a path, command name, or identifier that should be in config.**
+  Hard-coding mixes data and logic. A binary name belongs in a tool-config record, not
+  in the body of an `if` statement. If the name changes, the blast radius should be a
+  single config field, not an `if/else` chain.
 
-If yes, the defense is enterprise debris.
-The correct behavior is to fail loudly and fix the input or install the dependency.
+The litmus tests — mental exercises you can apply on sight:
+
+1. **If a dependency disappeared, would the code still run?** If yes, the code has
+   graceful degradation and is deeply broken. It is silently running without a required
+   dependency, producing garbage that nothing catches.
+
+2. **If a binary was unavailable, would the code still run?** Same question, same
+   answer. A missing binary means the feature is broken. The app must not pretend
+   otherwise.
+
+3. **If a binary or dependency name changed, is the blast radius for the update
+   nearly trivial?** If the name appears in 7 scattered locations, the name is
+   hard-coded in control flow instead of stored in a config record. The blast radius
+   IS the diagnosis.
 
 ### Why This Matters
 
-Enterprise patterns in bespoke software are not just unnecessary — they actively harm
-maintainability. Every defensive branch is code that must be tested, maintained, and
-understood. When the defense is against a failure that cannot happen, the code is pure
-liability.
-The philosophical principle: less bespoke code, more reliance on dependencies,
-more copying and sharing of known patterns.
+Enterprise patterns in bespoke software are not just unnecessary — they actively harm maintainability.
+Every defensive branch is code that must be tested, maintained, and understood.
+When the defense is against a failure that cannot happen, the code is pure liability.
+The philosophical principle: less bespoke code, more reliance on dependencies, more copying and sharing of known patterns.
 Complex logic that isn’t composition or glue is highly suspect.
 Complex *interactions* with dependencies or external programs are the expected default.
 
 * * *
 
-## Brittleness as Blast-Radius Smell
+## Fail-Open Logic (Antipathy Toward Assertion)
 
-**“Brittle” does NOT mean “doesn’t handle many edge cases.”** Edge-case handling is a
-natural consequence of bugs that surface during planned development.
-It is not a quality signal and its absence is not a defect.
-Do not critique code for lacking speculative edge-case handling.
+### The philosophical stance: sharp, opinionated shapes
 
-**Brittle means: what happens when a future agent goes to edit this code.** The question
-is not “does this handle every case” but “do small changes have large blast radii?”
+Code should have **sharp, well-defined, opinionated edges.** It should know what data it expects and refuse everything else.
+"Graceful" handling of unexpected shapes is not a virtue — it is a failure to commit to a design.
+
+If a function accepts data that could be `x` or `y`, the correct shape is:
+
+```
+one path for x, one path for y, everything else is an error
+```
+
+Not "try to handle x, fall through to y, and if neither works try to massage the input."
+Not "branch on `not x` and hope the complement is y." **Assert the input is either x or y. Fail fast if it is not.**
 
 ### The Pattern
 
-- **Scattered truth**: the same concept or data is defined in multiple places, so
-  changing one site breaks distant consumers.
+Code that handles data shapes "gracefully" — massaging inputs, providing fallbacks, branching on `not x` instead of enumerating `x` and `y` and asserting everything else is an error.
+
+### The Pattern
+
+```python
+# BAD: "handles" unexpected shapes by trying to make them work
+def process_item(item):
+    if hasattr(item, "type"):
+        if item.type == "x":
+            return handle_x(item)
+        else:
+            # must be type y, try to handle it
+            return handle_y(item)
+    else:
+        # no type attr, try falling back to string mode
+        return handle_string(str(item))
+```
+
+```python
+# GOOD: asserts exact shape, fails fast on anything unexpected
+def process_item(item: Item) -> Result:
+    match item.type:
+        case "x": return handle_x(item)
+        case "y": return handle_y(item)
+        case _:   assert_never(item.type)  # type-checker enforces exhaustiveness
+```
+
+The bad version:
+- Uses `hasattr` to guess about the shape instead of asserting it
+- Falls through to `else` branches as "handlers" for unspecified cases
+- Tries `str(item)` as a last resort — a guess that stringifying random objects is meaningful
+- Has no assertion that `item` is one of the expected types
+
+The good version:
+- Enumerates `x` and `y` explicitly — those are the only shapes that exist
+- Everything else is a type error caught at compile time (via `assert_never` / exhaustiveness checking)
+- Fails fast with a clear error instead of silently producing garbage
+
+### Why it happens
+
+The agent treats "make the code not crash" as the goal.
+Massaging inputs prevents crashes.
+The agent does not ask whether the massaged output is *correct*, only whether the function exits without throwing.
+A fallback that converts any object to a string and processes it "works" in the sense that it returns something — but that something is almost certainly wrong.
+
+### The existential question
+
+Why does this fallback exist?
+What user request produced it?
+
+Almost always: no request.
+The agent reflexively added it because "preventing crashes" is a hard-coded reward in LLM training.
+The fallback is slop — it exists to satisfy a training signal that does not apply to bespoke software.
+
+### Detection
+
+For every `if`/`else` chain, `match`/`case`, or branching on type/shape:
+
+- Does this enumerate all known shapes explicitly?
+- Does anything fall through to a "catch-all" handler that is not `assert False`?
+- Is there a fallback path that converts / coerces / massages data into a different type?
+- Would removing the fallback cause a crash — and is that crash the CORRECT behavior?
+
+If the answer to any of the last three is "yes" and the first is "no," the code has fail-open logic.
+The fix is to replace it with an exact enumeration and an assertion that the input is one of the known shapes.
+
+### Why it matters
+
+Fail-open logic is the primary source of *silently wrong* behavior.
+Not crashing is not the same as being correct.
+Every fallback is a path where the code produces an output without ever verifying it.
+Those paths accumulate into a codebase where nothing is reliable because everything silently adapts.
+
+* * *
+
+## No Shared Type Language (Islands of Code)
+
+The absence of centralized, shared type definitions across the codebase.
+Each module reinvents its own shapes.
+The hierarchy is flat — no abstractions emerged because no agent ever consolidated.
+
+### The Pattern
+
+```typescript
+// auth/types.ts
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// billing/types.ts (reinvented)
+interface Customer {
+  identifier: string;
+  displayName: string;
+  contactEmail: string;
+  plan: string;
+}
+
+// admin/types.ts (reinvented again)
+interface AdminUser {
+  uid: string;
+  username: string;
+  mail: string;
+  role: string;
+}
+```
+
+Three files, three definitions of "a person in the system."
+Different property names (`id` vs `identifier` vs `uid`), different naming conventions (`displayName` vs `username`), different email fields.
+Every time code needs to pass a user between modules, it must map fields — and that mapping is either another helper function (accretion) or an inline coercion (unchecked).
+
+The canonical fix is a single `User` type with `Partial<Pick<User, ...>>` for subsets.
+But the accretion process never produces this — each agent creates the type it needs for its task and moves on.
+
+### The existential question
+
+Why does `billing/types.ts` exist?
+Why does `admin/types.ts` exist?
+
+These are not independent domains.
+A user is a user is a user.
+Each file exists because an agent chose "create a new type" over "find the existing type and extend it."
+The path of least resistance was a new file.
+The result is islands.
+
+### Detection
+
+- Scan the type/interface definitions across modules.
+  Do the same concepts appear with different names, structures, or conventions?
+- Count the number of "mapper" or "converter" or "adapter" functions that exist solely to translate between isomorphic shapes.
+  Each is a signal that a shared type should exist.
+- Are there `Partial<T>`, `Omit<T, ...>`, or `Pick<T, ...>` usages that are duplicating what a more carefully designed shared type would express?
+
+### Flat hierarchies (shallow directory structures)
+
+The same accretion mechanism that produces islands of types also produces flat directory structures.
+No agent ever consolidated related files into subdirectories because each agent only sees the current task and adds a file where the files already are.
+
+The result: a `src/` directory with 40 files, a `components/` directory with 30 components, a `utils/` directory with 50 unrelated helper functions.
+No grouping, no hierarchy, no indication of which files belong together.
+
+**Detection:** If any directory has more than 15-20 entries (excluding index files and standard configs), it is flat.
+The fix is to group related files into subdirectories with their own index/barrel exports.
+The presence of meaningful subdirectories is the signal of a designed structure; a flat list is the signal of accretion.
+
+### Wide public surface (disorganized exports)
+
+The same accretion at the export boundary.
+Every module exports almost everything it defines, because no agent ever asked "should this be private?"
+Exporting is the path of least resistance — it avoids thinking about the module's contract.
+
+The result: modules where 90% of definitions are exported, making the public surface indistinguishable from the implementation.
+No module has a narrow, deliberate API. Consumers can import anything, so they import everything, creating tight coupling to implementation details.
+
+**Detection:** If more than half of a module's top-level definitions are exported, the public surface is too wide.
+Every export is a promise of stability — if nothing is private, nothing is stable.
+
+### Shared style (schizophrenic code)
+
+The same accretion mechanism produces inconsistent style:
+- One module uses camelCase, another snake_case
+- One module uses classes, another plain functions
+- One module uses React context, another prop drilling
+- One module uses CSS modules, another inline styles
+- One module returns `Result<T, E>`, another throws exceptions
+
+Each was written by a different agent session, each with its own implicit conventions, and no agent ever normalized them.
+The result is code that looks like it was written by five different people — because it was.
+
+**Detection:** If the style varies noticeably between files that serve the same role, the codebase has no shared design language.
+The fix is a centralized style guide and a lint rule, not rewriting each file.
+
+### Why it matters
+
+Islands of code and schizophrenic style are the same problem at different scales: the absence of shared contracts.
+Every agent started fresh instead of discovering and extending existing conventions.
+The codebase becomes a museum of one-shot prompts rather than a designed system.
+
+* * *
+
+## Tests That Don't Exercise Real Workflows
+
+Tests that assert on code internals (function output, type correctness, specific return values) rather than on human-observable behavior (the app opens, user clicks X, result Y appears on screen).
+
+### The Pattern
+
+```typescript
+// BAD: asserts on code internals, not user behavior
+describe("LoginForm", () => {
+  it("sets email on input change", () => {
+    const form = render(<LoginForm />);
+    const input = form.getByLabel("Email");
+    fireEvent.change(input, { target: { value: "a@b.com" } });
+    expect(input.value).toBe("a@b.com");  // tautological — I just set it
+  });
+
+  it("calls onSubmit with email and password", () => {
+    const onSubmit = vi.fn();
+    const form = render(<LoginForm onSubmit={onSubmit} />);
+    fireEvent.change(form.getByLabel("Email"), { target: { value: "a@b.com" } });
+    fireEvent.change(form.getByLabel("Password"), { target: { value: "pwd" } });
+    fireEvent.click(form.getByText("Sign In"));
+    expect(onSubmit).toHaveBeenCalledWith({ email: "a@b.com", password: "pwd" });
+    // Asserts the function was called with the right args.
+    // Does NOT assert: the user is now logged in, the UI changed, the session exists.
+  });
+});
+```
+
+```typescript
+// GOOD: asserts on human-observable behavior
+describe("Login", () => {
+  it("user can sign in with valid credentials", async () => {
+    // This is a Playwright / Cypress test — it opens the real app
+    await page.goto("/login");
+    await page.fill("[data-testid=email]", "a@b.com");
+    await page.fill("[data-testid=password]", "pwd");
+    await page.click("text=Sign In");
+    await page.waitForURL("/dashboard");
+    await expect(page.locator("[data-testid=user-name]")).toHaveText("Alice");
+    // Proves: navigation happened, session exists, UI updated, data loaded.
+    // Reproduces what a human would actually do.
+  });
+});
+```
+
+The bad test:
+- Asserts on internal state (`input.value`) that was just set — tautological
+- Asserts a mock was called with specific args — proves the component calls a function, proves nothing about the app working
+- Never loads a real page, never checks real navigation, never checks real state
+
+The good test:
+- Opens the real app in a browser
+- Performs real human actions (type, click, wait for navigation)
+- Asserts on observable outcomes (URL changed, UI element shows the user's name)
+- If this passes, the app actually works for this workflow
+
+### The accretion mechanism
+
+Adding a unit test for a new feature is the path of least resistance: it is fast, it does not require infrastructure (Playwright, a browser, a server), and it produces a green checkmark.
+The agent took the cheap win.
+The result is a test suite with 500 passing tests and a broken app.
+
+### The existential question
+
+Why does this test exist?
+To prove the app works for real users?
+Or to make the test suite count go up?
+
+For every test file: does it exercise a real user workflow?
+If the answer is "no, it tests an individual function" — does that function have its own proof of correctness (type safety, formal verification, a property-based test) that a unit test improves?
+If not, the unit test is accretion.
+
+### Detection
+
+- Count the ratio of unit tests to integration/E2E tests.
+  A high unit-to-E2E ratio is suspicious (the app is simple — most behavior should be tested at the workflow level).
+- For every unit test: if you delete it, does a human still know the app works because an E2E test covers the same workflow?
+  If yes, the unit test is slop.
+- Does the test use mocks to simulate dependencies?
+  Mock-heavy tests prove the mocks work, not the app.
+  Replace with real dependencies or E2E tests.
+- Does the test set a value and then assert that value was set?
+  That is tautological.
+  It proves the test infrastructure works, not the app.
+
+### Corrective
+
+Replace mock-heavy unit tests with Playwright/Cypress tests that reproduce real human workflows: open app → click → observe result.
+Unit test only code that has its own proof-of-correctness gap (complex business logic with no type-level guarantees).
+
+* * *
+
+## No Clear Contracts (Undelineated Happy Paths)
+
+A codebase where you cannot answer the question: "what is THE way to do X?" There is no blessed path, no documented workflow, no clear owner for any critical operation.
+Every agent added its own way of doing things, and no agent ever standardized.
+
+### The Pattern
+
+- Three different ways to make an API call in the same app (raw `fetch`, a `useApi` hook, a `apiClient` class), none deprecated, none documented as preferred
+- Two different component patterns (class components in one directory, function components in another) with no migration path or convention
+- Configuration spread across env vars, config files, CLI flags, and hardcoded defaults, with no documented precedence order
+- A justfile with `build`, `make`, `compile` — all doing slightly different things, none marked as the canonical build command
+- No README or top-level doc that says "here is the architecture, here are the key abstractions, here is how to add a feature"
+
+### The accretion mechanism
+
+Each agent added the path of least resistance for its task.
+If the existing `fetch` call was awkward for the new use case, the agent didn't refactor it — it added a new pattern alongside it.
+The new pattern "works" and passes review.
+Now there are two patterns.
+
+Over time, the number of ways to do anything grows monotonically.
+No agent ever deprecates, removes, or consolidates, because that would require understanding the full codebase — expensive — and the payoff is invisible.
+The result is a codebase with N ways to do everything, where N only increases.
+
+### The existential question
+
+If I need to add a feature right now, where do I start?
+Is there a single command?
+A single file to edit?
+A documented workflow?
+
+If the answer is "it depends" or "there are several ways" or "let me check a few files first," the codebase has no clear contracts.
+The happy paths were never delineated.
+
+### Detection
+
+- Count the number of ways any given operation can be done.
+  If more than one exists, the codebase has no clear contract.
+- Is there a `README.md` or architecture doc that describes the blessed paths?
+  If not, accretion has already happened.
+- Is there a single `just build` / `just test` / `just deploy` that everyone uses, or are there alternatives?
+  Alternatives mean no contract.
+- Can you identify an owner for each critical workflow?
+  If not, no one is responsible for keeping it correct.
+
+### Why it matters
+
+No clear contracts means the codebase is not designed — it is accumulated.
+Every future agent will add yet another way to do things, making the surface wider and the contracts weaker.
+The fix is to pick ONE way, document it, deprecate the others, and enforce with lint rules.
+
+* * *
+
+## Kitchen Sink Accumulation (Monolithic Recipes, Utilities, and Docs)
+
+A single file that accumulates every conceivable recipe, utility function, or piece of documentation because agents added to it instead of organizing.
+The justfile with 40 recipes.
+The `utils.ts` with 50 unrelated functions.
+The `README.md` that is 800 lines of accumulated instructions.
+
+### The Pattern
+
+```justfile
+# A justfile that grew by accretion:
+build:
+    # ... actual build logic
+
+assemble:
+    # ... assembly logic extracted from build
+
+test:
+    # ... test logic
+
+test-release: test
+    # ... release-specific test
+
+generate-macros:
+    # ... macro generation
+
+sync:
+    # ... sync to server
+
+preview:
+    # ... preview build
+
+preview-open: preview
+    # ... open preview in browser
+
+update-snapshots:
+    # ... update test snapshots
+
+check-hygiene:
+    # run various checks
+
+lint:
+    # run linter
+
+format:
+    # run formatter
+
+clean:
+    # clean build artifacts
+
+doctor:
+    # check system setup
+
+# ... 20 more
+```
+
+Each recipe was added by a different agent session.
+Each was the path of least resistance for that task ("just add another recipe"). No agent ever asked: "does this belong in the justfile, or should it be a separate script?"
+"Does this belong in the public interface?"
+"Could this be consolidated with an existing recipe?"
+
+The same pattern appears in:
+- **`utils.py` / `helpers.ts`** — a dumping ground for unrelated functions, each added because "we need this utility somewhere" and the utils file already exists
+- **`README.md`** — accumulates installation instructions, usage examples, architecture notes, contribution guidelines, troubleshooting tips, and historical context, all in one flat file, because no one created separate documents
+- **`styles.css` / `globals.css`** — accumulates every CSS rule because "put it in the global stylesheet" is the path of least resistance
+
+### The existential question
+
+Why does this file exist?
+Not "what does it contain" — what CONCEPT does it represent?
+
+A justfile should represent "ways to interact with this project."
+If it has 40 entries, it no longer represents a designed interface — it is a log of every agent session that touched the project.
+The same for utils files: they should represent "shared operations that don't belong to any module."
+If they have 50 unrelated functions, they represent nothing.
+
+### Detection
+
+- Count the entries in any aggregation file (justfile recipes, utility module exports, README sections).
+  More than 15-20 is a smell.
+- Are there groups of entries that could be extracted into their own file?
+- Does the file have a clear purpose stated in its first lines/doc comment, and do all entries serve that purpose?
+- Would deleting any entry cause a breakage (not just a search-and-find, but a real dependency on that entry)?
+  If not, it is accretion.
+
+### Corrective
+
+Split monolithic files by concern.
+A justfile with 40 recipes should become a justfile with 5 public recipes and delegated scripts in a `scripts/` directory.
+A `utils.ts` with 50 functions should be split into domain-specific utility modules.
+A `README.md` with 800 lines should link to separate docs.
+
+Every entry must justify its existence against the file's stated purpose.
+If it cannot, it is accretion slop.
+
+* * *
+
+## Brittleness as Blast-Radius Smell
+
+**“Brittle” does NOT mean “doesn’t handle many edge cases.”** Edge-case handling is a natural consequence of bugs that surface during planned development.
+It is not a quality signal and its absence is not a defect.
+Do not critique code for lacking speculative edge-case handling.
+
+**Brittle means: what happens when a future agent goes to edit this code.** The question is not “does this handle every case” but “do small changes have large blast radii?”
+
+### The Pattern
+
+- **Scattered truth**: the same concept or data is defined in multiple places, so changing one site breaks distant consumers.
   The fix is a single source of truth, not more edge-case handling.
 
-- **Coupling to volatile data**: functionality tied to string outputs, exact structures
-  of other code, exact log messages, exact file paths, or exact serialized formats.
+- **Coupling to volatile data**: functionality tied to string outputs, exact structures of other code, exact log messages, exact file paths, or exact serialized formats.
   When any of those change, the dependent code breaks silently.
   The fix is structural decoupling, not defensive parsing.
 
-- **Regex instead of simpler correct approaches**: using complex regex where simple
-  string containment, exact matching, or a typed comparison would be equally correct and
-  far more maintainable.
-  A bad LLM might write a complex regex to catch `\begin{align*}` in LaTeX, which
-  requires borderline reinventing a leaf of a full token parser, when the equally simple
-  `'align*' in mystring` is completely and obviously right — it matches exactly the
-  intended matches, uses simpler string containment, and has no need to deal with regex
-  edge cases or an inscrutable matching pattern.
-  The regex is not “more correct” — it is harder to read, harder to modify, and more
-  likely to break on unexpected input.
+- **Regex instead of simpler correct approaches**: using complex regex where simple string containment, exact matching, or a typed comparison would be equally correct and far more maintainable.
+  A bad LLM might write a complex regex to catch `\begin{align*}` in LaTeX, which requires borderline reinventing a leaf of a full token parser, when the equally simple `'align*' in mystring` is completely and obviously right — it matches exactly the intended matches, uses simpler string containment, and has no need to deal with regex edge cases or an inscrutable matching pattern.
+  The regex is not “more correct” — it is harder to read, harder to modify, and more likely to break on unexpected input.
 
-- **Tight coupling to implementation details**: code that depends on the internal shape
-  of another module’s output, the exact order of keys in a dictionary, or the specific
-  text of an error message.
+- **Tight coupling to implementation details**: code that depends on the internal shape of another module’s output, the exact order of keys in a dictionary, or the specific text of an error message.
   When the other module changes, this code breaks.
 
-- **Large blast radius per change**: a single edit requires synchronized changes in
-  multiple files, because the code is not organized around stable interfaces.
+- **Large blast radius per change**: a single edit requires synchronized changes in multiple files, because the code is not organized around stable interfaces.
 
 ### Detection
 
 For every code dependency (imports, string references, structural assumptions):
 
-- **If the depended-on thing changes, how many other things break?** If the answer is
-  “many,” the code is brittle — not because it lacks edge cases, but because its
-  dependencies are unstable.
+- **If the depended-on thing changes, how many other things break?** If the answer is “many,” the code is brittle — not because it lacks edge cases, but because its dependencies are unstable.
 
-- **Is the same concept defined in multiple places?** If yes, scattered truth is the
-  brittleness, and the fix is consolidation, not defensive handling at each site.
+- **Is the same concept defined in multiple places?** If yes, scattered truth is the brittleness, and the fix is consolidation, not defensive handling at each site.
 
-- **Is the code using regex where simpler string operations would be equally correct?**
-  If yes, the regex is a brittleness smell — harder to read, harder to modify, and more
-  likely to break on unexpected input.
+- **Is the code using regex where simpler string operations would be equally correct?** If yes, the regex is a brittleness smell — harder to read, harder to modify, and more likely to break on unexpected input.
   Replace with the simplest correct approach.
 
-- **Does the code depend on the exact shape of another module’s output?** If yes, the
-  coupling is to an implementation detail that can change without notice.
-  The fix is structural decoupling (typed interfaces, stable contracts), not defensive
-  parsing.
+- **Does the code depend on the exact shape of another module’s output?** If yes, the coupling is to an implementation detail that can change without notice.
+  The fix is structural decoupling (typed interfaces, stable contracts), not defensive parsing.
 
 ### Why This Matters
 
 Brittle code is the primary source of “this worked yesterday” failures.
-A future agent makes a small, seemingly correct change to one module, and three other
-modules break because they were coupled to the exact string output, the exact dictionary
-key order, or the exact regex pattern that the change altered.
-The fix is always structural: single source of truth, stable interfaces, simpler correct
-approaches. Never speculative edge-case handling.
+A future agent makes a small, seemingly correct change to one module, and three other modules break because they were coupled to the exact string output, the exact dictionary key order, or the exact regex pattern that the change altered.
+The fix is always structural: single source of truth, stable interfaces, simpler correct approaches.
+Never speculative edge-case handling.
 
 * * *
 
@@ -372,8 +1287,7 @@ approaches. Never speculative edge-case handling.
 
 The real dead code problem is not unimported files.
 `knip` and `vulture` handle those.
-The real problem is **dead branches inside imported files** — logic that executes but
-never does anything meaningful, or branches that are unreachable from all call sites.
+The real problem is **dead branches inside imported files** — logic that executes but never does anything meaningful, or branches that are unreachable from all call sites.
 
 ### The Pattern
 
@@ -390,14 +1304,11 @@ never does anything meaningful, or branches that are unreachable from all call s
 ### Why It Happens
 
 LLMs patch symptoms, not causes.
-When a test fails because a function throws, the model adds a `try/catch` with
-`console.log(e)` and continues.
+When a test fails because a function throws, the model adds a `try/catch` with `console.log(e)` and continues.
 When a type error occurs, the model adds `as any` or a runtime check.
-When a linter complains about an unhandled case, the model adds a default branch that
-returns `undefined`.
+When a linter complains about an unhandled case, the model adds a default branch that returns `undefined`.
 
-This introduces **dead control flow** that makes the program appear to work but actually
-hides bugs and weakens invariants.
+This introduces **dead control flow** that makes the program appear to work but actually hides bugs and weakens invariants.
 
 ### Detection
 
@@ -419,29 +1330,23 @@ For every branch and catch block:
 ## Myopic Patching & Patch Accretion
 
 LLMs patch locally without understanding the global structure.
-Over time, this produces **patch accretion**: evidence of continued monkey-patching with
-no refactor.
+Over time, this produces **patch accretion**: evidence of continued monkey-patching with no refactor.
 
 ### The Pattern
 
-- **Stacked conditionals around prior mistakes**: `if (a) { if (b) { if (c) { ... }}}`
-  where each layer was added to fix a bug the previous layer introduced
+- **Stacked conditionals around prior mistakes**: `if (a) { if (b) { if (c) { ... }}}` where each layer was added to fix a bug the previous layer introduced
 
-- **Parallel helpers**: Three similar functions that should be one, each adding a
-  slightly different workaround
+- **Parallel helpers**: Three similar functions that should be one, each adding a slightly different workaround
 
-- **New adapters that preserve a bad shape**: Instead of replacing a bad data structure,
-  the model writes a wrapper that adapts the bad shape into a slightly-less-bad shape
+- **New adapters that preserve a bad shape**: Instead of replacing a bad data structure, the model writes a wrapper that adapts the bad shape into a slightly-less-bad shape
 
-- **Flag proliferation**: Boolean flags added to functions to control behavior that
-  should be separate concerns
+- **Flag proliferation**: Boolean flags added to functions to control behavior that should be separate concerns
 
 ### Why It Happens
 
-The LLM sees the immediate error (test fails, linter complains) and adds the smallest
-possible local fix.
-It does not step back and ask: “Why is this structure producing these
-errors? Should the structure itself change?”
+The LLM sees the immediate error (test fails, linter complains) and adds the smallest possible local fix.
+It does not step back and ask: “Why is this structure producing these errors?
+Should the structure itself change?”
 
 ### Detection
 
@@ -459,21 +1364,19 @@ Look for:
 
 ## Abstraction Inflation
 
-LLMs are trained to produce “clean code” which often means “lots of small functions and
-classes.” But abstraction is only valuable when it **uniformizes a construction** — when
-the same pattern appears at many call sites and the abstraction captures that pattern.
+LLMs are trained to produce “clean code” which often means “lots of small functions and classes.”
+But abstraction is only valuable when it **uniformizes a construction** — when the same pattern appears at many call sites and the abstraction captures that pattern.
 
 ### The Pattern
 
-- **Helper function that indirects 3 LOC**: Used once, adds indirection without naming a
-  real concept. This is an abstraction layer, likely not necessary UNLESS it uniformized
-  a construction.
+- **Helper function that indirects 3 LOC**: Used once, adds indirection without naming a real concept.
+  This is an abstraction layer, likely not necessary UNLESS it uniformized a construction.
 
 - **Complex class hierarchies**: Suspicious.
   Class hierarchies in LLM-generated code are almost always premature abstraction.
 
-- **Standalone modular components** (e.g., `card.tsx`, `dialog.tsx`): Likely a CORRECT
-  abstraction. These are concrete implementations, not abstraction layers.
+- **Standalone modular components** (e.g., `card.tsx`, `dialog.tsx`): Likely a CORRECT abstraction.
+  These are concrete implementations, not abstraction layers.
   Be SKEPTICAL of their slop status but do not confuse them with abstraction inflation.
 
 - **One-off micro-helpers (3-line functions used once)**: Almost always slop.
@@ -487,30 +1390,24 @@ For every function or class:
   If one, it should be inlined or justify its existence with a named concept.
 
 - Does this abstraction remove duplication or just move it?
-  If the “abstracted” code is only slightly different at each call site, the abstraction
-  is wrong.
+  If the “abstracted” code is only slightly different at each call site, the abstraction is wrong.
 
 - Is this a class hierarchy where composition would suffice?
-  E.g., `FooBase` → `FooImpl` → `FooManager` when a single function + config object
-  would work.
+  E.g., `FooBase` → `FooImpl` → `FooManager` when a single function + config object would work.
 
 * * *
 
 ## Spaghetti Data Flow
 
-Values that are parsed, re-parsed, stringified, re-shaped, or tunneled across files
-without a canonical data model.
+Values that are parsed, re-parsed, stringified, re-shaped, or tunneled across files without a canonical data model.
 
 ### The Pattern
 
-- YAML frontmatter parsed to JS object → stringified to JSON → parsed back to JS →
-  concatenated into HTML → regex-extracted back to text
+- YAML frontmatter parsed to JS object → stringified to JSON → parsed back to JS → concatenated into HTML → regex-extracted back to text
 
-- Configuration read from env vars, then overridden by CLI flags, then overridden by
-  hardcoded defaults in code, with no clear precedence
+- Configuration read from env vars, then overridden by CLI flags, then overridden by hardcoded defaults in code, with no clear precedence
 
-- The same data structure defined in three places: the database schema, the API response
-  type, and the frontend component props, none of which share a source
+- The same data structure defined in three places: the database schema, the API response type, and the frontend component props, none of which share a source
 
 ### Detection
 
@@ -528,14 +1425,11 @@ It is wrong when it creates a second source of truth.
 
 ### The Pattern
 
-- A route list hardcoded in `App.tsx` when `site-manifest.json` already has the
-  canonical route list
+- A route list hardcoded in `App.tsx` when `site-manifest.json` already has the canonical route list
 
-- A component registry that duplicates the component names from the Pandoc filter that
-  generates `data-component` attributes
+- A component registry that duplicates the component names from the Pandoc filter that generates `data-component` attributes
 
-- Test fixtures that contain copy-pasted config instead of importing from the config
-  file they test
+- Test fixtures that contain copy-pasted config instead of importing from the config file they test
 
 ### Detection
 
@@ -551,29 +1445,21 @@ For every literal string, number, or array in source code:
 
 ## Introspection Red Flags
 
-Runtime type/shape introspection (`isinstance`, `hasattr`, `getattr`, `type()`,
-`issubclass`, `callable()`) is a diagnostic signal that code is guessing about input
-shapes at runtime rather than having asserted and type-checked shapes up front.
+Runtime type/shape introspection (`isinstance`, `hasattr`, `getattr`, `type()`, `issubclass`, `callable()`) is a diagnostic signal that code is guessing about input shapes at runtime rather than having asserted and type-checked shapes up front.
 
-This section is retained from the original `code-patterns.md` because the reasoning
-framework (the Core Signal, the Reasoning Chain, the Acceptance Criteria Table) is
-genuinely useful for structural analysis.
-However, the framing is updated: runtime introspection is not “slop” per se but a **flag
-that the type system boundary is broken**. The question is not “is this good style” but
-“why doesn’t the code already know the shape of this object?”
+This section is retained from the original `code-patterns.md` because the reasoning framework (the Core Signal, the Reasoning Chain, the Acceptance Criteria Table) is genuinely useful for structural analysis.
+However, the framing is updated: runtime introspection is not “slop” per se but a **flag that the type system boundary is broken**. The question is not “is this good style” but “why doesn’t the code already know the shape of this object?”
 
 ### The Core Signal
 
-Every use of these functions raises the same question: **why doesn’t the code already
-know the shape of this object?**
+Every use of these functions raises the same question: **why doesn’t the code already know the shape of this object?**
 
 ### The Reasoning Chain
 
-1. **Is this a legitimate boundary?** Typed/untyped interface, external library, JSON
-   deserialization. If yes → 2. If no → design smell.
+1. **Is this a legitimate boundary?** Typed/untyped interface, external library, JSON deserialization.
+   If yes → 2. If no → design smell.
 
-2. **Is the check minimal and localized?** Boundary checks should appear once at the
-   entry point, then immediately narrow to a typed path.
+2. **Is the check minimal and localized?** Boundary checks should appear once at the entry point, then immediately narrow to a typed path.
    Repeated checks deeper in the stack = boundary never properly crossed.
 
 3. **What is missing?**
@@ -586,8 +1472,7 @@ know the shape of this object?**
 
    - Constructor gate that validates once
 
-4. **Could the shape be asserted instead of interrogated?** `assert isinstance(x, T)`
-   documents precondition, fails loudly, does not silently recover.
+4. **Could the shape be asserted instead of interrogated?** `assert isinstance(x, T)` documents precondition, fails loudly, does not silently recover.
    This is categorically different from branching behavior on type.
 
 | Pattern | When Acceptable | Remediation When Not |
@@ -603,17 +1488,14 @@ know the shape of this object?**
 
 ## Cross-References
 
-- **`../../reviewing-llm-code/references/pattern-catalog.md`** — Central catalog of
-  regex against semantic formats, fallback laundering, no-op behavior, QC appeasement
-  code, and recipe bypasses.
+- **`../../reviewing-llm-code/references/pattern-catalog.md`** — Central catalog of regex against semantic formats, fallback laundering, no-op behavior, QC appeasement code, and recipe bypasses.
+  The **Hollow Facade** pattern in this file overlaps with several patterns there: **no-op behavior**, **user-deceptive code**, **unreachable or no-op code**, and **recipe proliferation** — but the Hollow Facade is more specific: it requires the entity to be *dressed up* (named, documented, with success output) as if it owns behavior it does not own.
+  A no-op function without naming camouflage is not a hollow facade.
   Always load this first.
 
-- **`../SKILL.md`** — The main anti-slop skill with hard rules, dependency inversion
-  principle, explicit anti-patterns, and the abstraction taxonomy.
+- **`../SKILL.md`** — The main anti-slop skill with hard rules, dependency inversion principle, explicit anti-patterns, and the abstraction taxonomy.
   Read that before this reference.
 
-- **`test-patterns.md`** — Testing-specific structural failures (content-free
-  verification, tautological testing, mock-first evasion, masking over failure).
+- **`test-patterns.md`** — Testing-specific structural failures (content-free verification, tautological testing, mock-first evasion, masking over failure).
 
-- **`llm-failure-modes`** — Cognitive failure modes (overconfidence, confabulation,
-  premature solution generation, replacement instinct).
+- **`llm-failure-modes`** — Cognitive failure modes (overconfidence, confabulation, premature solution generation, replacement instinct).
