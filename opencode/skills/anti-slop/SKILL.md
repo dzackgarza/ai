@@ -582,3 +582,9 @@ Secondary references (use when the central catalog does not cover the specific d
 - `references/design-patterns.md` — Visual and UX design slop patterns
 
 - `references/text-patterns.md` — Natural language slop patterns (text-only reviews)
+
+## Remediation
+
+This skill is ANALYSIS only. It detects slop but does not prescribe fixes.
+
+When slop has been identified, do NOT rename or delete it — both are laundering. Instead, load **`../fixing-slop/SKILL.md`** for the remediation protocol: reconstruct the narrative, identify the correct intention, fulfill the intention with the right implementation.
