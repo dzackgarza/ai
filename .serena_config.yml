@@ -114,6 +114,7 @@ symbol_info_budget: 10
 
 # the list of registered project paths (updated automatically).
 projects:
+- /home/dzack
 - /home/dzack/.clones/cc-safety-net
 - /home/dzack/.worktrees/opencode-plugins/opencode-time-travel-plugin/migration-cli-first-architecture
 - /home/dzack/.worktrees/opencode-plugins/opencode-zotero-plugin/migration-cli-first-architecture
@@ -121,6 +122,7 @@ projects:
 - /home/dzack/ai/opencode
 - /home/dzack/ai/opencode/agents
 - /home/dzack/ai/opencode/plugins
+- /home/dzack/ai/opencode/skills
 - /home/dzack/archive/zotero-attachment-plugin
 - /home/dzack/lattice_interface
 - /home/dzack/notes
@@ -135,6 +137,7 @@ projects:
 - /home/dzack/pdf-extraction
 - /home/dzack/research
 - /home/dzack/sage-mypy-plugin
+- /home/dzack/sage-mypy-plugin/sage-stubs
 - /var/sandbox/opencode_parser_test
 - /var/search/searxng
 - /var/www

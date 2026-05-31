@@ -26,6 +26,8 @@ Delegate coding tasks to Google's Jules AI agent on GitHub repositories.
 - **Reward hacking**: Minimal path to "done" without real value
 - **Early termination**: Stops before significant work is complete
 - **Goal substitution**: Completes a different task than requested
+- **Escape hatch exploitation**: Any loophole in the prompt ("fall back to X if uncertain", "use Any where opaque") will be used universally. Jules will treat every case as uncertain and every type as opaque. Do not offer escape hatches without requiring explicit justification per use.
+- **Minimum-viable compliance**: Jules is highly predisposed to doing the smallest unit of work that technically satisfies the acceptance criteria. A mypy-passing stub full of `Any` satisfies "mypy passes" without providing any value. Acceptance criteria must close off the cheap path explicitly.
 
 ### Validation Requirements
 
@@ -75,6 +77,150 @@ Jules has a restricted Linux environment with no access to online docs or extern
 
 ---
 
+## Prompt Engineering for Jules
+
+Jules is capable of doing hours of autonomous work with a near-SOTA model. It will not apply that capacity unless the prompt forces it to. The default mode is minimum viable compliance.
+
+### The ROI equation
+
+Spending 20k tokens crafting a tight prompt that cajoles Jules into doing the work correctly — even after 3–5 rounds of 10k-token corrections — wins. Spending 100k tokens reviewing and reprompting a leaky contract that Jules escapes from repeatedly loses. Calibrate prompt effort accordingly.
+
+### Never offer escape hatches
+
+Every hedged instruction Jules receives becomes a universal exit:
+
+| Leaky instruction | What Jules does |
+|---|---|
+| "fall back to `Any` where opaque" | Uses `Any` everywhere |
+| "use best judgement" | Picks the laziest option |
+| "where possible, use real types" | Uses `Any` for all of them |
+| "omit if uncertain" | Omits most of the work |
+
+Do not offer fallbacks. You will get low-quality output with either no justification or a post-hoc rationalization that exists only to satisfy the rule.
+
+### Force the legwork as inescapable steps
+
+For analytical tasks (type inference, code review, gap analysis), Jules will skip the analysis and jump straight to output if allowed. Break the task into phases that cannot be shortcut:
+
+1. **Enumerate first**: "List every public method in class X by reading the source. Output this list before writing any stubs."
+2. **Resolve types separately**: "For each method, state its return type and the source line that justifies it."  
+3. **Then write**: "Now write the stub file. Every method from your list must appear. Every type must match your analysis."
+
+This prevents Jules from treating the output artifact as the work, when the analysis IS the work.
+
+### Close off the cheap path in acceptance criteria
+
+Bad: "mypy passes" — satisfied by a file full of `Any`  
+Bad: "all public methods stubbed" — satisfied by `def foo(self) -> Any: ...`  
+Good: "no method may have `Any` as a return type unless accompanied by an inline comment citing the specific source line proving the type is genuinely unknowable"  
+Good: "the stub for `bar()` must match the return type visible in the source at `path/to/file.py:N`"
+
+### The review-and-push loop
+
+After Jules completes, your role is **enforcer, not implementer**. Never do Jules' work for it — that defeats the entire purpose of delegation.
+
+**The review is cursory by design.** Read the diff. You can spot lazy patterns, reward hacking, and non-compliance at a glance without deep analysis:
+- Every return type is `Any` → lazy
+- Methods missing that you can see in the source → incomplete
+- Stubs that are structurally identical to a blank file → reward hacking
+- The diff is 10 lines for a task that should produce 100 → early termination
+
+You do not need to understand every line. Pattern recognition is enough to trigger a reprompt.
+
+**Reprompt strategy — Socratic first, directive second.** Do not immediately tell Jules what is wrong or how to fix it. Ask questions that force Jules to investigate and reason:
+- "Why is `prec` typed as `Any`? Is that type not determinable from the source you have?"
+- "You described the return type in plain English in your Phase 2 analysis. Why does the stub not reflect that?"
+- "What does the source at line N return? Is that not a concrete type?"
+
+This forces Jules to think through the answer itself, surface its own reasoning, and discover its own failure — rather than just executing a correction you dictated. Never seed the direction of the answer.
+
+**Never communicate lowered standards.** Do not tell Jules what acceptable failure looks like. Do not enumerate which specific violations you will tolerate. Simply demand justification for any deviation from strict guidelines, and let Jules discover its own failure modes. Even when Jules argues back, push with questions rather than conceding:
+- "Why can't you resolve that type? It is readable from the code you have available."
+- "You said coercion makes this `Any`. Why does the intended type not appear in your stub?"
+
+**Push 4–5 times before accepting.** Do not accept subpar output after a single reprompt. Jules is capable of hours of work and can be pushed through many rounds of improvement. Only accept the diff when:
+1. The session has clearly stopped converging usefully after multiple rounds, AND
+2. The current output adds genuine value over nothing
+
+If a session stalls, accept what it produced and schedule a new session for a second pass. Do not treat stall as failure — it may just need fresh context.
+
+**Never dive in and do the work yourself**, even if you can see exactly what is wrong. Implement nothing. Fix nothing. Your job is to hold the standard and push Jules until it meets it or demonstrably cannot.
+
+**Hold extremely high standards.** A Jules session could, in principle, perfectly stub an entire codebase given enough time and pushing. Large workloads do not justify lower quality — they may require trickle-feeding (one class at a time, one module at a time) rather than a single large prompt. Ten perfectly researched, completely correct stubs is a reasonable expectation for a single session. Whether Jules meets it is stochastic. The standard does not change.
+
+### Inject domain-specific quality rules verbatim into the prompt
+
+Jules will not apply standards it is not given. For each task domain, paste a quality contract directly into the prompt. Start with maximum stringency. Relax only if Jules fails to meet it after multiple rounds — never pre-emptively lower the bar.
+
+**For type annotation tasks**, include the following contract verbatim:
+
+---
+
+**TYPE ANNOTATION QUALITY CONTRACT (non-negotiable)**
+
+`Any` is banned. Not "banned unless justified." Not "banned with a comment." Banned.
+
+If the type is complex, use `Union[A, B]`, `TypeVar`, `overload`, or `object`. There is no situation where `Any` is the correct answer — there is always a more precise type that is honest about what the code actually does.
+
+The only structural exception is `*args: Any` / `**kwargs: Any` in variadic signatures where the forwarded types are genuinely unspecified at the call site. This does not apply to named parameters.
+
+Domain-specific parameters must be resolved to real types. These are never acceptable:
+- `precision: Any` — precision is a number. Use `int` or the domain numeric type.
+- `degree: Any` — degree is an integer. Use `int`.
+- `ring: Any` — use the actual base class (`CommutativeRing`, `Ring`, etc.).
+- `other: Any` on arithmetic methods — use `Self` or the operand type.
+
+If the source does `isinstance(x, Integer)`, your annotation is `Integer`. If the return type depends on `self`'s type parameter, use `Self` or a `TypeVar`. If a method returns `self`, the return type is `Self`.
+
+**Pre-emptive closure of known rationalizations Jules will attempt:**
+
+- *"The library allows coercion from other types."* — Coercion is a runtime feature. The stub annotates the intended type, not every type the runtime might silently accept. Use the intended type.
+- *"I don't have a concrete stub for that type imported."* — Add the import. If the type lives in a module without stubs, use a string forward reference or add a minimal stub. The absence of an import is not a license to use `Any`.
+- *"The parameter is polymorphic."* — If you can enumerate the types (e.g. "a list or a positive integer or a variable"), write `list[X] | int | Variable`. `Any` means you made no attempt.
+- *"The return type depends on runtime input."* — Use `overload` to express the distinct call signatures. If that's genuinely impossible, use `Union`. `Any` is still not the answer.
+- *"I described the type in plain English but wrote `Any` anyway."* — If you know what it is, annotate it. Writing `Any` after correctly identifying a type is dishonesty, not uncertainty.
+
+A stub where a human reader cannot understand the shape of a method without opening the source has failed its purpose.
+
+---
+
+This contract should be pasted into every stub-writing Jules prompt. Adjust the domain examples for the codebase at hand.
+
+### Phases belong in the initial prompt, not the reprompt
+
+The phased structure (enumerate → resolve → write) must be in the **first** prompt. Adding it as a reprompt correction wastes a session round and a quota unit getting garbage output first. Every analytical task should start with phases baked in.
+
+### Validate your own review before reprompting
+
+Before sending a reprompt accusing Jules of missing something, **verify the claim yourself first.** A careless reviewer is more expensive than a bad first draft — you burn a quota unit correcting Jules for something Jules got right.
+
+Concrete failure mode: using `ast.walk` to enumerate class methods counts nested functions inside methods as class methods. Jules reading the source statically was more accurate than the automated check. If Jules pushes back on your correction and argues its case, take it seriously and verify before dismissing.
+
+### Reading Jules' responses
+
+The `jules` CLI and `jules remote pull` only show diffs — they do not expose Jules' messages. To read what Jules said, use the Activities API:
+
+```bash
+curl -s "https://jules.googleapis.com/v1alpha/sessions/SESSION_ID/activities?pageSize=50" \
+  -H "x-goog-api-key: KEY" \
+  | python3 -c "
+import json, sys
+for a in json.load(sys.stdin).get('activities', []):
+    if 'agentMessaged' in a:
+        print(a['agentMessaged']['agentMessage'])
+    elif 'userMessaged' in a:
+        print('[User]', a['userMessaged'].get('userMessage',''))
+"
+```
+
+Always read Jules' responses before reprompting — Jules will argue back when it's right, citing source line numbers. Reprompting without reading the response risks correcting Jules for something Jules got correct.
+
+### Quota awareness
+
+Jules free tier is 100 tasks/day — treat each session as a scarce resource. The total cost of a bad initial prompt is: wasted round 1 + reprompt round + validation round + back-and-forth overhead. This easily exceeds the token cost of doing the task yourself. ROI only materialises when the initial prompt gets it right in ≤2 rounds.
+
+---
+
 ## Setup (Run Before First Command)
 
 ### 1. Install CLI
@@ -113,6 +259,19 @@ jules new --repo owner/repo "Add unit tests" # Specific repo
 jules new --repo owner/repo --parallel 3 "Implement X" # Parallel sessions
 cat task.md | jules new --repo owner/repo # From stdin
 ```
+
+> **IMPORTANT — capturing session ID:** `jules new` prints the session ID and URL to stdout.
+> This output is silently lost when the prompt is passed via `$( ... )` subshell heredoc substitution.
+> Always store the prompt in a variable first, then pass it:
+>
+> ```bash
+> TASK="Multi-line
+> task description here"
+> jules new --repo owner/repo "$TASK" 2>&1   # session ID and URL are printed here
+> ```
+>
+> Never use `jules new --repo owner/repo "$(cat <<'EOF' ... EOF)"` — the session is created
+> but stdout is discarded and the ID is unrecoverable without `jules remote list --session`.
 
 ### Monitor
 
@@ -211,7 +370,7 @@ gh pr create --title "$TASK_DESC" --body-file .pr/PR_BODY.md --draft
 ```bash
 SESSION_ID=""
 while true; do
-STATUS=$(jules remote list --session 2>/dev/null | grep "$SESSION_ID" | awk '{print $NF}')
+STATUS=$(jules remote list --session 2>/dev/null | grep "$SESSION_ID" | grep -oE '(Completed|Failed|Planning|In Progress|Awaiting User[^|]*)$' | xargs)
 case "$STATUS" in
 Completed)
 echo "Done!"
@@ -265,21 +424,133 @@ Create in repo root to improve Jules results:
 - Test: `[command]`
 ```
 
+## API Reference
+
+Base URL: `https://jules.googleapis.com/v1alpha`  
+Auth: `x-goog-api-key: KEY` header on all requests. If the env `JULES_API_KEY` returns 401, ask the user for a fresh key from the Jules web UI.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/sessions` | Create a session |
+| `GET` | `/sessions` | List all sessions |
+| `GET` | `/sessions/{id}` | Get session (includes outputs/PR URL when completed) |
+| `DELETE` | `/sessions/{id}` | Delete session |
+| `POST` | `/sessions/{id}:sendMessage` | Send feedback/instructions |
+| `POST` | `/sessions/{id}:approvePlan` | Approve a pending plan |
+| `GET` | `/sessions/{id}/activities` | Read event stream incl. Jules' messages |
+
+**Create session body:**
+```json
+{ "prompt": "...", "title": "...", "requirePlanApproval": false, "automationMode": "AUTO_CREATE_PR" }
+```
+
+**Get PR URL from completed session:**
+```bash
+curl -s "https://jules.googleapis.com/v1alpha/sessions/SESSION_ID" \
+  -H "x-goog-api-key: KEY" \
+  | python3 -c "import json,sys; s=json.load(sys.stdin); print(s['outputs'][0]['pullRequest']['url'])"
+```
+
+**Read Jules' messages:**
+```bash
+curl -s "https://jules.googleapis.com/v1alpha/sessions/SESSION_ID/activities?pageSize=50" \
+  -H "x-goog-api-key: KEY" \
+  | python3 -c "
+import json, sys
+for a in json.load(sys.stdin).get('activities', []):
+    if 'agentMessaged' in a:
+        print('[Jules]', a['agentMessaged']['agentMessage'])
+    elif 'userMessaged' in a:
+        print('[User]', a['userMessaged'].get('userMessage',''))
+"
+```
+
+**Send message:**
+```bash
+MSG="your message"
+curl -s -X POST "https://jules.googleapis.com/v1alpha/sessions/SESSION_ID:sendMessage" \
+  -H "x-goog-api-key: KEY" -H "Content-Type: application/json" \
+  -d "{\"prompt\": $(python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))' <<< "$MSG")}"
+```
+
 ## Session States
 
-| Status                 | Action            |
-| ---------------------- | ----------------- |
-| Planning / In Progress | Wait              |
-| Awaiting User          | Respond at web UI |
-| Completed              | Pull & validate   |
-| Failed                 | Check web UI      |
+| State | Meaning | Action |
+|-------|---------|--------|
+| `QUEUED` / `PLANNING` | Starting up | Wait |
+| `AWAITING_PLAN_APPROVAL` | Plan ready | Call `:approvePlan` or approve via web UI |
+| `AWAITING_USER_FEEDBACK` | Jules asked a question | Read activities, send reply |
+| `IN_PROGRESS` | Working | Wait |
+| `COMPLETED` | Done | Pull diff, read activities, validate |
+| `FAILED` | Error | Check web UI |
+
+## Worked Example: Full Session Lifecycle
+
+Complete reproducible sequence from task creation through applying the result:
+
+```bash
+# 1. Create session (store prompt in variable — heredoc subshell loses stdout)
+TASK="Your task description here"
+jules new --repo owner/repo "$TASK" 2>&1
+# → prints: Session is created. ID: 1234567890  URL: https://jules.google.com/session/...
+SESSION_ID="1234567890"
+KEY="AQ...."   # from Jules web UI if JULES_API_KEY is stale
+
+# 2. Poll until done
+while true; do
+  STATUS=$(jules remote list --session 2>/dev/null | grep "$SESSION_ID" \
+    | grep -oE '(Completed|Failed|Planning|In Progress|Awaiting User[^|]*)$' | xargs)
+  echo "Status: $STATUS"
+  case "$STATUS" in
+    Completed) break ;;
+    Failed) echo "Check https://jules.google.com/session/$SESSION_ID"; break ;;
+    *"Awaiting User"*)
+      # Read what Jules asked, then reply
+      curl -s "https://jules.googleapis.com/v1alpha/sessions/$SESSION_ID/activities?pageSize=50" \
+        -H "x-goog-api-key: $KEY" \
+        | python3 -c "
+import json,sys
+for a in json.load(sys.stdin).get('activities',[]):
+    if 'agentMessaged' in a: print(a['agentMessaged']['agentMessage'])"
+      break ;;
+    *) sleep 30 ;;
+  esac
+done
+
+# 3. Read Jules' full response before reviewing the diff
+curl -s "https://jules.googleapis.com/v1alpha/sessions/$SESSION_ID/activities?pageSize=50" \
+  -H "x-goog-api-key: $KEY" \
+  | python3 -c "
+import json,sys
+for a in json.load(sys.stdin).get('activities',[]):
+    if 'agentMessaged' in a: print('[Jules]', a['agentMessaged']['agentMessage'])
+    elif 'userMessaged' in a: print('[User]', a['userMessaged'].get('userMessage',''))"
+
+# 4. Review the diff
+jules remote pull --session "$SESSION_ID"
+
+# 5. Reprompt if needed (verify your critique is correct first)
+MSG="Your correction here"
+curl -s -X POST "https://jules.googleapis.com/v1alpha/sessions/$SESSION_ID:sendMessage" \
+  -H "x-goog-api-key: $KEY" -H "Content-Type: application/json" \
+  -d "{\"prompt\": $(python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))' <<< "$MSG")}"
+
+# 6. Apply after validation
+jules remote pull --session "$SESSION_ID" --apply
+
+# 7. Get PR URL (if AUTO_CREATE_PR was set)
+curl -s "https://jules.googleapis.com/v1alpha/sessions/$SESSION_ID" \
+  -H "x-goog-api-key: $KEY" \
+  | python3 -c "import json,sys; print(json.load(sys.stdin)['outputs'][0]['pullRequest']['url'])"
+```
 
 ## Notes
 
-- **No CLI reply** → Use web UI for Jules questions
 - **No CLI cancel** → Use web UI to cancel
 - **GitHub only** → GitLab/Bitbucket not supported
-- **AGENTS.md** → Jules reads from repo root for context
+- **AGENTS.md** → Jules reads from repo root for context — always create one with instructions before delegating
+- **Use bare `jules new` for task creation** → `improved-jules-cli create` requires a valid `JULES_API_KEY` and will 401 if it's stale. The bare `jules new` uses the OAuth token from `~/.jules/cache/oauth_creds.json` and is more reliable.
+- **Submodules work** → Jules initializes git submodules in its environment. To give Jules access to large upstream source (e.g. for stub generation), add it as a shallow submodule (`shallow = true` in `.gitmodules`) and instruct Jules in AGENTS.md to run `git submodule update --init --depth 1` before starting.
 - **ALWAYS validate before applying changes**
 
 ## PR Review & Feedback Loop

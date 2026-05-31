@@ -8,24 +8,61 @@ repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 default:
     @just --list
 
-disk-free:
+# Clean local caches and removable desktop debris.
+clean:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
     df -h
     trash-empty
-    sudo rm -rf /tmp/*
-    sudo rm -rf ~/.cache
+
+    just --justfile "{{ justfile() }}" _opencode-clear-cache
+    bash "{{ repo }}/opencode/scripts/maintenance/opencode_gc.sh"
+
+    # Do not remove live session sockets. tmux uses /tmp/tmux-UID; mosh uses
+    # /tmp/mosh-* on some installs; X/session buses also keep sockets here.
+    sudo find /tmp -mindepth 1 -maxdepth 1 \
+      ! -name 'tmux-*' \
+      ! -name 'mosh-*' \
+      ! -name '.X11-unix' \
+      ! -name '.ICE-unix' \
+      ! -name '.XIM-unix' \
+      ! -name '.font-unix' \
+      ! -name '.Test-unix' \
+      ! -name 'systemd-private-*' \
+      -exec rm -rf -- {} +
+
+    if [[ -d "$HOME/.cache" ]]; then
+      find "$HOME/.cache" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+    fi
+
+    rm -rf -- \
+      "$HOME/.npm/_npx" \
+      "$HOME/.npm/_logs" \
+      "$HOME/.julia/artifacts" \
+      "$HOME/.hermes/state-snapshots"
+
     sudo rm -rf /var/lib/apt/lists/*
     sudo apt clean
     sudo apt-get autoclean
     sudo apt-get autoremove
     uv cache clean
     npm cache clean --force
-    # Additional easy-win cleanups
-    docker system prune -af --volumes 2>/dev/null || true
-    bun pm cache rm 2>/dev/null || true
-    yarn cache clean 2>/dev/null || true
-    pip cache purge 2>/dev/null || true
-    df -h
 
+    if command -v docker >/dev/null 2>&1; then
+      docker system prune -af --volumes 2>/dev/null
+    fi
+    if command -v bun >/dev/null 2>&1; then
+      bun pm cache rm 2>/dev/null
+    fi
+    if command -v yarn >/dev/null 2>&1; then
+      yarn cache clean 2>/dev/null
+    fi
+    if command -v pip >/dev/null 2>&1; then
+      pip cache purge 2>/dev/null
+    fi
+
+    df -h
 
 # =============================================================================
 # MCP Sync
@@ -60,17 +97,17 @@ usage-limits-json *ARGS="":
 _opencode-rebuild:
     @just --justfile {{ repo }}/justfile rebuild
 
-opencode-rebuild: _opencode-rebuild opencode-clear-cache opencode-restart
+opencode-rebuild: _opencode-rebuild _opencode-clear-cache opencode-restart
 
 _opencode-build-permissions:
     @just --justfile {{ repo }}/justfile permissions-apply
 
-opencode-build-permissions: _opencode-build-permissions opencode-clear-cache
+opencode-build-permissions: _opencode-build-permissions _opencode-clear-cache
 
 _opencode-build-config:
     @just --justfile {{ repo }}/justfile config-build
 
-opencode-build-config: _opencode-build-config opencode-clear-cache
+opencode-build-config: _opencode-build-config _opencode-clear-cache
 
 opencode-restart:
     systemctl --user restart opencode-serve
@@ -81,7 +118,8 @@ opencode-restart:
 # Cache Cleaning
 # =============================================================================
 
-opencode-clear-cache:
+[private]
+_opencode-clear-cache:
     #!/usr/bin/env bash
     set -euo pipefail
     cache_dir="${OPENCODE_PLUGIN_CACHE_DIR:-$HOME/.cache/opencode}"
@@ -95,6 +133,3 @@ opencode-clear-cache:
         gio trash "$path"
       fi
     done
-
-clear-caches:
-    @bash {{ repo }}/opencode/scripts/maintenance/opencode_gc.sh

@@ -1,42 +1,72 @@
 rules:
-# Codacy's LWC ESLint env does not include Promise as a global variable, so any
-# explicit `Promise` reference fires no-undef. The two patterns below catch the two
-# forms that appear in plugin/CLI code:
-#   1. Explicit `: Promise<X>` return-type annotations on functions
-#   2. `Promise.resolve(...)` / `Promise.reject(...)` calls in function bodies
-# Fix: remove the explicit return-type annotation (TypeScript infers it) and replace
-# Promise.resolve/reject with .then()-chain equivalents.
-- id: no-explicit-promise-return-type
-  pattern: |
-    function $F(...): Promise<$T> { ... }
-  message: |
-    Explicit `: Promise<$T>` return type triggers no-undef in Codacy's LWC ESLint
-    env. Remove the annotation; TypeScript infers the return type.
-  languages: [typescript]
-  severity: ERROR
-- id: no-promise-global-usage
-  patterns:
-    - pattern: Promise.resolve(...)
-    - pattern: Promise.reject(...)
-    - pattern: Promise.all(...)
-    - pattern: Promise.race(...)
-    - pattern: new Promise(...)
-  message: |
-    Direct use of the Promise global triggers no-undef in Codacy's LWC ESLint env.
-    Use .then()/.catch() chains from an existing thenable instead of constructing
-    new Promises.
-  languages: [typescript]
-  severity: ERROR
-- id: no-print-statements
-  pattern: print(...)
-  message: Print statements should not be committed
-  languages:
-  - python
-  severity: ERROR
-- id: no-console-log
-  pattern: console.log(...)
-  message: Console.log should not be committed
-  languages:
-  - typescript
-  - javascript
-  severity: ERROR
+  # Codacy's LWC ESLint env does not include Promise as a global variable, so any
+  # explicit `Promise` reference fires no-undef. The two patterns below catch the two
+  # forms that appear in plugin/CLI code:
+  #   1. Explicit `: Promise<X>` return-type annotations on functions
+  #   2. `Promise.resolve(...)` / `Promise.reject(...)` calls in function bodies
+  # Fix: remove the explicit return-type annotation (TypeScript infers it) and replace
+  # Promise.resolve/reject with .then()-chain equivalents.
+  - id: no-explicit-promise-return-type
+    pattern: |
+      function $F(...): Promise<$T> { ... }
+    message: |
+      Explicit `: Promise<$T>` return type triggers no-undef in Codacy's LWC ESLint
+      env. Remove the annotation; TypeScript infers the return type.
+    languages: [typescript]
+    severity: ERROR
+  - id: no-promise-global-usage
+    patterns:
+      - pattern: Promise.resolve(...)
+      - pattern: Promise.reject(...)
+      - pattern: Promise.all(...)
+      - pattern: Promise.race(...)
+      - pattern: new Promise(...)
+    message: |
+      Direct use of the Promise global triggers no-undef in Codacy's LWC ESLint env.
+      Use .then()/.catch() chains from an existing thenable instead of constructing
+      new Promises.
+    languages: [typescript]
+    severity: ERROR
+  - id: no-print-statements
+    pattern: print(...)
+    message: Print statements should not be committed
+    languages:
+      - python
+    severity: ERROR
+  - id: no-console-log
+    pattern: console.log(...)
+    message: Console.log should not be committed
+    languages:
+      - typescript
+      - javascript
+    severity: ERROR
+  - id: no-stub-override-with-abstractmethod
+    pattern: |
+      @override
+      @abstractmethod
+      def $F(...):
+        ...
+    message: |
+      This method has both @override and @abstractmethod with no
+      implementation. This usually means the operation is already defined
+      mathematically in greater generality on a supercategory. Review
+      whether this method should exist here at all — the inherited signature
+      from the supercategory may already be sufficient.
+    languages:
+      - python
+    severity: WARNING
+  - id: no-stub-override-pass-or-ellipsis
+    patterns:
+      - pattern: |
+          @override
+          def $F(...):
+            ...
+      - pattern-regex: '\n\s+(\.\.\.|pass)\s*\n'
+    message: |
+      This method has @override with no implementation (only `...` or
+      `pass`). This usually means the operation is already defined
+      mathematically in greater generality on a supercategory. Review
+      whether this method should exist here at all.
+    languages:
+      - python
+    severity: WARNING

@@ -74,3 +74,5 @@ Here's an example of how your output should be structured:
 </example>
 
 Please provide your summary based on the conversation so far, following this structure and ensuring precision and thoroughness in your response. 
+
+NOTE: you should EXCLUDE old, stale, or irrelevant conversational data. If a task is done and committed in git, it is likely irrelevant to this summary. If a decision was later changed or corrected, you should only include the final outcome, not a historical outline. If files are not relevant to the current task, do not mention them. Focus MUCH more on the most recent 5-10 turns, the relevance of older turns drops off exponentially.

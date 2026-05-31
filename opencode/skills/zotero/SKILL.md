@@ -73,6 +73,48 @@ python3 scripts/zotero.py <command> [options]
 
 ## Workflows
 
+### Audit Attachment Completeness
+
+When answering whether Zotero items have PDFs, markdown extractions, or other
+attachments, define the item universe before counting.
+
+- Do not treat a collection query as a library-wide result unless the user
+  explicitly scoped the question to that collection.
+- If the user says "all Zotero items", "the library", or points at an item visible
+  in the Zotero UI, query all top-level parent items, then inspect each parent's
+  children for attachment content types.
+- Use pagination for both parent item queries and attachment queries. A single
+  `limit=500` or collection response is not evidence of full coverage.
+- Count markdown extraction coverage parent-by-parent: parent item has at least
+  one PDF child and at least one child attachment with
+  `data.contentType == "text/markdown"`.
+- If any item is cited as a counterexample, query that exact title/key and its
+  children before making or defending an aggregate claim.
+- Report the exact scope used in the conclusion, e.g. "collection X" versus "all
+  parent items with PDF children in the library".
+
+Use this method for library-wide markdown coverage against the workstation-local
+Zotero API:
+
+1. Fetch all items with pagination from `http://127.0.0.1:23119/api/users/0/items`.
+2. Keep only top-level parent items: `data.itemType != "attachment"`.
+3. For each parent key, fetch all children with pagination from
+   `/api/users/0/items/{KEY}/children`.
+4. Count a parent as needing extraction when it has at least one child attachment
+   with `data.contentType == "application/pdf"` and no child attachment with
+   `data.contentType == "text/markdown"`.
+5. For a named counterexample, search the exact title with `/items?q=...`, inspect
+   each matching parent and its children, and check whether the parent belongs to
+   the collection being discussed before using it to confirm or refute the aggregate
+   result.
+
+The observed failure mode: querying only
+`/collections/JEJSXB2N/items?limit=500` produced 433/433 markdown coverage for that
+collection, but a full-library parent/child walk found 465 parent items with PDF
+children and 26 of those had no markdown child. The counterexample title
+`Introduction to the Minimal Model Problem` had a PDF-only parent outside
+`JEJSXB2N`, so the collection-scoped result was not a library-wide result.
+
 ### Add a paper by DOI
 
 ```bash
