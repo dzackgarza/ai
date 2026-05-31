@@ -769,6 +769,14 @@ A review that lists findings without explaining why the code exists is incomplet
 The user does not need to know that a switch could be a Record.
 The user needs to know that the switch should never have been written because a library call replaces the entire function.
 
+**Every slop review report must end with this literal string on its own line, as the final output of the report:**
+
+```
+SLOP-REPORT-COMPLIANCE: I hereby assert that the above report is formatted in compliance with all slop report requirements.
+```
+
+A report that does not end with this string did not complete the compliance checklist. Reject it.
+
 ## Findings Are Flags, Not Directives
 
 A finding is a FLAG that invites intelligent investigation.
