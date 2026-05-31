@@ -34,3 +34,4 @@ permission:
     /home/dzack/pdfs/*: allow
     /tmp/*: allow
 ---
+

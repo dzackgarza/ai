@@ -1,12 +1,21 @@
 ## WebGL2 Adaptation Requirements
 
-The code templates in this document use ShaderToy GLSL style. When generating standalone HTML pages, you must adapt for WebGL2:
+The code templates in this document use ShaderToy GLSL style.
+When generating standalone HTML pages, you must adapt for WebGL2:
 
 - Use `canvas.getContext("webgl2")`
-- First line of shaders: `#version 300 es`, add `precision highp float;` in fragment shaders
+
+- First line of shaders: `#version 300 es`, add `precision highp float;` in fragment
+  shaders
+
 - Vertex shader: `attribute` -> `in`, `varying` -> `out`
-- Fragment shader: `varying` -> `in`, `gl_FragColor` -> custom output variable (must be declared before `void main()`, e.g. `out vec4 outColor;`), `texture2D()` -> `texture()`
-- ShaderToy's `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to the standard `void main()` entry point
+
+- Fragment shader: `varying` -> `in`, `gl_FragColor` -> custom output variable (must be
+  declared before `void main()`, e.g. `out vec4 outColor;`), `texture2D()` ->
+  `texture()`
+
+- ShaderToy’s `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to
+  the standard `void main()` entry point
 
 # CSG Boolean Operations
 
@@ -15,12 +24,14 @@ The code templates in this document use ShaderToy GLSL style. When generating st
 CSG boolean operations are per-point value operations on two distance fields:
 
 | Operation | Expression | Meaning |
-|-----------|-----------|---------|
+| --- | --- | --- |
 | Union | `min(d1, d2)` | Take nearest surface, keeping both shapes |
 | Intersection | `max(d1, d2)` | Take farthest surface, keeping only the overlap |
 | Subtraction | `max(d1, -d2)` | Cut d1 using the interior of d2 |
 
-**Smooth booleans** (smooth min/max) introduce a blending band in the transition region. The parameter `k` controls the blend band width (larger = rounder, `k=0` degenerates to hard boolean). Multiple variants exist with different mathematical properties.
+**Smooth booleans** (smooth min/max) introduce a blending band in the transition region.
+The parameter `k` controls the blend band width (larger = rounder, `k=0` degenerates to
+hard boolean). Multiple variants exist with different mathematical properties.
 
 ## Implementation Steps
 
@@ -77,10 +88,11 @@ float sSub(float d1, float d2, float k) {
 
 ### Step 4b: Smooth Minimum Variant Library
 
-Different smin implementations have different mathematical properties. Choose based on your needs:
+Different smin implementations have different mathematical properties.
+Choose based on your needs:
 
 | Variant | Rigid | Associative | Best For |
-|---------|-------|-------------|----------|
+| --- | --- | --- | --- |
 | Quadratic (default above) | Yes | No | General use, fastest |
 | Cubic | Yes | No | Smoother C2 transitions |
 | Quartic | Yes | No | Highest quality blending |
@@ -88,7 +100,8 @@ Different smin implementations have different mathematical properties. Choose ba
 | Circular Geometric | Yes | Yes | Strict local blending |
 
 **Rigid**: preserves original SDF shape outside the blend region (no under-estimation).
-**Associative**: `smin(a, smin(b, c))` == `smin(smin(a, b), c)` — important when blending many objects where evaluation order varies.
+**Associative**: `smin(a, smin(b, c))` == `smin(smin(a, b), c)` — important when
+blending many objects where evaluation order varies.
 
 ```glsl
 // --- Cubic Polynomial smin (C2 continuous, smoother transitions) ---
@@ -472,20 +485,38 @@ float mapCharacter(vec3 p) {
 ## Performance & Composition Tips
 
 **Performance:**
-- Bounding volume acceleration: use AABB/bounding spheres to skip distant sub-scenes, reducing `mapScene()` calls
+
+- Bounding volume acceleration: use AABB/bounding spheres to skip distant sub-scenes,
+  reducing `mapScene()` calls
+
 - Tetrahedral sampling normals (4 samples) outperform central differences (6 samples)
+
 - Step scaling `t += d * 0.9` can reduce overshoot penetration
-- Prefer quadratic optimized smin/smax (fastest); use exponential version when extreme smoothness is needed
-- `k` must not be zero (division by zero error); fall back to hard boolean when near zero
+
+- Prefer quadratic optimized smin/smax (fastest); use exponential version when extreme
+  smoothness is needed
+
+- `k` must not be zero (division by zero error); fall back to hard boolean when near
+  zero
+
 - For symmetric shapes, use `abs()` to fold coordinates and define only one side
 
 **Composition techniques:**
-- **+ Domain Repetition**: `mod()`/`fract()` for infinite repetition of CSG shapes (mechanical arrays, railings)
+
+- **+ Domain Repetition**: `mod()`/`fract()` for infinite repetition of CSG shapes
+  (mechanical arrays, railings)
+
 - **+ Procedural Displacement**: overlay noise displacement on SDF for surface detail
-- **+ Procedural Texturing**: use smin blend factor to simultaneously blend material ID / color
+
+- **+ Procedural Texturing**: use smin blend factor to simultaneously blend material ID
+  / color
+
 - **+ 2D SDF**: equally applicable to 2D scenes (clouds, UI shape compositing)
-- **+ Animation**: bind k values, positions, and radii to `iTime` for dynamic deformation
+
+- **+ Animation**: bind k values, positions, and radii to `iTime` for dynamic
+  deformation
 
 ## Further Reading
 
-Full step-by-step tutorials, mathematical derivations, and advanced usage in [reference](../reference/csg-boolean-operations.md)
+Full step-by-step tutorials, mathematical derivations, and advanced usage in
+[reference](../reference/csg-boolean-operations.md)

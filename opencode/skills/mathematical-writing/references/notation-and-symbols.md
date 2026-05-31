@@ -6,7 +6,7 @@ Dzack-specific conventions that differ from common defaults.
 
 | Notation | Meaning | Note |
 | --- | --- | --- |
-| `NN` | Positive integers {1, 2, 3, ...} | **Excludes 0.** Lean's `ℕ` includes 0 — adjust statements when formalizing |
+| `NN` | Positive integers {1, 2, 3, ...} | **Excludes 0.** Lean’s `ℕ` includes 0 — adjust statements when formalizing |
 | `ZZ_{≥0}` | Non-negative integers {0, 1, 2, ...} | Use when 0 is needed |
 | `2ZZ` | Even integers | `{..., -4, -2, 0, 2, 4, ...}` |
 | `2ZZ + 1` | Odd integers | `{..., -3, -1, 1, 3, ...}` |
@@ -17,7 +17,9 @@ Dzack-specific conventions that differ from common defaults.
 Always be explicit about operations when the structure matters:
 
 - **Ring:** `(ZZ/6ZZ, +, ×)` — never write just `ZZ/6ZZ`
+
 - **Group:** `(G, ·, e)` or `(G, +, 0)` — specify operation and identity
+
 - **Field:** `(F, +, ×, 0, 1)` — all operations and distinguished elements
 
 ## Delimiter Macros
@@ -42,6 +44,7 @@ template with all macros pre-defined.
 Always use explicit arrow notation for function definitions:
 
 - **Correct:** `f: X → Y, x ↦ x²`
+
 - **Incorrect:** `Let f(x) = x²` (unless domain/codomain are clear from context)
 
 ### Type Annotations
@@ -49,7 +52,9 @@ Always use explicit arrow notation for function definitions:
 When defining functions, always include domain and codomain:
 
 - **Correct:** `f: RR → RR, x ↦ x²`
+
 - **Correct:** `φ: G → G, g ↦ a·g` (for fixed `a ∈ G`)
+
 - **Incorrect:** `Let f(x) = x²` (unless domain/codomain are clear from context)
 
 ### Hom Notation
@@ -57,6 +62,7 @@ When defining functions, always include domain and codomain:
 For structure-preserving maps, use `Hom` notation:
 
 - **Example:** `f ∈ Hom_Ring(R, S)` for ring homomorphisms
+
 - **General:** `f ∈ Hom_C(X, Y)` for morphisms in category `C`
 
 ### Piecewise Functions

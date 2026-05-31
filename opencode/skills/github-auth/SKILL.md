@@ -9,12 +9,13 @@ metadata:
     tags: [GitHub, Authentication, Git, gh-cli, SSH, Setup]
     related_skills: [github-pr-workflow, github-code-review, github-issues, github-repo-management]
 ---
-
 # GitHub Authentication Setup
 
-This skill sets up authentication so the agent can work with GitHub repositories, PRs, issues, and CI. It covers two paths:
+This skill sets up authentication so the agent can work with GitHub repositories, PRs,
+issues, and CI. It covers two paths:
 
 - **`git` (always available)** — uses HTTPS personal access tokens or SSH keys
+
 - **`gh` CLI (if installed)** — richer GitHub API access with a simpler auth flow
 
 ## Detection Flow
@@ -32,15 +33,19 @@ git config --global credential.helper 2>/dev/null || echo "no git credential hel
 ```
 
 **Decision tree:**
-1. If `gh auth status` shows authenticated → you're good, use `gh` for everything
-2. If `gh` is installed but not authenticated → use "gh auth" method below
-3. If `gh` is not installed → use "git-only" method below (no sudo needed)
 
----
+1. If `gh auth status` shows authenticated → you’re good, use `gh` for everything
+
+2. If `gh` is installed but not authenticated → use “gh auth” method below
+
+3. If `gh` is not installed → use “git-only” method below (no sudo needed)
+
+* * *
 
 ## Method 1: Git-Only Authentication (No gh, No sudo)
 
-This works on any machine with `git` installed. No root access needed.
+This works on any machine with `git` installed.
+No root access needed.
 
 ### Option A: HTTPS with Personal Access Token (Recommended)
 
@@ -50,14 +55,21 @@ This is the most portable method — works everywhere, no SSH config needed.
 
 Tell the user to go to: **https://github.com/settings/tokens**
 
-- Click "Generate new token (classic)"
-- Give it a name like "hermes-agent"
+- Click “Generate new token (classic)”
+
+- Give it a name like “hermes-agent”
+
 - Select scopes:
+
   - `repo` (full repository access — read, write, push, PRs)
+
   - `workflow` (trigger and manage GitHub Actions)
+
   - `read:org` (if working with organization repos)
+
 - Set expiration (90 days is a good default)
-- Copy the token — it won't be shown again
+
+- Copy the token — it won’t be shown again
 
 **Step 2: Configure git to store the token**
 
@@ -72,7 +84,7 @@ git config --global credential.helper store
 git ls-remote https://github.com/<their-username>/<any-repo>.git
 ```
 
-After entering credentials once, they're saved and reused for all future operations.
+After entering credentials once, they’re saved and reused for all future operations.
 
 **Alternative: cache helper (credentials expire from memory)**
 
@@ -128,9 +140,12 @@ cat ~/.ssh/id_ed25519.pub
 ```
 
 Tell the user to add the public key at: **https://github.com/settings/keys**
-- Click "New SSH key"
+
+- Click “New SSH key”
+
 - Paste the public key content
-- Give it a title like "hermes-agent-<machine-name>"
+
+- Give it a title like “hermes-agent-<machine-name>”
 
 **Step 3: Test the connection**
 
@@ -153,7 +168,7 @@ git config --global user.name "Their Name"
 git config --global user.email "their-email@example.com"
 ```
 
----
+* * *
 
 ## Method 2: gh CLI Authentication
 
@@ -183,11 +198,13 @@ gh auth setup-git
 gh auth status
 ```
 
----
+* * *
 
 ## Using the GitHub API Without gh
 
-When `gh` is not available, you can still access the full GitHub API using `curl` with a personal access token. This is how the other GitHub skills implement their fallbacks.
+When `gh` is not available, you can still access the full GitHub API using `curl` with a
+personal access token.
+This is how the other GitHub skills implement their fallbacks.
 
 ### Setting the Token for API Calls
 
@@ -202,7 +219,8 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
 
 ### Extracting the Token from Git Credentials
 
-If git credentials are already configured (via credential.helper store), the token can be extracted:
+If git credentials are already configured (via credential.helper store), the token can
+be extracted:
 
 ```bash
 # Read from git credential store
@@ -231,12 +249,12 @@ else
 fi
 ```
 
----
+* * *
 
 ## Troubleshooting
 
 | Problem | Solution |
-|---------|----------|
+| --- | --- |
 | `git push` asks for password | GitHub disabled password auth. Use a personal access token as the password, or switch to SSH |
 | `remote: Permission to X denied` | Token may lack `repo` scope — regenerate with correct scopes |
 | `fatal: Authentication failed` | Cached credentials may be stale — run `git credential reject` then re-authenticate |

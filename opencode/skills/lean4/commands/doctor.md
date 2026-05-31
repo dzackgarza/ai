@@ -3,7 +3,6 @@ name: doctor
 description: Diagnostics, cleanup, and migration help
 user_invocable: true
 ---
-
 # Lean4 Doctor
 
 Diagnostics, troubleshooting, and migration assistance for the Lean4 plugin.
@@ -22,7 +21,7 @@ Diagnostics, troubleshooting, and migration assistance for the Lean4 plugin.
 ## Inputs
 
 | Arg | Required | Description |
-|-----|----------|-------------|
+| --- | --- | --- |
 | mode | No | `env`, `migrate`, `cleanup`, or full (default) |
 | --global | No | Include user-level paths (~/); migrate only |
 | --apply | No | Execute removals; cleanup only |
@@ -32,21 +31,22 @@ Diagnostics, troubleshooting, and migration assistance for the Lean4 plugin.
 ### 1. Environment Check
 
 | Tool | Check | Required |
-|------|-------|----------|
+| --- | --- | --- |
 | `lean` | `lean --version` | Yes |
 | `lake` | `lake --version` | Yes |
 | `python3` | `python3 --version` | For scripts |
 | `git` | `git --version` | For commits |
 | `rg` | `rg --version` | Optional (faster search) |
 
-Environment variables: `LEAN4_PLUGIN_ROOT`, `LEAN4_SCRIPTS`, `LEAN4_REFS`, `LEAN4_PYTHON_BIN`
+Environment variables: `LEAN4_PLUGIN_ROOT`, `LEAN4_SCRIPTS`, `LEAN4_REFS`,
+`LEAN4_PYTHON_BIN`
 
 ### 1b. MCP Tools
 
 | Check | Detection | Status |
-|-------|-----------|--------|
+| --- | --- | --- |
 | Lean LSP MCP | `lean_goal` tool available in this session | Optional (sub-second feedback) |
-`✓ … available` or `⚠ … unavailable — see INSTALLATION.md`
+| `✓ … available` or `⚠ … unavailable — see INSTALLATION.md` |  |  |
 
 ### 2. Plugin Check
 
@@ -64,7 +64,9 @@ plugins/lean4/
 ### 3. Project Check
 
 - `lakefile.lean` and `lean-toolchain` present
+
 - `lake build` passes
+
 - Sorry count reported
 
 ### 4. Migration Detection (read-only)
@@ -79,20 +81,24 @@ Detects legacy v3 artifacts without making changes.
 ```
 
 **Stale environment variables:**
+
 - `LEAN4_PLUGIN_ROOT` pointing to old path (e.g., `lean4-theorem-proving`)
+
 - `LEAN4_SCRIPTS` not under current plugin
+
 - `LEAN4_REFS` not under current plugin
 
 **Name mapping (v3 → v4):**
 
 | V3 | V4 |
-|----|-----|
+| --- | --- |
 | `lean4-theorem-proving` | `lean4` |
 | `lean4-memories` | Removed |
 | `lean4-subagents` | Integrated |
 | `/lean4-theorem-proving:*` | `/lean4:*` |
 
-**With `--global`:** Also scans user-level `~/.claude/` for duplicates or stale plugin versions. Only when explicitly requested.
+**With `--global`:** Also scans user-level `~/.claude/` for duplicates or stale plugin
+versions. Only when explicitly requested.
 
 ### 5. Cleanup
 
@@ -113,7 +119,9 @@ Detects and optionally removes obsolete artifacts.
 ```
 
 **Behavior:**
+
 - Default: Report findings, show `rm -rf` commands, do NOT execute
+
 - With `--apply`: Interactive per-item confirmation
 
 **Interactive prompt (`--apply`):**
@@ -193,7 +201,7 @@ No changes made. Run `/lean4:doctor cleanup --apply` to remove.
 ## Troubleshooting
 
 | Issue | Fix |
-|-------|-----|
+| --- | --- |
 | LEAN4_SCRIPTS not set | Restart session, check hooks.json |
 | lake not found | Install via elan |
 | Scripts not executable | `chmod +x $LEAN4_SCRIPTS/*.sh` |
@@ -209,14 +217,21 @@ No changes made. Run `/lean4:doctor cleanup --apply` to remove.
 ## Safety
 
 - All modes are read-only by default
+
 - `migrate` never makes changes (detection only)
+
 - `cleanup` shows commands but does not execute without `--apply`
+
 - `cleanup --apply` prompts per-item (y/n/a/q) - users can keep specific items
+
 - `--global` only scans `~/` when explicitly requested
+
 - Does not modify Lean source files
 
 ## See Also
 
 - `/lean4:prove` - Guided cycle-by-cycle proving
+
 - `/lean4:checkpoint` - Save progress
+
 - [Examples](../skills/lean4/references/command-examples.md#doctor)

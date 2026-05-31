@@ -1,12 +1,15 @@
 # Chapter 2: Meaningful Names
 
-Names are everywhere in software—variables, functions, arguments, classes, packages, source files, directories. Because we name so much, we'd better do it well.
+Names are everywhere in software—variables, functions, arguments, classes, packages,
+source files, directories.
+Because we name so much, we’d better do it well.
 
 ## Use Intention-Revealing Names
 
-A name should answer: **Why does it exist? What does it do? How is it used?**
+A name should answer: **Why does it exist?
+What does it do? How is it used?**
 
-If a name requires a comment, the name doesn't reveal its intent.
+If a name requires a comment, the name doesn’t reveal its intent.
 
 ```java
 // Bad
@@ -40,16 +43,23 @@ public List<Cell> getFlaggedCells() {
 }
 ```
 
-The second version has the same operators, constants, and nesting—but the intent is clear.
+The second version has the same operators, constants, and nesting—but the intent is
+clear.
 
 ## Avoid Disinformation
 
-Don't leave false clues that obscure meaning:
+Don’t leave false clues that obscure meaning:
 
-- **Don't use platform names**: `hp`, `aix`, `sco` look like Unix platforms
-- **Don't lie about types**: Don't call it `accountList` unless it's actually a `List`. Use `accounts` or `accountGroup`
-- **Avoid subtle differences**: `XYZControllerForEfficientHandlingOfStrings` vs `XYZControllerForEfficientStorageOfStrings` forces scrutiny
-- **Watch for confusing characters**: lowercase `l` and uppercase `O` look like `1` and `0`
+- **Don’t use platform names**: `hp`, `aix`, `sco` look like Unix platforms
+
+- **Don’t lie about types**: Don’t call it `accountList` unless it’s actually a `List`.
+  Use `accounts` or `accountGroup`
+
+- **Avoid subtle differences**: `XYZControllerForEfficientHandlingOfStrings` vs
+  `XYZControllerForEfficientStorageOfStrings` forces scrutiny
+
+- **Watch for confusing characters**: lowercase `l` and uppercase `O` look like `1` and
+  `0`
 
 ## Make Meaningful Distinctions
 
@@ -73,16 +83,24 @@ public static void copyChars(char source[], char destination[]) {
 ```
 
 **Noise words are meaningless distinctions:**
-- `ProductInfo` vs `ProductData` — what's the difference?
+
+- `ProductInfo` vs `ProductData` — what’s the difference?
+
 - `NameString` — would a Name ever be a float?
+
 - `CustomerObject` vs `Customer` — which has payment history?
-- `getActiveAccount()` vs `getActiveAccounts()` vs `getActiveAccountInfo()` — which to call?
+
+- `getActiveAccount()` vs `getActiveAccounts()` vs `getActiveAccountInfo()` — which to
+  call?
+
 - `moneyAmount` vs `money` — indistinguishable
+
 - `theMessage` vs `message` — no meaningful distinction
 
 ## Use Pronounceable Names
 
-Programming is a social activity. You need to discuss code with others.
+Programming is a social activity.
+You need to discuss code with others.
 
 ```java
 // Bad - "gen why emm dee aich emm ess"
@@ -121,21 +139,28 @@ for (int j=0; j < NUMBER_OF_TASKS; j++) {
 }
 ```
 
-**The Rule:** The length of a name should correspond to the size of its scope. Single-letter names only for tiny scopes (small loop counters).
+**The Rule:** The length of a name should correspond to the size of its scope.
+Single-letter names only for tiny scopes (small loop counters).
 
 ## Avoid Encodings
 
 We have enough encodings to deal with.
 
 ### Hungarian Notation
-Modern languages have rich type systems. The compiler remembers types. HN is an obsolete crutch:
+
+Modern languages have rich type systems.
+The compiler remembers types.
+HN is an obsolete crutch:
 ```java
 // Bad - type encoding is redundant
 PhoneNumber phoneString; // name not changed when type changed!
 ```
 
 ### Member Prefixes
-You don't need `m_` anymore. Classes should be small enough that you see declarations. IDEs highlight members:
+
+You don’t need `m_` anymore.
+Classes should be small enough that you see declarations.
+IDEs highlight members:
 ```java
 // Bad
 public class Part {
@@ -153,7 +178,9 @@ public class Part {
 ```
 
 ### Interfaces and Implementations
-Prefer unadorned interfaces. Don't tell users it's an interface—they shouldn't care:
+
+Prefer unadorned interfaces.
+Don’t tell users it’s an interface—they shouldn’t care:
 ```java
 // Bad
 IShapeFactory  // The I is noise
@@ -165,20 +192,24 @@ ShapeFactoryImpl       // for the implementation (if you must encode)
 
 ## Avoid Mental Mapping
 
-Readers shouldn't translate your names into names they already know.
+Readers shouldn’t translate your names into names they already know.
 
-Single-letter variables (`i`, `j`, `k`) are acceptable only for traditional loop counters in very small scopes. Using `r` because you "know" it's the URL with host and scheme removed is showing off, not being professional.
+Single-letter variables (`i`, `j`, `k`) are acceptable only for traditional loop
+counters in very small scopes.
+Using `r` because you “know” it’s the URL with host and scheme removed is showing off,
+not being professional.
 
 **Clarity is king.** Professionals write code that others can understand.
 
 ## Class Names vs Method Names
 
 | Type | Rule | Examples |
-|------|------|----------|
+| --- | --- | --- |
 | **Classes** | Noun or noun phrase | `Customer`, `WikiPage`, `Account`, `AddressParser` |
 | **Methods** | Verb or verb phrase | `postPayment`, `deletePage`, `save` |
 
-**Avoid** weasel words like `Manager`, `Processor`, `Data`, `Info` in class names. They hint at unclear responsibilities.
+**Avoid** weasel words like `Manager`, `Processor`, `Data`, `Info` in class names.
+They hint at unclear responsibilities.
 
 For overloaded constructors, use static factory methods:
 ```java
@@ -189,12 +220,12 @@ Complex fulcrumPoint = Complex.FromRealNumber(23.0);
 Complex fulcrumPoint = new Complex(23.0);
 ```
 
-## Don't Be Cute
+## Don’t Be Cute
 
 Choose clarity over entertainment value.
 
 | Cute | Clear |
-|------|-------|
+| --- | --- |
 | `HolyHandGrenade` | `DeleteItems` |
 | `whack()` | `kill()` |
 | `eatMyShorts()` | `abort()` |
@@ -204,23 +235,27 @@ Say what you mean. Mean what you say.
 ## Pick One Word per Concept
 
 Pick one word for one abstract concept and stick with it:
-- Don't mix `fetch`, `retrieve`, and `get` for equivalent operations
-- Don't mix `controller`, `manager`, and `driver` in the same codebase
 
-Function names must stand alone—you can't rely on readers checking comments.
+- Don’t mix `fetch`, `retrieve`, and `get` for equivalent operations
 
-## Don't Pun
+- Don’t mix `controller`, `manager`, and `driver` in the same codebase
 
-Don't use the same word for two different operations.
+Function names must stand alone—you can’t rely on readers checking comments.
 
-If `add` means "concatenate two values" in most classes, don't use `add` for "put into collection" in a new class. Use `insert` or `append` instead.
+## Don’t Pun
+
+Don’t use the same word for two different operations.
+
+If `add` means “concatenate two values” in most classes, don’t use `add` for “put into
+collection” in a new class.
+Use `insert` or `append` instead.
 
 **Goal:** Code should be a quick skim, not an intense study.
 
 ## Solution Domain Names vs Problem Domain Names
 
 | When | Use |
-|------|-----|
+| --- | --- |
 | Technical concepts | CS terms, algorithm names, pattern names (`AccountVisitor`, `JobQueue`) |
 | Business concepts | Domain terms (ask domain experts if unclear) |
 
@@ -228,9 +263,12 @@ Programmers will read your code—use technical names when appropriate.
 
 ## Add Meaningful Context
 
-Variables often need context. `state` alone is ambiguous. Options:
+Variables often need context.
+`state` alone is ambiguous.
+Options:
 
 1. **Prefixing** (last resort): `addrState`, `addrCity`
+
 2. **Better:** Create a class `Address` with `state`, `city` fields
 
 ```java
@@ -256,18 +294,24 @@ public class GuessStatisticsMessage {
 }
 ```
 
-## Don't Add Gratuitous Context
+## Don’t Add Gratuitous Context
 
-In "Gas Station Deluxe" app, don't prefix every class with `GSD`:
+In “Gas Station Deluxe” app, don’t prefix every class with `GSD`:
+
 - You get a mile-long autocomplete list
+
 - `GSDAccountAddress` has 10/17 irrelevant characters
 
-**Shorter names are better if they're clear.** Add no more context than necessary.
+**Shorter names are better if they’re clear.** Add no more context than necessary.
 
-`Address` is fine for a class. If you need to differentiate: `PostalAddress`, `MAC`, `URI`.
+`Address` is fine for a class.
+If you need to differentiate: `PostalAddress`, `MAC`, `URI`.
 
 ## Final Words
 
-The hardest thing about naming is that it requires descriptive skills and shared cultural background—a teaching issue, not a technical one.
+The hardest thing about naming is that it requires descriptive skills and shared
+cultural background—a teaching issue, not a technical one.
 
-**Don't fear renaming.** Use refactoring tools. It pays off short-term and long-term. Code should read like paragraphs and sentences.
+**Don’t fear renaming.** Use refactoring tools.
+It pays off short-term and long-term.
+Code should read like paragraphs and sentences.

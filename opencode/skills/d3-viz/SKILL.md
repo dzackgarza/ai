@@ -2,23 +2,34 @@
 name: d3-viz
 description: "Use when building custom charts, network diagrams, geographic maps, or any SVG-based visualisation requiring fine-grained control over elements or transitions."
 ---
-
 # D3.js Visualisation
 
 ## Overview
 
-This skill provides guidance for creating sophisticated, interactive data visualisations using d3.js. D3.js (Data-Driven Documents) excels at binding data to DOM elements and applying data-driven transformations to create custom, publication-quality visualisations with precise control over every visual element. The techniques work across any JavaScript environment, including vanilla JavaScript, React, Vue, Svelte, and other frameworks.
+This skill provides guidance for creating sophisticated, interactive data visualisations
+using d3.js. D3.js (Data-Driven Documents) excels at binding data to DOM elements and
+applying data-driven transformations to create custom, publication-quality
+visualisations with precise control over every visual element.
+The techniques work across any JavaScript environment, including vanilla JavaScript,
+React, Vue, Svelte, and other frameworks.
 
 ## When to use d3.js
 
 **Use d3.js for:**
 
 - Custom visualisations requiring unique visual encodings or layouts
+
 - Interactive explorations with complex pan, zoom, or brush behaviours
-- Network/graph visualisations (force-directed layouts, tree diagrams, hierarchies, chord diagrams)
+
+- Network/graph visualisations (force-directed layouts, tree diagrams, hierarchies,
+  chord diagrams)
+
 - Geographic visualisations with custom projections
+
 - Visualisations requiring smooth, choreographed transitions
+
 - Publication-quality graphics with fine-grained styling control
+
 - Novel chart types not available in standard libraries
 
 **Consider alternatives for:**
@@ -41,12 +52,14 @@ Or use the CDN version (7.x):
 <script src="https://d3js.org/d3.v7.min.js"></script>
 ```
 
-All modules (scales, axes, shapes, transitions, etc.) are accessible through the `d3` namespace.
+All modules (scales, axes, shapes, transitions, etc.)
+are accessible through the `d3` namespace.
 
 ### 2. Choose the integration pattern
 
-**Pattern A: Direct DOM manipulation (recommended for most cases)**
-Use d3 to select DOM elements and manipulate them imperatively. This works in any JavaScript environment:
+**Pattern A: Direct DOM manipulation (recommended for most cases)** Use d3 to select DOM
+elements and manipulate them imperatively.
+This works in any JavaScript environment:
 
 ```javascript
 function drawChart(data) {
@@ -70,8 +83,8 @@ function drawChart(data) {
 drawChart(myData);
 ```
 
-**Pattern B: Declarative rendering (for frameworks with templating)**
-Use d3 for data calculations (scales, layouts) but render elements via your framework:
+**Pattern B: Declarative rendering (for frameworks with templating)** Use d3 for data
+calculations (scales, layouts) but render elements via your framework:
 
 ```javascript
 function getChartElements(data) {
@@ -93,7 +106,10 @@ function getChartElements(data) {
 // In vanilla JS: Create elements manually from the returned data
 ```
 
-Use Pattern A for complex visualisations with transitions, interactions, or when leveraging d3's full capabilities. Use Pattern B for simpler visualisations or when your framework prefers declarative rendering.
+Use Pattern A for complex visualisations with transitions, interactions, or when
+leveraging d3’s full capabilities.
+Use Pattern B for simpler visualisations or when your framework prefers declarative
+rendering.
 
 ### 3. Structure the visualisation code
 
@@ -284,7 +300,8 @@ g.selectAll("circle")
 
 ### Chord diagram
 
-A chord diagram shows relationships between entities in a circular layout, with ribbons representing flows between them:
+A chord diagram shows relationships between entities in a circular layout, with ribbons
+representing flows between them:
 
 ```javascript
 function drawChordDiagram(data) {
@@ -371,7 +388,8 @@ function drawChordDiagram(data) {
 
 ### Heatmap
 
-A heatmap uses colour to encode values in a two-dimensional grid, useful for showing patterns across categories:
+A heatmap uses colour to encode values in a two-dimensional grid, useful for showing
+patterns across categories:
 
 ```javascript
 function drawHeatmap(data) {
@@ -797,26 +815,35 @@ g.selectAll(".tick line")
 **Issue**: Axes not appearing
 
 - Ensure scales have valid domains (check for NaN values)
+
 - Verify axis is appended to correct group
+
 - Check transform translations are correct
 
 **Issue**: Transitions not working
 
 - Call `.transition()` before attribute changes
+
 - Ensure elements have unique keys for proper data binding
+
 - Check that useEffect dependencies include all changing data
 
 **Issue**: Responsive sizing not working
 
 - Use ResizeObserver or window resize listener
+
 - Update dimensions in state to trigger re-render
+
 - Ensure SVG has width/height attributes or viewBox
 
 **Issue**: Performance problems
 
 - Limit number of DOM elements (consider canvas for >1000 items)
+
 - Debounce resize handlers
+
 - Use `.join()` instead of separate enter/update/exit selections
+
 - Avoid unnecessary re-renders by checking dependencies
 
 ## Resources
@@ -825,8 +852,11 @@ g.selectAll(".tick line")
 
 Contains detailed reference materials:
 
-- `d3-patterns.md` - Comprehensive collection of visualisation patterns and code examples
+- `d3-patterns.md` - Comprehensive collection of visualisation patterns and code
+  examples
+
 - `scale-reference.md` - Complete guide to d3 scales with examples
+
 - `colour-schemes.md` - D3 colour schemes and palette recommendations
 
 ### assets/
@@ -834,9 +864,14 @@ Contains detailed reference materials:
 Contains boilerplate templates:
 
 - `chart-template.js` - Starter template for basic chart
+
 - `interactive-template.js` - Template with tooltips, zoom, and interactions
+
 - `sample-data.json` - Example datasets for testing
 
-These templates work with vanilla JavaScript, React, Vue, Svelte, or any other JavaScript environment. Adapt them as needed for your specific framework.
+These templates work with vanilla JavaScript, React, Vue, Svelte, or any other
+JavaScript environment.
+Adapt them as needed for your specific framework.
 
-To use these resources, read the relevant files when detailed guidance is needed for specific visualisation types or patterns.
+To use these resources, read the relevant files when detailed guidance is needed for
+specific visualisation types or patterns.

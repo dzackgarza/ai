@@ -3,14 +3,22 @@
 ## Use Cases
 
 - **Marble/jade textures**: multi-layer warping produces streaked stone textures
+
 - **Fabric/silk appearance**: warping field creases simulate textile surfaces
+
 - **Geological formations**: rock strata, lava flows, surface erosion
+
 - **Gas giant atmospheres**: Jupiter-style banded circulation
+
 - **Smoke/fire/explosions**: fluid effects combined with volumetric rendering
-- **Abstract art backgrounds**: procedural organic patterns, suitable for UI backgrounds, music visualization
+
+- **Abstract art backgrounds**: procedural organic patterns, suitable for UI
+  backgrounds, music visualization
+
 - **Electric current/plasma effects**: ridged FBM variant produces sharp arc patterns
 
-Core advantage: relies only on math functions (no texture assets needed), outputs seamless tiling, animatable, GPU-friendly.
+Core advantage: relies only on math functions (no texture assets needed), outputs
+seamless tiling, animatable, GPU-friendly.
 
 ## Core Principles
 
@@ -26,15 +34,21 @@ Classic multi-layer recursive nesting:
 result = fbm(p + fbm(p + fbm(p)))
 ```
 
-Each FBM layer's output serves as a coordinate offset for the next layer; deeper nesting produces more organic deformation.
+Each FBM layer’s output serves as a coordinate offset for the next layer; deeper nesting
+produces more organic deformation.
 
 **Key mathematical structure**:
 
-1. **Noise** `noise(p)`: pseudo-random values at integer lattice points + Hermite interpolation `f*f*(3.0-2.0*f)`
-2. **FBM**: `fbm(p) = sum of (0.5^i) * noise(p * 2^i * R^i)`, where `R` is a rotation matrix for decorrelation
+1. **Noise** `noise(p)`: pseudo-random values at integer lattice points + Hermite
+   interpolation `f*f*(3.0-2.0*f)`
+
+2. **FBM**: `fbm(p) = sum of (0.5^i) * noise(p * 2^i * R^i)`, where `R` is a rotation
+   matrix for decorrelation
+
 3. **Domain warping chain**: `fbm(p + fbm(p + fbm(p)))`
 
-The rotation matrix `mat2(0.80, 0.60, -0.60, 0.80)` (approx 36.87 deg) is the most widely used decorrelation transform.
+The rotation matrix `mat2(0.80, 0.60, -0.60, 0.80)` (approx 36.87 deg) is the most
+widely used decorrelation transform.
 
 ## Implementation Steps
 
@@ -49,7 +63,8 @@ float hash(vec2 p) {
 }
 ```
 
-> The classic `fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453)` also works; the sin-free version above has more stable precision on some GPUs.
+> The classic `fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453)` also works; the
+> sin-free version above has more stable precision on some GPUs.
 
 ### Step 2: Value Noise
 
@@ -85,7 +100,8 @@ float fbm(vec2 p) {
 }
 ```
 
-> Lacunarity uses 2.01~2.04 rather than exactly 2.0 to avoid visual artifacts caused by lattice regularity.
+> Lacunarity uses 2.01~2.04 rather than exactly 2.0 to avoid visual artifacts caused by
+> lattice regularity.
 
 ### Step 4: Domain Warping (Core)
 
@@ -219,7 +235,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Variant 1: Multi-Resolution Layered Warping
 
-Different warp layers use FBM with different octave counts, outputting `vec2` for dual-axis displacement, with intermediate variables used for coloring.
+Different warp layers use FBM with different octave counts, outputting `vec2` for
+dual-axis displacement, with intermediate variables used for coloring.
 
 ```glsl
 float fbm4(vec2 p) {
@@ -271,7 +288,8 @@ col *= f * 2.0;
 
 ### Variant 2: Turbulence/Ridged Warping (Electric Arc/Plasma Effect)
 
-In FBM, apply `abs(noise - 0.5)` to produce ridged textures, with dual-axis independent displacement + time-reversed drift.
+In FBM, apply `abs(noise - 0.5)` to produce ridged textures, with dual-axis independent
+displacement + time-reversed drift.
 
 ```glsl
 float fbm_ridged(vec2 p) {
@@ -302,7 +320,8 @@ vec3 col = vec3(0.2, 0.1, 0.4) / rz;
 
 ### Variant 3: Pseudo-3D Lit Domain Warping
 
-Estimate screen-space normals via finite differences, apply directional lighting for an embossed effect.
+Estimate screen-space normals via finite differences, apply directional lighting for an
+embossed effect.
 
 ```glsl
 float e = 2.0 / iResolution.y;
@@ -324,7 +343,8 @@ col = 1.1 * col * col;
 
 ### Variant 4: Flow Field Iterative Warping (Gas Giant Effect)
 
-Compute the FBM gradient field, Euler-integrate to iteratively advect coordinates, simulating fluid convection vortices.
+Compute the FBM gradient field, Euler-integrate to iteratively advect coordinates,
+simulating fluid convection vortices.
 
 ```glsl
 #define ADVECT_ITERATIONS 5
@@ -392,23 +412,43 @@ float distanceFunc(vec3 p, out float displace) {
 
 ### Performance Tips
 
-- Three warp layers x 6 octaves = 18 noise samples per pixel; adding lit finite differences can reach 54
-- **Reduce octaves**: 4 instead of 6, ~33% performance gain with minimal visual difference
-- **Reduce warp depth**: two layers `fbm(p + fbm(p))` is already organic enough, saving ~33%
-- **sin-product noise**: `sin(p.x)*sin(p.y)` is branchless and memory-free, suitable for mobile
+- Three warp layers x 6 octaves = 18 noise samples per pixel; adding lit finite
+  differences can reach 54
+
+- **Reduce octaves**: 4 instead of 6, ~33% performance gain with minimal visual
+  difference
+
+- **Reduce warp depth**: two layers `fbm(p + fbm(p))` is already organic enough, saving
+  ~33%
+
+- **sin-product noise**: `sin(p.x)*sin(p.y)` is branchless and memory-free, suitable for
+  mobile
+
 - **GPU built-in derivatives**: `dFdx/dFdy` instead of finite differences, 3x faster
+
 - **Texture noise**: pre-bake noise textures, trading computation for memory reads
+
 - **LOD adaptive**: reduce octave count for distant pixels
+
 - **Supersampling**: only use 2x2 when anti-aliasing is needed, 4x performance cost
 
 ### Composition Suggestions
 
-- **Ray marching**: warped scalar field as SDF displacement function -> fire, explosions, organic forms
-- **Polar coordinate transform**: domain warping in polar space -> vortices, nebulae, spirals
+- **Ray marching**: warped scalar field as SDF displacement function -> fire,
+  explosions, organic forms
+
+- **Polar coordinate transform**: domain warping in polar space -> vortices, nebulae,
+  spirals
+
 - **Cosine palette**: `a + b*cos(2*pi*(c*t+d))` is more flexible than mix chains
-- **Post-processing**: bloom glow, tone mapping `col/(1+col)`, chromatic aberration (RGB channel offset sampling)
-- **Particles/geometry**: scalar field driving particle velocity fields, vertex displacement, UV animation
+
+- **Post-processing**: bloom glow, tone mapping `col/(1+col)`, chromatic aberration (RGB
+  channel offset sampling)
+
+- **Particles/geometry**: scalar field driving particle velocity fields, vertex
+  displacement, UV animation
 
 ## Further Reading
 
-Full step-by-step tutorials, mathematical derivations, and advanced usage in [reference](../reference/domain-warping.md)
+Full step-by-step tutorials, mathematical derivations, and advanced usage in
+[reference](../reference/domain-warping.md)

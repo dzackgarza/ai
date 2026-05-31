@@ -2,29 +2,39 @@
 name: systematic-deduction
 description: "Use when solving complex problems with multiple unknowns, debugging elusive bugs, or investigating root causes with rigorous logical reasoning."
 ---
-
 # Systematic Deduction
 
 ## Overview
 
-Hard problems require systematic reasoning, not intuition. Write it down. Track every hypothesis. Eliminate rigorously.
+Hard problems require systematic reasoning, not intuition.
+Write it down. Track every hypothesis.
+Eliminate rigorously.
 
-**Core principle:** If you haven't written it in the scratchpad, you haven't thought it through.
+**Core principle:** If you haven’t written it in the scratchpad, you haven’t thought it
+through.
 
 **Violating the letter of this process is violating the spirit of rigorous reasoning.**
 
 ## When to Use
 
 **Use for:**
-- Complex bugs with multiple interacting causes
-- Problems where you've already tried several approaches without success
-- Situations with many unknowns and constraints
-- Root cause investigation where the answer isn't obvious
-- Any problem where you catch yourself "circling back" to the same ideas
 
-**Don't use for:**
+- Complex bugs with multiple interacting causes
+
+- Problems where you’ve already tried several approaches without success
+
+- Situations with many unknowns and constraints
+
+- Root cause investigation where the answer isn’t obvious
+
+- Any problem where you catch yourself “circling back” to the same ideas
+
+**Don’t use for:**
+
 - Simple lookups or straightforward tasks
-- Problems you've solved before with known solutions
+
+- Problems you’ve solved before with known solutions
+
 - When the answer is immediately obvious
 
 ## The Iron Law
@@ -33,7 +43,7 @@ Hard problems require systematic reasoning, not intuition. Write it down. Track 
 NO CONCLUSIONS WITHOUT WRITTEN REASONING CHAIN
 ```
 
-If you can't point to a line in the scratchpad that proves it, you don't know it.
+If you can’t point to a line in the scratchpad that proves it, you don’t know it.
 
 ## The Scratchpad
 
@@ -95,16 +105,24 @@ Or project-specific:
 ```
 
 **Mark every statement:**
+
 - `(proven)` - Directly observed or logically derived from proven facts
+
 - `(assumed)` - Axiom introduced for elimination
+
 - `(inferred)` - Derived from other statements via reasoning
+
 - `(speculation)` - Intuition without logical chain
 
 **Validity vs. Soundness:**
+
 - **Valid**: Conclusion follows logically from premises (regardless of premise truth)
+
 - **Sound**: Valid argument with *true* premises
 
-You can have valid reasoning from false assumptions. That's fine for elimination. Just mark it `(assumed)`.
+You can have valid reasoning from false assumptions.
+That’s fine for elimination.
+Just mark it `(assumed)`.
 
 ### 2. Rules of Inference
 
@@ -142,7 +160,7 @@ Example: If DB connection lost → queries timeout. If queries timeout → reque
 These patterns look valid but are NOT:
 
 | Fallacy | Invalid Form | Why It Fails |
-|---------|--------------|--------------|
+| --- | --- | --- |
 | **Affirming the Consequent** | P→Q, Q, ∴P | Q could have other causes |
 | **Denying the Antecedent** | P→Q, ¬P, ∴¬Q | P might not be the only cause of Q |
 
@@ -163,22 +181,29 @@ Memory usage is NOT growing over time.
 ### 4. Deductive vs. Abductive Reasoning
 
 | **Deductive** | **Abductive** |
-|---------------|---------------|
+| --- | --- |
 | Conclusion *must* be true if premises true | Conclusion is *best explanation* of observations |
-| "Therefore X is true" | "Therefore X might explain this" |
+| “Therefore X is true” | “Therefore X might explain this” |
 | Eliminates possibilities | Generates hypotheses |
 
 **In debugging:**
+
 - Use **deduction** to eliminate hypotheses (modus tollens)
+
 - Use **abduction** to generate hypotheses (what would explain this?)
+
 - Never treat abductive conclusions as proven
 
 ### 5. Introduce Hypotheses Systematically
 
 For each hypothesis:
+
 1. **State it precisely** - What exactly would be true if this hypothesis is correct?
+
 2. **Identify testable predictions** - What observations would confirm/falsify it?
+
 3. **Check consistency** - Does it contradict any known facts?
+
 4. **Design experiments** - What would prove or eliminate it?
 
 ```markdown
@@ -215,15 +240,21 @@ This helps isolate the problem by eliminating variables.
 ```
 
 **Critical:** Axioms must eventually reduce to proven statements:
+
 - Either prove the axiom (run health check, verify connection)
+
 - Or eliminate it and mark the negation as proven
 
 ### 7. Track Experiments with Scientific Method
 
 Every experiment needs:
+
 1. **Hypothesis being tested**
+
 2. **Expected outcome** if hypothesis is true
+
 3. **Actual outcome** observed
+
 4. **Conclusion** - supports, falsifies, or inconclusive
 
 ```markdown
@@ -246,8 +277,11 @@ This means the problem is NOT in invalidation - it's in cache retrieval or a sec
 ### 8. Elimination is Progress
 
 When you eliminate a hypothesis:
+
 1. **Mark it eliminated** in the table with reason
-2. **Update your belief** - it's no longer a candidate
+
+2. **Update your belief** - it’s no longer a candidate
+
 3. **Note what the elimination implies** - often points to the real cause
 
 ```markdown
@@ -255,7 +289,7 @@ When you eliminate a hypothesis:
 
 - H1 (cache stale) - ELIMINATED by E1: Cache invalidation logged but stale data still served
   - IMPLIES: Problem is in cache retrieval OR there's a second cache layer
-  
+
 - H2 (wrong key) - ELIMINATED by E2: Key hash verified correct
   - IMPLIES: Key generation is correct, problem is elsewhere
 ```
@@ -263,17 +297,20 @@ When you eliminate a hypothesis:
 ### 9. Prevent Circling Back
 
 **Before proposing any hypothesis:**
+
 1. Check the scratchpad - has this been tried?
+
 2. If yes, what evidence eliminated it?
-3. If no, why wasn't it considered before?
+
+3. If no, why wasn’t it considered before?
 
 **The scratchpad is your memory.** Trust it over your intuition.
 
 ## Common Failure Modes
 
 | Failure | Prevention |
-|---------|------------|
-| "I feel like it's X" | Demand: What facts support this? What would falsify it? |
+| --- | --- |
+| “I feel like it’s X” | Demand: What facts support this? What would falsify it? |
 | Re-proposing eliminated hypotheses | Check scratchpad first |
 | Treating axioms as proven | Mark every statement with (proven)/(assumed)/(inferred)/(speculation) |
 | Running experiments without predictions | Write expected outcome BEFORE running |
@@ -282,57 +319,63 @@ When you eliminate a hypothesis:
 
 ## Cognitive Biases to Watch For
 
-**Knowing these isn't enough.** You must actively counteract them with structured processes.
+**Knowing these isn’t enough.** You must actively counteract them with structured
+processes.
 
-**For comprehensive coverage of individual biases with examples, see `cognitive-biases.md`.** Read that document when:
+**For comprehensive coverage of individual biases with examples, see
+`cognitive-biases.md`.** Read that document when:
+
 - You catch yourself making reasoning errors
-- You're stuck and suspect bias is leading you astray
+
+- You’re stuck and suspect bias is leading you astray
+
 - You want to learn which biases affected your investigation (after finding the bug)
 
-The tables below summarize key biases—use them as quick reference during active debugging.
+The tables below summarize key biases—use them as quick reference during active
+debugging.
 
 ### Hypothesis Testing Biases
 
 | Bias | What It Is | Countermeasure |
-|------|------------|----------------|
+| --- | --- | --- |
 | **Confirmation bias** | Search for/remember info that confirms preconceptions | Test what would *disprove* your hypothesis (modus tollens) |
 | **Congruence bias** | Test only your hypothesis, not alternatives | Generate 3+ alternative hypotheses before testing any |
 | **Belief bias** | Accept flawed reasoning if conclusion is believable | Mark every statement (proven)/(assumed)/(inferred)/(speculation) |
-| **Backfire effect** | Strengthen beliefs when contradicted by evidence | When evidence contradicts theory, write "THEORY MAY BE WRONG" in scratchpad |
-| **Semmelweis reflex** | Reject evidence contradicting your paradigm | Ask: "What would it take to change my mind?" Write it down. |
+| **Backfire effect** | Strengthen beliefs when contradicted by evidence | When evidence contradicts theory, write “THEORY MAY BE WRONG” in scratchpad |
+| **Semmelweis reflex** | Reject evidence contradicting your paradigm | Ask: “What would it take to change my mind?” Write it down. |
 
 ### Sticking with Failing Approaches
 
 | Bias | What It Is | Countermeasure |
-|------|------------|----------------|
-| **Sunk cost fallacy** | Continue because you've already invested time | Set abandonment criteria BEFORE starting: "If X fails, switch to Y" |
-| **Plan continuation bias** | Continue original plan despite new evidence | At each checkpoint: "Knowing what I know now, would I start this approach?" |
-| **Status quo bias** | Prefer things stay the same | Ask: "If this code didn't exist, would I write it this way?" |
-| **Endowment effect** | Overvalue your own code | Treat all code as equally suspect - yours and others' |
+| --- | --- | --- |
+| **Sunk cost fallacy** | Continue because you’ve already invested time | Set abandonment criteria BEFORE starting: “If X fails, switch to Y” |
+| **Plan continuation bias** | Continue original plan despite new evidence | At each checkpoint: “Knowing what I know now, would I start this approach?” |
+| **Status quo bias** | Prefer things stay the same | Ask: “If this code didn’t exist, would I write it this way?” |
+| **Endowment effect** | Overvalue your own code | Treat all code as equally suspect - yours and others’ |
 
 ### Pattern Recognition Errors
 
 | Bias | What It Is | Countermeasure |
-|------|------------|----------------|
-| **Clustering illusion** | See patterns in random data | Ask: "How many times did this NOT happen?" |
+| --- | --- | --- |
+| **Clustering illusion** | See patterns in random data | Ask: “How many times did this NOT happen?” |
 | **Apophenia** | Connect unrelated things | Require causal mechanism, not just correlation |
-| **Availability heuristic** | Assume bug is like last one you fixed | Read the actual error - don't match from memory |
+| **Availability heuristic** | Assume bug is like last one you fixed | Read the actual error - don’t match from memory |
 | **Anchoring bias** | Rely too heavily on first information | Re-read error messages after each hypothesis - fresh eyes |
 
 ### Overconfidence Errors
 
 | Bias | What It Is | Countermeasure |
-|------|------------|----------------|
-| **Overconfidence effect** | Excessive confidence in answers | "99% certain" is wrong 40% of the time - verify anyway |
+| --- | --- | --- |
+| **Overconfidence effect** | Excessive confidence in answers | “99% certain” is wrong 40% of the time - verify anyway |
 | **Illusion of explanatory depth** | Think you understand until explaining | Actually write the explanation in the scratchpad |
-| **Hindsight bias** | "I-knew-it-all-along" after finding bug | Document what you thought BEFORE finding the answer |
-| **G. I. Joe fallacy** | Thinking knowing biases prevents them | It doesn't. Use checklists and structured processes. |
+| **Hindsight bias** | “I-knew-it-all-along” after finding bug | Document what you thought BEFORE finding the answer |
+| **G. I. Joe fallacy** | Thinking knowing biases prevents them | It doesn’t. Use checklists and structured processes. |
 
 ### Tool & Method Biases
 
 | Bias | What It Is | Countermeasure |
-|------|------------|----------------|
-| **Law of the instrument** | Over-rely on familiar tools | Ask: "What's the fastest way to test this?" not "What do I know?" |
+| --- | --- | --- |
+| **Law of the instrument** | Over-rely on familiar tools | Ask: “What’s the fastest way to test this?” not “What do I know?” |
 | **Automation bias** | Trust automated systems over reasoning | Linters can be wrong. Verify critical claims manually. |
 | **Additive bias** | Add solutions instead of subtracting | Try removing code before adding logging/features |
 
@@ -403,14 +446,18 @@ H2 (race condition in test setup) - supported by E2 showing failure correlates w
 - What resource is being exhausted?
 ```
 
-## When You're Stuck
+## When You’re Stuck
 
-**If you've eliminated everything and still don't know:**
+**If you’ve eliminated everything and still don’t know:**
 
 1. **Re-examine your facts** - Are any actually assumptions?
+
 2. **Generate more hypotheses** - Have you been thorough?
+
 3. **Question your axioms** - What if an axiom is wrong?
+
 4. **Look for compound causes** - Could multiple factors interact?
+
 5. **Design a discriminating experiment** - What would distinguish remaining hypotheses?
 
 ## The Bottom Line
@@ -419,4 +466,4 @@ H2 (race condition in test setup) - supported by E2 showing failure correlates w
 
 The scratchpad is your external memory, your proof tracker, your elimination ledger.
 
-If it's not written down, it doesn't count.
+If it’s not written down, it doesn’t count.

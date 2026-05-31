@@ -9,14 +9,15 @@ metadata:
     tags: [GitHub, Issues, Project-Management, Bug-Tracking, Triage]
     related_skills: [github-auth, github-pr-workflow]
 ---
-
 # GitHub Issues Management
 
-Create, search, triage, and manage GitHub issues. Each section shows `gh` first, then the `curl` fallback.
+Create, search, triage, and manage GitHub issues.
+Each section shows `gh` first, then the `curl` fallback.
 
 ## Prerequisites
 
 - Authenticated with GitHub (see `github-auth` skill)
+
 - Inside a git repo with a GitHub remote, or specify the repo explicitly
 
 ### Setup
@@ -41,7 +42,7 @@ OWNER=$(echo "$OWNER_REPO" | cut -d/ -f1)
 REPO=$(echo "$OWNER_REPO" | cut -d/ -f2)
 ```
 
----
+* * *
 
 ## 1. Viewing Issues
 
@@ -358,7 +359,7 @@ curl -s \
 ## Quick Reference Table
 
 | Action | gh | curl endpoint |
-|--------|-----|--------------|
+| --- | --- | --- |
 | List issues | `gh issue list` | `GET /repos/{o}/{r}/issues` |
 | View issue | `gh issue view N` | `GET /repos/{o}/{r}/issues/N` |
 | Create issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |

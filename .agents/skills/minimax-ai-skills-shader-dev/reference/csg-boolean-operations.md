@@ -1,50 +1,80 @@
 # CSG Boolean Operations — Detailed Reference
 
-This document is a complete reference manual for [SKILL.md](SKILL.md), including step-by-step tutorials, mathematical derivations, variant details, and advanced usage.
+This document is a complete reference manual for [SKILL.md](SKILL.md), including
+step-by-step tutorials, mathematical derivations, variant details, and advanced usage.
 
 ## Use Cases
 
-- **Geometric Modeling**: Build complex shapes from simple primitives (spheres, boxes, cylinders) through boolean combinations — nuts, buildings, mechanical parts, organic characters, etc.
-- **Ray Marching Scenes**: All SDF-based ray marching rendering relies on CSG to compose scenes
-- **Organic Forms**: Use smooth variants (smin/smax) to create natural transitions between shapes, suitable for character modeling (snails, elephants), clouds, terrain, etc.
-- **Architectural / Industrial Design**: Use subtraction to carve windows and doorways, intersection to cut shapes
-- **2D SDF Compositing**: Equally applicable to 2D scenes (cyberpunk clouds, UI shape compositing, etc.)
+- **Geometric Modeling**: Build complex shapes from simple primitives (spheres, boxes,
+  cylinders) through boolean combinations — nuts, buildings, mechanical parts, organic
+  characters, etc.
+
+- **Ray Marching Scenes**: All SDF-based ray marching rendering relies on CSG to compose
+  scenes
+
+- **Organic Forms**: Use smooth variants (smin/smax) to create natural transitions
+  between shapes, suitable for character modeling (snails, elephants), clouds, terrain,
+  etc.
+
+- **Architectural / Industrial Design**: Use subtraction to carve windows and doorways,
+  intersection to cut shapes
+
+- **2D SDF Compositing**: Equally applicable to 2D scenes (cyberpunk clouds, UI shape
+  compositing, etc.)
 
 ## Prerequisites
 
 - GLSL basic syntax (`vec3`, `float`, `mix`, `clamp`, `min`, `max`)
-- SDF (Signed Distance Field) concept: the signed distance from each point in space to the nearest surface, with negative values indicating the interior
+
+- SDF (Signed Distance Field) concept: the signed distance from each point in space to
+  the nearest surface, with negative values indicating the interior
+
 - Basic SDF primitives: sphere `length(p) - r`, box `length(max(abs(p)-b, 0.0))`
-- Ray Marching basics: stepping from the camera along the view direction, using SDF values to determine step size
+
+- Ray Marching basics: stepping from the camera along the view direction, using SDF
+  values to determine step size
 
 ## Core Principles in Detail
 
-The essence of CSG boolean operations is **per-point value operations on two distance fields**:
+The essence of CSG boolean operations is **per-point value operations on two distance
+fields**:
 
 | Operation | Math Expression | Meaning |
-|-----------|----------------|---------|
+| --- | --- | --- |
 | Union | `min(d1, d2)` | Take the nearest surface, keeping both shapes |
 | Intersection | `max(d1, d2)` | Take the farthest surface, keeping only the overlap |
-| Subtraction | `max(d1, -d2)` | Use d2's interior (negated) to cut d1 |
+| Subtraction | `max(d1, -d2)` | Use d2’s interior (negated) to cut d1 |
 
-**Hard booleans** produce sharp edges at the junction. **Smooth booleans** (smooth min/max) introduce a blend band in the transition region, "fusing" the two shapes together. The key parameter `k` controls the blend band width:
+**Hard booleans** produce sharp edges at the junction.
+**Smooth booleans** (smooth min/max) introduce a blend band in the transition region,
+“fusing” the two shapes together.
+The key parameter `k` controls the blend band width:
 
 - Larger `k` means wider, smoother transitions
+
 - Smaller `k` means closer to hard boolean sharp edges
+
 - `k = 0` degenerates to hard boolean
 
 Three mainstream smooth formulas, each with distinct characteristics:
+
 1. **Polynomial**: Most commonly used, fast to compute, natural transitions
+
 2. **Quadratic optimized**: More compact and mathematically elegant
+
 3. **Exponential**: Smoothest transitions but more expensive to compute
 
 ## Implementation Steps in Detail
 
 ### Step 1: Hard Boolean Operations
 
-**What**: Implement the three basic boolean operations — union, intersection, subtraction.
+**What**: Implement the three basic boolean operations — union, intersection,
+subtraction.
 
-**Why**: These are the foundation of all CSG operations. `min` selects the nearest surface to achieve union; `max` selects the farthest surface for intersection; negating the second operand and taking `max` with the first achieves subtraction (keeping the region of d1 that is not inside d2).
+**Why**: These are the foundation of all CSG operations.
+`min` selects the nearest surface to achieve union; `max` selects the farthest surface
+for intersection; negating the second operand and taking `max` with the first achieves
+subtraction (keeping the region of d1 that is not inside d2).
 
 ```glsl
 // Union: keep both shapes
@@ -65,9 +95,15 @@ float opSubtraction(float d1, float d2) {
 
 ### Step 2: Smooth Union — Polynomial Version
 
-**What**: Implement a union operation with a blend transition, producing rounded junctions between two shapes.
+**What**: Implement a union operation with a blend transition, producing rounded
+junctions between two shapes.
 
-**Why**: Hard `min` produces C0 continuity (sharp creases) at the SDF junction. Polynomial smooth min interpolates within the transition band where `|d1-d2| < k`, producing C1 continuity (smooth transitions). In the formula, `h` is the normalized blend factor, and the `k*h*(1-h)` term ensures the distance field correctly dips in the transition region (producing more accurate distance values than plain `mix`).
+**Why**: Hard `min` produces C0 continuity (sharp creases) at the SDF junction.
+Polynomial smooth min interpolates within the transition band where `|d1-d2| < k`,
+producing C1 continuity (smooth transitions).
+In the formula, `h` is the normalized blend factor, and the `k*h*(1-h)` term ensures the
+distance field correctly dips in the transition region (producing more accurate distance
+values than plain `mix`).
 
 ```glsl
 // Polynomial smooth union
@@ -82,7 +118,10 @@ float opSmoothUnion(float d1, float d2, float k) {
 
 **What**: Extend the smooth union approach to subtraction and intersection.
 
-**Why**: Subtraction = intersection with an inverted SDF; intersection = inverted union of inverted inputs. The sign changes in the formulas reflect this duality. Note that subtraction uses `d2+d1` (not `d2-d1`), because d1 is negated in the operation.
+**Why**: Subtraction = intersection with an inverted SDF; intersection = inverted union
+of inverted inputs. The sign changes in the formulas reflect this duality.
+Note that subtraction uses `d2+d1` (not `d2-d1`), because d1 is negated in the
+operation.
 
 ```glsl
 // Smooth subtraction: smoothly carve d2 out of d1
@@ -102,7 +141,10 @@ float opSmoothIntersection(float d1, float d2, float k) {
 
 **What**: Implement smin/smax using a more compact quadratic polynomial formula.
 
-**Why**: This version is mathematically equivalent but more concise with fewer branches. `h = max(k - abs(a-b), 0.0)` directly computes the influence within the transition band, being non-zero only when `|a-b| < k`. `h*h*0.25/k` is the quadratic correction term. smax can be derived directly through smin's duality: `smax(a,b,k) = -smin(-a,-b,k)`.
+**Why**: This version is mathematically equivalent but more concise with fewer branches.
+`h = max(k - abs(a-b), 0.0)` directly computes the influence within the transition band,
+being non-zero only when `|a-b| < k`. `h*h*0.25/k` is the quadratic correction term.
+smax can be derived directly through smin’s duality: `smax(a,b,k) = -smin(-a,-b,k)`.
 
 ```glsl
 // Quadratic optimized smooth union
@@ -127,7 +169,9 @@ float sSub(float d1, float d2, float k) {
 
 **What**: Define the basic shape SDFs used for combination.
 
-**Why**: CSG needs operands. Spheres and boxes are the most common primitives; cylinders are often used for drilling holes.
+**Why**: CSG needs operands.
+Spheres and boxes are the most common primitives; cylinders are often used for drilling
+holes.
 
 ```glsl
 float sdSphere(vec3 p, float r) {
@@ -149,7 +193,9 @@ float sdCylinder(vec3 p, float h, float r) {
 
 **What**: Combine primitives with boolean operations to build complex geometry.
 
-**Why**: The power of CSG lies in combination. Classic example: intersecting a sphere with a cube yields a rounded cube, then subtracting three cylinders produces a nut shape.
+**Why**: The power of CSG lies in combination.
+Classic example: intersecting a sphere with a cube yields a rounded cube, then
+subtracting three cylinders produces a nut shape.
 
 ```glsl
 float mapScene(vec3 p) {
@@ -169,9 +215,12 @@ float mapScene(vec3 p) {
 
 ### Step 7: Organic Body Modeling with Smooth CSG
 
-**What**: Use smin/smax with different k values to blend multiple ellipsoids/capsules into organic characters.
+**What**: Use smin/smax with different k values to blend multiple ellipsoids/capsules
+into organic characters.
 
-**Why**: Different body parts need different blend amounts — large k values for broad connections (torso-legs), small k values for fine details (eyes-head). This is the core technique for organic character modeling with smooth CSG.
+**Why**: Different body parts need different blend amounts — large k values for broad
+connections (torso-legs), small k values for fine details (eyes-head).
+This is the core technique for organic character modeling with smooth CSG.
 
 ```glsl
 float mapCreature(vec3 p) {
@@ -198,7 +247,10 @@ float mapCreature(vec3 p) {
 
 **What**: Render the SDF scene using the sphere tracing algorithm.
 
-**Why**: SDF scenes cannot be rendered with traditional rasterization. Ray Marching is needed: cast a ray from each pixel, advance by the current point's distance to the nearest surface (i.e., the SDF value) at each step, until close enough to a surface or out of range.
+**Why**: SDF scenes cannot be rendered with traditional rasterization.
+Ray Marching is needed: cast a ray from each pixel, advance by the current point’s
+distance to the nearest surface (i.e., the SDF value) at each step, until close enough
+to a surface or out of range.
 
 ```glsl
 float rayMarch(vec3 ro, vec3 rd, float maxDist) {
@@ -216,9 +268,12 @@ float rayMarch(vec3 ro, vec3 rd, float maxDist) {
 
 ### Step 9: Normal Computation and Lighting
 
-**What**: Compute the surface normal by taking the finite-difference gradient of the SDF, then apply lighting.
+**What**: Compute the surface normal by taking the finite-difference gradient of the
+SDF, then apply lighting.
 
-**Why**: The gradient direction of the SDF is the surface normal direction. Using tetrahedral sampling only requires 4 SDF samples, which is more efficient than the 6 needed for central differences.
+**Why**: The gradient direction of the SDF is the surface normal direction.
+Using tetrahedral sampling only requires 4 SDF samples, which is more efficient than the
+6 needed for central differences.
 
 ```glsl
 vec3 calcNormal(vec3 pos) {
@@ -236,7 +291,10 @@ vec3 calcNormal(vec3 pos) {
 
 ### Variant 1: Polynomial Smooth Union (Most Universal Version)
 
-Differs from the basic (quadratic optimized) version by using the `clamp + mix` form, which makes the code intent more intuitive. Mathematically approximately equivalent to the quadratic version, but with slight differences in the transition curve in extreme cases.
+Differs from the basic (quadratic optimized) version by using the `clamp + mix` form,
+which makes the code intent more intuitive.
+Mathematically approximately equivalent to the quadratic version, but with slight
+differences in the transition curve in extreme cases.
 
 ```glsl
 float opSmoothUnion(float d1, float d2, float k) {
@@ -257,7 +315,12 @@ float opSmoothIntersection(float d1, float d2, float k) {
 
 ### Variant 2: Exponential Smooth Union
 
-**Difference from the basic version**: Uses `exp` for implementation, with smoother transitions (C-infinity continuity vs polynomial's C1). However, `exp` is more expensive. Suitable for terrain modeling (e.g., craters). The parameter `k` has a different meaning — in the exponential version, larger `k` produces sharper transitions (opposite to polynomial). Used in RME4-Crater for volcano terrain blending.
+**Difference from the basic version**: Uses `exp` for implementation, with smoother
+transitions (C-infinity continuity vs polynomial’s C1). However, `exp` is more
+expensive. Suitable for terrain modeling (e.g., craters).
+The parameter `k` has a different meaning — in the exponential version, larger `k`
+produces sharper transitions (opposite to polynomial).
+Used in RME4-Crater for volcano terrain blending.
 
 ```glsl
 float sminExp(float a, float b, float k) {
@@ -268,7 +331,11 @@ float sminExp(float a, float b, float k) {
 
 ### Variant 3: Smooth Operations with Color Blending
 
-**Difference from the basic version**: Blends material colors using the same blend factor during geometric fusion. This way, the material at the junction transitions naturally rather than showing an abrupt color boundary. Useful for color gradients between organic shape junctions (e.g., shell and body).
+**Difference from the basic version**: Blends material colors using the same blend
+factor during geometric fusion.
+This way, the material at the junction transitions naturally rather than showing an
+abrupt color boundary.
+Useful for color gradients between organic shape junctions (e.g., shell and body).
 
 ```glsl
 // vec3 overloaded smax, blending colors simultaneously
@@ -291,7 +358,11 @@ float sminWithFactor(float a, float b, float k, out float blend) {
 
 ### Variant 4: Layered CSG Modeling (Architectural / Industrial Scenes)
 
-**Difference from the basic version**: Does not use smooth variants; instead uses multi-level nested hard boolean operations to build precise geometric structures. An additive-then-subtractive pattern — first build the overall form with union, then carve details (windows, doorways) with subtraction. Commonly used for architectural modeling.
+**Difference from the basic version**: Does not use smooth variants; instead uses
+multi-level nested hard boolean operations to build precise geometric structures.
+An additive-then-subtractive pattern — first build the overall form with union, then
+carve details (windows, doorways) with subtraction.
+Commonly used for architectural modeling.
 
 ```glsl
 float sdBuilding(vec3 p) {
@@ -320,7 +391,10 @@ float sdBuilding(vec3 p) {
 
 ### Variant 5: Large-Scale Organic Character Modeling
 
-**Difference from the basic version**: Extensively uses smin/smax (100+ calls), with different k values for different body parts to control blend amounts. Large k (0.1~0.3) for torso connections, small k (0.01~0.05) for detail areas. Complex organic characters can use over 100 smooth operations to sculpt a complete form.
+**Difference from the basic version**: Extensively uses smin/smax (100+ calls), with
+different k values for different body parts to control blend amounts.
+Large k (0.1~~0.3) for torso connections, small k (0.01~~0.05) for detail areas.
+Complex organic characters can use over 100 smooth operations to sculpt a complete form.
 
 ```glsl
 float mapCharacter(vec3 p) {
@@ -347,7 +421,9 @@ float mapCharacter(vec3 p) {
 
 ### 1. Bounding Volume Acceleration
 
-The biggest performance bottleneck in CSG scenes is `mapScene()` being called too many times (MAX_STEPS per pixel per frame). Use AABB bounding boxes to skip distant sub-scenes:
+The biggest performance bottleneck in CSG scenes is `mapScene()` being called too many
+times (MAX_STEPS per pixel per frame).
+Use AABB bounding boxes to skip distant sub-scenes:
 
 ```glsl
 float mapScene(vec3 p) {
@@ -361,24 +437,29 @@ float mapScene(vec3 p) {
 }
 ```
 
-Using `intersectAABB` to pre-test rays against AABBs can skip regions that cannot be hit.
+Using `intersectAABB` to pre-test rays against AABBs can skip regions that cannot be
+hit.
 
 ### 2. Reducing SDF Sample Count
 
-- Use tetrahedral sampling for normal computation (4 calls) instead of central differences (6 calls)
-- Use `t += d * 0.9` to slightly reduce step size, preventing overshoot-induced penetration
+- Use tetrahedral sampling for normal computation (4 calls) instead of central
+  differences (6 calls)
+
+- Use `t += d * 0.9` to slightly reduce step size, preventing overshoot-induced
+  penetration
 
 ### 3. smin/smax Selection
 
 | Method | Performance | Accuracy | Recommended Use |
-|--------|-------------|----------|----------------|
+| --- | --- | --- | --- |
 | Quadratic optimized | Fastest | Good | General first choice |
 | Polynomial clamp | Fast | Good | When a separate blend factor is needed |
 | Exponential | Slower | Best | Terrain, when extremely smooth transitions are needed |
 
 ### 4. Avoiding k=0 with smin
 
-When `k` is zero, the quadratic optimized version causes a division-by-zero error. Always ensure `k > 0`, or fall back to hard boolean when k approaches zero:
+When `k` is zero, the quadratic optimized version causes a division-by-zero error.
+Always ensure `k > 0`, or fall back to hard boolean when k approaches zero:
 
 ```glsl
 float safeSmin(float a, float b, float k) {
@@ -390,7 +471,8 @@ float safeSmin(float a, float b, float k) {
 
 ### 5. Symmetry Exploitation
 
-For symmetric shapes, use `abs()` to fold coordinates and only define one side. Useful for symmetric windows, limbs, and other mirrored features:
+For symmetric shapes, use `abs()` to fold coordinates and only define one side.
+Useful for symmetric windows, limbs, and other mirrored features:
 
 ```glsl
 vec3 q = vec3(p.xy, abs(p.z)); // Mirror along Z axis
@@ -400,7 +482,8 @@ vec3 q = vec3(p.xy, abs(p.z)); // Mirror along Z axis
 
 ### 1. CSG + Domain Repetition
 
-CSG shapes can be infinitely repeated in space via `mod()` or `fract()`, suitable for mechanical arrays, architectural railings, etc.:
+CSG shapes can be infinitely repeated in space via `mod()` or `fract()`, suitable for
+mechanical arrays, architectural railings, etc.:
 
 ```glsl
 float mapRepeated(vec3 p) {
@@ -412,7 +495,8 @@ float mapRepeated(vec3 p) {
 
 ### 2. CSG + Procedural Displacement
 
-Add noise displacement on top of SDF results to give smooth CSG shapes surface detail textures, adding a flowing or organic appearance:
+Add noise displacement on top of SDF results to give smooth CSG shapes surface detail
+textures, adding a flowing or organic appearance:
 
 ```glsl
 float mapWithDisplacement(vec3 p) {
@@ -424,7 +508,8 @@ float mapWithDisplacement(vec3 p) {
 
 ### 3. CSG + Procedural Texturing
 
-Use smin's blend factor to blend not just geometry but also material IDs or colors, achieving cross-shape material gradients:
+Use smin’s blend factor to blend not just geometry but also material IDs or colors,
+achieving cross-shape material gradients:
 
 ```glsl
 vec2 mapWithMaterial(vec3 p) {
@@ -439,7 +524,8 @@ vec2 mapWithMaterial(vec3 p) {
 
 ### 4. CSG + 2D SDF
 
-CSG is not limited to 3D. In 2D scenes, smooth union can similarly create organic shapes, like stylized cloud effects:
+CSG is not limited to 3D. In 2D scenes, smooth union can similarly create organic
+shapes, like stylized cloud effects:
 
 ```glsl
 float sdCloud2D(vec2 p) {
@@ -453,7 +539,8 @@ float sdCloud2D(vec2 p) {
 
 ### 5. CSG + Animation
 
-By binding CSG parameters (k values, primitive positions, primitive radii) to `iTime`, you can achieve dynamic shape deformation and blend animations:
+By binding CSG parameters (k values, primitive positions, primitive radii) to `iTime`,
+you can achieve dynamic shape deformation and blend animations:
 
 ```glsl
 float mapAnimated(vec3 p) {

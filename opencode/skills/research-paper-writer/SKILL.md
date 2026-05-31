@@ -2,12 +2,14 @@
 name: research-paper-writer
 description: Use when writing a formal research, academic, or conference paper.
 ---
-
 # Research Paper Writer
 
 ## Overview
 
-This skill guides the creation of formal academic research papers that meet publication standards for IEEE and ACM conferences/journals. It ensures proper structure, formatting, academic writing style, and comprehensive coverage of research topics.
+This skill guides the creation of formal academic research papers that meet publication
+standards for IEEE and ACM conferences/journals.
+It ensures proper structure, formatting, academic writing style, and comprehensive
+coverage of research topics.
 
 ## Workflow
 
@@ -16,15 +18,23 @@ This skill guides the creation of formal academic research papers that meet publ
 When asked to write a research paper:
 
 1. **Clarify the topic and scope** with the user:
+
    - What is the main research question or contribution?
+
    - What is the target audience (conference, journal, general academic)?
+
    - What is the desired length (page count or word count)?
+
    - Are there specific sections required?
+
    - What formatting standard to use (IEEE or ACM)?
 
 2. **Gather context** if needed:
+
    - Review any provided research materials, data, or references
+
    - Understand the domain and technical background
+
    - Identify key related work or existing research to reference
 
 ### 2. Paper Structure
@@ -86,53 +96,75 @@ Apply these writing conventions from scholarly research:
 **Tone and Voice:**
 
 - Formal, objective, and precise language
-- Third-person perspective (avoid "I" or "we" unless describing specific contributions)
+
+- Third-person perspective (avoid “I” or “we” unless describing specific contributions)
+
 - Present tense for established facts, past tense for specific studies
+
 - Clear, direct statements without unnecessary complexity
 
 **Technical Precision:**
 
-- Define all acronyms on first use: "Context-Aware Systems (C-AS)"
+- Define all acronyms on first use: “Context-Aware Systems (C-AS)”
+
 - Use domain-specific terminology correctly and consistently
+
 - Quantify claims with specific metrics or evidence
-- Avoid vague terms like "very", "many", "significant" without data
+
+- Avoid vague terms like “very”, “many”, “significant” without data
 
 **Argumentation:**
 
 - State claims clearly, then support with evidence
+
 - Use logical progression: motivation → problem → solution → validation
+
 - Compare and contrast with related work explicitly
+
 - Address limitations and counterarguments
 
 **Section-Specific Guidelines:**
 
-_Abstract:_
+*Abstract:*
 
 - First sentence: broad context and motivation
+
 - Second/third: specific problem and gap
+
 - Middle: approach and methodology
+
 - End: key results and contributions
+
 - Self-contained (readable without the full paper)
 
-_Introduction:_
+*Introduction:*
 
 - Start with real-world motivation or compelling problem
+
 - Build from general to specific (inverted pyramid)
+
 - End with clear contribution list and paper roadmap
+
 - Use examples to illustrate the problem
 
-_Related Work:_
+*Related Work:*
 
 - Group related work by theme or approach
-- Compare explicitly: "Unlike [X] which focuses on Y, our approach..."
-- Identify gaps: "However, these approaches do not address..."
+
+- Compare explicitly: “Unlike [X] which focuses on Y, our approach …”
+
+- Identify gaps: “However, these approaches do not address …”
+
 - Position your work clearly
 
-_Results:_
+*Results:*
 
 - Present data clearly in tables/figures
+
 - Describe trends and patterns objectively
+
 - Compare with baselines quantitatively
+
 - Acknowledge unexpected or negative results
 
 ### 4. Formatting Guidelines
@@ -140,33 +172,50 @@ _Results:_
 **IEEE Format (default):**
 
 - Page size: A4 (210mm × 297mm)
+
 - Margins: Top 19mm, Bottom 43mm, Left/Right 14.32mm
+
 - Two-column layout with 4.22mm column separation
+
 - Font: Times New Roman throughout
+
   - Title: 24pt bold
+
   - Author names: 11pt
+
   - Section headings: 10pt bold, numbered (1., 1.1, 1.1.1)
+
   - Body text: 10pt
+
   - Figure/Table captions: 8pt
+
 - Line spacing: Single
+
 - Paragraph: No indentation, 3pt spacing between paragraphs
+
 - Figures: Centered, with captions below
+
 - Tables: Centered, with captions above
 
 **ACM Format (alternative):**
 
 - Standard ACM conference proceedings format
+
 - Single-column abstract, two-column body
+
 - Include CCS Concepts and Keywords sections after abstract
+
 - Use ACM reference format for citations
 
 ### 5. Citations and References
 
 **In-text citations:**
 
-- Use numbered citations: "Recent work [1, 2] has shown..."
+- Use numbered citations: “Recent work [1, 2] has shown …”
+
 - Multiple citations in chronological order: [3, 7, 12]
-- Reference specific sections: "As demonstrated in [5, Section 3]..."
+
+- Reference specific sections: “As demonstrated in [5, Section 3]...”
 
 **Reference formatting (IEEE style):**
 
@@ -178,9 +227,12 @@ _Results:_
 
 **Reference list requirements:**
 
-- Alphabetically ordered by first author's last name (or numbered by citation order)
+- Alphabetically ordered by first author’s last name (or numbered by citation order)
+
 - Include DOI or URL when available
+
 - Minimum 15-20 references for a full paper
+
 - Mix of recent (last 5 years) and foundational works
 
 ### 6. Content Generation Process
@@ -188,28 +240,45 @@ _Results:_
 **Step-by-step approach:**
 
 1. **Create outline**
+
    - Develop detailed section-by-section outline
+
    - Define key points for each section
+
    - Identify where figures/tables are needed
 
 2. **Draft sections iteratively**
+
    - Start with methodology (core contribution)
+
    - Then introduction (now that contribution is clear)
+
    - Related work (to position the contribution)
+
    - Results and evaluation
+
    - Discussion and conclusion
+
    - Abstract last (summary of complete paper)
 
 3. **Add citations**
+
    - Reference related work throughout
+
    - Support claims with evidence from literature
+
    - Create comprehensive reference list
 
 4. **Review and refine**
+
    - Check logical flow between sections
+
    - Ensure consistency in terminology
+
    - Verify all figures/tables are referenced in text
+
    - Confirm abstract matches content
+
    - Validate citation completeness
 
 ## Examples
@@ -264,21 +333,32 @@ Response:
 
 ### references/
 
-- `writing_style_guide.md`: Detailed academic writing conventions extracted from example papers
+- `writing_style_guide.md`: Detailed academic writing conventions extracted from example
+  papers
+
 - `ieee_formatting_specs.md`: Complete IEEE formatting specifications
+
 - `acm_formatting_specs.md`: Complete ACM formatting specifications
 
 ### assets/
 
 - `full_paper_template.pdf`: IEEE paper template with formatting examples
+
 - `interim-layout.pdf`: ACM paper template
+
 - Reference these templates when discussing formatting requirements with users
 
 ## Important Notes
 
 - **Always ask for clarification** on topic scope before starting
+
 - **Quality over speed**: Take time to structure properly and write clearly
+
 - **Cite appropriately**: Academic integrity requires proper attribution
+
 - **Be honest about limitations**: Acknowledge gaps or constraints in the research
+
 - **Maintain consistency**: Terminology, notation, and style throughout
-- **User provides the research content**: This skill structures and writes; the user provides the technical contributions and findings
+
+- **User provides the research content**: This skill structures and writes; the user
+  provides the technical contributions and findings

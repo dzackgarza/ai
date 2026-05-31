@@ -19,18 +19,24 @@ o.add_soft(x > 4, 4)
 ```
 
 Tutorial highlights two objective styles:
+
 - direct maximize/minimize over arithmetic/bit-vector expressions,
+
 - soft constraints with optional weights.
 
 ## Soft Constraints and 0-1 View
 
-Tutorial shows equivalence between weighted soft constraints and minimization of indicator penalties (via `If` terms).
+Tutorial shows equivalence between weighted soft constraints and minimization of
+indicator penalties (via `If` terms).
 
 ## Multiple Objective Combination Modes
 
 Tutorial identifies three combination strategies:
+
 - box,
+
 - lex,
+
 - pareto.
 
 Pareto pattern:
@@ -51,14 +57,22 @@ while opt.check() == sat:
 
 ## MaxSAT Notes
 
-Tutorial describes MaxRes-style core-based weakening as default MaxSAT/MaxSMT strategy in Z3, with algorithmic intuition and weighted-handling notes.
+Tutorial describes MaxRes-style core-based weakening as default MaxSAT/MaxSMT strategy
+in Z3, with algorithmic intuition and weighted-handling notes.
 
 Practical implication:
-- for many soft-constraint workloads, using `Optimize` soft assertions is usually the right high-level entry.
+
+- for many soft-constraint workloads, using `Optimize` soft assertions is usually the
+  right high-level entry.
 
 ## Guidance
 
-- Pick objective priority mode explicitly; do not rely on defaults in critical workflows.
+- Pick objective priority mode explicitly; do not rely on defaults in critical
+  workflows.
+
 - Keep objective semantics separate from feasibility constraints.
-- For weighted soft constraints, verify whether weight scaling/truncation assumptions are intended.
+
+- For weighted soft constraints, verify whether weight scaling/truncation assumptions
+  are intended.
+
 - Inspect objective values (`handle.value()`) and not only final model assignments.

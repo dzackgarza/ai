@@ -1,7 +1,14 @@
 **IMPORTANT - GLSL Type Strictness**:
-- GLSL is a strongly-typed language and does not support the `string` type (you cannot define `string var`)
-- `vec2`/`vec3`/`vec4` are vector types and cannot be directly assigned a float (e.g., `vec2 a = 1.0` must be `vec2 a = vec2(1.0)`)
-- Array indices must be integer constants or uniform variables; runtime-computed floats cannot be used
+
+- GLSL is a strongly-typed language and does not support the `string` type (you cannot
+  define `string var`)
+
+- `vec2`/`vec3`/`vec4` are vector types and cannot be directly assigned a float (e.g.,
+  `vec2 a = 1.0` must be `vec2 a = vec2(1.0)`)
+
+- Array indices must be integer constants or uniform variables; runtime-computed floats
+  cannot be used
+
 - Avoid uninitialized variables — GLSL default values are undefined
 
 # Texture Sampling
@@ -9,25 +16,40 @@
 ## Use Cases
 
 - **Post-processing effects**: Blur, bloom, dispersion, chromatic aberration
-- **Procedural noise**: FBM layering from noise textures to generate terrain, clouds, fire
+
+- **Procedural noise**: FBM layering from noise textures to generate terrain, clouds,
+  fire
+
 - **PBR/IBL**: Cubemap environment lighting, BRDF LUT lookup
-- **Simulation/feedback systems**: Reaction-diffusion, fluid simulation multi-buffer feedback
+
+- **Simulation/feedback systems**: Reaction-diffusion, fluid simulation multi-buffer
+  feedback
+
 - **Data storage**: Textures used as structured data (game state, keyboard input)
+
 - **Temporal accumulation**: TAA, motion blur, previous frame reading
 
 ## Core Principles
 
 | Function | Coordinate Type | Filtering | Typical Use |
-|----------|----------------|-----------|-------------|
+| --- | --- | --- | --- |
 | `texture(sampler, uv)` | Float UV `[0,1]` | Hardware bilinear | General texture reading |
 | `textureLod(sampler, uv, lod)` | Float UV + LOD | Specified mip level | Control blur level / avoid auto mip |
 | `texelFetch(sampler, ivec2, lod)` | Integer pixel coordinates | No filtering | Exact pixel data reading |
 
 Key mathematics:
-1. **Hardware bilinear interpolation**: `texture()` automatically linearly blends between 4 adjacent texels
-2. **Quintic Hermite smoothing**: `u = f^3(6f^2 - 15f + 10)`, C2 continuous (eliminates hardware linear interpolation seams)
-3. **LOD control**: `textureLod` third parameter selects mipmap level, `lod=0` is original resolution, each +1 halves resolution
-4. **Coordinate wrapping**: `fract(uv)` implements torus boundary, equivalent to `GL_REPEAT`
+
+1. **Hardware bilinear interpolation**: `texture()` automatically linearly blends
+   between 4 adjacent texels
+
+2. **Quintic Hermite smoothing**: `u = f^3(6f^2 - 15f + 10)`, C2 continuous (eliminates
+   hardware linear interpolation seams)
+
+3. **LOD control**: `textureLod` third parameter selects mipmap level, `lod=0` is
+   original resolution, each +1 halves resolution
+
+4. **Coordinate wrapping**: `fract(uv)` implements torus boundary, equivalent to
+   `GL_REPEAT`
 
 ## Implementation Steps
 
@@ -181,7 +203,7 @@ vec3 specular = envColor * (F * brdf.x + brdf.y);
 
 ## Complete Code Template
 
-iChannel0 bound to a noise texture (e.g., "Gray Noise Medium"), with mipmap enabled.
+iChannel0 bound to a noise texture (e.g., “Gray Noise Medium”), with mipmap enabled.
 
 ```glsl
 // === Texture Sampling Comprehensive Demo ===
@@ -364,19 +386,41 @@ vec3 temporalBlend(vec2 currUv, vec2 prevUv, vec3 currColor) {
 ## Performance & Composition
 
 **Performance Tips**:
-- Heavy sampling (e.g., 64 dispersion samples) is a bandwidth bottleneck — reduce sample count + use smart weight compensation; use `textureLod` with high LOD to reduce cache misses
-- 2D Gaussian blur uses separable two-pass (O(N^2) -> O(2N)), leveraging hardware bilinear for (N+1)/2 samples to achieve N-tap
-- Must use `textureLod(..., 0.0)` inside ray marching — the GPU cannot correctly estimate screen-space derivatives
-- Manual Hermite interpolation is ~4x slower than hardware — only use for the first two FBM octaves, fall back to `texture()` for higher frequencies
-- Each multi-buffer feedback adds one frame of latency — merge operations into the same pass; use `texelFetch` to avoid filtering overhead
+
+- Heavy sampling (e.g., 64 dispersion samples) is a bandwidth bottleneck — reduce sample
+  count + use smart weight compensation; use `textureLod` with high LOD to reduce cache
+  misses
+
+- 2D Gaussian blur uses separable two-pass (O(N^2) -> O(2N)), leveraging hardware
+  bilinear for (N+1)/2 samples to achieve N-tap
+
+- Must use `textureLod(..., 0.0)` inside ray marching — the GPU cannot correctly
+  estimate screen-space derivatives
+
+- Manual Hermite interpolation is ~4x slower than hardware — only use for the first two
+  FBM octaves, fall back to `texture()` for higher frequencies
+
+- Each multi-buffer feedback adds one frame of latency — merge operations into the same
+  pass; use `texelFetch` to avoid filtering overhead
 
 **Composition Tips**:
-- **+ SDF Ray Marching**: Noise textures for displacement maps/materials; use `textureLod(..., 0.0)` inside ray marching
-- **+ Procedural Noise**: Hermite + FBM driving domain warping to generate terrain/clouds/fire; texture noise is faster than pure mathematical noise
-- **+ Post-Processing Pipeline**: Multi-LOD bloom → separable DOF → dispersion → tone mapping, chaining a complete post-processing pipeline
-- **+ PBR/IBL**: `textureLod` samples cubemap by roughness + BRDF LUT lookup = split-sum IBL
-- **+ Simulation/Feedback**: Multi-buffer reaction-diffusion/fluid; Buffer A state, B/C separable blur diffusion, Image visualization; `fract()` torus boundary
+
+- **+ SDF Ray Marching**: Noise textures for displacement maps/materials; use
+  `textureLod(..., 0.0)` inside ray marching
+
+- **+ Procedural Noise**: Hermite + FBM driving domain warping to generate
+  terrain/clouds/fire; texture noise is faster than pure mathematical noise
+
+- **+ Post-Processing Pipeline**: Multi-LOD bloom → separable DOF → dispersion → tone
+  mapping, chaining a complete post-processing pipeline
+
+- **+ PBR/IBL**: `textureLod` samples cubemap by roughness + BRDF LUT lookup = split-sum
+  IBL
+
+- **+ Simulation/Feedback**: Multi-buffer reaction-diffusion/fluid; Buffer A state, B/C
+  separable blur diffusion, Image visualization; `fract()` torus boundary
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/texture-sampling.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/texture-sampling.md)

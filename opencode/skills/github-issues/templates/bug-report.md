@@ -4,9 +4,8 @@
 
 ## Steps to Reproduce
 
-1.
-2.
-3.
+
+
 
 ## Expected Behavior
 
@@ -19,8 +18,11 @@
 ## Environment
 
 - OS:
+
 - Version/Commit:
+
 - Python version:
+
 - Browser (if applicable):
 
 ## Error Output
@@ -32,4 +34,5 @@
 
 ## Additional Context
 
-<!-- Screenshots, related issues, workarounds discovered, etc. -->
+<!-- Screenshots, related issues, workarounds discovered, etc.
+-->

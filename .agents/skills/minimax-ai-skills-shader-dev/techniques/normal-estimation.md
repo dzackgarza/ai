@@ -1,43 +1,66 @@
 ## WebGL2 Adaptation Requirements
 
 **IMPORTANT: GLSL Type Strictness Warning**:
-- GLSL is a strongly typed language with **no `string` type**; using string types is forbidden
-- Common illegal types: `string`, `int` (can only use `int` literals, cannot declare variable types as `int`)
-- vec2/vec3/vec4 cannot be implicitly converted between each other; explicit construction is required
+
+- GLSL is a strongly typed language with **no `string` type**; using string types is
+  forbidden
+
+- Common illegal types: `string`, `int` (can only use `int` literals, cannot declare
+  variable types as `int`)
+
+- vec2/vec3/vec4 cannot be implicitly converted between each other; explicit
+  construction is required
+
 - Float precision: `highp float` (recommended), `mediump float`, `lowp float`
 
-The code templates in this document use ShaderToy GLSL style. When generating standalone HTML pages, you must adapt for WebGL2:
+The code templates in this document use ShaderToy GLSL style.
+When generating standalone HTML pages, you must adapt for WebGL2:
 
 - Use `canvas.getContext("webgl2")`
+
 - Shader first line: `#version 300 es`, add `precision highp float;` in fragment shader
+
 - Vertex shader: `attribute` -> `in`, `varying` -> `out`
-- Fragment shader: `varying` -> `in`, `gl_FragColor` -> custom `out vec4 fragColor`, `texture2D()` -> `texture()`
-- ShaderToy's `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to the standard `void main()` entry point
+
+- Fragment shader: `varying` -> `in`, `gl_FragColor` -> custom `out vec4 fragColor`,
+  `texture2D()` -> `texture()`
+
+- ShaderToy’s `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to
+  the standard `void main()` entry point
 
 # SDF Normal Estimation
 
 ## Use Cases
 
-- Lighting calculations in raymarching rendering pipelines (diffuse, specular, Fresnel, etc.)
-- Any 3D scene based on SDF distance fields (fractals, parametric surfaces, boolean geometry, procedural terrain)
-- Edge detection and contour rendering (Laplacian value as a byproduct of normal sampling)
+- Lighting calculations in raymarching rendering pipelines (diffuse, specular, Fresnel,
+  etc.)
+
+- Any 3D scene based on SDF distance fields (fractals, parametric surfaces, boolean
+  geometry, procedural terrain)
+
+- Edge detection and contour rendering (Laplacian value as a byproduct of normal
+  sampling)
+
 - Prerequisite for ambient occlusion (AO) computation
 
 ## Core Principles
 
-The gradient of an SDF `nabla f(p)` points in the direction of fastest distance increase, which is the outward surface normal. Numerical differentiation approximates the gradient:
+The gradient of an SDF `nabla f(p)` points in the direction of fastest distance
+increase, which is the outward surface normal.
+Numerical differentiation approximates the gradient:
 
 $$\vec{n} = \text{normalize}\left(\nabla f(p)\right)$$
 
 Three main strategies:
 
 | Method | Samples | Accuracy | Recommendation |
-|--------|---------|----------|----------------|
+| --- | --- | --- | --- |
 | Forward difference | 4 | O(epsilon) | Simple scenes |
 | Central difference | 6 | O(epsilon^2) | When symmetry is needed |
 | **Tetrahedron method** | **4** | **Between the two** | **Preferred** |
 
-Key parameter epsilon: commonly `0.0005 ~ 0.001`; for advanced scenes, multiply by ray distance `t` for adaptive scaling.
+Key parameter epsilon: commonly `0.0005 ~ 0.001`; for advanced scenes, multiply by ray
+distance `t` for adaptive scaling.
 
 ## Implementation Steps
 
@@ -299,20 +322,34 @@ vec3 normal(vec3 p) {
 ## Performance & Composition
 
 **Performance**:
+
 - Default to tetrahedron method (4 samples, better accuracy than forward difference)
+
 - Only switch to central difference (6 samples) when jagged normal artifacts appear
+
 - Use anti-inlining loop (Variant 4) for complex SDFs to avoid compile time explosion
+
 - Epsilon recommended `0.0005 ~ 0.001`; best practice is adaptive `eps * t`
+
 - Too small (< 1e-5) produces floating-point noise; too large (> 0.05) loses detail
-- Reuse SDF sampling results when multiple types of information are needed at the same position (e.g., Variant 5)
+
+- Reuse SDF sampling results when multiple types of information are needed at the same
+  position (e.g., Variant 5)
 
 **Common combinations**:
-- **Normal + Soft Shadow**: `calcSoftShadow(pos + nor * 0.01, sunDir, 16.0)` -- normal offset at start point to avoid self-intersection
+
+- **Normal + Soft Shadow**: `calcSoftShadow(pos + nor * 0.01, sunDir, 16.0)` -- normal
+  offset at start point to avoid self-intersection
+
 - **Normal + AO**: Multi-step SDF sampling along the normal to estimate occlusion
+
 - **Normal + Fresnel**: `pow(clamp(1.0 + dot(nor, rd), 0.0, 1.0), 5.0)`
+
 - **Normal + Bump Mapping**: Overlay texture gradient perturbation on SDF normals
+
 - **Normal + Triplanar Mapping**: Use `abs(nor)` components as triplanar blend weights
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/normal-estimation.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/normal-estimation.md)

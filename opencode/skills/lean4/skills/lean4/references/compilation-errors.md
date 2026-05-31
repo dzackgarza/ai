@@ -1,41 +1,47 @@
 # Common Compilation Errors in Lean 4
 
-This reference provides detailed explanations and fixes for the most common compilation errors encountered in Lean 4 theorem proving.
+This reference provides detailed explanations and fixes for the most common compilation
+errors encountered in Lean 4 theorem proving.
 
 ## Quick Reference Table
 
 | Error | Cause | Fix |
-|-------|-------|-----|
-| **"failed to synthesize instance"** | Missing type class | Add `haveI : IsProbabilityMeasure μ := ⟨proof⟩` |
-| **"maximum recursion depth"** | Type class loop/complex search | Provide manually: `letI := instance` or increase: `set_option synthInstance.maxHeartbeats 40000` |
+| --- | --- | --- |
+| **“failed to synthesize instance”** | Missing type class | Add `haveI : IsProbabilityMeasure μ := ⟨proof⟩` |
+| **“maximum recursion depth”** | Type class loop/complex search | Provide manually: `letI := instance` or increase: `set_option synthInstance.maxHeartbeats 40000` |
 | **WHNF/isDefEq timeout** (500k+ heartbeats) | Complex function in polymorphic goal | **[performance-optimization.md](performance-optimization.md)** - use `@[irreducible]` wrapper |
-| **"type mismatch"** (has type ℕ but expected ℝ) | Wrong type | Use coercion: `(x : ℝ)` or `↑x` |
-| **"expected Filter got Measure"** | Dot notation namespace confusion | Use standalone: `EventuallyEq.lemma h` not `h.EventuallyEq.lemma` |
-| **"numerals are data but expected Prop"** | Value where proof expected | Use proof term: `tendsto_const_nhds` not `1` |
-| **"tactic 'exact' failed"** | Goal/term type mismatch | Use `apply` for unification or restructure: `⟨h.2, h.1⟩` |
-| **"unknown identifier"** | Missing import OR namespace not opened | Import tactic OR `open Filter Topology` |
-| **"unexpected token/identifier"** | Section comment in proof | Replace `/-! -/` with `--` in tactic mode |
-| **"no goals to be solved"** | Tactic already finished | Remove redundant tactics after `simp` |
-| **"equation compiler failed"** | Can't prove termination | Add `termination_by my_rec n => n` clause |
-| **"synthesized: m, inferred: inst✝"** | Instance pollution (sub-σ-algebras) | ⚡ **READ [instance-pollution.md](instance-pollution.md)** - pin ambient first! |
-| **"binder x doesn't match goal's binder ω"** | Alpha/beta-equivalence issue | Use `set F := <expr> with hF`, apply to `F`, unfold with `simpa [hF]` |
+| **“type mismatch”** (has type ℕ but expected ℝ) | Wrong type | Use coercion: `(x : ℝ)` or `↑x` |
+| **“expected Filter got Measure”** | Dot notation namespace confusion | Use standalone: `EventuallyEq.lemma h` not `h.EventuallyEq.lemma` |
+| **“numerals are data but expected Prop”** | Value where proof expected | Use proof term: `tendsto_const_nhds` not `1` |
+| **“tactic 'exact' failed”** | Goal/term type mismatch | Use `apply` for unification or restructure: `⟨h.2, h.1⟩` |
+| **“unknown identifier”** | Missing import OR namespace not opened | Import tactic OR `open Filter Topology` |
+| **“unexpected token/identifier”** | Section comment in proof | Replace `/-! -/` with `--` in tactic mode |
+| **“no goals to be solved”** | Tactic already finished | Remove redundant tactics after `simp` |
+| **“equation compiler failed”** | Can’t prove termination | Add `termination_by my_rec n => n` clause |
+| **“synthesized: m, inferred: inst✝”** | Instance pollution (sub-σ-algebras) | ⚡ **READ [instance-pollution.md](instance-pollution.md)** - pin ambient first! |
+| **“binder x doesn’t match goal’s binder ω”** | Alpha/beta-equivalence issue | Use `set F := <expr> with hF`, apply to `F`, unfold with `simpa [hF]` |
 | **Error at line N** | Actual error before line N | Check 5-10 lines before reported location |
-| **OOM kill (exit 137)** on sorry'd file or LSP timeout on importers | Large dependent type signatures | Isolate heavy signatures into small files; see [below](#oom-from-large-dependent-type-signatures) |
+| **OOM kill (exit 137)** on sorry’d file or LSP timeout on importers | Large dependent type signatures | Isolate heavy signatures into small files; see [below](#oom-from-large-dependent-type-signatures) |
 
----
+* * *
 
 ## ⚡ WORKING WITH SUB-σ-ALGEBRAS?
 
-**If you're defining multiple `MeasurableSpace` instances (sub-σ-algebras), STOP and read this first:**
+**If you’re defining multiple `MeasurableSpace` instances (sub-σ-algebras), STOP and
+read this first:**
 
 **📚 [instance-pollution.md](instance-pollution.md)** - Essential guide to prevent:
+
 - **Subtle bugs:** Lean picks wrong instance (even from outer scopes!)
+
 - **Timeout errors:** 500k+ heartbeat explosions
-- **Cryptic errors:** "synthesized: m, inferred: inst✝⁴"
 
-**Quick fix:** Pin ambient instance BEFORE defining sub-σ-algebras (see [instance-pollution.md](instance-pollution.md) for details).
+- **Cryptic errors:** “synthesized: m, inferred: inst✝⁴”
 
----
+**Quick fix:** Pin ambient instance BEFORE defining sub-σ-algebras (see
+[instance-pollution.md](instance-pollution.md) for details).
+
+* * *
 
 ## Detailed Error Explanations
 
@@ -50,8 +56,11 @@ failed to synthesize instance
 **What it means:** Lean cannot automatically infer the required type class instance.
 
 **Common scenarios:**
-- Working with sub-σ-algebras: `m ≤ m₀` but Lean can't infer instances on `m`
+
+- Working with sub-σ-algebras: `m ≤ m₀` but Lean can’t infer instances on `m`
+
 - Trimmed measures: `μ.trim hm` needs explicit `SigmaFinite` instance
+
 - Conditional expectations requiring multiple measure properties
 
 **Solutions:**
@@ -82,13 +91,19 @@ omit [MeasurableSpace Ω] in
 lemma my_lemma : Statement := by
   proof
 ```
+
 - **Must appear before the docstring** (not after)
+
 - Common when section variables cause unwanted instance requirements
+
 - Can omit multiple: `omit [inst1] [inst2] in`
 
-**⚡ CRITICAL for sub-σ-algebras:** If working with multiple `MeasurableSpace` instances, **read [instance-pollution.md](instance-pollution.md) FIRST** to avoid subtle bugs and timeout errors!
+**⚡ CRITICAL for sub-σ-algebras:** If working with multiple `MeasurableSpace` instances,
+**read [instance-pollution.md](instance-pollution.md) FIRST** to avoid subtle bugs and
+timeout errors!
 
-**For deep patterns with sub-σ-algebras, conditional expectation, and measure theory type class issues, see:** [measure-theory.md](measure-theory.md)
+**For deep patterns with sub-σ-algebras, conditional expectation, and measure theory
+type class issues, see:** [measure-theory.md](measure-theory.md)
 
 **Debug with:**
 ```lean
@@ -107,8 +122,11 @@ theorem my_theorem : Goal := by
 **What it means:** Type class synthesis is stuck in a loop or the search is too complex.
 
 **Common causes:**
+
 - Circular instance dependencies
+
 - Very deep instance search trees
+
 - Ambiguous instances competing
 
 **Solutions:**
@@ -147,11 +165,14 @@ but is expected to have type
   ℝ
 ```
 
-**What it means:** The term's type doesn't match what's expected.
+**What it means:** The term’s type doesn’t match what’s expected.
 
 **Common scenarios:**
+
 - Natural number used where real number expected
+
 - Integer used where rational expected
+
 - General coercion needed
 
 **Solutions:**
@@ -184,7 +205,8 @@ f (n : ℝ)  -- Explicit
 
 **Pattern 4: Bypass coercion unification with calc**
 
-When automatic coercion `(π/6 : Real.Angle)` won't unify with explicit `((π/6 : ℝ) : Real.Angle)`, use calc chain with coercion-free middle steps:
+When automatic coercion `(π/6 : Real.Angle)` won’t unify with explicit
+`((π/6 : ℝ) : Real.Angle)`, use calc chain with coercion-free middle steps:
 ```lean
 calc ((Real.pi / 6 : ℝ) : Real.Angle)
     = ∠ A C H := by rw [← h_angle]  -- Explicit coercion matches helper signature
@@ -192,7 +214,7 @@ calc ((Real.pi / 6 : ℝ) : Real.Angle)
   _ = ((4 * Real.pi / 9 : ℝ) : Real.Angle) := by rw [angle_ACB]
 ```
 
-### 4. Tactic 'exact' Failed
+### 4. Tactic ‘exact’ Failed
 
 **Full error message:**
 ```
@@ -204,7 +226,7 @@ but is expected to have type
   ∀ x, A x → B x
 ```
 
-**What it means:** The term's type is close but not exactly the goal type.
+**What it means:** The term’s type is close but not exactly the goal type.
 
 **Solutions:**
 
@@ -255,13 +277,17 @@ import Mathlib.Tactic.Positivity    -- positivity
 ```
 
 **Quick fix:**
+
 1. See error for tactic name
+
 2. Add `import Mathlib.Tactic.TacticName`
+
 3. Rebuild
 
 **Cause 2: Missing `open` declarations**
 
-Names like `Tendsto` and `atTop` live in the `Filter` namespace. Without opening it, Lean cannot resolve them:
+Names like `Tendsto` and `atTop` live in the `Filter` namespace.
+Without opening it, Lean cannot resolve them:
 
 ```lean
 -- ❌ WRONG: bare identifiers without open
@@ -272,7 +298,8 @@ open Filter Topology in
 have h : Tendsto f atTop (𝓝 x) := ...
 ```
 
-Alternatively, you can fully qualify the names (`Filter.Tendsto`, `Filter.atTop`), but `open Filter Topology` is the standard mathlib practice.
+Alternatively, you can fully qualify the names (`Filter.Tendsto`, `Filter.atTop`), but
+`open Filter Topology` is the standard mathlib practice.
 
 ### 6. Equation Compiler Failed (Termination)
 
@@ -284,7 +311,7 @@ with errors
   ...
 ```
 
-**What it means:** Lean can't automatically prove the function terminates.
+**What it means:** Lean can’t automatically prove the function terminates.
 
 **Solutions:**
 
@@ -322,14 +349,20 @@ h2 : (4 : ℝ) / ε ≤ ↑m
 ⊢ False
 ```
 
-**What it means:** After introducing a contradiction hypothesis, the goal is `False` but the tactic can't derive the contradiction.
+**What it means:** After introducing a contradiction hypothesis, the goal is `False` but
+the tactic can’t derive the contradiction.
 
-**Common scenario:** Proving `m > 0` from `m ≠ 0` and some bound, but `norm_num` fails because the expressions are symbolic (not concrete numbers).
+**Common scenario:** Proving `m > 0` from `m ≠ 0` and some bound, but `norm_num` fails
+because the expressions are symbolic (not concrete numbers).
 
 **Why norm_num fails:**
+
 - `norm_num` works on **concrete numerical expressions** (like `2 + 2 = 4`)
-- When you have symbolic variables like `4/ε`, `norm_num` can't evaluate them
-- After `rw [h]` where `h : m = 0`, you get `4/ε ≤ 0`, but `norm_num` can't derive `False` from this
+
+- When you have symbolic variables like `4/ε`, `norm_num` can’t evaluate them
+
+- After `rw [h]` where `h : m = 0`, you get `4/ε ≤ 0`, but `norm_num` can’t derive
+  `False` from this
 
 **Solution: Use simp to eliminate variables, then linarith**
 
@@ -351,19 +384,30 @@ have hm_pos' : m > 0 := Nat.pos_of_ne_zero (by
 ```
 
 **Key insight:**
+
 - `norm_num` = numerical normalization (concrete numbers)
+
 - `simp` = simplification (eliminates variables, unfolds definitions)
-- `linarith` = linear arithmetic solver (works with inequalities and symbolic expressions)
+
+- `linarith` = linear arithmetic solver (works with inequalities and symbolic
+  expressions)
 
 **General pattern for contradiction proofs:**
+
 1. `simp [hypothesis]` to eliminate the contradictory assumption
+
 2. Establish any needed positivity facts with `positivity`
+
 3. `linarith` to derive the contradiction from inequalities
 
 **When to use each tactic:**
+
 - `norm_num`: Concrete arithmetic (`2 + 2 = 4`, `7 < 10`)
+
 - `simp`: Simplify using hypotheses and definitions
+
 - `linarith`: Linear inequalities with variables (`a + b ≤ c`, `x > 0 → x + 1 > 0`)
+
 - `omega`: Integer linear arithmetic (works on `ℕ` and `ℤ`)
 
 ### 8. Unexpected Token/Identifier in Proof (Section Doc Comments)
@@ -374,9 +418,11 @@ unexpected identifier; expected command
 unexpected token 'have'; expected command
 ```
 
-**What it means:** Section doc comments `/-! ... -/` in tactic mode can terminate proof parsing.
+**What it means:** Section doc comments `/-! ... -/` in tactic mode can terminate proof
+parsing.
 
-**CRITICAL:** Section doc comments terminate proof context, causing everything after to be interpreted as top-level declarations.
+**CRITICAL:** Section doc comments terminate proof context, causing everything after to
+be interpreted as top-level declarations.
 
 ```lean
 -- ❌ WRONG: Section comments break proof
@@ -398,7 +444,8 @@ lemma my_proof := by
   have h := ...           -- ✓ Works
 ```
 
-**Best practice:** Use `--` for in-proof comments, reserve `/-! -/` for top-level documentation only.
+**Best practice:** Use `--` for in-proof comments, reserve `/-! -/` for top-level
+documentation only.
 
 ### 9. Variable Shadowing in Lambda
 
@@ -430,7 +477,8 @@ have h_sp_le : ∀ n a, (sp n a) ≤ φp a := by
     ... a  -- ✓ Clear: outer 'a'
 ```
 
-**Prevention:** Use different variable names in nested lambdas or add explicit type annotations.
+**Prevention:** Use different variable names in nested lambdas or add explicit type
+annotations.
 
 ### 10. No Goals After Tactic
 
@@ -439,7 +487,8 @@ have h_sp_le : ∀ n a, (sp n a) ≤ φp a := by
 no goals to be solved
 ```
 
-**What it means:** Previous tactic already completed the proof, but another tactic remains.
+**What it means:** Previous tactic already completed the proof, but another tactic
+remains.
 
 ```lean
 -- ❌ WRONG: simp already solved goal
@@ -454,30 +503,41 @@ have hφp_nn : ∀ a, 0 ≤ φp a := by
   simp [φp]  -- ✓ simp completes proof
 ```
 
-**Debug:** Check goal state after each tactic. If "no goals" appears, proof is done.
+**Debug:** Check goal state after each tactic.
+If “no goals” appears, proof is done.
 
 ## Quick Debug Workflow
 
 When encountering any error:
 
 1. **Read error location carefully** - Often points to exact issue
+
 2. **Use #check** - Verify types of all terms involved
+
 3. **Simplify** - Try to create minimal example that fails
+
 4. **Search mathlib** - Error might be documented in lemma comments
+
 5. **Ask Zulip** - Lean community is very helpful
 
-### Quick Checklist for "Unexpected" Errors in Proofs
+### Quick Checklist for “Unexpected” Errors in Proofs
 
-When facing "unexpected identifier/token" in long proofs:
+When facing “unexpected identifier/token” in long proofs:
 
 1. ☐ Search for `/-! ... -/` section comments → replace with `--`
+
 2. ☐ Check for bare identifiers (`Tendsto`, `atTop`) → `open Filter Topology`
+
 3. ☐ Look for lambda shadowing → rename variables or add type annotations
-4. ☐ Check for "no goals" after `simp` → remove redundant tactics
-5. ☐ For section variables + explicit params → rely on section, use `(by infer_instance)`
+
+4. ☐ Check for “no goals” after `simp` → remove redundant tactics
+
+5. ☐ For section variables + explicit params → rely on section, use
+   `(by infer_instance)`
+
 6. ☐ For sub-σ-algebra work → ensure `hmW_le : mW ≤ _` proof exists
 
----
+* * *
 
 ## Additional Common Errors
 
@@ -490,7 +550,8 @@ type mismatch
   got Measure
 ```
 
-**What it means:** You're using dot notation for a lemma name that conflicts with a type constructor.
+**What it means:** You’re using dot notation for a lemma name that conflicts with a type
+constructor.
 
 **Example:**
 ```lean
@@ -508,13 +569,18 @@ have := EventuallyEq.comp_measurePreserving h ...
 ```
 
 **Pattern:** If you see type errors where:
+
 - A `Measure` is expected to be a `Filter`
+
 - A `Set` is expected to be a different type
-- "Expected X but got Y" for completely unrelated types
 
-Check if you're using dot notation for a lemma that shares a name with a type constructor.
+- “Expected X but got Y” for completely unrelated types
 
-**Rule:** For private helper lemmas extending common type names (`EventuallyEq`, `Tendsto`, `Continuous`, etc.), use standalone function call syntax, not dot notation.
+Check if you’re using dot notation for a lemma that shares a name with a type
+constructor.
+
+**Rule:** For private helper lemmas extending common type names (`EventuallyEq`,
+`Tendsto`, `Continuous`, etc.), use standalone function call syntax, not dot notation.
 
 ### 10. Numerals in Propositional Contexts
 
@@ -523,7 +589,7 @@ Check if you're using dot notation for a lemma that shares a name with a type co
 numerals are data but expected type is Prop
 ```
 
-**What it means:** You're passing a value (numeral) where a proof term is expected.
+**What it means:** You’re passing a value (numeral) where a proof term is expected.
 
 **Example:**
 ```lean
@@ -541,7 +607,9 @@ have := h1.atTop_add (tendsto_const_nhds : Tendsto (fun _ => (1 : ℝ)) atTop (n
 ```
 
 **Pattern:** Functions like `atTop_add` work on limits and need proof terms:
+
 - `Tendsto f atTop (nhds a)` ← This is a Prop (needs proof)
+
 - `1` ← This is data (ℕ or ℝ)
 
 **Common fixes:**
@@ -555,7 +623,8 @@ use lemmas like Filter.tendsto_id, Filter.tendsto_const_pure
 
 ### 11. Error Location Can Be Misleading
 
-**Problem:** Lean reports errors where elaboration fails, not always where the mistake is.
+**Problem:** Lean reports errors where elaboration fails, not always where the mistake
+is.
 
 **Example:**
 ```
@@ -563,14 +632,20 @@ error: type mismatch at line 4238
 ```
 But the actual mistake is at line 4231.
 
-**Why:** Elaborator processes code sequentially and reports failure at the point where it can't continue, which may be several lines after the actual error.
+**Why:** Elaborator processes code sequentially and reports failure at the point where
+it can’t continue, which may be several lines after the actual error.
 
 **Strategy:**
 
 **When investigating an error:**
+
 1. Read 5-10 lines **before** the reported location
-2. Look for recent changes (especially new `let` bindings, `have` statements, or tactic calls)
+
+2. Look for recent changes (especially new `let` bindings, `have` statements, or tactic
+   calls)
+
 3. Check for missing hypotheses or incorrect variable names
+
 4. Verify that all previous lines actually compile in isolation
 
 **Example workflow:**
@@ -586,16 +661,20 @@ let μX := pathLaw μ X  -- Should be Y not X
 ```
 
 **Pattern:** The mistake is often in:
+
 - Most recent `let` or `have` before error (wrong RHS)
+
 - Most recent tactic (applied wrong lemma)
+
 - Missing hypothesis from 2-5 lines before
 
-**Don't:** Assume the error line is where you need to fix.
+**Don’t:** Assume the error line is where you need to fix.
 **Do:** Trace backwards from error to find the root cause.
 
 ### 12. Alpha/Beta-Equivalence Issues (Binder Mismatches)
 
-**Problem:** Lean fails to match expressions because binder names differ (α-equivalence) or beta-redexes aren't reduced.
+**Problem:** Lean fails to match expressions because binder names differ (α-equivalence)
+or beta-redexes aren’t reduced.
 
 **Error message:**
 ```
@@ -612,7 +691,8 @@ have h := integral_condExp (f := fun ω => μ[g|m] ω * ξ ω)
 simpa using h.symm  -- Error: binder x ≠ binder ω
 ```
 
-**Why it fails:** Lean doesn't automatically recognize that `fun x => F x` and `fun ω => F ω` are the same when comparing goal to hypothesis.
+**Why it fails:** Lean doesn’t automatically recognize that `fun x => F x` and
+`fun ω => F ω` are the same when comparing goal to hypothesis.
 
 **Solution: Use `set ... with` pattern to name expression once**
 
@@ -631,19 +711,27 @@ exact h_goal.symm
 ```
 
 **Why this works:**
+
 - `set F := ...` gives the expression an explicit name
+
 - Lean never compares different lambda expressions
+
 - `simpa [hF]` unfolds `F` uniformly in both places
+
 - No binder name mismatches because we use the same name throughout
 
 **Pattern:**
+
 1. `set F := <complex expr> with hF`
+
 2. Apply lemma to the named `F`
+
 3. Unfold with `simpa [hF]` or `rw [hF]`
 
-**See also:** [lean-phrasebook.md](lean-phrasebook.md) - "Name complex expression to avoid alpha/beta-equivalence issues"
+**See also:** [lean-phrasebook.md](lean-phrasebook.md) - “Name complex expression to
+avoid alpha/beta-equivalence issues”
 
----
+* * *
 
 ## Type Class Debugging Commands
 
@@ -692,28 +780,43 @@ exact (h : _)  -- Guessing
 -- Solution: Convert A to B or restructure
 ```
 
----
+* * *
 
 ## OOM from Large Dependent Type Signatures
 
-A file with all-`sorry` proof bodies can still OOM or take tens of minutes to build if the **type signatures** are expensive to elaborate. `sorry` skips the proof, but Lean must still fully elaborate every type signature at the definition site and every call site that destructures the result; importing or downstream files can also become slow or time out.
+A file with all-`sorry` proof bodies can still OOM or take tens of minutes to build if
+the **type signatures** are expensive to elaborate.
+`sorry` skips the proof, but Lean must still fully elaborate every type signature at the
+definition site and every call site that destructures the result; importing or
+downstream files can also become slow or time out.
 
 **Watch for this when:**
+
 - Return type has 6+ existential/conjunction components with dependent types
+
 - Types reference `List`/`Vector`/`Array` with length-indexed proof terms
+
 - Types contain `Fin.cast`, `by omega`, or `by simp; omega` inside binder types
+
 - File takes minutes to build even though all proofs are `sorry`
 
-**Symptom:** `lake build` consumes multi-GB RAM and is OOM-killed (exit code 137), or LSP times out on any file importing the module.
+**Symptom:** `lake build` consumes multi-GB RAM and is OOM-killed (exit code 137), or
+LSP times out on any file importing the module.
 
 **Fixes:**
+
 1. **Isolate pathological signatures** into small, rarely-recompiled files
-2. **Break dependency chains** — extract structure definitions into lightweight files so editing proof files doesn't trigger re-elaboration of heavy signatures
-3. **Sorry call sites too** — when `obtain ⟨...many binders...⟩ := heavy_thm ...` is itself expensive, sorry the caller until the callee is ready
 
-**Not a concern when:** signatures are small (3-4 binders or fewer), types don't have deeply nested proof-term dependencies, or file builds in seconds.
+2. **Break dependency chains** — extract structure definitions into lightweight files so
+   editing proof files doesn’t trigger re-elaboration of heavy signatures
 
----
+3. **Sorry call sites too** — when `obtain ⟨...many binders...⟩ := heavy_thm ...` is
+   itself expensive, sorry the caller until the callee is ready
+
+**Not a concern when:** signatures are small (3-4 binders or fewer), types don’t have
+deeply nested proof-term dependencies, or file builds in seconds.
+
+* * *
 
 ## Build Log Capture
 
@@ -739,9 +842,14 @@ lake build 2>&1 | tee "$LOG"
 ```
 
 **Benefits:**
+
 - Preserves logs across rebuilds for comparison
+
 - Avoids filename clashes between runs
+
 - Enables grep without rebuilding
+
 - Links log to specific commit state
 
-**See also:** [Repair Mode](../../../commands/prove.md#repair-mode) for escalation-only repair policy.
+**See also:** [Repair Mode](../../../commands/prove.md#repair-mode) for escalation-only
+repair policy.

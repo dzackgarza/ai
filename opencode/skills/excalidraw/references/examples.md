@@ -1,6 +1,7 @@
 # Excalidraw Diagram Examples
 
-Complete, copy-pasteable examples. Wrap each in the `.excalidraw` envelope before saving:
+Complete, copy-pasteable examples.
+Wrap each in the `.excalidraw` envelope before saving:
 
 ```json
 {
@@ -12,10 +13,11 @@ Complete, copy-pasteable examples. Wrap each in the `.excalidraw` envelope befor
 }
 ```
 
-> **IMPORTANT:** All text labels on shapes and arrows use container binding (`containerId` + `boundElements`).
-> Do NOT use the non-existent `"label"` property -- it will be silently ignored, producing blank shapes.
+> **IMPORTANT:** All text labels on shapes and arrows use container binding
+> (`containerId` + `boundElements`). Do NOT use the non-existent `"label"` property --
+> it will be silently ignored, producing blank shapes.
 
----
+* * *
 
 ## Example 1: Two Connected Labeled Boxes
 
@@ -32,11 +34,12 @@ A minimal flowchart with two boxes and an arrow between them.
 ]
 ```
 
----
+* * *
 
 ## Example 2: Photosynthesis Process Diagram
 
-A larger diagram with background zones, multiple nodes, and directional arrows showing inputs/outputs.
+A larger diagram with background zones, multiple nodes, and directional arrows showing
+inputs/outputs.
 
 ```json
 [
@@ -87,7 +90,7 @@ A larger diagram with background zones, multiple nodes, and directional arrows s
 ]
 ```
 
----
+* * *
 
 ## Example 3: Sequence Diagram (UML-style)
 
@@ -126,16 +129,34 @@ Demonstrates a sequence diagram with actors, dashed lifelines, and message arrow
 ]
 ```
 
----
+* * *
 
 ## Common Mistakes to Avoid
 
-- **Do NOT use `"label"` property** -- this is the #1 mistake. It is NOT part of the Excalidraw file format and will be silently ignored, producing blank shapes with no visible text. Always use container binding (`containerId` + `boundElements`) as shown in the examples above.
-- **Every bound text needs both sides linked** -- the shape needs `boundElements: [{"id": "t_xxx", "type": "text"}]` AND the text needs `containerId: "shape_id"`. If either is missing, the binding won't work.
-- **Include `originalText` and `autoResize: true`** on all text elements -- Excalidraw uses these for proper text reflow.
-- **Include `fontFamily: 1`** on all text elements -- without it, text may not render with the expected hand-drawn font.
-- **Elements overlap when y-coordinates are close** -- always check that text, boxes, and labels don't stack on top of each other
-- **Arrow labels need space** -- long labels like "ATP + NADPH" overflow short arrows. Keep labels short or make arrows wider
-- **Center titles relative to the diagram** -- estimate total width and center the title text over it
-- **Draw decorations LAST** -- cute illustrations (sun, stars, icons) should appear at the end of the array so they're drawn on top
+- **Do NOT use `"label"` property** -- this is the #1 mistake.
+  It is NOT part of the Excalidraw file format and will be silently ignored, producing
+  blank shapes with no visible text.
+  Always use container binding (`containerId` + `boundElements`) as shown in the
+  examples above.
 
+- **Every bound text needs both sides linked** -- the shape needs
+  `boundElements: [{"id": "t_xxx", "type": "text"}]` AND the text needs
+  `containerId: "shape_id"`. If either is missing, the binding won’t work.
+
+- **Include `originalText` and `autoResize: true`** on all text elements -- Excalidraw
+  uses these for proper text reflow.
+
+- **Include `fontFamily: 1`** on all text elements -- without it, text may not render
+  with the expected hand-drawn font.
+
+- **Elements overlap when y-coordinates are close** -- always check that text, boxes,
+  and labels don’t stack on top of each other
+
+- **Arrow labels need space** -- long labels like “ATP + NADPH” overflow short arrows.
+  Keep labels short or make arrows wider
+
+- **Center titles relative to the diagram** -- estimate total width and center the title
+  text over it
+
+- **Draw decorations LAST** -- cute illustrations (sun, stars, icons) should appear at
+  the end of the array so they’re drawn on top

@@ -9,25 +9,31 @@ metadata:
     tags: [code-review, security, verification, quality, pre-commit, auto-fix]
     related_skills: [subagent-driven-development, writing-plans, test-driven-development, github-code-review, llm-failure-modes]
 ---
-
 # Pre-Commit Code Verification
 
-Automated verification pipeline before code lands. Static scans, baseline-aware
-quality gates, an independent reviewer subagent, and an auto-fix loop.
+Automated verification pipeline before code lands.
+Static scans, baseline-aware quality gates, an independent reviewer subagent, and an
+auto-fix loop.
 
-**Core principle:** No agent should verify its own work. Fresh context finds what you miss.
+**Core principle:** No agent should verify its own work.
+Fresh context finds what you miss.
 
 ## When to Use
 
 - After implementing a feature or bug fix, before `git commit` or `git push`
-- When user says "commit", "push", "ship", "done", "verify", or "review before merge"
+
+- When user says “commit”, “push”, “ship”, “done”, “verify”, or “review before merge”
+
 - After completing a task with 2+ file edits in a git repo
+
 - After each task in subagent-driven-development (the two-stage review)
 
-**Skip for:** documentation-only changes, pure config tweaks, or when user says "skip verification".
+**Skip for:** documentation-only changes, pure config tweaks, or when user says “skip
+verification”.
 
-**This skill vs github-code-review:** This skill verifies YOUR changes before committing.
-`github-code-review` reviews OTHER people's PRs on GitHub with inline comments.
+**This skill vs github-code-review:** This skill verifies YOUR changes before
+committing. `github-code-review` reviews OTHER people’s PRs on GitHub with inline
+comments.
 
 ## Step 1 — Get the diff
 
@@ -38,7 +44,8 @@ git diff --cached
 If empty, try `git diff` then `git diff HEAD~1 HEAD`.
 
 If `git diff --cached` is empty but `git diff` shows changes, tell the user to
-`git add <files>` first. If still empty, run `git status` — nothing to verify.
+`git add <files>` first.
+If still empty, run `git status` — nothing to verify.
 
 If the diff exceeds 15,000 characters, split by file:
 ```bash
@@ -48,7 +55,8 @@ git diff HEAD -- specific_file.py
 
 ## Step 2 — Static security scan
 
-Scan added lines only. Any match is a security concern fed into Step 5.
+Scan added lines only.
+Any match is a security concern fed into Step 5.
 
 ```bash
 # Hardcoded secrets
@@ -69,9 +77,9 @@ git diff --cached | grep "^+" | grep -E "execute\(f\"|\.format\(.*SELECT|\.forma
 
 ## Step 3 — Baseline tests and linting
 
-Detect the project language and run the appropriate tools. Capture the failure
-count BEFORE your changes as **baseline_failures** (stash changes, run, pop).
-Only NEW failures introduced by your changes block the commit.
+Detect the project language and run the appropriate tools.
+Capture the failure count BEFORE your changes as **baseline_failures** (stash changes,
+run, pop). Only NEW failures introduced by your changes block the commit.
 
 **Test frameworks** (auto-detect by project files):
 ```bash
@@ -106,27 +114,36 @@ which go && go vet ./... 2>&1 | tail -10
 ```
 
 **Baseline comparison:** If baseline was clean and your changes introduce failures,
-that's a regression. If baseline already had failures, only count NEW ones.
+that’s a regression.
+If baseline already had failures, only count NEW ones.
 
 ## Step 4 — Self-review checklist
 
 Quick scan before dispatching the reviewer:
 
 - [ ] No hardcoded secrets, API keys, or credentials
+
 - [ ] Input validation on user-provided data
+
 - [ ] SQL queries use parameterized statements
+
 - [ ] File operations validate paths (no traversal)
+
 - [ ] External calls have error handling (try/catch)
+
 - [ ] No debug print/console.log left behind
+
 - [ ] No commented-out code
+
 - [ ] New code has tests (if test suite exists)
 
 ## Step 5 — Independent reviewer subagent
 
 Call `delegate_task` directly — it is NOT available inside execute_code or scripts.
 
-The reviewer gets ONLY the diff and static scan results. No shared context with
-the implementer. Fail-closed: unparseable response = fail.
+The reviewer gets ONLY the diff and static scan results.
+No shared context with the implementer.
+Fail-closed: unparseable response = fail.
 
 ```python
 delegate_task(
@@ -219,10 +236,13 @@ Fix each issue precisely. Describe what you changed and why.""",
 ```
 
 After the fix agent completes, re-run Steps 1-6 (full verification cycle).
+
 - Passed: proceed to Step 8
+
 - Failed and attempts < 2: repeat Step 7
-- Failed after 2 attempts: escalate to user with the remaining issues and
-  suggest `git stash` or `git reset` to undo
+
+- Failed after 2 attempts: escalate to user with the remaining issues and suggest
+  `git stash` or `git reset` to undo
 
 ## Step 8 — Commit
 
@@ -237,6 +257,7 @@ The `[verified]` prefix indicates an independent reviewer approved this change.
 ## Reference: Common Patterns to Flag
 
 ### Python
+
 ```python
 # Bad: SQL injection
 cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
@@ -250,6 +271,7 @@ subprocess.run(["ls", user_input], check=True)
 ```
 
 ### JavaScript
+
 ```javascript
 // Bad: XSS
 element.innerHTML = userInput;
@@ -262,67 +284,84 @@ element.textContent = userInput;
 **subagent-driven-development:** Run this after EACH task as the quality gate.
 The two-stage review (spec compliance + code quality) uses this pipeline.
 
-**test-driven-development:** This pipeline verifies TDD discipline was followed —
-tests exist, tests pass, no regressions.
+**test-driven-development:** This pipeline verifies TDD discipline was followed — tests
+exist, tests pass, no regressions.
 
 **writing-plans:** Validates implementation matches the plan requirements.
 
-**llm-failure-modes:** Reviewers should be aware of common LLM cognitive failures
-— overconfidence, confabulation, citation without comprehension, premature victory
-declaration, and tool output blindness. These patterns can corrupt the review
-process itself if the reviewer subagent exhibits them.
+**llm-failure-modes:** Reviewers should be aware of common LLM cognitive failures —
+overconfidence, confabulation, citation without comprehension, premature victory
+declaration, and tool output blindness.
+These patterns can corrupt the review process itself if the reviewer subagent exhibits
+them.
 
 ## How Not to Review: The Checkbox Anti-Pattern
 
 DO NOT do a review that only verifies:
 
 - [ ] Acceptance criteria are checked off
+
 - [ ] Git diff is empty / no staged changes
+
 - [ ] Smoke tests pass (exit 0)
+
 - [ ] Plan validates
 
-This is **checkbox review**. It proves nothing. Every one of these can pass while
-the implementation has serious bugs. Smoke exit codes check that the smoke file ran
-— not that the implementation is correct. ACs being [x] means someone toggled a
-checkbox, not that the code works.
+This is **checkbox review**. It proves nothing.
+Every one of these can pass while the implementation has serious bugs.
+Smoke exit codes check that the smoke file ran — not that the implementation is correct.
+ACs being [x] means someone toggled a checkbox, not that the code works.
 
-**The invariant:** A review that never reads the actual implementation files is not
-a review. If your review notes only reference metadata (task cards, smoke output,
-diff stats), you are checkboxing. Stop and read the code.
+**The invariant:** A review that never reads the actual implementation files is not a
+review. If your review notes only reference metadata (task cards, smoke output, diff
+stats), you are checkboxing.
+Stop and read the code.
 
 ## Substantive Code Review
 
-A review that finds nothing found nothing because it looked nowhere. Read the code.
+A review that finds nothing found nothing because it looked nowhere.
+Read the code.
 
 **The core loop:**
 
 1. The task claims feature X was implemented
+
 2. Find the files that implement X
+
 3. Read them. Every line.
+
 4. Does the code actually do what the task claims?
-5. If the task says "fixed bug in Y" — did Y actually have a bug? Is it fixed?
+
+5. If the task says “fixed bug in Y” — did Y actually have a bug?
+   Is it fixed?
+
 6. Are there type mismatches between the claimed return and the actual return?
-7. Are Sage/parent objects properly refined into project categories, or are raw
-   Sage objects leaking through?
-8. Are abstract methods backed by working concrete implementations, or by broken
-   Sage implementations that happen to satisfy the abstract check?
 
-**Verification is not reading exit codes.** Run the relevant smoke/test command,
-yes — but also:
+7. Are Sage/parent objects properly refined into project categories, or are raw Sage
+   objects leaking through?
 
-- Read the smoke file assertions. Do they test what the task claims?
-- Construct a manual test case that exercises edge cases the smoke doesn't cover.
-- Call the method with unusual inputs. Does it crash gracefully?
+8. Are abstract methods backed by working concrete implementations, or by broken Sage
+   implementations that happen to satisfy the abstract check?
+
+**Verification is not reading exit codes.** Run the relevant smoke/test command, yes —
+but also:
+
+- Read the smoke file assertions.
+  Do they test what the task claims?
+
+- Construct a manual test case that exercises edge cases the smoke doesn’t cover.
+
+- Call the method with unusual inputs.
+  Does it crash gracefully?
 
 ## Patterns to Flag in Python/Sage Projects
 
 These are specific, high-signal patterns that get past smoke tests:
 
-**1. Broken parent equality/hash**
-Sage parent classes often use identity-based `__eq__` (returning `False` for
-equal objects). If the project declares `__eq__`/`__hash__` as abstract but
-Sage's broken concrete impl satisfies the abstract check, the result is silent
-wrong behavior:
+**1. Broken parent equality/hash** Sage parent classes often use identity-based `__eq__`
+(returning `False` for equal objects).
+If the project declares `__eq__`/`__hash__` as abstract but Sage’s broken concrete impl
+satisfies the abstract check, the result is silent wrong behavior:
 ```python
 # Project declares abstract __eq__ on _ImageSets.ParentMethods
 # Sage's ImageSubobject.__eq__ uses object identity
@@ -332,9 +371,9 @@ b = ImageSubobject(f, dom)
 a == b  # False! But should be True.
 ```
 
-**2. Raw Sage returns without project refinement**
-If a method imports and returns a Sage class directly, the caller loses project
-category membership and project-specific methods:
+**2. Raw Sage returns without project refinement** If a method imports and returns a
+Sage class directly, the caller loses project category membership and project-specific
+methods:
 ```python
 # BAD: returns raw Sage object
 from sage.combinat.posets.lattices import JoinSemilattice
@@ -348,11 +387,11 @@ raw = SageJoinSemilattice(self.subposet(closure))
 return refine_category(raw, [Posets().JoinSemilattice().Finite()])
 ```
 
-**3. @abstract_method relying on broken Sage impl**
-An `@abstract_method` with body `...` means "this must be implemented by a
-concrete subclass." When the project class inherits from a Sage class that has
-a broken concrete implementation, the abstract check passes silently but the
-behavior is wrong. Replace with a `@final` project implementation.
+**3. @abstract_method relying on broken Sage impl** An `@abstract_method` with body
+`...` means “this must be implemented by a concrete subclass.”
+When the project class inherits from a Sage class that has a broken concrete
+implementation, the abstract check passes silently but the behavior is wrong.
+Replace with a `@final` project implementation.
 
 ```python
 # BAD: declares abstract, relies on Sage's broken MeetSemilattice
@@ -370,9 +409,9 @@ class _FiniteMeetSemilatticePosets(CategoryWithAxiom):
             return refine_category(raw, [Posets().MeetSemilattice().Finite()])
 ```
 
-**4. Constructor returns wrong type (type annotation mismatch)**
-The return annotation says a project type (wrapped in the project category) but
-the actual return is a raw Sage object. This silently drops project methods.
+**4. Constructor returns wrong type (type annotation mismatch)** The return annotation
+says a project type (wrapped in the project category) but the actual return is a raw
+Sage object. This silently drops project methods.
 Always trace the actual return path, not just the annotation:
 
 ```python
@@ -408,14 +447,25 @@ if isinstance(domain, IntegerRangeFinite): ...
 ## Pitfalls
 
 - **Empty diff** — check `git status`, tell user nothing to verify
+
 - **Checkbox review** — verifying ACs + smoke exit code + plan validation without
-  reading implementation code is theater, not review. See "How Not to Review" above.
+  reading implementation code is theater, not review.
+  See “How Not to Review” above.
+
 - **Not a git repo** — skip and tell user
+
 - **Large diff (>15k chars)** — split by file, review each separately
-- **delegate_task returns non-JSON** — retry once with stricter prompt, then treat as FAIL
+
+- **delegate_task returns non-JSON** — retry once with stricter prompt, then treat as
+  FAIL
+
 - **False positives** — if reviewer flags something intentional, note it in fix prompt
+
 - **No test framework found** — skip regression check, reviewer verdict still runs
-- **Lint tools not installed** — skip that check silently, don't fail
+
+- **Lint tools not installed** — skip that check silently, don’t fail
+
 - **Auto-fix introduces new issues** — counts as a new failure, cycle continues
-- **Verification-only review** — a review that only checks test pass rates and
-  never reads the implementation code has found nothing because it looked nowhere.
+
+- **Verification-only review** — a review that only checks test pass rates and never
+  reads the implementation code has found nothing because it looked nowhere.

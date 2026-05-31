@@ -1,42 +1,74 @@
 # Condensed Review Protocol (6-Gate Order)
 
-Use when a card is in `needs-agent-review` status. Apply gates in order; stop at first failure.
+Use when a card is in `needs-agent-review` status.
+Apply gates in order; stop at first failure.
 
 ## Gate 1: Definition Grounding
+
 Every definition, type, predicate, constructor, method-owner claim traces to a source.
-- Check: card body records source path, exact definition, owner category, hypotheses, codomain/return object.
+
+- Check: card body records source path, exact definition, owner category, hypotheses,
+  codomain/return object.
+
 - Fail: ungrounded, missing, or ambiguous definition → revision-required.
 
 ## Gate 2: Acceptance Criteria
+
 Work satisfies its own criteria and every applicable parent criterion.
+
 - Check: each `[ ]` vs evidence; card discharge claims are backed.
+
 - Fail: unmet criteria, parent criteria violated, unbacked claim → revision-required.
 
 ## Gate 3: Spec-Weakening (category-spec cards)
+
 No spec obligation deleted/weakened without a source-grounded replacement owner.
-- Check: `git diff --cached`, `git diff`, commit diff. Flag deleted abstract methods, removed constructors, narrowed smokes, moved obligations without replacement owner.
+
+- Check: `git diff --cached`, `git diff`, commit diff.
+  Flag deleted abstract methods, removed constructors, narrowed smokes, moved
+  obligations without replacement owner.
+
 - Fail: any of the above → revision-required.
 
 ## Gate 4: Gradient (Backsliding Detection)
+
 Work must not reverse or contradict previously established truths.
-- Check: decided decision cards, previously approved specs, previously passing smokes, resolved TODOs, git history.
-- Fail: decision reversal, new smoke failures, resurrected TODO, removed approved spec surface → revision-required or blocked.
+
+- Check: decided decision cards, previously approved specs, previously passing smokes,
+  resolved TODOs, git history.
+
+- Fail: decision reversal, new smoke failures, resurrected TODO, removed approved spec
+  surface → revision-required or blocked.
 
 ## Gate 5: Mathematical Correctness
+
 Mathematical content must be correct for the claimed generality.
-- Check: spec coherence, tests pass, algorithm correct, evidence matches escalation tier.
+
+- Check: spec coherence, tests pass, algorithm correct, evidence matches escalation
+  tier.
+
 - Use `research-proof-auditing` for evidence sufficiency.
-- Fail: tests fail, mathematical error, proxy evidence, tier mismatch → revision-required.
+
+- Fail: tests fail, mathematical error, proxy evidence, tier mismatch →
+  revision-required.
 
 ## Gate 6: Style and Compliance
+
 Work follows repo style and compliance rules.
-- Check: no raw ConditionSet, no variadic option bags, import hygiene, type annotations, no AI-slop, conventional commits.
+
+- Check: no raw ConditionSet, no variadic option bags, import hygiene, type annotations,
+  no AI-slop, conventional commits.
+
 - Fail: style violations, anti-slop patterns → revision-required.
 
 ## Outcomes
+
 - **complete/done**: All gates passed
+
 - **revision-required**: Fixable within card scope; rework → needs-agent-review
-- **blocked**: External prerequisite needed; set blocked_reason + create prerequisite card
+
+- **blocked**: External prerequisite needed; set blocked_reason + create prerequisite
+  card
 
 ## Review Log format
 
@@ -156,8 +188,14 @@ The work log shows the task shifted from implementation to spec-audit (updating 
 ```
 
 ## Pitfalls
+
 - Do not review your own implementation; use an independent agent session
+
 - A smoke improvement paired with interface shrinkage = Gate 3 failure regardless
+
 - `dependsOn` cards with incomplete deps = `unstarted`, not `blocked`
-- Revision-required is distinct from unstarted (no work done) and blocked (external blocker)
+
+- Revision-required is distinct from unstarted (no work done) and blocked (external
+  blocker)
+
 - Repetitive revision cycles = escalate to plan review or decision card

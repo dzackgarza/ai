@@ -1,7 +1,9 @@
 # Subscribing (API + CLI)
 
 Canonical docs:
+
 - `https://docs.ntfy.sh/subscribe/api/`
+
 - `https://docs.ntfy.sh/subscribe/cli/`
 
 ## API Endpoint Shapes
@@ -9,8 +11,11 @@ Canonical docs:
 For topic `<topic>`:
 
 - `GET /<topic>/json`: newline-delimited JSON stream.
+
 - `GET /<topic>/sse`: server-sent events (great for browser/EventSource).
+
 - `GET /<topic>/raw`: one line per message body.
+
 - `GET /<topic>/ws`: WebSocket JSON stream.
 
 ## Minimum Working Calls
@@ -34,7 +39,9 @@ curl -sS "https://ntfy.sh/<topic>/json?poll=1"
 ### Replay and poll
 
 - `poll=1`: return available cached messages then close.
+
 - `since=<value>`: replay from duration, Unix timestamp, message ID, `all`, or `latest`.
+
 - `scheduled=1` (alias `sched=1`): include scheduled/delayed messages.
 
 Examples:
@@ -48,10 +55,15 @@ curl -sS "https://ntfy.sh/mytopic/json?poll=1&sched=1"
 ### Filters
 
 Available filters (case-insensitive):
+
 - `id`
+
 - `message`
+
 - `title`
+
 - `priority` (OR across listed priorities)
+
 - `tags` (AND across listed tags)
 
 Examples:
@@ -70,7 +82,7 @@ curl -sS -N https://ntfy.sh/topicA,topicB/json
 ## Subscription Parameters
 
 | Parameter | Aliases | Meaning |
-|---|---|---|
+| --- | --- | --- |
 | `poll` | `X-Poll`, `po` | Return cached messages and close |
 | `since` | `X-Since`, `si` | Replay from duration/timestamp/message ID |
 | `scheduled` | `X-Scheduled`, `sched` | Include scheduled messages |
@@ -85,13 +97,21 @@ curl -sS -N https://ntfy.sh/topicA,topicB/json
 The JSON/SSE payload includes these important fields:
 
 - `id` (message identifier)
+
 - `time` (Unix timestamp)
-- `event` (`open`, `keepalive`, `message`, `message_delete`, `message_clear`, `poll_request`)
+
+- `event` (`open`, `keepalive`, `message`, `message_delete`, `message_clear`,
+  `poll_request`)
+
 - `topic`
-- Optional for `message` events: `message`, `title`, `tags`, `priority`, `click`, `actions`, `attachment`, `sequence_id`, `expires`
+
+- Optional for `message` events: `message`, `title`, `tags`, `priority`, `click`,
+  `actions`, `attachment`, `sequence_id`, `expires`
 
 Typical consumer rule:
+
 - Handle only `event == "message"` for business logic.
+
 - Ignore or separately handle `open`/`keepalive`/`poll_request`.
 
 ## Authentication for Subscribe
@@ -124,12 +144,19 @@ ntfy sub <topic> '/path/to/script.sh'
 Message fields are exposed as env vars:
 
 - `NTFY_ID` (`$id`)
+
 - `NTFY_TIME` (`$time`)
+
 - `NTFY_TOPIC` (`$topic`)
+
 - `NTFY_MESSAGE` (`$message`, `$m`)
+
 - `NTFY_TITLE` (`$title`, `$t`)
+
 - `NTFY_PRIORITY` (`$priority`, `$prio`, `$p`)
+
 - `NTFY_TAGS` (`$tags`, `$tag`, `$ta`)
+
 - `NTFY_RAW` (`$raw`)
 
 ## Subscribe to multiple topics from config
@@ -139,7 +166,9 @@ ntfy subscribe --from-config
 ```
 
 Config location examples:
+
 - Linux user: `~/.config/ntfy/client.yml`
+
 - macOS user: `~/Library/Application Support/ntfy/client.yml`
 
 Core config pattern:
@@ -156,6 +185,9 @@ subscribe:
 ## Related Docs
 
 - `https://docs.ntfy.sh/subscribe/api/`
+
 - `https://docs.ntfy.sh/subscribe/cli/`
+
 - `https://docs.ntfy.sh/subscribe/web/`
+
 - `https://docs.ntfy.sh/subscribe/phone/`

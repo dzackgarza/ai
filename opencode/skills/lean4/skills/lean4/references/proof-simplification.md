@@ -1,6 +1,9 @@
 # Proof Simplification
 
-Guide for simplifying Lean 4 proofs at the *strategy* level: finding fundamentally better proof approaches, leveraging mathlib, and extracting reusable helpers. Complements [proof-refactoring.md](proof-refactoring.md) (structural extraction) and [proof-golfing.md](proof-golfing.md) (tactic-level optimization).
+Guide for simplifying Lean 4 proofs at the *strategy* level: finding fundamentally
+better proof approaches, leveraging mathlib, and extracting reusable helpers.
+Complements [proof-refactoring.md](proof-refactoring.md) (structural extraction) and
+[proof-golfing.md](proof-golfing.md) (tactic-level optimization).
 
 ## Quick Decision Tree
 
@@ -22,12 +25,14 @@ Proof seems too long or complex
 
 ## Replace with Mathlib Lemmas
 
-The single highest-impact simplification. For search protocol details, see [mathlib-guide.md](mathlib-guide.md) and [lean-lsp-tools-api.md](lean-lsp-tools-api.md).
+The single highest-impact simplification.
+For search protocol details, see [mathlib-guide.md](mathlib-guide.md) and
+[lean-lsp-tools-api.md](lean-lsp-tools-api.md).
 
 ### Common Patterns Worth Searching
 
 | Proof Pattern | Mathlib Lemmas to Search |
-|---------------|-----------|
+| --- | --- |
 | Continuity of piecewise function | `ContinuousOn.if`, `ContinuousOn.union_of_isClosed`, `LocallyFinite.continuousOn_iUnion` (→ [Congr Lemmas](#congr-lemmas)) |
 | Property of a function that equals another on a set | `ContinuousOn.congr`, `HasDerivWithinAt.congr_of_eventuallyEq`, `Measurable.congr` (→ [Congr Lemmas](#congr-lemmas)) |
 | Floor/ceil equals specific value | `Nat.floor_eq_on_Ico`, `Int.floor_eq_iff` |
@@ -61,11 +66,14 @@ intro t ht
 -- Unified proof (often much shorter)
 ```
 
-`ContinuousOn.congr` takes `ContinuousOn f s` and `EqOn g f s` to give `ContinuousOn g s`. Direction matters: `EqOn` goes from the *new* function to the *known-continuous* function.
+`ContinuousOn.congr` takes `ContinuousOn f s` and `EqOn g f s` to give
+`ContinuousOn g s`. Direction matters: `EqOn` goes from the *new* function to the
+*known-continuous* function.
 
 ### Pattern: Transfer via `EventuallyEq`
 
-When manually differentiating a complex function by unfolding and assembling, show it agrees with a known-differentiable function eventually instead:
+When manually differentiating a complex function by unfolding and assembling, show it
+agrees with a known-differentiable function eventually instead:
 ```lean
 have h_eq : f =ᶠ[nhdsWithin t s] g := by
   filter_upwards [some_neighborhood_lemma] with x hx
@@ -76,13 +84,17 @@ exact h_deriv_g.congr_of_eventuallyEq h_eq h_val
 ### When Congr Lemmas Help
 
 - Function is defined piecewise but equals something simpler on each piece
+
 - You need continuity/differentiability/measurability of a complex function
+
 - The complex function agrees with a simple one on the relevant set
+
 - Case splits are about matching definitions, not about mathematical content
 
 ## Finset Patterns
 
-Replace Finset induction with direct combinatorial lemmas when the inductive step is mostly `simp` with `insert`/`erase`/`mem_image`.
+Replace Finset induction with direct combinatorial lemmas when the inductive step is
+mostly `simp` with `insert`/`erase`/`mem_image`.
 
 **Before:** Manual induction over a Finset with mechanical insert/erase bookkeeping:
 ```lean
@@ -104,11 +116,15 @@ exact Finset.card_image_of_injective s hinj
 -- or: Finset.prod_image ...
 ```
 
-Mathlib has pre-packaged lemmas for `card`, `sum`, `prod`, `sup`, and `inf` over `Finset.image`. If the induction step is mechanical bookkeeping, the lemma almost certainly exists.
+Mathlib has pre-packaged lemmas for `card`, `sum`, `prod`, `sup`, and `inf` over
+`Finset.image`. If the induction step is mechanical bookkeeping, the lemma almost
+certainly exists.
 
 ## Ext Lemmas
 
-Replace manual pointwise unfolding of morphism equality with `ext` lemmas. Applies when proofs coerce to bare functions and unfold with `map_add`/`map_mul`/`map_one` chains.
+Replace manual pointwise unfolding of morphism equality with `ext` lemmas.
+Applies when proofs coerce to bare functions and unfold with
+`map_add`/`map_mul`/`map_one` chains.
 
 **Before:** Manual pointwise unfolding to show two ring homomorphisms are equal:
 ```lean
@@ -128,11 +144,14 @@ ext x <;> simp
 -- exact RingHom.ext fun x => by simp [h_comm]
 ```
 
-`MonoidHom.ext`, `RingHom.ext`, `LinearMap.ext`, and `AlgHom.ext` reduce morphism equality to pointwise equality with the correct coercion context. Combined with `simp`, this eliminates manual `DFunLike.ext` + `map_*` chains.
+`MonoidHom.ext`, `RingHom.ext`, `LinearMap.ext`, and `AlgHom.ext` reduce morphism
+equality to pointwise equality with the correct coercion context.
+Combined with `simp`, this eliminates manual `DFunLike.ext` + `map_*` chains.
 
 ## Order/Lattice Patterns
 
-Replace manual monotonicity threading and `sup`/`inf` splitting with compositional lemmas.
+Replace manual monotonicity threading and `sup`/`inf` splitting with compositional
+lemmas.
 
 ### Pattern: Monotone composition
 
@@ -182,55 +201,90 @@ exact sup_le_iff.mpr ⟨h₁.trans h₂, h₃.trans h₄⟩
 
 ## Helper Extraction
 
-Extract repeated proof patterns (same `rw`/`simp` chain 2+ times, same `nlinarith` structure, same definitional unfolding) as standalone lemmas.
+Extract repeated proof patterns (same `rw`/`simp` chain 2+ times, same `nlinarith`
+structure, same definitional unfolding) as standalone lemmas.
 
 ### Extraction Protocol
 
 1. **Find the common core** — what mathematical fact is being proved each time?
+
 2. **State it as a standalone lemma** with the most general hypotheses
-3. **Name it after what it proves**, not where it's used
+
+3. **Name it after what it proves**, not where it’s used
+
 4. **Place it before first use**
 
 ### Generalization Checklist
 
 When extracting, ask:
+
 - **Weaker hypotheses?** Can `=` become `≤`? Can `Fin n` become `ℕ`?
+
 - **Fewer assumptions?** Does the proof actually use all hypotheses?
+
 - **More general types?** Can `ℝ` become `[LinearOrderedField α]`?
-- **Mathlib-ready?** Would this be useful in mathlib? If so, state it in mathlib conventions (see [mathlib-style.md](mathlib-style.md)).
+
+- **Mathlib-ready?** Would this be useful in mathlib?
+  If so, state it in mathlib conventions (see [mathlib-style.md](mathlib-style.md)).
 
 ## Missing Lemmas
 
-Sometimes the right lemma doesn't exist in mathlib. Signs: 20+ lines to prove something "obvious", same proof repeated across projects, only basic library infrastructure needed, natural place in an existing module.
+Sometimes the right lemma doesn’t exist in mathlib.
+Signs: 20+ lines to prove something “obvious”, same proof repeated across projects, only
+basic library infrastructure needed, natural place in an existing module.
 
 What to do:
+
 1. State it in maximum generality (most general typeclasses)
+
 2. Follow mathlib naming conventions (see [mathlib-style.md](mathlib-style.md))
+
 3. Use a `private` version locally for now
+
 4. Note it in the refactoring report for potential contribution
 
 ## Definition Problems
 
-Sometimes the proof is hard because the definition is fighting you. Signs: every proof starts with `unfold foo; simp`, same definitional unfolding in every lemma, arithmetic computations dominate due to discretization.
+Sometimes the proof is hard because the definition is fighting you.
+Signs: every proof starts with `unfold foo; simp`, same definitional unfolding in every
+lemma, arithmetic computations dominate due to discretization.
 
 What to do:
+
 1. **Build the API** — prove key properties as standalone lemmas
-2. **Consider alternative definitions** — would an equivalent definition be easier to work with?
-3. **Use `simp` lemmas** — make key equalities available to `simp` so proofs don't need manual unfolding
+
+2. **Consider alternative definitions** — would an equivalent definition be easier to
+   work with?
+
+3. **Use `simp` lemmas** — make key equalities available to `simp` so proofs don’t need
+   manual unfolding
 
 ## File-Level Audit Checklist
 
 When analyzing a whole file:
 
 1. **Repeated tactic sequences** — same `rw`/`simp` chain 2+ times → extract helper
-2. **Proof lengths** — >30 lines for "basic" facts → search mathlib; >60 lines → strong candidate
-3. **Hand-rolled basics** — continuity proofs not using `fun_prop`, derivatives not using `HasDerivAt` chains, arithmetic not using `omega`/`positivity`/`norm_num`
-4. **Overly specific hypotheses** — can `=` become `≤`? Can `[NormedSpace ℝ E]` become `[Module ℝ E]`?
-5. **API coverage** — is every proof unfolding a definition directly? Should there be intermediate API lemmas?
+
+2. **Proof lengths** — >30 lines for “basic” facts → search mathlib; >60 lines → strong
+   candidate
+
+3. **Hand-rolled basics** — continuity proofs not using `fun_prop`, derivatives not
+   using `HasDerivAt` chains, arithmetic not using `omega`/`positivity`/`norm_num`
+
+4. **Overly specific hypotheses** — can `=` become `≤`? Can `[NormedSpace ℝ E]` become
+   `[Module ℝ E]`?
+
+5. **API coverage** — is every proof unfolding a definition directly?
+   Should there be intermediate API lemmas?
 
 ## See Also
 
-- [proof-refactoring.md](proof-refactoring.md) — Structural refactoring (breaking proofs into helpers)
+- [proof-refactoring.md](proof-refactoring.md) — Structural refactoring (breaking proofs
+  into helpers)
+
 - [proof-golfing.md](proof-golfing.md) — Tactic-level optimization
+
 - [mathlib-guide.md](mathlib-guide.md) — How to search mathlib
-- [mathlib-style.md](mathlib-style.md) — Naming conventions for potential mathlib contributions
+
+- [mathlib-style.md](mathlib-style.md) — Naming conventions for potential mathlib
+  contributions

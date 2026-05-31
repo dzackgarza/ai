@@ -1,4 +1,6 @@
-**IMPORTANT: Common Error When Extracting Shaders from HTML Script Tags**: When extracting source from `<script type="x-shader/x-fragment">`, you must ensure `#version` is the **very first character** of the string, with no leading whitespace or newlines:
+**IMPORTANT: Common Error When Extracting Shaders from HTML Script Tags**: When
+extracting source from `<script type="x-shader/x-fragment">`, you must ensure `#version`
+is the **very first character** of the string, with no leading whitespace or newlines:
 ```javascript
 // WRONG: indentation/newline inside script tag
 // <script id="fs">
@@ -15,9 +17,15 @@ const source = document.getElementById('fs').textContent.trim();
 
 ### IMPORTANT: Float Texture Compatibility (Most Critical Issue for Fluid Simulation)
 
-Fluid simulation requires float textures to store velocity (can be negative), pressure, and ink concentration (can exceed 1.0).
+Fluid simulation requires float textures to store velocity (can be negative), pressure,
+and ink concentration (can exceed 1.0).
 
-**IMPORTANT: Must use RGBA16F instead of RGBA32F**: Many environments (headless Chrome, SwiftShader, mobile) do not support `RGBA32F` render targets. Even when the `EXT_color_buffer_float` extension claims to be available, `RGBA32F` FBOs may silently fail (framebuffer reports complete but renders all zeros or all ones). `RGBA16F + HALF_FLOAT` has far better compatibility than `RGBA32F`, and its precision is more than sufficient for fluid simulation.
+**IMPORTANT: Must use RGBA16F instead of RGBA32F**: Many environments (headless Chrome,
+SwiftShader, mobile) do not support `RGBA32F` render targets.
+Even when the `EXT_color_buffer_float` extension claims to be available, `RGBA32F` FBOs
+may silently fail (framebuffer reports complete but renders all zeros or all ones).
+`RGBA16F + HALF_FLOAT` has far better compatibility than `RGBA32F`, and its precision is
+more than sufficient for fluid simulation.
 
 ```javascript
 const gl = canvas.getContext("webgl2");
@@ -54,7 +62,10 @@ function createFBO(w, h) {
 
 ### Mouse Interaction Implementation
 
-Fluid simulation requires tracking mouse position and drag direction. iMouse uniform convention: **xy=current mouse position, z=mouse down flag (>0 means pressed), w=unused**. Mouse velocity is calculated from the position difference between current and previous frames:
+Fluid simulation requires tracking mouse position and drag direction.
+iMouse uniform convention: **xy=current mouse position, z=mouse down flag (>0 means
+pressed), w=unused**. Mouse velocity is calculated from the position difference between
+current and previous frames:
 
 ```javascript
 // IMPORTANT: iMouse convention: xy=current position, z=pressed flag (1.0=down, 0.0=up), w=0
@@ -117,14 +128,27 @@ if (!gl) {
 # Real-Time Fluid Simulation
 
 ## Use Cases
+
 - Real-time 2D fluid effects in ShaderToy/WebGL (smoke, liquids, ink diffusion)
+
 - Interactive fluid: mouse/touch-driven fluid response
-- **Ink diffusion/curling vortex effects in water**: vorticity confinement + high diffusion coefficient + single or multi-color ink
-- **Multi-color ink mixing**: multiple ink colors interpenetrating and blending (requires Buffer B to store RGB ink, see multi-color ink mixing template)
+
+- **Ink diffusion/curling vortex effects in water**: vorticity confinement + high
+  diffusion coefficient + single or multi-color ink
+
+- **Multi-color ink mixing**: multiple ink colors interpenetrating and blending
+  (requires Buffer B to store RGB ink, see multi-color ink mixing template)
+
 - Decorative fluid backgrounds, particle systems, vortex visualization
-- **Lava/fire/magma effects**: fluid simulation + FBM noise texture + temperature color mapping
-- **Water surface ripple effects**: wave equation + click-generated concentric ripples + interference and damping
-- Core: solving simplified Navier-Stokes equations or wave equations in GPU fragment shaders
+
+- **Lava/fire/magma effects**: fluid simulation + FBM noise texture + temperature color
+  mapping
+
+- **Water surface ripple effects**: wave equation + click-generated concentric ripples +
+  interference and damping
+
+- Core: solving simplified Navier-Stokes equations or wave equations in GPU fragment
+  shaders
 
 ## Core Principles
 
@@ -135,10 +159,14 @@ Momentum equation: ∂v/∂t = -(v·∇)v - ∇p + ν∇²v + f
 Continuity equation: ∇·v = 0
 ```
 
-Term meanings: `-(v·∇)v` advection, `-∇p` pressure gradient, `ν∇²v` viscous diffusion, `f` external forces.
-Zero divergence = incompressibility constraint, achieved by projecting the velocity field through the pressure Poisson equation.
+Term meanings: `-(v·∇)v` advection, `-∇p` pressure gradient, `ν∇²v` viscous diffusion,
+`f` external forces.
+Zero divergence = incompressibility constraint, achieved by projecting the velocity
+field through the pressure Poisson equation.
 
-**ShaderToy implementation strategy**: texture buffer inter-frame feedback, each frame executes: advection → diffusion → external forces → pressure projection. Each pixel stores grid point physical quantities (velocity, pressure, density).
+**ShaderToy implementation strategy**: texture buffer inter-frame feedback, each frame
+executes: advection → diffusion → external forces → pressure projection.
+Each pixel stores grid point physical quantities (velocity, pressure, density).
 
 ### Water Surface Ripple Principles (Wave Equation)
 
@@ -148,13 +176,17 @@ Water surface ripples use the 2D wave equation rather than Navier-Stokes:
 ∂²h/∂t² = c² * ∇²h - damping * ∂h/∂t
 ```
 
-Discretized using Verlet integration: `next = speed * (2*curr - prev + laplacian) * damping`.
+Discretized using Verlet integration:
+`next = speed * (2*curr - prev + laplacian) * damping`.
 
-Data encoding: `.r = previous frame height (prev)`, `.g = current frame height (curr)`. Each frame computes the Laplacian to advance the wavefront, with ping-pong buffers alternating read/write.
+Data encoding: `.r = previous frame height (prev)`, `.g = current frame height (curr)`.
+Each frame computes the Laplacian to advance the wavefront, with ping-pong buffers
+alternating read/write.
 
 ## Implementation Steps
 
 ### Step 1: Data Encoding & Neighborhood Sampling
+
 ```glsl
 // Data layout: .xy=velocity, .z=pressure/density, .w=ink
 #define T(p) texture(iChannel0, (p) / iResolution.xy)
@@ -167,6 +199,7 @@ vec4 w = T(p - vec2(1, 0));       // west
 ```
 
 ### Step 2: Discrete Differential Operators
+
 ```glsl
 // Laplacian (weighted 3x3 stencil)
 const float _K0 = -20.0 / 6.0;
@@ -186,6 +219,7 @@ float curl = dx.y - dy.x;
 ```
 
 ### Step 3: Semi-Lagrangian Advection
+
 ```glsl
 #define DT 0.15  // time step
 // Backward trace: sample from upstream, unconditionally stable
@@ -194,6 +228,7 @@ c.xyw = advected.xyw;
 ```
 
 ### Step 4: Viscous Diffusion
+
 ```glsl
 #define NU 0.5     // kinematic viscosity (0.01=water, 1.0=syrup)
 #define KAPPA 0.1  // ink diffusion coefficient
@@ -203,6 +238,7 @@ c.w  += DT * KAPPA * laplacian.w;
 ```
 
 ### Step 5: Pressure Projection
+
 ```glsl
 #define K 0.2  // pressure correction strength
 c.xy -= K * vec2(dx.z, dy.z);
@@ -210,6 +246,7 @@ c.z -= DT * (dx.z * c.x + dy.z * c.y + div * c.z);
 ```
 
 ### Step 6: Mouse Interaction
+
 ```glsl
 // IMPORTANT: iMouse.z is the mouse-down flag (>0=pressed), not a position coordinate
 // iMouseVel is mouse movement velocity, passed via a separate uniform
@@ -224,6 +261,7 @@ if (iMouse.z > 0.0) {
 ```
 
 ### Step 6b: Vorticity Confinement (Required for Ink Curling Effects)
+
 ```glsl
 // IMPORTANT: Ink diffusion/swirl effects require vorticity confinement, otherwise small vortices dissipate quickly leaving only smooth flow
 // Vorticity confinement re-injects energy into small-scale vortices, producing characteristic curling textures
@@ -242,6 +280,7 @@ c.xy += DT * VORT_STR * vec2(eta.y, -eta.x) * curl_c;
 ```
 
 ### Step 7: Automatic Ink Sources (Critical: Ensures Visible Output Without Interaction)
+
 ```glsl
 // IMPORTANT: Must have automatic ink sources! Otherwise the screen is completely black without mouse interaction
 // IMPORTANT: Ink injection and decay must be balanced! Too-strong injection or too-weak decay causes ink saturation across the entire screen → solid color with no features
@@ -270,6 +309,7 @@ c.w += DT * (r1 + r2 + r3) * 2.0;
 ```
 
 ### Step 8: Boundaries & Stability
+
 ```glsl
 // No-slip boundary
 if (p.x < 1.0 || p.y < 1.0 ||
@@ -286,6 +326,7 @@ c = clamp(c, vec4(-5, -5, 0.5, 0), vec4(5, 5, 3, 5));
 ```
 
 ### Step 9: Visualization (Image Pass) — General Fluid
+
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord / iResolution.xy;
@@ -312,7 +353,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Step 9b: Visualization (Image Pass) — Lava/Fire/Magma Effects
 
-Lava/fire requires FBM noise for turbulent textures + temperature color band mapping. **Key: Must use FBM noise to distort UV coordinates and temperature values, otherwise the image is too smooth and looks like a plain gradient rather than lava.**
+Lava/fire requires FBM noise for turbulent textures + temperature color band mapping.
+**Key: Must use FBM noise to distort UV coordinates and temperature values, otherwise
+the image is too smooth and looks like a plain gradient rather than lava.**
 
 ```glsl
 // IMPORTANT: FBM noise is the core of lava/fire visualization! Without it the image is a smooth gradient with no lava texture
@@ -392,7 +435,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Step 9c: Visualization (Image Pass) — Water Surface Ripple Effects
 
-The water ripple Image Pass computes normals from the height field, then applies lighting + environment reflection. **Key: Normal perturbation strength must be large enough (50~100), water base color must be bright (blue component > 0.15), and specular highlights must be prominent.**
+The water ripple Image Pass computes normals from the height field, then applies
+lighting + environment reflection.
+**Key: Normal perturbation strength must be large enough (50~100), water base color must
+be bright (blue component > 0.15), and specular highlights must be prominent.**
 
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -441,20 +487,35 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ## IMPORTANT: Common Fatal Errors
 
-1. **RGBA32F silently fails in headless/SwiftShader environments**: Must use `RGBA16F + HALF_FLOAT`
-2. **Ink saturates entire screen**: Gaussian denominator too large (>300) or decay too weak (>0.995). Fix: denominator 100~200, decay `*= 0.99`
-3. **Image Pass colors too dark causing all-black screen**: Use `0.5 + 0.5 * cos(...)` color base to ensure bright range
-4. **Unclamped mouse velocity causing NaN crash**: Fast dragging or first-frame clicks produce huge velocity deltas → velocity explosion → NaN propagates across entire screen. **Both JS side and shader side must clamp mouseVel to [-50, 50]**
-5. **Using single scalar for multi-color ink prevents mixing**: A single `c.w` can only do single-color. Multi-color ink requires Buffer B to store RGB three channels (see multi-color ink mixing template)
-6. **GLSL strict typing**: `vec2 = float` is illegal, must use `vec2(float)`; integers and floats cannot be mixed
+1. **RGBA32F silently fails in headless/SwiftShader environments**: Must use
+   `RGBA16F + HALF_FLOAT`
+
+2. **Ink saturates entire screen**: Gaussian denominator too large (>300) or decay too
+   weak (>0.995). Fix: denominator 100~200, decay `*= 0.99`
+
+3. **Image Pass colors too dark causing all-black screen**: Use `0.5 + 0.5 * cos(...)`
+   color base to ensure bright range
+
+4. **Unclamped mouse velocity causing NaN crash**: Fast dragging or first-frame clicks
+   produce huge velocity deltas → velocity explosion → NaN propagates across entire
+   screen. **Both JS side and shader side must clamp mouseVel to [-50, 50]**
+
+5. **Using single scalar for multi-color ink prevents mixing**: A single `c.w` can only
+   do single-color. Multi-color ink requires Buffer B to store RGB three channels (see
+   multi-color ink mixing template)
+
+6. **GLSL strict typing**: `vec2 = float` is illegal, must use `vec2(float)`; integers
+   and floats cannot be mixed
 
 ## Complete Code Template
 
-Setup: Buffer A's iChannel0 points to Buffer A itself (feedback loop).
+Setup: Buffer A’s iChannel0 points to Buffer A itself (feedback loop).
 
 ### Standalone HTML JS Skeleton (Ping-Pong Render Pipeline)
 
-Fluid simulation requires framebuffer self-feedback + float textures. The following JS skeleton demonstrates the correct WebGL2 multi-pass ping-pong structure:
+Fluid simulation requires framebuffer self-feedback + float textures.
+The following JS skeleton demonstrates the correct WebGL2 multi-pass ping-pong
+structure:
 
 ```html
 <!DOCTYPE html>
@@ -783,9 +844,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ## Water Surface Ripple Complete Template
 
-Water surface ripples use the wave equation rather than Navier-Stokes. Clicks/touches generate concentric ripples that interfere with each other and gradually decay.
+Water surface ripples use the wave equation rather than Navier-Stokes.
+Clicks/touches generate concentric ripples that interfere with each other and gradually
+decay.
 
-**IMPORTANT: Water ripple drop injection must be implemented directly in the shader using iMouse**, do not use custom uniform arrays to pass click positions — that adds complexity on both JS/GLSL sides and is error-prone (uniform location not found, array length mismatch, etc.).
+**IMPORTANT: Water ripple drop injection must be implemented directly in the shader
+using iMouse**, do not use custom uniform arrays to pass click positions — that adds
+complexity on both JS/GLSL sides and is error-prone (uniform location not found, array
+length mismatch, etc.).
 
 ### Water Ripple Buffer Pass (Wave Equation Solver)
 
@@ -861,13 +927,21 @@ void main() {
 
 ### Water Ripple JS Side
 
-The water ripple JS structure is identical to the fluid simulation skeleton (ping-pong FBO + render loop), with only these differences:
-- Buffer pass shader is the wave equation solver (template above)
-- Image pass is the water surface lighting renderer (Step 9c)
-- **No custom uniform arrays needed**, drop injection is done entirely in the shader via iMouse
-- JS side only needs to pass standard uniforms: `iChannel0, iResolution, iTime, iFrame, iMouse`
+The water ripple JS structure is identical to the fluid simulation skeleton (ping-pong
+FBO + render loop), with only these differences:
 
-When dragging the mouse, ripples are continuously injected (because iMouse.z > 0 remains true), and faster dragging produces denser ripples (a natural effect).
+- Buffer pass shader is the wave equation solver (template above)
+
+- Image pass is the water surface lighting renderer (Step 9c)
+
+- **No custom uniform arrays needed**, drop injection is done entirely in the shader via
+  iMouse
+
+- JS side only needs to pass standard uniforms:
+  `iChannel0, iResolution, iTime, iFrame, iMouse`
+
+When dragging the mouse, ripples are continuously injected (because iMouse.z > 0 remains
+true), and faster dragging produces denser ripples (a natural effect).
 
 ### Water Ripple Image Pass
 
@@ -875,13 +949,20 @@ See Step 9c above.
 
 ## Multi-Color Ink Mixing Template (Ink Diffusion in Water / Multi-Color Blending)
 
-When multiple ink colors need to interpenetrate and blend, a single scalar `c.w` is insufficient. You need **two Buffers**: Buffer A stores velocity/pressure (same as above), Buffer B stores RGB three-channel ink concentration, sharing the same velocity field for advection.
+When multiple ink colors need to interpenetrate and blend, a single scalar `c.w` is
+insufficient. You need **two Buffers**: Buffer A stores velocity/pressure (same as
+above), Buffer B stores RGB three-channel ink concentration, sharing the same velocity
+field for advection.
 
-**IMPORTANT: Key for multi-color ink: Buffer B's RGB channels independently store the concentration of each ink color, using Buffer A's velocity field for semi-Lagrangian advection. Different ink colors naturally blend during advection and diffusion.**
+**IMPORTANT: Key for multi-color ink: Buffer B’s RGB channels independently store the
+concentration of each ink color, using Buffer A’s velocity field for semi-Lagrangian
+advection. Different ink colors naturally blend during advection and diffusion.**
 
 ### JS Side Changes (Three Buffer Ping-Pong)
 
-Two sets of ping-pong FBOs are needed: `bufA/bufB` (velocity field) and `bufC/bufD` (ink RGB). In the render loop, first render Buffer A (velocity field), then Buffer B (ink advection), and finally the Image pass reads Buffer B for visualization:
+Two sets of ping-pong FBOs are needed: `bufA/bufB` (velocity field) and `bufC/bufD` (ink
+RGB). In the render loop, first render Buffer A (velocity field), then Buffer B (ink
+advection), and finally the Image pass reads Buffer B for visualization:
 
 ```javascript
 // Create additional ink FBO pair
@@ -1040,12 +1121,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 }
 ```
 
-**IMPORTANT: The multi-color ink Buffer A velocity field template is identical to the single-color version**, except `c.w` is no longer used for ink (ink is in Buffer B). Buffer A only handles velocity + pressure.
+**IMPORTANT: The multi-color ink Buffer A velocity field template is identical to the
+single-color version**, except `c.w` is no longer used for ink (ink is in Buffer B).
+Buffer A only handles velocity + pressure.
 
 ## Common Variants
 
 ### Variant 1: Rotational Self-Advection
-Does not use pressure projection; achieves naturally divergence-free advection through multi-scale rotational sampling.
+
+Does not use pressure projection; achieves naturally divergence-free advection through
+multi-scale rotational sampling.
 ```glsl
 #define RotNum 3
 #define angRnd 1.0
@@ -1084,7 +1169,9 @@ fragColor = texture(iChannel0, fract(uv + v * 3.0 / iResolution.x));
 ```
 
 ### Variant 2: Vorticity Confinement
-Adds vorticity confinement force on top of the basic solver, preventing small vortices from dissipating too quickly.
+
+Adds vorticity confinement force on top of the basic solver, preventing small vortices
+from dissipating too quickly.
 ```glsl
 #define VORT_STRENGTH 0.01  // [0.001 - 0.1]
 
@@ -1100,7 +1187,9 @@ c.xy += DT * conf;
 ```
 
 ### Variant 3: Viscous Fingering
-Rotation-driven self-amplification + Laplacian diffusion, producing reaction-diffusion style organic patterns.
+
+Rotation-driven self-amplification + Laplacian diffusion, producing reaction-diffusion
+style organic patterns.
 ```glsl
 const float cs = 0.25;   // curl→rotation scale
 const float ls = 0.24;   // Laplacian diffusion strength
@@ -1117,7 +1206,9 @@ fragColor = clamp(vec4(a, b, div, 1), -1.0, 1.0);
 ```
 
 ### Variant 4: Gaussian Kernel SPH Particle Fluid (Gaussian SPH)
-Gaussian kernel function for density and velocity estimation, a grid-based approximation of SPH.
+
+Gaussian kernel function for density and velocity estimation, a grid-based approximation
+of SPH.
 ```glsl
 #define RADIUS 7  // search radius [3-10]
 
@@ -1133,7 +1224,9 @@ r.xy /= r.z + 1e-6;
 ```
 
 ### Variant 5: Lagrangian Vortex Particle Method
-Tracks discrete vortex particles, computing the velocity field using the Biot-Savart law.
+
+Tracks discrete vortex particles, computing the velocity field using the Biot-Savart
+law.
 ```glsl
 #define N 20              // N×N particles
 #define STRENGTH 1e3*0.25 // vorticity strength scale
@@ -1154,22 +1247,44 @@ position += velocity * dt;
 ## Performance & Composition
 
 **Performance tips**:
-- 5-point cross stencil is fastest; 3x3 (9 samples) is the best accuracy/performance tradeoff
-- SPH search radius >7 is extremely slow; use `texelFetch` instead of `texture` to skip filtering
-- Merge multiple steps into a single Pass; inter-frame feedback forms implicit Jacobi iteration
+
+- 5-point cross stencil is fastest; 3x3 (9 samples) is the best accuracy/performance
+  tradeoff
+
+- SPH search radius >7 is extremely slow; use `texelFetch` instead of `texture` to skip
+  filtering
+
+- Merge multiple steps into a single Pass; inter-frame feedback forms implicit Jacobi
+  iteration
+
 - Multi-step advection (`ADVECTION_STEPS=3`) improves accuracy but 3x sampling cost
+
 - `textureLod` provides O(1) multi-scale reads replacing large-radius sampling
+
 - Add slight noise (`1e-6`) on initial frames to break symmetry lock
+
 - `fract(uv + offset)` implements periodic boundaries without branching
+
 - Multiply pressure field by `0.9999` decay to prevent drift
 
 **Composition directions**:
-- **+ Normal map lighting**: density field → height map → normals → Phong/GGX, liquid metal effects
-- **+ Particle tracing**: passive particles update position following the flow field, visualizing streamlines/ink wash
-- **+ Color advection**: extra channels store RGB, synchronous semi-Lagrangian advection, colorful blending
-- **+ Audio response**: low freq → thrust, high freq → vortex perturbation, music-driven fluid
-- **+ 3D volume rendering**: 2D slices packed as 3D voxels, ray marching to render clouds/explosions
+
+- **+ Normal map lighting**: density field → height map → normals → Phong/GGX, liquid
+  metal effects
+
+- **+ Particle tracing**: passive particles update position following the flow field,
+  visualizing streamlines/ink wash
+
+- **+ Color advection**: extra channels store RGB, synchronous semi-Lagrangian
+  advection, colorful blending
+
+- **+ Audio response**: low freq → thrust, high freq → vortex perturbation, music-driven
+  fluid
+
+- **+ 3D volume rendering**: 2D slices packed as 3D voxels, ray marching to render
+  clouds/explosions
 
 ## Further Reading
 
-Full step-by-step tutorial, mathematical derivations, and advanced usage in [reference](../reference/fluid-simulation.md)
+Full step-by-step tutorial, mathematical derivations, and advanced usage in
+[reference](../reference/fluid-simulation.md)

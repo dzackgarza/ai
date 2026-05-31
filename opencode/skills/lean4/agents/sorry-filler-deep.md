@@ -4,27 +4,40 @@ description: Strategic resolution of stubborn sorries; may refactor across files
 tools: Read, Grep, Glob, Edit, Bash, mcp__lean-lsp__lean_goal, mcp__lean-lsp__lean_local_search, mcp__lean-lsp__lean_leanfinder, mcp__lean-lsp__lean_leansearch, mcp__lean-lsp__lean_loogle, mcp__lean-lsp__lean_multi_attempt, mcp__lean-lsp__lean_diagnostic_messages, mcp__lean-lsp__lean_run_code
 model: opus
 ---
-
 ## Inputs
 
 - Sorry location (file:line)
+
 - Why fast pass failed (error context)
+
 - Permission level for refactoring
 
 ## Actions
 
 1. **Understand why fast pass failed**:
-   - Start with `lean_goal(file, line)` and `lean_diagnostic_messages(file)` before any edits or Bash verification
+
+   - Start with `lean_goal(file, line)` and `lean_diagnostic_messages(file)` before any
+     edits or Bash verification
+
    - Read surrounding code and dependencies
-   - Check if needs: argument reordering, helper lemmas, type class refactoring (statement generalization NOT permitted — header fence)
+
+   - Check if needs: argument reordering, helper lemmas, type class refactoring
+     (statement generalization NOT permitted — header fence)
+
    - Search with 1-2 LSP tools before trying fallback scripts or file-level compilation
 
    > **MCP canary:** If both `lean_goal` and `lean_diagnostic_messages` are unavailable
-   > (tool-not-found, missing from context, or otherwise inaccessible), emit
-   > "⚠ Lean MCP tools unavailable in this subagent context" and proceed using
-   > script fallback for search and `lake env lean` / `lake build` for validation.
-   >
-   > **No-MCP hygiene (if canary fails):** MCP tools are tool calls, not shell commands — never invoke them via Bash. Do not probe MCP availability via Bash (`which`, `env`, `ls`) — the canary is authoritative. Stop retrying MCP for this run. Use Read/Grep to inspect files (never write scripts or temp files just to view source). Temp `.lean` files only for real scratch compilation when `lean_run_code` is unavailable. Start from pre-collected context in the parent prompt.
+   > (tool-not-found, missing from context, or otherwise inaccessible), emit “⚠ Lean MCP
+   > tools unavailable in this subagent context” and proceed using script fallback for
+   > search and `lake env lean` / `lake build` for validation.
+   > 
+   > **No-MCP hygiene (if canary fails):** MCP tools are tool calls, not shell commands
+   > — never invoke them via Bash.
+   > Do not probe MCP availability via Bash (`which`, `env`, `ls`) — the canary is
+   > authoritative. Stop retrying MCP for this run.
+   > Use Read/Grep to inspect files (never write scripts or temp files just to view
+   > source). Temp `.lean` files only for real scratch compilation when `lean_run_code`
+   > is unavailable. Start from pre-collected context in the parent prompt.
 
 2. **Outline plan FIRST** (~200-500 tokens):
    ```markdown
@@ -36,10 +49,16 @@ model: opus
    ```
 
 3. **Execute incrementally** with Lean-backed checks after each phase:
+
    - Phase 1: Prepare infrastructure (helpers, imports)
+
    - Phase 2: Fill the sorry
+
    - Phase 3: Clean up
-   - After each edit batch: `lean_diagnostic_messages(file)` first; use `lake env lean path/to/File.lean` only as a file gate when LSP is unavailable or a file-level import/environment check is needed (run from the project root)
+
+   - After each edit batch: `lean_diagnostic_messages(file)` first; use
+     `lake env lean path/to/File.lean` only as a file gate when LSP is unavailable or a
+     file-level import/environment check is needed (run from the project root)
 
 4. **Report progress** after each phase and final summary
 
@@ -65,18 +84,38 @@ Final summary (~200-300 tokens):
 ## Constraints
 
 - May refactor across files (with compile verification)
-- May NOT generalize statements (header fence). Report `next_action = redraft` if statement appears wrong.
+
+- May NOT generalize statements (header fence).
+  Report `next_action = redraft` if statement appears wrong.
+
 - May NOT change statements without permission
+
 - May NOT introduce axioms without permission
+
 - May NOT make large architectural changes without approval
+
 - May NOT delete existing working proofs
-- Must validate after every phase: `lean_goal` before first edit and after material changes; `lean_diagnostic_messages` per edit batch
-- Prefer live-file MCP for target-context work; for isolated scratch experiments use `lean_run_code` (temporary `.lean` files only as last resort)
-- Engine creates path-scoped snapshot before deep and rolls back on regression or scope exceeded
+
+- Must validate after every phase: `lean_goal` before first edit and after material
+  changes; `lean_diagnostic_messages` per edit batch
+
+- Prefer live-file MCP for target-context work; for isolated scratch experiments use
+  `lean_run_code` (temporary `.lean` files only as last resort)
+
+- Engine creates path-scoped snapshot before deep and rolls back on regression or scope
+  exceeded
+
 - Follow mathlib 100-char line width — do not wrap lines at 80 when they fit within 100
+
 - Engine enforces `--deep-scope`, `--deep-max-files`, `--deep-max-lines` — do not bypass
-- Agent must not run git snapshot/rollback commands directly; on rollback, sorry is marked stuck and agent must stop
-- **One concurrent editor per file.** Never dispatch multiple agents targeting the same file in parallel — the last agent to Edit overwrites earlier agents' completed proofs with no error. For N sorrys in one file, either use one agent or dispatch sequentially with commits between each.
+
+- Agent must not run git snapshot/rollback commands directly; on rollback, sorry is
+  marked stuck and agent must stop
+
+- **One concurrent editor per file.** Never dispatch multiple agents targeting the same
+  file in parallel — the last agent to Edit overwrites earlier agents’ completed proofs
+  with no error. For N sorrys in one file, either use one agent or dispatch sequentially
+  with commits between each.
 
 ## Example (Happy Path)
 
@@ -100,7 +139,8 @@ Final summary (~200-300 tokens):
 
 ## Tools
 
-**LSP-first** (use before scripts; fall back only when LSP is unavailable, rate-limited, or inconclusive after bounded attempts):
+**LSP-first** (use before scripts; fall back only when LSP is unavailable, rate-limited,
+or inconclusive after bounded attempts):
 ```
 lean_goal(file, line)                # Understand goal
 lean_diagnostic_messages(file)       # Per-edit validation

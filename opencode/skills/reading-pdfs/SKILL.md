@@ -5,14 +5,15 @@ metadata:
   author: dzack
   version: "0.1.0"
 ---
-
 # Reading PDFs with Mistral OCR
 
 ## Overview
 
-Use Mistral OCR API as the first attempt for converting PDFs to markdown. It has some amount of free usage on the free tier.
+Use Mistral OCR API as the first attempt for converting PDFs to markdown.
+It has some amount of free usage on the free tier.
 
-**Important:** Before extracting any PDF, check if it already exists in the local collection at `~/pdfs/`.
+**Important:** Before extracting any PDF, check if it already exists in the local
+collection at `~/pdfs/`.
 
 ## PDF Storage Structure
 
@@ -28,17 +29,21 @@ Use Mistral OCR API as the first attempt for converting PDFs to markdown. It has
         └── content.md
 ```
 
-**Always save the original PDF alongside the extracted markdown.** Name them `paper.pdf` and `paper.md` for arXiv papers.
+**Always save the original PDF alongside the extracted markdown.** Name them `paper.pdf`
+and `paper.md` for arXiv papers.
 
 For arXiv papers:
 
 - Download URL: `https://arxiv.org/pdf/{arxiv_id}.pdf`
+
 - Store as: `~/pdfs/arxiv/{arxiv_id}/paper.md`
 
 ## Workflow
 
 1. **Check if already extracted** - Look for `~/pdfs/arxiv/{arxiv_key}/paper.md`
+
 2. **If not exists** - Download PDF, extract with OCR, save to appropriate location
+
 3. **Return the markdown content**
 
 ## Using Mistral OCR
@@ -160,7 +165,8 @@ print(paper[:1000])  # First 1000 chars
 
 ## Local Extraction (justfile recipes)
 
-For extracting PDFs locally without the Mistral API, use the managed recipes in `~/pdf-extraction`. These handle environment setup automatically via `uv sync`.
+For extracting PDFs locally without the Mistral API, use the managed recipes in
+`~/pdf-extraction`. These handle environment setup automatically via `uv sync`.
 
 ```bash
 # From any directory
@@ -168,7 +174,7 @@ just -f ~/pdf-extraction/justfile -d ~/pdf-extraction <recipe>
 ```
 
 | Recipe | Purpose |
-|---|---|
+| --- | --- |
 | `sample-pdf` | Regenerate the smoke-test PDF |
 | `docling` | Extract with Docling |
 | `mineru` | Extract with MinerU |
@@ -176,7 +182,31 @@ just -f ~/pdf-extraction/justfile -d ~/pdf-extraction <recipe>
 
 Outputs appear under `~/pdf-extraction/artifacts/` and `~/pdf-extraction/outputs/`.
 
-**Do not** create a separate venv or install ad hoc — let the recipes manage the environment.
+**Do not** create a separate venv or install ad hoc — let the recipes manage the
+environment.
+
+When only structured extraction data is needed, prefer a recipe that emits the minimal
+MinerU JSON artifacts (`middle.json` and `content_list.json`) without generating extra
+rendered PDFs or Markdown.
+The recipe should own that mode; do not run private one-off extraction scripts.
+After extraction, verify the expected output files and keep the run log with the
+artifacts.
+
+## Zotero and MinerU Artifacts
+
+MinerU markdown/JSON are external research artifacts, not repository source.
+Preserve that separation:
+
+- Original PDFs belong under `~/pdfs` or Zotero storage, not in agent/code repos.
+
+- Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant Zotero
+  attachment path, not in Git LFS.
+
+- When Zotero already has a PDF, prefer resolving the local attachment path via the
+  `zotero-api` skill before downloading a duplicate.
+
+- When attaching existing MinerU output back to Zotero, verify against the running
+  Zotero local API and Better BibTeX key; do not infer matches from filenames alone.
 
 When only structured extraction data is needed, prefer a recipe that emits the
 minimal MinerU JSON artifacts (`middle.json` and `content_list.json`) without
@@ -200,7 +230,11 @@ Preserve that separation:
 
 ## Notes
 
-- The OCR handles complex documents including tables, math equations, and multi-column layouts
+- The OCR handles complex documents including tables, math equations, and multi-column
+  layouts
+
 - Free tier has some OCR usage included (check dashboard for limits)
+
 - The API returns `pages_processed` in usage info
+
 - For very large documents, consider processing in batches

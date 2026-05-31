@@ -2,77 +2,115 @@
 
 ## Purpose
 
-This guide is for PR workers, including agentic coding systems and human contributors using LLM assistance. Its purpose is not to optimize for "getting approved." Its purpose is to make the work legible, falsifiable, and reviewable, so that reviewer feedback is anchored to the actual intended outcome rather than to a post-hoc story constructed after the code already exists.
+This guide is for PR workers, including agentic coding systems and human contributors
+using LLM assistance.
+Its purpose is not to optimize for “getting approved.”
+Its purpose is to make the work legible, falsifiable, and reviewable, so that reviewer
+feedback is anchored to the actual intended outcome rather than to a post-hoc story
+constructed after the code already exists.
 
 The main failure to prevent is this:
 
 - code is written first,
+
 - completion criteria are inferred from the resulting code,
+
 - the PR description is retrofitted to match what now exists,
+
 - reviewers evaluate against those retrofitted criteria,
+
 - the result is a tautologous thumbs-up on work that may not meet the original need.
 
 This guide therefore imposes one hard rule:
 
-> **Jules-initiated PRs:** For any PR initiated by Jules, a contract must be written before implementation, committed to the branch, and used as the source of truth for the PR body. Do not let the code define the task after the fact. See the **Jules skill → PR Contract** section for the full mandatory workflow, template, and required contents.
+> **Jules-initiated PRs:** For any PR initiated by Jules, a contract must be written
+> before implementation, committed to the branch, and used as the source of truth for
+> the PR body. Do not let the code define the task after the fact.
+> See the **Jules skill → PR Contract** section for the full mandatory workflow,
+> template, and required contents.
 
-> **Other PRs:** Follow standard review procedures, but use the PR body to clearly state the intended outcome, acceptance criteria, and verification plan. Contract files are optional but recommended.
+> **Other PRs:** Follow standard review procedures, but use the PR body to clearly state
+> the intended outcome, acceptance criteria, and verification plan.
+> Contract files are optional but recommended.
 
----
+* * *
 
 ## Core principle
 
 A review is only as good as the target it is reviewing against.
 
-If the intended outcome is underspecified, or if the worker allows the implementation to define its own success criteria after the fact, reviewers are forced into local or stylistic review. They can comment on naming, tests, structure, and plausibility, but they cannot reliably say whether the change meets the actual need.
+If the intended outcome is underspecified, or if the worker allows the implementation to
+define its own success criteria after the fact, reviewers are forced into local or
+stylistic review. They can comment on naming, tests, structure, and plausibility, but
+they cannot reliably say whether the change meets the actual need.
 
 The worker must therefore supply, in advance:
 
 1. the intended outcome,
+
 2. the non-goals,
+
 3. the acceptance criteria,
+
 4. the specific evidence that will count as success,
+
 5. the boundaries of the change,
+
 6. the exact unresolved questions, if any.
 
 That is what enables strong process-alignment feedback.
 
----
+* * *
 
 ## Required workflow
 
-> **PR contract workflow:** The full contract creation workflow, required contents, and template are in the **Jules skill → PR Contract** section. That section is the authoritative source for Jules-initiated PRs.
+> **PR contract workflow:** The full contract creation workflow, required contents, and
+> template are in the **Jules skill → PR Contract** section.
+> That section is the authoritative source for Jules-initiated PRs.
 
----
+* * *
 
 ## Phase 1: TDD before implementation
 
 The PR should be driven by failing checks written before the fix.
 
-The point is not ceremony. The point is to lock the target before implementation exists.
+The point is not ceremony.
+The point is to lock the target before implementation exists.
 
 Required sequence:
 
 1. Write failing test or verification artifact.
+
 2. Confirm it fails for the intended reason.
+
 3. Implement the narrowest change that should make it pass.
+
 4. Re-run verification.
+
 5. Record the result in the PR body.
 
 ### What counts as acceptable pre-implementation verification
 
 - a failing automated test,
+
 - a reproducible failing command,
+
 - a failing integration check,
+
 - a failing exact output comparison,
+
 - a failing invariant check.
 
 ### What does not count
 
 - informal intention,
+
 - a TODO list,
+
 - a verbal claim that the bug exists,
+
 - a post-hoc explanation added after the code already passes,
+
 - content-free checks like `is not None` or `len(x) > 0`.
 
 ### Minimal example
@@ -80,17 +118,22 @@ Required sequence:
 Bad sequence:
 
 1. Write implementation.
+
 2. Run tests.
+
 3. Write PR description saying the feature now works.
 
 Required sequence:
 
 1. Add test showing the feature does not work.
+
 2. Commit test or at least keep it in the branch as part of the work.
+
 3. Implement the fix.
+
 4. Show the exact same test now passes.
 
----
+* * *
 
 ## Phase 2: Keep the diff causally legible
 
@@ -98,47 +141,60 @@ The PR must remain easy to evaluate against the contract.
 
 ### Rules
 
-1. **No unrelated edits.**
-   Do not rename nearby symbols, reformat unrelated files, update fixtures, or rewrite helpers unless they are required by the contract.
+1. **No unrelated edits.** Do not rename nearby symbols, reformat unrelated files,
+   update fixtures, or rewrite helpers unless they are required by the contract.
 
-2. **No hidden goal substitution.**
-   If the original goal becomes impossible or incorrect, update the PR contract explicitly before changing direction.
+2. **No hidden goal substitution.** If the original goal becomes impossible or
+   incorrect, update the PR contract explicitly before changing direction.
 
-3. **No structural completion as substitute for functional completion.**
-   Do not add scaffolding, registries, wrappers, or documentation to create the appearance of completeness while leaving the core behavior stubbed.
+3. **No structural completion as substitute for functional completion.** Do not add
+   scaffolding, registries, wrappers, or documentation to create the appearance of
+   completeness while leaving the core behavior stubbed.
 
-4. **No fake success via fallbacks.**
-   Do not hide failures with defaults, silent recovery, or plausible fabricated data.
+4. **No fake success via fallbacks.** Do not hide failures with defaults, silent
+   recovery, or plausible fabricated data.
 
-5. **Prefer deletion and reuse over additive layers.**
-   If a wrapper, fallback, or custom implementation is not necessary, remove it. If a mature dependency already solves the problem, use it unless a listed constraint forbids that.
+5. **Prefer deletion and reuse over additive layers.** If a wrapper, fallback, or custom
+   implementation is not necessary, remove it.
+   If a mature dependency already solves the problem, use it unless a listed constraint
+   forbids that.
 
----
+* * *
 
 ## Phase 3: Force the PR body to come from the contract file
 
-> **See the Jules skill → PR Contract section** for the full contract-based PR body workflow, including `gh pr create --body-file`, the rule for re-publishing on scope change, and the complete PR body template.
+> **See the Jules skill → PR Contract section** for the full contract-based PR body
+> workflow, including `gh pr create --body-file`, the rule for re-publishing on scope
+> change, and the complete PR body template.
 
----
+* * *
 
 ## Phase 4: Read every review comment with `gh` or bundled tools, not selectively
 
-A worker must not rely on memory, inbox summaries, or partial UI reading. Review feedback is part of the task state. It must be read exhaustively and tracked explicitly.
+A worker must not rely on memory, inbox summaries, or partial UI reading.
+Review feedback is part of the task state.
+It must be read exhaustively and tracked explicitly.
 
 The worker must read:
 
 1. the PR body as currently published,
+
 2. issue-style PR comments,
+
 3. formal reviews,
+
 4. line-level review comments,
+
 5. CI/check failures,
+
 6. review decision state.
 
 ### Minimum command set
 
 #### 1. Use the bundled CLI tool to read all feedback surfaces at once
 
-The most robust way to gather all feedback is to use the `extract_unresolved_issues` tool bundled with the git-guidelines skill:
+The most robust way to gather all feedback is to use the `extract_unresolved_issues`
+tool bundled with the git-guidelines skill:
 
 ```bash
 uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <OWNER>/<REPO>#<PR_NUMBER>
@@ -147,7 +203,9 @@ uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolve
 This will automatically fetch:
 
 - Top-level PR comments
+
 - Inline code review threads
+
 - Automated check-run errors (like Codacy static analysis)
 
 #### 2. Inspect structured PR state manually (fallback)
@@ -173,7 +231,9 @@ gh pr checks <PR_NUMBER> --json name,state,bucket,link
 
 #### Codacy Automated Checks
 
-Codacy posts its own check-run with annotations surfaced via GitHub's API. The Codacy web interface is the authoritative source — GitHub's annotation feed can lag or remain stale after follow-up fixes.
+Codacy posts its own check-run with annotations surfaced via GitHub’s API. The Codacy
+web interface is the authoritative source — GitHub’s annotation feed can lag or remain
+stale after follow-up fixes.
 
 **Read Codacy check status:**
 
@@ -185,16 +245,21 @@ gh api repos/<OWNER>/<REPO>/commits/<HEAD_SHA>/check-runs
 gh api repos/<OWNER>/<REPO>/check-runs/<CHECK_RUN_ID>/annotations
 ```
 
-Each annotation includes `message`, `path`, `start_line`, `annotation_level`, and a `details_url` pointing to the Codacy web report.
+Each annotation includes `message`, `path`, `start_line`, `annotation_level`, and a
+`details_url` pointing to the Codacy web report.
 
 **Codacy is the authoritative source:**
 
-The `details_url` from the annotation payload links to Codacy's web report. Open it for the current, complete issue list with categories, per-file breakdowns, and severity — especially when the GitHub annotation feed appears stale or noisy.
+The `details_url` from the annotation payload links to Codacy’s web report.
+Open it for the current, complete issue list with categories, per-file breakdowns, and
+severity — especially when the GitHub annotation feed appears stale or noisy.
 
 **What Codacy typically reports:**
 
 - `method-length` / `complexity`: function size and cyclomatic complexity
+
 - `assert-usage`: test assertion patterns
+
 - `subprocess-warnings`: shell invocation safety
 
 #### 4. Read formal review objects in chronological order
@@ -215,9 +280,10 @@ gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/comments
 gh api repos/<OWNER>/<REPO>/issues/<PR_NUMBER>/comments
 ```
 
-These are distinct surfaces. A worker that reads only one of them will miss actionable feedback.
+These are distinct surfaces.
+A worker that reads only one of them will miss actionable feedback.
 
----
+* * *
 
 ## Required review-log discipline
 
@@ -249,14 +315,20 @@ $EDITOR .pr/REVIEW_LOG.md
 ### Hard rules
 
 1. **No silent ignoring.** Every actionable item must appear in the log.
+
 2. **No bundling multiple requests into vague summaries.** Preserve atomicity.
+
 3. **No “addressed” without a commit.**
+
 4. **No rejection without explicit rationale tied to the PR contract.**
+
 5. **If a review item reveals that the contract is wrong, update the contract first.**
 
-This is necessary because agentic workers often continue from their prior frame and treat review feedback as advisory decoration. The log must force integration of each item into the task state.
+This is necessary because agentic workers often continue from their prior frame and
+treat review feedback as advisory decoration.
+The log must force integration of each item into the task state.
 
----
+* * *
 
 ## Phase 5: Respond to feedback by updating the contract, code, or both
 
@@ -267,7 +339,9 @@ Feedback should be handled through one of only three legal moves.
 Action:
 
 - update code/tests,
+
 - update evidence,
+
 - mark the review item addressed.
 
 ### Move B: The reviewer exposed missing or weak acceptance criteria
@@ -275,7 +349,9 @@ Action:
 Action:
 
 - strengthen the contract file,
+
 - add or revise tests first if needed,
+
 - then update code.
 
 ### Move C: The reviewer identified that the contract itself is wrong
@@ -283,38 +359,51 @@ Action:
 Action:
 
 - revise the contract file explicitly,
+
 - commit that revision,
+
 - then proceed with implementation changes.
 
 ### Illegal move
 
-- silently keep the same implementation direction while merely adding a local constraint,
+- silently keep the same implementation direction while merely adding a local
+  constraint,
+
 - say “addressed” without changing the contract or the code appropriately,
+
 - reinterpret the reviewer’s feedback into something easier and solve that instead.
 
----
+* * *
 
 ## Example of proper feedback integration
 
 Reviewer comment:
 
-> This test only checks that a value is returned. It would pass on arbitrary non-empty junk.
+> This test only checks that a value is returned.
+> It would pass on arbitrary non-empty junk.
 
 Incorrect response pattern:
 
 - add another `isinstance(...)` check,
+
 - reply “done,”
+
 - leave acceptance criteria unchanged.
 
 Required response pattern:
 
 1. add the review item to `.pr/REVIEW_LOG.md`,
-2. update the contract file so the acceptance criterion names the exact invariant or exact value to be proven,
+
+2. update the contract file so the acceptance criterion names the exact invariant or
+   exact value to be proven,
+
 3. replace the weak test with a substantive one,
+
 4. commit,
+
 5. cite the commit when marking the item addressed.
 
----
+* * *
 
 ## Phase 6: Keep reviewers anchored to outcome, not process theater
 
@@ -325,21 +414,28 @@ The PR should make it easy for reviewers to reject process-shaped nonsense.
 At the end of the contract file, ask reviewers to check:
 
 - whether the intended outcome is the right one,
+
 - whether any acceptance criterion is missing, tautological, or implementation-defined,
+
 - whether any file in the diff falls outside the declared boundary,
+
 - whether any test would pass on plausible junk,
+
 - whether any fallback hides failure instead of surfacing it,
+
 - whether the code satisfies the problem or merely looks complete.
 
-This materially improves reviewer alignment because it keeps the PR anchored to external success criteria defined before implementation.
+This materially improves reviewer alignment because it keeps the PR anchored to external
+success criteria defined before implementation.
 
----
+* * *
 
 ## Patterns workers must actively avoid
 
 ### 1. Post-hoc PR narration
 
-Writing the body after the code and then describing what now exists as if it were the intended target from the start.
+Writing the body after the code and then describing what now exists as if it were the
+intended target from the start.
 
 ### 2. Completion criteria drift
 
@@ -347,29 +443,35 @@ Changing “done” to mean whatever the current code already satisfies.
 
 ### 3. Structural completion as surrogate
 
-Submitting scaffolding, docs, wrappers, registrations, and passing trivial tests while the core outcome is still missing.
+Submitting scaffolding, docs, wrappers, registrations, and passing trivial tests while
+the core outcome is still missing.
 
 ### 4. Review-skimming
 
-Reading only the top-level review decision or only the web summary and missing line-level or issue-level comments.
+Reading only the top-level review decision or only the web summary and missing
+line-level or issue-level comments.
 
 ### 5. Silent partial compliance
 
-Addressing only the easiest fragment of a review item and marking the whole item resolved.
+Addressing only the easiest fragment of a review item and marking the whole item
+resolved.
 
 ### 6. Constraint accumulation without frame change
 
-A correction implies “abandon this direction,” but the worker instead adds a local patch and keeps the original wrong direction.
+A correction implies “abandon this direction,” but the worker instead adds a local patch
+and keeps the original wrong direction.
 
 ### 7. Evidence laundering
 
-Replacing real proof with broad claims such as “tested thoroughly,” “handled edge cases,” or “improved reliability.”
+Replacing real proof with broad claims such as “tested thoroughly,” “handled edge
+cases,” or “improved reliability.”
 
 ### 8. Reviewer burden shifting
 
-Leaving reviewers to reconstruct the original goal, infer missing constraints, or detect whether the tests are tautological.
+Leaving reviewers to reconstruct the original goal, infer missing constraints, or detect
+whether the tests are tautological.
 
----
+* * *
 
 ## Minimal shell workflow
 
@@ -413,36 +515,54 @@ git commit -m "Address review feedback"
 gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md
 ```
 
----
+* * *
 
 ## What reviewers should be able to see immediately
 
 A well-prepared PR should let a reviewer answer these questions in under a minute:
 
 1. What exact outcome is this PR trying to achieve?
+
 2. What counts as success?
+
 3. What is not being changed?
+
 4. What evidence proves the behavior now holds?
+
 5. Which review items remain open?
+
 6. Which ones were addressed in which commits?
 
 If the PR does not expose those answers directly, it is not review-ready.
 
----
+* * *
 
 ## Final rule set
 
 1. Write the PR contract before implementation.
+
 2. Commit it to the branch.
+
 3. Derive the PR body from that file, not from memory or the web form.
+
 4. Lock acceptance criteria before code exists.
+
 5. Use failing verification first.
+
 6. Keep the diff within the declared boundary.
+
 7. Read every review surface with `gh`.
+
 8. Log every actionable review item atomically.
+
 9. Do not mark feedback addressed without an identifying commit.
+
 10. If feedback changes the target, update the contract first.
+
 11. Do not let the implementation define its own success criteria.
+
 12. Do not let a reviewer guess what “done” means.
 
-A PR that follows these rules is much easier to review well, much harder to rubber-stamp for the wrong reasons, and much less likely to drift into post-hoc self-justifying completion theater.
+A PR that follows these rules is much easier to review well, much harder to rubber-stamp
+for the wrong reasons, and much less likely to drift into post-hoc self-justifying
+completion theater.

@@ -1,21 +1,34 @@
 # Sound Synthesis — Detailed Reference
 
-This document is a complete reference supplement to [SKILL.md](SKILL.md), covering prerequisites, detailed explanations of each step, in-depth variant descriptions, performance optimization analysis, and complete combination code examples.
+This document is a complete reference supplement to [SKILL.md](SKILL.md), covering
+prerequisites, detailed explanations of each step, in-depth variant descriptions,
+performance optimization analysis, and complete combination code examples.
 
 ## Prerequisites
 
-- **GLSL Fundamentals**: Functions, vector operations, `float`/`vec2` types, math functions like `sin()`/`exp()`/`fract()`
-- **Audio Fundamentals**: Sample rate (typically 44100Hz), frequency-to-pitch relationship, waveform concepts (sine, sawtooth, square)
-- **Music Theory Basics**: MIDI note numbers, equal temperament, octave relationship (frequency doubles), chord construction
-- **ShaderToy Sound Mode**: `vec2 mainSound(int samp, float time)` returns a `vec2` stereo sample value in the range `[-1, 1]`
+- **GLSL Fundamentals**: Functions, vector operations, `float`/`vec2` types, math
+  functions like `sin()`/`exp()`/`fract()`
+
+- **Audio Fundamentals**: Sample rate (typically 44100Hz), frequency-to-pitch
+  relationship, waveform concepts (sine, sawtooth, square)
+
+- **Music Theory Basics**: MIDI note numbers, equal temperament, octave relationship
+  (frequency doubles), chord construction
+
+- **ShaderToy Sound Mode**: `vec2 mainSound(int samp, float time)` returns a `vec2`
+  stereo sample value in the range `[-1, 1]`
 
 ## Implementation Steps
 
 ### Step 1: mainSound Entry Point and Basic Framework
 
-**What**: Establish the standard entry function for a sound shader, outputting a stereo signal.
+**What**: Establish the standard entry function for a sound shader, outputting a stereo
+signal.
 
-**Why**: ShaderToy requires the fixed signature `vec2 mainSound(int samp, float time)`, where the return value's `.x` and `.y` are the left and right channels respectively, with a range of `[-1, 1]`. `samp` is the sample index, and `time` is the corresponding time (in seconds).
+**Why**: ShaderToy requires the fixed signature `vec2 mainSound(int samp, float time)`,
+where the return value’s `.x` and `.y` are the left and right channels respectively,
+with a range of `[-1, 1]`. `samp` is the sample index, and `time` is the corresponding
+time (in seconds).
 
 ```glsl
 // ShaderToy sound shader basic framework
@@ -40,7 +53,9 @@ vec2 mainSound(int samp, float time) {
 
 **What**: Convert a MIDI note number to its corresponding frequency value.
 
-**Why**: In equal temperament, each semitone up multiplies the frequency by `2^(1/12)`. MIDI 69 = A4 = 440Hz is the standard reference point. This is the foundation of all melodic synthesis.
+**Why**: In equal temperament, each semitone up multiplies the frequency by `2^(1/12)`.
+MIDI 69 = A4 = 440Hz is the standard reference point.
+This is the foundation of all melodic synthesis.
 
 ```glsl
 // MIDI note number to frequency
@@ -52,9 +67,14 @@ float noteFreq(float note) {
 
 ### Step 3: Basic Oscillators
 
-**What**: Implement four standard waveform generators — sine, sawtooth, square, and triangle waves.
+**What**: Implement four standard waveform generators — sine, sawtooth, square, and
+triangle waves.
 
-**Why**: Different waveforms have different harmonic characteristics. Sine waves are pure (fundamental only), sawtooth waves are rich in all harmonics (bright), square waves contain only odd harmonics (hollow), and triangle waves have faster harmonic decay (soft). These four are the building blocks of all timbre synthesis.
+**Why**: Different waveforms have different harmonic characteristics.
+Sine waves are pure (fundamental only), sawtooth waves are rich in all harmonics
+(bright), square waves contain only odd harmonics (hollow), and triangle waves have
+faster harmonic decay (soft).
+These four are the building blocks of all timbre synthesis.
 
 ```glsl
 // Sine wave - pure tone, fundamental only
@@ -80,9 +100,13 @@ float osc_tri(float t) {
 
 ### Step 4: Additive Synthesis Instrument
 
-**What**: Build a timbre by layering multiple harmonics (integer multiples of the fundamental), each with independent amplitude and decay rate.
+**What**: Build a timbre by layering multiple harmonics (integer multiples of the
+fundamental), each with independent amplitude and decay rate.
 
-**Why**: The timbre of real instruments is determined by their harmonic content (spectrum). Layering 3-8 harmonics with faster decay for higher harmonics can simulate piano, bell, and other timbres. This is the core technique for additive timbre synthesis.
+**Why**: The timbre of real instruments is determined by their harmonic content
+(spectrum). Layering 3-8 harmonics with faster decay for higher harmonics can simulate
+piano, bell, and other timbres.
+This is the core technique for additive timbre synthesis.
 
 ```glsl
 // Additive synthesis instrument
@@ -112,9 +136,12 @@ float instrument_additive(float freq, float t) {
 
 ### Step 5: FM Synthesis Instrument
 
-**What**: Use one oscillator's (modulator) output as the phase offset of another oscillator (carrier) to produce rich harmonics.
+**What**: Use one oscillator’s (modulator) output as the phase offset of another
+oscillator (carrier) to produce rich harmonics.
 
-**Why**: FM synthesis can generate extremely rich timbres with very few oscillators. Varying modulation depth over time can simulate the "bright→dark" decay characteristic of instruments. Electric pianos and sitar-like timbres are both based on this principle.
+**Why**: FM synthesis can generate extremely rich timbres with very few oscillators.
+Varying modulation depth over time can simulate the “bright→dark” decay characteristic
+of instruments. Electric pianos and sitar-like timbres are both based on this principle.
 
 ```glsl
 // FM synthesis electric piano
@@ -162,7 +189,10 @@ float fm_instrument(float freq, float t, float beatTime, Instr ins) {
 
 **What**: Synthesize kick drum, snare/clap, and hi-hat percussion instruments.
 
-**Why**: Percussion is typically composed of pitch sweeps (kick) or noise pulses (hi-hat/clap) with fast envelopes. The kick's core is a sine sweep from high to low frequency; hi-hats are noise with exponential decay. Nearly all complete music shaders require these.
+**Why**: Percussion is typically composed of pitch sweeps (kick) or noise pulses
+(hi-hat/clap) with fast envelopes.
+The kick’s core is a sine sweep from high to low frequency; hi-hats are noise with
+exponential decay. Nearly all complete music shaders require these.
 
 ```glsl
 // Pseudo-random hash (replaces noise texture)
@@ -208,9 +238,13 @@ float clap(float t) {
 
 ### Step 7: Note Sequence Arrangement
 
-**What**: Implement melody/chord temporal arrangement, determining which note should play at each moment.
+**What**: Implement melody/chord temporal arrangement, determining which note should
+play at each moment.
 
-**Why**: Music = timbre × timing. ShaderToy has three mainstream arrangement approaches: (A) D() macro accumulation for handwritten melodies, (B) array lookup for complex arrangements, (C) hash pseudo-random for algorithmic composition.
+**Why**: Music = timbre × timing.
+ShaderToy has three mainstream arrangement approaches: (A) D() macro accumulation for
+handwritten melodies, (B) array lookup for complex arrangements, (C) hash pseudo-random
+for algorithmic composition.
 
 ```glsl
 // === Approach A: D() Macro Accumulation ===
@@ -272,7 +306,10 @@ float melody_random(float time, float bpm) {
 
 **What**: Layer multiple notes according to chord relationships to form harmony.
 
-**Why**: A chord is a combination of multiple pitches sounding simultaneously. The common structure is root + third + fifth (triad), with added seventh and ninth degrees for jazz chords. Jazz chord progressions can be built this way.
+**Why**: A chord is a combination of multiple pitches sounding simultaneously.
+The common structure is root + third + fifth (triad), with added seventh and ninth
+degrees for jazz chords.
+Jazz chord progressions can be built this way.
 
 ```glsl
 // Chord construction
@@ -299,9 +336,13 @@ vec2 chord(float time, float root, float isMinor) {
 
 ### Step 9: Delay and Reverb Effects
 
-**What**: Simulate spatial echo and reverb effects by layering time-offset copies of the audio signal.
+**What**: Simulate spatial echo and reverb effects by layering time-offset copies of the
+audio signal.
 
-**Why**: Dry audio sounds "flat". Multi-tap delay creates spatial depth by layering signal copies at different delays and decay amounts. Ping-pong delay bounces alternately between left and right channels, enhancing stereo width.
+**Why**: Dry audio sounds “flat”.
+Multi-tap delay creates spatial depth by layering signal copies at different delays and
+decay amounts. Ping-pong delay bounces alternately between left and right channels,
+enhancing stereo width.
 
 ```glsl
 // Multi-tap echo/reverb
@@ -345,9 +386,13 @@ vec2 pingpong_delay(float time) {
 
 ### Step 10: Beat and Arrangement Structure
 
-**What**: Define a time grid using BPM, arrange different instruments at different beat positions, and control the overall song structure (intro, verse, interlude, etc.).
+**What**: Define a time grid using BPM, arrange different instruments at different beat
+positions, and control the overall song structure (intro, verse, interlude, etc.).
 
-**Why**: The rhythmic skeleton of music is built on a uniform beat grid. Using `floor(time * BPM / 60)` gets the current beat number, and `fract()` gets the position within the beat. `smoothstep` gating controls instrument entry and exit at specific sections.
+**Why**: The rhythmic skeleton of music is built on a uniform beat grid.
+Using `floor(time * BPM / 60)` gets the current beat number, and `fract()` gets the
+position within the beat.
+`smoothstep` gating controls instrument entry and exit at specific sections.
 
 ```glsl
 vec2 mainSound(int samp, float time) {
@@ -386,7 +431,11 @@ vec2 mainSound(int samp, float time) {
 
 ### Variant 1: Subtractive Synthesis / TB-303 Acid Synthesizer
 
-**Difference from basic version**: Instead of building timbre by layering harmonics, generates a harmonic-rich waveform (sawtooth) and then sculpts it with a resonant low-pass filter to remove high frequencies. The filter cutoff frequency is modulated by an envelope, producing the classic "wah" sound.
+**Difference from basic version**: Instead of building timbre by layering harmonics,
+generates a harmonic-rich waveform (sawtooth) and then sculpts it with a resonant
+low-pass filter to remove high frequencies.
+The filter cutoff frequency is modulated by an envelope, producing the classic “wah”
+sound.
 
 **Key modified code**:
 
@@ -426,7 +475,11 @@ vec2 acid_synth(float freq, float noteTime) {
 
 ### Variant 2: IIR Biquad Filter
 
-**Difference from basic version**: Uses a time-domain IIR filter based on the Audio EQ Cookbook instead of frequency-domain methods. Supports 7 filter types including low-pass, high-pass, band-pass, notch, peak, and shelf — closer to real hardware. Requires maintaining past sample state.
+**Difference from basic version**: Uses a time-domain IIR filter based on the Audio EQ
+Cookbook instead of frequency-domain methods.
+Supports 7 filter types including low-pass, high-pass, band-pass, notch, peak, and shelf
+— closer to real hardware.
+Requires maintaining past sample state.
 
 **Key modified code**:
 
@@ -460,7 +513,9 @@ void biquadLPF(float freq, float Q, float sr,
 
 ### Variant 3: Vocal / Formant Synthesis
 
-**Difference from basic version**: Uses a sinusoidal tract model to simulate the human voice. By setting formants at different frequencies with their bandwidths, vowels can be synthesized. Consonants are implemented through fricative noise.
+**Difference from basic version**: Uses a sinusoidal tract model to simulate the human
+voice. By setting formants at different frequencies with their bandwidths, vowels can be
+synthesized. Consonants are implemented through fricative noise.
 
 **Key modified code**:
 
@@ -490,7 +545,11 @@ float fricative(float t, float formantFreq) {
 
 ### Variant 4: Algorithmic Composition (Generative Music)
 
-**Difference from basic version**: Does not use handwritten note sequences; instead uses hash functions to generate pseudo-random melodies, with scale quantization to ensure harmonic consistency. Multi-level rhythmic subdivision (1-beat/2-beat/4-beat) produces fractal-like musical structure.
+**Difference from basic version**: Does not use handwritten note sequences; instead uses
+hash functions to generate pseudo-random melodies, with scale quantization to ensure
+harmonic consistency.
+Multi-level rhythmic subdivision (1-beat/2-beat/4-beat) produces fractal-like musical
+structure.
 
 **Key modified code**:
 
@@ -519,7 +578,10 @@ vec2 generativeNote(float beat) {
 
 ### Variant 5: Chord Progression System (Circle of Fifths)
 
-**Difference from basic version**: Automatically generates harmonic progressions based on the circle of fifths interval. Every 4 beats advances one fifth (+7 semitones), automatically alternating major/minor chords with jazz chord extensions (seventh, ninth).
+**Difference from basic version**: Automatically generates harmonic progressions based
+on the circle of fifths interval.
+Every 4 beats advances one fifth (+7 semitones), automatically alternating major/minor
+chords with jazz chord extensions (seventh, ninth).
 
 **Key modified code**:
 
@@ -543,36 +605,57 @@ vec2 mainSound(int samp, float time) {
 
 ## Performance Optimization Details
 
-1. **Reduce Harmonic Count**: In additive synthesis and frequency-domain filters, the harmonic count (`NUM_HARMONICS` / `NSPC`) is the biggest performance bottleneck. Start with 4-8 harmonics and don't add more once the sound is satisfactory. Using 256 harmonics is an extreme case.
+1. **Reduce Harmonic Count**: In additive synthesis and frequency-domain filters, the
+   harmonic count (`NUM_HARMONICS` / `NSPC`) is the biggest performance bottleneck.
+   Start with 4-8 harmonics and don’t add more once the sound is satisfactory.
+   Using 256 harmonics is an extreme case.
 
-2. **Avoid Sample History in Loops**: IIR filters need to process 128 historical samples, meaning each output sample requires 128 loop iterations. Prefer frequency-domain methods or reduce `PAST_SAMPLES`.
+2. **Avoid Sample History in Loops**: IIR filters need to process 128 historical
+   samples, meaning each output sample requires 128 loop iterations.
+   Prefer frequency-domain methods or reduce `PAST_SAMPLES`.
 
-3. **Simplify Echo/Delay**: Each delay tap requires recomputing the complete signal chain. 4 taps means 5x computation. Consider reducing the complexity (fewer harmonics) for delayed signals.
+3. **Simplify Echo/Delay**: Each delay tap requires recomputing the complete signal
+   chain. 4 taps means 5x computation.
+   Consider reducing the complexity (fewer harmonics) for delayed signals.
 
-4. **Use `fract()` Instead of `mod()`**: When the divisor is 1.0, `fract(x)` is faster than `mod(x, 1.0)`.
+4. **Use `fract()` Instead of `mod()`**: When the divisor is 1.0, `fract(x)` is faster
+   than `mod(x, 1.0)`.
 
-5. **Precompute Constants**: Move loop-invariant expressions like `TAU * freq` outside the loop.
+5. **Precompute Constants**: Move loop-invariant expressions like `TAU * freq` outside
+   the loop.
 
-6. **Use the Common Pass**: Place constant definitions and shared functions in ShaderToy's Common tab, accessible by both Sound and Image, avoiding redundant computation of BPM/SPB, etc.
+6. **Use the Common Pass**: Place constant definitions and shared functions in
+   ShaderToy’s Common tab, accessible by both Sound and Image, avoiding redundant
+   computation of BPM/SPB, etc.
 
 ## Combination Suggestions
 
 ### 1. Combining with Audio Visualization
 
-Sound shader output can be read in the Image shader via `iChannel0` (set to this shader's Sound output). Use `texture(iChannel0, vec2(freq, 0.0))` to get spectrum data to drive visual effects (waveforms, spectrum bar charts, etc.).
+Sound shader output can be read in the Image shader via `iChannel0` (set to this
+shader’s Sound output).
+Use `texture(iChannel0, vec2(freq, 0.0))` to get spectrum data to drive visual effects
+(waveforms, spectrum bar charts, etc.).
 
 ### 2. Combining with Raymarching Scenes
 
-Sound-visual synchronization can be achieved by sharing timeline/cue events. Define shared timeline/cue events in the Common Pass, referenced by both Sound and Image shaders simultaneously, ensuring visual-audio synchronization.
+Sound-visual synchronization can be achieved by sharing timeline/cue events.
+Define shared timeline/cue events in the Common Pass, referenced by both Sound and Image
+shaders simultaneously, ensuring visual-audio synchronization.
 
 ### 3. Combining with Particle Systems
 
-Use beat events (kick trigger moments) to drive particle emission. In the Image shader, use the same BPM/SPB to calculate the current beat position, and increase particle count or velocity at the kick trigger moment.
+Use beat events (kick trigger moments) to drive particle emission.
+In the Image shader, use the same BPM/SPB to calculate the current beat position, and
+increase particle count or velocity at the kick trigger moment.
 
 ### 4. Combining with Post-Processing Effects
 
-Share Sound shader envelope values (e.g., sidechain compression coefficient) with the Image shader via the Common Pass, driving bloom intensity, color shifting, screen shake, and other effects.
+Share Sound shader envelope values (e.g., sidechain compression coefficient) with the
+Image shader via the Common Pass, driving bloom intensity, color shifting, screen shake,
+and other effects.
 
 ### 5. Combining with Text/Graphic Overlays
 
-Use `message()` functions in the Image shader to render text hints, parameter displays, or interaction instructions to help users understand what is being played.
+Use `message()` functions in the Image shader to render text hints, parameter displays,
+or interaction instructions to help users understand what is being played.

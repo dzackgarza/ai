@@ -1,37 +1,62 @@
 # Voronoi & Cellular Noise — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), containing prerequisites, step-by-step explanations, variant descriptions, performance analysis, and complete combination code.
+This document is a detailed supplement to [SKILL.md](SKILL.md), containing
+prerequisites, step-by-step explanations, variant descriptions, performance analysis,
+and complete combination code.
 
 ## Prerequisites
 
-- **GLSL Basic Syntax**: `vec2/vec3`, `floor/fract`, `dot`, `smoothstep` and other built-in functions
+- **GLSL Basic Syntax**: `vec2/vec3`, `floor/fract`, `dot`, `smoothstep` and other
+  built-in functions
+
 - **Vector Math**: dot product, distance calculation, vector normalization
-- **Pseudo-Random Hash Function Concepts**: input coordinates -> pseudo-random values, deterministic but appearing random
-- **fBm (Fractional Brownian Motion) Basics**: multi-layer noise summation, used for advanced variants
+
+- **Pseudo-Random Hash Function Concepts**: input coordinates -> pseudo-random values,
+  deterministic but appearing random
+
+- **fBm (Fractional Brownian Motion) Basics**: multi-layer noise summation, used for
+  advanced variants
 
 ## Core Principles in Detail
 
-The essence of Voronoi noise is **spatial partitioning**: scatter a set of feature points across 2D/3D space, and each pixel belongs to the "cell" defined by its nearest feature point.
+The essence of Voronoi noise is **spatial partitioning**: scatter a set of feature
+points across 2D/3D space, and each pixel belongs to the “cell” defined by its nearest
+feature point.
 
 **Core Algorithm Flow:**
 
-1. Divide space into an integer grid (`floor`), placing one randomly offset feature point in each grid cell
-2. For the current pixel, search all feature points in the surrounding 3x3 (2D) or 3x3x3 (3D) neighborhood
-3. Calculate the distance to each feature point, recording the nearest distance F1 (and optionally the second-nearest distance F2)
-4. Use F1, F2, or their combination (e.g., F2-F1) as the output value, mapping to color/height/shape
+1. Divide space into an integer grid (`floor`), placing one randomly offset feature
+   point in each grid cell
+
+2. For the current pixel, search all feature points in the surrounding 3x3 (2D) or 3x3x3
+   (3D) neighborhood
+
+3. Calculate the distance to each feature point, recording the nearest distance F1 (and
+   optionally the second-nearest distance F2)
+
+4. Use F1, F2, or their combination (e.g., F2-F1) as the output value, mapping to
+   color/height/shape
 
 **Key Mathematics:**
-- Distance metrics: Euclidean `length(r)` or `dot(r,r)` (squared distance, faster), Manhattan `abs(r.x)+abs(r.y)`, Chebyshev `max(abs(r.x), abs(r.y))`
-- Exact border distance (two-pass algorithm): `dot(0.5*(mr+r), normalize(r-mr))` (perpendicular bisector projection)
+
+- Distance metrics: Euclidean `length(r)` or `dot(r,r)` (squared distance, faster),
+  Manhattan `abs(r.x)+abs(r.y)`, Chebyshev `max(abs(r.x), abs(r.y))`
+
+- Exact border distance (two-pass algorithm): `dot(0.5*(mr+r), normalize(r-mr))`
+  (perpendicular bisector projection)
+
 - Rounded borders (harmonic mean): `1/(1/(d2-d1) + 1/(d3-d1))`
 
 ## Implementation Steps — Detailed Explanation
 
 ### Step 1: Hash Function — Generating Pseudo-Random Feature Points
 
-**What**: Define a hash function that maps 2D integer coordinates to a pseudo-random `vec2` in the [0,1] range.
+**What**: Define a hash function that maps 2D integer coordinates to a pseudo-random
+`vec2` in the [0,1] range.
 
-**Why**: Feature point positions within each grid cell need to be deterministic but appear random. Hash functions provide this "reproducible randomness". Different hash functions affect distribution uniformity and visual quality.
+**Why**: Feature point positions within each grid cell need to be deterministic but
+appear random. Hash functions provide this “reproducible randomness”.
+Different hash functions affect distribution uniformity and visual quality.
 
 **Code**:
 ```glsl
@@ -58,9 +83,13 @@ vec3 hash3_uint(vec3 p) {
 
 ### Step 2: Grid Partitioning and Neighborhood Search — F1 Distance
 
-**What**: Split input coordinates into integer part (grid ID) and fractional part (position within cell), iterate over the 3x3 neighborhood to compute distances to all feature points, and find the nearest distance F1.
+**What**: Split input coordinates into integer part (grid ID) and fractional part
+(position within cell), iterate over the 3x3 neighborhood to compute distances to all
+feature points, and find the nearest distance F1.
 
-**Why**: `floor/fract` discretizes continuous space into a grid. Since feature points are offset within the [0,1] range, the nearest point can only be in the current cell or its 8 neighbors, so a 3x3 search covers all cases.
+**Why**: `floor/fract` discretizes continuous space into a grid.
+Since feature points are offset within the [0,1] range, the nearest point can only be in
+the current cell or its 8 neighbors, so a 3x3 search covers all cases.
 
 **Code**:
 ```glsl
@@ -89,9 +118,12 @@ vec2 voronoi(vec2 x) {
 
 ### Step 3: F1 + F2 Tracking — Edge Detection
 
-**What**: Simultaneously record the nearest distance F1 and second-nearest distance F2 during the search, using F2-F1 to extract cell boundaries.
+**What**: Simultaneously record the nearest distance F1 and second-nearest distance F2
+during the search, using F2-F1 to extract cell boundaries.
 
-**Why**: The value of F2-F1 is large inside cells (far from boundaries) and approaches 0 at cell junctions (two feature points equidistant). This is the most common Voronoi edge detection method.
+**Why**: The value of F2-F1 is large inside cells (far from boundaries) and approaches 0
+at cell junctions (two feature points equidistant).
+This is the most common Voronoi edge detection method.
 
 **Code**:
 ```glsl
@@ -124,9 +156,13 @@ vec2 voronoi_f1f2(vec2 x) {
 
 ### Step 4: Exact Border Distance — Two-Pass Algorithm
 
-**What**: First pass finds the nearest feature point; second pass calculates the exact distance to all neighboring cell boundaries.
+**What**: First pass finds the nearest feature point; second pass calculates the exact
+distance to all neighboring cell boundaries.
 
-**Why**: Simple F2-F1 is only an approximation of the boundary. For geometrically exact equidistant lines and smooth boundary rendering, the distance to the perpendicular bisector must be computed. The second pass requires a 5x5 search range to ensure geometric correctness.
+**Why**: Simple F2-F1 is only an approximation of the boundary.
+For geometrically exact equidistant lines and smooth boundary rendering, the distance to
+the perpendicular bisector must be computed.
+The second pass requires a 5x5 search range to ensure geometric correctness.
 
 **Code**:
 ```glsl
@@ -174,9 +210,12 @@ vec3 voronoi_border(vec2 x) {
 
 ### Step 5: Feature Point Animation
 
-**What**: Make feature points move smoothly over time, producing organic dynamic effects.
+**What**: Make feature points move smoothly over time, producing organic dynamic
+effects.
 
-**Why**: Static Voronoi is suitable for texture maps, but real-time effects usually require animation. Using `sin(iTime + 6.2831*hash)` makes each point oscillate at a different phase while staying within the [0,1] range.
+**Why**: Static Voronoi is suitable for texture maps, but real-time effects usually
+require animation. Using `sin(iTime + 6.2831*hash)` makes each point oscillate at a
+different phase while staying within the [0,1] range.
 
 **Code**:
 ```glsl
@@ -188,9 +227,12 @@ vec2 r = g - f + o;
 
 ### Step 6: Coloring and Visualization
 
-**What**: Map Voronoi distance values to colors, rendering cell fills, border lines, and feature point markers.
+**What**: Map Voronoi distance values to colors, rendering cell fills, border lines, and
+feature point markers.
 
-**Why**: Different mapping methods produce dramatically different visual effects. Distance values can be used directly as grayscale, or transformed into rich colors through palette functions.
+**Why**: Different mapping methods produce dramatically different visual effects.
+Distance values can be used directly as grayscale, or transformed into rich colors
+through palette functions.
 
 **Code**:
 ```glsl
@@ -222,7 +264,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Variant 1: 3D Voronoi + fBm Fire
 
-Difference from base version: extends 2D Voronoi to 3D space, multi-layer fBm summation produces volumetric feel, combined with blackbody radiation palette for rendering fire/nebula.
+Difference from base version: extends 2D Voronoi to 3D space, multi-layer fBm summation
+produces volumetric feel, combined with blackbody radiation palette for rendering
+fire/nebula.
 
 Key modified code:
 ```glsl
@@ -272,7 +316,9 @@ vec3 firePalette(float i) {
 
 ### Variant 2: Rounded Borders (3rd-Order Voronoi)
 
-Difference from base version: simultaneously tracks F1, F2, and F3 (three nearest distances), using a harmonic mean formula to produce smoother, more uniform cell boundaries instead of standard Voronoi's sharp intersections.
+Difference from base version: simultaneously tracks F1, F2, and F3 (three nearest
+distances), using a harmonic mean formula to produce smoother, more uniform cell
+boundaries instead of standard Voronoi’s sharp intersections.
 
 Key modified code:
 ```glsl
@@ -303,7 +349,9 @@ float voronoiRounded(vec2 p) {
 
 ### Variant 3: Voronoise (Unified Noise-Voronoi Framework)
 
-Difference from base version: through two parameters `u` (jitter amount) and `v` (smoothness), continuously interpolates between Cell Noise, Perlin Noise, and Voronoi. Uses weighted accumulation instead of `min()` operation, requiring a 5x5 search range.
+Difference from base version: through two parameters `u` (jitter amount) and `v`
+(smoothness), continuously interpolates between Cell Noise, Perlin Noise, and Voronoi.
+Uses weighted accumulation instead of `min()` operation, requiring a 5x5 search range.
 
 Key modified code:
 ```glsl
@@ -340,7 +388,9 @@ vec3 hash3(vec2 p) {
 
 ### Variant 4: Crack Textures (Multi-Layer Recursive Voronoi)
 
-Difference from base version: uses extended jitter range to generate irregular cells, two-pass algorithm for exact boundaries, then overlays Perlin fBm perturbation on crack paths. Multi-layer recursion (rotation + scaling) produces fractal crack networks.
+Difference from base version: uses extended jitter range to generate irregular cells,
+two-pass algorithm for exact boundaries, then overlays Perlin fBm perturbation on crack
+paths. Multi-layer recursion (rotation + scaling) produces fractal crack networks.
 
 Key modified code:
 ```glsl
@@ -367,7 +417,10 @@ for (float i = 0.0; i < CRACK_DEPTH; i++) {
 
 ### Variant 5: Tileable 3D Worley (Cloud Noise)
 
-Difference from base version: implements domain wrapping via `mod()` to generate seamlessly tileable 3D Worley noise. Combined with Perlin-Worley remapping for volumetric cloud rendering. Uses high-quality integer hash.
+Difference from base version: implements domain wrapping via `mod()` to generate
+seamlessly tileable 3D Worley noise.
+Combined with Perlin-Worley remapping for volumetric cloud rendering.
+Uses high-quality integer hash.
 
 Key modified code:
 ```glsl
@@ -409,11 +462,13 @@ float remap(float x, float a, float b, float c, float d) {
 
 ### 1. Avoid sqrt in Distance Comparisons
 
-Use `dot(r,r)` (squared distance) during the comparison phase, only taking `sqrt` for the final output. Saves 9 `sqrt` calls per pixel.
+Use `dot(r,r)` (squared distance) during the comparison phase, only taking `sqrt` for
+the final output. Saves 9 `sqrt` calls per pixel.
 
 ### 2. Unroll 3D Voronoi Loops
 
-GPUs are not efficient with deeply nested loops. The 3x3x3 loop for 3D can be manually unrolled along the z-axis:
+GPUs are not efficient with deeply nested loops.
+The 3x3x3 loop for 3D can be manually unrolled along the z-axis:
 ```glsl
 // Instead of 3-level nesting, manually unroll z=-1, 0, 1
 for (int j = -1; j <= 1; j++)
@@ -427,26 +482,36 @@ for (int i = -1; i <= 1; i++) {
 ### 3. Minimize Search Range
 
 - Basic F1: 3x3 is sufficient
+
 - Exact border / rounded border: second pass needs 5x5
+
 - Voronoise (smooth blending): needs 5x5 to cover kernel radius
+
 - Extended jitter (`ofs>0`): must use 5x5
-- Don't blindly use 5x5; searching 16 extra cells means 16 extra hash computations
+
+- Don’t blindly use 5x5; searching 16 extra cells means 16 extra hash computations
 
 ### 4. Hash Function Selection
 
 - `sin(dot(...))` hash: fastest, but insufficient precision on some GPUs
-- Texture lookup hash (`textureLod(iChannel0, ...)`): high quality but requires texture resources
+
+- Texture lookup hash (`textureLod(iChannel0, ...)`): high quality but requires texture
+  resources
+
 - Integer hash (`uvec3`): high quality without textures, but requires ES 3.0+
 
 ### 5. Layer Count Control for Multi-Layer fBm
 
-Each additional fBm layer adds a complete Voronoi search. 3 layers usually provide sufficient detail, 5 layers is the visual upper limit, and beyond 5 layers is rarely worth the performance cost.
+Each additional fBm layer adds a complete Voronoi search.
+3 layers usually provide sufficient detail, 5 layers is the visual upper limit, and
+beyond 5 layers is rarely worth the performance cost.
 
 ## Combination Suggestions in Detail
 
 ### 1. Voronoi + fBm Perturbation
 
-Use fBm noise to perturb Voronoi input coordinates, producing organic, irregular cell shapes (like stone textures, magma):
+Use fBm noise to perturb Voronoi input coordinates, producing organic, irregular cell
+shapes (like stone textures, magma):
 ```glsl
 vec2 distorted_uv = uv + 0.5 * fbm22(uv * 2.0);
 vec2 v = voronoi(distorted_uv * SCALE);
@@ -454,7 +519,8 @@ vec2 v = voronoi(distorted_uv * SCALE);
 
 ### 2. Voronoi + Bump Mapping
 
-Use Voronoi distance values as a height map, compute normals via finite differences for pseudo-3D bump effects:
+Use Voronoi distance values as a height map, compute normals via finite differences for
+pseudo-3D bump effects:
 ```glsl
 float h0 = voronoiRounded(uv);
 float hx = voronoiRounded(uv + vec2(0.004, 0.0));
@@ -464,7 +530,8 @@ float bump = max(hx - h0, 0.0) * 16.0; // Simple bump value
 
 ### 3. Voronoi + Palette Mapping
 
-Use cell ID or distance values to drive the cosine palette, quickly producing rich procedural colors:
+Use cell ID or distance values to drive the cosine palette, quickly producing rich
+procedural colors:
 ```glsl
 vec3 palette(float t) {
     return 0.5 + 0.5 * cos(6.2831 * (t + vec3(0.0, 0.33, 0.67)));
@@ -474,11 +541,13 @@ col = palette(cellId * 0.1 + iTime * 0.1);
 
 ### 4. Voronoi + Raymarching
 
-Use Voronoi distance as part of an SDF in raymarching scenes to sculpt cellular surface textures or crack effects.
+Use Voronoi distance as part of an SDF in raymarching scenes to sculpt cellular surface
+textures or crack effects.
 
 ### 5. Multi-Scale Voronoi Stacking
 
-Compute multiple Voronoi layers at different frequencies and stack them for rich detail. Low-frequency layers control large structures, high-frequency layers add fine detail:
+Compute multiple Voronoi layers at different frequencies and stack them for rich detail.
+Low-frequency layers control large structures, high-frequency layers add fine detail:
 ```glsl
 float detail = voronoiRounded(uv * 6.0);       // Main structure
 float fine   = voronoiRounded(uv * 16.0) * 0.5; // Fine detail

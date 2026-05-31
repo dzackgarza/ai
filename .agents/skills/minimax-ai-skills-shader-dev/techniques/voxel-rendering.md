@@ -1,13 +1,23 @@
 ## WebGL2 Adaptation Requirements
 
-The code templates in this document use ShaderToy GLSL style. When generating standalone HTML pages, you must adapt for WebGL2:
+The code templates in this document use ShaderToy GLSL style.
+When generating standalone HTML pages, you must adapt for WebGL2:
 
-- Use `canvas.getContext("webgl2")` **(required! WebGL1 does not support in/out keywords)**
+- Use `canvas.getContext("webgl2")` **(required!
+  WebGL1 does not support in/out keywords)**
+
 - Shader first line: `#version 300 es`, add `precision highp float;` to fragment shader
-- **IMPORTANT: #version must be the very first line of the shader! No characters before it (including blank lines/comments/Unicode BOM)**
+
+- **IMPORTANT: #version must be the very first line of the shader!
+  No characters before it (including blank lines/comments/Unicode BOM)**
+
 - Vertex shader: `attribute` → `in`, `varying` → `out`
-- Fragment shader: `varying` → `in`, `gl_FragColor` → custom `out vec4 fragColor`, `texture2D()` → `texture()`
-- ShaderToy's `void mainImage(out vec4 fragColor, in vec2 fragCoord)` needs to be adapted to the standard `void main()` entry point
+
+- Fragment shader: `varying` → `in`, `gl_FragColor` → custom `out vec4 fragColor`,
+  `texture2D()` → `texture()`
+
+- ShaderToy’s `void mainImage(out vec4 fragColor, in vec2 fragCoord)` needs to be
+  adapted to the standard `void main()` entry point
 
 ### WebGL2 Full Adaptation Example
 
@@ -45,40 +55,82 @@ void main() {
 ```
 
 **IMPORTANT: Common GLSL compile errors:**
-- `in/out storage qualifier supported in GLSL ES 3.00 only` → Check that you are using `getContext("webgl2")` and `#version 300 es`
-- `#version directive must occur on the first line` → Check that the shader string starts with #version, with no characters before it
-- **IMPORTANT: GLSL reserved words**: `cast`, `class`, `template`, `namespace`, `union`, `enum`, `typedef`, `sizeof`, `input`, `output`, `filter`, `image`, `sampler`, `fixed`, `volatile`, `public`, `static`, `extern`, `external`, `interface`, `long`, `short`, `double`, `half`, `unsigned`, `superp`, `inline`, `noinline`, etc. are all GLSL reserved words and **must never be used as variable or function names**! Common pitfall: naming a function `cast` for ray casting → compile failure. **Use compound names like `castRay`, `castShadow`, `shootRay` instead**.
-- **IMPORTANT: GLSL strict typing**: float/int cannot be mixed. `if (x > 0)` for int, `if (y < 0.0)` for float. Comparing ivec3 members to float requires explicit conversion: `float(c.y) < height`. When getVoxel returns int, compare with `> 0` not `> 0.0`. Function parameter types must match exactly.
-- **IMPORTANT: Vector dimension mismatch (vec2 vs vec3)**: `p.xz` returns `vec2` and **must never** be added to `vec3` or passed to functions expecting `vec3` parameters (e.g., `fbm(vec3)`, `noise(vec3)`)! Common error: `fbm(p.xz * 0.08 + vec3(...))` — `vec2 + vec3` compile failure. **Fix**: either use a `vec2` version of noise/fbm, or construct a full vec3: `fbm(vec3(p.xz * 0.08, p.y * 0.05))`. Similarly, `vec2` only has `.x`/`.y`, cannot access `.z`/`.w`.
-- **IMPORTANT: length() / floating-point precision**: `length(ivec2)` must first convert to `vec2`: `length(vec2(d))`. Exact floating-point equality comparison almost never works; use range comparison: `floor(p.y) == floor(height)`
+
+- `in/out storage qualifier supported in GLSL ES 3.00 only` → Check that you are using
+  `getContext("webgl2")` and `#version 300 es`
+
+- `#version directive must occur on the first line` → Check that the shader string
+  starts with #version, with no characters before it
+
+- **IMPORTANT: GLSL reserved words**: `cast`, `class`, `template`, `namespace`, `union`,
+  `enum`, `typedef`, `sizeof`, `input`, `output`, `filter`, `image`, `sampler`, `fixed`,
+  `volatile`, `public`, `static`, `extern`, `external`, `interface`, `long`, `short`,
+  `double`, `half`, `unsigned`, `superp`, `inline`, `noinline`, etc.
+  are all GLSL reserved words and **must never be used as variable or function names**!
+  Common pitfall: naming a function `cast` for ray casting → compile failure.
+  **Use compound names like `castRay`, `castShadow`, `shootRay` instead**.
+
+- **IMPORTANT: GLSL strict typing**: float/int cannot be mixed.
+  `if (x > 0)` for int, `if (y < 0.0)` for float.
+  Comparing ivec3 members to float requires explicit conversion: `float(c.y) < height`.
+  When getVoxel returns int, compare with `> 0` not `> 0.0`. Function parameter types
+  must match exactly.
+
+- **IMPORTANT: Vector dimension mismatch (vec2 vs vec3)**: `p.xz` returns `vec2` and
+  **must never** be added to `vec3` or passed to functions expecting `vec3` parameters
+  (e.g., `fbm(vec3)`, `noise(vec3)`)! Common error: `fbm(p.xz * 0.08 + vec3(...))` —
+  `vec2 + vec3` compile failure.
+  **Fix**: either use a `vec2` version of noise/fbm, or construct a full vec3:
+  `fbm(vec3(p.xz * 0.08, p.y * 0.05))`. Similarly, `vec2` only has `.x`/`.y`, cannot
+  access `.z`/`.w`.
+
+- **IMPORTANT: length() / floating-point precision**: `length(ivec2)` must first convert
+  to `vec2`: `length(vec2(d))`. Exact floating-point equality comparison almost never
+  works; use range comparison: `floor(p.y) == floor(height)`
 
 # Voxel Rendering Skill
 
 ## Use Cases
-- Rendering discrete volumetric data on regular 3D grids (Minecraft-style worlds, medical volume data, architectural voxel models)
+
+- Rendering discrete volumetric data on regular 3D grids (Minecraft-style worlds,
+  medical volume data, architectural voxel models)
+
 - Pixel-accurate block/cube scenes
-- "Block art", "3D pixel art", "low-poly voxel" visual styles
+
+- “Block art”, “3D pixel art”, “low-poly voxel” visual styles
+
 - Real-time voxel scenes in pure fragment shader environments like ShaderToy
+
 - Advanced lighting effects including shadows, AO, and global illumination
 
 ## Core Principles
 
-The core of voxel rendering is the **DDA (Digital Differential Analyzer) ray traversal algorithm**: cast a ray from the camera through each pixel, stepping through the 3D grid cell by cell along the ray direction until hitting an occupied voxel.
+The core of voxel rendering is the **DDA (Digital Differential Analyzer) ray traversal
+algorithm**: cast a ray from the camera through each pixel, stepping through the 3D grid
+cell by cell along the ray direction until hitting an occupied voxel.
 
 For ray `P(t) = rayPos + t * rayDir`, DDA maintains:
-- **`mapPos`** = `floor(rayPos)`: current grid coordinate (integer)
-- **`deltaDist`** = `abs(1.0 / rayDir)`: t cost to cross one cell
-- **`sideDist`** = `(sign(rayDir) * (mapPos - rayPos) + sign(rayDir) * 0.5 + 0.5) * deltaDist`: t distance to the next boundary on each axis
 
-Each step advances along the axis with the smallest `sideDist`, updating `sideDist += deltaDist` and `mapPos += rayStep`.
+- **`mapPos`** = `floor(rayPos)`: current grid coordinate (integer)
+
+- **`deltaDist`** = `abs(1.0 / rayDir)`: t cost to cross one cell
+
+- **`sideDist`** =
+  `(sign(rayDir) * (mapPos - rayPos) + sign(rayDir) * 0.5 + 0.5) * deltaDist`: t
+  distance to the next boundary on each axis
+
+Each step advances along the axis with the smallest `sideDist`, updating
+`sideDist += deltaDist` and `mapPos += rayStep`.
 
 Normal on hit: `normal = -mask * rayStep`
 
-Face UV is obtained by projecting the hit point onto the two tangent axes of the hit face.
+Face UV is obtained by projecting the hit point onto the two tangent axes of the hit
+face.
 
 ## Implementation Steps
 
 ### Step 1: Camera Ray Construction
+
 ```glsl
 vec2 screenPos = (fragCoord.xy / iResolution.xy) * 2.0 - 1.0;
 vec3 cameraDir = vec3(0.0, 0.0, 0.8);  // Focal length; larger = narrower FOV
@@ -89,6 +141,7 @@ vec3 rayPos = vec3(0.0, 2.0, -12.0);
 ```
 
 ### Step 2: DDA Initialization
+
 ```glsl
 ivec3 mapPos = ivec3(floor(rayPos));
 vec3 rayStep = sign(rayDir);
@@ -97,6 +150,7 @@ vec3 sideDist = (sign(rayDir) * (vec3(mapPos) - rayPos) + (sign(rayDir) * 0.5) +
 ```
 
 ### Step 3: DDA Traversal Loop (Branchless Version)
+
 ```glsl
 #define MAX_RAY_STEPS 64
 
@@ -118,6 +172,7 @@ mapPos += mask * rayStep;
 ```
 
 ### Step 4: Voxel Occupancy Function
+
 ```glsl
 // Basic version: solid block (most common; use this when user asks for "voxel cube")
 // IMPORTANT: Important: getVoxel receives ivec3, but all internal calculations must use float!
@@ -193,6 +248,7 @@ bool getVoxelRotating(ivec3 c) {
 ```
 
 ### Step 5: Face Shading (Normal + Base Color)
+
 ```glsl
 vec3 normal = -vec3(mask) * rayStep;
 vec3 color;
@@ -203,6 +259,7 @@ fragColor = vec4(color, 1.0);
 ```
 
 ### Step 6: Precise Hit Position and Face UV
+
 ```glsl
 float t = dot(sideDist - deltaDist, vec3(mask));
 vec3 hitPos = rayPos + rayDir * t;
@@ -212,6 +269,7 @@ vec2 uv = vec2(dot(vec3(mask) * uvw.yzx, vec3(1.0)),
 ```
 
 ### Step 7: Neighbor Voxel AO
+
 ```glsl
 float vertexAo(vec2 side, float corner) {
     return (side.x + side.y + max(corner, side.x * side.y)) / 3.0;
@@ -239,6 +297,7 @@ ao = pow(ao, 1.0 / 3.0);  // Gamma correction to control AO intensity
 ```
 
 ### Step 8: DDA Shadow Ray
+
 ```glsl
 // IMPORTANT: Shadow steps must be capped at 16; total main ray + shadow ray steps should not exceed 80
 #define MAX_SHADOW_STEPS 16
@@ -470,7 +529,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### Variant 1: Glowing Voxels (Glow Accumulation)
-Accumulate distance-based glow values during DDA traversal; produces semi-transparent glow even on miss.
+
+Accumulate distance-based glow values during DDA traversal; produces semi-transparent
+glow even on miss.
 ```glsl
 float glow = 0.0;
 for (int i = 0; i < MAX_RAY_STEPS; i++) {
@@ -483,6 +544,7 @@ vec3 col = baseColor + glow * vec3(0.4, 0.6, 1.0);
 ```
 
 ### Variant 2: Rounded Voxels (Intra-voxel SDF Refinement)
+
 After DDA hit, perform SDF ray march inside the voxel to render rounded blocks.
 ```glsl
 float id = hash31(mapPos);
@@ -501,7 +563,9 @@ for (int j = 0; j < 6; j++) {
 ```
 
 ### Variant 3: Hybrid SDF-Voxel Traversal
-SDF sphere-tracing with large steps at distance, switching to precise DDA near the surface.
+
+SDF sphere-tracing with large steps at distance, switching to precise DDA near the
+surface.
 ```glsl
 #define VOXEL_SIZE 0.0625
 #define SWITCH_DIST (VOXEL_SIZE * 1.732)
@@ -523,7 +587,9 @@ for (int i = 0; i < MAX_STEPS; i++) {
 ```
 
 ### Variant 4: Voxel Cone Tracing
-Build multi-level mipmaps, cast cone-shaped rays from hit points for global illumination.
+
+Build multi-level mipmaps, cast cone-shaped rays from hit points for global
+illumination.
 ```glsl
 vec4 traceCone(vec3 origin, vec3 dir, float coneRatio) {
     vec4 light = vec4(0.0);
@@ -541,7 +607,9 @@ vec4 traceCone(vec3 origin, vec3 dir, float coneRatio) {
 ```
 
 ### Variant 5: PBR Lighting + Multi-Bounce Reflection
-GGX BRDF replacing Lambert, with metallic/roughness parameters; cast a second DDA ray for reflections.
+
+GGX BRDF replacing Lambert, with metallic/roughness parameters; cast a second DDA ray
+for reflections.
 ```glsl
 float ggxDiffuse(float NoL, float NoV, float LoH, float roughness) {
     float FD90 = 0.5 + 2.0 * roughness * LoH * LoH;
@@ -559,7 +627,9 @@ col += fresnel * reflColor;
 ```
 
 ### Variant 6: Voxel Water Scene (Water + Underwater Voxels)
-Water surface ripple reflections, underwater refraction, sand and seaweed for a complete water scene.
+
+Water surface ripple reflections, underwater refraction, sand and seaweed for a complete
+water scene.
 ```glsl
 float waterY = 0.0;
 
@@ -617,7 +687,9 @@ if (hitWater) {
 ```
 
 ### Variant 7: Rotating Voxel Objects
-Rotate voxel objects as a whole. Core: apply inverse rotation to sample points in getVoxel.
+
+Rotate voxel objects as a whole.
+Core: apply inverse rotation to sample points in getVoxel.
 ```glsl
 // IMPORTANT: Correct way to rotate objects: apply inverse rotation to sample coordinates in getVoxel
 // Wrong approach: only rotate the camera (that just changes the viewpoint, not the object)
@@ -636,7 +708,9 @@ int getVoxel(vec3 c) {
 ```
 
 ### Variant 8: Indoor/Cave/Enclosed Scenes (Point Lights + High Ambient Lighting)
-Indoor, cave, underground, sci-fi base, and other enclosed or semi-enclosed scenes require point lights and high ambient lighting.
+
+Indoor, cave, underground, sci-fi base, and other enclosed or semi-enclosed scenes
+require point lights and high ambient lighting.
 ```glsl
 // IMPORTANT: Key points for enclosed/semi-enclosed scenes (caves, interiors, sci-fi bases, mazes, etc.):
 // 1. Camera must be placed inside the cavity (a position where getVoxel returns 0)
@@ -696,6 +770,7 @@ col = matCol * lighting;
 ```
 
 ### Variant 9: Voxel Character Animation
+
 Simple voxel character animation using time-driven offsets and rotations.
 ```glsl
 // IMPORTANT: Voxel character animation core approach:
@@ -758,7 +833,10 @@ int getVoxel(vec3 c) {
 ```
 
 ### Variant 10: Waterfall / Flowing Water Particle Effects
-Dynamic waterfall, splash particles, water mist effects. Core: time-offset noise simulates water flow, hashed particles simulate splashes, exponential decay simulates mist.
+
+Dynamic waterfall, splash particles, water mist effects.
+Core: time-offset noise simulates water flow, hashed particles simulate splashes,
+exponential decay simulates mist.
 ```glsl
 // IMPORTANT: Key points for waterfall/flowing water/particle effects:
 // 1. Waterfall stream: noise + iTime vertical offset simulates water column flowing down
@@ -834,8 +912,12 @@ if (hit.mat == 5) {
 ```
 
 ### Variant 11: Multi-Building / Town / Minecraft-Style Scenes (Multi-Structure Town Composition)
-Towns, villages, Minecraft-style worlds, and other scenes requiring multiple discrete structures (houses, trees, lampposts, etc.) placed on the ground.
-**IMPORTANT: "Minecraft-like voxel scene" = multi-building scene; must follow the performance constraints of this template!**
+
+Towns, villages, Minecraft-style worlds, and other scenes requiring multiple discrete
+structures (houses, trees, lampposts, etc.)
+placed on the ground.
+**IMPORTANT: “Minecraft-like voxel scene” = multi-building scene; must follow the
+performance constraints of this template!**
 ```glsl
 // IMPORTANT: Key points for multi-building scenes:
 // 1. Define the ground first (height map or flat plane), ensure ground getVoxel returns correct material
@@ -951,35 +1033,104 @@ vec3 ambientColor = vec3(0.35, 0.3, 0.4);  // IMPORTANT: High ambient light (≥
 ## Performance & Composition
 
 **Performance Tips:**
+
 - Early exit: break immediately when `mapPos` exceeds scene bounds
+
 - Shadow ray steps of 16-24 are sufficient
+
 - Use SDF sphere-tracing with large steps in open areas, switch to DDA near surfaces
-- Material queries, AO, normals, etc. are only computed after hit
+
+- Material queries, AO, normals, etc.
+  are only computed after hit
+
 - Replace procedural voxel queries with `texelFetch` texture sampling
+
 - Multi-frame accumulation + reprojection for low-noise results
-- **IMPORTANT: MAX_RAY_STEPS defaults to 64, MAX_SHADOW_STEPS defaults to 16 (total 80)**. Only simple scenes (single cube/sphere) can increase to 96+24. Multi-building/Minecraft/character scenes with complex getVoxel must keep 64+16 or lower, otherwise SwiftShader frame timeout → only sky background renders
+
+- **IMPORTANT: MAX_RAY_STEPS defaults to 64, MAX_SHADOW_STEPS defaults to 16 (total
+  80)**. Only simple scenes (single cube/sphere) can increase to 96+24.
+  Multi-building/Minecraft/character scenes with complex getVoxel must keep 64+16 or
+  lower, otherwise SwiftShader frame timeout → only sky background renders
 
 **Composition Tips:**
+
 - **Procedural noise terrain**: use FBM/Perlin noise height maps inside `getVoxel()`
-- **SDF procedural modeling**: use SDF boolean operations inside `getVoxel()` to define shapes
+
+- **SDF procedural modeling**: use SDF boolean operations inside `getVoxel()` to define
+  shapes
+
 - **Texture mapping**: after hit, sample 16x16 pixel textures using face UV * 16
-- **Atmospheric scattering / volumetric fog**: accumulate medium density during DDA traversal
-- **Water surface rendering**: Fresnel reflection/refraction on a specific Y plane (see Variant 6 above)
+
+- **Atmospheric scattering / volumetric fog**: accumulate medium density during DDA
+  traversal
+
+- **Water surface rendering**: Fresnel reflection/refraction on a specific Y plane (see
+  Variant 6 above)
+
 - **Global illumination**: cone tracing or Monte Carlo hemisphere sampling
-- **Temporal reprojection**: multi-frame accumulation + previous frame reprojection for anti-aliasing and denoising
+
+- **Temporal reprojection**: multi-frame accumulation + previous frame reprojection for
+  anti-aliasing and denoising
 
 ## Common Errors
 
-1. **GLSL reserved words causing compile failure**: `cast`, `class`, `template`, `namespace`, `input`, `output`, `filter`, `image`, `sampler`, `half`, `fixed`, etc. are GLSL reserved words and **must never be used as variable or function names**. Use compound names: `castRay`, `castShadow`, `shootRay`, `spellEffect` (not `cast`)
-2. **Enclosed/semi-enclosed scene total darkness**: caves, interiors, sci-fi bases, mazes, and other enclosed scenes cannot rely solely on directional light (completely blocked by walls/ceiling); must use point lights + high ambient light (≥0.2) + emissive materials (see Variant 8)
-3. **Camera inside voxel causing rendering anomalies**: cave/indoor scene camera origin must be inside the cavity (where getVoxel returns 0), otherwise the first DDA step hits immediately = scene invisible
-4. **Complex getVoxel causing SwiftShader black screen (most common with Minecraft-style/town/character/multi-building scenes!)**: getVoxel is called once per DDA step; if it contains multiple buildings/characters/terrain+trees without early exit, frame timeout → only sky background renders. **Must do all of**: (1) AABB bounding box early exit (check coordinate range first, return 0 immediately outside building area); (2) MAX_RAY_STEPS ≤ 64, MAX_SHADOW_STEPS ≤ 16; (3) scene range within ±20 cells. **Minecraft-style scene = multi-building scene**; must follow this rule (see Variant 9, 11 template code)
-5. **vec2/vec3 dimension mismatch causing compile failure**: `p.xz` returns `vec2` and cannot be passed directly to noise/fbm functions expecting `vec3` parameters or used in operations with `vec3`. Use `vec3(p.xz, val)` to construct a full vec3, or use vec2 versions of functions
-6. **Mountain/terrain height-based coloring invisible**: (1) `maxH` must equal the actual max return value of the terrain noise function (don't arbitrarily use 20.0); (2) grass threshold at 0.4 (largest area ensures green is visible), rock 0.4~0.7, snow >0.7; (3) grass green must be saturated enough `vec3(0.25, 0.55, 0.15)` not grayish; (4) sun intensity ≤2.0, sky light ≤1.0, too bright washes out colors; (5) gamma correction reduces saturation, pre-compensate material colors (see Step 4 mountain terrain template)
-7. **Waterfall/flowing water effect lacks recognizability**: waterfall must have a clear cliff drop (≥10 cells), visible water column (noise + iTime offset), bottom splash particles (hash random bouncing), and mist (exponential decay density field). Just a gradient color block is not a waterfall! See Variant 10 complete template
-8. **"Low saturation coloring" becomes pure white/gray**: low saturation ≠ near white! Low saturation means colors are not vivid but still have clear hue (e.g., brick red `vec3(0.55, 0.35, 0.3)` not gray-white `vec3(0.8, 0.8, 0.8)`). Brick/stone textures must use UV periodic patterns (staggered rows + mortar dark lines), not solid colors. See the `getBrickColor` function in the complete template
-9. **Sunset/side-lit scene buildings become black silhouettes**: when low-angle light (sunset/dawn) illuminates from the side, building fronts are completely backlit → pure black silhouettes with no visible detail. Must: (1) ambient light ≥ 0.3; (2) walls use bright materials (light yellow, off-white) not dark colors; (3) buildings large enough (width/height ≥ 5 cells). See Variant 11 sunset scene code
+1. **GLSL reserved words causing compile failure**: `cast`, `class`, `template`,
+   `namespace`, `input`, `output`, `filter`, `image`, `sampler`, `half`, `fixed`, etc.
+   are GLSL reserved words and **must never be used as variable or function names**. Use
+   compound names: `castRay`, `castShadow`, `shootRay`, `spellEffect` (not `cast`)
+
+2. **Enclosed/semi-enclosed scene total darkness**: caves, interiors, sci-fi bases,
+   mazes, and other enclosed scenes cannot rely solely on directional light (completely
+   blocked by walls/ceiling); must use point lights + high ambient light (≥0.2) +
+   emissive materials (see Variant 8)
+
+3. **Camera inside voxel causing rendering anomalies**: cave/indoor scene camera origin
+   must be inside the cavity (where getVoxel returns 0), otherwise the first DDA step
+   hits immediately = scene invisible
+
+4. **Complex getVoxel causing SwiftShader black screen (most common with
+   Minecraft-style/town/character/multi-building scenes!)**: getVoxel is called once per
+   DDA step; if it contains multiple buildings/characters/terrain+trees without early
+   exit, frame timeout → only sky background renders.
+   **Must do all of**: (1) AABB bounding box early exit (check coordinate range first,
+   return 0 immediately outside building area); (2) MAX_RAY_STEPS ≤ 64, MAX_SHADOW_STEPS
+   ≤ 16; (3) scene range within ±20 cells.
+   **Minecraft-style scene = multi-building scene**; must follow this rule (see Variant
+   9, 11 template code)
+
+5. **vec2/vec3 dimension mismatch causing compile failure**: `p.xz` returns `vec2` and
+   cannot be passed directly to noise/fbm functions expecting `vec3` parameters or used
+   in operations with `vec3`. Use `vec3(p.xz, val)` to construct a full vec3, or use
+   vec2 versions of functions
+
+6. **Mountain/terrain height-based coloring invisible**: (1) `maxH` must equal the
+   actual max return value of the terrain noise function (don’t arbitrarily use 20.0);
+   (2) grass threshold at 0.4 (largest area ensures green is visible), rock 0.4~0.7,
+   snow >0.7; (3) grass green must be saturated enough `vec3(0.25, 0.55, 0.15)` not
+   grayish; (4) sun intensity ≤2.0, sky light ≤1.0, too bright washes out colors; (5)
+   gamma correction reduces saturation, pre-compensate material colors (see Step 4
+   mountain terrain template)
+
+7. **Waterfall/flowing water effect lacks recognizability**: waterfall must have a clear
+   cliff drop (≥10 cells), visible water column (noise + iTime offset), bottom splash
+   particles (hash random bouncing), and mist (exponential decay density field).
+   Just a gradient color block is not a waterfall!
+   See Variant 10 complete template
+
+8. **“Low saturation coloring” becomes pure white/gray**: low saturation ≠ near white!
+   Low saturation means colors are not vivid but still have clear hue (e.g., brick red
+   `vec3(0.55, 0.35, 0.3)` not gray-white `vec3(0.8, 0.8, 0.8)`). Brick/stone textures
+   must use UV periodic patterns (staggered rows + mortar dark lines), not solid colors.
+   See the `getBrickColor` function in the complete template
+
+9. **Sunset/side-lit scene buildings become black silhouettes**: when low-angle light
+   (sunset/dawn) illuminates from the side, building fronts are completely backlit →
+   pure black silhouettes with no visible detail.
+   Must: (1) ambient light ≥ 0.3; (2) walls use bright materials (light yellow,
+   off-white) not dark colors; (3) buildings large enough (width/height ≥ 5 cells).
+   See Variant 11 sunset scene code
 
 ## Further Reading
 
-For full step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/voxel-rendering.md)
+For full step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/voxel-rendering.md)

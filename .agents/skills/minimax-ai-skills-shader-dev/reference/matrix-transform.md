@@ -1,21 +1,34 @@
 # Matrix Transforms & Camera — Detailed Reference
 
-This document is the complete detailed version of [SKILL.md](SKILL.md), covering step-by-step tutorials, mathematical derivations, detailed explanations, and advanced usage.
+This document is the complete detailed version of [SKILL.md](SKILL.md), covering
+step-by-step tutorials, mathematical derivations, detailed explanations, and advanced
+usage.
 
 ## Prerequisites
 
-- **Vector Fundamentals**: Meaning of `vec2/vec3/vec4`, dot product `dot()`, cross product `cross()`, `normalize()`
-- **Matrix Fundamentals**: Column-major storage of `mat2/mat3/mat4` in GLSL, semantics of matrix multiplication `m * v`
-- **Coordinate Systems**: NDC (Normalized Device Coordinates), screen-space to world-space mapping, aspect ratio correction
+- **Vector Fundamentals**: Meaning of `vec2/vec3/vec4`, dot product `dot()`, cross
+  product `cross()`, `normalize()`
+
+- **Matrix Fundamentals**: Column-major storage of `mat2/mat3/mat4` in GLSL, semantics
+  of matrix multiplication `m * v`
+
+- **Coordinate Systems**: NDC (Normalized Device Coordinates), screen-space to
+  world-space mapping, aspect ratio correction
+
 - **Trigonometry**: Relationship between `sin()`/`cos()` and rotation
+
 - **ShaderToy Built-in Variables**: `iResolution`, `iTime`, `iMouse`, `fragCoord`
 
 ## Core Principles
 
-The essence of matrix transforms is **coordinate system transformation**. In ShaderToy's ray marching pipeline, transformation matrices serve two key roles:
+The essence of matrix transforms is **coordinate system transformation**. In ShaderToy’s
+ray marching pipeline, transformation matrices serve two key roles:
 
-1. **Camera Matrix**: Converts screen pixel coordinates to ray directions in world space (view-to-world)
-2. **Object Transform Matrix**: Converts sampling points from world space to the object's local space (world-to-local, i.e., "domain transform")
+1. **Camera Matrix**: Converts screen pixel coordinates to ray directions in world space
+   (view-to-world)
+
+2. **Object Transform Matrix**: Converts sampling points from world space to the
+   object’s local space (world-to-local, i.e., “domain transform”)
 
 ### Key Mathematical Formulas
 
@@ -34,7 +47,7 @@ Ry(θ) = | cos θ   0   sin θ |
         | -sin θ  0   cos θ |
 ```
 
-**Rodrigues' Rotation Formula** (rotation by angle θ around arbitrary axis **k**):
+**Rodrigues’ Rotation Formula** (rotation by angle θ around arbitrary axis **k**):
 
 ```
 R = cos θ · I + (1 - cos θ) · k⊗k + sin θ · K
@@ -56,15 +69,18 @@ viewMatrix = mat3(right, up, forward)
 rayDir = normalize(camMatrix * vec3(uv, focalLength))
 ```
 
-where `uv` is the aspect-ratio-corrected screen coordinate, and `focalLength` controls the field of view (larger values produce smaller FOV).
+where `uv` is the aspect-ratio-corrected screen coordinate, and `focalLength` controls
+the field of view (larger values produce smaller FOV).
 
 ## Implementation Steps
 
 ### Step 1: Screen Coordinate Normalization and Aspect Ratio Correction
 
-**What**: Convert pixel coordinates `fragCoord` to normalized UV coordinates centered at the screen center, with Y-axis pointing up and correct aspect ratio.
+**What**: Convert pixel coordinates `fragCoord` to normalized UV coordinates centered at
+the screen center, with Y-axis pointing up and correct aspect ratio.
 
-**Why**: All subsequent ray generation depends on correctly normalized screen coordinates. Without aspect ratio correction, circles would become ellipses.
+**Why**: All subsequent ray generation depends on correctly normalized screen
+coordinates. Without aspect ratio correction, circles would become ellipses.
 
 **Code**:
 ```glsl
@@ -78,9 +94,11 @@ uv.x *= iResolution.x / iResolution.y;
 
 ### Step 2: Building Rotation Matrices
 
-**What**: Choose the appropriate rotation matrix construction method based on requirements.
+**What**: Choose the appropriate rotation matrix construction method based on
+requirements.
 
-**Why**: Rotation is the core of all 3D transforms. Different scenarios suit different rotation representations.
+**Why**: Rotation is the core of all 3D transforms.
+Different scenarios suit different rotation representations.
 
 **Method A: 2D Rotation (mat2)**
 
@@ -132,7 +150,7 @@ mat3 fromEuler(vec3 ang) {
 
 **Method D: Rodrigues Arbitrary-Axis Rotation (mat3)**
 
-Rotation around any normalized axis, based on Rodrigues' formula:
+Rotation around any normalized axis, based on Rodrigues’ formula:
 ```glsl
 mat3 rotationMatrix(vec3 axis, float angle) {
     axis = normalize(axis);
@@ -149,9 +167,12 @@ mat3 rotationMatrix(vec3 axis, float angle) {
 
 ### Step 3: Building a LookAt Camera
 
-**What**: Construct a view-to-world matrix from the camera position (eye) and look-at target (target).
+**What**: Construct a view-to-world matrix from the camera position (eye) and look-at
+target (target).
 
-**Why**: LookAt is the most intuitive camera definition — just specify "where to stand" and "where to look", and the matrix automatically computes three orthogonal basis vectors.
+**Why**: LookAt is the most intuitive camera definition — just specify “where to stand”
+and “where to look”, and the matrix automatically computes three orthogonal basis
+vectors.
 
 **Classic setCamera (mat3)**:
 ```glsl
@@ -177,7 +198,8 @@ vec3 camRight = normalize(cross(camDir, camUp));
 
 **mat4 LookAt (with translation)**:
 
-Returns a 4x4 matrix with the camera world position stored in the 4th column. Suitable for scenarios requiring homogeneous coordinates:
+Returns a 4x4 matrix with the camera world position stored in the 4th column.
+Suitable for scenarios requiring homogeneous coordinates:
 ```glsl
 mat4 LookAt(vec3 pos, vec3 target, vec3 up) {
     vec3 dir = normalize(target - pos);
@@ -189,9 +211,11 @@ mat4 LookAt(vec3 pos, vec3 target, vec3 up) {
 
 ### Step 4: Generating Perspective Rays
 
-**What**: Transform normalized screen coordinates through the camera matrix into world-space ray directions.
+**What**: Transform normalized screen coordinates through the camera matrix into
+world-space ray directions.
 
-**Why**: Perspective projection simulates the near-large far-small effect by appending a fixed Z component (focal length) after the UV. Larger focal length means smaller FOV.
+**Why**: Perspective projection simulates the near-large far-small effect by appending a
+fixed Z component (focal length) after the UV. Larger focal length means smaller FOV.
 
 **Method A: mat3 Camera + normalize**:
 ```glsl
@@ -219,7 +243,9 @@ vec3 rd = (viewToWorld * normalize(vec4(uv, 1.0, 0.0))).xyz;
 
 **What**: Map `iMouse` input to camera orbit angles.
 
-**Why**: An interactive camera is a fundamental need for debugging and showcasing 3D shaders. Mapping mouse X to horizontal rotation and Y to pitch angle is the most universal pattern.
+**Why**: An interactive camera is a fundamental need for debugging and showcasing 3D
+shaders. Mapping mouse X to horizontal rotation and Y to pitch angle is the most
+universal pattern.
 
 **Spherical Coordinate Orbit Camera**:
 ```glsl
@@ -257,9 +283,12 @@ vec3 dir = normalize(vec3(uv, -2.0)) * rot;
 
 ### Step 6: SDF Object Domain Transforms (Translation, Rotation, Scaling)
 
-**What**: In the ray marching distance function, apply inverse transforms to sampling points to achieve object translation/rotation/scaling.
+**What**: In the ray marching distance function, apply inverse transforms to sampling
+points to achieve object translation/rotation/scaling.
 
-**Why**: The SDF domain transform principle is "transform the space, not the object" — inversely transforming the sampling point into the object's local coordinate system to evaluate distance is equivalent to transforming the object itself.
+**Why**: The SDF domain transform principle is “transform the space, not the object” —
+inversely transforming the sampling point into the object’s local coordinate system to
+evaluate distance is equivalent to transforming the object itself.
 
 **Basic Transforms**:
 ```glsl
@@ -304,9 +333,12 @@ float d = sdBox(opTx(p, xform), vec3(1.0));
 
 ### Step 7: Quaternion Rotation (Advanced)
 
-**What**: Use quaternions for rotation around arbitrary axes, suitable for joint animation and other scenarios requiring frequent rotation composition.
+**What**: Use quaternions for rotation around arbitrary axes, suitable for joint
+animation and other scenarios requiring frequent rotation composition.
 
-**Why**: Quaternions avoid gimbal lock, and interpolation (slerp) is more natural than matrices. The double cross product formula `p + 2·cross(q.xyz, cross(q.xyz, p) + q.w·p)` is the most computationally efficient quaternion rotation implementation.
+**Why**: Quaternions avoid gimbal lock, and interpolation (slerp) is more natural than
+matrices. The double cross product formula `p + 2·cross(q.xyz, cross(q.xyz, p) + q.w·p)`
+is the most computationally efficient quaternion rotation implementation.
 
 ```glsl
 // Axis-angle → quaternion
@@ -331,7 +363,9 @@ float d = sdEllipsoid(limbPos, limbSize);
 
 ### Variant 1: Orthographic Projection Camera
 
-**Difference from basic version**: Ray direction is fixed (parallel rays); different pixel sampling is achieved by changing the ray origin position. Suitable for 2D-style rendering, engineering drawings, isometric views.
+**Difference from basic version**: Ray direction is fixed (parallel rays); different
+pixel sampling is achieved by changing the ray origin position.
+Suitable for 2D-style rendering, engineering drawings, isometric views.
 
 **Key modified code**:
 ```glsl
@@ -346,7 +380,9 @@ ro += cam * vec3(uv * ORTHO_SIZE, 0.0); // Offset origin
 
 ### Variant 2: Full Euler Angle Rotation Camera
 
-**Difference from basic version**: Does not use LookAt; instead builds the rotation matrix directly from three Euler angles. Suitable for first-person perspective or scenarios requiring roll.
+**Difference from basic version**: Does not use LookAt; instead builds the rotation
+matrix directly from three Euler angles.
+Suitable for first-person perspective or scenarios requiring roll.
 
 **Key modified code**:
 ```glsl
@@ -370,7 +406,9 @@ vec3 rd = normalize(vec3(uv, -2.0)) * rot;
 
 ### Variant 3: Quaternion Joint Rotation
 
-**Difference from basic version**: Uses quaternions instead of matrices for rotation in domain transforms, suitable for hierarchical joint animation (multi-limbed biological systems).
+**Difference from basic version**: Uses quaternions instead of matrices for rotation in
+domain transforms, suitable for hierarchical joint animation (multi-limbed biological
+systems).
 
 **Key modified code**:
 ```glsl
@@ -392,7 +430,10 @@ float dLeg = sdEllipsoid(legP, vec3(0.2, 0.6, 0.25));
 
 ### Variant 4: mat4 SRT Pipeline (Full 4x4 Transform)
 
-**Difference from basic version**: Uses `mat4` homogeneous coordinates to combine scale-rotate-translate into a single matrix, applying `opTx()` domain transform to sampling points. Suitable for complex scenes requiring management of many object transforms.
+**Difference from basic version**: Uses `mat4` homogeneous coordinates to combine
+scale-rotate-translate into a single matrix, applying `opTx()` domain transform to
+sampling points. Suitable for complex scenes requiring management of many object
+transforms.
 
 **Key modified code**:
 ```glsl
@@ -425,7 +466,9 @@ float d = sdBox(opTx(p, xform), boxSize);
 
 ### Variant 5: Path Camera (Animated Flight)
 
-**Difference from basic version**: The camera moves along a predefined path (e.g., tunnel, racetrack), using `LookAt` to track a forward target point. Common in tunnel-type shaders.
+**Difference from basic version**: The camera moves along a predefined path (e.g.,
+tunnel, racetrack), using `LookAt` to track a forward target point.
+Common in tunnel-type shaders.
 
 **Key modified code**:
 ```glsl
@@ -460,15 +503,19 @@ mat2(sc.y, sc.x, -sc.x, sc.y);
 
 ### 2. Prefer mat3 Over mat4
 
-If translation is not needed (pure rotation), always use `mat3` instead of `mat4`. `mat3*vec3` requires 7 fewer multiply-add operations than `mat4*vec4`.
+If translation is not needed (pure rotation), always use `mat3` instead of `mat4`.
+`mat3*vec3` requires 7 fewer multiply-add operations than `mat4*vec4`.
 
 ### 3. Inverse of Rotation Matrix = Transpose
 
-Orthogonal rotation matrix R satisfies `R⁻¹ = Rᵀ`. When the inverse transform is needed, directly use `transpose(m)` or swap the multiplication order `v * m` (equivalent to `transpose(m) * v`), avoiding general matrix inversion.
+Orthogonal rotation matrix R satisfies `R⁻¹ = Rᵀ`. When the inverse transform is needed,
+directly use `transpose(m)` or swap the multiplication order `v * m` (equivalent to
+`transpose(m) * v`), avoiding general matrix inversion.
 
 ### 4. Avoid Rebuilding Matrices Inside the SDF
 
-If the rotation angle does not depend on the sampling point `p`, move matrix construction outside the `map()` function or cache it in a global variable:
+If the rotation angle does not depend on the sampling point `p`, move matrix
+construction outside the `map()` function or cache it in a global variable:
 ```glsl
 // Bad: rebuild matrix on every map() call
 float map(vec3 p) {
@@ -489,7 +536,8 @@ float map(vec3 p) {
 
 ### 5. Merge Consecutive Rotations
 
-The product of multiple rotation matrices is still a rotation matrix. Pre-multiply and store as a single matrix:
+The product of multiple rotation matrices is still a rotation matrix.
+Pre-multiply and store as a single matrix:
 ```glsl
 // Bad: two matrix multiplications per sample
 p = rotX(a) * (rotY(b) * p);
@@ -503,11 +551,14 @@ p = combined * p;
 
 ### Combining with Ray Marching / SDF (Most Common)
 
-Matrix transforms are almost always used together with SDF ray marching. The camera matrix generates rays, and domain transform matrices place objects. This is the foundational pipeline for all 3D ShaderToy shaders.
+Matrix transforms are almost always used together with SDF ray marching.
+The camera matrix generates rays, and domain transform matrices place objects.
+This is the foundational pipeline for all 3D ShaderToy shaders.
 
 ### Combining with Noise / fBm
 
-Use rotation matrices to apply domain warping to noise sampling coordinates, breaking axis-aligned regularity:
+Use rotation matrices to apply domain warping to noise sampling coordinates, breaking
+axis-aligned regularity:
 ```glsl
 mat3 rot = rotAxis(vec3(0,0,1), 0.5 * iTime);
 float n = fbm(rot * p);  // Rotate noise sampling direction
@@ -516,7 +567,8 @@ Using time-varying rotation matrices makes water surface noise look more natural
 
 ### Combining with Fractals / IFS
 
-Add rotation transforms within each iteration of a fractal to create more complex geometric patterns:
+Add rotation transforms within each iteration of a fractal to create more complex
+geometric patterns:
 ```glsl
 for (int i = 0; i < Iterations; i++) {
     z.xy = rot2D(angle) * z.xy; // Rotate each iteration
@@ -528,8 +580,11 @@ Embedding `mat2` rotation within IFS iterations produces more complex fractal ge
 
 ### Combining with Lighting / Materials
 
-After normal computation, transform matrices can be used to convert normals from local space back to world space (for lighting calculations). For pure rotation matrices, the normal transform is identical to the vertex transform.
+After normal computation, transform matrices can be used to convert normals from local
+space back to world space (for lighting calculations).
+For pure rotation matrices, the normal transform is identical to the vertex transform.
 
 ### Combining with Post-Processing
 
-Camera parameters (such as FOV) can be used for depth of field calculations; `mat2` rotation can be used for screen-space chromatic aberration or motion blur direction.
+Camera parameters (such as FOV) can be used for depth of field calculations; `mat2`
+rotation can be used for screen-space chromatic aberration or motion blur direction.

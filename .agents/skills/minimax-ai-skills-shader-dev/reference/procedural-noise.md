@@ -1,72 +1,108 @@
 # Procedural Noise — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), containing step-by-step tutorials, mathematical derivations, and advanced usage.
+This document is a detailed supplement to [SKILL.md](SKILL.md), containing step-by-step
+tutorials, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
-- **GLSL Basics**: uniform, varying, built-in functions (`fract`, `floor`, `mix`, `smoothstep`, `dot`, `sin`/`cos`)
-- **Vector Math**: dot product, cross product, matrix multiplication (`mat2` rotation matrix)
+- **GLSL Basics**: uniform, varying, built-in functions (`fract`, `floor`, `mix`,
+  `smoothstep`, `dot`, `sin`/`cos`)
+
+- **Vector Math**: dot product, cross product, matrix multiplication (`mat2` rotation
+  matrix)
+
 - **Coordinate Spaces**: UV coordinate normalization, screen aspect ratio correction
-- **Interpolation Theory**: linear interpolation, Hermite interpolation `3t^2-2t^3` (smoothstep)
+
+- **Interpolation Theory**: linear interpolation, Hermite interpolation `3t^2-2t^3`
+  (smoothstep)
+
 - **ShaderToy Environment**: `iTime`, `iResolution`, `fragCoord`, `mainImage` signature
 
 ## Use Cases in Detail
 
-Procedural noise is the most fundamental and versatile technique in real-time GPU graphics, applicable to:
+Procedural noise is the most fundamental and versatile technique in real-time GPU
+graphics, applicable to:
 
-- **Natural phenomena simulation**: fire, clouds, water surfaces, lava, lightning, smoke, etc.
+- **Natural phenomena simulation**: fire, clouds, water surfaces, lava, lightning,
+  smoke, etc.
+
 - **Terrain generation**: mountains, canyons, erosion landscapes, snowline distribution
-- **Texture synthesis**: marble textures, wood grain, organic patterns, abstract art
-- **Volume rendering**: volumetric clouds, volumetric fog, light scattering
-- **Motion effects**: fluid simulation approximation, particle trajectory perturbation, domain warping animation
 
-Core idea: instead of using pre-made textures, generate pseudo-random, spatially continuous signals in real-time on the GPU through mathematical functions, then produce rich multi-scale detail through fractal summation (FBM) and Domain Warping.
+- **Texture synthesis**: marble textures, wood grain, organic patterns, abstract art
+
+- **Volume rendering**: volumetric clouds, volumetric fog, light scattering
+
+- **Motion effects**: fluid simulation approximation, particle trajectory perturbation,
+  domain warping animation
+
+Core idea: instead of using pre-made textures, generate pseudo-random, spatially
+continuous signals in real-time on the GPU through mathematical functions, then produce
+rich multi-scale detail through fractal summation (FBM) and Domain Warping.
 
 ## Core Principles in Detail
 
 ### 1. Noise Functions — Building Continuous Pseudo-Random Signals
 
-The essence of a noise function is: **generate random values at integer lattice points, then smoothly interpolate between them**.
+The essence of a noise function is: **generate random values at integer lattice points,
+then smoothly interpolate between them**.
 
 Two mainstream implementations:
 
-**Value Noise**: each lattice point stores a random scalar, bilinear interpolation yields a continuous field.
-- Formula: `N(p) = mix(mix(h00, h10, u), mix(h01, h11, u), v)`, where `u,v` are the fractional parts after Hermite smoothing
+**Value Noise**: each lattice point stores a random scalar, bilinear interpolation
+yields a continuous field.
 
-**Simplex Noise**: uses gradient dot products + radial falloff kernels on a triangular lattice (2D) or tetrahedral lattice (3D).
-- Advantages: fewer lattice lookups (2D: 3 vs 4), no axis-aligned artifacts, lower computational cost
-- Core: skew transform maps square grid to triangular grid, using `K1=(sqrt(3)-1)/2` for skewing, `K2=(3-sqrt(3))/6` for unskewing
+- Formula: `N(p) = mix(mix(h00, h10, u), mix(h01, h11, u), v)`, where `u,v` are the
+  fractional parts after Hermite smoothing
+
+**Simplex Noise**: uses gradient dot products + radial falloff kernels on a triangular
+lattice (2D) or tetrahedral lattice (3D).
+
+- Advantages: fewer lattice lookups (2D: 3 vs 4), no axis-aligned artifacts, lower
+  computational cost
+
+- Core: skew transform maps square grid to triangular grid, using `K1=(sqrt(3)-1)/2` for
+  skewing, `K2=(3-sqrt(3))/6` for unskewing
 
 ### 2. Hash Functions — Source of Lattice Random Values
 
 Hash functions map integer coordinates to pseudo-random values in [0,1] or [-1,1]:
 
-- **sin-based hash** (classic but has precision risks): `fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453)`
-- **sin-free hash** (cross-platform stable): pure arithmetic `fract(p * 0.1031)` + `dot` mixing + `fract` output
+- **sin-based hash** (classic but has precision risks):
+  `fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453)`
+
+- **sin-free hash** (cross-platform stable): pure arithmetic `fract(p * 0.1031)` + `dot`
+  mixing + `fract` output
 
 ### 3. FBM (Fractional Brownian Motion) — Multi-Scale Detail Summation
 
-Sum multiple noise "octaves" at different frequencies and amplitudes:
+Sum multiple noise “octaves” at different frequencies and amplitudes:
 
 ```
 FBM(p) = sum( amplitude_i * noise(frequency_i * p) )
 ```
 
 Standard parameters:
-- **Lacunarity (frequency multiplier)**: each octave's frequency multiplied by ~2.0
-- **Persistence/Gain (amplitude decay)**: each octave's amplitude multiplied by ~0.5
+
+- **Lacunarity (frequency multiplier)**: each octave’s frequency multiplied by ~2.0
+
+- **Persistence/Gain (amplitude decay)**: each octave’s amplitude multiplied by ~0.5
+
 - **Inter-octave rotation**: use a rotation matrix to eliminate axis-aligned artifacts
 
 ### 4. Domain Warping — Organic Distortion
 
-Feed the output of noise back as coordinate offsets, producing distorted organic patterns:
+Feed the output of noise back as coordinate offsets, producing distorted organic
+patterns:
+
 - **Single-layer warping**: `fbm(p + fbm(p))`
-- **Multi-layer cascade**: `fbm(p + fbm(p + fbm(p)))` — classic three-layer domain warping
+
+- **Multi-layer cascade**: `fbm(p + fbm(p + fbm(p)))` — classic three-layer domain
+  warping
 
 ### 5. FBM Variants — Different Visual Characteristics
 
 | Variant | Formula | Visual Effect |
-|---------|---------|---------------|
+| --- | --- | --- |
 | Standard FBM | `sum( a*noise(p) )` | Smooth, soft (cloud interiors) |
 | Ridged FBM | `sum( a*abs(noise(p)) )` | Sharp creases (ridges, lightning) |
 | Sinusoidal ridged | `sum( a*sin(noise(p)*k) )` | Periodic ridges (lava) |
@@ -77,9 +113,11 @@ Feed the output of noise back as coordinate offsets, producing distorted organic
 
 ### Step 1: Hash Function
 
-**What**: Implement a hash function that maps 2D integer coordinates to pseudo-random values.
+**What**: Implement a hash function that maps 2D integer coordinates to pseudo-random
+values.
 
-**Why**: Hashing is the fundamental building block of all noise. The sin-free version is stable across GPUs; the sin version is more concise.
+**Why**: Hashing is the fundamental building block of all noise.
+The sin-free version is stable across GPUs; the sin version is more concise.
 
 **Code (sin-free version)**:
 ```glsl
@@ -115,9 +153,13 @@ vec2 hash2(vec2 p) {
 
 ### Step 2: Value Noise
 
-**What**: Perform Hermite-smoothed interpolation between hashed values at integer lattice points to obtain a continuous 2D noise field.
+**What**: Perform Hermite-smoothed interpolation between hashed values at integer
+lattice points to obtain a continuous 2D noise field.
 
-**Why**: Value noise is the simplest noise implementation with minimal code, suitable as a foundation for FBM and domain warping. Using the `smoothstep` polynomial `3t^2-2t^3` directly guarantees C1 continuity (no seam discontinuities).
+**Why**: Value noise is the simplest noise implementation with minimal code, suitable as
+a foundation for FBM and domain warping.
+Using the `smoothstep` polynomial `3t^2-2t^3` directly guarantees C1 continuity (no seam
+discontinuities).
 
 **Code**:
 ```glsl
@@ -135,9 +177,12 @@ float noise(in vec2 x) {
 
 ### Step 3: Simplex Noise
 
-**What**: Use gradient dot products and radial falloff kernels on a triangular grid to generate isotropic 2D noise.
+**What**: Use gradient dot products and radial falloff kernels on a triangular grid to
+generate isotropic 2D noise.
 
-**Why**: Compared to value noise, Simplex Noise has no axis-aligned artifacts, lower computational cost (2D requires only 3 lattice points instead of 4), and higher visual quality. Suitable for scenarios requiring high-quality noise (fire, clouds).
+**Why**: Compared to value noise, Simplex Noise has no axis-aligned artifacts, lower
+computational cost (2D requires only 3 lattice points instead of 4), and higher visual
+quality. Suitable for scenarios requiring high-quality noise (fire, clouds).
 
 **Code**:
 ```glsl
@@ -164,9 +209,14 @@ float noise(in vec2 p) {
 
 ### Step 4: Standard FBM (Fractional Brownian Motion)
 
-**What**: Sum multiple octaves of noise with decreasing amplitudes to obtain a multi-scale fractal signal.
+**What**: Sum multiple octaves of noise with decreasing amplitudes to obtain a
+multi-scale fractal signal.
 
-**Why**: A single noise octave has a single frequency and cannot produce the multi-scale detail found in nature. FBM simulates fractal self-similarity by summing noise at different frequencies. **The inter-octave rotation matrix is a key technique** that breaks axis-aligned artifacts.
+**Why**: A single noise octave has a single frequency and cannot produce the multi-scale
+detail found in nature.
+FBM simulates fractal self-similarity by summing noise at different frequencies.
+**The inter-octave rotation matrix is a key technique** that breaks axis-aligned
+artifacts.
 
 **Code (4-octave loop version)**:
 ```glsl
@@ -207,9 +257,12 @@ float fbm4(vec2 p) {
 
 ### Step 5: Ridged FBM
 
-**What**: Take the absolute value of noise before summation, producing sharp "ridges" at zero crossings.
+**What**: Take the absolute value of noise before summation, producing sharp “ridges” at
+zero crossings.
 
-**Why**: Standard FBM produces overly smooth patterns and cannot represent sharp structures like lightning, mountain ridges, or cracks. The `abs()` operation folds the noise's zero crossings into sharp V-shaped ridge lines.
+**Why**: Standard FBM produces overly smooth patterns and cannot represent sharp
+structures like lightning, mountain ridges, or cracks.
+The `abs()` operation folds the noise’s zero crossings into sharp V-shaped ridge lines.
 
 **Code**:
 ```glsl
@@ -234,9 +287,12 @@ rz += (sin(noise(p) * 7.0) * 0.5 + 0.5) / z;
 
 ### Step 6: Domain Warping
 
-**What**: Use the output of noise/FBM to distort the input coordinates of subsequent noise, producing organic distortion patterns.
+**What**: Use the output of noise/FBM to distort the input coordinates of subsequent
+noise, producing organic distortion patterns.
 
-**Why**: Domain warping is the core technique for producing "painterly", "ink wash", "geological" and other organic patterns. The number of nested warping layers controls complexity.
+**Why**: Domain warping is the core technique for producing “painterly”, “ink wash”,
+“geological” and other organic patterns.
+The number of nested warping layers controls complexity.
 
 **Basic domain warping**:
 ```glsl
@@ -284,9 +340,12 @@ float dualfbm(in vec2 p) {
 
 ### Step 7: Flow Noise
 
-**What**: Apply independent gradient field displacement within each FBM octave, simulating fluid transport effects.
+**What**: Apply independent gradient field displacement within each FBM octave,
+simulating fluid transport effects.
 
-**Why**: Ordinary domain warping is "global" (distorting before or after FBM), while flow noise is "per-octave" — each frequency layer has its own flow direction and speed, producing extremely realistic lava and fluid effects.
+**Why**: Ordinary domain warping is “global” (distorting before or after FBM), while
+flow noise is “per-octave” — each frequency layer has its own flow direction and speed,
+producing extremely realistic lava and fluid effects.
 
 **Code**:
 ```glsl
@@ -325,9 +384,14 @@ float flow(in vec2 p) {
 
 ### Step 8: Derivative FBM
 
-**What**: Track the analytical gradient of noise during FBM accumulation, using the accumulated gradient magnitude to suppress high-frequency detail in steep areas.
+**What**: Track the analytical gradient of noise during FBM accumulation, using the
+accumulated gradient magnitude to suppress high-frequency detail in steep areas.
 
-**Why**: This is a signature technique for terrain rendering. Standard FBM adds detail uniformly across all areas, but natural terrain has smooth ridges due to hydraulic erosion while valleys retain fine detail. Derivative FBM automatically simulates this erosion effect through the `1/(1+|gradient|^2)` factor.
+**Why**: This is a signature technique for terrain rendering.
+Standard FBM adds detail uniformly across all areas, but natural terrain has smooth
+ridges due to hydraulic erosion while valleys retain fine detail.
+Derivative FBM automatically simulates this erosion effect through the
+`1/(1+|gradient|^2)` factor.
 
 **Code**:
 ```glsl
@@ -373,8 +437,11 @@ float terrainFBM(in vec2 x) {
 
 ### Variant 1: Ridged FBM (Ridged/Turbulent FBM)
 
-- **Difference from base version**: applies `abs()` to noise values, producing sharp ridge lines at zero crossings
+- **Difference from base version**: applies `abs()` to noise values, producing sharp
+  ridge lines at zero crossings
+
 - **Use cases**: lightning, mountain ridges, cracks, veins, electric arcs
+
 - **Key modified code**:
 ```glsl
 // Standard FBM line:
@@ -387,8 +454,11 @@ f += a * (sin(noise(p) * 7.0) * 0.5 + 0.5);
 
 ### Variant 2: Domain Warped FBM
 
-- **Difference from base version**: FBM output is fed back as coordinate offsets, producing organic distortion
+- **Difference from base version**: FBM output is fed back as coordinate offsets,
+  producing organic distortion
+
 - **Use cases**: cloud deformation, geological textures, ink wash style, abstract art
+
 - **Key modified code**:
 ```glsl
 // Classic three-layer domain warping
@@ -399,8 +469,11 @@ float f = 0.5 + 0.5 * fbm(q + 2.0 * n + 1.0);
 
 ### Variant 3: Derivative Erosion FBM
 
-- **Difference from base version**: tracks analytical gradient, suppresses high frequencies in steep areas (simulates hydraulic erosion)
+- **Difference from base version**: tracks analytical gradient, suppresses high
+  frequencies in steep areas (simulates hydraulic erosion)
+
 - **Use cases**: realistic terrain, mountains, canyons
+
 - **Key modified code**:
 ```glsl
 vec2 d = vec2(0.0);  // Accumulated gradient
@@ -415,8 +488,11 @@ for (int i = 0; i < N; i++) {
 
 ### Variant 4: Flow Noise
 
-- **Difference from base version**: applies independent gradient field displacement within each octave, simulating fluid transport
+- **Difference from base version**: applies independent gradient field displacement
+  within each octave, simulating fluid transport
+
 - **Use cases**: lava, liquid metal, flowing magma
+
 - **Key modified code**:
 ```glsl
 for (float i = 1.0; i < 7.0; i++) {
@@ -430,8 +506,11 @@ for (float i = 1.0; i < 7.0; i++) {
 
 ### Variant 5: Custom Sea Octave FBM
 
-- **Difference from base version**: uses `1-abs(sin(uv))` to construct peaked waveforms, combined with bidirectional propagation and choppy decay
+- **Difference from base version**: uses `1-abs(sin(uv))` to construct peaked waveforms,
+  combined with bidirectional propagation and choppy decay
+
 - **Use cases**: ocean water surface, waves
+
 - **Key modified code**:
 ```glsl
 float sea_octave(vec2 uv, float choppy) {
@@ -451,7 +530,8 @@ choppy = mix(choppy, 1.0, 0.2);  // Higher octaves are smoother
 
 ### 1. Reduce Octave Count (Most Direct)
 
-Each additional octave doubles the noise sampling cost. Distant objects can use fewer octaves:
+Each additional octave doubles the noise sampling cost.
+Distant objects can use fewer octaves:
 ```glsl
 // LOD-aware octave count
 int oct = 5 - int(log2(1.0 + t * 0.5));  // Fewer octaves at greater distances
@@ -468,7 +548,8 @@ float terrainH(vec2 x) { /* 16 octaves — for normal calculation */ }
 
 ### 3. Use Texture Sampling Instead of Math
 
-Store precomputed noise in textures, using hardware texture filtering instead of arithmetic hashing:
+Store precomputed noise in textures, using hardware texture filtering instead of
+arithmetic hashing:
 ```glsl
 float noise(in vec2 x) { return texture(iChannel0, x * 0.01).x; }
 // Or use texelFetch for exact lookup:
@@ -477,7 +558,8 @@ float a = texelFetch(iChannel0, (p + 0) & 255, 0).x;
 
 ### 4. Manually Unroll Loops
 
-GLSL compilers typically optimize manually unrolled small loops (4-6 iterations) better than `for` loops, and allow slightly varying lacunarity per octave.
+GLSL compilers typically optimize manually unrolled small loops (4-6 iterations) better
+than `for` loops, and allow slightly varying lacunarity per octave.
 
 ### 5. Adaptive Step Size (Volume Rendering)
 
@@ -503,13 +585,18 @@ if (sum.a > 0.99) break;  // Volume is already opaque, stop marching
 
 ### 1. FBM + Ray Marching
 
-Noise drives a height field or density field, ray marching finds intersections. This is the standard combination for terrain and ocean surface rendering:
-- Height field: `height = terrainFBM(pos.xz)`, ray march to find the intersection where `pos.y == height`
+Noise drives a height field or density field, ray marching finds intersections.
+This is the standard combination for terrain and ocean surface rendering:
+
+- Height field: `height = terrainFBM(pos.xz)`, ray march to find the intersection where
+  `pos.y == height`
+
 - Volume field: `density = fbm(pos)`, forward-accumulate transmittance and color
 
 ### 2. FBM + Finite Difference Normals + Lighting
 
-Use finite differences on a 2D noise field to estimate normals, adding pseudo-3D lighting effects:
+Use finite differences on a 2D noise field to estimate normals, adding pseudo-3D
+lighting effects:
 ```glsl
 vec3 nor = normalize(vec3(f(p+ex)-f(p), epsilon, f(p+ey)-f(p)));
 float dif = dot(nor, lightDir);
@@ -517,7 +604,8 @@ float dif = dot(nor, lightDir);
 
 ### 3. FBM + Color Mapping
 
-Map the same scalar at different power exponents to RGB channels, producing natural color gradients:
+Map the same scalar at different power exponents to RGB channels, producing natural
+color gradients:
 ```glsl
 vec3 col = vec3(1.5*c, 1.5*c*c*c, c*c*c*c*c*c);  // Fire: red -> orange -> yellow -> white
 ```
@@ -528,7 +616,8 @@ vec3 col = vec3(0.2, 0.07, 0.01) / rz;  // Areas with small ridge values are bri
 
 ### 4. FBM + Fresnel Water Surface Coloring
 
-Noise drives water surface waveforms, Fresnel equations blend reflected sky and refracted water color:
+Noise drives water surface waveforms, Fresnel equations blend reflected sky and
+refracted water color:
 ```glsl
 float fresnel = pow(1.0 - dot(n, -eye), 3.0);
 vec3 color = mix(refracted, reflected, fresnel);
@@ -537,14 +626,19 @@ vec3 color = mix(refracted, reflected, fresnel);
 ### 5. Multi-Layer FBM Compositing
 
 Different FBM layers with different parameters control different properties:
+
 - **Shape layer**: low-frequency standard FBM controls cloud shape
+
 - **Ridged layer**: mid-frequency ridged FBM adds edge detail
+
 - **Color layer**: high-frequency FBM controls cloud interior color variation
+
 - **Combination**: `f *= r + f;` shape * ridged produces sharp edges
 
 ### 6. FBM + Volumetric Lighting (Directional Derivative)
 
-In volume rendering, the density difference along the light direction approximates lighting:
+In volume rendering, the density difference along the light direction approximates
+lighting:
 ```glsl
 float shadow = clamp((density_here - density_toward_sun) / scale, 0.0, 1.0);
 vec3 lit_color = mix(shadow_color, light_color, shadow);

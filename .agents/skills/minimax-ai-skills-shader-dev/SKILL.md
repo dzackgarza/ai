@@ -6,10 +6,10 @@ metadata:
   version: "1.0"
   category: graphics
 ---
-
 # Shader Craft
 
-A unified skill covering 36 GLSL shader techniques (ShaderToy-compatible) for real-time visual effects.
+A unified skill covering 36 GLSL shader techniques (ShaderToy-compatible) for real-time
+visual effects.
 
 ## Invocation
 
@@ -17,7 +17,8 @@ A unified skill covering 36 GLSL shader techniques (ShaderToy-compatible) for re
 /shader-dev <request>
 ```
 
-`$ARGUMENTS` contains the user's request (e.g. "create a raymarched SDF scene with soft shadows").
+`$ARGUMENTS` contains the user’s request (e.g. “create a raymarched SDF scene with soft
+shadows”).
 
 ## Skill Structure
 
@@ -40,15 +41,21 @@ shader-dev/
 
 ## How to Use
 
-1. Read the **Technique Routing Table** below to identify which technique(s) match the user's request
-2. Read the relevant file(s) from `techniques/` — each file contains core principles, implementation steps, and complete code templates
-3. If you need deeper understanding (math derivations, advanced patterns), follow the reference link at the bottom of each technique file to `reference/`
+1. Read the **Technique Routing Table** below to identify which technique(s) match the
+   user’s request
+
+2. Read the relevant file(s) from `techniques/` — each file contains core principles,
+   implementation steps, and complete code templates
+
+3. If you need deeper understanding (math derivations, advanced patterns), follow the
+   reference link at the bottom of each technique file to `reference/`
+
 4. Apply the **WebGL2 Adaptation Rules** below when generating standalone HTML pages
 
 ## Technique Routing Table
 
-| User wants to create... | Primary technique | Combine with |
-|---|---|---|
+| User wants to create … | Primary technique | Combine with |
+| --- | --- | --- |
 | 3D objects / scenes from math | [ray-marching](techniques/ray-marching.md) + [sdf-3d](techniques/sdf-3d.md) | lighting-model, shadow-techniques |
 | Complex 3D shapes (booleans, blends) | [csg-boolean-operations](techniques/csg-boolean-operations.md) | sdf-3d, ray-marching |
 | Infinite repeating patterns in 3D | [domain-repetition](techniques/domain-repetition.md) | sdf-3d, ray-marching |
@@ -89,70 +96,128 @@ shader-dev/
 ## Technique Index
 
 ### Geometry & SDF
+
 - **sdf-2d** — 2D signed distance functions for shapes, UI, anti-aliased rendering
+
 - **sdf-3d** — 3D signed distance functions for real-time implicit surface modeling
-- **csg-boolean-operations** — Constructive solid geometry: union, subtraction, intersection with smooth blending
+
+- **csg-boolean-operations** — Constructive solid geometry: union, subtraction,
+  intersection with smooth blending
+
 - **domain-repetition** — Infinite space repetition, folding, and limited tiling
+
 - **domain-warping** — Distort domains with noise for organic, flowing shapes
-- **sdf-tricks** — SDF optimization, bounding volumes, binary search refinement, hollowing, layered edges, debug visualization
+
+- **sdf-tricks** — SDF optimization, bounding volumes, binary search refinement,
+  hollowing, layered edges, debug visualization
 
 ### Ray Casting & Lighting
+
 - **ray-marching** — Sphere tracing with SDF for 3D scene rendering
-- **analytic-ray-tracing** — Closed-form ray-primitive intersections (sphere, plane, box, torus)
+
+- **analytic-ray-tracing** — Closed-form ray-primitive intersections (sphere, plane,
+  box, torus)
+
 - **path-tracing-gi** — Monte Carlo path tracing for photorealistic global illumination
+
 - **lighting-model** — Phong, Blinn-Phong, PBR (Cook-Torrance), and toon shading
-- **shadow-techniques** — Hard shadows, soft shadows (penumbra estimation), cascade shadows
+
+- **shadow-techniques** — Hard shadows, soft shadows (penumbra estimation), cascade
+  shadows
+
 - **ambient-occlusion** — SDF-based AO, screen-space AO approximation
+
 - **normal-estimation** — Finite-difference normals, tetrahedron technique
 
 ### Simulation & Physics
-- **fluid-simulation** — Navier-Stokes fluid solver with advection, diffusion, pressure projection
+
+- **fluid-simulation** — Navier-Stokes fluid solver with advection, diffusion, pressure
+  projection
+
 - **simulation-physics** — GPU-based physics: springs, cloth, N-body gravity, collision
-- **particle-system** — Stateless and stateful particle systems (fire, rain, sparks, galaxies)
-- **cellular-automata** — Game of Life, reaction-diffusion (Turing patterns), sand simulation
+
+- **particle-system** — Stateless and stateful particle systems (fire, rain, sparks,
+  galaxies)
+
+- **cellular-automata** — Game of Life, reaction-diffusion (Turing patterns), sand
+  simulation
 
 ### Natural Phenomena
+
 - **water-ocean** — Gerstner waves, FFT ocean, caustics, underwater fog
+
 - **terrain-rendering** — Heightfield ray marching, FBM terrain, erosion
+
 - **atmospheric-scattering** — Rayleigh/Mie scattering, god rays, SSS approximation
+
 - **volumetric-rendering** — Volume ray marching for clouds, fog, fire, explosions
 
 ### Procedural Generation
+
 - **procedural-noise** — Value noise, Perlin, Simplex, Worley, FBM, ridged noise
+
 - **procedural-2d-pattern** — Brick, hexagon, truchet, Islamic geometric patterns
+
 - **voronoi-cellular-noise** — Voronoi diagrams, Worley noise, cracked earth, crystal
+
 - **fractal-rendering** — Mandelbrot, Julia sets, 3D fractals (Mandelbox, Mandelbulb)
+
 - **color-palette** — Cosine palettes, HSL/HSV/Oklab, dynamic color mapping
 
 ### Post-Processing & Infrastructure
-- **post-processing** — Bloom, tone mapping (ACES, Reinhard), vignette, chromatic aberration, glitch
+
+- **post-processing** — Bloom, tone mapping (ACES, Reinhard), vignette, chromatic
+  aberration, glitch
+
 - **multipass-buffer** — Ping-pong FBO setup, state persistence across frames
+
 - **texture-sampling** — Bilinear, bicubic, mipmap, procedural texture lookup
+
 - **matrix-transform** — Camera look-at, projection, rotation, orbit controls
+
 - **polar-uv-manipulation** — Polar/log-polar coordinates, kaleidoscope, spiral mapping
-- **anti-aliasing** — SSAA, SDF analytical AA, temporal anti-aliasing (TAA), FXAA post-process
-- **camera-effects** — Depth of field (thin lens), motion blur, lens distortion, film grain, vignette
-- **texture-mapping-advanced** — Biplanar mapping, texture repetition avoidance, ray differential filtering
+
+- **anti-aliasing** — SSAA, SDF analytical AA, temporal anti-aliasing (TAA), FXAA
+  post-process
+
+- **camera-effects** — Depth of field (thin lens), motion blur, lens distortion, film
+  grain, vignette
+
+- **texture-mapping-advanced** — Biplanar mapping, texture repetition avoidance, ray
+  differential filtering
 
 ### Audio
-- **sound-synthesis** — Procedural audio in GLSL: oscillators, envelopes, filters, FM synthesis
+
+- **sound-synthesis** — Procedural audio in GLSL: oscillators, envelopes, filters, FM
+  synthesis
 
 ### Debugging & Validation
-- **webgl-pitfalls** — Common WebGL2/GLSL errors: `fragCoord`, `main()` wrapper, function order, macro limitations, uniform null
+
+- **webgl-pitfalls** — Common WebGL2/GLSL errors: `fragCoord`, `main()` wrapper,
+  function order, macro limitations, uniform null
 
 ## WebGL2 Adaptation Rules
 
-All technique files use ShaderToy GLSL style. When generating standalone HTML pages, apply these adaptations:
+All technique files use ShaderToy GLSL style.
+When generating standalone HTML pages, apply these adaptations:
 
 ### Shader Version & Output
+
 - Use `canvas.getContext("webgl2")`
+
 - Shader first line: `#version 300 es`, fragment shader adds `precision highp float;`
+
 - Fragment shader must declare: `out vec4 fragColor;`
+
 - Vertex shader: `attribute` → `in`, `varying` → `out`
-- Fragment shader: `varying` → `in`, `gl_FragColor` → `fragColor`, `texture2D()` → `texture()`
+
+- Fragment shader: `varying` → `in`, `gl_FragColor` → `fragColor`, `texture2D()` →
+  `texture()`
 
 ### Fragment Coordinate
-- **Use `gl_FragCoord.xy`** instead of `fragCoord` (WebGL2 does not have `fragCoord` built-in)
+
+- **Use `gl_FragCoord.xy`** instead of `fragCoord` (WebGL2 does not have `fragCoord`
+  built-in)
 ```glsl
 // WRONG
 vec2 uv = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
@@ -161,7 +226,9 @@ vec2 uv = (2.0 * gl_FragCoord.xy - iResolution.xy) / iResolution.y;
 ```
 
 ### main() Wrapper for ShaderToy Templates
+
 - ShaderToy uses `void mainImage(out vec4 fragColor, in vec2 fragCoord)`
+
 - WebGL2 requires standard `void main()` entry point — always wrap mainImage:
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -175,7 +242,9 @@ void main() {
 ```
 
 ### Function Declaration Order
-- GLSL requires functions to be declared before use — either declare before use or reorder:
+
+- GLSL requires functions to be declared before use — either declare before use or
+  reorder:
 ```glsl
 // WRONG — getAtmosphere() calls getSunDirection() before it's defined
 vec3 getAtmosphere(vec3 dir) { return getSunDirection(); } // Error!
@@ -187,6 +256,7 @@ vec3 getAtmosphere(vec3 dir) { return getSunDirection(); } // Works
 ```
 
 ### Macro Limitations
+
 - `#define` cannot use function calls — use `const` instead:
 ```glsl
 // WRONG
@@ -197,30 +267,45 @@ const vec3 SUN_DIR = vec3(0.756, 0.378, -0.567); // Pre-computed normalized valu
 ```
 
 ### Script Tag Extraction
-- When extracting shader source from `<script>` tags, ensure `#version` is the **first character** — use `.trim()`:
+
+- When extracting shader source from `<script>` tags, ensure `#version` is the **first
+  character** — use `.trim()`:
 ```javascript
 const fs = document.getElementById('fs').text.trim();
 ```
 
 ### Common Pitfalls
-- **Unused uniforms**: Compiler may optimize away unused uniforms, causing `gl.getUniformLocation()` to return `null` — always use uniforms in a way the compiler cannot optimize out
-- **Loop indices**: Use runtime constants in loops, not `#define` macros in some ES versions
-- **Terrain functions**: Functions like `terrainM(vec2)` need XZ components — use `terrainM(pos.xz + offset)` not `terrainM(pos + offset)`
+
+- **Unused uniforms**: Compiler may optimize away unused uniforms, causing
+  `gl.getUniformLocation()` to return `null` — always use uniforms in a way the compiler
+  cannot optimize out
+
+- **Loop indices**: Use runtime constants in loops, not `#define` macros in some ES
+  versions
+
+- **Terrain functions**: Functions like `terrainM(vec2)` need XZ components — use
+  `terrainM(pos.xz + offset)` not `terrainM(pos + offset)`
 
 ## HTML Page Setup
 
 When generating a standalone HTML page:
 
 - Canvas fills the entire viewport, auto-resizes on window resize
-- Page background black, no scrollbars: `body { margin: 0; overflow: hidden; background: #000; }`
+
+- Page background black, no scrollbars:
+  `body { margin: 0; overflow: hidden; background: #000; }`
+
 - Implement ShaderToy-compatible uniforms: `iTime`, `iResolution`, `iMouse`, `iFrame`
-- For multi-pass effects (Buffer A/B), use WebGL2 framebuffer + ping-pong (see multipass-buffer technique)
+
+- For multi-pass effects (Buffer A/B), use WebGL2 framebuffer + ping-pong (see
+  multipass-buffer technique)
 
 ## Common Pitfalls
 
 ### JS Variable Declaration Order (TDZ — causes white screen crash)
 
-`let`/`const` variables must be declared at the **top** of the `<script>` block, before any function that references them:
+`let`/`const` variables must be declared at the **top** of the `<script>` block, before
+any function that references them:
 
 ```javascript
 // 1. State variables FIRST
@@ -238,57 +323,90 @@ function render() { /* ... */ }
 window.addEventListener('resize', resize);
 ```
 
-Reason: `let`/`const` have a Temporal Dead Zone — referencing them before declaration throws `ReferenceError`, causing a white screen.
+Reason: `let`/`const` have a Temporal Dead Zone — referencing them before declaration
+throws `ReferenceError`, causing a white screen.
 
 ### GLSL Compilation Errors (self-check after writing shaders)
 
-- **Function signature mismatch**: Call must exactly match definition in parameter count and types. If defined as `float fbm(vec3 p)`, cannot call `fbm(uv)` with a `vec2`
-- **Reserved words as variable names**: Do not use: `patch`, `cast`, `sample`, `filter`, `input`, `output`, `common`, `partition`, `active`
-- **Strict type matching**: `vec3 x = 1.0` is illegal — use `vec3 x = vec3(1.0)`; cannot use `.z` to access a `vec2`
-- **No ternary on structs**: ESSL does not allow ternary operator on struct types — use `if`/`else` instead
+- **Function signature mismatch**: Call must exactly match definition in parameter count
+  and types. If defined as `float fbm(vec3 p)`, cannot call `fbm(uv)` with a `vec2`
+
+- **Reserved words as variable names**: Do not use: `patch`, `cast`, `sample`, `filter`,
+  `input`, `output`, `common`, `partition`, `active`
+
+- **Strict type matching**: `vec3 x = 1.0` is illegal — use `vec3 x = vec3(1.0)`; cannot
+  use `.z` to access a `vec2`
+
+- **No ternary on structs**: ESSL does not allow ternary operator on struct types — use
+  `if`/`else` instead
 
 ### Performance Budget
 
-Deployment environments may use headless software rendering with limited GPU power. Stay within these limits:
+Deployment environments may use headless software rendering with limited GPU power.
+Stay within these limits:
 
 - Ray marching main loop: ≤ 128 steps
+
 - Volume sampling / lighting inner loops: ≤ 32 steps
+
 - FBM octaves: ≤ 6 layers
+
 - Total nested loop iterations per pixel: ≤ 1000 (exceeding this freezes the browser)
 
 ## Quick Recipes
 
-Common effect combinations — complete rendering pipelines assembled from technique modules.
+Common effect combinations — complete rendering pipelines assembled from technique
+modules.
 
 ### Photorealistic SDF Scene
-1. **Geometry**: sdf-3d (extended primitives) + csg-boolean-operations (cubic/quartic smin)
+
+1. **Geometry**: sdf-3d (extended primitives) + csg-boolean-operations (cubic/quartic
+   smin)
+
 2. **Rendering**: ray-marching + normal-estimation (tetrahedron method)
-3. **Lighting**: lighting-model (outdoor three-light model) + shadow-techniques (improved soft shadow) + ambient-occlusion
+
+3. **Lighting**: lighting-model (outdoor three-light model) + shadow-techniques
+   (improved soft shadow) + ambient-occlusion
+
 4. **Atmosphere**: atmospheric-scattering (height-based fog with sun tint)
-5. **Post**: post-processing (ACES tone mapping) + anti-aliasing (2x SSAA) + camera-effects (vignette)
+
+5. **Post**: post-processing (ACES tone mapping) + anti-aliasing (2x SSAA) +
+   camera-effects (vignette)
 
 ### Organic / Biological Forms
-1. **Geometry**: sdf-3d (extended primitives + deformation operators: twist, bend) + csg-boolean (gradient-aware smin for material blending)
+
+1. **Geometry**: sdf-3d (extended primitives + deformation operators: twist, bend) +
+   csg-boolean (gradient-aware smin for material blending)
+
 2. **Detail**: procedural-noise (FBM with derivatives) + domain-warping
+
 3. **Surface**: lighting-model (subsurface scattering approximation via half-Lambert)
 
 ### Procedural Landscape
+
 1. **Terrain**: terrain-rendering + procedural-noise (erosion FBM with derivatives)
+
 2. **Texturing**: texture-mapping-advanced (biplanar mapping + no-tile)
+
 3. **Sky**: atmospheric-scattering (Rayleigh/Mie + height fog)
+
 4. **Water**: water-ocean (Gerstner waves) + lighting-model (Fresnel reflections)
 
 ### Stylized 2D Art
+
 1. **Shapes**: sdf-2d (extended library) + sdf-tricks (layered edges, hollowing)
+
 2. **Color**: color-palette (cosine palettes) + polar-uv-manipulation (kaleidoscope)
-3. **Polish**: anti-aliasing (SDF analytical AA) + post-processing (bloom, chromatic aberration)
+
+3. **Polish**: anti-aliasing (SDF analytical AA) + post-processing (bloom, chromatic
+   aberration)
 
 ## Shader Debugging Techniques
 
 Visual debugging methods — temporarily replace your output to diagnose issues.
 
 | What to check | Code | What to look for |
-|---|---|---|
+| --- | --- | --- |
 | Surface normals | `col = nor * 0.5 + 0.5;` | Smooth gradients = correct normals; banding = epsilon too large |
 | Ray march step count | `col = vec3(float(steps) / float(MAX_STEPS));` | Red hotspots = performance bottleneck; uniform = wasted iterations |
 | Depth / distance | `col = vec3(t / MAX_DIST);` | Verify correct hit distances |

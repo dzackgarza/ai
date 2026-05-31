@@ -89,34 +89,7 @@ _python-syntax:
 	raise SystemExit(1 if failed else 0)
 	PY
 
-_sage-qc-files:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	rg --files \
-		-g '*.sage' \
-		-g '!*.sage.py' \
-		-g '!**/external/**' \
-		-g '!**/node_modules/**' \
-		-g '!**/__pycache__/**' \
-		-g '!**/.venv/**' \
-		-g '!**/dist/**' \
-		-g '!**/build/**' \
-		-g '!**/coverage/**' \
-		-g '!**/codeql-db/**' \
-		-g '!**/*.bak/**' \
-		-g '!**/*.bak/**'
 
-_sage-syntax:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	echo "============================="
-	echo "=== Running: Sage syntax validation ==="
-	echo "# Preparses .sage files and byte-compiles the generated Python to catch syntax errors early"
-	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
-	if [ "${#sage_files[@]}" -eq 0 ]; then
-		echo "Skipping Sage syntax validation: no Sage files found."
-		exit 0
-	fi
 
 	sage_bin="${SAGE_BIN:-sage}"
 	if ! command -v "$sage_bin" >/dev/null 2>&1; then
@@ -316,12 +289,13 @@ _pytest_with_coverage: _install-tools
 	echo "============================="
 	echo "=== Running: pytest with coverage measurement ==="
 	echo "# Runs pytest with coverage.py to enforce 100% line/branch coverage and generate coverage.xml"
-	if [ ! -f pyproject.toml ]; then
-		echo "Skipping coverage: no pyproject.toml found."
-		exit 0
-	fi
 	if ! rg --files tests -g 'test_*.py' -g '*_test.py' >/dev/null 2>&1; then
 		echo "Skipping coverage: no pytest-style Python tests found."
+		exit 0
+	fi
+	if [ ! -f pyproject.toml ]; then
+		echo "No pyproject.toml found; running pytest without editable install or coverage."
+		uvx --with pytest pytest tests
 		exit 0
 	fi
 	project_root="$(pwd -P)"
@@ -356,48 +330,15 @@ _vulture: _install-tools
 	echo "=== Running: vulture dead code detection ==="
 	echo "# Finds unused code (functions, classes, variables) that can be safely removed"
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
-	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
-	generated_sage_python_files=()
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
-	if [ "${#python_files[@]}" -eq 0 ] && [ "${#sage_files[@]}" -eq 0 ]; then
-		echo "Skipping vulture: no Python or Sage files found."
+	if [ "${#python_files[@]}" -eq 0 ]; then
+		echo "Skipping vulture: no Python files found."
 		exit 0
-	fi
-
-	if [ "${#sage_files[@]}" -gt 0 ]; then
-		sage_bin="${SAGE_BIN:-sage}"
-		if ! command -v "$sage_bin" >/dev/null 2>&1; then
-			echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
-			exit 1
-		fi
-
-		sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-vulture-sage.XXXXXX")"
-		trap 'rm -rf "$sage_preparse_dir"' EXIT
-		echo "# Preparsing ${#sage_files[@]} Sage file(s) for vulture"
-		copied_sage_files=()
-		for sage_file in "${sage_files[@]}"; do
-			target="$sage_preparse_dir/$sage_file"
-			mkdir -p "$(dirname "$target")"
-			cp "$sage_file" "$target"
-			copied_sage_files+=("$sage_file")
-			generated_sage_python_files+=("$target.py")
-		done
-		(
-			cd "$sage_preparse_dir"
-			"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
-		)
-		for generated_file in "${generated_sage_python_files[@]}"; do
-			if [ ! -f "$generated_file" ]; then
-				echo "ERROR: Sage preparse did not produce $generated_file"
-				exit 1
-			fi
-		done
 	fi
 
 	uvx --from vulture vulture \
 		--config {{justfile_directory()}}/pyproject.toml \
 		"${python_files[@]}" \
-		"${generated_sage_python_files[@]}" \
 		"$whitelist_file"
 
 _deptry: _install-tools
@@ -569,6 +510,34 @@ _codeql:
 		print(f"- ... {len(findings) - 50} more findings omitted; see SARIF report above.")
 	PY
 
+_js-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.ts' \
+		-g '*.tsx' \
+		-g '*.js' \
+		-g '*.jsx' \
+		-g '*.mjs' \
+		-g '*.cjs' \
+		-g '!**/node_modules/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**'
+
+_slop-scan:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: slop-scan JS/TS anti-pattern detection ==="
+	echo "# Scans JS/TS files for AI-associated slop patterns (error-swallowing, duplicate signatures, generic casts, etc.)"
+	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
+	if [ "${#js_files[@]}" -eq 0 ]; then
+		echo "Skipping slop-scan: no JS/TS files found."
+		exit 0
+	fi
+	npx -y slop-scan scan --lint .
+
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -599,7 +568,7 @@ _slop:
 	done
 
 # public: all static checks run locally
-test: _python-syntax _sage-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _codeql _pytest_with_coverage _diff-cover _slop
+test: _python-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _slop-scan
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

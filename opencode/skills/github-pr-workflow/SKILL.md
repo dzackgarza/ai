@@ -9,14 +9,16 @@ metadata:
     tags: [GitHub, Pull-Requests, CI/CD, Git, Automation, Merge]
     related_skills: [github-auth, github-code-review]
 ---
-
 # GitHub Pull Request Workflow
 
-Complete guide for managing the PR lifecycle. Each section shows the `gh` way first, then the `git` + `curl` fallback for machines without `gh`.
+Complete guide for managing the PR lifecycle.
+Each section shows the `gh` way first, then the `git` + `curl` fallback for machines
+without `gh`.
 
 ## Prerequisites
 
 - Authenticated with GitHub (see `github-auth` skill)
+
 - Inside a git repository with a GitHub remote
 
 ### Quick Auth Detection
@@ -52,7 +54,7 @@ REPO=$(echo "$OWNER_REPO" | cut -d/ -f2)
 echo "Owner: $OWNER, Repo: $REPO"
 ```
 
----
+* * *
 
 ## 1. Branch Creation
 
@@ -68,15 +70,20 @@ git checkout -b feat/add-user-authentication
 ```
 
 Branch naming conventions:
+
 - `feat/description` — new features
+
 - `fix/description` — bug fixes
+
 - `refactor/description` — code restructuring
+
 - `docs/description` — documentation
+
 - `ci/description` — CI/CD changes
 
 ## 2. Making Commits
 
-Use the agent's file tools (`write_file`, `patch`) to make changes, then commit:
+Use the agent’s file tools (`write_file`, `patch`) to make changes, then commit:
 
 ```bash
 # Stage specific files
@@ -210,7 +217,8 @@ done
 
 ## 5. Auto-Fixing CI Failures
 
-When CI fails, diagnose and fix. This loop works with either auth method.
+When CI fails, diagnose and fix.
+This loop works with either auth method.
 
 ### Step 1: Get Failure Details
 
@@ -267,10 +275,15 @@ Re-check CI status using the commands from Section 4 above.
 When asked to auto-fix CI, follow this loop:
 
 1. Check CI status → identify failures
+
 2. Read failure logs → understand the error
+
 3. Use `read_file` + `patch`/`write_file` → fix the code
+
 4. `git add . && git commit -m "fix: ..." && git push`
+
 5. Wait for CI → re-check status
+
 6. Repeat if still failing (up to 3 attempts, then ask the user)
 
 ## 6. Merging
@@ -357,10 +370,10 @@ git push -u origin HEAD
 ## Useful PR Commands Reference
 
 | Action | gh | git + curl |
-|--------|-----|-----------|
+| --- | --- | --- |
 | List my PRs | `gh pr list --author @me` | `curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls?state=open"` |
 | View PR diff | `gh pr diff` | `git diff main...HEAD` (local) or `curl -H "Accept: application/vnd.github.diff" ...` |
 | Add comment | `gh pr comment N --body "..."` | `curl -X POST .../issues/N/comments -d '{"body":"..."}'` |
 | Request review | `gh pr edit N --add-reviewer user` | `curl -X POST .../pulls/N/requested_reviewers -d '{"reviewers":["user"]}'` |
 | Close PR | `gh pr close N` | `curl -X PATCH .../pulls/N -d '{"state":"closed"}'` |
-| Check out someone's PR | `gh pr checkout N` | `git fetch origin pull/N/head:pr-N && git checkout pr-N` |
+| Check out someone’s PR | `gh pr checkout N` | `git fetch origin pull/N/head:pr-N && git checkout pr-N` |

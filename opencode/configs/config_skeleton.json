@@ -127,10 +127,6 @@
     "just": {
       "command": ["just", "--unstable", "--fmt", "--justfile", "$FILE"],
       "extensions": ["justfile"]
-    },
-    "flowmark": {
-      "command": ["uvx", "flowmark", "--semantic", "--inplace", "$FILE"],
-      "extensions": [".md"]
     }
   },
   "lsp": {

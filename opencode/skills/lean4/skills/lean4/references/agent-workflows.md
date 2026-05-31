@@ -1,14 +1,17 @@
 # Agent Workflow Examples
 
-**Internal reference:** These workflows are orchestrated by commands. You typically don't invoke them directly.
+**Internal reference:** These workflows are orchestrated by commands.
+You typically don’t invoke them directly.
 
-**For Claude Code users:** See [subagent-workflows.md](subagent-workflows.md) for user-facing delegation patterns.
+**For Claude Code users:** See [subagent-workflows.md](subagent-workflows.md) for
+user-facing delegation patterns.
 
-**Review source** is chosen at prove/autoprove start. External review provides advice only—it cannot apply fixes directly.
+**Review source** is chosen at prove/autoprove start.
+External review provides advice only—it cannot apply fixes directly.
 
 Extended workflow examples for Lean4 plugin internal workflows.
 
----
+* * *
 
 ## sorry-filler-deep
 
@@ -77,7 +80,7 @@ Extended workflow examples for Lean4 plugin internal workflows.
 - No unexpected axioms: ✓
 ```
 
----
+* * *
 
 ## proof-repair
 
@@ -104,7 +107,8 @@ Stage 1 output:
 +  exact Continuous.of_discrete h1
 ```
 
-Build fails, error persists. Stage 1 retry:
+Build fails, error persists.
+Stage 1 retry:
 ```diff
 --- Core.lean
 +++ Core.lean
@@ -159,7 +163,7 @@ Fallback if needed: `$LEAN4_SCRIPTS/search_mathlib.sh "continuous.*real" name`
 +  exact Real.continuous_ofReal
 ```
 
----
+* * *
 
 ## proof-golfer
 
@@ -253,7 +257,7 @@ Savings: replaced custom helper with mathlib lemma
 Handoff: not needed (single-line, no statement change)
 ```
 
----
+* * *
 
 ## axiom-eliminator
 

@@ -1,21 +1,31 @@
 # Ray Marching Detailed Reference
 
-This document serves as a detailed reference for the Ray Marching Skill, covering prerequisites, step-by-step tutorials, mathematical derivations, and advanced usage.
+This document serves as a detailed reference for the Ray Marching Skill, covering
+prerequisites, step-by-step tutorials, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
-- **GLSL Basics**: uniforms, varyings, built-in functions (`mix`, `clamp`, `smoothstep`, `normalize`, `dot`, `cross`, `reflect`, `refract`)
-- **Vector Math**: dot product, cross product, vector normalization, matrix multiplication
-- **Coordinate Systems**: transformations from screen space to NDC to view space to world space
+- **GLSL Basics**: uniforms, varyings, built-in functions (`mix`, `clamp`, `smoothstep`,
+  `normalize`, `dot`, `cross`, `reflect`, `refract`)
+
+- **Vector Math**: dot product, cross product, vector normalization, matrix
+  multiplication
+
+- **Coordinate Systems**: transformations from screen space to NDC to view space to
+  world space
+
 - **Basic Lighting Models**: diffuse (Lambertian), specular (Phong/Blinn-Phong)
 
 ## Implementation Steps in Detail
 
 ### Step 1: UV Coordinate Normalization and Ray Direction Computation
 
-**What**: Convert pixel coordinates to normalized coordinates in the [-1,1] range, and compute the ray direction from the camera.
+**What**: Convert pixel coordinates to normalized coordinates in the [-1,1] range, and
+compute the ray direction from the camera.
 
-**Why**: This establishes the mapping from screen pixels to the 3D world. Dividing by `iResolution.y` preserves the aspect ratio; the z component controls the field of view.
+**Why**: This establishes the mapping from screen pixels to the 3D world.
+Dividing by `iResolution.y` preserves the aspect ratio; the z component controls the
+field of view.
 
 ```glsl
 // Method A: Concise version (common for quick prototyping)
@@ -31,9 +41,11 @@ vec3 rd = normalize(vec3(xy, -z));
 
 ### Step 2: Building the Camera Matrix (Look-At)
 
-**What**: Construct a view matrix from the camera position, target point, and up direction, then transform the view-space ray direction into world space.
+**What**: Construct a view matrix from the camera position, target point, and up
+direction, then transform the view-space ray direction into world space.
 
-**Why**: Without a camera matrix, the ray direction is fixed along -Z. With a Look-At matrix, the camera can be freely positioned and rotated.
+**Why**: Without a camera matrix, the ray direction is fixed along -Z. With a Look-At
+matrix, the camera can be freely positioned and rotated.
 
 ```glsl
 mat3 setCamera(vec3 ro, vec3 ta, float cr) {
@@ -51,9 +63,11 @@ vec3 rd = ca * normalize(vec3(uv, FOCAL_LENGTH)); // FOCAL_LENGTH adjustable: 1.
 
 ### Step 3: Defining the Scene SDF
 
-**What**: Write a function that returns the signed distance from any point in space to the nearest surface.
+**What**: Write a function that returns the signed distance from any point in space to
+the nearest surface.
 
-**Why**: The SDF is the core of Ray Marching — it simultaneously defines geometry and step distance.
+**Why**: The SDF is the core of Ray Marching — it simultaneously defines geometry and
+step distance.
 
 ```glsl
 // --- Basic SDF Primitives ---
@@ -97,9 +111,13 @@ float map(vec3 p) {
 
 ### Step 4: Core Ray Marching Loop
 
-**What**: Iteratively step along the ray direction, using the SDF value at each step to determine the advance distance, and check whether the ray has hit a surface or exceeded the maximum range.
+**What**: Iteratively step along the ray direction, using the SDF value at each step to
+determine the advance distance, and check whether the ray has hit a surface or exceeded
+the maximum range.
 
-**Why**: Sphere Tracing guarantees that each step advances the maximum safe distance (without penetrating surfaces), taking large steps in open areas and automatically slowing down near surfaces.
+**Why**: Sphere Tracing guarantees that each step advances the maximum safe distance
+(without penetrating surfaces), taking large steps in open areas and automatically
+slowing down near surfaces.
 
 ```glsl
 #define MAX_STEPS 128   // Adjustable: max step count, 64~256, more = more precise but slower
@@ -121,9 +139,11 @@ float rayMarch(vec3 ro, vec3 rd) {
 
 ### Step 5: Normal Estimation
 
-**What**: Compute the surface normal at the hit point using the numerical gradient of the SDF.
+**What**: Compute the surface normal at the hit point using the numerical gradient of
+the SDF.
 
-**Why**: Normals are the foundation of lighting calculations. The gradient direction of the SDF is the surface normal direction.
+**Why**: Normals are the foundation of lighting calculations.
+The gradient direction of the SDF is the surface normal direction.
 
 ```glsl
 // Method A: Central differences (6 SDF calls, straightforward)
@@ -181,9 +201,11 @@ vec3 shade(vec3 p, vec3 rd) {
 
 ### Step 7: Post-Processing (Gamma Correction and Tone Mapping)
 
-**What**: Convert linear lighting results to sRGB space and apply tone mapping to prevent overexposure.
+**What**: Convert linear lighting results to sRGB space and apply tone mapping to
+prevent overexposure.
 
-**Why**: GPU computations are done in linear space, but displays require gamma-corrected values. Tone mapping compresses HDR values into the [0,1] range.
+**Why**: GPU computations are done in linear space, but displays require gamma-corrected
+values. Tone mapping compresses HDR values into the [0,1] range.
 
 ```glsl
 // Gamma correction
@@ -201,7 +223,9 @@ col *= 0.5 + 0.5 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.25);
 
 ### 1. Volumetric Ray Marching
 
-**Difference from the basic version**: Instead of finding a surface intersection, the ray advances in **fixed steps**, accumulating density/color at each step. Used for flames, smoke, and clouds.
+**Difference from the basic version**: Instead of finding a surface intersection, the
+ray advances in **fixed steps**, accumulating density/color at each step.
+Used for flames, smoke, and clouds.
 
 **Key modified code**:
 ```glsl
@@ -244,7 +268,9 @@ vec3 volumetricMarch(vec3 ro, vec3 rd) {
 
 ### 2. CSG Scene Construction (Constructive Solid Geometry)
 
-**Difference from the basic version**: Combines multiple SDF primitives using `min` (union), `max` (intersection), and `max(a,-b)` (subtraction), along with rotation/translation transforms to create complex mechanical parts.
+**Difference from the basic version**: Combines multiple SDF primitives using `min`
+(union), `max` (intersection), and `max(a,-b)` (subtraction), along with
+rotation/translation transforms to create complex mechanical parts.
 
 **Key modified code**:
 ```glsl
@@ -267,7 +293,10 @@ float sceneSDF(vec3 p) {
 
 ### 3. Physically-Based Volumetric Scattering
 
-**Difference from the basic version**: Uses physically correct extinction coefficients, scattering coefficients, and transmittance formulas, with volumetric shadows (marching toward the light source to compute transmittance). Based on Frostbite engine's energy-conserving integration formula.
+**Difference from the basic version**: Uses physically correct extinction coefficients,
+scattering coefficients, and transmittance formulas, with volumetric shadows (marching
+toward the light source to compute transmittance).
+Based on Frostbite engine’s energy-conserving integration formula.
 
 **Key modified code**:
 ```glsl
@@ -286,7 +315,9 @@ transmittance *= exp(-sigmaE * stepLen);                         // Update trans
 
 ### 4. Glow Accumulation
 
-**Difference from the basic version**: During the Ray March loop, additionally tracks the closest distance from the ray to the surface `dM`. Even without a hit, this produces a glow effect. Commonly used for glowing spheres and plasma.
+**Difference from the basic version**: During the Ray March loop, additionally tracks
+the closest distance from the ray to the surface `dM`. Even without a hit, this produces
+a glow effect. Commonly used for glowing spheres and plasma.
 
 **Key modified code**:
 ```glsl
@@ -311,7 +342,9 @@ col += glow * vec3(1.0, 0.8, 0.9);
 
 ### 5. Refraction and Bidirectional Marching (Interior Marching)
 
-**Difference from the basic version**: After hitting a surface, computes the refraction direction and marches **inside the object in reverse** (negating the SDF) to find the exit point. Can achieve glass, water, and liquid metal effects.
+**Difference from the basic version**: After hitting a surface, computes the refraction
+direction and marches **inside the object in reverse** (negating the SDF) to find the
+exit point. Can achieve glass, water, and liquid metal effects.
 
 **Key modified code**:
 ```glsl
@@ -342,8 +375,11 @@ vec3 nor2 = calcNormal(hitPos + refDir * t2);        // Exit point normal
 
 ### 1. Reducing SDF Call Count
 
-- Use the tetrahedron trick for normal computation (4 calls instead of 6 with central differences)
-- Use `min(iFrame,0)` as the loop start value to prevent the compiler from unrolling and inlining map() multiple times
+- Use the tetrahedron trick for normal computation (4 calls instead of 6 with central
+  differences)
+
+- Use `min(iFrame,0)` as the loop start value to prevent the compiler from unrolling and
+  inlining map() multiple times
 
 ### 2. Bounding Box Acceleration
 
@@ -355,42 +391,57 @@ if (tb.x < tb.y && tb.y > 0.0) { /* Only march inside the box */ }
 
 ### 3. Adaptive Precision
 
-- Scale the hit threshold with distance: `SURF_DIST * (1.0 + t * 0.1)` — distant surfaces don't need high precision
-- Clamp step size: `t += clamp(h, 0.01, 0.2)` — prevent individual steps from being too large or too small
+- Scale the hit threshold with distance: `SURF_DIST * (1.0 + t * 0.1)` — distant
+  surfaces don’t need high precision
+
+- Clamp step size: `t += clamp(h, 0.01, 0.2)` — prevent individual steps from being too
+  large or too small
 
 ### 4. Early Exit
 
 - In volume rendering: `if (sum.a > 0.99) break;` — stop immediately when opaque
+
 - In shadow computation: `if (res < 0.004) break;` — stop when fully occluded
 
 ### 5. Reducing map() Complexity
 
 - Use simplified SDFs for distant objects
-- First test with a cheap bounding SDF; only compute the expensive precise SDF when `sdBox(p, bound) < currentMin`
+
+- First test with a cheap bounding SDF; only compute the expensive precise SDF when
+  `sdBox(p, bound) < currentMin`
 
 ### 6. Anti-Aliasing
 
 - Supersampling (AA=2 means 2x2 sampling, 4 rays per pixel), but at 4x performance cost
-- In volume rendering, use dithering instead of supersampling to reduce banding artifacts
+
+- In volume rendering, use dithering instead of supersampling to reduce banding
+  artifacts
 
 ## Combination Suggestions in Detail
 
 ### 1. Ray Marching + FBM Noise
 
-Use fractal noise to perturb SDF surfaces for terrain and rock textures, or build volumetric density fields to render clouds/smoke.
+Use fractal noise to perturb SDF surfaces for terrain and rock textures, or build
+volumetric density fields to render clouds/smoke.
 
 ### 2. Ray Marching + Domain Warping
 
-Apply spatial distortions (twist, bend, repeat) to sample points to create infinitely repeating corridors or twisted surreal geometry.
+Apply spatial distortions (twist, bend, repeat) to sample points to create infinitely
+repeating corridors or twisted surreal geometry.
 
 ### 3. Ray Marching + PBR Materials
 
-SDF provides geometry; combine with Cook-Torrance BRDF, environment map reflections, and Fresnel terms for realistic metal/dielectric materials.
+SDF provides geometry; combine with Cook-Torrance BRDF, environment map reflections, and
+Fresnel terms for realistic metal/dielectric materials.
 
 ### 4. Ray Marching + Post-Processing
 
-Multi-pass architecture: the first Buffer performs Ray Marching and outputs color + depth (stored in the alpha channel); the second pass applies depth of field (DOF), motion blur, and tone mapping.
+Multi-pass architecture: the first Buffer performs Ray Marching and outputs color +
+depth (stored in the alpha channel); the second pass applies depth of field (DOF),
+motion blur, and tone mapping.
 
 ### 5. Ray Marching + Procedural Animation
 
-Drive SDF primitive positions/sizes/blend coefficients with time parameters, combined with easing functions (smoothstep, parabolic) to create character animations without a skeletal system.
+Drive SDF primitive positions/sizes/blend coefficients with time parameters, combined
+with easing functions (smoothstep, parabolic) to create character animations without a
+skeletal system.

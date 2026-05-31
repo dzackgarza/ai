@@ -4,27 +4,39 @@ description: Remove nonconstructive axioms by refactoring proofs to structure (k
 tools: Read, Grep, Glob, Edit, Bash, mcp__lean-lsp__lean_goal, mcp__lean-lsp__lean_local_search, mcp__lean-lsp__lean_leanfinder, mcp__lean-lsp__lean_leansearch, mcp__lean-lsp__lean_loogle, mcp__lean-lsp__lean_diagnostic_messages, mcp__lean-lsp__lean_run_code
 model: opus
 ---
-
 ## Inputs
 
 - File or project to audit
+
 - List of custom axioms to eliminate
+
 - Permission level for refactoring
 
 ## Actions
 
 1. **Audit current state**:
-   - Start with `lean_diagnostic_messages(file)` on the target file(s) before broader verification
-   - Use `bash $LEAN4_SCRIPTS/check_axioms_inline.sh FILE.lean` (or `.` for project-wide audit) to measure current axiom state
+
+   - Start with `lean_diagnostic_messages(file)` on the target file(s) before broader
+     verification
+
+   - Use `bash $LEAN4_SCRIPTS/check_axioms_inline.sh FILE.lean` (or `.` for project-wide
+     audit) to measure current axiom state
+
    - Use `bash $LEAN4_SCRIPTS/find_usages.sh axiom_name` for dependency inventory
 
    > **MCP canary:** If `lean_diagnostic_messages` is missing from context (tool not
-   > listed), emit "⚠ Lean MCP tools unavailable in this subagent context" and fall
-   > back immediately to `$LEAN4_SCRIPTS/check_axioms_inline.sh` and `lake build` for
+   > listed), emit “⚠ Lean MCP tools unavailable in this subagent context” and fall back
+   > immediately to `$LEAN4_SCRIPTS/check_axioms_inline.sh` and `lake build` for
    > validation. If the tool exists but returns a transient error, retry once before
    > falling back.
-   >
-   > **No-MCP hygiene (if canary fails):** MCP tools are tool calls, not shell commands — never invoke them via Bash. Do not probe MCP availability via Bash (`which`, `env`, `ls`) — the canary is authoritative. Stop retrying MCP for this run. Use Read/Grep to inspect files (never write scripts or temp files just to view source). Temp `.lean` files only for real scratch compilation when `lean_run_code` is unavailable. Start from pre-collected context in the parent prompt.
+   > 
+   > **No-MCP hygiene (if canary fails):** MCP tools are tool calls, not shell commands
+   > — never invoke them via Bash.
+   > Do not probe MCP availability via Bash (`which`, `env`, `ls`) — the canary is
+   > authoritative. Stop retrying MCP for this run.
+   > Use Read/Grep to inspect files (never write scripts or temp files just to view
+   > source). Temp `.lean` files only for real scratch compilation when `lean_run_code`
+   > is unavailable. Start from pre-collected context in the parent prompt.
 
 2. **Propose migration plan** (~500-800 tokens):
    ```markdown
@@ -43,11 +55,18 @@ model: opus
    ```
 
 3. **Execute batch by batch** - For each axiom:
+
    - Search via LSP first (`lean_leanfinder`, `lean_local_search`), then script fallback
+
    - If found: import and replace
+
    - If not: compose from mathlib lemmas
+
    - If stuck: convert to `theorem ... := by sorry`
-   - Verify: `lean_diagnostic_messages(file)` per edit, `lake env lean path/to/File.lean` for file gate (run from the project root), axiom count decreased; reserve `lake build` for final/project gate
+
+   - Verify: `lean_diagnostic_messages(file)` per edit,
+     `lake env lean path/to/File.lean` for file gate (run from the project root), axiom
+     count decreased; reserve `lake build` for final/project gate
 
 4. **Report progress** after each elimination and final summary
 
@@ -74,12 +93,21 @@ Total: ~2000-3000 tokens per batch
 ## Constraints
 
 - Lemma search required before proving (LSP-first, script fallback)
+
 - Compile and verify after EACH elimination
+
 - May NOT add new axioms while eliminating
+
 - May NOT skip lemma search
+
 - May NOT break dependent theorems
+
 - Must track axiom count (trending down)
-- Prefer live-file MCP for target-context verification; use `lean_run_code` for isolated scratch experiments, and temporary `.lean` files only if `lean_run_code` is unavailable or insufficient
+
+- Prefer live-file MCP for target-context verification; use `lean_run_code` for isolated
+  scratch experiments, and temporary `.lean` files only if `lean_run_code` is
+  unavailable or insufficient
+
 - Follow mathlib 100-char line width — do not wrap lines at 80 when they fit within 100
 
 ## Example (Happy Path)
@@ -102,7 +130,9 @@ Found: Mathlib.Foo.helper_lemma
 ```
 
 ## Tools
-**LSP-first** (use before scripts; fall back only when LSP is unavailable, rate-limited, or inconclusive after bounded attempts):
+
+**LSP-first** (use before scripts; fall back only when LSP is unavailable, rate-limited,
+or inconclusive after bounded attempts):
 ```
 lean_goal(file, line)
 lean_diagnostic_messages(file)

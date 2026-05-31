@@ -1,14 +1,20 @@
 # Anti-Aliasing Techniques
 
 ## Use Cases
+
 - Eliminating jagged edges (staircase artifacts) in ray-marched or SDF-rendered scenes
+
 - Smooth 2D SDF shape rendering
+
 - Post-process edge smoothing for any shader output
+
 - Temporal smoothing for noise reduction
 
 ## Core Principles
 
-Anti-aliasing in shaders differs from rasterization pipelines. Without hardware MSAA on procedural geometry, we rely on analytical or post-process approaches.
+Anti-aliasing in shaders differs from rasterization pipelines.
+Without hardware MSAA on procedural geometry, we rely on analytical or post-process
+approaches.
 
 ## Techniques
 
@@ -29,7 +35,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor = vec4(totalColor / float(AA * AA), 1.0);
 }
 ```
-Cost: AA^2 × full render. Use AA=2 for quality, AA=1 for development.
+Cost: AA^2 × full render.
+Use AA=2 for quality, AA=1 for development.
 
 ### 2. SDF Analytical Anti-Aliasing
 
@@ -115,7 +122,7 @@ vec3 fxaa(sampler2D tex, vec2 uv, vec2 texelSize) {
 ## Choosing the Right Approach
 
 | Method | Cost | Quality | Best For |
-|--------|------|---------|----------|
+| --- | --- | --- | --- |
 | SSAA 2x2 | 4× render | Excellent | Final quality renders |
 | SDF analytical | Minimal | Great for SDF | 2D shapes, UI elements |
 | TAA | 1× + blend | Good + temporal | Animated scenes with multipass |

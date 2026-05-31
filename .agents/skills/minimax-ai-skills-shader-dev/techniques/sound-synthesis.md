@@ -1,36 +1,59 @@
 **IMPORTANT - GLSL ES 3.00 Critical Rules**:
-1. **Type strictness**: `int` and `float` cannot be mixed directly; array indices must be of `int` type
-2. **Reserved words**: `sample` is a reserved word in GLSL ES 3.00; it cannot be used as a variable name
-3. **Constant arrays**: Must explicitly specify size when declaring, e.g., `const float ARR[4] = float[4](1.,2.,3.,4.);`
-4. **Integer division**: In GLSL ES 3.00, `1/2` evaluates to 0 (integer division); must use `1.0/2.0` or `float(1)/float(2)`
+
+1. **Type strictness**: `int` and `float` cannot be mixed directly; array indices must
+   be of `int` type
+
+2. **Reserved words**: `sample` is a reserved word in GLSL ES 3.00; it cannot be used as
+   a variable name
+
+3. **Constant arrays**: Must explicitly specify size when declaring, e.g.,
+   `const float ARR[4] = float[4](1.,2.,3.,4.);`
+
+4. **Integer division**: In GLSL ES 3.00, `1/2` evaluates to 0 (integer division); must
+   use `1.0/2.0` or `float(1)/float(2)`
 
 # Sound Synthesis (Procedural Audio)
 
 ## Use Cases
+
 - Generate procedural audio using `mainSound()` in ShaderToy
+
 - Synthesize melodies, chords, rhythm patterns, and complete music
+
 - Synthesize instrument timbres: piano, bass, acid synth, percussion
+
 - Implement audio effects: delay, reverb, distortion, filters
+
 - Pure mathematical audio generation without external samples
 
 ## Core Principles
 
 ShaderToy sound shader four-layer architecture:
 
-1. **Oscillator layer**: `sin(2π·f·t)`, layering harmonics or FM modulation to build timbre
+1. **Oscillator layer**: `sin(2π·f·t)`, layering harmonics or FM modulation to build
+   timbre
+
 2. **Envelope layer**: `exp(-rate·t)` + `smoothstep` attack, simulating strike→decay
-3. **Sequencer layer**: Macro definitions / array lookup / hash pseudo-random for arranging melodies
+
+3. **Sequencer layer**: Macro definitions / array lookup / hash pseudo-random for
+   arranging melodies
+
 4. **Effects layer**: Reverb, delay, distortion, filters, and other post-processing
 
 Key formulas:
+
 - MIDI → frequency: `f = 440.0 × 2^((n - 69) / 12)`
+
 - Sine oscillator: `y = sin(2π × freq × time)`
+
 - Exponential decay: `env = exp(-decay_rate × time)`
+
 - FM modulation: `y = sin(2π × f_c × t + depth × sin(2π × f_m × t))`
 
 ## Implementation Steps
 
 ### Step 1: mainSound Entry Framework
+
 ```glsl
 #define TAU 6.28318530718
 #define BPM 120.0
@@ -45,6 +68,7 @@ vec2 mainSound(int samp, float time) {
 ```
 
 ### Step 2: MIDI Note to Frequency
+
 ```glsl
 float noteFreq(float note) {
     return 440.0 * pow(2.0, (note - 69.0) / 12.0);
@@ -52,6 +76,7 @@ float noteFreq(float note) {
 ```
 
 ### Step 3: Basic Oscillators
+
 ```glsl
 float osc_sin(float t) { return sin(TAU * t); }
 float osc_saw(float t) { return fract(t) * 2.0 - 1.0; }
@@ -60,6 +85,7 @@ float osc_tri(float t) { return abs(fract(t) - 0.5) * 4.0 - 1.0; }
 ```
 
 ### Step 4: Additive Synthesis Instrument
+
 ```glsl
 // Layer harmonics to build timbre; higher harmonics decay faster
 float instrument_additive(float freq, float t) {
@@ -75,6 +101,7 @@ float instrument_additive(float freq, float t) {
 ```
 
 ### Step 5: FM Synthesis Instrument
+
 ```glsl
 // FM electric piano (stereo)
 vec2 fm_epiano(float freq, float t) {
@@ -107,6 +134,7 @@ float fm_instrument(float freq, float t, float beatTime, Instr ins) {
 ```
 
 ### Step 6: Percussion Synthesis
+
 ```glsl
 float hash(float p) {
     p = fract(p * 0.1031); p *= p + 33.33; p *= p + p; return fract(p);
@@ -135,6 +163,7 @@ float clap(float t) {
 ```
 
 ### Step 7: Note Sequence Arrangement
+
 ```glsl
 // === Method A: D() macro accumulation (good for handwritten melodies) ===
 #define D(duration, note) b += float(duration); if(t > b) { x = b; n = float(note); }
@@ -181,6 +210,7 @@ float melody_random(float time, float bpm) {
 ```
 
 ### Step 8: Chord Construction
+
 ```glsl
 vec2 chord(float time, float root, float isMinor) {
     vec2 result = vec2(0.0);
@@ -196,6 +226,7 @@ vec2 chord(float time, float root, float isMinor) {
 ```
 
 ### Step 9: Delay and Reverb
+
 ```glsl
 // Multi-tap echo
 // NOTE: "sample" is a reserved word in GLSL ES 3.00; use "samp" instead
@@ -225,6 +256,7 @@ vec2 pingpong_delay(float time) {
 ```
 
 ### Step 10: Beat and Arrangement Structure
+
 ```glsl
 vec2 mainSound(int samp, float time) {
     vec2 audio = vec2(0.0);
@@ -250,7 +282,8 @@ vec2 mainSound(int samp, float time) {
 
 ## Complete Code Template
 
-Can be pasted directly into the ShaderToy Sound tab to run. Includes FM piano melody, kick drum rhythm, and ping-pong delay.
+Can be pasted directly into the ShaderToy Sound tab to run.
+Includes FM piano melody, kick drum rhythm, and ping-pong delay.
 
 ```glsl
 // === Sound Synthesis Complete Template ===
@@ -367,7 +400,9 @@ vec2 mainSound(int samp, float time) {
 ## Common Variants
 
 ### Variant 1: Subtractive Synthesis / TB-303 Acid Synth
-Sawtooth wave through resonant low-pass filter, cutoff frequency modulated by envelope to produce the "wow" sound.
+
+Sawtooth wave through resonant low-pass filter, cutoff frequency modulated by envelope
+to produce the “wow” sound.
 ```glsl
 #define NSPC 128
 float lpf_response(float h, float cutoff, float reso) {
@@ -395,7 +430,9 @@ vec2 acid_synth(float freq, float noteTime) {
 ```
 
 ### Variant 2: IIR Biquad Filter
-Time-domain IIR filter based on the Audio EQ Cookbook, supporting 7 types including low-pass/high-pass/band-pass.
+
+Time-domain IIR filter based on the Audio EQ Cookbook, supporting 7 types including
+low-pass/high-pass/band-pass.
 ```glsl
 float waveSaw(float freq, int samp) {
     return fract(freq * float(samp) / iSampleRate) * 2.0 - 1.0;
@@ -418,7 +455,9 @@ void biquadLPF(float freq, float Q, float sr,
 ```
 
 ### Variant 3: Vocal / Formant Synthesis
-Vocal tract model simulating human voice by synthesizing vowels through formant frequencies and bandwidths.
+
+Vocal tract model simulating human voice by synthesizing vowels through formant
+frequencies and bandwidths.
 ```glsl
 float tract(float x, float formantFreq, float bandwidth) {
     return sin(TAU * formantFreq * x) * exp(-bandwidth * 3.14159 * x);
@@ -438,7 +477,9 @@ float fricative(float t, float formantFreq) {
 ```
 
 ### Variant 4: Algorithmic Composition
-Hash pseudo-random melody + scale quantization, multi-layer rhythmic subdivision producing fractal music structures.
+
+Hash pseudo-random melody + scale quantization, multi-layer rhythmic subdivision
+producing fractal music structures.
 ```glsl
 vec2 noteRing(float n) {
     float r = 0.5 + 0.5 * fract(sin(mod(floor(n), 32.123) * 32.123) * 41.123);
@@ -454,7 +495,9 @@ vec2 generativeNote(float beat) {
 ```
 
 ### Variant 5: Circle of Fifths Chord Progressions
-Automatically generates harmony based on the circle of fifths, advancing +7 semitones every 4 beats, alternating major/minor chords.
+
+Automatically generates harmony based on the circle of fifths, advancing +7 semitones
+every 4 beats, alternating major/minor chords.
 ```glsl
 vec2 mainSound(int samp, float time) {
     float id = floor(time / SPB / 4.0);
@@ -472,19 +515,38 @@ vec2 mainSound(int samp, float time) {
 ## Performance & Composition
 
 **Performance Tips:**
-- Harmonic count (`NUM_HARMONICS` / `NSPC`) is the biggest bottleneck; start with 4-8, stop when sufficient
-- IIR filters require looping through sample history per output sample; prefer frequency-domain methods
+
+- Harmonic count (`NUM_HARMONICS` / `NSPC`) is the biggest bottleneck; start with 4-8,
+  stop when sufficient
+
+- IIR filters require looping through sample history per output sample; prefer
+  frequency-domain methods
+
 - Each delay tap requires recomputing the full signal chain; 4 taps = 5x computation
+
 - `fract(x)` is faster than `mod(x, 1.0)`; hoist constants out of loops
-- Use Common Pass to share constants; avoid redundant computation between Sound and Image
+
+- Use Common Pass to share constants; avoid redundant computation between Sound and
+  Image
 
 **Composition Tips:**
-- **Audio visualization**: Sound output is read via `iChannel0` in the Image shader for spectrum display
-- **Raymarching sync**: Common Pass defines shared timeline; Sound/Image reference it synchronously
-- **Particle systems**: Use kick triggers to drive particle emission; share BPM/SPB for beat position calculation
-- **Post-processing linkage**: Sidechain compression coefficients drive bloom/chromatic aberration/dithering via Common Pass
-- **Text overlay**: `message()` in Image shader renders parameter display or interaction instructions
+
+- **Audio visualization**: Sound output is read via `iChannel0` in the Image shader for
+  spectrum display
+
+- **Raymarching sync**: Common Pass defines shared timeline; Sound/Image reference it
+  synchronously
+
+- **Particle systems**: Use kick triggers to drive particle emission; share BPM/SPB for
+  beat position calculation
+
+- **Post-processing linkage**: Sidechain compression coefficients drive bloom/chromatic
+  aberration/dithering via Common Pass
+
+- **Text overlay**: `message()` in Image shader renders parameter display or interaction
+  instructions
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/sound-synthesis.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/sound-synthesis.md)

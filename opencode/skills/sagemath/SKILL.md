@@ -2,12 +2,12 @@
 name: sagemath
 description: Use when working with SageMath for mathematical computations, algebraic geometry, or number theory
 ---
-
 # SageMath
 
 ## Overview
 
-Work with canonical mathematical objects, not manual constructions. SageMath provides rich algebraic structures—use them.
+Work with canonical mathematical objects, not manual constructions.
+SageMath provides rich algebraic structures—use them.
 
 ## Forbidden Patterns
 
@@ -37,13 +37,15 @@ assert alpha[1].inner_product(alpha[2]) == -1
 assert M.is_positive_definite()
 ```
 
-**Principle:** Manual constructions hide mathematical meaning. Canonical objects encode structure, enable verification, and make code self-documenting.
+**Principle:** Manual constructions hide mathematical meaning.
+Canonical objects encode structure, enable verification, and make code self-documenting.
 
 ## Core Rules
 
 ### 1. NO Manual Matrix Construction
 
-**NEVER** create matrices like `matrix([[1,2],[3,4]])`. Always use SageMath's built-in objects:
+**NEVER** create matrices like `matrix([[1,2],[3,4]])`. Always use SageMath’s built-in
+objects:
 
 ```sage
 # ❌ BAD: Manual construction
@@ -58,7 +60,8 @@ L = R.root_lattice()               # Lattice from SageMath
 
 ### 2. Canonical Examples Only
 
-Use well-known mathematical objects from literature. Reference standard sources:
+Use well-known mathematical objects from literature.
+Reference standard sources:
 
 ```sage
 # ✅ GOOD: Canonical objects with citations
@@ -86,7 +89,9 @@ Every assertion must be mathematically verifiable with clear documentation:
 ```
 
 **Format:**
-- Comment states the mathematical assertion
-- Code is runnable in sage blocks
-- Result includes citation to mathematical fact
 
+- Comment states the mathematical assertion
+
+- Code is runnable in sage blocks
+
+- Result includes citation to mathematical fact

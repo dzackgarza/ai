@@ -1,8 +1,9 @@
 # Template: Research Agent
 
-**Use for:** Information gathering, comparisons, deep dives, fact-finding, market research.
+**Use for:** Information gathering, comparisons, deep dives, fact-finding, market
+research.
 
----
+* * *
 
 ## The Template
 
@@ -73,24 +74,24 @@ Think step by step through each phase.
 5. Only report "done" when all stories are satisfied
 ```
 
----
+* * *
 
 ## Variables
 
 | Variable | Description | Example |
-|----------|-------------|---------|
-| `{{domain}}` | Agent's specialty area | "SaaS product evaluation" |
-| `{{research_question}}` | The main question to answer | "What are the best project management tools for remote teams under 10 people?" |
-| `{{user}}` | Who benefits from this research | "Jordan" |
-| `{{deliverable_N}}` | What the user wants | "a comparison table" |
-| `{{benefit_N}}` | Why they want it | "I can quickly see differences" |
-| `{{custom_section}}` | Domain-specific analysis section | "Tool Comparison Table" |
-| `{{search_limit}}` | Max web searches | "10" |
-| `{{depth}}` | How deep to go | "moderate" |
-| `{{focus_areas}}` | Priority topics | "Pricing, integrations, mobile app quality" |
-| `{{exclusions}}` | What to skip | "Enterprise-only solutions over $50/user" |
+| --- | --- | --- |
+| `{{domain}}` | Agent’s specialty area | “SaaS product evaluation” |
+| `{{research_question}}` | The main question to answer | “What are the best project management tools for remote teams under 10 people?” |
+| `{{user}}` | Who benefits from this research | “Jordan” |
+| `{{deliverable_N}}` | What the user wants | “a comparison table” |
+| `{{benefit_N}}` | Why they want it | “I can quickly see differences” |
+| `{{custom_section}}` | Domain-specific analysis section | “Tool Comparison Table” |
+| `{{search_limit}}` | Max web searches | “10” |
+| `{{depth}}` | How deep to go | “moderate” |
+| `{{focus_areas}}` | Priority topics | “Pricing, integrations, mobile app quality” |
+| `{{exclusions}}` | What to skip | “Enterprise-only solutions over $50/user” |
 
----
+* * *
 
 ## Example: Filled Template
 
@@ -160,50 +161,66 @@ Think step by step through each phase.
 5. Only report "done" when all stories are satisfied
 ```
 
----
+* * *
 
 ## Variations
 
 **Quick Scan (5 min):**
+
 - Remove confidence assessment
+
 - 5 search budget
+
 - Summary + key findings + sources only
 
 **Deep Dive (30 min):**
+
 - 20+ search budget
-- Add "Counter-arguments" section
-- Add "Historical context" section
+
+- Add “Counter-arguments” section
+
+- Add “Historical context” section
+
 - Require multiple sources per claim
 
 **Competitive Intel:**
-- Add "Pricing strategy analysis"
-- Add "Target customer comparison"  
-- Add "Weakness exploitation opportunities"
 
----
+- Add “Pricing strategy analysis”
+
+- Add “Target customer comparison”
+
+- Add “Weakness exploitation opportunities”
+
+* * *
 
 ## Common Mistakes
 
 | Mistake | Fix |
-|---------|-----|
+| --- | --- |
 | No search budget | Always set a limit or agent researches forever |
 | Vague question | Specific question = specific answer |
-| No user stories | Agent doesn't know what YOU need |
+| No user stories | Agent doesn’t know what YOU need |
 | Missing output format | You get a wall of text |
 | No confidence assessment | Agent presents uncertain info as fact |
 
----
+* * *
 
 ## Success Metrics
 
 A good research agent output:
+
 - [ ] Directly answers the research question
+
 - [ ] Every claim has a source
+
 - [ ] Confidence levels are explicit
+
 - [ ] Gaps are acknowledged
+
 - [ ] Format matches what you requested
+
 - [ ] Satisfies all user stories
 
----
+* * *
 
 *Part of the Hal Stack 🦞 — Agent Orchestration*

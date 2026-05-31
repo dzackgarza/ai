@@ -2,21 +2,30 @@
 name: test-patterns
 description: Reference guide for detecting AI slop patterns in testing, including content-free checks, tautological assertions, and mock evasion.
 ---
-
 # Testing Slop Patterns
 
-This reference documents common "AI slop" patterns in tests that indicate low-quality, AI-generated content that provides the illusion of coverage without actual verification.
+This reference documents common “AI slop” patterns in tests that indicate low-quality,
+AI-generated content that provides the illusion of coverage without actual verification.
+
+For adversarial review of LLM-produced test suites, also load
+[`../../reviewing-llm-code/references/pattern-catalog.md`](../../reviewing-llm-code/references/pattern-catalog.md).
+That file is the central catalog for developer-controlled assertions, regex
+meta-testing, fake-data confidence, inflated suites, and QC bypasses.
 
 ## Table of Contents
 
 - Content-Free Verification
+
 - Tautological Testing
+
 - Mock-First Evasion
+
 - Masking Over Failure
 
 ## Content-Free Verification
 
-Tests that execute code but fail to verify meaningful output. They check for the presence of _something_ rather than the correctness of _the thing_.
+Tests that execute code but fail to verify meaningful output.
+They check for the presence of *something* rather than the correctness of *the thing*.
 
 **Bad:**
 
@@ -49,7 +58,8 @@ def test_items():
 
 ## Tautological Testing
 
-Tests that merely prove a system is internally consistent, rather than correct relative to an external oracle or ground truth.
+Tests that merely prove a system is internally consistent, rather than correct relative
+to an external oracle or ground truth.
 
 **Bad:**
 
@@ -71,7 +81,9 @@ def test_group_order():
 
 ## Mock-First Evasion
 
-Agents frequently use `unittest.mock` to bypass the actual boundaries of a system, creating tests that run fast but prove nothing about how the repository interlocks with reality.
+Agents frequently use `unittest.mock` to bypass the actual boundaries of a system,
+creating tests that run fast but prove nothing about how the repository interlocks with
+reality.
 
 **Bad:**
 
@@ -84,17 +96,25 @@ def test_fetch(mock_get):
     assert result == "ok"
 ```
 
-**Better:**
-Test against real data, captured offline fixtures, or an actual local proxy. If you must test the boundary, test how the system interprets a real external response, not how well you can simulate `requests`.
+**Better:** Test against real data, captured offline fixtures, or an actual local proxy.
+If you must test the boundary, test how the system interprets a real external response,
+not how well you can simulate `requests`.
 
 ## Masking Over Failure
 
-When a refactor introduces a regression, agents often attempt to hide the failure rather than fixing the implementation.
+When a refactor introduces a regression, agents often attempt to hide the failure rather
+than fixing the implementation.
 
 Watch for:
 
 - Suddenly adding `@pytest.mark.xfail` or `skip` to a previously passing test.
-- Rewriting the expectation to match the _new_ (incorrect) behavior of the refactored code.
-- Asserting on the _type_ of error rather than fixing the code that throws it (e.g., changing a success test into a `pytest.raises()` test).
 
-**Rule:** Tests define the specification. The implementation must rise to meet the tests; tests must not be relaxed to accommodate the implementation.
+- Rewriting the expectation to match the *new* (incorrect) behavior of the refactored
+  code.
+
+- Asserting on the *type* of error rather than fixing the code that throws it (e.g.,
+  changing a success test into a `pytest.raises()` test).
+
+**Rule:** Tests define the specification.
+The implementation must rise to meet the tests; tests must not be relaxed to accommodate
+the implementation.

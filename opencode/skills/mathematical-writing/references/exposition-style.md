@@ -5,13 +5,19 @@ Dzack-specific pedagogical writing style for mathematical content.
 ## Core Principles
 
 1. **Precision Over Brevity**
+
    - Every step must be mathematically justified
-   - No "clearly" or "obviously" without explicit reasoning
+
+   - No “clearly” or “obviously” without explicit reasoning
+
    - All algebraic manipulations shown in full
 
 2. **Structured Exposition**
+
    - Solutions follow a clear, logical progression
+
    - Each major step is numbered or bulleted
+
    - Key transitions are explicitly noted
 
 ## Problem Presentation
@@ -19,26 +25,39 @@ Dzack-specific pedagogical writing style for mathematical content.
 ### Problem Statement Format
 
 A problem statement must include:
+
 - Clear, concise wording
+
 - All given information
+
 - Proper mathematical notation with consistent formatting
+
 - Any necessary conditions or constraints
 
 ### Solution Structure
 
 1. **Setup**
+
    - Restate the problem in mathematical terms
+
    - Define any variables or notation being introduced
+
    - State the approach or method to be used
 
 2. **Step-by-Step Development**
+
    - Break down the solution into logical, numbered steps
+
    - Each step should contain exactly one mathematical operation or concept
+
    - Include the justification for each step in-line
 
 3. **Verification**
+
    - Include verification of the solution when appropriate
+
    - Show that the solution satisfies any initial conditions
+
    - Check for reasonableness of the result
 
 ## Proof Techniques in Exposition
@@ -46,29 +65,41 @@ A problem statement must include:
 ### Direct Proofs
 
 - State what is to be shown
+
 - Present the argument in logical sequence
+
 - Conclude with QED or a clear statement of the result
 
 ### Limit Proofs
 
 - Clearly state the limit to be evaluated
+
 - Show all algebraic manipulations
+
 - Justify each limit law or theorem used
+
 - Conclude with the final limit value
 
 ### Proof by Contradiction
 
 - State the assumption explicitly: `[Assume ¬P]`
+
 - Derive consequences logically
+
 - Reach a contradiction
+
 - Conclude P holds
 
 ### Proof by Induction
 
 - State the predicate P(n) clearly
+
 - Verify base case (usually n = 0 or n = 1)
+
 - State induction hypothesis: `[Assume P(k)]`
+
 - Show P(k) ⇒ P(k+1)
+
 - Conclude ∀n: P(n)
 
 ## Example: Polynomial Derivative via Limit Definition
@@ -103,29 +134,43 @@ A problem statement must include:
    ```
 
 **Verification:**
+
 - For `x = 0`, `f'(0) = 3`, which matches the slope of the tangent line.
+
 - The result is consistent with the power rule.
 
 ## Best Practices
 
 1. **Clarity**
+
    - Write for your intended audience
+
    - Explain non-obvious steps
+
    - Use consistent notation throughout
 
 2. **Rigor**
-   - Don't skip non-trivial algebraic steps
+
+   - Don’t skip non-trivial algebraic steps
+
    - Justify all limit evaluations
+
    - Check for domain restrictions
 
 3. **Presentation**
+
    - Use proper mathematical typesetting
+
    - Align equations for readability
+
    - Group related expressions together
 
 4. **Verification**
+
    - Check your work at each step
+
    - Verify the final answer makes sense in context
+
    - Consider special cases or edge cases
 
 ## Anti-Patterns in Exposition
@@ -134,6 +179,6 @@ A problem statement must include:
 | --- | --- | --- |
 | Skipping algebraic steps | Reader cannot verify; gaps hide errors | Show every expansion, factorization, simplification |
 | Unstated domain restrictions | Solutions may be invalid outside domain | State domain at the beginning; check restrictions |
-| Inconsistent variable reuse | Confusion; "x" means two different things | Use distinct names; subscript if needed |
+| Inconsistent variable reuse | Confusion; “x” means two different things | Use distinct names; subscript if needed |
 | Missing verification | Errors go undetected | Always verify, at least for a test case |
 | Prose-only proofs (no math mode) | Hard to read; ambiguous precedence | Use LaTeX math for all mathematical expressions |

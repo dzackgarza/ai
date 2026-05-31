@@ -1,13 +1,19 @@
 # Color Palette & Color Space Techniques - Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), containing step-by-step tutorials, mathematical derivations, and advanced usage.
+This document is a detailed supplement to [SKILL.md](SKILL.md), containing step-by-step
+tutorials, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
 - GLSL basic syntax: `vec3`, `mix`, `clamp`, `smoothstep`, `fract`, `mod`
+
 - Basic properties of trigonometric functions `cos`/`sin` (periodicity, range [-1, 1])
-- Color space fundamentals: RGB is a cube, HSV/HSL is cylindrical coordinates, Lab/Lch is a perceptually uniform space
-- Gamma correction concept: monitors store sRGB (nonlinear), shading computations should be performed in linear space
+
+- Color space fundamentals: RGB is a cube, HSV/HSL is cylindrical coordinates, Lab/Lch
+  is a perceptually uniform space
+
+- Gamma correction concept: monitors store sRGB (nonlinear), shading computations should
+  be performed in linear space
 
 ## Step-by-Step Tutorial
 
@@ -15,7 +21,10 @@ This document is a detailed supplement to [SKILL.md](SKILL.md), containing step-
 
 **What**: Implement the most fundamental and commonly used procedural palette function
 
-**Why**: Only 4 vec3 parameters are needed to generate infinite smooth color ramps, with extremely low computational cost (a single cos operation). This function is widely used in the ShaderToy community and is the cornerstone of procedural coloring.
+**Why**: Only 4 vec3 parameters are needed to generate infinite smooth color ramps, with
+extremely low computational cost (a single cos operation).
+This function is widely used in the ShaderToy community and is the cornerstone of
+procedural coloring.
 
 **Mathematical Derivation**:
 ```
@@ -23,11 +32,17 @@ color(t) = a + b * cos(2pi * (c * t + d))
 ```
 
 - **a** = brightness offset (center luminance of the color ramp), typically ~0.5
-- **b** = amplitude (color contrast), typically ~0.5
-- **c** = frequency (how many times each channel oscillates), vec3(1,1,1) means R/G/B each oscillate once
-- **d** = phase offset (hue starting position per channel), this is the key parameter controlling color style
 
-When a=b=0.5, c=(1,1,1), changing d alone generates completely different color ramps like rainbow, warm tones, cool tones, etc.
+- **b** = amplitude (color contrast), typically ~0.5
+
+- **c** = frequency (how many times each channel oscillates), vec3(1,1,1) means R/G/B
+  each oscillate once
+
+- **d** = phase offset (hue starting position per channel), this is the key parameter
+  controlling color style
+
+When a=b=0.5, c=(1,1,1), changing d alone generates completely different color ramps
+like rainbow, warm tones, cool tones, etc.
 
 **Code**:
 ```glsl
@@ -43,7 +58,9 @@ vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
 
 **What**: Provide ready-to-use palette parameters
 
-**Why**: The original demo showcases 7 classic parameter combinations, covering common needs like rainbow, warm, cool, and duotone schemes. Memorizing a few parameter sets enables rapid color adjustment.
+**Why**: The original demo showcases 7 classic parameter combinations, covering common
+needs like rainbow, warm, cool, and duotone schemes.
+Memorizing a few parameter sets enables rapid color adjustment.
 
 **Code**:
 ```glsl
@@ -73,15 +90,19 @@ vec3 palette(float t) {
 
 **What**: Implement branchless HSV to RGB conversion and its cubic smooth variant
 
-**Why**: HSV space is ideal for rotating by hue, scaling by saturation/value. The standard implementation has C0 discontinuity (piecewise linear); the smooth version achieves C1 continuity through Hermite interpolation, producing smoother hue animation.
+**Why**: HSV space is ideal for rotating by hue, scaling by saturation/value.
+The standard implementation has C0 discontinuity (piecewise linear); the smooth version
+achieves C1 continuity through Hermite interpolation, producing smoother hue animation.
 
-**Principle**: Using vectorized `mod` + `abs` + `clamp` operations avoids if/else branching:
+**Principle**: Using vectorized `mod` + `abs` + `clamp` operations avoids if/else
+branching:
 
 ```
 rgb = clamp(abs(mod(H*6 + vec3(0,4,2), 6) - 3) - 1, 0, 1)
 ```
 
-This essentially uses piecewise linear functions to model R/G/B channel variation with hue H. C1 discontinuity can be eliminated via cubic smoothing `rgb*rgb*(3-2*rgb)`.
+This essentially uses piecewise linear functions to model R/G/B channel variation with
+hue H. C1 discontinuity can be eliminated via cubic smoothing `rgb*rgb*(3-2*rgb)`.
 
 **Code**:
 ```glsl
@@ -104,7 +125,9 @@ vec3 hsv2rgb_smooth(vec3 c) {
 
 **What**: Implement HSL color space conversion
 
-**Why**: HSL is more intuitive than HSV — L=0 is black, L=1 is white, L=0.5 is pure color. Suitable for scenarios requiring control over "lightness" rather than "value" (e.g., mapping iteration counts to hue in data visualization).
+**Why**: HSL is more intuitive than HSV — L=0 is black, L=1 is white, L=0.5 is pure
+color. Suitable for scenarios requiring control over “lightness” rather than “value”
+(e.g., mapping iteration counts to hue in data visualization).
 
 **Code**:
 ```glsl
@@ -125,7 +148,9 @@ vec3 hsl2rgb(float h, float s, float l) {
 
 **What**: Implement the reverse conversion from RGB back to HSV
 
-**Why**: When blending colors in HSV space, you need to first convert both endpoint colors from RGB to HSV, interpolate, then convert back. RGB to HSV uses a classic branchless implementation.
+**Why**: When blending colors in HSV space, you need to first convert both endpoint
+colors from RGB to HSV, interpolate, then convert back.
+RGB to HSV uses a classic branchless implementation.
 
 **Code**:
 ```glsl
@@ -144,9 +169,14 @@ vec3 rgb2hsv(vec3 c) {
 
 **What**: Implement the complete RGB <-> Lab <-> Lch conversion pipeline
 
-**Why**: Linear interpolation in RGB and HSV spaces is not perceptually uniform — the human eye is more sensitive to green than red. Interpolation in Lch (Lightness-Chroma-Hue) space produces the most visually natural gradients, especially suitable for UI color schemes and artistic gradients.
+**Why**: Linear interpolation in RGB and HSV spaces is not perceptually uniform — the
+human eye is more sensitive to green than red.
+Interpolation in Lch (Lightness-Chroma-Hue) space produces the most visually natural
+gradients, especially suitable for UI color schemes and artistic gradients.
 
-**Mathematical Derivation**: The conversion pipeline is RGB -> XYZ (via sRGB D65 matrix) -> Lab (via nonlinear mapping) -> Lch (via converting a,b to polar coordinates: Chroma, Hue). The inverse process reverses each step.
+**Mathematical Derivation**: The conversion pipeline is RGB -> XYZ (via sRGB D65 matrix)
+-> Lab (via nonlinear mapping) -> Lch (via converting a,b to polar coordinates: Chroma,
+Hue). The inverse process reverses each step.
 
 **Code**:
 ```glsl
@@ -198,11 +228,16 @@ vec3 lerpLch(vec3 a, vec3 b, float x) {
 
 ### Step 7: sRGB Gamma and Linear Space Workflow
 
-**What**: Implement correct sRGB encode/decode functions and a complete linear-space pipeline
+**What**: Implement correct sRGB encode/decode functions and a complete linear-space
+pipeline
 
-**Why**: All lighting/blending computations must be performed in linear space. sRGB textures need to be decoded first (pow 2.2 or exact piecewise function), then encoded back to sRGB after computation. Ignoring this step causes colors to appear too dark and unnatural blending.
+**Why**: All lighting/blending computations must be performed in linear space.
+sRGB textures need to be decoded first (pow 2.2 or exact piecewise function), then
+encoded back to sRGB after computation.
+Ignoring this step causes colors to appear too dark and unnatural blending.
 
-**Complete Pipeline**: sRGB texture decode -> linear space shading/blending -> Reinhard tonemap -> sRGB encode
+**Complete Pipeline**: sRGB texture decode -> linear space shading/blending -> Reinhard
+tonemap -> sRGB encode
 
 **Code**:
 ```glsl
@@ -228,9 +263,15 @@ vec3 tonemap_reinhard(vec3 col) {
 
 **What**: Implement a physics-based temperature-to-color mapping
 
-**Why**: Used for fire, lava, stars, hot metal, and other scenarios requiring physically realistic emission colors. More believable than manual color tuning, with intuitive parameterization (input is just temperature).
+**Why**: Used for fire, lava, stars, hot metal, and other scenarios requiring physically
+realistic emission colors.
+More believable than manual color tuning, with intuitive parameterization (input is just
+temperature).
 
-**Mathematical Derivation**: Maps temperature T to CIE chromaticity coordinates (cx, cy) via Planck locus approximation, then converts to XYZ -> RGB, combined with Stefan-Boltzmann law (T^4) brightness scaling to produce physically realistic emission colors.
+**Mathematical Derivation**: Maps temperature T to CIE chromaticity coordinates (cx, cy)
+via Planck locus approximation, then converts to XYZ -> RGB, combined with
+Stefan-Boltzmann law (T^4) brightness scaling to produce physically realistic emission
+colors.
 
 **Code**:
 ```glsl
@@ -260,9 +301,14 @@ vec3 blackbodyPalette(float t) {
 
 ### Variant 1: Multi-Harmonic Cosine Palette (Anti-Aliased)
 
-**Difference from base version**: Extends the single cos to 9 layers of different frequencies for richer color detail; uses `fwidth()` for band-limited filtering to prevent high-frequency aliasing.
+**Difference from base version**: Extends the single cos to 9 layers of different
+frequencies for richer color detail; uses `fwidth()` for band-limited filtering to
+prevent high-frequency aliasing.
 
-**Principle**: `fwidth()` returns the variation across adjacent pixels. When oscillation frequency exceeds pixel resolution (i.e., w approaches or exceeds one full TAU period), `smoothstep` attenuates the cos contribution to 0, achieving approximate sinc filtering.
+**Principle**: `fwidth()` returns the variation across adjacent pixels.
+When oscillation frequency exceeds pixel resolution (i.e., w approaches or exceeds one
+full TAU period), `smoothstep` attenuates the cos contribution to 0, achieving
+approximate sinc filtering.
 
 **Complete code**:
 ```glsl
@@ -290,9 +336,12 @@ vec3 getColor(float t) {
 
 ### Variant 2: Hash-Driven Per-Tile Color Variation
 
-**Difference from base version**: Uses a hash function to generate a unique ID for each grid/tile, feeding the ID as the palette's t value to achieve "same palette but different color per tile".
+**Difference from base version**: Uses a hash function to generate a unique ID for each
+grid/tile, feeding the ID as the palette’s t value to achieve “same palette but
+different color per tile”.
 
-**Use cases**: Procedural tiles/brickwork/mosaics, Voronoi cell coloring, building facades.
+**Use cases**: Procedural tiles/brickwork/mosaics, Voronoi cell coloring, building
+facades.
 
 **Complete code**:
 ```glsl
@@ -310,12 +359,19 @@ vec3 tileColor = palette(hash12(tileId)); // Different color per tile
 
 ### Variant 3: Saturation-Preserving Improved RGB Interpolation
 
-**Difference from base version**: Detects saturation decay during RGB space interpolation and displaces colors away from the gray diagonal, achieving approximate perceptually uniform interpolation at very low cost (~15 instructions).
+**Difference from base version**: Detects saturation decay during RGB space
+interpolation and displaces colors away from the gray diagonal, achieving approximate
+perceptually uniform interpolation at very low cost (~15 instructions).
 
 **Principle**:
+
 1. Compute RGB linear interpolation result `ic`
-2. Compute the difference between expected saturation `mix(getsat(a), getsat(b), x)` and actual saturation `getsat(ic)`
+
+2. Compute the difference between expected saturation `mix(getsat(a), getsat(b), x)` and
+   actual saturation `getsat(ic)`
+
 3. Find the direction away from the gray diagonal `dir`
+
 4. Compensate saturation loss along that direction
 
 **Complete code**:
@@ -341,7 +397,10 @@ vec3 iLerp(vec3 a, vec3 b, float x) {
 
 ### Variant 4: Circular Hue Interpolation (HSV/Lch Space)
 
-**Difference from base version**: When interpolating in color spaces with a circular hue dimension, the hue wraparound from 0.9 to 0.1 crossing through 1.0/0.0 must be handled, otherwise interpolation takes the "long way" (e.g., red -> magenta -> blue -> cyan -> green -> yellow -> red instead of directly red -> orange -> yellow).
+**Difference from base version**: When interpolating in color spaces with a circular hue
+dimension, the hue wraparound from 0.9 to 0.1 crossing through 1.0/0.0 must be handled,
+otherwise interpolation takes the “long way” (e.g., red -> magenta -> blue -> cyan ->
+green -> yellow -> red instead of directly red -> orange -> yellow).
 
 **Complete code**:
 ```glsl
@@ -360,7 +419,9 @@ float lerpAngle(float a, float b, float x) {
 
 ### Variant 5: Additive Color Stacking (Glow/HDR Effects)
 
-**Difference from base version**: Instead of selecting a single color, additively stack palette colors from multiple iterations, producing natural HDR glow effects. Requires tone mapping.
+**Difference from base version**: Instead of selecting a single color, additively stack
+palette colors from multiple iterations, producing natural HDR glow effects.
+Requires tone mapping.
 
 **Use cases**: Fractal glow, halos, laser effects, particle systems, volumetric light.
 
@@ -378,27 +439,55 @@ finalColor = finalColor / (1.0 + finalColor); // Reinhard tonemap
 ## Performance Optimization Details
 
 ### 1. Branchless HSV/HSL Conversion
-Use vectorized `mod`/`abs`/`clamp` operations instead of if-else. All implementations above are already branchless. Branching is expensive on GPUs (especially divergent branches within a warp/wavefront); branchless versions ensure all threads follow the same execution path.
+
+Use vectorized `mod`/`abs`/`clamp` operations instead of if-else.
+All implementations above are already branchless.
+Branching is expensive on GPUs (especially divergent branches within a warp/wavefront);
+branchless versions ensure all threads follow the same execution path.
 
 ### 2. Band-Limited Filtering for Multi-Harmonic Palettes
-High-frequency cos layers produce Moire patterns at distance or small angles. Using `fwidth()` + `smoothstep` for automatic attenuation costs only ~2 extra instructions to eliminate aliasing. `fwidth()` leverages hardware partial derivative computation at nearly zero cost.
+
+High-frequency cos layers produce Moire patterns at distance or small angles.
+Using `fwidth()` + `smoothstep` for automatic attenuation costs only ~2 extra
+instructions to eliminate aliasing.
+`fwidth()` leverages hardware partial derivative computation at nearly zero cost.
 
 ### 3. Lch Pipeline Cost Analysis
-The complete RGB -> XYZ -> Lab -> Lch pipeline requires ~57 instructions, including matrix multiplication, pow, atan, etc. If you only need "slightly better than RGB" interpolation, use `iLerp` (improved RGB, ~15 instructions) instead of the full Lch pipeline for an excellent quality/performance ratio.
+
+The complete RGB -> XYZ -> Lab -> Lch pipeline requires ~57 instructions, including
+matrix multiplication, pow, atan, etc.
+If you only need “slightly better than RGB” interpolation, use `iLerp` (improved RGB,
+~15 instructions) instead of the full Lch pipeline for an excellent quality/performance
+ratio.
 
 ### 4. sRGB Gamma Approximation
-The exact piecewise linear sRGB conversion requires branching. In most visual scenarios, `pow(c, 2.2)` / `pow(c, 1.0/2.2)` is sufficiently accurate (error < 0.4%) and allows better compiler optimization. The exact version uses `mix` + `step` for branchless implementation but costs a few extra instructions.
+
+The exact piecewise linear sRGB conversion requires branching.
+In most visual scenarios, `pow(c, 2.2)` / `pow(c, 1.0/2.2)` is sufficiently accurate
+(error < 0.4%) and allows better compiler optimization.
+The exact version uses `mix` + `step` for branchless implementation but costs a few
+extra instructions.
 
 ### 5. Cosine Palette Vectorization
-`a + b * cos(TAU*(c*t+d))` compiles to 1 MAD + 1 COS + 1 MAD on the GPU, approximately 3-4 clock cycles, extremely efficient. All three channels (R/G/B) execute in parallel via SIMD.
+
+`a + b * cos(TAU*(c*t+d))` compiles to 1 MAD + 1 COS + 1 MAD on the GPU, approximately
+3-4 clock cycles, extremely efficient.
+All three channels (R/G/B) execute in parallel via SIMD.
 
 ### 6. Texture sRGB Decoding
-If texture data is already stored as sRGB, use `pow(texture(...).rgb, vec3(2.2))` to decode to linear space before computation, avoiding color distortion from lighting in nonlinear space. In OpenGL/Vulkan, you can also use the `GL_SRGB8_ALPHA8` format for automatic hardware decoding.
+
+If texture data is already stored as sRGB, use `pow(texture(...).rgb, vec3(2.2))` to
+decode to linear space before computation, avoiding color distortion from lighting in
+nonlinear space. In OpenGL/Vulkan, you can also use the `GL_SRGB8_ALPHA8` format for
+automatic hardware decoding.
 
 ## Combination Suggestions in Detail
 
 ### 1. Cosine Palette + SDF Raymarching
-The most classic combination. Use the normal direction, distance, or surface attributes of ray march hit points as palette t input, producing rich surface coloring.
+
+The most classic combination.
+Use the normal direction, distance, or surface attributes of ray march hit points as
+palette t input, producing rich surface coloring.
 
 **Example**:
 ```glsl
@@ -409,7 +498,10 @@ vec3 col = palette(t_palette + iTime * 0.1);
 ```
 
 ### 2. HSL/HSV + Data Visualization
-Map iteration counts, distance values, or gradient directions to hue (H), encoding other dimensions via saturation/lightness. E.g., using different hues to mark each step in SDF trace visualization.
+
+Map iteration counts, distance values, or gradient directions to hue (H), encoding other
+dimensions via saturation/lightness.
+E.g., using different hues to mark each step in SDF trace visualization.
 
 **Example**:
 ```glsl
@@ -419,7 +511,9 @@ vec3 col = hsl2rgb(h, 0.8, 0.5);
 ```
 
 ### 3. Cosine Palette + Fractals/Noise
-Use `length(uv)` or `fbm(p)` output plus `iTime` as t, combined with additive stacking and inverse-distance glow, producing psychedelic dynamic color effects.
+
+Use `length(uv)` or `fbm(p)` output plus `iTime` as t, combined with additive stacking
+and inverse-distance glow, producing psychedelic dynamic color effects.
 
 **Example**:
 ```glsl
@@ -428,7 +522,10 @@ vec3 col = palette(n + length(uv) * 0.5);
 ```
 
 ### 4. Blackbody Palette + Volume Rendering/Fire
-Map a temperature field (noise-driven or physically simulated) through `blackbodyPalette()` to color, producing physically plausible fire, lava, and stellar effects.
+
+Map a temperature field (noise-driven or physically simulated) through
+`blackbodyPalette()` to color, producing physically plausible fire, lava, and stellar
+effects.
 
 **Example**:
 ```glsl
@@ -439,7 +536,10 @@ fireColor = tonemap_reinhard(fireColor); // HDR -> LDR
 ```
 
 ### 5. Linear Space Workflow + Any Palette Technique
-Regardless of which palette method is used, always follow: sRGB texture decode -> linear space shading/blending -> Reinhard tonemap -> sRGB encode as the complete pipeline, ensuring physically correct color computation.
+
+Regardless of which palette method is used, always follow: sRGB texture decode -> linear
+space shading/blending -> Reinhard tonemap -> sRGB encode as the complete pipeline,
+ensuring physically correct color computation.
 
 **Complete pipeline example**:
 ```glsl
@@ -462,7 +562,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 ### 6. Hash + Palette + Tiling System
-In procedural tiles/brickwork/mosaics, use `hash(tileID)` as palette input so each tile has a different color while maintaining an overall coordinated color scheme.
+
+In procedural tiles/brickwork/mosaics, use `hash(tileID)` as palette input so each tile
+has a different color while maintaining an overall coordinated color scheme.
 
 **Complete example**:
 ```glsl

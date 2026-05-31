@@ -1,20 +1,33 @@
 # 2D Procedural Patterns
 
 ## Use Cases
-- Repeating/aperiodic 2D patterns: grids, hexagons, Truchet, interference patterns, kaleidoscopes, spirals, Lissajous
+
+- Repeating/aperiodic 2D patterns: grids, hexagons, Truchet, interference patterns,
+  kaleidoscopes, spirals, Lissajous
+
 - Procedural backgrounds, UI textures, sci-fi HUD/radar
+
 - Fractals, water caustics, and other natural phenomena
+
 - Infinite detail, seamless tiling, parameter-driven visual effects
 
 ## Core Principles
 
 2D procedural patterns = **domain transforms + distance fields + color mapping**:
 
-1. **Domain repetition**: `fract()`/`mod()` folds the infinite plane into repeating cells
-2. **Cell identification**: `floor()` extracts integer coordinates as hash seeds, driving per-cell random variations
-3. **Distance field (SDF)**: mathematical functions compute pixel-to-shape distance, `smoothstep` renders edges
+1. **Domain repetition**: `fract()`/`mod()` folds the infinite plane into repeating
+   cells
+
+2. **Cell identification**: `floor()` extracts integer coordinates as hash seeds,
+   driving per-cell random variations
+
+3. **Distance field (SDF)**: mathematical functions compute pixel-to-shape distance,
+   `smoothstep` renders edges
+
 4. **Color mapping**: cosine palette `a + b*cos(2pi(c*t+d))` or HSV
-5. **Layer compositing**: multi-layer loop results blended via addition/multiplication/`mix`
+
+5. **Layer compositing**: multi-layer loop results blended via
+   addition/multiplication/`mix`
 
 Key formulas:
 ```glsl
@@ -34,11 +47,13 @@ mat2(cos(a), -sin(a), sin(a), cos(a));
 ## Implementation Steps
 
 ### Step 1: UV Normalization
+
 ```glsl
 vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
 ```
 
 ### Step 2: Domain Repetition
+
 ```glsl
 #define SCALE 4.0
 vec2 cell_uv = fract(uv * SCALE) - 0.5;
@@ -56,6 +71,7 @@ vec4 hex_data = dot(h.xy, h.xy) < dot(h.zw, h.zw)
 ```
 
 ### Step 3: Per-Cell Randomization
+
 ```glsl
 float hash21(vec2 p) {
     return fract(sin(dot(p, vec2(141.173, 289.927))) * 43758.5453);
@@ -65,6 +81,7 @@ float radius = 0.15 + 0.1 * rnd;
 ```
 
 ### Step 4: SDF Shape Drawing
+
 ```glsl
 // Circle
 float d = length(cell_uv) - radius;
@@ -87,6 +104,7 @@ float shape = 1.0 - smoothstep(radius - 0.008, radius + 0.008, length(cell_uv));
 ```
 
 ### Step 5: Polar Coordinate Rings/Arcs
+
 ```glsl
 vec2 polar = vec2(length(uv), atan(uv.y, uv.x));
 float ring_id = floor(polar.x * NUM_RINGS + 0.5) / NUM_RINGS;
@@ -96,6 +114,7 @@ ring *= smoothstep(0.0, 0.05, arc_end);
 ```
 
 ### Step 6: Cosine Palette
+
 ```glsl
 vec3 palette(float t) {
     vec3 a = vec3(0.5, 0.5, 0.5);
@@ -107,6 +126,7 @@ vec3 palette(float t) {
 ```
 
 ### Step 7: Iterative Stacking & Glow
+
 ```glsl
 #define NUM_LAYERS 4.0
 vec3 finalColor = vec3(0.0);
@@ -123,6 +143,7 @@ for (float i = 0.0; i < NUM_LAYERS; i++) {
 ```
 
 ### Step 8: Trigonometric Interference
+
 ```glsl
 #define MAX_ITER 5
 vec2 p = mod(uv * TAU, TAU) - 250.0;
@@ -142,6 +163,7 @@ vec3 colour = vec3(pow(abs(c), 8.0));
 ```
 
 ### Step 9: Multi-Layer Depth Compositing
+
 ```glsl
 #define NUM_DEPTH_LAYERS 4.0
 float m = 0.0;
@@ -154,6 +176,7 @@ for (float i = 0.0; i < 1.0; i += 1.0 / NUM_DEPTH_LAYERS) {
 ```
 
 ### Step 10: Post-Processing
+
 ```glsl
 col = pow(clamp(col, 0.0, 1.0), vec3(1.0 / 2.2));                          // Gamma
 col = col * 0.6 + 0.4 * col * col * (3.0 - 2.0 * col);                    // Contrast S-curve
@@ -221,6 +244,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### Variant 1: Hexagonal Truchet Arcs
+
 ```glsl
 float hex(vec2 p) {
     p = abs(p);
@@ -246,6 +270,7 @@ d = abs(d - 0.288675) - 0.1;
 ```
 
 ### Variant 2: Water Caustic Interference
+
 ```glsl
 #define TAU 6.28318530718
 #define MAX_ITER 5
@@ -267,6 +292,7 @@ colour = clamp(colour + vec3(0.0, 0.35, 0.5), 0.0, 1.0);
 ```
 
 ### Variant 3: Polar Concentric Ring Arc Segments
+
 ```glsl
 #define NUM_RINGS 20.0
 #define PALETTE vec3(0.0, 1.4, 2.0) + 1.5
@@ -281,6 +307,7 @@ vec3 col = (sin(PALETTE + id * 5.0 + iTime) * 0.5 + 0.5) * rz;
 ```
 
 ### Variant 4: Multi-Layer Depth Parallax Network
+
 ```glsl
 #define NUM_DEPTH_LAYERS 4.0
 vec2 GetPos(vec2 id, vec2 offs, float t) {
@@ -302,6 +329,7 @@ for (float i = 0.0; i < 1.0; i += 1.0 / NUM_DEPTH_LAYERS) {
 ```
 
 ### Variant 5: Fractal Apollonian
+
 ```glsl
 float apollian(vec4 p, float s) {
     float scale = 1.0;
@@ -325,22 +353,41 @@ vec3 col = hsv2rgb(vec3(hue, sat, 1.0));
 ## Performance & Composition
 
 **Performance:**
-- Iteration loops are the biggest bottleneck; `NUM_LAYERS` 4->8 halves performance; mobile should use 3 layers or fewer
+
+- Iteration loops are the biggest bottleneck; `NUM_LAYERS` 4->8 halves performance;
+  mobile should use 3 layers or fewer
+
 - Use `step()`/`smoothstep()`/`mix()` instead of `if/else`
+
 - Merge multiple SDFs with `min()`/`max()`, then apply a single `smoothstep`
-- Precompute `sin`/`cos` pairs outside loops; write irrational constants as literal values
+
+- Precompute `sin`/`cos` pairs outside loops; write irrational constants as literal
+  values
+
 - `atan` is expensive; use `dot` approximation when only periodicity is needed
-- LOD: reduce iterations for distant objects `int iters = int(mix(3.0, float(MAX_ITER), smoothstep(...)));`
+
+- LOD: reduce iterations for distant objects
+  `int iters = int(mix(3.0, float(MAX_ITER), smoothstep(...)));`
+
 - `smoothstep` is often better than `pow` and inherently clamps to [0,1]
 
 **Combinations:**
+
 - **+ Noise**: `d += triangleNoise(uv * 10.0) * 0.05;` for organic erosion feel
+
 - **+ Cross-hatch**: grayscale thresholds + `sin` lines to simulate hand-drawn style
-- **+ SDF Boolean**: `min` (union) / `max` (intersection) / subtraction for complex geometry
+
+- **+ SDF Boolean**: `min` (union) / `max` (intersection) / subtraction for complex
+  geometry
+
 - **+ Domain distortion**: `uv += 0.05 * vec2(sin(uv.y*5.+iTime), sin(uv.x*3.+iTime));`
+
 - **+ Radial blur**: multi-sample average along polar coordinate direction
-- **+ Pseudo-3D lighting**: SDF gradient as normal, add diffuse/specular for embossed look
+
+- **+ Pseudo-3D lighting**: SDF gradient as normal, add diffuse/specular for embossed
+  look
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/procedural-2d-pattern.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/procedural-2d-pattern.md)

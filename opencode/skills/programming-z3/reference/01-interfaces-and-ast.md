@@ -1,12 +1,17 @@
 # 01 - Logical Interfaces and AST Basics
 
-Source anchors: Programming Z3 sections 2, 2.1, 2.2, 2.3, 2.4 (approx lines 171-378 in text dump).
+Source anchors: Programming Z3 sections 2, 2.1, 2.2, 2.3, 2.4 (approx lines 171-378 in
+text dump).
 
 ## Core Mental Model
 
-Z3 consumes many-sorted first-order formulas with theory symbols. In Z3Py:
+Z3 consumes many-sorted first-order formulas with theory symbols.
+In Z3Py:
+
 - You build terms/formulas as expression trees.
+
 - You assert Bool-sorted formulas into a solver.
+
 - You call `check()` and inspect `model()` for sat states.
 
 ## Minimal Propositional Pattern
@@ -39,7 +44,8 @@ solve(Not(fml))
 
 ## SMT-LIB Interoperability
 
-Z3Py expressions correspond to SMT-LIB2 formulas. Useful for debugging interoperability:
+Z3Py expressions correspond to SMT-LIB2 formulas.
+Useful for debugging interoperability:
 
 ```python
 from z3 import *
@@ -53,18 +59,26 @@ print(s.sexpr())
 ## Sorts You Should Reach For
 
 From tutorial coverage:
+
 - `BoolSort()`, `IntSort()`, `RealSort()`
+
 - `BitVecSort(n)`
+
 - `Array(IndexSort, ElemSort)`
+
 - `StringSort()` and `SeqSort(S)`
+
 - `DeclareSort("S")` for uninterpreted sorts
 
-Uninterpreted sort domains are non-empty. This matters for satisfiability reasoning.
+Uninterpreted sort domains are non-empty.
+This matters for satisfiability reasoning.
 
 ## Signatures and Symbols
 
 - Constants are nullary functions.
+
 - Free function symbols are declared with explicit domain/range sorts.
+
 - Boolean-range functions can be used directly as formula-producing predicates.
 
 ```python
@@ -80,11 +94,17 @@ solve(g(1 + f(a)))
 
 ## Terms, Formulas, and AST Inspection
 
-A Bool-sorted expression is a formula. Inspect AST shape with:
+A Bool-sorted expression is a formula.
+Inspect AST shape with:
+
 - `num_args()`
+
 - `children()`
+
 - `arg(i)`
+
 - `decl()`
+
 - `decl().name()`
 
 ```python
@@ -98,7 +118,9 @@ print(n.num_args(), n.children(), n.arg(0), n.arg(1), n.decl(), n.decl().name())
 ## Quantifiers and Lambda Notes
 
 - `ForAll` / `Exists` bind variables in local scope.
+
 - Bound names are not assignments; they are scoped binders.
+
 - Lambda terms are supported and represented through array/function-space mechanisms.
 
 Example pattern from tutorial:
@@ -119,5 +141,8 @@ solve(Select(m1, 6) != z)
 ## Practical Guidance
 
 - Keep sort discipline explicit; most subtle bugs are sort mismatches.
+
 - Prefer small helper constructors for repeated expression templates.
-- Use `sexpr()` when model/query behavior is surprising; inspect the exact asserted form.
+
+- Use `sexpr()` when model/query behavior is surprising; inspect the exact asserted
+  form.

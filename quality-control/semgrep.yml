@@ -40,33 +40,12 @@ rules:
       - typescript
       - javascript
     severity: ERROR
-  - id: no-stub-override-with-abstractmethod
-    pattern: |
-      @override
-      @abstractmethod
-      def $F(...):
-        ...
+  - id: no-as-unknown
+    pattern: '$X as unknown as $Y'
     message: |
-      This method has both @override and @abstractmethod with no
-      implementation. This usually means the operation is already defined
-      mathematically in greater generality on a supercategory. Review
-      whether this method should exist here at all — the inherited signature
-      from the supercategory may already be sufficient.
+      `as unknown as T` bypasses type safety entirely. Use a proper type assertion or
+      restructure the code to avoid the cast.
     languages:
-      - python
-    severity: WARNING
-  - id: no-stub-override-pass-or-ellipsis
-    patterns:
-      - pattern: |
-          @override
-          def $F(...):
-            ...
-      - pattern-regex: '\n\s+(\.\.\.|pass)\s*\n'
-    message: |
-      This method has @override with no implementation (only `...` or
-      `pass`). This usually means the operation is already defined
-      mathematically in greater generality on a supercategory. Review
-      whether this method should exist here at all.
-    languages:
-      - python
-    severity: WARNING
+      - typescript
+      - javascript
+    severity: ERROR

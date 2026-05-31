@@ -2,53 +2,64 @@
 name: bug-report
 description: Draft a bug report issue for lean4-skills
 ---
-
 # Bug Report
 
 Draft and submit a bug report as a GitHub issue on `cameronfreer/lean4-skills`.
 
 ## Precondition
 
-Invoke this command only if the user explicitly ran it or explicitly agreed to
-draft a bug report. If invoked without prior opt-in, ask:
+Invoke this command only if the user explicitly ran it or explicitly agreed to draft a
+bug report. If invoked without prior opt-in, ask:
 
-> This looks like a lean4-skills bug. Want me to draft a bug report?
+> This looks like a lean4-skills bug.
+> Want me to draft a bug report?
 
 If the user explicitly ran `/lean4-contribute:bug-report`, treat that as opt-in.
-Do not proceed unless the user confirms. Do not mine git diff, gather
-diagnostics, or ask structured questions until consent is given.
+Do not proceed unless the user confirms.
+Do not mine git diff, gather diagnostics, or ask structured questions until consent is
+given.
 
 ## Gathering Context
 
-Collect the following from the user and the current session. Ask for anything
-you cannot infer:
+Collect the following from the user and the current session.
+Ask for anything you cannot infer:
 
 1. **Summary** — One-line description of the bug
+
 2. **Expected behavior** — What should happen
+
 3. **Actual behavior** — What happens instead
+
 4. **Repro steps** — Numbered steps to reproduce
+
 5. **Minimal Lean snippet** — Smallest code that triggers the bug (strip
    project-specific details)
-6. **Environment / toolchain** — Lean version (`lean --version`), lake version,
-   OS, plugin version, relevant MCP servers
-7. **Diagnostics / build output** — Compiler errors, lake build output, or LSP
-   messages (redact paths and usernames)
-8. **Possible fix** (optional) — If you have a local fix, write a short
-   **prose summary** of what the fix does (1–3 sentences). Do **not** include
-   a raw diff by default. If the user explicitly asks to include a patch
-   excerpt, include only the minimal relevant hunk (not the whole diff), strip
-   file paths and surrounding context, and require a separate confirmation:
-   > This draft includes a code patch. Review it for unrelated code or secrets.
+
+6. **Environment / toolchain** — Lean version (`lean --version`), lake version, OS,
+   plugin version, relevant MCP servers
+
+7. **Diagnostics / build output** — Compiler errors, lake build output, or LSP messages
+   (redact paths and usernames)
+
+8. **Possible fix** (optional) — If you have a local fix, write a short **prose
+   summary** of what the fix does (1–3 sentences).
+   Do **not** include a raw diff by default.
+   If the user explicitly asks to include a patch excerpt, include only the minimal
+   relevant hunk (not the whole diff), strip file paths and surrounding context, and
+   require a separate confirmation:
+   > This draft includes a code patch.
+   > Review it for unrelated code or secrets.
    > **Include this patch?** (yes / remove it / edit)
-9. **Privacy / redaction check** — Before showing the draft, scan for
-   filesystem paths, usernames, API keys, or other sensitive data and redact
-   them. Flag anything you redacted so the user can verify.
+
+9. **Privacy / redaction check** — Before showing the draft, scan for filesystem paths,
+   usernames, API keys, or other sensitive data and redact them.
+   Flag anything you redacted so the user can verify.
 
 ## Drafting the Issue
 
 Compose the issue using this template:
 
-```
+````
 Title: [Bug] <summary>
 Labels: bug
 
@@ -67,22 +78,29 @@ Labels: bug
 ## Minimal Example
 ```lean
 <minimal Lean snippet>
-```
+````
 
 ## Environment
+
 - Lean: <version>
+
 - Lake: <version>
+
 - OS: <os>
+
 - Plugin: <version>
+
 - MCP: <servers if relevant>
 
 ## Diagnostics
+
 <build output / compiler errors>
 
 ## Possible Fix
+
 <prose summary of fix; minimal patch excerpt only if user confirmed>
 
----
+* * *
 *Drafted via [lean4-contribute](https://github.com/cameronfreer/lean4-skills)*
 ```
 
@@ -119,3 +137,4 @@ After confirmation, submit using the first available method:
 
 Report the result (issue URL, fallback URL, or email draft) and confirm
 completion.
+```

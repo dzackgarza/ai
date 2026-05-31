@@ -2,17 +2,18 @@
 name: config-file-editing
 description: Use when editing JSON or YAML config files — covers safe read/modify/write patterns with jq, yq, and Python to prevent syntax errors and indentation corruption.
 ---
-
 # Config File Editing
 
 ## Core Rule
 
-**Never edit JSON or YAML directly with text patch tools.** Direct edits introduce indentation errors, syntax corruption, and missed escaping. Always parse → modify → dump.
+**Never edit JSON or YAML directly with text patch tools.** Direct edits introduce
+indentation errors, syntax corruption, and missed escaping.
+Always parse → modify → dump.
 
 ## Quick Reference
 
 | Task | Tool |
-|---|---|
+| --- | --- |
 | Read/query JSON | `jq` |
 | Read/query YAML | `yq` |
 | Modify JSON or YAML | Python (parse → modify → dump) |
@@ -55,13 +56,17 @@ jq '.servers[0].host' config.json
 yq '.servers[0].host' config.yml
 ```
 
-Use these for inspection only. For writes, always use the Python pattern above.
+Use these for inspection only.
+For writes, always use the Python pattern above.
 
 ## Why This Matters
 
 Direct patch-tool edits on JSON/YAML fail silently when:
+
 - Indentation changes break YAML block scalars
+
 - Commas or brackets are inserted in wrong positions in JSON
+
 - Special characters in values require escaping that text substitution misses
 
 The Python parse → modify → dump cycle handles all of this automatically.

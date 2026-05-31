@@ -56,29 +56,34 @@ components:
     rounded: "{rounded.md}"
     padding: 24px
 ---
-
 ## Overview
 
-Describe the voice and feel of the brand in one or two paragraphs. What mood
-does it evoke? What emotional response should a user have on first impression?
+Describe the voice and feel of the brand in one or two paragraphs.
+What mood does it evoke?
+What emotional response should a user have on first impression?
 
 ## Colors
 
 - **Primary ({colors.primary}):** Core text, headlines, high-emphasis surfaces.
+
 - **Secondary ({colors.secondary}):** Supporting text, borders, metadata.
-- **Tertiary ({colors.tertiary}):** Interaction driver — buttons, links,
-  selected states. Use sparingly to preserve its signal.
+
+- **Tertiary ({colors.tertiary}):** Interaction driver — buttons, links, selected
+  states. Use sparingly to preserve its signal.
+
 - **Neutral ({colors.neutral}):** Page background and surface fills.
 
 ## Typography
 
-Inter for everything. Weight and size carry hierarchy, not font family. Tight
-letter-spacing on display sizes; default tracking on body.
+Inter for everything.
+Weight and size carry hierarchy, not font family.
+Tight letter-spacing on display sizes; default tracking on body.
 
 ## Layout
 
-Spacing scale is a 4px baseline. Use `md` (16px) for intra-component gaps,
-`lg` (24px) for inter-component gaps, `xl` (48px) for section breaks.
+Spacing scale is a 4px baseline.
+Use `md` (16px) for intra-component gaps, `lg` (24px) for inter-component gaps, `xl`
+(48px) for section breaks.
 
 ## Shapes
 
@@ -88,12 +93,16 @@ Rounded corners are modest — `sm` on interactive elements, `md` on cards.
 ## Components
 
 - `button-primary` is the only high-emphasis action per screen.
-- `card` is the default surface for grouped content. No shadow by default.
 
-## Do's and Don'ts
+- `card` is the default surface for grouped content.
+  No shadow by default.
 
-- **Do** use token references (`{colors.primary}`) instead of literal hex in
-  component definitions.
-- **Don't** introduce colors outside the palette — extend the palette first.
-- **Don't** nest component variants. `button-primary-hover` is a sibling,
-  not a child.
+## Do’s and Don’ts
+
+- **Do** use token references (`{colors.primary}`) instead of literal hex in component
+  definitions.
+
+- **Don’t** introduce colors outside the palette — extend the palette first.
+
+- **Don’t** nest component variants.
+  `button-primary-hover` is a sibling, not a child.

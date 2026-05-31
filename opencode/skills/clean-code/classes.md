@@ -1,41 +1,55 @@
 # Chapter 10: Classes
 
-We've focused on lines and blocks of code—functions and how they interrelate. But we don't have clean code until we've paid attention to higher levels of organization.
+We’ve focused on lines and blocks of code—functions and how they interrelate.
+But we don’t have clean code until we’ve paid attention to higher levels of
+organization.
 
 ## Class Organization
 
 Standard Java convention:
+
 1. Public static constants
+
 2. Private static variables
+
 3. Private instance variables
+
 4. Public functions
+
 5. Private utilities (right after the public function that calls them)
 
 This follows the stepdown rule—program reads like a newspaper article.
 
 ### Encapsulation
 
-Keep variables and utility functions private. Sometimes make them protected for tests. But loosening encapsulation is always a last resort.
+Keep variables and utility functions private.
+Sometimes make them protected for tests.
+But loosening encapsulation is always a last resort.
 
 ## Classes Should Be Small!
 
-The first rule of classes is they should be small. The second rule is they should be smaller than that.
+The first rule of classes is they should be small.
+The second rule is they should be smaller than that.
 
-With functions we measured by lines. **With classes we count responsibilities.**
+With functions we measured by lines.
+**With classes we count responsibilities.**
 
 ### The Name Test
 
-The name of a class should describe its responsibilities. If you cannot derive a concise name, it's likely too large.
+The name of a class should describe its responsibilities.
+If you cannot derive a concise name, it’s likely too large.
 
-Weasel words like `Manager`, `Processor`, `Super` often hint at too many responsibilities.
+Weasel words like `Manager`, `Processor`, `Super` often hint at too many
+responsibilities.
 
 ### The 25-Word Test
 
-Write a brief description in about 25 words without using "if," "and," "or," or "but."
+Write a brief description in about 25 words without using “if,” "and," “or,” or “but.”
 
-> "The SuperDashboard provides access to the component that last held the focus, **and** it also allows us to track the version and build numbers."
+> “The SuperDashboard provides access to the component that last held the focus, **and**
+> it also allows us to track the version and build numbers.”
 
-That "and" is a hint of too many responsibilities.
+That “and” is a hint of too many responsibilities.
 
 ## The Single Responsibility Principle (SRP)
 
@@ -63,19 +77,28 @@ public class Version {
 
 **Why is SRP often violated?**
 
-Getting software to work and making it clean are different activities. We focus on getting code to work, then fail to switch to organization and cleanliness. We move to the next problem instead of breaking overstuffed classes into decoupled units.
+Getting software to work and making it clean are different activities.
+We focus on getting code to work, then fail to switch to organization and cleanliness.
+We move to the next problem instead of breaking overstuffed classes into decoupled
+units.
 
-**The "too many classes" fear:**
+**The “too many classes” fear:**
 
-Some developers fear many small classes make it harder to understand the bigger picture. But a system with many small classes has no more moving parts than one with few large classes.
+Some developers fear many small classes make it harder to understand the bigger picture.
+But a system with many small classes has no more moving parts than one with few large
+classes.
 
-**Which would you prefer?** Toolboxes with many small, well-labeled drawers? Or a few drawers where you toss everything?
+**Which would you prefer?** Toolboxes with many small, well-labeled drawers?
+Or a few drawers where you toss everything?
 
-> We want systems composed of many small classes, not a few large ones. Each small class encapsulates a single responsibility, has a single reason to change, and collaborates with others to achieve desired behaviors.
+> We want systems composed of many small classes, not a few large ones.
+> Each small class encapsulates a single responsibility, has a single reason to change,
+> and collaborates with others to achieve desired behaviors.
 
 ## Cohesion
 
-Classes should have a small number of instance variables. Each method should manipulate one or more of those variables.
+Classes should have a small number of instance variables.
+Each method should manipulate one or more of those variables.
 
 **High cohesion:** Methods and variables hang together as a logical whole.
 
@@ -103,13 +126,19 @@ public class Stack {
 
 **When cohesion breaks down:**
 
-Small functions with short parameter lists can lead to instance variables used by only a subset of methods. When this happens, there's at least one other class trying to get out.
+Small functions with short parameter lists can lead to instance variables used by only a
+subset of methods.
+When this happens, there’s at least one other class trying to get out.
 
-**Breaking large functions → breaking out classes:** If you extract a function that uses four variables, you might promote them to instance variables. But now the class loses cohesion. Solution: those variables and methods become their own class.
+**Breaking large functions → breaking out classes:** If you extract a function that uses
+four variables, you might promote them to instance variables.
+But now the class loses cohesion.
+Solution: those variables and methods become their own class.
 
 ## Organizing for Change
 
-Change is continual. In a clean system, we organize classes to reduce the risk of change.
+Change is continual.
+In a clean system, we organize classes to reduce the risk of change.
 
 ```java
 // Bad - must be opened for any change
@@ -126,7 +155,8 @@ public class Sql {
 }
 ```
 
-This class must change for new statement types AND for detail changes to existing types. Two reasons to change → violates SRP.
+This class must change for new statement types AND for detail changes to existing types.
+Two reasons to change → violates SRP.
 
 ```java
 // Good - closed classes, open for extension
@@ -155,17 +185,24 @@ public class FindByKeySql extends Sql {
 ```
 
 **Benefits:**
+
 - Each class is excruciatingly simple
+
 - Comprehension time drops to almost nothing
+
 - Risk of breaking other code is vanishingly small
+
 - Easy to test in isolation
+
 - Adding `UpdateSql` requires no changes to existing classes
 
-This supports SRP and the **Open-Closed Principle (OCP):** Classes should be open for extension but closed for modification.
+This supports SRP and the **Open-Closed Principle (OCP):** Classes should be open for
+extension but closed for modification.
 
 ## Isolating from Change
 
-Concrete classes contain implementation details. Abstract classes represent concepts.
+Concrete classes contain implementation details.
+Abstract classes represent concepts.
 
 A client depending on concrete details is at risk when those details change.
 
@@ -202,6 +239,8 @@ public class PortfolioTest {
 }
 ```
 
-**Dependency Inversion Principle (DIP):** Classes should depend upon abstractions, not on concrete details.
+**Dependency Inversion Principle (DIP):** Classes should depend upon abstractions, not
+on concrete details.
 
-If a system is decoupled enough to be tested this way, it will also be more flexible and promote more reuse.
+If a system is decoupled enough to be tested this way, it will also be more flexible and
+promote more reuse.

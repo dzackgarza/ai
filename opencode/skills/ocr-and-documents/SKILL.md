@@ -9,11 +9,10 @@ metadata:
     tags: [PDF, Documents, Research, Arxiv, Text-Extraction, OCR]
     related_skills: [powerpoint]
 ---
-
 # PDF & Document Extraction
 
-For DOCX: use `python-docx` (parses actual document structure, far better than OCR).
-For PPTX: see the `powerpoint` skill (uses `python-pptx` with full slide/notes support).
+For DOCX: use `python-docx` (parses actual document structure, far better than OCR). For
+PPTX: see the `powerpoint` skill (uses `python-pptx` with full slide/notes support).
 This skill covers **PDFs and scanned documents**.
 
 ## Step 1: Remote URL Available?
@@ -27,12 +26,13 @@ web_extract(urls=["https://example.com/report.pdf"])
 
 This handles PDF-to-markdown conversion via Firecrawl with no local dependencies.
 
-Only use local extraction when: the file is local, web_extract fails, or you need batch processing.
+Only use local extraction when: the file is local, web_extract fails, or you need batch
+processing.
 
 ## Step 2: Choose Local Extractor
 
 | Feature | pymupdf (~25MB) | marker-pdf (~3-5GB) |
-|---------|-----------------|---------------------|
+| --- | --- | --- |
 | **Text-based PDF** | ✅ | ✅ |
 | **Scanned PDF (OCR)** | ❌ | ✅ (90+ languages) |
 | **Tables** | ✅ (basic) | ✅ (high accuracy) |
@@ -48,12 +48,16 @@ Only use local extraction when: the file is local, web_extract fails, or you nee
 | **Install size** | ~25MB | ~3-5GB (PyTorch + models) |
 | **Speed** | Instant | ~1-14s/page (CPU), ~0.2s/page (GPU) |
 
-**Decision**: Use pymupdf unless you need OCR, equations, forms, or complex layout analysis.
+**Decision**: Use pymupdf unless you need OCR, equations, forms, or complex layout
+analysis.
 
 If the user needs marker capabilities but the system lacks ~5GB free disk:
-> "This document needs OCR/advanced extraction (marker-pdf), which requires ~5GB for PyTorch and models. Your system has [X]GB free. Options: free up space, provide a URL so I can use web_extract, or I can try pymupdf which works for text-based PDFs but not scanned documents or equations."
+> “This document needs OCR/advanced extraction (marker-pdf), which requires ~5GB for
+> PyTorch and models. Your system has [X]GB free.
+> Options: free up space, provide a URL so I can use web_extract, or I can try pymupdf
+> which works for text-based PDFs but not scanned documents or equations.”
 
----
+* * *
 
 ## pymupdf (lightweight)
 
@@ -81,7 +85,7 @@ for page in doc:
 "
 ```
 
----
+* * *
 
 ## marker-pdf (high-quality OCR)
 
@@ -107,7 +111,7 @@ marker_single document.pdf --output_dir ./output
 marker /path/to/folder --workers 4    # Batch
 ```
 
----
+* * *
 
 ## Arxiv Papers
 
@@ -156,16 +160,24 @@ for i, page in enumerate(doc):
         print(page.get_text("text"))
 ```
 
-No extra dependencies needed — pymupdf covers split, merge, search, and text extraction in one package.
+No extra dependencies needed — pymupdf covers split, merge, search, and text extraction
+in one package.
 
----
+* * *
 
 ## Notes
 
 - `web_extract` is always first choice for URLs
+
 - pymupdf is the safe default — instant, no models, works everywhere
-- marker-pdf is for OCR, scanned docs, equations, complex layouts — install only when needed
+
+- marker-pdf is for OCR, scanned docs, equations, complex layouts — install only when
+  needed
+
 - Both helper scripts accept `--help` for full usage
+
 - marker-pdf downloads ~2.5GB of models to `~/.cache/huggingface/` on first use
+
 - For Word docs: `pip install python-docx` (better than OCR — parses actual structure)
+
 - For PowerPoint: see the `powerpoint` skill (uses python-pptx)

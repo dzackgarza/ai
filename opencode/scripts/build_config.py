@@ -355,8 +355,7 @@ def validate_openrouter(config: dict[str, Any]) -> None:
         )
     else:
         logger.info(
-            "[green]OpenRouter: All live whitelisted models are priced at "
-            "zero[/green]",
+            "[green]OpenRouter: All live whitelisted models are priced at zero[/green]",
             extra={"markup": True},
         )
 
@@ -410,6 +409,21 @@ def validate_openrouter(config: dict[str, Any]) -> None:
     else:
         logger.info(
             "[green]OpenRouter: No free models are present in the blacklist[/green]",
+            extra={"markup": True},
+        )
+
+    unaccounted_free = sorted(free_live_ids - whitelist - blacklist)
+    if unaccounted_free:
+        logger.warning(
+            "[yellow]OpenRouter: %d free model(s) absent from both whitelist and "
+            "blacklist: %s[/yellow]",
+            len(unaccounted_free),
+            unaccounted_free,
+            extra={"markup": True},
+        )
+    else:
+        logger.info(
+            "[green]OpenRouter: All live free models are accounted for[/green]",
             extra={"markup": True},
         )
 

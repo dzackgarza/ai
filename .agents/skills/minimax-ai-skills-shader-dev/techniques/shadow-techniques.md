@@ -2,11 +2,13 @@
 
 ## Core Principles
 
-March from the surface point toward the light source, using the **ratio of nearest distance to marching distance** to estimate penumbra width.
+March from the surface point toward the light source, using the **ratio of nearest
+distance to marching distance** to estimate penumbra width.
 
 ### Key Formulas
 
 Classic formula: `shadow = min(shadow, k * h / t)`
+
 - `h` = SDF value at current position, `t` = distance traveled, `k` = penumbra hardness
 
 Improved formula (geometric triangulation) — eliminates sharp edge banding artifacts:
@@ -16,12 +18,16 @@ d = sqrt(h² - y²)       // true closest distance perpendicular to the ray
 shadow = min(shadow, d / (w * max(0, t - y)))
 ```
 
-Negative extension — allows `res` to drop to -1, remapped with a C1 continuous function to eliminate hard creases:
+Negative extension — allows `res` to drop to -1, remapped with a C1 continuous function
+to eliminate hard creases:
 ```
 res = max(res, -1.0)
 shadow = 0.25 * (1 + res)² * (2 - res)
 ```
-This is equivalent to `smoothstep` over [-1, 1] instead of [0, 1]. The step size is clamped with `clamp(h, 0.005, 0.50)` to ensure the ray penetrates slightly into geometry, capturing both outer and inner penumbra. This produces results close to ground truth for varying light sizes.
+This is equivalent to `smoothstep` over [-1, 1] instead of [0, 1]. The step size is
+clamped with `clamp(h, 0.005, 0.50)` to ensure the ray penetrates slightly into
+geometry, capturing both outer and inner penumbra.
+This produces results close to ground truth for varying light sizes.
 
 ## Implementation Steps
 
@@ -362,10 +368,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ## Standalone HTML + WebGL2 Template
 
-When generating standalone HTML files, use the following complete template. Key points:
+When generating standalone HTML files, use the following complete template.
+Key points:
+
 - Must use `canvas.getContext('webgl2')`
+
 - Shaders use `#version 300 es`
+
 - Entry function is `void main()`, not `void mainImage()`
+
 - Use `gl_FragCoord.xy` to get pixel coordinates (available in WebGL2)
 
 ```html
@@ -756,21 +767,37 @@ float godRays(vec3 ro, vec3 rd, float tmax, vec3 sunDir) {
 ## Performance & Composition
 
 **Performance optimization:**
+
 - Bounding volume clipping (plane/AABB) can reduce 30-70% of wasted iterations
+
 - Step clamping `clamp(h, minStep, maxStep)` prevents stalling / skipping thin objects
+
 - Early exit: `res < 0.004` (classic) or `res < -1.0` (negative extension)
+
 - Simplified `map()` omitting material calculations, returning distance only
+
 - Only compute shadow when `dif > 0.0001`; skip for backlit faces
-- Iteration count: simple scenes 16~32, complex FBM 64~128, terrain ~80
+
+- Iteration count: simple scenes 16~~32, complex FBM 64~~128, terrain ~80
+
 - `#define ZERO (min(iFrame,0))` prevents compiler loop unrolling
 
 **Composition tips:**
-- AO: shadows control direct light, AO controls indirect light, `col = diffuse * sha + ambient * ao`
+
+- AO: shadows control direct light, AO controls indirect light,
+  `col = diffuse * sha + ambient * ao`
+
 - SSS: `sss *= 0.25 + 0.75 * sha` -- SSS weakens but does not vanish in shadow
-- Fog: complete lit+shadowed shading first, then `mix(col, fogColor, 1.0 - exp(-0.001*t*t))`
-- Normal mapping: perturbed normals for lighting, geometric normals for shadow determination
+
+- Fog: complete lit+shadowed shading first, then
+  `mix(col, fogColor, 1.0 - exp(-0.001*t*t))`
+
+- Normal mapping: perturbed normals for lighting, geometric normals for shadow
+  determination
+
 - Reflection: `refSha = calcSoftShadow(pos + nor*0.01, reflect(rd, nor), 0.02, 8.0)`
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/shadow-techniques.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/shadow-techniques.md)

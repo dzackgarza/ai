@@ -1,13 +1,19 @@
 # Volumetric Rendering Skill
 
 ## Use Cases
-- Rendering participating media: clouds, fog, smoke, fire, explosions, atmospheric scattering
-- Visual effects of light passing through and scattering/absorbing within semi-transparent volumes
+
+- Rendering participating media: clouds, fog, smoke, fire, explosions, atmospheric
+  scattering
+
+- Visual effects of light passing through and scattering/absorbing within
+  semi-transparent volumes
+
 - Suitable for ShaderToy real-time fragment shaders, also portable to game engines
 
 ## Core Principles
 
-Advance along each view ray at fixed or adaptive step sizes (Ray Marching), querying medium density at each sample point, accumulating color and opacity.
+Advance along each view ray at fixed or adaptive step sizes (Ray Marching), querying
+medium density at each sample point, accumulating color and opacity.
 
 ### Key Formulas
 
@@ -19,7 +25,9 @@ col.rgb *= col.a;
 sum += col * (1.0 - sum.a);
 ```
 
-**Henyey-Greenstein phase function**: `HG(cosθ, g) = (1 - g²) / (1 + g² - 2g·cosθ)^(3/2)`
+**Henyey-Greenstein phase function**:
+`HG(cosθ, g) = (1 - g²) / (1 + g² - 2g·cosθ)^(3/2)`
+
 - `g > 0` forward scattering, `g < 0` back scattering, `g = 0` isotropic
 
 **Frostbite improved integration**: `Sint = (S - S × exp(-σe × dt)) / σe`
@@ -27,6 +35,7 @@ sum += col * (1.0 - sum.a);
 ## Implementation Steps
 
 ### Step 1: Camera and Ray Construction
+
 ```glsl
 vec2 uv = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
 vec3 ro = vec3(0.0, 1.0, -5.0);  // Camera position
@@ -39,6 +48,7 @@ vec3 rd = normalize(uv.x * uu + uv.y * vv + fl * ww);
 ```
 
 ### Step 2: Volume Bounds Intersection
+
 ```glsl
 // Method A: Horizontal plane bounds (cloud layers)
 float tmin = (yBottom - ro.y) / rd.y;
@@ -57,6 +67,7 @@ vec2 intersectSphere(vec3 ro, vec3 rd, float r) {
 ```
 
 ### Step 3: Density Field Definition
+
 ```glsl
 // 3D Value Noise (texture-based)
 float noise(vec3 x) {
@@ -88,6 +99,7 @@ float cloudDensity(vec3 p) {
 ```
 
 ### Step 4: Ray Marching Main Loop
+
 ```glsl
 #define NUM_STEPS 64
 #define STEP_SIZE 0.05
@@ -114,6 +126,7 @@ vec4 raymarch(vec3 ro, vec3 rd, float tmin, float tmax, vec3 bgCol) {
 ```
 
 ### Step 5: Lighting Calculation
+
 ```glsl
 // Method A: Directional derivative lighting (1 extra sample)
 vec3 sundir = normalize(vec3(1.0, 0.0, -1.0));
@@ -143,6 +156,7 @@ float scattering = mix(
 ```
 
 ### Step 6: Color Mapping
+
 ```glsl
 // Method A: Density-interpolated coloring (clouds)
 vec3 cloudColor = mix(vec3(1.0, 0.95, 0.8), vec3(0.25, 0.3, 0.35), den);
@@ -163,6 +177,7 @@ vec3 ambientLight = mix(
 ```
 
 ### Step 7: Final Compositing and Post-Processing
+
 ```glsl
 // Sky background
 vec3 bgCol = vec3(0.6, 0.71, 0.75) - rd.y * 0.2 * vec3(1.0, 0.5, 1.0);
@@ -288,6 +303,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ## Common Variants
 
 ### Variant 1: Self-Emissive Volume (Fire/Explosions)
+
 ```glsl
 vec3 emissionColor(float density, float radius) {
     vec3 result = mix(vec3(1.0, 0.9, 0.8), vec3(0.4, 0.15, 0.1), density);
@@ -301,6 +317,7 @@ sum.rgb += lightColor / exp(lDist * lDist * lDist * 0.08) / 30.0;
 ```
 
 ### Variant 2: Physical Scattering Atmosphere (Rayleigh + Mie)
+
 ```glsl
 float density(vec3 p, float scaleHeight) {
     return exp(-max(length(p) - R_INNER, 0.0) / scaleHeight);
@@ -317,6 +334,7 @@ vec3 scatter = sumRay * kRay * phaseRayleigh(cc) + sumMie * kMie * phaseMie(-0.7
 ```
 
 ### Variant 3: Frostbite Energy-Conserving Integration
+
 ```glsl
 vec3 S = evaluateLight(p) * sigmaS * phaseFunction() * volumetricShadow(p, lightPos);
 vec3 Sint = (S - S * exp(-sigmaE * dt)) / sigmaE;
@@ -325,6 +343,7 @@ transmittance *= exp(-sigmaE * dt);
 ```
 
 ### Variant 4: Production-Grade Clouds (Horizon Zero Dawn Style)
+
 ```glsl
 float m = cloudMapBase(pos, norY);
 m *= cloudGradient(norY);
@@ -337,6 +356,7 @@ col = mix(texture(iChannel1, spos, 0.0), col, 0.05);
 ```
 
 ### Variant 5: Gradient Normal Surface Lighting (Fur Ball / Volume Surface)
+
 ```glsl
 vec3 furNormal(vec3 pos, float density) {
     float eps = 0.01;
@@ -354,22 +374,40 @@ float spec = pow(max(0.0, dot(N, H)), 50.0);     // Blinn-Phong
 ## Performance & Composition
 
 ### Performance Tips
+
 - **Early exit**: break out of loop when `sum.a > 0.99`
-- **LOD noise**: `int lod = 5 - int(log2(1.0 + t * 0.5));` reduce fBM octaves at distance
+
+- **LOD noise**: `int lod = 5 - int(log2(1.0 + t * 0.5));` reduce fBM octaves at
+  distance
+
 - **Adaptive step size**: `float dt = max(0.05, 0.02 * t);` fine near, coarse far
-- **Dithering**: add pixel-dependent random offset to start position, eliminates banding artifacts
+
+- **Dithering**: add pixel-dependent random offset to start position, eliminates banding
+  artifacts
+
 - **Bounds clipping**: only march within the ray-volume intersection interval
+
 - **Density threshold skip**: only compute lighting when `den > 0.01`
+
 - **Minimal shadow steps**: 6-16 steps with increasing step size
-- **Temporal reprojection**: blend history frames (e.g., 5% new frame + 95% history frame)
+
+- **Temporal reprojection**: blend history frames (e.g., 5% new frame + 95% history
+  frame)
 
 ### Composition Tips
+
 - **SDF terrain + volumetric clouds**: mutual depth occlusion (Himalayas style)
+
 - **Volumetric fog + scene lighting**: `color = color * transmittance + scatteredLight`
-- **Multi-layer volumes**: different density functions at different heights, march independently then composite
+
+- **Multi-layer volumes**: different density functions at different heights, march
+  independently then composite
+
 - **Post-process light shafts (God Rays)**: radial blur or screen-space ray marching
+
 - **Procedural sky + volumetric clouds**: distance fogging for natural transitions
 
 ## Further Reading
 
-For full step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/volumetric-rendering.md)
+For full step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/volumetric-rendering.md)

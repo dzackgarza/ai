@@ -5,14 +5,16 @@ metadata:
   author: dzack
   version: "0.1.0"
 ---
-
 # Integer Programming for Pure Mathematics
 
 ## Overview
 
-OR-Tools CP-SAT solver can be applied to problems in number theory, arithmetic geometry, and lattice theory. The key insight is that many mathematical search problems can be encoded as constraint satisfaction or optimization over integers.
+OR-Tools CP-SAT solver can be applied to problems in number theory, arithmetic geometry,
+and lattice theory. The key insight is that many mathematical search problems can be
+encoded as constraint satisfaction or optimization over integers.
 
-**Key constraint:** All constraints must be defined using integers. Multiply by a large integer if necessary to convert non-integer terms.
+**Key constraint:** All constraints must be defined using integers.
+Multiply by a large integer if necessary to convert non-integer terms.
 
 ## Installation
 
@@ -23,9 +25,13 @@ pip install ortools
 ## Basic Workflow
 
 1. **Create model** - `model = cp_model.CpModel()`
+
 2. **Create variables** - `x = model.new_int_var(0, max, "x")`
+
 3. **Add constraints** - `model.add(x != y)`
+
 4. **Solve** - `solver = cp_model.CpSolver(); status = solver.solve(model)`
+
 5. **Check status** - `OPTIMAL`, `FEASIBLE`, `INFEASIBLE`, `MODEL_INVALID`, or `UNKNOWN`
 
 ## Mathematical Applications
@@ -302,25 +308,28 @@ def modular_inverse(a, m):
 
 ## Common Constraint Patterns
 
-| Mathematical Concept | Code                                                   |
-| -------------------- | ------------------------------------------------------ |
-| Equality             | `model.add(x == y)`                                    |
-| Inequality           | `model.add(x != y)`                                    |
-| Bounded variable     | `model.new_int_var(lo, hi, "name")`                    |
-| Boolean variable     | `model.new_int_var(0, 1, "b")`                         |
-| Sum constraint       | `model.add(x + y + z == n)`                            |
+| Mathematical Concept | Code |
+| --- | --- |
+| Equality | `model.add(x == y)` |
+| Inequality | `model.add(x != y)` |
+| Bounded variable | `model.new_int_var(lo, hi, "name")` |
+| Boolean variable | `model.new_int_var(0, 1, "b")` |
+| Sum constraint | `model.add(x + y + z == n)` |
 | Product (linearize!) | Create `p = x * y` as separate IntVar with constraints |
-| Modulo               | `model.add(x % m == r)`                                |
-| Absolute value       | `model.add(abs_x >= x); model.add(abs_x >= -x)`        |
-| AllDifferent         | `model.add_all_different([x, y, z])`                   |
-| Implication          | `model.add(x == 0).only_enforce_if(y == 1)`            |
+| Modulo | `model.add(x % m == r)` |
+| Absolute value | `model.add(abs_x >= x); model.add(abs_x >= -x)` |
+| AllDifferent | `model.add_all_different([x, y, z])` |
+| Implication | `model.add(x == 0).only_enforce_if(y == 1)` |
 
 ## Handling Non-Linear Expressions
 
-CP-SAT is a **linear** solver. For nonlinear constraints:
+CP-SAT is a **linear** solver.
+For nonlinear constraints:
 
 1. **For products of variables**: Create intermediate variables and add constraints
+
 2. **For squares**: Use `model.add(square == x * x)` or linearize
+
 3. **For divisions**: Use integer division constraints
 
 ```python
@@ -354,15 +363,17 @@ solver.parameters.log_search_progress = True
 
 ## Return Values
 
-| Status          | Meaning                               |
-| --------------- | ------------------------------------- |
-| `OPTIMAL`       | Optimal solution found                |
-| `FEASIBLE`      | Feasible solution, not proven optimal |
-| `INFEASIBLE`    | Problem proven unsolvable             |
-| `MODEL_INVALID` | Model validation failed               |
-| `UNKNOWN`       | Hit limits before resolution          |
+| Status | Meaning |
+| --- | --- |
+| `OPTIMAL` | Optimal solution found |
+| `FEASIBLE` | Feasible solution, not proven optimal |
+| `INFEASIBLE` | Problem proven unsolvable |
+| `MODEL_INVALID` | Model validation failed |
+| `UNKNOWN` | Hit limits before resolution |
 
 ## When to Use CP-SAT vs MILP
 
 - **CP-SAT**: Exhaustive search, counting, feasibility, many binary constraints
-- **MPSolver (MILP)**: Linear objectives, continuous relaxations useful, large linear programs
+
+- **MPSolver (MILP)**: Linear objectives, continuous relaxations useful, large linear
+  programs

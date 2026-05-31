@@ -247,6 +247,37 @@ def build_gemini_server_config(config: dict, server_type: str) -> dict:
         return server_config
 
 
+def build_antigravity_server_config(config: dict, server_type: str) -> dict:
+    """Build a server configuration in Antigravity format.
+
+    Antigravity uses:
+    - No 'type' field for local servers
+    - command: string, args: array
+    - For remote: uses 'serverUrl' field (not 'url' or 'type')
+    """
+    if server_type == 'remote':
+        server_config = {
+            'serverUrl': resolve_env_tokens(config.get('url', ''))
+        }
+        if config.get('headers'):
+            server_config['headers'] = {
+                key: resolve_env_tokens(val) for key, val in config['headers'].items()
+            }
+        return server_config
+    else:
+        command, args, env, cwd = resolve_local_server_fields(config)
+        server_config = {
+            'command': command,
+            'args': args
+        }
+        if env:
+            server_config['env'] = env
+        if cwd:
+            server_config['cwd'] = cwd
+        return server_config
+
+
+
 def build_codex_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Codex TOML format."""
     if server_type == 'remote':
@@ -408,6 +439,7 @@ def sync_json_harness(config_path: Path, mcp_servers: dict, json_path: str, dry_
         print(f"  MCP servers: {list(mcp_servers.keys())}")
         return True
 
+    config_path.parent.mkdir(parents=True, exist_ok=True)
     with open(config_path, 'w') as f:
         json.dump(config, f, indent=2)
         f.write('\n')
@@ -415,6 +447,7 @@ def sync_json_harness(config_path: Path, mcp_servers: dict, json_path: str, dry_
     print(f"  ✓ Updated {config_path}")
     print(f"  MCP servers: {list(mcp_servers.keys())}")
     return True
+
 
 
 def main():
@@ -462,6 +495,8 @@ def main():
         elif harness_name == 'gemini' or harness_name == 'qwen':
             # Qwen is forked from Gemini, uses same format
             builder_func = build_gemini_server_config
+        elif harness_name == 'antigravity-cli':
+            builder_func = build_antigravity_server_config
         else:
             # Default to OpenCode format for unknown harnesses
             builder_func = build_opencode_server_config

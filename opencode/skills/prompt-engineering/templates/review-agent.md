@@ -1,8 +1,9 @@
 # Template: Review Agent
 
-**Use for:** Code review, document review, quality checks, proofreading, compliance checks, design review.
+**Use for:** Code review, document review, quality checks, proofreading, compliance
+checks, design review.
 
----
+* * *
 
 ## The Template
 
@@ -101,26 +102,26 @@ Think step by step through each criterion.
 5. Recommendation is clear and actionable
 ```
 
----
+* * *
 
 ## Variables
 
 | Variable | Description | Example |
-|----------|-------------|---------|
-| `{{review_domain}}` | Type of review | "Python code quality" |
-| `{{target}}` | What's being reviewed | "the authentication module at /src/auth/" |
-| `{{review_focus}}` | Main concern | "security vulnerabilities and best practices" |
-| `{{user}}` | Who needs the review | "Jordan" |
-| `{{review_outcome_N}}` | What the user wants | "all security issues identified" |
-| `{{benefit_N}}` | Why it matters | "I can fix them before deployment" |
-| `{{criterion_N}}` | Review category | "Security" |
-| `{{check_Na}}` | Specific check | "Input validation on all endpoints" |
-| `{{review_scope}}` | What to cover | "Only the auth module, not the whole codebase" |
-| `{{time_budget}}` | Effort limit | "15 minutes" |
-| `{{priority_areas}}` | What matters most | "SQL injection, auth bypass" |
-| `{{exclusions}}` | What to skip | "Styling, minor refactors" |
+| --- | --- | --- |
+| `{{review_domain}}` | Type of review | “Python code quality” |
+| `{{target}}` | What’s being reviewed | “the authentication module at /src/auth/” |
+| `{{review_focus}}` | Main concern | “security vulnerabilities and best practices” |
+| `{{user}}` | Who needs the review | “Jordan” |
+| `{{review_outcome_N}}` | What the user wants | “all security issues identified” |
+| `{{benefit_N}}` | Why it matters | “I can fix them before deployment” |
+| `{{criterion_N}}` | Review category | “Security” |
+| `{{check_Na}}` | Specific check | “Input validation on all endpoints” |
+| `{{review_scope}}` | What to cover | “Only the auth module, not the whole codebase” |
+| `{{time_budget}}` | Effort limit | “15 minutes” |
+| `{{priority_areas}}` | What matters most | “SQL injection, auth bypass” |
+| `{{exclusions}}` | What to skip | “Styling, minor refactors” |
 
----
+* * *
 
 ## Example: Code Review
 
@@ -189,7 +190,7 @@ Think step by step through each criterion.
 4. Final recommendation is clear
 ```
 
----
+* * *
 
 ## Example: Document Review
 
@@ -235,44 +236,54 @@ Review the API documentation for completeness, clarity, and accuracy.
 - Out of scope: Marketing copy, changelog
 ```
 
----
+* * *
 
 ## Variations
 
 **Quick Check (5 min):**
+
 - 3 criteria max
+
 - Simple pass/fail, no severity levels
+
 - Short summary, no detailed breakdown
 
 **Thorough Audit (1 hour):**
+
 - 6+ criteria categories
+
 - Require evidence for each finding
-- Include "Comparison to Best Practices" section
-- Add "Risk Assessment" section
+
+- Include “Comparison to Best Practices” section
+
+- Add “Risk Assessment” section
 
 **Peer Review Style:**
-- More collaborative tone
-- "Questions" section instead of just "Issues"
-- Include "What I'd do differently" perspective
 
----
+- More collaborative tone
+
+- “Questions” section instead of just “Issues”
+
+- Include “What I’d do differently” perspective
+
+* * *
 
 ## Common Mistakes
 
 | Mistake | Fix |
-|---------|-----|
+| --- | --- |
 | Too broad scope | Focus on specific module/document |
 | No criteria defined | Without criteria, review is subjective |
 | Issues without fixes | Always suggest how to resolve |
 | Missing severity | Not all issues are equal |
 | No positives mentioned | Balance criticism with acknowledgment |
 
----
+* * *
 
 ## Review Types Quick Reference
 
 | Review Type | Key Criteria | Time Budget |
-|-------------|--------------|-------------|
+| --- | --- | --- |
 | **Code Security** | Auth, injection, secrets, validation | 15-30 min |
 | **Code Quality** | Style, structure, tests, docs | 10-20 min |
 | **PR Review** | Changes make sense, no regressions, tests | 10-15 min |
@@ -280,18 +291,24 @@ Review the API documentation for completeness, clarity, and accuracy.
 | **Design Review** | Feasibility, edge cases, alternatives | 20-30 min |
 | **Content Review** | Tone, accuracy, audience fit | 10-15 min |
 
----
+* * *
 
 ## Success Metrics
 
 A good review agent output:
+
 - [ ] Every criterion addressed with evidence
+
 - [ ] Issues have clear locations and fixes
+
 - [ ] Severity levels are appropriate
+
 - [ ] Positives are acknowledged
+
 - [ ] Recommendation is unambiguous
+
 - [ ] User stories are satisfied
 
----
+* * *
 
 *Part of the Hal Stack 🦞 — Agent Orchestration*

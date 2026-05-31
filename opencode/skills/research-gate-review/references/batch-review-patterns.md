@@ -13,7 +13,10 @@ delegate_task(tasks=[
 ```
 
 - 3 parallel subagents, 1 card each
-- Throughput: ~3 cards per 8-10 minutes (verified across 5 batches, 14/15 successes, 1 timeout)
+
+- Throughput: ~3 cards per 8-10 minutes (verified across 5 batches, 14/15 successes, 1
+  timeout)
+
 - Timeout rate: 1 in 15 (SPEC-MAPPING-LATTICES at 600s with 42 API calls)
 
 ## Card-type-specific context templates
@@ -65,7 +68,7 @@ Working directory: /home/dzack/research
 Real issues discovered across 15 reviews:
 
 | Card | Gate | Finding |
-|------|------|---------|
+| --- | --- | --- |
 | SPEC-MAPPING-RINGS | G5 | 3 missing decision cards: roots-of-unity owner, Ore localization owner, q-adic lattice precision |
 | SPEC-MAPPING-ALGEBRAS | G2 | 3 unaccounted Sage surfaces: semisimple_quotient(), Supercommutative(), radical() gap |
 | SPEC-MAPPING-ALGEBRAS | G5 | Cellular subcategory missing decision card reference |
@@ -93,12 +96,26 @@ Real issues discovered across 15 reviews:
 | PLAN-CONSTRUCTOR-ADMISSION | G4 | Minor: PHASE-VARIADIC has parent ambiguity (frontmatter says one plan, body says another) |
 
 Recurring patterns:
-- **Stale file references** (5 instances in specs, 4 in plans): theory files deleted or relocated during repo restructuring. Check `git log -- <path>` for every referenced file.
-- **Self-referential dependsOn** (3 instances in phases): wrapup tasks listing themselves. Trivially detectable.
-- **Missing decision cards** (2 instances): spec says "decision needed" but no card exists in decisions/.
-- **YAML dependsOn contradicts body dependency** (3 instances in plans): plan body declares a cross-plan dependency, but frontmatter `dependsOn` is empty. Add the dependency to YAML.
-- **Success criteria misalignment** (2 instances in plans): YAML `successCriteria` and body checkboxes mismatched or duplicated.
-- **Phase misattribution** (2 instances): phase card parented to one plan in frontmatter but described as belonging to another in body prose.
+
+- **Stale file references** (5 instances in specs, 4 in plans): theory files deleted or
+  relocated during repo restructuring.
+  Check `git log -- <path>` for every referenced file.
+
+- **Self-referential dependsOn** (3 instances in phases): wrapup tasks listing
+  themselves. Trivially detectable.
+
+- **Missing decision cards** (2 instances): spec says “decision needed” but no card
+  exists in decisions/.
+
+- **YAML dependsOn contradicts body dependency** (3 instances in plans): plan body
+  declares a cross-plan dependency, but frontmatter `dependsOn` is empty.
+  Add the dependency to YAML.
+
+- **Success criteria misalignment** (2 instances in plans): YAML `successCriteria` and
+  body checkboxes mismatched or duplicated.
+
+- **Phase misattribution** (2 instances): phase card parented to one plan in frontmatter
+  but described as belonging to another in body prose.
 
 ## Triage before dispatch
 
@@ -126,11 +143,20 @@ for root, dirs, files in os.walk('plans/features'):
                 ...
 ```
 
-Cards already reviewed but not promoted are almost always awaiting human signoff. Moving them from `needs-agent-review` to `needs-human-input` prevents redundant re-review.
+Cards already reviewed but not promoted are almost always awaiting human signoff.
+Moving them from `needs-agent-review` to `needs-human-input` prevents redundant
+re-review.
 
 ## Large spec timeout recovery
 
-SPEC-MAPPING-LATTICES (and similar >500-line mapping specs) will timeout at 600s. Recovery options:
-1. Split review: "review only the lattice tier table" → separate subagent → "review only the constructor routes"
-2. Give the subagent a grep-based checklist instead of asking it to read every Sage source file
-3. Pre-compute source file existence and provide it in the context so the subagent doesn't spend API calls on `ls`/`find`
+SPEC-MAPPING-LATTICES (and similar >500-line mapping specs) will timeout at 600s.
+Recovery options:
+
+1. Split review: “review only the lattice tier table” → separate subagent → “review only
+   the constructor routes”
+
+2. Give the subagent a grep-based checklist instead of asking it to read every Sage
+   source file
+
+3. Pre-compute source file existence and provide it in the context so the subagent
+   doesn’t spend API calls on `ls`/`find`

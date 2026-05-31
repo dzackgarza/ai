@@ -3,7 +3,6 @@ name: zotero
 description: Manage Zotero reference libraries via the Web API. Search, list, add items by DOI/ISBN/PMID (with duplicate detection), delete/trash items, update metadata and tags, export in BibTeX/RIS/CSL-JSON, batch-add from files, check PDF attachments, cross-reference citations, find missing DOIs via CrossRef, and fetch open-access PDFs. Supports --json output for scripting. Use when the user asks about academic references, citation management, literature libraries, PDFs for papers, bibliography export, or Zotero specifically.
 metadata: {"clawdbot":{"emoji":"📚","requires":{"env":["ZOTERO_API_KEY","ZOTERO_USER_ID"]},"primaryEnv":"ZOTERO_API_KEY"}}
 ---
-
 # Zotero Skill
 
 Interact with Zotero personal or group libraries via the REST API v3.
@@ -25,7 +24,8 @@ Optional env var for CrossRef/Unpaywall polite pool (improves DOI lookup success
 CROSSREF_EMAIL   — Your email (optional; uses fallback if unset)
 ```
 
-If credentials are missing, tell the user what's needed and link them to the key creation page.
+If credentials are missing, tell the user what’s needed and link them to the key
+creation page.
 
 ## CLI Script
 
@@ -38,7 +38,7 @@ python3 scripts/zotero.py <command> [options]
 ### Commands
 
 | Command | Description | Example |
-|---------|-------------|---------|
+| --- | --- | --- |
 | `items` | List top-level items | `zotero.py items --limit 50` |
 | `search` | Search by query | `zotero.py search "cognitive load"` |
 | `get` | Full item details + attachments | `zotero.py get ITEMKEY` |
@@ -64,11 +64,17 @@ python3 scripts/zotero.py <command> [options]
 ### Common Options
 
 - `--limit N` — Max items to return (default 25)
+
 - `--sort FIELD` — Sort by dateModified, title, creator, date
+
 - `--direction asc|desc` — Sort direction
+
 - `--collection KEY` — Filter by or add to collection
+
 - `--type TYPE` — Filter by item type (journalArticle, book, conferencePaper, etc.)
+
 - `--tags "tag1,tag2"` — Add tags when creating items
+
 - `--force` — Skip duplicate detection on add commands
 
 ## Workflows
@@ -122,7 +128,8 @@ python3 zotero.py add-doi "10.1093/jamia/ocaa037" --tags "review"
 # Warns if already in library. Use --force to override.
 ```
 
-Duplicate detection: translates DOI to metadata, searches library by first author, compares DOI fields.
+Duplicate detection: translates DOI to metadata, searches library by first author,
+compares DOI fields.
 
 ### Bulk add from a file
 
@@ -178,10 +185,11 @@ python3 zotero.py find-dois --apply
 python3 zotero.py find-dois --collection COLLKEY --apply
 ```
 
-Scans journalArticle and conferencePaper items missing DOIs, queries CrossRef, and matches
-by title similarity (>85%), exact year, and first author last name. Dry run by default — use
-`--apply` to write. Only patches the DOI field; never touches other metadata. 1s delay between
-CrossRef requests (polite pool with mailto).
+Scans journalArticle and conferencePaper items missing DOIs, queries CrossRef, and
+matches by title similarity (>85%), exact year, and first author last name.
+Dry run by default — use `--apply` to write.
+Only patches the DOI field; never touches other metadata.
+1s delay between CrossRef requests (polite pool with mailto).
 
 ### Fetch open-access PDFs
 
@@ -202,13 +210,15 @@ python3 zotero.py fetch-pdfs --upload --limit 10
 python3 zotero.py fetch-pdfs --sources unpaywall,semanticscholar
 ```
 
-Tries three legal OA sources in order: Unpaywall → Semantic Scholar → DOI content negotiation.
-By default creates linked URL attachments (no Zotero storage quota needed). Use `--upload` for
-full S3 upload to Zotero storage. Use `--download-dir` to also save PDFs locally.
+Tries three legal OA sources in order: Unpaywall → Semantic Scholar → DOI content
+negotiation. By default creates linked URL attachments (no Zotero storage quota needed).
+Use `--upload` for full S3 upload to Zotero storage.
+Use `--download-dir` to also save PDFs locally.
 
 **Sources:** `unpaywall`, `semanticscholar`, `doi` (default: all three)
 
-**Rate limits:** 1s between Unpaywall/Semantic Scholar requests, 2s between DOI requests.
+**Rate limits:** 1s between Unpaywall/Semantic Scholar requests, 2s between DOI
+requests.
 
 ### Scripting with JSON
 
@@ -220,10 +230,20 @@ python3 zotero.py --json get ITEMKEY | jq '.title'
 ## Notes
 
 - Zero dependencies — Python 3 stdlib only (urllib, json, argparse)
+
 - Write operations require an API key with write permissions
+
 - If Zotero translation server is down (503), DOI lookups fall back to CrossRef
-- **Input validation:** DOIs must be `10.xxxx/...` format. Item keys are 8-char alphanumeric (e.g., `VNPN6FHT`). ISBNs must be valid checksums.
+
+- **Input validation:** DOIs must be `10.xxxx/...` format.
+  Item keys are 8-char alphanumeric (e.g., `VNPN6FHT`). ISBNs must be valid checksums.
+
 - `check-pdfs` fetches all items; for large libraries (500+), this may be slow
-- `fetch-pdfs` also processes all items — use `--collection` to scope for large libraries
+
+- `fetch-pdfs` also processes all items — use `--collection` to scope for large
+  libraries
+
 - Rate limits are generous; batch-add includes 1s delay between items
-- For common errors and troubleshooting, see [references/troubleshooting.md](references/troubleshooting.md)
+
+- For common errors and troubleshooting, see
+  [references/troubleshooting.md](references/troubleshooting.md)

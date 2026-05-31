@@ -2,22 +2,35 @@
 
 ## Use Cases
 
-- Rendering scenes composed of geometric primitives (spheres, planes, boxes, cylinders, ellipsoids, etc.)
-- Requiring precise surface intersection points, normals, and distance calculations (no iterative approximation)
+- Rendering scenes composed of geometric primitives (spheres, planes, boxes, cylinders,
+  ellipsoids, etc.)
+
+- Requiring precise surface intersection points, normals, and distance calculations (no
+  iterative approximation)
+
 - Building the underlying geometry engine for ray tracers / path tracers
+
 - Scenes requiring accurate shadows, reflections, and refractions
 
 ## Core Principles
 
-Substitute the ray equation `P(t) = O + tD` into the geometric body's implicit equation to obtain an algebraic equation in `t`, then solve it in closed form.
+Substitute the ray equation `P(t) = O + tD` into the geometric body’s implicit equation
+to obtain an algebraic equation in `t`, then solve it in closed form.
 
-**Unified intersection workflow**: Build equation -> Simplify to standard form -> Discriminant test -> Take smallest positive root -> Compute gradient at intersection for normal
+**Unified intersection workflow**: Build equation -> Simplify to standard form ->
+Discriminant test -> Take smallest positive root -> Compute gradient at intersection for
+normal
 
 **Key formulas**:
+
 - **Sphere** `|P-C|^2 = r^2` -> Quadratic equation
+
 - **Plane** `N·P + d = 0` -> Linear equation
+
 - **Box** Intersection of three pairs of parallel planes -> Slab Method
+
 - **Ellipsoid** `|P/R|^2 = 1` -> Sphere intersection in scaled space
+
 - **Torus** `(|P_xy| - R)^2 + P_z^2 = r^2` -> Quartic equation
 
 ## Implementation Steps
@@ -193,7 +206,11 @@ vec3 shade(vec3 pos, vec3 normal, vec3 rd, vec3 albedo) {
 }
 ```
 
-> **IMPORTANT: Critical pitfall**: `d.xy` must be passed as distBound, and `d.y` must be updated each time a closer intersection is found! If the deployed code passes the original `dist` directly without updating, the intersection logic will fail (all object distance tests become invalid), resulting in a completely black screen.
+> **IMPORTANT: Critical pitfall**: `d.xy` must be passed as distBound, and `d.y` must be
+> updated each time a closer intersection is found!
+> If the deployed code passes the original `dist` directly without updating, the
+> intersection logic will fail (all object distance tests become invalid), resulting in
+> a completely black screen.
 
 ```glsl
 #define MAX_BOUNCES 4
@@ -227,9 +244,14 @@ vec3 radiance(vec3 ro, vec3 rd) {
 
 ## Complete Code Template
 
-Runs directly on ShaderToy, includes sphere, plane, and box primitives with reflection and Blinn-Phong shading.
+Runs directly on ShaderToy, includes sphere, plane, and box primitives with reflection
+and Blinn-Phong shading.
 
-> **IMPORTANT: Must follow**: All intersection function calls must use `d.xy` as the `distBound` parameter, and update `d.y` after each closer intersection is found. Incorrect usage: `iSphere(ro, rd, dist, ...)` (always using the original dist). Correct usage: `iSphere(ro, rd, d.xy, ...)` followed by `if (t < d.y) { d.y = t; ... }` to update.
+> **IMPORTANT: Must follow**: All intersection function calls must use `d.xy` as the
+> `distBound` parameter, and update `d.y` after each closer intersection is found.
+> Incorrect usage: `iSphere(ro, rd, dist, ...)` (always using the original dist).
+> Correct usage: `iSphere(ro, rd, d.xy, ...)` followed by
+> `if (t < d.y) { d.y = t; ... }` to update.
 
 ```glsl
 // Analytic Ray Tracing - Complete ShaderToy Template
@@ -422,7 +444,7 @@ vec2 sphDistances(vec3 ro, vec3 rd, vec4 sph) {
 // col = mix(bgColor, sphereColor, coverage);
 ```
 
-### Variant 4: Refraction (Snell's Law)
+### Variant 4: Refraction (Snell’s Law)
 
 ```glsl
 // Requires a random number function defined first
@@ -485,9 +507,9 @@ float iSphere4(vec3 ro, vec3 rd, vec2 distBound, inout vec3 normal, float ra) {
 ## Common Errors and Safeguards
 
 ### Error 1: Distance Bound Not Updated
-**Symptom**: Screen is completely black or shows only background
-**Cause**: `distBound.y` not updated after each intersection
-**Fix**:
+
+**Symptom**: Screen is completely black or shows only background **Cause**:
+`distBound.y` not updated after each intersection **Fix**:
 ```glsl
 // WRONG:
 t = iSphere(ro, rd, dist, tmpNormal, 1.0);
@@ -498,23 +520,27 @@ if (t < d.y) { d.y = t; d.z = matId; normal = tmpNormal; }
 ```
 
 ### Error 2: EPSILON Too Small Causing Self-Intersection Artifacts
-**Symptom**: Black spots or artifacts on object surfaces
-**Cause**: `EPSILON` value too small, ray still intersects with itself
-**Fix**: Adjust EPSILON based on scene scale; typical values 1e-3 ~ 1e-2
+
+**Symptom**: Black spots or artifacts on object surfaces **Cause**: `EPSILON` value too
+small, ray still intersects with itself **Fix**: Adjust EPSILON based on scene scale;
+typical values 1e-3 ~ 1e-2
 
 ### Error 3: Variable Used as Loop Upper Bound
-**Symptom**: WebGL2 compilation failure or shader crash
-**Cause**: In GLSL ES 3.0, `for` loop upper bounds must be constants
-**Fix**: Use `#define` for loop upper bounds, and keep bounds to 4-5 iterations max
+
+**Symptom**: WebGL2 compilation failure or shader crash **Cause**: In GLSL ES 3.0, `for`
+loop upper bounds must be constants **Fix**: Use `#define` for loop upper bounds, and
+keep bounds to 4-5 iterations max
 
 ### Error 4: Division by Zero Causing NaN
-**Symptom**: Stripe patterns from NaN propagation across the screen
-**Cause**: Division not protected when ray direction components are zero
-**Fix**: Always use `max(abs(x), 1e-8)` or similar protection
+
+**Symptom**: Stripe patterns from NaN propagation across the screen **Cause**: Division
+not protected when ray direction components are zero **Fix**: Always use
+`max(abs(x), 1e-8)` or similar protection
 
 ### Error 5: Missing Hash Function in Refraction Variant
-**Symptom**: Compilation error "undefined function 'hash1'"
-**Fix**: Add the function definition when using the refraction variant:
+
+**Symptom**: Compilation error “undefined function 'hash1'” **Fix**: Add the function
+definition when using the refraction variant:
 ```glsl
 float hash1(float p) {
     return fract(sin(p) * 43758.5453);
@@ -524,19 +550,38 @@ float hash1(float p) {
 ## Performance & Composition
 
 **Performance tips**:
-- **Distance bound clipping**: Shorten `distBound.y` after each closer intersection; subsequent objects are automatically skipped
-- **Bounding sphere pre-test**: Pre-screen with bounding sphere for complex geometry (torus, etc.)
-- **Shadow ray simplification**: Only need to determine occlusion, no normal calculation needed
-- **Avoid unnecessary sqrt**: Return early when discriminant is negative; `c > 0.0 && b > 0.0` for fast rejection
-- **Grid acceleration**: Use 3D DDA grid traversal for large numbers of similar primitives
+
+- **Distance bound clipping**: Shorten `distBound.y` after each closer intersection;
+  subsequent objects are automatically skipped
+
+- **Bounding sphere pre-test**: Pre-screen with bounding sphere for complex geometry
+  (torus, etc.)
+
+- **Shadow ray simplification**: Only need to determine occlusion, no normal calculation
+  needed
+
+- **Avoid unnecessary sqrt**: Return early when discriminant is negative;
+  `c > 0.0 && b > 0.0` for fast rejection
+
+- **Grid acceleration**: Use 3D DDA grid traversal for large numbers of similar
+  primitives
 
 **Composition approaches**:
-- **+ Raymarching SDF**: Analytic primitives define major structures, SDF handles complex details
-- **+ Volume effects**: Analytic intersection provides precise entry/exit distances for volume sampling within the range
+
+- **+ Raymarching SDF**: Analytic primitives define major structures, SDF handles
+  complex details
+
+- **+ Volume effects**: Analytic intersection provides precise entry/exit distances for
+  volume sampling within the range
+
 - **+ PBR materials**: Precise normals plug directly into Cook-Torrance and other BRDFs
-- **+ Spatial transforms**: Rotate/translate rays to reuse the same intersection functions
+
+- **+ Spatial transforms**: Rotate/translate rays to reuse the same intersection
+  functions
+
 - **+ Analytic AA/AO/soft shadows**: Fully analytic pipeline, zero noise
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/analytic-ray-tracing.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/analytic-ray-tracing.md)

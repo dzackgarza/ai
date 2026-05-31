@@ -1,34 +1,50 @@
 # Fractal Rendering — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), containing prerequisites, step-by-step explanations, mathematical derivations, variant descriptions, in-depth performance analysis, and complete combination example code.
+This document is a detailed supplement to [SKILL.md](SKILL.md), containing
+prerequisites, step-by-step explanations, mathematical derivations, variant
+descriptions, in-depth performance analysis, and complete combination example code.
 
 ## Prerequisites
 
-- **GLSL Basics**: uniform, varying, built-in functions (`dot`, `length`, `normalize`, `abs`, `fract`)
-- **Complex Number Arithmetic**: representing complex numbers as `vec2`, multiplication `(a+bi)(c+di) = (ac-bd, ad+bc)`
+- **GLSL Basics**: uniform, varying, built-in functions (`dot`, `length`, `normalize`,
+  `abs`, `fract`)
+
+- **Complex Number Arithmetic**: representing complex numbers as `vec2`, multiplication
+  `(a+bi)(c+di) = (ac-bd, ad+bc)`
+
 - **Vector Math**: dot product, cross product, matrix transforms
-- **Ray Marching Basics** (required for 3D fractals): stepping along a ray, using distance fields for collision detection
+
+- **Ray Marching Basics** (required for 3D fractals): stepping along a ray, using
+  distance fields for collision detection
+
 - **Coordinate Normalization**: mapping pixel coordinates to the `[-1, 1]` range
 
 ## Core Principles in Detail
 
-The essence of fractal rendering is **visualization of iterative systems**. Core algorithm patterns fall into three categories:
+The essence of fractal rendering is **visualization of iterative systems**. Core
+algorithm patterns fall into three categories:
 
 ### 1. Escape-Time Algorithm
 
-For each point `c` on the complex plane, repeatedly iterate `Z <- Z^2 + c`, counting the number of steps needed for Z to escape (`|Z| > R`). More steps means closer to the fractal boundary.
+For each point `c` on the complex plane, repeatedly iterate `Z <- Z^2 + c`, counting the
+number of steps needed for Z to escape (`|Z| > R`). More steps means closer to the
+fractal boundary.
 
-**Distance Estimation** computes the precise distance from a point to the fractal by simultaneously tracking the derivative `Z'`:
+**Distance Estimation** computes the precise distance from a point to the fractal by
+simultaneously tracking the derivative `Z'`:
 ```
 Z  <- Z^2 + c       (value iteration)
 Z' <- 2*Z*Z' + 1    (derivative iteration)
 d(c) = |Z|*log|Z| / |Z'|  (Hubbard-Douady potential function)
 ```
-Distance estimation produces smoother coloring than pure escape-time step counting, and is a prerequisite for ray marching in 3D fractals.
+Distance estimation produces smoother coloring than pure escape-time step counting, and
+is a prerequisite for ray marching in 3D fractals.
 
 ### 2. Iterated Function System (IFS)
 
-Apply a set of transforms (folding `abs()`, scaling `Scale`, offset `Offset`) to points in space, iterating repeatedly to produce self-similar structures. Core steps of KIFS (Kaleidoscopic IFS) commonly used in 3D:
+Apply a set of transforms (folding `abs()`, scaling `Scale`, offset `Offset`) to points
+in space, iterating repeatedly to produce self-similar structures.
+Core steps of KIFS (Kaleidoscopic IFS) commonly used in 3D:
 ```
 p = abs(p)                          // Fold (symmetrize)
 sort p.xyz descending               // Sort (select symmetry axis)
@@ -37,7 +53,8 @@ p = Scale * p - Offset * (Scale-1)  // Scale and offset
 
 ### 3. Spherical Inversion Fractal
 
-Apollonian-type fractals use `fract()` for space folding + spherical inversion `p *= s/dot(p,p)`:
+Apollonian-type fractals use `fract()` for space folding + spherical inversion
+`p *= s/dot(p,p)`:
 ```
 p = -1.0 + 2.0 * fract(0.5*p + 0.5)   // Fold space to [-1,1]
 r^2 = dot(p, p)
@@ -45,15 +62,18 @@ k = s / r^2                             // Inversion factor
 p *= k; scale *= k                       // Spherical inversion
 ```
 
-All 3D fractals are rendered using **Sphere Tracing (Ray Marching)**: stepping along the view ray by the distance field value at each step, until close enough to the surface.
+All 3D fractals are rendered using **Sphere Tracing (Ray Marching)**: stepping along the
+view ray by the distance field value at each step, until close enough to the surface.
 
 ## Implementation Steps in Detail
 
 ### Step 1: Coordinate Normalization
 
-**What**: Map pixel coordinates to standard coordinates centered on the screen with aspect ratio correction.
+**What**: Map pixel coordinates to standard coordinates centered on the screen with
+aspect ratio correction.
 
-**Why**: All fractal calculations must be performed in mathematical space, independent of pixel resolution.
+**Why**: All fractal calculations must be performed in mathematical space, independent
+of pixel resolution.
 
 ```glsl
 vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
@@ -62,9 +82,11 @@ vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
 
 ### Step 2: 2D Fractal — Mandelbrot Escape-Time Iteration
 
-**What**: For each pixel point as complex number `c`, iterate `Z <- Z^2 + c` while tracking the derivative.
+**What**: For each pixel point as complex number `c`, iterate `Z <- Z^2 + c` while
+tracking the derivative.
 
-**Why**: Escape time produces fractal structure; derivative tracking enables distance estimation coloring.
+**Why**: Escape time produces fractal structure; derivative tracking enables distance
+estimation coloring.
 
 ```glsl
 float distanceToMandelbrot(in vec2 c) {
@@ -92,9 +114,11 @@ float distanceToMandelbrot(in vec2 c) {
 
 ### Step 3: 3D Fractal — Distance Field Function (Mandelbulb Example)
 
-**What**: Implement the Mandelbulb power-N iteration using spherical coordinates, returning a distance estimate.
+**What**: Implement the Mandelbulb power-N iteration using spherical coordinates,
+returning a distance estimate.
 
-**Why**: 3D fractals cannot be directly colored via escape-time on pixels; they require distance fields for ray marching.
+**Why**: 3D fractals cannot be directly colored via escape-time on pixels; they require
+distance fields for ray marching.
 
 ```glsl
 float mandelbulb(vec3 p) {
@@ -129,9 +153,11 @@ float mandelbulb(vec3 p) {
 
 ### Step 4: 3D Fractal — IFS Distance Field (Menger Sponge Example)
 
-**What**: Construct a KIFS fractal distance field through fold-sort-scale-offset iteration.
+**What**: Construct a KIFS fractal distance field through fold-sort-scale-offset
+iteration.
 
-**Why**: IFS fractals produce self-similar structures through spatial transforms rather than numerical iteration; distance is tracked via `Scale^(-n)` scaling.
+**Why**: IFS fractals produce self-similar structures through spatial transforms rather
+than numerical iteration; distance is tracked via `Scale^(-n)` scaling.
 
 ```glsl
 float mengerDE(vec3 z) {
@@ -155,9 +181,11 @@ float mengerDE(vec3 z) {
 
 ### Step 5: 3D Fractal — Spherical Inversion Distance Field (Apollonian Type)
 
-**What**: Construct an Apollonian fractal using fract folding + spherical inversion iteration, while recording orbit traps.
+**What**: Construct an Apollonian fractal using fract folding + spherical inversion
+iteration, while recording orbit traps.
 
-**Why**: Spherical inversion `p *= s/dot(p,p)` produces sphere packing structures; orbit traps provide color and AO information.
+**Why**: Spherical inversion `p *= s/dot(p,p)` produces sphere packing structures; orbit
+traps provide color and AO information.
 
 ```glsl
 vec4 orb;  // Global orbit trap
@@ -181,9 +209,11 @@ float apollonianDE(vec3 p, float s) {
 
 ### Step 6: Ray Marching (Sphere Tracing)
 
-**What**: Step along the ray direction, advancing by the distance field value at each step, until hitting the surface.
+**What**: Step along the ray direction, advancing by the distance field value at each
+step, until hitting the surface.
 
-**Why**: The distance field guarantees safe stepping (won't pass through the surface), and is the standard method for rendering implicit 3D fractals.
+**Why**: The distance field guarantees safe stepping (won’t pass through the surface),
+and is the standard method for rendering implicit 3D fractals.
 
 ```glsl
 float rayMarch(vec3 ro, vec3 rd) {
@@ -202,7 +232,9 @@ float rayMarch(vec3 ro, vec3 rd) {
 
 **What**: Sample the distance field gradient around the hit point as the surface normal.
 
-**Why**: Implicit surfaces have no analytical normals and require numerical approximation. Tetrahedral sampling (4-tap) saves 1/3 of the cost compared to central differences (6-tap).
+**Why**: Implicit surfaces have no analytical normals and require numerical
+approximation. Tetrahedral sampling (4-tap) saves 1/3 of the cost compared to central
+differences (6-tap).
 
 ```glsl
 // 6-tap central difference method (more intuitive)
@@ -230,7 +262,8 @@ vec3 calcNormal_4tap(vec3 pos, float t) {
 
 **What**: Compute Lambertian diffuse + ambient + AO for hit surfaces.
 
-**Why**: Lighting gives 3D fractals depth and material quality. Orbit trap values (`orb`) can serve both as color mapping and as simple AO.
+**Why**: Lighting gives 3D fractals depth and material quality.
+Orbit trap values (`orb`) can serve both as color mapping and as simple AO.
 
 ```glsl
 vec3 shade(vec3 pos, vec3 nor, vec3 rd, vec4 trap) {
@@ -253,9 +286,11 @@ vec3 shade(vec3 pos, vec3 nor, vec3 rd, vec4 trap) {
 
 ### Step 9: Camera Setup
 
-**What**: Build a look-at camera matrix, converting pixel coordinates to 3D ray directions.
+**What**: Build a look-at camera matrix, converting pixel coordinates to 3D ray
+directions.
 
-**Why**: All 3D fractal ray marching requires a unified camera framework to generate rays.
+**Why**: All 3D fractal ray marching requires a unified camera framework to generate
+rays.
 
 ```glsl
 void setupCamera(vec2 uv, vec3 ro, vec3 ta, float cr,
@@ -272,7 +307,8 @@ void setupCamera(vec2 uv, vec3 ro, vec3 ta, float cr,
 
 ### 1. 2D Mandelbrot (Distance Estimation Coloring)
 
-Difference from base version (3D Apollonian): pure 2D computation, no ray marching needed, uses complex iteration + distance coloring.
+Difference from base version (3D Apollonian): pure 2D computation, no ray marching
+needed, uses complex iteration + distance coloring.
 
 ```glsl
 // Replace entire mainImage
@@ -300,7 +336,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### 2. Mandelbulb Power-N (3D Spherical Coordinate Fractal)
 
-Difference from base version: uses spherical coordinate trigonometric functions instead of spherical inversion, with a tunable `POWER` parameter controlling the fractal shape.
+Difference from base version: uses spherical coordinate trigonometric functions instead
+of spherical inversion, with a tunable `POWER` parameter controlling the fractal shape.
 
 ```glsl
 #define POWER 8.0   // Tunable: 2-16, higher = more complex structure
@@ -327,7 +364,8 @@ float mandelbulbDE(vec3 p) {
 
 ### 3. Menger Sponge (KIFS Folding Type)
 
-Difference from base version: uses abs() folding + conditional sorting instead of spherical inversion, producing regular geometric fractals.
+Difference from base version: uses abs() folding + conditional sorting instead of
+spherical inversion, producing regular geometric fractals.
 
 ```glsl
 #define SCALE 3.0                           // Tunable: scaling factor, 2.0-4.0
@@ -353,7 +391,9 @@ float mengerDE(vec3 z) {
 
 ### 4. Quaternion Julia Set
 
-Difference from base version: uses quaternion algebra `Z <- Z^2 + c` (4D), Julia sets use a fixed `c` parameter instead of per-point `c`, visualized by taking 3D cross-sections.
+Difference from base version: uses quaternion algebra `Z <- Z^2 + c` (4D), Julia sets
+use a fixed `c` parameter instead of per-point `c`, visualized by taking 3D
+cross-sections.
 
 ```glsl
 // Quaternion squaring
@@ -382,7 +422,9 @@ float juliaDE(vec3 p, vec4 c) {
 
 ### 5. Minimal IFS Field (2D, No Ray Marching)
 
-Difference from base version: pure 2D implementation, only ~20 lines of code, using `abs(p)/dot(p,p) + offset` for iteration, producing a density field through weighted accumulation.
+Difference from base version: pure 2D implementation, only ~20 lines of code, using
+`abs(p)/dot(p,p) + offset` for iteration, producing a density field through weighted
+accumulation.
 
 ```glsl
 float field(vec3 p) {
@@ -405,52 +447,70 @@ float field(vec3 p) {
 
 ### Bottleneck Analysis
 
-The core bottleneck in fractal rendering is **nested loops**: outer ray marching steps x inner fractal iterations. A single pixel may execute `200 steps x 8 iterations = 1600` distance field evaluations.
+The core bottleneck in fractal rendering is **nested loops**: outer ray marching steps x
+inner fractal iterations.
+A single pixel may execute `200 steps x 8 iterations = 1600` distance field evaluations.
 
 ### Optimization Techniques
 
 #### 1. Reduce Ray Marching Steps
-Lower `MAX_STEPS` from 200 to 60-100, compensating precision loss with a fudge factor (0.7-0.9).
+
+Lower `MAX_STEPS` from 200 to 60-100, compensating precision loss with a fudge factor
+(0.7-0.9).
 ```glsl
 t += h * 0.7; // Fudge factor < 1.0, allows larger steps but reduces penetration risk
 ```
 
 #### 2. Adaptive Precision
-Relax the collision threshold as distance increases; far objects don't need pixel-level precision.
+
+Relax the collision threshold as distance increases; far objects don’t need pixel-level
+precision.
 ```glsl
 float precis = 0.001 * t; // Precision grows linearly with distance
 ```
 
 #### 3. Early Exit
+
 In fractal iteration, break immediately once `|z|^2 > bailout`.
 ```glsl
 if (m2 > 4.0) break; // Don't continue useless iterations
 ```
 
 #### 4. Reduce Iteration Count
-Fractal iteration counts (`INVERSION_ITER`, `IFS_ITER`) reduced from 8 to 4-5 have minimal visual impact but significant performance gains.
+
+Fractal iteration counts (`INVERSION_ITER`, `IFS_ITER`) reduced from 8 to 4-5 have
+minimal visual impact but significant performance gains.
 
 #### 5. Use 4-Tap Instead of 6-Tap for Normals
-The tetrahedral method requires only 4 `map()` calls instead of 6, saving 33% normal computation cost.
+
+The tetrahedral method requires only 4 `map()` calls instead of 6, saving 33% normal
+computation cost.
 
 #### 6. AA Downgrade
-Use `#define AA 1` during development, switch to `AA 2` for release. `AA 3` has massive performance impact (9x overhead).
+
+Use `#define AA 1` during development, switch to `AA 2` for release.
+`AA 3` has massive performance impact (9x overhead).
 
 #### 7. Distance Field Scaling
-For non-unit-sized fractals, scale the space first then scale the distance value to avoid precision issues.
+
+For non-unit-sized fractals, scale the space first then scale the distance value to
+avoid precision issues.
 ```glsl
 float z1 = 2.0;
 return mandelbulb(p / z1) * z1;
 ```
 
 #### 8. Avoid `pow()` Inside Loops
-`pow(r, power)` in Mandelbulb is expensive; low powers (e.g., 2, 3) can be manually expanded instead.
+
+`pow(r, power)` in Mandelbulb is expensive; low powers (e.g., 2, 3) can be manually
+expanded instead.
 
 ## Combination Suggestions
 
 ### 1. Fractal + Volumetric Lighting
 
-Accumulate scattered light passing through fractal gaps during ray marching, producing "god rays" effects.
+Accumulate scattered light passing through fractal gaps during ray marching, producing
+“god rays” effects.
 
 ```glsl
 // Accumulate additionally in ray march loop
@@ -465,7 +525,8 @@ col += glowColor * glow * 0.01;
 
 ### 2. Fractal + Post-Processing (Tone Mapping / FXAA)
 
-3D fractals have rich high-frequency detail, prone to aliasing. Use ACES Tone Mapping + sRGB correction + FXAA post-processing.
+3D fractals have rich high-frequency detail, prone to aliasing.
+Use ACES Tone Mapping + sRGB correction + FXAA post-processing.
 
 ```glsl
 // ACES tone mapping
@@ -480,7 +541,9 @@ col = pow(col, vec3(1.0/2.4)); // sRGB gamma
 
 ### 3. Fractal + Transparent Refraction (Multi-Bounce Refraction)
 
-Used for "crystal ball" effects on volumetric fractals like Mandelbulb. Uses negative distance fields for reverse ray marching inside, combined with Beer's law absorption.
+Used for “crystal ball” effects on volumetric fractals like Mandelbulb.
+Uses negative distance fields for reverse ray marching inside, combined with Beer’s law
+absorption.
 
 ```glsl
 // Invert distance field for interior stepping
@@ -494,7 +557,8 @@ vec3 refr = refract(rd, sn, isInside ? 1.0/ior : ior);
 
 ### 4. Fractal + Orbit Trap Texture Mapping
 
-Orbit trap values can be mapped to HSV color space for rich coloring, or mapped as self-emission for glowing fractal effects.
+Orbit trap values can be mapped to HSV color space for rich coloring, or mapped as
+self-emission for glowing fractal effects.
 
 ```glsl
 vec3 hsv2rgb(vec3 c) {
@@ -508,7 +572,8 @@ vec3 col = hsv2rgb(vec3(trap.x * 0.5, 0.9, 0.8));
 
 ### 5. Fractal + Soft Shadow
 
-Perform an additional ray march from the fractal surface toward the light source, accumulating the minimum `h/t` ratio to generate soft shadows.
+Perform an additional ray march from the fractal surface toward the light source,
+accumulating the minimum `h/t` ratio to generate soft shadows.
 
 ```glsl
 float softshadow(vec3 ro, vec3 rd, float mint, float k) {

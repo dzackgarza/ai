@@ -1,39 +1,54 @@
 # Water & Ocean Rendering — Detailed Reference
 
-This document is the complete reference for [SKILL.md](SKILL.md), covering prerequisites, detailed explanations for each step, variant descriptions, in-depth performance optimization analysis, and complete code examples for combination suggestions.
+This document is the complete reference for [SKILL.md](SKILL.md), covering
+prerequisites, detailed explanations for each step, variant descriptions, in-depth
+performance optimization analysis, and complete code examples for combination
+suggestions.
 
 ## Prerequisites
 
 - **GLSL Fundamentals**: uniforms, varyings, built-in functions
+
 - **Vector Math**: dot product, cross product, reflection/refraction vectors
+
 - **Basic Raymarching Concepts**
+
 - **FBM (Fractal Brownian Motion) / Multi-octave Noise Layering Basics**
-- **Physical Intuition of the Fresnel Effect**: strong reflection at grazing angles, strong transmission at normal incidence
+
+- **Physical Intuition of the Fresnel Effect**: strong reflection at grazing angles,
+  strong transmission at normal incidence
 
 ## Core Principles
 
-The essence of water rendering is solving three core problems: **water surface shape generation**, **light-water surface interaction**, and **water body color compositing**.
+The essence of water rendering is solving three core problems: **water surface shape
+generation**, **light-water surface interaction**, and **water body color compositing**.
 
 ### 1. Wave Generation: Exponential Sine Layering + Derivative Domain Warping
 
-Traditional sum-of-sines uses `sin(x)` to produce symmetric waveforms, but real ocean waves have **sharp crests and broad troughs**. The core formula:
+Traditional sum-of-sines uses `sin(x)` to produce symmetric waveforms, but real ocean
+waves have **sharp crests and broad troughs**. The core formula:
 
 ```
 wave(x) = exp(sin(x) - 1)
 ```
 
 - When `sin(x) = 1` (crest): `exp(0) = 1.0`, sharp peak
+
 - When `sin(x) = -1` (trough): `exp(-2) ≈ 0.135`, broad flat valley
 
-This naturally produces a **trochoidal profile** similar to Gerstner waves, but at much lower computational cost.
+This naturally produces a **trochoidal profile** similar to Gerstner waves, but at much
+lower computational cost.
 
-When layering multiple waves, the key innovation is **derivative domain warping (Drag)**:
+When layering multiple waves, the key innovation is **derivative domain warping
+(Drag)**:
 
 ```
 position += direction * derivative * weight * DRAG_MULT
 ```
 
-Each wave layer's sampling position is offset by the previous layer's derivative, causing small ripples to naturally cluster on the crests of larger waves — simulating the real-ocean phenomenon of capillary waves riding on gravity waves.
+Each wave layer’s sampling position is offset by the previous layer’s derivative,
+causing small ripples to naturally cluster on the crests of larger waves — simulating
+the real-ocean phenomenon of capillary waves riding on gravity waves.
 
 ### 2. Lighting Model: Schlick Fresnel + Subsurface Scattering Approximation
 
@@ -41,21 +56,30 @@ Each wave layer's sampling position is offset by the previous layer's derivative
 ```
 F = F0 + (1 - F0) * (1 - dot(N, V))^5
 ```
-Where water's F0 ≈ 0.04 (only 4% reflection at normal incidence).
+Where water’s F0 ≈ 0.04 (only 4% reflection at normal incidence).
 
-**Subsurface Scattering (SSS)** is approximated through water thickness: troughs have thicker water layers with stronger blue-green scattering; crests have thinner layers with weaker scattering — naturally producing the visual effect of transparent crests and deep blue troughs.
+**Subsurface Scattering (SSS)** is approximated through water thickness: troughs have
+thicker water layers with stronger blue-green scattering; crests have thinner layers
+with weaker scattering — naturally producing the visual effect of transparent crests and
+deep blue troughs.
 
 ### 3. Water Surface Intersection: Bounded Heightfield Marching
 
-The water surface is constrained within a bounding box of `[0, -WATER_DEPTH]`, and rays only march between the intersection points of two planes. Step size is adaptive: `step = ray_y - wave_height` — large steps when far from the surface, small precise steps when close.
+The water surface is constrained within a bounding box of `[0, -WATER_DEPTH]`, and rays
+only march between the intersection points of two planes.
+Step size is adaptive: `step = ray_y - wave_height` — large steps when far from the
+surface, small precise steps when close.
 
 ## Implementation Steps
 
 ### Step 1: Exponential Sine Wave Function
 
-**What**: Define a single directional wave's value and derivative calculation function.
+**What**: Define a single directional wave’s value and derivative calculation function.
 
-**Why**: `exp(sin(x) - 1)` transforms the symmetric sine into a realistic waveform with sharp crests and broad troughs. It also returns the analytical derivative, used for subsequent domain warping and normal calculation.
+**Why**: `exp(sin(x) - 1)` transforms the symmetric sine into a realistic waveform with
+sharp crests and broad troughs.
+It also returns the analytical derivative, used for subsequent domain warping and normal
+calculation.
 
 **Code**:
 ```glsl
@@ -69,9 +93,15 @@ vec2 wavedx(vec2 position, vec2 direction, float frequency, float timeshift) {
 
 ### Step 2: Multi-Octave Wave Layering with Domain Warping
 
-**What**: Layer multiple waves with different directions, frequencies, and speeds, applying derivative-driven position offset (drag) between each layer.
+**What**: Layer multiple waves with different directions, frequencies, and speeds,
+applying derivative-driven position offset (drag) between each layer.
 
-**Why**: A single wave is too regular. Multi-octave layering produces natural complex waveforms. Domain warping is the key — it causes small waves to cluster on top of large waves, which is the core technique distinguishing "good-looking ocean" from "ordinary noise." The frequency growth rate of 1.18 (instead of the traditional FBM 2.0) creates smoother transitions between wave layers.
+**Why**: A single wave is too regular.
+Multi-octave layering produces natural complex waveforms.
+Domain warping is the key — it causes small waves to cluster on top of large waves,
+which is the core technique distinguishing “good-looking ocean” from “ordinary noise.”
+The frequency growth rate of 1.18 (instead of the traditional FBM 2.0) creates smoother
+transitions between wave layers.
 
 **Code**:
 ```glsl
@@ -107,9 +137,13 @@ float getwaves(vec2 position, int iterations) {
 
 ### Step 3: Bounded Bounding Box Ray Marching
 
-**What**: Constrain the water surface between two horizontal planes and only march between the entry and exit points.
+**What**: Constrain the water surface between two horizontal planes and only march
+between the entry and exit points.
 
-**Why**: Much faster than unbounded SDF marching. The step size `pos.y - height` automatically adapts — large jumps when far from the surface, fine convergence when close. Precomputing bounding box intersections avoids wasting steps in open air.
+**Why**: Much faster than unbounded SDF marching.
+The step size `pos.y - height` automatically adapts — large jumps when far from the
+surface, fine convergence when close.
+Precomputing bounding box intersections avoids wasting steps in open air.
 
 **Code**:
 ```glsl
@@ -135,9 +169,14 @@ float raymarchwater(vec3 camera, vec3 start, vec3 end, float depth) {
 
 ### Step 4: Normal Calculation with Distance Smoothing
 
-**What**: Compute water surface normals using finite differences, and interpolate toward the up direction based on distance to eliminate distant aliasing.
+**What**: Compute water surface normals using finite differences, and interpolate toward
+the up direction based on distance to eliminate distant aliasing.
 
-**Why**: Normals determine all lighting details. Using more wave iterations for normals than for ray marching (36 vs 12) is a core performance technique — marching only needs coarse shape, normals need fine detail. The farther away, the more high-frequency normals cause flickering; smoothing toward `(0,1,0)` is equivalent to implicit LOD.
+**Why**: Normals determine all lighting details.
+Using more wave iterations for normals than for ray marching (36 vs 12) is a core
+performance technique — marching only needs coarse shape, normals need fine detail.
+The farther away, the more high-frequency normals cause flickering; smoothing toward
+`(0,1,0)` is equivalent to implicit LOD.
 
 **Code**:
 ```glsl
@@ -162,9 +201,14 @@ vec3 normal(vec2 pos, float e, float depth) {
 
 ### Step 5: Fresnel Reflection and Subsurface Scattering
 
-**What**: Use Schlick Fresnel approximation to calculate reflection/scattering weights, combining sky reflection with depth-dependent blue-green scattering color.
+**What**: Use Schlick Fresnel approximation to calculate reflection/scattering weights,
+combining sky reflection with depth-dependent blue-green scattering color.
 
-**Why**: The Fresnel effect is key to water surface realism — nearly fully transparent up close, nearly fully reflective at a distance. The SSS color `(0.0293, 0.0698, 0.1717)` comes from empirical values of deep-sea scattering spectra. Troughs have thicker water layers with stronger SSS; crests have thinner layers with weaker SSS, naturally producing light-dark variation.
+**Why**: The Fresnel effect is key to water surface realism — nearly fully transparent
+up close, nearly fully reflective at a distance.
+The SSS color `(0.0293, 0.0698, 0.1717)` comes from empirical values of deep-sea
+scattering spectra. Troughs have thicker water layers with stronger SSS; crests have
+thinner layers with weaker SSS, naturally producing light-dark variation.
 
 **Code**:
 ```glsl
@@ -190,7 +234,11 @@ vec3 C = fresnel * reflection + scattering;
 
 **What**: Add a cheap atmospheric scattering model and ACES tone mapping.
 
-**Why**: The water surface reflects the sky, so sky quality directly affects the water's appearance. `1/(ray.y + 0.1)` approximates optical path length, `vec3(5.5, 13.0, 22.4)/22.4` represents Rayleigh scattering coefficient ratios. ACES tone mapping maps HDR values to display range, preserving highlight detail while compressing shadows.
+**Why**: The water surface reflects the sky, so sky quality directly affects the water’s
+appearance. `1/(ray.y + 0.1)` approximates optical path length,
+`vec3(5.5, 13.0, 22.4)/22.4` represents Rayleigh scattering coefficient ratios.
+ACES tone mapping maps HDR values to display range, preserving highlight detail while
+compressing shadows.
 
 **Code**:
 ```glsl
@@ -229,7 +277,9 @@ vec3 aces_tonemap(vec3 color) {
 
 ### Variant 1: 2D Underwater Caustic Texture
 
-Difference from the base version: No 3D ray marching — purely a 2D screen-space effect. Uses an iterative triangular feedback loop to generate caustic light patterns, suitable as a ground projection texture for underwater scenes or as an overlay layer.
+Difference from the base version: No 3D ray marching — purely a 2D screen-space effect.
+Uses an iterative triangular feedback loop to generate caustic light patterns, suitable
+as a ground projection texture for underwater scenes or as an overlay layer.
 
 Key code:
 ```glsl
@@ -259,7 +309,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Variant 2: FBM Bump-Mapped Lake Surface (Plane Intersection + Bump Mapping)
 
-Difference from the base version: No per-pixel ray marching — uses analytical plane intersection + FBM bump mapping instead. Extremely fast, suitable for distant lake surfaces or situations where water must be embedded in complex scenes (e.g., with volumetric cloud reflections).
+Difference from the base version: No per-pixel ray marching — uses analytical plane
+intersection + FBM bump mapping instead.
+Extremely fast, suitable for distant lake surfaces or situations where water must be
+embedded in complex scenes (e.g., with volumetric cloud reflections).
 
 Key code:
 ```glsl
@@ -290,7 +343,10 @@ vec3 refracted = refract(rd, normal, 1.0 / 1.333);
 
 ### Variant 3: Ridged Noise Coastal Waves
 
-Difference from the base version: Uses `1 - abs(noise)` instead of `exp(sin)` to generate waveforms, combined with in-loop domain warping. Suitable for coastal scenes with sharper, more impactful waves that naturally connect to shore foam.
+Difference from the base version: Uses `1 - abs(noise)` instead of `exp(sin)` to
+generate waveforms, combined with in-loop domain warping.
+Suitable for coastal scenes with sharper, more impactful waves that naturally connect to
+shore foam.
 
 Key code:
 ```glsl
@@ -316,7 +372,10 @@ if (dh < 0.0 && dh > -0.02) {
 
 ### Variant 4: Flow Map Water Animation (Rivers/Streams)
 
-Difference from the base version: Adds flow-field-driven FBM animation. Uses a two-phase time cycle to eliminate texture stretching, with water flow direction procedurally generated from terrain gradients. Suitable for rivers, streams, and other water bodies with a clear flow direction.
+Difference from the base version: Adds flow-field-driven FBM animation.
+Uses a two-phase time cycle to eliminate texture stretching, with water flow direction
+procedurally generated from terrain gradients.
+Suitable for rivers, streams, and other water bodies with a clear flow direction.
 
 Key code:
 ```glsl
@@ -347,9 +406,11 @@ float weight = abs(t0 - 0.5) * 2.0;
 vec4 result = mix(sample0, sample1, weight);
 ```
 
-### Variant 5: Beer's Law Water Absorption + Volumetric Scattering
+### Variant 5: Beer’s Law Water Absorption + Volumetric Scattering
 
-Difference from the base version: Replaces the simple SSS approximation with physically correct Beer-Lambert exponential decay for underwater color absorption, plus a forward scattering term. Suitable for realistic scenes requiring tunable clear/turbid water.
+Difference from the base version: Replaces the simple SSS approximation with physically
+correct Beer-Lambert exponential decay for underwater color absorption, plus a forward
+scattering term. Suitable for realistic scenes requiring tunable clear/turbid water.
 
 Key code:
 ```glsl
@@ -375,7 +436,9 @@ vec3 finalColor = mix(underwaterColor, reflectionColor, fresnel);
 
 ### 1. Dual Iteration Count Strategy (Most Critical Optimization)
 
-Ray marching uses few iterations (12), normal calculation uses many (36). Marching only needs a rough intersection point; normals need fine wave detail. This single technique can halve render time with virtually no visual quality loss.
+Ray marching uses few iterations (12), normal calculation uses many (36). Marching only
+needs a rough intersection point; normals need fine wave detail.
+This single technique can halve render time with virtually no visual quality loss.
 
 ### 2. Distance-Adaptive Normal Smoothing
 
@@ -383,15 +446,22 @@ Ray marching uses few iterations (12), normal calculation uses many (36). Marchi
 N = mix(N, vec3(0.0, 1.0, 0.0), 0.8 * min(1.0, sqrt(dist * 0.01) * 1.1));
 ```
 
-Distant normals approach `(0,1,0)`, eliminating high-frequency flickering at distance (equivalent to implicit normal mipmapping), while saving expensive normal calculations at long range.
+Distant normals approach `(0,1,0)`, eliminating high-frequency flickering at distance
+(equivalent to implicit normal mipmapping), while saving expensive normal calculations
+at long range.
 
 ### 3. Bounding Box Clipping
 
-Precompute ray intersections with the top and bottom horizontal planes, and only march between the two intersection points. Rays pointing skyward (`ray.y >= 0`) skip water surface calculations entirely — the simplest and most effective early-out.
+Precompute ray intersections with the top and bottom horizontal planes, and only march
+between the two intersection points.
+Rays pointing skyward (`ray.y >= 0`) skip water surface calculations entirely — the
+simplest and most effective early-out.
 
 ### 4. Adaptive Step Size
 
-`pos += dir * (pos.y - height)` uses the current height difference as step size — potentially jumping large distances when far from the surface, automatically shrinking when close. 3-5x faster than fixed step size.
+`pos += dir * (pos.y - height)` uses the current height difference as step size —
+potentially jumping large distances when far from the surface, automatically shrinking
+when close. 3-5x faster than fixed step size.
 
 ### 5. Filter Width-Aware Normal Attenuation (Advanced)
 
@@ -402,7 +472,9 @@ float fScale = 1.0 / (1.0 + max(vFilterWidth.x, vFilterWidth.y) * max(vFilterWid
 normalStrength *= fScale;
 ```
 
-Uses screen-space derivatives to automatically detect pixel coverage area — the larger the area, the flatter the normal. This is a precise implementation of manual mipmapping.
+Uses screen-space derivatives to automatically detect pixel coverage area — the larger
+the area, the flatter the normal.
+This is a precise implementation of manual mipmapping.
 
 ### 6. LOD Conditional Detail
 
@@ -413,25 +485,37 @@ if (distanceToSurface < threshold) {
 }
 ```
 
-High-frequency displacement of the water surface SDF is only calculated when close to the surface; at distance, the base plane is used directly, avoiding unnecessary noise sampling.
+High-frequency displacement of the water surface SDF is only calculated when close to
+the surface; at distance, the base plane is used directly, avoiding unnecessary noise
+sampling.
 
 ## Combination Suggestions
 
 ### 1. Combining with Volumetric Clouds
 
-Including cloud reflections in the water surface is key to enhancing realism. Steps: first perform volumetric cloud raymarching along the reflection direction `R`, then mix the cloud color as part of `reflection` in the Fresnel compositing. This is a common technique in water rendering shaders.
+Including cloud reflections in the water surface is key to enhancing realism.
+Steps: first perform volumetric cloud raymarching along the reflection direction `R`,
+then mix the cloud color as part of `reflection` in the Fresnel compositing.
+This is a common technique in water rendering shaders.
 
 ### 2. Combining with Terrain Systems
 
-Shoreline rendering requires interaction between the water surface SDF and terrain SDF. Key technique: maintain `dh = waterSDF - terrainSDF`, and render foam when `dh ≈ 0` (`exp(k * dh)` produces exponentially decaying coastal glow). A standard technique in shoreline rendering.
+Shoreline rendering requires interaction between the water surface SDF and terrain SDF.
+Key technique: maintain `dh = waterSDF - terrainSDF`, and render foam when `dh ≈ 0`
+(`exp(k * dh)` produces exponentially decaying coastal glow).
+A standard technique in shoreline rendering.
 
 ### 3. Combining with Caustics
 
-In underwater scenes, project the caustic texture from Variant 1 onto the underwater terrain surface. Modulate caustic intensity as `caustic * exp(-waterDepth * absorption)` for depth-based attenuation.
+In underwater scenes, project the caustic texture from Variant 1 onto the underwater
+terrain surface. Modulate caustic intensity as `caustic * exp(-waterDepth * absorption)`
+for depth-based attenuation.
 
 ### 4. Combining with Fog/Atmospheric Scattering
 
-Distant water surfaces must blend into atmospheric fog. Use an independent extinction + in-scatter fog model (not a simple lerp), with each RGB channel attenuating independently:
+Distant water surfaces must blend into atmospheric fog.
+Use an independent extinction + in-scatter fog model (not a simple lerp), with each RGB
+channel attenuating independently:
 ```glsl
 vec3 fogExtinction = exp2(fogExtCoeffs * -distance);
 vec3 fogInscatter = fogColor * (1.0 - exp2(fogInCoeffs * -distance));
@@ -440,6 +524,11 @@ finalColor = finalColor * fogExtinction + fogInscatter;
 
 ### 5. Combining with Post-Processing
 
-- **Bloom**: Sun specular highlights on the water surface need bloom to look natural; Fibonacci spiral blur works better than simple Gaussian
-- **Tone Mapping**: ACES is the standard choice for ocean scenes, preserving sun highlights while compressing shadows
-- **Depth of Field (DOF)**: Focusing on mid-ground waves with near and far blur greatly enhances cinematic quality (post-process bokeh DOF)
+- **Bloom**: Sun specular highlights on the water surface need bloom to look natural;
+  Fibonacci spiral blur works better than simple Gaussian
+
+- **Tone Mapping**: ACES is the standard choice for ocean scenes, preserving sun
+  highlights while compressing shadows
+
+- **Depth of Field (DOF)**: Focusing on mid-ground waves with near and far blur greatly
+  enhances cinematic quality (post-process bokeh DOF)

@@ -1,35 +1,54 @@
 # Lean 4 Custom Syntax
 
-> **Version note:** API names in `MetaM`, `TacticM`, and `MacroM` can change across Lean toolchain versions. If a function listed here is not found, check the current Lean 4 source or run `#check @functionName` to verify availability in your toolchain.
+> **Version note:** API names in `MetaM`, `TacticM`, and `MacroM` can change across Lean
+> toolchain versions. If a function listed here is not found, check the current Lean 4
+> source or run `#check @functionName` to verify availability in your toolchain.
 
 ## Scope
 
-Reference for Lean 4 syntax extensions: notations, macros, elaborators, and embedded DSLs. Covers the full escalation path from `infixl` to `declare_syntax_cat` + `elab_rules`.
+Reference for Lean 4 syntax extensions: notations, macros, elaborators, and embedded
+DSLs. Covers the full escalation path from `infixl` to `declare_syntax_cat` +
+`elab_rules`.
 
-**Read when:** building custom notation, creating embedded DSLs, writing tactic extensions, or debugging macro expansion issues.
+**Read when:** building custom notation, creating embedded DSLs, writing tactic
+extensions, or debugging macro expansion issues.
 
-**Not part of the prove/autoprove default loop.** This is supplemental reference material for projects that define or modify custom syntax.
+**Not part of the prove/autoprove default loop.** This is supplemental reference
+material for projects that define or modify custom syntax.
 
 ## Contents
 
 - [Decision Tree](#decision-tree) — notation vs macro vs elaborator
+
 - [Precedence](#precedence) — associativity and binding power
+
 - [Elaborator Monads](#elaborator-monads) — MacroM, TermElabM, CommandElabM, TacticM
+
 - [API Cheat Sheet](#api-cheat-sheet) — MacroM and syntax extraction
+
 - [MetaM Utilities](#metam-utilities) — expression building, telescopes, transforms
+
 - [TacticM Utilities](#tacticm-utilities) — goals, context, lifting
+
 - [Breaking Hygiene](#breaking-hygiene) — mkIdent, addMacroScope, user names
+
 - [Unexpanders](#unexpanders) — auto-generated vs manual
+
 - [Syntax Categories](#syntax-categories) — declare, bridge, recursion
-- [Repetition and Splice Syntax](#repetition-and-splice-syntax) — `*`, `+`, `?`, antiquotation
+
+- [Repetition and Splice Syntax](#repetition-and-splice-syntax) — `*`, `+`, `?`,
+  antiquotation
+
 - [Gotchas](#gotchas) — hygiene, precedence, TSyntax, MetaM pitfalls
+
 - [Patterns](#patterns) — hierarchical categories, sanitization, multi-pass
+
 - [Troubleshooting](#troubleshooting) — diagnostic workflow, error table, escalation
 
 ## Decision Tree
 
 | Need | Use | Complexity |
-|------|-----|------------|
+| --- | --- | --- |
 | Binary/unary operator | `infixl:65 " ⊕ " => f` | Trivial |
 | Fixed pattern | `notation "⟨" a "," b "⟩" => Prod.mk a b` | Low |
 | Pattern-matching expansion | `syntax` + `macro_rules` | Medium |
@@ -88,16 +107,20 @@ Non-assoc:   syntax:50 term:51 " = " term:51
 ## Elaborator Monads
 
 | Monad | Purpose | Key Functions |
-|-------|---------|---------------|
+| --- | --- | --- |
 | `MacroM` | Syntax → Syntax | `addMacroScope`, `throwErrorAt`, `hasDecl` |
 | `TermElabM` | Syntax → Expr | `elabTerm`, `inferType`, `synthInstance`, `isDefEq` |
 | `CommandElabM` | Top-level commands | `getEnv`, `modifyEnv`, `elabCommand` |
 | `TacticM` | Proof tactics | `getMainGoal`, `closeMainGoal`, `getLocalHyps` |
 
 **MacroM limitations** (use elaborator if you need these):
+
 - No IO
+
 - No environment modification
+
 - No local context access
+
 - No unification
 
 **Lifting**: `liftMacroM` to use MacroM inside CommandElabM
@@ -225,8 +248,11 @@ myMacro x  -- should use user's x, not macro's internal x
 ## Unexpanders
 
 **Auto-generated when:**
+
 - RHS is single function application
+
 - Each param appears exactly once
+
 - Params in same order as notation
 
 ```lean
@@ -337,27 +363,42 @@ dbg_trace f!"count = {n}"
 ## Gotchas
 
 **Hygiene:**
+
 - Macros are hygienic by default (names get scopes like `foo._@.Module._hyg.123`)
+
 - Break hygiene: `let x := Lean.mkIdent `x` (unhygienic ident)
+
 - Fresh unique: `name ← Macro.addMacroScope `tmp`
+
 - Use `withFreshMacroScope` when generating syntax in loops
 
 **Unexpanders:**
+
 - Auto-generated only if: single function app, params appear once, in order
+
 - Manual: `@[app_unexpander myFunc] def unexpand | \`($_ $a $b) => \`(notation $a $b)`
 
 **Precedence:**
+
 - `:66` on RIGHT operand makes left-associative (counterintuitive)
+
 - `:26` on LEFT operand makes right-associative
 
 **TSyntax:**
+
 - Use `.reprint` for user text, not `.getString` (reprint reconstructs from tree)
+
 - Pattern match extracts typed syntax: `| \`([dsl| $n:num]) => ...`
 
 **MetaM:**
+
 - `whnf` only reduces head — call repeatedly for nested structures
-- `isAssigned` misses delayed assignments — check both `isAssigned` AND `isDelayedAssigned`
+
+- `isAssigned` misses delayed assignments — check both `isAssigned` AND
+  `isDelayedAssigned`
+
 - Always `instantiateMVars` after assigning metavariables
+
 - Use `withTransparency .all` to unfold everything (default skips `@[irreducible]`)
 
 ## Patterns
@@ -410,17 +451,17 @@ let code ← translateCode body       -- pass 2: synthesis
 **Common errors:**
 
 | Error | Cause | Fix |
-|-------|-------|-----|
+| --- | --- | --- |
 | `unknown identifier 'x'` | Hygiene scoped name away | Use `mkIdent \`x` to break hygiene |
 | `expected term` | Macro returned wrong syntax kind | Check antiquotation: `$e` vs `$e:term` |
 | `ambiguous, possible interpretations` | Overlapping syntax rules | Add precedence or more specific pattern |
 | `maximum recursion depth` | Left-recursive without precedence | Add `:N` to break recursion |
 | `failed to synthesize instance` | Elaborator needs type hint | Use `elabTerm stx (some expectedType)` |
 
-**When macros aren't enough** (escalate to `elab_rules`):
+**When macros aren’t enough** (escalate to `elab_rules`):
 
-| Need | Why Macro Can't | Elaborator Solution |
-|------|-----------------|---------------------|
+| Need | Why Macro Can’t | Elaborator Solution |
+| --- | --- | --- |
 | Infer types | No `Expr` access | `let ty ← inferType e` |
 | Check env | No `Environment` | `let env ← getEnv` |
 | Unification | No metavars | `isDefEq a b` |
@@ -446,7 +487,11 @@ logInfo m!"{e}"                      -- permanent, pretty-prints Expr
 
 ## External
 
-- [metaprogramming-patterns.md](metaprogramming-patterns.md) — MetaM/TacticM API patterns, composable blocks, elaborators
+- [metaprogramming-patterns.md](metaprogramming-patterns.md) — MetaM/TacticM API
+  patterns, composable blocks, elaborators
+
 - [Lean 4 Manual: Notations and Macros](https://lean-lang.org/doc/reference/latest/Notations-and-Macros)
+
 - [Metaprogramming in Lean 4](https://leanprover-community.github.io/lean4-metaprogramming-book/)
+
 - [Lean Community Blog](https://leanprover-community.github.io/blog/) — simprocs, search

@@ -1,24 +1,49 @@
 ## WebGL2 Adaptation Requirements
 
-**IMPORTANT: Critical Warning for Standalone HTML Deployment**: Post-processing effects require an input texture to work. When generating standalone HTML, you must:
+**IMPORTANT: Critical Warning for Standalone HTML Deployment**: Post-processing effects
+require an input texture to work.
+When generating standalone HTML, you must:
+
 1. Set `#define USE_DEMO_SCENE 1` to use the built-in demo scene (recommended), or
-2. Pass a valid input texture to the `iChannel0` channel, otherwise the screen will be completely black
-3. **Critical**: When USE_DEMO_SCENE=1, ensure the #else branch code does not reference non-existent uniforms (e.g., iChannel0)
+
+2. Pass a valid input texture to the `iChannel0` channel, otherwise the screen will be
+   completely black
+
+3. **Critical**: When USE_DEMO_SCENE=1, ensure the #else branch code does not reference
+   non-existent uniforms (e.g., iChannel0)
 
 **IMPORTANT: GLSL Type Strictness Rules**:
-- `vec2 = float` is illegal — must use `vec2(x, x)` or `vec2(x)`
-- Function parameters must be defined before use; using a variable name in its own initializer is forbidden (e.g., `float w = filmicCurve(w, w)` is an error)
-- Variables must be declared before use
-- **#version must be the very first line of shader code**: No characters (including whitespace or comments) may precede `#version 300 es`
-- **Code in preprocessor branches is still compiled**: Even if `#if USE_DEMO_SCENE` is true, the `#else` branch code is still compiled by the GPU — all branches must be valid GLSL code
 
-Code templates in this document use ShaderToy GLSL style. When generating standalone HTML pages, you must adapt to WebGL2:
+- `vec2 = float` is illegal — must use `vec2(x, x)` or `vec2(x)`
+
+- Function parameters must be defined before use; using a variable name in its own
+  initializer is forbidden (e.g., `float w = filmicCurve(w, w)` is an error)
+
+- Variables must be declared before use
+
+- **#version must be the very first line of shader code**: No characters (including
+  whitespace or comments) may precede `#version 300 es`
+
+- **Code in preprocessor branches is still compiled**: Even if `#if USE_DEMO_SCENE` is
+  true, the `#else` branch code is still compiled by the GPU — all branches must be
+  valid GLSL code
+
+Code templates in this document use ShaderToy GLSL style.
+When generating standalone HTML pages, you must adapt to WebGL2:
 
 - Use `canvas.getContext("webgl2")`
-- First line of shader: `#version 300 es`, add `precision highp float;` for fragment shaders
+
+- First line of shader: `#version 300 es`, add `precision highp float;` for fragment
+  shaders
+
 - Vertex shader: `attribute` → `in`, `varying` → `out`
-- Fragment shader: `varying` → `in`, `gl_FragColor` → custom `out vec4 fragColor`, `texture2D()` → `texture()`
-- ShaderToy's `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to standard `void main()` entry
+
+- Fragment shader: `varying` → `in`, `gl_FragColor` → custom `out vec4 fragColor`,
+  `texture2D()` → `texture()`
+
+- ShaderToy’s `void mainImage(out vec4 fragColor, in vec2 fragCoord)` must be adapted to
+  standard `void main()` entry
+
 - Must create Framebuffers and render to texture before post-processing
 
 ### Complete WebGL2 Standalone HTML Template
@@ -153,7 +178,10 @@ Code templates in this document use ShaderToy GLSL style. When generating standa
 
 ### Multi-Pass Post-Processing HTML Template (with FBO)
 
-Bloom separable blur, TAA, multi-step post-processing pipelines, etc. require rendering to intermediate textures. The following skeleton demonstrates the pattern: render scene to FBO → post-processing reads FBO → output to screen:
+Bloom separable blur, TAA, multi-step post-processing pipelines, etc.
+require rendering to intermediate textures.
+The following skeleton demonstrates the pattern: render scene to FBO → post-processing
+reads FBO → output to screen:
 
 ```html
 <!DOCTYPE html>
@@ -270,19 +298,33 @@ requestAnimationFrame(render);
 
 ## Use Cases
 
-Screen-space image enhancement on already-rendered scenes: Tone Mapping, Bloom, Vignette, Chromatic Aberration, Motion Blur, DoF, FXAA/TAA, Color Grading, Film Grain, Lens Flare, etc.
+Screen-space image enhancement on already-rendered scenes: Tone Mapping, Bloom,
+Vignette, Chromatic Aberration, Motion Blur, DoF, FXAA/TAA, Color Grading, Film Grain,
+Lens Flare, etc.
 
-Typical pipeline order: Scene Rendering → AA → Bloom → Chromatic Aberration → Motion Blur/DoF → Tone Mapping → Color Grading → Contrast → Vignette → Film Grain → Gamma → Dithering.
+Typical pipeline order: Scene Rendering → AA → Bloom → Chromatic Aberration → Motion
+Blur/DoF → Tone Mapping → Color Grading → Contrast → Vignette → Film Grain → Gamma →
+Dithering.
 
 ## Core Principles
 
-The essence of post-processing is **per-pixel transformation of an already-rendered image** — input is a framebuffer texture, output is the transformed color value.
+The essence of post-processing is **per-pixel transformation of an already-rendered
+image** — input is a framebuffer texture, output is the transformed color value.
 
-- **Tone Mapping**: HDR [0, ∞) → LDR [0, 1]. Reinhard `c/(1+c)`, Filmic Reinhard (white point/shoulder parameters), ACES (3×3 matrix + rational polynomial), generic rational polynomial
+- **Tone Mapping**: HDR [0, ∞) → LDR [0, 1]. Reinhard `c/(1+c)`, Filmic Reinhard (white
+  point/shoulder parameters), ACES (3×3 matrix + rational polynomial), generic rational
+  polynomial
+
 - **Gaussian Blur**: 2D Gaussian kernel is separable into two 1D passes, O(n²) → O(2n)
-- **Bloom**: Bright-pass extraction → multi-level Gaussian blur → additive blend back to original
-- **Vignette**: Brightness falloff based on pixel distance to center. Multiplicative or radial
-- **Chromatic Aberration**: Sample the same texture at different scales for R/G/B channels
+
+- **Bloom**: Bright-pass extraction → multi-level Gaussian blur → additive blend back to
+  original
+
+- **Vignette**: Brightness falloff based on pixel distance to center.
+  Multiplicative or radial
+
+- **Chromatic Aberration**: Sample the same texture at different scales for R/G/B
+  channels
 
 ## Implementation Steps
 
@@ -440,7 +482,8 @@ color += (orderedDither(fragCoord) - 0.5) * 4.0 / 255.0;
 
 ### Step 10: Demo Scene (Required for Standalone HTML!)
 
-**IMPORTANT: Critical Warning**: Standalone HTML deployment must provide an input texture, otherwise post-processing effects will output solid black.
+**IMPORTANT: Critical Warning**: Standalone HTML deployment must provide an input
+texture, otherwise post-processing effects will output solid black.
 
 ```glsl
 // Demo scene fallback: used when no valid input texture is available
@@ -539,10 +582,13 @@ vec3 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution) {
 
 ## Complete Code Template
 
-Can be run directly in ShaderToy. `iChannel0` is the scene texture.
+Can be run directly in ShaderToy.
+`iChannel0` is the scene texture.
 
 **IMPORTANT: Important Warning**: For standalone HTML deployment, you must:
+
 1. Pass a valid input texture to iChannel0 (or uChannel0)
+
 2. Or set `#define USE_DEMO_SCENE 1` to use the built-in demo scene
 
 ```glsl
@@ -779,10 +825,18 @@ totalFlare += wavelengthToRGB(300.0+fract((length(ghostCenter-uv)-ghostRadius)*5
 
 ## Performance & Composition
 
-**Performance**: Separable blur 121→22 samples | `textureLod` hardware mipmap for free downsampling | Downsample 2-4x before blurring | Sample counts: MB 16-32, DoF 32-64, CA 4-8 | Inter-texel sampling = free bilinear | `#define` switches have zero cost | Use `mix`/`step`/`smoothstep` instead of branches
+**Performance**: Separable blur 121→22 samples | `textureLod` hardware mipmap for free
+downsampling | Downsample 2-4x before blurring | Sample counts: MB 16-32, DoF 32-64, CA
+4-8 | Inter-texel sampling = free bilinear | `#define` switches have zero cost | Use
+`mix`/`step`/`smoothstep` instead of branches
 
-**Composition**: Bloom+ToneMap (compute bloom in HDR space then tonemap, not reversible) | TAA+MB+DoF (shared sampling loop) | CA+Vignette+Grain (lens trio) | ColorGrading+ToneMap+Contrast (grade in linear space → HDR compression → gamma-space S-curve) | Bloom+LensFlare (shared bright-pass) | Multi-pass pipeline: BufA scene → BufB/C Bloom H/V → BufD TAA → Image compositing
+**Composition**: Bloom+ToneMap (compute bloom in HDR space then tonemap, not reversible)
+| TAA+MB+DoF (shared sampling loop) | CA+Vignette+Grain (lens trio) |
+ColorGrading+ToneMap+Contrast (grade in linear space → HDR compression → gamma-space
+S-curve) | Bloom+LensFlare (shared bright-pass) | Multi-pass pipeline: BufA scene →
+BufB/C Bloom H/V → BufD TAA → Image compositing
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/post-processing.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/post-processing.md)

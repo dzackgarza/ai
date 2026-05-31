@@ -1,18 +1,32 @@
 # GPU Physics Simulation — Detailed Reference
 
-This document is the complete reference material for [SKILL.md](SKILL.md), containing step-by-step tutorials, mathematical derivations, and advanced usage.
+This document is the complete reference material for [SKILL.md](SKILL.md), containing
+step-by-step tutorials, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
-- **GLSL Basics**: uniforms, texture sampling (`texture`/`texelFetch`), `fragCoord`/`iResolution` coordinate system
-- **ShaderToy Multi-Pass Mechanism**: Buffer A/B/C/D read/write between each other, `iChannel0~3` binding, Common pass for shared code
+- **GLSL Basics**: uniforms, texture sampling (`texture`/`texelFetch`),
+  `fragCoord`/`iResolution` coordinate system
+
+- **ShaderToy Multi-Pass Mechanism**: Buffer A/B/C/D read/write between each other,
+  `iChannel0~3` binding, Common pass for shared code
+
 - **Vector Calculus Basics**: gradient, divergence, curl, Laplacian
-- **Numerical Integration**: Forward Euler, semi-implicit methods (Semi-implicit / Verlet)
-- **Textures as Data Storage**: Encoding physical quantities such as position/velocity/density into RGBA channels of texture pixels
+
+- **Numerical Integration**: Forward Euler, semi-implicit methods (Semi-implicit /
+  Verlet)
+
+- **Textures as Data Storage**: Encoding physical quantities such as
+  position/velocity/density into RGBA channels of texture pixels
 
 ## Core Principles in Detail
 
-The core paradigm of GPU physics simulation is **Buffer Feedback**: leveraging ShaderToy's multi-pass architecture to store physical state (position, velocity, density, pressure, etc.) in texture buffers. Each frame reads the previous frame's state, computes new state, and writes it back. Each pixel computes independently in parallel, achieving GPU-level massively parallel physics solving.
+The core paradigm of GPU physics simulation is **Buffer Feedback**: leveraging
+ShaderToy’s multi-pass architecture to store physical state (position, velocity,
+density, pressure, etc.)
+in texture buffers. Each frame reads the previous frame’s state, computes new state, and
+writes it back. Each pixel computes independently in parallel, achieving GPU-level
+massively parallel physics solving.
 
 ### Key Mathematical Tools in Detail
 
@@ -20,39 +34,62 @@ The core paradigm of GPU physics simulation is **Buffer Feedback**: leveraging S
 ```
 ∇²f ≈ f(x+1,y) + f(x-1,y) + f(x,y+1) + f(x,y-1) - 4·f(x,y)
 ```
-The Laplacian measures the difference between a point's value and the average of its neighbors. In the wave equation, it drives wave propagation; in fluid simulation, it provides viscous force (velocity diffusion); in the heat equation, it drives temperature equalization.
+The Laplacian measures the difference between a point’s value and the average of its
+neighbors. In the wave equation, it drives wave propagation; in fluid simulation, it
+provides viscous force (velocity diffusion); in the heat equation, it drives temperature
+equalization.
 
 **2. Semi-Lagrangian Advection** (used for fluid solving):
 ```
 f_new(x) = f_old(x - v·dt)    // backward tracing along the velocity field
 ```
-Advection is the most critical step in fluid simulation. The semi-Lagrangian method achieves unconditionally stable advection through "backward tracing" — starting from the target position, tracing backward along the velocity field to find the source position, then sampling the value at the source. This avoids the CFL condition limitation of forward Euler advection.
+Advection is the most critical step in fluid simulation.
+The semi-Lagrangian method achieves unconditionally stable advection through “backward
+tracing” — starting from the target position, tracing backward along the velocity field
+to find the source position, then sampling the value at the source.
+This avoids the CFL condition limitation of forward Euler advection.
 
 **3. Spring-Damper Force** (used for cloth, soft bodies):
 ```
 F_spring = k · (|Δx| - L₀) · normalize(Δx)
 F_damper = c · dot(normalize(Δx), Δv) · normalize(Δx)
 ```
-Spring force pulls two mass points back to the rest length L₀; stiffness k determines the restoring force strength. Damper force attenuates relative velocity along the connection direction; coefficient c determines the energy dissipation rate. Combined, they produce stable elastic motion.
+Spring force pulls two mass points back to the rest length L₀; stiffness k determines
+the restoring force strength.
+Damper force attenuates relative velocity along the connection direction; coefficient c
+determines the energy dissipation rate.
+Combined, they produce stable elastic motion.
 
 **4. Vorticity Confinement** (used for preserving fluid detail):
 ```
 curl = ∂v_x/∂y - ∂v_y/∂x
 vorticity_force = ε · (∇|curl| × curl) / |∇|curl||
 ```
-Numerical viscosity over-smooths small-scale vortices. Vorticity confinement compensates for this artificial dissipation by applying an additional force in high-vorticity regions, pushing small vortices into more concentrated rotational structures and preserving the visual richness of the fluid.
+Numerical viscosity over-smooths small-scale vortices.
+Vorticity confinement compensates for this artificial dissipation by applying an
+additional force in high-vorticity regions, pushing small vortices into more
+concentrated rotational structures and preserving the visual richness of the fluid.
 
 ## Implementation Steps in Detail
 
 ### Step 1: Ping-Pong Double Buffer Structure
 
-**What**: Create two Buffers (A and B) that alternate read/write to achieve state persistence.
+**What**: Create two Buffers (A and B) that alternate read/write to achieve state
+persistence.
 
-**Why**: GPU shaders cannot simultaneously read and write the same buffer. The ping-pong strategy reads from one buffer (previous frame's data) and writes to the other each frame, then swaps on the next frame.
+**Why**: GPU shaders cannot simultaneously read and write the same buffer.
+The ping-pong strategy reads from one buffer (previous frame’s data) and writes to the
+other each frame, then swaps on the next frame.
 
-**IMPORTANT: Key Difference Between ShaderToy and WebGL2**: In ShaderToy, Buffer A/B are two independent passes with separate write targets, so `iChannel0=self, iChannel1=other` doesn't conflict. However, in WebGL2 there's only one shader program doing ping-pong, and the write target texture cannot be simultaneously read. The solution is **dual-channel encoding** (R=current height, G=previous frame height).
+**IMPORTANT: Key Difference Between ShaderToy and WebGL2**: In ShaderToy, Buffer A/B are
+two independent passes with separate write targets, so `iChannel0=self, iChannel1=other`
+doesn’t conflict.
+However, in WebGL2 there’s only one shader program doing ping-pong, and
+the write target texture cannot be simultaneously read.
+The solution is **dual-channel encoding** (R=current height, G=previous frame height).
 
-**Code** (WebGL2-safe version, reads only from iChannel0, with RGBA8-compatible encoding):
+**Code** (WebGL2-safe version, reads only from iChannel0, with RGBA8-compatible
+encoding):
 ```glsl
 // IMPORTANT: Only use iChannel0 (read currentBuf), write to nextBuf (must be different!)
 // IMPORTANT: encode/decode ensure signed values aren't clipped on RGBA8 (no float textures/SwiftShader)
@@ -85,9 +122,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 ### Step 2: Interaction-Driven (External Force Injection)
 
-**What**: Inject energy into the simulation through mouse clicks or programmatic generation.
+**What**: Inject energy into the simulation through mouse clicks or programmatic
+generation.
 
-**Why**: Physics simulations need external excitation to start and sustain. Mouse interaction is the most intuitive driving method; programmatic methods can simulate raindrops, explosions, etc.
+**Why**: Physics simulations need external excitation to start and sustain.
+Mouse interaction is the most intuitive driving method; programmatic methods can
+simulate raindrops, explosions, etc.
 
 **Code** (insert before wave equation computation):
 ```glsl
@@ -110,9 +150,13 @@ else
 
 ### Step 3: Rendering Layer (Height Field Visualization)
 
-**What**: Read simulation results in the Image Pass, compute normals via gradient calculation, and render lighting effects.
+**What**: Read simulation results in the Image Pass, compute normals via gradient
+calculation, and render lighting effects.
 
-**Why**: The simulation result is a height field texture that needs to be transformed into a visible surface effect. Computing gradients via finite differences as normals enables refraction, diffuse reflection, specular highlights, and other water surface effects.
+**Why**: The simulation result is a height field texture that needs to be transformed
+into a visible surface effect.
+Computing gradients via finite differences as normals enables refraction, diffuse
+reflection, specular highlights, and other water surface effects.
 
 **Code** (Image Pass):
 ```glsl
@@ -145,9 +189,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 ### Step 4: Chained Multi-Buffer Iteration (Improving Accuracy)
 
-**What**: Chain multiple Buffers together to execute the same solver multiple times per frame.
+**What**: Chain multiple Buffers together to execute the same solver multiple times per
+frame.
 
-**Why**: Many physics solvers (fluid pressure projection, constraint solving) require multiple iterations to converge. In ShaderToy, you can chain Buffer A → B → C to execute the same code, equivalent to 3 iterations per frame. This is critical for Eulerian fluid (pressure-divergence elimination) and rigid bodies (impulse constraint solving).
+**Why**: Many physics solvers (fluid pressure projection, constraint solving) require
+multiple iterations to converge.
+In ShaderToy, you can chain Buffer A → B → C to execute the same code, equivalent to 3
+iterations per frame.
+This is critical for Eulerian fluid (pressure-divergence elimination) and rigid bodies
+(impulse constraint solving).
 
 **Full Euler fluid solver code** (Buffer A/B/C share Common pass):
 ```glsl
@@ -234,9 +284,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 ### Step 5: Texture Data Layout for Particle/Mass-Point Systems
 
-**What**: Encode particle positions, velocities, and other attributes at specific pixel locations in a texture.
+**What**: Encode particle positions, velocities, and other attributes at specific pixel
+locations in a texture.
 
-**Why**: In GPU physics simulation, each particle/mass point needs to store multiple attributes (position, velocity, force, etc.). By partitioning the texture into regions (e.g., left half for positions, right half for velocities), or encoding different attributes into different RGBA channels, a compact data layout is achieved.
+**Why**: In GPU physics simulation, each particle/mass point needs to store multiple
+attributes (position, velocity, force, etc.). By partitioning the texture into regions
+(e.g., left half for positions, right half for velocities), or encoding different
+attributes into different RGBA channels, a compact data layout is achieved.
 
 **Code** (cloth simulation data layout example):
 ```glsl
@@ -277,7 +331,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 **What**: Implement spring forces and damping forces between mass points.
 
-**Why**: Spring-dampers are the core of cloth and soft body simulation. Each mass point is connected to neighbors via springs — spring force maintains structural shape, damping force dissipates oscillation energy. Using near-neighbors (structural springs) + diagonals (shear springs) + skip-connections (bending springs) provides complete constraints.
+**Why**: Spring-dampers are the core of cloth and soft body simulation.
+Each mass point is connected to neighbors via springs — spring force maintains
+structural shape, damping force dissipates oscillation energy.
+Using near-neighbors (structural springs) + diagonals (shear springs) + skip-connections
+(bending springs) provides complete constraints.
 
 **Full code**:
 ```glsl
@@ -363,7 +421,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 **What**: Implement all-pairs interaction forces between all particles.
 
-**Why**: Certain physical systems (such as vortex dynamics, gravitational N-body problems) require each particle to interact with all other particles. The Biot-Savart law gives the velocity field generated by vorticity, which is the core of 2D vortex simulation. Uses semi-Newton (Verlet-type) two-step integration for improved accuracy.
+**Why**: Certain physical systems (such as vortex dynamics, gravitational N-body
+problems) require each particle to interact with all other particles.
+The Biot-Savart law gives the velocity field generated by vorticity, which is the core
+of 2D vortex simulation.
+Uses semi-Newton (Verlet-type) two-step integration for improved accuracy.
 
 **Full code**:
 ```glsl
@@ -408,9 +470,14 @@ void mainImage(out vec4 O, vec2 U)
 
 ### Step 8: State Storage in Specific Pixels (Global Variable Trick)
 
-**What**: Store global state (current position, time, mouse history) at fixed pixel locations in the texture.
+**What**: Store global state (current position, time, mouse history) at fixed pixel
+locations in the texture.
 
-**Why**: GPU shaders have no global variables. By storing state at agreed-upon pixel coordinates (usually `(0,0)` or the bottom row), the next frame can read these "global variables". This is indispensable for ODE integration (e.g., Lorenz attractor) and interactions that need to track mouse history.
+**Why**: GPU shaders have no global variables.
+By storing state at agreed-upon pixel coordinates (usually `(0,0)` or the bottom row),
+the next frame can read these “global variables”.
+This is indispensable for ODE integration (e.g., Lorenz attractor) and interactions that
+need to track mouse history.
 
 **Full code**:
 ```glsl
@@ -461,7 +528,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 ### Variant 1: Eulerian Fluid Simulation (Smoke / Ink)
 
-**Difference from base version**: Extends from scalar wave equation to full 2D velocity field solving — including advection, viscosity, vorticity confinement, and density tracking. Requires 3+ chained buffer iterations for enhanced convergence.
+**Difference from base version**: Extends from scalar wave equation to full 2D velocity
+field solving — including advection, viscosity, vorticity confinement, and density
+tracking. Requires 3+ chained buffer iterations for enhanced convergence.
 
 **Key code**:
 ```glsl
@@ -479,7 +548,10 @@ velocity.xy += vortForce;
 
 ### Variant 2: Cloth Simulation (Mass-Spring-Damper)
 
-**Difference from base version**: Changes from grid-based field equations to a discrete particle system. Each pixel represents a mass point storing 3D position and velocity. Connected to neighbors via spring-dampers, plus gravity, wind force, and collision. Multi-buffer chained iteration (4 passes) implements multiple sub-steps.
+**Difference from base version**: Changes from grid-based field equations to a discrete
+particle system. Each pixel represents a mass point storing 3D position and velocity.
+Connected to neighbors via spring-dampers, plus gravity, wind force, and collision.
+Multi-buffer chained iteration (4 passes) implements multiple sub-steps.
 
 **Key code**:
 ```glsl
@@ -499,15 +571,33 @@ if (length(pos - ballPos) < ballRadius) {
 ```
 
 > **IMPORTANT: Common Pitfalls**:
-> - **Cloth Image Pass must project world coordinates to screen**: You cannot use `uv * vec2(SIZX, SIZY)` to map screen UV to grid ID, because particles have moved from their initial positions, producing scattered fragments. You must iterate over mesh faces, projecting vertex world coordinates to screen space for triangle rasterization
-> - GLSL is strictly typed; you cannot write `float / vec2`. Wrong example: `length(dif) / vec2(SIZX, SIZY).x` will first execute float/vec2 causing a compile error; use `length(dif) / SIZX` instead
-> - `normalize(vec3(0))` produces NaN; all `normalize()` calls must include a length check beforehand
-> - In the Image Pass, `getpos`/`getvel` must use the simulation resolution (`iSimResolution`) for UV calculation, not the screen resolution `iResolution`
+>
+> - **Cloth Image Pass must project world coordinates to screen**: You cannot use
+>   `uv * vec2(SIZX, SIZY)` to map screen UV to grid ID, because particles have moved
+>   from their initial positions, producing scattered fragments.
+>   You must iterate over mesh faces, projecting vertex world coordinates to screen
+>   space for triangle rasterization
+>
+> - GLSL is strictly typed; you cannot write `float / vec2`. Wrong example:
+>   `length(dif) / vec2(SIZX, SIZY).x` will first execute float/vec2 causing a compile
+>   error; use `length(dif) / SIZX` instead
+>
+> - `normalize(vec3(0))` produces NaN; all `normalize()` calls must include a length
+>   check beforehand
+>
+> - In the Image Pass, `getpos`/`getvel` must use the simulation resolution
+>   (`iSimResolution`) for UV calculation, not the screen resolution `iResolution`
+>
 > - Texel center sampling should use `+0.5` offset (not `+0.01`)
 
 ### Variant 3: Rigid Body Physics Engine (Box2D-lite on GPU)
 
-**Difference from base version**: The most complex variant. Uses structured pixel addressing (ECS data layout) to serialize rigid body attributes, joints, contact points, etc., into textures. Buffer A handles integration + collision detection, Buffer B/C/D handle impulse constraint iteration. Requires Common pass to encapsulate a complete physics library.
+**Difference from base version**: The most complex variant.
+Uses structured pixel addressing (ECS data layout) to serialize rigid body attributes,
+joints, contact points, etc., into textures.
+Buffer A handles integration + collision detection, Buffer B/C/D handle impulse
+constraint iteration.
+Requires Common pass to encapsulate a complete physics library.
 
 **Key code**:
 ```glsl
@@ -532,7 +622,11 @@ body.vel += body.inv_mass * dp_n * contact.normal;
 
 ### Variant 4: N-Body Vortex Particle Simulation
 
-**Difference from base version**: Changes from field (Eulerian) method to particle (Lagrangian) method. Each particle carries vorticity, and the Biot-Savart law computes the full-field velocity. Uses semi-Newton two-step integration (Buffer A half-step → Buffer B full-step). O(N²) all-pairs interaction.
+**Difference from base version**: Changes from field (Eulerian) method to particle
+(Lagrangian) method.
+Each particle carries vorticity, and the Biot-Savart law computes the full-field
+velocity. Uses semi-Newton two-step integration (Buffer A half-step → Buffer B
+full-step). O(N²) all-pairs interaction.
 
 **Key code**:
 ```glsl
@@ -550,7 +644,11 @@ for (int j = 0; j < N; j++)
 
 ### Variant 5: 3D SPH Particle Fluid
 
-**Difference from base version**: Extends to 3D. Uses Particle Cluster Grid (PCG) for spatial neighborhood management, custom bit packing (5-bit exponent + 9-bit component) to compress particle data into 4 floats. Buffer A handles advection + clustering, Buffer B computes density, Buffer C computes forces + integration, Buffer D computes shadows.
+**Difference from base version**: Extends to 3D. Uses Particle Cluster Grid (PCG) for
+spatial neighborhood management, custom bit packing (5-bit exponent + 9-bit component)
+to compress particle data into 4 floats.
+Buffer A handles advection + clustering, Buffer B computes density, Buffer C computes
+forces + integration, Buffer D computes shadows.
 
 **Key code**:
 ```glsl
@@ -573,24 +671,42 @@ p.force += force_k * dir * (F + SPH_F + Friction) * irho / rest_density;
 ## Performance Optimization Details
 
 ### 1. Neighborhood Sampling Optimization
-- **Bottleneck**: Each pixel samples 4~12 neighbors; texture bandwidth is the main bottleneck
-- **Optimization**: Use `texelFetch` instead of `texture` (skips filtering), pre-compute `1.0/iResolution.xy` to avoid repeated division
+
+- **Bottleneck**: Each pixel samples 4~12 neighbors; texture bandwidth is the main
+  bottleneck
+
+- **Optimization**: Use `texelFetch` instead of `texture` (skips filtering), pre-compute
+  `1.0/iResolution.xy` to avoid repeated division
 
 ### 2. N-Body O(N²) Loop Optimization
-- **Bottleneck**: All-pairs interaction has O(N²) complexity; N=20 means 400 iterations per frame, N=50 means 2500
+
+- **Bottleneck**: All-pairs interaction has O(N²) complexity; N=20 means 400 iterations
+  per frame, N=50 means 2500
+
 - **Optimization**:
+
   - Limit N value (20~30 is enough for good visual results)
-  - Use "cheap" periodic boundary mode (`fract` instead of 3×3 loop traversal)
-  - Passive marker particles (90%) don't participate in force computation, only flow passively
+
+  - Use “cheap” periodic boundary mode (`fract` instead of 3×3 loop traversal)
+
+  - Passive marker particles (90%) don’t participate in force computation, only flow
+    passively
 
 ### 3. Iteration Count vs. Accuracy Balance
-- **Bottleneck**: Fluid/rigid body solvers need multiple iterations, but each buffer can only execute once
+
+- **Bottleneck**: Fluid/rigid body solvers need multiple iterations, but each buffer can
+  only execute once
+
 - **Optimization**:
+
   - Use 3 chained buffers (A→B→C) for 3 iterations/frame
+
   - 4 chained buffers for cloth (4 sub-steps/frame, time step = 1/4/60)
+
   - More buffers consume more GPU memory; balance accuracy against resources
 
 ### 4. Adaptive Precision
+
 - **Optimization**: Use larger step sizes for screen edges or distant regions
 ```glsl
 // Kelvin wave example: distant pixels use 8× step size
@@ -598,7 +714,9 @@ if (abs(U.y * R.y) > 100.0) dx *= 8.0 * abs(U.y);
 ```
 
 ### 5. Data Packing Compression
-- **Optimization**: When each particle has more than 4 float attributes, use bit operations for packing
+
+- **Optimization**: When each particle has more than 4 float attributes, use bit
+  operations for packing
 ```glsl
 // 3D SPH example: 3 floats compressed into 1 uint (5-bit exponent + 3×9-bit components)
 uint packvec3(vec3 v) {
@@ -610,35 +728,65 @@ uint packvec3(vec3 v) {
 ```
 
 ### 6. Stability Safeguards
+
 - Apply `clamp` to velocity/density to prevent numerical explosion
+
 - Use `smoothstep` for soft boundary decay instead of hard cutoff
+
 - Keep damping coefficients in the 0.95~0.999 range
 
 ## Combination Suggestions in Detail
 
 ### 1. Physics Simulation + Post-Processing Rendering
-The most common combination. Buffer passes handle physics computation, Image pass handles visualization:
-- **Waves + Refraction/Caustics**: Height field gradient drives refraction-offset sampling
-- **Fluid + Ink Coloring**: Velocity field advects colored ink particles (Buffer D), with HSV random coloring
-- **Cloth + Ray Tracing**: Voxelized spatial tree accelerates cloth surface ray intersection
+
+The most common combination.
+Buffer passes handle physics computation, Image pass handles visualization:
+
+- **Waves + Refraction/Caustics**: Height field gradient drives refraction-offset
+  sampling
+
+- **Fluid + Ink Coloring**: Velocity field advects colored ink particles (Buffer D),
+  with HSV random coloring
+
+- **Cloth + Ray Tracing**: Voxelized spatial tree accelerates cloth surface ray
+  intersection
 
 ### 2. Physics Simulation + SDF Rendering
-Rigid body/particle position data is passed to the Image pass, rendered as geometry using SDF functions:
+
+Rigid body/particle position data is passed to the Image pass, rendered as geometry
+using SDF functions:
+
 - `sdBox(p - bodyPos, bodySize)` renders rigid bodies
+
 - `length(p - particlePos) - radius` renders particles
+
 - Suitable for Box2D-lite rigid body engine visualization
 
 ### 3. Physics Simulation + Volume Rendering
+
 3D simulations (e.g., SPH) require a volume rendering pipeline:
+
 - Density field trilinear interpolation → ray marching → normal computation → lighting
+
 - Shadows via a separate buffer accumulating optical density along light rays
+
 - Environment map reflections + Fresnel blending
 
 ### 4. Multiple Physics System Coupling
-- **Fluid + Rigid Bodies**: Fluid velocity field drives rigid body motion; rigid body occupancy modifies fluid boundaries
-- **Cloth + Colliders**: Sphere/box shapes for collision detection, cloth elastic response
-- **Particles + Fields**: Particles generate fields (density/vorticity), fields in turn drive particles (SPH / Biot-Savart)
+
+- **Fluid + Rigid Bodies**: Fluid velocity field drives rigid body motion; rigid body
+  occupancy modifies fluid boundaries
+
+- **Cloth + Colliders**: Sphere/box shapes for collision detection, cloth elastic
+  response
+
+- **Particles + Fields**: Particles generate fields (density/vorticity), fields in turn
+  drive particles (SPH / Biot-Savart)
 
 ### 5. Physics Simulation + Audio Visualization
-- Bind audio texture via `iChannel`, mapping spectrum energy to external forces or parameters
-- Low frequencies drive large-scale motion, high frequencies drive small-scale vortices/ripples
+
+- Bind audio texture via `iChannel`, mapping spectrum energy to external forces or
+  parameters
+
+- Low frequencies drive large-scale motion, high frequencies drive small-scale
+  vortices/ripples

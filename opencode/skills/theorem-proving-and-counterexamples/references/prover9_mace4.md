@@ -3,21 +3,30 @@
 ## Connectives & Quantifiers
 
 - `&` (AND), `|` (OR)
+
 - `->` (Implication), `<->` (Equivalence)
+
 - `-` (Negation)
+
 - `all x (formula)`: Universal Quantifier ($\forall x$)
+
 - `exists x (formula)`: Existential Quantifier ($\exists x$)
 
 ## Variables & Constants
 
-- **Variables**: By default, `u, v, w, x, y, z` (any name starting with these letters) are treated as variables.
+- **Variables**: By default, `u, v, w, x, y, z` (any name starting with these letters)
+  are treated as variables.
+
 - **Constants/Functions**: Anything not starting with `u..z` is a constant or function.
 
 ## Equality
 
 - `=` (Equality)
+
 - `!=` (Inequality)
-- Natively supported by Paramodulation. No additional axioms required.
+
+- Natively supported by Paramodulation.
+  No additional axioms required.
 
 ## List Structures
 
@@ -79,11 +88,11 @@ formulas(assumptions).
   % Join and Meet are commutative
   join(x,y) = join(y,x).
   meet(x,y) = meet(y,x).
-  
+
   % Associative
   join(x, join(y,z)) = join(join(x,y), z).
   meet(x, meet(y,z)) = meet(meet(x,y), z).
-  
+
   % Absorption laws
   join(x, meet(x,y)) = x.
   meet(x, join(x,y)) = x.

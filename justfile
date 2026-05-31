@@ -40,6 +40,7 @@ claude_home := home / ".claude"
 codex_home := home / ".codex"
 gemini_home := home / ".gemini"
 qwen_home := home / ".qwen"
+qoder_home := home / ".qoder"
 opencode_home := home / ".config/opencode"
 opencode_permission_policy_home := home / ".config/opencode-permission-policy-compiler"
 kilo_home := home / ".config/kilo"
@@ -78,8 +79,9 @@ install:
     echo "✓ All repository targets exist."
 
     mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" "{{ qwen_home }}" \
-             "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" "{{ agents_home }}" \
-             "{{ kilocode_home }}" "{{ opencode_root }}" "{{ cc_safety_net_home }}"
+             "{{ qoder_home }}" "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" \
+             "{{ agents_home }}" "{{ kilocode_home }}" "{{ opencode_root }}" \
+             "{{ cc_safety_net_home }}"
 
     ln -snf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
     ln -snf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
@@ -110,10 +112,27 @@ install:
     ln -snf "{{ tmux_powerline_theme }}" "{{ home }}/.config/tmux-powerline/themes/my-theme.sh"
     ln -snf "{{ tmux_powerline_config }}" "{{ home }}/.config/tmux-powerline/config.sh"
 
+    # Merge existing qoder skills into repo before symlinking
+    if [ -d "{{ qoder_home }}/skills" ] && [ ! -L "{{ qoder_home }}/skills" ]; then
+        echo "Found existing Qoder skills at {{ qoder_home }}/skills"
+        for skill_dir in "{{ qoder_home }}/skills"/*/; do
+            if [ -d "$skill_dir" ] && [ -f "$skill_dir/SKILL.md" ]; then
+                skill_name=$(basename "$skill_dir")
+                target="{{ skills_dir }}/$skill_name"
+                if [ -d "$target" ]; then
+                    echo "  Skill '$skill_name' already exists in repo (delete ours to adopt theirs)"
+                else
+                    echo "  Importing Qoder skill '$skill_name' into repo"
+                    cp -r "$skill_dir" "$target"
+                fi
+            fi
+        done
+    fi
+
     # Backup existing skills directories before creating symlinks
     for dir in "{{ claude_home }}/skills" "{{ codex_home }}/skills" \
                "{{ agents_home }}/skills" "{{ qwen_home }}/skills" "{{ home }}/.config/agents/skills" \
-               "{{ amp_home }}/skills" "{{ kilocode_home }}/skills"; do
+               "{{ amp_home }}/skills" "{{ kilocode_home }}/skills" "{{ qoder_home }}/skills"; do
         if [ -d "$dir" ] && [ ! -L "$dir" ]; then
             mv "$dir" "$dir.bak.$(date +%Y%m%d%H%M%S)"
         fi
@@ -125,6 +144,7 @@ install:
     ln -snf "{{ skills_dir }}" "{{ home }}/.config/agents/skills"
     ln -snf "{{ skills_dir }}" "{{ amp_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ kilocode_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ qoder_home }}/skills"
 
     just --justfile {{ repo }}/justfile _update-shell-rc
 

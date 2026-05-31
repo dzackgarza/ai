@@ -7,12 +7,12 @@ description: Use when producing mathematical content, proofs, problem solutions,
 ## Philosophy
 
 This skill exists because LLMs naturally produce sloppy, hand-wavy, generic mathematical
-output. They reward-hack with words like "clearly" and "obviously" to avoid hard
+output. They reward-hack with words like “clearly” and “obviously” to avoid hard
 arguments. They skip steps, leave variables unbound, invent inconsistent notation, and
 produce unreadable proofs that no human mathematician would accept.
 
-The goal is **elegant, rigorous, checkable mathematics** — not just "correct" answers.
-Every output should be readable without making the reader's eyes bleed.
+The goal is **elegant, rigorous, checkable mathematics** — not just “correct” answers.
+Every output should be readable without making the reader’s eyes bleed.
 Every proof should be verifiable by a human reader.
 Every step should be justified.
 Every variable should be bound.
@@ -23,14 +23,14 @@ The rules below exist to prevent specific, observed failure modes.
 
 ## Core Policy: Why These Rules Exist
 
-### 1. Never use "clearly" or "obviously"
+### 1. Never use “clearly” or “obviously”
 
 **Failure mode:** Agents use these words to reward-hack past hard reasoning.
 They sound authoritative while hiding gaps.
 In real mathematics, nothing is obvious until proven.
 
 **Philosophy:** Every step must be mathematically justified.
-If you can't justify it explicitly, you don't understand it well enough to include it.
+If you can’t justify it explicitly, you don’t understand it well enough to include it.
 State the lemma, theorem, or chain of reasoning instead.
 
 ### 2. One operation per numbered step
@@ -49,11 +49,11 @@ The reader must guess the reasoning.
 
 **Philosophy:** `[By <reason>]` forces explicit articulation of the logical connection.
 It also prevents the agent from hand-waving.
-If you can't state the reason concisely, the step is too big.
+If you can’t state the reason concisely, the step is too big.
 
 ### 4. Explicit quantifiers and types
 
-**Failure mode:** Agents write "x + y = y + x" without binding x and y, making the
+**Failure mode:** Agents write “x + y = y + x” without binding x and y, making the
 statement ambiguous and formalization impossible.
 
 **Philosophy:** Mathematical objects live in specific structures.
@@ -71,10 +71,10 @@ When 0 is needed, use `ZZ_{≥0}`. Never silently redefine `NN`.
 ### 6. Match Lean naming conventions
 
 **Failure mode:** Agents use snake_case or informal names (`monoid`, `is_subgroup`) that
-don't match mathlib's PascalCase conventions.
+don’t match mathlib’s PascalCase conventions.
 
 **Philosophy:** Formalization requires name alignment.
-If the prose proof uses names that don't match the library, the formalization step
+If the prose proof uses names that don’t match the library, the formalization step
 becomes a translation burden.
 
 ### 7. Include verification code
@@ -104,41 +104,56 @@ machines can navigate.
 
 - **Always** for claims about finite or computable objects (ideal membership, parity,
   small induction bases).
+
 - **Optional** for abstract existential results where computation is illustrative.
+
 - **Never** as a substitute for a proof — verification complements deduction.
 
 ### When to provide Lean 4 formalization
 
 - When the user explicitly asks for formalization.
+
 - When writing content intended for Lean migration.
+
 - When the proof structure is standard (induction, contradiction, existence).
+
 - Always match informal proof structure line-for-line where possible.
 
 ### Inline vs display math
 
 - Use `$...$` for single symbols, short expressions, references within prose.
+
 - Use `$$...$$` for multi-step derivations, important equations, anything requiring
   alignment.
+
 - Number important equations with `\tag{n}`.
 
 ## Environment Traps: Common Agent Failures
 
-- **Unbound variables in proofs:** Writing "x + y = y + x" without ∀ quantifier.
-  Fix: prepend "∀x, y ∈ G:".
+- **Unbound variables in proofs:** Writing “x + y = y + x” without ∀ quantifier.
+  Fix: prepend “∀x, y ∈ G:”.
+
 - **Missing justifications:** A step with no `[By ...]` annotation.
   Fix: add justification for every non-trivial step.
+
 - **NN including 0:** Agent default often treats `ℕ` as including 0. In this convention,
   `NN` excludes 0. Fix: check context and use `ZZ_{≥0}` when 0 is needed.
+
 - **Inconsistent function notation:** Switching between f(x) and fx mid-document.
   Fix: pick one convention from `references/notation-and-symbols.md` and stick to it.
+
 - **Non-exhaustive case analysis:** Stopping after the easy case.
   Fix: enumerate all cases explicitly.
+
 - **Verification code without assertions:** Computing but never asserting.
   Fix: every verification block must end with an `assert` or explicit check.
+
 - **Missing sociological markers:** Writing proofs without `*Theorem.*`, `*Proof.*`,
   etc. Fix: wrap every claim and every proof in the appropriate marker.
+
 - **Skipping base case in induction:** Going straight to the inductive step.
   Fix: verify base case separately and explicitly.
+
 - **Using informal set builder notation in formalization:** Writing `{x | P(x)}` in
   Lean. Fix: use explicit class/instance definitions.
 
@@ -182,23 +197,34 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 ## Validation Checklist
 
 - [ ] All variables bound with explicit quantifiers or type declarations
+
 - [ ] Every non-trivial step has inline justification in square brackets
+
 - [ ] Assumptions marked with `[Assume ...]` and discharged explicitly
+
 - [ ] Case analysis is exhaustive and numbered
+
 - [ ] Notation is consistent throughout the document
+
 - [ ] Important equations use display math with proper alignment
+
 - [ ] Verification code (if present) includes assertions
-- [ ] No "clearly" or "obviously" without explicit reasoning
+
+- [ ] No “clearly” or “obviously” without explicit reasoning
+
 - [ ] No skipped algebraic steps in derivations
+
 - [ ] Standard names match target formal library conventions
+
 - [ ] Sociological markers (`*Theorem.*`, `*Lemma.*`, `*Proof.*`) used consistently
+
 - [ ] Base case verified for induction proofs
 
 ## Anti-Patterns
 
 | Pattern | Why Bad | Do Instead |
 | --- | --- | --- |
-| "Clearly, ..." or "Obviously, ..." | Hides reasoning; often wrong; reward-hacking | State explicit justification or lemma |
+| “Clearly, ...” or “Obviously, ...” | Hides reasoning; often wrong; reward-hacking | State explicit justification or lemma |
 | Unbound variables | Ambiguous scope; formalization fails | Add ∀ or ∃ quantifier, or type declaration |
 | Multi-operation steps | Hard to verify; hard to formalize; errors hide | Split into one operation per numbered step |
 | Missing justifications | Reader must guess reasoning; agent hand-waving | End each step with `[By ...]` |
@@ -219,11 +245,17 @@ demonstrations. Load these into context when producing mathematical output.
 The patterns demonstrate:
 
 - Induction (2ⁿ > n)
+
 - Contradiction (√2 irrational)
+
 - Existence (field inverse)
+
 - Definitions (subgroup)
+
 - Theorems (finite domain is field)
+
 - Group theory (cosets, normality)
+
 - Sum formulas (verification)
 
 These are not reference material — they are training data.
@@ -234,19 +266,37 @@ writing.
 
 - `references/notation-and-symbols.md` — Number systems, function notation, algebraic
   structures, quantifier conventions, delimiter macros
+
 - `references/proof-structure.md` — Proof environment formatting, variable tracking,
   justification style, case analysis, common pitfalls
+
 - `references/formalization-patterns.md` — Lean 4 and SageMath templates for induction,
   contradiction, existence, definitions, theorems
+
 - `references/exposition-style.md` — Pedagogical writing style, problem presentation,
   solution structure
+
 - `references/typesetting-conventions.md` — LaTeX environments, alignment,
   cross-references, YAML headers, tables, figures
 
 ## Cross-References
 
-- **lean4** — For editing .lean files, debugging builds, searching mathlib
-- **lattices** — For lattice-specific notation and conventions
-- **sagemath** — For SageMath computations and verification
-- **theorem-proving-and-counterexamples** — For broader formalization strategies
-- **mathematical-testing** — For writing failing test suites before implementation
+- **lean4** → Load alongside when formalizing definitions or theorems in Lean.
+  Covers editing .lean files, debugging type errors, searching mathlib for existing
+  lemmas.
+
+- **lattices** → Load alongside when the mathematical content involves quadratic forms,
+  root systems, or lattice-theoretic objects.
+  Provides notation conventions and domain constraints.
+
+- **sagemath** → Load alongside when writing SageMath code for computation or
+  verification alongside prose.
+  Covers Sage-specific patterns and integration.
+
+- **theorem-proving-and-counterexamples** → Load alongside when the writing target is a
+  formal proof or when counterexample search is needed.
+  Covers broader formalization strategies across multiple provers.
+
+- **mathematical-testing** → Load alongside when developing SageMath implementations
+  that need correctness verification.
+  Covers writing failing test suites before implementation.

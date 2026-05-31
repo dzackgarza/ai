@@ -19,7 +19,9 @@ just `typecheck` in isolation to bypass the full stack.
 ### Auto-Fix Before Check
 
 The `test` recipe runs `_normalize` first, which executes:
+
 - `ruff check --fix .` — auto-fix lint errors
+
 - `ruff format .` — auto-format code
 
 Only after normalization does the full QC stack run.
@@ -34,12 +36,19 @@ Running only typecheck is insufficient — the full stack must pass.
 ### No-Bypass Policy
 
 Bypass comments are explicitly blocked in staged files:
+
 - `# pragma: no cover` — Python coverage bypass
+
 - `// istanbul ignore` — JS coverage bypass
+
 - `# noqa` — Python lint bypass
+
 - `# type: ignore` — Python type bypass
+
 - `@ts-ignore` — TS type bypass
+
 - `@ts-expect-error` without comment — TS expect-error without justification
+
 - `// eslint-disable` — ESLint bypass
 
 **Rule:** Fix the underlying issue, never hide it with a bypass comment.
@@ -49,7 +58,7 @@ instead.
 ## Purpose
 
 1. **Enshrine workflows** — Every workflow lives in the justfile.
-   No ad-hoc scripts, no "I'll just run this command directly".
+   No ad-hoc scripts, no “I’ll just run this command directly”.
    Justfile is the single source of truth for project operations.
 
 2. **Fix opinionated workflows** — Agents cannot cherry-pick checks.
@@ -69,9 +78,11 @@ Location: `~/ai/quality-control/justfile`
 Used for: Pure Python projects, Python CLI tools, Python packages.
 
 Recipes:
+
 - `just test` — Local quality checks: normalization, bypass detection, coverage,
   diff-cover, vulture, deptry, semgrep, jscpd, lizard, import-linter, codeql,
   ai-slop-detector
+
 - `just test-ci` — **superset of test**, adds live/isolated checks (coverage thresholds,
   diff-cover against base branch, integration tests)
 
@@ -82,8 +93,10 @@ Location: `~/ai/quality-control/justfile-bun`
 Used for: TypeScript projects, Bun-based packages, Node.js CLIs.
 
 Recipes:
+
 - `just test` — Local quality checks: bypass detection, coverage, diff-cover, knip,
   biome, ast-grep, eslint, tsc, semgrep, jscpd, lizard, codeql, lint-staged
+
 - `just test-ci` — **superset of test**, adds live/isolated checks (coverage thresholds,
   diff-cover against base branch, integration tests)
 

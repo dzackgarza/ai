@@ -4,7 +4,8 @@ Base URL: `https://api.github.com`
 
 All requests need: `-H "Authorization: token $GITHUB_TOKEN"`
 
-Use the `gh-env.sh` helper to set `$GITHUB_TOKEN`, `$GH_OWNER`, `$GH_REPO` automatically:
+Use the `gh-env.sh` helper to set `$GITHUB_TOKEN`, `$GH_OWNER`, `$GH_REPO`
+automatically:
 ```bash
 source "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.sh"
 ```
@@ -12,7 +13,7 @@ source "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.s
 ## Repositories
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | Get repo info | GET | `/repos/{owner}/{repo}` |
 | Create repo (user) | POST | `/user/repos` |
 | Create repo (org) | POST | `/orgs/{org}/repos` |
@@ -28,7 +29,7 @@ source "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.s
 ## Pull Requests
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | List PRs | GET | `/repos/{owner}/{repo}/pulls?state=open` |
 | Create PR | POST | `/repos/{owner}/{repo}/pulls` |
 | Get PR | GET | `/repos/{owner}/{repo}/pulls/{number}` |
@@ -54,7 +55,7 @@ Merge methods: `"merge"`, `"squash"`, `"rebase"`
 ## Issues
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | List issues | GET | `/repos/{owner}/{repo}/issues?state=open` |
 | Create issue | POST | `/repos/{owner}/{repo}/issues` |
 | Get issue | GET | `/repos/{owner}/{repo}/issues/{number}` |
@@ -66,12 +67,13 @@ Merge methods: `"merge"`, `"squash"`, `"rebase"`
 | List labels | GET | `/repos/{owner}/{repo}/labels` |
 | Search issues | GET | `/search/issues?q={query}+repo:{owner}/{repo}` |
 
-Note: The Issues API also returns PRs. Filter with `"pull_request" not in item` when parsing.
+Note: The Issues API also returns PRs.
+Filter with `"pull_request" not in item` when parsing.
 
 ## CI / GitHub Actions
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | List workflows | GET | `/repos/{owner}/{repo}/actions/workflows` |
 | List runs | GET | `/repos/{owner}/{repo}/actions/runs?per_page=10` |
 | List runs (branch) | GET | `/repos/{owner}/{repo}/actions/runs?branch={branch}` |
@@ -86,7 +88,7 @@ Note: The Issues API also returns PRs. Filter with `"pull_request" not in item` 
 ## Releases
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | List releases | GET | `/repos/{owner}/{repo}/releases` |
 | Create release | POST | `/repos/{owner}/{repo}/releases` |
 | Get release | GET | `/repos/{owner}/{repo}/releases/{id}` |
@@ -96,7 +98,7 @@ Note: The Issues API also returns PRs. Filter with `"pull_request" not in item` 
 ## Secrets
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | List secrets | GET | `/repos/{owner}/{repo}/actions/secrets` |
 | Get public key | GET | `/repos/{owner}/{repo}/actions/secrets/public-key` |
 | Set secret | PUT | `/repos/{owner}/{repo}/actions/secrets/{name}` |
@@ -105,7 +107,7 @@ Note: The Issues API also returns PRs. Filter with `"pull_request" not in item` 
 ## Branch Protection
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | Get protection | GET | `/repos/{owner}/{repo}/branches/{branch}/protection` |
 | Set protection | PUT | `/repos/{owner}/{repo}/branches/{branch}/protection` |
 | Delete protection | DELETE | `/repos/{owner}/{repo}/branches/{branch}/protection` |
@@ -113,7 +115,7 @@ Note: The Issues API also returns PRs. Filter with `"pull_request" not in item` 
 ## User / Auth
 
 | Action | Method | Endpoint |
-|--------|--------|----------|
+| --- | --- | --- |
 | Get current user | GET | `/user` |
 | List user repos | GET | `/user/repos` |
 | List user gists | GET | `/gists` |
@@ -123,14 +125,19 @@ Note: The Issues API also returns PRs. Filter with `"pull_request" not in item` 
 ## Pagination
 
 Most list endpoints support:
+
 - `?per_page=100` (max 100)
+
 - `?page=2` for next page
+
 - Check `Link` header for `rel="next"` URL
 
 ## Rate Limits
 
 - Authenticated: 5,000 requests/hour
-- Check remaining: `curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/rate_limit`
+
+- Check remaining:
+  `curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/rate_limit`
 
 ## Common curl Patterns
 

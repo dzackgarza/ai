@@ -17,7 +17,9 @@ Use these before changing modeling strategy.
 ## Core/Assumption Diagnostics
 
 - Ensure `check()` returned `unsat` before reading `unsat_core()`.
+
 - Use `assert_and_track` labels that map to meaningful business constraints.
+
 - If cores are too large, test minimization settings:
 
 ```python
@@ -65,24 +67,38 @@ set_param("parallel.enable", True)
 set_param("parallel.threads.max", 8)
 ```
 
-Also review SAT co-processing settings (`sat.threads`, `sat.local_search_threads`, etc.) for finite-domain workloads.
+Also review SAT co-processing settings (`sat.threads`, `sat.local_search_threads`, etc.)
+for finite-domain workloads.
 
 ## Context and Cloning Safety
 
 - Objects in the same context are not thread-safe together.
+
 - Clone with `translate(ctx)` for independent parallel use.
 
 ## Engine Selection Checklist (Fast)
 
 1. General mixed SMT -> `Solver()` / SMT core.
+
 2. Finite domain bit-vector/enum/PB -> `SolverFor("QF_FD")`.
+
 3. Horn rules -> `SolverFor("HORN")`.
-4. Quantified elimination-friendly logics -> `SolverFor("LIA")`/`SolverFor("LRA")`/`Tactic("qsat").solver()`.
+
+4. Quantified elimination-friendly logics ->
+   `SolverFor("LIA")`/`SolverFor("LRA")`/`Tactic("qsat").solver()`.
+
 5. Quantifier-free nonlinear reals -> `SolverFor("QF_NRA")`.
 
 ## Failure Pattern Cheat Sheet
 
-- Too many persistent blocking lemmas in model enumeration -> switch to scope-based recursive blocking.
-- Unknown or stalled cubing -> verify solver supports cubing and inspect resource limits.
-- Unexpected model values -> inspect function `else` branches and use `m.eval` on target terms.
-- Exploding arithmetic numerals -> simplify coefficients/representation and reconsider fragment fit.
+- Too many persistent blocking lemmas in model enumeration -> switch to scope-based
+  recursive blocking.
+
+- Unknown or stalled cubing -> verify solver supports cubing and inspect resource
+  limits.
+
+- Unexpected model values -> inspect function `else` branches and use `m.eval` on target
+  terms.
+
+- Exploding arithmetic numerals -> simplify coefficients/representation and reconsider
+  fragment fit.

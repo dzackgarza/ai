@@ -1,53 +1,96 @@
 # Lighting Models Detailed Reference
 
-This document is a detailed supplementary reference to [SKILL.md](SKILL.md), covering prerequisite knowledge, in-depth explanations for each step, complete descriptions of variants, performance optimization analysis, and full code examples for combination suggestions.
+This document is a detailed supplementary reference to [SKILL.md](SKILL.md), covering
+prerequisite knowledge, in-depth explanations for each step, complete descriptions of
+variants, performance optimization analysis, and full code examples for combination
+suggestions.
 
----
+* * *
 
 ## Prerequisites
 
 ### Vector Math Fundamentals
-- **Dot product**: `dot(A, B) = |A||B|cos(θ)`, used to compute the angular relationship between two vectors. Lighting models heavily use dot products such as N·L, N·V, N·H, V·H
-- **Cross product**: `cross(A, B)` returns a vector perpendicular to both A and B, used to build camera coordinate systems and tangent spaces
-- **normalize**: Scales a vector to unit length; lighting calculations require all direction vectors to be normalized
-- **reflect**: `reflect(I, N) = I - 2.0 * dot(N, I) * N`, computes the reflection of incident vector I about normal N
+
+- **Dot product**: `dot(A, B) = |A||B|cos(θ)`, used to compute the angular relationship
+  between two vectors.
+  Lighting models heavily use dot products such as N·L, N·V, N·H, V·H
+
+- **Cross product**: `cross(A, B)` returns a vector perpendicular to both A and B, used
+  to build camera coordinate systems and tangent spaces
+
+- **normalize**: Scales a vector to unit length; lighting calculations require all
+  direction vectors to be normalized
+
+- **reflect**: `reflect(I, N) = I - 2.0 * dot(N, I) * N`, computes the reflection of
+  incident vector I about normal N
 
 ### GLSL Fundamentals
-- **uniform / varying**: uniforms are global constants (e.g., iTime, iResolution); varyings are interpolated from vertex to fragment
+
+- **uniform / varying**: uniforms are global constants (e.g., iTime, iResolution);
+  varyings are interpolated from vertex to fragment
+
 - **Key built-in functions**:
+
   - `clamp(x, min, max)` — clamp to range
+
   - `mix(a, b, t)` — linear interpolation `a*(1-t) + b*t`
+
   - `pow(base, exp)` — exponentiation, used for specular falloff
-  - `exp(x)` / `exp2(x)` — exponential functions, used for attenuation and Beer's Law
+
+  - `exp(x)` / `exp2(x)` — exponential functions, used for attenuation and Beer’s Law
+
   - `smoothstep(edge0, edge1, x)` — Hermite smooth interpolation
 
 ### Basic Computer Graphics Concepts
-- **Normal (N)**: Unit vector pointing outward from the surface, determines lighting intensity
+
+- **Normal (N)**: Unit vector pointing outward from the surface, determines lighting
+  intensity
+
 - **View Direction (V)**: Unit vector from the surface point toward the camera
+
 - **Light Direction (L)**: Unit vector from the surface point toward the light source
+
 - **Half Vector (H)**: `normalize(V + L)`, the core of the Blinn-Phong model
+
 - **Reflect Vector (R)**: `reflect(-L, N)`, used in the classic Phong model
 
 ### Raymarching Basics (Recommended)
-- **SDF (Signed Distance Function)**: Returns the signed distance from a point to the nearest surface
-- **Normal computation (finite differences)**: Approximates the gradient (i.e., normal direction) by computing small-offset differences of the SDF along the x, y, and z axes
-- **March**: Advances along the ray direction by the distance returned by the SDF until hitting a surface or exceeding the range
 
----
+- **SDF (Signed Distance Function)**: Returns the signed distance from a point to the
+  nearest surface
+
+- **Normal computation (finite differences)**: Approximates the gradient (i.e., normal
+  direction) by computing small-offset differences of the SDF along the x, y, and z axes
+
+- **March**: Advances along the ray direction by the distance returned by the SDF until
+  hitting a surface or exceeding the range
+
+* * *
 
 ## Implementation Steps in Detail
 
 ### Step 1: Scene Foundation (UV, Camera, Raymarching)
 
-**What**: Establish the standard ShaderToy framework — UV coordinates, camera ray, SDF scene, normal computation.
+**What**: Establish the standard ShaderToy framework — UV coordinates, camera ray, SDF
+scene, normal computation.
 
-**Why**: Lighting calculations require normal N, view direction V, and light direction L as inputs, all of which depend on scene geometry. Without correct normals and direction vectors, no lighting model can work.
+**Why**: Lighting calculations require normal N, view direction V, and light direction L
+as inputs, all of which depend on scene geometry.
+Without correct normals and direction vectors, no lighting model can work.
 
 **Details**:
-- UV coordinates are typically normalized as `(2.0 * fragCoord - iResolution.xy) / iResolution.y` to ensure correct aspect ratio
-- The camera uses a look-at matrix: forward direction `ww`, right direction `uu`, up direction `vv`
-- SDF normals use six-point central difference, which is more accurate than forward difference
-- The epsilon value in `e = vec2(0.001, 0.0)` affects normal accuracy: too large blurs details, too small introduces noise
+
+- UV coordinates are typically normalized as
+  `(2.0 * fragCoord - iResolution.xy) / iResolution.y` to ensure correct aspect ratio
+
+- The camera uses a look-at matrix: forward direction `ww`, right direction `uu`, up
+  direction `vv`
+
+- SDF normals use six-point central difference, which is more accurate than forward
+  difference
+
+- The epsilon value in `e = vec2(0.001, 0.0)` affects normal accuracy: too large blurs
+  details, too small introduces noise
 
 **Code**:
 ```glsl
@@ -72,12 +115,22 @@ vec3 L = normalize(lightPos - pos);  // Light direction (point light)
 
 **What**: Compute basic diffuse lighting — the foundation of all lighting models.
 
-**Why**: Lambert's law describes the ideal diffuse behavior of rough surfaces — brightness is proportional to cos(angle of incidence). This is the most fundamental physically-based lighting model, assuming light enters the surface and is scattered uniformly.
+**Why**: Lambert’s law describes the ideal diffuse behavior of rough surfaces —
+brightness is proportional to cos(angle of incidence).
+This is the most fundamental physically-based lighting model, assuming light enters the
+surface and is scattered uniformly.
 
 **Details**:
+
 - `max(0.0, dot(N, L))` uses `max(0,...)` to avoid negative values (backface lighting)
-- Energy-conserving Lambertian diffuse requires dividing by PI, since Lambert BRDF = albedo/PI and the integrated irradiance = PI * L_incoming
-- Half-Lambert (`NdotL * 0.5 + 0.5`) is a technique invented by Valve that maps [-1,1] to [0,1], giving backlit areas some brightness; commonly used for character rendering and SSS approximation
+
+- Energy-conserving Lambertian diffuse requires dividing by PI, since Lambert BRDF =
+  albedo/PI and the integrated irradiance = PI * L_incoming
+
+- Half-Lambert (`NdotL * 0.5 + 0.5`) is a technique invented by Valve that maps [-1,1]
+  to [0,1], giving backlit areas some brightness; commonly used for character rendering
+  and SSS approximation
+
 - Many ocean shaders use a similar wrapped diffuse pattern
 
 **Code**:
@@ -99,12 +152,22 @@ vec3 diffuse_wrapped = albedo * lightColor * halfLambert;
 
 **What**: Add specular highlights based on the half vector.
 
-**Why**: Blinn-Phong is more computationally efficient and physically plausible than classic Phong. The half vector H is the average direction of V and L; the highlight is brightest when H aligns with N. Blinn-Phong also behaves more realistically at grazing angles compared to Phong.
+**Why**: Blinn-Phong is more computationally efficient and physically plausible than
+classic Phong. The half vector H is the average direction of V and L; the highlight is
+brightest when H aligns with N. Blinn-Phong also behaves more realistically at grazing
+angles compared to Phong.
 
 **Details**:
-- Half vector H = normalize(V + L), which avoids the reflect computation needed by Phong's reflect(-L, N)
-- Shininess controls highlight concentration: 4.0 gives a very rough surface feel, 256.0 approaches a mirror
-- The normalization factor `(shininess + 8.0) / (8.0 * PI)` ensures total reflected energy remains constant when changing shininess (energy conservation)
+
+- Half vector H = normalize(V + L), which avoids the reflect computation needed by
+  Phong’s reflect(-L, N)
+
+- Shininess controls highlight concentration: 4.0 gives a very rough surface feel, 256.0
+  approaches a mirror
+
+- The normalization factor `(shininess + 8.0) / (8.0 * PI)` ensures total reflected
+  energy remains constant when changing shininess (energy conservation)
+
 - Based on the standard half vector method used in many raymarching shaders
 
 **Code**:
@@ -127,17 +190,32 @@ vec3 specular = lightColor * spec_normalized;
 
 ### Step 4: Fresnel-Schlick Approximation
 
-**What**: Compute reflectance based on viewing angle — reflectance increases at grazing angles ("edge brightening" effect).
+**What**: Compute reflectance based on viewing angle — reflectance increases at grazing
+angles ("edge brightening" effect).
 
-**Why**: All real materials approach 100% reflectance at grazing angles. This is a fundamental physical phenomenon (Fresnel effect). The Schlick approximation uses a fifth-power curve to simulate this, and is a core component of all PBR pipelines. This is a ubiquitous formula in real-time rendering.
+**Why**: All real materials approach 100% reflectance at grazing angles.
+This is a fundamental physical phenomenon (Fresnel effect).
+The Schlick approximation uses a fifth-power curve to simulate this, and is a core
+component of all PBR pipelines.
+This is a ubiquitous formula in real-time rendering.
 
 **Details**:
+
 - F0 is the reflectance at normal incidence (looking straight at the surface)
-- Dielectrics (plastic, water, etc.): F0 is approximately 0.02~0.04; most light is scattered (diffuse)
-- Metals: F0 uses the material's baseColor, since metals have virtually no diffuse reflection
-- `mix(vec3(0.04), baseColor, metallic)` is the unified metallic workflow, interpolating between dielectrics and metals
+
+- Dielectrics (plastic, water, etc.): F0 is approximately 0.02~0.04; most light is
+  scattered (diffuse)
+
+- Metals: F0 uses the material’s baseColor, since metals have virtually no diffuse
+  reflection
+
+- `mix(vec3(0.04), baseColor, metallic)` is the unified metallic workflow, interpolating
+  between dielectrics and metals
+
 - Using V·H for the Cook-Torrance BRDF specular term
+
 - Using N·V for environment reflections, rim lighting, etc.
+
 - A widely used approximation in both real-time and offline rendering pipelines.
 
 **Code**:
@@ -168,15 +246,27 @@ vec3 F_env = F0 + (1.0 - F0) * pow(1.0 - NdotV, 5.0);
 
 ### Step 5: GGX Normal Distribution Function (D Term)
 
-**What**: Compute the probability distribution of microfacet normals aligning with the half vector.
+**What**: Compute the probability distribution of microfacet normals aligning with the
+half vector.
 
-**Why**: The GGX (Trowbridge-Reitz) distribution has a wider "long tail" highlight, closer to real materials than the Beckmann distribution. This is the core term in PBR pipelines that determines highlight shape and size. This is the standard GGX formula used across PBR implementations.
+**Why**: The GGX (Trowbridge-Reitz) distribution has a wider “long tail” highlight,
+closer to real materials than the Beckmann distribution.
+This is the core term in PBR pipelines that determines highlight shape and size.
+This is the standard GGX formula used across PBR implementations.
 
 **Details**:
-- Roughness must be squared first (`a = roughness * roughness`); this is Disney's mapping from perceptual roughness to alpha
+
+- Roughness must be squared first (`a = roughness * roughness`); this is Disney’s
+  mapping from perceptual roughness to alpha
+
 - `a2 = a * a` is the alpha^2 term in the GGX formula
-- When roughness = 0.0, D approaches a delta function (perfect mirror); when roughness = 1.0, it approaches a uniform distribution
-- The denominator `PI * denom * denom` ensures the distribution function integrates to 1 over the hemisphere
+
+- When roughness = 0.0, D approaches a delta function (perfect mirror); when roughness =
+  1.0, it approaches a uniform distribution
+
+- The denominator `PI * denom * denom` ensures the distribution function integrates to 1
+  over the hemisphere
+
 - The standard GGX formula used across PBR implementations
 
 **Code**:
@@ -199,13 +289,25 @@ float distributionGGX(float NdotH, float roughness) {
 
 **What**: Compute the mutual shadowing and masking between microfacets.
 
-**Why**: Not all correctly-oriented microfacets can be "seen" by both the light and the view simultaneously — the G term corrects for this occlusion loss. The microfacet model assumes the surface is composed of countless tiny flat surfaces that can occlude each other (shadowing and masking).
+**Why**: Not all correctly-oriented microfacets can be “seen” by both the light and the
+view simultaneously — the G term corrects for this occlusion loss.
+The microfacet model assumes the surface is composed of countless tiny flat surfaces
+that can occlude each other (shadowing and masking).
 
 **Details**:
-- The Smith method decomposes G into two independent terms for the light direction (G1_L) and view direction (G1_V)
-- **Schlick-GGX**: `k = (roughness+1)^2 / 8` for direct lighting, `k = roughness^2 / 2` for IBL
-- **Height-Correlated Smith**: More physically accurate, accounts for height correlation of microfacets; directly returns the visibility term `G/(4*NdotV*NdotL)`
-- **Simplified approximation** (G1V): Most compact implementation, suitable for code golf or extremely performance-constrained scenarios
+
+- The Smith method decomposes G into two independent terms for the light direction
+  (G1_L) and view direction (G1_V)
+
+- **Schlick-GGX**: `k = (roughness+1)^2 / 8` for direct lighting, `k = roughness^2 / 2`
+  for IBL
+
+- **Height-Correlated Smith**: More physically accurate, accounts for height correlation
+  of microfacets; directly returns the visibility term `G/(4*NdotV*NdotL)`
+
+- **Simplified approximation** (G1V): Most compact implementation, suitable for code
+  golf or extremely performance-constrained scenarios
+
 - Three common implementations with different accuracy/performance tradeoffs
 
 **Code**:
@@ -247,13 +349,23 @@ float G1V(float dotNV, float k) {
 
 **What**: Combine the D, F, and G terms into a complete specular reflection BRDF.
 
-**Why**: The Cook-Torrance microfacet model is currently the most widely used physically-based specular reflection model in real-time rendering. It is based on microfacet theory, modeling the surface as countless tiny perfect mirrors.
+**Why**: The Cook-Torrance microfacet model is currently the most widely used
+physically-based specular reflection model in real-time rendering.
+It is based on microfacet theory, modeling the surface as countless tiny perfect
+mirrors.
 
 **Details**:
+
 - Full formula: `f_specular = D * F * G / (4 * NdotV * NdotL)`
-- When using `visibilitySmith` (which returns `G/(4*NdotV*NdotL)`), there is no need to manually divide by the denominator
-- When using the standard `geometrySmith` (which returns G), you must explicitly divide by `4 * NdotV * NdotL`
+
+- When using `visibilitySmith` (which returns `G/(4*NdotV*NdotL)`), there is no need to
+  manually divide by the denominator
+
+- When using the standard `geometrySmith` (which returns G), you must explicitly divide
+  by `4 * NdotV * NdotL`
+
 - `max(4.0 * NdotV * NdotL, 0.001)` prevents division by zero
+
 - Based on the standard Cook-Torrance BRDF formulation
 
 **Code**:
@@ -290,16 +402,28 @@ vec3 cookTorranceBRDF(vec3 N, vec3 V, vec3 L, float roughness, vec3 F0) {
 
 ### Step 8: Multi-Light Accumulation and Final Compositing
 
-**What**: Blend diffuse and specular reflections with energy conservation, and accumulate contributions from multiple lights.
+**What**: Blend diffuse and specular reflections with energy conservation, and
+accumulate contributions from multiple lights.
 
-**Why**: Real scenes contain multiple light sources (sun, sky, ground bounce, etc.). Energy conservation must be maintained between diffuse and specular: energy that has been reflected (F) should not participate in diffuse reflection.
+**Why**: Real scenes contain multiple light sources (sun, sky, ground bounce, etc.).
+Energy conservation must be maintained between diffuse and specular: energy that has
+been reflected (F) should not participate in diffuse reflection.
 
 **Details**:
+
 - `kD = (1.0 - F) * (1.0 - metallic)` implements energy conservation:
+
   - `(1.0 - F)` ensures already-reflected light does not participate in diffuse
-  - `(1.0 - metallic)` ensures metals have no diffuse (metals' free electrons absorb all refracted light)
-- Sky light uses `0.5 + 0.5 * N.y` to approximate hemisphere integration — the more upward the normal, the brighter
-- Back/rim light uses wrapped diffuse from the opposite direction of the sun to provide fill lighting
+
+  - `(1.0 - metallic)` ensures metals have no diffuse (metals' free electrons absorb all
+    refracted light)
+
+- Sky light uses `0.5 + 0.5 * N.y` to approximate hemisphere integration — the more
+  upward the normal, the brighter
+
+- Back/rim light uses wrapped diffuse from the opposite direction of the sun to provide
+  fill lighting
+
 - Based on multi-light architecture patterns common in PBR raymarching shaders
 
 **Code**:
@@ -347,17 +471,30 @@ vec3 shade(vec3 pos, vec3 N, vec3 V, vec3 albedo, float roughness, float metalli
 
 ### Step 9: Ambient Occlusion (AO)
 
-**What**: Approximate the reduction of indirect lighting in surface crevices due to geometric occlusion.
+**What**: Approximate the reduction of indirect lighting in surface crevices due to
+geometric occlusion.
 
-**Why**: Scenes without AO appear overly "flat" and lack spatial depth. In raymarching scenes, the SDF can be used to efficiently compute AO — sample several points along the normal direction and compare the SDF distance with the ideal distance.
+**Why**: Scenes without AO appear overly “flat” and lack spatial depth.
+In raymarching scenes, the SDF can be used to efficiently compute AO — sample several
+points along the normal direction and compare the SDF distance with the ideal distance.
 
 **Details**:
-- Principle: Step gradually away from the surface along the normal, querying the SDF value at each sample point. If the SDF value is less than the sample distance h, nearby occluding geometry is present
+
+- Principle: Step gradually away from the surface along the normal, querying the SDF
+  value at each sample point.
+  If the SDF value is less than the sample distance h, nearby occluding geometry is
+  present
+
 - `sca *= 0.95` gradually decreases the weight of farther sample points
+
 - The multiplier in `3.0 * occ` controls AO intensity (adjustable)
+
 - AO affects both diffuse and specular, but in different ways:
+
   - Diffuse: multiply directly by the AO value
+
   - Specular: use `pow(NdotV + ao, roughness^2) - 1 + ao` for more subtle attenuation
+
 - Based on the standard SDF ambient occlusion technique
 
 **Code**:
@@ -382,15 +519,19 @@ diffuseLight *= ao;
 specularLight *= clamp(pow(NdotV + ao, roughness * roughness) - 1.0 + ao, 0.0, 1.0);
 ```
 
----
+* * *
 
 ## Variant Details
 
 ### Variant 1: Classic Phong (Non-PBR)
 
-**Difference from base version**: Uses the reflection vector `R = reflect(-L, N)` instead of the half vector; no D/F/G decomposition.
+**Difference from base version**: Uses the reflection vector `R = reflect(-L, N)`
+instead of the half vector; no D/F/G decomposition.
 
-**Use cases**: Quick prototyping, retro-style rendering, performance-constrained scenarios. The Phong model has the lowest computational cost but does not satisfy energy conservation, and highlights disappear at grazing angles (the opposite of real materials).
+**Use cases**: Quick prototyping, retro-style rendering, performance-constrained
+scenarios. The Phong model has the lowest computational cost but does not satisfy energy
+conservation, and highlights disappear at grazing angles (the opposite of real
+materials).
 
 **Key code**:
 ```glsl
@@ -403,14 +544,22 @@ vec3 color = albedo * lightColor * NdotL    // diffuse
 
 ### Variant 2: Point Light Attenuation
 
-**Difference from base version**: Adds distance attenuation, suitable for point light / spotlight scenarios. The base version assumes directional light (sun), while point light intensity decreases with distance.
+**Difference from base version**: Adds distance attenuation, suitable for point light /
+spotlight scenarios.
+The base version assumes directional light (sun), while point light intensity decreases
+with distance.
 
 **Use cases**: Indoor scenes, multiple point lights, close-range light effects.
 
 **Details**:
-- Physically correct attenuation should be `1/distance²`, but in practice `1/(1 + k1*d + k2*d²)` avoids infinite brightness at close range
-- k1 (linear attenuation): 0.01~0.5, k2 (quadratic attenuation): 0.001~0.1
-- Alternatively, use physical attenuation with a maximum intensity cap: `min(1.0/(d*d), maxIntensity)`
+
+- Physically correct attenuation should be `1/distance²`, but in practice
+  `1/(1 + k1*d + k2*d²)` avoids infinite brightness at close range
+
+- k1 (linear attenuation): 0.01~~0.5, k2 (quadratic attenuation): 0.001~~0.1
+
+- Alternatively, use physical attenuation with a maximum intensity cap:
+  `min(1.0/(d*d), maxIntensity)`
 
 **Key code**:
 ```glsl
@@ -424,15 +573,27 @@ color *= attenuation;
 
 ### Variant 3: IBL (Image-Based Lighting)
 
-**Difference from base version**: Uses environment maps instead of analytic light sources, split into diffuse SH (spherical harmonics) and specular split-sum parts.
+**Difference from base version**: Uses environment maps instead of analytic light
+sources, split into diffuse SH (spherical harmonics) and specular split-sum parts.
 
-**Use cases**: Scenes requiring realistic environmental lighting reflections. IBL can capture complex lighting environments (e.g., HDRI panoramas), producing very natural lighting effects.
+**Use cases**: Scenes requiring realistic environmental lighting reflections.
+IBL can capture complex lighting environments (e.g., HDRI panoramas), producing very
+natural lighting effects.
 
 **Details**:
-- Diffuse IBL uses spherical harmonics (SH) to precompute the low-frequency component of environmental lighting
-- Specular IBL uses Epic Games' split-sum approximation: splits the BRDF integral into environment map LOD lookup + precomputed BRDF integration lookup table
-- `EnvBRDFApprox` is Unreal Engine 4's approximation, avoiding the need for a precomputed LUT texture
-- `textureLod(envMap, R, roughness * 7.0)` uses mipmap levels to simulate blurred reflections on rough surfaces
+
+- Diffuse IBL uses spherical harmonics (SH) to precompute the low-frequency component of
+  environmental lighting
+
+- Specular IBL uses Epic Games’ split-sum approximation: splits the BRDF integral into
+  environment map LOD lookup + precomputed BRDF integration lookup table
+
+- `EnvBRDFApprox` is Unreal Engine 4’s approximation, avoiding the need for a
+  precomputed LUT texture
+
+- `textureLod(envMap, R, roughness * 7.0)` uses mipmap levels to simulate blurred
+  reflections on rough surfaces
+
 - Based on the SH + EnvBRDFApprox method common in PBR pipelines
 
 **Key code**:
@@ -457,13 +618,24 @@ vec3 specularIBL = EnvBRDFApprox(F0, roughness, NdotV) * envColor;
 
 ### Variant 4: Subsurface Scattering Approximation (SSS)
 
-**Difference from base version**: Simulates light passing through translucent materials (e.g., skin, wax, water surfaces).
+**Difference from base version**: Simulates light passing through translucent materials
+(e.g., skin, wax, water surfaces).
 
-**Use cases**: Water surfaces, skin, candles, leaves, and other translucent materials. SSS makes thin parts appear brighter and more translucent.
+**Use cases**: Water surfaces, skin, candles, leaves, and other translucent materials.
+SSS makes thin parts appear brighter and more translucent.
 
 **Details**:
-- **Method 1 (SDF probing)**: Probes the SDF value along the light direction into the material interior. If the SDF value is much smaller than the probe distance, the material is thicker at that point and transmits less light; otherwise it transmits more
-- **Method 2 (Henyey-Greenstein phase function)**: Describes the directional distribution of light scattering in a medium. Parameter g controls forward/backward scattering: g > 0 for forward scattering (e.g., skin), g < 0 for backward scattering
+
+- **Method 1 (SDF probing)**: Probes the SDF value along the light direction into the
+  material interior. If the SDF value is much smaller than the probe distance, the
+  material is thicker at that point and transmits less light; otherwise it transmits
+  more
+
+- **Method 2 (Henyey-Greenstein phase function)**: Describes the directional
+  distribution of light scattering in a medium.
+  Parameter g controls forward/backward scattering: g > 0 for forward scattering (e.g.,
+  skin), g < 0 for backward scattering
+
 - Combines SDF-based interior probing with Henyey-Greenstein phase function
 
 **Key code**:
@@ -489,18 +661,32 @@ float sssAmount = HenyeyGreenstein(dot(V, L), 0.5);
 color += sssColor * sssAmount * NdotL;
 ```
 
-### Variant 5: Beer's Law Water Lighting
+### Variant 5: Beer’s Law Water Lighting
 
-**Difference from base version**: Simulates the exponential attenuation of light in water/transparent media.
+**Difference from base version**: Simulates the exponential attenuation of light in
+water/transparent media.
 
-**Use cases**: Water surfaces, underwater scenes, glass, juice, and other transparent/translucent media. The Beer-Lambert law describes the exponential decay of light intensity as it travels through a medium.
+**Use cases**: Water surfaces, underwater scenes, glass, juice, and other
+transparent/translucent media.
+The Beer-Lambert law describes the exponential decay of light intensity as it travels
+through a medium.
 
 **Details**:
-- `exp2(-opticalDepth * extinctColor)` implements wavelength-dependent exponential attenuation
-- Different color channels have different attenuation coefficients, producing the characteristic color of water (blue/green transmits the most)
-- In `extinctColor = 1.0 - vec3(0.5, 0.4, 0.1)`, the vec3 controls the absorption rate per channel
-- Inscattering simulates multiple scattering of light inside the water body, giving deep water its inherent color
+
+- `exp2(-opticalDepth * extinctColor)` implements wavelength-dependent exponential
+  attenuation
+
+- Different color channels have different attenuation coefficients, producing the
+  characteristic color of water (blue/green transmits the most)
+
+- In `extinctColor = 1.0 - vec3(0.5, 0.4, 0.1)`, the vec3 controls the absorption rate
+  per channel
+
+- Inscattering simulates multiple scattering of light inside the water body, giving deep
+  water its inherent color
+
 - `1.0 - exp(-depth * 0.1)` is a simplified inscattering model
+
 - Based on the Beer-Lambert law for wavelength-dependent attenuation
 
 **Key code**:
@@ -519,13 +705,15 @@ vec3 inscatter = waterDiffuse * (1.0 - exp(-depth * 0.1));
 underwaterColor += inscatter;
 ```
 
----
+* * *
 
 ## Performance Optimization In-Depth Analysis
 
 ### 1. Avoiding the Cost of pow(x, 5.0)
 
-The `pow` function on some GPUs is implemented as `exp2(5.0 * log2(x))`, involving two transcendental functions. Manually unrolling into a multiplication chain is more efficient:
+The `pow` function on some GPUs is implemented as `exp2(5.0 * log2(x))`, involving two
+transcendental functions.
+Manually unrolling into a multiplication chain is more efficient:
 
 ```glsl
 // Efficient implementation of Schlick Fresnel
@@ -537,30 +725,50 @@ vec3 F = F0 + (1.0 - F0) * x5;
 
 ### 2. Merging G and the Denominator (Visibility Term)
 
-Using `V_SmithGGX` to directly return `G / (4 * NdotV * NdotL)` avoids computing G separately and then dividing. This not only eliminates one division but also avoids numerical instability when `4 * NdotV * NdotL` is near zero. The Height-Correlated Smith version is also more physically accurate.
+Using `V_SmithGGX` to directly return `G / (4 * NdotV * NdotL)` avoids computing G
+separately and then dividing.
+This not only eliminates one division but also avoids numerical instability when
+`4 * NdotV * NdotL` is near zero.
+The Height-Correlated Smith version is also more physically accurate.
 
 ### 3. AO Sample Count
 
 - 5 samples are sufficient for most scenes
+
 - Distant objects can use as few as 3 (since details are not visible)
-- The upper bound of sample step h (`0.12 * i / 4.0`) controls the AO influence range: increasing it detects larger-scale occlusion but requires more samples
-- The decay rate `sca *= 0.95` is also adjustable: smaller values make AO more concentrated near the surface
+
+- The upper bound of sample step h (`0.12 * i / 4.0`) controls the AO influence range:
+  increasing it detects larger-scale occlusion but requires more samples
+
+- The decay rate `sca *= 0.95` is also adjustable: smaller values make AO more
+  concentrated near the surface
 
 ### 4. Soft Shadow Optimization
 
-- Using `clamp(h, 0.02, 0.2)` to limit step size: minimum step 0.02 prevents getting stuck near the surface, maximum step 0.2 prevents skipping thin geometry
-- Shadow ray maxSteps can be lower than the primary ray (14~24 steps is usually enough), since shadows don't need precise hit points
-- The 8.0 in `8.0 * h / t` controls shadow softness: higher values produce harder shadows, lower values softer ones. This is an intuitive penumbra size control
+- Using `clamp(h, 0.02, 0.2)` to limit step size: minimum step 0.02 prevents getting
+  stuck near the surface, maximum step 0.2 prevents skipping thin geometry
+
+- Shadow ray maxSteps can be lower than the primary ray (14~24 steps is usually enough),
+  since shadows don’t need precise hit points
+
+- The 8.0 in `8.0 * h / t` controls shadow softness: higher values produce harder
+  shadows, lower values softer ones.
+  This is an intuitive penumbra size control
 
 ### 5. Simplified IBL
 
-- Without a cubemap, use a simple sky color gradient as a substitute for environment mapping
-- `mix(groundColor, skyColor, R.y * 0.5 + 0.5)` is the cheapest "environment reflection"
-- A `pow(max(0, dot(R, sunDir)), 64.0)` in the sun direction can be added to simulate the sun's specular reflection
+- Without a cubemap, use a simple sky color gradient as a substitute for environment
+  mapping
+
+- `mix(groundColor, skyColor, R.y * 0.5 + 0.5)` is the cheapest “environment reflection”
+
+- A `pow(max(0, dot(R, sunDir)), 64.0)` in the sun direction can be added to simulate
+  the sun’s specular reflection
 
 ### 6. Branch Culling
 
-When NdotL <= 0, the surface faces away from the light source, and all specular calculations (D, F, G) can be skipped:
+When NdotL <= 0, the surface faces away from the light source, and all specular
+calculations (D, F, G) can be skipped:
 
 ```glsl
 // Skip entire specular computation when NdotL <= 0
@@ -569,44 +777,66 @@ if (NdotL > 0.0) {
 }
 ```
 
-Note: Branch efficiency on GPUs depends on the coherence of pixels within the same warp/wavefront. If large areas face away from the light, this branch is effective; if the branch condition switches frequently between adjacent pixels, it may actually be slower.
+Note: Branch efficiency on GPUs depends on the coherence of pixels within the same
+warp/wavefront.
+If large areas face away from the light, this branch is effective; if the
+branch condition switches frequently between adjacent pixels, it may actually be slower.
 
----
+* * *
 
 ## Combination Suggestions in Detail
 
 ### Lighting + Raymarching
 
-Raymarching scenes are the most common host for lighting models. Normals are obtained via SDF finite differences, and AO and shadows directly leverage SDF queries.
+Raymarching scenes are the most common host for lighting models.
+Normals are obtained via SDF finite differences, and AO and shadows directly leverage
+SDF queries.
 
 Key integration points:
+
 - `calcNormal` provides normal N
+
 - `calcAO` leverages SDF for ambient occlusion
+
 - `softShadow` leverages SDF for soft shadows
+
 - Material IDs can be passed through the return value of the `map` function
 
 ### Lighting + Volumetric Rendering
 
-Volumetric effects like clouds, smoke, and fog require Beer's Law attenuation and phase functions (e.g., Henyey-Greenstein). PBR surface lighting integrates naturally with volumetric cloud lighting.
+Volumetric effects like clouds, smoke, and fog require Beer’s Law attenuation and phase
+functions (e.g., Henyey-Greenstein).
+PBR surface lighting integrates naturally with volumetric cloud lighting.
 
 Key integration points:
+
 - Volumetric rendering uses ray marching to step through the volume
-- Each step accumulates density and applies Beer's Law attenuation
+
+- Each step accumulates density and applies Beer’s Law attenuation
+
 - Lighting uses the Henyey-Greenstein phase function instead of a BRDF
+
 - The final result is alpha-blended with the surface rendering output
 
 ### Lighting + Normal Maps / Procedural Normals
 
-Normals don't have to come from the SDF. Procedural normals generated by FBM noise (e.g., ocean wave normals, water surface normals) can be passed directly to lighting functions, producing rich surface detail.
+Normals don’t have to come from the SDF. Procedural normals generated by FBM noise
+(e.g., ocean wave normals, water surface normals) can be passed directly to lighting
+functions, producing rich surface detail.
 
 Key integration points:
-- Procedural normals work by perturbing the base normal: `N = normalize(N + perturbation)`
+
+- Procedural normals work by perturbing the base normal:
+  `N = normalize(N + perturbation)`
+
 - FBM noise frequency and amplitude control the coarseness and strength of detail
+
 - SDF normals and procedural normals can be combined for macro shape + micro detail
 
 ### Lighting + Post-Processing
 
-Tone mapping and gamma correction are essential parts of a PBR pipeline. HDR lighting values must be mapped to the [0,1] LDR range for correct display:
+Tone mapping and gamma correction are essential parts of a PBR pipeline.
+HDR lighting values must be mapped to the [0,1] LDR range for correct display:
 
 ```glsl
 // ACES — currently the most popular tone mapping
@@ -619,11 +849,14 @@ col = col / (col + 1.0);
 col = pow(col, vec3(1.0 / 2.2));
 ```
 
-Note: All lighting calculations must be performed in linear space; gamma correction is only applied at final output.
+Note: All lighting calculations must be performed in linear space; gamma correction is
+only applied at final output.
 
 ### Lighting + Reflections
 
-Multi-layer reflections or environment reflections query the scene again in the `reflect(rd, N)` direction, blending the reflected color into the final result weighted by Fresnel.
+Multi-layer reflections or environment reflections query the scene again in the
+`reflect(rd, N)` direction, blending the reflected color into the final result weighted
+by Fresnel.
 
 ```glsl
 // Basic reflection pattern
@@ -633,7 +866,11 @@ vec3 F = fresnelSchlick(F0, NdotV);
 color = mix(color, reflColor, F);
 ```
 
-A common water surface rendering approach combines refraction + reflection + Fresnel blending:
+A common water surface rendering approach combines refraction + reflection + Fresnel
+blending:
+
 - Reflection direction `reflect(rd, N)` queries the sky/scene
+
 - Refraction direction `refract(rd, N, 1.0/1.33)` queries the underwater scene
+
 - Fresnel coefficient blends between reflection and refraction

@@ -1,12 +1,20 @@
-- **Key**: Multi-pass rendering requires creating framebuffers and textures, switching the render target from screen to texture
+- **Key**: Multi-pass rendering requires creating framebuffers and textures, switching
+  the render target from screen to texture
 
 ### WebGL2 Multi-Pass Rendering Complete Template
 
-Below is a complete standalone HTML template demonstrating how to set up WebGL2 double buffering (ping-pong) for physics simulation:
+Below is a complete standalone HTML template demonstrating how to set up WebGL2 double
+buffering (ping-pong) for physics simulation:
 
-**IMPORTANT: WebGL2 ping-pong core rule: The texture bound to the write-target framebuffer must never simultaneously serve as input for any iChannel.** Violating this rule causes undefined behavior (typically all-black/all-zero output).
+**IMPORTANT: WebGL2 ping-pong core rule: The texture bound to the write-target
+framebuffer must never simultaneously serve as input for any iChannel.** Violating this
+rule causes undefined behavior (typically all-black/all-zero output).
 
-For simulations requiring "current frame" and "previous frame" two time steps (such as the wave equation), use **dual-channel encoding**: R channel stores current height, G channel stores previous frame height. This way only one buffer is read from (iChannel0 = currentBuf), writing to another buffer (nextBuf), avoiding read-write conflicts.
+For simulations requiring “current frame” and “previous frame” two time steps (such as
+the wave equation), use **dual-channel encoding**: R channel stores current height, G
+channel stores previous frame height.
+This way only one buffer is read from (iChannel0 = currentBuf), writing to another
+buffer (nextBuf), avoiding read-write conflicts.
 
 ```html
 <!DOCTYPE html>
@@ -208,28 +216,62 @@ requestAnimationFrame(render);
 ```
 
 **IMPORTANT: Common errors**:
-1. **RGBA8 signed value truncation (fatal)**: Environments like SwiftShader that don't support `EXT_color_buffer_float` fall back to RGBA8 where values are clamped to [0,1]. Simulations requiring negative values (like the wave equation) will all zero out and produce a static image. **Must** use encode/decode functions: store as `v * 0.5 + 0.5`, read as `v * 2.0 - 1.0`, switching at runtime via `uniform int useFloatTex`. See the `encode()`/`decode()` functions in the template above
-2. **Ping-pong read-write conflict (fatal)**: When rendering to a framebuffer, the texture bound to that framebuffer cannot simultaneously serve as input. The wave equation uses dual-channel encoding (R=current, G=previous) requiring only one input buffer; cloth/particle systems read getpos/getvel both from iChannel0
-3. **Cloth rendering must use world coordinate projection (fatal)**: The cloth Image Pass cannot use `uv * vec2(SIZX, SIZY)` to map screen UV directly to grid ID. It must iterate over mesh faces, project vertex world coordinates to screen space via `worldToScreen()`, and perform triangle rasterization
-4. **Smoke brightness insufficient (fatal)**: Beer-Lambert absorption must be >=3.0, background color >=`vec3(0.06, 0.07, 0.10)`, smoke base color >=`vec3(0.35)`, add gamma correction `pow(col, vec3(0.85))`, source density >=3.0, density decay >=0.9995
-5. **GLSL reserved words**: `active`, `input`, `output`, `filter`, `sample`, `buffer`, `shared` cannot be used as variable names
-6. **viewport/iResolution**: Buffer pass uses simulation resolution, Image pass uses screen resolution. Cloth Image Pass getpos/getvel must use `iSimResolution`
-7. **GLSL type & math safety**: Cannot write `float / vec2`; `normalize(vec3(0))` produces NaN — check `length(v) > 0.0001` before calling
-8. **GLSL nested functions forbidden**: Functions cannot be defined inside other functions
-9. **JS variable declarations**: Ping-pong variables inside for loops must use `let`; in substeps, pass `iFrame` as `frame * substeps + substep`
+
+1. **RGBA8 signed value truncation (fatal)**: Environments like SwiftShader that don’t
+   support `EXT_color_buffer_float` fall back to RGBA8 where values are clamped to
+   [0,1]. Simulations requiring negative values (like the wave equation) will all zero
+   out and produce a static image.
+   **Must** use encode/decode functions: store as `v * 0.5 + 0.5`, read as
+   `v * 2.0 - 1.0`, switching at runtime via `uniform int useFloatTex`. See the
+   `encode()`/`decode()` functions in the template above
+
+2. **Ping-pong read-write conflict (fatal)**: When rendering to a framebuffer, the
+   texture bound to that framebuffer cannot simultaneously serve as input.
+   The wave equation uses dual-channel encoding (R=current, G=previous) requiring only
+   one input buffer; cloth/particle systems read getpos/getvel both from iChannel0
+
+3. **Cloth rendering must use world coordinate projection (fatal)**: The cloth Image
+   Pass cannot use `uv * vec2(SIZX, SIZY)` to map screen UV directly to grid ID. It must
+   iterate over mesh faces, project vertex world coordinates to screen space via
+   `worldToScreen()`, and perform triangle rasterization
+
+4. **Smoke brightness insufficient (fatal)**: Beer-Lambert absorption must be >=3.0,
+   background color >=`vec3(0.06, 0.07, 0.10)`, smoke base color >=`vec3(0.35)`, add
+   gamma correction `pow(col, vec3(0.85))`, source density >=3.0, density decay >=0.9995
+
+5. **GLSL reserved words**: `active`, `input`, `output`, `filter`, `sample`, `buffer`,
+   `shared` cannot be used as variable names
+
+6. **viewport/iResolution**: Buffer pass uses simulation resolution, Image pass uses
+   screen resolution. Cloth Image Pass getpos/getvel must use `iSimResolution`
+
+7. **GLSL type & math safety**: Cannot write `float / vec2`; `normalize(vec3(0))`
+   produces NaN — check `length(v) > 0.0001` before calling
+
+8. **GLSL nested functions forbidden**: Functions cannot be defined inside other
+   functions
+
+9. **JS variable declarations**: Ping-pong variables inside for loops must use `let`; in
+   substeps, pass `iFrame` as `frame * substeps + substep`
 
 # GPU Physics Simulation Skill
 
 ## Use Cases
 
-- Real-time physics simulation: waves, fluid smoke, cloth, rigid body collision, particle fluids
+- Real-time physics simulation: waves, fluid smoke, cloth, rigid body collision,
+  particle fluids
+
 - Interactive physics effects: mouse force fields, ripples, pushing/pulling rigid bodies
+
 - Scientific visualization: chaotic attractors, vortex dynamics, ship wave dispersion
-- Iterative computations requiring "previous frame → next frame" state persistence
+
+- Iterative computations requiring “previous frame → next frame” state persistence
 
 ## Core Principles
 
-The core paradigm of GPU physics simulation is **Buffer Feedback**: physical state is stored in texture buffers, each frame reads the previous frame's state → computes → writes back, with each pixel processed independently in parallel.
+The core paradigm of GPU physics simulation is **Buffer Feedback**: physical state is
+stored in texture buffers, each frame reads the previous frame’s state → computes →
+writes back, with each pixel processed independently in parallel.
 
 ### Key Mathematical Tools
 
@@ -244,7 +286,7 @@ Vorticity confinement:     curl = ∂v_x/∂y - ∂v_y/∂x
 ### Architecture Patterns
 
 | Layer | Responsibility | ShaderToy Implementation |
-|-------|---------------|--------------------------|
+| --- | --- | --- |
 | **State Storage** | Encode physical quantities into textures | Buffer RGBA channels |
 | **Solver** | Read old state → compute forces → integrate → write new state | Buffer Pass (can be chained iteratively) |
 | **Rendering** | Visualize physical state | Image Pass |
@@ -253,9 +295,13 @@ Vorticity confinement:     curl = ∂v_x/∂y - ∂v_y/∂x
 
 ### Step 1: Ping-Pong Double Buffering (Correct WebGL2 Implementation)
 
-**IMPORTANT: Key difference between ShaderToy and WebGL2**: In ShaderToy, Buffer A/B are two independent passes with separate write targets, so `iChannel0=self, iChannel1=other` doesn't conflict. But in WebGL2 with a single shader program doing ping-pong, the write-target texture cannot be read simultaneously.
+**IMPORTANT: Key difference between ShaderToy and WebGL2**: In ShaderToy, Buffer A/B are
+two independent passes with separate write targets, so `iChannel0=self, iChannel1=other`
+doesn’t conflict. But in WebGL2 with a single shader program doing ping-pong, the
+write-target texture cannot be read simultaneously.
 
-**Solution: Dual-channel encoding** — R channel stores current height, G channel stores previous frame height, requiring only one input buffer:
+**Solution: Dual-channel encoding** — R channel stores current height, G channel stores
+previous frame height, requiring only one input buffer:
 
 ```glsl
 // WebGL2 Wave Equation Buffer Pass
@@ -560,9 +606,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 ## Complete Code Template
 
-2D wave simulation: double buffering + mouse interaction + procedural raindrops + height field water surface rendering.
+2D wave simulation: double buffering + mouse interaction + procedural raindrops + height
+field water surface rendering.
 
-**Ping-Pong setup**: bufA and bufB alternate; the shader only reads from iChannel0 (currentBuf) and writes to nextBuf. R=current height, G=previous frame height.
+**Ping-Pong setup**: bufA and bufB alternate; the shader only reads from iChannel0
+(currentBuf) and writes to nextBuf.
+R=current height, G=previous frame height.
 
 ```glsl
 // === Buffer Pass (Wave Equation) ===
@@ -655,7 +704,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 ### Variant 1: Euler Fluid (Smoke/Ink)
 
-Smoke/ink simulation requires a complete Buffer Pass (fluid solver) + Image Pass (volume rendering). Buffer stores xy=velocity, z=density, w=curl.
+Smoke/ink simulation requires a complete Buffer Pass (fluid solver) + Image Pass (volume
+rendering). Buffer stores xy=velocity, z=density, w=curl.
 
 ```glsl
 // === Buffer Pass (Fluid Solver) ===
@@ -800,15 +850,24 @@ void main() {
 }
 ```
 
-Smoke simulation requires 3 chained buffer iterations (same fluidSolver) for enhanced convergence. JS side creates bufA/bufB/bufC, executing A→B→C→Image each frame.
+Smoke simulation requires 3 chained buffer iterations (same fluidSolver) for enhanced
+convergence. JS side creates bufA/bufB/bufC, executing A→B→C→Image each frame.
 
 ### Variant 2: Cloth Simulation (Mass-Spring-Damper)
 
-Cloth simulation requires 2 buffers for ping-pong alternating read/write, with a JS render loop using a for loop to execute multiple substeps (e.g., 4 steps). Data structure:
+Cloth simulation requires 2 buffers for ping-pong alternating read/write, with a JS
+render loop using a for loop to execute multiple substeps (e.g., 4 steps).
+Data structure:
+
 - Left half of texture [0, SIZX) stores position xyz
+
 - Right half of texture [SIZX, 2*SIZX) stores velocity xyz
-- **Note**: When using substep loops, buffer variables in the render function must use `let` to allow reassignment within the loop
-- **Key**: Image Pass `getpos`/`getvel` functions must use the simulation resolution (`iSimResolution`) for UV calculation, not the screen resolution
+
+- **Note**: When using substep loops, buffer variables in the render function must use
+  `let` to allow reassignment within the loop
+
+- **Key**: Image Pass `getpos`/`getvel` functions must use the simulation resolution
+  (`iSimResolution`) for UV calculation, not the screen resolution
 
 ```glsl
 // WebGL2-adapted cloth simulation Buffer Pass
@@ -889,9 +948,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 #### Cloth Rendering Pass (Image Pass) Complete Template
 
-**IMPORTANT: Cloth rendering core principle**: After physics simulation, cloth particle world positions (pos.xy) will deviate from their initial grid positions (due to gravity, collisions, etc.). The Image Pass must render based on particles' **actual world positions** projected to the screen — you cannot use `uv * vec2(SIZX, SIZY)` to directly map screen UV to grid ID (that would produce scattered dots/fragments rather than a continuous cloth surface).
+**IMPORTANT: Cloth rendering core principle**: After physics simulation, cloth particle
+world positions (pos.xy) will deviate from their initial grid positions (due to gravity,
+collisions, etc.). The Image Pass must render based on particles’ **actual world
+positions** projected to the screen — you cannot use `uv * vec2(SIZX, SIZY)` to directly
+map screen UV to grid ID (that would produce scattered dots/fragments rather than a
+continuous cloth surface).
 
-Correct approach: iterate over all cloth mesh cells, project each cell's 4 vertex world coordinates to screen space, determine if the current pixel falls within that quad, then interpolate shading.
+Correct approach: iterate over all cloth mesh cells, project each cell’s 4 vertex world
+coordinates to screen space, determine if the current pixel falls within that quad, then
+interpolate shading.
 
 ```glsl
 // IMPORTANT: Key: must pass additional uniform vec2 iSimResolution (simulation resolution)
@@ -1035,15 +1101,32 @@ void main() {
 }
 ```
 
-**IMPORTANT: Cloth rendering performance note**: The above template uses a double loop to iterate all mesh faces for triangle rasterization. For a 128x64 mesh this is about 8000 quads per frame. If GPU performance is insufficient, reduce mesh resolution (e.g., SIZX=64, SIZY=32) or use `texelFetch` instead of `texture` for speed. Another approach is to partition the cloth into blocks (e.g., 4x4), each with an independent bounding box for early culling.
+**IMPORTANT: Cloth rendering performance note**: The above template uses a double loop
+to iterate all mesh faces for triangle rasterization.
+For a 128x64 mesh this is about 8000 quads per frame.
+If GPU performance is insufficient, reduce mesh resolution (e.g., SIZX=64, SIZY=32) or
+use `texelFetch` instead of `texture` for speed.
+Another approach is to partition the cloth into blocks (e.g., 4x4), each with an
+independent bounding box for early culling.
 
 #### Cloth Simulation Complete HTML Template (Multi-Substep Iteration)
 
 **IMPORTANT: Key notes (must-read for cloth template)**:
-1. **No read-write conflict**: In the Buffer Pass, iChannel0 is bound to currentBuf (read-only), the write target is nextBuf (separate buffer). getpos/getvel both read from iChannel0
-2. **iSimResolution uniform**: Image Pass must have `uniform vec2 iSimResolution` passing `(SIM_W, SIM_H)`, and `getpos`/`getvel` internally use `iSimResolution` for UV calculation
-3. **iFrame value passing**: In substep loops, iFrame should pass `frame * SUBSTEPS + substep`, ensuring the initialization condition `iFrame < SUBSTEPS` only triggers on the first frame
-4. **Substeps use 2-buffer ping-pong + JS for loop**: Do not use 4 buffers; use 2 buffers alternating at the JS level
+
+1. **No read-write conflict**: In the Buffer Pass, iChannel0 is bound to currentBuf
+   (read-only), the write target is nextBuf (separate buffer).
+   getpos/getvel both read from iChannel0
+
+2. **iSimResolution uniform**: Image Pass must have `uniform vec2 iSimResolution`
+   passing `(SIM_W, SIM_H)`, and `getpos`/`getvel` internally use `iSimResolution` for
+   UV calculation
+
+3. **iFrame value passing**: In substep loops, iFrame should pass
+   `frame * SUBSTEPS + substep`, ensuring the initialization condition
+   `iFrame < SUBSTEPS` only triggers on the first frame
+
+4. **Substeps use 2-buffer ping-pong + JS for loop**: Do not use 4 buffers; use 2
+   buffers alternating at the JS level
 
 ```html
 <!DOCTYPE html>
@@ -1523,20 +1606,38 @@ p.force += force_k * dir * (F + SPH_F + Friction) * irho / rest_density;
 ## Performance & Composition
 
 ### Performance Tips
-- Use `texelFetch` instead of `texture` to skip filtering; precompute `1.0/iResolution.xy`
+
+- Use `texelFetch` instead of `texture` to skip filtering; precompute
+  `1.0/iResolution.xy`
+
 - N-Body: limit N to 20~30; passive marker particles (90%) skip force computation
+
 - Cloth multi-substep: use 2 buffers + JS for loop (do not use 4-buffer chain)
+
 - Adaptive precision: use larger time steps for distant regions
+
 - Data packing: bit operations for compression (5-bit exponent + 3x9-bit components)
-- Stability: `clamp` to prevent explosion, `smoothstep` for soft boundaries, damping 0.95~0.999
+
+- Stability: `clamp` to prevent explosion, `smoothstep` for soft boundaries, damping
+  0.95~0.999
 
 ### Composition Patterns
-- **Physics + post-processing**: wave refraction/caustics, fluid advection ink coloring, cloth ray tracing
+
+- **Physics + post-processing**: wave refraction/caustics, fluid advection ink coloring,
+  cloth ray tracing
+
 - **Physics + SDF rendering**: `sdBox`/`length-radius` to render rigid bodies/particles
-- **Physics + volume rendering**: density field trilinear interpolation → ray marching → lighting + shadows
-- **Multi-system coupling**: fluid driving rigid bodies, cloth collision bodies, particle↔field mutual driving (SPH/Biot-Savart)
-- **Physics + audio**: spectrum energy mapped as external force, low frequency drives large scale, high frequency drives small scale
+
+- **Physics + volume rendering**: density field trilinear interpolation → ray marching →
+  lighting + shadows
+
+- **Multi-system coupling**: fluid driving rigid bodies, cloth collision bodies,
+  particle↔field mutual driving (SPH/Biot-Savart)
+
+- **Physics + audio**: spectrum energy mapped as external force, low frequency drives
+  large scale, high frequency drives small scale
 
 ## Further Reading
 
-Full step-by-step tutorial, mathematical derivations, and advanced usage in [reference](../reference/simulation-physics.md)
+Full step-by-step tutorial, mathematical derivations, and advanced usage in
+[reference](../reference/simulation-physics.md)

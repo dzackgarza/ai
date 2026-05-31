@@ -2,21 +2,37 @@
 
 ## Use Cases
 
-- Rendering implicit surfaces (geometry defined by mathematical functions) without triangle meshes
-- Creating fractals, organic forms, liquid metal, and other shapes difficult to express with traditional modeling
+- Rendering implicit surfaces (geometry defined by mathematical functions) without
+  triangle meshes
+
+- Creating fractals, organic forms, liquid metal, and other shapes difficult to express
+  with traditional modeling
+
 - Implementing volumetric effects: fire, smoke, clouds, glow
-- Rapid prototyping of procedural scenes: building complex scenes by combining SDF primitives with boolean operations
-- Advanced distance-field-based lighting: soft shadows, ambient occlusion, subsurface scattering
+
+- Rapid prototyping of procedural scenes: building complex scenes by combining SDF
+  primitives with boolean operations
+
+- Advanced distance-field-based lighting: soft shadows, ambient occlusion, subsurface
+  scattering
 
 ## Core Principles
 
-Cast a ray from the camera along each pixel direction, advancing step by step using a **Signed Distance Function (SDF)** (Sphere Tracing). Each step advances by the SDF value at the current point, guaranteeing no surface penetration.
+Cast a ray from the camera along each pixel direction, advancing step by step using a
+**Signed Distance Function (SDF)** (Sphere Tracing).
+Each step advances by the SDF value at the current point, guaranteeing no surface
+penetration.
 
 - Ray equation: `P(t) = ro + t * rd`
+
 - Stepping logic: `t += SDF(P(t))`
+
 - Hit test: `SDF(P) < epsilon`
+
 - Normal estimation: `N = normalize(gradient of SDF(P))` (direction of the SDF gradient)
-- Volumetric rendering: advance at fixed step size, accumulating density and color per step (front-to-back compositing)
+
+- Volumetric rendering: advance at fixed step size, accumulating density and color per
+  step (front-to-back compositing)
 
 ## Implementation Steps
 
@@ -164,7 +180,8 @@ col *= 0.5 + 0.5 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.25);
 
 ## Full Code Template
 
-Can be pasted directly into ShaderToy. Includes SDF scene, Phong lighting, soft shadows, and ambient occlusion:
+Can be pasted directly into ShaderToy.
+Includes SDF scene, Phong lighting, soft shadows, and ambient occlusion:
 
 ```glsl
 // ============================================================
@@ -336,7 +353,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### 1. Volumetric Ray Marching
 
-Advance at fixed step size, accumulating density/color per step. Used for fire, smoke, and clouds.
+Advance at fixed step size, accumulating density/color per step.
+Used for fire, smoke, and clouds.
 
 ```glsl
 #define VOL_STEPS 150
@@ -447,21 +465,40 @@ vec3 nor2 = calcNormal(hitPos + refDir * t2);
 ## Performance & Composition
 
 **Performance tips:**
+
 - Use tetrahedral trick for normals (4 SDF evaluations instead of 6)
+
 - `min(iFrame,0)` as loop start value to prevent compiler unrolling
+
 - AABB bounding box pre-test to skip empty regions
+
 - Adaptive hit threshold: `SURF_DIST * (1.0 + t * 0.1)`
+
 - Step clamping: `t += clamp(h, 0.01, 0.2)`
+
 - Early exit for volumetric rendering when `sum.a > 0.99`
+
 - Use cheap bounding SDF first, then compute precise SDF
 
 **Composition directions:**
+
+
 - + FBM noise: terrain/rock texture, cloud/smoke volumetric density fields
-- + Domain transforms (twist/bend/repeat): infinite repeating corridors, surreal geometry
+
+
+- + Domain transforms (twist/bend/repeat): infinite repeating corridors, surreal
+    geometry
+
+
 - + PBR materials (Cook-Torrance BRDF + Fresnel + environment mapping)
+
+
 - + Multi-pass post-processing: depth of field, motion blur, tone mapping
+
+
 - + Procedural animation: time-driven SDF parameters + smoothstep easing
 
 ## Further Reading
 
-Full step-by-step tutorials, mathematical derivations, and advanced usage in [reference](../reference/ray-marching.md)
+Full step-by-step tutorials, mathematical derivations, and advanced usage in
+[reference](../reference/ray-marching.md)

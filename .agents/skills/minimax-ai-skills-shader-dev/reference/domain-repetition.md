@@ -1,23 +1,33 @@
 # Domain Repetition and Spatial Folding — Detailed Reference
 
-This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites, step-by-step explanations, mathematical derivations, and advanced usage.
+This document is a detailed supplement to [SKILL.md](SKILL.md), covering prerequisites,
+step-by-step explanations, mathematical derivations, and advanced usage.
 
 ## Prerequisites
 
 - GLSL basic syntax, `vec2/vec3/mat2` operations
+
 - Behavior of built-in functions like `mod()`, `fract()`, `abs()`, `atan()`
-- Signed Distance Field (SDF) concept — a function returning the distance from a point to the nearest surface
+
+- Signed Distance Field (SDF) concept — a function returning the distance from a point
+  to the nearest surface
+
 - Basic principles of Ray Marching
+
 - 2D rotation matrix `mat2(cos(a), sin(a), -sin(a), cos(a))`
 
 ## Core Principles in Detail
 
-The essence of domain repetition is **coordinate transformation**: before computing the SDF, the point `p`'s coordinates are folded/mapped into a finite "fundamental domain," so that every point in infinite space maps to the same cell. The SDF function only needs to evaluate coordinates within this single cell, and the result automatically repeats across all of space.
+The essence of domain repetition is **coordinate transformation**: before computing the
+SDF, the point `p`’s coordinates are folded/mapped into a finite “fundamental domain,”
+so that every point in infinite space maps to the same cell.
+The SDF function only needs to evaluate coordinates within this single cell, and the
+result automatically repeats across all of space.
 
 **Three fundamental operations:**
 
 | Operation | Formula | Effect |
-|-----------|---------|--------|
+| --- | --- | --- |
 | **mod repetition** | `p = mod(p + period/2, period) - period/2` | Infinite translational repetition along an axis |
 | **abs mirroring** | `p = abs(p)` | Mirror symmetry across an axis plane |
 | **Rotational folding** | `angle = mod(atan(p.y, p.x), TAU/N); p = rotate(p, -angle)` | N-fold rotational symmetry |
@@ -25,8 +35,12 @@ The essence of domain repetition is **coordinate transformation**: before comput
 **Key mathematics:**
 
 - `mod(x, c)` maps x to the `[0, c)` range, providing periodicity
-- `abs(x)` folds the negative half-space onto the positive half-space, providing reflective symmetry
-- `fract(x) = x - floor(x)` is equivalent to `mod(x, 1.0)`, providing normalized periodicity
+
+- `abs(x)` folds the negative half-space onto the positive half-space, providing
+  reflective symmetry
+
+- `fract(x) = x - floor(x)` is equivalent to `mod(x, 1.0)`, providing normalized
+  periodicity
 
 ## Step-by-Step Details
 
@@ -34,7 +48,9 @@ The essence of domain repetition is **coordinate transformation**: before comput
 
 **What**: Infinitely repeat 3D space along one or more axes via translation.
 
-**Why**: `mod(p, c) - c/2` constrains coordinates to the `[-c/2, c/2)` range, dividing space into an infinite number of cells of size `c`, where each cell has identical coordinates. The SDF only needs to be defined within a single cell.
+**Why**: `mod(p, c) - c/2` constrains coordinates to the `[-c/2, c/2)` range, dividing
+space into an infinite number of cells of size `c`, where each cell has identical
+coordinates. The SDF only needs to be defined within a single cell.
 
 **Code**:
 ```glsl
@@ -51,13 +67,19 @@ float map(vec3 p) {
 }
 ```
 
-> This `pos = mod(pos-2., 4.) -2.;` is this exact pattern — period=4, offset=2, perfectly centered. `p1.x = mod(p1.x-5., 10.) - 5.;` follows the same logic (period=10, centered at origin).
+> This `pos = mod(pos-2., 4.) -2.;` is this exact pattern — period=4, offset=2,
+> perfectly centered. `p1.x = mod(p1.x-5., 10.) - 5.;` follows the same logic (period=10,
+> centered at origin).
 
 ### Step 2: Symmetric Fold Repetition (abs-mod Hybrid)
 
-**What**: On top of mod repetition, use `abs()` to give each cell mirror symmetry, eliminating seams at cell boundaries.
+**What**: On top of mod repetition, use `abs()` to give each cell mirror symmetry,
+eliminating seams at cell boundaries.
 
-**Why**: Plain `mod` repetition has coordinate discontinuity at cell boundaries (jumping from `+c/2` to `-c/2`), which can cause visible seams. `abs(tile - mod(p, tile*2))` makes coordinates fold back and forth within each tile from 0 to tile to 0, ensuring continuity at boundaries (equivalent to a "triangle wave").
+**Why**: Plain `mod` repetition has coordinate discontinuity at cell boundaries (jumping
+from `+c/2` to `-c/2`), which can cause visible seams.
+`abs(tile - mod(p, tile*2))` makes coordinates fold back and forth within each tile from
+0 to tile to 0, ensuring continuity at boundaries (equivalent to a “triangle wave”).
 
 **Code**:
 ```glsl
@@ -72,13 +94,18 @@ vec3 p = from + s * dir * 0.5;
 p = abs(vec3(tile) - mod(p, vec3(tile * 2.0)));
 ```
 
-> The core line `p = abs(vec3(tile)-mod(p,vec3(tile*2.)));` is this pattern. `tpos.xz=abs(.5-mod(tpos.xz,1.));` is the 2D version of the same pattern (tile=0.5, period=1).
+> The core line `p = abs(vec3(tile)-mod(p,vec3(tile*2.)));` is this pattern.
+> `tpos.xz=abs(.5-mod(tpos.xz,1.));` is the 2D version of the same pattern (tile=0.5,
+> period=1).
 
 ### Step 3: Angular Domain Repetition (Polar Coordinate Folding)
 
-**What**: Divide space into N equal rotational sectors around an axis, achieving a kaleidoscope effect.
+**What**: Divide space into N equal rotational sectors around an axis, achieving a
+kaleidoscope effect.
 
-**Why**: After converting coordinates to polar form, applying `mod(angle, TAU/N)` folds the full 360 degrees into a single `TAU/N` sector. Rotating the coordinates back makes all sectors share the same SDF.
+**Why**: After converting coordinates to polar form, applying `mod(angle, TAU/N)` folds
+the full 360 degrees into a single `TAU/N` sector.
+Rotating the coordinates back makes all sectors share the same SDF.
 
 **Code**:
 ```glsl
@@ -97,13 +124,19 @@ vec3 p1 = p;
 p1.xy = pmod(p1.xy, 5.0); // 5-fold symmetry in the xy plane
 ```
 
-> The `pmod()` function implements this pattern. An alternative `amod()` function follows the same idea but uses `inout` parameters to directly modify coordinates and returns the sector index (for coloring variants).
+> The `pmod()` function implements this pattern.
+> An alternative `amod()` function follows the same idea but uses `inout` parameters to
+> directly modify coordinates and returns the sector index (for coloring variants).
 
 ### Step 4: fract Domain Folding (For Fractal Iteration)
 
-**What**: Use `fract()` in fractal iteration loops to repeatedly fold coordinates back into the `[0,1)` range, combined with scaling to achieve self-similar structures.
+**What**: Use `fract()` in fractal iteration loops to repeatedly fold coordinates back
+into the `[0,1)` range, combined with scaling to achieve self-similar structures.
 
-**Why**: `-1.0 + 2.0*fract(0.5*p+0.5)` maps p to the `[-1, 1)` range (centered fract). Each iteration divides space into 8 sub-cells (in 3D), each recursively undergoing the same operation. Combined with the scaling factor `k = s/dot(p,p)` (spherical inversion), this produces fractal hierarchical structure.
+**Why**: `-1.0 + 2.0*fract(0.5*p+0.5)` maps p to the `[-1, 1)` range (centered fract).
+Each iteration divides space into 8 sub-cells (in 3D), each recursively undergoing the
+same operation. Combined with the scaling factor `k = s/dot(p,p)` (spherical inversion),
+this produces fractal hierarchical structure.
 
 **Code**:
 ```glsl
@@ -131,9 +164,13 @@ float map(vec3 p, float s) {
 
 ### Step 5: Iterative abs Folding (IFS / Kali-set)
 
-**What**: Repeatedly execute `p = abs(p) - offset` inside a loop, combined with rotation and scaling, to generate fractal symmetric structures.
+**What**: Repeatedly execute `p = abs(p) - offset` inside a loop, combined with rotation
+and scaling, to generate fractal symmetric structures.
 
-**Why**: `abs(p)` folds space into the positive octant, `-offset` translates the origin, then `abs()` folds again... each iteration adds another layer of symmetry. This is one implementation of an Iterated Function System (IFS). Combined with rotation, it produces extremely rich fractal structures.
+**Why**: `abs(p)` folds space into the positive octant, `-offset` translates the origin,
+then `abs()` folds again … each iteration adds another layer of symmetry.
+This is one implementation of an Iterated Function System (IFS). Combined with rotation,
+it produces extremely rich fractal structures.
 
 **Code**:
 ```glsl
@@ -162,13 +199,18 @@ vec2 de(vec3 pos) {
 }
 ```
 
-> Note that the `de()` variant uses the `vec4`'s w component to accumulate the scaling factor (`p.w`), and the final distance is divided by `p.w` to maintain SDF validity.
+> Note that the `de()` variant uses the `vec4`’s w component to accumulate the scaling
+> factor (`p.w`), and the final distance is divided by `p.w` to maintain SDF validity.
 
 ### Step 6: Reflection Folding (Polyhedral Symmetry)
 
-**What**: Fold space into the fundamental domain of a polyhedron (such as an icosahedron) through a set of reflection planes.
+**What**: Fold space into the fundamental domain of a polyhedron (such as an
+icosahedron) through a set of reflection planes.
 
-**Why**: Regular polyhedra have multiple symmetry planes. Reflecting along each symmetry plane via `p = p - 2*dot(p,n)*n` folds all of space into a "fundamental domain" (1/60th of the entire polyhedron for an icosahedron). Geometry only needs to be defined within this fundamental domain.
+**Why**: Regular polyhedra have multiple symmetry planes.
+Reflecting along each symmetry plane via `p = p - 2*dot(p,n)*n` folds all of space into
+a “fundamental domain” (1/60th of the entire polyhedron for an icosahedron).
+Geometry only needs to be defined within this fundamental domain.
 
 **Code**:
 ```glsl
@@ -194,13 +236,16 @@ void pModIcosahedron(inout vec3 p) {
 }
 ```
 
-> Full icosahedral symmetry group is achieved through alternating `abs()` and `pReflect()`.
+> Full icosahedral symmetry group is achieved through alternating `abs()` and
+> `pReflect()`.
 
 ### Step 7: Toroidal / Cylindrical Domain Warping (displaceLoop)
 
 **What**: Bend planar space into cylindrical or toroidal topology.
 
-**Why**: `displaceLoop` converts Cartesian coordinates `(x, z)` into `(distance_to_center - R, angle)`, "rolling" a plane into a cylinder/torus of radius R. The angular dimension can then undergo `amod` for angular repetition.
+**Why**: `displaceLoop` converts Cartesian coordinates `(x, z)` into
+`(distance_to_center - R, angle)`, “rolling” a plane into a cylinder/torus of radius R.
+The angular dimension can then undergo `amod` for angular repetition.
 
 **Code**:
 ```glsl
@@ -221,9 +266,11 @@ pDonut.z *= donutRadius; // Unwrap angle to linear length
 
 ### Step 8: 1D Centered Domain Repetition (with Cell ID)
 
-**What**: Perform centered mod repetition along one axis and return the current cell number.
+**What**: Perform centered mod repetition along one axis and return the current cell
+number.
 
-**Why**: Cell IDs can be used to assign different random properties (color, size, rotation, etc.) to each cell's geometry, breaking the uniformity of perfect repetition.
+**Why**: Cell IDs can be used to assign different random properties (color, size,
+rotation, etc.) to each cell’s geometry, breaking the uniformity of perfect repetition.
 
 **Code**:
 ```glsl
@@ -240,15 +287,19 @@ float cellID = pMod1(p.x, 2.0);
 float salt = fract(sin(cellID * 127.1) * 43758.5453); // Random seed
 ```
 
-> This is a standard domain repetition library function. A simpler `repeat()` function follows the same pattern (version without returning the index).
+> This is a standard domain repetition library function.
+> A simpler `repeat()` function follows the same pattern (version without returning the
+> index).
 
 ## Common Variants in Detail
 
 ### 1. Volumetric Glow Rendering
 
-Unlike standard ray marching, this does not check for surface hits. Instead, it accumulates a "distance-to-brightness" contribution at each step.
+Unlike standard ray marching, this does not check for surface hits.
+Instead, it accumulates a “distance-to-brightness” contribution at each step.
 
-**Difference from the basic version**: No normal computation or traditional shading needed. Each step accumulates glow via `exp(-dist * k)`.
+**Difference from the basic version**: No normal computation or traditional shading
+needed. Each step accumulates glow via `exp(-dist * k)`.
 
 **Key modified code**:
 ```glsl
@@ -265,13 +316,16 @@ for (int i = 0; i < 99; i++) {
 vec3 col = vec3(acc * 0.01, acc * 0.011, acc * 0.012);
 ```
 
-> This volumetric glow rendering strategy is commonly used in fractal domain repetition shaders.
+> This volumetric glow rendering strategy is commonly used in fractal domain repetition
+> shaders.
 
 ### 2. Single-Axis / Dual-Axis Selective Repetition
 
-Repeat along only certain axes while keeping others unchanged. Suitable for corridors, columns, and other directional scenes.
+Repeat along only certain axes while keeping others unchanged.
+Suitable for corridors, columns, and other directional scenes.
 
-**Difference from the basic version**: Does not use `vec3` full-axis repetition; only applies mod to the needed components.
+**Difference from the basic version**: Does not use `vec3` full-axis repetition; only
+applies mod to the needed components.
 
 **Key modified code**:
 ```glsl
@@ -286,9 +340,11 @@ float map(vec3 pos) {
 
 ### 3. Fractal fract Domain Folding (Apollonian Type)
 
-Uses `fract()` instead of `mod()` for iterative folding, combined with scaling and orbit trapping to create fractals.
+Uses `fract()` instead of `mod()` for iterative folding, combined with scaling and orbit
+trapping to create fractals.
 
-**Difference from the basic version**: Repeatedly applies fract+scaling in a loop rather than a one-time mod; uses orbit trap coloring.
+**Difference from the basic version**: Repeatedly applies fract+scaling in a loop rather
+than a one-time mod; uses orbit trap coloring.
 
 **Key modified code**:
 ```glsl
@@ -305,9 +361,11 @@ return 0.25 * abs(p.y) / scale;
 
 ### 4. Multi-Level Nested Repetition
 
-Apply angular repetition within a sector, then linear repetition within each sector, or vice versa.
+Apply angular repetition within a sector, then linear repetition within each sector, or
+vice versa.
 
-**Difference from the basic version**: Domain repetition operations are nested across multiple levels, each providing a different spatial organization.
+**Difference from the basic version**: Domain repetition operations are nested across
+multiple levels, each providing a different spatial organization.
 
 **Key modified code**:
 ```glsl
@@ -326,7 +384,8 @@ float salt = rng(vec2(indexX, floor(p.y / cellSize)));
 
 Use `clamp` to limit the mod cell index, achieving a finite number of repetitions.
 
-**Difference from the basic version**: Uses `clamp` to restrict the cell index to `[-N, N]`, repeating only `2N+1` times.
+**Difference from the basic version**: Uses `clamp` to restrict the cell index to
+`[-N, N]`, repeating only `2N+1` times.
 
 **Key modified code**:
 ```glsl
@@ -343,49 +402,74 @@ vec3 q = domainRepeatLimited(p, 2.0, vec3(2.0, 1.0, 1.0));
 
 ### Bottleneck 1: High Iteration Count in Fractal Loops
 
-**Problem**: When IFS or fract folding loops iterate too many times, the `map()` function slows down, and `map()` is called at every step during ray marching.
+**Problem**: When IFS or fract folding loops iterate too many times, the `map()`
+function slows down, and `map()` is called at every step during ray marching.
 
 **Optimization**:
+
 - Reduce fractal iteration count (5-8 iterations are usually sufficient)
-- Use the `vec4`'s w component to track the scaling factor, avoiding extra scaling variables
+
+- Use the `vec4`’s w component to track the scaling factor, avoiding extra scaling
+  variables
+
 - Set upper and lower bounds in `clamp(dot(p,p), min, max)` to prevent numerical blowup
 
 ### Bottleneck 2: mod Repetition Causing Inaccurate Distance Fields
 
-**Problem**: The SDF after domain repetition may be inaccurate at cell boundaries (geometry in adjacent cells may be closer), causing ray marching overshoot or extra steps.
+**Problem**: The SDF after domain repetition may be inaccurate at cell boundaries
+(geometry in adjacent cells may be closer), causing ray marching overshoot or extra
+steps.
 
 **Optimization**:
+
 - Ensure geometry fits entirely within the cell (radius < period/2)
+
 - Use a smaller step factor (`t += d * 0.5` instead of `t += d`)
-- For volumetric glow rendering, use `max(abs(d), minDist)` to prevent excessively small step sizes
+
+- For volumetric glow rendering, use `max(abs(d), minDist)` to prevent excessively small
+  step sizes
 
 ### Bottleneck 3: Compilation Time from Nested Repetition
 
-**Problem**: Multi-level nested domain repetition and fractal loops can cause very long shader compilation times.
+**Problem**: Multi-level nested domain repetition and fractal loops can cause very long
+shader compilation times.
 
 **Optimization**:
+
 - Pre-compute constant expressions in `map()`
+
 - Avoid `normalize()` inside loops (manually divide by length instead)
-- Use the loop version for normal computation instead of unrolled version to reduce compiler inlining
+
+- Use the loop version for normal computation instead of unrolled version to reduce
+  compiler inlining
 
 ### Bottleneck 4: Sampling Rate for Volumetric Glow Rendering
 
 **Problem**: Volumetric glow rendering requires dense sampling along the ray.
 
 **Optimization**:
+
 - Increase step size with distance: `t += dist * (0.3 + t * 0.02)`
-- Reduce sampling density for distant regions; the distance decay `exp(-totdist)` naturally hides precision loss
-- Use a `distfading` multiplier to gradually attenuate distant contributions (e.g., `fade *= distfading`)
+
+- Reduce sampling density for distant regions; the distance decay `exp(-totdist)`
+  naturally hides precision loss
+
+- Use a `distfading` multiplier to gradually attenuate distant contributions (e.g.,
+  `fade *= distfading`)
 
 ## Combination Suggestions with Complete Code
 
 ### 1. Domain Repetition + Ray Marching
 
-**The most basic and most common combination.** Domain repetition defines the geometric spatial structure; ray marching handles rendering. This is the most fundamental combination in SDF rendering.
+**The most basic and most common combination.** Domain repetition defines the geometric
+spatial structure; ray marching handles rendering.
+This is the most fundamental combination in SDF rendering.
 
 ### 2. Domain Repetition + Orbit Trap Coloring
 
-Record intermediate values during the fractal iteration loop (e.g., `min(orb, abs(p))`), used to color fractal structures. Avoids the high cost of normal computation + lighting on fractal surfaces.
+Record intermediate values during the fractal iteration loop (e.g., `min(orb, abs(p))`),
+used to color fractal structures.
+Avoids the high cost of normal computation + lighting on fractal surfaces.
 
 **Combination approach**:
 ```glsl
@@ -400,7 +484,9 @@ vec3 color = mix(vec3(1,0.8,0.2), vec3(1,0.55,0), clamp(orb.y * 6.0, 0.0, 1.0));
 
 ### 3. Domain Repetition + Toroidal / Polar Coordinate Warping
 
-First use `displaceLoop` to bend space into a toroidal topology, then perform linear and angular repetition in the flattened coordinates. Suitable for creating ring corridors, donut buildings, etc.
+First use `displaceLoop` to bend space into a toroidal topology, then perform linear and
+angular repetition in the flattened coordinates.
+Suitable for creating ring corridors, donut buildings, etc.
 
 **Combination approach**:
 ```glsl
@@ -412,7 +498,8 @@ p.y = repeat(p.y, cellSize);    // Linear repetition
 
 ### 4. Domain Repetition + Noise / Random Variants
 
-Generate pseudo-random numbers from cell IDs to inject variation into each repeated cell (size, rotation, color offset), breaking the uniformity.
+Generate pseudo-random numbers from cell IDs to inject variation into each repeated cell
+(size, rotation, color offset), breaking the uniformity.
 
 **Combination approach**:
 ```glsl
@@ -424,7 +511,9 @@ float boxSize = 0.3 + 0.2 * salt;
 
 ### 5. Domain Repetition + Polar Coordinate Spiral Transform
 
-Use `cartToPolar` / `polarToCart` coordinate transforms combined with `pMod1` for repetition along spiral paths. Suitable for DNA double helices, springs, threads, etc.
+Use `cartToPolar` / `polarToCart` coordinate transforms combined with `pMod1` for
+repetition along spiral paths.
+Suitable for DNA double helices, springs, threads, etc.
 
 **Combination approach**:
 ```glsl

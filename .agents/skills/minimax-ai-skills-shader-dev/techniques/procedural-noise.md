@@ -2,24 +2,35 @@
 
 ## Use Cases
 
-Procedural noise is the most fundamental technique in real-time GPU graphics. It applies to natural phenomena (fire, clouds, water, lava), terrain generation, texture synthesis, volume rendering, motion effects, and more.
+Procedural noise is the most fundamental technique in real-time GPU graphics.
+It applies to natural phenomena (fire, clouds, water, lava), terrain generation, texture
+synthesis, volume rendering, motion effects, and more.
 
-Core idea: use mathematical functions to generate pseudo-random, spatially continuous signals on the GPU in real time, then produce multi-scale detail through FBM and domain warping.
+Core idea: use mathematical functions to generate pseudo-random, spatially continuous
+signals on the GPU in real time, then produce multi-scale detail through FBM and domain
+warping.
 
 ## Core Principles
 
 ### Noise Functions
 
-Generate random values at integer lattice points, then smoothly interpolate between them.
+Generate random values at integer lattice points, then smoothly interpolate between
+them.
 
-- **Value Noise**: random scalars at lattice points + bilinear Hermite interpolation. `N(p) = mix(mix(h00,h10,u), mix(h01,h11,u), v)`
-- **Simplex Noise**: triangular lattice gradient dot products + radial falloff kernel. Skew `K1=(sqrt(3)-1)/2`, unskew `K2=(3-sqrt(3))/6`. Fewer lattice lookups, no axis-aligned artifacts.
+- **Value Noise**: random scalars at lattice points + bilinear Hermite interpolation.
+  `N(p) = mix(mix(h00,h10,u), mix(h01,h11,u), v)`
+
+- **Simplex Noise**: triangular lattice gradient dot products + radial falloff kernel.
+  Skew `K1=(sqrt(3)-1)/2`, unskew `K2=(3-sqrt(3))/6`. Fewer lattice lookups, no
+  axis-aligned artifacts.
 
 ### Hash Functions
 
 Map integer coordinates to pseudo-random values:
 
-- **sin-based** (short but precision-sensitive): `fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453)`
+- **sin-based** (short but precision-sensitive):
+  `fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453)`
+
 - **sin-free** (cross-platform stable): `fract(p * 0.1031)` + dot mixing + fract
 
 ### FBM (Fractal Brownian Motion)
@@ -30,12 +41,13 @@ Multi-octave noise summation: `FBM(p) = sum of amplitude_i * noise(frequency_i *
 
 ### Domain Warping
 
-Feed noise output back as coordinate offset: `fbm(p + fbm(p))` or cascaded `fbm(p + fbm(p + fbm(p)))`
+Feed noise output back as coordinate offset: `fbm(p + fbm(p))` or cascaded
+`fbm(p + fbm(p + fbm(p)))`
 
 ### FBM Variant Quick Reference
 
 | Variant | Formula | Effect |
-|---------|---------|--------|
+| --- | --- | --- |
 | Standard | `sum a*noise(p)` | Soft clouds |
 | Ridged | `sum a*abs(noise(p))` | Sharp ridges/lightning |
 | Sinusoidal ridged | `sum a*sin(noise(p)*k)` | Periodic ridges/lava |
@@ -264,7 +276,8 @@ float terrainFBM(in vec2 x) {
 
 ### Quintic Noise with Analytical Derivatives
 
-C2-continuous noise using quintic interpolation — eliminates visible grid artifacts in derivatives:
+C2-continuous noise using quintic interpolation — eliminates visible grid artifacts in
+derivatives:
 
 ```glsl
 // Returns vec3(value, dFdx, dFdy) — derivatives are exact, not finite-differenced
@@ -290,7 +303,8 @@ vec3 noisedQ(vec2 p) {
 
 ### FBM with Derivatives (Erosion Terrain)
 
-Accumulates derivatives across octaves — derivative magnitude dampens amplitude, creating realistic erosion patterns:
+Accumulates derivatives across octaves — derivative magnitude dampens amplitude,
+creating realistic erosion patterns:
 
 ```glsl
 vec3 fbmDerivative(vec2 p, int octaves) {
@@ -314,9 +328,15 @@ vec3 fbmDerivative(vec2 p, int octaves) {
 ```
 
 Key insights:
-- **Quintic interpolation**: `6t^5 - 15t^4 + 10t^3` gives C2 continuous noise (vs Hermite's C1), eliminating visible grid artifacts in derivatives
-- **Erosion FBM**: The `1/(1+dot(d,d))` term causes flat areas to accumulate more detail while steep slopes stay smooth — mimicking real erosion
-- **Inter-octave rotation**: The 2x2 rotation matrix between octaves prevents axis-aligned patterns especially visible in ridged noise
+
+- **Quintic interpolation**: `6t^5 - 15t^4 + 10t^3` gives C2 continuous noise (vs
+  Hermite’s C1), eliminating visible grid artifacts in derivatives
+
+- **Erosion FBM**: The `1/(1+dot(d,d))` term causes flat areas to accumulate more detail
+  while steep slopes stay smooth — mimicking real erosion
+
+- **Inter-octave rotation**: The 2x2 rotation matrix between octaves prevents
+  axis-aligned patterns especially visible in ridged noise
 
 ### Voronoise (Voronoi-Noise Hybrid)
 
@@ -347,19 +367,28 @@ float voronoise(vec2 p, float u, float v) {
 }
 ```
 
-Extremely versatile — smoothly interpolates between cellular Voronoi and continuous noise.
+Extremely versatile — smoothly interpolates between cellular Voronoi and continuous
+noise.
 
 ### Preventing Aliasing in Procedural Textures
 
-For distant surfaces, high-frequency noise octaves create moiré artifacts. Solutions:
+For distant surfaces, high-frequency noise octaves create moiré artifacts.
+Solutions:
 
-1. **LOD-based octave count**: `int octaves = min(MAX_OCTAVES, int(log2(pixelSize)))` — skip octaves finer than pixel size
-2. **Analytical filtering**: For simple patterns (checkers, stripes), use smoothstep with pixel width: `smoothstep(-fw, fw, pattern)` where `fw = fwidth(uv)`
-3. **Derivative-based mip**: Use `textureGrad()` with manually computed ray differentials for texture lookups in ray-marched scenes (see texture-mapping-advanced technique)
+1. **LOD-based octave count**: `int octaves = min(MAX_OCTAVES, int(log2(pixelSize)))` —
+   skip octaves finer than pixel size
+
+2. **Analytical filtering**: For simple patterns (checkers, stripes), use smoothstep
+   with pixel width: `smoothstep(-fw, fw, pattern)` where `fw = fwidth(uv)`
+
+3. **Derivative-based mip**: Use `textureGrad()` with manually computed ray
+   differentials for texture lookups in ray-marched scenes (see texture-mapping-advanced
+   technique)
 
 ## Complete Code Template
 
-Ready to run in ShaderToy. Switch between standard FBM / ridged FBM / domain warping modes via `#define`:
+Ready to run in ShaderToy.
+Switch between standard FBM / ridged FBM / domain warping modes via `#define`:
 
 ```glsl
 // ============================================================
@@ -533,22 +562,42 @@ choppy = mix(choppy, 1.0, 0.2);
 ## Performance & Composition
 
 **Performance optimization:**
-- Reducing octave count is the most direct optimization; use fewer octaves for distant objects: `int oct = 5 - int(log2(1.0 + t * 0.5));`
+
+- Reducing octave count is the most direct optimization; use fewer octaves for distant
+  objects: `int oct = 5 - int(log2(1.0 + t * 0.5));`
+
 - Multi-level LOD: `terrainL` (3 oct) / `terrainM` (9 oct) / `terrainH` (16 oct)
+
 - Texture sampling instead of math hash: `texture(iChannel0, x * 0.01).x`
+
 - Manually unroll small loops + slightly vary lacunarity
+
 - Adaptive step size: `float dt = max(0.05, 0.02 * t);`
+
 - Directional derivative instead of full gradient (1 sample vs 3)
+
 - Early termination: `if (sum.a > 0.99) break;`
 
 **Common combinations:**
-- FBM + Raymarching: noise-driven height/density fields, ray marching for intersection (terrain/ocean)
-- FBM + finite-difference normals + lighting: `nor = normalize(vec3(f(p+ex)-f(p), eps, f(p+ey)-f(p)))`
-- FBM + color mapping: different power curves mapping to RGB, e.g. flame `vec3(1.5*c, 1.5*c^3, c^6)` or inverse `vec3(k)/rz`
+
+- FBM + Raymarching: noise-driven height/density fields, ray marching for intersection
+  (terrain/ocean)
+
+- FBM + finite-difference normals + lighting:
+  `nor = normalize(vec3(f(p+ex)-f(p), eps, f(p+ey)-f(p)))`
+
+- FBM + color mapping: different power curves mapping to RGB, e.g. flame
+  `vec3(1.5*c, 1.5*c^3, c^6)` or inverse `vec3(k)/rz`
+
 - FBM + Fresnel water surface: `fresnel = pow(1.0 - dot(n, -eye), 3.0)`
-- Multi-layer FBM compositing: shape layer (low freq) + ridged layer (mid freq) + color layer (high freq)
-- FBM + volumetric lighting: density difference along light direction approximates illumination
+
+- Multi-layer FBM compositing: shape layer (low freq) + ridged layer (mid freq) + color
+  layer (high freq)
+
+- FBM + volumetric lighting: density difference along light direction approximates
+  illumination
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/procedural-noise.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/procedural-noise.md)

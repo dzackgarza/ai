@@ -1,13 +1,15 @@
 # Mathlib Integration Guide
 
-This reference provides comprehensive guidance for finding, importing, and using mathlib lemmas effectively.
+This reference provides comprehensive guidance for finding, importing, and using mathlib
+lemmas effectively.
 
 ## Philosophy: Search Before Prove
 
-**DON'T:** Spend hours proving something mathlib already has
-**DO:** Invest time in thorough searching first
+**DON’T:** Spend hours proving something mathlib already has **DO:** Invest time in
+thorough searching first
 
-Mathlib contains over 100,000 theorems. The probability that your "obvious lemma" is already there is high.
+Mathlib contains over 100,000 theorems.
+The probability that your “obvious lemma” is already there is high.
 
 ## Quick Reference Workflow
 
@@ -128,11 +130,13 @@ grep -n "map" .lake/packages/mathlib/Mathlib/Data/List/Basic.lean
 grep -n "lemma.*indicator" .lake/packages/mathlib/Mathlib/MeasureTheory/Function/Indicator.lean
 ```
 
-### Strategy 3: Type Signature-Based (Loogle's Killer Feature)
+### Strategy 3: Type Signature-Based (Loogle’s Killer Feature)
 
-**When to use:** You know what types should go in and out, but don't know the exact name.
+**When to use:** You know what types should go in and out, but don’t know the exact
+name.
 
-**Key insight:** Loogle's type pattern search is extremely powerful - use `?a`, `?b` as type variables to search by function signature.
+**Key insight:** Loogle’s type pattern search is extremely powerful - use `?a`, `?b` as
+type variables to search by function signature.
 
 **Successful patterns:**
 ```bash
@@ -147,9 +151,13 @@ grep -n "lemma.*indicator" .lake/packages/mathlib/Mathlib/MeasureTheory/Function
 ```
 
 **Type pattern syntax:**
+
 - `?a`, `?b`, `?c` - Type variables (can match any type)
+
 - `_` - Wildcard for any term
+
 - `->` - Function arrow
+
 - `|-` - Turnstile (for conclusions)
 
 **Examples that work well:**
@@ -183,7 +191,8 @@ lean_loogle "Measure ?X -> (?X -> ?Y) -> Measure ?Y"  # Finds Measure.map
 lean_loogle "IsProbabilityMeasure ?μ -> ?property"     # Finds related lemmas
 ```
 
-**Why simple names fail:** Loogle searches by *type structure*, not text matching. For text/name searches, use `leansearch` instead.
+**Why simple names fail:** Loogle searches by *type structure*, not text matching.
+For text/name searches, use `leansearch` instead.
 
 **Decision tree:**
 
@@ -406,7 +415,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 
 ### Missing Tactic Imports
 
-When you see "unknown identifier 'ring'":
+When you see “unknown identifier 'ring'”:
 
 ```lean
 import Mathlib.Tactic.Ring          -- ring, ring_nf
@@ -438,7 +447,8 @@ example (h : P x) : Q x := by
 
 ### Testing in isolation
 
-Note: the `goal` name is schematic here; replace it with the actual proposition you are testing.
+Note: the `goal` name is schematic here; replace it with the actual proposition you are
+testing.
 
 ```lean
 -- Create a test example
@@ -449,26 +459,35 @@ example : goal := by
 -- If it works here, use in main proof
 ```
 
-## When Mathlib Doesn't Have It
+## When Mathlib Doesn’t Have It
 
 ### Before giving up:
 
 1. **Try alternative phrasings**
-   - "continuous preimage compact" → "compact preimage continuous"
-   - "integral sum" → "sum integral"
 
-2. **Check if it's a special case**
+   - “continuous preimage compact” → “compact preimage continuous”
+
+   - “integral sum” → “sum integral”
+
+2. **Check if it’s a special case**
+
    - Maybe mathlib has more general version
+
    - Check class hierarchy: `Continuous` vs `ContinuousOn`
 
 3. **Look for building blocks**
+
    - Mathlib might have pieces you can combine
+
    - Example: No direct `condExp_indicator` but has `condExp_const` + `condExp_mul`
 
 4. **Ask on Zulip**
+
    - Lean Zulip: https://leanprover.zulipchat.com/
+
    - Channel: #mathlib
-   - Format: "Is there a lemma for X?"
+
+   - Format: “Is there a lemma for X?”
 
 ### If truly missing:
 

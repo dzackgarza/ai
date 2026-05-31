@@ -1,6 +1,7 @@
 ### Standalone HTML Complete Shader Template (Must Be Strictly Followed)
 
-**IMPORTANT: The following template can be copied directly; every line must be strictly followed**:
+**IMPORTANT: The following template can be copied directly; every line must be strictly
+followed**:
 
 **Vertex Shader** (common to all shaders):
 ```glsl
@@ -67,14 +68,22 @@ void main() {
 ```
 
 **IMPORTANT: Common GLSL ES 3.00 Errors** (must be avoided):
-1. **#version must be on the first line** - Any comments/blank lines will cause "version directive must occur on the first line" error
-2. **in/out qualifiers** - WebGL1's attribute/varying must be changed to in/out in ES3
+
+1. **#version must be on the first line** - Any comments/blank lines will cause “version
+   directive must occur on the first line” error
+
+2. **in/out qualifiers** - WebGL1’s attribute/varying must be changed to in/out in ES3
+
 3. **texture function** - ES3 uses `texture(sampler, uv)`, not `texture2D(sampler, uv)`
-4. **Type strictness** - `vec4 = float` is illegal, must use `vec4(v, v, v, v)` or `vec4(v)` or `vec4(vec3(v), 1.0)`
+
+4. **Type strictness** - `vec4 = float` is illegal, must use `vec4(v, v, v, v)` or
+   `vec4(v)` or `vec4(vec3(v), 1.0)`
 
 ## Standalone HTML Multi-Channel Framebuffer Implementation
 
-**IMPORTANT: Multi-Channel Rendering Pipeline Core Pitfalls**: ShaderToy code requires manual Framebuffer rendering pipeline implementation. The following template demonstrates the correct approach:
+**IMPORTANT: Multi-Channel Rendering Pipeline Core Pitfalls**: ShaderToy code requires
+manual Framebuffer rendering pipeline implementation.
+The following template demonstrates the correct approach:
 
 ```javascript
 // Correct multi-channel Framebuffer creation
@@ -151,42 +160,64 @@ function render() {
 ```
 
 **IMPORTANT: Common Errors** (JavaScript/WebGL side):
-1. **Missing texture parameters** - Must set `TEXTURE_MIN_FILTER`, `TEXTURE_MAG_FILTER`, `TEXTURE_WRAP_S/T`
-2. **Missing Framebuffer completeness check** - `gl.checkFramebufferStatus()` must return `FRAMEBUFFER_COMPLETE` before use
-3. **Float texture extension** - `gl.RGBA16F` requires `EXT_color_buffer_float` extension, otherwise fall back to `gl.UNSIGNED_BYTE`
-4. **Buffer ping-pong error** - Self-feedback must use 2 independent FBOs alternating read/write; a single FBO + texture swap causes "Feedback loop" error
-5. **Particle system empty texture initialization** - Textures are empty before the first frame; shaders reading default values cause render failure — must execute initPass() to pre-render
+
+1. **Missing texture parameters** - Must set `TEXTURE_MIN_FILTER`, `TEXTURE_MAG_FILTER`,
+   `TEXTURE_WRAP_S/T`
+
+2. **Missing Framebuffer completeness check** - `gl.checkFramebufferStatus()` must
+   return `FRAMEBUFFER_COMPLETE` before use
+
+3. **Float texture extension** - `gl.RGBA16F` requires `EXT_color_buffer_float`
+   extension, otherwise fall back to `gl.UNSIGNED_BYTE`
+
+4. **Buffer ping-pong error** - Self-feedback must use 2 independent FBOs alternating
+   read/write; a single FBO + texture swap causes “Feedback loop” error
+
+5. **Particle system empty texture initialization** - Textures are empty before the
+   first frame; shaders reading default values cause render failure — must execute
+   initPass() to pre-render
 
 # Multi-Pass Buffer Techniques
 
 ## Use Cases
 
-When single-frame computation cannot achieve the desired effect and cross-frame data persistence or multi-stage processing pipelines are needed, use multi-pass buffers:
+When single-frame computation cannot achieve the desired effect and cross-frame data
+persistence or multi-stage processing pipelines are needed, use multi-pass buffers:
 
 - **Temporal accumulation**: Motion blur, TAA, progressive rendering
+
 - **Physics simulation**: Fluids, reaction-diffusion, particle systems
+
 - **Persistent state**: Game state, particle positions/velocities, interaction history
+
 - **Deferred rendering**: G-Buffer → post-processing → compositing
+
 - **Post-processing chains**: HDR Bloom (downsample → blur → composite)
+
 - **Iterative solvers**: Poisson solver, vorticity confinement, multi-scale computation
 
 ## Core Principles
 
-Multi-pass buffers split the rendering pipeline into multiple Buffers, each outputting a texture as input for the next stage.
+Multi-pass buffers split the rendering pipeline into multiple Buffers, each outputting a
+texture as input for the next stage.
 
 ### Self-Feedback
-A Buffer reads its own previous frame output, achieving cross-frame state persistence: `x(n+1) = f(x(n))`
+
+A Buffer reads its own previous frame output, achieving cross-frame state persistence:
+`x(n+1) = f(x(n))`
 ```
 Buffer A (frame N) reads → Buffer A (frame N-1) output
 ```
 
 ### Pipeline Chaining
+
 Multiple Buffers process in sequence:
 ```
 Buffer A (geometry) → Buffer B (blur H) → Buffer C (blur V) → Image (compositing)
 ```
 
 ### Structured Data Storage
+
 Specific pixels serve as data registers, read precisely via `texelFetch`:
 ```
 texel (0,0) = ball position+velocity (vec4)
@@ -197,8 +228,11 @@ texel (x,1)-(x,12) = brick grid state
 ### Key Mathematical Patterns
 
 - **Fluid self-advection**: `newPos = texture(buf, uv - dt * velocity * texelSize)`
+
 - **Gaussian blur**: `sum += texture(buf, uv + offset_i) * weight_i`
+
 - **Temporal blending**: `result = mix(newFrame, prevFrame, blendWeight)`
+
 - **Vorticity confinement**: `vortForce = curl × normalize(gradient(|curl|))`
 
 ## Implementation Steps
@@ -287,7 +321,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
 ### Step 3-4: Navier-Stokes Solver + Chained Acceleration
 
-Buffer A / B / C use identical code (via Common tab's `solveFluid`):
+Buffer A / B / C use identical code (via Common tab’s `solveFluid`):
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord / iResolution.xy;
@@ -307,7 +341,8 @@ iChannel bindings: A→C(prev frame), B→A, C→B — 3 iterations per frame.
 
 ### Step 5: Separable Gaussian Blur
 
-Buffer B (horizontal, iChannel0 → source Buffer) — Buffer C vertical direction is analogous, using y-axis offset:
+Buffer B (horizontal, iChannel0 → source Buffer) — Buffer C vertical direction is
+analogous, using y-axis offset:
 ```glsl
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 pixelSize = 1.0 / iResolution.xy;
@@ -402,7 +437,8 @@ vec2 mouseDelta() {
 
 ## Complete Code Template
 
-A fully runnable fluid simulation shader (self-feedback + vorticity confinement + mouse interaction + color advection).
+A fully runnable fluid simulation shader (self-feedback + vorticity confinement + mouse
+interaction + color advection).
 
 ### Common tab
 
@@ -620,7 +656,9 @@ for (int i = 0; i < NUM_SCALES; i++) {
 
 ### Variant 6: Particle System (Position-Velocity Storage)
 
-**IMPORTANT: Particle System Implementation Key**: Particle state is stored in texture pixels, one particle per pixel. Rendering must iterate over the particle texture for sampling.
+**IMPORTANT: Particle System Implementation Key**: Particle state is stored in texture
+pixels, one particle per pixel.
+Rendering must iterate over the particle texture for sampling.
 
 **Buffer A (Particle Physics Simulation)**:
 ```glsl
@@ -700,9 +738,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 ```
 
 **Key Points**:
+
 - Buffer A self-feedback: iChannel0 → Buffer A
+
 - Image reads: iChannel0 → Buffer A (particle state)
+
 - Step size 0.02 produces 2500 samples; adjust based on performance
+
 - Particle size varies with velocity: `size = 0.01 + length(vel) * 0.3`
 
 **Complete JavaScript Rendering Pipeline (Particle System 3-Pass)**:
@@ -894,29 +936,54 @@ function render() {
 ```
 
 **IMPORTANT: Key Points**:
-- **Must use 2 FBOs for ping-pong**: Each Buffer needs two independent FBOs (read FBO + write FBO); a single FBO + texture swap causes "Feedback loop" error
-- Use FBO index switching (not texture swapping): bind target FBO when writing, bind source texture when reading
+
+- **Must use 2 FBOs for ping-pong**: Each Buffer needs two independent FBOs (read FBO +
+  write FBO); a single FBO + texture swap causes “Feedback loop” error
+
+- Use FBO index switching (not texture swapping): bind target FBO when writing, bind
+  source texture when reading
+
 - Image pass binds the latest Buffer results (obtained via read index)
 
 ## Performance & Composition
 
 **Performance Optimization**:
+
 - Separable blur: N² → 2N samples
+
 - Bilinear tap trick: 5 samples replace 9-tap Gaussian
-- MIP sampling replaces large kernels: `textureLod` at high MIP levels ≈ large-range average
+
+- MIP sampling replaces large kernels: `textureLod` at high MIP levels ≈ large-range
+  average
+
 - `discard` outside data regions to skip unnecessary computation
+
 - RGBA channel packing: velocity(xy) + density(z) + curl(w) in one vec4
+
 - Chained sub-steps: A→B→C same code for 3x simulation speed
+
 - `if (dot(b,b) > bbMax) break;` adaptive early exit
+
 - `iFrame < 20` progressive initialization to prevent explosion
 
 **Typical Composition Patterns**:
-- **Fluid + Lighting**: Fluid buffer → Image computes gradient normals → diffuse + specular
-- **Fluid + Color Advection**: Separate Buffer tracks color field, advected by velocity field
-- **Scene + Bloom + TAA**: 4-Buffer pipeline (render → downsample → blur → composite tone mapping)
-- **G-Buffer + Screen-Space Effects**: 2-Buffer without temporal feedback (geometry → edge/SSAO/SSR → stylized compositing)
-- **State Storage + Visualization Separation**: Buffer A pure logic + Image pure rendering (`texelFetch` reads state + distance field drawing)
+
+- **Fluid + Lighting**: Fluid buffer → Image computes gradient normals → diffuse +
+  specular
+
+- **Fluid + Color Advection**: Separate Buffer tracks color field, advected by velocity
+  field
+
+- **Scene + Bloom + TAA**: 4-Buffer pipeline (render → downsample → blur → composite
+  tone mapping)
+
+- **G-Buffer + Screen-Space Effects**: 2-Buffer without temporal feedback (geometry →
+  edge/SSAO/SSR → stylized compositing)
+
+- **State Storage + Visualization Separation**: Buffer A pure logic + Image pure
+  rendering (`texelFetch` reads state + distance field drawing)
 
 ## Further Reading
 
-For complete step-by-step tutorials, mathematical derivations, and advanced usage, see [reference](../reference/multipass-buffer.md)
+For complete step-by-step tutorials, mathematical derivations, and advanced usage, see
+[reference](../reference/multipass-buffer.md)

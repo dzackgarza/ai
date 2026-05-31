@@ -1,9 +1,13 @@
 # Camera & Lens Effects
 
 ## Use Cases
+
 - Adding cinematic depth of field (bokeh blur)
+
 - Motion blur for dynamic scenes
+
 - Lens distortion and chromatic aberration
+
 - Film grain and photographic realism
 
 ## Techniques
@@ -30,7 +34,9 @@ vec2 randomDisk(float seed) {
 ```
 
 Parameters:
+
 - `apertureSize`: 0.0 = pinhole (sharp), 0.1-0.5 = visible bokeh
+
 - `focalDistance`: distance to the in-focus plane
 
 ### 2. Post-Process Depth of Field (Single Pass)

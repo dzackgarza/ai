@@ -1,10 +1,15 @@
 # Simp Reference
 
-> **Scope:** Not part of the prove/autoprove default loop. Consulted when `simp` needs a deterministic, reusable rewrite that simp lemmas alone cannot provide.
+> **Scope:** Not part of the prove/autoprove default loop.
+> Consulted when `simp` needs a deterministic, reusable rewrite that simp lemmas alone
+> cannot provide.
 
 > **Version metadata:**
+>
 > - **Verified on:** Lean reference + release notes through `v4.27.0`
+>
 > - **Last validated:** 2026-02-17
+>
 > - **Confidence:** medium (docs reviewed; snippets not batch-compiled)
 
 ## Simp Lemma Hygiene
@@ -61,8 +66,11 @@ Avoid lemmas that simplify the same pattern differently.
 #### Direction Matters
 
 Simplify toward canonical forms:
+
 - Expand abbreviations to definitions
+
 - Normalize arithmetic (`a - b` → `a + (-b)`)
+
 - Reduce complexity
 
 #### Specificity
@@ -75,16 +83,21 @@ More specific lemmas are tried first:
 
 #### Use `@[simp]` Sparingly
 
-Not every equality should be a simp lemma. Consider:
+Not every equality should be a simp lemma.
+Consider:
+
 - Will this be useful in many proofs?
+
 - Does it simplify in the right direction?
+
 - Could it interfere with other lemmas?
 
 #### Testing
 
 Always test new simp lemmas:
 
-Note: this section uses schematic placeholders like `LHS`, `RHS`, and `goal` to illustrate tactic structure.
+Note: this section uses schematic placeholders like `LHS`, `RHS`, and `goal` to
+illustrate tactic structure.
 
 ```lean
 -- Test 1: Direct application works
@@ -100,35 +113,45 @@ example (h : some_hypothesis) : goal := by simp [your_lemma]
 ### Simp Attributes
 
 #### `@[simp]`
-Standard simplification lemma. Use for common simplifications.
+
+Standard simplification lemma.
+Use for common simplifications.
 
 #### `@[simp, nolint simpNF]`
-Suppress normal form lint. Use when you know the LHS isn't in NF but it's intentional.
+
+Suppress normal form lint.
+Use when you know the LHS isn’t in NF but it’s intentional.
 
 #### `@[simp high]` / `@[simp low]`
+
 Priority control. Higher priority means tried earlier.
 
 #### `@[simp?]`
+
 Debug: shows which lemmas are being applied.
 
 ### Debugging Simp
 
 #### See what simp does
+
 ```lean
 example : goal := by simp?  -- Shows applied lemmas
 ```
 
 #### Test specific lemmas
+
 ```lean
 example : goal := by simp only [lemma1, lemma2]
 ```
 
 #### Disable problematic lemmas
+
 ```lean
 example : goal := by simp [-bad_lemma]
 ```
 
 #### Trace simp
+
 ```lean
 set_option trace.Meta.Tactic.simp true in
 example : goal := by simp
@@ -168,10 +191,15 @@ example : goal := by simp
 ### Checklist Before Adding `@[simp]`
 
 - [ ] LHS is in simp normal form
+
 - [ ] RHS is simpler than LHS
-- [ ] Doesn't conflict with existing simp lemmas
+
+- [ ] Doesn’t conflict with existing simp lemmas
+
 - [ ] Tested: `simp only [lemma]` terminates
+
 - [ ] Tested: works in example proofs
+
 - [ ] Actually useful in multiple places
 
 ## Simproc Patterns
@@ -179,7 +207,9 @@ example : goal := by simp
 ### When to Use
 
 - `simp` is close but needs a deterministic rewrite
+
 - You repeat the same rewrite in multiple places
+
 - A rewrite depends on local computation (e.g., normalization)
 
 ### Composable Simp Pipeline
@@ -187,8 +217,11 @@ example : goal := by simp
 Think of simprocs as a block inside `simp`:
 
 1. `simp set` (lemmas, simp attributes)
+
 2. `simp config` (zeta, eta, simp theorems)
+
 3. `simproc` (deterministic rewrite)
+
 4. `simp` final normalization
 
 ### Minimal Simproc Shape
@@ -216,18 +249,26 @@ simproc_decl mySimproc (foo _) := fun e => do
 ### Rules of Thumb
 
 - Prefer simp lemmas; use simprocs only when needed
+
 - Keep patterns small and oriented (avoid loops)
+
 - Make simproc deterministic and fast
+
 - Register locally if the rewrite is not global
 
 ### Simproc Checklist
 
 - The simproc rewrite is one-way and terminating
+
 - `simp` set remains minimal (no noisy lemmas)
+
 - The simproc is only enabled where it helps
 
 ## See Also
 
-- [tactics-reference.md](tactics-reference.md) - Full tactic docs including simp variants
+- [tactics-reference.md](tactics-reference.md) - Full tactic docs including simp
+  variants
+
 - [performance-optimization.md](performance-optimization.md) - `simp only` for speed
+
 - [mathlib-style.md](mathlib-style.md) - Style conventions

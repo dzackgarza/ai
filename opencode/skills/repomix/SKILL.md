@@ -2,21 +2,27 @@
 name: repomix
 description: Use when packaging a codebase into a single file for AI analysis, third-party library inspection, security audits, or LLM context snapshots.
 ---
-
 # Repomix Skill
 
-Repomix packs entire repositories into single, AI-friendly files. Perfect for feeding codebases to LLMs like Claude, ChatGPT, and Gemini.
+Repomix packs entire repositories into single, AI-friendly files.
+Perfect for feeding codebases to LLMs like Claude, ChatGPT, and Gemini.
 
 ## When to Use
 
 Use when:
 
 - Packaging codebases for AI analysis
+
 - Creating repository snapshots for LLM context
+
 - Analyzing third-party libraries
+
 - Preparing for security audits
+
 - Generating documentation context
+
 - Investigating bugs across large codebases
+
 - Creating AI-friendly code representations
 
 ## Quick Start
@@ -59,9 +65,13 @@ repomix --include "src/**/*.ts" --remove-comments -o output.md
 ### Repository Packaging
 
 - AI-optimized formatting with clear separators
+
 - Multiple output formats: XML, Markdown, JSON, Plain text
+
 - Git-aware processing (respects .gitignore)
+
 - Token counting for LLM context management
+
 - Security checks for sensitive information
 
 ### Remote Repository Support
@@ -81,7 +91,8 @@ npx repomix --remote https://github.com/owner/repo/commit/hash
 
 ### Comment Removal
 
-Strip comments from supported languages (HTML, CSS, JavaScript, TypeScript, Vue, Svelte, Python, PHP, Ruby, C, C#, Java, Go, Rust, Swift, Kotlin, Dart, Shell, YAML):
+Strip comments from supported languages (HTML, CSS, JavaScript, TypeScript, Vue, Svelte,
+Python, PHP, Ruby, C, C#, Java, Go, Rust, Swift, Kotlin, Dart, Shell, YAML):
 
 ```bash
 repomix --remove-comments
@@ -167,24 +178,32 @@ repomix --init  # creates repomix.config.json
 
 ## Token Management
 
-Repomix automatically counts tokens for individual files, total repository, and per-format output.
+Repomix automatically counts tokens for individual files, total repository, and
+per-format output.
 
 Typical LLM context limits:
 
 - Claude Sonnet 4.5: ~200K tokens
+
 - GPT-4: ~128K tokens
+
 - GPT-3.5: ~16K tokens
 
 ## Security Considerations
 
-Repomix uses Secretlint to detect sensitive data (API keys, passwords, credentials, private keys, AWS secrets).
+Repomix uses Secretlint to detect sensitive data (API keys, passwords, credentials,
+private keys, AWS secrets).
 
 Best practices:
 
 1. Always review output before sharing
+
 2. Use `.repomixignore` for sensitive files
+
 3. Enable security checks for unknown codebases
+
 4. Avoid packaging `.env` files
+
 5. Check for hardcoded credentials
 
 Disable security checks if needed:
@@ -198,39 +217,59 @@ repomix --no-security-check
 When user requests repository packaging:
 
 1. **Assess Requirements**
+
    - Identify target repository (local/remote)
+
    - Determine output format needed
+
    - Check for sensitive data concerns
 
 2. **Configure Filters**
+
    - Set include patterns for relevant files
+
    - Add ignore patterns for unnecessary files
+
    - Enable/disable comment removal
 
 3. **Execute Packaging**
+
    - Run repomix with appropriate options
+
    - Monitor token counts
+
    - Verify security checks
 
 4. **Validate Output**
+
    - Review generated file
+
    - Confirm no sensitive data
+
    - Check token limits for target LLM
 
 5. **Deliver Context**
+
    - Provide packaged file to user
+
    - Include token count summary
+
    - Note any warnings or issues
 
 ## Reference Documentation
 
 For detailed information, see:
 
-- [Configuration Reference](./references/configuration.md) - Config files, include/exclude patterns, output formats, advanced options
-- [Usage Patterns](./references/usage-patterns.md) - AI analysis workflows, security audit preparation, documentation generation, library evaluation
+- [Configuration Reference](./references/configuration.md) - Config files,
+  include/exclude patterns, output formats, advanced options
+
+- [Usage Patterns](./references/usage-patterns.md) - AI analysis workflows, security
+  audit preparation, documentation generation, library evaluation
 
 ## Additional Resources
 
 - GitHub: https://github.com/yamadashy/repomix
+
 - Documentation: https://repomix.com/guide/
+
 - MCP Server: Available for AI assistant integration

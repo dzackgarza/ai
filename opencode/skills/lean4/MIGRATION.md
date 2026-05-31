@@ -1,15 +1,17 @@
 # Claude Code Migration: V3 → V4
 
-> This guide is specific to Claude Code's plugin system. Non-Claude hosts don't have V3 artifacts to migrate.
+> This guide is specific to Claude Code’s plugin system.
+> Non-Claude hosts don’t have V3 artifacts to migrate.
 
-This guide helps you upgrade from the legacy 3-plugin system (v3.x) to the unified v4 plugin.
+This guide helps you upgrade from the legacy 3-plugin system (v3.x) to the unified v4
+plugin.
 
 ## What Changed
 
 ### Plugin Structure
 
 | V3 (3 plugins) | V4 (unified) |
-|----------------|--------------|
+| --- | --- |
 | `lean4-theorem-proving` | `lean4` |
 | `lean4-memories` | Removed (unreliable) |
 | `lean4-subagents` | Integrated into `lean4` |
@@ -17,7 +19,7 @@ This guide helps you upgrade from the legacy 3-plugin system (v3.x) to the unifi
 ### Commands
 
 | V3 Command | V4 Command |
-|------------|------------|
+| --- | --- |
 | `/lean4-theorem-proving:fill-sorry` | `/lean4:prove` (or `/lean4:autoprove`) |
 | `/lean4-theorem-proving:repair-file` | `/lean4:prove --repair-only` |
 | `/lean4-theorem-proving:check-axioms` | `/lean4:checkpoint` (includes axiom check) |
@@ -31,7 +33,7 @@ This guide helps you upgrade from the legacy 3-plugin system (v3.x) to the unifi
 ### Environment Variables
 
 | V3 | V4 |
-|----|-----|
+| --- | --- |
 | `.claude/tools/lean4/` | `$LEAN4_SCRIPTS/` |
 | `.claude/docs/lean4/` | `$LEAN4_REFS/` |
 | (copied into workspace) | (stays in plugin directory) |
@@ -108,24 +110,39 @@ Or for unattended work: `/lean4:autoprove` (autonomous with explicit stop budget
 ### Planning Phase (NEW)
 
 `/lean4:prove` asks for your preferences at startup (if not passed via flags):
+
 - **Planning preference:** Start with a planning phase or skip straight to work
-- **Review source:** Internal (planner mode) / External (interactive handoff) / Both / None
+
+- **Review source:** Internal (planner mode) / External (interactive handoff) / Both /
+  None
 
 ### Safety Guardrails (NEW)
 
-V4 blocks certain git operations when working inside a Lean project (detected by `lakefile.lean`, `lean-toolchain`, or `lakefile.toml` in the directory tree). Outside Lean projects, guardrails do not fire.
+V4 blocks certain git operations when working inside a Lean project (detected by
+`lakefile.lean`, `lean-toolchain`, or `lakefile.toml` in the directory tree).
+Outside Lean projects, guardrails do not fire.
 
 - `git push` - Use `/lean4:checkpoint`, then push manually
+
 - `git commit --amend` - Each change is a new commit
+
 - `gh pr create` - Review first with `/lean4:review`
 
-Override with `LEAN4_GUARDRAILS_DISABLE=1` (skip all) or `LEAN4_GUARDRAILS_FORCE=1` (enforce everywhere). `LEAN4_GUARDRAILS_DISABLE` takes precedence over `LEAN4_GUARDRAILS_FORCE`.
-Set `LEAN4_GUARDRAILS_COLLAB_POLICY` to control collaboration ops: `ask` (default, current behavior), `allow` (no prompts), or `block` (unconditional block). Default `ask` mode preserves current behavior — set `allow` for no prompts on collaboration ops.
-For a single collaboration command in `ask` mode, prefix with the bypass token instead (command prefix only, not an env var): `LEAN4_GUARDRAILS_BYPASS=1 git push origin main`. Destructive operations remain hard-blocked regardless of policy.
+Override with `LEAN4_GUARDRAILS_DISABLE=1` (skip all) or `LEAN4_GUARDRAILS_FORCE=1`
+(enforce everywhere).
+`LEAN4_GUARDRAILS_DISABLE` takes precedence over `LEAN4_GUARDRAILS_FORCE`. Set
+`LEAN4_GUARDRAILS_COLLAB_POLICY` to control collaboration ops: `ask` (default, current
+behavior), `allow` (no prompts), or `block` (unconditional block).
+Default `ask` mode preserves current behavior — set `allow` for no prompts on
+collaboration ops. For a single collaboration command in `ask` mode, prefix with the
+bypass token instead (command prefix only, not an env var):
+`LEAN4_GUARDRAILS_BYPASS=1 git push origin main`. Destructive operations remain
+hard-blocked regardless of policy.
 
 ### Memory System (REMOVED)
 
-The v3 `lean4-memories` plugin is not included in v4. It was unreliable and has been removed. The proving workflow provides better guidance without the memory overhead.
+The v3 `lean4-memories` plugin is not included in v4. It was unreliable and has been
+removed. The proving workflow provides better guidance without the memory overhead.
 
 ## Legacy Access
 
@@ -145,10 +162,13 @@ If you need the old 3-plugin version:
 
 ## Troubleshooting
 
-### "LEAN4_SCRIPTS not set"
+### “LEAN4_SCRIPTS not set”
 
-The bootstrap hook didn't run. Try:
+The bootstrap hook didn’t run.
+Try:
+
 1. Restart Claude Code session
+
 2. Run `/lean4:doctor` to check environment
 
 ### Commands not found
@@ -160,12 +180,15 @@ Make sure you installed from the v4 version:
 
 ### Scripts not working
 
-The scripts now live in the plugin directory. Use `$LEAN4_SCRIPTS/` prefix:
+The scripts now live in the plugin directory.
+Use `$LEAN4_SCRIPTS/` prefix:
 ```bash
 ${LEAN4_PYTHON_BIN:-python3} "$LEAN4_SCRIPTS/sorry_analyzer.py" . --format=summary --report-only
 ```
 
-Both `lib/scripts/` and `scripts/` (compat alias) resolve to the same directory. If your environment doesn't preserve symlinks (e.g., archive extraction), use `$LEAN4_SCRIPTS` as the canonical path.
+Both `lib/scripts/` and `scripts/` (compat alias) resolve to the same directory.
+If your environment doesn’t preserve symlinks (e.g., archive extraction), use
+`$LEAN4_SCRIPTS` as the canonical path.
 
 ### Need help?
 
@@ -173,16 +196,18 @@ Run `/lean4:doctor` for full diagnostics.
 
 ## V4.4.0 → V4.4.1
 
-**Proof-editing agents renamed** to drop the `lean4-` prefix, fixing the dispatch name stutter.
+**Proof-editing agents renamed** to drop the `lean4-` prefix, fixing the dispatch name
+stutter.
 
 | Old name | New name | Old dispatch | New dispatch |
-|----------|----------|--------------|--------------|
+| --- | --- | --- | --- |
 | `lean4-sorry-filler-deep` | `sorry-filler-deep` | `lean4:lean4-sorry-filler-deep` | `lean4:sorry-filler-deep` |
 | `lean4-proof-repair` | `proof-repair` | `lean4:lean4-proof-repair` | `lean4:proof-repair` |
 | `lean4-proof-golfer` | `proof-golfer` | `lean4:lean4-proof-golfer` | `lean4:proof-golfer` |
 | `lean4-axiom-eliminator` | `axiom-eliminator` | `lean4:lean4-axiom-eliminator` | `lean4:axiom-eliminator` |
 
-If you have external tooling or scripts that dispatch agents by the old names, update them to the new names.
+If you have external tooling or scripts that dispatch agents by the old names, update
+them to the new names.
 
 ## V4.3.x → V4.4.0
 
@@ -190,15 +215,23 @@ If you have external tooling or scripts that dispatch agents by the old names, u
 
 ### What Changed and Why
 
-- `draft` is the honest name for "translate informal → formal skeleton." Old `formalize` did this plus proof attempts, which muddied the separation from `prove`.
-- `formalize` now means the full pipeline: draft a skeleton and prove it. This is a superset of old behavior.
-- `autoformalize` surfaces the `autoprove --formalize=auto` workflow as a first-class command with cleaner flag names.
-- Proof engines (`prove`/`autoprove`) no longer touch declaration headers. If the statement is wrong, they recommend `redraft` instead of silently rewriting.
+- `draft` is the honest name for “translate informal → formal skeleton.”
+  Old `formalize` did this plus proof attempts, which muddied the separation from
+  `prove`.
+
+- `formalize` now means the full pipeline: draft a skeleton and prove it.
+  This is a superset of old behavior.
+
+- `autoformalize` surfaces the `autoprove --formalize=auto` workflow as a first-class
+  command with cleaner flag names.
+
+- Proof engines (`prove`/`autoprove`) no longer touch declaration headers.
+  If the statement is wrong, they recommend `redraft` instead of silently rewriting.
 
 ### Migration Table
 
 | Old invocation | What to use now | Compatibility |
-|---|---|---|
+| --- | --- | --- |
 | `/lean4:formalize "claim"` | `/lean4:formalize "claim"` (superset: now also proves) or `/lean4:draft "claim"` (skeleton only) | Yes — formalize still accepts this |
 | `/lean4:formalize --rigor=axiomatic "claim"` | `/lean4:formalize --rigor=axiomatic "claim"` | Yes — rigor stays on formalize |
 | `/lean4:formalize "claim"` → save → `/lean4:prove` later | `/lean4:draft "claim"` → save → `/lean4:prove` (cleaner separation) | Yes — old formalize still works for this pattern too |
@@ -210,22 +243,40 @@ If you have external tooling or scripts that dispatch agents by the old names, u
 ## V4.0.4 → V4.0.5
 
 **`/lean4:autoprover` split into two commands:**
+
 - `/lean4:prove` — guided, cycle-by-cycle (asks before each cycle)
+
 - `/lean4:autoprove` — autonomous, with explicit stop budgets
 
-Both share the same cycle engine and most flags. Key differences:
-- **prove-only:** `--deep=ask` (interactive prompt), `--planning=ask`, `--commit=ask` (per-commit confirmation)
-- **autoprove-only:** `--max-cycles`, `--max-total-runtime`, `--max-stuck-cycles`, `--max-consecutive-deep-cycles` (autoprove coerces `--commit=ask` and `--review-source=external` to non-interactive values)
-- **Different defaults:** autoprove uses `--batch-size=2`, `--deep=stuck`, `--golf=never`, `--commit=auto`; prove uses `--batch-size=1`, `--deep=never`, `--golf=prompt`, `--commit=ask`
+Both share the same cycle engine and most flags.
+Key differences:
+
+- **prove-only:** `--deep=ask` (interactive prompt), `--planning=ask`, `--commit=ask`
+  (per-commit confirmation)
+
+- **autoprove-only:** `--max-cycles`, `--max-total-runtime`, `--max-stuck-cycles`,
+  `--max-consecutive-deep-cycles` (autoprove coerces `--commit=ask` and
+  `--review-source=external` to non-interactive values)
+
+- **Different defaults:** autoprove uses `--batch-size=2`, `--deep=stuck`,
+  `--golf=never`, `--commit=auto`; prove uses `--batch-size=1`, `--deep=never`,
+  `--golf=prompt`, `--commit=ask`
 
 ## V4.0.8 → V4.0.9
 
-**v4.0.9:** Grind, simprocs, metaprogramming, linters, FFI, verso-docs, and profiling content (from PR #10, Alok Singh) integrated as reference files in `plugins/lean4/skills/lean4/references/`. No separate plugins needed.
+**v4.0.9:** Grind, simprocs, metaprogramming, linters, FFI, verso-docs, and profiling
+content (from PR #10, Alok Singh) integrated as reference files in
+`plugins/lean4/skills/lean4/references/`. No separate plugins needed.
 
-New reference files: `grind-tactic.md`, `simproc-patterns.md`, `metaprogramming-patterns.md`, `linter-authoring.md`, `ffi-patterns.md`, `verso-docs.md`, `profiling-workflows.md`. All are outside the default prove/autoprove loop.
+New reference files: `grind-tactic.md`, `simproc-patterns.md`,
+`metaprogramming-patterns.md`, `linter-authoring.md`, `ffi-patterns.md`,
+`verso-docs.md`, `profiling-workflows.md`. All are outside the default prove/autoprove
+loop.
 
 ## See Also
 
 - [README.md](README.md) - Plugin documentation
+
 - [SKILL.md](skills/lean4/SKILL.md) - Core skill reference
+
 - [Commands](commands/) - Command documentation

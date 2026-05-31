@@ -1,8 +1,10 @@
 # Lean 4 Tactics Reference
 
-This reference provides comprehensive guidance on essential Lean 4 tactics, when to use them, and common patterns.
+This reference provides comprehensive guidance on essential Lean 4 tactics, when to use
+them, and common patterns.
 
-**For natural language translations:** See [lean-phrasebook.md](lean-phrasebook.md) for "Mathematical English to Lean" patterns organized by proof situation.
+**For natural language translations:** See [lean-phrasebook.md](lean-phrasebook.md) for
+“Mathematical English to Lean” patterns organized by proof situation.
 
 ## Decision Tree
 
@@ -24,12 +26,12 @@ What's my goal?
 └─ Don't know → exact? / apply? / simp?
 ```
 
----
+* * *
 
 ## Quick Reference
 
-| Want to... | Use... |
-|------------|--------|
+| Want to … | Use … |
+| --- | --- |
 | Close with exact term | `exact` |
 | Apply lemma | `apply` |
 | Rewrite once | `rw [lemma]` |
@@ -50,7 +52,8 @@ The most important tactic is the one you understand!
 
 #### `simp` - The Workhorse Simplifier
 
-**What it does:** Recursively applies `@[simp]` lemmas to rewrite expressions to normal form.
+**What it does:** Recursively applies `@[simp]` lemmas to rewrite expressions to normal
+form.
 
 **Basic usage:**
 ```lean
@@ -71,26 +74,39 @@ simp?                   -- Show which lemmas it uses (exploration)
 ```
 
 **When to use `simp`:**
+
 - Obvious algebraic simplifications (`x + 0`, `x * 1`, etc.)
+
 - Normalizing expressions to canonical form
+
 - Cleaning up after other tactics
 
 **When to use `simp only`:**
+
 - You know which lemmas you need (preferred for clarity)
+
 - Want explicit, reviewable proof
+
 - Avoiding surprising simp behavior
 
 **When NOT to use `simp`:**
+
 - Simple rewrites (use `rw` instead)
-- Unclear what it's doing (use `simp?` first, then convert to `simp only`)
+
+- Unclear what it’s doing (use `simp?` first, then convert to `simp only`)
 
 #### Deep Dive: The `simp` Tactic
 
 **How simp works internally:**
+
 1. Collects all `@[simp]` lemmas in scope
+
 2. Tries to match lemma left-hand sides against expression
+
 3. Rewrites using right-hand side
+
 4. Recursively simplifies subexpressions
+
 5. Continues until no more lemmas apply
 
 **What makes a good @[simp] lemma:**
@@ -151,7 +167,10 @@ apply other_lemma
 
 **simp with calc chains:**
 
-When using `simp` before a `calc` chain, the calc must start with the **already simplified form**, not the original expression. This is especially important with `simp [Real.norm_eq_abs]` which automatically converts `‖x‖` to `|x|`, `|a * b|` to `|a| * |b|`, and `1/(m:ℝ)` to `(m:ℝ)⁻¹`.
+When using `simp` before a `calc` chain, the calc must start with the **already
+simplified form**, not the original expression.
+This is especially important with `simp [Real.norm_eq_abs]` which automatically converts
+`‖x‖` to `|x|`, `|a * b|` to `|a| * |b|`, and `1/(m:ℝ)` to `(m:ℝ)⁻¹`.
 
 ```lean
 -- ❌ WRONG: calc starts with unsimplified form
@@ -165,7 +184,8 @@ calc (m:ℝ)⁻¹ * |∑...|  -- Start with what simp produced
     _ ≤ ...            -- Focus on actual reasoning
 ```
 
-**For detailed calc chain patterns, performance tips, and debugging workflows, see:** `references/calc-patterns.md`
+**For detailed calc chain patterns, performance tips, and debugging workflows, see:**
+`references/calc-patterns.md`
 
 ### Case Analysis Tactics
 
@@ -253,13 +273,19 @@ simp_rw [h₁, h₂, h₃]
 ```
 
 **Advantages over `rw`:**
+
 - Applies rewrites left-to-right repeatedly
+
 - More powerful for chains: can use intermediate results
+
 - Single tactic call = clearer proof structure
 
 **When to prefer `simp_rw`:**
+
 - Multiple related rewrites in sequence
+
 - Rewrite chains where later steps use earlier results
+
 - Measure theory: integral/expectation identity chains
 
 **Example:**
@@ -412,7 +438,8 @@ positivity      -- Prove positivity of measures/integrals
 
 **Compositional Function Properties (`fun_prop`):**
 
-`fun_prop` proves function properties compositionally by decomposing functions into simpler parts.
+`fun_prop` proves function properties compositionally by decomposing functions into
+simpler parts.
 
 **Basic usage:**
 ```lean
@@ -422,7 +449,8 @@ fun_prop
 
 **With discharge tactic (`disch`):**
 
-The `disch` parameter (short for "discharge") specifies which tactic to use for solving subgoals that `fun_prop` generates.
+The `disch` parameter (short for “discharge”) specifies which tactic to use for solving
+subgoals that `fun_prop` generates.
 
 **Common patterns:**
 ```lean
@@ -449,10 +477,17 @@ have h : Measurable (fun ω => fun j : Fin n => X (k j) ω) := by
 ```
 
 **Choosing the right `disch` tactic:**
+
 - Proving `Measurable`? → `disch := measurability`
+
 - Proving `Continuous`? → `disch := continuity`
-- Subgoals in context? → `disch := assumption`
-- Needs simplification? → `disch := simp`
+
+- Subgoals in context?
+  → `disch := assumption`
+
+- Needs simplification?
+  → `disch := simp`
+
 - Not sure? → Try `fun_prop` alone to see subgoals first
 
 **Advanced - Tactic sequences:**
@@ -477,9 +512,13 @@ example : Measurable (fun ω => shiftℤ ω) := by
 ```
 
 **When to use both attributes:**
+
 - `@[measurability]` - Makes lemma discoverable by `measurability` tactic
+
 - `@[fun_prop]` - Makes lemma discoverable by `fun_prop` tactic
-- `@[measurability, fun_prop]` - Makes lemma discoverable by both (recommended for custom function property lemmas)
+
+- `@[measurability, fun_prop]` - Makes lemma discoverable by both (recommended for
+  custom function property lemmas)
 
 **Real example from practice:**
 ```lean
@@ -494,11 +533,15 @@ have h : Measurable (fun ω => f (ω (-1))) := by
 
 #### `grind` - SMT-Style Automation
 
-**What it does:** Combines congruence closure, E-matching, case splitting, and arithmetic/algebraic solvers to close mixed-constraint goals.
+**What it does:** Combines congruence closure, E-matching, case splitting, and
+arithmetic/algebraic solvers to close mixed-constraint goals.
 
 **When to reach for it:**
+
 - `simp` normalizes but does not close
+
 - Goal mixes equalities + inequalities + algebraic facts
+
 - Finite-domain reasoning (`Fin`, `Bool`, small enums)
 
 **Baseline usage:**
@@ -526,15 +569,23 @@ grind -funCC +revert -reducible       -- newer search/reduction controls
 ```
 
 **When NOT to use `grind`:**
+
 - Pure rewrites -> `simp`
+
 - Integer-only arithmetic -> `omega`
+
 - Nonlinear arithmetic -> `nlinarith`
+
 - Combinatorial/bit-blasting search -> `bv_decide`
 
 **Notes:**
+
 - Local hypotheses are already in scope for `grind`; avoid passing them redundantly.
+
 - If search explodes, reduce splitting (`splits := 0`) before adding more lemmas.
-- For custom automation, register lemmas with `@[grind]` / `@[grind =]` / `@[grind ->]` and use `@[grind_pattern]` only when matching needs manual shaping.
+
+- For custom automation, register lemmas with `@[grind]` / `@[grind =]` / `@[grind ->]`
+  and use `@[grind_pattern]` only when matching needs manual shaping.
 
 **For full details:** [grind-tactic.md](grind-tactic.md)
 
@@ -575,7 +626,8 @@ by
 
 **Pattern 5: Work with what you have (avoid rearrangement)**
 
-When library gives `∠ B H C + ∠ H C B + ∠ C B H = π` but you want different order, don't fight commutativity - extract what you need directly:
+When library gives `∠ B H C + ∠ H C B + ∠ C B H = π` but you want different order, don’t
+fight commutativity - extract what you need directly:
 ```lean
 have angle_sum : ∠ B H C + ∠ H C B + ∠ C B H = π := angle_add_angle_add_angle_eq_pi C ...
 have : ∠ H C B = π - ∠ B H C - ∠ C B H := by linarith [angle_sum]
