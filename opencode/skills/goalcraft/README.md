@@ -1,8 +1,8 @@
 # Goalcraft
 
-Goalcraft turns a messy task description into a Codex `/goal` you can paste and run.
+Goalcraft turns a messy task description into a Codex `/goal` you can paste and run. For long-horizon work, it also prepares the companion workflow docs that the goal bootloads after compaction, keeping the goal compact while preserving the full intended end state.
 
-When you use `/goal`, the agent runs autonomously toward whatever you wrote down. A weak goal means the agent will claim "done" on something that isn't. Goalcraft writes goals that are tight on scope, clear on what counts as done, and structured so the agent has to show real evidence before declaring success.
+When you use `/goal`, the agent runs autonomously toward whatever you wrote down. A weak goal means the agent will claim "done" on something that isn't. Goalcraft writes goals by comparing what the user asked to have true at the end with what the draft goal would actually make true if completed. That consequence check keeps setup work, first batches, plans, and premature external-precondition notes from being confused with the finished task. Goalcraft also separates writer-side skill context from worker-side skill routing: the writer loads design skills before drafting, then writes exact skill slugs and load triggers into the goal and workflow docs future workers will actually see. When work fails, workflow-backed goals make the agent decompose the remaining residue, complete solvable subpieces, and preserve the active decomposition path in the project's canonical state surface instead of naming the first failed attempt as the blocker.
 
 ## Install
 
@@ -31,6 +31,13 @@ A `/goal` that spells out:
 - **How to verify the work** — specific commands, tests, or checks that prove it shipped
 - **When to keep going vs. stop and ask** — autonomy rules for risky or ambiguous moves
 - **What counts as success** — measurable criteria, not "looks good to me"
+
+For large jobs, Goalcraft may also produce:
+
+- **A contract doc** — the observable completion witness and final review standard
+- **A state doc** — the current phase, active context, evidence, remaining residue, and active decomposition path in the project's canonical searchable state surface, preferably `iwe`
+- **Phase docs** — narrow just-in-time context for the current slice of work
+- **Skill routing** — exact skill slugs to load for the whole goal, by phase, and when failures, drift, slop, orchestration, or reviews occur
 
 By default, goalcraft only drafts the goal. It won't activate it unless you tell it to.
 
