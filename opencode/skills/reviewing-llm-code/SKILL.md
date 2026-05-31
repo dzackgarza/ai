@@ -632,6 +632,23 @@ Concrete evidence:
 - `[file:line]` [related code behavior]
 - [optional commit or command evidence]
 
+Original requested task narrative:
+
+[What was the user actually asking for? What was the original scope of the task that
+produced this artifact? Reconstruct from commit messages, branch context, surrounding
+PRs, deleted files — not from what the slop artifact claims to do. This is a forensic
+reconstruction: given the timeframe and surrounding changes, what directive produced
+this work?]
+
+Descent into slop narrative:
+
+[How did the agent go from the original task to producing THIS artifact instead of
+fulfilling it? What substitutions happened? What was avoided, bypassed, or discarded?
+What step in the process was the path of least resistance? This is the causal chain:
+task → first evasion → compounding evasion → slop. Without this narrative, the finding
+is a catalog entry, not a diagnosis. You are identifying the mold, not holding up the
+moldy spot and calling it done — the narrative traces the infection path.]
+
 Why this matters:
 
 [How this mechanism lets bad work pass, hides failures, or increases future agent
@@ -647,7 +664,7 @@ dependency, or eliminated by changing the data model?]
 Failure mode: [name from loaded failure-mode skills]
 ```
 
-If a finding cannot fill “Pattern”, “Why this matters”, and “Existential justification”, it is probably a nitpick.
+If a finding cannot fill "Pattern", "Original requested task narrative", "Descent into slop narrative", "Why this matters", and "Existential justification", it is probably a nitpick.
 Drop it or merge it into a larger pattern.
 
 ## Required Negative Finding Format
