@@ -775,7 +775,7 @@ The user needs to know that the switch should never have been written because a 
 SLOP-REPORT-COMPLIANCE: I hereby assert that the above report is formatted in compliance with all slop report requirements.
 ```
 
-A report that does not end with this string did not complete the compliance checklist. Reject it.
+If the report reaches the user without this string, the compliance checklist was not completed.
 
 ## Findings Are Flags, Not Directives
 
