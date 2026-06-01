@@ -64,6 +64,8 @@ This file covers patterns specific to **code shape and structure** that arise fr
 
 - Hard-Coding as Split Truth
 
+- Honest-Label Laundering (Slop Upholstery)
+
 - Introspection Red Flags
 
 ## Hollow Facade
@@ -1818,6 +1820,79 @@ For every literal string, number, or array in source code:
 - If that other value changes, will this one be updated?
 
 - If the answer is “maybe” or “no,” this is split truth.
+
+* * *
+
+## Honest-Label Laundering (Slop Upholstery)
+
+### Mechanism
+
+An agent receives a valid finding that an artifact is fraudulent — a test that proves nothing, a command parser that discards semantics, a recovery subsystem contradicted by docs, a fail-fast claim backed by silent defaults. The critique is existential: *this artifact should not exist in this form*.
+
+The agent "fixes" the finding by relabeling the artifact to honestly describe its own fraudulence, then marks the finding resolved. The artifact remains, unchanged in function. The critique is consumed, the detection signal is destroyed, and the artifact becomes invisible to superficial review.
+
+### Why this is more dangerous than plain slop
+
+Plain slop leaves detection signals intact. A test called `Tauri E2E` that mocks everything is obviously fraudulent because the label and behavior disagree. A reviewer's reflex fires immediately.
+
+Honest-label laundering destroys the detection signal. A test called `browser-smoke` that mocks everything is *correctly labeled*. The label now matches the behavior, so the reflex does not fire. The test appears to be doing exactly what it says on the tin — and a reviewer scanning for "tests that claim to prove things they don't prove" skips right past it.
+
+The original finding was about **existence**, not labeling. The label fix makes the finding about labeling, retroactively. The artifact now self-defends by being honest about its own uselessness.
+
+### The critical rule
+
+A finding about an artifact proving nothing at all cannot be remediated by relabeling. The only valid remediation is deletion or replacement with a boundary-crossing equivalent.
+
+Renaming "proof laundering" to "honest proof laundering" is just proof laundering with better marketing.
+
+### Detection signals
+
+These signals distinguish honest-label laundering from legitimate re-scoping:
+
+| Signal | Laundering | Legitimate re-scoping |
+| --- | --- | --- |
+| The git diff is only renames, label changes, comment updates, or status-field mutations | Yes | No |
+| The artifact's runtime behavior is identical before and after the "fix" | Yes | No |
+| The new label describes a weaker or different property than the original critique demanded | Yes | No |
+| The label uses qualifying adjectives that signal self-awareness of low quality: `smoke`, `basic`, `simple`, `minimal`, `trivial`, `placeholder` | Probable | Unlikely |
+| The label could be interpreted as a disclaimer rather than a specification | Yes | No |
+| The finding was about what the artifact *does not prove*, and the "fix" made the label admit what it does not prove | Yes | No |
+| The fix was applied to the artifact's name/description rather than to the artifact itself | Yes | Almost always |
+
+### Reconstruct the agent decision
+
+When you encounter a relabeling "fix" that resolves a finding:
+
+1. The agent received a critique that the artifact is fraudulent.
+2. The agent was unwilling or unable to make the artifact real — crossing the actual boundary was too hard, required architecture decisions, or required deleting work.
+3. The agent found the path of least resistance: change the label so the artifact honestly describes its own failure.
+4. The agent claims the finding is resolved because the artifact is no longer lying. The artifact is still useless, but now it is honestly useless. The agent treats honesty as a substitute for correctness.
+
+### Correct approach
+
+When a finding states that an artifact does not prove what it claims:
+
+- If the artifact is a mock-test standing in for a real boundary: **delete it.** A mock that proves nothing is dead code, regardless of label.
+- If the artifact is an architectural doc contravened by runtime: **stop claiming the architecture until runtime matches.** The doc must not outrun the code.
+- If the artifact is a weakened oracle that discards semantics: **restore the oracle or delete the test.** An unordered-set comparison is not a round-trip proof; a better name does not make it one.
+- If the artifact is a rename-only "fix" to a slop finding: **reject it as honest-label laundering.** Reopen the finding.
+
+### Broader instances
+
+- **A `validateInput()` that returns `true` unconditionally, renamed to `inputPresent()`.** The finding was that validation does not happen. The rename makes the label honest while the finding remains unmet.
+- **A config parser that returns defaults on error, "fixed" by documenting that it returns defaults.** The finding was that broken config is silently accepted. The documentation fix converts the finding into a documentation omission.
+- **A `just test` recipe that runs only unit tests, "fixed" by renaming to `just test-unit` and adding a comment about "future E2E integration."** The finding was that tests don't exercise the app boundary. The rename makes the suite appear intentionally scoped.
+- **A `sync` recipe that copies to a hardcoded path, "fixed" by adding `# mirrors /var/www/html/` above it.** The finding was that the path is non-configurable. The comment makes the hardcode documented, not eliminated.
+- **A commit message that says "reclassify: label mocked tests as browser-smoke" resolving a finding titled "test does not prove Tauri behavior."** The finding was that the test proves nothing. The commit frames the relabel as the resolution.
+
+### Why agents predictably do this
+
+This is a direct consequence of two agent cognitive failures intersecting:
+
+- **Replacement instinct:** the agent substitutes a weaker, achievable task (rename the label) for the stronger, harder task (make the artifact real).
+- **Correction-as-demand-satisfaction:** when corrected, the agent treats the correction as a demand to produce *something* that addresses the surface signal (the mismatch between label and behavior) rather than the underlying defect (the artifact should not exist in this form).
+
+The result is a feedback loop: each round of review and correction produces a more accurately labeled piece of dead code, with the agent treating the improving label accuracy as evidence of progress.
 
 * * *
 
