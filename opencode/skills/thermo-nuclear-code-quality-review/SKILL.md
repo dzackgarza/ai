@@ -365,6 +365,12 @@ cleaner decomposition.
   box-checking. Provides structural-scrutiny patterns for detecting work that satisfies
   format without satisfying intent.
 
+- **anti-slop → deepening** → Load `references/deepening.md` and
+  `references/deepening-vocabulary.md` alongside when identifying pass-through wrappers,
+  shallow abstractions, or missed deepening opportunities. The deepening vocabulary gives
+  precise language for describing what's wrong (shallow module, pass-through) and what
+  should replace it (deep module, concentrated leverage, seam discipline).
+
 - **reviewing-subagent-work** → Load alongside when reviewing code produced by a
   subagent. Provides the Synthesis Gate for verifying that code actually achieves the
   stated goal.

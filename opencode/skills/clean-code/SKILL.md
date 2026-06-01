@@ -343,3 +343,11 @@ into decoupled units.
 
 Don’t. Go back. Clean it up.
 Leave it better than you found it.
+
+## Cross-References
+
+- **anti-slop → deepening** — This skill's SRP and DIP guidance overlaps with the deepening vocabulary in `anti-slop/references/deepening-vocabulary.md`. Where this skill says "classes should be small" and "depend on abstractions," deepening gives precise language: a module should be **deep** (high leverage at the interface, high locality in the implementation), and seams should only be introduced where there are at least two adapters. The deletion test is a concrete check for SRP: if deleting the class makes complexity vanish, it was a pass-through, not a real responsibility.
+
+- **anti-slop → deepening** — `anti-slop/references/deepening.md` provides the process for turning shallow modules (wide interfaces, pass-throughs) into deep ones. When this skill identifies cohesion breakdown or SRP violations, the deepening reference tells you how to consolidate them: classify dependencies (in-process, local-substitutable, ports & adapters, mock), place seams, and test through the deepened interface.
+
+- **thermo-nuclear-code-quality-review** — For aggressive simplification that goes beyond "clean code" into restructuring, load thermo-nuclear alongside this skill.

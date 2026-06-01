@@ -183,3 +183,13 @@ Signs that an approach destroys the abstraction before operating:
 - **prompt-engineering** → Load alongside when writing instructions that must prevent
   shallow work proactively.
   Constraint-based instruction forces thinking rather than pattern completion.
+
+- **anti-slop → deepening** → "Shallow work" in this skill's sense maps directly onto
+  "shallow modules" in the deepening vocabulary (`anti-slop/references/deepening-vocabulary.md`).
+  A shallow module is one whose interface is nearly as complex as its implementation — it
+  provides no leverage and no locality. The deletion test from deepening is a concrete
+  diagnostic: if deleting the module makes complexity vanish, it was a pass-through (shallow
+  work disguised as a module). If complexity reappears across N callers, it was earning its
+  keep (deep work). When this skill identifies structurally wrong code or template-filling,
+  the deepening reference (`anti-slop/references/deepening.md`) names what should replace it:
+  a deep module with concentrated leverage at its interface.

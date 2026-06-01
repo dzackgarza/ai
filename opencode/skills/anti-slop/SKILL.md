@@ -583,6 +583,10 @@ Secondary references (use when the central catalog does not cover the specific d
 
 - `references/text-patterns.md` — Natural language slop patterns (text-only reviews)
 
+- `references/deepening.md` — How to deepen shallow modules into deep interfaces. The constructive inverse of anti-slop: where this skill detects *shallowness*, deepening names the *replacement*. Covers dependency categories (in-process, local-substitutable, ports & adapters, mock), seam discipline, testing strategy (replace don't layer), and the Design It Twice interface exploration process. Uses vocabulary from `references/deepening-vocabulary.md`.
+
+- `references/deepening-vocabulary.md` — Precise glossary for architectural deepening: module, interface, depth, seam, adapter, leverage, locality, deletion test. Use these terms exactly — consistent language prevents drift into vague synonyms.
+
 ## Remediation
 
 This skill is ANALYSIS only. It detects slop but does not prescribe fixes.
