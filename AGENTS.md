@@ -36,16 +36,20 @@ Never read source code directly until all of these options have been exhausted.
 
 Use `tree` to understand your surroundings.
 Do not just use ls, grep/rg/ag/etc, which only show narrow slices.
-Never implement fallback behaviour, soft defaults, “graceful” error handling.
+Never implement fallback behaviour, soft defaults, “graceful” error handling, or fail-open conditions. Every error path must fail loudly. Silence is a bug.
 No legacy flags. No deprecated symbols. No “backwards-compatible” shims. Breaking changes are fine — we are in development.
 When revising feature A to work more like feature B, clean up the codebase as if feature A had never existed: delete the old implementation, its tests, its types, its exports, its config entries. Do not wrap it in a `deprecated` annotation, do not gate it behind a feature flag, do not preserve it as a fallback path, do not add a compatibility adapter. The old thing is gone. The new thing replaces it entirely.
 Agents have an asymmetric risk model (see `llm-failure-modes/coding-failures.md` #20): they treat adding code as safe and deleting code as dangerous, even when tests prove the replacement is correct. This compulsion produces codebase bloat — every refactor becomes additive (+2 files, +492 lines of legacy wiring) instead of net-negative. Resist it. When tests exist that cover the replacement, deletion is safe. Delete.
 A second-pass cleanup in clean context is a proven mitigation: after implementing a change, explicitly re-read the diff in a fresh context and strip every fallback, legacy branch, and defensive guard that the tests do not require. The first pass implements; the second pass deletes everything the first pass was too cautious to remove.
-Do not aim for “legacy” compatibility, preservation of historical artifacts, interop with old versions.
-Do not write code that gracefully accepts malformed inputs or data, to make “best effort” attempts.
-Instead: understand explicit data shapes, assert correctness, fail fast.
+
+All software written here is bespoke, for one user, on one system, tightly integrated with the tools on this system. It is not distributed, not multi-platform, not designed to scale, not built for unknown audiences. There is no “legacy user” — the only user is the owner, immediately after the task is done, expecting the old functionality to have vanished as if it never existed. Every change is a breaking change by default.
+Do not attempt multi-platform support, horizontal scaling, or imagined security hardening. These are enterprise patterns — they do not belong in bespoke software. The correct behavior is: work on happy paths, fail loudly and immediately outside of them. Do not prototype edge cases; prototype permutations of happy paths instead. Block non-happy branching and edge behaviours with sharp assertions, not soft guards. Put the user experience on guardrails that don’t accept veering.
+Opinionated configs and defaults only. No env-var switching, no feature-flag toggling, no runtime mode selection. The software runs one way, on this system, with these dependencies. If something needs to change, change the config, commit it, and move on — do not parameterize against imagined future variation.
+Do not aim for “legacy” compatibility, preservation of historical artifacts, or interop with old versions.
+Do not write code that gracefully accepts malformed inputs or data, or makes “best effort” attempts.
+Instead: understand explicit data shapes, assert correctness, fail loudly.
 Force data to be fixed and fit explicit schemas.
-Enumerate accepted types.
+Enumerate accepted types. Interfaces must loudly reject malformed data — silence is a bug.
 Short-circuit paths with optional data to quickly normalize and assert existence.
 Eliminate weakly typed signatures: optional, “Any”, “unknown”, by understanding the exact data you are working with and enforcing it.
 If you don’t know what the data looks like, do not write code for it.
