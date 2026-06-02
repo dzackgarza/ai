@@ -2,17 +2,17 @@
 name: difficulty-and-time-estimation
 description: Use when calibrating task complexity, estimating token costs, or deciding whether to delegate to a subagent.
 ---
+
 # Difficulty and Time Estimation
 
-This skill provides frameworks for calibrating task difficulty and making delegation
-decisions **without relying on time-based estimates**.
+This skill provides frameworks for calibrating task difficulty and making delegation decisions **without relying on time-based estimates**.
 
 * * *
 
 ## Core Principle: Time Estimates Are Misleading
 
-**LLMs are systematically biased toward time-based thinking** due to human-centered
-training data. This leads to catastrophic miscalibration:
+**LLMs are systematically biased toward time-based thinking** due to human-centered training data.
+This leads to catastrophic miscalibration:
 
 | Human Intuition | Reality | Error Factor |
 | --- | --- | --- |
@@ -48,11 +48,9 @@ Use these cues when a task feels larger than it is:
 
 - Repetitive scanning is usually trivial when it can be batched.
 
-- If a task feels hard because of file count alone, convert to atomic batched steps
-  first.
+- If a task feels hard because of file count alone, convert to atomic batched steps first.
 
-- One-by-one reads/edits are often a planning smell; prefer batched exploration then
-  targeted edits.
+- One-by-one reads/edits are often a planning smell; prefer batched exploration then targeted edits.
 
 ### Batch-First Operating Guidance
 
@@ -66,8 +64,7 @@ Use these cues when a task feels larger than it is:
 
 ## Multi-Factor Difficulty Model
 
-Task difficulty is a **weighted combination of multiple factors** — no single metric
-suffices.
+Task difficulty is a **weighted combination of multiple factors** — no single metric suffices.
 
 ### Primary Factors
 
@@ -101,8 +98,7 @@ suffices.
 
 - **Verdict**: Trivial, do in main thread
 
-**Task B: “Read all 200 files in `src/`, identify which export a `UserService` class,
-extract those classes, and refactor to use a common interface”**
+**Task B: “Read all 200 files in `src/`, identify which export a `UserService` class, extract those classes, and refactor to use a common interface”**
 
 - Atomic steps: 2 (glob + batch read) + N edits
 
@@ -136,8 +132,7 @@ extract those classes, and refactor to use a common interface”**
 
 - Context pollution: Medium (logs, traces)
 
-- **Verdict**: Start in main thread (needs full context), delegate if exploration
-  explodes
+- **Verdict**: Start in main thread (needs full context), delegate if exploration explodes
 
 * * *
 
@@ -149,11 +144,9 @@ extract those classes, and refactor to use a common interface”**
 
 - **Token explosion**: Task will burn >100K tokens exploring/parsing
 
-- **Context pollution**: Working set will clutter main agent’s context with transient
-  info
+- **Context pollution**: Working set will clutter main agent’s context with transient info
 
-- **Repetitive batch work**: “Do X to each of 50 files” (subagent has fresh context per
-  batch)
+- **Repetitive batch work**: “Do X to each of 50 files” (subagent has fresh context per batch)
 
 - **Tangential exploration**: Main task is A, but you need to research B to proceed
 
@@ -183,8 +176,7 @@ extract those classes, and refactor to use a common interface”**
 
 - **Total: 20-130K tokens before useful work begins**
 
-**Break-even point**: Subagent is worth it when task would burn >100K tokens in main
-context OR severely pollute working context.
+**Break-even point**: Subagent is worth it when task would burn >100K tokens in main context OR severely pollute working context.
 
 * * *
 
@@ -200,18 +192,15 @@ context OR severely pollute working context.
 
 ### 3. Underestimating Context Pollution
 
-❌ “I’ll just read these 50 log files real quick” → ✅ “50 log files = 500K tokens of
-pollution, subagent required”
+❌ “I’ll just read these 50 log files real quick” → ✅ “50 log files = 500K tokens of pollution, subagent required”
 
 ### 4. Overestimating Reasoning Cost
 
-❌ “This complex refactor will take forever” → ✅ “This is 10 atomic edits, each
-verifiable, subagent can batch”
+❌ “This complex refactor will take forever” → ✅ “This is 10 atomic edits, each verifiable, subagent can batch”
 
 ### 5. Compound Failure Probability
 
-❌ “Each step is 90% reliable, so I’m good” → ✅ “10 steps at 90% = 0.9^10 = 35% overall
-success rate”
+❌ “Each step is 90% reliable, so I’m good” → ✅ “10 steps at 90% = 0.9^10 = 35% overall success rate”
 
 * * *
 
@@ -223,7 +212,7 @@ success rate”
 
 - `model-selection` — When matching task difficulty to model tier
 
-- `systematic-deduction` — When estimating debugging complexity
+- `systematic-debugging` — When estimating debugging complexity
 
 **Related skills:**
 
