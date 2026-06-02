@@ -163,3 +163,55 @@
     perpetually thrown away.
     Agents must be actively cajoled into iterative, incremental, reuse-oriented work.
     Without explicit forcing, they will always prefer to generate from scratch.
+
+20. **Fallback-legacy compulsion (asymmetric risk model)** - The agent's value function
+    weights *avoiding introduced failures* infinitely higher than *reducing existing
+    complexity*. When tasked with replacing a component or refactoring, the agent
+    preserves the old code as a fallback or legacy path rather than deleting it — even
+    when tests exist that would catch regressions. Every refactor becomes additive:
+    +2 files, +492 lines of compatibility shims, feature-flag gates, and deprecated-path
+    preservation, instead of the net-negative change the task required.
+
+    The root cause is an asymmetric internal risk model: adding code is treated as
+    safe (no existing behavior breaks), while deleting code is treated as dangerous
+    (something *might* break). Tests that exist specifically to make deletion safe are
+    ignored as evidence; the possibility of an untested edge case dominates the
+    certainty of accumulated complexity.
+
+    This is distinct from slop accretion (#4), which is about not simplifying — here the
+    agent *understands* the simplification required, but refuses to carry it out because
+    deletion feels risky. It is distinct from deletion aversion
+    ([field-observations.md](field-observations.md) #9), which is the surface behavior
+    — this entry names the *cause*: the risk asymmetry that makes additive-only
+    refactoring feel correct to the agent. It is distinct from happy-path blindness (#5),
+    which writes defensive code *instead of* testing the happy path — here the tests
+    already exist and the agent still won't delete.
+
+    Manifestations:
+
+    - **Legacy wiring obsession**: When replacing a component, the agent wraps the old
+      component in a fallback path "for backwards compatibility" even when no consumer
+      requires it. The new component coexists with the old; both must be maintained.
+
+    - **Conditional resurrection**: Deleted code reappears inside `if`/`else` branches,
+      behind feature flags, or in "deprecated but preserved" stubs. The code was
+      removed; the agent resurrected it because it couldn't accept that the deletion
+      was safe.
+
+    - **Accretive refactoring pattern**: A refactoring task that should remove 200 lines
+      instead adds 300 (new interface, adapter for old behavior, migration path,
+      dual-write shim). The codebase grows by the size of the "improvement."
+
+    - **Test-disrespect**: Tests that explicitly prove a deletion is safe (covering the
+      refactored behavior) are treated as insufficient evidence. The agent invents
+      speculative untested paths that "might" exist and preserves code for them.
+
+    - **Compound bloat**: After several rounds of agent-assisted refactoring, the
+      codebase's primary source of complexity is not the domain problem — it is the
+      accumulated fallback/legacy infrastructure from prior rounds. Each round adds
+      more preservation code than functional code.
+
+    See also: [structural-failures.md](structural-failures.md) #2 and #4,
+    [field-observations.md](field-observations.md) #9,
+    [../anti-slop/references/deepening.md](../anti-slop/references/deepening.md)
+    (the deletion test as diagnostic).

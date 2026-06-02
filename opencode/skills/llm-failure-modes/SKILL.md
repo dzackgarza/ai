@@ -91,8 +91,9 @@ Load the relevant section for your context:
   Scope explosion, specification drift, slop accretion, critic hallucination, outcome
   blindness in review, failure mode inversion, impact miscalibration, replacement
   instinct, reimplementation impulse, dependency aversion bias, meta-artifact
-  delegation, scale-complexity confusion, ground-up bias (churn-first workflow).
-  (19 items)
+  delegation, scale-complexity confusion, ground-up bias (churn-first workflow),
+  fallback-legacy compulsion (asymmetric risk model).
+  (20 items)
 
 ### Structural and Behavioral Observations
 

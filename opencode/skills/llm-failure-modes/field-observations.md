@@ -52,6 +52,10 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
    When the correct fix is to delete something — including code it just wrote — this is
    rarely its first move.
    “LLMs are absolutely awful at DELETING code, or never writing it to begin with.”
+   Root cause: fallback-legacy compulsion
+   ([coding-failures.md](coding-failures.md) #20) — the agent's internal risk model
+   treats deletion as dangerous regardless of test coverage. The surface behavior is
+   “won't delete”; the cause is “adding code feels safe, deleting code feels risky.”
 
 10. **Performative research** — The agent runs keyword web searches to satisfy the
     “research” step of a plan without actually probing the system: no CLI commands run,
