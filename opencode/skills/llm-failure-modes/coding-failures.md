@@ -211,6 +211,25 @@
       accumulated fallback/legacy infrastructure from prior rounds. Each round adds
       more preservation code than functional code.
 
+    - **`try import` and conditional imports**: The agent wraps dependency imports in
+      `try`/`except ImportError` blocks and substitutes stubs or no-ops when the import
+      fails — on a system where the dependency is installed and available. This is the
+      import-level manifestation of the same compulsion: "in case the dependency is
+      missing" guards against a state that does not exist on this system.
+
+    - **Signature bloat**: The agent adds optional parameters, nullable arguments, and
+      configuration toggles to function signatures for hypothetical callers that do not
+      exist. "For compatibility with existing call patterns" rationalizes bloating a
+      signature for call patterns the agent itself created minutes earlier.
+
+    Fallback/legacy infrastructure is the current generation's equivalent of the mock-data
+    problem: earlier agents would fake functionality with placeholder data; current agents
+    fake correctness by ensuring every code path produces *some* result via fallback
+    routes, making the output appear correct at runtime without the fallback route being
+    semantically meaningful. Benchmarks may inadvertently select for this behavior, since
+    fallback-laden code "works" on more test cases by having more escape hatches — even
+    when those escape hatches produce synthetic results rather than correct ones.
+
     See also: [structural-failures.md](structural-failures.md) #2 and #4,
     [field-observations.md](field-observations.md) #9,
     [../anti-slop/references/deepening.md](../anti-slop/references/deepening.md)
