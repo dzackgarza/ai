@@ -65,6 +65,93 @@ If you don’t know what the data looks like, do not write code for it.
 **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing.
 Verify with `git diff` after.
 
+# Serena Symbolic Code Tools: MANDATORY for All Code Operations
+
+Serena provides a suite of LSP-powered symbolic code tools (`serena_*`).
+These tools are NOT optional conveniences — they are the **mandatory primary interface** for all code reading, searching, editing, refactoring, and deletion.
+
+**The Serena-First Rule:**
+
+Every code operation — inspecting, searching, inserting, replacing, renaming, deleting, or impact-analyzing — MUST be attempted with the appropriate Serena tool FIRST.
+The `edit`, `write`, `grep`, and `read` tools are **fallbacks**, permitted only when the corresponding Serena tool has been tried and has verifiably failed for that specific codebase.
+A Serena tool returns `[]` or errors does not justify silently switching to raw tools — the failure MUST be reported to the user with the exact tool, target, and result before the fallback is used.
+
+**Why this rule exists** (verified by case study on `flowmark/src/flowmark/cli.py`, 489 lines, Pyright LSP):
+
+| Operation | Serena tool | Raw fallback | Token cost |
+|-----------|-------------|--------------|------------|
+| Inspect a function in a large file | `find_symbol(name_path_pattern="main", include_body=True)` → 110 lines of body | `read` entire 489-line file then manually locate | 4-5x more tokens |
+| Find all references to a class | `find_referencing_symbols("Options")` → cross-file results in one call | `grep` across repo, manually deduplicate and verify | 3-10x more tokens + multiple rounds |
+| Insert a new function after an existing one | `insert_after_symbol("_needs_file_resolution", body=...)` → one call, zero context read | `read` file, search for insertion point, construct `edit` | 2-3x more tokens |
+| Replace a function body | `replace_symbol_body("_needs_file_resolution", body=...)` → one call | `read` file, identify exact body bounds, construct `edit` | 2-4x more tokens |
+| Rename a symbol across the codebase | `rename_symbol` → all references updated | `grep` + manual `edit` on every file | 5-20x more tokens |
+| Delete a symbol safely | `safe_delete_symbol` → fails if references exist | `rm` lines + hope nothing breaks | Risk of dead references |
+
+**The workflow for EVERY code task:**
+
+1. `serena_activate_project` the target repo.
+2. `get_symbols_overview` to survey the file without reading it.
+3. `find_symbol` (with `include_body=True` only when you actually need the body) to locate the target.
+4. `find_referencing_symbols` to assess cross-file impact before any edit.
+5. Perform the edit with `insert_after_symbol`, `insert_before_symbol`, `replace_symbol_body`, or `rename_symbol`.
+6. `find_referencing_symbols` again to verify no references broke.
+7. **Only if a Serena tool returns `[]` or errors**: report the failure to the user (exact tool, target, result), then fall back to raw tools.
+
+**One-shot examples of correct usage:**
+
+```
+# Task: "Add a new option `--dry-run` to the CLI"
+# WRONG: read the entire cli.py, find the Options class manually, construct an edit
+# RIGHT:
+serena_find_symbol(name_path_pattern="Options", relative_path="src/flowmark/cli.py", include_body=True)
+# → returns the class body. Add the new field.
+serena_replace_symbol_body(name_path_pattern="Options", relative_path="src/flowmark/cli.py", body="...")
+
+# Task: "Find everywhere _resolve_files is called and understand the call sites"
+# WRONG: grep "_resolve_files" and read surrounding lines manually
+# RIGHT:
+serena_find_referencing_symbols(name_path="_resolve_files", relative_path="src/flowmark/cli.py")
+# → returns every call site with surrounding context, including cross-file references
+
+# Task: "Insert a new helper function right before main()"
+# WRONG: read the file, find the line before main, construct an edit
+# RIGHT:
+serena_insert_before_symbol(name_path="main", relative_path="src/flowmark/cli.py", body="def new_helper(): ...")
+
+# Task: "Rename _parse_args to _parse_cli_args everywhere"
+# WRONG: grep for _parse_args, edit every occurrence, hope none were missed
+# RIGHT:
+serena_rename_symbol(name_path="_parse_args", relative_path="src/flowmark/cli.py", new_name="_parse_cli_args")
+# → all references in all files updated atomically
+
+# Task: "Understand the structure of a 900-line file I've never seen"
+# WRONG: read the entire 900-line file
+# RIGHT:
+serena_get_symbols_overview(relative_path="large_file.py")
+# → returns all classes, functions, constants with line ranges. Then drill into only what you need.
+```
+
+**Detecting LSP failure (the only valid reason to fall back):**
+
+If `find_symbol` returns `[]` for a symbol you know exists (e.g., you saw it in `get_symbols_overview` or via `search_for_pattern`), the language server is broken for that file.
+This is a **blocker** that MUST be reported to the user before proceeding with raw tools.
+
+```
+# Example failure report:
+# "find_symbol('_make_lattice', ...) returned [] despite _make_lattice existing at line 82
+# of constructors.py (confirmed via search_for_pattern).  LSP diagnostics: 123KB of type errors.
+# The Pyright language server cannot parse this file due to unresolvable SageMath imports.
+# Falling back to read/edit for constructors.py — other files in this project may also be affected."
+```
+
+**Tools that DO NOT substitute for Serena (never use these first):**
+
+- `grep` — use `find_symbol` or `find_referencing_symbols` instead
+- `read` of an entire file — use `get_symbols_overview` then `find_symbol(include_body=True)` for only the symbols you need
+- `edit` with string matching — use `insert_after_symbol`, `insert_before_symbol`, or `replace_symbol_body` instead
+- `write` to rewrite a file — use `replace_symbol_body` or the insert tools to modify only what changed
+- `bash` with `sed`/`awk`/`perl -i` — use `rename_symbol` for renames, `replace_symbol_body` for replacements
+
 **Never use `rm`.** Use `trash` or `gio trash`. Deletions must be recoverable.
 
 **NEVER use git checkout, revert, reset, stash or any other destructive git operation.** This WIPES OUT not only your work, but everyone else's, forever, in an unrecoverable way.
