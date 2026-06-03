@@ -127,6 +127,13 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   The user's specific design attributes for paper cards and their specific input schema become INPUT to a more general feature that uniformizes them, combines them, and produces the component.
   The defining characteristic of this failure mode: natural mutations of the feature have huge blast radii — touching core internals, copy-pasting code, reinventing infrastructure — rather than being minor data-driven or configuration-driven extensions to general tools that the original implementation already provided.
   Each feature should REDUCE the blast radius of future mutations, not increase it.
+  Diagnostic signals in the code:
+  - **Features hacked into core fundamentals**: user-requested features deeply integrated into app internals instead of added through extension points. The agent added the feature by hacking the core rather than designing a proper integration surface. Intended workflow, unintended architecture.
+  - **Mutating or adding a feature is unsafe**: would an agent have to touch delicate internals to extend a feature? Feature failures should fail in isolation with clear error messages, not as opaque build/compilation/runtime errors elsewhere in the app.
+  - **Murky boundaries and ownership**: no clear separation between highly specific features and generalized components. Schizophrenic designs where unrelated concerns bleed into each other.
+  - **Bizarre tool/framework mixing**: tools or frameworks jammed together in ways clearly at odds with their intended purpose. Bizarre intermediate steps that would not exist in a thought-out greenfield design.
+  - **Accretion without payoff**: layers of feature additions with no corresponding refactoring to absorb them. Tech debt that accrued and was never paid off.
+  Review question: if you were greenfielding this design, would the architecture make sense? If the answer is no, the current shape is overfitting accretion, not intentional design.
   Equally bad are failed attempts at generalization: unopinionated vague schemas attempting to capture ALL instances (god-object accretion, braindead pursuit of "good design" guidelines that weakens contracts and schema checking), complex inheritance chains, highly non-modular constructions, and broken walls of abstractions where modular core pieces are informed by leaf implementations instead of defining general composable tools.
   The correct approach follows Unix philosophy: most pieces do one thing well and compose well; most customization is composition, configuration, and trivial extensions.
 
