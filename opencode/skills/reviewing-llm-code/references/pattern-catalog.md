@@ -118,6 +118,15 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 
 - **Littered artifacts**: generated debris, stale snapshots, abandoned scratch files, duplicate reports, renamed-but-not-retired files, or disconnected docs that make the repository harder to inspect.
 
+- **Overfitting to a user prompt**: code that reflexively implements the exact hyper-specific feature requested in a user prompt without finding the simplest general solution that recovers the request as a special case.
+  Good, intelligent code solves a general problem and recovers the user's specific need as a special case, where the generalization is minimal and well-chosen.
+  The red flag is an implementation that could only have been produced by directly transcribing a user's literal feature request — hardcoded handling of one exact data shape, one exact presentation, one exact workflow — with no shared abstractions or composable pieces.
+  The test: if the user requested a natural mutation of the feature (e.g., splitting published papers into preprints vs. published as distinct components, changing the display layout, adding a new data field), would this require touching core internals, copy-pasting code, or reinventing infrastructure?
+  Or is the mutation a minor extension, mostly data-driven and configuration-driven, because the original solution provided reasonable shared modular tools?
+  Each feature should REDUCE the blast radius of future mutations.
+  Equally bad are failed attempts at generalization: unopinionated vague schemas attempting to capture ALL instances (god-object accretion), complex inheritance chains, modular core pieces whose design is informed by leaf implementations instead of defining general composable tools, or abstractions that weaken contracts and schema checking.
+  The correct approach follows Unix philosophy: most pieces do one thing well and compose well; most customization is composition, configuration, and trivial extensions.
+
 - **Myopic goal-seeking**: the code solves the immediate local complaint while making the system less coherent, less testable, less observable, or easier to lie about.
 
 - **Consultant-shaped triage**: producing generalized freeze/recovery/cleanup advice before identifying the actual in-progress feature, repo-local conventions, and root cause of the bad state.
