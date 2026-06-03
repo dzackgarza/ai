@@ -119,12 +119,15 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 - **Littered artifacts**: generated debris, stale snapshots, abandoned scratch files, duplicate reports, renamed-but-not-retired files, or disconnected docs that make the repository harder to inspect.
 
 - **Overfitting to a user prompt**: code that reflexively implements the exact hyper-specific feature requested in a user prompt without finding the simplest general solution that recovers the request as a special case.
-  Good, intelligent code solves a general problem and recovers the user's specific need as a special case, where the generalization is minimal and well-chosen.
-  The red flag is an implementation that could only have been produced by directly transcribing a user's literal feature request — hardcoded handling of one exact data shape, one exact presentation, one exact workflow — with no shared abstractions or composable pieces.
-  The test: if the user requested a natural mutation of the feature (e.g., splitting published papers into preprints vs. published as distinct components, changing the display layout, adding a new data field), would this require touching core internals, copy-pasting code, or reinventing infrastructure?
-  Or is the mutation a minor extension, mostly data-driven and configuration-driven, because the original solution provided reasonable shared modular tools?
-  Each feature should REDUCE the blast radius of future mutations.
-  Equally bad are failed attempts at generalization: unopinionated vague schemas attempting to capture ALL instances (god-object accretion), complex inheritance chains, modular core pieces whose design is informed by leaf implementations instead of defining general composable tools, or abstractions that weaken contracts and schema checking.
+  The red flag is an implementation that tells a story of directly transcribing a user's literal feature request — no thought, no planning, no abstraction — with hardcoded handling of one exact data shape, one exact presentation, one exact workflow, and no shared abstractions or composable pieces.
+  The simplest solution is rarely the most ambitious or the one that tries to handle every edge case imaginable.
+  Instead: isolate the general concern, find a minimal generalization that genuinely solves a recognized core of the problem, then recover the user's specific need as input to that general piece.
+  A website generation pipeline with hardcoded handling of how published papers are organized and displayed is the red flag.
+  The correct approach: a "core" with reusable generalizable components (e.g. display cards), with overrides/extensions for the specific feature requested now.
+  The user's specific design attributes for paper cards and their specific input schema become INPUT to a more general feature that uniformizes them, combines them, and produces the component.
+  The defining characteristic of this failure mode: natural mutations of the feature have huge blast radii — touching core internals, copy-pasting code, reinventing infrastructure — rather than being minor data-driven or configuration-driven extensions to general tools that the original implementation already provided.
+  Each feature should REDUCE the blast radius of future mutations, not increase it.
+  Equally bad are failed attempts at generalization: unopinionated vague schemas attempting to capture ALL instances (god-object accretion, braindead pursuit of "good design" guidelines that weakens contracts and schema checking), complex inheritance chains, highly non-modular constructions, and broken walls of abstractions where modular core pieces are informed by leaf implementations instead of defining general composable tools.
   The correct approach follows Unix philosophy: most pieces do one thing well and compose well; most customization is composition, configuration, and trivial extensions.
 
 - **Myopic goal-seeking**: the code solves the immediate local complaint while making the system less coherent, less testable, less observable, or easier to lie about.
