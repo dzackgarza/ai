@@ -137,6 +137,18 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   Equally bad are failed attempts at generalization: unopinionated vague schemas attempting to capture ALL instances (god-object accretion, braindead pursuit of "good design" guidelines that weakens contracts and schema checking), complex inheritance chains, highly non-modular constructions, and broken walls of abstractions where modular core pieces are informed by leaf implementations instead of defining general composable tools.
   The correct approach follows Unix philosophy: most pieces do one thing well and compose well; most customization is composition, configuration, and trivial extensions.
 
+- **Data accretion / weak schemas**: data structures that show no evidence of top-down design — the shape was accreted feature by feature without ever being revisited.
+  OSOT (One Source of Truth) violations are the primary signal: the same logical entity is scattered across multiple data sources because the agent grafted on new tracking rather than revisiting the structure of the data type.
+  The blast-radius test for data: if a user added a new data entry of this type, how many locations must change?
+  Should be one.
+  A research website that requires modifying a paper entry in 3 different file locations — because one feature needed publication links, another needed arxiv links, and each was grafted on as a separate data source — is the red flag.
+  The correct shape: a "papers database" with structured entries that understand all states from a top-down analysis (preprint→published status changes, DOI updates, arxiv versioning, abstract/author updates, tags, external links, talk slides, videos).
+  Adding a new paper becomes a single structured entry.
+  Equally bad are reflexive attempts to fix this with a "master schema": a god-type with everything optional that tries to weakly match subtypes instead of enforcing core requirements and allowing typed extensions.
+  Red flags for weak schemas: optional types everywhere, functions with optional arguments, schemas that don't confidently assert exact data shapes, fail-open logic, "peeking" logic that softly checks for key existence before acting.
+  All data in bespoke software is fully known and controlled — every data boundary should be a strict schema asserting specific valid shapes and routing them accordingly.
+  Another signal: code that clearly does not understand the data well enough to be opinionated about it. The agent bashed its head against a wall trying to process data it never actually looked at, using probe techniques instead of dumping the data or its schema and enumerating all possibilities with their exact shapes.
+
 - **Myopic goal-seeking**: the code solves the immediate local complaint while making the system less coherent, less testable, less observable, or easier to lie about.
 
 - **Consultant-shaped triage**: producing generalized freeze/recovery/cleanup advice before identifying the actual in-progress feature, repo-local conventions, and root cause of the bad state.
