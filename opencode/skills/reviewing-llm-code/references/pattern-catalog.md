@@ -134,6 +134,15 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - **Bizarre tool/framework mixing**: tools or frameworks jammed together in ways clearly at odds with their intended purpose. Bizarre intermediate steps that would not exist in a thought-out greenfield design.
   - **Accretion without payoff**: layers of feature additions with no corresponding refactoring to absorb them. Tech debt that accrued and was never paid off.
   Review question: if you were greenfielding this design, would the architecture make sense? If the answer is no, the current shape is overfitting accretion, not intentional design.
+  Observable tells:
+  - A component that directly imports a specific data file: `import papers from '../data/papers.json'` — data fused to component, not passed as input
+  - Multiple nearly-identical components differing only in label text, field names, or one conditional — should be one component parameterized by config or props
+  - Hardcoded data values inside rendering code: `<div class="paper-card">Paper Title Here</div>` instead of `<PaperCard paper={...} />`
+  - Functions taking no parameters that return hardcoded or single-source values — the call site couldn't vary the input
+  - Feature-specific imports in core/general modules: a `renderer.ts` importing `papers.config.ts` directly instead of accepting a generic config interface
+  - `git log --stat` showing feature additions that modify core files more than they add new leaf files
+  - Feature directories that are flat copies of each other: `papers/` and `preprints/` with near-identical file trees and logic
+  - Config or schema definitions that enumerate specific instances by name instead of defining a type and listing instances as data: `papers: { paper1: ..., paper2: ... }` vs `papers: Paper[]`
   Equally bad are failed attempts at generalization: unopinionated vague schemas attempting to capture ALL instances (god-object accretion, braindead pursuit of "good design" guidelines that weakens contracts and schema checking), complex inheritance chains, highly non-modular constructions, and broken walls of abstractions where modular core pieces are informed by leaf implementations instead of defining general composable tools.
   The correct approach follows Unix philosophy: most pieces do one thing well and compose well; most customization is composition, configuration, and trivial extensions.
 
@@ -148,6 +157,25 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   Red flags for weak schemas: optional types everywhere, functions with optional arguments, schemas that don't confidently assert exact data shapes, fail-open logic, "peeking" logic that softly checks for key existence before acting.
   All data in bespoke software is fully known and controlled — every data boundary should be a strict schema asserting specific valid shapes and routing them accordingly.
   Another signal: code that clearly does not understand the data well enough to be opinionated about it. The agent bashed its head against a wall trying to process data it never actually looked at, using probe techniques instead of dumping the data or its schema and enumerating all possibilities with their exact shapes.
+  Observable tells — what to grep for or recognize in code:
+  - Multiple files with the same entity prefix and different suffixes: `papers.json`, `papers-arxiv.json`, `papers-doi.json`
+  - Functions named `combine*`, `merge*`, `aggregate*` that stitch data from multiple sources into one shape at runtime
+  - Index lookups by slug/id in template code: `getArxivLink(paper.slug)` where a `paper.arxivLink` dereference would suffice
+  - Object spread or key intersection across multiple source files with the same repeated slug/id keys
+  - Optional fields on every property of a type definition: `interface Paper { doi?: string; arxivId?: string; publishedDate?: string; ... }` with no discriminant
+  - `if ('field' in obj)` or `obj.hasOwnProperty('field')` or `obj?.field !== undefined` checks in logic — peeking on key existence instead of dispatching on a known discriminant
+  - Conditionals that branch on which keys exist rather than on a `type`/`status`/`kind` tag: `if (paper.doi) { ... } else if (paper.arxivId) { ... }`
+  - `Partial<T>`, `Record<string, unknown>`, or `any` at data boundaries where the shape is known
+  - Functions with optional parameters that change control flow based on presence/absence of the argument
+  - `console.log(data)`, `JSON.stringify(data, null, 2)`, or `console.dir(data, {depth: null})` committed to source — the agent was poking at runtime
+  - `Object.keys(data)` or `Object.entries(data)` used to discover shape at runtime instead of importing a typed schema
+  - `typeof data.field === 'string'` runtime type guards at data boundaries where a compile-time interface would eliminate them
+  - `try { ... } catch { ... }` around data access instead of validation at the ingestion boundary
+  - Comments like `// data might have X`, `// sometimes Y is missing`, `// handle case where Z is null` — the agent is documenting its confusion about the shape
+  - Hardcoded data values inside component files: `<div class="paper-card">Paper Title Here</div>` instead of `<PaperCard paper={...} />`
+  - Multiple components that differ only in label text or one field — should be one component parameterized by a config or prop
+  - A component that directly imports a specific data file: `import papers from '../data/papers.json'` — the data is fused to the component, not passed as input
+  - Functions that take no parameters but return a hardcoded or single-source value — the call site couldn't vary the input even if it wanted to
 
 - **Myopic goal-seeking**: the code solves the immediate local complaint while making the system less coherent, less testable, less observable, or easier to lie about.
 
