@@ -132,7 +132,9 @@ install:
     # Backup existing skills directories before creating symlinks
     for dir in "{{ claude_home }}/skills" "{{ codex_home }}/skills" \
                "{{ agents_home }}/skills" "{{ qwen_home }}/skills" "{{ home }}/.config/agents/skills" \
-               "{{ amp_home }}/skills" "{{ kilocode_home }}/skills" "{{ qoder_home }}/skills"; do
+               "{{ amp_home }}/skills" "{{ kilocode_home }}/skills" "{{ qoder_home }}/skills" \
+               "{{ gemini_home }}/skills" "{{ gemini_home }}/antigravity-cli/skills" \
+               "{{ gemini_home }}/antigravity/skills"; do
         if [ -d "$dir" ] && [ ! -L "$dir" ]; then
             mv "$dir" "$dir.bak.$(date +%Y%m%d%H%M%S)"
         fi
@@ -145,6 +147,10 @@ install:
     ln -snf "{{ skills_dir }}" "{{ amp_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ kilocode_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ qoder_home }}/skills"
+    mkdir -p "{{ gemini_home }}/antigravity-cli"
+    ln -snf "{{ skills_dir }}" "{{ gemini_home }}/antigravity-cli/skills"
+    ln -snf "{{ skills_dir }}" "{{ gemini_home }}/skills"
+    ln -snf "{{ skills_dir }}" "{{ gemini_home }}/antigravity/skills"
 
     just --justfile {{ repo }}/justfile _update-shell-rc
 

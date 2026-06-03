@@ -68,3 +68,4 @@ The user’s response to your answer may change the intended action entirely.
 | “The fix is obvious, no need to pause” | The fix is never obvious to someone who just made the mistake |
 | “Reverting is the safe undo” | `git restore` and `git checkout` are destructive in noisy repos |
 | “I should fix it right now while I understand it” | Understanding is not authorization. Get the user’s sign-off. |
+| “I'll rename it so the label is honest” | The correction was about the artifact's **existence**, not its labeling. Renaming fraudulent code so it honestly describes its own fraudulence is **honest-label laundering**: consuming the critique while leaving the defect intact. See `anti-slop/references/code-patterns.md` → **Honest-Label Laundering**. |

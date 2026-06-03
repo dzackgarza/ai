@@ -124,6 +124,138 @@ test-ci:
   @just -f ~/ai/quality-control/justfile-bun test-ci
 ```
 
+## Extending for Repo-Specific Testing
+
+The global QC stack covers cross-project baselines: lint, typecheck, coverage,
+complexity, copy-paste, and slop detection.
+Individual projects must extend these with domain-specific testing that targets
+their unique correctness requirements and the failure modes LLMs systematically
+produce.
+
+### Mutation Testing
+
+Mutation testing verifies that tests actually catch defects by introducing
+controlled code mutations (flipping conditionals, swapping operators, deleting
+statements) and asserting the test suite fails on each mutant.
+A surviving mutant means tests are insufficient — the code might be buggy but
+the tests are too weak to notice.
+
+**Tools by language:**
+- Python: `mutmut`, `mutpy`
+- TypeScript/JavaScript: `stryker`
+- Rust: `cargo-mutants`
+- Java/Kotlin: `pitest`
+- Go: `go-mutesting`
+
+**Target:** Core logic modules — business rules, data transformations, public
+APIs. Do not waste mutations on trivial getters/setters or framework glue.
+
+### Property-Based Testing
+
+Property-based testing asserts invariants over random inputs instead of
+hard-coding examples.
+This catches edge cases, off-by-one errors, type-incorrect assumptions, and
+"works on my examples" reasoning — all common LLM failure modes.
+
+**Tools by language:**
+- Python: `hypothesis`, `crosshair` (symbolic/contract-based PBT)
+- TypeScript/JavaScript: `fast-check`
+- Rust: `proptest`, `quickcheck`
+- Java/Kotlin: `jqwik`, `quickcheck`
+- Go: `gopter`, `rapid`
+- C++: `RapidCheck`
+
+**Target:** Parsing, serialization, indexing, boundary computations, and any
+function processing unbounded or untrusted input.
+
+**Adversarial seeding:** Seed generators with values known to trigger LLM slop
+— empty collections, sentinel values, mixed encodings, deeply nested
+structures, extreme numeric ranges, overlapping intervals.
+
+### Adversarial Design Against LLM Failure Modes
+
+Tests must be explicitly designed to detect what LLMs systematically get wrong.
+The following modalities are hard to game without actual correctness:
+
+- **Gaming modalities:** LLMs learn to produce synthetic success signals — tests
+  that pass trivially, coverage that exercises only happy paths, assertions
+  that check tautologies. Mutation testing and property-based testing are the
+  primary countermeasures because they cannot be satisfied by mimicking test
+  structure.
+- **Slop patterns:** Redundant assertions, tautological checks (e.g., `assert x
+  is not None` without asserting actual values), testing only constructors or
+  trivial getters, mocking external dependencies to avoid real integration
+  testing, bypass comments (`# pragma: no cover`, `# type: ignore`).
+- **Failure modes:** Off-by-one errors, swapped arguments, silent truncation,
+  broken error handling (`except: pass`), assumptions about input shape,
+  mixing mutability and immutability, ignoring return values.
+
+### Structural Validation and Contract Enforcement
+
+Projects must enforce data contracts at every boundary — API ingress, storage
+serialization, inter-service communication, and configuration loading.
+LLMs systematically produce type-incorrect or shape-incorrect data handling;
+structural validation catches these at runtime or compile time without brittle
+regex heuristics.
+
+**Python:**
+- `pydantic` — runtime data validation with type coercion, JSON schema export,
+  and strict mode. Enforced via mypy's pydantic plugin.
+- `msgspec` — fast serialization with schema enforcement.
+- `dataclasses` with `@dataclass(slots=True, frozen=True)` — structural
+  invariants where pydantic is overkill.
+
+**TypeScript/JavaScript:**
+- `zod`, `io-ts`, `valibot` — runtime schema validation at API and storage
+  boundaries.
+- TypeScript interfaces and types with `strict: true` in tsconfig — compile-time
+  structural enforcement.
+
+**Rust:**
+- `serde` with `#[derive(Deserialize, Serialize)]` — compile-time contract
+  enforcement for serialization boundaries.
+
+**Go:**
+- Struct tags with `go-playground/validator` — runtime boundary enforcement.
+
+**Integration:**
+QC does not enforce specific libraries via fragile grep patterns. Instead,
+projects add targeted recipes that use the actual tooling:
+
+- `_validate-models` — runs pydantic or zod validation on known model files
+- `_schema-roundtrip` — property tests asserting serialize → deserialize →
+  identity for all boundary types
+- `_strict-compile` — tsc or mypy with strictest-available config
+
+### How to Extend
+
+Project justfiles must NOT modify the global QC recipes.
+Instead, wrap the global `test` and add project-specific steps:
+
+```justfile
+# my-project/justfile
+test:
+  @just -f ~/ai/quality-control/justfile test
+  @just _mutation-test
+  @just _property-test
+  @just _validate-models
+
+_mutation-test:
+  uv run mutmut run --paths-to-mutate src/my_project/
+
+_property-test:
+  uv run pytest tests/property/ -x -q
+
+_validate-models:
+  uv run python -m pydantic src/my_project/models/
+
+test-ci: test
+  @just -f ~/ai/quality-control/justfile test-ci
+```
+
+This preserves "delegate, never reimplement" while letting projects layer on
+the adversarial depth their domain requires.
+
 ## Hooks
 
 Pre-commit and pre-push hooks block on `just test`. Copy/symlink into `.git/hooks/`:

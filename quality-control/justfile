@@ -538,6 +538,14 @@ _slop-scan:
 	fi
 	npx -y slop-scan scan --lint .
 
+_vibecheck:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: vibecheck anti-slop pattern detection ==="
+	echo "# Runs qinnovates/vibecheck-slop-stopper via uvx against the project root"
+	uvx --from git+https://github.com/qinnovates/vibecheck-slop-stopper vibecheck . --severity high
+
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -568,7 +576,7 @@ _slop:
 	done
 
 # public: all static checks run locally
-test: _python-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _slop-scan
+test: _python-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _slop-scan _vibecheck
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

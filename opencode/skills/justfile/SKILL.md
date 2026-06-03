@@ -7,6 +7,23 @@ description: Use when working with just command runner, defining recipes, or man
 
 ## Interface Design — What Belongs in a Justfile
 
+### The universal convention: all workflows through just
+
+`just` is the project-management API for every repository on this system. A user should be
+able to clone any project, run `just`, and see the same set of familiar recipes —
+regardless of language, framework, or build tooling. `just run` always starts the app.
+`just test` always runs the test suite. `just build` always produces the artifact.
+
+There are no exceptions. A Rust project does not route `cargo run` directly as the user
+interface. A Node project does not expose `npm run dev` as the canonical entry point.
+These are underlying implementations. The user never needs to know them. They run `just
+run`. The justfile calls `cargo` or `npm` internally.
+
+Routing workflows directly through language-specific build tools — `cargo run`, `npm run
+build`, `python -m pytest`, `make` — spreads sources of truth across disparate tooling and
+forces the user to do archaeology before interacting with the project. The justfile
+centralizes the project interface into one place, one command.
+
 ### The recipe list is the project's architecture
 
 Every recipe in `just --list` communicates to every future reader: **"this is a distinct, independently useful operation."** If a recipe is not independently useful, exposing it is architectural debt — it pollutes the surface, signals wrong ownership, and normalizes accretion by one-shot prompts.

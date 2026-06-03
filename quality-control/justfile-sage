@@ -171,6 +171,7 @@ test: _sage-syntax _vulture
 	just -f {{std}} _diff-cover
 	just -f {{std}} _slop
 	just -f {{std}} _slop-scan
+	just -f {{std}} _vibecheck
 	echo "Sage QC checks completed"
 
 test-ci: test
