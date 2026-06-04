@@ -1,83 +1,70 @@
 ---
 name: ocr-and-documents
-description: "Extract text from PDFs/scans (pymupdf, marker-pdf)."
-version: 2.3.0
+description: "Extract text from PDFs/scans — redirects to Mistral OCR, not pymupdf."
+version: 3.0.0
 author: Hermes Agent
 license: MIT
 metadata:
   hermes:
     tags: [PDF, Documents, Research, Arxiv, Text-Extraction, OCR]
-    related_skills: [powerpoint]
+    related_skills: [reading-pdfs, powerpoint]
 ---
+
 # PDF & Document Extraction
 
-For DOCX: use `python-docx` (parses actual document structure, far better than OCR). For
-PPTX: see the `powerpoint` skill (uses `python-pptx` with full slide/notes support).
-This skill covers **PDFs and scanned documents**.
+**The entire point of this skill is to redirect agents away from low-quality PDF
+extraction tools (pymupdf, marker-pdf, docling, pymupdf4llm) and toward high-quality
+solutions.**
 
-## Step 1: Remote URL Available?
-
-If the document has a URL, **always try `web_extract` first**:
-
-```
-web_extract(urls=["https://arxiv.org/pdf/2402.03300"])
-web_extract(urls=["https://example.com/report.pdf"])
-```
-
-This handles PDF-to-markdown conversion via Firecrawl with no local dependencies.
-
-Only use local extraction when: the file is local, web_extract fails, or you need batch
-processing.
-
-## Step 2: Choose Local Extractor
-
-| Feature | pymupdf (~25MB) | marker-pdf (~3-5GB) |
-| --- | --- | --- |
-| **Text-based PDF** | ✅ | ✅ |
-| **Scanned PDF (OCR)** | ❌ | ✅ (90+ languages) |
-| **Tables** | ✅ (basic) | ✅ (high accuracy) |
-| **Equations / LaTeX** | ❌ | ✅ |
-| **Code blocks** | ❌ | ✅ |
-| **Forms** | ❌ | ✅ |
-| **Headers/footers removal** | ❌ | ✅ |
-| **Reading order detection** | ❌ | ✅ |
-| **Images extraction** | ✅ (embedded) | ✅ (with context) |
-| **Images → text (OCR)** | ❌ | ✅ |
-| **EPUB** | ✅ | ✅ |
-| **Markdown output** | ✅ (via pymupdf4llm) | ✅ (native, higher quality) |
-| **Install size** | ~25MB | ~3-5GB (PyTorch + models) |
-| **Speed** | Instant | ~1-14s/page (CPU), ~0.2s/page (GPU) |
-
-**Decision**: Use pymupdf unless you need OCR, equations, forms, or complex layout
-analysis.
-
-If the user needs marker capabilities but the system lacks ~5GB free disk:
-> "This document needs OCR/advanced extraction (marker-pdf), which requires ~5GB for
-> PyTorch and models. Your system has [X]GB free.
-> Options: free up space, provide a URL so I can use web_extract, or I can try pymupdf
-> which works for text-based PDFs but not scanned documents or equations."
+**Do not** reach for pymupdf, marker-pdf, or any ad-hoc PDF library unless explicitly
+directed to. These produce poor results on complex documents, equations, tables, and
+scanned pages. The system has better options.
 
 * * *
 
-## pymupdf (lightweight)
+## Tool Selection (in order of preference)
 
-Run via `uvx` — no local install needed:
+| Priority | Tool | When to use |
+| --- | --- | --- |
+| **1** | **Mistral OCR** (via `reading-pdfs` skill) | **Default** for any PDF — API-based, handles tables, math, scanned docs, multi-column. Check `reading-pdfs` skill. |
+| **2** | **Managed recipes** (`~/pdf-extraction` justfile) | When Mistral API is unavailable. Uses Docling / MinerU with managed environments. |
+| **3** | **pymupdf** | **Only** for trivial text-only PDFs when neither Mistral API nor the extraction recipes work. Minimal quality. |
+| **4** | **marker-pdf** | **Do not use.** ~3-5GB install for results that are still worse than Mistral OCR. |
+
+* * *
+
+## Workflow
+
+### 1. Try Mistral OCR first
+
+Load the `reading-pdfs` skill and follow its extraction workflow. This uses the Mistral
+API with local caching under `~/pdfs/`.
 
 ```bash
-uvx pymupdf4llm --help
+# After loading the reading-pdfs skill, run the PEP 723 script:
+uv run scripts/extract_ocr.py document.pdf
 ```
 
-**Via helper script**:
+Mistral OCR handles: text, tables, equations, scanned documents, multi-column layouts,
+code blocks.
+
+### 2. Fallback: managed local extraction
+
+If Mistral OCR is unavailable (no API key, offline), use the recipes in
+`~/pdf-extraction`:
+
 ```bash
-uv run python scripts/extract_pymupdf.py document.pdf              # Plain text
-uv run python scripts/extract_pymupdf.py document.pdf --markdown   # Markdown
-uv run python scripts/extract_pymupdf.py document.pdf --tables     # Tables
-uv run python scripts/extract_pymupdf.py document.pdf --images out/  # Extract images
-uv run python scripts/extract_pymupdf.py document.pdf --metadata   # Title, author, pages
-uv run python scripts/extract_pymupdf.py document.pdf --pages 0-4   # Specific pages
+just -f ~/pdf-extraction/justfile -d ~/pdf-extraction docling document.pdf
+just -f ~/pdf-extraction/justfile -d ~/pdf-extraction mineru document.pdf
 ```
 
-**Inline (uses uvx with pymupdf for one-shot invocation)**:
+These manage their own environments via `uv sync`. Do not create a separate venv or
+install dependencies manually.
+
+### 3. Last resort: pymupdf (text-only PDFs only)
+
+For simple text-based PDFs when neither API nor recipes are available:
+
 ```bash
 uvx --from pymupdf python3 -c "
 import pymupdf
@@ -87,98 +74,30 @@ for page in doc:
 "
 ```
 
-* * *
-
-## marker-pdf (high-quality OCR)
-
-```bash
-# Check disk space first
-uv run python scripts/extract_marker.py --check
-```
-
-**Via helper script**:
-```bash
-uv run python scripts/extract_marker.py document.pdf                # Markdown
-uv run python scripts/extract_marker.py document.pdf --json         # JSON with metadata
-uv run python scripts/extract_marker.py document.pdf --output_dir out/  # Save images
-uv run python scripts/extract_marker.py scanned.pdf                 # Scanned PDF (OCR)
-uv run python scripts/extract_marker.py document.pdf --use_llm      # LLM-boosted accuracy
-```
-
-**CLI**:
-```bash
-uvx marker_single document.pdf --output_dir ./output
-uvx marker /path/to/folder --workers 4    # Batch
-```
+pymupdf will **not** handle: scanned pages, equations, complex tables, reading order,
+headers/footers removal. If the document needs any of these, do not use pymupdf.
 
 * * *
 
-## Arxiv Papers
+## What to Avoid
 
-```
-# Abstract only (fast)
-web_extract(urls=["https://arxiv.org/abs/2402.03300"])
+- **pymupdf4llm** — installs pymupdf + pymupdf4llm but quality is still far below Mistral
+  OCR. Do not reach for it.
 
-# Full paper
-web_extract(urls=["https://arxiv.org/pdf/2402.03300"])
+- **marker-pdf** — downloads ~2.5GB of PyTorch models and still produces worse results
+  than Mistral OCR. Not worth the disk space or time.
 
-# Search
-web_search(query="arxiv GRPO reinforcement learning 2026")
-```
+- **Ad-hoc OCR scripts** — do not write your own tesseract/pytesseract pipeline or use
+  `pdf2image` + `pytesseract`. Delegate to the managed recipes or Mistral OCR.
 
-## Split, Merge & Search
-
-pymupdf handles these natively.
-The snippets below are excerpts showing the logic; to run them, use `uvx --from pymupdf python3 -c "..."` for one-liners or a PEP 723 script for reusable tools.
-
-```python
-# Excerpt: Split — extract pages 1-5 to a new PDF
-import pymupdf
-doc = pymupdf.open("report.pdf")
-new = pymupdf.open()
-for i in range(5):
-    new.insert_pdf(doc, from_page=i, to_page=i)
-new.save("pages_1-5.pdf")
-```
-
-```python
-# Excerpt: Merge multiple PDFs
-import pymupdf
-result = pymupdf.open()
-for path in ["a.pdf", "b.pdf", "c.pdf"]:
-    result.insert_pdf(pymupdf.open(path))
-result.save("merged.pdf")
-```
-
-```python
-# Excerpt: Search for text across all pages
-import pymupdf
-doc = pymupdf.open("report.pdf")
-for i, page in enumerate(doc):
-    results = page.search_for("revenue")
-    if results:
-        print(f"Page {i+1}: {len(results)} match(es)")
-        print(page.get_text("text"))
-```
-
-No extra dependencies needed — pymupdf covers split, merge, search, and text extraction
-in one package.
+- **Docling standalone** — use through `~/pdf-extraction` justfile, not installed ad-hoc.
 
 * * *
 
-## Notes
+## Non-PDF Documents
 
-- `web_extract` is always first choice for URLs
-
-- pymupdf is the safe default — instant, no models, works everywhere
-
-- marker-pdf is for OCR, scanned docs, equations, complex layouts — install only when
-  needed
-
-- Both helper scripts accept `--help` for full usage
-
-- marker-pdf downloads ~2.5GB of models to `~/.cache/huggingface/` on first use
-
-- For Word docs: use a PEP 723 inline script with `python-docx` (better than OCR — parses actual structure). `uvx python-docx` will not work because `python-docx` is a library, not a CLI tool. Use `uv run --with python-docx python -c "..."` for one-liners or a PEP 723 script for anything reusable.
-
-- For PowerPoint: see the `powerpoint` skill (uses python-pptx)
+| Format | Tool | Notes |
+| --- | --- | --- |
+| DOCX | `python-docx` via PEP 723 script | Parses actual structure — far better than OCR |
+| PPTX | `python-pptx` via `powerpoint` skill | Full slide/notes support |
+| HTML | `web_extract` or `python-html2text` | Prefer URL extraction |
