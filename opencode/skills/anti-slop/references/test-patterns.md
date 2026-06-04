@@ -119,11 +119,24 @@ Watch for:
 The implementation must rise to meet the tests; tests must not be relaxed to accommodate
 the implementation.
 
-## Helper-Level Proof Substitution
+## Helper-Level Proof Substitution (Helper-Branch Proof Laundering)
 
 Replacing a global or boundary-crossing contract with a local helper unit proof that is easy to satisfy.
 
 The agent tests a small helper function in isolation (proving only that the helper's internal logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering: the helper test passes, but the actual entrypoint remains unverified. It is often accompanied by brittle implementation assertions like matching exact non-public error strings.
+
+### Red Flags in Helper Tests
+
+1. **Helper-local proof after boundary-level feedback:** Boundary feedback needs boundary proof. If the feedback is "startup config semantics are wrong," testing `require_or_default` is insufficient.
+2. **Defaults existing inside a required-value pathway:** A helper named something like `require_or_default` indicates a suspicious conflation of required config values and default fallbacks. If a config exists and the value is required, there should be no fallback value in scope. The presence of a fallback closure in the same helper that enforces required explicit values preserves a slop surface, making it easy to call with the wrong boolean and default a required value.
+3. **Boolean control flags to force branches:** Passing `true`/`false` flags (e.g., `require_or_default(None, true, ...)`) to simulate system state forces branches. The test does not construct the world where config exists or doesn't exist; it simply branches as desired. Ambient config discovery failures or path computation bugs will not be caught.
+4. **Test names overclaiming system states:** Names like `existing_config_requires_explicit_values` or `absent_config_uses_defaults` are misleading if the body only passes `None` plus a boolean. The names claim product/system semantics; the bodies only prove helper semantics.
+5. **Exact assertion on a string passed directly into the function under test:** Asserting that the function returned the exact string that the test itself passed to it is tautological. It proves plumbing, not behavior.
+6. **Unused fallback closures in required-value paths:** If a test claims a fallback must not be used, passing a real fallback value is a weak check. A sentinel fallback that panics when evaluated (e.g., `|| panic!("must not be evaluated")`) is stronger, but boundary-level proof is still required.
+7. **Prose encoded inside arguments:** The phrase `"must not be used"` passed as an argument to stand in for logic validation is a sign that the agent is checking its own local abstraction rather than product behavior.
+8. **No real fixture representing the artifact:** A config contract should use actual TOML fixtures or temp config files. A filesystem boundary should use temp directories/files.
+9. **No test for the successful explicit case:** Proving rejection of invalid input is not enough; there must be a complete config proving explicit values are accepted and used.
+10. **The test would still pass if the app never called the helper:** If the application path stopped using the helper entirely, the unit tests would still pass. This proves they do not protect the behavior users depend on.
 
 **Bad:**
 
@@ -141,13 +154,37 @@ fn test_require_or_default() {
 
 **Better:**
 
-Exercise the real boundary:
+Exercise the real boundary (e.g. config loading and parsing) using a temp directory/file and structured errors:
 
 ```rust
 #[test]
-fn test_startup_fails_on_missing_required_render_command() {
-    let temp_config = create_temp_config("pandoc = {}"); // missing required render_command
-    let result = build_initial_state_from_config_path(Some(&temp_config));
-    assert!(result.is_err());
+fn absent_config_uses_builtin_defaults() {
+    let temp = tempdir();
+    let state = build_initial_state_from_config_path(None, temp.path()).unwrap();
+
+    assert_eq!(state.render_command, DEFAULT_RENDER_COMMAND);
+    assert_eq!(state.timeout_ms, 750);
+}
+
+#[test]
+fn existing_config_missing_render_command_fails_loudly() {
+    let temp = tempdir();
+    let config = temp.path().join("pandoc-preview.toml");
+    fs::write(&config, r#"
+        [render]
+        debounce_ms = 750
+
+        [pandoc]
+        templates_dir = "templates"
+        filters_dir = "filters"
+    "#).unwrap();
+
+    let error = build_initial_state_from_config_path(Some(&config), temp.path())
+        .unwrap_err();
+
+    assert!(matches!(
+        error,
+        ConfigError::MissingRequired { key } if key == "pandoc.render_command"
+    ));
 }
 ```

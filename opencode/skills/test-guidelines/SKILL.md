@@ -658,6 +658,25 @@ Invalid deletion:
 
 A deleted fake proof must be paired with proof replacement, proof invalidation, or explicit proof debt.
 
+## Helper-Branch Proof Laundering
+
+When review feedback concerns a product boundary, agents often extract a tiny helper and
+test that helper’s branches instead of testing the original boundary.
+
+Red flags:
+- test name describes system state, but body passes a boolean flag (branch-forcing);
+- exact string asserted was supplied by the test itself (tautological plumbing validation);
+- fallback value/closure remains in a required-value path (defaults in required-value code are suspect — a default is valid only in the absent-config regime. Once a user config exists, missing required values should fail through the real config-loading boundary, not through a helper branch selected by a boolean in a unit test);
+- no fixture or real boundary artifact appears;
+- test would pass even if the application stopped calling the helper;
+- the helper did not exist before the review.
+
+Correct response:
+- reconstruct the original proof burden;
+- test the source-of-truth boundary;
+- keep helper tests only as supplementary unit coverage;
+- do not accept helper coverage as resolution of boundary feedback.
+
 * * *
 
 ## Verification Rigor
