@@ -607,7 +607,7 @@ Constrain scope (what to include) not length.
 Install SciencePlots for publication-ready defaults:
 
 ```bash
-pip install SciencePlots matplotlib numpy
+uv add SciencePlots matplotlib numpy
 ```
 
 **Option A: SciencePlots styles** (recommended — handles most defaults automatically):

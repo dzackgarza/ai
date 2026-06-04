@@ -209,3 +209,5 @@ Load alongside:
   checked.
 - `reality-grounded-debugging` for local integration inspection after the public
   contract is established.
+- `tool-provisioning-and-environment-hygiene` for provisioning rules when a known
+  solution requires installation (ephemeral vs project-managed vs persistent-isolated).
