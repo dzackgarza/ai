@@ -206,7 +206,7 @@ When a review response adds tests, classify every assertion:
 - **Policing assertion**: checks source shape, review compliance, helper branch, existence, visibility, exact string, or absence of a banned token.
 - **Setup assertion**: only prepares the test and must not be cited as proof.
 
-Review feedback is not resolved by policing or setup assertions. Consult the central [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md) to ensure all added assertions are proof-bearing.
+Review feedback is not resolved by policing or setup assertions. Consult the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md) to ensure all added assertions are proof-bearing.
 
 ### Response Examples
 

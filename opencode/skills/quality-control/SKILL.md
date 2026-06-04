@@ -443,7 +443,7 @@ Project tests own behavior proof:
 - structured errors checked;
 - independent oracles used.
 
-Do not scatter policy-policing tests into projects. For the catalog of assertion constraints, see the central [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md).
+Do not scatter policy-policing tests into projects. For the catalog of assertion constraints, see the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md).
 
 ## Key Principle
 

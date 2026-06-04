@@ -122,7 +122,7 @@ Valid:
 - move code-shape enforcement to global QC;
 - record unresolved proof debt.
 
-Consult the central [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md) for the inventory of banned and preferred assertion patterns.
+Consult the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md) for the inventory of banned and preferred assertion patterns.
 
 ## The Golden Rule
 

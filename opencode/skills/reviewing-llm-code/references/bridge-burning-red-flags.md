@@ -469,7 +469,7 @@ For every such assertion, require one of:
 2. move to global QC if it is code-shape policing;
 3. record the proof burden as unresolved.
 
-For the canonical inventory of these banned patterns and their allowed replacements, see the [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md).
+For the canonical inventory of these banned patterns and their allowed replacements, see the [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md).
 
 ---
 

@@ -412,7 +412,23 @@ Global QC enforces code-shape policy.
 Issues record unresolved proof burdens.
 Nothing else belongs in the test suite.
 
-For the canonical inventory of banned assertion patterns and their allowed replacements, see the [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md).
+For the canonical catalog of banned test shapes and their allowed replacements, see the [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md).
+
+## Try/Catch Ban
+
+Do not write try/catch/except/rescue blocks in tests or owned runtime code.
+
+Banned:
+- Python `try/except`
+- JavaScript/TypeScript `try/catch`
+- Ruby `begin/rescue`
+- shell `cmd || fallback`, `set +e` around normal execution, or fallback branches
+- Rust `let _ =`, `.ok()`, `unwrap_or`, `unwrap_or_else`, `match Err(_) => fallback`
+
+Expected failures must be asserted by structured test-framework mechanisms or structured error values. Unexpected failures must propagate.
+
+The only possible exception is an explicitly approved boundary renderer whose sole job is to translate a structured internal error into a user-facing protocol. That boundary must not continue execution, must not default, and must not return partial success.
+
 
 ## Line Admission Gate
 

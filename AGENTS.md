@@ -90,7 +90,7 @@ Before writing, reviewing, or fixing code/tests/QC, load:
 - `anti-slop` for bridge-burning policies and anti-laundering doctrine.
 - `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
 - `test-guidelines` for proof/test obligations.
-- `test-guidelines/references/proof-only-assertions.md` for banned test assertion patterns.
+- `test-guidelines/references/banned-test-shapes.md` for banned test assertion patterns.
 - `fixing-slop` when an artifact is being renamed, deleted, quarantined, or “made honest.”
 - `pr-feedback-triage` when acting on review comments or automated review feedback.
 
