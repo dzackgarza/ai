@@ -126,6 +126,10 @@ Load the relevant section for your context:
 - **anti-slop** → Load alongside when the failure mode produces surface-level quality
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
+  All implementation work influenced by this skill is subject to the
+  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)
+  in `anti-slop/SKILL.md` as non-negotiable hard constraints — no runtime defaults,
+  fallbacks, mocks, or optional critical dependencies.
 
 - **reviewing-llm-code pattern catalog** →
   [../reviewing-llm-code/references/pattern-catalog.md](../reviewing-llm-code/references/pattern-catalog.md)

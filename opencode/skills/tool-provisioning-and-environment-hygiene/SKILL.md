@@ -25,6 +25,9 @@ documents it.
 
 ## Prohibitions
 
+> [!IMPORTANT]
+> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+
 - Never use `pip install --break-system-packages`.
 - Never install into system Python.
 - Never use `pipx`.

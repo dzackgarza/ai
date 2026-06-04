@@ -4,6 +4,9 @@ description: Use when editing JSON or YAML config files — covers safe read/mod
 ---
 # Config File Editing
 
+> [!IMPORTANT]
+> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+
 ## Core Rule
 
 **Never edit JSON or YAML directly with text patch tools.** Direct edits introduce

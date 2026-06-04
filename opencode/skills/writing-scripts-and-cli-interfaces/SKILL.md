@@ -71,6 +71,9 @@ chmod +x my_script.py
 
 ## Mandatory Requirements
 
+> [!IMPORTANT]
+> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+
 Every CLI must have:
 
 1. **Well-typed interfaces** — all arguments typed, no implicit Any
@@ -79,7 +82,7 @@ Every CLI must have:
 
 3. **Progressive disclosure** — flat CLIs banned after trivial size; use subcommands
 
-4. **Documented defaults** — every default value explained
+4. **Documented defaults** — every default value explained in config files and CLI help text (NOT runtime fallback defaults — those are prohibited by [Bridge-Burning Policy 1](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies))
 
 5. **Centralized config** — knobs/levers in YAML config files, not ad-hoc env vars
 

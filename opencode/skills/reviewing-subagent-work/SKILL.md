@@ -124,6 +124,11 @@ Apply `pr-feedback-triage`:
 - **anti-slop** → LOAD alongside when the subagent output shows generated-code residue:
   generic wrappers, no-op UI, debug debris, boilerplate, or local patches with no real
   abstraction. Provides the Dependency Inversion Rule and structural analysis frame.
+  Reviewing subagent work MUST check compliance with the
+  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)
+  in `anti-slop/SKILL.md` — these are non-negotiable hard constraints. Any subagent
+  output containing runtime defaults, fallbacks, mocks, or optional critical
+  dependencies MUST be rejected.
 
 - **llm-failure-modes** → LOAD alongside when you need to name the specific cognitive
   failure mode that produced the shallow work (goal substitution, overconfidence,
