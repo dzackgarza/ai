@@ -1,10 +1,10 @@
 ---
 name: jules-anti-slop-issue-review
-description: Use when launching Jules as an asynchronous anti-slop review scout. Jules receives the full anti-slop/reviewing-LLM-code curriculum and opens a GitHub issue with candidate findings. Do not use this workflow for immediate fixing, PR thread resolution, or implementation.
+description: Use when launching Jules as an asynchronous anti-slop review scout. Jules receives the full anti-slop/reviewing-LLM-code curriculum and opens a Linear issue with candidate findings. Do not use this workflow for immediate fixing, PR thread resolution, or implementation.
 ---
 # Jules Anti-Slop Issue Review
 
-Jules is not trusted to complete complex work independently. Use Jules as an asynchronous review scout: prime it with the full anti-slop curriculum, ask it to inspect a PR/branch/diff thoroughly, and require it to open a GitHub issue containing candidate findings.
+Jules is not trusted to complete complex work independently. Use Jules as an asynchronous review scout: prime it with the full anti-slop curriculum, ask it to inspect a PR/branch/diff thoroughly, and require it to open a Linear issue containing candidate findings.
 
 The Jules issue is not an implementation instruction. It is a durable review artifact for later human/agent triage.
 
@@ -31,7 +31,7 @@ Do not keep the controller session blocked waiting to fix findings. Do not immed
 
 3. **Launch Jules asynchronously**.
 
-4. **Jules performs the review and opens a GitHub issue**.
+4. **Jules performs the review and creates a Linear issue via the Linear MCP tool** (which automatically syncs to GitHub in the background).
 
 5. **The controller records the Jules session/issue link and stops**.
 
@@ -59,7 +59,7 @@ The prompt must heavily constrain Jules:
 ```markdown
 You are Jules. You are not implementing code in this task.
 
-You are performing an anti-slop review of LLM-produced work. Your only deliverable is a GitHub issue with candidate anti-slop findings.
+You are performing an anti-slop review of LLM-produced work. Your only deliverable is a Linear issue with candidate anti-slop findings, created via the Linear MCP tool.
 
 Do not open a PR.
 Do not edit files.
@@ -67,6 +67,7 @@ Do not fix findings.
 Do not resolve review threads.
 Do not approve or reject the target PR.
 Do not perform a generic code review.
+You must use the Linear MCP tool to create the issue. Do not attempt to use the GitHub API or CLI to create the issue directly.
 
 You must use the supplied anti-slop curriculum. A finding is valid only if it maps to one of the supplied patterns and is supported by exact code evidence.
 ```
@@ -86,6 +87,16 @@ Curriculum:
 ```
 
 The review curriculum should be fully pasted/embedded into the prompt since Jules cannot be trusted to discover or apply it from memory.
+
+## Issue-Opening Mechanics
+
+The subskill prefers issue creation, not PR creation. Both Jules and the controller have access to the Linear MCP server. Issues must be created using the Linear MCP tools, which will automatically sync to GitHub via background integration.
+
+Recommended controller/Jules command shape to invoke Jules:
+
+```bash
+cat .jules/anti-slop-review-prompt.md | jules new --repo owner/repo
+```
 
 ## Issue Body Format
 

@@ -418,8 +418,7 @@ uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolve
 
 For the full end-to-end workflow using `improved-jules-cli`:
 
-1. **Create Issue** — Use `git-guidelines` skill.
-   Ensure clear title, specific outcomes, and context files referenced.
+1. **Create Issue** — Use the Linear MCP server to create the issue (which automatically syncs to GitHub). Ensure a clear title, specific outcomes, and context files referenced.
 
 2. **Launch**:
    ```bash
