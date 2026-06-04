@@ -235,20 +235,24 @@ def generate_citation_key(bibtex: str) -> str:
 
 {% raw %}
 ```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "requests>=2.32",
+#   "semanticscholar>=0.8",
+# ]
+# ///
+
 """
 Citation Manager - Verified citation workflow for ML papers.
 """
 
 import requests
 import time
-from typing import Optional, List, Dict, Tuple
+from typing import Optional
 from dataclasses import dataclass
-
-try:
-    from semanticscholar import SemanticScholar
-except ImportError:
-    print("Install: pip install semanticscholar")
-    SemanticScholar = None
+from semanticscholar import SemanticScholar
 
 @dataclass
 class Paper:
@@ -265,7 +269,7 @@ class CitationManager:
     """Manage citations with verification."""
 
     def __init__(self, api_key: Optional[str] = None):
-        self.sch = SemanticScholar(api_key=api_key) if SemanticScholar else None
+        self.sch = SemanticScholar(api_key=api_key)
         self.verified_papers: Dict[str, Paper] = {}
 
     def search(self, query: str, limit: int = 10) -> List[Paper]:

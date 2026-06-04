@@ -15,32 +15,52 @@ source of truth.
 
 ## Standalone Python Scripts
 
-When writing standalone Python scripts that require external dependencies (i.e. not part
-of a larger package with a `pyproject.toml`), **always** use `uv`’s inline script
-metadata to define dependencies, and run them with `uv run`. This allows for zero-setup
-execution with isolated, automatically managed virtual environments.
+### Mandatory Policy
 
-Add a `# /// script` block at the very top of the file:
+Any Python script created by an agent that imports non-stdlib packages must be
+self-contained with PEP 723 inline script metadata and run through `uv`. No separate
+install step. No implicit environment assumption. No `pip install` prelude.
+See `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts
+with uv" for the full hierarchy and forbidden pathways.
+
+### Canonical Template
+
+Add a `# /// script` block at the very top of the file. For executable scripts, add the
+shebang line before the metadata block:
 
 ```python
+#!/usr/bin/env -S uv run --script
 # /// script
+# requires-python = ">=3.12"
 # dependencies = [
-#   "httpx",
-#   "loguru",
-#   "pydantic>=2.0.0"
+#   "httpx>=0.28",
+#   "rich>=13",
 # ]
 # ///
 
 from __future__ import annotations
+
 import httpx
-from loguru import logger
-...
+from rich.pretty import pprint
+
+response = httpx.get("https://example.com")
+response.raise_for_status()
+pprint(response.text[:200])
 ```
 
-Then execute via:
+### Execution
+
+Run as either:
 
 ```bash
 uv run my_script.py
+```
+
+or, if the shebang is present and the file is executable:
+
+```bash
+chmod +x my_script.py
+./my_script.py
 ```
 
 ## Mandatory Requirements

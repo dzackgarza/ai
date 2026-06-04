@@ -58,17 +58,93 @@ bounded permission: the user explicitly asked to perform this action, these are 
 allowed target paths, and this does not authorize general home-directory inspection or
 global tool installation.
 
-## Cross-References
+## Self-Contained Python Scripts with uv
 
-Required when any skill provides tool-installation instructions:
+### Core Rule
 
-- `known-solution-first` — external-tool uncertainty must start with public contracts,
+Any Python script created by an agent that imports non-stdlib packages must be
+self-contained with PEP 723 inline script metadata and run through `uv`. No separate
+install step. No implicit environment assumption. No `pip install` prelude.
+
+### Canonical Template
+
+```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "httpx>=0.28",
+#   "rich>=13",
+# ]
+# ///
+
+import httpx
+from rich.pretty import pprint
+
+response = httpx.get("https://example.com")
+response.raise_for_status()
+pprint(response.text[:200])
+```
+
+Run as either:
+
+```bash
+uv run script.py
+```
+
+or, if executable:
+
+```bash
+chmod +x script.py
+./script.py
+```
+
+### Accepted Hierarchy
+
+| Scenario | Mechanism |
+| --- | --- |
+| Python CLI tool | `uvx tool ...` |
+| Python CLI where package name differs from command | `uvx --from package command ...` |
+| One-shot Python snippet with dependencies | `uv run --with package python - <<'PY' ... PY` |
+| Python script written to disk | PEP 723 inline metadata + `uv run` |
+| Executable Python script | `#!/usr/bin/env -S uv run --script` + PEP 723 inline metadata |
+| Existing uv project | `uv sync` + `uv run ...`; `uv add` only for repo-owned dependencies |
+
+`uv run --with ... script.py` is acceptable for a transient one-shot command written and
+discarded in a single session. But if the script is written to disk, checked in, handed
+to another agent, documented in a skill, or reused as a recipe, dependencies belong in
+the script metadata. `uv run --with` must not become a hidden install surrogate
+scattered across docs.
+
+### Forbidden Pathways
+
+```
+No pip install.
+No python -m pip install.
+No pipx.
+No ad hoc venv.
+No "install these requirements first" script prelude.
+No assuming the current interpreter has the imports.
+No checking what is installed and adapting downward.
+```
+
+### Hard Review Rule
+
+Reject any agent-authored Python script that imports third-party packages but lacks
+PEP 723 / uv inline script metadata, unless it is inside an existing uv-managed project
+and intentionally uses that project environment.
+
+This must be checked in every review pass — code review, PR review, gate review, or
+spot-check of any agent-produced artifact.
+
+### Related Skills
+
+- `known-solution-first` — external-tool uncertainty: start with public contracts,
   docs, and known solutions before CLI probing or local artifact inspection.
 
 - `reality-grounded-debugging` — command-output discipline, stderr preservation,
   surface-classification matrix.
 
-- `python-patterns` — uv-only, `uv run` metadata blocks for standalone scripts.
+- `python-patterns` — uv-only, PEP 723 inline metadata for standalone scripts.
 
-Load alongside any skill that provides `pip install`, `npm install`, or tool-install
-examples to check compliance.
+- `writing-scripts-and-cli-interfaces` — standalone script template, Cyclopts/Pydantic.

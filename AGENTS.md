@@ -75,6 +75,13 @@ If you don’t know what the data looks like, do not write code for it.
 **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing.
 Verify with `git diff` after.
 
+**Self-contained Python scripts (mandatory).**
+Any agent-authored Python script that imports third-party (non-stdlib) packages must
+declare dependencies as PEP 723 inline script metadata and run through `uv`. No
+separate install step. No implicit environment assumption. No `pip install` prelude.
+The full policy (hierarchy, forbidden pathways, canonical template, review rule) is in
+`tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts with uv".
+
 # Serena Symbolic Code Tools: MANDATORY for All Code Operations
 
 Serena provides a suite of LSP-powered symbolic code tools (`serena_*`).
@@ -747,7 +754,9 @@ Use `iwe --help` and `iwe <subcommand> --help` to discover the full set of comma
 
 - `jq` and `yq` for manipulating JSON and YAML
 
-- `uv` for all python-related projects
+- `uv` for all python-related projects. See `self-contained-python-scripts` under
+  `tool-provisioning-and-environment-hygiene` for the mandatory policy on agent-authored
+  Python scripts with dependencies.
 
 - `bun` and typescript for all JS-related development
 

@@ -1261,10 +1261,17 @@ Don’t assume packages are available:
 "Use the pdf library to process the file."
 
 **Good example: Explicit about dependencies**:
-"Install required package: `pip install pypdf`
+"Use uv's inline metadata to declare dependencies:
 
-Then use it:
 ```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "pypdf>=5",
+# ]
+# ///
+
 from pypdf import PdfReader
 reader = PdfReader("file.pdf")
 ```"

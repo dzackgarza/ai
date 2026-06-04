@@ -300,9 +300,19 @@ NLP tasks with subjective judgments (fluency, helpfulness) typically achieve 0.4
 ### Implementation
 
 ```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "numpy>=1.26",
+#   "scikit-learn>=1.5",
+#   "krippendorff>=0.7",
+# ]
+# ///
+
 import numpy as np
 from sklearn.metrics import cohen_kappa_score
-import krippendorff  # pip install krippendorff
+import krippendorff
 
 def compute_agreement(annotations_matrix):
     """

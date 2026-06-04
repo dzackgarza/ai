@@ -30,8 +30,10 @@ applications. Targets the **latest Python** — no backwards compatibility hedgi
    syntax
 
 5. **Always uv** — never pip, never pip-tools, never poetry.
-   Use `uv run` with `# /// script` metadata blocks for standalone scripts with external
-   dependencies.
+   Use PEP 723 inline script metadata for standalone scripts with external dependencies.
+   Run via `uv run script.py`. Executable scripts get `#!/usr/bin/env -S uv run --script`.
+   See `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts
+   with uv" for the full hierarchy, forbidden pathways, and review rule.
 
 6. **Always a venv** — managed by uv
 
@@ -708,6 +710,14 @@ except Exception:
 
 # Bad: pip install
 # pip install package  # use: uv add package
+
+# Bad: standalone script with pip prelude instead of inline metadata
+# pip install httpx
+# python script.py   # use: PEP 723 metadata + uv run script.py
+
+# Bad: requirements.txt for a standalone script
+# pip install -r requirements.txt && python script.py
+# use: inline dependencies block
 
 # Bad: Config in setup.cfg, tox.ini, .pylintrc, etc.
 # All config belongs in pyproject.toml
