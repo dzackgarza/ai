@@ -173,7 +173,7 @@ Projects also need recipes that serve agents, not users or developers: QC guardr
 
 This is documented in the `Project Structure: User vs. Agent` section of `AGENTS.md`.
 
-Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on pip install), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See `reality-grounded-debugging` for command-output discipline and surface-upgrade requirements.
+Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on `uv sync`), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See `reality-grounded-debugging` for command-output discipline and surface-upgrade requirements.
 
 ### Large justfiles are a smell
 
@@ -396,12 +396,9 @@ install:
 clean:
   rm -rf {{config_dir}}
 
-# ✅ Use dependency recipes + direct binary paths
-venv:
-  [ -d .venv ] || python3 -m venv .venv
-
-run: venv
-  .venv/bin/python3 main.py
+# ✅ Use dependency recipes + uv direct execution
+run:
+  uv run main.py
 ```
 
 * * *
