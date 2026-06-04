@@ -52,32 +52,34 @@ processing.
 analysis.
 
 If the user needs marker capabilities but the system lacks ~5GB free disk:
-> “This document needs OCR/advanced extraction (marker-pdf), which requires ~5GB for
+> "This document needs OCR/advanced extraction (marker-pdf), which requires ~5GB for
 > PyTorch and models. Your system has [X]GB free.
 > Options: free up space, provide a URL so I can use web_extract, or I can try pymupdf
-> which works for text-based PDFs but not scanned documents or equations.”
+> which works for text-based PDFs but not scanned documents or equations."
 
 * * *
 
 ## pymupdf (lightweight)
 
+Declare as project dependencies when the helper scripts are used:
+
 ```bash
-pip install pymupdf pymupdf4llm
+uv add pymupdf pymupdf4llm
 ```
 
 **Via helper script**:
 ```bash
-python scripts/extract_pymupdf.py document.pdf              # Plain text
-python scripts/extract_pymupdf.py document.pdf --markdown    # Markdown
-python scripts/extract_pymupdf.py document.pdf --tables      # Tables
-python scripts/extract_pymupdf.py document.pdf --images out/ # Extract images
-python scripts/extract_pymupdf.py document.pdf --metadata    # Title, author, pages
-python scripts/extract_pymupdf.py document.pdf --pages 0-4   # Specific pages
+uv run python scripts/extract_pymupdf.py document.pdf              # Plain text
+uv run python scripts/extract_pymupdf.py document.pdf --markdown   # Markdown
+uv run python scripts/extract_pymupdf.py document.pdf --tables     # Tables
+uv run python scripts/extract_pymupdf.py document.pdf --images out/  # Extract images
+uv run python scripts/extract_pymupdf.py document.pdf --metadata   # Title, author, pages
+uv run python scripts/extract_pymupdf.py document.pdf --pages 0-4   # Specific pages
 ```
 
 **Inline**:
 ```bash
-python3 -c "
+uv run python3 -c "
 import pymupdf
 doc = pymupdf.open('document.pdf')
 for page in doc:
@@ -91,24 +93,24 @@ for page in doc:
 
 ```bash
 # Check disk space first
-python scripts/extract_marker.py --check
+uv run python scripts/extract_marker.py --check
 
-pip install marker-pdf
+uv add marker-pdf
 ```
 
 **Via helper script**:
 ```bash
-python scripts/extract_marker.py document.pdf                # Markdown
-python scripts/extract_marker.py document.pdf --json         # JSON with metadata
-python scripts/extract_marker.py document.pdf --output_dir out/  # Save images
-python scripts/extract_marker.py scanned.pdf                 # Scanned PDF (OCR)
-python scripts/extract_marker.py document.pdf --use_llm      # LLM-boosted accuracy
+uv run python scripts/extract_marker.py document.pdf                # Markdown
+uv run python scripts/extract_marker.py document.pdf --json         # JSON with metadata
+uv run python scripts/extract_marker.py document.pdf --output_dir out/  # Save images
+uv run python scripts/extract_marker.py scanned.pdf                 # Scanned PDF (OCR)
+uv run python scripts/extract_marker.py document.pdf --use_llm      # LLM-boosted accuracy
 ```
 
-**CLI** (installed with marker-pdf):
+**CLI**:
 ```bash
-marker_single document.pdf --output_dir ./output
-marker /path/to/folder --workers 4    # Batch
+uvx marker_single document.pdf --output_dir ./output
+uvx marker /path/to/folder --workers 4    # Batch
 ```
 
 * * *
@@ -178,6 +180,6 @@ in one package.
 
 - marker-pdf downloads ~2.5GB of models to `~/.cache/huggingface/` on first use
 
-- For Word docs: `pip install python-docx` (better than OCR — parses actual structure)
+- For Word docs: `uv add python-docx` (better than OCR — parses actual structure)
 
 - For PowerPoint: see the `powerpoint` skill (uses python-pptx)

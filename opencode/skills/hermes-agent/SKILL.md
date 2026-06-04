@@ -569,7 +569,7 @@ Voice messages from messaging platforms are auto-transcribed.
 
 Provider priority (auto-detected):
 
-1. **Local faster-whisper** — free, no API key: `pip install faster-whisper`
+1. **Local faster-whisper** — free, no API key: `uv add faster-whisper`
 
 2. **Groq Whisper** — free tier: set `GROQ_API_KEY`
 
@@ -595,7 +595,7 @@ stt:
 | OpenAI | `VOICE_TOOLS_OPENAI_KEY` | Paid |
 | MiniMax | `MINIMAX_API_KEY` | Paid |
 | Mistral (Voxtral) | `MISTRAL_API_KEY` | Paid |
-| NeuTTS (local) | None (`pip install neutts[all]` + `espeak-ng`) | Free |
+| NeuTTS (local) | None (`uv add neutts[all]` + `espeak-ng`) | Free |
 
 Voice commands: `/voice on` (voice-to-voice), `/voice tts` (always voice), `/voice off`.
 
@@ -818,7 +818,7 @@ User docs: https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban
 
 1. Check `stt.enabled: true` in config.yaml
 
-2. Verify provider: `pip install faster-whisper` or set API key
+2. Verify provider: `uv add faster-whisper` or set API key
 
 3. In gateway: `/restart`. In CLI: exit and relaunch.
 

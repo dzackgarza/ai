@@ -11,8 +11,10 @@ accuracy.
 
 ### 1. Research & Discovery
 
-- **Check Tooling First**: Run `npx tool --help` or `tool --help` for every tool before
-  concluding it lacks search/download capability.
+- **Identify the authoritative source first** — official docs, marketplace pages, or
+  GitHub readmes — before probing CLIs. After identifying the tool and contract, use
+  official CLIs through ephemeral runners when the docs indicate they are the right
+  interface.
 
 - **Exhaustive Discovery**: If initial searches yield nothing, pivot search terms
   immediately. Do not conclude absence based on one failure.

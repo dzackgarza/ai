@@ -29,7 +29,7 @@ Requires Python 3.10+ and repomix CLI:
 npm install -g repomix
 
 # Install Python dependencies (if needed)
-pip install pytest pytest-cov pytest-mock  # For running tests
+uv add --group dev pytest pytest-cov pytest-mock  # For running tests
 ```
 
 ### Usage

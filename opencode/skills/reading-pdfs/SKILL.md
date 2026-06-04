@@ -51,7 +51,7 @@ For arXiv papers:
 ### Installation
 
 ```bash
-pip install mistralai
+uv add mistralai
 ```
 
 ### Basic OCR Extraction

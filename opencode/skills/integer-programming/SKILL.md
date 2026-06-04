@@ -19,7 +19,7 @@ Multiply by a large integer if necessary to convert non-integer terms.
 ## Installation
 
 ```bash
-pip install ortools
+uv add ortools
 ```
 
 ## Basic Workflow

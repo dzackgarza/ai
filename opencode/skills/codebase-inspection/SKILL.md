@@ -31,7 +31,7 @@ code-vs-comment ratios using `pygount`.
 ## Prerequisites
 
 ```bash
-pip install --break-system-packages pygount >/dev/null || pip install pygount
+uvx pygount --help
 ```
 
 ## 1. Basic Summary (Most Common)

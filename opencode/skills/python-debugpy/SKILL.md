@@ -164,7 +164,7 @@ already misbehaving and can’t be restarted clean.
 
 ```bash
 source /home/bb/hermes-agent/.venv/bin/activate
-pip install debugpy
+uv add debugpy
 ```
 
 ### Pattern A: Source-edit — process waits for debugger at launch
@@ -273,7 +273,7 @@ add a `launch.json`:
 terminal agent:
 
 ```bash
-pip install remote-pdb
+uv add remote-pdb
 ```
 
 In your code:
@@ -376,7 +376,7 @@ you’re restarting the gateway anyway.
 
 ## Verification Checklist
 
-- [ ] After `pip install debugpy`, confirm:
+- [ ] After `uv add debugpy`, confirm:
   `python -c "import debugpy; print(debugpy.__version__)"`
 
 - [ ] For remote debug, confirm the port is actually listening: `ss -tlnp | grep 5678`

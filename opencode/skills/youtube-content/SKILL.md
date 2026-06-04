@@ -16,7 +16,7 @@ Extract transcripts from YouTube videos and convert them into useful formats.
 ## Setup
 
 ```bash
-pip install youtube-transcript-api
+uv add youtube-transcript-api
 ```
 
 ## Helper Script
@@ -92,4 +92,4 @@ After fetching the transcript, format it based on what the user asks for:
 - **No matching language**: retry without `--language` to fetch any available
   transcript, then note the actual language to the user.
 
-- **Dependency missing**: run `pip install youtube-transcript-api` and retry.
+- **Dependency missing**: run `uv add youtube-transcript-api` and retry.
