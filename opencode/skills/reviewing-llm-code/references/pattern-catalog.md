@@ -194,6 +194,10 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 - **Consultant-shaped triage**: producing generalized freeze/recovery/cleanup advice before identifying the actual in-progress feature, repo-local conventions, and root cause of the bad state.
   This creates plausible prioritization while avoiding the concrete question: what currently prevents the happy path from being proven?
 
+- **Debug-surface debt**: failures are addressed by mutating global code, adding one-off scripts, or repeatedly running opaque whole-system commands instead of creating a reusable isolated reproducer, structured boundary log, artifact dump, schema dump, or canonical diagnostic recipe. The smell is not that debugging took time; it is that the work left future debugging no easier.
+
+- **Prior-shaped probes**: commands encode the expected answer and suppress contrary evidence, e.g. guessed flags with `2>/dev/null`, greps whose failure is treated as absence, `jq` paths run before response-shape inspection, or endpoint guesses treated as API facts. The output is the agent's hypothesis reflected back as fake evidence.
+
 ## Test Patterns
 
 - **No assertions**: tests that execute code but do not prove a contract.

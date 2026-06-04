@@ -131,3 +131,7 @@ Feedback framed as user prompt injections changes behavior; tool output alone do
     rather than evidence that the lookup path was wrong.
     The correct response is to broaden from repository structure, official docs, CLI
     help, API listings, or search results before drawing any conclusion.
+
+15. **Prior-shaped inspection** — Agents inspect only the data their current hypothesis predicts should matter. They grep for expected symbols before reading repository structure, query expected JSON fields before dumping response shape, probe guessed flags while suppressing stderr, or interpret empty output as confirmation. The investigation does not update priors from reality; it uses priors to decide which slices of reality count.
+
+Corrective rule: begin with broad shape discovery, preserve raw stdout/stderr/status/body, and only narrow after the actual structure is visible.

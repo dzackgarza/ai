@@ -1,0 +1,170 @@
+---
+name: reality-grounded-debugging
+description: Use when debugging, exploring unfamiliar repositories/APIs, handling build/test failures, or after any failed probe/fix where the agent may be reasoning from priors instead of observed data.
+---
+
+# Reality-Grounded Debugging
+
+## Core Policy
+
+Debugging must start from observed reality, not expected reality.
+
+A local failure is not merely a thing to patch. It is evidence about missing observability, missing isolation, missing canonical recipes, missing logs, missing artifact dumps, missing fixtures, or missing proof loops.
+
+Before patching a symptom, ask what debugging surface would have made the cause visible.
+
+## Synthesis Gate
+
+Before proposing or applying a fix, produce this statement internally and make it explicit in reports when nontrivial:
+
+"The raw observation that changed my prior is ____.
+The smallest reproducible surface is ____.
+The missing or weak debugging surface is ____.
+The fix will be verified through ____ rather than by repeating the original opaque failure."
+
+If any blank cannot be filled with concrete command output, source text, logs, artifact paths, API responses, or test results, do not patch yet. Surface data first.
+
+## Reality-First Discovery
+
+When entering an unfamiliar repo, API, CLI, data format, or pipeline:
+
+- First expose the actual shape.
+- Then narrow.
+
+Correct first moves include:
+
+- `pwd`, `git status --short`, shallow `tree`/`find`/`fd`
+- `just --list`, package scripts, Makefile targets, CI commands
+- CLI `--help`, config files, entrypoints, source-of-truth wrappers
+- API status, headers, schema/list/root endpoints, full redacted response bodies
+- data shape dumps: top-level JSON keys, representative records, schema, raw error bodies
+
+Do not begin by grepping for the symbol, flag, field, route, or file you expect to exist unless you have already surfaced the broader structure.
+
+Inventories are evidence, not findings. Never report "many files" or "no grep hit" as a conclusion without structural interpretation.
+
+## Command Output Discipline
+
+Never hide the only evidence.
+
+Forbidden as diagnostic evidence:
+
+```bash
+cmd --guessed-flag 2>/dev/null || echo "not found"
+rg expected_string . || true
+curl endpoint | jq '.expected.path'
+test_command >/dev/null 2>&1
+```
+
+These commands replace system feedback with the agent's prior.
+
+Required for diagnostic commands:
+
+* preserve stdout
+* preserve stderr
+* preserve exit code
+* preserve cwd and relevant environment/config
+* show enough output to update the hypothesis
+* treat empty output as data requiring interpretation, not as confirmation
+
+Use `set -o pipefail` for shell pipelines. Use `tee` or explicit temp files when output matters.
+
+## Local Failure → Surface Upgrade
+
+After any failed fix, repeated failed probe, or "this might work" moment, stop and classify the missing surface:
+
+* no exact reproduction command
+* no isolated fixture
+* no way to run one unit through the real pipeline
+* no structured logs at the failing boundary
+* no dump of intermediate artifacts
+* no schema/data-shape inspection
+* no source-of-truth command recipe
+* no test that proves the owned behavior
+* no visibility into subprocess arguments, cwd, env, or generated files
+
+The next action should usually build or use that surface.
+
+Do not keep mutating global application code to make one local symptom disappear.
+
+## Canonical Isolation
+
+An isolated reproducer must call the same source-of-truth code path as the global workflow.
+
+Bad:
+
+* one-off script that reimplements part of the pipeline
+* direct CLI invocation with flags copied from memory
+* fixture runner that bypasses filters/config/loaders used in production
+* test that asserts on generated debris rather than the real output
+
+Good:
+
+* `render_one(path)` calls the same renderer as full build
+* `compile_fixture(markdown)` writes a temp source and invokes the same Pandoc wrapper
+* debug command dumps the exact command, env, cwd, input, output, stdout, stderr, and exit code
+* API fixture uses captured real response shape at the repository-owned boundary
+
+If no such seam exists, create the seam before fixing the bug when feasible.
+
+## Pipeline Debugging Rule
+
+For compilers, SSGs, document renderers, code generators, bundlers, and multi-stage transforms:
+
+1. Run the canonical command once and capture raw failure.
+2. Identify the source-of-truth invocation.
+3. Add or use an isolated single-unit runner through the same invocation.
+4. Dump intermediate artifacts at each owned boundary.
+5. Reduce to a minimal representative fixture.
+6. Fix the root cause.
+7. Verify with the minimal fixture, the original failing unit, and the global test/build command.
+
+Do not repeatedly run the entire pipeline as the only diagnostic. Do not mutate the full document/app while the failing boundary is still opaque.
+
+## API/Data Debugging Rule
+
+Before querying expected fields:
+
+1. capture status and headers
+2. dump the raw redacted body
+3. inspect top-level shape
+4. inspect representative records
+5. identify the schema or contract if available
+6. only then write targeted extraction code
+
+A missing expected field is not evidence until the actual shape has been observed.
+
+## Stop Rules
+
+Stop patching and add/repair a debug surface when:
+
+* two fix attempts have failed
+* a command returns empty output unexpectedly
+* stderr was suppressed
+* a probe used a guessed flag/path/field/endpoint
+* the fix requires changing global pipeline code before a minimal reproducer exists
+* the agent cannot state what observation would falsify the current hypothesis
+* the agent is about to add a fallback, try/except, skip, xfail, ignore, or bypass
+
+## Completion Evidence
+
+A debugging task is not complete until the report includes:
+
+* the original failure command and raw relevant output
+* the root cause at the owned boundary
+* the smallest reproducer or fixture
+* the observability/isolation surface added or used
+* the targeted verification result
+* the global verification result
+* any remaining unobservable boundary or known limitation
+
+## Cross-References
+
+Load alongside:
+
+- `systematic-debugging` — hypothesis ledger, falsification, formal reasoning
+- `llm-failure-modes` — cognitive failure modes (premature solution, thrashing, prior-shaped inspection, tool output blindness)
+- `anti-slop` — implementation-quality analysis, patch accretion, myopic fixes
+- `test-guidelines` — substantive assertions, owned-surface discipline
+- `quality-control` — global QC as single source of truth, no-bypass policy
+- `justfile` — recipe list as project API, source-of-truth commands

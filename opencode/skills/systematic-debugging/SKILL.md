@@ -367,6 +367,22 @@ For generated-output or render bugs:
 - Compare generated artifacts against served artifacts before blaming runtime code.
 - Do not edit templates, filters, serializers, or renderers until the boundary that first corrupts output is known.
 
+### Debugging Surface Check
+
+If evidence gathering requires guessed commands, repeated whole-system runs, stderr suppression, manual inspection of generated debris, or mutation of global code before isolation, the system lacks a debugging surface.
+
+Before proposing a fix, add or use the smallest canonical surface that reveals the failing boundary:
+
+- structured boundary logging
+- exact command/env/cwd dump
+- intermediate artifact dump
+- one-unit runner through the real pipeline
+- captured real API/data fixture
+- schema/shape dump
+- regression test at the repository-owned boundary
+
+A local failure should improve future diagnosability. Do not spend multiple attempts probing the opaque global workflow.
+
 ## Bias Countermeasures
 
 Bias names are not useful unless they force different behavior.

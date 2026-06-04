@@ -266,3 +266,5 @@ replace it with something that works differently.
 33. **Citation fabrication pressure** — Agents fill source-backed sections with
     plausible references or paraphrases before verifying that the source actually
     supports the claim. The failure can appear even when the cited source exists.
+
+34. **Debug-surface neglect** — Agents solve each local failure with a one-off probe or patch rather than extracting a reusable diagnostic surface. They do not add isolated runners, boundary logs, artifact dumps, schema dumps, or canonical recipes, so the next failure in the same class starts from zero again.
