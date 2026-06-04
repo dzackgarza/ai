@@ -684,9 +684,14 @@ A remediation is incomplete if the artifact is gone but the burden has no owner.
 
 ## Bridge-Burning Policies
 
-For agent-driven bespoke software, prefer blanket prohibitions that eliminate entire classes of evasion.
+The important move is to stop treating this as a case-by-case review problem. Agents are too good at finding local, linguistically plausible exceptions. The right response is to make whole classes of evasive code unrepresentable.
 
-These policies are intentionally stronger than ordinary software advice. Their purpose is not universal elegance. Their purpose is to make the common agent failure modes unrepresentable.
+> [!IMPORTANT]
+> **Core Principle:** Prefer blanket constraints that make bad states impossible over review rules that ask agents to judge bad states later.
+
+The recurring pattern is that an agent first tries to satisfy checking/validation surfaces (such as the compiler/typechecker, QC gates, PR review, or user queries) by manipulating the validation surface (e.g. by adding fallbacks, defaults, mocks, try/except blocks, or bypass comments) instead of reconstructing the original obligation and solving it. The policy answer is to remove the vocabulary that enables that manipulation.
+
+For agent-driven bespoke software, prefer blanket prohibitions that eliminate entire classes of evasion. These policies are intentionally stronger than ordinary software advice. Their purpose is not universal elegance. Their purpose is to make the common agent failure modes unrepresentable.
 
 ### 1. No defaults in runtime logic
 
