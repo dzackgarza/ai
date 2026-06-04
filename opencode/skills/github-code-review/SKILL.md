@@ -26,28 +26,6 @@ interactions.
 
 - Inside a git repository
 
-### Setup (for PR interactions)
-
-```bash
-if command -v gh &>/dev/null && gh auth status &>/dev/null; then
-  AUTH="gh"
-else
-  AUTH="git"
-  if [ -z "$GITHUB_TOKEN" ]; then
-    if [ -f ~/.hermes/.env ] && grep -q "^GITHUB_TOKEN=" ~/.hermes/.env; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.hermes/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
-    elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
-      GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials 2>/dev/null | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')
-    fi
-  fi
-fi
-
-REMOTE_URL=$(git remote get-url origin)
-OWNER_REPO=$(echo "$REMOTE_URL" | sed -E 's|.*github\.com[:/]||; s|\.git$||')
-OWNER=$(echo "$OWNER_REPO" | cut -d/ -f1)
-REPO=$(echo "$OWNER_REPO" | cut -d/ -f2)
-```
-
 * * *
 
 ## 1. Reviewing Local Changes (Pre-Push)
@@ -112,20 +90,17 @@ When reviewing local changes, present findings in this structure:
 ## Code Review Summary
 
 ### Critical
-- **src/auth.py:45** — SQL injection: user input passed directly to query.
-  Suggestion: Use parameterized queries.
+- **<file>:<line>** — <Critical finding description>.
+  Suggestion: <Remediation step>.
 
 ### Warnings
-- **src/models/user.py:23** — Password stored in plaintext. Use bcrypt or argon2.
-- **src/api/routes.py:112** — No rate limiting on login endpoint.
+- **<file>:<line>** — <Warning description>.
 
 ### Suggestions
-- **src/utils/helpers.py:8** — Duplicates logic in `src/core/utils.py:34`. Consolidate.
-- **tests/test_auth.py** — Missing edge case: expired token test.
+- **<file>:<line>** — <Suggestion description>.
 
 ### Looks Good
-- Clean separation of concerns in the middleware layer
-- Good test coverage for the happy path
+- <What looks good, e.g. clean separation of concerns in the middleware layer>
 ```
 
 * * *
@@ -217,10 +192,10 @@ HEAD_SHA=$(gh pr view 123 --json headRefOid --jq '.headRefOid')
 
 gh api repos/$OWNER/$REPO/pulls/123/comments \
   --method POST \
-  -f body="This could be simplified with a list comprehension." \
-  -f path="src/auth/login.py" \
+  -f body="<Feedback detail>" \
+  -f path="<file_path>" \
   -f commit_id="$HEAD_SHA" \
-  -f line=45 \
+  -f line=<line_number> \
   -f side="RIGHT"
 ```
 
@@ -237,10 +212,10 @@ curl -s -X POST \
   -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments \
   -d "{
-    \"body\": \"This could be simplified with a list comprehension.\",
-    \"path\": \"src/auth/login.py\",
+    \"body\": \"<Feedback detail>\",
+    \"path\": \"<file_path>\",
     \"commit_id\": \"$HEAD_SHA\",
-    \"line\": 45,
+    \"line\": <line_number>,
     \"side\": \"RIGHT\"
   }"
 ```
@@ -271,9 +246,7 @@ curl -s -X POST \
     \"event\": \"COMMENT\",
     \"body\": \"Code review from Hermes Agent\",
     \"comments\": [
-      {\"path\": \"src/auth.py\", \"line\": 45, \"body\": \"Use parameterized queries to prevent SQL injection.\"},
-      {\"path\": \"src/models/user.py\", \"line\": 23, \"body\": \"Hash passwords with bcrypt before storing.\"},
-      {\"path\": \"tests/test_auth.py\", \"line\": 1, \"body\": \"Add test for expired token edge case.\"}
+      {\"path\": \"<file_path>\", \"line\": <line_number>, \"body\": \"<Feedback detail>\"}
     ]
   }"
 ```
@@ -287,31 +260,13 @@ For deleted lines, use `"side": "LEFT"`.
 
 ## 3. Review Checklist
 
-When performing a code review (local or PR), systematically check:
+When performing a code review (local or PR), do not invent local review standards or use generic code smell advice. All code evaluation rules, anti-slop guidelines, and validation-evasion auditing are delegated to the canonical policy skills:
 
-### Policy-Aware Code Review Checklist
+- **Code Review Policy & Bridge-Burning**: Delegate to [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md) and its [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
+- **PR Guidance & Triage Rules**: Delegate to [pr-feedback-triage](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md) and the global policy index.
+- **Proof & Test Obligations**: Delegate to [test-guidelines](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md).
 
-Review for:
-- correctness under the original task
-- proof-loop integrity
-- type/QC coverage
-- fail-fast violations
-- fake proof, mocks, skips, smoke laundering
-- race/stale-state correctness failures
-- data contract violations
-- known-solution bypass
-- slop patterns from reviewing-llm-code
-
-> [!IMPORTANT]
-> **Bridge-Burning Red Flags:** If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. Reviewers must check all code changes against the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) to detect validation-evasion moves (such as runtime defaults, fallbacks, mocks, and exact string assertions).
-
-Do not default to:
-- graceful fallback
-- enterprise edge-case hardening
-- sandbox paranoia
-- micro-optimization
-- broader platform support
-- generic security framing without project-owned threat model
+Always consult [policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md) to find the canonical source-of-truth skill for any code review, testing, or remediation question.
 
 
 * * *
@@ -342,10 +297,7 @@ follow this recipe:
 
 ### Step 1: Set up environment
 
-```bash
-source "${HERMES_HOME:-$HOME/.hermes}/skills/github/github-auth/scripts/gh-env.sh"
-# Or run the inline setup block from the top of this skill
-```
+Ensure you are authenticated using the [github-auth](file:///home/dzack/ai/opencode/skills/github-auth/SKILL.md) skill.
 
 ### Step 2: Gather PR context
 
@@ -398,14 +350,11 @@ alone can miss issues visible only with surrounding code.
 
 ### Step 5: Run automated checks locally (if applicable)
 
-```bash
-# Run tests if there's a test suite
-python -m pytest 2>&1 | tail -20
-# or: npm test, cargo test, go test ./..., etc.
+Always run the repository's configured global Quality Control command (typically `just test` or `just qc`) to verify that changes pass checks and tests. Never run ad-hoc command runners (like `pytest`, `npm test`, or `ruff`) directly.
 
-# Run linter if configured
-ruff check . 2>&1 | head -30
-# or: eslint, clippy, etc.
+```bash
+# Run global test/QC suite
+just test
 ```
 
 ### Step 6: Apply the review checklist (Section 3)
@@ -439,11 +388,9 @@ curl -s -X POST \
   -d "{
     \"commit_id\": \"$HEAD_SHA\",
     \"event\": \"REQUEST_CHANGES\",
-    \"body\": \"## Hermes Agent Review\n\nFound 2 issues, 1 suggestion. See inline comments.\",
+    \"body\": \"## Code Review Feedback\n\nIdentified issues during review. See inline comments.\",
     \"comments\": [
-      {\"path\": \"src/auth.py\", \"line\": 45, \"body\": \"🔴 **Critical:** User input passed directly to SQL query — use parameterized queries.\"},
-      {\"path\": \"src/models.py\", \"line\": 23, \"body\": \"⚠️ **Warning:** Password stored without hashing.\"},
-      {\"path\": \"src/utils.py\", \"line\": 8, \"body\": \"💡 **Suggestion:** This duplicates logic in core/utils.py:34.\"}
+      {\"path\": \"<file_path>\", \"line\": <line_number>, \"body\": \"🔴 **Critical:** <Critical finding details>\"}
     ]
   }"
 ```
@@ -459,20 +406,19 @@ Use the review output format from `references/review-output-template.md`.
 gh pr comment $PR_NUMBER --body "$(cat <<'EOF'
 ## Code Review Summary
 
-**Verdict: Changes Requested** (2 issues, 1 suggestion)
+**Verdict: Changes Requested**
 
 ### 🔴 Critical
-- **src/auth.py:45** — SQL injection vulnerability
+- **<file_path>:<line_number>** — <Critical finding details>
 
 ### ⚠️ Warnings
-- **src/models.py:23** — Plaintext password storage
+- **<file_path>:<line_number>** — <Warning details>
 
 ### 💡 Suggestions
-- **src/utils.py:8** — Duplicated logic, consider consolidating
+- **<file_path>:<line_number>** — <Suggestion details>
 
 ### ✅ Looks Good
-- Clean API design
-- Good error handling in the middleware layer
+- <Positive feedback item>
 
 ---
 *Reviewed by Hermes Agent*

@@ -59,7 +59,7 @@ The named rationalizations to reject: "for compatibility with legacy code," "nor
 
 All software written here is bespoke, for one user, on one system, tightly integrated with the tools on this system. It is not distributed, not multi-platform, not designed to scale, not built for unknown audiences. There is no “legacy user” — the only user is the owner, immediately after the task is done, expecting the old functionality to have vanished as if it never existed. Every change is a breaking change by default.
 Do not attempt multi-platform support, horizontal scaling, or imagined security hardening. These are enterprise patterns — they do not belong in bespoke software. The correct behavior is: work on happy paths, fail loudly and immediately outside of them. Do not prototype edge cases; prototype permutations of happy paths instead. Block non-happy branching and edge behaviours with sharp assertions, not soft guards. Put the user experience on guardrails that don’t accept veering.
-Opinionated configs and defaults only. No env-var switching, no feature-flag toggling, no runtime mode selection. The software runs one way, on this system, with these dependencies. If something needs to change, change the config, commit it, and move on — do not parameterize against imagined future variation.
+Complete opinionated config only. No runtime defaults. The app may ship with a generated/starter config populated with values. Runtime code must validate that config and fail if required values are missing. No env-var switching, no feature-flag toggling, no runtime mode selection. The software runs one way, on this system, with these dependencies. If something needs to change, change the config, commit it, and move on — do not parameterize against imagined future variation.
 Do not aim for “legacy” compatibility, preservation of historical artifacts, or interop with old versions.
 Do not write code that gracefully accepts malformed inputs or data, or makes “best effort” attempts.
 Instead: understand explicit data shapes, assert correctness, fail loudly.
@@ -81,6 +81,32 @@ declare dependencies as PEP 723 inline script metadata and run through `uv`. No
 separate install step. No implicit environment assumption. No `pip install` prelude.
 The full policy (hierarchy, forbidden pathways, canonical template, review rule) is in
 `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts with uv".
+
+# Bridge-Burning Policy Router
+
+Before writing, reviewing, or fixing code/tests/QC, load:
+
+- `policy-index` to identify which policy skill owns the rule.
+- `anti-slop` for bridge-burning policies and anti-laundering doctrine.
+- `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
+- `test-guidelines` for proof/test obligations.
+- `fixing-slop` when an artifact is being renamed, deleted, quarantined, or “made honest.”
+- `pr-feedback-triage` when acting on review comments or automated review feedback.
+
+Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, smoke tests in proof paths, helper-level proof for boundary obligations, stringly errors, boolean mode flags, and deletion without burden transfer are hard red flags.
+
+## Skill Routing Matrix
+
+| Situation | Load |
+| --- | --- |
+| Writing or reviewing code/tests/QC | `policy-index`, `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `test-guidelines` |
+| Seeing defaults/fallbacks/mocks/skips/smoke/quarantine/deletion | `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `fixing-slop` |
+| Fixing a slop finding | `fixing-slop` before editing |
+| Reviewing LLM/agent output | `reviewing-subagent-work`, `reviewing-llm-code`, `anti-slop` |
+| Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `quality-control`, `test-guidelines` |
+| Debugging failures | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
+| Adding local QC/checks | `quality-control` first |
+| Using Jules for review | `jules`, `jules/references/anti-slop-issue-review.md`; do not use Jules for immediate remediation |
 
 # Serena Symbolic Code Tools: MANDATORY for All Code Operations
 

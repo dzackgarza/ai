@@ -155,7 +155,7 @@ If fails → tell user to run `jules login` (or `--no-launch-browser` for headle
 ### 3. Auto-Detect Repo
 
 ```bash
-git remote get-url origin 2>/dev/null | sed -E 's#.*(github\.com)[/:]([^/]+/[^/.]+)(\.git)?#\2#'
+git remote get-url origin | sed -E 's#.*(github\.com)[/:]([^/]+/[^/.]+)(\.git)?#\2#'
 ```
 
 If not GitHub or not in git repo → ask user for `--repo owner/repo`
@@ -193,7 +193,7 @@ jules teleport <id>                       # Clone + apply
 ### Latest Session Shortcut
 
 ```bash
-LATEST=$(jules remote list --session 2>/dev/null | awk 'NR==2 {print $1}')
+LATEST=$(jules remote list --session | awk 'NR==2 {print $1}')
 jules remote pull --session $LATEST
 ```
 
@@ -203,7 +203,7 @@ Enrich prompts with current context for better results:
 
 ```bash
 BRANCH=$(git branch --show-current)
-RECENT_FILES=$(git diff --name-only HEAD~3 2>/dev/null | head -10 | tr '\n' ', ')
+RECENT_FILES=$(git diff --name-only HEAD~3 | head -10 | tr '\n' ', ')
 RECENT_COMMITS=$(git log --oneline -5 | tr '\n' '; ')
 STAGED=$(git diff --cached --name-only | tr '\n' ', ')
 
@@ -217,14 +217,14 @@ jules new --repo owner/repo "Fix the bug in auth module. Context: branch=$BRANCH
 ### Add Tests
 
 ```bash
-FILES=$(git diff --name-only HEAD~3 2>/dev/null | grep -E '\.(js|ts|py|go|java)$' | head -5 | tr '\n' ', ')
+FILES=$(git diff --name-only HEAD~3 | grep -E '\.(js|ts|py|go|java)$' | head -5 | tr '\n' ', ')
 jules new "Add substantive tests for recently modified files: $FILES. Follow test-guidelines: no mocks, no skips, no fake proof, no content-free assertions. Tests must prove repository-owned behavior."
 ```
 
 ### Add Documentation
 
 ```bash
-FILES=$(git diff --name-only HEAD~3 2>/dev/null | grep -E '\.(js|ts|py|go|java)$' | head -5 | tr '\n' ', ')
+FILES=$(git diff --name-only HEAD~3 | grep -E '\.(js|ts|py|go|java)$' | head -5 | tr '\n' ', ')
 jules new "Add documentation comments to: $FILES. Include function descriptions, parameters, return values, and examples."
 ```
 
@@ -262,7 +262,8 @@ SESSION_ID=""
 TASK_DESC=""
 git checkout -b "jules/$SESSION_ID"
 jules remote pull --session "$SESSION_ID" --apply
-git add -A
+# Stage specific modified files (never use git add -A, follow staging discipline in git-guidelines)
+git add <modified_files>
 git commit -m "feat: $TASK_DESC
 Jules session: $SESSION_ID"
 git push -u origin "jules/$SESSION_ID"
@@ -278,7 +279,7 @@ gh pr create --title "$TASK_DESC" --body-file .pr/PR_BODY.md --draft
 ```bash
 SESSION_ID=""
 while true; do
-STATUS=$(jules remote list --session 2>/dev/null | grep "$SESSION_ID" | awk '{print $NF}')
+STATUS=$(jules remote list --session | grep "$SESSION_ID" | awk '{print $NF}')
 case "$STATUS" in
 Completed)
 echo "Done!"

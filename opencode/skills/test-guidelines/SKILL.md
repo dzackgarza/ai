@@ -627,6 +627,8 @@ the resulting state safe to remove.
 
 ## Smoke and Harness Checks
 
+If it is test-shaped and in the test suite, it must be proof-bearing. Non-proof smoke/harness diagnostics belong in a diagnostic command outside the QC proof path.
+
 A smoke check may prove that the test harness, frontend shell, or diagnostic fixture starts.
 It does not prove feature behavior.
 
