@@ -6,16 +6,23 @@ description: 'Use when performing any git operation — staging, committing, bra
 
 ## The Edit Workflow (Mandatory)
 
-**Read → Checkpoint → Edit → Verify**
+**Read → Checkpoint Commit → Edit → Verify → Commit**
 
 1. **Read** the file
 
-2. **Checkpoint** — `git add <files>` (or commit) the *current* state before touching
-   anything
+2. **Checkpoint commit** the current target-file state before touching it.
+   If the target file is clean, `HEAD` is the checkpoint.
+   If the target file already has uncommitted changes, commit those changes first or stop
+   and ask how to proceed.
+   Staging is not a checkpoint.
 
 3. **Edit** the file
 
 4. **Verify** — run `git diff` immediately after to confirm what changed
+
+5. **Commit** every coherent substantive change before switching tasks, reporting
+   completion, starting a risky follow-up edit, or leaving work to another session.
+   Do not leave real work only in the index or working tree.
 
 This applies to **every edit** — one-liners, multi-file changes, everything.
 No exceptions.
@@ -24,16 +31,19 @@ No exceptions.
 
 You are about to violate the workflow if:
 
-- You are writing an Edit/Write tool call and haven’t staged first
+- You are writing an Edit/Write tool call and the target file has uncommitted changes
+  that are not already committed as the pre-edit checkpoint
 
 - You are “just fixing a typo” (still requires checkpoint)
 
 - You plan to diff “at the end” instead of after each file
 
-- You are bundling edits across files into one checkpoint
+- You plan to commit “later” after accumulating multiple independent changes
 
-Each file gets its own checkpoint.
-Bundling is not cleaner history — it’s missing safety.
+- You are bundling unrelated edits across files into one checkpoint
+
+Each coherent change gets its own checkpoint commit.
+Bundling unrelated work is not cleaner history — it is missing provenance.
 
 ## Safe Deletion
 
@@ -141,6 +151,9 @@ preserved. Epistemic violations should decrease due to required format.
 
 ## Staging Discipline
 
+Staging prepares a commit.
+It is not itself a checkpoint or audit trail.
+
 ```bash
 # ✅ Specific files
 git add src/opencode_parser/errors.py tests/test_triage.py
@@ -161,14 +174,49 @@ git add .
 | Never use interactive flags | `git rebase -i`, `git add -i` |
 | Never `--no-edit` with rebase | not a valid rebase flag |
 
-## When to Commit vs. When Not To
+## Commit Cadence
 
-**DO** checkpoint with `git add` before every edit.
+**DO** commit proactively.
+User requests to commit or push are a lower bound, not permission gates.
+If you changed tracked files in a way that advances, preserves, repairs, or tests the
+task, commit it.
 
-**DO NOT** create a commit unless the user explicitly asks.
-Checkpointing and committing are separate acts.
+Commit immediately after:
+
+- a source fix, test, spec row, mapping row, or other substantive artifact is verified;
+
+- a red test is created for a reported bug;
+
+- a green fix makes a committed red test pass;
+
+- a workflow or policy contradiction is corrected;
+
+- a long-running or multi-step task reaches a coherent review point;
+
+- the user asks whether work was committed, asks for a handoff, or asks to stop.
+
+Do not wait for explicit user approval to commit ordinary task progress.
+Do not let hours of work accumulate only in the index or working tree.
+
+**DO NOT** commit:
+
+- read-only investigation;
+
+- secrets or credential material;
+
+- unrelated dirty files you did not touch;
+
+- changes you do not understand well enough to describe in the commit body.
 
 **NEVER** commit files that may contain secrets: `.env`, `credentials.json`, keys.
+
+## Push Cadence
+
+Push after committing when the user asked for pushed work, when the task depends on
+GitHub-visible auditability, before claiming completion, and before any handoff after
+substantive work.
+If push fails, report the exact failure instead of treating a local commit as remotely
+auditable.
 
 ## Commit Messages vs Memory vs Repo Artifacts
 
