@@ -209,17 +209,26 @@ Suggestions (non-blocking): [list]
 
 **Maximum 2 fix-and-reverify cycles.**
 
-Spawn a THIRD agent context — not you (the implementer), not the reviewer.
-It fixes ONLY the reported issues:
+If the reviewer finds issues, do not send its raw findings directly to the fixer. The controller must first translate each accepted finding into a first-principles remediation spec (following the spec template in [pr-feedback-triage](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md)) and strip the reviewer's suggested patch wording.
+
+Spawn a THIRD agent context — not you (the implementer), not the reviewer. It implements the remediation spec:
 
 ```python
 delegate_task(
-    goal="""You are a code fix agent. Fix ONLY the specific issues listed below.
-Do NOT refactor, rename, or change anything else. Do NOT add features.
+    goal="""You are an independent remediation agent.
+Implement the remediation spec below from first principles. Do NOT patch the reviewer's wording or make minimal edits to satisfy raw comment findings. Treat the current implementation as suspect and replace the relevant implementation/proof surface if necessary.
 
-Issues to fix:
+Rules:
+- Do not add defaults, fallbacks, mocks, skips, source-policing tests, exact string assertions, fail-open branches, or helper-level proof.
+- Do not minimally patch the current implementation to silence the concern.
+- Treat current implementation/tests at the target boundary as suspect.
+- Replace the implementation/proof surface if needed.
+- Prove the required behavior at the owned boundary.
+- If the spec cannot be satisfied, report the blocker. Do not produce a partial patch.
+
+Remediation spec:
 ---
-[INSERT security_concerns AND logic_errors FROM REVIEWER]
+[INSERT FIRST-PRINCIPLES REMEDIATION SPEC]
 ---
 
 Current diff for context:
@@ -227,8 +236,8 @@ Current diff for context:
 [INSERT GIT DIFF]
 ---
 
-Fix each issue precisely. Describe what you changed and why.""",
-    context="Fix only the reported issues. Do not change anything else.",
+Satisfy the spec precisely. Describe what you changed and why.""",
+    context="Implement the remediation spec. Do not make minimal reviewer-appeasing patches.",
     toolsets=["terminal", "file"]
 )
 ```

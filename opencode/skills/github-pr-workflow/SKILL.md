@@ -269,8 +269,14 @@ Re-check CI status using the commands from Section 4 above.
 > CI failures and PR review comments are different.
 >
 > CI failure logs may often be fixed mechanically after root-cause diagnosis.
-> Review comments must first be routed through `pr-feedback-triage`.
+> Review comments must first be routed to `pr-feedback-triage`.
 > Do not auto-fix review comments merely because they are unresolved.
+>
+> **PR review feedback gating rules:**
+> PR feedback is not fixed in the issue-extraction loop.
+> When unresolved review items are found, route to `pr-feedback-triage`.
+> Do not pass raw review comments directly to implementer agents.
+> Do not pipe comments back to Jules/Codex/worker agents for blind fixing.
 
 ### Auto-Fix Loop Pattern
 

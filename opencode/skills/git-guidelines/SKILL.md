@@ -298,6 +298,26 @@ If any answer is scanner status, check status, process compliance, or a claim th
 will re-review later, stop.
 That is not judgment.
 
+### Positive disposition requires committed remediation
+
+Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review
+thread unless the remediation is already committed.
+
+Accepted feedback follows this sequence:
+1. classify the claim internally;
+2. write first-principles remediation spec;
+3. assign independent remediation subagent;
+4. review the subagent output against the spec and banned-pattern catalogs;
+5. commit the accepted remediation;
+6. only then reply and resolve the thread with commit/proof anchors.
+
+A thread cannot be resolved on intent.
+
+### Top-level ledger requirement
+
+Before resolving any rejected or modified feedback thread, ensure the disposition appears
+in a top-level PR comment titled `Review feedback disposition ledger`.
+
 ### Split feedback from remediation
 
 Every review item has two separable claims:

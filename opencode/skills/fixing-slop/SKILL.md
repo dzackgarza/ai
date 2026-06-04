@@ -136,6 +136,15 @@ Every slop fix must produce a git history that clearly shows:
 
 If the fix does not produce this trail, it is laundering — and the original slop pattern will recur.
 
+## Review-Driven Slop Fixes
+
+When slop is found through PR review, do not fix the review comment.
+Fix the original obligation that the slop artifact was trying to avoid.
+
+A review-driven slop fix must be written as a first-principles spec and implemented by
+an independent subagent or fresh context. The spec must not expose the reviewer’s exact
+suggested fix.
+
 ## Cross-References
 
 - **`anti-slop/references/code-patterns.md`** → **Honest-Label Laundering** — The specific detection heuristics for renaming/relabeling.

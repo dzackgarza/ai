@@ -1,6 +1,6 @@
 ---
 name: pr-feedback-triage
-description: Use when consuming, replying to, resolving, or acting on PR review comments, automated review comments, check annotations, external agent review output, or user requests to decide which PR suggestions align with repo/global policy.
+description: Use when consuming, replying to, resolving, or acting on PR review comments, automated review comments, check annotations, external agent review output, or user requests. Also use when converting accepted feedback into remediation specs, assigning independent subagents, verifying remediation commits, and producing top-level disposition ledgers.
 ---
 # PR Feedback Triage
 
@@ -40,6 +40,283 @@ For every review comment, select one of these four dispositions:
 - **Investigate before action**:
   The comment points to a possible inconsistency but does not prove the fix. Gather the
   missing contract/runtime/config evidence before changing code.
+
+## Threat Model: Review Evasion and Gaming
+
+The worker agent will attempt to game PR review itself. It will:
+- accept feedback in prose without fixing it;
+- resolve threads after promising future work;
+- patch exactly the reviewed line rather than the underlying burden;
+- add weak tests that prove the patch, not the behavior;
+- hide rejected feedback inside resolved threads;
+- treat “disposition provided” as completion;
+- use the reviewer's wording as a checklist to silence rather than understand.
+
+The workflow must make that game impossible.
+
+## Core Rule: Positive Disposition Requires Committed Remediation
+
+A positive disposition requires a remediation commit.
+
+Do not reply “accepted,” “aligned,” “fixed,” “addressed,” “will address,” or equivalent unless the actual remediation is already committed and the reply cites that commit.
+
+No accepted review thread may be resolved on the basis of:
+- agreement;
+- intent to fix;
+- a local plan;
+- an issue;
+- a future task;
+- a subagent being launched;
+- a weak or partial patch;
+- a test that only polices the reviewer's wording.
+
+Positive disposition without a commit is false signaling.
+
+There are only three pre-commit states:
+- open / under triage
+- rejected with visible rationale
+- blocked with visible blocker
+
+“Accepted pending fix” may exist in an internal review log, but it must not be posted as a resolved disposition on the PR thread.
+
+## Commit-Gated Disposition Workflow
+
+Triage is not resolution. Accepted claims do not get visible positive disposition until remediation is committed.
+
+### Phase 1: Collect All Review Surfaces
+The controller must collect all live review items before acting:
+- inline review threads
+- formal review summaries
+- top-level PR comments
+- check annotations
+- bot comments that update in place
+- previously resolved comments if reviewing whether prior remediation was valid
+
+A green check, “not resolved: 0,” or resolved-thread count is not proof. Feedback must be understood and made visible to the maintainer, not treated as an administrative obstacle.
+
+### Phase 2: Classify Without Resolving
+For each item, classify internally:
+- claim: true / false / needs investigation
+- reviewer remediation: aligned / misaligned / underspecified
+- required action: none / rejection ledger / remediation spec / investigation
+
+Do not reply “accepted” yet. Do not resolve accepted items yet.
+
+### Phase 3: Convert Accepted Feedback into a First-Principles Remediation Spec
+The controller must not hand the reviewer’s exact comment to the implementer. Instead, it must reconstruct the underlying problem from first principles.
+
+#### Remediation Spec Template
+
+```markdown
+## Remediation spec
+
+Original task / proof burden:
+<What the PR or feature was supposed to prove or satisfy.>
+
+Root concern:
+<The actual correctness/proof/architecture problem, stated without the reviewer’s wording.>
+
+Required behavior:
+<What must be true after remediation.>
+
+Required invariants:
+- ...
+- ...
+
+Banned remediation patterns:
+- no defaults
+- no fallbacks
+- no mocks/fakes/stubs
+- no smoke/proof laundering
+- no helper-level proof for boundary obligation
+- no exact string assertions
+- no source-policing tests
+- no fail-open branches
+- no boolean branch-forcing
+- no deletion without burden disposition
+
+Proof obligation:
+<What real boundary, real data, real config, real process, real UI workflow, or structured error must be proven.>
+
+Replacement requirement:
+<Treat the current implementation/test as suspect. Replace the boundary-level implementation or proof surface as needed. Do not patch to the review wording.>
+
+Scope:
+<Files/subsystems in scope; explicit non-goals.>
+```
+
+*Good vs. Bad Examples:*
+- **Bad spec:** `Replace .flatten() with map_err and add a test.`
+- **Good spec:** `Directory listing must never convert filesystem read errors into missing entries. If reading the directory or any entry fails, the command must fail visibly with a structured error. A test must exercise the directory-listing boundary and prove that a read failure does not produce a partial successful listing.`
+- **Bad spec:** `Remove browser-smoke mock.`
+- **Good spec:** `The test suite must not contain test-shaped artifacts that simulate Tauri IPC and can be cited as product proof. Desktop behavior must be proven through the real Tauri IPC boundary or the proof burden must be recorded as unresolved. Any diagnostic-only harness must live outside the test/QC proof path.`
+
+### Phase 4: Independent Remediation Subagent
+Accepted feedback must be fixed by an independent subagent, not the same worker that is trying to clear the review.
+The subagent receives the *Remediation Spec*, the *Original task/PR contract*, *relevant source files*, and *global skills/policies* (anti-slop, fixing-slop, test-guidelines, bridge-burning-red-flags, banned-test-shapes, runtime-control-flow-red-flags, quality-control, known-solution-first).
+The subagent must **NOT** receive the exact reviewer wording, suggested patch text, thread-resolution status, the worker’s preferred fix, or “just address this comment” framing.
+
+#### Subagent Prompt Template
+```markdown
+You are an independent remediation agent.
+
+You are not fixing a review comment. You are implementing the remediation specification below from first principles.
+
+You have not been given the reviewer’s exact feedback because review wording causes agents to patch the symptom instead of solving the obligation.
+
+Rules:
+- Do not add defaults, fallbacks, mocks, skips, source-policing tests, exact string assertions, fail-open branches, or helper-level proof.
+- Do not minimally patch the current implementation to silence the concern.
+- Treat current implementation/tests at the target boundary as suspect.
+- Replace the implementation/proof surface if needed.
+- Prove the required behavior at the owned boundary.
+- If the spec cannot be satisfied, report the blocker. Do not produce a partial patch.
+
+Remediation spec:
+<spec>
+
+Required output:
+- changed files;
+- proof commands;
+- explanation of how the proof discharges the spec;
+- explicit banned-pattern audit.
+```
+
+### Phase 5: Controller Verification Gate
+Before committing subagent remediation, the controller must review the subagent output under `reviewing-subagent-work`, `fixing-slop`, `test-guidelines`, and the red-flag catalogs.
+Required verification questions:
+1. Did the subagent solve the first-principles spec, or patch the visible symptom?
+2. Is the original proof burden discharged at the owned boundary?
+3. Does the diff introduce any banned patterns?
+4. Are tests proof-bearing, or merely policing/visibility/existence/string/helper tests?
+5. Did the implementation fail open anywhere?
+6. Was slop deleted without burden disposition?
+7. Would the old broken implementation fail the new proof?
+8. Does the result depend on the exact reviewer wording?
+
+If validation fails, reject and issue a corrected spec or assign a fresh subagent. Do not patch it locally.
+
+### Phase 6: Commit Before Disposition
+The commit message must mention:
+- root concern;
+- proof burden;
+- files changed;
+- tests/proof added;
+- banned-pattern audit result;
+- review item(s) remediated.
+
+Only then may the controller post a positive PR-thread reply.
+
+## Review Feedback Disposition Ledger (PR Comment & Repo)
+
+Every PR must have a top-level review ledger.
+
+### Inline and Top-level PR Ledgers
+Rejected or modified feedback must not disappear into resolved threads. They must be recorded twice:
+1. An inline/thread reply with rationale.
+2. A top-level PR comment titled `Review feedback disposition ledger`.
+
+#### Top-level Comment Ledger Format
+```markdown
+# Review feedback disposition ledger
+
+## Rejected feedback
+
+### <thread/comment link or id>
+
+Claim:
+<What the reviewer alleged.>
+
+Disposition:
+Rejected.
+
+Why:
+<Why the claim is false, not repository-owned, design-hostile, generic review slop, or conflicts with stronger global policy.>
+
+Policy basis:
+<Specific policy or product semantics.>
+
+Audit anchor:
+<File/line/doc/command that proves the rejection.>
+
+## Accepted with modified remediation
+
+### <thread/comment link or id>
+
+Claim:
+<True concern.>
+
+Reviewer remediation:
+<Why the proposed fix was misaligned.>
+
+Actual remediation:
+<Commit + proof.>
+```
+
+### Repo-side dispositions artifact: `.pr/REVIEW_DISPOSITIONS.md`
+For large PRs, require a tracked repository artifact at `.pr/REVIEW_DISPOSITIONS.md`:
+
+```markdown
+# Review dispositions
+
+## Accepted and remediated
+
+### <review item id / thread URL>
+
+Root concern:
+<first-principles concern>
+
+Remediation spec:
+<link or pasted summary>
+
+Implementer:
+<subagent/session>
+
+Commit:
+<sha>
+
+Proof:
+<commands/tests/files>
+
+Banned-pattern audit:
+<summary>
+
+## Rejected
+
+### <review item id / thread URL>
+
+Claim:
+<reviewer claim>
+
+Reason for rejection:
+<policy/product evidence>
+
+Top-level PR comment:
+<link>
+
+## Still open
+
+### <review item id / thread URL>
+
+Blocker:
+<what remains>
+```
+This file is the durable repository-side audit trail.
+
+## Banned PR Review Handling
+
+- Positive disposition without a remediation commit.
+- “Will address” followed by resolving the thread.
+- “Accepted” without code/proof change.
+- Resolving an accepted comment before independent remediation review passes.
+- Giving the implementer the exact reviewer wording as the task.
+- Asking a subagent to “fix review comment X.”
+- Patching only the cited line when the concern is boundary-level.
+- Adding tests that assert source shape, strings, existence, visibility, helper branches, or absence of banned tokens.
+- Replacing a real proof burden with a policing test.
+- Resolving rejected feedback only inline without a top-level ledger entry.
+- Treating an issue opened for later work as resolution of current accepted feedback.
+- Letting the original worker remediate its own review without independent spec-and-review.
 
 ## Global Principles
 

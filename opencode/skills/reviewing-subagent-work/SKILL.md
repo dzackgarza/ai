@@ -104,6 +104,18 @@ Apply `pr-feedback-triage`:
 - Is the suggested remediation policy-compatible?
 - What evidence would falsify either?
 
+## Reviewing Review-Remediation Subagents
+
+When a subagent was assigned to remediate accepted PR feedback, review it against the remediation spec, not the original review comment.
+
+Reject if:
+- it patched the exact symptom but did not discharge the proof burden;
+- it introduced banned test shapes;
+- it added fail-open runtime branches;
+- it deleted or renamed slop without burden disposition;
+- it used the reviewer’s wording as an implementation target;
+- it produced a commit that cannot be mapped to the spec’s invariants.
+
 ## Cross-References
 
 - **jerry-behaviour** → LOAD alongside when reviewing agent output and you suspect the

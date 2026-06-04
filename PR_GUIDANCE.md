@@ -105,8 +105,15 @@ any move that makes checks pass by weakening the problem instead of solving it.
 
 ## When Acting on Review Feedback
 
-Review comments are evidence, not commands.
-Do not blindly accept or reflexively reject them.
+A positive disposition requires a commit.
+
+Do not resolve an accepted review comment until the code/proof remediation is committed and the reply cites the commit.
+
+Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed. A thread cannot be resolved on intent or future work.
+
+Rejected and modified feedback must be collected in a top-level PR comment titled `Review feedback disposition ledger` so resolved threads do not hide the audit trail.
+
+Review comments are not implementation specs. The worker must translate accepted feedback into first-principles remediation requirements before assigning implementation.
 
 For each comment:
 - Identify the concern.
