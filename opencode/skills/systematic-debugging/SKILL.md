@@ -132,6 +132,10 @@ If the failure involves an external tool, compiler, library, framework, API, pac
 manager, provider, or exact error message, load `known-solution-first` and resolve the
 public contract **before** populating the hypothesis ledger from local probing.
 
+Capture the minimal symptom, exact error, and version first (one command, not full
+probing), then search external sources. Local reverse-engineering, config inspection,
+source-tree walking, and hypothesis construction follow only after external search.
+
 The knowledge-source hierarchy for external-owner problems is:
 
 1. Official docs, release notes, migration guides, changelogs, API references.

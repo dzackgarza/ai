@@ -46,9 +46,16 @@ answer.
 
 ### Exception
 
-If the tool is private, locally authored, forked, undocumented, air-gapped, or the bug
-is clearly in the project's own integration layer, local inspection can move earlier.
-The agent must state why the external-known-solution path is unavailable or insufficient.
+If the tool is private, locally authored, forked, undocumented, or air-gapped, local
+inspection can move earlier. The agent must state why the external-known-solution path is
+unavailable.
+
+If the bug is "clearly in the project's own integration layer," the agent must name
+the specific owned boundary (file, function, config path) and either (a) already know
+the external contract from a verified authoritative source, or (b) have performed a
+minimal exact-error/docs search and found nothing applicable. Without both the named
+boundary and the external-knowledge check, "integration issue" is an excuse to avoid
+public lookup.
 
 ## The Gate
 
@@ -74,6 +81,19 @@ Extract the documented contract or known fix.
 Check whether the local system matches the conditions.
 
 Only then patch, probe, or reverse-engineer.
+
+## Error-Query Redaction
+
+When capturing exact error messages and log snippets for public search, redact secrets
+and private content — never abstract the diagnostic away. Preserve the semantic search
+terms: package names, library versions, error codes, stack frame symbols, and exact
+diagnostic wording are what make the search useful. Remove credentials, tokens, private
+file paths, private document contents, and user-specific identifiers that do not
+contribute to the diagnostic.
+
+The rule is **redact, don't abstract**: the query should retain everything that would
+help another developer recognize the same problem, and nothing that would expose private
+state.
 
 ## Anti-Patterns
 
@@ -136,6 +156,13 @@ handler, auth flow, cache, queue, rate limiter, or compiler workaround, search f
 known library, official recipe, or existing upstream pattern. If a dependency exists and
 fits, prefer using it. If you write bespoke code anyway, state what source ruled out the
 known solution.
+
+Stop picking tools by scanning what is already installed. Identify the best tool for the
+job from public knowledge (docs, ecosystem, examples), then install or declare it if
+missing. Local availability is an applicability check, not a selection strategy. Do not
+constrain the solution to currently installed tools. If installation is blocked by
+credentials, sudo, licensing, or network, state the blocker. Do not treat the local
+environment as an immutable constraint — the environment exists to serve the project.
 
 ## Completion Standard
 

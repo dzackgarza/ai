@@ -212,6 +212,8 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 
 - **Prior-shaped probes**: commands encode the expected answer and suppress contrary evidence, e.g. guessed flags with `2>/dev/null`, greps whose failure is treated as absence, `jq` paths run before response-shape inspection, or endpoint guesses treated as API facts. The output is the agent's hypothesis reflected back as fake evidence.
 
+- **Availability-first tool reuse**: agents select tools by scanning installed packages or `$PATH` rather than choosing the best tool from public knowledge and installing it if missing. The review question is not "does the chosen tool work" but "was a better tool passed over because it wasn't already installed." Local availability is an applicability check, not the search strategy. When bespoke code or a suboptimal tool appears where a known library or CLI would be cleaner, check whether the agent mentioned, searched for, or rejected the better alternative before settling. The correct expectation: identify the best tool → install/declare it → use it. Only fall back if installation is blocked by credentials, sudo, licensing, network, or policy.
+
 ## Test Patterns
 
 - **No assertions**: tests that execute code but do not prove a contract.
@@ -266,8 +268,12 @@ When reviewing agent-produced debugging work (failed fix attempts, failed probes
 
 3. **Named observability/isolation surface** — the specific surface (fixture, boundary log, intermediate dump, schema dump, test, diagnostic recipe, subprocess capture) that was added or used to make the failing boundary visible.
 
-A report missing any of these three has not completed debugging. It has guessed from priors and bypassed the failure surface.
+For failures whose meaning is owned by an external tool, compiler, library, API, package manager, provider, or exact error message, additionally reject reports that lack:
 
-The canonical statements are: "The raw observation that changed my prior is ____. The smallest surface that reproduces it is ____. The missing observability/isolation surface was ____. The fix is verified by ____ and by the canonical full check ____."
+4. **External-known-solution evidence** — exact error/version/query searched, authoritative docs or issues read (with citation or URL), known contract or solution found, and what remains local-specific. Local config scanning, CLI probing, or source-tree inspection before public-knowledge search is not debugging — it is local-artifact laundering. The external-known-solution evidence must appear before or alongside local probing, not as retroactive research after the local fix is proposed.
+
+A report missing any of the applicable required items has not completed debugging. It has guessed from priors and bypassed the failure surface.
+
+The canonical statements are: "The raw observation that changed my prior is ____. The smallest surface that reproduces it is ____. The missing observability/isolation surface was ____. The fix is verified by ____ and by the canonical full check ____." For external-owner failures, also: "The exact error/query searched was ____. The authoritative source that established the contract or solution was ____."
 
 See `reality-grounded-debugging` for the full command-output discipline, surface-classification matrix, and completion evidence standard.

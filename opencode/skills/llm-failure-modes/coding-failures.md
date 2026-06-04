@@ -234,3 +234,57 @@
     [field-observations.md](field-observations.md) #9,
     [../anti-slop/references/deepening.md](../anti-slop/references/deepening.md)
     (the deletion test as diagnostic).
+
+21. **Availability-first tool reuse** - Agents choose tools by scanning what is already
+    installed or on `$PATH`, then pick the best available local option — or hand-roll
+    bespoke code — rather than identifying the best tool for the job from public
+    knowledge and installing it if missing. Local availability is an applicability
+    check, not the search strategy. The correct loop: identify the best known
+    tool/library/CLI from public docs, examples, and ecosystem knowledge; verify
+    license, fit, and version; check whether it is already declared or installed; if
+    absent, add it to the project's dependency manifest or install it in the
+    project-managed environment; only ask the user if credentials, sudo, licensing,
+    network, or policy blocks it. The failure mode is: `which some_tool` or `npm list`
+    returns nothing, so the agent picks a suboptimal tool or writes custom code, when
+    the correct action was `apt install` or `npm add`. The installed toolset is an
+    accident of history; the task's requirements determine the toolset, not the other
+    way around.
+
+    This is distinct from dependency aversion bias (#16), which is an implicit bias
+    against dependencies in general. Availability-first is a narrower error: the agent
+    *would* use a dependency but short-circuits the decision at the local-availability
+    check. It is also the operational bridge between known-solution-first (search public
+    knowledge before acting) and dependency aversion: even when the known solution is
+    identified, the agent fails to install it because it treats the local filesystem as
+    an immutable constraint rather than a managed environment.
+
+    Manifestations:
+
+    - **`PATH` as oracle**: The agent runs `which`, `command -v`, or `dpkg -l` to
+      discover available tools, then selects the best match from what exists. The
+      correct first step is external search followed by installation; the local
+      check is only for applicability after the right tool is identified.
+
+    - **Package-manager shyness**: The agent avoids adding a dependency to
+      `pyproject.toml`, `package.json`, `Cargo.toml`, or `justfile` when a new tool
+      would simplify the implementation. The project manifest is treated as
+      immutable rather than as the thing that declares what the project needs.
+
+    - **Hand-rolling instead of installing**: The agent writes 50 lines of bespoke
+      date parsing because the preferred library is not in `node_modules`, rather than
+      running `npm add date-fns` and calling one function. The implementation cost
+      of installation was zero; the agent paid the implementation cost of custom code
+      anyway.
+
+    - **Suboptimal local tool selection**: The agent uses an installed tool that
+      partially fits the problem when a better tool exists but isn't installed.
+      The partial-fit tool requires adapters, workarounds, and extra code that the
+      correct tool would not.
+
+    - **Environment mystification**: The agent treats the user's `$PATH`, installed
+      packages, and system configuration as an opaque given — never asking whether
+      the project should own its dependency declarations or whether a tool should be
+      added. The environment exists to serve the project, not the other way around.
+
+    See also: known-solution-first (#16, #17), reviewing-llm-code pattern catalog
+    (known-solution bypass in implementation).
