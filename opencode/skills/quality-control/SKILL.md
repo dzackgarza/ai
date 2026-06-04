@@ -128,9 +128,85 @@ test-ci:
 
 The global QC stack covers cross-project baselines: lint, typecheck, coverage,
 complexity, copy-paste, and slop detection.
-Individual projects must extend these with domain-specific testing that targets
-their unique correctness requirements and the failure modes LLMs systematically
-produce.
+Individual projects may extend these with **domain-specific semantic tests** that
+target their unique correctness requirements and the failure modes LLMs
+systematically produce.
+
+**Before adding any local QC extension, classify the check per the QC Extension
+Gate below.** Extensions are only permitted for project-owned semantic tests.
+Generic, reusable, or tool-configuration steps must be promoted to global QC —
+they do not belong in local recipes or dev dependencies.
+
+### QC Ownership
+
+**Global QC owns:**
+- generic linting, formatting, typechecking
+- coverage machinery and thresholds
+- bypass detection
+- complexity checks, copy-paste detection, dead-code detection
+- slop detectors and anti-pattern detectors
+- tool versions and pins (ruff, mypy, biome, eslint, etc.)
+- generic tool config files
+- generic runner strategy (how tests execute, what gates compose)
+
+**The project owns:**
+- runtime dependencies
+- build dependencies truly required by the project
+- domain tests proving repository-owned behavior
+- fixtures and real data needed by those tests
+- minimal private adapters that connect project-specific tests to the global gate
+
+**The project does not own:**
+- its own generic lint/type/format/coverage stack
+- duplicate tool pins
+- local replacements for global QC
+- public `lint`, `typecheck`, `coverage`, `check`, or similar QC recipes
+- local scripts that should be global QC detectors
+- generic QC tool installs in dev dependencies
+
+### QC Extension Gate
+
+Before adding any project-local QC recipe, script, tool config, or dev
+dependency, classify the check:
+
+1. **Does it verify this repository's domain semantics using project-owned
+   fixtures/data?**
+   - If yes: it may be local, private, and composed into `test`.
+   - If no: continue.
+
+2. **Could the same check apply to another repository?**
+   - If yes: it belongs in `~/ai/quality-control`, not this repo.
+
+3. **Does it encode a known LLM failure mode or anti-slop detector?**
+   - If yes: promote it to global QC.
+
+4. **Does it require a generic tool version, config file, ignore rule, or
+   invocation pattern?**
+   - If yes: global QC owns the tool/config/invocation.
+     Do not pin it locally.
+
+5. **Is it just a narrower way to run lint/typecheck/format/test/coverage?**
+   - Reject it. Use the global recipe.
+
+Local QC extensions are allowed only for project-owned semantic tests.
+Reusable QC practices must be promoted upward.
+
+### Promotion Pathway
+
+When an agent wants to add a local QC step, it must classify it per the
+Extension Gate above. Additionally:
+
+- If the step catches a recurring LLM failure mode, it belongs in global QC.
+- If the step appears useful in more than one repo, promote it to global QC.
+- If unsure, do not add local QC silently; report the classification and ask
+  for QC-owner direction.
+
+Any change that adds project-local QC must report one of:
+
+- "This is domain-specific and should remain local because ___."
+- "This is reusable and was promoted to global QC in ___."
+- "This appears reusable but was not promoted because ___; QC-owner follow-up
+  is required."
 
 ### Mutation Testing
 
@@ -177,11 +253,11 @@ structures, extreme numeric ranges, overlapping intervals.
 Tests must be explicitly designed to detect what LLMs systematically get wrong.
 The following modalities are hard to game without actual correctness:
 
-- **Gaming modalities:** LLMs learn to produce synthetic success signals — tests
-  that pass trivially, coverage that exercises only happy paths, assertions
-  that check tautologies. Mutation testing and property-based testing are the
-  primary countermeasures because they cannot be satisfied by mimicking test
-  structure.
+- **Gaming modalities:** LLMs learn to produce synthetic success signals —
+  tests that pass trivially, coverage that exercises only happy paths,
+  assertions that check tautologies. Mutation testing and property-based
+  testing are the primary countermeasures because they cannot be satisfied by
+  mimicking test structure.
 - **Slop patterns:** Redundant assertions, tautological checks (e.g., `assert x
   is not None` without asserting actual values), testing only constructors or
   trivial getters, mocking external dependencies to avoid real integration
@@ -227,10 +303,10 @@ projects add targeted recipes that use the actual tooling:
   identity for all boundary types
 - `_strict-compile` — tsc or mypy with strictest-available config
 
-### How to Extend
+### How to Extend (Domain-Specific Only, After Gate Classification)
 
 Project justfiles must NOT modify the global QC recipes.
-Instead, wrap the global `test` and add project-specific steps:
+Instead, wrap the global `test` and add project-specific (domain-owned) steps:
 
 ```justfile
 # my-project/justfile

@@ -108,6 +108,28 @@ If snapshots must be rebaselined, that's `npx playwright test --update-snapshots
 If CI needs different behavior, the CI config passes arguments to `just test` or sets environment variables.
 A separate `test-ci` or `test-staging` recipe is always a sign that the developer and CI gates have diverged — which means CI verifies something different from what developers run, which means CI failures are surprises.
 
+#### Exception: Global QC Regime
+
+Under the centralized quality-control model (see the `quality-control` skill), the
+project justfile exposes exactly two public test recipes:
+
+```just
+test:
+    @just -f ~/ai/quality-control/justfile test
+
+test-ci:
+    @just -f ~/ai/quality-control/justfile test-ci
+```
+
+This is **not** a CI/developer divergence. In this regime, `test` runs the full
+gate (all project layers, all QC stages). `test-ci` runs a narrower sub-gate
+focused on correctness proofs and domain semantics, skipping heavy global-QC
+detectors that are redundant per-commit. Both delegate to global QC; the
+distinction is between a full proof run and a fast CI feedback cycle.
+
+Projects not under the global QC regime follow the standard rule: exactly one
+public `test` recipe, no `test-ci`.
+
 ### One entry point per concern
 
 Beyond `test`, a project might expose one or two other entry points:
@@ -152,7 +174,7 @@ Group recipes by who runs them:
 
 - **User** (runs the project's output): `build`, `serve`
 - **Developer** (works on the project): `test`, `setup`, `clean`
-- **CI** (automated pipelines): the same `test` recipe — CI should never have its own recipe that duplicates or narrows the developer's test path
+- **CI** (automated pipelines): the same `test` recipe — CI should never have its own recipe that duplicates or narrows the developer's test path (exception: under global QC regime, see §Exception: Global QC Regime)
 
 Recipes that don't fit one of these three categories are suspect.
 `update-snapshots` and `test-staging` are operations that should happen automatically (as part of the test gate) or on demand via a CLI subcommand, not as distinct recipes a user must know about.

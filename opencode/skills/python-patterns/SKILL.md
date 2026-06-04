@@ -37,7 +37,7 @@ applications. Targets the **latest Python** — no backwards compatibility hedgi
 
 6. **Always a venv** — managed by uv
 
-7. **Always pyproject.toml** — all config lives here (ruff, mypy, pytest, etc.)
+7. **Always pyproject.toml** — project-owned metadata and runtime/build dependencies live here. Generic QC config lives in `~/ai/quality-control`.
 
 8. **Always a justfile** — all dev commands go through `just`
 
@@ -472,7 +472,7 @@ from mypackage.models import User
 from mypackage.utils import format_name
 ```
 
-### pyproject.toml — All Config Lives Here
+### pyproject.toml — Project Metadata and Dependencies
 
 ```toml
 [project]
@@ -489,30 +489,13 @@ dependencies = [
 [dependency-groups]
 dev = []
 
-[tool.ruff]
-line-length = 120
-target-version = "py313"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "TCH", "RUF"]
-
-[tool.ruff.lint.isort]
-known-first-party = ["mypackage"]
-
-[tool.mypy]
-python_version = "3.13"
-strict = true
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_any_generics = true
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--tb=short -q"
+# Remaining QC config (ruff, mypy, coverage, etc.) belongs in global QC.
 ```
 
-### justfile — All Dev Commands
+### justfile — Project Dev Commands (QC Delegated)
 
 ```just
 # Default: show available commands
@@ -524,22 +507,12 @@ setup:
     uv venv
     uv sync
 
-# Format code (ephemeral — no per-repo install needed)
-fmt:
-    uvx ruff format .
-    uvx ruff check --fix .
+# Delegate all QC (fmt, lint, typecheck, test, coverage) to global QC.
+test:
+    @just -f ~/ai/quality-control/justfile test
 
-# Lint code (ephemeral — no per-repo install needed)
-lint:
-    uvx ruff check .
-
-# Type check (ephemeral — no per-repo install needed)
-typecheck:
-    uvx mypy .
-
-# Run tests (ephemeral — no per-repo install needed)
-test *ARGS:
-    uvx pytest {{ARGS}}
+test-ci:
+    @just -f ~/ai/quality-control/justfile test-ci
 
 # Clean build artifacts
 clean:
@@ -648,12 +621,9 @@ result = "".join(str(item) for item in items)
 | Error handling | Assert invariants, fail fast, no speculative try/catch |
 | Package manager | `uv` only |
 | Environment | `uv venv`, always |
-| Config | All in `pyproject.toml` |
+| Project config | In `pyproject.toml`; QC config (lint/typecheck/coverage) belongs in global QC |
 | Dev commands | All in `justfile`, run via `just` |
-| Formatting | `uvx ruff format` via `just fmt` |
-| Linting | `uvx ruff check` via `just lint` |
-| Type checking | `uvx mypy` via `just typecheck` |
-| Testing | `uvx pytest` via `just test` |
+| QC (fmt/lint/typecheck/test/coverage) | Delegated to global QC — use `just test` and see the `quality-control` skill |
 | Target Python | Latest (3.13+), no backwards compat |
 
 ## Anti-Patterns to Avoid
@@ -703,7 +673,7 @@ except Exception:
 # All config belongs in pyproject.toml
 
 # Bad: Running tools directly
-# ruff check .        # use: just lint
+# ruff check .        # use: just test (all QC delegated)
 # pytest              # use: just test
 
 # Bad: Bare except or broad except
@@ -767,6 +737,6 @@ result = parse_date(user_input)
 
 **Remember**: Fail fast.
 Type everything. Use pydantic.
-Run `just check` before committing.
+Run `just test` (all QC, delegated to global QC) before committing.
 No exceptions without evidence of a specific observed failure.
 No variadics, no `Any`, no silent `None` on deterministic paths.
