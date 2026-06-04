@@ -536,10 +536,56 @@ This may be definite or indefinite, and is NOT assumed to be positive-definite, 
   Any watering-down, vague summarization, generic regression-to-the-mean wording, missing concrete procedure, or weakened prohibition is a defect.
   Rectify it immediately before deleting, retiring, or relying on the old source.
 
+# Project Structure: User vs. Agent
+
+Every project has two audiences: the user, and agents working on the user’s behalf.
+
+**What the user sees** is the project: source code, public interfaces, user-facing config, and a top-level `justfile` that exposes real workflows (`build`, `test`, `serve`).
+
+**What agents need** is guardrails: process documentation, QC scripts, hooks, anti-gaming measures, slop checks, and diagnostic surfaces. These exist to constrain agent behavior, not to serve the user’s workflow.
+
+These two surfaces must be kept separate. Agent-facing artifacts belong in `.agents/`. The user should never need to see or interact with them.
+
+### `.agents/` Directory
+
+Every project root contains a `.agents/` directory. This is the canonical location for all agent-facing artifacts:
+
+- **`memories/`** — Durable operational knowledge indexed by `iwe`. All process docs, AGENTS.md supplements, workflow instructions, diagnostic playbooks, and other agent-facing documentation live here as indexed memories, not as loose markdown files.
+- **`justfile`** — Agent-facing recipes for QC, debugging, and guardrail enforcement. All recipes are `[private]`.
+- **Scripts** — Hygiene checks, anti-gaming measures, slop detection, hook scripts. Scripts that encode reusable diagnostic surfaces live here, referenced by the private justfile.
+
+Nothing in `.agents/` is user-facing. The top-level `justfile` may route through agent recipes to enforce mandatory measures, but those recipes are `[private]` and invisible to `just --list`.
+
+### `.agents/justfile`
+
+The agent-facing justfile holds recipes for:
+
+- `[private]` hygiene checks (dead code, duplication, complexity, slop)
+- `[private]` anti-gaming measures (bypass detection, checker integrity)
+- `[private]` debug surfaces (isolated reproducers, artifact dumps, fixture runners)
+- `[private]` hook scripts (pre-commit, pre-push)
+
+The top-level `justfile` composes user-facing workflows from these private recipes where needed:
+
+```justfile
+# Top-level justfile — user-facing surface
+build:
+    @project-cli build
+
+test:
+    @just -f ~/ai/quality-control/justfile test
+    @just -f .agents/justfile _test-agent
+
+serve:
+    @project-cli serve
+```
+
+Agent-facing recipes are never exposed to the user. They exist to prevent agents from bypassing mandatory checks, hacking proof loops, or mutating global state without isolation.
+
 # Memory
 
-Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes.
-Each project contains a `.agents/memories/` directory with a `config.toml` and all memories stored as plain `.md` files.
+Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes, stored under `.agents/memories/`.
+Each project’s `.agents/memories/` directory contains a `config.toml` and all memories stored as plain `.md` files.
 Memories are persistent, searchable, and cross-session.
 
 **Store:** Stable operational guidance, environment quirks, cross-session execution context, technical findings, decisions that outlive a single task.
