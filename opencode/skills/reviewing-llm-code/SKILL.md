@@ -463,6 +463,21 @@ Why this matters:
 [How this mechanism lets bad work pass, hides failures, or increases future agent
 damage.]
 
+User surprise analysis:
+
+[Every finding must answer: how does this behavior minimize what agents care about
+(reducing errors) at the cost of what users care about (minimizing surprise and
+confusion)?
+Walk through the user's experience: what the user expects to happen, what perfectly
+fine error states they might expect in the bad case (a 404 when content is missing, a
+crash on malformed data — these are not bad outcomes, they are clear ones), what
+actually happens, and why the actual behavior will surprise or confuse the user.
+Slop is not just architecturally wrong — it produces the worst possible user
+experience: an app that silently does the wrong thing is far more confusing than one
+that loudly refuses to work.
+The agent optimized for a green check; the user gets a head-scratching experience
+they cannot diagnose.]
+
 Existential justification:
 
 [WHY does this code exist at all? What justified the agent writing it instead of
