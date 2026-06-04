@@ -82,7 +82,7 @@ separate install step. No implicit environment assumption. No `pip install` prel
 The full policy (hierarchy, forbidden pathways, canonical template, review rule) is in
 `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts with uv".
 
-# Bridge-Burning Policy Router
+## Bridge-Burning Policy Router
 
 Before writing, reviewing, or fixing code/tests/QC, load:
 

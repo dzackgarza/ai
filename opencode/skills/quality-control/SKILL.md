@@ -4,6 +4,10 @@ description: Use when implementing, understanding, or delegating to the global q
 ---
 # Quality Control System
 
+Before configuring, running, or modifying Quality Control checks, consult the central policy index:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
+
+
 The global quality control system at `~/ai/quality-control` provides centralized
 linting, typechecking, formatting, complexity analysis, and code quality enforcement for
 all projects. It is the single source of truth for QC workflows.

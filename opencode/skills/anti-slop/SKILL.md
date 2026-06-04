@@ -1198,14 +1198,6 @@ Skills must not seed:
 
 ### Cross-References (Source-of-Truth Skills)
 
-Rather than repeating policy in every skill, reference the canonical source:
+Rather than repeating policy in every skill, consult the central policy index to locate the canonical source-of-truth skill:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
 
-| Domain | Canonical Skill |
-| --- | --- |
-| Testing behavior | `test-guidelines` |
-| Debugging behavior | `reality-grounded-debugging` + `systematic-debugging` |
-| External tools/errors | `known-solution-first` |
-| Tool execution | runner-first tooling / uv script pathway |
-| QC | `quality-control` |
-| Skill authoring | `creating-skills` |
-| Dependency provisioning | tool-provisioning-and-environment-hygiene

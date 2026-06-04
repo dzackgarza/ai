@@ -5,6 +5,10 @@ description: Use when fixing slop identified by anti-slop or reviewing-llm-code 
 
 # Fixing Slop
 
+Before attempting to remediate or fix code quality/slop findings, consult the central policy index:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
+
+
 ## Core Rule
 
 **Deleting or renaming slop is laundering.** Both destroy forensic evidence of the original intention. The slop artifact records what an agent was *trying to do* — obliterating it without understanding that intention means the unmet need that produced the slop still exists, and the next agent will produce the same slop all over again.

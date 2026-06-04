@@ -6,8 +6,12 @@ Note: if you are working with a PR, read the adjacent pr-guide.md file.
 
 # HIGH-QUALITY TESTING STANDARDS (GUIDELINES)
 
+Before writing, reviewing, or modifying tests or Quality Control configurations, consult the central policy index:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
+
 **MANDATORY FIRST STEP: You MUST read this entire file before taking ANY action.
 This is the source of truth for all test work.**
+
 
 ## Core Principle
 

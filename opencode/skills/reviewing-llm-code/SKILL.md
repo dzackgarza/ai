@@ -5,6 +5,9 @@ description: Use when reviewing code, tests, QC, or documentation produced by an
 
 # Reviewing LLM Code
 
+Before reviewing, testing, or triaging code, consult the central policy index to locate the canonical source-of-truth skill:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
+
 Review LLM-produced code as an agent-failure audit, not as a normal bug list.
 The point is to identify the mechanisms that made bad work look acceptable.
 

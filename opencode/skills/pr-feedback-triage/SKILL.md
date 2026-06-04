@@ -4,6 +4,10 @@ description: Use when consuming, replying to, resolving, or acting on PR review 
 ---
 # PR Feedback Triage
 
+Before acting on PR comments or review feedback, consult the central policy index:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
+
+
 When consuming review feedback from other agents (automated or human), do not treat review comments as automatic chores to be done or automatic blockers. A review comment is a claim to be evaluated, not an order.
 
 ## Core Doctrine: Split Feedback from Remediation
