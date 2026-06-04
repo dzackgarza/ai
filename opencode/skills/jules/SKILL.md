@@ -112,9 +112,9 @@ references. Context engineering in the prompt is essential.
 **No Jules PR should be accepted without deep review.
 Automated reviews are insufficient.**
 
-### Anti-Slop Review Delegation
+### Jules as Asynchronous Anti-Slop Review Scout
 
-Use [anti-slop-review-workflow.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-review-workflow.md) when:
+Use [jules-anti-slop-issue-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md) when:
 - the user asks Jules to review LLM/agent-produced work,
 - a PR has already been produced by Jules, Codex, Claude, Qwen, DeepSeek, etc.,
 - the user wants a cheap second-pass slop audit,
@@ -212,6 +212,8 @@ jules new --repo owner/repo "Fix the bug in auth module. Context: branch=$BRANCH
 
 ## Template Prompts
 
+- [Jules Anti-Slop Issue Review Template Prompt](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md)
+
 ### Add Tests
 
 ```bash
@@ -234,11 +236,8 @@ jules new "Fix all linting errors in the codebase. Run the linter, identify issu
 
 ### Review PR (Anti-Slop Review)
 
-```bash
-PR_NUM=123
-# Build .jules/anti-slop-review-prompt.md using jules/references/anti-slop-review-workflow.md
-cat .jules/anti-slop-review-prompt.md | jules new --repo owner/repo
-```
+- For normal review, use [github-code-review](file:///home/dzack/ai/opencode/skills/github-code-review/SKILL.md);
+- For anti-slop review, use [jules-anti-slop-issue-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md).
 
 ## Workflow
 
@@ -396,6 +395,13 @@ Workflow:
 3. Qodo strikes through resolved issues automatically
 
 ### Sending Review Feedback to Jules
+
+> [!WARNING]
+> **Do not confuse this with anti-slop issue review**
+> 
+> The feedback loop below is for an existing Jules PR being iterated through review.
+> 
+> For anti-slop review, do not pipe findings back to Jules for immediate fixing. Jules opens an issue. Later PRs address that issue after independent triage.
 
 Use the `extract_unresolved_issues` module from the `git-guidelines` skill to pipe
 unresolved PR review issues back to Jules:
