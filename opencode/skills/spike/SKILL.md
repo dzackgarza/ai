@@ -106,7 +106,7 @@ Use Hermes tools for the research step:
 - `web_extract(urls=["https://websockets.readthedocs.io/..."])` — read the actual docs
   (returns markdown)
 
-- `terminal("pip show websockets | grep Version")` — check what’s installed in the
+- `terminal("uv pip show websockets | grep Version")` — check what’s installed in the
   project’s venv
 
 For libraries without docs pages, clone and read their `README.md` / `examples/` via
@@ -211,7 +211,7 @@ then do a head-to-head comparison at the end:
 | Dimension | pdfjs (002a) | camelot (002b) |
 |-----------|--------------|----------------|
 | Extraction quality | 9/10 structured | 7/10 table-only |
-| Setup complexity | npm install, 1 line | pip + ghostscript |
+| Setup complexity | npm install, 1 line | uv add ghostscript |
 | Perf on 100-page PDF | 3s | 18s |
 | Handles rotated text | no | yes |
 

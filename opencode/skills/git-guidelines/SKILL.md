@@ -402,6 +402,17 @@ gh issue view <N> --repo <owner>/<repo> --json state,title,url
 gh api repos/<owner>/<repo>/issues/<N>/comments
 ```
 
+### Jules Review Delegation
+
+If the user asks to use Jules for review, load:
+- [jules](file:///home/dzack/ai/opencode/skills/jules/SKILL.md)
+- [jules/references/anti-slop-review-workflow](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-review-workflow.md)
+- [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md)
+- [anti-slop](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md)
+- [reviewing-subagent-work](file:///home/dzack/ai/opencode/skills/reviewing-subagent-work/SKILL.md)
+- `test-guidelines` if tests/QC/proof surfaces are in scope
+- `pr-feedback-triage` if existing review comments are being evaluated
+
 ## Issue Workflow
 
 ### Filing Issues

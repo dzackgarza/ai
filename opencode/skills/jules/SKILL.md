@@ -112,15 +112,37 @@ references. Context engineering in the prompt is essential.
 **No Jules PR should be accepted without deep review.
 Automated reviews are insufficient.**
 
+### Anti-Slop Review Delegation
+
+Use [anti-slop-review-workflow.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-review-workflow.md) when:
+- the user asks Jules to review LLM/agent-produced work,
+- a PR has already been produced by Jules, Codex, Claude, Qwen, DeepSeek, etc.,
+- the user wants a cheap second-pass slop audit,
+- the task is to produce findings, not implement fixes.
+
+Do not use this workflow for ordinary bug fixing or feature implementation.
+For implementation, use the PR Contract workflow.
+For anti-slop review, Jules’ deliverable is a GitHub issue, not code.
+
 * * *
 
 ## Setup (Run Before First Command)
 
-### 1. Install CLI
+### 1. Run Ephemerally / Verify CLI
+
+Use an ephemeral runner where possible:
 
 ```bash
-which jules || npm install -g @google/jules
+npx -y @google/jules --help
 ```
+
+Or route through the existing `improved-jules-cli` flow:
+
+```bash
+uvx git+https://github.com/dzackgarza/improved-jules-cli --help
+```
+
+*(Note: Avoid global installations. If Jules truly cannot run ephemerally, document the exception and require explicit user approval. Do not run `npm install -g`.)*
 
 ### 2. Check Auth
 
@@ -194,7 +216,7 @@ jules new --repo owner/repo "Fix the bug in auth module. Context: branch=$BRANCH
 
 ```bash
 FILES=$(git diff --name-only HEAD~3 2>/dev/null | grep -E '\.(js|ts|py|go|java)$' | head -5 | tr '\n' ', ')
-jules new "Add unit tests for recently modified files: $FILES. Include edge cases and mocks where needed."
+jules new "Add substantive tests for recently modified files: $FILES. Follow test-guidelines: no mocks, no skips, no fake proof, no content-free assertions. Tests must prove repository-owned behavior."
 ```
 
 ### Add Documentation
@@ -210,12 +232,12 @@ jules new "Add documentation comments to: $FILES. Include function descriptions,
 jules new "Fix all linting errors in the codebase. Run the linter, identify issues, and fix them while maintaining code functionality."
 ```
 
-### Review PR
+### Review PR (Anti-Slop Review)
 
 ```bash
 PR_NUM=123
-PR_INFO=$(gh pr view $PR_NUM --json title,body,files --jq '"\(.title)\n\(.body)\nFiles: \(.files[].path)"')
-jules new "Review this PR for bugs, security issues, and improvements: $PR_INFO"
+# Build .jules/anti-slop-review-prompt.md using jules/references/anti-slop-review-workflow.md
+cat .jules/anti-slop-review-prompt.md | jules new --repo owner/repo
 ```
 
 ## Workflow
@@ -337,11 +359,9 @@ Create in repo root to improve Jules results:
 This section covers the detailed workflow for managing Jules PRs through the review
 cycle, including automated reviewer tracking and feedback piping.
 
-### Issues are resolved when
+### Feedback Resolution Principles
 
-- The review comment has been marked as **resolved** in GitHub (clicked checkmark), OR
-
-- The concern is **struck through** in the PR (~~text~~)
+Do not treat feedback resolution as a purely mechanical thread-clearing process. Feedback must be understood, accepted or rejected, and made legible to the human maintainer with a visible disposition and evidence (see [git-guidelines](file:///home/dzack/ai/opencode/skills/git-guidelines/SKILL.md) review feedback rule).
 
 ### Matching Jules Sessions to PRs
 
@@ -413,7 +433,7 @@ For the full end-to-end workflow using `improved-jules-cli`:
 
 6. **Send Feedback** — Pipe issues to Jules (see above).
 
-7. **Repeat** steps 3-6 until no unresolved issues remain.
+7. **Repeat** steps 3-6 using the following rule: Use Jules for candidate anti-slop issue generation only. Do not pipe review comments back to Jules for blind fixing unless a stronger controller has already triaged each comment and written policy-compatible instructions.
 
 8. **Surface** — Present PR link:
    `uvx git+https://github.com/dzackgarza/improved-jules-cli pr SESSION_ID`

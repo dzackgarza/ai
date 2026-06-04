@@ -125,6 +125,15 @@ Also load as applicable:
 
 - `thermo-nuclear-code-quality-review` when the review includes maintainability, architecture, abstractions, giant files, or code that feels obviously badly shaped.
 
+- **Jules Review Delegation** (if the user asks to use Jules for review): Load:
+  - [jules](file:///home/dzack/ai/opencode/skills/jules/SKILL.md)
+  - [jules/references/anti-slop-review-workflow](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-review-workflow.md)
+  - [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md)
+  - [anti-slop](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md)
+  - [reviewing-subagent-work](file:///home/dzack/ai/opencode/skills/reviewing-subagent-work/SKILL.md)
+  - `test-guidelines` if tests/QC/proof surfaces are in scope
+  - `pr-feedback-triage` if existing review comments are being evaluated
+
 Do not summarize these skills in the review.
 Use them to shape the judgment.
 
