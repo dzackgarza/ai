@@ -7,10 +7,23 @@ description: Use when writing, reviewing, or refactoring code — especially whe
 ## Overview
 
 Clean code reads like well-written prose.
+
+**Authority note:** This skill is subordinate to repo-specific policies.
+Where this skill's patterns conflict with higher-ranked skills in the authority
+hierarchy (see `quality-control`), the higher-ranked skill wins. In particular:
+
+- `python-patterns`' "fail fast, no speculative try/catch" overrides "start with
+  try-catch-finally" (see `error-handling.md`).
+
+- `test-guidelines`'s "no mocks, no exceptions" overrides any mock-enabling rationale.
+
+- The fail-loud policy means special cases and default objects are allowed only as
+  explicit domain semantics, not as defensive soft defaults.
+
 Every name reveals intent.
 Every function tells a story.
 Every class has a single purpose.
-The goal isn’t just working code—it’s code that others can understand quickly, modify
+The goal isn't just working code—it's code that others can understand quickly, modify
 safely, and extend confidently.
 
 > “Clean code always looks like it was written by someone who cares.”

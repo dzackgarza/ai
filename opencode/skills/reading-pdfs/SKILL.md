@@ -92,7 +92,12 @@ if __name__ == "__main__":
     print(markdown)
 ```
 
-### Utility Function
+### Utility Function (Excerpt)
+
+**Excerpt only — do not save/run directly.**
+This snippet shows the logic. To run it, embed in a PEP 723 script (see the full
+script template above) or include in an existing uv-managed project with `mistralai`
+declared as a dependency.
 
 ```python
 import os

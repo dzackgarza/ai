@@ -25,20 +25,15 @@ without `gh`.
 
 ```bash
 # Determine which method to use throughout this workflow
-if command -v gh &>/dev/null && gh auth status &>/dev/null; then
+if gh auth status 2>&1; then
   AUTH="gh"
+elif [ -n "$GITHUB_TOKEN" ]; then
+  AUTH="curl"
 else
-  AUTH="git"
-  # Ensure we have a token for API calls
-  if [ -z "$GITHUB_TOKEN" ]; then
-    if [ -f ~/.hermes/.env ] && grep -q "^GITHUB_TOKEN=" ~/.hermes/.env; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.hermes/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
-    elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
-      GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials 2>/dev/null | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')
-    fi
-  fi
+  AUTH="none"
+  echo "ERROR: No GitHub authentication found. Run: gh auth login"
+  exit 1
 fi
-echo "Using: $AUTH"
 ```
 
 ### Extracting Owner/Repo from the Git Remote

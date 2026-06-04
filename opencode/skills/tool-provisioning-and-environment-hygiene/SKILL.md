@@ -10,9 +10,11 @@ Use the right provisioning mechanism for the intended lifetime:
 
 | Scope | Mechanism | Example |
 | --- | --- | --- |
-| One-off CLI invocation | Ephemeral runner | `uvx`, `npx -y`, `bunx` |
-| Project dependency | Project package manager | `uv add`, `npm install --save-dev`, `bun add --dev` |
-| Persistent user tool | Isolated tool manager | `uv tool install`, `pipx install` |
+| Generic tool / QC tool / inspection tool | Ephemeral runner, usually from global QC | `uvx`, `npx -y`, `bunx`; see `quality-control` |
+| Python CLI one-off | Ephemeral runner | `uvx`, `uvx --from package` |
+| Project dependency (repo-owned runtime/build/plugin/domain-test only) | Project package manager | `uv add`, `npm install --save-dev`, `bun add --dev` |
+| Agent-authored Python script with deps | PEP 723 + `uv run` | See self-contained scripts policy below |
+| Persistent Python user tool (exceptional) | Isolated tool manager | `uv tool install` only |
 | OS-level package | OS package manager | `apt install`, only when authorized |
 
 Do not mix tiers. If a tool is needed once, use an ephemeral runner. If a tool is a
@@ -25,8 +27,13 @@ documents it.
 
 - Never use `pip install --break-system-packages`.
 - Never install into system Python.
+- Never use `pipx`.
+- Never use `pip` in any context.
 - Never install globally (`npm install -g`, `cargo install`, `go install`) just to avoid
   using an ephemeral runner or declaring a project dependency.
+- Never install generic QC tools (ruff, mypy, pytest, pytest-cov, coverage, basedpyright,
+  etc.) as per-repo dev dependencies. These belong in global QC at `~/ai/quality-control`.
+  Project dev dependencies are for repo-owned runtime/build/plugin/domain-test dependencies.
 - Never decide against a better dependency because it is not currently installed.
   Local availability is an applicability check, not a selection strategy.
 - Never write fallback code, stubs, soft degradation, or reimplementation when a missing
@@ -103,12 +110,13 @@ chmod +x script.py
 
 | Scenario | Mechanism |
 | --- | --- |
+| Generic QC tool / inspection tool | Ephemeral runner, usually from global QC (`~/ai/quality-control`). See `quality-control`. |
 | Python CLI tool | `uvx tool ...` |
 | Python CLI where package name differs from command | `uvx --from package command ...` |
 | One-shot Python snippet with dependencies | `uv run --with package python - <<'PY' ... PY` |
 | Python script written to disk | PEP 723 inline metadata + `uv run` |
 | Executable Python script | `#!/usr/bin/env -S uv run --script` + PEP 723 inline metadata |
-| Existing uv project | `uv sync` + `uv run ...`; `uv add` only for repo-owned dependencies |
+| Existing uv project | `uv sync` + `uv run ...`; `uv add` only for repo-owned dependencies (runtime, build, domain-test). Generic QC tools go in global QC. |
 
 `uv run --with ... script.py` is acceptable for a transient one-shot command written and
 discarded in a single session. But if the script is written to disk, checked in, handed
@@ -121,7 +129,7 @@ scattered across docs.
 ```
 No pip install.
 No python -m pip install.
-No pipx.
+No pipx (already prohibited above).
 No ad hoc venv.
 No "install these requirements first" script prelude.
 No assuming the current interpreter has the imports.

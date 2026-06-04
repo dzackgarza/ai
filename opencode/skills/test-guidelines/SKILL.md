@@ -153,8 +153,10 @@ functionality.
 
 1. **Action-First** — Execute tool calls BEFORE any explanation.
 
-2. **Exploration Parallelism** — Make 3 parallel tool calls (e.g., `read`, `grep`,
-   `glob`) during initial context gathering.
+2. **Split by ownership in initial investigation** — For project-internal unknowns,
+   start with `tree`/shape inspection. For external tool/API/compiler unknowns, load
+   `known-solution-first` and search public contracts first. Do not force a rigid
+   parallel tool-call pattern — use the appropriate model for the uncertainty type.
 
 3. **REQUIRED: Reference Skills** — Strictly follow `prompt-engineering`,
    `agent-orchestration`, and the guidelines below.
@@ -649,15 +651,15 @@ If that sentence cannot be written clearly, the test is likely not well-targeted
 ## Comprehensive Quality Gates (`just test`)
 
 All code must be hard-gated by a comprehensive suite of checks.
-These must be enshrined in a version-controlled `justfile` (or similar global config) to
-prevent bypasses.
+These gates are owned by the global QC system at `~/ai/quality-control` — see the
+`quality-control` skill. The project justfile delegates to global QC and may add only
+domain-specific private checks per the QC Extension Gate.
 
-The `justfile` must consistently set up the venv/test environment and expose testing
-recipes that run the *entire* suite of related checks rather than allowing individual
-“pieces” to be tested in isolation (e.g., no running just typechecks without the rest of
-the suite). This combined recipe should be the primary `test` command.
+**Do not** reconfigure these gates locally (no per-repo tool installs, no local
+config overrides for generic QC tools). The global QC system owns tool pins, configs,
+and invocation patterns.
 
-The following checks are **mandatory** gates:
+The following checks are **mandatory** gates (all owned by global QC):
 
 1. **Tests pass**
 

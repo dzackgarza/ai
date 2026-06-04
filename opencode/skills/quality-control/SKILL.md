@@ -8,6 +8,37 @@ The global quality control system at `~/ai/quality-control` provides centralized
 linting, typechecking, formatting, complexity analysis, and code quality enforcement for
 all projects. It is the single source of truth for QC workflows.
 
+## Authority Hierarchy
+
+When skill policies conflict, the following authority order determines which rule
+prevails. A domain skill may narrow these policies for its domain but may not weaken
+them.
+
+| Rank | Skill | Owns |
+| --- | --- | --- |
+| **1** | `quality-control` | Generic QC invocation, public recipes, tool pins, and configs. No local reimplementation. |
+| **2** | `test-guidelines` | Testing epistemology: what constitutes a proof, no mocks, no exceptions, no masking. |
+| **3** | `tool-provisioning-and-environment-hygiene` | How tools run: ephemeral by default, uv-only Python, no pipx/pip/global npm. |
+| **4** | `known-solution-first` | External tool/compiler/API uncertainty: public contracts before local probing. |
+| **5** | `reality-grounded-debugging` | Diagnostic command discipline: stderr preservation, surface classification before mutation. |
+| **6** | `writing-scripts-and-cli-interfaces` | CLI design patterns, project-owned dependency decisions, standalone script templates. |
+| **7** | Domain skills | May narrow higher-ranked policies within their domain but may not weaken them. |
+
+**Policy narrowing rule:** A domain skill may impose stricter requirements than a
+higher-ranked skill (e.g., `test-guidelines` may add prohibitions beyond
+`quality-control`'s defaults). It may not relax them (e.g., no skill may permit mocks
+or pytest-mock).
+
+**When a lower-ranked skill contradicts a higher-ranked skill, the higher-ranked skill
+wins.** If `test-driven-development` says "mocks if unavoidable" and `test-guidelines`
+says "no mocks, no exceptions," `test-guidelines` wins. If `clean-code` says "start with
+try/catch" and `python-patterns` says "fail fast, no speculative try/catch,"
+`python-patterns` (as a domain skill narrowing tool-provisioning's fail-loud doctrine)
+wins.
+
+The hierarchy is designed so that no skill below rank 3 can re-introduce mock seams,
+local QC reimplementation, or global tool installation.
+
 ## High-Level Policies
 
 ### Minimal Public API

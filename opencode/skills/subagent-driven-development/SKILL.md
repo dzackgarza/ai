@@ -84,17 +84,21 @@ delegate_task(
 
     FOLLOW TDD:
     1. Write failing test in tests/models/test_user.py
-    2. Run: pytest tests/models/test_user.py -v (verify FAIL)
+    2. Run: uv run pytest tests/models/test_user.py -v (verify FAIL)
     3. Write minimal implementation
-    4. Run: pytest tests/models/test_user.py -v (verify PASS)
-    5. Run: pytest tests/ -q (verify no regressions)
+    4. Run: uv run pytest tests/models/test_user.py -v (verify PASS)
+    5. Run: just test (verify no regressions via global QC)
     6. Commit: git add -A && git commit -m "feat: add User model with password hashing"
+
+    TESTING EPISTEMOLOGY:
+    - No mocks. See test-guidelines.
+    - Substantive assertions only — prove owned behavior, not type/internals.
 
     PROJECT CONTEXT:
     - Python 3.11, Flask app in src/app.py
     - Existing models in src/models/
-    - Tests use pytest, run from project root
-    - bcrypt already in requirements.txt
+    - Tests use uv run pytest, run from project root
+    - bcrypt already declared in pyproject.toml (no requirements.txt)
     """,
     toolsets=['terminal', 'file']
 )
@@ -190,8 +194,8 @@ delegate_task(
 ### 4. Verify and Commit
 
 ```bash
-# Run full test suite
-pytest tests/ -q
+# Run full test suite (global QC gate)
+just test
 
 # Review all changes
 git diff --stat
@@ -306,24 +310,42 @@ This skill EXECUTES plans created by the writing-plans skill:
 
 2. Implementation plan → subagent-driven-development → working code
 
+### Inherited Parent Policies
+
+Every subagent prompt template must inherit these policies:
+
+| Policy | Skill | Behavior |
+| --- | --- | --- |
+| Testing epistemology (no mocks, substantive assertions) | `test-guidelines` | Reject mock-based tests, content-free assertions, and masking. |
+| Final verification (global QC gate) | `quality-control` | `just test` runs the full global QC pipeline. |
+| Tooling (uv-only, PEP 723, ephemeral by default) | `tool-provisioning-and-environment-hygiene` | No pip, no pipx, no global installs. |
+| External errors/tools | `known-solution-first` | Public contracts before local probing. |
+| Debugging | `reality-grounded-debugging` | Stderr preservation, surface classification before mutation. |
+
 ### With test-driven-development
 
 Implementer subagents should follow TDD:
 
 1. Write failing test first
 
-2. Implement minimal code
+2. Run test to verify it fails
 
-3. Verify test passes
+3. Implement minimal code
 
-4. Commit
+4. Run test to verify it passes
+
+5. Run full suite (`just test`) for regressions
+
+6. Commit
 
 Include TDD instructions in every implementer context.
+Use `uv run pytest tests/` for red/green isolation, but completion proof must be
+`just test` (global QC gate).
 
 ### With requesting-code-review
 
 The two-stage review process IS the code review.
-For final integration review, use the requesting-code-review skill’s review dimensions.
+For final integration review, use the requesting-code-review skill's review dimensions.
 
 ### With systematic-debugging
 

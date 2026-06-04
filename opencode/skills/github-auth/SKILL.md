@@ -25,20 +25,12 @@ When a user asks you to work with GitHub, run this check first:
 ```bash
 # Check what's available
 git --version
-gh --version 2>/dev/null || echo "gh not installed"
-
-# Check if already authenticated
-gh auth status 2>/dev/null || echo "gh not authenticated"
-git config --global credential.helper 2>/dev/null || echo "no git credential helper"
+gh auth status 2>&1
 ```
 
-**Decision tree:**
-
-1. If `gh auth status` shows authenticated → you’re good, use `gh` for everything
-
-2. If `gh` is installed but not authenticated → use “gh auth” method below
-
-3. If `gh` is not installed → use “git-only” method below (no sudo needed)
+1. `gh auth status` succeeds: authenticated, use `gh` for everything
+2. `gh` is installed but not authenticated: use “gh auth” method below
+3. `gh` is not installed: use “git-only” method below
 
 * * *
 
@@ -71,18 +63,27 @@ Tell the user to go to: **https://github.com/settings/tokens**
 
 - Copy the token — it won’t be shown again
 
-**Step 2: Configure git to store the token**
+**Step 2: Configure git credential cache**
 
 ```bash
-# Set up the credential helper to cache credentials
-# "store" saves to ~/.git-credentials in plaintext (simple, persistent)
-git config --global credential.helper store
-
-# Now do a test operation that triggers auth — git will prompt for credentials
-# Username: <their-github-username>
-# Password: <paste the personal access token, NOT their GitHub password>
-git ls-remote https://github.com/<their-username>/<any-repo>.git
+# Cache credentials in memory for 8 hours (28800 seconds)
+# This avoids plaintext storage on disk.
+git config --global credential.helper 'cache --timeout=28800'
 ```
+
+Then do a test operation that triggers auth — git will prompt for credentials:
+- Username: your GitHub username
+- Password: paste the personal access token (not your GitHub password)
+
+```bash
+git ls-remote https://github.com/<your-username>/<any-repo>.git
+```
+
+After entering credentials once, they're cached in memory for the timeout duration.
+
+**Do not use `credential.helper store`** — it saves tokens in plaintext to
+`~/.git-credentials`. Do not embed tokens in remote URLs. Use the memory cache or `gh`
+credential helper instead.
 
 After entering credentials once, they’re saved and reused for all future operations.
 
@@ -91,13 +92,6 @@ After entering credentials once, they’re saved and reused for all future opera
 ```bash
 # Cache in memory for 8 hours (28800 seconds) instead of saving to disk
 git config --global credential.helper 'cache --timeout=28800'
-```
-
-**Alternative: set the token directly in the remote URL (per-repo)**
-
-```bash
-# Embed token in the remote URL (avoids credential prompts entirely)
-git remote set-url origin https://<username>:<token>@github.com/<owner>/<repo>.git
 ```
 
 **Step 3: Configure git identity**
@@ -126,7 +120,8 @@ Good for users who prefer SSH or already have keys set up.
 **Step 1: Check for existing SSH keys**
 
 ```bash
-ls -la ~/.ssh/id_*.pub 2>/dev/null || echo "No SSH keys found"
+ls ~/.ssh/id_*.pub
+# If this returns "No such file or directory", no keys exist — proceed to Step 2.
 ```
 
 **Step 2: Generate a key if needed**
@@ -217,35 +212,20 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/user
 ```
 
-### Extracting the Token from Git Credentials
-
-If git credentials are already configured (via credential.helper store), the token can
-be extracted:
-
-```bash
-# Read from git credential store
-grep "github.com" ~/.git-credentials 2>/dev/null | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|'
-```
-
-### Helper: Detect Auth Method
+### Auth Detection
 
 Use this pattern at the start of any GitHub workflow:
 
 ```bash
-# Try gh first, fall back to git + curl
-if command -v gh &>/dev/null && gh auth status &>/dev/null; then
+# Prefer gh for all GitHub operations.
+# Fall back to GITHUB_TOKEN env var for curl API calls.
+if gh auth status 2>&1; then
   echo "AUTH_METHOD=gh"
 elif [ -n "$GITHUB_TOKEN" ]; then
   echo "AUTH_METHOD=curl"
-elif [ -f ~/.hermes/.env ] && grep -q "^GITHUB_TOKEN=" ~/.hermes/.env; then
-  export GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.hermes/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
-  echo "AUTH_METHOD=curl"
-elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
-  export GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')
-  echo "AUTH_METHOD=curl"
 else
   echo "AUTH_METHOD=none"
-  echo "Need to set up authentication first"
+  echo "Need to set up authentication first. See: gh auth login"
 fi
 ```
 

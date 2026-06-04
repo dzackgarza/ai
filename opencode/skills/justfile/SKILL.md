@@ -72,46 +72,12 @@ The result is a justfile whose public surface is the complete history of one-sho
 The fix is not to avoid adding recipes — it's to **stop and read the existing surface** before adding another one.
 If the new behavior is a sub-step of an existing recipe, it should be `[private]` or inlined.
 
-### Single `test` recipe, always
+### Single `test` recipe under global QC
 
-There should be exactly **one** public test recipe.
-All sub-tasks — unit tests, integration tests, visual regression, snapshot generation, linting, type-checking, hygiene checks — are `[private]` recipes that `test` composes.
-
-```just
-[private]
-_typecheck:
-    npx tsc --noEmit
-
-[private]
-_unit:
-    npx vitest --run
-
-[private]
-_integration:
-    npx playwright test
-
-[private]
-_snapshots:
-    npx playwright test --update-snapshots
-
-test: _typecheck _unit _integration _snapshots
-    @echo "All gates passed"
-```
-
-Never expose `test-unit`, `test-integration`, `test-visual-regression`, `update-snapshots`, `check-hygiene`, or any other test sub-step as a public recipe.
-If a developer needs to run a subset locally, they run the CLI tool directly (`npx vitest --run tests/unit`) — the justfile is not a test-discovery interface.
-
-The requirement to produce a full-site snapshot gallery on every test run is not a separate recipe — it's a `[private]` dependency of `test`. Snapshot updates are part of the test gate; they are not a distinct user-facing operation.
-If snapshots must be rebaselined, that's `npx playwright test --update-snapshots` at the CLI, not `just update-snapshots`.
-
-**CI uses the same `test` recipe.** CI never gets its own recipe.
-If CI needs different behavior, the CI config passes arguments to `just test` or sets environment variables.
-A separate `test-ci` or `test-staging` recipe is always a sign that the developer and CI gates have diverged — which means CI verifies something different from what developers run, which means CI failures are surprises.
-
-#### Exception: Global QC Regime
-
-Under the centralized quality-control model (see the `quality-control` skill), the
-project justfile exposes exactly two public test recipes:
+For projects governed by `~/ai/quality-control`, the public QC surface is exactly `test`
+and `test-ci`, both delegating to the global QC justfile. No public `lint`, `fmt`,
+`typecheck`, `coverage`, `check`, `test-unit`, `test-integration`, or other generic QC
+recipes exist at the project level.
 
 ```just
 test:
@@ -121,14 +87,18 @@ test-ci:
     @just -f ~/ai/quality-control/justfile test-ci
 ```
 
-This is **not** a CI/developer divergence. In this regime, `test` runs the full
-gate (all project layers, all QC stages). `test-ci` runs a narrower sub-gate
-focused on correctness proofs and domain semantics, skipping heavy global-QC
-detectors that are redundant per-commit. Both delegate to global QC; the
-distinction is between a full proof run and a fast CI feedback cycle.
+**CI uses the same public recipes as local development.**
+If CI needs different behavior, the CI config passes arguments or sets environment
+variables — it does not get a third public recipe.
 
-Projects not under the global QC regime follow the standard rule: exactly one
-public `test` recipe, no `test-ci`.
+All sub-tasks — unit tests, integration tests, visual regression, snapshot generation,
+linting, type-checking, hygiene checks — are `[private]` recipes that `test` composes,
+or they are owned by the global QC system. The justfile is not a test-discovery
+interface. If a developer needs to run a subset locally, they run the CLI tool directly
+(`npx vitest --run tests/unit`), not a public just recipe.
+
+**Exception: projects not under global QC** follow the standard rule: exactly one public
+`test` recipe, no `test-ci`.
 
 ### One entry point per concern
 
@@ -377,9 +347,9 @@ repo := env_var_or_default("REPO", env_var("HOME") / "myproject")
 build target="debug":
   cargo build --{{target}}
 
-# Variadic parameter
-test *args:
-  pytest {{args}}
+# Variadic parameter (avoid for test — use private recipes composed under single test gate)
+run *files:
+  ./process {{files}}
 ```
 
 `{{justfile_directory()}}` — directory containing the justfile (stable, use instead of `$PWD`) `{{justfile()}}` — absolute path to the justfile itself
@@ -434,18 +404,18 @@ run:
 
 ## Groups
 
+Groups organize private recipes for display.
+They are acceptable for internal composition but must never expose generic QC operations
+as public sub-recipes.
+
 ```just
-[group('test')]
-test-unit:
-  pytest tests/unit
-
-[group('test')]
-test-integration:
-  pytest tests/integration
-
 [group('build')]
 build:
   cargo build
+
+[group('build')]
+_bundle-assets:
+  rsync -a dist/ output/
 ```
 
 ```bash

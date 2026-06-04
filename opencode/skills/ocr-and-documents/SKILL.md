@@ -77,9 +77,9 @@ uv run python scripts/extract_pymupdf.py document.pdf --metadata   # Title, auth
 uv run python scripts/extract_pymupdf.py document.pdf --pages 0-4   # Specific pages
 ```
 
-**Inline**:
+**Inline (uses uvx with pymupdf for one-shot invocation)**:
 ```bash
-uv run python3 -c "
+uvx --from pymupdf python3 -c "
 import pymupdf
 doc = pymupdf.open('document.pdf')
 for page in doc:
@@ -128,10 +128,11 @@ web_search(query="arxiv GRPO reinforcement learning 2026")
 
 ## Split, Merge & Search
 
-pymupdf handles these natively — use `execute_code` or inline Python:
+pymupdf handles these natively.
+The snippets below are excerpts showing the logic; to run them, use `uvx --from pymupdf python3 -c "..."` for one-liners or a PEP 723 script for reusable tools.
 
 ```python
-# Split: extract pages 1-5 to a new PDF
+# Excerpt: Split — extract pages 1-5 to a new PDF
 import pymupdf
 doc = pymupdf.open("report.pdf")
 new = pymupdf.open()
@@ -141,7 +142,7 @@ new.save("pages_1-5.pdf")
 ```
 
 ```python
-# Merge multiple PDFs
+# Excerpt: Merge multiple PDFs
 import pymupdf
 result = pymupdf.open()
 for path in ["a.pdf", "b.pdf", "c.pdf"]:
@@ -150,7 +151,7 @@ result.save("merged.pdf")
 ```
 
 ```python
-# Search for text across all pages
+# Excerpt: Search for text across all pages
 import pymupdf
 doc = pymupdf.open("report.pdf")
 for i, page in enumerate(doc):
@@ -178,6 +179,6 @@ in one package.
 
 - marker-pdf downloads ~2.5GB of models to `~/.cache/huggingface/` on first use
 
-- For Word docs: `uvx python-docx` or PEP 723 inline script with `python-docx` (better than OCR — parses actual structure)
+- For Word docs: use a PEP 723 inline script with `python-docx` (better than OCR — parses actual structure). `uvx python-docx` will not work because `python-docx` is a library, not a CLI tool. Use `uv run --with python-docx python -c "..."` for one-liners or a PEP 723 script for anything reusable.
 
 - For PowerPoint: see the `powerpoint` skill (uses python-pptx)

@@ -158,9 +158,13 @@ fits, prefer using it. If you write bespoke code anyway, state what source ruled
 known solution.
 
 Stop picking tools by scanning what is already installed. Identify the best tool for the
-job from public knowledge (docs, ecosystem, examples), then install or declare it if
-missing. Local availability is an applicability check, not a selection strategy. Do not
-constrain the solution to currently installed tools. If installation is blocked by
+job from public knowledge (docs, ecosystem, examples).
+Use it ephemerally by default (`uvx`, `npx -y`, `bunx`).
+Declare it in the project manifest only if it is a repo-owned dependency (runtime,
+build, plugin, or domain-test dependency).
+Promote generic tooling to `~/ai/quality-control` rather than installing it per-repo.
+Local availability is an applicability check, not a selection strategy. Do not
+constrain the solution to currently installed tools. If provisioning is blocked by
 credentials, sudo, licensing, or network, state the blocker. Do not treat the local
 environment as an immutable constraint — the environment exists to serve the project.
 

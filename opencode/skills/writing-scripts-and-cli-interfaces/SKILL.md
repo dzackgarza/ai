@@ -6,12 +6,18 @@ description: Use when creating shell scripts, Python CLI tools, or command-line 
 
 ## Default Stack
 
-**Cyclopts + Pydantic v2 + basedpyright + Ruff + pytest**
+**Project-owned:** Cyclopts + Pydantic v2 (for CLI presentation and input contracts).
+**Global QC (see `quality-control`):** basedpyright, Ruff, pytest, coverage, etc.
 
 Use Cyclopts for CLI presentation.
 Use Pydantic as the actual spec.
 This converges help text, validation, config loading, schemas, docs, and tests on one
 source of truth.
+
+**Do not configure basedpyright, Ruff, pytest, or other generic QC tools locally in the
+project.** These tools, their configs, and invocation patterns belong in global QC at
+`~/ai/quality-control`. The project's `pyproject.toml` declares only repo-owned runtime,
+build, plugin, and domain-test dependencies.
 
 ## Standalone Python Scripts
 
@@ -146,15 +152,17 @@ Generate JSON Schema from Pydantic models for:
 
 - Structured output validation
 
-### 5. basedpyright Strict Mode
+### 5. basedpyright — Global QC
 
-Enable strict mode to turn “typed-looking code” into actually checked code.
-Configure in `pyproject.toml`:
+basedpyright strict mode is configured in global QC at `~/ai/quality-control`.
+Do not configure it in the project `pyproject.toml`. The global config covers all
+projects.
 
-```toml
-[tool.basedpyright]
-strict = ["src"]
-```
+### 6. Ruff — Global QC
+
+Ruff runs as part of the global QC gate (`just test` from `~/ai/quality-control`).
+Do not run it ad-hoc. If you need to check generated code, use `just test` to run the
+full gate, which includes Ruff checks automatically after normalization.
 
 Rejects untyped public functions and unknown types.
 
@@ -357,8 +365,8 @@ Apply these rules to force quality:
 7. Every command has at least one substantive behavioral test proving it correctly
    invokes the underlying logic or fails on invalid input.
 
-8. Run Ruff immediately — reject untyped public functions, unknown types, and lint
-   failures
+8. Run `just test` (the full global QC gate) before declaring work complete — Ruff,
+   basedpyright, pytest, and all other checks run automatically
 
 ## Anti-Patterns
 
