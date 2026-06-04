@@ -638,6 +638,26 @@ A mocked smoke check:
 
 Renaming a mock test to `smoke` is not a fix for missing proof.
 
+## No Proof-Burden Erasure
+
+Deleting a fake, mocked, skipped, or weak test is not sufficient.
+
+Before deleting a bad test, identify the claim it was attempting to prove.
+
+Valid deletion:
+- the claim is not repository-owned;
+- the claim is already proved by a real test, named explicitly;
+- the claim is invalidated by the current contract;
+- the claim remains required and a blocker/issue is opened or the current task is reported incomplete.
+
+Invalid deletion:
+- remove the test and claim the suite is cleaner;
+- remove the test and close the review thread;
+- remove the test and leave no proof of the original behavior;
+- remove the test because making it real is hard.
+
+A deleted fake proof must be paired with proof replacement, proof invalidation, or explicit proof debt.
+
 * * *
 
 ## Verification Rigor

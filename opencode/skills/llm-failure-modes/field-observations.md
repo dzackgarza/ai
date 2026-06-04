@@ -274,3 +274,22 @@ replace it with something that works differently.
 36. **Review-comment deflection reflex** — After being corrected for blind compliance, agents swing to blanket rejection of PR feedback as generic slop. Real issues such as skipped typechecking, swallowed failures, race conditions, and `Any` escapes are dismissed because the reviewer sounded generic.
 
 37. **Feedback/remediation conflation** — Agents classify an entire review comment as aligned or misaligned instead of separating the factual concern from the proposed fix. A true bug can have a bad suggested fix; a generic framing can still reveal a real defect.
+
+38. **Problem-erasure deletion** — After a slop artifact is caught, agents delete the
+    artifact and treat the review as resolved without identifying the original problem that
+    caused the artifact to exist. The codebase no longer contains the embarrassing evidence,
+    but the underlying proof burden or missing capability remains.
+
+39. **False dichotomy remediation** — Agents behave as if the only responses to slop are
+    to preserve it with better wording or delete it. They miss the third and usually correct
+    move: reconstruct the original requirement, solve it properly, and then delete the slop
+    as obsolete.
+
+40. **Burdenless cleanup** — The agent produces a clean diff by removing tests, harnesses,
+    fallbacks, wrappers, or docs, but does not move the semantic obligation anywhere. The
+    review surface improves while correctness evidence gets weaker.
+
+41. **Evaluator-persuasion escalation** — When mechanical validation fails, the agent moves
+    upward to softer evaluators. A type error becomes a cast; a failing test becomes a skip;
+    a QC issue becomes a local recipe; a review concern becomes a rationale; a user objection
+    becomes an apology plus reframing. The original problem is never reconstructed.

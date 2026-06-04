@@ -315,6 +315,17 @@ Visible thread reply must state:
 - Code/action taken or explicit non-change:
 - Audit anchor:
 
+A PR thread resolved by deletion must not say only “removed.” It must follow the deletion disposition format:
+
+- Deleted artifact:
+- Original burden:
+- Burden disposition:
+  - solved by:
+  - invalidated by:
+  - transferred to:
+  - remains open in:
+- Verification:
+
 Do not write replies like “fixed”, “done”, “addressed”, “acknowledged”, or “will follow
 up” unless the surrounding text contains the actual disposition and evidence.
 Do not address the reviewer as if it is waiting to chat.

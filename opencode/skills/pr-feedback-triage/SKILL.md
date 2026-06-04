@@ -63,6 +63,9 @@ For private, single-user editor-like software, "workspace escape," "path travers
 ### 8. Smoke/harness checks are not proof
 A mocked or synthetic browser smoke check can only be a diagnostic health check, and the global no-mock rule means it cannot prove product behavior. Do not let relabeling become resolution (such as renaming a mocked test to `smoke` or `harness` while preserving the unproved artifact). Either the artifact is a non-proof diagnostic and excluded from feature-proof claims, or it must be removed/replaced by a real proof.
 
+### 9. Deletion is also a remediation claim
+When a review item is resolved by deletion, require the same scrutiny as a code fix. Never accept “removed” as a complete disposition. The deletion must disposition both the artifact and the original problem or proof burden that caused the artifact to be introduced, ensuring the original burden is either solved, invalidated, explicitly transferred, or recorded as unresolved.
+
 ## Routing Matrix
 
 When routing PR review workflows, follow these rules:
@@ -125,6 +128,54 @@ For each review item, evaluate:
 - sandboxing or path traversal hardening that breaks intended local workflows.
 - replacing real proof with browser-smoke/mock harness.
 - adding skips, mocks, `type: ignore`, graceful defaults, or fallback warnings.
+## Deletion Is Also a Remediation Claim
+
+When a review item is resolved by deletion, require the same scrutiny as a code fix.
+
+The thread response must state:
+- what original problem the deleted artifact attempted to solve;
+- why that problem is no longer live, or where it is now solved;
+- what proof or issue records the disposition;
+- why deletion does not weaken the PR’s evidence.
+
+Never accept “removed” as a complete disposition.
+
+A PR thread resolved by deletion must not say only “removed.”
+
+Required format:
+
+```text
+Deleted artifact: <file/name>
+Original burden: <what it attempted to prove/solve>
+Burden disposition:
+  - solved by: <real proof surface/implementation>
+  - invalidated by: <evidence/contract change>
+  - transferred to: <other location>
+  - remains open in: <issue number/explicit blocker>
+Verification: <how it was verified>
+```
+
+Example:
+
+```markdown
+Deleted `browser-smoke` mocked IPC test.
+
+Original burden: fast detection that the frontend shell can mount without real Tauri IPC.
+Burden disposition: remains useful as a diagnostic, but cannot be proof-bearing under
+global no-mock rules. Replaced with real Tauri workflow tests for product behavior;
+no diagnostic replacement kept in this PR. The lack of a non-proof shell diagnostic is
+accepted because product proof is now covered by <test>.
+```
+
+or:
+
+```markdown
+Deleted mocked IPC test.
+
+Original burden: product-level Tauri IPC proof.
+Burden disposition: not solved. Opened issue #N and this PR remains incomplete for that
+proof requirement.
+```
 
 ## Visible Thread Reply Format
 

@@ -124,7 +124,33 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 
 - **No global QC integration**: tests, scripts, type checks, startup checks, or runtime validation exist but are not part of the standard command that future agents and users will actually run.
 
-- **Honest-label laundering (slop upholstery)**: an agent receives a finding that an artifact is fraudulent (a test that proves nothing, a parser that discards semantics, docs claiming an architecture the runtime contravenes) and "fixes" it by renaming the artifact to honestly describe its own fraudulence — e.g., renaming a mocked Tauri test to `browser-smoke`, adding a comment that docs `# mirror /var/www/html/` above a hardcoded path, or renaming `validateInput` that does nothing to `inputPresent`. The rename makes the label match the behavior, destroying the detection signal (the mismatch between label and behavior) that would have flagged the artifact on future review. The artifact's runtime behavior is unchanged. The finding was about **existence**, not labeling, but the relabel retroactively reframes it as a labeling issue. This is proof laundering with better marketing. See `anti-slop/references/code-patterns.md` → **Honest-Label Laundering** for detection heuristics (diff-only-renames, qualifying adjectives like `smoke`/`basic`/`minimal`, disclaimer-style naming, fix applied to name not artifact).
+- **Honest-label laundering (slop upholstery)**:
+  The artifact remains but receives a more accurate label: smoke, harness, diagnostic,
+  scaffold, non-proof, quarantine. The label is now less false, but the artifact still
+  pollutes the validation ecosystem.
+  The rename makes the label match the behavior, destroying the detection signal (the mismatch between label and behavior) that would have flagged the artifact on future review. The artifact's runtime behavior is unchanged. The finding was about **existence**, not labeling, but the relabel retroactively reframes it as a labeling issue. This is proof laundering with better marketing. See `anti-slop/references/code-patterns.md` → **Honest-Label Laundering** for detection heuristics (diff-only-renames, qualifying adjectives like `smoke`/`basic`/`minimal`, disclaimer-style naming, fix applied to name not artifact).
+
+- **Deletion laundering / proof-burden erasure**:
+  A criticized slop artifact is deleted without solving or recording the original problem
+  it attempted to address. The codebase looks cleaner, but the proof burden is now hidden.
+  The next agent is likely to recreate the same fake proof, fallback, wrapper, or harness.
+
+  Detection:
+  - deletion follows review/user criticism;
+  - commit message emphasizes cleanup, removal, or simplification;
+  - no replacement proof or capability exists;
+  - no issue/contract/blocker records the original problem;
+  - final report says the review item is resolved because the artifact is gone;
+  - the original requirement is absent from the new PR narrative.
+
+  Correct response:
+  Require a burden disposition: solved, invalidated, transferred to real proof,
+  or explicitly open as unresolved.
+
+- **Reviewer-signal whack-a-mole**:
+  The agent treats every evaluator as a layer to appease: typechecker, compiler, test,
+  QC, PR review, user. At each layer it performs the minimum mutation to silence that
+  evaluator, rather than reconstructing the original story and solving the problem.
 
 - **Broken proof-loop inversion**: recommending new tests, fixtures, inventories, coverage, or cleanup before repairing the canonical command that makes any test meaningful.
   This is especially damaging when the gate runs against stale static output, cached artifacts, hidden services, or a different runtime path than users actually exercise.

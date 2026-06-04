@@ -621,6 +621,65 @@ This skill is ANALYSIS only. It detects slop but does not prescribe fixes.
 
 When slop has been identified, do NOT rename or delete it — both are laundering. Instead, load **`../fixing-slop/SKILL.md`** for the remediation protocol: reconstruct the narrative, identify the correct intention, fulfill the intention with the right implementation.
 
+### Deletion Laundering / Problem-Erasure Deletion
+
+Deletion laundering occurs when an agent removes a criticized slop artifact without solving, invalidating, or explicitly preserving the original problem it was trying to solve.
+
+The artifact disappears. The proof burden disappears from view. The PR looks cleaner. But the original need remains unresolved.
+
+This is laundering because the deletion makes the codebase look less sloppy while also erasing the evidence that a correctness, proof, workflow, or diagnostic gap existed.
+
+Deleting the artifact is not enough. The reviewer must ask where the original burden went.
+
+### The Corrected Principle
+
+Slop remediation must disposition both:
+
+1. the bad artifact, and
+2. the original problem or proof burden that caused the artifact to be introduced.
+
+Valid outcomes:
+- artifact removed because the original problem is invalidated with evidence;
+- artifact removed and replaced by a real solution/proof surface;
+- artifact removed and the original problem is explicitly recorded as unresolved/blocking;
+- artifact preserved only after it is proven to have a real, non-laundered purpose.
+
+Invalid outcomes:
+- artifact renamed;
+- artifact quarantined;
+- artifact deleted;
+- artifact moved;
+- artifact documented;
+- artifact excluded from one gate;
+
+while the original problem silently disappears.
+
+First reconstruct the original burden. Then remove, replace, move, or preserve the artifact only after the burden is solved, invalidated, explicitly transferred, or recorded as unresolved.
+
+One-line principle:
+*Slop remediation is not artifact management. It is obligation management.*
+
+A slop artifact may be deleted only after the problem it was trying to solve has been solved, disproved, or made explicitly unresolved.
+
+### Artifact/Burden Disposition Gate
+
+Before accepting a slop remediation, answer:
+
+1. What original problem caused this artifact to exist?
+2. What claim did the artifact pretend or attempt to prove?
+3. Is that claim still required?
+4. If no, what evidence invalidated it?
+5. If yes, where is it now solved or proved?
+6. If unsolved, where is it recorded as an explicit blocker?
+7. Did the fix change runtime/proof behavior, or only remove the evidence of failure?
+8. Could a future agent reintroduce the same artifact because the original problem is still invisible?
+
+A remediation is incomplete if the artifact is gone but the burden has no owner. This links to the existing goal-integrity rule: changing labels, comments, issue state, or public framing does not satisfy a goal whose object is code, proof, data, implementation, research, or semantic review.
+
+**Short reviewer form:**
+- Do not ask only “is the slop gone?”
+- Ask “where did the original problem go?”
+
 * * *
 
 ## Verification-Poison Dependencies

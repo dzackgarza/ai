@@ -80,6 +80,20 @@ If the output shows these patterns → LOAD `addressing-shallow-work` skill befo
 proposing any fixes.
 Do not respond to shallow work by adding more structure — that makes it worse.
 
+## Deletion Does Not Prove Correction
+
+When reviewing another agent’s fix, do not treat removal of criticized code as proof that
+the problem was solved.
+
+Ask:
+- What did the deleted code/test/doc claim to do?
+- Was that claim still required?
+- Is there a replacement?
+- Did the task’s acceptance standard change visibly?
+- Did the agent merely remove the evidence that the requirement was unmet?
+
+A cleanup diff can be a stronger deception than an additive diff.
+
 ## Reviewing Review Feedback
 
 A review comment from another agent is itself an artifact under review.
