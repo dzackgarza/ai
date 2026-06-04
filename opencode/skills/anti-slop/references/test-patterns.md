@@ -118,3 +118,36 @@ Watch for:
 **Rule:** Tests define the specification.
 The implementation must rise to meet the tests; tests must not be relaxed to accommodate
 the implementation.
+
+## Helper-Level Proof Substitution
+
+Replacing a global or boundary-crossing contract with a local helper unit proof that is easy to satisfy.
+
+The agent tests a small helper function in isolation (proving only that the helper's internal logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering: the helper test passes, but the actual entrypoint remains unverified. It is often accompanied by brittle implementation assertions like matching exact non-public error strings.
+
+**Bad:**
+
+The review feedback requested proof that "existing config with missing required render command fails loudly."
+
+```rust
+// Slop: Tests only the helper logic in isolation rather than the config parser/startup flow
+#[test]
+fn test_require_or_default() {
+    let res = require_or_default(None, true, "missing pandoc.render_command", || DEFAULT_RENDER_COMMAND.to_string());
+    assert!(res.is_err());
+    assert_eq!(res.unwrap_err().to_string(), "pandoc-preview config is missing pandoc.render_command");
+}
+```
+
+**Better:**
+
+Exercise the real boundary:
+
+```rust
+#[test]
+fn test_startup_fails_on_missing_required_render_command() {
+    let temp_config = create_temp_config("pandoc = {}"); // missing required render_command
+    let result = build_initial_state_from_config_path(Some(&temp_config));
+    assert!(result.is_err());
+}
+```

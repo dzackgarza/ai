@@ -541,6 +541,7 @@ A useful review names patterns a maintainer can act on:
 - fallback branches that weaken invariants tests pretend to enforce;
 - fake success paths: caught owned failures returning success-shaped state;
 - **timing or performance assertions in tests**: tests that assert on timing, responsiveness, latency, or throughput — these chase imaginary issues, inflate test coverage with hallucinated targets, and prove nothing about correctness. Performance belongs in CI gates, not unit tests. Users notice choppiness and ask for a fix; they do not ask for "popup loads in <=50ms". See **Test Patterns** → **Timing or performance assertions**;
+- **helper-level proof substitution (easy-to-satisfy proof)**: replacing a substantive boundary-crossing or configuration contract with a local helper unit proof that is easy to satisfy. The agent tests a small helper function in isolation (proving only that the helper's internal logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering;
 - god objects and unsegmented service interfaces;
 - manual enumeration of the same concept in several distant places;
 - boolean theater: `return true` APIs whose values callers ignore;

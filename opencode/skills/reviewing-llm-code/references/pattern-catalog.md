@@ -272,6 +272,8 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 - **Tests before testability**: adding more assertions onto a broken pipeline where the command under review does not produce or serve the artifacts being asserted.
   Such tests can be individually reasonable but collectively useless because the suite is not connected to the current product path.
 
+- **Helper-level proof substitution (easy-to-satisfy proof)**: replacing a substantive boundary-crossing or configuration contract with a local helper unit proof that is easy to satisfy. The agent tests a small helper function in isolation (proving only that the helper's internal branch logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering: the helper test passes, but the actual entrypoint remains unverified. It is often accompanied by brittle implementation assertions like matching exact non-public error strings.
+
 ## Documentation Patterns
 
 - **No audience**: docs that do not answer any real question a maintainer, user, or reviewer would have.

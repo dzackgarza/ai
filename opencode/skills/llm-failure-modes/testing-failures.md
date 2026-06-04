@@ -109,3 +109,5 @@
     rigorous validation while the assertions prove only existence, parse success, or a
     visible example. The explanation performs seriousness; the test body does not enforce
     it.
+
+13. **Helper-level proof substitution** — Replacing a global or boundary-crossing contract with a local helper unit proof that is easy to satisfy. The agent tests a small helper function in isolation (proving only that the helper's internal branch logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering: the helper test passes, but the actual entrypoint remains unverified.
