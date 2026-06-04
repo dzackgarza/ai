@@ -438,8 +438,44 @@ These can be compiled into global QC detectors to act as warning or error gates.
 
 ---
 
+## Non-Discriminating Assertion Red Flags
+
+These assertions are banned in ordinary project tests because they do not meaningfully
+raise confidence in repository-owned behavior:
+
+- existence-only assertions;
+- visibility-only assertions;
+- truthiness / non-empty assertions;
+- type-only or shape-only assertions;
+- no-throw assertions;
+- exact string assertions;
+- source-text / AST / implementation-shape assertions;
+- assertions for absence of banned constructs;
+- helper-only branch assertions;
+- boolean branch-forcing tests;
+- mock/spies/call-count assertions;
+- broad snapshots where exact output is not public contract;
+- import/module-load/constructor tests;
+- status-label assertions;
+- log/warning assertions;
+- HTTP status-only assertions;
+- database count/existence assertions;
+- round-trip tests where both directions share the same implementation;
+- timing/performance assertions in ordinary tests;
+- no-console-errors as sole proof.
+
+For every such assertion, require one of:
+1. replace with real boundary proof;
+2. move to global QC if it is code-shape policing;
+3. record the proof burden as unresolved.
+
+For the canonical inventory of these banned patterns and their allowed replacements, see the [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md).
+
+---
+
 ## Final Principle
 
 > **Agent-resistant codebases should be designed so that the easiest code to write is also the hardest code to fake.**
 
 Defaults, fallbacks, mocks, skips, helper proofs, string errors, and local QC gates all make faking easier. The bridge-burning policies remove those moves from the game.
+

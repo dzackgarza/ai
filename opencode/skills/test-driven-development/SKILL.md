@@ -442,7 +442,7 @@ Never fix bugs without a test.
   Catalogs field-observed testing failures: checker removal, test expectation
   modification, and plausible fixture injection.
 
-- **anti-slop → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
+- **anti-slop → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md). For the catalog of assertion constraints, see the central [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md).
 
 ## Final Rule
 

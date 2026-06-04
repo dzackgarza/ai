@@ -90,10 +90,13 @@ Before writing, reviewing, or fixing code/tests/QC, load:
 - `anti-slop` for bridge-burning policies and anti-laundering doctrine.
 - `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
 - `test-guidelines` for proof/test obligations.
+- `test-guidelines/references/proof-only-assertions.md` for banned test assertion patterns.
 - `fixing-slop` when an artifact is being renamed, deleted, quarantined, or “made honest.”
 - `pr-feedback-triage` when acting on review comments or automated review feedback.
 
+A test line is admissible only if it increases the epistemic status of a repository-owned proof burden. If an assertion would still pass on a plausibly broken app, it is banned.
 Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, smoke tests in proof paths, helper-level proof for boundary obligations, stringly errors, boolean mode flags, and deletion without burden transfer are hard red flags.
+
 
 ## Skill Routing Matrix
 

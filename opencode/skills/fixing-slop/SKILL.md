@@ -106,6 +106,24 @@ Before accepting any "fix" to a slop finding, apply these checks:
 - Was the correct intention fulfilled? If you can't point to the boundary-crossing test, the real dependency, or the architectural migration — the fix was avoidance.
 - **Does the fix address the full blast radius?** If the fix touches one artifact while the same failure pattern exists in adjacent code, discarded code remains unmigrated, or systemic invariants remain unproven — the fix is myopic. A single slop finding is a symptom; check that the disease was treated.
 
+## Low-Information Tests Are Laundering
+
+A slop fix that adds low-information assertions is not a fix.
+
+Invalid:
+- deleting a mock and adding a test that no mock file exists;
+- renaming fake E2E to smoke and asserting it only runs in smoke;
+- replacing a fallback with a helper and asserting helper branches;
+- adding `assert result is not None` to show the path works;
+- asserting an exact error string copied from the review comment.
+
+Valid:
+- prove the original burden through the real boundary;
+- move code-shape enforcement to global QC;
+- record unresolved proof debt.
+
+Consult the central [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md) for the inventory of banned and preferred assertion patterns.
+
 ## The Golden Rule
 
 **The slop artifact is forensic evidence of an unmet need.** If you destroy the evidence without fulfilling the need, you have made the system worse: the need is now invisible, and the next artifact produced to address it will be slop again, but without the context to understand why.

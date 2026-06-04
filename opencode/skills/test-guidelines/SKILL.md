@@ -391,33 +391,43 @@ The local fixture source for these tests is
 
 * * *
 
-## Assertion Rule
+## Proof-Only Assertion Policy
 
-Assertions should express the nontrivial claim being proven.
+A project test is admitted only if every assertion increases confidence in a repository-owned behavior.
+A test line is admissible only if it increases the epistemic status of a repository-owned proof burden.
+If an assertion would still pass on a plausibly broken app, it is banned.
+No assertion without discrimination.
 
-**Prefer:**
+A test line is banned if it would pass when:
+- the app is not wired to the real boundary;
+- the implementation returns arbitrary non-empty junk;
+- the helper under test is no longer used by production;
+- the error is wrong but the string matches;
+- the UI shell renders but the feature is broken;
+- the code was merely reshaped to appease a reviewer;
+- the assertion checks existence, visibility, type, or structure without semantics.
 
-- Exact transformed values
+Project tests prove behavior.
+Global QC enforces code-shape policy.
+Issues record unresolved proof burdens.
+Nothing else belongs in the test suite.
 
-- Exact contract output
+For the canonical inventory of banned assertion patterns and their allowed replacements, see the [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md).
 
-- Exact interpretation of representative external input
+## Line Admission Gate
 
-- Exact failure behavior
+Before keeping any assertion line, answer:
 
-- Exact repository-owned semantics
+1. What exact proof burden does this line raise confidence in?
+2. What plausible broken implementation would this line fail on?
+3. Does it exercise the real owned boundary?
+4. Is it asserting product semantics rather than existence, visibility, type, string, structure, or review compliance?
+5. Would it still pass if production stopped using the helper or artifact under test?
 
-**Avoid primary assertions like:**
+If no plausible broken implementation is excluded, delete the line.
+If the claim is code-shape policy, move it to global QC.
+If the burden remains unproved, record the proof debt; do not add a low-information assertion.
 
-- `is not None`
-
-- `len(x) > 0`
-
-- “returns a list”
-
-- “serialization succeeded”
-
-- “field equals constructor input” (when that is merely framework storage)
 
 * * *
 

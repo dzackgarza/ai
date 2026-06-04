@@ -422,6 +422,29 @@ just test-ci    # Run all checks including CI-specific ones
 
 Projects should run `just test-ci` in CI to match local + CI checks.
 
+## Assertion Policy vs QC Policy
+
+Project tests must not enforce generic policy by inspecting code shape or asserting absence of banned constructs.
+
+Global QC owns policy policing:
+- mocks/fakes/stubs;
+- type ignores and `as any`;
+- runtime defaults/fallbacks;
+- skip/xfail;
+- source suppression;
+- local QC surfaces;
+- stderr suppression;
+- exact-string assertion patterns where mechanically detectable.
+
+Project tests own behavior proof:
+- real boundary exercised;
+- semantic output asserted;
+- side effects verified;
+- structured errors checked;
+- independent oracles used.
+
+Do not scatter policy-policing tests into projects. For the catalog of assertion constraints, see the central [Proof-Only Assertions Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/proof-only-assertions.md).
+
 ## Key Principle
 
 **Delegate, never reimplement.** Local projects use global QC infrastructure.
