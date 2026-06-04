@@ -62,7 +62,8 @@ Load the relevant section for your context:
   [investigation-failures.md](investigation-failures.md) Premature solution generation,
   thrashing, question dissolution, verification theater, tool output blindness,
   unfalsified external attribution, concept label substitution, analysis-action
-  concurrency. (13 items)
+  concurrency, prior-shaped inspection, local-artifact laundering, reverse-engineering
+  before lookup. (17 items)
 
 - **Self-evaluation and introspection failures** —
   [introspection-failures.md](introspection-failures.md) Attribution error, narrative

@@ -34,6 +34,20 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   **When you see complexity, stop and search for the dependency.
   Do not review the complex code on its own terms first.**
 
+- **Known-solution bypass in implementation**: agents write nontrivial code (parsers,
+  adapters, retry mechanisms, file watchers, renderers, API clients, schema validators,
+  markdown transformers, date/time handlers, auth flows, caches, queues, rate limiters,
+  compiler workarounds) without first checking whether a known library, official recipe,
+  or existing upstream pattern solves the task. The code compiles, passes tests, and
+  might even work, but it duplicates effort the ecosystem already owns. The review
+  question is not "does this code look correct" but "why does this code exist when the
+  dependency was available." Before implementing, agents should search for the known
+  solution. If bespoke code is written anyway, the agent or report should state what
+  source ruled out the known solution.
+  This mirrors the debugging half of `known-solution-first` (search public contracts
+  before reverse-engineering) but applied at implementation time: before hand-rolling
+  infrastructure- or integration-layer code, check whether the ecosystem solved it.
+
 - **Enterprise patterns in bespoke software**: code that attempts graceful degradation when dependencies are missing, accepts squishy input shapes, over-generalizes to other platforms or users, or handles enterprise-grade edge cases — all inappropriate for one user’s private tool on their own system.
   The correct behavior for bespoke software is: work on the happy path, fail loudly outside of it.
   “Graceful degradation” is enterprise thinking for unknown deployment targets.

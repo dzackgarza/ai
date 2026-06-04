@@ -31,7 +31,13 @@ When entering an unfamiliar repo, API, CLI, data format, or pipeline:
 - First expose the actual shape.
 - Then narrow.
 
-Correct first moves include:
+**Split by ownership.** For project-internal code, "actual shape" means the local
+directory, configs, entrypoints, and invocation chain. For external
+tools/compilers/libraries/APIs, "actual shape" means the public contract — docs, release
+notes, issues, known working examples — not the local cache or wrapper. Load
+`known-solution-first` for the latter case.
+
+Correct first moves for project-internal unknowns:
 
 - `pwd`, `git status --short`, shallow `tree`/`find`/`fd`
 - `just --list`, package scripts, Makefile targets, CI commands
@@ -163,7 +169,11 @@ A debugging task is not complete until the report includes:
 Load alongside:
 
 - `systematic-debugging` — hypothesis ledger, falsification, formal reasoning
-- `llm-failure-modes` — cognitive failure modes (premature solution, thrashing, prior-shaped inspection, tool output blindness)
+- `known-solution-first` — external-tool/API/compiler problems: search public contract
+  before local reverse-engineering. Required when the unknown is owned by an external
+  project.
+- `llm-failure-modes` — cognitive failure modes (premature solution, thrashing,
+  prior-shaped inspection, tool output blindness, local-artifact laundering)
 - `anti-slop` — implementation-quality analysis, patch accretion, myopic fixes
 - `test-guidelines` — substantive assertions, owned-surface discipline
 - `quality-control` — global QC as single source of truth, no-bypass policy

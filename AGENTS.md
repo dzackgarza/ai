@@ -8,7 +8,20 @@ These are in ~/ai/opencode/skills -- use semtools, npx probe, and iwe to search 
 
 # **CRITICAL DIRECTIVE**: RESEARCH BEFORE ACTION, ALWAYS
 
-START EVERY EXPLORATION BY USING A `tree` COMMAND. Do NOT spike with greps, guess file paths or directories, or run narrow searches -- start broad and THEN narrow.
+**Split by ownership.** For project-internal unknowns, the rule below ("tree first")
+applies — expose the local directory structure and configs before narrowing.
+
+For external tools, compilers, libraries, APIs, package managers, providers, or exact
+error messages, the first pass is different. Load `known-solution-first` and search
+public contracts (docs, release notes, issues, known fixes) before inspecting local
+integration. Local artifacts answer "what is on this machine." External sources answer
+"what does the tool mean, what is the documented contract, and has this error been
+solved upstream."
+
+START EVERY LOCAL EXPLORATION BY USING A `tree` COMMAND.
+Do NOT spike with greps, guess file paths or directories, or run narrow searches --
+start broad and THEN narrow. But for tool/API/compiler unknowns, reach for web search,
+Context7, DeepWiki, and upstream docs before local probing. See `known-solution-first`.
 
 **BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive.
 User directives are highly specific, not suggestions.
@@ -20,7 +33,7 @@ Inspect the repo's declared entrypoints, docs, configs, and runtime surfaces bef
 - `just --list`, `package.json#scripts`, `Makefile`, CLI `--help` — learn available commands
 - Config files (pyproject.toml, .envrc, tsconfig.json, Cargo.toml, etc.) — understand project conventions
 - README, AGENTS.md, architectural docs — read for intent
-- GitHub issues, web search, Context7/DeepWiki, existing skills
+- GitHub issues, web search, Context7/DeepWiki, existing skills, `known-solution-first` skill
 - Source code itself (via `tree`, `probe extract`, Serena, glob, read) when docs are stale or incomplete
 
 Never make an edit without first understanding the repo's shape and the specific boundary you are about to change.
@@ -29,8 +42,10 @@ Do not treat docs as the sole source of truth — code, configs, CLI output, gen
 
 # Hard Rules
 
-Use `tree` to understand your surroundings.
+Use `tree` to understand your surroundings (for local project structure).
 Do not just use ls, grep/rg/ag/etc, which only show narrow slices.
+For tool/API/compiler unknowns, use `known-solution-first` instead — the first pass is
+web search, Context7, DeepWiki, and upstream docs, not local `tree`.
 Never implement fallback behaviour, soft defaults, “graceful” error handling, or fail-open conditions. Every error path must fail loudly. Silence is a bug.
 No legacy flags. No deprecated symbols. No “backwards-compatible” shims. Breaking changes are fine — we are in development.
 When revising feature A to work more like feature B, clean up the codebase as if feature A had never existed: delete the old implementation, its tests, its types, its exports, its config entries. Do not wrap it in a `deprecated` annotation, do not gate it behind a feature flag, do not preserve it as a fallback path, do not add a compatibility adapter. The old thing is gone. The new thing replaces it entirely.
@@ -209,9 +224,22 @@ IMPORTANT: when you encounter a bug in an app, DO NOT IMMEDIATELY FIX IT. The fa
 6. ONLY once you have a committed red test: stop and explain to the user why the test failing PROVES that the bug exists and is observable. Emphasis on why it actually PROVES the bug exists. "The bug is observed and the test fails" is not a proof: it is correlation with no clear causation either way. The test logic should provide enough information for any external party to reproduce the bug themselves.
 7. AFTER the user approves the proof, you may proceed with the fix. When the tests pass, you must AGAIN check with the user: provide steps to reproduce the bug, and wait to get confirmation that the fix truly fixes it. If it does not, you must start over, because your test was fundamentally flawed: it both failed and passed with the bug still present, meaning your entire change was code mutation and thrashing, and thus a net regression. Record the flawed hypothesis in memory so you don't assume it again.
 
+**Refinement for dependency-owned bugs.** The above procedure assumes the bug is in
+project-owned code. If the "bug" is a compiler error, library behavior, API failure,
+package version mismatch, or any symptom whose meaning is owned by an external project,
+then step 2 expands: while capturing the faithful reproduction, also search the exact
+error, upstream docs, release notes, and known issues. Establishing the external
+contract is part of constructing the reproduction case. Do not web search as a
+substitute for faithful reproduction of a project-owned bug. But for dependency-owned
+behavior, web search (exact errors, version-specific docs, known fixes) is part of
+establishing what the tool actually means. Load `known-solution-first` for the external
+half of the investigation.
+
 REMINDER: STOP IMMEDIATELY. DO NOT FIX THE BUG. Your ONLY job when this happens is to CREATE AND COMMIT A RED TEST that proves the observed failure exists. All investigation must be SUBORDINATE to that EXACT task: understanding the failure well enough to encode it in a test. A test you guess from priors (without running the failing code) proves nothing — it replaces the epistemically clean state "I don't know what fails" with the dirty state "I have false beliefs about the failure." State EXPLICITLY to the user WHY your investigations are PRECISELY for constructing a red test if you DO need to dig deeper.
 
 Load `reality-grounded-debugging` alongside for command-output discipline, surface-classification matrix, and the synthesis gate (raw observation, smallest reproducer, missing surface, verification path).
+For dependency-owned behavior, also load `known-solution-first` for establishing the
+external contract before probing locally.
 
 You must immediately stop and ask yourself why your entire test and QC suite passes when bugs exist, and address the procedural issue first.
 Are your tests full of fake or idealized data?

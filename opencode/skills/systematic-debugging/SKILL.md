@@ -126,6 +126,30 @@ If a claim has no row, it is not established.
 Move through these gates in order.
 If a later observation contradicts an earlier claim, return to the contradiction gate before continuing.
 
+### External-Owner Gate (Preliminary)
+
+If the failure involves an external tool, compiler, library, framework, API, package
+manager, provider, or exact error message, load `known-solution-first` and resolve the
+public contract **before** populating the hypothesis ledger from local probing.
+
+The knowledge-source hierarchy for external-owner problems is:
+
+1. Official docs, release notes, migration guides, changelogs, API references.
+2. Upstream GitHub issues, discussions, PRs, Stack Overflow, issue trackers.
+3. Context7 for version-specific library/API docs.
+4. DeepWiki for public repo architecture discovery.
+5. Known working examples from official repos, test suites, templates, real usages.
+6. CLI help, man pages, local package source, local configs, local docs, empirical
+   probing.
+
+Do not skip to step 6 because a command is available or because you are in a terminal.
+Local command output is real but it answers "what is on this machine," not "what does
+the tool mean." The latter is owned by public sources.
+
+Exception: if the tool is private, locally authored, forked, undocumented, air-gapped,
+or the bug is clearly in the project's own integration layer, state why the external
+path is unavailable and proceed. Record this in the ledger.
+
 ### Establish The Failure
 
 Do this before diagnosing:
@@ -135,7 +159,8 @@ Do this before diagnosing:
   Do not suppress stderr or replace it with synthetic text.
 - State whether the failure is reproducible, intermittent, or not yet reproduced.
 - If a command times out, record what was still running, what output existed, and whether the timeout came from the tool wrapper or the system under test.
-- If the failure involves external tools or libraries, read the local docs, upstream docs, CLI help, source, or generated artifacts that define the behavior before asserting a contract.
+- If the failure involves external tools or libraries and the external-owner gate was
+  skipped, run it now.
 
 Do not proceed if the only evidence is a summary, a passing unrelated test, a missing string, a hunch, or a single stale artifact.
 
