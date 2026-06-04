@@ -1,7 +1,7 @@
 ---
 name: ocr-and-documents
-description: "Extract text from PDFs/scans — redirects to Mistral OCR, not pymupdf."
-version: 3.0.0
+description: "Extract text from PDFs/scans — redirects to high-quality extraction (Mistral OCR, marker-pdf), away from pymupdf garbage."
+version: 3.1.0
 author: Hermes Agent
 license: MIT
 metadata:
@@ -12,13 +12,12 @@ metadata:
 
 # PDF & Document Extraction
 
-**The entire point of this skill is to redirect agents away from low-quality PDF
-extraction tools (pymupdf, marker-pdf, docling, pymupdf4llm) and toward high-quality
-solutions.**
+**The purpose of this skill is to redirect agents away from pymupdf and similar
+low-quality PDF tools, toward tools that actually handle mathematics, equations, tables,
+and scanned documents correctly.**
 
-**Do not** reach for pymupdf, marker-pdf, or any ad-hoc PDF library unless explicitly
-directed to. These produce poor results on complex documents, equations, tables, and
-scanned pages. The system has better options.
+This is a mathematical research system. Correct equation extraction is the primary
+requirement. "Lightweight" tools that produce garbage on math are not acceptable.
 
 * * *
 
@@ -26,10 +25,10 @@ scanned pages. The system has better options.
 
 | Priority | Tool | When to use |
 | --- | --- | --- |
-| **1** | **Mistral OCR** (via `reading-pdfs` skill) | **Default** for any PDF — API-based, handles tables, math, scanned docs, multi-column. Check `reading-pdfs` skill. |
-| **2** | **Managed recipes** (`~/pdf-extraction` justfile) | When Mistral API is unavailable. Uses Docling / MinerU with managed environments. |
-| **3** | **pymupdf** | **Only** for trivial text-only PDFs when neither Mistral API nor the extraction recipes work. Minimal quality. |
-| **4** | **marker-pdf** | **Do not use.** ~3-5GB install for results that are still worse than Mistral OCR. |
+| **1** | **Mistral OCR** (via `reading-pdfs` skill) | **Default** — API-based, handles tables, math, scanned docs, multi-column. Check `reading-pdfs` skill. |
+| **2** | **marker-pdf** | High-quality local fallback when Mistral API is unavailable. Handles math, equations, OCR, complex layouts. ~5GB install (negligible for a research system). |
+| **3** | **Managed recipes** (`~/pdf-extraction` justfile) | Docling / MinerU with managed environments. When neither Mistral API nor marker-pdf are suitable. |
+| **4** | **pymupdf** | **Garbage on math.** Only for trivial text-only PDFs where nothing else is available and equations are not needed. |
 
 * * *
 
@@ -48,10 +47,27 @@ uv run scripts/extract_ocr.py document.pdf
 Mistral OCR handles: text, tables, equations, scanned documents, multi-column layouts,
 code blocks.
 
-### 2. Fallback: managed local extraction
+### 2. Fallback: marker-pdf
 
-If Mistral OCR is unavailable (no API key, offline), use the recipes in
-`~/pdf-extraction`:
+When Mistral OCR is unavailable (no API key, offline), use marker-pdf for high-quality
+local extraction:
+
+```bash
+# Single file
+uvx marker_single document.pdf --output_dir ./output
+
+# Batch
+uvx marker /path/to/folder --workers 4
+```
+
+**Why marker-pdf over pymupdf:** marker-pdf handles equations, LaTeX, scanned pages,
+complex tables, reading order. pymupdf produces garbage on all of these. The ~5GB
+install is a one-time cost for correct extraction, which is the only acceptable outcome
+for research documents.
+
+### 3. Fallback: managed local recipes
+
+Use the managed recipes in `~/pdf-extraction` for docling/mineru extraction:
 
 ```bash
 just -f ~/pdf-extraction/justfile -d ~/pdf-extraction docling document.pdf
@@ -61,9 +77,10 @@ just -f ~/pdf-extraction/justfile -d ~/pdf-extraction mineru document.pdf
 These manage their own environments via `uv sync`. Do not create a separate venv or
 install dependencies manually.
 
-### 3. Last resort: pymupdf (text-only PDFs only)
+### 4. Last resort: pymupdf (text-only PDFs only)
 
-For simple text-based PDFs when neither API nor recipes are available:
+Only when the document is purely text (no equations, no tables, no scanned pages) and
+none of the above options are available:
 
 ```bash
 uvx --from pymupdf python3 -c "
@@ -75,22 +92,24 @@ for page in doc:
 ```
 
 pymupdf will **not** handle: scanned pages, equations, complex tables, reading order,
-headers/footers removal. If the document needs any of these, do not use pymupdf.
+headers/footers removal. **For mathematical papers, pymupdf is useless** — it cannot
+extract equations or LaTeX.
 
 * * *
 
 ## What to Avoid
 
-- **pymupdf4llm** — installs pymupdf + pymupdf4llm but quality is still far below Mistral
-  OCR. Do not reach for it.
+- **pymupdf4llm** — a wrapper around pymupdf. Same garbage on math.
 
-- **marker-pdf** — downloads ~2.5GB of PyTorch models and still produces worse results
-  than Mistral OCR. Not worth the disk space or time.
+- **pymupdf for anything non-trivial** — produces unusable output on equations, tables,
+  scanned documents.
 
-- **Ad-hoc OCR scripts** — do not write your own tesseract/pytesseract pipeline or use
-  `pdf2image` + `pytesseract`. Delegate to the managed recipes or Mistral OCR.
+- **Ad-hoc OCR pipelines** — do not build your own tesseract/pytesseract/pdf2image
+  pipeline. Use marker-pdf or the managed recipes instead.
 
-- **Docling standalone** — use through `~/pdf-extraction` justfile, not installed ad-hoc.
+- **Installing extraction tools manually** — always use `uvx` for one-shot tools or the
+  `~/pdf-extraction` justfile for managed extraction. No `pip install marker-pdf` or
+  `pip install pymupdf`.
 
 * * *
 
