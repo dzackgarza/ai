@@ -367,21 +367,40 @@ For generated-output or render bugs:
 - Compare generated artifacts against served artifacts before blaming runtime code.
 - Do not edit templates, filters, serializers, or renderers until the boundary that first corrupts output is known.
 
-### Debugging Surface Check
+### Debugging Surface Discipline
 
-If evidence gathering requires guessed commands, repeated whole-system runs, stderr suppression, manual inspection of generated debris, or mutation of global code before isolation, the system lacks a debugging surface.
+A local failure is not merely a defect to patch. It is evidence that the repository lacks a sufficient observation/isolation surface. Debugging must leave behind better observability and isolation than it found.
 
-Before proposing a fix, add or use the smallest canonical surface that reveals the failing boundary:
+#### Surface Classification (Hard Gate)
 
-- structured boundary logging
-- exact command/env/cwd dump
-- intermediate artifact dump
-- one-unit runner through the real pipeline
-- captured real API/data fixture
-- schema/shape dump
-- regression test at the repository-owned boundary
+After any failed fix, repeated failed probe, or opaque command/API/build/test invocation, classify the missing surface before taking further action:
 
-A local failure should improve future diagnosability. Do not spend multiple attempts probing the opaque global workflow.
+- **No exact reproduction command** → add or capture the failing command with env, cwd, args, stdin
+- **No isolated fixture** → create a minimal fixture that calls the same source-of-truth code path
+- **No one-unit pipeline runner** → add `render_one(path)` or equivalent that uses the real renderer
+- **No structured boundary logs** → add logging at the failing boundary that captures inputs, outputs, decisions
+- **No intermediate artifact dump** → dump intermediate files/templates/queries/responses at each stage
+- **No schema/data-shape inspection** → capture actual status, headers, top-level keys, representative records
+- **No source-of-truth command recipe** → ensure `just test` or CI runs the canonical path being debugged
+- **No test at the owned boundary** → add a regression test that would fail for the observed failure mode
+- **No visibility into subprocess args/cwd/env/output** → capture exact invocation and all output channels
+
+The next action must build or use one of these surfaces. Do not mutate global application code while the failing boundary is still opaque.
+
+#### Synthesis Gate
+
+Before proposing or applying a fix for a nontrivial failure, fill this statement with concrete data:
+
+> "The raw observation that changed my prior is ____.
+> The smallest surface that reproduces it is ____.
+> The missing observability/isolation surface was ____.
+> The fix is verified by ____ and by the canonical full check ____."
+
+If any blank cannot be filled with command output, artifact paths, API responses, source locations, or test results, do not patch yet. Surface data first.
+
+A debugging task is not complete until the report includes the original failure command and raw output, the root cause at the owned boundary, the smallest reproducer or fixture, the surface added or used, the targeted verification result, and the global verification result.
+
+Load `reality-grounded-debugging` alongside for full command-output discipline, canonical-isolation standards, pipeline debugging rules, API/data debugging rules, and stop rules.
 
 ## Bias Countermeasures
 

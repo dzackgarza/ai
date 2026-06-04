@@ -157,6 +157,24 @@ Group recipes by who runs them:
 Recipes that don't fit one of these three categories are suspect.
 `update-snapshots` and `test-staging` are operations that should happen automatically (as part of the test gate) or on demand via a CLI subcommand, not as distinct recipes a user must know about.
 
+### Agent-facing recipes (`.agents/justfile`)
+
+Projects also need recipes that serve agents, not users or developers: QC guardrails, hygiene checks, debugging surfaces, anti-gaming measures, and hook scripts. These must never appear in `just --list` or the top-level justfile.
+
+- Agent-facing recipes live in `.agents/justfile`, a separate file at the project root.
+- **All agent-facing recipes are `[private]`**, invisible to `just --list`.
+- The top-level `justfile` routes through agent recipes where mandatory enforcement is needed:
+  ```justfile
+  test:
+      @project-cli test
+      @just -f .agents/justfile _test-agent
+  ```
+- `.agents/justfile` recipes cover: hygiene checks (dead code, duplication, complexity, slop), anti-gaming measures, debug surfaces (isolated reproducers, artifact dumps, fixture runners), and hook scripts (pre-commit, pre-push).
+
+This is documented in the `Project Structure: User vs. Agent` section of `AGENTS.md`.
+
+Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on pip install), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See `reality-grounded-debugging` for command-output discipline and surface-upgrade requirements.
+
 ### Large justfiles are a smell
 
 A justfile that grows beyond ~30 lines of recipe bodies is usually reinventing something that already exists:

@@ -802,6 +802,12 @@ code.**
   LLM-generated test artifacts: developer-controlled assertions, fallback laundering,
   no-op behavior, and recipe bypasses.
 
+- **reality-grounded-debugging** → Load alongside when a test failure must be
+  reproduced as a faithful red test (the "RED" in RED-GREEN-REFACTOR). Provides
+  command-output discipline, surface-classification matrix, and the rule that a red
+  test must encode the observed failure — not a scenario guessed from priors.
+  Ensures the failing boundary is visible before writing or mutating application code.
+
 - **anti-slop** → Load alongside when tests show generated-code residue: tautological
   assertions, mock-first evasion, content-free verification, or test-cheat escalation.
   Provides the Dependency Inversion Rule and structural analysis frame for evaluating

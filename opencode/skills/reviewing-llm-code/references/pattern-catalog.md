@@ -241,3 +241,19 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 - **Marketing inflation**: feature lists, achievement language, completion claims, LOC counts, test counts, and confident summaries that do not help operate or audit the system.
 
 - **Immediate staleness**: docs that duplicate fast-changing structure instead of pointing to the source of truth.
+
+## Debugging-Review Gate
+
+When reviewing agent-produced debugging work (failed fix attempts, failed probes, diagnostic reports), reject reports that lack all three of:
+
+1. **Raw diagnostic output** — the exact command, env, cwd, stdout, stderr, exit code that produced the observed failure.
+
+2. **Smallest reproducer** — the minimal fixture, runner, or command sequence through the source-of-truth code path that reproduces the failure outside the opaque global workflow.
+
+3. **Named observability/isolation surface** — the specific surface (fixture, boundary log, intermediate dump, schema dump, test, diagnostic recipe, subprocess capture) that was added or used to make the failing boundary visible.
+
+A report missing any of these three has not completed debugging. It has guessed from priors and bypassed the failure surface.
+
+The canonical statements are: "The raw observation that changed my prior is ____. The smallest surface that reproduces it is ____. The missing observability/isolation surface was ____. The fix is verified by ____ and by the canonical full check ____."
+
+See `reality-grounded-debugging` for the full command-output discipline, surface-classification matrix, and completion evidence standard.

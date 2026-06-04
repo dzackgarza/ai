@@ -39,12 +39,10 @@ tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.s
 claude_home := home / ".claude"
 codex_home := home / ".codex"
 gemini_home := home / ".gemini"
-qwen_home := home / ".qwen"
 qoder_home := home / ".qoder"
 opencode_home := home / ".config/opencode"
 opencode_permission_policy_home := home / ".config/opencode-permission-policy-compiler"
 kilo_home := home / ".config/kilo"
-amp_home := home / ".config/amp"
 agents_home := home / ".agents"
 kilocode_home := home / ".kilocode"
 opencode_root := home / ".opencode"
@@ -78,18 +76,17 @@ install:
     done
     echo "✓ All repository targets exist."
 
-    mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" "{{ qwen_home }}" \
-             "{{ qoder_home }}" "{{ opencode_home }}" "{{ kilo_home }}" "{{ amp_home }}" \
+    mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" \
+             "{{ qoder_home }}" "{{ opencode_home }}" "{{ kilo_home }}" \
              "{{ agents_home }}" "{{ kilocode_home }}" "{{ opencode_root }}" \
              "{{ cc_safety_net_home }}"
 
     ln -snf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
     ln -snf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
     ln -snf "{{ agents_md }}" "{{ gemini_home }}/GEMINI.md"
-    ln -snf "{{ agents_md }}" "{{ qwen_home }}/QWEN.md"
     ln -snf "{{ agents_md }}" "{{ kilo_home }}/AGENTS.md"
-    ln -snf "{{ agents_md }}" "{{ amp_home }}/AGENTS.md"
     ln -snf "{{ agents_md }}" "{{ home }}/.config/AGENTS.md"
+    ln -snf "{{ agents_md }}" "{{ gemini_home }}/AGENTS.md"
     ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
     if [ -d "{{ opencode_permission_policy_home }}" ] && [ ! -L "{{ opencode_permission_policy_home }}" ]; then
         mv "{{ opencode_permission_policy_home }}" "{{ opencode_permission_policy_home }}.bak.$(date +%Y%m%d%H%M%S)"
@@ -131,10 +128,9 @@ install:
 
     # Backup existing skills directories before creating symlinks
     for dir in "{{ claude_home }}/skills" "{{ codex_home }}/skills" \
-               "{{ agents_home }}/skills" "{{ qwen_home }}/skills" "{{ home }}/.config/agents/skills" \
-               "{{ amp_home }}/skills" "{{ kilocode_home }}/skills" "{{ qoder_home }}/skills" \
-               "{{ gemini_home }}/skills" "{{ gemini_home }}/antigravity-cli/skills" \
-               "{{ gemini_home }}/antigravity/skills"; do
+               "{{ agents_home }}/skills" "{{ home }}/.config/agents/skills" \
+               "{{ kilocode_home }}/skills" "{{ qoder_home }}/skills" \
+               "{{ gemini_home }}/skills" "{{ gemini_home }}/antigravity-cli/skills"; do
         if [ -d "$dir" ] && [ ! -L "$dir" ]; then
             mv "$dir" "$dir.bak.$(date +%Y%m%d%H%M%S)"
         fi
@@ -142,15 +138,12 @@ install:
     ln -snf "{{ skills_dir }}" "{{ claude_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ codex_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ agents_home }}/skills"
-    ln -snf "{{ skills_dir }}" "{{ qwen_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ home }}/.config/agents/skills"
-    ln -snf "{{ skills_dir }}" "{{ amp_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ kilocode_home }}/skills"
     ln -snf "{{ skills_dir }}" "{{ qoder_home }}/skills"
     mkdir -p "{{ gemini_home }}/antigravity-cli"
     ln -snf "{{ skills_dir }}" "{{ gemini_home }}/antigravity-cli/skills"
     ln -snf "{{ skills_dir }}" "{{ gemini_home }}/skills"
-    ln -snf "{{ skills_dir }}" "{{ gemini_home }}/antigravity/skills"
 
     just --justfile {{ repo }}/justfile _update-shell-rc
 
@@ -158,6 +151,7 @@ install:
     echo ""
     echo "Symlink targets (actual):"
     printf "%-30s -> %s\n" "~/.gemini/GEMINI.md" "$(readlink {{ gemini_home }}/GEMINI.md)"
+    printf "%-30s -> %s\n" "~/.gemini/AGENTS.md" "$(readlink {{ gemini_home }}/AGENTS.md)"
     printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
     printf "%-30s -> %s\n" "~/.config/opencode-permission-policy-compiler" "$(readlink {{ opencode_permission_policy_home }})"
     printf "%-30s -> %s\n" "~/.config/ruff/ruff.toml" "$(readlink {{ home }}/.config/ruff/ruff.toml)"
@@ -169,9 +163,7 @@ install:
     echo ""
     echo "System prompts (actual):"
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
-    [ -f ~/.bashrc ] && grep "export QWEN_SYSTEM_MD=" ~/.bashrc | tail -n 1
     [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
-    [ -f ~/.zshrc ] && grep "export QWEN_SYSTEM_MD=" ~/.zshrc | tail -n 1
 
 # Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:
@@ -181,16 +173,14 @@ _update-shell-rc:
 
     repo_root = Path("{{ repo }}").resolve()
     prompt_path = str((repo_root / "opencode/agents/interactive.md").resolve())
-    marker = "# System prompt overrides for Gemini/Qwen CLI"
+    marker = "# System prompt override for Gemini CLI"
     block = (
         f"\n{marker}\n"
         f"export GEMINI_SYSTEM_MD={prompt_path}\n"
-        f"export QWEN_SYSTEM_MD={prompt_path}\n"
     )
     pattern = re.compile(
-        r"\n# System prompt overrides for Gemini/Qwen CLI\n"
-        r"export GEMINI_SYSTEM_MD=.*\n"
-        r"export QWEN_SYSTEM_MD=.*\n?",
+        r"\n# System prompt override for Gemini CLI\n"
+        r"export GEMINI_SYSTEM_MD=.*\n?",
         re.MULTILINE,
     )
     for rc_name in (".bashrc", ".zshrc"):

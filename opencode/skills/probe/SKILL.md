@@ -1,18 +1,24 @@
 ---
 name: probe
-description: Use for ALL codebase searching and discovery. REPLACES list_directory, grep, and ripgrep for semantic discovery, AST-aware extraction, and structural queries. Mandatory for turn-efficient navigation.
+description: Use for semantic narrowing AFTER broad codebase discovery (tree/find/just/help/config). Extracts implementations and finds structural patterns in source code. NOT a replacement for reality-first repo inspection.
 ---
 # Probe Agentic Primer (Python)
 
-**Always invoke via `npx -y @probelabs/probe`**. `probe` is your primary tool for
-codebase navigation.
-Do not use `grep` or `find` for architectural discovery; `probe` is 10x faster and
-context-aware.
+**Always invoke via `npx -y @probelabs/probe`**.
 
-## 1. Semantic Search (Ranked Discovery)
+`probe` is a semantic narrowing and extraction tool. Use AFTER you have exposed the actual repo structure through `tree`, `find`, `just --list`, package scripts, CLI `--help`, config files, and entrypoints. Do not start with `probe search` as a substitute for broad discovery.
 
-Ideal for finding “where” a feature is implemented.
-REPLACES `grep`.
+## When To Use (vs. Not)
+
+| Use `probe` for | Use `tree`/`find`/`just`/`--help` first |
+| --- | --- |
+| Finding where a known concept is implemented | Exposing the repo's actual shape |
+| Extracting a full function/class body | Understanding what directories and configs exist |
+| Finding structural patterns across files | Learning what commands and entrypoints are available |
+
+## 1. Semantic Search (Second-Stage Narrowing)
+
+Use after broad discovery identifies the likely search space.
 
 **Pattern**:
 `npx -y @probelabs/probe search "<KEYWORDS>" <PATH> -l python -o plain --max-results <N>`
@@ -27,8 +33,7 @@ REPLACES `grep`.
 
 ## 2. AST-Aware Symbol Retrieval
 
-REPLACES `read_file` line-guessing.
-Always use to get complete implementations.
+Use to get complete implementations without guessing line ranges.
 
 **Pattern**: `npx -y @probelabs/probe extract "<FILE>#<SYMBOL>" -o plain`
 
@@ -46,7 +51,7 @@ class LatexBibliography(BaseModel, frozen=True):
 
 ## 3. Structural Queries (AST-Grep)
 
-REPLACES complex `grep` pipelines for finding architectural patterns in source code.
+Use for finding consistent patterns across many source files.
 
 **Pattern**: `npx -y @probelabs/probe query "<PATTERN>" <PATH> --language python`
 
@@ -80,13 +85,14 @@ REPLACES complex `grep` pipelines for finding architectural patterns in source c
 
 ## Agentic Heuristics (Turn Efficiency)
 
-1. **Discover (Turn 1)**: Use `probe search` to identify candidate files and symbols.
+1. **Expose (Turn 1)**: Use `tree`, `find`, `just --list`, `--help`, config files to understand the repo's actual shape.
 
-2. **Retrieve (Turn 2)**: Use `probe extract "file#Symbol"` to pull the implementation.
+2. **Narrow (Turn 2)**: Use `probe search` to identify candidate files and symbols.
 
-3. **Audit (Optional)**: Use `probe query` ONLY for finding consistent patterns across
+3. **Retrieve (Turn 3)**: Use `probe extract "file#Symbol"` to pull the implementation.
+
+4. **Audit (Optional)**: Use `probe query` ONLY for finding consistent patterns across
    many source files.
 
-4. **Context Management**: Use `--max-tokens` or `--max-results` to prevent context
-   explosion. One `probe search` + `probe extract` sequence usually replaces 5-10 turns
-   of standard tools.
+5. **Context Management**: Use `--max-tokens` or `--max-results` to prevent context
+   explosion. The full sequence replaces 5-10 turns of raw text search.

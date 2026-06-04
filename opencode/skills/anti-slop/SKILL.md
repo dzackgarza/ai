@@ -514,6 +514,12 @@ If you catch yourself doing any of these, you have slipped from analysis into ja
 
 - **Myopic patching** (stacked conditionals around prior mistakes, parallel helpers)
 
+- **Prior-shaped probes** (commands encoding the expected answer and suppressing contrary evidence — guessed flags with `2>/dev/null`, greps whose failure is treated as absence, `jq` paths run before response-shape inspection, endpoint guesses treated as API facts)
+  See `reality-grounded-debugging` for the behavioral fix.
+
+- **Debug-surface debt** (failures addressed by mutating global code, adding one-off scripts, or repeatedly running opaque whole-system commands instead of creating isolated reproducers, structured logs, artifact dumps, schema inspections, or canonical diagnostic recipes)
+  See `reality-grounded-debugging` for the surface-upgrade requirements.
+
 - **Bespoke reinvention** (custom `AcademicCard` when `card.tsx` exists)
 
 - **Dead control flow** (unreachable branches, orphaned states, no-op fallbacks)
@@ -586,6 +592,10 @@ Secondary references (use when the central catalog does not cover the specific d
 - `references/deepening.md` — How to deepen shallow modules into deep interfaces. The constructive inverse of anti-slop: where this skill detects *shallowness*, deepening names the *replacement*. Covers dependency categories (in-process, local-substitutable, ports & adapters, mock), seam discipline, testing strategy (replace don't layer), and the Design It Twice interface exploration process. Uses vocabulary from `references/deepening-vocabulary.md`.
 
 - `references/deepening-vocabulary.md` — Precise glossary for architectural deepening: module, interface, depth, seam, adapter, leverage, locality, deletion test. Use these terms exactly — consistent language prevents drift into vague synonyms.
+
+- **`../reality-grounded-debugging/SKILL.md`** — Load alongside when reviewing debugging attempts, probe logs, or diagnostic commands.
+  Detects prior-shaped probes, debug-surface debt, and missing command-output discipline.
+  Provides the behavioral fix (surface upgrade) for patterns in this catalog.
 
 ## Remediation
 

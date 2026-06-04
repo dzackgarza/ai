@@ -31,7 +31,7 @@ code-vs-comment ratios using `pygount`.
 ## Prerequisites
 
 ```bash
-pip install --break-system-packages pygount 2>/dev/null || pip install pygount
+pip install --break-system-packages pygount >/dev/null || pip install pygount
 ```
 
 ## 1. Basic Summary (Most Common)
@@ -92,8 +92,8 @@ pygount --format=summary .
 # JSON output for programmatic use
 pygount --format=json .
 
-# Pipe-friendly: Language, file count, code, docs, empty, string
-pygount --format=summary . 2>/dev/null
+# Language, file count, code, docs, empty, string (capture stderr separately if piping)
+pygount --format=summary .
 ```
 
 ## 6. Interpreting Results

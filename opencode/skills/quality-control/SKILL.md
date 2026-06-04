@@ -304,3 +304,16 @@ Projects should run `just test-ci` in CI to match local + CI checks.
 
 **Delegate, never reimplement.** Local projects use global QC infrastructure.
 The QC agent owns rule changes, not individual projects.
+
+## When QC Fails
+
+When any QC check — build, typecheck, lint, format, complexity, or test — fails with
+an opaque error or repeated failed attempt, load `reality-grounded-debugging` before
+mutating the failing pipeline. It provides:
+
+- Command-output discipline (preserve stdout, stderr, exit code)
+- Surface classification (fixture, boundary log, intermediate dump, schema dump, diagnostic
+  recipe, subprocess capture)
+- A synthesis gate (raw observation, smallest reproducer, missing surface, verification path)
+
+The failure indicates a missing debugging surface, not just a code defect to patch.
