@@ -89,6 +89,7 @@ Before writing, reviewing, or fixing code/tests/QC, load:
 - `policy-index` to identify which policy skill owns the rule.
 - `anti-slop` for bridge-burning policies and anti-laundering doctrine.
 - `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
+- `reviewing-llm-code/references/runtime-control-flow-red-flags.md` for runtime control-flow rules.
 - `test-guidelines` for proof/test obligations.
 - `test-guidelines/references/banned-test-shapes.md` for banned test assertion patterns.
 - `fixing-slop` when an artifact is being renamed, deleted, quarantined, or “made honest.”

@@ -262,7 +262,7 @@ For deleted lines, use `"side": "LEFT"`.
 
 When performing a code review (local or PR), do not invent local review standards or use generic code smell advice. All code evaluation rules, anti-slop guidelines, and validation-evasion auditing are delegated to the canonical policy skills:
 
-- **Code Review Policy & Bridge-Burning**: Delegate to [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md) and its [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
+- **Code Review Policy & Bridge-Burning**: Delegate to [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md), its [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md), and its [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md).
 - **PR Guidance & Triage Rules**: Delegate to [pr-feedback-triage](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md) and the global policy index.
 - **Proof & Test Obligations**: Delegate to [test-guidelines](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md).
 

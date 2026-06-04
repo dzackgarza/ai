@@ -71,7 +71,7 @@ A mocked or synthetic browser smoke check can only be a diagnostic health check,
 When a review item is resolved by deletion, require the same scrutiny as a code fix. Never accept “removed” as a complete disposition. The deletion must disposition both the artifact and the original problem or proof burden that caused the artifact to be introduced, ensuring the original burden is either solved, invalidated, explicitly transferred, or recorded as unresolved.
 
 ### 10. Scan remediations for Bridge-Burning Red Flags
-If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. Reviewers and triage agents must audit changes against the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) to detect validation-evasion moves (such as runtime defaults, fallbacks, mocks, and exact string assertions).
+If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. Reviewers and triage agents must audit changes against the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md) to detect validation-evasion moves (such as runtime defaults, fallbacks, mocks, exact string assertions, and fail-open control branches).
 
 ## Routing Matrix
 
