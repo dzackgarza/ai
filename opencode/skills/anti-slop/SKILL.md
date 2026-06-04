@@ -684,6 +684,9 @@ A remediation is incomplete if the artifact is gone but the burden has no owner.
 
 ## Bridge-Burning Policies
 
+> [!TIP]
+> For a detailed, language-specific catalog of code patterns that violate these policies (the "red flags"), see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
+
 The important move is to stop treating this as a case-by-case review problem. Agents are too good at finding local, linguistically plausible exceptions. The right response is to make whole classes of evasive code unrepresentable.
 
 > [!IMPORTANT]

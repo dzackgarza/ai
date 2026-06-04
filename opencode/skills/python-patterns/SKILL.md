@@ -739,6 +739,9 @@ The recurring pattern is that an agent first tries to satisfy checking/validatio
 
 Adhering to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` is a non-negotiable hard constraint for all development. These rules eliminate common agent validation-evasion pathways (such as runtime defaults, fallbacks, mocks, and diagnostic smoke tests in proof paths). Refer to them as hard boundaries.
 
+> [!IMPORTANT]
+> **Bridge-Burning Red Flags:** If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. For a detailed list of Python-specific red flags (such as `os.getenv` defaults, fake resilience try/except blocks, `Any` escapes, mock/test poison, etc.), see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
+
 ---
 
 ## Policy Exception Protocol

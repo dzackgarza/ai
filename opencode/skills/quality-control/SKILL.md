@@ -92,6 +92,11 @@ Adhering to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/
 
 Any exception to these rules must strictly follow the **Policy Exception Protocol** defined in [anti-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#policy-exception-protocol).
 
+> [!IMPORTANT]
+> **Bridge-Burning Red Flags:** If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. For a comprehensive catalog of code signatures, keywords, and patterns to look for, see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
+
+
+
 ## Purpose
 
 1. **Enshrine workflows** — Every workflow lives in the justfile.
