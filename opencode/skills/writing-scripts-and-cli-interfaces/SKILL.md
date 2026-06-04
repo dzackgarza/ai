@@ -166,14 +166,6 @@ full gate, which includes Ruff checks automatically after normalization.
 
 Rejects untyped public functions and unknown types.
 
-### 6. Ruff as Hygiene Gate
-
-Run immediately on generated code:
-
-```bash
-ruff check . && ruff format .
-```
-
 ## Why Not Typer
 
 Typer is suitable for small tools, but avoid it as the default for LLM-generated code.

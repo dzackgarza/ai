@@ -184,12 +184,13 @@ local patterns</rule> </async-and-concurrency-guidance>
 
 <testing-methodology> <rule>When tests are in scope, favor test-first updates when
 feasible and keep assertions substantive</rule> <rule>Use fixtures and parameterization
-patterns already used by the repository</rule> <rule>Use mocking/patching only at clear
-boundaries (network, time, filesystem, external services)</rule> <rule>If
-Hypothesis/property-based testing already exists in the repo, extend that style for
-edge-heavy logic</rule> <rule>When scope requires it, include integration/e2e-style
-checks consistent with existing test layout</rule> <rule>For performance-sensitive
-behavior, add or update benchmark-style checks when such tests already exist</rule>
+patterns already used by the repository</rule> <rule>No mocks. Use real data or
+controlled test fixtures. See `test-guidelines` and `test-driven-development`
+skills for the no-mock policy.</rule> <rule>If Hypothesis/property-based testing
+already exists in the repo, extend that style for edge-heavy logic</rule>
+<rule>When scope requires it, include integration/e2e-style checks consistent with
+existing test layout</rule> <rule>For performance-sensitive behavior, add or update
+benchmark-style checks when such tests already exist</rule>
 </testing-methodology>
 
 <performance-tooling-guidance> <rule>For hotspot work, prefer algorithm/data-structure
@@ -233,18 +234,15 @@ verification command(s) (tests/lint/type checks as specified)</step> <step>Do NO
 
 <quality-gates>
 
-- Use justfile commands as the primary verification interface when a justfile exists
+- Use the justfile as the primary verification interface when one exists
 
-- If no justfile exists, create or extend one with Python tasks using uv-based commands
+- QC tools (ruff, basedpyright, pytest, coverage) are owned by global QC at
+  `~/ai/quality-control`. Do not configure or run them locally. Run `just test`
+  for the full gate.
 
-- Ensure justfile exposes at least: format/lint/test/coverage tasks wired to ruff,
-  pytest, and pytest-cov via uv
-
-- Prefer command forms like: `uv run ruff format .`, `uv run ruff check .`,
-  `uv run pytest`, `uv run pytest --cov=<package_or_src> --cov-report=term-missing`
-
-- If verification commands are provided by build, run those exactly (via just targets
-  when possible)
+- If no justfile exists, run `uv run pytest` for direct test invocation (red/green
+  isolation). Completion proof must pass through the project's justfile once it
+  exists.
 
 - If required tooling is unavailable in environment, report the gap clearly to build
   instead of silently skipping
@@ -271,7 +269,7 @@ verification command(s) (tests/lint/type checks as specified)</step> <step>Do NO
 
 - Optional test update requirements
 
-- Verify command (e.g., “pytest tests/unit/test_feature.py”)
+- Verify command (e.g., \u201cuv run pytest tests/unit/test_feature.py\u201d)
 
 Your job: make the requested edits, run verification, report result.
 </delegation-input>
@@ -282,7 +280,15 @@ Your job: make the requested edits, run verification, report result.
 
 - python-patterns
 
-- clean-code </reference-skills>
+- clean-code
+
+- test-guidelines
+
+- test-driven-development
+
+- writing-scripts-and-cli-interfaces
+
+- tool-provisioning-and-environment-hygiene </reference-skills>
 
 <adaptation-rules> When plan doesn’t exactly match reality, TRY TO ADAPT before
 escalating:

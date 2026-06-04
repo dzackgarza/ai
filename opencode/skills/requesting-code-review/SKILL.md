@@ -75,47 +75,23 @@ git diff --cached | grep "^+" | grep -E "pickle\.loads?\("
 git diff --cached | grep "^+" | grep -E "execute\(f\"|\.format\(.*SELECT|\.format\(.*INSERT"
 ```
 
-## Step 3 — Baseline tests and linting
+## Step 3 — Baseline quality gate
 
-Detect the project language and run the appropriate tools.
-Capture the failure count BEFORE your changes as **baseline_failures** (stash changes,
-run, pop). Only NEW failures introduced by your changes block the commit.
+All quality checks (tests, lint, type checking) are owned by global QC at
+`~/ai/quality-control`. Do not probe for or run tools locally.
 
-**Test frameworks** (auto-detect by project files):
+Run the global QC gate to establish the baseline:
+
 ```bash
-# Python (pytest)
-python -m pytest --tb=no -q 2>&1 | tail -5
-
-# Node (npm test)
-npm test -- --passWithNoTests 2>&1 | tail -5
-
-# Rust
-cargo test 2>&1 | tail -5
-
-# Go
-go test ./... 2>&1 | tail -5
+just test
 ```
 
-**Linting and type checking** (run only if installed):
-```bash
-# Python
-which ruff && ruff check . 2>&1 | tail -10
-which mypy && mypy . --ignore-missing-imports 2>&1 | tail -10
+If no `justfile` exists in the project, the project is too immature for QC gating;
+skip this step and proceed to Step 4.
 
-# Node
-which npx && npx eslint . 2>&1 | tail -10
-which npx && npx tsc --noEmit 2>&1 | tail -10
-
-# Rust
-cargo clippy -- -D warnings 2>&1 | tail -10
-
-# Go
-which go && go vet ./... 2>&1 | tail -10
-```
-
-**Baseline comparison:** If baseline was clean and your changes introduce failures,
-that’s a regression.
-If baseline already had failures, only count NEW ones.
+**Baseline comparison:** Stash your changes, run `just test`, note the result, pop
+your changes, run `just test` again. Only NEW failures introduced by your changes
+block the commit.
 
 ## Step 4 — Self-review checklist
 
@@ -462,8 +438,6 @@ if isinstance(domain, IntegerRangeFinite): ...
 - **False positives** — if reviewer flags something intentional, note it in fix prompt
 
 - **No test framework found** — skip regression check, reviewer verdict still runs
-
-- **Lint tools not installed** — skip that check silently, don’t fail
 
 - **Auto-fix introduces new issues** — counts as a new failure, cycle continues
 
