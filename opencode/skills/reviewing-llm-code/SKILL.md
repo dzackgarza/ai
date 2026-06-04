@@ -99,7 +99,10 @@ Before producing review findings, load these skills in this order:
   The canonical catalog of concrete LLM code, test, QC, and documentation failure patterns.
   Read this to learn the specific signatures to look for.
 
-- **`llm-failure-modes`** — Read third.
+- **`references/bridge-burning-red-flags.md`** — Read third.
+  The canonical reference catalog of validation-evasion "red flags" (such as runtime defaults, fallbacks, mocks, skips, and bypass comments) that are strictly prohibited under the bridge-burning policies. Read this to audit implementations for validator-silencing behavior.
+
+- **`llm-failure-modes`** — Read fourth.
   This teaches the cognitive failure modes that produce slop: ground-up bias, dependency aversion, meta-artifact delegation, replacement instinct, overconfidence, confabulation.
   You must understand WHY agents produce bad code before you can spot it.
 

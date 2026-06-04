@@ -367,4 +367,4 @@ Leave it better than you found it.
 
 - **thermo-nuclear-code-quality-review** — For aggressive simplification that goes beyond "clean code" into restructuring, load thermo-nuclear alongside this skill.
 
-- **anti-slop → Bridge-Burning Policies** — Modern development requires adhering strictly to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These represent non-negotiable constraints to prevent agent evasion (such as runtime defaults, fallbacks, and mocks).
+- **anti-slop → Bridge-Burning Policies** — Modern development requires adhering strictly to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These represent non-negotiable constraints to prevent agent evasion (such as runtime defaults, fallbacks, and mocks). For a detailed catalog of code constructs that violate these policies, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).

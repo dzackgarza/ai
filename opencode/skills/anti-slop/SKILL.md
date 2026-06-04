@@ -357,13 +357,13 @@ If you cannot identify the live goal and proof loop, you are not ready to analyz
 
 For code, tests, QC, and documentation, **always** load:
 
-- `reviewing-llm-code` and its `references/pattern-catalog.md` — the canonical catalog of regex-against-semantic-formats, fallback laundering, no-op behavior, QC appeasement code, and recipe bypasses.
+- `reviewing-llm-code`, its `references/pattern-catalog.md` (canonical catalog of regex-against-semantic-formats, fallback laundering, no-op behavior, QC appeasement code, and recipe bypasses), and its `references/bridge-burning-red-flags.md` (canonical reference catalog of validation-evasion red flags).
 
 - `llm-failure-modes` — the cognitive failure modes that produce slop (overconfidence, confabulation, premature solution generation, replacement instinct).
 
 - `test-guidelines` — the canonical test quality framework.
 
-Do NOT rely solely on this skill’s `references/code-patterns.md` or `references/test-patterns.md`. Those are secondary references; the central catalog is in `reviewing-llm-code`.
+Do NOT rely solely on this skill’s `references/code-patterns.md` or `references/test-patterns.md`. Those are secondary references; the central catalogs are in `reviewing-llm-code`.
 
 ### Phase 3: Structural Analysis (The Anti-Checklist)
 

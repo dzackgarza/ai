@@ -118,5 +118,5 @@ If the fix does not produce this trail, it is laundering — and the original sl
 
 - **`anti-slop/references/code-patterns.md`** → **Honest-Label Laundering** — The specific detection heuristics for renaming/relabeling.
 - **`anti-slop/SKILL.md`** — The analysis skill; use this FIRST to identify slop, then use fixing-slop to remediate.
-- **anti-slop → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) are the core criteria for what constitutes a correct, non-evasive implementation. Any fix must follow them as hard constraints.
+- **anti-slop → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) are the core criteria for what constitutes a correct, non-evasive implementation. Any fix must follow them as hard constraints. For a detailed list of prohibited code constructs and testing red flags, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
 - **`handling-corrections/SKILL.md`** — The anti-thrashing protocol; use when a fix attempt is rejected as laundering.

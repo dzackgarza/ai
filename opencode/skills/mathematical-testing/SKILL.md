@@ -226,3 +226,13 @@ def test_weyl_group_order_e8(generator):
     group = WeylGroup("E8", generator=generator)
     assert group.order() == 696729600
 ```
+
+---
+
+## Non-Negotiable Constraints
+
+All mathematical tests must strictly adhere to the [Test Guidelines](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) and the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. Under these rules:
+- **No Mocks or Simulations:** Tests must operate on real mathematical objects and structures. MagicMock and other testing stubs are strictly prohibited.
+- **No Masking:** Never skip or xfail tests to bypass failing invariants.
+- **Bridge-Burning Red Flags:** Mathematical tests must not contain any red flags that silence validators or weaken mathematical proof obligations. For a comprehensive catalog of testing-specific and general red flags, see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md).
+

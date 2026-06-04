@@ -302,6 +302,9 @@ Review for:
 - known-solution bypass
 - slop patterns from reviewing-llm-code
 
+> [!IMPORTANT]
+> **Bridge-Burning Red Flags:** If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. Reviewers must check all code changes against the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) to detect validation-evasion moves (such as runtime defaults, fallbacks, mocks, and exact string assertions).
+
 Do not default to:
 - graceful fallback
 - enterprise edge-case hardening
@@ -309,6 +312,7 @@ Do not default to:
 - micro-optimization
 - broader platform support
 - generic security framing without project-owned threat model
+
 
 * * *
 
