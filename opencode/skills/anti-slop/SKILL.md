@@ -684,111 +684,460 @@ A remediation is incomplete if the artifact is gone but the burden has no owner.
 
 ## Bridge-Burning Policies
 
-For agent-driven bespoke software, prefer blanket prohibitions that eliminate entire
-classes of evasion.
+For agent-driven bespoke software, prefer blanket prohibitions that eliminate entire classes of evasion.
 
-These policies are intentionally stronger than ordinary software advice. Their purpose is
-not universal elegance. Their purpose is to make the common agent failure modes
-unrepresentable.
+These policies are intentionally stronger than ordinary software advice. Their purpose is not universal elegance. Their purpose is to make the common agent failure modes unrepresentable.
 
 ### 1. No defaults in runtime logic
+
 Runtime code should not contain defaults for required application behavior. Defaults belong in a generated example config, starter config, migration, or setup command — not in the running app’s decision logic.
-- **Bad:** `timeout_ms.unwrap_or(750)`, `render_command.unwrap_or(DEFAULT_RENDER_COMMAND)`, `config.foo.unwrap_or_else(default_foo)`
-- **Better:** The app ships with a complete config. Startup validates the config. Missing values are fatal.
-- *Collapses the proof burden:* You no longer need to prove that the app chooses the correct default in twenty places. You prove that a complete config is loaded, and incomplete config fails.
+
+- **Bad:**
+```rust
+timeout_ms.unwrap_or(750)
+render_command.unwrap_or(DEFAULT_RENDER_COMMAND)
+config.foo.unwrap_or_else(default_foo)
+```
+- **Better:**
+```text
+The app ships with a complete config.
+Startup validates the config.
+Missing values are fatal.
+```
+- **What this burns:**
+  - `require_or_default` helpers
+  - absent-vs-present boolean branch tests
+  - silent config drift
+  - “use defaults when malformed” review suggestions
+  - partial config support
+  - stringly fallback diagnostics
+  - helper-level proof laundering
+
+This also collapses the proof burden. You no longer need to prove that the app chooses the correct default in twenty places. You prove that a complete config is loaded, and incomplete config fails.
 
 ### 2. No fallbacks, period
+
 A fallback is usually the app making a decision the user did not make.
-- **Bad:** `try rofi, else dmenu, else builtin picker`, `try configured command, else default command`, `try real API, else cached fake`, `try local file, else generated placeholder`, `try Tauri IPC, else browser mock`
-- **Better:** The config names the command/provider/mode. If it is wrong, fail. The user fixes the config or the app is changed. A fallback path is not “resilience”; it is an unreviewed alternate design.
+
+- **Bad:**
+```text
+try rofi, else dmenu, else builtin picker
+try configured command, else default command
+try real API, else cached fake
+try local file, else generated placeholder
+try Tauri IPC, else browser mock
+```
+- **Better (Explicit Selection):**
+```text
+The config names the command/provider/mode.
+If it is wrong, fail.
+The user fixes the config or the app is changed.
+```
+- **What this burns:**
+  - fallback chains
+  - graceful degradation
+  - “works on my machine” discovery logic
+  - optional critical dependencies
+  - test-only fallback branches
+  - enterprise compatibility hedges
+  - fake success after dependency failure
+
+A fallback path is not “resilience”; it is an unreviewed alternate design.
 
 ### 3. No optional critical dependencies
-If the app requires a dependency (`pandoc`, `rofi`, `systemctl`, `zotero`, `ags`, a Tauri plugin, or a configured CLI), it is not optional.
-- **Bad:** `try: import x except ImportError:` or `if which("pandoc").is_ok() { ... } else { ... }`
-- **Better:** Doctor/setup verifies dependencies. Runtime assumes them. Missing dependency is a setup failure and should crash loudly.
+
+If the app requires `pandoc`, `rofi`, `systemctl`, `zotero`, `ags`, a Tauri plugin, or a configured CLI, it is not optional.
+
+- **Bad:**
+```python
+try:
+    import x
+except ImportError:
+    ...
+```
+- **Bad:**
+```rust
+if which("pandoc").is_ok() { ... } else { ... }
+```
+- **Better:**
+```text
+Doctor/setup verifies dependencies.
+Runtime assumes them.
+Missing dependency is a setup failure and should crash loudly.
+```
+- **What this burns:**
+  - try-import stubs
+  - dependency fallback paths
+  - skipif dependency missing
+  - “works without X” branches
+  - mocked stand-ins
+  - fallback providers
 
 ### 4. No partial success
+
 Owned commands should either complete the claimed operation or return a hard error.
-- **Bad:** `return { ok: true, warnings: [...] }`, `return partial entries after read_dir error`, `render with missing diagrams but show warning`, `save file but fail to remove backup silently`
-- **Better:** If an owned substep fails, the operation fails.
+
+- **Bad:**
+```text
+return { ok: true, warnings: [...] }
+return partial entries after read_dir error
+render with missing diagrams but show warning
+save file but fail to remove backup silently
+```
+- **Better:**
+```text
+If an owned substep fails, the operation fails.
+```
+- **What this burns:**
+  - warning laundering
+  - partial object success
+  - empty-array-on-error
+  - best-effort modes
+  - hidden data loss
+  - soft failure states
 
 ### 5. No proof-free smoke tests
-If it is in the test suite, it must prove repository-owned behavior. Otherwise it is not a test.
-- **Bad:** `browser-smoke` test with mocked IPC, harness test that only proves mount, test renamed to “smoke” after review.
-- **Better:** Diagnostic command: `just diagnose-frontend-shell` (outside the test/QC path), or real test: exercises real Tauri IPC boundary.
+
+No tests that are not proof-bearing. If a diagnostic harness is genuinely useful, it should live outside the test/QC proof path as a command, not as a test-shaped artifact.
+
+- **Bad:**
+```text
+browser-smoke test with mocked IPC
+harness test that only proves mount
+test renamed to “smoke” after review
+```
+- **Better:**
+```text
+diagnostic command: just diagnose-frontend-shell
+or real test: exercises real Tauri IPC boundary
+```
+- **What this burns:**
+  - honest-label laundering
+  - mocked E2E tests
+  - “non-proof test” explanations
+  - future agents citing smoke as evidence
+  - test suite pollution
+
+If it is in the test suite, it proves repository-owned behavior. Otherwise it is not a test.
 
 ### 6. No mocks, fakes, stubs, or simulated environments
-Do not allow mocks, fake APIs, test doubles, stub services, simulated filesystems, mocked Tauri IPC, or mocked network responses as proof.
-- **Better:** Use real boundary, captured real response, local real service, fixture file with real structure, or explicit diagnostic outside the proof path.
-- *Burden Rule:* Deleting a mock test is not enough. The proof burden must be replaced, invalidated, or recorded as unresolved.
+
+Do not allow:
+- mocks
+- fake APIs
+- test doubles
+- stub services
+- simulated filesystems
+- mocked Tauri IPC
+- mocked network responses as proof
+
+Use:
+- real boundary
+- captured real response
+- local real service
+- fixture file with real structure
+- explicit diagnostic outside proof path
+
+And add:
+*Deleting a mock test is not enough. The proof burden must be replaced, invalidated, or recorded as unresolved.*
 
 ### 7. No deletion without burden disposition
-When slop is found, agents will either launder it or delete it. Deletion can be laundering if the original problem disappears with the artifact. *Slop remediation is obligation management, not artifact management.*
-- **Required before deleting a criticized artifact:**
-  1. What original problem caused this to exist?
-  2. Is that problem still live?
-  3. Where is it now solved?
-  4. If unsolved, where is it explicitly recorded?
-  5. Could a future agent reintroduce the same artifact?
+
+When slop is found, agents will either launder it or delete it. Deletion can be laundering if the original problem disappears with the artifact.
+
+Required before deleting a criticized artifact:
+- What original problem caused this to exist?
+- Is that problem still live?
+- Where is it now solved?
+- If unsolved, where is it explicitly recorded?
+- Could a future agent reintroduce the same artifact?
+
+- **What this burns:**
+  - cleanup-as-resolution
+  - removing fake tests without replacing proof
+  - deleting wrappers while leaving the integration gap
+  - closing review threads because evidence disappeared
+
+*Slop remediation is obligation management, not artifact management.*
 
 ### 8. No boolean mode flags in owned APIs
-Boolean flags are one of the easiest ways to hide policy choices. In tests, a boolean often means the test is not constructing the real state but is just selecting the branch it wants.
-- **Bad:** `require_or_default(value, config_exists, message, default)`, `save(path, allow_external)`, `render(markdown, strict)`
-- **Better:** `load_default_config()`, `load_user_config(path)`, `save_workspace_file(...)`, `save_absolute_file(...)`, `render_checked(...)`, or use an enum with explicit states.
+
+Boolean flags are one of the easiest ways to hide policy choices.
+
+- **Bad:**
+```rust
+require_or_default(value, config_exists, message, default)
+save(path, allow_external)
+render(markdown, strict)
+```
+- **Better:**
+```rust
+load_default_config()
+load_user_config(path)
+save_workspace_file(...)
+save_absolute_file(...)
+render_checked(...)
+```
+Or use an enum with explicit states if there are genuinely multiple modes.
+
+- **What this burns:**
+  - branch-forcing tests
+  - helper-local proof laundering
+  - wrong flag at call site
+  - unclear semantics
+  - “true means strict?” ambiguity
+
+In tests, a boolean often means the test is not constructing the real state. It is just selecting the branch it wants.
 
 ### 9. No helper-level proof for boundary-level obligations
-A review comment about startup config, file save, Tauri IPC, subprocess lifecycle, or E2E behavior must be resolved at that boundary. Helper tests are supplementary. They cannot resolve boundary feedback.
-- **Bad:** Review: "config startup defaults are wrong" -> Fix: add tests for `require_or_default(...)`
-- **Better:** Test actual config file absent/present/malformed through `build_initial_state`, test actual save operation through command boundary, test actual subprocess timeout kills the process.
+
+A review comment about startup config, file save, Tauri IPC, subprocess lifecycle, or E2E behavior must be resolved at that boundary.
+
+- **Bad:**
+```text
+review: config startup defaults are wrong
+fix: add tests for require_or_default(...)
+```
+- **Better:**
+```text
+test actual config file absent/present/malformed through build_initial_state
+test actual save operation through command boundary
+test actual subprocess timeout kills the process
+```
+- **What this burns:**
+  - new helper extracted after review
+  - unit tests that mirror the patch
+  - proof of branch behavior instead of product behavior
+  - tests that would pass if the app stopped calling the helper
+
+*Helper tests are supplementary. They cannot resolve boundary feedback.*
 
 ### 10. No exact string assertions unless the string is a public contract
+
 Exact string assertions are often tautological, especially when the test passes the string into the function.
-- **Bad:** `let error = helper(None, true, "missing foo", default).unwrap_err(); assert_eq!(error, "missing foo");`
-- **Better:** `assert!(matches!(error, ConfigError::MissingRequired { key } if key == "pandoc.render_command"));`, or test the actual boundary and assert that it fails with a structured error.
+
+- **Bad:**
+```rust
+let error = helper(None, true, "missing foo", default).unwrap_err();
+assert_eq!(error, "missing foo");
+```
+- **Better:**
+```rust
+assert!(matches!(error, ConfigError::MissingRequired { key } if key == "pandoc.render_command"));
+```
+Or, better still, test the actual boundary and assert that it fails with a structured error.
+
+- **What this burns:**
+  - message plumbing tests
+  - brittle implementation coupling
+  - tests that prove the test’s own literal
 
 ### 11. No stringly typed errors for owned failures
-Owned errors should be structured. Strings can be rendered at the edge, but they should not be the internal contract.
-- **Bad:** `Result<T, String>`, `Err("missing config value".into())`
-- **Better:** Use structured errors, e.g. `enum ConfigError { MissingRequired { key: &'static str }, MalformedToml { path: PathBuf, source: toml::de::Error } }`
+
+Owned errors should be structured. Strings can be rendered at the edge. They should not be the internal contract.
+
+- **Bad:**
+```rust
+Result<T, String>
+Err("missing config value".into())
+```
+- **Better:**
+```rust
+enum ConfigError {
+    MissingRequired { key: &'static str },
+    MalformedToml { path: PathBuf, source: toml::de::Error },
+}
+```
+- **What this burns:**
+  - exact string tests
+  - ambiguous failure classification
+  - review-thread debates about wording
+  - catch-all error laundering
 
 ### 12. No `Option<T>` in initialized core state for required data
+
 Optionality belongs at the boundary, before normalization. After initialization, required state should be total. If initialization cannot supply the field, initialization fails.
-- **Bad:** `struct AppState { render_command: Option<String>, workspace_root: Option<PathBuf> }`
-- **Better:** `struct AppState { render_command: String, workspace_root: PathBuf }`
+
+- **Bad:**
+```rust
+struct AppState {
+    render_command: Option<String>,
+    workspace_root: Option<PathBuf>,
+}
+```
+- **Better:**
+```rust
+struct AppState {
+    render_command: String,
+    workspace_root: PathBuf,
+}
+```
+- **What this burns:**
+  - repeated unwrap_or
+  - defensive guards
+  - impossible-condition tests
+  - runtime fallback decisions
+  - soft initialization
 
 ### 13. No ambient discovery chains
-Discovery chains are fallbacks in disguise. If multiple locations are truly supported, they should be an explicit ordered contract with tests. But for agent-driven bespoke software, the default should be one source.
-- **Bad:** look in env var, then project config, then home config, then built-in default, then inferred current directory
-- **Better:** one configured path, or one explicit startup rule, or one setup-generated config.
+
+Discovery chains are fallbacks in disguise.
+
+- **Bad:**
+```text
+look in env var
+then project config
+then home config
+then built-in default
+then inferred current directory
+```
+- **Better:**
+```text
+one configured path
+or one explicit startup rule
+or one setup-generated config
+```
+If multiple locations are truly supported, they should be an explicit ordered contract with tests. But for agent-driven bespoke software, the default should be one source.
+
+- **What this burns:**
+  - local-artifact laundering
+  - mystery config precedence
+  - probe-driven behavior
+  - “works because it found something else”
 
 ### 14. No hidden global state as source of truth
+
 Do not let the app infer behavior from installed tools, current directory, environment variables, shell profiles, caches, or home-directory artifacts unless that is explicitly the product contract.
-- **Bad:** `if fd installed use fd else find`, `if env var exists use it else config`, read `~/.something` because maybe credentials are there.
-- **Better:** Config declares the command/path/provider, doctor verifies it, runtime uses it.
+
+- **Bad:**
+```text
+if fd installed use fd else find
+if env var exists use it else config
+read ~/.something because maybe credentials are there
+```
+- **Better:**
+```text
+config declares the command/path/provider
+doctor verifies it
+runtime uses it
+```
+- **What this burns:**
+  - installed-tool-first behavior
+  - local snooping
+  - implicit user preference inference
+  - environment-dependent tests
 
 ### 15. No local QC authority
-Do not let repos define their own generic lint/type/test/coverage gates. They delegate to the global QC system at `~/ai/quality-control`.
+
+Do not let repos define their own generic lint/type/test/coverage gates. They delegate to global QC.
+
+- **What this burns:**
+  - local recipe proliferation
+  - narrow check passing
+  - per-repo tool drift
+  - agents modifying QC to pass
 
 ### 16. No bypass comments
-No `# type: ignore`, `# noqa`, `# pragma: no cover`, `eslint-disable`, `ts-ignore`, `skip`, or `xfail`. If the tool is wrong, fix the type surface, change the code shape, or escalate.
+
+No:
+- `# type: ignore`
+- `# noqa`
+- `# pragma: no cover`
+- `eslint-disable`
+- `ts-ignore`
+- `skip`
+- `xfail`
+
+If the tool is wrong, fix the type surface, change the code shape, or escalate.
+
+- **What this burns:**
+  - checker appeasement
+  - proof masking
+  - silent escape hatches
 
 ### 17. No compatibility shims or legacy paths in pre-launch bespoke software
+
+No:
+- legacy adapter
+- deprecated path
+- backward-compatible parser
+- old config loader
+- compat mode
+
 Replace the old path. Delete it after transferring the burden.
-- **Bad:** legacy adapter, deprecated path, backward-compatible parser, old config loader, compat mode.
-- **Better:** Greenfield mutation replaces the old path completely.
+
+- **What this burns:**
+  - branch accretion
+  - fallback preservation
+  - “just in case” code
+  - parallel implementations
 
 ### 18. No general-purpose defensive validation inside trusted hot paths
+
 Validate once at the owned boundary, then use total types internally.
-- **Bad:** every function checks null, malformed input, missing fields, impossible variants.
-- **Better:** Boundary validates, core assumes, asserts document impossible states.
+
+- **Bad:**
+```text
+every function checks null, malformed input, missing fields, impossible variants
+```
+- **Better:**
+```text
+boundary validates
+core assumes
+asserts document impossible states
+```
+- **What this burns:**
+  - enterprise edge-case accretion
+  - impossible-condition tests
+  - hot-path defensive programming
+  - logic noise
 
 ### 19. No “quarantine” as remediation
-Quarantine language (e.g. `quarantined`, `isolated`, `non-proof`, `smoke-only`, `legacy`, `diagnostic-only`, `temporary`, `compatibility`, `fallback`, `scaffold`, `future-owned`, `out-of-scope`) is often fluent laundering. It triggers a burden-disposition check: What problem remains? Why does this artifact still exist? Can future agents cite it as proof? Is it in a proof path? If yes, it is still slop.
+
+Quarantine language is often fluent laundering.
+
+Suspicious words:
+- `quarantined`
+- `isolated`
+- `non-proof`
+- `smoke-only`
+- `legacy`
+- `diagnostic-only`
+- `temporary`
+- `compatibility`
+- `fallback`
+- `scaffold`
+- `future-owned`
+- `out-of-scope`
+
+These terms trigger a burden-disposition check:
+- What problem remains?
+- Why does this artifact still exist?
+- Can future agents cite it as proof?
+- Is it in a proof path?
+
+If yes, it is still slop.
 
 ### 20. No issue/comment/documentation as completion
+
 Administrative artifacts can preserve truth, but they do not solve implementation/proof obligations.
-- **Bad:** opened issue, therefore resolved; documented limitation, therefore fixed; renamed test, therefore compliant; comment explains fake proof, therefore okay.
-- **Better:** Issue records unresolved burden, but the PR/task remains incomplete unless the original task was strictly documentation/triage.
+
+- **Bad:**
+```text
+opened issue, therefore resolved
+documented limitation, therefore fixed
+renamed test, therefore compliant
+comment explains fake proof, therefore okay
+```
+- **Better:**
+```text
+issue records unresolved burden
+PR remains incomplete unless original task was only to document/triage
+```
+- **What this burns:**
+  - completion laundering
+  - metadata as progress
+  - future-work as resolution
 
 ---
 
