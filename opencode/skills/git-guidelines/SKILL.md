@@ -250,6 +250,22 @@ If any answer is scanner status, check status, process compliance, or a claim th
 will re-review later, stop.
 That is not judgment.
 
+### Split feedback from remediation
+
+Every review item has two separable claims:
+
+1. The feedback claim: what is allegedly wrong?
+2. The suggested remediation: what change is being proposed?
+
+Classify both. A true claim does not make the proposed fix acceptable.
+A bad proposed fix does not make the underlying claim false.
+
+Disposition options:
+- Accepted as written
+- Accepted with modified remediation
+- Rejected
+- Investigate before action
+
 ### Interpret policy by purpose
 
 Repo rules exist to protect the work, not to excuse abandoning it.
@@ -290,6 +306,14 @@ Each substantive reply must include:
 
 - Policy interpretation: when repo guidance is involved, explain how the action follows
   the spirit of the rule, not merely its literal text.
+
+Visible thread reply must state:
+
+- Claim disposition:
+- Remediation disposition:
+- Policy basis:
+- Code/action taken or explicit non-change:
+- Audit anchor:
 
 Do not write replies like “fixed”, “done”, “addressed”, “acknowledged”, or “will follow
 up” unless the surrounding text contains the actual disposition and evidence.

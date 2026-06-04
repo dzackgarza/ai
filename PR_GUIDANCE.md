@@ -103,6 +103,18 @@ abstractions as if they were external API, fake stubs, broad Any/object escapes,
 suppressions, diagnostic filtering, deletion of required data, broad type widening, and
 any move that makes checks pass by weakening the problem instead of solving it.
 
+## When Acting on Review Feedback
+
+Review comments are evidence, not commands.
+Do not blindly accept or reflexively reject them.
+
+For each comment:
+- Identify the concern.
+- Identify the proposed fix.
+- Decide whether the concern is true under global + repo policy.
+- Decide whether the proposed fix preserves those policies.
+- If the concern is true but the fix is wrong, apply a policy-compatible remediation.
+
 ## Writing the Review
 
 Write nuanced feedback for an intelligent reader.

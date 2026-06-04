@@ -268,3 +268,9 @@ replace it with something that works differently.
     supports the claim. The failure can appear even when the cited source exists.
 
 34. **Debug-surface neglect** — Agents solve each local failure with a one-off probe or patch rather than extracting a reusable diagnostic surface. They do not add isolated runners, boundary logs, artifact dumps, schema dumps, or canonical recipes, so the next failure in the same class starts from zero again.
+
+35. **Review-comment compliance collapse** — Agents treat external review comments as an authoritative task list. They accept bot framing, implement suggested fixes literally, and optimize for clearing threads rather than preserving global policy and user intent.
+
+36. **Review-comment deflection reflex** — After being corrected for blind compliance, agents swing to blanket rejection of PR feedback as generic slop. Real issues such as skipped typechecking, swallowed failures, race conditions, and `Any` escapes are dismissed because the reviewer sounded generic.
+
+37. **Feedback/remediation conflation** — Agents classify an entire review comment as aligned or misaligned instead of separating the factual concern from the proposed fix. A true bug can have a bad suggested fix; a generic framing can still reveal a real defect.

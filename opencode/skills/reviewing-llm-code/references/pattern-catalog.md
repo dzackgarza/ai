@@ -258,6 +258,30 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 
 - **Immediate staleness**: docs that duplicate fast-changing structure instead of pointing to the source of truth.
 
+## Generic PR Review Slop
+
+- Sandbox paranoia in bespoke software:
+  Reviewer imports enterprise threat models into private single-user tools.
+  Reject unless the repo explicitly owns a containment/security boundary.
+
+- Graceful-fallback remediation:
+  Reviewer identifies a real failure but suggests warnings/defaults/continuation.
+  Accept the concern only if real; replace remediation with fail-loud behavior.
+
+- Micro-optimization laundering:
+  Reviewer proposes a faster API or async conversion without measured/user-visible problem.
+  Reject unless it fixes correctness, removes complexity, or has near-zero blast radius.
+
+- Type/QC gap underweighting:
+  Reviewer frames excluded typechecking or `Any` as style. Treat as proof-loop failure.
+
+- Race-condition minimization:
+  Reviewer or agent treats stale async state as speculative edge-case hardening.
+  Accept when it can overwrite user-visible current state and fix is small.
+
+- Honest-label smoke laundering:
+  Mocked/fake tests renamed as `smoke`, `basic`, or `harness` are not feature proof.
+
 ## Debugging-Review Gate
 
 When reviewing agent-produced debugging work (failed fix attempts, failed probes, diagnostic reports), reject reports that lack all three of:

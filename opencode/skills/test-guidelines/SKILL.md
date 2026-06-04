@@ -625,6 +625,21 @@ the resulting state safe to remove.
 
 * * *
 
+## Smoke and Harness Checks
+
+A smoke check may prove that the test harness, frontend shell, or diagnostic fixture starts.
+It does not prove feature behavior.
+
+A mocked smoke check:
+- cannot satisfy feature proof
+- cannot replace real boundary tests
+- must not be counted as coverage for product correctness
+- should be removed if its existence encourages proof laundering
+
+Renaming a mock test to `smoke` is not a fix for missing proof.
+
+* * *
+
 ## Verification Rigor
 
 - **FRESH PROOF**: A claim of “tests pass” requires fresh command output from the

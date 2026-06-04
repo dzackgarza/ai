@@ -15,6 +15,11 @@ Perform code reviews on local changes before pushing, or review open PRs on GitH
 Most of this skill uses plain `git` — the `gh`/`curl` split only matters for PR-level
 interactions.
 
+> [!IMPORTANT]
+> **Authority and Routing Constraint**:
+> This skill is strictly for *performing code reviews and generating review feedback comments*. It must NOT be used as the authority for consuming, triaging, or acting on review comments or CI failures.
+> If you are acting on, resolving, or replying to existing review feedback or automated comments, you must load and use [pr-feedback-triage](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md) instead.
+
 ## Prerequisites
 
 - Authenticated with GitHub (see `github-auth` skill)
@@ -284,57 +289,26 @@ For deleted lines, use `"side": "LEFT"`.
 
 When performing a code review (local or PR), systematically check:
 
-### Correctness
+### Policy-Aware Code Review Checklist
 
-- Does the code do what it claims?
+Review for:
+- correctness under the original task
+- proof-loop integrity
+- type/QC coverage
+- fail-fast violations
+- fake proof, mocks, skips, smoke laundering
+- race/stale-state correctness failures
+- data contract violations
+- known-solution bypass
+- slop patterns from reviewing-llm-code
 
-- Edge cases handled (empty inputs, nulls, large data, concurrent access)?
-
-- Error paths handled gracefully?
-
-### Security
-
-- No hardcoded secrets, credentials, or API keys
-
-- Input validation on user-facing inputs
-
-- No SQL injection, XSS, or path traversal
-
-- Auth/authz checks where needed
-
-### Code Quality
-
-- Clear naming (variables, functions, classes)
-
-- No unnecessary complexity or premature abstraction
-
-- DRY — no duplicated logic that should be extracted
-
-- Functions are focused (single responsibility)
-
-### Testing
-
-- New code paths tested?
-
-- Happy path and error cases covered?
-
-- Tests readable and maintainable?
-
-### Performance
-
-- No N+1 queries or unnecessary loops
-
-- Appropriate caching where beneficial
-
-- No blocking operations in async code paths
-
-### Documentation
-
-- Public APIs documented
-
-- Non-obvious logic has comments explaining “why”
-
-- README updated if behavior changed
+Do not default to:
+- graceful fallback
+- enterprise edge-case hardening
+- sandbox paranoia
+- micro-optimization
+- broader platform support
+- generic security framing without project-owned threat model
 
 * * *
 

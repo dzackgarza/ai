@@ -80,6 +80,16 @@ If the output shows these patterns → LOAD `addressing-shallow-work` skill befo
 proposing any fixes.
 Do not respond to shallow work by adding more structure — that makes it worse.
 
+## Reviewing Review Feedback
+
+A review comment from another agent is itself an artifact under review.
+Do not trust the reviewer’s framing, severity, or proposed fix.
+
+Apply `pr-feedback-triage`:
+- Is the underlying claim true?
+- Is the suggested remediation policy-compatible?
+- What evidence would falsify either?
+
 ## Cross-References
 
 - **jerry-behaviour** → LOAD alongside when reviewing agent output and you suspect the

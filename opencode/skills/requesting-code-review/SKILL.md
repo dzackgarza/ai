@@ -132,14 +132,36 @@ FAIL-CLOSED RULES:
 - Cannot parse diff -> passed must be false
 - Only set passed=true when BOTH lists are empty
 
+CONSTRAINTS:
+- You are not allowed to recommend generic production hardening, graceful fallback,
+  mocking, broad sandboxing, micro-optimization, type ignores, skips, or local QC changes.
+- If you identify a concern, separate the concern from the remediation.
+- Mark remediation as required only when it preserves the repository authority hierarchy.
+
+SEVERITY RUBRIC:
+Blockers (auto-FAIL; list in security_concerns or logic_errors):
+- typechecking or QC exclusion
+- `any` / type escape in owned proof surface
+- skip/mask/mock/fake proof
+- fail-fast violation
+- swallowed errors
+- user-visible race/stale state
+- broken owned contract
+
+Usually reject (do not flag as blockers or suggestions):
+- micro-optimization without measured/user-visible problem
+- security hardening that conflicts with single-user workflow
+- graceful fallback or defaulting
+- broad compatibility/platform advice
+
 SECURITY (auto-FAIL): hardcoded secrets, backdoors, data exfiltration,
 shell injection, SQL injection, path traversal, eval()/exec() with user input,
 pickle.loads(), obfuscated commands.
 
 LOGIC ERRORS (auto-FAIL): wrong conditional logic, missing error handling for
-I/O/network/DB, off-by-one errors, race conditions, code contradicts intent.
+I/O/network/DB, off-by-one errors, user-visible race/stale state, code contradicts intent.
 
-SUGGESTIONS (non-blocking): missing tests, style, performance, naming.
+SUGGESTIONS (non-blocking): missing tests, style, naming.
 
 <static_scan_results>
 [INSERT ANY FINDINGS FROM STEP 2]

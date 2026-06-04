@@ -265,6 +265,13 @@ git push
 
 Re-check CI status using the commands from Section 4 above.
 
+> [!WARNING]
+> CI failures and PR review comments are different.
+>
+> CI failure logs may often be fixed mechanically after root-cause diagnosis.
+> Review comments must first be routed through `pr-feedback-triage`.
+> Do not auto-fix review comments merely because they are unresolved.
+
 ### Auto-Fix Loop Pattern
 
 When asked to auto-fix CI, follow this loop:
@@ -275,7 +282,7 @@ When asked to auto-fix CI, follow this loop:
 
 3. Use `read_file` + `patch`/`write_file` → fix the code
 
-4. `git add . && git commit -m "fix: ..." && git push`
+4. `git add <specifically modified files> && git commit -m "fix: ..." && git push` (Never use `git add .` or `git add -A` as they can stage unwanted files or secrets)
 
 5. Wait for CI → re-check status
 
