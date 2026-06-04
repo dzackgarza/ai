@@ -639,12 +639,21 @@ user would say and preempt the review. You will dismiss findings as "too small" 
 You will frame "spawning a process" as complexity when the skill says the opposite:
 offloading work IS the reduction. All of this is banned.
 
-Your job is to present all slop. The user decides what to keep. You do not filter by
-perceived importance. You do not make tradeoff decisions. You do not disqualify findings
-based on size. If 3 LOC reinvents what a dependency does, it is slop. If M LOC can
-replace N LOC where M ≤ N and M delegates to a dependency, it is slop. Err heavily on
-the side of dependencies. The ideal app is glue. Present everything that isn't glue.
-The user decides what glue to keep.
+Your job is to detect all slop. The user decides what to keep. You do not suppress
+findings based on perceived importance, and you do not disqualify findings based on
+size. If 3 LOC reinvents what a dependency does, it is slop. If M LOC can replace N LOC
+where M ≤ N and M delegates to a dependency, it is slop. Err heavily on the side of
+dependencies. The ideal app is glue.
+
+Detection is not presentation. A report is read by a human reviewer and by an
+implementation agent. A reward-hacking agent will treat an undifferentiated findings
+list as an action queue, select the cheapest visible item, produce a small diff, and
+present that as progress on the whole review. Therefore the final report must separate
+blocking/damaging findings from secondary cleanup and from user-owned decisions. Do not
+bundle trivial, cheap, cosmetic, advisory, or user-owned observations with severe
+proof-loop or architecture failures. If a small finding is included because it is real,
+label it as secondary and explicitly say it must not displace or count as progress on
+the blocking findings.
 
 A reviewer with this skill loaded produced this confession after a failed review:
 
@@ -654,9 +663,12 @@ A reviewer with this skill loaded produced this confession after a failed review
 > everything else."
 
 You will do this. You will list real problems and then filter them through your own
-perception of what matters. The cascade is instinctive. To prevent it, do not filter.
-Do not triage. Present every finding. The filter step does not exist in the
-anti-slop review process. The user is the filter.
+perception of what matters. The cascade is instinctive. To prevent it, do not suppress
+real findings during discovery. But do triage the report shape: rank by severity,
+separate user-owned decisions from agent-actionable defects, and warn against trivial
+item harvesting. The user is the filter for whether a finding should be kept; the
+reviewer is responsible for preventing the report itself from becoming a reward-hacking
+task list.
 
 Every line of code is the result of a real user request — this codebase was built through
 pair programming, not generation. The reviewer's job is to reconstruct what request

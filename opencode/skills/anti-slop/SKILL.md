@@ -401,6 +401,19 @@ Write findings that:
 
 4. **Never prescribe deletion.** Use verbs like “refine,” “replace,” “migrate,” or “investigate.”
 
+5. **Separate by severity and ownership before listing.** The report is read by a human reviewer and by an implementation agent.
+   A reward-hacking agent will treat any undifferentiated list of findings as an action queue, then pick the cheapest visible item and present that as progress on the whole review.
+   Do not put trivial, cheap, or user-owned observations in the same list as proof-loop failures, architectural debt, or objectively agent-fixable defects.
+
+6. **Mark implementation priority explicitly.** Findings must be grouped as:
+   - **Blocking / damaging agent-actionable defects** — proof-loop failures, broken runtime boundaries, test laundering, structural debt that prevents trustworthy work.
+   - **Secondary agent-actionable cleanup** — real slop, but not allowed to displace blocking work.
+   - **User-owned decisions / do-not-touch observations** — detectable issues whose correct resolution requires user taste, scholarly judgment, content selection, or product judgment.
+
+7. **Add a reward-hacking warning when mixed audiences will act on the report.** If any low-effort finding is included, state that it must not be used as evidence that the severe findings were addressed.
+   A trivial fix does not count as progress on blocking defects.
+   Reports that omit this warning invite agents to solve the smallest item and launder it as completion.
+
 ## Correct Action Bias
 
 This skill should NEVER result in models suggesting wholesale deletion of code — that is a clear sign that the task has slipped into routine checkbox cleanup.
@@ -453,6 +466,11 @@ If you catch yourself doing any of these, you have slipped from analysis into ja
 - **Taking inventories:** Listing components, dependencies, or files as a “finding” is checkboxing.
   Lists are data points that require structural interpretation.
   Never present an inventory as a conclusion.
+
+- **Bundling trivial findings with severe findings.** A report is not a neutral bag of observations.
+  Implementation agents will myopically choose the easiest item, especially if it produces a visible diff, and then present that as progress on the whole report.
+  If a finding is cheap, cosmetic, advisory, or user-owned, separate it from blocking findings and label it so it cannot be mistaken for the next implementation target.
+  Do not let a placeholder/image/content-choice warning sit beside a broken proof loop as if both are equally agent-actionable slop.
 
 - **Treating “dead dependencies” as in-scope:** If a dependency exists but is not imported, it is outside the scope of this analysis.
   `knip` will find it.
