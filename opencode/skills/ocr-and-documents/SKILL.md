@@ -107,9 +107,8 @@ extract equations or LaTeX.
 - **Ad-hoc OCR pipelines** — do not build your own tesseract/pytesseract/pdf2image
   pipeline. Use marker-pdf or the managed recipes instead.
 
-- **Installing extraction tools manually** — always use `uvx` for one-shot tools or the
-  `~/pdf-extraction` justfile for managed extraction. No `pip install marker-pdf` or
-  `pip install pymupdf`.
+- **Installing extraction tools manually** — use `uvx` for one-shot tools or the
+  `~/pdf-extraction` justfile for managed extraction.
 
 * * *
 

@@ -658,16 +658,9 @@ try:
 except Exception:
     result = default
 
-# Bad: pip install
-# pip install package  # use: uv add package
-
-# Bad: standalone script with pip prelude instead of inline metadata
-# pip install httpx
-# python script.py   # use: PEP 723 metadata + uv run script.py
-
-# Bad: requirements.txt for a standalone script
-# pip install -r requirements.txt && python script.py
-# use: inline dependencies block
+# Use: uv add package
+# Use: PEP 723 metadata + uv run script.py (for standalone scripts)
+# Use: inline dependencies block (instead of requirements.txt for scripts)
 
 # Bad: Config in setup.cfg, tox.ini, .pylintrc, etc.
 # All config belongs in pyproject.toml
