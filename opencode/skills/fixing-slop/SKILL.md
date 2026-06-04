@@ -11,6 +11,8 @@ description: Use when fixing slop identified by anti-slop or reviewing-llm-code 
 
 You cannot fix slop by removing it. You fix slop by reconstructing the narrative that produced it, identifying the correct intention, and fulfilling that intention with the right implementation.
 
+Remediation must strictly respect the **Bridge-Burning Policies** (defined in [anti-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)). Any fix that introduces fallbacks, defaults, mocks, optional critical dependencies, or boolean flags to "remediate" a finding is violating policy and is considered laundering.
+
 ## Slop Is Never Localized: The Blast Radius Rule
 
 A slop finding is a mold spot on bread. You cannot cut out the moldy spot and call the bread fixed. You cannot replace the moldy spot with fresh bread. The mold has spread invisibly; you must determine the full extent of the infection, excise it entirely, then go back to bread-making principles to produce moldless bread from the ground up.
@@ -116,4 +118,5 @@ If the fix does not produce this trail, it is laundering — and the original sl
 
 - **`anti-slop/references/code-patterns.md`** → **Honest-Label Laundering** — The specific detection heuristics for renaming/relabeling.
 - **`anti-slop/SKILL.md`** — The analysis skill; use this FIRST to identify slop, then use fixing-slop to remediate.
+- **anti-slop → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) are the core criteria for what constitutes a correct, non-evasive implementation. Any fix must follow them as hard constraints.
 - **`handling-corrections/SKILL.md`** — The anti-thrashing protocol; use when a fix attempt is rejected as laundering.

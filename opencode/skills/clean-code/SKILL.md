@@ -20,6 +20,8 @@ hierarchy (see `quality-control`), the higher-ranked skill wins. In particular:
 - The fail-loud policy means special cases and default objects are allowed only as
   explicit domain semantics, not as defensive soft defaults.
 
+- **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)) are HARD, non-negotiable rules that eliminate validation-evasion pathways (such as runtime defaults, mocks, and fallbacks) and must be strictly followed.
+
 Every name reveals intent.
 Every function tells a story.
 Every class has a single purpose.
@@ -364,3 +366,5 @@ Leave it better than you found it.
 - **anti-slop → deepening** — `anti-slop/references/deepening.md` provides the process for turning shallow modules (wide interfaces, pass-throughs) into deep ones. When this skill identifies cohesion breakdown or SRP violations, the deepening reference tells you how to consolidate them: classify dependencies (in-process, local-substitutable, ports & adapters, mock), place seams, and test through the deepened interface.
 
 - **thermo-nuclear-code-quality-review** — For aggressive simplification that goes beyond "clean code" into restructuring, load thermo-nuclear alongside this skill.
+
+- **anti-slop → Bridge-Burning Policies** — Modern development requires adhering strictly to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These represent non-negotiable constraints to prevent agent evasion (such as runtime defaults, fallbacks, and mocks).

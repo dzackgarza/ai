@@ -86,6 +86,12 @@ Bypass comments are explicitly blocked in staged files:
 If you find yourself needing a bypass, escalate to the user for QC agent review/approval
 instead.
 
+### Bridge-Burning Policies
+
+Adhering to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) is a non-negotiable constraint for all development. These rules eliminate common agent validation-evasion pathways (such as runtime defaults, fallbacks, mocks, and diagnostic smoke tests in proof paths). 
+
+Any exception to these rules must strictly follow the **Policy Exception Protocol** defined in [anti-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#policy-exception-protocol).
+
 ## Purpose
 
 1. **Enshrine workflows** — Every workflow lives in the justfile.

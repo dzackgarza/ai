@@ -209,6 +209,8 @@ Before adding content, ask:
 
 - Task-specific decomposition rules
 
+- **Bridge-Burning Policies**: When authoring coding, testing, or review skills, you must reference and respect the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`.
+
 ## Skill Location
 
 **All skills must be stored in `~/ai/opencode/skills/`**

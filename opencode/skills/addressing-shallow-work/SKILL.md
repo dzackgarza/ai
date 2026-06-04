@@ -18,6 +18,8 @@ The relationship is often inverted:
 
 - **More procedural gates** = more ways to produce solution-shaped filler
 
+To prevent this inversion, developers must adhere to the **Bridge-Burning Policies** (defined in [anti-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)). Instead of creating new review steps or templates to check, these policies impose blanket constraints that make bad states (such as mocks, runtime defaults, fallbacks, and helper-level proofs) impossible to represent in the codebase.
+
 ### Why This Happens
 
 Adding requirements like “every X must have a Y” or “require inventory where each row
@@ -183,6 +185,8 @@ Signs that an approach destroys the abstraction before operating:
 - **prompt-engineering** → Load alongside when writing instructions that must prevent
   shallow work proactively.
   Constraint-based instruction forces thinking rather than pattern completion.
+
+- **anti-slop → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) are the ultimate expression of making bad states impossible rather than using checklists or procedural gates. Refer to them as hard boundaries.
 
 - **anti-slop → deepening** → "Shallow work" in this skill's sense maps directly onto
   "shallow modules" in the deepening vocabulary (`anti-slop/references/deepening-vocabulary.md`).
