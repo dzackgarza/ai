@@ -1,6 +1,6 @@
 ---
 name: reviewing-llm-code
-description: Use when reviewing code, tests, QC, or documentation produced by an LLM or coding agent, especially when the user asks for bad patterns, low-quality code, shallow work, review of Deepseek/Codex/Claude/Jules output, or why an agent-produced change is untrustworthy.
+description: Use when reviewing code, tests, QC, or documentation produced by an LLM or coding agent, especially when the user asks for bad patterns, low-quality code, shallow work, review of Deepseek/Codex/Claude/Jules output, or why an agent-produced change is untrustworthy. Also use when auditing bridge-burning red flags, validation-evasion constructs, runtime defaults, fallbacks, mocks, skips, bypasses, or proof-laundering in LLM-produced code.
 ---
 
 # Reviewing LLM Code
@@ -60,10 +60,7 @@ If the code has an unusual feature scope, unexpected external dependency, or sur
    Patch accretion, stacked conditionals, dead control flow, dependency aversion, ground-up bias, proof-loop failures, error laundering — these are the mechanisms that make the implementation rotten beneath correct behavior.
 
 **Do NOT rely on your judgment to distinguish these.** You cannot — if you could, you would not need this skill.
-Instead, use this mechanical checklist.
-If ANY of these signals are true, the code is a design choice, not slop.
-Stop.
-Do not critique it.
+Instead, use this mechanical checklist to classify design choices:
 
 - Does the code integrate with a specific external tool, CLI, API, or library that is not a standard dependency for this language/ecosystem?
 
@@ -75,15 +72,12 @@ Do not critique it.
 
 - Does the code have behavioral constraints that seem arbitrary but are actually deliberate (e.g., "only process files matching this exact pattern," "use this specific command-line flag")?
 
+**How to use this**: This is a single-gate test for the feature/premise scope, not a license to bypass implementation auditing.
+If a design-choice signal is true, do not critique the feature, product scope, or user-owned behavior.
+But continue reviewing implementation mechanisms against bridge-burning policies and the red-flag catalog. A user-requested feature may still be implemented through slop.
+
 If none of these signals are true AND you can point to a specific code pattern from the loaded skills (patch accretion, dead control flow, dependency aversion, etc.), then the finding is implementation quality and you may proceed.
 
-**How to use this**: This is a single-gate test, not a sequential checklist.
-If ANY signal matches, STOP immediately — do not continue evaluating remaining signals.
-The moment you detect one match, the code is a design choice.
-There is no "score" to accumulate and no threshold to reach.
-One match is total.
-Do not narrate your evaluation of each signal.
-Just check for matches and stop on the first one.
 
 ## Required Background
 
@@ -130,7 +124,7 @@ Also load as applicable:
 
 - **Jules Review Delegation** (if the user asks to use Jules for review): Load:
   - [jules](file:///home/dzack/ai/opencode/skills/jules/SKILL.md)
-  - [jules/references/anti-slop-review-workflow](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-review-workflow.md)
+  - [jules/references/anti-slop-issue-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md)
   - [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md)
   - [anti-slop](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md)
   - [reviewing-subagent-work](file:///home/dzack/ai/opencode/skills/reviewing-subagent-work/SKILL.md)
