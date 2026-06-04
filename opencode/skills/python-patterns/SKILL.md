@@ -484,13 +484,10 @@ dependencies = [
     "httpx>=0.27",
 ]
 
+# Generic QC tools (ruff, mypy, pytest, etc.) run from central/global QC — do not install per-repo.
+# See the `quality-control` skill.
 [dependency-groups]
-dev = [
-    "pytest>=8.0",
-    "pytest-cov>=5.0",
-    "ruff>=0.8",
-    "mypy>=1.13",
-]
+dev = []
 
 [tool.ruff]
 line-length = 120
@@ -512,7 +509,7 @@ disallow_any_generics = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=mypackage --cov-report=term-missing --tb=short -q"
+addopts = "--tb=short -q"
 ```
 
 ### justfile — All Dev Commands
@@ -527,43 +524,27 @@ setup:
     uv venv
     uv sync
 
-# Run the full lint + type check + test suite
-check: lint typecheck test
-
-# Format code
+# Format code (ephemeral — no per-repo install needed)
 fmt:
-    uv run ruff format .
-    uv run ruff check --fix .
+    uvx ruff format .
+    uvx ruff check --fix .
 
-# Lint code
+# Lint code (ephemeral — no per-repo install needed)
 lint:
-    uv run ruff check .
+    uvx ruff check .
 
-# Type check
+# Type check (ephemeral — no per-repo install needed)
 typecheck:
-    uv run mypy .
+    uvx mypy .
 
-# Run tests
+# Run tests (ephemeral — no per-repo install needed)
 test *ARGS:
-    uv run pytest {{ARGS}}
+    uvx pytest {{ARGS}}
 
-# Run tests with verbose output
-test-verbose:
-    uv run pytest -v --tb=long
-
-# Run tests matching a pattern
-test-match PATTERN:
-    uv run pytest -k "{{PATTERN}}" -v
-
-# Run tests with coverage report
-coverage:
-    uv run pytest --cov=mypackage --cov-report=html
-    @echo "Coverage report: htmlcov/index.html"
-
-# Clean build artifacts — non-diagnostic cleanup: stderr suppression for missing dirs
+# Clean build artifacts
 clean:
     rm -rf .mypy_cache .pytest_cache .ruff_cache htmlcov .coverage
-    find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+    find . -type d -name __pycache__ -exec rm -rf {} + || true
 
 # Add a dependency
 add *PKGS:
@@ -586,7 +567,7 @@ update:
 mkdir myproject && cd myproject
 uv init --lib
 uv add pydantic
-uv add --group dev pytest pytest-cov ruff mypy
+# Generic QC tools (ruff, mypy, pytest, etc.) run from central/global QC — see the `quality-control` skill
 # Copy justfile from above
 # Run: just setup
 ```
@@ -669,11 +650,10 @@ result = "".join(str(item) for item in items)
 | Environment | `uv venv`, always |
 | Config | All in `pyproject.toml` |
 | Dev commands | All in `justfile`, run via `just` |
-| Formatting | `ruff format` via `just fmt` |
-| Linting | `ruff check` via `just lint` |
-| Type checking | `mypy --strict` via `just typecheck` |
-| Testing | `pytest` via `just test` |
-| Full check | `just check` (lint + typecheck + test) |
+| Formatting | `uvx ruff format` via `just fmt` |
+| Linting | `uvx ruff check` via `just lint` |
+| Type checking | `uvx mypy` via `just typecheck` |
+| Testing | `uvx pytest` via `just test` |
 | Target Python | Latest (3.13+), no backwards compat |
 
 ## Anti-Patterns to Avoid

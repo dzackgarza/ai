@@ -48,50 +48,59 @@ For arXiv papers:
 
 ## Using Mistral OCR
 
-### Installation
+### Basic OCR Extraction (PEP 723 Script)
 
-```bash
-uv add mistralai
-```
-
-### Basic OCR Extraction
+Save the following as a standalone script and run with `uv run`:
 
 ```python
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["mistralai"]
+# ///
+
 import os
+import sys
 from mistralai import Mistral
 
-# Use environment variable - never hardcode API keys
-api_key = os.environ.get("MISTRAL_API_KEY")
-client = Mistral(api_key=api_key)
 
-# Upload PDF
-with open("/path/to/file.pdf", "rb") as f:
-    uploaded = client.files.upload(
-        file={"file_name": "file.pdf", "content": f.read()},
-        purpose="ocr"
+def extract_pdf_to_markdown(pdf_path: str) -> str:
+    """Extract PDF to markdown using Mistral OCR."""
+    api_key = os.environ.get("MISTRAL_API_KEY")
+    client = Mistral(api_key=api_key)
+
+    with open(pdf_path, "rb") as f:
+        uploaded = client.files.upload(
+            file={"file_name": os.path.basename(pdf_path), "content": f.read()},
+            purpose="ocr"
+        )
+
+    signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=1)
+
+    response = client.ocr.process(
+        document={"document_url": signed_url.url},
+        model="mistral-ocr-latest"
     )
 
-# Get signed URL
-signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=1)
+    return "\n\n".join(page.markdown for page in response.pages)
 
-# Process with OCR
-response = client.ocr.process(
-    document={"document_url": signed_url.url},
-    model="mistral-ocr-latest"
-)
 
-# Extract markdown
-markdown = "\n\n".join(page.markdown for page in response.pages)
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: uv run extract_ocr.py <pdf_path>", file=sys.stderr)
+        sys.exit(1)
+    markdown = extract_pdf_to_markdown(sys.argv[1])
+    print(markdown)
 ```
 
 ### Utility Function
 
 ```python
+import os
+from mistralai import Mistral
+
+
 def extract_pdf_to_markdown(pdf_path: str) -> str:
     """Extract PDF to markdown using Mistral OCR."""
-    import os
-    from mistralai import Mistral
-
     api_key = os.environ.get("MISTRAL_API_KEY")
     client = Mistral(api_key=api_key)
 
@@ -145,7 +154,9 @@ def get_arxiv_paper(arxiv_id: str, base_dir: str = os.path.expanduser("~/pdfs/ar
         url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
         urllib.request.urlretrieve(url, pdf_path)
 
-    # Extract to markdown
+    # Extract to markdown using the script above
+    # Save as scripts/extract_ocr.py with PEP 723 metadata, then:
+    # uv run scripts/extract_ocr.py {pdf_path}
     markdown = extract_pdf_to_markdown(pdf_path)
 
     # Save markdown

@@ -15,7 +15,9 @@ Face Hub, providing tools to manage repositories, models, datasets, and Spaces.
 
 ## Quick Start
 
-* **Installation:** `curl -LsSf https://hf.co/cli/install.sh | bash -s`
+* **Installation:** See <https://huggingface.co/docs/huggingface_hub> for the canonical install docs.  
+  Prefer ephemeral use via `uvx hf --help` over global install.  
+  **Do not** pipe shell installers directly — determine the official package manager pathway and authenticate explicitly.
 
 * **Help:** Use `hf --help` to view all available functions and real-world examples.
 

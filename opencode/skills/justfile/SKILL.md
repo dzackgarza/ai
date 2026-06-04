@@ -248,12 +248,19 @@ deploy:
   echo "Deploying..."
 
 # Python — recipe body IS Python, no heredoc, no subprocess
+# For stdlib-only scripts, #!/usr/bin/env python3 is acceptable.
+# For scripts with dependencies, use the [script] attribute with uv run --script:
 analyze:
-  #!/usr/bin/env python3
+  #!/usr/bin/env -S uv run --script
+  # /// script
+  # requires-python = ">=3.11"
+  # dependencies = ["httpx", "pydantic"]
+  # ///
   import sys
-  from pathlib import Path
+  import httpx
+  from pydantic import BaseModel
   print(f"Python {sys.version}")
-  print(Path.home())  # ✅ works fine — just doesn't parse shebang recipe bodies
+  # ✅ uv auto-installs dependencies into an isolated environment
 
 # Node
 gen-config:

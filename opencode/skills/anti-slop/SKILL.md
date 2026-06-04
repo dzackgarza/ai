@@ -620,3 +620,56 @@ Secondary references (use when the central catalog does not cover the specific d
 This skill is ANALYSIS only. It detects slop but does not prescribe fixes.
 
 When slop has been identified, do NOT rename or delete it — both are laundering. Instead, load **`../fixing-slop/SKILL.md`** for the remediation protocol: reconstruct the narrative, identify the correct intention, fulfill the intention with the right implementation.
+
+* * *
+
+## Verification-Poison Dependencies
+
+Do not recommend, install, template, or casually mention dependencies whose main effect is to make fake proof easier.
+
+Examples include mock frameworks, patch helpers, request-mocking libraries, fake service frameworks, and time/network/filesystem simulation tools unless a skill explicitly discusses them as prohibited patterns.
+
+A dependency is not acceptable merely because it is common. If it helps the agent avoid a real owned boundary, captured real fixture, live integration check, or substantive assertion, it is proof-loop poison.
+
+### Dependency Taxonomy
+
+| Category | Treatment | Examples |
+| --- | --- | --- |
+| **Known semantic dependency** | Preferred when it replaces bespoke logic | `pydantic`, `httpx`, `numpy` |
+| **Generic QC/tool dependency** | Run ephemerally from central/global QC, not installed per-repo | `mypy`, `ruff`, `pytest`, `pytest-cov` |
+| **Repo-owned runtime/build/plugin dependency** | Declare locally in pyproject.toml | `pydantic`, project-specific plugins |
+| **Agent-authored one-off Python dependency** | PEP 723 inline metadata + `uv run` | `mistralai` for a one-off script |
+| **Verification-poison dependency** | Forbidden by default | `pytest-mock`, `unittest.mock`, `responses`, `moto`, `freezegun`, `requests-mock` |
+| **Global/system dependency** | Exceptional and explicitly bounded | `sudo apt install`, `brew install`, `npm install -g` |
+
+## Behavioral Seed Hygiene
+
+Every skill example is a behavioral seed.
+
+Do not include commands, packages, test patterns, or workflow templates that would be unsafe if copied by an agent outside the narrow context.
+
+Skills must not seed:
+- mocks, fakes, stubs, or simulation-first testing
+- pip/system/global installs (use `uvx`, `npx`, `bunx`, or PEP 723 `uv run --script`)
+- generic QC tools as per-repo dependencies
+- stderr suppression in diagnostic commands
+- checklist theater
+- local-artifact research for external-owned questions
+- fallback/default/special-case patterns that hide failure
+- pipe-to-shell installers
+- sudo/system mutation
+- broad "comprehensive" testing detached from owned claims
+
+### Cross-References (Source-of-Truth Skills)
+
+Rather than repeating policy in every skill, reference the canonical source:
+
+| Domain | Canonical Skill |
+| --- | --- |
+| Testing behavior | `test-guidelines` |
+| Debugging behavior | `reality-grounded-debugging` + `systematic-debugging` |
+| External tools/errors | `known-solution-first` |
+| Tool execution | runner-first tooling / uv script pathway |
+| QC | `quality-control` |
+| Skill authoring | `creating-skills` |
+| Dependency provisioning | tool-provisioning-and-environment-hygiene

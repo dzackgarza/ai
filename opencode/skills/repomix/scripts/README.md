@@ -22,14 +22,11 @@ Batch process multiple repositories (local or remote) using the repomix CLI tool
 
 ### Installation
 
-Requires Python 3.10+ and repomix CLI:
+Requires Python 3.10+ and repomix CLI (ephemeral via `npx -y repomix`):
 
 ```bash
-# Install repomix
-npm install -g repomix
-
-# Install Python dependencies (if needed)
-uv add --group dev pytest pytest-cov pytest-mock  # For running tests
+# Python test dependencies (if needed — prefer global QC for generic tools)
+uv add --group dev pytest pytest-cov  # For running tests
 ```
 
 ### Usage
@@ -170,9 +167,7 @@ Current coverage: 99%
 ### Troubleshooting
 
 **repomix not found:**
-```bash
-npm install -g repomix
-```
+Run via `npx -y repomix` instead. No global install needed.
 
 **Permission denied:**
 ```bash

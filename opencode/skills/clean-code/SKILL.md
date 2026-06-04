@@ -149,7 +149,7 @@ comment would be unnecessary.
 | --- | --- |
 | Use exceptions over return codes | Separates algorithm from error handling |
 | Provide context | Include operation that failed and type of failure |
-| Wrap third-party APIs | Minimizes dependencies, enables mocking |
+| Wrap third-party APIs | Defines owned semantic boundary, centralizes contract validation |
 | Use Special Case Pattern | Return object that handles special case (empty list, default values) |
 | **Don’t return null** | Creates work, invites NullPointerException |
 | **Don’t pass null** | Worse than returning null—forbid it by default |
@@ -191,7 +191,7 @@ Add new behavior via subclassing, not modifying existing code.
 ### Dependency Inversion Principle (DIP)
 
 Depend on abstractions, not concrete details.
-Inject dependencies for testability.
+Inject dependencies for explicit dependency flow and boundary control.
 
 ```python
 # Bad - can't test without network
@@ -199,7 +199,7 @@ class Portfolio:
     def __init__(self):
         self.exchange = TokyoStockExchange()
 
-# Good - injectable, testable
+# Good - explicit dependency flow, boundary control
 class Portfolio:
     def __init__(self, exchange: StockExchange):
         self.exchange = exchange

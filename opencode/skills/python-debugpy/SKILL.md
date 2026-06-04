@@ -163,7 +163,7 @@ already misbehaving and can’t be restarted clean.
 ### Setup
 
 ```bash
-source /home/bb/hermes-agent/.venv/bin/activate
+# Add to project if needed (otherwise use uvx for ephemeral)
 uv add debugpy
 ```
 
@@ -203,10 +203,8 @@ python -m debugpy --listen 127.0.0.1:5678 --pid <pid>
 ```
 
 Some kernels/security configs block the ptrace-based injection
-(`/proc/sys/kernel/yama/ptrace_scope`). Fix with:
-```bash
-echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-```
+(`/proc/sys/kernel/yama/ptrace_scope`).
+This requires explicit user intervention — do not attempt `sudo` without asking:
 
 ### Connecting a client from the terminal
 
@@ -273,8 +271,10 @@ add a `launch.json`:
 terminal agent:
 
 ```bash
-uv add remote-pdb
+uvx -p remote-pdb -- python -c "from remote_pdb import set_trace; set_trace(host='127.0.0.1', port=4444)"
 ```
+
+Or add as a PEP 723 script dependency for the file using it.
 
 In your code:
 ```python

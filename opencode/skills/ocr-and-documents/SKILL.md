@@ -61,10 +61,10 @@ If the user needs marker capabilities but the system lacks ~5GB free disk:
 
 ## pymupdf (lightweight)
 
-Declare as project dependencies when the helper scripts are used:
+Run via `uvx` — no local install needed:
 
 ```bash
-uv add pymupdf pymupdf4llm
+uvx pymupdf4llm --help
 ```
 
 **Via helper script**:
@@ -94,8 +94,6 @@ for page in doc:
 ```bash
 # Check disk space first
 uv run python scripts/extract_marker.py --check
-
-uv add marker-pdf
 ```
 
 **Via helper script**:
@@ -180,6 +178,6 @@ in one package.
 
 - marker-pdf downloads ~2.5GB of models to `~/.cache/huggingface/` on first use
 
-- For Word docs: `uv add python-docx` (better than OCR — parses actual structure)
+- For Word docs: `uvx python-docx` or PEP 723 inline script with `python-docx` (better than OCR — parses actual structure)
 
 - For PowerPoint: see the `powerpoint` skill (uses python-pptx)
