@@ -92,7 +92,7 @@ A failed one-shot attempt is residue. `DECOMPOSE` is a work state: split residue
 **No worker-authored summary, plan, status note, disposition, issue label, checklist, or claimed blocker is completion evidence** unless independently tied to the user-visible result.
 - Do not ask the adversary to define success.
 - Do not ask the adversary to interpret scope or classify its own residue.
-- Test output from outside the adversary's control.
+- **Verification channel**: Pre-existing locked tests, independent reviewer tests, CI configured outside the worker’s diff, or user-provided commands are the only authoritative channels. Worker-authored tests are evidence only when they are themselves reviewed against the contract.
 
 ### Length and Validation
 - **Hard Limit**: 4,000 characters. **Target**: 3,400 characters.
@@ -109,7 +109,7 @@ State surface: use <iwe keys or documented project paths>. Resume with <retrieva
 
 Preserve: <scope boundaries and non-regressions>.
 
-Completion: mark complete only when the contract witness is true in artifacts and required independent review passes. If a failed attempt occurs, enter DECOMPOSE: split the failed residue, record the active path if decomposition may span context, attempt smaller pieces, integrate solved pieces, subtract them from the parent residue, and reconcile back up the ledger before changing scope, reporting externally owned residue, or asking for follow-up work.
+Completion: mark complete only when the contract witness is true in artifacts and required independent review (when justified by the process-budget audit) passes. If a failed attempt occurs, enter DECOMPOSE: split the failed residue, record the active path if decomposition may span context, attempt smaller pieces, integrate solved pieces, subtract them from the parent residue, and reconcile back up the ledger before changing scope, reporting externally owned residue, or asking for follow-up work.
 
 Stop: <approval/destructive/access boundaries>.
 ```
