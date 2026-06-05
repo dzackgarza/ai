@@ -54,6 +54,69 @@ expose a weaker stopping path:
   adversarial case that must fail at the exact boundary where the contract says it
   fails?
 
+## Source-To-Domain Mapping Goals
+
+Use this section when a goal asks a worker to map source code, APIs, docs, methods,
+constructors, schemas, or implementation surfaces into a domain vocabulary, category
+spec, mathematical owner, architecture, policy layer, or other semantic model.
+
+The cheap false goal is usually:
+
+```text
+source location/name
+  -> existing vocabulary or owner label
+  -> mapping row or status artifact
+```
+
+The opposite false goal is:
+
+```text
+abstract domain primer
+  -> force source methods into that primer
+  -> polished mapping row
+```
+
+The required unit method is:
+
+```text
+source body/docs/examples
+  -> behavior actually implemented
+  -> domain operation extracted from that behavior
+  -> vocabulary/hypotheses required by the operation
+  -> weakest owner or placement
+  -> source evidence and residue
+```
+
+The goal must reject any completion criterion that skips the semantic extraction step.
+A row, classification, or owner label is admissible only if it records:
+
+- the source witness read deeply enough to know behavior, not merely name/location;
+- the inputs, outputs, examples, branch cases, conventions, and return objects relevant
+  to classification;
+- the operation actually implemented in ordinary domain language;
+- the vocabulary introduced or referenced because that behavior requires it;
+- the weakest structure, owner, hypotheses, and why a more implementation-local owner is
+  too specific;
+- the non-semantic residue: compatibility, runtime, display, backend, helper, test, or
+  import behavior.
+
+Consequence comparison must preserve the user's requested postcondition. If the request
+is "establish the mathematical/category/API foundation," then "classify every source
+surface that touches the area" is a different postcondition unless the user explicitly
+asked for a total source-surface audit. The word "touches" is a red flag: compile it
+into a finite generator and exclusion rule, or remove it.
+
+Large source-to-domain goals also need three separated queues when those concerns are
+present:
+
+- the domain foundation or semantic vocabulary queue;
+- the source implementation inventory queue;
+- the compatibility/runtime/display/backend audit queue.
+
+Do not let helper exports, display aliases, random/test helpers, backend options,
+factory internals, or implementation class methods compete with the domain foundation
+unless the goal names the implementation or migration obligation they block.
+
 ## Forensic Reading Rule
 
 Treat every anti-slop rule as evidence of a prior exploit.

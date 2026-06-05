@@ -202,6 +202,30 @@ The completion witness is still about the whole queue. A sample proves the metho
 
 If the required method is unavailable on the smallest representative unit after the access/tool boundary is verified, record that residue leaf. If the work is merely slow, large, or repetitive, keep the loop.
 
+For source-to-domain mapping queues, define the unit method before drafting the goal.
+The unit is not "source name exists" and not "row has an owner label." The unit method
+is:
+
+```text
+source body/docs/examples
+  -> behavior actually implemented
+  -> domain operation extracted from that behavior
+  -> vocabulary/hypotheses required by the operation
+  -> weakest owner or placement
+  -> source evidence and residue
+```
+
+The workflow state must include a finite generator for the source units and a rule for
+removing a unit from the frontier. Do not use porous scope terms such as "touches the
+subtree" unless they are compiled into source roots, traversal rules, admitted unit
+kinds, and an explicit exclusion lane.
+
+Keep distinct queues distinct. A domain-foundation queue, a source implementation
+inventory queue, and a compatibility/runtime/display/backend audit queue may inform one
+another, but completing one is not evidence that the others are complete. If the user's
+request is the domain foundation, compatibility surfaces count only when they block a
+named implementation or migration obligation.
+
 ## Goal Skeleton
 
 ```text

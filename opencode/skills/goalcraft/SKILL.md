@@ -67,6 +67,17 @@ Compare the request witness and draft witness. If the request witness contains f
 
 This is the core scope guard. The writer may honestly believe "set up the workflow", "process a representative batch", "write the plan", or "document the blocker" is equivalent to the user's request. Consequence comparison breaks that false equivalence by asking what would actually be true after completion.
 
+For source-to-domain mapping goals, run the same consequence comparison on the unit of
+work. If the request witness is a domain foundation, mathematical vocabulary, category
+spec, API semantics, or other object-language state, do not draft a completion witness
+whose natural unit is "every source surface that touches the area." A source-surface
+audit is a different postcondition unless the user explicitly asked for that audit.
+The goal must name the finite generator for the queue, the unit method that extracts
+behavior from source/docs/examples before assigning vocabulary or owners, and any
+separate compatibility/runtime/display/backend queue. Avoid scope words such as
+"touches", "adjacent", "all related", or "every relevant" unless they compile to a
+bounded generator and residue rule.
+
 ### Success Criteria As Contracts
 
 Read [references/success-criteria-contracts.md](references/success-criteria-contracts.md) before writing a concrete goal. Apply it as an adversarial audit of the proposed stopping criteria, not as background reading.
@@ -82,6 +93,13 @@ Use a workflow-backed goal when completion needs phased context, repeated loops,
 Workflow docs must cross-reference concrete existing skills by slug and trigger, not generic categories. At minimum: bugs, failing checks, unexpected behavior, integration failures, and unclear causality route to `systematic-debugging`; failed attempts, hard residue, pressure to defer, and blocked/off-ramp claims route to `hard-problem-decomposition`; adversarial test design routes to `test-guidelines`; orchestration routes to `subagent-delegation`; agent-work review routes to `reviewing-subagent-work` plus `jerry-behaviour`; substantive code/research gates route to `research-gate-review`; drift or reward-hacking suspicion routes to `llm-failure-modes`; slop suspicion routes to `anti-slop`; progress/completion reporting routes to `hierarchical-task-framing` or `response-preparation` when those reports are part of the workflow.
 
 Workflow-backed goals must choose a canonical state surface before drafting. Prefer the active project's `iwe` memory graph for contract, state, phase, and residue-ledger docs when it exists or project docs prescribe it. Use `iwe find` before creating, `iwe retrieve -k <key>` when resuming, and `iwe update` or `iwe new` rather than loose Markdown files. If the project has a different documented goal/planning surface, use that documented surface and name it. Do not create ad hoc `notes.md`, `progress.md`, or chat-transcript-dependent state.
+
+For source-to-domain mapping, classification, or inventory goals, the canonical state
+surface must include the extraction queue, not just source file lists or mapping rows.
+Each unit must carry source behavior, extracted domain operation, required vocabulary,
+weakest structure or hypotheses, owner/placement, evidence, status, and residue. If the
+goal has multiple queues, keep them separate: domain foundation/mathematical vocabulary,
+source implementation inventory, and compatibility/runtime/display/backend audit.
 
 ### Shape Evidence And Stop Conditions
 
