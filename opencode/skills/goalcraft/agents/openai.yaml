@@ -1,4 +1,4 @@
 interface:
   display_name: "Goalcraft"
-  short_description: "Draft goals and workflow docs"
-  default_prompt: "Use $goalcraft to turn this task brief into a Codex /goal and, if needed, workflow docs."
+  short_description: "Adversarial completion-game design"
+  default_prompt: "Use $goalcraft to design a minimum viable adversarial envelope (Codex /goal + docs) for this task."

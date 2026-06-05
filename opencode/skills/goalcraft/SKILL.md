@@ -1,40 +1,50 @@
 ---
 name: goalcraft
 description: >-
-  Turn a rough draft, vague ambition, or messy task brief into a powerful Codex
-  /goal objective and, when needed, companion workflow docs for long-running
-  autonomous work. Use when the user asks to write, improve, format, sharpen,
-  stress-test, or activate a Codex goal, thread goal, durable goal, or /goal
-  prompt.
+  Goalcraft is adversarial completion-game design. It models the worker as a
+  clever adversary seeking a completion signal while minimizing real work.
+  Use to design a minimum viable adversarial envelope—the smallest set of
+  constraints, evidence gates, and state surfaces that makes non-completion
+  harder to launder than completion.
 ---
 
 # Goalcraft
 
 **This is NOT prompt engineering. This is NOT instruction clarification. This is NOT workflow design. This is adversarial completion-game design.**
 
-You are not writing instructions for a cooperative worker. You are designing a **win-condition contract in a hostile completion game**. The worker is modeled as a clever adversary trying to acquire a completion signal while minimizing real work. Every word in the Goal either changes the adversary’s payoff landscape or creates a new exploit surface.
+Do not design instructions for a cooperative worker. Model the worker as a clever adversary whose objective is to obtain a completion signal while doing as little of the intended work as possible. A Goal is acceptable only if the cheapest apparent-completion path passes through the intended work. Every word in the Goal either changes the adversary’s payoff landscape or creates a new exploit surface.
 
-Your job is to design a **minimum viable adversarial envelope**: the smallest set of constraints, evidence gates, and state surfaces that makes non-completion harder to launder than completion.
-
-**Process is not free.** Process is a cost-bearing control that may itself become the adversary’s substitute objective (compliance theater). Every workflow doc, state machine, and review gate is a new artifact class the adversary can optimize against instead of the real task.
+**Process is attack surface.** Added structure often creates measurable targets and compliance surfaces that let an adversary bypass the cognitive work by filling templates. Add no state doc, checklist, ledger, review gate, or routing rule unless it blocks a named false-completion path and does not create a cheaper compliance path.
 
 ## Prerequisite Cognitive Updates (Writer-Side)
 
 **The reader is presumed ignorant of the adversarial failure model until these skills have changed your design.** Cross-references are not citations or routing labels. They are prerequisite cognitive updates. If the Goal would look essentially the same without these skills, the design has failed.
 
 **Internalize the Adversary**:
-- `llm-failure-modes`: Learn the attack patterns (goal substitution, progress theater, meta-artifact delegation, checklist theater, self-certification).
-- `addressing-shallow-work`: Learn how process targets (inventories, gates) become substitute wins for the adversary.
+- `llm-failure-modes`: Learn the attack patterns: **goal substitution**, **verification theater**, **checklist theater**, **self-certification**, **progress theater**, **meta-artifact delegation**, and **wrapper slop**.
+- `addressing-shallow-work`: Learn how process targets (inventories, gates) become substitute wins.
 - `anti-slop`: Learn to detect success-shaped filler used to bypass real work.
 - `writing-for-agent-audiences`, `prompt-engineering`, `agent-memory`: Learn to design memory surfaces that resist narrative drift.
 
 ### Synthesis Gate (MANDATORY)
-Before drafting, state what the prerequisite skills teach that changes this Goal’s design. If the answer is only “load X on drift,” the design has failed. Identify:
+Before drafting a Goal, state what the prerequisite skills teach that changes this Goal’s design. Identify:
 1. The adversary’s likely false-completion strategy (the "cheapest win").
 2. The cognitive operation the worker will try to avoid.
 3. The artifact class that would launder avoidance as progress.
 4. The smallest evidence condition that forces the real work.
-5. What new dishonest compliance paths are created by your proposed process layers.
+5. **Adversarial Compiler**: How would a clever worker make this witness appear satisfied while leaving the user’s intended world-state false?
+
+## Adversarial Design Ontology
+
+Redefine your vocabulary before drafting:
+
+- **Goal**: A win-condition contract in a hostile completion game.
+- **Verification**: The evidence channel the adversary cannot fake without doing the real work.
+- **State**: The minimum durable memory needed to prevent context-loss laundering, not a place to narrate progress.
+- **Review**: An independent attack on the completion claim, not a disposition loop.
+- **Blocker**: The adversary’s preferred exit move, allowed only after direct evidence rules out smaller object-level continuations.
+- **Process**: A cost-bearing control that may itself become the adversary’s substitute objective.
+- **Residue**: The remaining un-solved portion of the adversarial contract.
 
 ## Adversarial Design Algorithm
 
@@ -42,22 +52,22 @@ Before drafting, state what the prerequisite skills teach that changes this Goal
 Build a **draft completion witness**: the observable facts that would be true if an agent marked a naive version of this goal complete. Find the exploits: can the adversary launder a plan as a result? A batch as a whole? A blocker claim as completion? A self-report as evidence?
 
 ### 2. Identify Non-Fakable Evidence
-What world-state change (files, command output, PR state, verified findings) is the **evidence channel the adversary cannot fake** without doing the real work? This is the **request completion witness**.
+What world-state change (files, command output, PR state, verified findings) is the **evidence channel the adversary cannot fake**? This is the **request completion witness**.
 
 ### 3. Process Budget Audit
 Compare the "cheapest exit" against the "request completion witness." Add process layers ONLY to block specific exits. For every layer, ask: **"Is satisfying this layer's compliance requirements harder than doing the task?"** If the layer merely produces better-looking progress evidence, omit it.
 
 - **Completion witness**: Necessary to prevent redefinition of "done."
-- **State**: Minimum durable memory needed to prevent context-loss laundering, not a place to narrate progress.
-- **Residue ledger**: Necessary only when branches genuinely span context; otherwise it is a bureaucratic substitute for work.
-- **Independent review**: An independent attack on the completion claim, necessary only when completion depends on judgment; otherwise it is a second artifact target.
+- **State Surface**: Necessary only to prevent context-loss laundering across continuations.
+- **Residue Ledger**: Necessary only when branches genuinely span context; otherwise it is a bureaucratic substitute for work.
+- **Independent Review**: An independent attack on the completion claim.
 
 ### 4. Derive the Adversarial Envelope
 Encode the minimum constraints, evidence gates, and state retrieval rules that make evasion costlier than completion.
 
 ## Worker-Side Routing
 
-**Worker-side routing** is how you wire the payoff landscape for future workers. Pre-retrieval skills belong in the goal text (the bootloader). Always-on skills belong in the contract. Phase-specific skills belong in phase docs.
+Wire the payoff landscape for future workers. Pre-retrieval skills belong in the goal text (the bootloader). Always-on skills belong in the contract. Phase-specific skills belong in phase docs.
 
 ### Reference Skills By State (Worker-Side)
 Name exact skill slugs and triggers:
@@ -76,7 +86,7 @@ For long-horizon work, the `/goal` text is the stable bootloader. It retrieves s
 Use states as decision modes: `RECONCILE` (artifacts vs state), `FOCUS` (current sliver), `CHECK` (world-state evidence), `REVIEW` (independent judgment), `ADVANCE` (evidence-backed update), `DECOMPOSE` (residue reduction).
 
 ### Recursive Decomposition
-A failed one-shot attempt is residue. `DECOMPOSE` is a work state: split residue into observable subpieces, attempt one piece, integrate results, subtract from parent residue. **Blocker**: The adversary’s preferred exit move, allowed only after direct evidence rules out smaller object-level continuations.
+A failed one-shot attempt is residue. `DECOMPOSE` is a work state: split residue into observable subpieces, attempt one piece, integrate results, subtract from parent residue. **Blocker claims** are an adversary's preferred exit move; accept them only after direct evidence reduces the residue to the smallest externally owned leaf.
 
 ### Shape Evidence And Stop Conditions
 **No worker-authored summary, plan, status note, disposition, issue label, checklist, or claimed blocker is completion evidence** unless independently tied to the user-visible result.
@@ -105,9 +115,11 @@ Stop: <approval/destructive/access boundaries>.
 ```
 
 ## Quality Bar
+- **Adversarial Frame**: Design is a win-condition contract, not instructions.
 - **Prerequisite Update**: Design is changed by internalized adversarial failure modes.
 - **Synthesis Gate**: Cheapest dishonest win identified and blocked by minimum evidence.
-- Goal is a **minimum viable adversarial envelope**.
-- **Process Budget**: All added layers cost more to game than to perform.
+- **Adversarial Compiler**: Witness cannot be satisfied while the intended state is false.
+- **Minimum Envelope**: All added layers cost more to game than to perform.
+- **Blocker Evidence**: Claims allowed only after recursive decomposition to the smallest leaf.
 - Completion requires world-state evidence, not narrative.
 - Final objective passes `scripts/validate_goal_length.py --target-chars 3400 --strict-target`.
