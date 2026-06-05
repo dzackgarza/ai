@@ -1,8 +1,12 @@
 # Goalcraft
 
-Goalcraft turns a messy task description into a Codex `/goal` you can paste and run. For long-horizon work, it also prepares the companion workflow docs that the goal bootloads after compaction, keeping the goal compact while preserving the full intended end state.
+**Goalcraft is not prompt engineering. It is adversarial completion-game design.**
 
-When you use `/goal`, the agent runs autonomously toward whatever you wrote down. A weak goal means the agent will claim "done" on something that isn't. Goalcraft writes goals by comparing what the user asked to have true at the end with what the draft goal would actually make true if completed. That consequence check keeps setup work, first batches, plans, and premature external-precondition notes from being confused with the finished task. Goalcraft also separates writer-side skill context from worker-side skill routing: the writer loads design skills before drafting, then writes exact skill slugs and load triggers into the goal and workflow docs future workers will actually see. When work fails, workflow-backed goals make the agent decompose the remaining residue, complete solvable subpieces, and preserve the active decomposition path in the project's canonical state surface instead of naming the first failed attempt as the blocker.
+Goalcraft turns a messy task description into a **minimum viable adversarial envelope**: a Codex `/goal` and companion workflow docs designed to make non-completion harder to launder than completion.
+
+When you set a `/goal`, you are not giving instructions to a cooperative partner; you are designing a **win-condition contract in a hostile game**. The worker is a clever adversary whose objective is to obtain a completion signal while minimizing real work. It may narrow the task, substitute a batch for the whole, claim a blocker prematurely, or use its own summaries as evidence. Goalcraft works by identifying the adversary’s cheapest false-completion path and designing the minimum set of constraints and evidence gates that force the work to pass through the intended destination.
+
+Goalcraft treats "process" as attack surface. Every checklist, residue ledger, and review gate is a potential target for **compliance theater**. The goal writer's job is to ensure the **process budget** is spent only on layers that cost more to game than to perform. It also enforces a **pedagogical prerequisite** workflow: the writer is presumed ignorant of agent failure modes until specific skills (like `llm-failure-modes` and `anti-slop`) have been internalized and used to change the goal’s completion predicate.
 
 ## Install
 
@@ -14,39 +18,26 @@ cd goalcraft
 ln -s "$(pwd)" ~/.codex/skills/goalcraft
 ```
 
-If your Codex setup uses a different skills directory, symlink the repo there instead. The skill is self-contained; it does not depend on any local project path.
+## How it works
 
-Restart Codex, then invoke it with a rough brief. The brief doesn't need to be clean — that's the point:
+A `/goal` produced by Goalcraft is an anti-evasion instrument that spells out:
 
-> Use `$goalcraft` to turn this into a Codex `/goal`:
->
-> I need to clean up the billing settings page in the web app. It's kind of half-done from a previous pass. The upgrade button works but the loading and error states are janky, and I think mobile is probably broken. Please make it match the rest of the settings UI, don't touch the Stripe webhook stuff or pricing logic unless something is obviously wrong, and don't do a huge refactor. It should have tests or at least whatever checks this repo normally uses. I want Codex to keep going until the page is actually usable and verified, but it should stop and ask me before changing public APIs, database schema, or anything payment-risky.
+- **The request completion witness** — the evidence channel the adversary cannot fake (files, command output, PR state).
+- **The adversarial envelope** — the minimum constraints that block cheap exit moves.
+- **Independent verification** — an independent attack on the completion claim that bypasses worker self-reports.
+- **Recursive decomposition** — a protocol that forces work on solvable residue instead of reporting blockers.
 
-## What you get back
+For large jobs, Goalcraft prepares a **workflow pack** in a canonical state surface (like `iwe`):
 
-A `/goal` that spells out:
-
-- **Where things stand and what "done" looks like** — so the agent has a clear destination
-- **What to work on, what to leave alone** — scope and non-negotiables
-- **How to verify the work** — specific commands, tests, or checks that prove it shipped
-- **When to keep going vs. stop and ask** — autonomy rules for risky or ambiguous moves
-- **What counts as success** — measurable criteria, not "looks good to me"
-
-For large jobs, Goalcraft may also produce:
-
-- **A contract doc** — the observable completion witness and final review standard
-- **A state doc** — the current phase, active context, evidence, remaining residue, and active decomposition path in the project's canonical searchable state surface, preferably `iwe`
-- **Phase docs** — narrow just-in-time context for the current slice of work
-- **Skill routing** — exact skill slugs to load for the whole goal, by phase, and when failures, drift, slop, orchestration, or reviews occur
-
-By default, goalcraft only drafts the goal. It won't activate it unless you tell it to.
+- **Contract doc** — the stable completion witness and final review standard.
+- **State doc** — minimum memory to prevent context-loss laundering, not progress narration.
+- **Phase docs** — narrow context for the current sliver of work.
+- **Skill routing** — pedagogical prerequisite slugs to load at each transition.
 
 ## Length safety
 
-Codex caps `/goal` text at 4,000 characters. Goalcraft targets 3,400 and compresses any draft over 3,800 before returning it. If you want to check a goal manually from this repo:
+Codex caps `/goal` text at 4,000 characters. Goalcraft targets 3,400. To check a goal manually:
 
 ```bash
 python3 scripts/validate_goal_length.py --target-chars 3400 --strict-target goal.txt
 ```
-
-That script is bundled with this Goalcraft repo. When the skill is used while working in another project, agents should resolve `scripts/validate_goal_length.py` relative to Goalcraft's own `SKILL.md`, not relative to the project being edited. If the skill runtime does not expose that path, Goalcraft's instructions include an inline Python fallback that works anywhere with Python 3.
