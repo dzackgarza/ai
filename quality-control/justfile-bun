@@ -102,8 +102,8 @@ _diff-cover: _coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
 	if [ ! -f lcov.info ]; then
-		echo "Skipping diff-cover: lcov.info not produced (no tests matched by bun test)."
-		exit 0
+		echo "ERROR: diff-cover: lcov.info not produced — coverage step did not produce output."
+		exit 1
 	fi
 	bun x diff-cover lcov.info --compare-branch ${DIFF_COVER_BASE:-main}
 
@@ -217,8 +217,8 @@ _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	if ! command -v codeql >/dev/null 2>&1; then
-		echo "Skipping CodeQL: codeql CLI is not installed."
-		exit 0
+		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
+		exit 1
 	fi
 	codeql database create codeql-db --overwrite --language=typescript --source-root=. --search-path=/dev/null 2>&1 | grep -v "Extracting\|Done extracting\|already exists" || true
 	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif || true

@@ -33,6 +33,15 @@ default:
   @just test
 
 # private recipes (prefix with _ — never run individually)
+_rust-qc-files:
+        #!/usr/bin/env bash
+        set -euo pipefail
+        rg --files \
+                -g '*.rs' \
+                -g '!**/target/**' \
+                -g '!**/external/**' \
+                -g '!**/node_modules/**'
+
 _python-qc-files:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -56,10 +65,10 @@ _python-syntax:
 	echo "============================="
 	echo "=== Running: Python syntax validation ==="
 	echo "# Compiles Python source with the configured target interpreter before linting or analysis"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping Python syntax validation: no Python files found."
-		exit 0
+		echo "ERROR: Python syntax validation: no Python files found in a Python project."
+		exit 1
 	fi
 	uv run --python 3.14 --no-project python - "${python_files[@]}" <<'PY'
 	import sys
@@ -219,10 +228,10 @@ _mypy: _install-tools
 	echo "============================="
 	echo "=== Running: mypy type checking ==="
 	echo "# Checks static typing after syntax validation and before lint/style normalization"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping mypy: no Python files found."
-		exit 0
+		echo "ERROR: mypy: no Python files found in a Python project."
+		exit 1
 	fi
 	# If the project provides sage-mypy-plugin.ini, merge it with the global config.
 	# ConfigParser merge (read_string twice) handles duplicate sections correctly:
@@ -258,10 +267,10 @@ _normalize: _install-tools
 	echo "============================="
 	echo "=== Running: ruff format and check (auto-fix) ==="
 	echo "# Enforces PEP 8 style + auto-fixes common issues (import sorting, unused imports, pyupgrade patterns)"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping ruff normalization: no Python or Sage files found."
-		exit 0
+		echo "ERROR: ruff normalization: no Python files found in a Python project."
+		exit 1
 	fi
 	if [ -n "${SAGE_PYTEST:-}" ]; then
 		sage -python -m ruff check --fix \
@@ -290,13 +299,12 @@ _pytest_with_coverage: _install-tools
 	echo "=== Running: pytest with coverage measurement ==="
 	echo "# Runs pytest with coverage.py to enforce 100% line/branch coverage and generate coverage.xml"
 	if ! rg --files tests -g 'test_*.py' -g '*_test.py' >/dev/null 2>&1; then
-		echo "Skipping coverage: no pytest-style Python tests found."
-		exit 0
+		echo "ERROR: pytest/coverage: no test files found in a Python project."
+		exit 1
 	fi
 	if [ ! -f pyproject.toml ]; then
-		echo "No pyproject.toml found; running pytest without editable install or coverage."
-		uvx --with pytest pytest tests
-		exit 0
+		echo "ERROR: pytest/coverage: no pyproject.toml found — cannot install project or measure coverage."
+		exit 1
 	fi
 	project_root="$(pwd -P)"
 	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
@@ -318,8 +326,8 @@ _diff-cover: _pytest_with_coverage
 	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
 	coverage_xml="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/coverage/$project_slug/coverage.xml"
 	if [ ! -f "$coverage_xml" ]; then
-		echo "Skipping diff-cover: no coverage.xml generated at $coverage_xml."
-		exit 0
+		echo "ERROR: diff-cover: no coverage.xml at $coverage_xml — coverage step did not produce output."
+		exit 1
 	fi
 	uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch ${DIFF_COVER_BASE:-main}
 
@@ -329,11 +337,11 @@ _vulture: _install-tools
 	echo "============================="
 	echo "=== Running: vulture dead code detection ==="
 	echo "# Finds unused code (functions, classes, variables) that can be safely removed"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping vulture: no Python files found."
-		exit 0
+		echo "ERROR: vulture: no Python files found in a Python project."
+		exit 1
 	fi
 
 	uvx --from vulture vulture \
@@ -348,28 +356,32 @@ _deptry: _install-tools
 	echo "=== Running: deptry dependency linting ==="
 	echo "# Checks for unused/missing dependencies in pyproject.toml, detects transitive deps, and verifies type checking"
 	if [ ! -f pyproject.toml ]; then
-		echo "Skipping deptry: no pyproject.toml found."
-		exit 0
+		echo "ERROR: deptry: no pyproject.toml found — Python project must have one."
+		exit 1
 	fi
 	uvx --from deptry deptry .
 
 _semgrep: _install-tools
-	#!/usr/bin/env bash
-	set -euo pipefail
-	echo "============================="
-	echo "=== Running: semgrep security pattern scanning ==="
-	echo "# Static analysis for code quality and fraud patterns (trivial functions, self-reinforcing comments, print/console statements)"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
-	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping semgrep: no Python or Sage files found."
-		exit 0
-	fi
-	uvx --from semgrep semgrep scan \
-		--config={{justfile_directory()}}/semgrep.yml \
-		--config=p/ci \
-		--scan-unknown-extensions \
-		--autofix \
-		"${python_files[@]}"
+        #!/usr/bin/env bash
+        set -euo pipefail
+        echo "============================="
+        echo "=== Running: semgrep security pattern scanning ==="
+        echo "DEBUG: qc_files = ${qc_files[*]}"
+        # Static analysis for code quality and fraud patterns (trivial functions, self-reinforcing comments, print/console statements)
+        mapfile -t qc_files < <(
+            just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true
+            just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true
+        )
+        if [ "${#qc_files[@]}" -eq 0 ]; then
+                echo "ERROR: semgrep: no supported files found."
+                exit 1
+        fi
+        uvx --from semgrep semgrep scan \
+                --config={{justfile_directory()}}/semgrep.yml \
+                --config=p/ci \
+                --scan-unknown-extensions \
+                --autofix \
+                "${qc_files[@]}"
 
 _ast-grep: _install-tools
 	#!/usr/bin/env bash
@@ -377,10 +389,10 @@ _ast-grep: _install-tools
 	echo "============================="
 	echo "=== Running: ast-grep code quality audit ==="
 	echo "# Custom AST rules for fraud detection (boolean assignment, loops without asserts, numeric bounds, self-reinforcing prints)"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping ast-grep: no Python or Sage files found."
-		exit 0
+		echo "ERROR: ast-grep: no Python files found in a Python project."
+		exit 1
 	fi
 	findings_file=$(mktemp)
 	trap 'rm -f "$findings_file"' EXIT
@@ -399,10 +411,10 @@ _jscpd:
 	echo "============================="
 	echo "=== Running: jscpd copy-paste detection ==="
 	echo "# Finds duplicate code blocks across the codebase that may indicate copypaste or missing refactoring"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping jscpd: no Python or Sage files found."
-		exit 0
+		echo "ERROR: jscpd: no Python files found in a Python project."
+		exit 1
 	fi
 	npx -y jscpd \
 		--config {{justfile_directory()}}/.jscpd.json \
@@ -416,10 +428,10 @@ _lizard: _install-tools
 	echo "============================="
 	echo "=== Running: lizard complexity analysis ==="
 	echo "# Computes cyclomatic complexity number (CCN), line count, and parameter count to flag overly complex functions"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping lizard: no Python or Sage files found."
-		exit 0
+		echo "ERROR: lizard: no Python files found in a Python project."
+		exit 1
 	fi
 	uvx --from lizard lizard -l python -C 7 -L 100 -a 5 -i 0 "${python_files[@]}"
 
@@ -437,8 +449,8 @@ _import-linter: _install-tools
 		config="pyproject.toml"
 	fi
 	if [ -z "$config" ]; then
-		echo "Skipping import-linter: no project-specific import-linter config found."
-		exit 0
+		echo "ERROR: import-linter: no project-specific import-linter config found. Add [tool.import-linter] to pyproject.toml or create .importlinter."
+		exit 1
 	fi
 	uvx --from import-linter --with-editable . lint-imports --config "$config"
 
@@ -459,8 +471,8 @@ _codeql:
 	echo "=== Running: codeql security analysis ==="
 	echo "# GitHub's static analysis engine for code quality and security vulnerabilities"
 	if ! command -v codeql >/dev/null 2>&1; then
-		echo "Skipping CodeQL: codeql CLI is not installed."
-		exit 0
+		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
+		exit 1
 	fi
 	project_root="$(pwd -P)"
 	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
@@ -533,8 +545,8 @@ _slop-scan:
 	echo "# Scans JS/TS files for AI-associated slop patterns (error-swallowing, duplicate signatures, generic casts, etc.)"
 	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
 	if [ "${#js_files[@]}" -eq 0 ]; then
-		echo "Skipping slop-scan: no JS/TS files found."
-		exit 0
+		echo "ERROR: slop-scan: no JS/TS files found."
+		exit 1
 	fi
 	npx -y slop-scan scan --lint .
 
@@ -553,10 +565,10 @@ _slop:
 	echo "=== Running: ai-slop-detector ML-based quality check ==="
 	echo "# ML classifier for detecting AI-generated code patterns and low-quality implementations"
 	project_root="$(pwd -P)"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files)
+	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
-		echo "Skipping ai-slop-detector: no Python or Sage files found."
-		exit 0
+		echo "ERROR: ai-slop-detector: no Python files found in a Python project."
+		exit 1
 	fi
 	for file in "${python_files[@]}"; do
 		target="$file"
@@ -576,7 +588,7 @@ _slop:
 	done
 
 # public: all static checks run locally
-test: _python-syntax _mypy _normalize _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _slop-scan _vibecheck
+test: _normalize _python-syntax _mypy _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _slop-scan _vibecheck
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
