@@ -51,16 +51,48 @@ local QC reimplementation, or global tool installation.
 (prefixed with `_`). This prevents cherry-picking — agents cannot run just `lint` or
 just `typecheck` in isolation to bypass the full stack.
 
-### Auto-Fix Before Check
+### Auto-Fix Enforcement: Always Apply All Available Fixes
 
-The `test` recipe runs `_normalize` first, which executes:
+**Rule:** Agents MUST always apply all available auto-fixes when running any default recipe (`just test`, `just test-ci`). This is not optional, not a "best effort," and not conditional on whether failures are expected. Fixes run first, checks run second.
 
-- `ruff check --fix .` — auto-fix lint errors
+#### What happens when you run `just test`
 
-- `ruff format .` — auto-format code
+The `test` recipe runs `_normalize` before any checks. This applies every auto-fix the toolchain supports:
 
-Only after normalization does the full QC stack run.
-This ensures code is in a consistent state before any assertions.
+**Python stack (`~/ai/quality-control/justfile`):**
+| Tool | Flag | Fixes |
+| --- | --- | --- |
+| `ruff check` | `--fix` | Lint errors (E, F, I, UP) — unused imports, import sorting, pyupgrade patterns |
+| `ruff format` | (implicit) | PEP 8 style formatting |
+| `semgrep` | `--autofix` | Security and quality pattern fixes |
+| `grain` | `--fix` | Unused code removal |
+
+**TypeScript stack (`~/ai/quality-control/justfile-bun`):**
+| Tool | Flag | Fixes |
+| --- | --- | --- |
+| `biome check` | `--write --unsafe` | Formatter, linter, import sorting — safe and unsafe fixes |
+| `eslint` | `--fix` | Lint rule auto-fixes |
+| `semgrep` | `--autofix` | Security and quality pattern fixes |
+
+#### What agents MUST do
+
+1. **Run `just test` (not individual checks).** The full stack with auto-fix is the only valid workflow. Do not run `ruff` or `biome` or `eslint` in isolation — the recipe handles all of them in the right order with the right flags.
+
+2. **Never skip the auto-fix step.** If `just test` passes without changes, fine. If it applies fixes, those fixes are part of the intended output — they are not noise. Commit them.
+
+3. **If a tool has an auto-fix flag that is not wired into the recipe, wire it in.** Do not apply it manually and leave the recipe stale. The justfile is the single source of truth. Add the flag and document it in this table.
+
+4. **Never use bypass comments (`# noqa`, `@ts-ignore`, `# type: ignore`, etc.) as a substitute for letting auto-fix do its job.** The [No-Bypass Policy](#no-bypass-policy) is stricter than any individual tool's silence mechanism.
+
+#### Why this rule exists
+
+Without an explicit auto-fix requirement, agents routinely:
+- Run checks without fixing, see failures, and reach for bypass comments instead of letting the tool fix itself
+- Run `ruff check` without `--fix` (diagnostic only), then manually "fix" issues that `--fix` would have handled automatically
+- Apply fixes manually to a subset of files while leaving the rest broken
+- Skip auto-fix entirely and report "lint pass" when the actual fix step was never run
+
+This is not a performance optimization. It is an epistemic integrity requirement: the state of the code after `just test` must be the state that was actually checked.
 
 ### Full Stack, No Exceptions
 
@@ -89,6 +121,158 @@ Bypass comments are explicitly blocked in staged files:
 **Rule:** Fix the underlying issue, never hide it with a bypass comment.
 If you find yourself needing a bypass, escalate to the user for QC agent review/approval
 instead.
+
+### Hard-Fail Doctrine: No Soft Skips
+
+**Rule:** Every QC recipe MUST hard-fail (`exit 1`) when its prerequisites are absent.
+There is no "Skipping: no X found; exit 0" path. QC failure is `exit 1` — always.
+
+This covers all prerequisite types:
+
+| Missing prerequisite | Example failure |
+|---|---|
+| No source files of the correct language | Python QC finds no `.py` files |
+| No tests | `_pytest_with_coverage` finds no test files |
+| No project config | `_deptry`/`_pytest_with_coverage` finds no `pyproject.toml` |
+| No tool config | `_import-linter` finds no `.importlinter` or `[tool.import-linter]` |
+| No tool installation | `_codeql` finds `codeql` CLI not on `PATH` |
+| No coverage output | `_diff-cover` finds no `coverage.xml`/`lcov.info` from preceding step |
+
+**Rationale:** QC is not optional, not best-effort, not advisory. If a prerequisite is
+missing, the project is misconfigured — the correct response is a hard failure with a
+clear error message telling the developer what to fix, not a silent green check.
+
+#### Failure modes this policy exists to prevent
+
+These are concrete misunderstandings that occurred during development and must not recur:
+
+1. **"Missing source files are OK — the tool has nothing to scan, so skip silently."**
+   Wrong. If the QC justfile for a language runs on a project and finds no source files
+   of that language, that means either the project is using the wrong justfile (should
+   map to a different language stack) or the project has no source code (not a real
+   project). Both are configuration errors that must fail loudly.
+
+2. **"Missing tool installations are OK — skip gracefully if the CLI is not on PATH."**
+   Wrong. Every tool in the QC chain is mandatory. If CodeQL is not installed, QC must
+   fail with an error telling the developer to install it. Silently skipping means the
+   QC result is incomplete, which defeats the purpose of having a QC system.
+
+3. **"Missing project config files are OK — skip the check that depends on them."**
+   Wrong. If `pyproject.toml` is missing (or `tsconfig.json`, or `.importlinter`), the
+   project is not properly configured. QC must fail, not amputate the check.
+
+4. **"It's OK for a recipe to `exit 0` with a 'skipping' message."** Wrong. `exit 0` is
+   a success signal. A check that did not run is not a success — it is a gap in the QC
+   pipeline. The test runner and CI both interpret `exit 0` as "all good." Silent gaps
+   produce false confidence.
+
+**What a hard failure looks like:**
+
+```
+ERROR: vulture: no Python files found in a Python project.
+```
+
+Not:
+
+```
+Skipping vulture: no Python files found.
+exit 0
+```
+
+The error message must name the tool, the missing prerequisite, and (when applicable)
+the remediation (e.g., "Install CodeQL from https://github.com/github/codeql-cli").
+
+### Language Isolation: One Language per Justfile
+
+**Rule:** Each justfile owns exactly one language stack. No recipe in the Python justfile
+may depend on JS/TS files existing. No recipe in the TS justfile may depend on Python
+files existing.
+
+| Justfile | Language | Validates presence of |
+|---|---|---|
+| `justfile` | Python | `.py` files, `pyproject.toml`, test files, Python tools on PATH |
+| `justfile-bun` | TypeScript/JS | `.ts`/`.tsx`/`.js`/`.jsx`/`.mjs`/`.cjs` files, `tsconfig.json`, `package.json` |
+| `justfile-sage` | SageMath | `.sage` files, `sage` binary |
+
+#### Failure mode this policy exists to prevent
+
+**"It doesn't matter which justfile a recipe lives in — recipes are just scripts."**
+Wrong. A Python-justfile recipe that checks for `.ts` files will hard-fail on a pure
+Python project (no `.ts` files exist), falsely indicating a QC failure. This is a
+configuration error: the recipe belongs in the TS justfile, not the Python one.
+Cross-contamination creates false negatives on correct projects and makes the QC
+system impossible to reason about.
+
+**Cross-contamination pattern (prohibited):**
+
+```
+# Python justfile — WRONG: contains JS/TS-specific recipes
+_js-qc-files:          # does not belong here — hard-fails when no .ts files exist
+_slop-scan:            # does not belong here — hard-fails on pure Python projects
+```
+
+**Correct separation:**
+
+```
+# Python justfile
+test: _python-syntax _mypy _normalize ...   # Python tools only
+
+# TS justfile
+test: _normalize _knip _biome _slop-scan ...  # TS tools only
+```
+
+Running the wrong justfile for a project also fails — if Python QC runs on a project
+with no Python files, every recipe that checks for `.py` files will exit 1. This is
+correct: the developer is using the wrong justfile.
+
+### No Optional Tools
+
+#### Failure mode this policy exists to prevent
+
+**"CodeQL is a security scanner — it's optional, not a core quality check."** Wrong.
+Every tool in the global QC chain was deliberately included. Making any tool optional
+creates a precedent for cherry-picking: "this project doesn't need deptry," "this
+project doesn't need import-linter," "semgrep is overkill here." Over time, the full
+stack degrades into whatever subset an agent subjectively decides is "appropriate."
+The QC system is not negotiable per-project.
+
+**Rule:** Every tool in the QC chain is mandatory. There is no "skip if not installed",
+no `command -v tool || exit 0`, no graceful degradation.
+
+| Tool | Behavior if missing | Before (wrong) | After (correct) |
+|---|---|---|---|
+| `codeql` | Hard fail | `exit 0` "Skipping CodeQL: CLI not installed" | `exit 1` "ERROR: Install CodeQL from ..." |
+| `deptry` | Hard fail | `exit 0` "Skipping: no pyproject.toml" | `exit 1` "ERROR: no pyproject.toml found" |
+| `import-linter` | Hard fail | `exit 0` "Skipping: no config" | `exit 1` "ERROR: no config found" |
+
+If a tool cannot be installed or configured, QC is blocked until it is. This is by
+design: QC must be complete to pass.
+
+### Ephemeral Tools
+
+#### Failure mode this policy exists to prevent
+
+**"Tools need to be installed globally with `npm install -g` or `pip install` to be
+available."** Wrong. Global installs pollute the system Python and node environments,
+create version conflicts with project-local dependencies, and are invisible unless you
+know to look. Every tool in the QC stack has a working ephemeral runner (`uvx`, `bun x`,
+`npx -y`). If a tool cannot run ephemerally, it is the wrong tool — replace it, don't
+install it globally.
+
+**Rule:** All tools run via ephemeral runners (`uvx`, `bun x`, `npx -y`). No
+permanent global or local installation of QC tools is permitted. See
+`tool-provisioning-and-environment-hygiene` (rank 3 in the authority hierarchy).
+
+| Correct | Incorrect |
+|---|---|
+| `uvx --from ruff ruff check --fix` | `pip install ruff && ruff check` |
+| `bun x biome check` | `bun add --global @biomejs/biome && biome check` |
+| `npx -y ast-grep scan` | `npm install -g @ast-grep/cli && ast-grep scan` |
+
+**Sole exception:** ESLint flat config requires its plugins to be locally installed in
+`~/ai/quality-control/node_modules/` because the flat config uses ES module imports
+that resolve relative to the config file's directory. This exception is documented at
+the recipe site in `_eslint-deps`. No other tool may use this exception.
 
 ### Bridge-Burning Policies
 
