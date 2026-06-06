@@ -870,13 +870,33 @@ The QC agent owns rule changes, not individual projects.
 
 ## When QC Fails
 
-When any QC check — build, typecheck, lint, format, complexity, or test — fails with
-an opaque error or repeated failed attempt, load `reality-grounded-debugging` before
-mutating the failing pipeline. It provides:
+When any QC check fails, the triage directive (the banner beginning with
+"QC FAILURE — TRIAGE REQUIRED") is emitted alongside the tool output. This
+directive tells agents exactly what to do next: enter triage mode, present
+findings to the user, and delegate review and fix to separate subagents.
 
-- Command-output discipline (preserve stdout, stderr, exit code)
-- Surface classification (fixture, boundary log, intermediate dump, schema dump, diagnostic
-  recipe, subprocess capture)
-- A synthesis gate (raw observation, smallest reproducer, missing surface, verification path)
+### Immediate Response
 
-The failure indicates a missing debugging surface, not just a code defect to patch.
+When a QC check fails:
+
+1. **The triage directive is already in the output.** Read it. Follow it.
+2. **Load `qc-triage`** for the complete triage protocol — the rules about
+   not probing QC configs, not self-fixing, and the subagent workflow.
+3. **Load `reality-grounded-debugging`** only after the triage workflow is
+   underway, if the failure requires deeper diagnostic work. It provides:
+   - Command-output discipline (preserve stdout, stderr, exit code)
+   - Surface classification (fixture, boundary log, intermediate dump, schema
+     dump, diagnostic recipe, subprocess capture)
+   - A synthesis gate (raw observation, smallest reproducer, missing surface,
+     verification path)
+
+### Triage vs. Debugging
+
+| Phase | Action | Skill |
+|---|---|---|
+| **Triage** | Present findings to user. Do not self-fix. Delegate to subagents. | `qc-triage` |
+| **Debugging** | Investigate opaque errors after triage is complete. | `reality-grounded-debugging` |
+
+The triage protocol takes priority over debugging. Do not start debugging until
+the triage workflow (present to user → get approval → spawn subagents) has
+completed.
