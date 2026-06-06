@@ -29,34 +29,42 @@ _no-bypass:
 		[ -f "$file" ] || continue
 		if grep -n "# pragma: no cover" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '# pragma: no cover' — fix coverage, don't hide it"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		if grep -n "// istanbul ignore" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '// istanbul ignore' — fix coverage, don't hide it"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		if grep -n "# noqa" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '# noqa' — fix lint errors, don't hide them"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		if grep -n "# type: ignore" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '# type: ignore' — fix type errors, don't hide them"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		if grep -nP 'as\s+(unknown|any|never)\s+as\s' "$file" 2>/dev/null; then
 			echo "ERROR: $file contains a double-cast bypass (e.g., 'as unknown as') — use a proper type assertion or restructure the code"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		if grep -n "@ts-ignore" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '@ts-ignore' — fix type errors, don't hide them"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		if grep -n "@ts-expect-error$" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '@ts-expect-error' without justification — add a comment explaining why"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		if grep -n "// eslint-disable" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '// eslint-disable' — fix lint errors, don't hide them"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 	done
@@ -87,6 +95,7 @@ _check-no-local-qc-override:
 		fi
 	done
 	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	echo "No local QC overrides detected"
@@ -135,6 +144,7 @@ _vibecheck:
 		echo "  Do NOT modify QC configs or tooling in ~/ai/quality-control/"
 		echo "  to suppress these findings."
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit $ec
 	}
 
@@ -147,6 +157,7 @@ _slop:
 		echo "ERROR: ai-slop-detector ML model not found: $model_file"
 		echo "  Run: uv run scripts/train_slop_model.py"
 		echo "  (from the quality-control repo root)"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	echo "============================="
@@ -171,6 +182,7 @@ _slop:
 		echo "  Do NOT modify QC configs, thresholds, ignore patterns, or"
 		echo "  ML model files in ~/ai/quality-control/ to suppress findings."
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit $ec
 	}
 
