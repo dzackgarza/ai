@@ -51,6 +51,7 @@ _python-syntax:
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: Python syntax validation: no Python files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	uv run --python 3.14 --no-project python - "${python_files[@]}" <<'PY'
@@ -86,6 +87,7 @@ _python-syntax:
 	sage_bin="${SAGE_BIN:-sage}"
 	if ! command -v "$sage_bin" >/dev/null 2>&1; then
 		echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -117,6 +119,7 @@ _python-syntax:
 		fi
 	done
 	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -139,6 +142,7 @@ _python-syntax:
 	raise SystemExit(1 if failed else 0)
 	PY
 	then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -165,6 +169,7 @@ _mypy: _install-tools
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: mypy: no Python files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	# If the project provides sage-mypy-plugin.ini, merge it with the global config.
@@ -251,6 +256,7 @@ _check-python-project:
 		failed=1
 	fi
 	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	echo "Python project configuration OK"
@@ -264,6 +270,7 @@ _normalize: _install-tools
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: ruff normalization: no Python files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	if [ -n "${SAGE_PYTEST:-}" ]; then
@@ -294,10 +301,12 @@ _pytest_with_coverage: _install-tools
 	echo "# Runs pytest with coverage.py to enforce 100% line/branch coverage and generate coverage.xml"
 	if ! rg --files tests -g 'test_*.py' -g '*_test.py' >/dev/null 2>&1; then
 		echo "ERROR: pytest/coverage: no test files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	if [ ! -f pyproject.toml ]; then
 		echo "ERROR: pytest/coverage: no pyproject.toml found — cannot install project or measure coverage."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	project_root="$(pwd -P)"
@@ -321,6 +330,7 @@ _diff-cover: _pytest_with_coverage
 	coverage_xml="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/coverage/$project_slug/coverage.xml"
 	if [ ! -f "$coverage_xml" ]; then
 		echo "ERROR: diff-cover: no coverage.xml at $coverage_xml — coverage step did not produce output."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch ${DIFF_COVER_BASE:-main}
@@ -335,6 +345,7 @@ _vulture: _install-tools
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: vulture: no Python files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -351,6 +362,7 @@ _deptry: _install-tools
 	echo "# Checks for unused/missing dependencies in pyproject.toml, detects transitive deps, and verifies type checking"
 	if [ ! -f pyproject.toml ]; then
 		echo "ERROR: deptry: no pyproject.toml found — Python project must have one."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	uvx --from deptry deptry .
@@ -364,6 +376,7 @@ _ast-grep: _install-tools
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: ast-grep: no Python files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	findings_file=$(mktemp)
@@ -374,6 +387,7 @@ _ast-grep: _install-tools
 		"${python_files[@]}" | tee "$findings_file"
 	if [ -s "$findings_file" ]; then
 		echo "Blocking just test: fraud-review warnings were found and must be reviewed against repository audit guidelines."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -386,6 +400,7 @@ _jscpd-python:
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: jscpd: no Python files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	npx -y jscpd \
@@ -403,6 +418,7 @@ _lizard-python: _install-tools
 	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: lizard: no Python files found in a Python project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	uvx --from lizard lizard -l python -C 7 -L 100 -a 5 -i 0 "${python_files[@]}"
@@ -422,6 +438,7 @@ _import-linter: _install-tools
 	fi
 	if [ -z "$config" ]; then
 		echo "ERROR: import-linter: no project-specific import-linter config found. Add [tool.import-linter] to pyproject.toml or create .importlinter."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	uvx --from import-linter --with-editable . lint-imports --config "$config"
@@ -444,6 +461,7 @@ _codeql:
 	echo "# GitHub's static analysis engine for code quality and security vulnerabilities"
 	if ! command -v codeql >/dev/null 2>&1; then
 		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	project_root="$(pwd -P)"
