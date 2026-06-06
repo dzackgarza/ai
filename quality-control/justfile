@@ -78,7 +78,11 @@ _check-no-local-qc-override:
 		sgconfig.yml; do
 		if [ -f "$config" ]; then
 			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
-			echo "       Remove it and use the global config in ~/ai/quality-control/ instead."
+			echo "       DELETE this file. The global config for this tool already exists in"
+			echo "       ~/ai/quality-control/ and is authoritative for all projects."
+			echo "       Do NOT copy or move this file to ~/ai/quality-control/ — that violates"
+			echo "       QC isolation policy. If the global config needs to change, contact"
+			echo "       the QC owner (dzack) to update it centrally."
 			failed=1
 		fi
 	done
@@ -111,24 +115,6 @@ _vibecheck:
 	echo "# Runs qinnovates/vibecheck-slop-stopper via uvx against the project root"
 	uvx --from git+https://github.com/qinnovates/vibecheck-slop-stopper vibecheck . --severity high
 
-_src-files:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	find . -type f \( \
-		-name '*.py' -o -name '*.sage' -o \
-		-name '*.ts' -o -name '*.tsx' -o \
-		-name '*.js' -o -name '*.jsx' -o -name '*.mjs' -o -name '*.cjs' -o \
-		-name '*.rs' \) \
-		-not -path '*/node_modules/*' \
-		-not -path '*/.venv/*' \
-		-not -path '*/__pycache__/*' \
-		-not -path '*/target/*' \
-		-not -path '*/dist/*' \
-		-not -path '*/build/*' \
-		-not -path '*/codeql-db/*' \
-		-not -path '*/.git/*' \
-		2>/dev/null
-
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -143,32 +129,15 @@ _slop:
 	echo "============================="
 	echo "=== Running: ai-slop-detector ML-based quality check ==="
 	echo "# ML classifier for detecting AI-generated code patterns and low-quality implementations"
-	project_root="$(pwd -P)"
-	mapfile -t src_files < <(just --justfile {{justfile()}} -d . _src-files 2>/dev/null || true)
-	if [ "${#src_files[@]}" -eq 0 ]; then
-		echo "ERROR: ai-slop-detector: no source files found in project."
-		exit 1
-	fi
-	for file in "${src_files[@]}"; do
-		target="$file"
-		if [[ "$target" != /* ]]; then
-			target="$project_root/$target"
-		fi
-		extra_args=""
-		if [[ "$target" == *.ts || "$target" == *.tsx || "$target" == *.js || "$target" == *.jsx || "$target" == *.mjs || "$target" == *.cjs ]]; then
-			extra_args="--js"
-		fi
-		(
-			cd {{justfile_directory()}}
-			uvx ai-slop-detector "$target" $extra_args \
-			--config {{justfile_directory()}}/.slopconfig.yaml \
-			--verbose \
-			--ci-mode hard \
-			--ci-claims-strict \
-			--ci-report \
-			--no-color
-		)
-	done
+	uvx ai-slop-detector "$(pwd -P)" \
+		--project \
+		--js \
+		--config {{justfile_directory()}}/.slopconfig.yaml \
+		--verbose \
+		--ci-mode hard \
+		--ci-claims-strict \
+		--ci-report \
+		--no-color
 
 # ── Entry Points ──────────────────────────────────────────────────
 

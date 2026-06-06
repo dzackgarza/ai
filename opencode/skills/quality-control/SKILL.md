@@ -211,7 +211,11 @@ If any of these files exist in the project root, the check fails with:
 
 ```
 ERROR: Local QC override detected: semgrep.yml — global QC owns this tool config.
-       Remove it and use the global config in ~/ai/quality-control/ instead.
+       DELETE this file. The global config for this tool already exists in
+       ~/ai/quality-control/ and is authoritative for all projects.
+       Do NOT copy or move this file to ~/ai/quality-control/ — that violates
+       QC isolation policy. If the global config needs to change, contact
+       the QC owner (dzack) to update it centrally.
 ```
 
 #### Python Preflight: `_check-python-project`
@@ -316,8 +320,8 @@ precision, recall, F1) are expected to be near-perfect on the synthetic test set
 This is a diagnostic baseline, not a guarantee of real-world performance.
 
 Dependencies are declared as PEP 723 inline metadata; `uv run` provisions them
-automatically. Note that `xgboost==2.0.0` is pinned to avoid the `nvidia-nccl-cu12`
-CUDA dependency present in later versions (~283 MB wheel saved).
+automatically. On Linux, `xgboost` pulls in `nvidia-nccl-cu12` — this is a declared
+dependency, not a working-around.
 
 #### Failure mode this policy exists to prevent
 
@@ -336,7 +340,7 @@ files existing.
 
 | Justfile | Type | Recipes |
 |---|---|---|---|
-| `justfile` | Shared (cross-language) | `_no-bypass`, `_semgrep`, `_vibecheck`, `_slop`, `_src-files` — language-agnostic QC. Imported by language justfiles; not intended for standalone invocation. |
+| `justfile` | Shared (cross-language) | `_no-bypass`, `_semgrep`, `_vibecheck`, `_slop` — language-agnostic QC. Imported by language justfiles; not intended for standalone invocation. |
 | `justfile-python` | Python | Python-specific: `_python-syntax`, `_mypy`, `_normalize`, etc. Imports shared `justfile`. |
 | `justfile-bun` | TypeScript/JS | TypeScript-specific: `_biome`, `_eslint`, `_tsc`, `_knip`, etc. Imports shared `justfile`. |
 | `justfile-rust` | Rust | Rust-specific: `_clippy`, `_rustfmt`, `_cargo-test`, etc. Imports shared `justfile`. |
