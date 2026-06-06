@@ -281,6 +281,53 @@ standard and create an unmaintainable patchwork of project-specific exceptions.
 The correct action is to escalate to the QC owner, who may update the global
 config for all projects.
 
+### ML Model Preflight: `_slop` requires trained classifier
+
+**Rule:** The `_slop` recipe in the shared `justfile` runs an ML-based code quality
+detector (`ai-slop-detector`) which requires a trained classifier model at
+`models/slop_classifier.pkl`. The recipe checks for this file before running the
+detector and fails hard if it is missing:
+
+```
+ERROR: ai-slop-detector ML model not found: /home/dzack/gitclones/ai/quality-control/models/slop_classifier.pkl
+  Run: uv run scripts/train_slop_model.py
+```
+
+Without this check, `ai-slop-detector` silently disables ML scoring and falls back
+to rule-based analysis only — the ML signal is lost with no indication to the user.
+
+#### Regenerating the model
+
+The model is trained from synthetic data and tracked as a binary artifact in the QC
+repo. To regenerate:
+
+```bash
+cd ~/gitclones/ai/quality-control
+uv run scripts/train_slop_model.py
+```
+
+The training script (`scripts/train_slop_model.py`) uses `ai-slop-detector`'s
+`MLPipeline` to generate 1000 synthetic samples (500 slop, 500 clean), extract
+features from each, and train an ensemble classifier (RandomForest + XGBoost). The
+trained model is written to `models/slop_classifier.pkl`.
+
+Because the model is trained on synthetic data, performance metrics (accuracy,
+precision, recall, F1) are expected to be near-perfect on the synthetic test set.
+This is a diagnostic baseline, not a guarantee of real-world performance.
+
+Dependencies are declared as PEP 723 inline metadata; `uv run` provisions them
+automatically. Note that `xgboost==2.0.0` is pinned to avoid the `nvidia-nccl-cu12`
+CUDA dependency present in later versions (~283 MB wheel saved).
+
+#### Failure mode this policy exists to prevent
+
+**"The slop detector ran but the ML classifier silently fell back to rule-based only."**
+The `ai-slop-detector` tool's `MLScorer.from_model()` returns `None` when the model
+file is missing, logging `[DEBUG] Model not found: models/slop_classifier.pkl —
+ML scoring disabled`. Without the preflight check, this produces no error, no warning
+visible at default log level, and no CI failure — the tool completes with exit 0
+while the ML signal is entirely absent.
+
 ### Language Isolation: One Language per Justfile
 
 **Rule:** Each justfile owns exactly one language stack. No recipe in the Python justfile
@@ -415,7 +462,7 @@ Cross-language recipes available to all language justfiles via `import`:
 - `_no-bypass` — Blocks bypass comments (`# noqa`, `@ts-ignore`, `# type: ignore`, etc.)
 - `_semgrep` — Security and quality pattern scanning
 - `_vibecheck` — Anti-slop pattern detection
-- `_slop` — ML-based code quality detection
+- `_slop` — ML-based code quality detection (preflight checks `models/slop_classifier.pkl`; fails hard if model file missing)
 - `_src-files` — Lists all source files across all known languages
 
 This file is **not** intended for standalone invocation. Language justfiles compose its
