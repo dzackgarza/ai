@@ -182,6 +182,105 @@ exit 0
 The error message must name the tool, the missing prerequisite, and (when applicable)
 the remediation (e.g., "Install CodeQL from https://github.com/github/codeql-cli").
 
+### Fail-Fast Preflight Gates
+
+**Rule:** Every language `test` recipe runs preflight checks before any QC tooling.
+These checks validate project configuration and fail fast on misconfiguration,
+producing clear error messages instead of confusing tool failures.
+
+Each language justfile has a dedicated `_check-*-project` recipe that runs first
+in the `test` dependency chain, followed by the shared `_check-no-local-qc-override`
+(imported from `justfile`). These run before `_normalize`, linters, typecheckers,
+tests, or any other QC tool.
+
+#### Shared Preflight: `_check-no-local-qc-override`
+
+Location: `justfile` (imported by all language justfiles).
+
+Detects local copies of global QC config files in the project root. Global QC owns
+these tool configs — local overrides are forbidden:
+
+| Config file | Tool | Why it's an override |
+|---|---|---|
+| `semgrep.yml` | Semgrep | Global QC owns semgrep security rules |
+| `.jscpd.json` | jscpd | Global QC owns copy-paste detection config |
+| `.slopconfig.yaml` | ai-slop-detector | Global QC owns slop detection config |
+| `sgconfig.yml` | ast-grep | Global QC owns AST pattern rules |
+
+If any of these files exist in the project root, the check fails with:
+
+```
+ERROR: Local QC override detected: semgrep.yml — global QC owns this tool config.
+       Remove it and use the global config in ~/ai/quality-control/ instead.
+```
+
+#### Python Preflight: `_check-python-project`
+
+Location: `justfile-python`
+
+Validates:
+
+1. **`pyproject.toml` exists** — Python QC requires a project config.
+2. **`requires-python` targets >=3.14** — Global QC pins to Python 3.14. If the
+   project targets an older Python, tool versions and type stubs may not align.
+3. **No local QC tool overrides in `pyproject.toml` sections** — The following
+   sections are owned by global QC and must not be set locally:
+   `[tool.ruff]`, `[tool.mypy]`, `[tool.coverage]`, `[tool.deptry]`,
+   `[tool.vulture]`, `[tool.import-linter]`.
+4. **No standalone Python tool config files** — `ruff.toml`, `.ruff.toml`,
+   `mypy.ini`, `.mypy.ini`, `grain.toml`, `.coveragerc`, `.importlinter`.
+5. **Tests must exist** — At least one file matching `test_*.py`, `*_test.py`,
+   or `tests/*.py`.
+
+#### TypeScript Preflight: `_check-ts-project`
+
+Location: `justfile-bun`
+
+Validates:
+
+1. **`package.json` exists** — TypeScript QC requires a package manifest.
+2. **Bun is the package manager** — `bun.lock` or `bun.lockb` must exist.
+3. **No local QC tool config overrides** — `biome.json`, `eslint.config.js`,
+   `knip.json`, `.lintstagedrc.json`.
+4. **`tsconfig.json` does not set `strict: false`** — TypeScript strict mode is
+   required by global QC.
+5. **Tests must exist** — At least one file matching `*.test.ts`, `*.test.tsx`,
+   `*.spec.ts`, `*.spec.tsx`, or a `tests/` directory.
+
+#### Rust Preflight: `_check-rust-project`
+
+Location: `justfile-rust`
+
+Validates:
+
+1. **`Cargo.toml` exists** — Rust QC requires a project manifest.
+2. **Tests must exist** — Either a `tests/` directory or `#[test]` functions in
+   source files.
+
+#### Why preflight gates exist
+
+Without fail-fast preflight checks, a misconfigured project produces confusing
+errors from individual tools: "ruff: No such file or directory" (wrong Python
+version), "error: Cannot find module" (wrong package manager), or "0 tests
+collected" (no tests, but exit 0). These are hard to distinguish from legitimate
+transient failures.
+
+Preflight gates convert misconfiguration into a single clear message:
+
+```
+ERROR: Python project must have tests. No test files found with patterns: test_*.py, *_test.py, tests/*.py
+```
+
+This is a hard fail (`exit 1`). Misconfiguration is not a warning — it blocks QC.
+
+#### Failure mode this policy exists to prevent
+
+**"The project just needs a quick local override — a one-line change to ruff config."**
+Wrong. Tool configs are owned by global QC. Overrides weaken the uniform QC
+standard and create an unmaintainable patchwork of project-specific exceptions.
+The correct action is to escalate to the QC owner, who may update the global
+config for all projects.
+
 ### Language Isolation: One Language per Justfile
 
 **Rule:** Each justfile owns exactly one language stack. No recipe in the Python justfile
