@@ -62,6 +62,31 @@ _no-bypass:
 	done
 	echo "No bypass comments detected in staged files"
 
+_check-no-local-qc-override:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: local QC override detection ==="
+	echo "# Detects local config files that would override or duplicate global QC"
+	failed=0
+	# Shared tool configs that must NOT exist in project root.
+	# Global QC owns these tool configs — local copies are forbidden overrides.
+	for config in \
+		semgrep.yml \
+		.jscpd.json \
+		.slopconfig.yaml \
+		sgconfig.yml; do
+		if [ -f "$config" ]; then
+			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
+			echo "       Remove it and use the global config in ~/ai/quality-control/ instead."
+			failed=1
+		fi
+	done
+	if [ "$failed" -ne 0 ]; then
+		exit 1
+	fi
+	echo "No local QC overrides detected"
+
 _semgrep:
 	#!/usr/bin/env bash
 	set -euo pipefail

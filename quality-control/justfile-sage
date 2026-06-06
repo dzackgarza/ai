@@ -158,7 +158,7 @@ _vulture: _sage-qc-files
 		"${generated_sage_python_files[@]}" \
 		"$whitelist_file"
 
-test: _sage-syntax _vulture
+test: _check-no-local-qc-override _sage-syntax _vulture
 	#!/usr/bin/env bash
 	set -euo pipefail
 	# Run the full Python QC chain via the Python justfile

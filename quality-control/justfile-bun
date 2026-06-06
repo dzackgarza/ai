@@ -208,6 +208,49 @@ _lint-staged:
 	set -euo pipefail
 	bun x lint-staged --config {{justfile_directory()}}/.lintstagedrc.json
 
+_check-ts-project:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: TypeScript project preflight check ==="
+	echo "# Validates project structure, Bun alignment, test presence, and QC config isolation"
+	failed=0
+	# 1. package.json must exist
+	if [ ! -f "package.json" ]; then
+		echo "ERROR: TypeScript project must have a package.json file."
+		failed=1
+	fi
+	# 2. Must use Bun
+	if [ ! -f "bun.lock" ] && [ ! -f "bun.lockb" ]; then
+		echo "ERROR: TypeScript project must use Bun — no bun.lock or bun.lockb found."
+		failed=1
+	fi
+	# 3. Check for local QC tool config overrides.
+	#    Global QC owns these tool configs — projects must not set them locally.
+	for config in biome.json eslint.config.js knip.json .lintstagedrc.json; do
+		if [ -f "$config" ]; then
+			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
+			echo "       Remove it and use the global config in ~/ai/quality-control/ instead."
+			failed=1
+		fi
+	done
+	# 4. tsconfig.json must not disable strict mode
+	if [ -f "tsconfig.json" ]; then
+		if grep -qP '"strict"\s*:\s*false' tsconfig.json 2>/dev/null; then
+			echo "ERROR: tsconfig.json has 'strict: false' — TypeScript strict mode is required by global QC."
+			failed=1
+		fi
+	fi
+	# 5. Tests must exist
+	if ! rg --files -g '*.test.ts' -g '*.test.tsx' -g '*.spec.ts' -g '*.spec.tsx' -g 'tests/' >/dev/null 2>&1; then
+		echo "ERROR: TypeScript project must have tests. No test files found with patterns: *.test.ts, *.test.tsx, *.spec.ts, *.spec.tsx, tests/"
+		failed=1
+	fi
+	if [ "$failed" -ne 0 ]; then
+		exit 1
+	fi
+	echo "TypeScript project configuration OK"
+
 _normalize: _eslint-deps
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -230,7 +273,7 @@ _normalize: _eslint-deps
 		--exclude=codeql-db 2>&1 || true
 
 # public: all static checks run locally
-test: _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _slop-scan _vibecheck _slop
+test: _check-ts-project _check-no-local-qc-override _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _slop-scan _vibecheck _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

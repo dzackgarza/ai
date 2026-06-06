@@ -195,6 +195,58 @@ _mypy: _install-tools
 			"${python_files[@]}"
 	fi
 
+_check-python-project:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: Python project preflight check ==="
+	echo "# Validates project structure, Python version target, test presence, and QC config isolation"
+	failed=0
+	# 1. pyproject.toml must exist
+	if [ ! -f "pyproject.toml" ]; then
+		echo "ERROR: Python project must have a pyproject.toml file."
+		failed=1
+	else
+		# 2. must target Python >=3.14
+		if ! grep -qP 'requires-python\s*=\s*"[^"]*3\.14' pyproject.toml 2>/dev/null; then
+			echo "ERROR: pyproject.toml must target Python >=3.14 (requires-python string)."
+			echo "       Add: requires-python = \">=3.14\""
+			failed=1
+		fi
+		# 3. Check for local QC tool overrides in pyproject.toml sections.
+		#    These tools' configs are owned by global QC — projects must not set them locally.
+		for section in \
+			'\[tool\.ruff' \
+			'\[tool\.mypy' \
+			'\[tool\.coverage' \
+			'\[tool\.deptry' \
+			'\[tool\.vulture' \
+			'\[tool\.import-linter'; do
+			if grep -qP "$section" pyproject.toml 2>/dev/null; then
+				echo "ERROR: pyproject.toml contains section matching '$section' — global QC owns this tool config."
+				echo "       Remove the section and use the global config in ~/ai/quality-control/ instead."
+				failed=1
+			fi
+		done
+	fi
+	# 4. Check for standalone Python tool config files (also QC overrides)
+	for config in ruff.toml .ruff.toml mypy.ini .mypy.ini grain.toml .coveragerc .importlinter; do
+		if [ -f "$config" ]; then
+			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
+			echo "       Remove it and use the global config in ~/ai/quality-control/ instead."
+			failed=1
+		fi
+	done
+	# 5. Tests must exist
+	if ! rg --files -g 'test_*.py' -g '*_test.py' -g 'tests/*.py' >/dev/null 2>&1; then
+		echo "ERROR: Python project must have tests. No test files found with patterns: test_*.py, *_test.py, tests/*.py"
+		failed=1
+	fi
+	if [ "$failed" -ne 0 ]; then
+		exit 1
+	fi
+	echo "Python project configuration OK"
+
 _normalize: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -435,7 +487,7 @@ _codeql:
 	PY
 
 # public: all static checks run locally
-test: _normalize _python-syntax _mypy _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _vibecheck
+test: _check-python-project _check-no-local-qc-override _normalize _python-syntax _mypy _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _vibecheck
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

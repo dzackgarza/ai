@@ -27,6 +27,30 @@ _rust-qc-files:
 	set -euo pipefail
 	find . -name '*.rs' -not -path '*/target/*' -not -path '*/codeql-db/*' 2>/dev/null
 
+_check-rust-project:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: Rust project preflight check ==="
+	echo "# Validates project structure, test presence, and QC config isolation"
+	failed=0
+	# 1. Cargo.toml must exist
+	if [ ! -f "Cargo.toml" ]; then
+		echo "ERROR: Rust project must have a Cargo.toml file."
+		failed=1
+	fi
+	# 2. Tests must exist (either tests/ directory or #[test] functions in source)
+	if [ ! -d "tests" ]; then
+		if ! rg -l '#\[test\]' --glob '*.rs' --glob '!**/target/**' >/dev/null 2>&1; then
+			echo "ERROR: Rust project must have tests. No tests/ directory and no #[test] functions found."
+			failed=1
+		fi
+	fi
+	if [ "$failed" -ne 0 ]; then
+		exit 1
+	fi
+	echo "Rust project configuration OK"
+
 _clippy:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -117,7 +141,7 @@ _lizard:
 		"${rust_files[@]}"
 
 # public: all static checks run locally
-test: _clippy _rustfmt _cargo-test _no-bypass _semgrep _jscpd _lizard _codeql _vibecheck _slop
+test: _check-rust-project _check-no-local-qc-override _clippy _rustfmt _cargo-test _no-bypass _semgrep _jscpd _lizard _codeql _vibecheck _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
