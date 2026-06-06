@@ -51,6 +51,7 @@ _coverage:
 	fi
 	if [ ! -d tests ] && [ ! -d __tests__ ]; then
 		echo "ERROR: no test script and no tests directory found — 0% coverage"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	bun test --coverage --coverage-reporter=lcov --coverage-dir=.
@@ -60,6 +61,7 @@ _diff-cover: _coverage
 	set -euo pipefail
 	if [ ! -f lcov.info ]; then
 		echo "ERROR: diff-cover: lcov.info not produced — coverage step did not produce output."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	bun x diff-cover lcov.info --compare-branch ${DIFF_COVER_BASE:-main}
@@ -110,6 +112,7 @@ _tsc:
 			if grep -vE '/usr/share/ags/js/|\.\./.*usr/share/ags/js/|gi://' "$output" | grep -q 'error TS'; then
 				cat "$output"
 				rm -f "$output"
+				"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 				exit 1
 			fi
 			cat "$output"
@@ -134,12 +137,14 @@ _tsc:
 		cat "$output"
 		if grep -vE '/usr/share/ags/js/|\.\./.*usr/share/ags/js/|gi://' "$output" | grep -q 'error TS'; then
 			rm -f "$output"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		rm -f "$output"
 		echo "Only system AGS/Gnim TypeScript diagnostics were reported; project-owned TypeScript passed."
 	else
 		echo "ERROR: no package typecheck script and no tsconfig.json found"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -152,6 +157,7 @@ _jscpd-bun:
 	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
 	if [ "${#js_files[@]}" -eq 0 ]; then
 		echo "ERROR: jscpd: no JS/TS files found."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json \
@@ -195,6 +201,7 @@ _slop-scan:
 	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
 	if [ "${#js_files[@]}" -eq 0 ]; then
 		echo "ERROR: slop-scan: no JS/TS files found in a TypeScript project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	# slop-scan scan has no --fail-on flag (only delta does).
@@ -210,6 +217,7 @@ _slop-scan:
 			echo "ERROR: Local QC override detected: $config_dst — global QC owns this tool config."
 			echo "       DELETE this file. The global config already exists in"
 			echo "       ~/ai/quality-control/ and is authoritative for all projects."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 	else
@@ -237,6 +245,7 @@ _slop-scan:
 		echo ""
 		echo "  The only acceptable response: fix the project code."
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	echo "slop-scan: 0 findings — clean."
@@ -246,6 +255,7 @@ _codeql:
 	set -euo pipefail
 	if ! command -v codeql >/dev/null 2>&1; then
 		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	codeql database create codeql-db --overwrite --language=typescript --source-root=. --search-path=/dev/null 2>&1 | grep -v "Extracting\|Done extracting\|already exists" || true
@@ -300,6 +310,7 @@ _check-ts-project:
 		failed=1
 	fi
 	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	echo "TypeScript project configuration OK"
