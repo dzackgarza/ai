@@ -1,13 +1,8 @@
----
-name: qc-triage
-description: Use when QC checks fail and the triage directive is emitted. Triggers on QC failure output containing "TRIAGE REQUIRED" or "PROBING GLOBAL QC IS REWARD-HACKING". Also use when the agent has received a QC failure banner that demands switching to triage mode. Do NOT use for routine QC pass-through or successful QC runs.
----
-
 # QC Triage Protocol
 
-This skill defines the mandatory triage procedure when global QC checks fail.
-Load this skill when the QC output contains the triage directive (the banner
-that begins with "QC FAILURE — TRIAGE REQUIRED").
+This document defines the mandatory triage procedure when global QC checks
+fail. It is a reference for the `reviewing-llm-code` skill — the slop report
+subagent workflow defined below is owned by `reviewing-llm-code`.
 
 ## Core Policy
 
@@ -82,10 +77,3 @@ Before reporting any triage step complete, these must be true:
 - [ ] Slop report subagent produced a structured violation report
 - [ ] Fix subagent made code changes and verified with `just test`
 - [ ] Separate subagents were used for review and fix
-
-## References
-
-- `quality-control` skill: the QC system architecture and justfile design
-- `reviewing-llm-code` skill: the slop report methodology and red-flag catalog
-- `fixing-slop` skill: converting fraudulent artifacts back into correct implementations
-- `policy-index` skill: locating the canonical source-of-truth skill for any policy

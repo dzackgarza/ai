@@ -880,8 +880,9 @@ findings to the user, and delegate review and fix to separate subagents.
 When a QC check fails:
 
 1. **The triage directive is already in the output.** Read it. Follow it.
-2. **Load `qc-triage`** for the complete triage protocol — the rules about
-   not probing QC configs, not self-fixing, and the subagent workflow.
+2. **Load `reviewing-llm-code/references/qc-triage.md`** for the complete triage
+   protocol — the rules about not probing QC configs, not self-fixing, and the
+   subagent workflow.
 3. **Load `reality-grounded-debugging`** only after the triage workflow is
    underway, if the failure requires deeper diagnostic work. It provides:
    - Command-output discipline (preserve stdout, stderr, exit code)
@@ -894,7 +895,7 @@ When a QC check fails:
 
 | Phase | Action | Skill |
 |---|---|---|
-| **Triage** | Present findings to user. Do not self-fix. Delegate to subagents. | `qc-triage` |
+| **Triage** | Present findings to user. Do not self-fix. Delegate to subagents. | `reviewing-llm-code/references/qc-triage.md` |
 | **Debugging** | Investigate opaque errors after triage is complete. | `reality-grounded-debugging` |
 
 The triage protocol takes priority over debugging. Do not start debugging until

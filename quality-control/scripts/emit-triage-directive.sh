@@ -44,9 +44,10 @@ cat << 'TRIAGE_EOF'
              architectural issues. The reviewer and fixer MUST be
              different subagent instances.
 
-  Load the qc-triage skill for the complete triage protocol:
+  Load the QC Triage Protocol reference (under reviewing-llm-code) for the
+  complete triage protocol:
 
-    skill qc-triage
+    reviewing-llm-code/references/qc-triage.md
 
 ================================================================================
 TRIAGE_EOF
