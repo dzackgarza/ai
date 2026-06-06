@@ -5,7 +5,7 @@
 #   just -f ~/ai/quality-control/justfile-rust test
 #
 # Shared recipes (imported from justfile):
-#   _no-bypass, _semgrep, _jscpd, _vibecheck, _slop
+#   _no-bypass, _semgrep, _ast-grep, _jscpd, _vibecheck, _slop
 #
 # Rust-specific recipes:
 #   _clippy, _rustfmt, _cargo-test, _lizard, _codeql
@@ -141,7 +141,7 @@ _lizard:
 		"${rust_files[@]}"
 
 # public: all static checks run locally
-test: _check-rust-project _check-no-local-qc-override _clippy _rustfmt _cargo-test _no-bypass _semgrep _jscpd _lizard _codeql _vibecheck _slop
+test: _check-rust-project _check-no-local-qc-override _clippy _rustfmt _cargo-test _no-bypass _semgrep _jscpd _lizard _codeql _ast-grep _vibecheck _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
