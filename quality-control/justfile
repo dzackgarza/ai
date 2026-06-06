@@ -132,6 +132,14 @@ _src-files:
 _slop:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	# Preflight: verify the ML model file exists (centrally owned artifact)
+	model_file="{{justfile_directory()}}/models/slop_classifier.pkl"
+	if [ ! -f "$model_file" ]; then
+		echo "ERROR: ai-slop-detector ML model not found: $model_file"
+		echo "  Run: uv run scripts/train_slop_model.py"
+		echo "  (from the quality-control repo root)"
+		exit 1
+	fi
 	echo "============================="
 	echo "=== Running: ai-slop-detector ML-based quality check ==="
 	echo "# ML classifier for detecting AI-generated code patterns and low-quality implementations"
@@ -146,9 +154,13 @@ _slop:
 		if [[ "$target" != /* ]]; then
 			target="$project_root/$target"
 		fi
+		extra_args=""
+		if [[ "$target" == *.ts || "$target" == *.tsx || "$target" == *.js || "$target" == *.jsx || "$target" == *.mjs || "$target" == *.cjs ]]; then
+			extra_args="--js"
+		fi
 		(
 			cd {{justfile_directory()}}
-			uvx ai-slop-detector "$target" \
+			uvx ai-slop-detector "$target" $extra_args \
 			--config {{justfile_directory()}}/.slopconfig.yaml \
 			--verbose \
 			--ci-mode hard \
@@ -157,3 +169,15 @@ _slop:
 			--no-color
 		)
 	done
+
+# ── Entry Points ──────────────────────────────────────────────────
+
+_global-qc: _no-bypass _check-no-local-qc-override _semgrep _vibecheck _slop
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "Global quality checks completed"
+
+_global-qc-ci: _global-qc
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "Global CI quality checks completed"
