@@ -1,0 +1,129 @@
+# justfile-rust — Rust-specific quality control
+#
+# Imports cross-language QC recipes from `justfile` (shared) and adds
+# Rust-specific recipes. Rust projects delegate to this file:
+#   just -f ~/ai/quality-control/justfile-rust test
+#
+# Shared recipes (imported from justfile):
+#   _no-bypass, _semgrep, _jscpd, _vibecheck, _slop
+#
+# Rust-specific recipes:
+#   _clippy, _rustfmt, _cargo-test, _lizard, _codeql
+#
+# WORKFLOW:
+#   just test      — local quality checks (linting, static analysis, complexity)
+#   just test-ci  — test + live/isolated checks
+#
+# HOOKS: pre-commit.hook and pre-push.hook both block on `just test`.
+#   Copy/symlink into .git/hooks/ to activate.
+
+import 'justfile'
+
+default:
+  @just test
+
+_rust-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	find . -name '*.rs' -not -path '*/target/*' -not -path '*/codeql-db/*' 2>/dev/null
+
+_clippy:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: clippy Rust linting ==="
+	echo "# Runs cargo clippy with deny-level warnings"
+	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true)
+	if [ "${#rust_files[@]}" -eq 0 ]; then
+		echo "ERROR: clippy: no Rust files found in a Rust project."
+		exit 1
+	fi
+	cargo clippy --all-targets --all-features -- -D warnings
+
+_rustfmt:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: rustfmt formatting check ==="
+	echo "# Checks Rust source formatting against rustfmt defaults"
+	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true)
+	if [ "${#rust_files[@]}" -eq 0 ]; then
+		echo "ERROR: rustfmt: no Rust files found in a Rust project."
+		exit 1
+	fi
+	cargo fmt --check
+
+_cargo-test:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: cargo test ==="
+	echo "# Runs Rust unit and integration tests"
+	if [ ! -f Cargo.toml ]; then
+		echo "ERROR: cargo test: no Cargo.toml found — Rust project must have one."
+		exit 1
+	fi
+	cargo test --all-features
+
+_codeql:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: codeql security analysis (Rust) ==="
+	echo "# GitHub's static analysis engine for code quality and security vulnerabilities"
+	if ! command -v codeql >/dev/null 2>&1; then
+		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
+		exit 1
+	fi
+	cargo clean
+	project_root="$(pwd -P)"
+	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
+	codeql_root="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/codeql/$project_slug"
+	db="$codeql_root/codeql-db"
+	report="$codeql_root/codeql-report.sarif"
+	mkdir -p "$codeql_root"
+	codeql database create "$db" --overwrite --language=rust --source-root="$project_root"
+	codeql database analyze "$db" --format=sarif-latest --output="$report"
+	echo "CodeQL SARIF report: $report"
+
+_jscpd:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: jscpd copy-paste detection ==="
+	echo "# Finds duplicate code blocks across Rust files"
+	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files)
+	if [ "${#rust_files[@]}" -eq 0 ]; then
+		echo "ERROR: jscpd: no Rust files found."
+		exit 1
+	fi
+	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json \
+		--format rust \
+		"${rust_files[@]}"
+
+_lizard:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: lizard complexity analysis (Rust) ==="
+	echo "# Computes cyclomatic complexity number (CCN), line count, and parameter count"
+	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true)
+	if [ "${#rust_files[@]}" -eq 0 ]; then
+		echo "ERROR: lizard: no Rust files found in a Rust project."
+		exit 1
+	fi
+	uvx --from lizard lizard -l rust -C 7 -L 150 -a 5 -i 0 \
+		-x "*/target/*" \
+		"${rust_files[@]}"
+
+# public: all static checks run locally
+test: _clippy _rustfmt _cargo-test _no-bypass _semgrep _jscpd _lizard _codeql _vibecheck _slop
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "Local quality checks completed"
+
+# public: test-ci = test + live/isolated checks
+test-ci: test
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "CI checks completed"

@@ -20,7 +20,7 @@ them.
 
 | Rank | Skill | Owns |
 | --- | --- | --- |
-| **1** | `quality-control` | Generic QC invocation, public recipes, tool pins, and configs. No local reimplementation. |
+| **1** | `quality-control` | Generic QC invocation, public recipes, tool pins, configs, and justfile architecture (shared + language-specific). No local reimplementation. |
 | **2** | `test-guidelines` | Testing epistemology: what constitutes a proof, no mocks, no exceptions, no masking. |
 | **3** | `tool-provisioning-and-environment-hygiene` | How tools run: ephemeral by default, uv-only Python, no pipx/pip/global npm. |
 | **4** | `known-solution-first` | External tool/compiler/API uncertainty: public contracts before local probing. |
@@ -59,7 +59,7 @@ just `typecheck` in isolation to bypass the full stack.
 
 The `test` recipe runs `_normalize` before any checks. This applies every auto-fix the toolchain supports:
 
-**Python stack (`~/ai/quality-control/justfile`):**
+**Python stack (`~/ai/quality-control/justfile-python`):**
 | Tool | Flag | Fixes |
 | --- | --- | --- |
 | `ruff check` | `--fix` | Lint errors (E, F, I, UP) — unused imports, import sorting, pyupgrade patterns |
@@ -188,11 +188,13 @@ the remediation (e.g., "Install CodeQL from https://github.com/github/codeql-cli
 may depend on JS/TS files existing. No recipe in the TS justfile may depend on Python
 files existing.
 
-| Justfile | Language | Validates presence of |
-|---|---|---|
-| `justfile` | Python | `.py` files, `pyproject.toml`, test files, Python tools on PATH |
-| `justfile-bun` | TypeScript/JS | `.ts`/`.tsx`/`.js`/`.jsx`/`.mjs`/`.cjs` files, `tsconfig.json`, `package.json` |
-| `justfile-sage` | SageMath | `.sage` files, `sage` binary |
+| Justfile | Type | Recipes |
+|---|---|---|---|
+| `justfile` | Shared (cross-language) | `_no-bypass`, `_semgrep`, `_vibecheck`, `_slop`, `_src-files` — language-agnostic QC. Imported by language justfiles; not intended for standalone invocation. |
+| `justfile-python` | Python | Python-specific: `_python-syntax`, `_mypy`, `_normalize`, etc. Imports shared `justfile`. |
+| `justfile-bun` | TypeScript/JS | TypeScript-specific: `_biome`, `_eslint`, `_tsc`, `_knip`, etc. Imports shared `justfile`. |
+| `justfile-rust` | Rust | Rust-specific: `_clippy`, `_rustfmt`, `_cargo-test`, etc. Imports shared `justfile`. |
+| `justfile-sage` | SageMath | Sage-specific: `_sage-syntax`, `_vulture` (Sage-aware). Imports shared `justfile`; calls Python QC via `just -f justfile-python`. |
 
 #### Failure mode this policy exists to prevent
 
@@ -299,51 +301,113 @@ Any exception to these rules must strictly follow the **Policy Exception Protoco
    tasks — all hidden in private recipes.
    Users run workflows, not infrastructure.
 
-## Two Justfiles
+## Justfile Architecture
 
-### Python: `justfile`
+The QC system uses one shared justfile (`justfile`) and multiple language-specific
+justfiles. Each language justfile imports the shared justfile via Just 1.51's `import`
+directive and adds its own recipes.
+
+### Shared Justfile (`justfile`)
 
 Location: `~/ai/quality-control/justfile`
 
-Used for: Pure Python projects, Python CLI tools, Python packages.
+Cross-language recipes available to all language justfiles via `import`:
 
-Recipes:
+- `_no-bypass` — Blocks bypass comments (`# noqa`, `@ts-ignore`, `# type: ignore`, etc.)
+- `_semgrep` — Security and quality pattern scanning
+- `_vibecheck` — Anti-slop pattern detection
+- `_slop` — ML-based code quality detection
+- `_src-files` — Lists all source files across all known languages
 
-- `just test` — Local quality checks: normalization, bypass detection, coverage,
-  diff-cover, vulture, deptry, semgrep, jscpd, lizard, import-linter, codeql,
-  ai-slop-detector
+This file is **not** intended for standalone invocation. Language justfiles compose its
+recipes into their `test` chains.
 
-- `just test-ci` — **superset of test**, adds live/isolated checks (coverage thresholds,
-  diff-cover against base branch, integration tests)
+### Python: `justfile-python`
+
+Location: `~/ai/quality-control/justfile-python`
+
+Imports: `justfile` (shared).
+
+Recipes: `_python-syntax`, `_mypy`, `_normalize` (ruff), `_pytest_with_coverage`,
+`_diff-cover`, `_vulture`, `_deptry`, `_import-linter`, `_grain`, `_ast-grep`,
+`_jscpd`, `_lizard`, `_codeql` plus all shared recipes.
+
+Invocations:
+- `just -f ~/ai/quality-control/justfile-python test`
+- `just -f ~/ai/quality-control/justfile-python test-ci`
 
 ### TypeScript: `justfile-bun`
 
 Location: `~/ai/quality-control/justfile-bun`
 
-Used for: TypeScript projects, Bun-based packages, Node.js CLIs.
+Imports: `justfile` (shared).
 
-Recipes:
+Recipes: `_normalize` (biome + eslint), `_coverage`, `_diff-cover`, `_knip`, `_biome`,
+`_eslint`, `_tsc`, `_ast-grep`, `_jscpd`, `_lizard`, `_codeql`, `_slop-scan`,
+`_lint-staged` plus all shared recipes.
 
-- `just test` — Local quality checks: bypass detection, coverage, diff-cover, knip,
-  biome, ast-grep, eslint, tsc, semgrep, jscpd, lizard, codeql, lint-staged
+Invocations:
+- `just -f ~/ai/quality-control/justfile-bun test`
+- `just -f ~/ai/quality-control/justfile-bun test-ci`
 
-- `just test-ci` — **superset of test**, adds live/isolated checks (coverage thresholds,
-  diff-cover against base branch, integration tests)
+### Rust: `justfile-rust`
+
+Location: `~/ai/quality-control/justfile-rust`
+
+Imports: `justfile` (shared).
+
+Recipes: `_clippy`, `_rustfmt`, `_cargo-test`, `_jscpd`, `_lizard`, `_codeql` plus all
+shared recipes.
+
+Invocations:
+- `just -f ~/ai/quality-control/justfile-rust test`
+- `just -f ~/ai/quality-control/justfile-rust test-ci`
+
+### SageMath: `justfile-sage`
+
+Location: `~/ai/quality-control/justfile-sage`
+
+Imports: `justfile` (shared). Calls Python QC via `just -f justfile-python` subcommands
+(does not import `justfile-python` directly to avoid recipe conflicts).
+
+Recipes: `_sage-syntax`, `_vulture` (Sage-aware preparse), plus all shared recipes.
+
+Invocations:
+- `just -f ~/ai/quality-control/justfile-sage test`
+- `just -f ~/ai/quality-control/justfile-sage test-ci`
+
+### Import and Recipe Override
+
+Just 1.51's `import` directive makes imported recipes available in the importing file.
+**It is an error to redefine an imported recipe.** If two justfiles define a recipe with
+the same name, they must not have a direct import relationship. This constrains the
+architecture:
+
+- `justfile` (shared) is imported by all language justfiles → it must NOT define
+  `default`, `test`, or `test-ci` (each language defines its own).
+- `justfile-python` is NOT imported by `justfile-sage` because both define `default`,
+  `_vulture`, and potentially other recipes that would conflict. Instead,
+  `justfile-sage` imports `justfile` (shared) and calls Python QC via `-f` subcommands.
+- Language-specific recipes like `_jscpd` and `_lizard` are defined in each language
+  justfile, not in `justfile` (shared), because their invocation flags differ per
+  language.
 
 ## Usage in Local Projects
 
-**Never reimplement QC locally.** Local justfiles must delegate to the global justfile:
+**Never reimplement QC locally.** Local justfiles must delegate to the appropriate
+language justfile:
 
+**Python projects:**
 ```justfile
 # my-project/justfile
 test:
-  @just -f ~/ai/quality-control/justfile test
+  @just -f ~/ai/quality-control/justfile-python test
 
 test-ci:
-  @just -f ~/ai/quality-control/justfile test-ci
+  @just -f ~/ai/quality-control/justfile-python test-ci
 ```
 
-Or for TypeScript/Bun projects:
+**TypeScript/Bun projects:**
 
 ```justfile
 # my-project/justfile
@@ -352,6 +416,26 @@ test:
 
 test-ci:
   @just -f ~/ai/quality-control/justfile-bun test-ci
+```
+
+**Rust projects:**
+```justfile
+# my-project/justfile
+test:
+  @just -f ~/ai/quality-control/justfile-rust test
+
+test-ci:
+  @just -f ~/ai/quality-control/justfile-rust test-ci
+```
+
+**SageMath projects:**
+```justfile
+# my-project/justfile
+test:
+  @just -f ~/ai/quality-control/justfile-sage test
+
+test-ci:
+  @just -f ~/ai/quality-control/justfile-sage test-ci
 ```
 
 ## Extending for Repo-Specific Testing
@@ -541,7 +625,7 @@ Instead, wrap the global `test` and add project-specific (domain-owned) steps:
 ```justfile
 # my-project/justfile
 test:
-  @just -f ~/ai/quality-control/justfile test
+  @just -f ~/ai/quality-control/justfile-python test
   @just _mutation-test
   @just _property-test
   @just _validate-models
@@ -556,7 +640,7 @@ _validate-models:
   uv run python -m pydantic src/my_project/models/
 
 test-ci: test
-  @just -f ~/ai/quality-control/justfile test-ci
+  @just -f ~/ai/quality-control/justfile-python test-ci
 ```
 
 This preserves "delegate, never reimplement" while letting projects layer on

@@ -1,79 +1,30 @@
-# justfile-bun — TypeScript quality control with bun
+# justfile-bun — TypeScript-specific quality control
 #
-# PURPOSE OF A JUSTFILE:
-# 1) ENSHRINE WORKFLOWS: Every workflow lives in the justfile. No ad-hoc
-#    scripts, no "I'll just run this command directly". Justfile is the
-#    single source of truth for project operations.
-# 2) FIX OPINIONATED WORKFLOWS: Agents cannot cherry-pick checks. For
-#    example, `just typecheck` does NOT assert code quality — the `test`
-#    recipe runs the full QC stack. Running only typecheck is insufficient.
-# 3) ABSTRACT COMPLEXITY: Env management, sandbox setup, tool installation,
-#    common tasks — all hidden in private recipes. Users run workflows,
-#    not infrastructure.
+# Imports cross-language QC recipes from `justfile` (shared) and adds
+# TypeScript-specific recipes. TypeScript projects delegate to this file:
+#   just -f ~/ai/quality-control/justfile-bun test
+#
+# Shared recipes (imported from justfile):
+#   _no-bypass, _semgrep, _vibecheck, _slop
+#
+# TypeScript-specific recipes:
+#   _coverage, _diff-cover, _knip, _biome, _eslint, _tsc,
+#   _normalize (biome + eslint), _ast-grep, _jscpd, _lizard,
+#   _codeql, _slop-scan, _lint-staged
 #
 # WORKFLOW:
 #   just test      — local quality checks (linting, static analysis, complexity)
 #   just test-ci  — test + live/isolated checks (coverage, diff-cover, integration tests)
-#   Both are public. Everything else is private. Do NOT add public recipes.
 #
 # HOOKS: pre-commit.hook and pre-push.hook both block on `just test`.
 #   Copy/symlink into .git/hooks/ to activate.
 #
 # CONFIG: This justfile uses justfile_directory() to reference configs
-# in this directory. No symlinks needed. Configs read by each tool:
-#   knip.json         → knip (explicit --config flag)
-#   semgrep.yml       → semgrep local rules (explicit --config flag)
-#   .jscpd.json       → jscpd (explicit --config flag)
-#   biome.json        → biome (explicit --config flag)
-#   eslint.config.js  → eslint (explicit --config flag)
-#   sgconfig.yml      → ast-grep (auto-discovered)
-#   .lintstagedrc.json → lint-staged (explicit --config flag)
-# GLOBAL CONFIGS OK: prettier (project .prettierrc),
-# lizard (CLI flags only).
+# in this directory.
 
-default:
-  @just test
+import 'justfile'
 
 # private recipes (prefix with _ — never run individually)
-_no-bypass:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	# Block attempts to hide/launder QC issues via bypass comments
-	# Check both staged and unstaged modified files
-	staged=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
-	unstaged=$(git ls-files --modified 2>/dev/null || echo "")
-	files=$(printf "%s\n%s" "$staged" "$unstaged" | sort -u | sed '/^$/d')
-	[ -z "$files" ] && exit 0
-	for file in $files; do
-		[ -f "$file" ] || continue
-		# Type safety bypass: double-cast (as T as U)
-		if grep -nP 'as\s+(unknown|any|never)\s+as\s' "$file" 2>/dev/null; then
-			echo "ERROR: $file contains a double-cast bypass (e.g., 'as unknown as') — use a proper type assertion or restructure the code"
-			exit 1
-		fi
-		# JS coverage bypass
-		if grep -n "// istanbul ignore" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '// istanbul ignore' — fix coverage, don't hide it"
-			exit 1
-		fi
-		# TS bypass
-		if grep -n "@ts-ignore" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '@ts-ignore' — fix type errors, don't hide them"
-			exit 1
-		fi
-		# TS expect-error without comment
-		if grep -n "@ts-expect-error$" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '@ts-expect-error' without justification — add a comment explaining why"
-			exit 1
-		fi
-		# ESLint bypass
-		if grep -n "// eslint-disable" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '// eslint-disable' — fix lint errors, don't hide them"
-			exit 1
-		fi
-	done
-	echo "No bypass comments detected in staged files"
-
 _eslint-deps:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -186,15 +137,20 @@ _tsc:
 		exit 1
 	fi
 
-_semgrep:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	uvx semgrep --config {{justfile_directory()}}/semgrep.yml --config=p/ci --exclude=codeql-db
-
 _jscpd:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x jscpd --config {{justfile_directory()}}/.jscpd.json
+	echo "============================="
+	echo "=== Running: jscpd copy-paste detection ==="
+	echo "# Finds duplicate code blocks across JS/TS files"
+	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
+	if [ "${#js_files[@]}" -eq 0 ]; then
+		echo "ERROR: jscpd: no JS/TS files found."
+		exit 1
+	fi
+	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json \
+		--format typescript \
+		"${js_files[@]}"
 
 _lizard:
 	#!/usr/bin/env bash
@@ -236,11 +192,6 @@ _slop-scan:
 	fi
 	npx -y slop-scan scan --lint .
 
-_vibecheck:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	uvx --from git+https://github.com/qinnovates/vibecheck-slop-stopper vibecheck . --severity high
-
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -279,7 +230,7 @@ _normalize: _eslint-deps
 		--exclude=codeql-db 2>&1 || true
 
 # public: all static checks run locally
-test: _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _slop-scan _vibecheck
+test: _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _slop-scan _vibecheck _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
