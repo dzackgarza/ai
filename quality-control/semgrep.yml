@@ -40,12 +40,39 @@ rules:
       - typescript
       - javascript
     severity: ERROR
-  - id: no-as-unknown
-    pattern: '$X as unknown as $Y'
+  - id: no-double-cast
+    pattern: '$X as $T as $Z'
     message: |
-      `as unknown as T` bypasses type safety entirely. Use a proper type assertion or
-      restructure the code to avoid the cast.
+      Double-casting (`x as T as U`) bypasses TypeScript's type system entirely.
+      Use a proper type guard, mapping function, or restructure the code instead.
     languages:
       - typescript
-      - javascript
+    severity: ERROR
+  - id: no-first-element-child-hydration
+    pattern: '$X.firstElementChild !== null'
+    message: |
+      Checking `firstElementChild !== null` does NOT prove that a component mounted
+      or hydrated successfully. A crash or error boundary still renders at least one
+      child element. Assert semantic content specific to the component instead.
+    languages:
+      - typescript
+    severity: ERROR
+  - id: no-status-only-assertion
+    pattern-either:
+      - pattern: 'expect($X.status).toBe(200)'
+      - pattern: 'expect($X.status()).toBe(200)'
+    message: |
+      HTTP status-only assertions (`.status` then `toBe(200)`) do not verify link
+      validity or page content — a 200 can return error pages or empty content.
+      Link checking is owned by lychee in the QC pipeline. For page content,
+      assert semantic content.
+    languages:
+      - typescript
+    severity: ERROR
+  - id: rust-silenced-result
+    pattern: let _ = $EXPR;
+    message: |
+      Using `let _ =` to silence a `Result` (or any must_use type) is a fail-fast violation.
+      Handle the error explicitly with `?`, `unwrap()`, `expect()`, or pattern matching.
+    languages: [rust]
     severity: ERROR

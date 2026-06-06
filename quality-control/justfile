@@ -113,7 +113,19 @@ _vibecheck:
 	echo "============================="
 	echo "=== Running: vibecheck anti-slop pattern detection ==="
 	echo "# Runs qinnovates/vibecheck-slop-stopper via uvx against the project root"
-	uvx --from git+https://github.com/qinnovates/vibecheck-slop-stopper vibecheck . --severity high
+	uvx --from git+https://github.com/qinnovates/vibecheck-slop-stopper vibecheck . --severity high || {
+		ec=$?
+		echo ""
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "  ERROR: vibecheck found anti-slop pattern violations."
+		echo "  Findings are in PROJECT CODE — fix the project code."
+		echo ""
+		echo "  PROBING GLOBAL QC IS REWARD-HACKING."
+		echo "  Do NOT modify QC configs or tooling in ~/ai/quality-control/"
+		echo "  to suppress these findings."
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		exit $ec
+	}
 
 _slop:
 	#!/usr/bin/env bash
@@ -137,7 +149,19 @@ _slop:
 		--ci-mode hard \
 		--ci-claims-strict \
 		--ci-report \
-		--no-color
+		--no-color || {
+		ec=$?
+		echo ""
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "  ERROR: ai-slop-detector found slop pattern violations."
+		echo "  Findings are in PROJECT CODE — fix the project code."
+		echo ""
+		echo "  PROBING GLOBAL QC IS REWARD-HACKING."
+		echo "  Do NOT modify QC configs, thresholds, ignore patterns, or"
+		echo "  ML model files in ~/ai/quality-control/ to suppress findings."
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		exit $ec
+	}
 
 # ── Entry Points ──────────────────────────────────────────────────
 

@@ -653,6 +653,56 @@ Test-data cleanup is not permission to mock.
 The test should still exercise the real storage/service boundary; the marker only makes
 the resulting state safe to remove.
 
+## Web Application and Frontend Testing
+
+To test local web applications, write native Python Playwright scripts. 
+
+**Helper Scripts Available**:
+- `scripts/with_server.py` (in `test-guidelines/`) - Manages server lifecycle (supports multiple servers)
+
+**Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is absolutely necessary. These scripts exist to be called directly as black-box scripts rather than ingested into your context window.
+
+### Decision Tree: Choosing Your Approach
+
+1. **Is it static HTML?**
+   - **Yes** → Read HTML file directly to identify selectors → Write Playwright script using selectors.
+   - **No/Fails** → Treat as dynamic (below).
+
+2. **Is the server already running?**
+   - **No** → Run `python scripts/with_server.py --help` → Use the helper + write simplified Playwright script.
+   - **Yes** → Reconnaissance-then-action:
+     1. Navigate and wait for `networkidle`.
+     2. Take screenshot or inspect DOM.
+     3. Identify selectors from rendered state.
+     4. Execute actions with discovered selectors.
+
+### Reconnaissance-Then-Action Pattern
+
+1. **Inspect rendered DOM**:
+   ```python
+   page.screenshot(path='/tmp/inspect.png', full_page=True)
+   content = page.content()
+   page.locator('button').all()
+   ```
+
+2. **Identify selectors** from inspection results.
+
+3. **Execute actions** using discovered selectors.
+
+### Common Pitfalls and Best Practices
+
+- ❌ **Don't** inspect the DOM before waiting for `networkidle` on dynamic apps.
+- ✅ **Do** wait for `page.wait_for_load_state('networkidle')` before inspection.
+- **Use bundled scripts as black boxes** - Use `scripts/with_server.py` to handle common, complex workflows reliably without cluttering the context window.
+- Use `sync_playwright()` for synchronous scripts and always close the browser when done.
+- Use descriptive selectors: `text=`, `role=`, CSS selectors, or IDs.
+- Add appropriate waits: `page.wait_for_selector()` or `page.wait_for_timeout()`.
+
+For pattern examples, see:
+- `references/webapp-testing/element_discovery.py`
+- `references/webapp-testing/static_html_automation.py`
+- `references/webapp-testing/console_logging.py`
+
 * * *
 
 ## Smoke and Harness Checks

@@ -25,6 +25,12 @@
 import 'justfile'
 
 # private recipes (prefix with _ — never run individually)
+
+# Single source of truth for QC file-scope excludes (directories to skip).
+_qc-excludes:
+	#!/usr/bin/env bash
+	printf '%s\n' "node_modules" "dist" "build" "coverage"
+
 _eslint-deps:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -137,7 +143,7 @@ _tsc:
 		exit 1
 	fi
 
-_jscpd:
+_jscpd-bun:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "============================="
@@ -152,7 +158,7 @@ _jscpd:
 		--format typescript \
 		"${js_files[@]}"
 
-_lizard:
+_lizard-bun:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	uvx lizard . -l typescript -C 8 -L 200 -a 7 -i 0 \
@@ -167,6 +173,10 @@ _lizard:
 _js-qc-files:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	exclude_args=()
+	while IFS= read -r dir; do
+		exclude_args+=(-g "!**/$dir/**")
+	done < <(just --justfile {{justfile()}} -d . _qc-excludes)
 	rg --files \
 		-g '*.ts' \
 		-g '*.tsx' \
@@ -174,10 +184,7 @@ _js-qc-files:
 		-g '*.jsx' \
 		-g '*.mjs' \
 		-g '*.cjs' \
-		-g '!**/node_modules/**' \
-		-g '!**/dist/**' \
-		-g '!**/build/**' \
-		-g '!**/coverage/**'
+		"${exclude_args[@]}"
 
 _slop-scan:
 	#!/usr/bin/env bash
@@ -190,7 +197,49 @@ _slop-scan:
 		echo "ERROR: slop-scan: no JS/TS files found in a TypeScript project."
 		exit 1
 	fi
-	npx -y slop-scan scan --lint .
+	# slop-scan scan has no --fail-on flag (only delta does).
+	# Run with --json (stdout) and post-process to enforce findings as failures.
+	# Stderr from npx/slop-scan passes through to terminal.
+	# Place QC-owned slop-scan config in the scan root (tool auto-discovers it).
+	config_src="{{justfile_directory()}}/slop-scan.config.json"
+	config_dst="./slop-scan.config.json"
+	if [ -f "$config_dst" ]; then
+		if cmp -s "$config_src" "$config_dst"; then
+			: # already has the QC config — leave it
+		else
+			echo "ERROR: Local QC override detected: $config_dst — global QC owns this tool config."
+			echo "       DELETE this file. The global config already exists in"
+			echo "       ~/ai/quality-control/ and is authoritative for all projects."
+			exit 1
+		fi
+	else
+		cp "$config_src" "$config_dst"
+		trap 'rm -f "$config_dst"' EXIT
+	fi
+	output=$(npx -y slop-scan scan . --json)
+	count=$(echo "$output" | jq -r '.summary.findingCount // 0')
+	if [ "$count" -gt 0 ]; then
+		echo "$output" | jq -r '
+			.findings[] | "  [" + (.severity // "?") + "] " +
+			(.ruleId // "?") + " — " +
+			(.path // "?") + ":" +
+			((.location.line // 0) | tostring)
+		'
+		echo ""
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "  ERROR: slop-scan found $count finding(s)."
+		echo "  All findings are in PROJECT CODE and must be fixed in PROJECT CODE."
+		echo ""
+		echo "  PROBING GLOBAL QC IS REWARD-HACKING."
+		echo "  Do NOT modify QC configs, thresholds, ignore patterns, or any file"
+		echo "  in ~/ai/quality-control/ to suppress these findings."
+		echo "  Do NOT probe or edit QC tooling to mask the signal."
+		echo ""
+		echo "  The only acceptable response: fix the project code."
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		exit 1
+	fi
+	echo "slop-scan: 0 findings — clean."
 
 _codeql:
 	#!/usr/bin/env bash
@@ -230,7 +279,11 @@ _check-ts-project:
 	for config in biome.json eslint.config.js knip.json .lintstagedrc.json; do
 		if [ -f "$config" ]; then
 			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
-			echo "       Remove it and use the global config in ~/ai/quality-control/ instead."
+			echo "       DELETE this file. The global config for this tool already exists in"
+			echo "       ~/ai/quality-control/ and is authoritative for all projects."
+			echo "       Do NOT copy or move this file to ~/ai/quality-control/ — that violates"
+			echo "       QC isolation policy. If the global config needs to change, contact"
+			echo "       the QC owner (dzack) to update it centrally."
 			failed=1
 		fi
 	done
@@ -273,14 +326,14 @@ _normalize: _eslint-deps
 		--exclude=codeql-db 2>&1 || true
 
 # public: all static checks run locally
-test: _check-ts-project _check-no-local-qc-override _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _slop-scan _vibecheck _slop
+test: _check-ts-project _global-qc _normalize _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _jscpd-bun _lizard-bun _slop-scan
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
 
 # public: test-ci = test + live/isolated checks
 # Add project-specific live tests (needs docker, live server, etc.) here
-test-ci: test
+test-ci: test _global-qc-ci
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "CI checks completed"

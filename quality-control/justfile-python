@@ -224,7 +224,11 @@ _check-python-project:
 			'\[tool\.import-linter'; do
 			if grep -qP "$section" pyproject.toml 2>/dev/null; then
 				echo "ERROR: pyproject.toml contains section matching '$section' — global QC owns this tool config."
-				echo "       Remove the section and use the global config in ~/ai/quality-control/ instead."
+				echo "       DELETE this section from pyproject.toml. The global config for this tool"
+				echo "       already exists in ~/ai/quality-control/ and is authoritative for all projects."
+				echo "       Do NOT copy the section contents to ~/ai/quality-control/ — that violates"
+				echo "       QC isolation policy. If the global config needs to change, contact"
+				echo "       the QC owner (dzack) to update it centrally."
 				failed=1
 			fi
 		done
@@ -233,7 +237,11 @@ _check-python-project:
 	for config in ruff.toml .ruff.toml mypy.ini .mypy.ini grain.toml .coveragerc .importlinter; do
 		if [ -f "$config" ]; then
 			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
-			echo "       Remove it and use the global config in ~/ai/quality-control/ instead."
+			echo "       DELETE this file. The global config for this tool already exists in"
+			echo "       ~/ai/quality-control/ and is authoritative for all projects."
+			echo "       Do NOT copy or move this file to ~/ai/quality-control/ — that violates"
+			echo "       QC isolation policy. If the global config needs to change, contact"
+			echo "       the QC owner (dzack) to update it centrally."
 			failed=1
 		fi
 	done
@@ -369,7 +377,7 @@ _ast-grep: _install-tools
 		exit 1
 	fi
 
-_jscpd:
+_jscpd-python:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "============================="
@@ -386,7 +394,7 @@ _jscpd:
 		--formats-exts python:py,sage \
 		"${python_files[@]}"
 
-_lizard: _install-tools
+_lizard-python: _install-tools
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "============================="
@@ -487,14 +495,14 @@ _codeql:
 	PY
 
 # public: all static checks run locally
-test: _check-python-project _check-no-local-qc-override _normalize _python-syntax _mypy _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _vibecheck
+test: _check-python-project _global-qc _normalize _python-syntax _mypy _deptry _import-linter _ast-grep _jscpd-python _lizard-python _vulture _grain _pytest_with_coverage _diff-cover
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
 
 # public: test-ci = test + live/isolated checks
 # Add project-specific live tests (needs docker, live server, etc.) here
-test-ci: test
+test-ci: test _global-qc-ci
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "CI checks completed"

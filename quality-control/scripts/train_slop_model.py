@@ -9,7 +9,7 @@ writes models/slop_classifier.pkl to the centrally-owned QC path.
 # dependencies = [
 #   "ai-slop-detector>=3.8",
 #   "scikit-learn>=1.5",
-#   "xgboost==2.0.0",
+#   "xgboost",
 # ]
 # ///
 

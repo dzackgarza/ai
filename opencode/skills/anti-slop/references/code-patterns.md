@@ -44,6 +44,8 @@ This file covers patterns specific to **code shape and structure** that arise fr
 
 - Fail-Open Logic (Antipathy Toward Assertion)
 
+- For-If Fail-Open (Iteration-With-Conditional-Peeking)
+
 - No Shared Type Language (Islands of Code)
 
 - Tests That Don't Exercise Real Workflows
@@ -1274,6 +1276,62 @@ Fail-open logic is the primary source of *silently wrong* behavior.
 Not crashing is not the same as being correct.
 Every fallback is a path where the code produces an output without ever verifying it.
 Those paths accumulate into a codebase where nothing is reliable because everything silently adapts.
+
+* * *
+
+## For-If Fail-Open (Iteration-With-Conditional-Peeking)
+
+### The Pattern
+
+A `for` loop immediately followed by an `if` guard that silently skips items that do not match.
+
+The guard acts as a silent data filter — iteration quietly passes over items that violate the expected shape instead of structuring the iteration to match the data.
+
+```python
+# BAD: silently skips anything unexpected
+for item in items:
+    if isinstance(item, ExpectedType):
+        # process item
+```
+
+The fix is **not** to assert the type inside the loop (which would crash on heterogeneous data). Instead, restructure the iteration so the loop body handles only what it expects:
+
+**Option A — Filter-first:** Partition the collection before iterating, then process each partition in a dedicated loop:
+
+```python
+# GOOD: partition then iterate
+for item in [x for x in items if isinstance(x, ExpectedType)]:
+    # process ExpectedType items
+for item in [x for x in items if isinstance(x, OtherType)]:
+    # process OtherType items
+```
+
+**Option B — Match/case within the loop:** Enumerate all variants explicitly with an exhaustiveness check:
+
+```python
+# GOOD: enumerate all variants
+for item in items:
+    match item:
+        case ExpectedType(): ...
+        case OtherType():     ...
+        case _:               assert_never(item)
+```
+
+### Variants
+
+- **Filtering-before-asserting**: `for x in xs: if x in keepset:` where `keepset` is a static whitelist and the data should never contain anything outside it. The `if` silently masks invalid data instead of failing.
+- **Type-peek**: `for x in xs: if isinstance(x, SomeType):` where `xs` is supposed to be homogeneous `SomeType[]`. The guard papers over an upstream type confusion.
+- **Option-peek**: `for x in xs: if x is not None:` where `None` should not appear in `xs`. Remove `None` at the boundary; don't silently skip it inside iteration.
+
+### How to detect
+
+Search for `for` within 3 lines of `if`. Not every `for`-`if` pair is slop — but every one that silently skips data instead of asserting, matching, or failing is.
+
+The key question: **what happens to items that fail the guard?** If the answer is "they are silently ignored," the guard is fail-open slop. If the answer is "they are explicitly enumerated in a match and handled," it is fine.
+
+### Why it happens
+
+Agents treat iteration as "visiting" and the condition as "safe access." The reward is to avoid crashes, not to produce correct output. Silently skipping an item is better (to the agent) than crashing on it. The agent does not consider that the item should not have been in the collection at all.
 
 * * *
 
