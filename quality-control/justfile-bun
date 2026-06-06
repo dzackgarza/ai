@@ -46,9 +46,9 @@ _no-bypass:
 	[ -z "$files" ] && exit 0
 	for file in $files; do
 		[ -f "$file" ] || continue
-		# Type safety bypass: as unknown as T
-		if grep -n "as unknown as " "$file" 2>/dev/null; then
-			echo "ERROR: $file contains 'as unknown as' — use a proper type assertion or restructure the code"
+		# Type safety bypass: double-cast (as T as U)
+		if grep -nP 'as\s+(unknown|any|never)\s+as\s' "$file" 2>/dev/null; then
+			echo "ERROR: $file contains a double-cast bypass (e.g., 'as unknown as') — use a proper type assertion or restructure the code"
 			exit 1
 		fi
 		# JS coverage bypass
@@ -237,8 +237,29 @@ _lint-staged: _install-tools
 	set -euo pipefail
 	bun x lint-staged --config {{justfile_directory()}}/.lintstagedrc.json
 
+_normalize: _install-tools
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: biome format, lint, and import sorting (auto-fix) ==="
+	echo "# Auto-applies safe and unsafe fixes, formatting, and import sorting"
+	dirs=()
+	[ -d src ] && dirs+=(src)
+	[ -d tests ] && dirs+=(tests)
+	[ ${#dirs[@]} -eq 0 ] && dirs=(.)
+	bun x biome check --write --unsafe --config-path {{justfile_directory()}}/biome.json "${dirs[@]}"
+	echo "=== Running: eslint auto-fix ==="
+	"{{justfile_directory()}}/node_modules/.bin/eslint" \
+		--config {{justfile_directory()}}/eslint.config.js \
+		--fix \
+		. 2>&1 || true
+	echo "=== Running: semgrep auto-fix ==="
+	uvx semgrep --config {{justfile_directory()}}/semgrep.yml --config=p/ci \
+		--autofix \
+		--exclude=codeql-db 2>&1 || true
+
 # public: all static checks run locally
-test: _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _vibecheck
+test: _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _vibecheck
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
