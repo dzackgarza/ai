@@ -33,15 +33,6 @@ default:
   @just test
 
 # private recipes (prefix with _ — never run individually)
-_rust-qc-files:
-        #!/usr/bin/env bash
-        set -euo pipefail
-        rg --files \
-                -g '*.rs' \
-                -g '!**/target/**' \
-                -g '!**/external/**' \
-                -g '!**/node_modules/**'
-
 _python-qc-files:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -370,7 +361,6 @@ _semgrep: _install-tools
         # Static analysis for code quality and fraud patterns (trivial functions, self-reinforcing comments, print/console statements)
         mapfile -t qc_files < <(
             just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true
-            just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true
         )
         if [ "${#qc_files[@]}" -eq 0 ]; then
                 echo "ERROR: semgrep: no supported files found."
@@ -522,34 +512,6 @@ _codeql:
 		print(f"- ... {len(findings) - 50} more findings omitted; see SARIF report above.")
 	PY
 
-_js-qc-files:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	rg --files \
-		-g '*.ts' \
-		-g '*.tsx' \
-		-g '*.js' \
-		-g '*.jsx' \
-		-g '*.mjs' \
-		-g '*.cjs' \
-		-g '!**/node_modules/**' \
-		-g '!**/dist/**' \
-		-g '!**/build/**' \
-		-g '!**/coverage/**'
-
-_slop-scan:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	echo "============================="
-	echo "=== Running: slop-scan JS/TS anti-pattern detection ==="
-	echo "# Scans JS/TS files for AI-associated slop patterns (error-swallowing, duplicate signatures, generic casts, etc.)"
-	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
-	if [ "${#js_files[@]}" -eq 0 ]; then
-		echo "ERROR: slop-scan: no JS/TS files found."
-		exit 1
-	fi
-	npx -y slop-scan scan --lint .
-
 _vibecheck:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -588,7 +550,7 @@ _slop:
 	done
 
 # public: all static checks run locally
-test: _normalize _python-syntax _mypy _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _slop-scan _vibecheck
+test: _normalize _python-syntax _mypy _no-bypass _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _vulture _grain _pytest_with_coverage _diff-cover _slop _vibecheck
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"

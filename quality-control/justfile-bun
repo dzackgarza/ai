@@ -208,6 +208,34 @@ _lizard:
 		-x "*/_ci-support/*" \
 		-x "*/@girs/*"
 
+_js-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rg --files \
+		-g '*.ts' \
+		-g '*.tsx' \
+		-g '*.js' \
+		-g '*.jsx' \
+		-g '*.mjs' \
+		-g '*.cjs' \
+		-g '!**/node_modules/**' \
+		-g '!**/dist/**' \
+		-g '!**/build/**' \
+		-g '!**/coverage/**'
+
+_slop-scan:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: slop-scan JS/TS anti-pattern detection ==="
+	echo "# Scans JS/TS files for AI-associated slop patterns (error-swallowing, duplicate signatures, generic casts, etc.)"
+	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
+	if [ "${#js_files[@]}" -eq 0 ]; then
+		echo "ERROR: slop-scan: no JS/TS files found in a TypeScript project."
+		exit 1
+	fi
+	npx -y slop-scan scan --lint .
+
 _vibecheck:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -251,7 +279,7 @@ _normalize: _eslint-deps
 		--exclude=codeql-db 2>&1 || true
 
 # public: all static checks run locally
-test: _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _vibecheck
+test: _normalize _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard _slop-scan _vibecheck
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Local quality checks completed"
