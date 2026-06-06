@@ -264,3 +264,34 @@ rules:
   languages:
   - bash
   severity: ERROR
+- id: ts-no-partial
+  message: Partial<T> makes all fields optional, creating undefined-value paths in
+    core state. Define an explicit type with only the optional fields instead.
+  languages:
+  - typescript
+  severity: WARNING
+  pattern-either:
+  - pattern: Partial<$TYPE>
+  - pattern: type $T = Partial<$U>
+  - pattern: '$X: Partial<$Y>'
+- id: rs-no-cfg-test-fake
+  pattern: "#[cfg(test)]\nmod tests {\n    use super::*;\n    ...\n}"
+  message: '#[cfg(test)] test modules must not contain fake/override implementations
+    that shadow production behavior. Use dependency injection for test seams.'
+  languages:
+  - rust
+  severity: WARNING
+- id: sh-no-stderr-suppress
+  pattern-regex: 2\s*>\s*/dev/null
+  message: Stderr suppression (2>/dev/null) hides diagnostic output. Use explicit
+    error handling or logging instead.
+  languages:
+  - bash
+  severity: WARNING
+- id: rs-no-match-bool
+  pattern: "match $X {\n    true => $A,\n    false => $B,\n}"
+  message: match on a bool value is equivalent to an if/else expression. Use `if $X
+    { $A } else { $B }` or refactor to an enum.
+  languages:
+  - rust
+  severity: WARNING
