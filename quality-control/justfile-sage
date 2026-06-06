@@ -45,12 +45,14 @@ _sage-syntax:
 	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
 	if [ "${#sage_files[@]}" -eq 0 ]; then
 		echo "ERROR: Sage syntax validation: no .sage files found in a Sage project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
 	sage_bin="${SAGE_BIN:-sage}"
 	if ! command -v "$sage_bin" >/dev/null 2>&1; then
 		echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -82,6 +84,7 @@ _sage-syntax:
 		fi
 	done
 	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -104,6 +107,7 @@ _sage-syntax:
 	raise SystemExit(1 if failed else 0)
 	PY
 	then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -119,6 +123,7 @@ _vulture: _sage-qc-files
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
 	if [ "${#python_files[@]}" -eq 0 ] && [ "${#sage_files[@]}" -eq 0 ]; then
 		echo "ERROR: vulture: no Python or Sage files found in a Sage project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -126,6 +131,7 @@ _vulture: _sage-qc-files
 		sage_bin="${SAGE_BIN:-sage}"
 		if ! command -v "$sage_bin" >/dev/null 2>&1; then
 			echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 
@@ -147,6 +153,7 @@ _vulture: _sage-qc-files
 		for generated_file in "${generated_sage_python_files[@]}"; do
 			if [ ! -f "$generated_file" ]; then
 				echo "ERROR: Sage preparse did not produce $generated_file"
+				"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 				exit 1
 			fi
 		done

@@ -47,6 +47,7 @@ _check-rust-project:
 		fi
 	fi
 	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	echo "Rust project configuration OK"
@@ -60,6 +61,7 @@ _clippy:
 	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true)
 	if [ "${#rust_files[@]}" -eq 0 ]; then
 		echo "ERROR: clippy: no Rust files found in a Rust project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	cargo clippy --all-targets --all-features -- -D warnings
@@ -73,6 +75,7 @@ _rustfmt:
 	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true)
 	if [ "${#rust_files[@]}" -eq 0 ]; then
 		echo "ERROR: rustfmt: no Rust files found in a Rust project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	cargo fmt --check
@@ -85,6 +88,7 @@ _cargo-test:
 	echo "# Runs Rust unit and integration tests"
 	if [ ! -f Cargo.toml ]; then
 		echo "ERROR: cargo test: no Cargo.toml found — Rust project must have one."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	cargo test --all-features
@@ -97,6 +101,7 @@ _codeql:
 	echo "# GitHub's static analysis engine for code quality and security vulnerabilities"
 	if ! command -v codeql >/dev/null 2>&1; then
 		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	cargo clean
@@ -119,6 +124,7 @@ _jscpd:
 	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files)
 	if [ "${#rust_files[@]}" -eq 0 ]; then
 		echo "ERROR: jscpd: no Rust files found."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json \
@@ -134,6 +140,7 @@ _lizard:
 	mapfile -t rust_files < <(just --justfile {{justfile()}} -d . _rust-qc-files 2>/dev/null || true)
 	if [ "${#rust_files[@]}" -eq 0 ]; then
 		echo "ERROR: lizard: no Rust files found in a Rust project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	uvx --from lizard lizard -l rust -C 7 -L 150 -a 5 -i 0 \
