@@ -63,33 +63,33 @@ rules:
     or validate at startup.
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-dict-get-default
   pattern: $DICT.get($KEY, $DEFAULT)
   message: dict.get with default hides missing keys. Use subscript access or a complete
     config model.
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-getattr-default
   pattern: getattr($OBJ, $ATTR, $DEFAULT)
   message: getattr with default hides missing attributes. Required attributes should
     not be optional.
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-setdefault
   pattern: $DICT.setdefault($KEY, $DEFAULT)
   message: dict.setdefault is a runtime default. Use explicit check-and-set.
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-defaultdict
   pattern: defaultdict($TYPE)
   message: defaultdict creates implicit default values on missing-key access.
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-optional-type
   pattern-either:
   - pattern: '$VAR: Optional[$TYPE]'
@@ -98,7 +98,7 @@ rules:
     total (non-optional).
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-try-import
   pattern: "try:\n    import $MOD\nexcept ImportError:\n    ..."
   message: try/except ImportError makes a required dependency optional.
@@ -116,7 +116,7 @@ rules:
   message: contextlib.suppress silently swallows exceptions.
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-mock-import
   pattern-either:
   - pattern: from unittest.mock import $X
@@ -138,7 +138,7 @@ rules:
   message: monkeypatch replaces real behavior with test seams.
   languages:
   - python
-  severity: WARNING
+  severity: ERROR
 - id: py-no-skip-test
   pattern-either:
   - pattern: '@pytest.mark.skip'
@@ -153,14 +153,14 @@ rules:
   languages:
   - typescript
   - javascript
-  severity: WARNING
+  severity: ERROR
 - id: ts-no-or-default
   pattern: $X || $DEFAULT
   message: Logical OR with default creates silent fallback on any falsy value.
   languages:
   - typescript
   - javascript
-  severity: WARNING
+  severity: ERROR
 - id: ts-no-env-default
   pattern: process.env.$KEY || $DEFAULT
   message: process.env with default creates runtime fallback for missing env vars.
@@ -200,43 +200,43 @@ rules:
   languages:
   - typescript
   - javascript
-  severity: WARNING
+  severity: ERROR
 - id: rs-no-unwrap-or
   message: unwrap_or provides default on failure — fail explicitly.
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
   pattern-regex: .unwrap_or($DEFAULT)
 - id: rs-no-unwrap-or-default
   message: unwrap_or_default uses Default trait — fail explicitly.
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
   pattern-regex: .unwrap_or_default()
 - id: rs-no-result-ok
   message: Result.ok() discards the error. Handle it explicitly.
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
   pattern-regex: .ok()
 - id: rs-no-filter-map-ok
   pattern: filter_map(Result::ok)
   message: filter_map(Result::ok) discards errors. Handle each explicitly.
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
 - id: rs-no-stringly-error
   message: Result<T, String> are stringly-typed. Use a proper error enum.
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
   pattern-regex: Result<[^<>]+,\s*String>
 - id: rs-no-serde-default
   pattern: '#[serde(default)]'
   message: '#[serde(default)] silently fills missing config. Make config mandatory.'
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
 - id: rs-no-allow-attr
   pattern-either:
   - pattern: '#[allow($ARGS)]'
@@ -244,20 +244,20 @@ rules:
   message: '#[allow(...)] suppresses warnings. Fix the underlying issue.'
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
 - id: sh-no-command-v-runtime
   pattern: "if command -v $TOOL >/dev/null 2>&1; then\n  $CMD\nelse\n  $FALLBACK\n\
     fi"
   message: command -v fallback chain — should be config-declared.
   languages:
   - bash
-  severity: WARNING
+  severity: ERROR
 - id: sh-no-or-true
   pattern: '|| true'
   message: '|| true silences command failure.'
   languages:
   - bash
-  severity: WARNING
+  severity: ERROR
 - id: sh-no-pip-install
   pattern: pip install $PACKAGE
   message: pip install violates tool-provisioning. Use uv/uvx/bun.
@@ -269,7 +269,7 @@ rules:
     core state. Define an explicit type with only the optional fields instead.
   languages:
   - typescript
-  severity: WARNING
+  severity: ERROR
   pattern-either:
   - pattern: Partial<$TYPE>
   - pattern: type $T = Partial<$U>
@@ -280,18 +280,18 @@ rules:
     that shadow production behavior. Use dependency injection for test seams.'
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
 - id: sh-no-stderr-suppress
   pattern-regex: 2\s*>\s*/dev/null
   message: Stderr suppression (2>/dev/null) hides diagnostic output. Use explicit
     error handling or logging instead.
   languages:
   - bash
-  severity: WARNING
+  severity: ERROR
 - id: rs-no-match-bool
   pattern: "match $X {\n    true => $A,\n    false => $B,\n}"
   message: match on a bool value is equivalent to an if/else expression. Use `if $X
     { $A } else { $B }` or refactor to an enum.
   languages:
   - rust
-  severity: WARNING
+  severity: ERROR
