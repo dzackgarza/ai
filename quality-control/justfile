@@ -107,6 +107,17 @@ _semgrep:
 	# The rules in semgrep.yml define which patterns to match.
 	# Exit code reflects whether any blocking results were found.
 
+_ast-grep:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: ast-grep structural pattern scanning ==="
+	echo "# Structural code pattern analysis for bridge-burning policy violations"
+	sg_config="{{justfile_directory()}}/ast-grep/sgconfig.yml"
+	if [ -f "$sg_config" ]; then
+		/bin/ast-grep scan --config "$sg_config" .
+	fi
+
 _vibecheck:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -165,7 +176,7 @@ _slop:
 
 # ── Entry Points ──────────────────────────────────────────────────
 
-_global-qc: _no-bypass _check-no-local-qc-override _semgrep _vibecheck _slop
+_global-qc: _no-bypass _check-no-local-qc-override _semgrep _ast-grep _vibecheck _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Global quality checks completed"

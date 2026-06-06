@@ -1,0 +1,7 @@
+id: no-boolean-param
+language: python
+rule:
+  kind: function_definition
+  regex: "def\\s+\\w+\\s*\\([^)]*\\b(bool)\\b[^)]*\\)"
+message: 'Boolean parameter in function definition. Use a dedicated enum, struct, keyword-arg class, or an options object instead.'
+severity: warning

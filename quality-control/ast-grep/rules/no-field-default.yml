@@ -1,0 +1,9 @@
+id: no-field-default
+language: python
+rule:
+  any:
+    - pattern: Field(default=$VAL)
+    - pattern: Field($$$, default=$VAL)
+    - pattern: Field($$$, default=$VAL, $$$)
+message: 'Field(default=...) provides a runtime default that bypasses config completeness. Make the config model require this value at startup instead.'
+severity: warning
