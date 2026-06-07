@@ -50,12 +50,3 @@ Follow the **Finding Classification Tiers** in the CI Sweep Protocol:
 ### Output Format
 Follow the sweep protocol's format: Tier 1 findings get full Symptom→Source→Consequence→Remedy with Health Score (0-100) for the diff changes and separately for the full repo. Tier 2 findings get a single-line cleanup list appended only if Tier 1 is empty.
 
-### Pre-Output Validation
-
-Before writing the final report, validate any Mermaid diagrams you included:
-
-```
-npx @probelabs/maid --format json -
-```
-
-Feed each ` ```mermaid ` block through stdin. If `"valid": false`, fix the syntax error and re-validate. Do not output a report containing Mermaid diagram errors.

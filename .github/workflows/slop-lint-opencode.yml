@@ -26,7 +26,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install just
-        run: curl -LSfs https://raw.githubusercontent.com/casey/just/main/install.sh | sh -s -- --to /usr/local/bin
+        run: |
+          VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
+          curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+            | tar -xzf - -C /usr/local/bin just
 
       - name: Install OpenCode
         run: npm install -g opencode-ai

@@ -106,13 +106,3 @@ Subtract 10 per `[SLOP]` finding, 5 per `[SLOP SUSPECT]`.
 X findings total: Y definite slop, Z suspects, W notes (if any).
 ```
 
-### Pre-Output Validation
-
-Before writing the final report, validate any Mermaid diagrams:
-
-```
-npx @probelabs/maid --format json -
-```
-
-Feed each ` ```mermaid ` block through stdin. If `"valid": false`, fix the syntax and
-re-validate. Do not output a report containing Mermaid diagram errors.

@@ -3,13 +3,14 @@
 # requires-python = ">=3.11"
 # ///
 """
-Validate a brooks-lint review report against the template-driven output format.
+Validate a brooks-lint / slop review report against template-driven output format.
 
 Asserts positively that the report conforms to the required structure:
-  1. At least one finding label ([PR BLOCKER], [SHOULD FILE ISSUE], or [NOTE])
-  2. At least one file:line reference (evidence of source examination)
-  3. A Health Score mention
-  4. Not trivially short
+   1. At least one valid finding label
+   2. At least one file:line reference (evidence of source examination)
+   3. A Health Score mention
+   4. Not trivially short
+   5. All Mermaid diagrams pass syntax validation (via maid)
 
 Usage:
     uv run .agents/scripts/check-brooks-report.py <result.json>
@@ -18,11 +19,12 @@ Usage:
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
-# Finding labels the template requires
-FINDING_LABEL = re.compile(r"\[(PR BLOCKER|SHOULD FILE ISSUE|NOTE)\]")
+# Finding labels across all templates: brooks-lint and slop
+FINDING_LABEL = re.compile(r"\[(PR BLOCKER|SHOULD FILE ISSUE|NOTE|SLOP|SLOP SUSPECT)\]")
 
 # File-path-with-line evidence: something like "path/to/file.py:42"
 FILE_PATH = re.compile(r"[a-zA-Z0-9_\-./]+\.\w+:\d+")
@@ -31,6 +33,29 @@ FILE_PATH = re.compile(r"[a-zA-Z0-9_\-./]+\.\w+:\d+")
 HEALTH_SCORE = re.compile(r"Health\s+Score", re.IGNORECASE)
 
 MIN_CHARS = 200
+
+# Mermaid block delimiter
+MERMAID_BLOCK = re.compile(r"```mermaid\n(.+?)\n```", re.DOTALL)
+
+
+def _validate_mermaid(block: str) -> list[str]:
+    """Validate a single Mermaid diagram via maid. Returns errors, empty = pass."""
+    try:
+        result = subprocess.run(
+            ["npx", "@probelabs/maid", "--format", "json", "-"],
+            input=block,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        parsed = json.loads(result.stdout)
+        if not parsed.get("valid", False):
+            return [parsed.get("error", "unknown error")]
+        return []
+    except subprocess.TimeoutExpired:
+        return ["maid timed out"]
+    except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
+        return [f"maid invocation failed: {e}"]
 
 
 def collect_violations(report: str) -> list[str]:
@@ -50,7 +75,7 @@ def collect_violations(report: str) -> list[str]:
     if not FINDING_LABEL.search(stripped):
         violations.append(
             "No finding label found — expected at least one of "
-            "[PR BLOCKER], [SHOULD FILE ISSUE], [NOTE]"
+            "[PR BLOCKER], [SHOULD FILE ISSUE], [NOTE], [SLOP], [SLOP SUSPECT]"
         )
 
     if not HEALTH_SCORE.search(stripped):
@@ -61,6 +86,14 @@ def collect_violations(report: str) -> list[str]:
             "No file:line reference found (e.g. path/to/file.py:42) — "
             "evidence of actual source examination is required"
         )
+
+    # Validate Mermaid diagrams
+    for idx, match in enumerate(MERMAID_BLOCK.finditer(stripped), start=1):
+        errors = _validate_mermaid(match.group(1))
+        if errors:
+            violations.append(
+                f"Mermaid diagram #{idx} has syntax errors: {'; '.join(errors)}"
+            )
 
     return violations
 
