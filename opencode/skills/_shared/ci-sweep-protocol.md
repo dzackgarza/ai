@@ -197,14 +197,17 @@ Do not restrict to diff files. Do not skip directories.
 
 ### Excluded from Sweep Analysis
 
-These directories contain CI infrastructure and tooling — NOT the project's product code.
+These directories and files contain agent infrastructure — NOT the project's product code.
 Do NOT report findings about these files unless a change in them introduces a bug in project code.
 
 - `.github/workflows/` — CI pipeline definitions
 - `quality-control/` — QC template copies
-- `opencode/skills/` (when the repo IS the skills/tooling repo) — agent-facing skills
+- `opencode/skills/` — agent-facing skill definitions
+- `AGENTS.md` and `.agents/` — agent behavioral configuration and process docs
+- `.github/workflows/brooks-review-template.md` and `brooks-lint-run.py` — review tooling
+- Any `prompt` or `prompts` directory — agent prompt templates
 
-Exception: If the repository's *purpose* is CI tooling or agent skills, do not exclude them.
+Exception: If the repository's *purpose* is agent tooling or skill authoring, do not exclude them.
 But for a product repo, these are support infrastructure, not the subject of review.
 
 When scanning project code, focus on:
@@ -218,7 +221,7 @@ When scanning project code, focus on:
 
 The following are NOT valid findings. If the agent produces them, they will be rejected:
 
-1. **Meta-commentary on the CI pipeline.** The CI pipeline is the subject of this review, not an object of review. Do not comment on README.md trigger markers, workflow_dispatch, or CI trigger mechanics. The CI setup is the mechanism, not the target.
+1. **Meta-commentary on agent infrastructure.** The agent's own configuration (AGENTS.md, .agents/, skill files, prompt templates, CI workflows) is the infrastructure that performs this review, not an object of review. Do not report AGENTS.md length, skill organization, prompt structure, or workflow design as findings. If the agent infrastructure had defects that caused concrete failures, those failures would be observable — theorizing about "context dilution" or "cognitive overload" in the agent's own prompt without evidence is speculation, not analysis.
 
 2. **Fallback suggestions.** Do not suggest adding a fallback path, graceful degradation, or silent default. If a resource does not exist, it should fail loudly. System policy: no fallbacks, no try-import, no conditional stubs.
 
