@@ -131,7 +131,16 @@ def main() -> None:
     diff = get_diff(args.base_ref)
     template = template_path.read_text()
     body = substitute_diff(template, diff)
-    prompt = f"{system}\n\n{body}"
+    ci_header = (
+        "## CI Environment (MANDATORY CONSTRAINTS)\n\n"
+        "This runs in a GitHub Actions CI runner. The only output that persists is stdout.\n"
+        "- Do NOT write any files. Do NOT write a report file.\n"
+        "- Do NOT ask questions, pause, or wait for input.\n"
+        "- Output EVERY finding to stdout as part of this message.\n"
+        '- Do NOT say "I\'ve written the full report to X" — there is no report file.\n'
+        '- Do NOT summarize with "see attached file" — there is no attachment.\n'
+    )
+    prompt = f"{system}\n\n{ci_header}\n{body}"
 
     # Run opencode
     try:

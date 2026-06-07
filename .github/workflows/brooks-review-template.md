@@ -1,3 +1,11 @@
+## CI Constraints (MANDATORY)
+
+This runs in a CI environment. Follow these rules exactly:
+- **Write ALL findings to stdout.** Do not write any files.
+- Do not reference files you wrote — they do not persist after the job.
+- Do not ask questions. Do not request confirmation. Do not pause for input.
+- Output the complete report as text to stdout. Every finding, every score, every recommendation.
+
 ## Task
 
 You have two jobs — do BOTH:
