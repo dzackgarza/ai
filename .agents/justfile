@@ -1,8 +1,6 @@
-set script-interpreter := ['uv', 'run', '--script']
-
-# Post a brooks-lint review as a PR comment.
+# Post a brooks-lint / slop review as a PR comment.
 # Validates the report first — rejects launder patterns, empty reports,
-# missing finding labels, and missing file-path evidence.
+# missing finding labels, missing file-path evidence, and Mermaid errors.
 #
 # Usage:
 #   just post-brooks-review <result.json> <pr-number>
@@ -10,16 +8,21 @@ set script-interpreter := ['uv', 'run', '--script']
 # The only way to post a review comment — no bypass path.
 [private]
 post-brooks-review result pr-number:
-    #!/usr/bin/env bash
     set -euo pipefail
 
     # Validate
     uv run .agents/scripts/check-brooks-report.py "{{result}}"
 
-    # Parse and post
-    report=$(jq -r '.report' "{{result}}")
-    score=$(jq -r '.score // "N/A"' "{{result}}")
+    # Parse and post via stdin — avoids bash escaping issues with \n
+    report=$$(jq -r '.report' "{{result}}")
+    score=$$(jq -r '.score // "N/A"' "{{result}}")
 
-    body="## Brooks-Lint Review (OpenCode)\n\n${report}\n\n---\n_Health Score: ${score}_"
-    gh pr comment "{{pr-number}}" --body "${body}"
+    {
+        echo "## Review (OpenCode)"
+        echo ""
+        echo "$${report}"
+        echo ""
+        echo "---"
+        echo "_Health Score: $${score}_"
+    } | gh pr comment "{{pr-number}}" --body -
     echo "Posted review to PR #{{pr-number}}"
