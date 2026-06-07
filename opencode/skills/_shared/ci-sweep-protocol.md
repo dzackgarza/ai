@@ -1,0 +1,121 @@
+# CI Sweep Protocol
+
+Used when Brooks-Lint runs in CI (GitHub Actions) for automated full-repo sweeps.
+This is NOT the interactive auto-fix pipeline (see sweep-guide.md for that).
+This is a **read-only exploration and reporting protocol** — no file edits, no auto-fixes.
+
+## Mandatory Exploration Sequence
+
+Do NOT skip to findings without completing this exploration.
+Each step produces evidence you use in analysis.
+Run ALL of these commands. Read the output. Follow up on what you find.
+
+### Step 1 — Structure
+
+```bash
+tree -L 3
+```
+
+Identify entrypoints, module boundaries, and where config vs. code lives.
+Look for unexpected files, dead directories, structural inconsistencies.
+
+### Step 2 — Hotspots (recent churn)
+
+```bash
+git log --oneline --since="3 months ago" --name-only --pretty=format: | sort | uniq -c | sort -rn | head -20
+```
+
+Files modified most often in recent history = highest risk surfaces.
+Read these files. They are where bugs concentrate.
+
+### Step 3 — Stale files (lowest churn, oldest untouched)
+
+```bash
+git ls-files -z | xargs -0 -I{} sh -c 'echo "$(git log -1 --format="%ai" -- {}) {}"' | sort | head -20
+```
+
+Files not touched in years = likely dead code, unmaintained configs, or forgotten artifacts.
+
+### Step 4 — Recently modified files
+
+```bash
+ls -lt $(find . -type f -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.venv/*' -not -path '*/__pycache__/*' 2>/dev/null) 2>/dev/null | head -30
+```
+
+Recently changed files are active development surfaces. Check for quality decay in them.
+
+### Step 5 — Entrypoints and Commands
+
+```bash
+just --list
+```
+
+If no justfile, check `package.json#scripts`, `Makefile`, CLI --help.
+List all available commands. Run any that look like tests or checks.
+
+### Step 6 — Key Configs
+
+Read each of these if present:
+- `.envrc` — environment variables and toolchain
+- `pyproject.toml` / `Cargo.toml` / `package.json` — project metadata and dependencies
+- `opencode.json` — agent/tool configuration
+- `tsconfig.json` / `deno.json` / `justfile` — language-level settings
+- Any YAML configs for CI, linting, formatting
+
+Check for version constraints, dependency duplication, dead or conflicting configuration.
+Cross-reference against `git ls-files` — are there config files for tools not used?
+
+### Step 7 — Documentation
+
+Read project docs in priority order:
+1. `AGENTS.md` and any `.agents/AGENTS.md` — agent-facing behavioral rules
+2. `README.md` — project purpose and user-facing intent
+3. `.github/workflows/` — CI pipeline definitions
+4. `SKILL.md` files in `skills/` — agent skill definitions
+
+Check whether the docs match reality (stale docs, dead entrypoints, unmaintained workflows).
+Check for docs that reference paths or commands that no longer exist.
+
+### Step 8 — Quality Surface
+
+Check:
+- Is there a `just test` or `just check`? Run it. Report failures verbatim.
+- Is there a `just lint` or `just fmt`? Run it. Report violations verbatim.
+- Are there test files? Read a sample. Check for mocking, assertion quality, coverage of actual behavior.
+- Are there CI workflows? Check if they test what they claim to test.
+- Check `git status` for dirty files — uncommitted debris.
+
+### Step 9 — Source Code Analysis
+
+Read the top 5 files from the churn list (Step 2) in full.
+Read the top 3 oldest files (Step 3) in full.
+Read entrypoint source files from each module.
+
+For each file, apply the Six Decay Risks from `decay-risks.md`:
+- R1 Cognitive Overload: function length, nesting, naming, magic numbers
+- R2 Change Propagation: coupling, shotgun surgery, divergent change
+- R3 Knowledge Duplication: DRY violations, inconsistent naming
+- R4 Accidental Complexity: speculative generality, lazy classes, over-engineering
+- R5 Dependency Disorder: circular deps, inversion, fan-out
+- R6 Domain Model Distortion: anemic models, ubiquitous language drift
+
+Also check the Test Decay risks if test files exist.
+
+## Finding Format
+
+Each finding MUST reference specific evidence from the exploration above:
+- File path(s) and line numbers
+- Specific code patterns or config values observed
+- Which exploration step produced the evidence
+- Command output that proves the claim
+
+Do NOT report findings without evidence.
+"If you cannot point to a specific file and line, you have not explored enough."
+
+Do NOT report generic config drift without checking whether the config is actually used.
+Do NOT report missing tests without checking whether the code has any.
+
+## Scope
+
+The sweep covers the ENTIRE checked-out repository.
+Do not restrict to diff files. Do not skip directories.
