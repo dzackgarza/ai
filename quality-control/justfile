@@ -23,10 +23,14 @@ _no-bypass:
 	echo "============================="
 	echo "=== Running: bypass comment detection ==="
 	echo "# Blocks staged changes from hiding QC issues via bypass comments"
-	files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
+	if ! files=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null); then
+		files=""
+	fi
 	[ -z "$files" ] && exit 0
 	for file in $files; do
-		[ -f "$file" ] || continue
+		if [ ! -f "$file" ]; then
+			continue
+		fi
 		if grep -n "# pragma: no cover" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '# pragma: no cover' — fix coverage, don't hide it"
 			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
@@ -106,15 +110,21 @@ _semgrep:
 	echo "============================="
 	echo "=== Running: semgrep security pattern scanning ==="
 	echo "# Static analysis for code quality and fraud patterns"
-	uvx --from semgrep semgrep scan \
+	if ! uvx --from semgrep semgrep scan \
 		--config={{justfile_directory()}}/semgrep.yml \
 		--config=p/ci \
 		--exclude=codeql-db \
 		--scan-unknown-extensions \
-		--autofix
-	# --scan-unknown-extensions: scan all file types, not just known ones.
-	# The rules in semgrep.yml define which patterns to match.
-	# Exit code reflects whether any blocking results were found.
+		--autofix; then
+		ec=$?
+		echo ""
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "  ERROR: semgrep found pattern violations in project code."
+		echo "  Fix the project code, not the QC tooling."
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 _ast-grep:
 	#!/usr/bin/env bash
@@ -124,7 +134,16 @@ _ast-grep:
 	echo "# Structural code pattern analysis for bridge-burning policy violations"
 	sg_config="{{justfile_directory()}}/ast-grep/sgconfig.yml"
 	if [ -f "$sg_config" ]; then
-		/bin/ast-grep scan --config "$sg_config" .
+		if ! /bin/ast-grep scan --config "$sg_config" .; then
+			ec=$?
+			echo ""
+			echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+			echo "  ERROR: ast-grep found pattern violations in project code."
+			echo "  Fix the project code, not the QC tooling."
+			echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit $ec
+		fi
 	fi
 
 _vibecheck:
@@ -133,7 +152,7 @@ _vibecheck:
 	echo "============================="
 	echo "=== Running: vibecheck anti-slop pattern detection ==="
 	echo "# Runs qinnovates/vibecheck-slop-stopper via uvx against the project root"
-	uvx --from git+https://github.com/qinnovates/vibecheck-slop-stopper vibecheck . --severity high || {
+	if ! uvx --from git+https://github.com/qinnovates/vibecheck-slop-stopper vibecheck . --severity high; then
 		ec=$?
 		echo ""
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -146,7 +165,7 @@ _vibecheck:
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit $ec
-	}
+	fi
 
 _slop:
 	#!/usr/bin/env bash
@@ -163,7 +182,7 @@ _slop:
 	echo "============================="
 	echo "=== Running: ai-slop-detector ML-based quality check ==="
 	echo "# ML classifier for detecting AI-generated code patterns and low-quality implementations"
-	uvx ai-slop-detector "$(pwd -P)" \
+	if ! uvx ai-slop-detector "$(pwd -P)" \
 		--project \
 		--js \
 		--config {{justfile_directory()}}/.slopconfig.yaml \
@@ -171,7 +190,7 @@ _slop:
 		--ci-mode hard \
 		--ci-claims-strict \
 		--ci-report \
-		--no-color || {
+		--no-color; then
 		ec=$?
 		echo ""
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -184,7 +203,19 @@ _slop:
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit $ec
-	}
+	fi
+
+# ── Config Sync ───────────────────────────────────────────────────
+
+# Sync qc-excludes.toml into every tool config (biome, eslint, knip,
+# jscpd, slop-scan, pyright, grain, and justfile-rust _rust-qc-files).
+# Run this whenever qc-excludes.toml changes.
+_sync-qc-excludes:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "=== Syncing qc-excludes.toml into tool configs ==="
+	uv run {{justfile_directory()}}/scripts/sync_qc_excludes.py
+	echo "Done. Commit the updated configs."
 
 # ── Entry Points ──────────────────────────────────────────────────
 

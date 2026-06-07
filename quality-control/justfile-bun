@@ -22,14 +22,13 @@
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory.
 
-import 'justfile'
-
 # private recipes (prefix with _ — never run individually)
 
-# Single source of truth for QC file-scope excludes (directories to skip).
+# QC file-scope excludes (directories to skip), sourced from qc-excludes.toml.
 _qc-excludes:
 	#!/usr/bin/env bash
-	printf '%s\n' "node_modules" "dist" "build" "coverage"
+	set -euo pipefail
+	uv run {{justfile_directory()}}/scripts/read_qc_excludes.py
 
 _eslint-deps:
 	#!/usr/bin/env bash
@@ -167,14 +166,12 @@ _jscpd-bun:
 _lizard-bun:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	lizard_excludes=()
+	while IFS= read -r dir; do
+		lizard_excludes+=(-x "*/$dir/*")
+	done < <(uv run {{justfile_directory()}}/scripts/read_qc_excludes.py)
 	uvx lizard . -l typescript -C 8 -L 200 -a 7 -i 0 \
-		-x "*/node_modules/*" \
-		-x "*/__pycache__/*" \
-		-x "*/.venv/*" \
-		-x "*/dist/*" \
-		-x "*/build/*" \
-		-x "*/_ci-support/*" \
-		-x "*/@girs/*"
+		"${lizard_excludes[@]}"
 
 _js-qc-files:
 	#!/usr/bin/env bash
@@ -337,14 +334,16 @@ _normalize: _eslint-deps
 		--exclude=codeql-db 2>&1 || true
 
 # public: all static checks run locally
-test: _check-ts-project _global-qc _normalize _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _jscpd-bun _lizard-bun _slop-scan
+test: _check-ts-project _normalize _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _jscpd-bun _lizard-bun _slop-scan
 	#!/usr/bin/env bash
 	set -euo pipefail
+	just -f {{justfile_directory()}}/justfile _global-qc
 	echo "Local quality checks completed"
 
 # public: test-ci = test + live/isolated checks
 # Add project-specific live tests (needs docker, live server, etc.) here
-test-ci: test _global-qc-ci
+test-ci: test
 	#!/usr/bin/env bash
 	set -euo pipefail
+	just -f {{justfile_directory()}}/justfile _global-qc-ci
 	echo "CI checks completed"

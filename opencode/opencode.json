@@ -100,7 +100,8 @@
     "@ramtinj95/opencode-tokenscope@latest",
     "cc-safety-net@latest",
     "opencode-pty@latest",
-    "@hueyexe/opencode-ensemble@0.13.3"
+    "@hueyexe/opencode-ensemble@0.13.3",
+    "context-mode"
   ],
   "provider": {
     "anthropic": {

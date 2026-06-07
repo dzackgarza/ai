@@ -1,5 +1,6 @@
 set fallback := true
 set script-interpreter := ['uv', 'run', '--script']
+qc-type := "python"
 
 # Install symlinks for all CLI harnesses
 # Usage: just install

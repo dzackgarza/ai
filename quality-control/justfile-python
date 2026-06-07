@@ -22,25 +22,18 @@
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory.
 
-import 'justfile'
-
 # private recipes (prefix with _ — never run individually)
 _python-qc-files:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	exclude_args=()
+	while IFS= read -r dir; do
+		exclude_args+=(-g "!**/$dir/**")
+	done < <(uv run {{justfile_directory()}}/scripts/read_qc_excludes.py)
 	rg --files \
 		-g '*.py' \
 		-g '!*.sage.py' \
-		-g '!**/external/**' \
-		-g '!**/node_modules/**' \
-		-g '!**/__pycache__/**' \
-		-g '!**/.venv/**' \
-		-g '!**/dist/**' \
-		-g '!**/build/**' \
-		-g '!**/coverage/**' \
-		-g '!**/codeql-db/**' \
-		-g '!**/*.bak/**' \
-		-g '!**/*.bak/**'
+		"${exclude_args[@]}"
 
 _python-syntax:
 	#!/usr/bin/env bash
@@ -48,7 +41,7 @@ _python-syntax:
 	echo "============================="
 	echo "=== Running: Python syntax validation ==="
 	echo "# Compiles Python source with the configured target interpreter before linting or analysis"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
+	if ! mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null); then :; fi
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: Python syntax validation: no Python files found in a Python project."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
@@ -85,12 +78,6 @@ _python-syntax:
 
 
 	sage_bin="${SAGE_BIN:-sage}"
-	if ! command -v "$sage_bin" >/dev/null 2>&1; then
-		echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
-		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
-		exit 1
-	fi
-
 	sage_preparse_dir="$(mktemp -d "${TMPDIR:-/tmp}/qc-sage-syntax.XXXXXX")"
 	trap 'rm -rf "$sage_preparse_dir"' EXIT
 	echo "# Preparsing and compiling ${#sage_files[@]} Sage file(s)"
@@ -106,10 +93,12 @@ _python-syntax:
 		compile_args+=("$sage_file" "$generated_file")
 	done
 
-	(
-		cd "$sage_preparse_dir"
-		"$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null
-	)
+	if ! (cd "$sage_preparse_dir"; "$sage_bin" --preparse "${copied_sage_files[@]}" >/dev/null); then
+		ec=$?
+		echo "ERROR: Sage preparse failed for one or more .sage files."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 	for sage_file in "${sage_files[@]}"; do
 		generated_file="$sage_preparse_dir/$sage_file.py"
@@ -166,7 +155,7 @@ _mypy: _install-tools
 	echo "============================="
 	echo "=== Running: mypy type checking ==="
 	echo "# Checks static typing after syntax validation and before lint/style normalization"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
+	if ! mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null); then :; fi
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: mypy: no Python files found in a Python project."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
@@ -187,17 +176,13 @@ _mypy: _install-tools
 	else
 		effective_config="$global_config"
 	fi
-	sage_bin="${SAGE_BIN:-sage}"
-	if command -v "$sage_bin" >/dev/null 2>&1; then
-		"$sage_bin" -python -m mypy \
-			--config-file "$effective_config" \
-			--ignore-missing-imports \
-			--explicit-package-bases \
-			"${python_files[@]}"
-	else
-		uvx --python 3.14 --from mypy mypy \
-			--config-file "$effective_config" \
-			"${python_files[@]}"
+	if ! uvx --python 3.14 --from mypy mypy \
+		--config-file "$effective_config" \
+		"${python_files[@]}"; then
+		ec=$?
+		echo "ERROR: mypy found type errors in project code."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
 	fi
 
 _check-python-project:
@@ -267,30 +252,50 @@ _normalize: _install-tools
 	echo "============================="
 	echo "=== Running: ruff format and check (auto-fix) ==="
 	echo "# Enforces PEP 8 style + auto-fixes common issues (import sorting, unused imports, pyupgrade patterns)"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
+	if ! mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null); then :; fi
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: ruff normalization: no Python files found in a Python project."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	if [ -n "${SAGE_PYTEST:-}" ]; then
-		sage -python -m ruff check --fix \
+		if ! sage -python -m ruff check --fix \
 			--config {{justfile_directory()}}/ruff-global.toml \
 			--extension sage:python \
-			"${python_files[@]}"
-		sage -python -m ruff format \
+			"${python_files[@]}"; then
+			ec=$?
+			echo "ERROR: ruff check found issues in project code."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit $ec
+		fi
+		if ! sage -python -m ruff format \
 			--config {{justfile_directory()}}/ruff-global.toml \
 			--extension sage:python \
-			"${python_files[@]}"
+			"${python_files[@]}"; then
+			ec=$?
+			echo "ERROR: ruff format found issues in project code."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit $ec
+		fi
 	else
-		uvx --from ruff ruff check --fix \
+		if ! uvx --from ruff ruff check --fix \
 			--config {{justfile_directory()}}/ruff-global.toml \
 			--extension sage:python \
-			"${python_files[@]}"
-		uvx --from ruff ruff format \
+			"${python_files[@]}"; then
+			ec=$?
+			echo "ERROR: ruff check found issues in project code."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit $ec
+		fi
+		if ! uvx --from ruff ruff format \
 			--config {{justfile_directory()}}/ruff-global.toml \
 			--extension sage:python \
-			"${python_files[@]}"
+			"${python_files[@]}"; then
+			ec=$?
+			echo "ERROR: ruff format found issues in project code."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit $ec
+		fi
 	fi
 
 _pytest_with_coverage: _install-tools
@@ -315,8 +320,18 @@ _pytest_with_coverage: _install-tools
 	coverage_data="$coverage_root/.coverage"
 	coverage_xml="$coverage_root/coverage.xml"
 	mkdir -p "$coverage_root"
-	COVERAGE_FILE="$coverage_data" uvx --from coverage --with pytest --with-editable . coverage run -m pytest
-	COVERAGE_FILE="$coverage_data" uvx --from coverage coverage xml --fail-under=100 -o "$coverage_xml"
+	if ! COVERAGE_FILE="$coverage_data" uvx --from coverage --with pytest --with-editable . coverage run -m pytest; then
+		ec=$?
+		echo "ERROR: pytest failed."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
+	if ! COVERAGE_FILE="$coverage_data" uvx --from coverage coverage xml --fail-under=100 -o "$coverage_xml"; then
+		ec=$?
+		echo "ERROR: coverage below 100% threshold."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 	echo "Coverage XML report: $coverage_xml"
 
 _diff-cover: _pytest_with_coverage
@@ -333,7 +348,12 @@ _diff-cover: _pytest_with_coverage
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch ${DIFF_COVER_BASE:-main}
+	if ! uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch ${DIFF_COVER_BASE:-main}; then
+		ec=$?
+		echo "ERROR: diff-cover found coverage gaps in changed code."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 _vulture: _install-tools
 	#!/usr/bin/env bash
@@ -341,7 +361,7 @@ _vulture: _install-tools
 	echo "============================="
 	echo "=== Running: vulture dead code detection ==="
 	echo "# Finds unused code (functions, classes, variables) that can be safely removed"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
+	if ! mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null); then :; fi
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: vulture: no Python files found in a Python project."
@@ -349,10 +369,15 @@ _vulture: _install-tools
 		exit 1
 	fi
 
-	uvx --from vulture vulture \
+	if ! uvx --from vulture vulture \
 		--config {{justfile_directory()}}/pyproject.toml \
 		"${python_files[@]}" \
-		"$whitelist_file"
+		"$whitelist_file"; then
+		ec=$?
+		echo "ERROR: vulture found dead code in project code."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 _deptry: _install-tools
 	#!/usr/bin/env bash
@@ -365,7 +390,12 @@ _deptry: _install-tools
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	uvx --from deptry deptry .
+	if ! uvx --from deptry deptry .; then
+		ec=$?
+		echo "ERROR: deptry found dependency issues in project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 _ast-grep: _install-tools
 	#!/usr/bin/env bash
@@ -373,7 +403,7 @@ _ast-grep: _install-tools
 	echo "============================="
 	echo "=== Running: ast-grep code quality audit ==="
 	echo "# Custom AST rules for fraud detection (boolean assignment, loops without asserts, numeric bounds, self-reinforcing prints)"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
+	if ! mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null); then :; fi
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: ast-grep: no Python files found in a Python project."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
@@ -397,17 +427,22 @@ _jscpd-python:
 	echo "============================="
 	echo "=== Running: jscpd copy-paste detection ==="
 	echo "# Finds duplicate code blocks across the codebase that may indicate copypaste or missing refactoring"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
+	if ! mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null); then :; fi
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: jscpd: no Python files found in a Python project."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	npx -y jscpd \
+	if ! npx -y jscpd \
 		--config {{justfile_directory()}}/.jscpd.json \
 		--format python \
 		--formats-exts python:py,sage \
-		"${python_files[@]}"
+		"${python_files[@]}"; then
+		ec=$?
+		echo "ERROR: jscpd found code duplication in project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 _lizard-python: _install-tools
 	#!/usr/bin/env bash
@@ -415,13 +450,18 @@ _lizard-python: _install-tools
 	echo "============================="
 	echo "=== Running: lizard complexity analysis ==="
 	echo "# Computes cyclomatic complexity number (CCN), line count, and parameter count to flag overly complex functions"
-	mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null || true)
+	if ! mapfile -t python_files < <(just --justfile {{justfile()}} -d . _python-qc-files 2>/dev/null); then :; fi
 	if [ "${#python_files[@]}" -eq 0 ]; then
 		echo "ERROR: lizard: no Python files found in a Python project."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	uvx --from lizard lizard -l python -C 7 -L 100 -a 5 -i 0 "${python_files[@]}"
+	if ! uvx --from lizard lizard -l python -C 7 -L 100 -a 5 -i 0 "${python_files[@]}"; then
+		ec=$?
+		echo "ERROR: lizard found excessive complexity in project code."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 _import-linter: _install-tools
 	#!/usr/bin/env bash
@@ -441,7 +481,12 @@ _import-linter: _install-tools
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	uvx --from import-linter --with-editable . lint-imports --config "$config"
+	if ! uvx --from import-linter --with-editable . lint-imports --config "$config"; then
+		ec=$?
+		echo "ERROR: import-linter found import rule violations in project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 
 _grain:
 	#!/usr/bin/env bash
@@ -450,7 +495,13 @@ _grain:
 	echo "=== Running: grain unused code detection ==="
 	echo "# Finds unused imports and variables that can be safely removed"
 	cp {{justfile_directory()}}/grain.toml .grain.toml
-	uvx --from git+https://github.com/mmartoccia/grain grain check --all --fix
+	if ! uvx --from git+https://github.com/mmartoccia/grain grain check --all --fix; then
+		ec=$?
+		rm .grain.toml
+		echo "ERROR: grain found unused code in project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 	rm .grain.toml
 
 _codeql:
@@ -459,19 +510,24 @@ _codeql:
 	echo "============================="
 	echo "=== Running: codeql security analysis ==="
 	echo "# GitHub's static analysis engine for code quality and security vulnerabilities"
-	if ! command -v codeql >/dev/null 2>&1; then
-		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
-		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
-		exit 1
-	fi
 	project_root="$(pwd -P)"
 	project_slug="$(printf '%s' "$project_root" | sed 's#[^A-Za-z0-9._-]#_#g')"
 	codeql_root="${XDG_CACHE_HOME:-$HOME/.cache}/quality-control/codeql/$project_slug"
 	db="$codeql_root/codeql-db"
 	report="$codeql_root/codeql-report.sarif"
 	mkdir -p "$codeql_root"
-	codeql database create "$db" --overwrite --language=python --source-root="$project_root"
-	codeql database analyze "$db" --format=sarif-latest --output="$report"
+	if ! codeql database create "$db" --overwrite --language=python --source-root="$project_root"; then
+		ec=$?
+		echo "ERROR: CodeQL database creation failed."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
+	if ! codeql database analyze "$db" --format=sarif-latest --output="$report"; then
+		ec=$?
+		echo "ERROR: CodeQL analysis failed."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit $ec
+	fi
 	echo "CodeQL SARIF report: $report"
 	python3 - "$report" <<'PY'
 	import json
@@ -513,14 +569,16 @@ _codeql:
 	PY
 
 # public: all static checks run locally
-test: _check-python-project _global-qc _normalize _python-syntax _mypy _deptry _import-linter _ast-grep _jscpd-python _lizard-python _vulture _grain _pytest_with_coverage _diff-cover
+test: _check-python-project _normalize _python-syntax _mypy _deptry _import-linter _ast-grep _jscpd-python _lizard-python _vulture _grain _pytest_with_coverage _diff-cover
 	#!/usr/bin/env bash
 	set -euo pipefail
+	just -f {{justfile_directory()}}/justfile _global-qc
 	echo "Local quality checks completed"
 
 # public: test-ci = test + live/isolated checks
 # Add project-specific live tests (needs docker, live server, etc.) here
-test-ci: test _global-qc-ci
+test-ci: test
 	#!/usr/bin/env bash
 	set -euo pipefail
+	just -f {{justfile_directory()}}/justfile _global-qc-ci
 	echo "CI checks completed"
