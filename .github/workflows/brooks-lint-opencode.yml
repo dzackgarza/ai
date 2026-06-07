@@ -40,14 +40,16 @@ jobs:
 
           const SKILLS = path.resolve(".brooks-lint/skills");
           const shared = (f) => readFileSync(path.join(SKILLS, "_shared", f), "utf8");
-          const guide = (f) => readFileSync(path.join(SKILLS, "brooks-review", f), "utf8");
+          const guideReview = (f) => readFileSync(path.join(SKILLS, "brooks-review", f), "utf8");
+          const guideSweep = (f) => readFileSync(path.join(SKILLS, "brooks-sweep", f), "utf8");
           const mode = process.argv[2] || "review";
 
           const system = [
             shared("common.md"),
             shared("source-coverage.md"),
             shared("decay-risks.md"),
-            guide("pr-review-guide.md"),
+            guideReview("pr-review-guide.md"),
+            guideSweep("sweep-guide.md"),
           ].join("\n\n---\n\n");
 
           function getDiff() {
@@ -58,12 +60,24 @@ jobs:
           }
 
           const diff = getDiff();
-          const scope = diff ? "branch diff vs ${{ github.base_ref }}" : "full codebase scan";
-          const msg = diff
-            ? `Run brooks-lint ${mode} mode on this diff.\n\nScope: ${scope}\n\n\`\`\`diff\n${diff}\n\`\`\``
-            : `Run brooks-lint ${mode} mode on this project.\n\nScope: ${scope}`;
 
-          const prompt = `${system}\n\n${msg}\n\nProduce findings as Symptom→Source→Consequence→Remedy with a Health Score (0-100).`;
+          const baseRef = "${{ github.base_ref }}";
+          const diffSection = diff
+            ? "\n\n### Diff (branch vs " + baseRef + ")\n\n```diff\n" + diff + "\n```"
+            : "\n\n*No diff - full codebase scan only.*";
+
+          const prompt = system
+            + "\n\n## Task\n\n"
+            + "You have two jobs - do BOTH:\n\n"
+            + "1. **PR Review** - review the diff below. "
+            + "Produce Symptom->Source->Consequence->Remedy findings for anything wrong in the changed code.\n\n"
+            + "2. **Full Codebase Sweep** - independently scan the entire repository for issues: "
+            + "dead code, missing tests, security risks, architectural problems, tech debt, config drift. "
+            + "Produce Symptom->Source->Consequence->Remedy findings for each issue found.\n\n"
+            + "**Label each finding** as `[PR BLOCKER]`, `[SHOULD FILE ISSUE]`, or `[NOTE]`."
+            + diffSection
+            + "\n\nProduce findings as Symptom->Source->Consequence->Remedy "
+            + "with a Health Score (0-100) for the diff changes and separately for the full repo.";
 
           try {
             const out = execFileSync("opencode", [
