@@ -76,15 +76,8 @@ Read project docs in priority order:
 Check whether the docs match reality (stale docs, dead entrypoints, unmaintained workflows).
 Check for docs that reference paths or commands that no longer exist.
 
-After reading AGENTS.md, extract the bespoke-software rules and apply them as a mandatory filter on every finding BEFORE reporting. The key rules are:
-
-- This is **bespoke, single-user, pre-launch software** — no multi-platform, no scaling, no enterprise hardening, no imagined future consumers. Do NOT report hardcoded paths, machine-specific config files, or non-portable conventions as defects. They are intentional.
-- **Breaking changes are fine** — there is no backward compatibility constraint. Do NOT report interface breakage or removal as a defect unless it breaks an actual current workflow.
-- **No fallbacks, no graceful degradation** — fail loudly. Do NOT suggest fallback paths, conditional imports, or graceful error handling.
-- **Test are proof of correctness, not coverage of errors** — mocks and fakes do not prove anything. Every assertion must increase the burden of proof.
-- **The user is the repo owner** — not an external audience. Config conventions, path layouts, and tool choices are the owner's decisions, not defects to report.
-
-If a finding contradicts any of these rules, suppress it.
+Apply the already-loaded `bespoke-software-policy` skill to every finding.
+If you did not load it at startup, stop — the skill loading is mandatory.
 
 ### Step 8 — Quality Surface
 
@@ -243,13 +236,8 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 Before reporting any finding, run these five checks in order. If any check suppresses it, stop — do not report.
 
-**Check 1 — Does this violate the bespoke-software rules from AGENTS.md?**
-Hardcoded paths, machine-specific configs, non-portable conventions, breaking changes, lack of enterprise features — these are not defects in bespoke single-user software. If the finding would only matter for an imagined future consumer or a multi-platform deployment, suppress it.
-
-In particular:
-- **Version range too narrow?** Not a defect. This software targets the owner's environment. The convention is "latest unless pinning is strictly required." Do not suggest broadening version ranges for hypothetical other users.
-- **Uses latest library/framework?** Not a defect — this is the default posture.
-- **Breaking change?** Not a defect — there are no legacy consumers.
+**Check 1 — Does this violate the bespoke-software rules?**
+Apply the `bespoke-software-policy` skill you loaded at startup. Hardcoded paths, machine-specific configs, non-portable conventions, breaking changes, lack of enterprise features — these are not defects. If the finding would only matter for an imagined future consumer or a multi-platform deployment, suppress it.
 
 **Check 2 — Is this about infrastructure or product code?**
 If the finding is about CI infrastructure, workflow files, or review tooling, suppress it. The CI pipeline is the mechanism, not the target.

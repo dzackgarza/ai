@@ -12,12 +12,13 @@ Before any analysis, use the `skill()` tool to load these skills IN ORDER.
 If a skill fails to load, do not continue — report the failure.
 
 1. `policy-index` — policy routing: determines which rule owns each finding
-2. `anti-slop` — structural technical debt detection: runtime defaults, fallbacks, mocks, fakes, stubs, proof-laundering, deletion-laundering, bridge-burning violations
-3. `reviewing-llm-code` — LLM-produced code review patterns: validation-evasion constructs, dead control flow, myopic patching
-4. `test-guidelines` — proof obligations: banned assertion shapes, helper-level proof, smoke/proof boundary rules
-5. `reviewing-llm-code/references/bridge-burning-red-flags.md` — red-flag inventory for bridge-burning policy violations
+2. `bespoke-software-policy` — bespoke-software rules: filters out portability, compatibility, enterprise, and meta findings
+3. `anti-slop` — structural technical debt detection: runtime defaults, fallbacks, mocks, fakes, stubs, proof-laundering, deletion-laundering, bridge-burning violations
+4. `reviewing-llm-code` — LLM-produced code review patterns: validation-evasion constructs, dead control flow, myopic patching
+5. `test-guidelines` — proof obligations: banned assertion shapes, helper-level proof, smoke/proof boundary rules
+6. `reviewing-llm-code/references/bridge-burning-red-flags.md` — red-flag inventory for bridge-burning policy violations
 
-After loading all five, you have this baseline:
+After loading all six, you have this baseline:
 - No fallback suggestions (every missing resource must fail loudly)
 - No mock/fake/stub as proof (real data or nothing)
 - No runtime defaults for critical dependencies

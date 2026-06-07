@@ -31,7 +31,7 @@ jobs:
       - name: Install policy skills for skill() tool
         run: |
           mkdir -p ~/.config/opencode/skills
-          for skill in anti-slop reviewing-llm-code policy-index test-guidelines; do
+          for skill in anti-slop reviewing-llm-code policy-index test-guidelines bespoke-software-policy; do
             if [ -d "opencode/skills/$skill" ]; then
               cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
               echo "installed $skill"
