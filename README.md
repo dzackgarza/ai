@@ -637,3 +637,4 @@ uvx --from git+https://github.com/dzackgarza/llm-runner.git llm-run --help
 
 Run `cd /home/dzack/ai/opencode && uv run --python .venv/bin/python llm-run --help` for
 the canonical local CLI usage.
+# CI trigger
