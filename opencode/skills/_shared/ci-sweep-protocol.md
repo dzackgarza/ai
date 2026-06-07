@@ -169,7 +169,11 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 4. **Config file length / DRY violations in data sections.** "JSON config is 1921 lines" or "7 providers each list model IDs" is not complexity — it is domain cardinality. Proposing a registry or refactoring that preserves the same number of distinct entries is rearrangement, not simplification. Config data is not source code.
 
-5. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
+5. **Ephemeral tactical artifacts reported as architectural debt.** "README has a `# CI trigger` comment" or "there's a TODO marker" or "a temporary branch marker exists" — these are intentionally tactical lines that serve a transient purpose. They are not decay risks. Do not cite Fowler, Brooks, or Ousterhout for a single throwaway comment. A one-line tactical marker is not Speculative Generality or Accidental Complexity.
+
+6. **Trivial documentation nits without reader impact.** A dead link, a stale command path, or a contradicted instruction in a README is a real finding. But a single non-functional comment, a formatting preference, or a line that "explains nothing" — these do not warrant citations, severity labels, or architectural analysis. If the finding spends more words on the citation than the defect, it is noise.
+
+7. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
 
 ## Finding Quality Gate
 
@@ -181,7 +185,10 @@ If the finding is about CI infrastructure, workflow files, or review tooling, su
 **Check 2 — What kind of file is this?**
 If the finding applies a code-complexity heuristic (file length, nesting, cyclomatic complexity, DRY) to a configuration file, stop. Config file length is data cardinality, not accidental complexity. Only apply code heuristics to source code.
 
-**Check 3 — Does the remedy actually solve the problem?**
+**Check 3 — Is this an intentional tactical artifact?**
+A one-line CI trigger marker, a TODO comment, a WIP branch marker — these are tactical ephemera, not architectural debt. They serve a transient purpose and will be removed when that purpose expires. Reporting them as Speculative Generality or Accidental Complexity with Fowler/Brooks citations is noise. Reject these findings.
+
+**Check 4 — Does the remedy actually solve the problem?**
 Trace through: does the proposed fix reduce the number of distinct items a human must maintain? If it just rearranges the same data (registry with cross-references instead of inline arrays), the remedy is rearrangement, not remediation. Reject it.
 
 A valid finding must include:
