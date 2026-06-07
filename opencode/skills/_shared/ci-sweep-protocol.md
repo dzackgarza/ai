@@ -129,19 +129,66 @@ Before applying any quality heuristic to a file, classify it:
 
 - **Cite the wrong tool for the job:** If a finding applies an engineering-text heuristic (McConnell, Ousterhout, Fowler) to a config file, it is invalid. Software design heuristics apply to functions, modules, and interfaces — not to data declarations.
 
-## Finding Format
+## Finding Classification Tiers
 
-Each finding MUST reference specific evidence from the exploration above:
+Not every issue deserves the same treatment. Classify each finding into one of two tiers:
+
+### Tier 1 — Significant Findings
+Structural code defects, bugs, architectural problems, decay risks in active code.
+These get the full analysis format below.
+
+Examples:
+- A function with cyclomatic complexity > 15 that is modified every sprint
+- A circular dependency between modules that causes cascading rebuilds
+- Test coverage that asserts on mocks instead of real behavior
+- A config value that provably causes incorrect runtime behavior
+
+### Tier 2 — Cleanup Notes
+Stale artifacts, dead files, minor doc inconsistencies, housekeeping.
+These do NOT get decay-risk labels, citations, or Symptom→Source→Consequence→Remedy.
+Report them as a single-line list appended AFTER all Tier 1 findings.
+
+Examples:
+- `AGENTS.md.orig` — stale backup file, delete
+- `# CI trigger` comment — ephemeral marker, remove when done
+- Outdated comment in README that references a renamed command
+
+### Priority Rule
+If there are ANY Tier 1 findings, report them first and skip Tier 2 entirely.
+Only report Tier 2 cleanup notes when the codebase has zero significant findings.
+Trust that future CI passes will converge on trivial tasks — they don't all need to be reported now.
+
+If a finding would require a decay-risk label (R1-R6) and a citation to sound important, it is probably Tier 2.
+
+### Tier 1 Output Format — Full Analysis
+
+Each Tier 1 finding MUST reference specific evidence:
 - File path(s) and line numbers
 - Specific code patterns or config values observed
 - Which exploration step produced the evidence
 - Command output that proves the claim
 
-Do NOT report findings without evidence.
+Format: Symptom→Source→Consequence→Remedy with a decay-risk label (R1-R6) only if the finding genuinely maps to a structural code problem.
+
+Do NOT report Tier 1 findings without evidence.
 "If you cannot point to a specific file and line, you have not explored enough."
 
 Do NOT report generic config drift without checking whether the config is actually used.
 Do NOT report missing tests without checking whether the code has any.
+
+### Tier 2 Output Format — Single-Line List
+
+When there are zero Tier 1 findings, append cleanup notes as a single-line list:
+
+```
+Cleanup:
+- `AGENTS.md.orig` — stale backup file, delete
+- `README.md` CI trigger comment — ephemeral marker, remove when done
+- `obsolete-config.yml` — references a tool no longer installed
+```
+
+No decay-risk labels. No citations. No Symptom→Source→Consequence→Remedy.
+One line per item: file path, what is wrong, what to do.
 
 ## Scope
 

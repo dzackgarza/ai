@@ -42,13 +42,11 @@ Scan the entire repository for issues following the **CI Sweep Protocol** above:
 - Check test quality, dead code, architectural problems
 - Apply the Six Decay Risks (R1-R6) to real files you read
 
-### Labeling
-**Label each finding** as `[PR BLOCKER]`, `[SHOULD FILE ISSUE]`, or `[NOTE]`.
-
-Evidence requirements:
-- Every finding must cite specific file paths and line numbers
-- Every finding must state which exploration command surfaced it
-- Generic config-drift findings without file-level evidence will be rejected
+### Labeling and Priority
+Follow the **Finding Classification Tiers** in the CI Sweep Protocol:
+- **Tier 1** (significant): full Symptom→Source→Consequence→Remedy with decay-risk label. Label as `[PR BLOCKER]` or `[SHOULD FILE ISSUE]`.
+- **Tier 2** (cleanup): single-line list only. Label as `[NOTE]`.
+- **Priority rule**: if any Tier 1 findings exist, report them and skip Tier 2. Only report cleanup notes when the repo has zero significant issues.
 
 ### Diff
 ```diff
@@ -56,4 +54,4 @@ Evidence requirements:
 ```
 
 ### Output Format
-Produce findings as Symptom→Source→Consequence→Remedy with a Health Score (0-100) for the diff changes and separately for the full repo.
+Follow the sweep protocol's format: Tier 1 findings get full Symptom→Source→Consequence→Remedy with Health Score (0-100) for the diff changes and separately for the full repo. Tier 2 findings get a single-line cleanup list appended only if Tier 1 is empty.
