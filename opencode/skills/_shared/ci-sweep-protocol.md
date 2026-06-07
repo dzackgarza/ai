@@ -76,6 +76,16 @@ Read project docs in priority order:
 Check whether the docs match reality (stale docs, dead entrypoints, unmaintained workflows).
 Check for docs that reference paths or commands that no longer exist.
 
+After reading AGENTS.md, extract the bespoke-software rules and apply them as a mandatory filter on every finding BEFORE reporting. The key rules are:
+
+- This is **bespoke, single-user, pre-launch software** — no multi-platform, no scaling, no enterprise hardening, no imagined future consumers. Do NOT report hardcoded paths, machine-specific config files, or non-portable conventions as defects. They are intentional.
+- **Breaking changes are fine** — there is no backward compatibility constraint. Do NOT report interface breakage or removal as a defect unless it breaks an actual current workflow.
+- **No fallbacks, no graceful degradation** — fail loudly. Do NOT suggest fallback paths, conditional imports, or graceful error handling.
+- **Test are proof of correctness, not coverage of errors** — mocks and fakes do not prove anything. Every assertion must increase the burden of proof.
+- **The user is the repo owner** — not an external audience. Config conventions, path layouts, and tool choices are the owner's decisions, not defects to report.
+
+If a finding contradicts any of these rules, suppress it.
+
 ### Step 8 — Quality Surface
 
 Check:
@@ -173,22 +183,27 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 6. **Trivial documentation nits without reader impact.** A dead link, a stale command path, or a contradicted instruction in a README is a real finding. But a single non-functional comment, a formatting preference, or a line that "explains nothing" — these do not warrant citations, severity labels, or architectural analysis. If the finding spends more words on the citation than the defect, it is noise.
 
-7. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
+7. **Bespoke-software portability complaints.** "Config file has hardcoded `/home/dzack/` paths" or "`.serena_config.yml` won't work on another machine" — this is single-user, pre-launch, bespoke software. Machine-specific config files are not defects. Do not report hardcoded home-directory paths, absolute local paths, or non-portable tool configs as portability issues. They are intentional.
+
+8. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
 
 ## Finding Quality Gate
 
-Before reporting any finding, run these three checks:
+Before reporting any finding, run these five checks in order. If any check suppresses it, stop — do not report.
 
-**Check 1 — Is this about infrastructure or product code?**
+**Check 1 — Does this violate the bespoke-software rules from AGENTS.md?**
+Hardcoded paths, machine-specific configs, non-portable conventions, breaking changes, lack of enterprise features — these are not defects in bespoke single-user software. If the finding would only matter for an imagined future consumer or a multi-platform deployment, suppress it.
+
+**Check 2 — Is this about infrastructure or product code?**
 If the finding is about CI infrastructure, workflow files, or review tooling, suppress it. The CI pipeline is the mechanism, not the target.
 
-**Check 2 — What kind of file is this?**
+**Check 3 — What kind of file is this?**
 If the finding applies a code-complexity heuristic (file length, nesting, cyclomatic complexity, DRY) to a configuration file, stop. Config file length is data cardinality, not accidental complexity. Only apply code heuristics to source code.
 
-**Check 3 — Is this an intentional tactical artifact?**
+**Check 4 — Is this an intentional tactical artifact?**
 A one-line CI trigger marker, a TODO comment, a WIP branch marker — these are tactical ephemera, not architectural debt. They serve a transient purpose and will be removed when that purpose expires. Reporting them as Speculative Generality or Accidental Complexity with Fowler/Brooks citations is noise. Reject these findings.
 
-**Check 4 — Does the remedy actually solve the problem?**
+**Check 5 — Does the remedy actually solve the problem?**
 Trace through: does the proposed fix reduce the number of distinct items a human must maintain? If it just rearranges the same data (registry with cross-references instead of inline arrays), the remedy is rearrangement, not remediation. Reject it.
 
 A valid finding must include:
