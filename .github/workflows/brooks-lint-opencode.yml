@@ -55,12 +55,7 @@ jobs:
         run: |
           report=$(jq -r '.report' .brooks-report-artifact.json)
           score=$(jq -r '.score // "N/A"' .brooks-report-artifact.json)
-          body="## Brooks-Lint Review (OpenCode)
-
-${report}
-
----
-_Health Score: ${score}_"
+          body=$(printf '## Brooks-Lint Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
           gh pr comment ${{ github.event.number }} --body "$body"
 
       - name: Check Threshold
