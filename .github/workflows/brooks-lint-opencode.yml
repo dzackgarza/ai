@@ -1,3 +1,4 @@
+# Brooks-Lint: code review via opencode run (free model, no API key)
 name: Brooks-Lint PR Review (OpenCode)
 on:
   pull_request:
