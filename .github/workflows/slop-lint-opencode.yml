@@ -54,7 +54,7 @@ jobs:
 
       - name: Post PR Comment
         if: github.event_name == 'pull_request'
-        run: just -f .agents/justfile post-brooks-review .slop-result.json ${{ github.event.number }}
+        run: just -f .agents/justfile post-brooks-review "$(pwd)/.slop-result.json" ${{ github.event.number }}
 
       - name: Check Slop Threshold
         if: ${{ vars.SLOP_FAIL_BELOW != '' }}
