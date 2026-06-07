@@ -26,10 +26,10 @@ def load_skills(skills_dir: pathlib.Path) -> str:
         if path.exists():
             guides.append(path.read_text())
 
-    # Load CI exploration protocol from _shared (not the interactive auto-fix pipeline)
-    ci_protocol = _shared / "ci-sweep-protocol.md"
-    if ci_protocol.exists():
-        guides.append(ci_protocol.read_text())
+    # Load CI exploration protocol from the project's own repo (not the brooks-lint checkout).
+    # This is project-owned code, not an external skill guide.
+    ci_protocol = pathlib.Path("opencode/skills/_shared/ci-sweep-protocol.md").resolve()
+    guides.append(ci_protocol.read_text())  # no guard — fail loudly if missing
 
     for guide_dir, fname in [
         ("brooks-review", "pr-review-guide.md"),
