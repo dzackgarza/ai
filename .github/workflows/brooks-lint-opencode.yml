@@ -20,10 +20,10 @@ jobs:
           repository: hyhmrright/brooks-lint
           path: .brooks-lint
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          node-version: 20
+          python-version: '3.11'
 
       - name: Install OpenCode
         run: npm install -g opencode-ai
@@ -32,69 +32,12 @@ jobs:
         id: review
         shell: bash
         run: |
-          # Write the runner script (heredoc prevents shell expansion)
-          cat > /tmp/ci-opencode.mjs << 'SCRIPTEOF'
-          import { execFileSync } from "node:child_process";
-          import { readFileSync } from "node:fs";
-          import path from "node:path";
-
-          const SKILLS = path.resolve(".brooks-lint/skills");
-          const shared = (f) => readFileSync(path.join(SKILLS, "_shared", f), "utf8");
-          const guideReview = (f) => readFileSync(path.join(SKILLS, "brooks-review", f), "utf8");
-          const guideSweep = (f) => readFileSync(path.join(SKILLS, "brooks-sweep", f), "utf8");
-          const mode = process.argv[2] || "review";
-
-          const system = [
-            shared("common.md"),
-            shared("source-coverage.md"),
-            shared("decay-risks.md"),
-            guideReview("pr-review-guide.md"),
-            guideSweep("sweep-guide.md"),
-          ].join("\n\n---\n\n");
-
-          function getDiff() {
-            const run = (a) => { try { return execFileSync("git", a, {encoding:"utf8"}); } catch { return ""; } };
-            return run(["diff", "origin/${{ github.base_ref }}...HEAD"])
-                || run(["diff", "HEAD~1"])
-                || "";
-          }
-
-          const diff = getDiff();
-
-          const baseRef = "${{ github.base_ref }}";
-          const diffSection = diff
-            ? "\n\n### Diff (branch vs " + baseRef + ")\n\n```diff\n" + diff + "\n```"
-            : "\n\n*No diff - full codebase scan only.*";
-
-          const prompt = system
-            + "\n\n## Task\n\n"
-            + "You have two jobs - do BOTH:\n\n"
-            + "1. **PR Review** - review the diff below. "
-            + "Produce Symptom->Source->Consequence->Remedy findings for anything wrong in the changed code.\n\n"
-            + "2. **Full Codebase Sweep** - independently scan the entire repository for issues: "
-            + "dead code, missing tests, security risks, architectural problems, tech debt, config drift. "
-            + "Produce Symptom->Source->Consequence->Remedy findings for each issue found.\n\n"
-            + "**Label each finding** as `[PR BLOCKER]`, `[SHOULD FILE ISSUE]`, or `[NOTE]`."
-            + diffSection
-            + "\n\nProduce findings as Symptom->Source->Consequence->Remedy "
-            + "with a Health Score (0-100) for the diff changes and separately for the full repo.";
-
-          try {
-            const out = execFileSync("opencode", [
-              "run", "--model", "opencode/deepseek-v4-flash-free",
-              "--dangerously-skip-permissions",
-              "--file", "/dev/stdin"
-            ], { input: prompt, encoding: "utf8", maxBuffer: 50*1024*1024,
-                env: { ...process.env, OPENCODE_PURE: "1" } });
-            const score = (out.match(/Health\s+Score[:\s]+(\d+)/i) || [])[1] || null;
-            process.stdout.write(JSON.stringify({ report: out.trim(), score: score ? parseInt(score) : null, mode }));
-          } catch (e) {
-            process.stdout.write(JSON.stringify({ error: e.message, mode }));
-            process.exit(1);
-          }
-          SCRIPTEOF
-
-          node /tmp/ci-opencode.mjs review > .brooks-result.json
+          python3 .github/workflows/brooks-lint-run.py \
+            --mode review \
+            --skills-dir .brooks-lint/skills \
+            --template .github/workflows/brooks-review-template.md \
+            --base-ref "${{ github.base_ref }}" \
+            > .brooks-result.json
 
           echo "score=$(jq -r '.score // 0' .brooks-result.json)" >> "$GITHUB_OUTPUT"
           echo "report<<EOF" >> "$GITHUB_OUTPUT"
