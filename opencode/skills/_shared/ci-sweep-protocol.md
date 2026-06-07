@@ -235,7 +235,9 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 7. **Bespoke-software portability complaints.** "Config file has hardcoded `/home/dzack/` paths" or "`.serena_config.yml` won't work on another machine" — this is single-user, pre-launch, bespoke software. Machine-specific config files are not defects. Do not report hardcoded home-directory paths, absolute local paths, or non-portable tool configs as portability issues. They are intentional.
 
-8. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
+8. **Version range / dependency freshness complaints.** "pyproject.toml requires Python >=3.14" or "uses an alpha/beta" — this software targets the owner's latest environment. The convention is latest unless pinning is strictly required. Do not suggest broadening version ranges, relaxing constraints, or using older stable releases for hypothetical compatibility.
+
+9. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
 
 ## Finding Quality Gate
 
@@ -243,6 +245,11 @@ Before reporting any finding, run these five checks in order. If any check suppr
 
 **Check 1 — Does this violate the bespoke-software rules from AGENTS.md?**
 Hardcoded paths, machine-specific configs, non-portable conventions, breaking changes, lack of enterprise features — these are not defects in bespoke single-user software. If the finding would only matter for an imagined future consumer or a multi-platform deployment, suppress it.
+
+In particular:
+- **Version range too narrow?** Not a defect. This software targets the owner's environment. The convention is "latest unless pinning is strictly required." Do not suggest broadening version ranges for hypothetical other users.
+- **Uses latest library/framework?** Not a defect — this is the default posture.
+- **Breaking change?** Not a defect — there are no legacy consumers.
 
 **Check 2 — Is this about infrastructure or product code?**
 If the finding is about CI infrastructure, workflow files, or review tooling, suppress it. The CI pipeline is the mechanism, not the target.
