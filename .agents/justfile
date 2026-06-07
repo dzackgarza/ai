@@ -6,6 +6,8 @@
 #   just post-brooks-review <result.json> <pr-number>
 #
 # The only way to post a review comment — no bypass path.
+set shell := ['bash', '-c']
+
 [private]
 post-brooks-review result pr-number:
     set -euo pipefail
