@@ -38,6 +38,8 @@ def collect_repo_docs(repo_root: pathlib.Path) -> str:
             rel = p.relative_to(repo_root)
             if any(part in IGNORE_DIRS for part in p.parts):
                 continue
+            if not p.is_file():
+                continue  # skip broken symlinks (local-only targets not on CI)
             if p.stat().st_size > 500_000:
                 continue  # skip huge files
             sections.append(f"### Repo doc: {rel}\n\n{p.read_text()}")
