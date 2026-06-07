@@ -1,11 +1,10 @@
-# Post a brooks-lint review as a PR comment.
-# Validates the report first — rejects launder patterns, empty reports,
-# missing finding labels, and missing file-path evidence.
+# Validate a brooks-lint/slop report and write it to the canonical artifact.
+# The agent MUST call this to submit a report — there is no other path.
+# - If validation fails → exits non-zero → agent retries
+# - If validation passes → writes .brooks-report-artifact.json (CI posts from this)
 #
 # Usage:
 #   just post-brooks-review <result.json> <pr-number>
-#
-# The only way to post a review comment — no bypass path.
 set shell := ['bash', '-c']
 
 [private]
@@ -15,9 +14,6 @@ post-brooks-review result pr-number:
     # Validate — checker has PEP 723 metadata declared in its shebang
     scripts/check-brooks-report.py "{{result}}"
 
-    # Parse and post
-    report=$$(jq -r '.report' "{{result}}")
-    score=$$(jq -r '.score // "N/A"' "{{result}}")
-    body=$$(printf '## Brooks-Lint Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$${report}" "$${score}")
-    gh pr comment "{{pr-number}}" --body "$${body}"
-    echo "Posted review to PR #{{pr-number}}"
+    # Write canonical artifact (CI posts from this — no re-validation)
+    cp "{{result}}" .brooks-report-artifact.json
+    echo "Report validated. Artifact written to .brooks-report-artifact.json"

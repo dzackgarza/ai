@@ -48,19 +48,26 @@ jobs:
             --skills-dir opencode/skills \
             --template .github/workflows/brooks-review-template.md \
             --base-ref "${{ github.base_ref }}" \
-            > .brooks-result.json
-
-          echo "score=$(jq -r '.score // 0' .brooks-result.json)" >> "$GITHUB_OUTPUT"
+            --pr-number "${{ github.event.number }}"
 
       - name: Post PR Comment
         if: github.event_name == 'pull_request'
-        run: just -f .agents/justfile post-brooks-review "$(pwd)/.brooks-result.json" ${{ github.event.number }}
+        run: |
+          report=$(jq -r '.report' .brooks-report-artifact.json)
+          score=$(jq -r '.score // "N/A"' .brooks-report-artifact.json)
+          body="## Brooks-Lint Review (OpenCode)
+
+${report}
+
+---
+_Health Score: ${score}_"
+          gh pr comment ${{ github.event.number }} --body "$body"
 
       - name: Check Threshold
         if: ${{ vars.BROOKS_FAIL_BELOW != '' }}
         run: |
           threshold="${{ vars.BROOKS_FAIL_BELOW }}"
-          score=$(jq -r '.score // 0' .brooks-result.json)
+          score=$(jq -r '.score // 0' .brooks-report-artifact.json)
           if [ "$score" -lt "$threshold" ] 2>/dev/null; then
             echo "Health Score $score is below threshold $threshold"
             exit 1

@@ -1,10 +1,9 @@
 ## CI Constraints (MANDATORY)
 
 This runs in a CI environment. Follow these rules exactly:
-- **Write ALL findings to stdout.** Do not write any files.
-- Do not reference files you wrote — they do not persist after the job.
+- **Do NOT output the report to stdout.** The recipe is the only submission path.
 - Do not ask questions. Do not request confirmation. Do not pause for input.
-- Output the complete report as text to stdout. Every finding, every score, every recommendation.
+- Run `just -f .agents/justfile` to discover available recipes — do not guess paths.
 
 ## Skills in Context
 
@@ -49,4 +48,25 @@ Follow the **Finding Classification Tiers** in the CI Sweep Protocol:
 
 ### Output Format
 Follow the sweep protocol's format: Tier 1 findings get full Symptom→Source→Consequence→Remedy with Health Score (0-100) for the diff changes and separately for the full repo. Tier 2 findings get a single-line cleanup list appended only if Tier 1 is empty.
+
+## Submitting Your Report
+
+The ONLY way to submit a report is through the validation recipe:
+
+1. Write your report and score to a **temporary JSON file** (e.g. `/tmp/brooks-report.json`):
+   ```json
+   {"report": "<full report text with all findings>", "score": <0-100>}
+   ```
+
+2. Run the recipe:
+   ```
+   just -f .agents/justfile post-brooks-review /tmp/brooks-report.json {{PR_NUMBER}}
+   ```
+
+3. If the recipe **fails** (exit non-zero): read the validation errors, fix the report, and retry.
+
+4. If the recipe **succeeds**: it creates `.brooks-report-artifact.json` with the validated report.
+
+Do NOT write to `.brooks-report-artifact.json` directly — only the recipe can create it.
+Do NOT output the report to stdout — the recipe is the only submission path.
 
