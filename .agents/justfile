@@ -12,8 +12,8 @@ set shell := ['bash', '-c']
 post-brooks-review result pr-number:
     set -euo pipefail
 
-    # Validate — checker has PEP 723 metadata, skip project context
-    uv run --no-project .agents/scripts/check-brooks-report.py "{{result}}"
+    # Validate — checker has PEP 723 metadata declared in its shebang
+    .agents/scripts/check-brooks-report.py "{{result}}"
 
     # Parse and post
     report=$$(jq -r '.report' "{{result}}")
