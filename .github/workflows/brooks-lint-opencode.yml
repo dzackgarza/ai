@@ -26,7 +26,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install just
-        run: sudo apt-get update && sudo apt-get install -y just
+        run: curl -LSfs https://raw.githubusercontent.com/casey/just/main/install.sh | sh -s -- --to /usr/local/bin
 
       - name: Install OpenCode
         run: npm install -g opencode-ai
