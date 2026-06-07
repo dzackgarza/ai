@@ -28,6 +28,18 @@ jobs:
       - name: Install OpenCode
         run: npm install -g opencode-ai
 
+      - name: Install policy skills for skill() tool
+        run: |
+          mkdir -p ~/.config/opencode/skills
+          for skill in anti-slop reviewing-llm-code policy-index test-guidelines; do
+            if [ -d "opencode/skills/$skill" ]; then
+              cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
+              echo "installed $skill"
+            else
+              echo "WARNING: opencode/skills/$skill not found — skill() will fail"
+            fi
+          done
+
       - name: Run Brooks-Lint via OpenCode
         id: review
         shell: bash
