@@ -46,7 +46,7 @@ def collect_repo_docs(repo_root: pathlib.Path) -> str:
     return "## Repo Documentation\n\n" + "\n\n---\n\n".join(sections)
 
 
-def load_skills(skills_dir: pathlib.Path) -> str:
+def load_skills(skills_dir: pathlib.Path, slop_mode: bool = False) -> str:
     """Load and concatenate all shared and mode-specific skill guides."""
     _shared = skills_dir / "_shared"
     guides = []
@@ -70,20 +70,34 @@ def load_skills(skills_dir: pathlib.Path) -> str:
         "bespoke-software-policy",
         "anti-slop",
         "reviewing-llm-code",
+        "fixing-slop",
         "test-guidelines",
         "tool-provisioning-and-environment-hygiene",
     ]:
         path = skills_repo / skill_name / "SKILL.md"
         guides.append(path.read_text())  # no guard — fail loudly if missing
 
-    # Force-inject the bridge-burning red-flag reference from reviewing-llm-code.
-    ref_path = (
-        skills_repo
-        / "reviewing-llm-code"
-        / "references"
-        / "bridge-burning-red-flags.md"
-    )
-    guides.append(ref_path.read_text())
+    # In slop mode, load ALL reference files from reviewing-llm-code and anti-slop.
+    # The main SKILL.md files are already loaded above; the references add detection
+    # pattern depth across bridge-burning violations, runtime control-flow, case
+    # studies, code patterns, test patterns, text patterns, UX antipatterns, etc.
+    if slop_mode:
+        for ref_dir in [
+            skills_repo / "reviewing-llm-code" / "references",
+            skills_repo / "anti-slop" / "references",
+        ]:
+            for ref_file in sorted(ref_dir.iterdir()):
+                if ref_file.suffix == ".md":
+                    guides.append(ref_file.read_text())
+    else:
+        # Non-slop mode: only load the core bridge-burning red-flag reference.
+        ref_path = (
+            skills_repo
+            / "reviewing-llm-code"
+            / "references"
+            / "bridge-burning-red-flags.md"
+        )
+        guides.append(ref_path.read_text())
 
     for guide_dir, fname in [
         ("brooks-review", "pr-review-guide.md"),
@@ -188,7 +202,7 @@ def main() -> None:
 
     # Assemble the prompt: system (skills + project docs) + body (template + diff).
     # The template is the single source of prompt instructions — no injected layers.
-    system = load_skills(skills_dir)
+    system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))
     diff = get_diff(args.base_ref)
     template = template_path.read_text()
     body = substitute_diff(template, diff)

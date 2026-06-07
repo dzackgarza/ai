@@ -1,11 +1,11 @@
-# Brooks-Lint: code review via opencode run (free model, no API key)
-name: Brooks-Lint PR Review (OpenCode)
+# Slop-Lint: AI-generated-code slop review via opencode run (free model, no API key)
+name: Slop-Lint PR Review (OpenCode)
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  brooks-lint:
+  slop-lint:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -39,29 +39,29 @@ jobs:
             echo "installed $skill"
           done
 
-      - name: Run Brooks-Lint via OpenCode
+      - name: Run Slop-Lint via OpenCode
         id: review
         shell: bash
         run: |
           python3 .github/workflows/brooks-lint-run.py \
-            --mode review \
+            --mode slop \
             --skills-dir .brooks-lint/skills \
-            --template .github/workflows/brooks-review-template.md \
+            --template .github/workflows/slop-review-template.md \
             --base-ref "${{ github.base_ref }}" \
-            > .brooks-result.json
+            > .slop-result.json
 
-          echo "score=$(jq -r '.score // 0' .brooks-result.json)" >> "$GITHUB_OUTPUT"
+          echo "score=$(jq -r '.score // 0' .slop-result.json)" >> "$GITHUB_OUTPUT"
 
       - name: Post PR Comment
         if: github.event_name == 'pull_request'
-        run: just -f .agents/justfile post-brooks-review .brooks-result.json ${{ github.event.number }}
+        run: just -f .agents/justfile post-brooks-review .slop-result.json ${{ github.event.number }}
 
-      - name: Check Threshold
-        if: ${{ vars.BROOKS_FAIL_BELOW != '' }}
+      - name: Check Slop Threshold
+        if: ${{ vars.SLOP_FAIL_BELOW != '' }}
         run: |
-          threshold="${{ vars.BROOKS_FAIL_BELOW }}"
-          score=$(jq -r '.score // 0' .brooks-result.json)
+          threshold="${{ vars.SLOP_FAIL_BELOW }}"
+          score=$(jq -r '.score // 0' .slop-result.json)
           if [ "$score" -lt "$threshold" ] 2>/dev/null; then
-            echo "Health Score $score is below threshold $threshold"
+            echo "Slop Health Score $score is below threshold $threshold"
             exit 1
           fi
