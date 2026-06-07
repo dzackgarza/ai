@@ -31,6 +31,45 @@ rules:
       - typescript
       - javascript
     severity: ERROR
+  - id: no-nullish-coalescing
+    pattern: $X ?? $Y
+    message: 'Nullish coalescing (??) creates a runtime fallback. Use an explicit assertion or fail loudly if the value can be null/undefined.'
+    languages:
+      - typescript
+      - javascript
+    severity: ERROR
+  - id: no-const-assignment
+    patterns:
+      - pattern: 'const $X = $VALUE;'
+      - pattern-not: 'const $X = require($VALUE);'
+    message: 'Const assignment creates a binding that pretends immutability. Use `let` — constants belong in config files, not source code.'
+    paths:
+      exclude:
+        - '*config*'
+        - '*.config.*'
+        - '*.d.ts'
+    languages:
+      - typescript
+      - javascript
+    severity: ERROR
+  - id: rust-no-const
+    pattern: 'const $X: $T = $VALUE;'
+    message: 'Compile-time constant in source code. Move to config or use `let mut`.'
+    paths:
+      exclude:
+        - '*config*'
+    languages:
+      - rust
+    severity: ERROR
+  - id: rust-no-static
+    pattern: 'static $X: $T = $VALUE;'
+    message: 'Static variable in source code. Move to config or use `let mut`.'
+    paths:
+      exclude:
+        - '*config*'
+    languages:
+      - rust
+    severity: ERROR
   - id: no-double-cast
     pattern: $X as $T as $Z
     message: Double-casting (x as T as U) bypasses TypeScript's type system entirely.
@@ -105,6 +144,31 @@ rules:
     message: try/except ImportError makes a required dependency optional.
     languages:
       - python
+    severity: ERROR
+  - id: py-no-hardcoded-env-var
+    pattern-either:
+      - pattern: os.environ[$KEY] = $VALUE
+      - pattern: os.environ[$KEY] = $VALUE
+    message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
+    languages:
+      - python
+    severity: ERROR
+  - id: ts-no-hardcoded-env-var
+    pattern-either:
+      - pattern: process.env.$KEY = $VALUE
+      - pattern: process.env[$KEY] = $VALUE
+    message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
+    languages:
+      - typescript
+      - javascript
+    severity: ERROR
+  - id: rust-no-hardcoded-env-var
+    pattern-either:
+      - pattern: env::set_var($KEY, $VALUE)
+      - pattern: std::env::set_var($KEY, $VALUE)
+    message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
+    languages:
+      - rust
     severity: ERROR
   - id: py-no-bare-except
     pattern: "except:\n    pass"

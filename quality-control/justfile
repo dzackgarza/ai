@@ -17,6 +17,66 @@
 
 # ── Cross-language recipes ────────────────────────────────────────
 
+_check-envrc:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: environment config check ==="
+	echo "# Validates .envrc presence and env var hygiene"
+	failed=0
+	# 1. .envrc must exist
+	if [ ! -f ".envrc" ]; then
+		echo "ERROR: No .envrc file in project root."
+		echo "       Create an .envrc with all required environment variables,"
+		echo "       then run 'direnv allow' to load it."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	# 2. DIRENV_CONFIGURED_CORRECTLY must be set
+	if [ -z "${DIRENV_CONFIGURED_CORRECTLY:-}" ]; then
+		echo "ERROR: DIRENV_CONFIGURED_CORRECTLY is not set."
+		echo "       The repo's .envrc must either use 'source_up' to inherit"
+		echo "       the parent environment (which sources ~/.envrc), or explicitly"
+		echo "       source \$HOME/.envrc to make the global env vars available."
+		echo "       Then run 'direnv allow' to load the configuration."
+		echo ""
+		echo "       The justfile must NEVER define env vars via 'export'."
+		echo "       All environment variables must be defined in .envrc files."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	# 3. No .env files — they are env var definitions outside .envrc
+	if find . -maxdepth 3 -name '.env*' -type f -not -path '*/.git/*' -not -path '*/node_modules/*' 2>/dev/null | grep -q .; then
+		echo "ERROR: Found .env files — these are env var definitions that belong in .envrc."
+		find . -maxdepth 3 -name '.env*' -type f -not -path '*/.git/*' -not -path '*/node_modules/*' 2>/dev/null
+		echo "       Move these variables to .envrc and delete the .env files."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	# 4. Shell scripts must not define env vars via 'export VAR=value'
+	for script in $(find . -maxdepth 3 -name '*.sh' -type f -not -path '*/.git/*' -not -path '*/node_modules/*' 2>/dev/null); do
+		if grep -n '^[[:space:]]*export [A-Za-z_][A-Za-z0-9_]*=' "$script" 2>/dev/null; then
+			echo "ERROR: $script defines environment variables via 'export VAR=value'."
+			echo "       All env vars must be centralized in .envrc."
+			echo "       Move these exports to .envrc and run 'direnv allow'."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit 1
+		fi
+	done
+	# 5. Justfile must not define env vars — they belong in .envrc
+	for jf in "justfile" "Justfile"; do
+		[ ! -f "$jf" ] && continue
+		if grep -n '^export ' "$jf" 2>/dev/null; then
+			echo "ERROR: $jf defines environment variables via 'export'."
+			echo "       All env vars must be centralized in .envrc."
+			echo "       Move these exports to .envrc and run 'direnv allow'."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit 1
+		fi
+		break
+	done
+	echo "Environment configuration OK"
+
 _no-bypass:
 	#!/usr/bin/env bash
 	set -euo pipefail
@@ -219,7 +279,7 @@ _sync-qc-excludes:
 
 # ── Entry Points ──────────────────────────────────────────────────
 
-_global-qc: _no-bypass _check-no-local-qc-override _semgrep _ast-grep _vibecheck _slop
+_global-qc: _check-envrc _no-bypass _check-no-local-qc-override _semgrep _ast-grep _vibecheck _slop
 	#!/usr/bin/env bash
 	set -euo pipefail
 	echo "Global quality checks completed"

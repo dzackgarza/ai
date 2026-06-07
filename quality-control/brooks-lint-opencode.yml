@@ -1,0 +1,111 @@
+name: Brooks-Lint PR Review (OpenCode)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  brooks-lint:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout brooks-lint skills
+        uses: actions/checkout@v4
+        with:
+          repository: hyhmrright/brooks-lint
+          path: .brooks-lint
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install OpenCode
+        run: npm install -g opencode-ai
+
+      - name: Run Brooks-Lint via OpenCode
+        id: review
+        shell: bash
+        run: |
+          # Write the runner script (heredoc prevents shell expansion)
+          cat > /tmp/ci-opencode.mjs << 'SCRIPTEOF'
+          import { execFileSync } from "node:child_process";
+          import { readFileSync } from "node:fs";
+          import path from "node:path";
+
+          const SKILLS = path.resolve(".brooks-lint/skills");
+          const shared = (f) => readFileSync(path.join(SKILLS, "_shared", f), "utf8");
+          const guide = (f) => readFileSync(path.join(SKILLS, "brooks-review", f), "utf8");
+          const mode = process.argv[2] || "review";
+
+          const system = [
+            shared("common.md"),
+            shared("source-coverage.md"),
+            shared("decay-risks.md"),
+            guide("pr-review-guide.md"),
+          ].join("\n\n---\n\n");
+
+          function getDiff() {
+            const run = (a) => { try { return execFileSync("git", a, {encoding:"utf8"}); } catch { return ""; } };
+            return run(["diff", "origin/${{ github.base_ref }}...HEAD"])
+                || run(["diff", "HEAD~1"])
+                || "";
+          }
+
+          const diff = getDiff();
+          const scope = diff ? "branch diff vs ${{ github.base_ref }}" : "full codebase scan";
+          const msg = diff
+            ? `Run brooks-lint ${mode} mode on this diff.\n\nScope: ${scope}\n\n\`\`\`diff\n${diff}\n\`\`\``
+            : `Run brooks-lint ${mode} mode on this project.\n\nScope: ${scope}`;
+
+          const prompt = `${system}\n\n${msg}\n\nProduce findings as Symptom→Source→Consequence→Remedy with a Health Score (0-100).`;
+
+          try {
+            const out = execFileSync("opencode", [
+              "run", "--model", "opencode/deepseek-v4-flash-free",
+              "--dangerously-skip-permissions",
+              "--file", "/dev/stdin"
+            ], { input: prompt, encoding: "utf8", maxBuffer: 50*1024*1024,
+                env: { ...process.env, OPENCODE_PURE: "1" } });
+            const score = (out.match(/Health\s+Score[:\s]+(\d+)/i) || [])[1] || null;
+            process.stdout.write(JSON.stringify({ report: out.trim(), score: score ? parseInt(score) : null, mode }));
+          } catch (e) {
+            process.stdout.write(JSON.stringify({ error: e.message, mode }));
+            process.exit(1);
+          }
+          SCRIPTEOF
+
+          node /tmp/ci-opencode.mjs review > .brooks-result.json
+
+          echo "score=$(jq -r '.score // 0' .brooks-result.json)" >> "$GITHUB_OUTPUT"
+          echo "report<<EOF" >> "$GITHUB_OUTPUT"
+          jq -r '.report // "error"' .brooks-result.json >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Post PR Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('.brooks-result.json', 'utf8'));
+            const body = `## Brooks-Lint Review (OpenCode)\n\n${r.report || "*error*"}\n\n---\n_Health Score: ${r.score ?? "N/A"}_`;
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+      - name: Check Threshold
+        if: ${{ vars.BROOKS_FAIL_BELOW != '' }}
+        run: |
+          threshold="${{ vars.BROOKS_FAIL_BELOW }}"
+          score=$(jq -r '.score // 0' .brooks-result.json)
+          if [ "$score" -lt "$threshold" ] 2>/dev/null; then
+            echo "Health Score $score is below threshold $threshold"
+            exit 1
+          fi

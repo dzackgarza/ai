@@ -9,6 +9,14 @@ common:
       - start-mcp-server
       - --project-from-cwd
     enabled: true
+  sdl-mcp:
+    description: SDL MCP server
+    command: npx
+    args:
+      - sdl-mcp@latest
+      - serve
+      - --stdio
+    enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
     command: /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/.venv/bin/python
@@ -55,4 +63,3 @@ harnesses:
     config_path: ~/.gemini/antigravity-cli/mcp_config.json
     format: json
     json_path: mcpServers
-

@@ -10,6 +10,9 @@
     "morph",
     "kaggle-ollama"
   ],
+  "instructions": [
+    "/home/dzack/.config/opencode/AGENTS.caveman.md"
+  ],
   "permission": {
     "external_directory": {
       "*": "deny",
@@ -180,6 +183,15 @@
         "serena",
         "start-mcp-server",
         "--project-from-cwd"
+      ]
+    },
+    "sdl-mcp": {
+      "type": "local",
+      "command": [
+        "npx",
+        "sdl-mcp@latest",
+        "serve",
+        "--stdio"
       ]
     }
   },
