@@ -39,6 +39,7 @@ IGNORE_DIRS = frozenset(
 )
 
 ARTIFACT_PATH = pathlib.Path(".brooks-report-artifact.json")
+CHECKER_PATH = pathlib.Path(".agents/scripts/check-brooks-report.py")
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
 
@@ -158,6 +159,30 @@ def substitute(template: str, **kwargs: str) -> str:
     return template
 
 
+def validate_artifact() -> bool:
+    """Re-validate artifact in case agent bypassed the just recipe.
+    Returns True only if the checker script passes."""
+    if not ARTIFACT_PATH.exists():
+        return False
+    result = subprocess.run(
+        [str(CHECKER_PATH), str(ARTIFACT_PATH)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        print(
+            "--- Artifact re-validation FAILED (agent may have bypassed recipe) ---",
+            file=sys.stderr,
+            flush=True,
+        )
+        for line in (result.stdout or "").strip().splitlines():
+            print(f"  checker: {line}", file=sys.stderr)
+        for line in (result.stderr or "").strip().splitlines():
+            print(f"  checker err: {line}", file=sys.stderr)
+    return result.returncode == 0
+
+
 def run_opencode(prompt: str) -> int:
     """Run opencode with prompt on stdin. Output flows to parent's stdout/stderr."""
     result = subprocess.run(
@@ -242,12 +267,22 @@ def main() -> None:
             sys.exit(1)
 
         if ARTIFACT_PATH.exists():
-            print(
-                f"--- Report artifact created ({ARTIFACT_PATH.stat().st_size} bytes) ---",
-                file=sys.stderr,
-                flush=True,
-            )
-            sys.exit(0)
+            if validate_artifact():
+                print(
+                    f"--- Report artifact validated ({ARTIFACT_PATH.stat().st_size} bytes) ---",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                sys.exit(0)
+            else:
+                # Agent bypassed the recipe — delete and retry
+                ARTIFACT_PATH.unlink()
+                print(
+                    "--- Invalid artifact removed, retrying ---",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                continue
 
         print(
             "--- No artifact found. Agent did not submit a valid report ---",
