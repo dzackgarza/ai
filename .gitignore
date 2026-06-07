@@ -111,3 +111,8 @@ dist/
 opencode/events.jsonl
 .opencode/events.jsonl
 .opencode/opencode.json
+
+# Context-mode SQLite databases (auto-generated session state)
+opencode/context-mode/**/*.db
+opencode/context-mode/**/*.db-shm
+opencode/context-mode/**/*.db-wal
