@@ -91,7 +91,7 @@ Read the top 5 files from the churn list (Step 2) in full.
 Read the top 3 oldest files (Step 3) in full.
 Read entrypoint source files from each module.
 
-For each file, apply the Six Decay Risks from `decay-risks.md`:
+For each source code file (NOT config/data files), apply the Six Decay Risks from `decay-risks.md`:
 - R1 Cognitive Overload: function length, nesting, naming, magic numbers
 - R2 Change Propagation: coupling, shotgun surgery, divergent change
 - R3 Knowledge Duplication: DRY violations, inconsistent naming
@@ -99,7 +99,25 @@ For each file, apply the Six Decay Risks from `decay-risks.md`:
 - R5 Dependency Disorder: circular deps, inversion, fan-out
 - R6 Domain Model Distortion: anemic models, ubiquitous language drift
 
+The Decay Risks apply ONLY to source code files (.py, .ts, .js, .rs, .go, .c, .h, .cpp, .java, .lean, etc.).
+Do NOT apply them to configuration files (.json, .yaml, .toml, .ini), data files, or markup (.md, .html).
+Config file length is data cardinality, not cognitive overload. Parallel config sections for
+different providers are not DRY violations. An `opencode.json` with model ID lists is not
+"accidental complexity."
+
 Also check the Test Decay risks if test files exist.
+
+## File Classification Before Heuristics
+
+Before applying any quality heuristic to a file, classify it:
+
+- **Is this a configuration file or source code?** Config files (JSON, YAML, TOML) encode data — their length is the cardinality of the domain they model, not accidental complexity. A 1921-line JSON with 7 parallel arrays of model IDs is not "cognitive overload" — it's the model ecosystem's cardinality. Apply heuristics about function length, nesting, and cyclomatic complexity ONLY to source code files (.py, .ts, .js, .rs, .go, etc.).
+
+- **For config files:** Check for structural issues only: missing values, contradictory keys, stale references, dead entries. Do NOT report "file too long" or "duplicate structure across sections" as complexity findings. Parallel config sections for different providers are not DRY violations — they're multiple interfaces to the same domain.
+
+- **Before proposing a refactoring:** Verify that it actually reduces the number of items a human must maintain. Moving 7 parallel arrays into a "centralized registry" with cross-references does not eliminate the 7 lists — it adds a join layer. If the total number of semantically distinct elements is unchanged, the "fix" is rearrangement, not simplification.
+
+- **Cite the wrong tool for the job:** If a finding applies an engineering-text heuristic (McConnell, Ousterhout, Fowler) to a config file, it is invalid. Software design heuristics apply to functions, modules, and interfaces — not to data declarations.
 
 ## Finding Format
 
@@ -149,13 +167,27 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 3. **Vapid DRY violations in infrastructure tooling.** CI pipeline files, workflow runners, and prompt templates are by their nature duplicated or structurally similar. Reporting knowledge duplication or shotgun surgery in `.github/workflows/` or `quality-control/` is noise. These files are infrastructure, not product code.
 
-4. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
+4. **Config file length / DRY violations in data sections.** "JSON config is 1921 lines" or "7 providers each list model IDs" is not complexity — it is domain cardinality. Proposing a registry or refactoring that preserves the same number of distinct entries is rearrangement, not simplification. Config data is not source code.
+
+5. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
 
 ## Finding Quality Gate
 
-Before reporting any finding, ask: "Is this finding about the CI/review infrastructure, or about the project's product code?" If the former, suppress it. If the latter, the finding must include:
+Before reporting any finding, run these three checks:
+
+**Check 1 — Is this about infrastructure or product code?**
+If the finding is about CI infrastructure, workflow files, or review tooling, suppress it. The CI pipeline is the mechanism, not the target.
+
+**Check 2 — What kind of file is this?**
+If the finding applies a code-complexity heuristic (file length, nesting, cyclomatic complexity, DRY) to a configuration file, stop. Config file length is data cardinality, not accidental complexity. Only apply code heuristics to source code.
+
+**Check 3 — Does the remedy actually solve the problem?**
+Trace through: does the proposed fix reduce the number of distinct items a human must maintain? If it just rearranges the same data (registry with cross-references instead of inline arrays), the remedy is rearrangement, not remediation. Reject it.
+
+A valid finding must include:
 - A specific defect in product code behavior, structure, or maintainability
 - A concrete recommendation that does not involve adding a fallback
 - Evidence from exploration commands (tree, git log, ls -lt) that surfaces the defect
+- Verification that the remedy reduces cardinality or removes an actual defect
 
 Findings about the review tooling itself will be summarily rejected.
