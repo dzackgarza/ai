@@ -1,6 +1,6 @@
-# Post a brooks-lint / slop review as a PR comment.
+# Post a brooks-lint review as a PR comment.
 # Validates the report first — rejects launder patterns, empty reports,
-# missing finding labels, missing file-path evidence, and Mermaid errors.
+# missing finding labels, and missing file-path evidence.
 #
 # Usage:
 #   just post-brooks-review <result.json> <pr-number>
@@ -10,19 +10,12 @@
 post-brooks-review result pr-number:
     set -euo pipefail
 
-    # Validate
-    uv run .agents/scripts/check-brooks-report.py "{{result}}"
+    # Validate — checker has PEP 723 metadata, skip project context
+    uv run --no-project .agents/scripts/check-brooks-report.py "{{result}}"
 
-    # Parse and post via stdin — avoids bash escaping issues with \n
+    # Parse and post
     report=$$(jq -r '.report' "{{result}}")
     score=$$(jq -r '.score // "N/A"' "{{result}}")
-
-    {
-        echo "## Review (OpenCode)"
-        echo ""
-        echo "$${report}"
-        echo ""
-        echo "---"
-        echo "_Health Score: $${score}_"
-    } | gh pr comment "{{pr-number}}" --body -
+    body=$$(printf '## Brooks-Lint Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$${report}" "$${score}")
+    gh pr comment "{{pr-number}}" --body "$${body}"
     echo "Posted review to PR #{{pr-number}}"
