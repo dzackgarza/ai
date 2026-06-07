@@ -26,9 +26,13 @@ def load_skills(skills_dir: pathlib.Path) -> str:
         if path.exists():
             guides.append(path.read_text())
 
+    # Load CI exploration protocol from _shared (not the interactive auto-fix pipeline)
+    ci_protocol = _shared / "ci-sweep-protocol.md"
+    if ci_protocol.exists():
+        guides.append(ci_protocol.read_text())
+
     for guide_dir, fname in [
         ("brooks-review", "pr-review-guide.md"),
-        ("brooks-sweep", "sweep-guide.md"),
     ]:
         path = skills_dir / guide_dir / fname
         if path.exists():
@@ -122,7 +126,8 @@ def main() -> None:
         )
         sys.exit(1)
 
-    # Assemble the prompt
+    # Assemble the prompt: system (skills) + body (template + diff).
+    # The template is the single source of prompt instructions — no injected layers.
     system = load_skills(skills_dir)
     diff = get_diff(args.base_ref)
     template = template_path.read_text()

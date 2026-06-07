@@ -65,19 +65,21 @@ def resolve_local_server_fields(
     config: dict,
 ) -> tuple[str, list[str], dict[str, str] | None, str | None]:
     """Resolve command, args, env, and cwd for a local MCP server."""
-    command = resolve_env_tokens(config.get('command', ''))
-    args = [resolve_env_tokens(arg) for arg in config.get('args', [])]
-    env_config = config.get('env')
-    env = None if not env_config else {
-        key: resolve_env_tokens(value) for key, value in env_config.items()
-    }
-    cwd = resolve_env_tokens(config.get('cwd')) if config.get('cwd') else None
+    command = resolve_env_tokens(config.get("command", ""))
+    args = [resolve_env_tokens(arg) for arg in config.get("args", [])]
+    env_config = config.get("env")
+    env = (
+        None
+        if not env_config
+        else {key: resolve_env_tokens(value) for key, value in env_config.items()}
+    )
+    cwd = resolve_env_tokens(config.get("cwd")) if config.get("cwd") else None
     return command, args, env, cwd
 
 
 def load_yaml_config(config_path: str) -> dict:
     """Load the centralized YAML configuration."""
-    with open(config_path, 'r') as f:
+    with open(config_path) as f:
         return yaml.safe_load(f)
 
 
@@ -95,7 +97,9 @@ def ensure_required_sync_environment() -> None:
     sys.exit(1)
 
 
-def build_mcp_config_for_harness(yaml_config: dict, harness_name: str, builder_func: callable) -> dict:
+def build_mcp_config_for_harness(
+    yaml_config: dict, harness_name: str, builder_func: callable
+) -> dict:
     """Build the MCP configuration for a specific harness.
 
     Args:
@@ -106,16 +110,16 @@ def build_mcp_config_for_harness(yaml_config: dict, harness_name: str, builder_f
     mcp_servers = {}
 
     # Add all common servers (no harness-specific servers - all harnesses get the same tools)
-    for name, server_config in yaml_config.get('common', {}).items():
-        if not server_config.get('enabled', True):
+    for name, server_config in yaml_config.get("common", {}).items():
+        if not server_config.get("enabled", True):
             continue
-        
+
         # Check if this server should be excluded from this harness
-        exclude_harnesses = server_config.get('exclude_harnesses', [])
+        exclude_harnesses = server_config.get("exclude_harnesses", [])
         if harness_name in exclude_harnesses:
             continue
-        
-        server_type = server_config.get('type', 'local')
+
+        server_type = server_config.get("type", "local")
         try:
             mcp_servers[name] = builder_func(server_config, server_type)
         except ValueError as exc:
@@ -126,99 +130,80 @@ def build_mcp_config_for_harness(yaml_config: dict, harness_name: str, builder_f
 
 def build_opencode_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in OpenCode format."""
-    if server_type == 'remote':
-        return {
-            'type': 'remote',
-            'url': resolve_env_tokens(config.get('url', ''))
-        }
+    if server_type == "remote":
+        return {"type": "remote", "url": resolve_env_tokens(config.get("url", ""))}
     else:
         command, args, _, cwd = resolve_local_server_fields(config)
-        server_config = {
-            'type': 'local',
-            'command': [command] + args
-        }
+        server_config = {"type": "local", "command": [command] + args}
         if cwd:
-            server_config['cwd'] = cwd
+            server_config["cwd"] = cwd
         return server_config
 
 
 def build_claude_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Claude Code format.
-    
+
     Claude uses:
     - type: "stdio" for local servers (not "local")
     - type: "http" for remote servers (not "remote")
     - command: string (not array)
     """
-    if server_type == 'remote':
-        return {
-            'type': 'http',
-            'url': resolve_env_tokens(config.get('url', ''))
-        }
+    if server_type == "remote":
+        return {"type": "http", "url": resolve_env_tokens(config.get("url", ""))}
     else:
         # Claude expects command as a single string, args as separate array
         command, cmd_args, env, cwd = resolve_local_server_fields(config)
         server_config = {
-            'type': 'stdio',
-            'command': command,
-            'args': cmd_args if cmd_args else []
+            "type": "stdio",
+            "command": command,
+            "args": cmd_args if cmd_args else [],
         }
         if env:
-            server_config['env'] = env
+            server_config["env"] = env
         if cwd:
-            server_config['cwd'] = cwd
+            server_config["cwd"] = cwd
         return server_config
 
 
 def build_amp_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Amp format.
-    
+
     Amp uses:
     - No 'type' field
     - command: string (not array)
     - args: array
     - For remote: just 'url' field
     """
-    if server_type == 'remote':
-        return {
-            'url': resolve_env_tokens(config.get('url', ''))
-        }
+    if server_type == "remote":
+        return {"url": resolve_env_tokens(config.get("url", ""))}
     else:
         command, args, env, cwd = resolve_local_server_fields(config)
-        server_config = {
-            'command': command,
-            'args': args
-        }
+        server_config = {"command": command, "args": args}
         if env:
-            server_config['env'] = env
+            server_config["env"] = env
         if cwd:
-            server_config['cwd'] = cwd
+            server_config["cwd"] = cwd
         return server_config
 
 
 def build_kilo_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Kilo Code format.
-    
+
     Kilo uses (same as Cline/Roo Code):
     - No 'type' field
     - command: string (not array)
     - args: array
     - For remote: just 'url' field
     """
-    if server_type == 'remote':
-        return {
-            'url': resolve_env_tokens(config.get('url', ''))
-        }
+    if server_type == "remote":
+        return {"url": resolve_env_tokens(config.get("url", ""))}
     else:
         command, args, env, cwd = resolve_local_server_fields(config)
-        server_config = {
-            'command': command,
-            'args': args
-        }
+        server_config = {"command": command, "args": args}
         if env:
-            server_config['env'] = env
+            server_config["env"] = env
         if cwd:
-            server_config['cwd'] = cwd
+            server_config["cwd"] = cwd
         return server_config
 
 
@@ -230,20 +215,15 @@ def build_gemini_server_config(config: dict, server_type: str) -> dict:
     - command: string, args: array
     - For remote: uses 'httpUrl' field (not 'url' or 'type')
     """
-    if server_type == 'remote':
-        return {
-            'httpUrl': resolve_env_tokens(config.get('url', ''))
-        }
+    if server_type == "remote":
+        return {"httpUrl": resolve_env_tokens(config.get("url", ""))}
     else:
         command, args, env, cwd = resolve_local_server_fields(config)
-        server_config = {
-            'command': command,
-            'args': args
-        }
+        server_config = {"command": command, "args": args}
         if env:
-            server_config['env'] = env
+            server_config["env"] = env
         if cwd:
-            server_config['cwd'] = cwd
+            server_config["cwd"] = cwd
         return server_config
 
 
@@ -255,109 +235,73 @@ def build_antigravity_server_config(config: dict, server_type: str) -> dict:
     - command: string, args: array
     - For remote: uses 'serverUrl' field (not 'url' or 'type')
     """
-    if server_type == 'remote':
-        server_config = {
-            'serverUrl': resolve_env_tokens(config.get('url', ''))
-        }
-        if config.get('headers'):
-            server_config['headers'] = {
-                key: resolve_env_tokens(val) for key, val in config['headers'].items()
+    if server_type == "remote":
+        server_config = {"serverUrl": resolve_env_tokens(config.get("url", ""))}
+        if config.get("headers"):
+            server_config["headers"] = {
+                key: resolve_env_tokens(val) for key, val in config["headers"].items()
             }
         return server_config
     else:
         command, args, env, cwd = resolve_local_server_fields(config)
-        server_config = {
-            'command': command,
-            'args': args
-        }
+        server_config = {"command": command, "args": args}
         if env:
-            server_config['env'] = env
+            server_config["env"] = env
         if cwd:
-            server_config['cwd'] = cwd
+            server_config["cwd"] = cwd
         return server_config
-
 
 
 def build_codex_server_config(config: dict, server_type: str) -> dict:
     """Build a server configuration in Codex TOML format."""
-    if server_type == 'remote':
-        return {
-            'url': resolve_env_tokens(config.get('url', '')),
-            'enabled': True
-        }
+    if server_type == "remote":
+        return {"url": resolve_env_tokens(config.get("url", "")), "enabled": True}
     else:
         command, args, env, cwd = resolve_local_server_fields(config)
-        server_config = {
-            'command': command,
-            'args': args,
-            'enabled': True
-        }
+        server_config = {"command": command, "args": args, "enabled": True}
         if env:
-            server_config['env'] = env
+            server_config["env"] = env
         if cwd:
-            server_config['cwd'] = cwd
+            server_config["cwd"] = cwd
         return server_config
 
 
-def sync_opencode_harness(config_path: Path, mcp_servers: dict, dry_run: bool = False) -> bool:
-    """Sync MCP configuration to OpenCode harness (preserves all other config)."""
+def sync_json_config(
+    config_path: Path, mcp_servers: dict, dry_run: bool = False
+) -> bool:
+    """Write MCP server config into a JSON file, preserving all other keys."""
     if not config_path.exists():
         print(f"  ERROR: Config file not found: {config_path}")
         return False
-    
-    with open(config_path, 'r') as f:
+
+    with open(config_path) as f:
         config = json.load(f)
-    
-    # Only update the 'mcp' section, preserve everything else
-    config['mcp'] = mcp_servers
-    
+
+    config["mcp"] = mcp_servers
+
     if dry_run:
         print(f"  Would update {config_path}")
         print(f"  MCP servers: {list(mcp_servers.keys())}")
         return True
-    
-    with open(config_path, 'w') as f:
+
+    with open(config_path, "w") as f:
         json.dump(config, f, indent=2)
-        f.write('\n')
-    
+        f.write("\n")
+
     print(f"  ✓ Updated {config_path}")
     print(f"  MCP servers: {list(mcp_servers.keys())}")
     return True
 
 
-def sync_opencode_skeleton(config_path: Path, mcp_servers: dict, dry_run: bool = False) -> bool:
-    """Sync MCP configuration to OpenCode config skeleton (preserves all other config)."""
-    if not config_path.exists():
-        print(f"  ERROR: Config file not found: {config_path}")
-        return False
-    
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-    
-    # Only update the 'mcp' section, preserve everything else
-    config['mcp'] = mcp_servers
-    
-    if dry_run:
-        print(f"  Would update {config_path}")
-        print(f"  MCP servers: {list(mcp_servers.keys())}")
-        return True
-    
-    with open(config_path, 'w') as f:
-        json.dump(config, f, indent=2)
-        f.write('\n')
-    
-    print(f"  ✓ Updated {config_path}")
-    print(f"  MCP servers: {list(mcp_servers.keys())}")
-    return True
-
-
-def sync_codex_harness(config_path: Path, mcp_servers: dict, dry_run: bool = False) -> bool:
+def sync_codex_harness(
+    config_path: Path, mcp_servers: dict, dry_run: bool = False
+) -> bool:
     """Sync MCP configuration to Codex harness (preserves all other config).
-    
+
     The mcp_servers dict is already in Codex's TOML-ready format.
     """
     if config_path.exists():
-        with open(config_path, 'r') as f:
+        with open(config_path) as f:
             config = tomlkit.parse(f.read())
     else:
         print(f"  ERROR: Config file not found: {config_path}")
@@ -369,14 +313,14 @@ def sync_codex_harness(config_path: Path, mcp_servers: dict, dry_run: bool = Fal
         mcp_section[name] = server_config
 
     # Update only mcp_servers, preserve all other sections
-    config['mcp_servers'] = mcp_section
+    config["mcp_servers"] = mcp_section
 
     if dry_run:
         print(f"  Would update {config_path}")
         print(f"  MCP servers: {list(mcp_servers.keys())}")
         return True
 
-    with open(config_path, 'w') as f:
+    with open(config_path, "w") as f:
         f.write(tomlkit.dumps(config))
 
     print(f"  ✓ Updated {config_path}")
@@ -384,28 +328,30 @@ def sync_codex_harness(config_path: Path, mcp_servers: dict, dry_run: bool = Fal
     return True
 
 
-def sync_amp_harness(config_path: Path, mcp_servers: dict, dry_run: bool = False) -> bool:
+def sync_amp_harness(
+    config_path: Path, mcp_servers: dict, dry_run: bool = False
+) -> bool:
     """Sync MCP configuration to Amp harness (preserves all other config).
-    
+
     The mcp_servers dict is already in Amp's format (no 'type' field, command as string).
     """
     if config_path.exists():
-        with open(config_path, 'r') as f:
+        with open(config_path) as f:
             config = json.load(f)
     else:
         config = {}
 
     # Amp uses "amp.mcpServers" as a literal key, not nested
-    config['amp.mcpServers'] = mcp_servers
+    config["amp.mcpServers"] = mcp_servers
 
     if dry_run:
         print(f"  Would update {config_path}")
         print(f"  MCP servers: {list(mcp_servers.keys())}")
         return True
 
-    with open(config_path, 'w') as f:
+    with open(config_path, "w") as f:
         json.dump(config, f, indent=2)
-        f.write('\n')
+        f.write("\n")
 
     print(f"  ✓ Updated {config_path}")
     print(f"  MCP servers: {list(mcp_servers.keys())}")
@@ -414,7 +360,7 @@ def sync_amp_harness(config_path: Path, mcp_servers: dict, dry_run: bool = False
 
 def set_nested_value(config: dict, json_path: str, value: Any) -> None:
     """Set a value in a nested dict using dot notation path."""
-    keys = json_path.split('.')
+    keys = json_path.split(".")
     current = config
     for key in keys[:-1]:
         if key not in current:
@@ -423,10 +369,12 @@ def set_nested_value(config: dict, json_path: str, value: Any) -> None:
     current[keys[-1]] = value
 
 
-def sync_json_harness(config_path: Path, mcp_servers: dict, json_path: str, dry_run: bool = False) -> bool:
+def sync_json_harness(
+    config_path: Path, mcp_servers: dict, json_path: str, dry_run: bool = False
+) -> bool:
     """Sync MCP configuration to a generic JSON harness (preserves all other config)."""
     if config_path.exists():
-        with open(config_path, 'r') as f:
+        with open(config_path) as f:
             config = json.load(f)
     else:
         config = {}
@@ -440,62 +388,72 @@ def sync_json_harness(config_path: Path, mcp_servers: dict, json_path: str, dry_
         return True
 
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(config_path, 'w') as f:
+    with open(config_path, "w") as f:
         json.dump(config, f, indent=2)
-        f.write('\n')
+        f.write("\n")
 
     print(f"  ✓ Updated {config_path}")
     print(f"  MCP servers: {list(mcp_servers.keys())}")
     return True
 
 
-
 def main():
-    parser = argparse.ArgumentParser(description='Sync MCP configurations to all harnesses')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be changed without making changes')
-    parser.add_argument('--harness', type=str, help='Sync only this specific harness')
-    parser.add_argument('--config', type=str, default='mcp/mcp-servers.yml', help='Path to YAML config file')
+    parser = argparse.ArgumentParser(
+        description="Sync MCP configurations to all harnesses"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be changed without making changes",
+    )
+    parser.add_argument("--harness", type=str, help="Sync only this specific harness")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="mcp/mcp-servers.yml",
+        help="Path to YAML config file",
+    )
     args = parser.parse_args()
 
     ensure_required_sync_environment()
-    
+
     # Load YAML config
     config_path = Path(args.config)
     if not config_path.exists():
         print(f"Error: Config file not found: {config_path}")
         sys.exit(1)
-    
+
     yaml_config = load_yaml_config(config_path)
     print(f"Loaded MCP configuration from {config_path}")
     print(f"Common servers: {list(yaml_config.get('common', {}).keys())}")
     print()
-    
+
     # Sync each harness
-    for harness_name, harness_config in yaml_config.get('harnesses', {}).items():
+    for harness_name, harness_config in yaml_config.get("harnesses", {}).items():
         if args.harness and args.harness != harness_name:
             continue
-        
-        if not harness_config.get('enabled', True):
+
+        if not harness_config.get("enabled", True):
             print(f"⊘ Skipping {harness_name} (disabled)")
             continue
-        
+
         print(f"Syncing {harness_name}...")
 
         # Select the appropriate builder function for this harness
-        if harness_name == 'opencode':
+        if harness_name == "opencode":
             builder_func = build_opencode_server_config
-        elif harness_name == 'claude':
+        elif harness_name == "claude":
             builder_func = build_claude_server_config
-        elif harness_name == 'amp':
+        elif harness_name == "amp":
             builder_func = build_amp_server_config
-        elif harness_name == 'kilo':
+        elif harness_name == "kilo":
             builder_func = build_kilo_server_config
-        elif harness_name == 'codex':
+        elif harness_name == "codex":
             builder_func = build_codex_server_config
-        elif harness_name == 'gemini' or harness_name == 'qwen':
+        elif harness_name == "gemini" or harness_name == "qwen":
             # Qwen is forked from Gemini, uses same format
             builder_func = build_gemini_server_config
-        elif harness_name == 'antigravity-cli':
+        elif harness_name == "antigravity-cli":
             builder_func = build_antigravity_server_config
         else:
             # Default to OpenCode format for unknown harnesses
@@ -503,41 +461,44 @@ def main():
 
         # Build MCP config for this harness
         try:
-            mcp_servers = build_mcp_config_for_harness(yaml_config, harness_name, builder_func)
+            mcp_servers = build_mcp_config_for_harness(
+                yaml_config, harness_name, builder_func
+            )
         except ValueError as exc:
             print(f"  ERROR: {exc}")
             print()
             continue
-        
+
         # Get the config path
-        config_file_path = expand_path(harness_config['config_path'])
-        
+        config_file_path = expand_path(harness_config["config_path"])
+
         # Sync based on harness type
         success = False
 
-        if harness_name == 'opencode':
-            # Sync main opencode.json
-            success = sync_opencode_harness(config_file_path, mcp_servers, args.dry_run)
-            # Also sync config skeleton
-            skeleton_path = config_file_path.parent / 'configs' / 'config_skeleton.json'
+        if harness_name == "opencode":
+            # Sync both opencode.json and config_skeleton.json
+            success = sync_json_config(config_file_path, mcp_servers, args.dry_run)
+            skeleton_path = config_file_path.parent / "configs" / "config_skeleton.json"
             if skeleton_path.exists():
-                sync_opencode_skeleton(skeleton_path, mcp_servers, args.dry_run)
-        elif harness_name == 'codex':
+                sync_json_config(skeleton_path, mcp_servers, args.dry_run)
+        elif harness_name == "codex":
             success = sync_codex_harness(config_file_path, mcp_servers, args.dry_run)
-        elif harness_name == 'amp':
+        elif harness_name == "amp":
             success = sync_amp_harness(config_file_path, mcp_servers, args.dry_run)
-        elif harness_config.get('format') == 'json':
+        elif harness_config.get("format") == "json":
             # Use generic JSON sync with json_path support
-            json_path = harness_config.get('json_path', 'mcp')
-            success = sync_json_harness(config_file_path, mcp_servers, json_path, args.dry_run)
+            json_path = harness_config.get("json_path", "mcp")
+            success = sync_json_harness(
+                config_file_path, mcp_servers, json_path, args.dry_run
+            )
 
         if not success:
             print(f"  ✗ Failed to sync {harness_name}")
-        
+
         print()
-    
+
     print("Done!" if not args.dry_run else "Dry run complete!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

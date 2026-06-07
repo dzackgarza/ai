@@ -216,6 +216,18 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 1. **Meta-commentary on agent infrastructure.** The agent's own configuration (AGENTS.md, .agents/, skill files, prompt templates, CI workflows) is the infrastructure that performs this review, not an object of review. Do not report AGENTS.md length, skill organization, prompt structure, or workflow design as findings. If the agent infrastructure had defects that caused concrete failures, those failures would be observable — theorizing about "context dilution" or "cognitive overload" in the agent's own prompt without evidence is speculation, not analysis.
 
+   **Skills-specific rejections.** Certain findings about `opencode/skills/` are invalid because the reviewer does not understand the harness interface:
+   - "Flat namespace" / "no directory hierarchy" complaints — harnesses resolve skills by name, not path. Hierarchical nesting would break discovery.
+   - "N skills is too many" / "too heterogeneous" — skills cover the full domain range the agent works in. Breadth is not a defect.
+   - "No taxonomy" — the skill name *is* the taxonomy. Hierarchical names encode domain (e.g., `debugging-hermes-tui-commands`, `reviewing-llm-code`).
+
+   **Valid skills findings** (these address actual defects, not interface constraints):
+   - Two skills with substantial overlap that should be consolidated
+   - An overlarge skill that should be split into a skill + subskills/references
+   - A skill for a tool no longer on the system (dead skill)
+   - Missing cross-references between related skills
+   - A needed skill that doesn't exist
+
 2. **Fallback suggestions.** Do not suggest adding a fallback path, graceful degradation, or silent default. If a resource does not exist, it should fail loudly. System policy: no fallbacks, no try-import, no conditional stubs.
 
 3. **Vapid DRY violations in infrastructure tooling.** CI pipeline files, workflow runners, and prompt templates are by their nature duplicated or structurally similar. Reporting knowledge duplication or shotgun surgery in `.github/workflows/` or `quality-control/` is noise. These files are infrastructure, not product code.

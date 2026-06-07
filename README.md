@@ -132,29 +132,41 @@ kilo
 
 #### OpenCode Config Architecture
 
-`opencode.json` is a **built artifact** and should not be edited directly.
-Manual changes will be overwritten.
-The configuration is assembled from:
+`opencode.json` is a **built artifact — never manually edited, touched, or maintained.**
+It is assembled by `scripts/build_config.py` from two disjoint source layers:
 
-- **Skeleton**: `opencode/configs/config_skeleton.json` (base template, MCP, global
-  permissions)
+1. **Skeleton** (`opencode/configs/config_skeleton.json`): permanent top-level defaults
+   (MCP servers, permissions, formatter, LSP). One-time setup. Rarely changes.
 
-- **Providers**: `opencode/configs/providers/*.json` (merged into the `provider` key)
+2. **Provider files** (`opencode/configs/providers/*.json`): per-provider model
+   configuration — blocklists, renames, and overrides that shadow the automatic
+   population from [models.dev](https://models.dev).
 
-- **Agents**: Compiled from `ai-prompts` into `opencode/agents/*.md` with injected
-  permissions.
+The entire point of this split is to modularize what is, by construction, a massive
+`opencode.json`. OpenCode automatically populates models from the model registry; the
+provider files are **deliberate shadows** over that automatic list — explicitly blocking
+non-wanted models and explicitly renaming/annotating wanted models to match local naming
+conventions. Without them, the models list would contain hundreds of useless entries
+under opaque upstream names. The 1921-line `opencode.json` is not accidental complexity
+— it is domain cardinality, directly proportional to the model ecosystem's size.
 
-**Build Commands:**
+**Maintaining provider files is expected, designed, ongoing work.**
+Adding a model to a blocklist or a rename is not "technical debt" — it is the intended
+mechanism for fine-grained model selection. The provider files *are* the source of truth
+for model policy.
+
+**Build commands (run both, in order):**
 
 ```bash
 # 1. Compile permissions and agents
 cd opencode && uv run permissions/main.py --apply
 
-# 2. Merge skeleton and providers into opencode.json
+# 2. Merge skeleton + providers into opencode.json
 cd opencode && uv run scripts/build_config.py
 ```
 
-See `opencode/README.md` for the full technical breakdown.
+See `opencode/configs/AGENTS.md` for the full architectural breakdown and
+`opencode/configs/providers/` for provider source files.
 
 **Claude Code** ([source](https://docs.anthropic.com/en/docs/claude-code/overview)):
 
@@ -218,6 +230,21 @@ my-project/
 │   └── skills/            # Shared project skills
 └── opencode.json          # OpenCode project config
 ```
+
+### Skills Directory Structure
+
+`opencode/skills/` contains ~150 skill directories loaded by various harnesses via
+their `skill()` tool (or equivalent). The flat single-directory layout is
+**vendor-imposed** — each harness expects skills at a specific path and resolves them
+by name, not by subdirectory. Hierarchical nesting (e.g., `math/lean4/`,
+`devtools/probe/`) would break skill discovery.
+
+Skills are inherently heterogeneous because they cover the full range of domains the
+agent works in: mathematical research, debugging, CLI workflows, writing,
+linting, and system configuration. A flat directory of independently loadable modules
+is the correct pattern for this interface.
+
+See `opencode/skills/` for the full list.
 
 ### Context Files vs System Prompts
 

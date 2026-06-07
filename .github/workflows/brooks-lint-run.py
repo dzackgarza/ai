@@ -15,6 +15,36 @@ import pathlib
 import subprocess
 import sys
 
+IGNORE_DIRS = frozenset(
+    {
+        ".git",
+        "node_modules",
+        ".venv",
+        "__pycache__",
+        "dist",
+        "build",
+        ".next",
+        "coverage",
+    }
+)
+
+
+def collect_repo_docs(repo_root: pathlib.Path) -> str:
+    """Find all README.md and AGENTS.md files. Inject as context so the model
+    cannot skip reading project documentation before making findings."""
+    sections = []
+    for pattern in ("*README.md", "*AGENTS.md", "*AGENTS*.md"):
+        for p in repo_root.rglob(pattern):
+            rel = p.relative_to(repo_root)
+            if any(part in IGNORE_DIRS for part in p.parts):
+                continue
+            if p.stat().st_size > 500_000:
+                continue  # skip huge files
+            sections.append(f"### Repo doc: {rel}\n\n{p.read_text()}")
+    if not sections:
+        return ""
+    return "## Repo Documentation\n\n" + "\n\n---\n\n".join(sections)
+
 
 def load_skills(skills_dir: pathlib.Path) -> str:
     """Load and concatenate all shared and mode-specific skill guides."""
@@ -31,12 +61,42 @@ def load_skills(skills_dir: pathlib.Path) -> str:
     ci_protocol = pathlib.Path("opencode/skills/_shared/ci-sweep-protocol.md").resolve()
     guides.append(ci_protocol.read_text())  # no guard — fail loudly if missing
 
+    # Force-inject skill SKILL.md files. The template previously asked the agent to
+    # load these via skill() — but agents routinely skip or fail at that. Loading them
+    # here guarantees the content is in context regardless of agent compliance.
+    skills_repo = pathlib.Path("opencode/skills").resolve()
+    for skill_name in [
+        "policy-index",
+        "bespoke-software-policy",
+        "anti-slop",
+        "reviewing-llm-code",
+        "test-guidelines",
+        "tool-provisioning-and-environment-hygiene",
+    ]:
+        path = skills_repo / skill_name / "SKILL.md"
+        guides.append(path.read_text())  # no guard — fail loudly if missing
+
+    # Force-inject the bridge-burning red-flag reference from reviewing-llm-code.
+    ref_path = (
+        skills_repo
+        / "reviewing-llm-code"
+        / "references"
+        / "bridge-burning-red-flags.md"
+    )
+    guides.append(ref_path.read_text())
+
     for guide_dir, fname in [
         ("brooks-review", "pr-review-guide.md"),
     ]:
         path = skills_dir / guide_dir / fname
         if path.exists():
             guides.append(path.read_text())
+
+    # Inject project documentation (README.md, AGENTS.md) as part of system context.
+    # Not a separate prompt layer — the template is the single source of instructions.
+    repo_docs = collect_repo_docs(pathlib.Path.cwd())
+    if repo_docs:
+        guides.append(repo_docs)
 
     return "\n\n---\n\n".join(guides)
 
@@ -126,7 +186,8 @@ def main() -> None:
         )
         sys.exit(1)
 
-    # Assemble the prompt
+    # Assemble the prompt: system (skills + project docs) + body (template + diff).
+    # The template is the single source of prompt instructions — no injected layers.
     system = load_skills(skills_dir)
     diff = get_diff(args.base_ref)
     template = template_path.read_text()

@@ -25,19 +25,18 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install just
+        run: sudo apt-get update && sudo apt-get install -y just
+
       - name: Install OpenCode
         run: npm install -g opencode-ai
 
       - name: Install policy skills for skill() tool
         run: |
           mkdir -p ~/.config/opencode/skills
-          for skill in anti-slop reviewing-llm-code policy-index test-guidelines bespoke-software-policy; do
-            if [ -d "opencode/skills/$skill" ]; then
-              cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
-              echo "installed $skill"
-            else
-              echo "WARNING: opencode/skills/$skill not found — skill() will fail"
-            fi
+          for skill in anti-slop reviewing-llm-code policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
+            cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
+            echo "installed $skill"
           done
 
       - name: Run Brooks-Lint via OpenCode
@@ -52,23 +51,10 @@ jobs:
             > .brooks-result.json
 
           echo "score=$(jq -r '.score // 0' .brooks-result.json)" >> "$GITHUB_OUTPUT"
-          echo "report<<EOF" >> "$GITHUB_OUTPUT"
-          jq -r '.report // "error"' .brooks-result.json >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Post PR Comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const r = JSON.parse(fs.readFileSync('.brooks-result.json', 'utf8'));
-            const body = `## Brooks-Lint Review (OpenCode)\n\n${r.report || "*error*"}\n\n---\n_Health Score: ${r.score ?? "N/A"}_`;
-            await github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.issue.number,
-              body
-            });
+        run: just -f .agents/justfile post-brooks-review .brooks-result.json ${{ github.event.number }}
 
       - name: Check Threshold
         if: ${{ vars.BROOKS_FAIL_BELOW != '' }}

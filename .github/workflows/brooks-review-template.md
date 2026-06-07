@@ -6,19 +6,12 @@ This runs in a CI environment. Follow these rules exactly:
 - Do not ask questions. Do not request confirmation. Do not pause for input.
 - Output the complete report as text to stdout. Every finding, every score, every recommendation.
 
-## Mandatory Skill Loading
+## Skills in Context
 
-Before any analysis, use the `skill()` tool to load these skills IN ORDER.
-If a skill fails to load, do not continue — report the failure.
+These skills are loaded above — reference them directly:
+`policy-index`, `bespoke-software-policy`, `anti-slop`, `reviewing-llm-code`, `test-guidelines`
 
-1. `policy-index` — policy routing: determines which rule owns each finding
-2. `bespoke-software-policy` — bespoke-software rules: filters out portability, compatibility, enterprise, and meta findings
-3. `anti-slop` — structural technical debt detection: runtime defaults, fallbacks, mocks, fakes, stubs, proof-laundering, deletion-laundering, bridge-burning violations
-4. `reviewing-llm-code` — LLM-produced code review patterns: validation-evasion constructs, dead control flow, myopic patching
-5. `test-guidelines` — proof obligations: banned assertion shapes, helper-level proof, smoke/proof boundary rules
-6. `reviewing-llm-code/references/bridge-burning-red-flags.md` — red-flag inventory for bridge-burning policy violations
-
-After loading all six, you have this baseline:
+Baseline:
 - No fallback suggestions (every missing resource must fail loudly)
 - No mock/fake/stub as proof (real data or nothing)
 - No runtime defaults for critical dependencies
@@ -56,3 +49,13 @@ Follow the **Finding Classification Tiers** in the CI Sweep Protocol:
 
 ### Output Format
 Follow the sweep protocol's format: Tier 1 findings get full Symptom→Source→Consequence→Remedy with Health Score (0-100) for the diff changes and separately for the full repo. Tier 2 findings get a single-line cleanup list appended only if Tier 1 is empty.
+
+### Pre-Output Validation
+
+Before writing the final report, validate any Mermaid diagrams you included:
+
+```
+npx @probelabs/maid --format json -
+```
+
+Feed each ` ```mermaid ` block through stdin. If `"valid": false`, fix the syntax error and re-validate. Do not output a report containing Mermaid diagram errors.
