@@ -119,3 +119,43 @@ Do NOT report missing tests without checking whether the code has any.
 
 The sweep covers the ENTIRE checked-out repository.
 Do not restrict to diff files. Do not skip directories.
+
+### Excluded from Sweep Analysis
+
+These directories contain CI infrastructure and tooling — NOT the project's product code.
+Do NOT report findings about these files unless a change in them introduces a bug in project code.
+
+- `.github/workflows/` — CI pipeline definitions
+- `quality-control/` — QC template copies
+- `opencode/skills/` (when the repo IS the skills/tooling repo) — agent-facing skills
+
+Exception: If the repository's *purpose* is CI tooling or agent skills, do not exclude them.
+But for a product repo, these are support infrastructure, not the subject of review.
+
+When scanning project code, focus on:
+- `opencode.json` / `opencode.jsonc` — main agent config (high churn, high risk)
+- `justfile` — build/test commands
+- `skills/**/*.md` — skill definitions (logical complexity)
+- `src/`, `lib/`, or equivalent — actual source code
+- `.envrc`, `pyproject.toml`, `package.json` — environment and dependency configs
+
+## Prohibited Findings
+
+The following are NOT valid findings. If the agent produces them, they will be rejected:
+
+1. **Meta-commentary on the CI pipeline.** The CI pipeline is the subject of this review, not an object of review. Do not comment on README.md trigger markers, workflow_dispatch, or CI trigger mechanics. The CI setup is the mechanism, not the target.
+
+2. **Fallback suggestions.** Do not suggest adding a fallback path, graceful degradation, or silent default. If a resource does not exist, it should fail loudly. System policy: no fallbacks, no try-import, no conditional stubs.
+
+3. **Vapid DRY violations in infrastructure tooling.** CI pipeline files, workflow runners, and prompt templates are by their nature duplicated or structurally similar. Reporting knowledge duplication or shotgun surgery in `.github/workflows/` or `quality-control/` is noise. These files are infrastructure, not product code.
+
+4. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
+
+## Finding Quality Gate
+
+Before reporting any finding, ask: "Is this finding about the CI/review infrastructure, or about the project's product code?" If the former, suppress it. If the latter, the finding must include:
+- A specific defect in product code behavior, structure, or maintainability
+- A concrete recommendation that does not involve adding a fallback
+- Evidence from exploration commands (tree, git log, ls -lt) that surfaces the defect
+
+Findings about the review tooling itself will be summarily rejected.
