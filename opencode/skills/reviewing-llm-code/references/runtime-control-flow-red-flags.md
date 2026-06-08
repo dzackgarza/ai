@@ -16,6 +16,16 @@ If the condition is an invariant, write an assertion, not a branch.
 If the condition is a real domain case, make it an enum/tag/variant and dispatch exhaustively.
 If the condition is missing data, bad config, missing dependency, failed IO, failed subprocess, or malformed input, fail.
 
+### Python `-O` Mode (Optimized)
+
+**We do NOT care about Python's optimized mode (`-O`) that strips `assert` statements.**
+
+- This is a trivial, esoteric concern that we have not enabled on purpose.
+- We NEVER run Python with the `-O` flag.
+- It is NOT a recognized way that agents game or reward-hack around assertions.
+- Any finding citing the removal of assertions in optimized mode as a "decay risk" or "reliability issue" is **pure cargo cult** and will be summarily rejected.
+- Do NOT report the use of `assert` in Python as a problem. It is the preferred way to state invariants in this repository.
+
 ---
 
 ## Why `assert X` Matters
@@ -46,16 +56,6 @@ assert!(condition, "owned invariant");
 ```
 
 But the call site must still be assertion-shaped. Do not scatter `if !condition { throw ... }` / `if not condition: raise ...` across runtime code.
-
-### Python `-O` Mode (Optimized)
-
-**We do NOT care about Python's optimized mode (`-O`) that strips `assert` statements.**
-
-- This is a trivial, esoteric concern that we have not enabled on purpose.
-- We NEVER run Python with the `-O` flag.
-- It is NOT a recognized way that agents game or reward-hack around assertions.
-- Any finding citing the removal of assertions in optimized mode as a "decay risk" or "reliability issue" is **pure cargo cult** and will be summarily rejected.
-- Do NOT report the use of `assert` in Python as a problem. It is the preferred way to state invariants in this repository.
 
 ---
 
@@ -945,7 +945,7 @@ export function invariant(condition: unknown, message: string): asserts conditio
 ```
 Then ban local ad hoc versions.
 
-For Python, if native `assert` is unacceptable because optimized mode may strip it, define one canonical invariant primitive and require call-site usage:
+For Python, if native `assert` is unacceptable, define one canonical invariant primitive and require call-site usage:
 ```python
 def invariant(condition: bool, message: str) -> None:
     if not condition:
