@@ -5,13 +5,15 @@
 """
 Validate a brooks-lint / slop review candidate report.
 
-Asserts positively that the report conforms to the required structured JSON format.
+Asserts positively that the report conforms to the required structured JSON format
+AND that the markdown 'report' field contains the mandatory Brooks-Lint markers.
 """
 
 import json
 import sys
 import os
 import subprocess
+import re
 from pathlib import Path
 
 # Infrastructure paths that are forbidden as findings
@@ -44,7 +46,14 @@ FORBIDDEN_CATEGORIES = [
     "environment",
 ]
 
-CLEANUP_LABELS = ["NOTE", "cleanup", "refactor-suggestion"]
+# Mandatory markers for the markdown report field
+MANDATORY_MARKERS = [
+    r"Finding\s+\d+",
+    r"Symptom:",
+    r"Source:",
+    r"Consequence:",
+    r"Remedy:",
+]
 
 def is_infra_path(path_str: str) -> bool:
     path_str = path_str.lstrip("./")
@@ -57,7 +66,6 @@ def check_file_exists_in_git(path: str, repo_sha: str) -> bool:
     """Check if a file exists in the given git commit."""
     try:
         # We check current working directory (which should be the repo root)
-        # Using cat-file -e is faster than ls-tree
         subprocess.run(
             ["git", "cat-file", "-e", f"{repo_sha}:{path}"],
             capture_output=True,
@@ -106,6 +114,20 @@ def validate_finding(finding: dict, idx: int, repo_sha: str) -> list[str]:
 
     return violations
 
+def validate_report_content(report: str) -> list[str]:
+    """Validate that the human-readable report field contains the required markers."""
+    violations = []
+    
+    if not report or len(report.strip()) < 200:
+        violations.append("The 'report' field is too short or empty. Provide full substantive analysis.")
+        return violations
+
+    for marker in MANDATORY_MARKERS:
+        if not re.search(marker, report, re.IGNORECASE):
+            violations.append(f"Mandatory marker '{marker.replace(r'\\s+', ' ')}' not found in report field. You must provide detailed analysis for at least one finding.")
+            
+    return violations
+
 def collect_violations(data: dict) -> list[str]:
     violations: list[str] = []
 
@@ -122,6 +144,8 @@ def collect_violations(data: dict) -> list[str]:
 
     repo_sha = data["repo_sha"]
     findings = data["findings"]
+    report_text = data.get("report", "")
+    
     if not isinstance(findings, list):
         violations.append("findings must be a list")
     else:
@@ -131,13 +155,11 @@ def collect_violations(data: dict) -> list[str]:
         if has_tier1 and has_tier2:
             violations.append("Tier 2 findings are not allowed if any Tier 1 findings exist. Clean the significant issues first.")
 
-        # Ensure no report with only cleanup findings unless Tier 1 is genuinely empty
-        if not has_tier1 and has_tier2:
-            # This is allowed by the priority rule, but we should ensure the findings are valid
-            pass
-
         for idx, finding in enumerate(findings):
             violations.extend(validate_finding(finding, idx, repo_sha))
+
+    # SUBSTANTIVE CONTENT CHECK
+    violations.extend(validate_report_content(report_text))
 
     if not findings and len(data.get("checked_surfaces", [])) == 0:
         violations.append("Report has zero findings AND zero checked surfaces. Provide evidence of actual repository scanning.")
@@ -170,6 +192,11 @@ def main() -> None:
     print(f"Report validation FAILED ({len(violations)} violation(s)):")
     for v in violations:
         print(f"  - {v}")
+    
+    print("\nERROR: Your report is hollow or missing mandatory Brooks-Lint template markers.")
+    print("You must review the template provided in the task and return a fully compliant report")
+    print("that includes 'Finding X', 'Symptom:', 'Source:', 'Consequence:', and 'Remedy:' sections.")
+    
     sys.exit(1)
 
 if __name__ == "__main__":
