@@ -489,6 +489,155 @@ For the canonical inventory of these banned patterns and their allowed replaceme
 
 ---
 
+## Remediation Policies
+
+A red flag says "this is suspicious." A remediation policy says "replace it with this exact shape." Every remediation converts a slop-enabling pattern into a fail-loud, minimal-cruft equivalent.
+
+### Remediation: Fallback / Optional-Dependency / File-Availability Hedge
+
+**Slop pattern:** A guard checks whether a dependency, file, binary, or resource exists before using it, with a silent fallback when absent.
+
+```python
+# BAD: silent hedge
+if shutil.which("ffmpeg"):
+    subprocess.run(["ffmpeg", ...])
+else:
+    logger.warning("ffmpeg not found, skipping")
+
+# BAD: optional critical dependency
+try:
+    import magic
+except ImportError:
+    magic = None
+```
+
+**Remediation:** Assert availability at the program boundary. If the resource is required, failure to find it is a hard error. Do not provide a silent branch.
+
+```python
+# Remediation: boundary assertion
+assert shutil.which("ffmpeg"), "ffmpeg is required for video processing"
+subprocess.run(["ffmpeg", ...])
+```
+
+Remediation applies when:
+- The dependency, file, or binary is required for the operation being performed.
+- The app controls deployment (it can guarantee the dependency is present).
+- The only purpose of the guard is to avoid an error that would be correct to raise.
+
+Do not apply remediation when:
+- The app legitimately supports multiple optional backends chosen by config.
+- The resource is genuinely external and its absence is a valid runtime condition (e.g., network availability for a cache).
+
+### Remediation: try/catch That Swallows or Hedges
+
+**Slop pattern:** A try/catch around an operation that is expected to succeed, converting a useful diagnostic into a silent continuation or a weak log line.
+
+```python
+# BAD: swallows diagnostic
+try:
+    result = api_call()
+except Exception:
+    result = None
+
+# BAD: hedges with a log that no one reads
+try:
+    data = read_file(path)
+except Exception as e:
+    logger.error(f"failed to read {path}: {e}")
+    data = []
+```
+
+**Remediation:** Let the error propagate. If the caller cannot handle the error, it should not catch it. If a specific error type is expected and recoverable, catch only that type and handle it in the same scope.
+
+```python
+# Remediation: propagate
+data = read_file(path)  # raises if file is missing or unreadable
+
+# When recovery IS the intent: narrow and handle immediately
+try:
+    config = read_config(path)
+except FileNotFoundError:
+    config = default_config()  # explicit recovery for a known condition
+```
+
+Remediation applies when:
+- The try block wraps a single operation (not a sequence where partial failure is meaningful).
+- The catch clause is broad (`Exception`, bare `except`, or a type that does not match the recoverable error).
+- Recovery produces a sentinel value (`None`, `[]`, `""`, `False`) distinct from real results.
+
+### Remediation: Data-Peeking Inside Loops
+
+**Slop pattern:** A loop that checks a condition on each element and routes logic inside the loop body, mixing filtering with processing and making the control flow harder to read.
+
+```python
+# BAD: peeking inside the loop
+results = []
+for item in items:
+    if item.status == "active":
+        if item.owner is not None:
+            results.append(process(item))
+        else:
+            logger.warning(f"item {item.id} has no owner")
+    # items with other statuses are silently ignored
+```
+
+**Remediation:** Filter and assert invariants before the loop. The loop body should only contain the processing logic, with preconditions already satisfied.
+
+```python
+# Remediation: filter then process
+active = [i for i in items if i.status == "active"]
+assert all(i.owner is not None for i in active), "all active items must have an owner"
+results = [process(i) for i in active]
+```
+
+Remediation applies when:
+- The filter conditions are knowable before the loop (no dependence on loop-local state).
+- Filtering and processing can be separated without changing semantics.
+- The loop body has 2+ conditional branches that route on element properties.
+
+### Remediation: Nested / Stacked Conditional Chains
+
+**Slop pattern:** A cascade of `if`/`elif`/`else` that branches on a single discriminant (type, enum, status, state) with implicit fall-through for unhandled cases.
+
+```python
+# BAD: stacked if/elif chain with implicit unhandled cases
+if event.type == "click":
+    handle_click(event)
+elif event.type == "focus":
+    handle_focus(event)
+elif event.type == "blur":
+    handle_blur(event)
+# other event types silently ignored
+```
+
+**Remediation:** Use a match/case (Python 3.10+, TypeScript, Rust, etc.) or an explicit dispatch table that enumerates all expected cases and fails hard on unexpected input.
+
+```python
+# Remediation (match/case): explicit, exhaustive, fails on unexpected
+match event.type:
+    case "click": handle_click(event)
+    case "focus": handle_focus(event)
+    case "blur":  handle_blur(event)
+    case _:       raise ValueError(f"unexpected event type: {event.type}")
+
+# Remediation (dispatch table): equally explicit
+_HANDLERS = {
+    "click": handle_click,
+    "focus": handle_focus,
+    "blur":  handle_blur,
+}
+handler = _HANDLERS.get(event.type)
+assert handler is not None, f"unexpected event type: {event.type}"
+handler(event)
+```
+
+Remediation applies when:
+- The chain is 3+ branches on the same discriminant.
+- The default/else branch is missing, empty, or just logs and continues.
+- The discriminant is a bounded set (enum, string literal union, known type variants).
+
+---
+
 ## Final Principle
 
 > **Agent-resistant codebases should be designed so that the easiest code to write is also the hardest code to fake.**
