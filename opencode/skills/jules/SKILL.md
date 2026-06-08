@@ -236,7 +236,7 @@ jules new "Fix all linting errors in the codebase. Run the linter, identify issu
 
 ### Review PR (Anti-Slop Review)
 
-- For normal review, use [github-code-review](file:///home/dzack/ai/opencode/skills/github-code-review/SKILL.md);
+- For normal review, use [git-guidelines/code-review.md](file:///home/dzack/ai/opencode/skills/git-guidelines/code-review.md);
 - For anti-slop review, use [jules-anti-slop-issue-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md).
 
 ## Workflow
