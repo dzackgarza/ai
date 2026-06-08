@@ -183,7 +183,7 @@ def main():
     run_dir = pathlib.Path(".agents/review-runner").resolve()
     candidates_dir = run_dir / "candidates"
     candidates_dir.mkdir(parents=True, exist_ok=True)
-    task_path = brooks_dir / "task.md"
+    task_path = run_dir / "task.md"
 
     repo_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
 

@@ -114,7 +114,7 @@ Automated reviews are insufficient.**
 
 ### Jules as Asynchronous Anti-Slop Report Scout
 
-Use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md) when:
+Use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md) when:
 - the user asks Jules to review LLM/agent-produced work,
 - a PR has already been produced by Jules, Codex, Claude, Qwen, DeepSeek, etc.,
 - the user wants a cheap second-pass slop audit,
@@ -212,7 +212,7 @@ jules new --repo owner/repo "Fix the bug in auth module. Context: branch=$BRANCH
 
 ## Template Prompts
 
-- [Jules Anti-Slop Report Review Template](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md)
+- [Jules Anti-Slop Report Review Template](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md)
 
 ### Add Tests
 
@@ -237,7 +237,7 @@ jules new "Fix all linting errors in the codebase. Run the linter, identify issu
 ### Review PR (Anti-Slop Review)
 
 - For normal review, use [git-guidelines/code-review.md](file:///home/dzack/ai/opencode/skills/git-guidelines/code-review.md);
-- For anti-slop review, use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md).
+- For anti-slop review, use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md).
 
 ## Workflow
 
