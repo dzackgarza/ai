@@ -65,17 +65,17 @@ def is_infra_path(path_str: str) -> bool:
 
 def check_file_exists_in_git(path: str, repo_sha: str) -> bool:
     """Check if a file exists in the given git commit."""
-    try:
-        # We check current working directory (which should be the repo root)
-        subprocess.run(
-            ["git", "cat-file", "-e", f"{repo_sha}:{path}"],
-            capture_output=True,
-            check=True,
+    result = subprocess.run(
+        ["git", "cat-file", "-e", f"{repo_sha}:{path}"],
+        capture_output=True,
+    )
+    # git cat-file -e exits 0 (exists), 1 (not found), or 128+ (real error)
+    if result.returncode >= 2:
+        raise RuntimeError(
+            f"git cat-file -e {repo_sha}:{path} failed: "
+            f"{result.stderr.decode().strip()}"
         )
-        return True
-    except subprocess.CalledProcessError:
-        # Fallback to local check if git fails (e.g. shallow clone without that SHA)
-        return Path(path).exists()
+    return result.returncode == 0
 
 
 def validate_finding(

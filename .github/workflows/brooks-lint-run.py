@@ -179,13 +179,7 @@ def main():
     candidates_dir.mkdir(parents=True, exist_ok=True)
     task_path = brooks_dir / "task.md"
 
-    # Get current SHA
-    try:
-        repo_sha = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], text=True
-        ).strip()
-    except subprocess.CalledProcessError:
-        repo_sha = "HEAD"
+    repo_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
 
     system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))
     template = template_path.read_text()
