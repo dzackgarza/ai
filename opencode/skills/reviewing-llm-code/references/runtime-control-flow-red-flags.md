@@ -26,6 +26,20 @@ If the condition is missing data, bad config, missing dependency, failed IO, fai
 - Any finding citing the removal of assertions in optimized mode as a "decay risk" or "reliability issue" is **pure cargo cult** and will be summarily rejected.
 - Do NOT report the use of `assert` in Python as a problem. It is the preferred way to state invariants in this repository.
 
+### General Principle: No Pre-Emptive Path Code
+
+A branch, guard, fallback, or defensive check must be motivated by a real observed failure, not by a hypothetical scenario. Code that handles a failure path that has never been observed, tested, or reported is speculative dead weight — it introduces branches, testing obligations, and maintenance surface for a world that does not exist.
+
+**The wrong gradient:** "This code could fail in scenario X, so add handling for X."
+**The correct gradient:** "This code has never failed in scenario X. If it ever does, fail loudly — then handle it."
+
+Concretely:
+- If `sudo` is required and has never failed, assert it, do not guard it.
+- If a dependency has always been available, do not add a fallback for its absence.
+- If a file has always existed at a known path, do not add a discovery chain for "what if it moves."
+
+A hypothetical scenario is not an edge case. It is an imaginary world. Code for the world that exists.
+
 ---
 
 ## Why `assert X` Matters

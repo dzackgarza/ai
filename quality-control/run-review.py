@@ -2,9 +2,12 @@
 # requires-python = ">=3.11"
 # ///
 """
-Brooks-Lint runner: manages the agent loop, harvesting, and validation.
+Review runner: manages the agent loop, harvesting, and validation.
 
 The agent acts as a candidate generator. The harness finalizes the artifact.
+Takes --mode to select review type (review|slop), loads template and
+skills accordingly. Type-agnostic — adding a new review type means
+adding reviews/<type>/template.md + schema.json.
 """
 
 import argparse
@@ -28,10 +31,12 @@ IGNORE_DIRS = {
     "coverage",
 }
 
-ARTIFACT_PATH = pathlib.Path(".brooks-report-artifact.json")
-MARKDOWN_PATH = pathlib.Path(".brooks-report-artifact.md")
-SCORE_PATH = pathlib.Path(".brooks-report-score.txt")
-CHECKER_PATH = pathlib.Path(".agents/scripts/check-brooks-report.py")
+HERE = pathlib.Path(__file__).parent.resolve()
+
+ARTIFACT_PATH = pathlib.Path(".review-report-artifact.json")
+MARKDOWN_PATH = pathlib.Path(".review-report-artifact.md")
+SCORE_PATH = pathlib.Path(".review-report-score.txt")
+CHECKER_PATH = HERE / "check-report.py"
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
 
@@ -161,7 +166,8 @@ def main():
     parser.add_argument("--skills-dir", default="opencode/skills")
     parser.add_argument("--base-ref")
     parser.add_argument(
-        "--template", default=".github/workflows/brooks-review-template.md"
+        "--template",
+        default=str(HERE / "reviews" / "brooks" / "template.md"),
     )
     parser.add_argument("--pr-number", default="0")
     args = parser.parse_args()
@@ -174,8 +180,8 @@ def main():
         print("FATAL: Missing dependencies", file=sys.stderr)
         sys.exit(1)
 
-    brooks_dir = pathlib.Path(".agents/brooks").resolve()
-    candidates_dir = brooks_dir / "candidates"
+    run_dir = pathlib.Path(".agents/review-runner").resolve()
+    candidates_dir = run_dir / "candidates"
     candidates_dir.mkdir(parents=True, exist_ok=True)
     task_path = brooks_dir / "task.md"
 

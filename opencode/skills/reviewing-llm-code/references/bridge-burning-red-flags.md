@@ -35,6 +35,7 @@ When one appears, ask:
 | **Bypass comments** | Turns validator failure into validator silence. | Fix the code or escalate. |
 | **Compatibility/legacy shims** | Preserves wrong prior designs in pre-launch code. | Replace, do not shim. |
 | **Defensive guards in trusted core** | Bloats happy path and hides invariant violations. | Validate at boundary; assert internally. |
+| **Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. | Require observed failure before adding handling; if invariant, assert. |
 | **Administrative completion** | Issues/comments/docs replace implementation or proof. | Treat them as records, not completion. |
 
 If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works.

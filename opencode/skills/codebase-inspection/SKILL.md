@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [LOC, Code Analysis, pygount, Codebase, Metrics, Repository]
-    related_skills: [github-repo-management]
+    related_skills: [git-guidelines]
 prerequisites:
   commands: [pygount]
 ---

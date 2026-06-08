@@ -355,7 +355,7 @@ If a construct would let an agent preserve the appearance of correctness while w
 When routing PR review workflows, follow these rules:
 
 - **User asks to review a PR**:
-  Load `github-code-review` + `PR_GUIDANCE` + `reviewing-llm-code` + `test-guidelines`.
+  Load `git-guidelines` (see `code-review.md`) + `PR_GUIDANCE` + `reviewing-llm-code` + `test-guidelines`.
   If the PR is agent-produced, also load `reviewing-subagent-work`.
 
 - **User asks to address, resolve, reply to, or classify PR review comments**:
@@ -365,8 +365,8 @@ When routing PR review workflows, follow these rules:
   Load `reality-grounded-debugging` for CI/check failures or opaque logs.
 
 - **User asks whether automated review feedback aligns with policy**:
-  Load `pr-feedback-triage` first, not `github-pr-workflow`.
-  Use `github-pr-workflow` only for mechanics/API commands.
+  Load `pr-feedback-triage` first, not `git-guidelines` (see `pr-workflow.md`).
+  Use `git-guidelines` only for mechanics/API commands.
 
 - **User asks an implementer agent to fix review comments**:
   The controller must triage comments first.

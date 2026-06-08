@@ -99,5 +99,5 @@ The JSON must conform to the following schema precisely:
 The ONLY way to submit your candidate report is to write the JSON to a file in the candidates directory: `{{CANDIDATES_DIR}}`.
 
 1. Write your full JSON report to a file like `{{CANDIDATES_DIR}}/candidate.json`.
-2. Do NOT try to write `.brooks-report-artifact.json` directly. The harness will validate your candidate and write the artifact itself if validation passes.
+2. Do NOT try to write `.review-report-artifact.json` directly. The harness will validate your candidate and write the artifact itself if validation passes.
 3. If the harness rejects your candidate, it will automatically restart you with a continuation prompt containing the exact validation errors.

@@ -197,7 +197,7 @@ Do NOT report findings about these files unless a change in them introduces a bu
 - `quality-control/` — QC template copies
 - `opencode/skills/` — agent-facing skill definitions
 - `AGENTS.md` and `.agents/` — agent behavioral configuration and process docs
-- `.github/workflows/brooks-review-template.md` and `brooks-lint-run.py` — review tooling
+- `quality-control/run-review.py` and `quality-control/reviews/` — review tooling (type-agnostic runner + type-specific schemas/templates)
 - Any `prompt` or `prompts` directory — agent prompt templates
 
 Exception: If the repository's *purpose* is agent tooling or skill authoring, do not exclude them.

@@ -43,10 +43,10 @@ jobs:
         id: review
         shell: bash
         run: |
-          python3 .github/workflows/brooks-lint-run.py \
+          python3 quality-control/run-review.py \
             --mode review \
             --skills-dir opencode/skills \
-            --template .github/workflows/brooks-review-template.md \
+            --template quality-control/reviews/brooks/template.md \
             --base-ref "${{ github.base_ref }}" \
             --pr-number "${{ github.event.number }}"
 
@@ -55,8 +55,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          report=$(cat .brooks-report-artifact.md)
-          score=$(cat .brooks-report-score.txt)
+          report=$(cat .review-report-artifact.md)
+          score=$(cat .review-report-score.txt)
           body=$(printf '## Brooks-Lint Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
           gh pr comment ${{ github.event.number }} --body "$body"
 
@@ -64,7 +64,7 @@ jobs:
         if: ${{ vars.BROOKS_FAIL_BELOW != '' }}
         run: |
           threshold="${{ vars.BROOKS_FAIL_BELOW }}"
-          score=$(cat .brooks-report-score.txt)
+          score=$(cat .review-report-score.txt)
           if [ "$score" -lt "$threshold" ] 2>/dev/null; then
             echo "Health Score $score is below threshold $threshold"
             exit 1

@@ -1,0 +1,30 @@
+{
+  "finding_required_fields": [
+    "tier",
+    "label",
+    "category",
+    "location",
+    "pattern",
+    "task_narrative",
+    "slop_narrative",
+    "why_it_matters",
+    "user_surprise",
+    "existential_justification",
+    "failure_mode",
+    "evidence"
+  ],
+  "report_required_markers": [
+    "Finding\\s+\\d+",
+    "Pattern:",
+    "Concrete evidence:",
+    "Original requested task narrative:",
+    "Descent into slop narrative:",
+    "Why this matters:",
+    "User surprise analysis:",
+    "Existential justification:",
+    "Failure mode:"
+  ],
+  "forbidden_categories": ["infra", "infrastructure", "ci", "workflow", "config"],
+  "report_min_length": 200,
+  "report_reject_patterns": ["-O", "optimized mode"]
+}

@@ -1143,6 +1143,41 @@ PR remains incomplete unless original task was only to document/triage
   - metadata as progress
   - future-work as resolution
 
+### 21. No hypothetical-path code
+
+Do not add code (or propose adding code) for a failure path that has never been observed, tested, or reported.
+
+The wrong gradient: "This code could fail in scenario X, so add a fallback/guard/default for X." This converts absence-of-evidence into code — the failure path exists only in the reviewer's imagination, and the added code introduces branches, testing obligations, and maintenance surface for a world that does not exist.
+
+The correct gradient: assert invariants at the boundary, fail loudly outside happy paths. If the failure is later observed, handle it then.
+
+- **Bad finding:**
+```text
+WARNING: scripts/scaffold-sandbox.sh runs sudo without checking whether sudo is
+available or whether the user has passwordless sudo. In CI pipelines, headless
+containers, or locked-down environments, the script stalls on a password prompt.
+
+Remedy: Use sudo -n to test non-interactive availability, or fall back to a
+user-writable location when /var/sandbox is inaccessible.
+```
+  - Why it is wrong: the script is a dev setup tool that has never stalled in any environment. The finding proposes adding fallback code (passwordless sudo check, alternate writable directory) for scenarios no one has ever hit. The correct response is nothing until the failure is observed.
+
+- **Better disposition:**
+```text
+This script runs on this system only. It has never failed due to sudo
+availability. If it ever does, the fix is an explicit assertion
+(sudo -v at the top, fail loudly) — not a fallback path.
+```
+
+- **What this burns:**
+  - speculative fallback code
+  - cargo-cult review findings
+  - pre-emptive defensive guards
+  - "what if" branches masquerading as reliability improvements
+  - enterprise deployment-grace degradation in bespoke software
+  - adding code for environments that have never run the software
+  - the entire genre of "this could fail in theory" review feedback
+
 ---
 
 ## Policy Exception Protocol
