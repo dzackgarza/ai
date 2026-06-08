@@ -397,3 +397,4 @@ rules:
       - python
     severity: ERROR
     pattern-regex: '^\s*from\s+typing\s+import.*?\b(Dict|List|Tuple|Set|Type|Optional|Union|Callable|Iterable|Mapping|Sequence)\b'
+
