@@ -1,9 +1,8 @@
 ## CI Constraints (MANDATORY)
 
 This runs in a CI environment. Follow these rules exactly:
-- **Do NOT output the report to stdout.** The recipe is the only submission path.
+- **Do NOT modify any workflow files, scripts, or CI infrastructure.** You are running in a restricted mode.
 - Do not ask questions. Do not request confirmation. Do not pause for input.
-- Run `just -f .agents/justfile` to discover available recipes — do not guess paths.
 
 ## Skills in Context
 
@@ -35,38 +34,72 @@ Scan the entire repository for issues following the **CI Sweep Protocol** above:
 - Check test quality, dead code, architectural problems
 - Apply the Six Decay Risks (R1-R6) to real files you read
 
-### Labeling and Priority
-Follow the **Finding Classification Tiers** in the CI Sweep Protocol:
-- **Tier 1** (significant): full Symptom→Source→Consequence→Remedy with decay-risk label. Label as `[PR BLOCKER]` or `[SHOULD FILE ISSUE]`.
-- **Tier 2** (cleanup): single-line list only. Label as `[NOTE]`.
-- **Priority rule**: if any Tier 1 findings exist, report them and skip Tier 2. Only report cleanup notes when the repo has zero significant issues.
-
 ### Diff
 ```diff
 {{DIFF}}
 ```
 
 ### Output Format
-Follow the sweep protocol's format: Tier 1 findings get full Symptom→Source→Consequence→Remedy with Health Score (0-100) for the diff changes and separately for the full repo. Tier 2 findings get a single-line cleanup list appended only if Tier 1 is empty.
+The harness requires a strict JSON file format. Plain text reports will be rejected.
+The JSON must conform to the following schema precisely:
+
+```json
+{
+  "schema_version": 1,
+  "repo_sha": "{{REPO_SHA}}",
+  "pr_number": {{PR_NUMBER}},
+  "review_scope": {
+    "changed_files": ["list", "of", "files", "in", "diff"],
+    "excluded_files": [],
+    "required_surfaces": []
+  },
+  "findings": [
+    {
+      "tier": "tier1",
+      "label": "PR BLOCKER",
+      "category": "semantic-regression",
+      "location": {
+        "path": "src/foo.ts",
+        "start_line": 10,
+        "end_line": 25,
+        "quoted_text_sha256": "optional-sha"
+      },
+      "symptom": "...",
+      "source": "...",
+      "consequence": "...",
+      "remedy": "...",
+      "evidence": [
+        {
+          "kind": "file-read",
+          "path": "src/foo.ts",
+          "lines": [1, 80]
+        }
+      ]
+    }
+  ],
+  "checked_surfaces": [
+    {
+      "path": "src/foo.ts",
+      "reason": "changed-file",
+      "lines_read": [1, 120],
+      "result": "finding"
+    }
+  ],
+  "rejected_easy_wins": [],
+  "score": 85,
+  "report": "## Markdown Report Summary\n\nInclude the full formatted report here for human consumption."
+}
+```
+
+- **Tier 1** (significant): Label as `[PR BLOCKER]` or `[SHOULD FILE ISSUE]`.
+- **Tier 2** (cleanup): Label as `[NOTE]`. Append ONLY if Tier 1 is empty.
+- Meta/infrastructure findings about agent configs, tests, CI workflows, or harness files are strictly forbidden and will cause rejection.
+- All locations must correspond to real files in the repository.
 
 ## Submitting Your Report
 
-The ONLY way to submit a report is through the validation recipe:
+The ONLY way to submit your candidate report is to write the JSON to a file in the candidates directory: `{{CANDIDATES_DIR}}`.
 
-1. Write your report and score to a **temporary JSON file** (e.g. `/tmp/brooks-report.json`):
-   ```json
-   {"report": "<full report text with all findings>", "score": <0-100>}
-   ```
-
-2. Run the recipe:
-   ```
-   just -f .agents/justfile post-brooks-review /tmp/brooks-report.json {{PR_NUMBER}}
-   ```
-
-3. If the recipe **fails** (exit non-zero): read the validation errors, fix the report, and retry.
-
-4. If the recipe **succeeds**: it creates `.brooks-report-artifact.json` with the validated report.
-
-Do NOT write to `.brooks-report-artifact.json` directly — only the recipe can create it.
-Do NOT output the report to stdout — the recipe is the only submission path.
-
+1. Write your full JSON report to a file like `{{CANDIDATES_DIR}}/candidate.json`.
+2. Do NOT try to write `.brooks-report-artifact.json` directly. The harness will validate your candidate and write the artifact itself if validation passes.
+3. If the harness rejects your candidate, it will automatically restart you with a continuation prompt containing the exact validation errors.

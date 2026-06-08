@@ -1,7 +1,7 @@
 ## CI Constraints (MANDATORY)
 
 This runs in a CI environment. Follow these rules exactly:
-- **Do NOT modify any workflow files, scripts, or CI infrastructure.** You are running in a restricted mode.
+- **Do NOT modify any workflow files or CI infrastructure.** You are running in a restricted mode.
 - Do not ask questions. Do not request confirmation. Do not pause for input.
 
 ## Skills in Context
@@ -67,6 +67,15 @@ Check these specific slop categories (from loaded references):
 {{DIFF}}
 ```
 
+### Finding Labeling
+
+Each finding MUST carry one of these labels in the JSON `label` field:
+- `SLOP` — Definite slop violation.
+- `SLOP SUSPECT` — Likely slop but needs human judgment to confirm.
+- `NOTE` — Minor concern, not clearly slop.
+
+If any `SLOP` or `SLOP SUSPECT` findings exist, report them and skip `NOTE`.
+
 ### Output Format
 The harness requires a strict JSON file format. Plain text reports will be rejected.
 The JSON must conform to the following schema precisely:
@@ -74,10 +83,10 @@ The JSON must conform to the following schema precisely:
 ```json
 {
   "schema_version": 1,
-  "repo_sha": "{{REPO_SHA}}",
+  "repo_sha": "HEAD",
   "pr_number": {{PR_NUMBER}},
   "review_scope": {
-    "changed_files": ["list", "of", "files", "in", "diff"],
+    "changed_files": ["src/example.py"],
     "excluded_files": [],
     "required_surfaces": []
   },
@@ -87,10 +96,10 @@ The JSON must conform to the following schema precisely:
       "label": "SLOP",
       "category": "bridge-burning",
       "location": {
-        "path": "src/foo.ts",
+        "path": "src/example.py",
         "start_line": 10,
         "end_line": 25,
-        "quoted_text_sha256": "optional-sha"
+        "quoted_text_sha256": ""
       },
       "symptom": "...",
       "source": "...",
@@ -99,7 +108,7 @@ The JSON must conform to the following schema precisely:
       "evidence": [
         {
           "kind": "file-read",
-          "path": "src/foo.ts",
+          "path": "src/example.py",
           "lines": [1, 80]
         }
       ]
@@ -107,20 +116,18 @@ The JSON must conform to the following schema precisely:
   ],
   "checked_surfaces": [
     {
-      "path": "src/foo.ts",
+      "path": "src/example.py",
       "reason": "changed-file",
       "lines_read": [1, 120],
       "result": "finding"
     }
   ],
   "rejected_easy_wins": [],
-  "score": 85,
-  "report": "## Markdown Slop Review Summary\n\nInclude the full formatted report here for human consumption."
+  "score": 95,
+  "report": "Fallback markdown report summary here..."
 }
 ```
 
-- Each finding MUST carry one of these labels in the JSON `label` field: `SLOP`, `SLOP SUSPECT`, or `NOTE`.
-- If any `SLOP` or `SLOP SUSPECT` findings exist, report them and skip `NOTE`.
 - Meta/infrastructure findings about agent configs, tests, CI workflows, or harness files are strictly forbidden and will cause rejection.
 - All locations must correspond to real files in the repository.
 
@@ -128,6 +135,6 @@ The JSON must conform to the following schema precisely:
 
 The ONLY way to submit your candidate report is to write the JSON to a file in the candidates directory: `{{CANDIDATES_DIR}}`.
 
-1. Write your full JSON report to a file like `{{CANDIDATES_DIR}}/candidate.json`.
+1. Write your full JSON report to `{{CANDIDATES_DIR}}/attempt-0.json`.
 2. Do NOT try to write `.brooks-report-artifact.json` directly. The harness will validate your candidate and write the artifact itself if validation passes.
 3. If the harness rejects your candidate, it will automatically restart you with a continuation prompt containing the exact validation errors.

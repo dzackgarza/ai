@@ -3,139 +3,174 @@
 # requires-python = ">=3.11"
 # ///
 """
-Validate a brooks-lint / slop review report against template-driven output format.
+Validate a brooks-lint / slop review candidate report.
 
-Asserts positively that the report conforms to the required structure:
-   1. At least one valid finding label
-   2. At least one file:line reference (evidence of source examination)
-   3. A Health Score mention
-   4. Not trivially short
-   5. All Mermaid diagrams pass syntax validation (via maid)
-
-Usage:
-    uv run .agents/scripts/check-brooks-report.py <result.json>
-    uv run .agents/scripts/check-brooks-report.py <result.json> --verbose
+Asserts positively that the report conforms to the required structured JSON format.
 """
 
 import json
-import re
-import subprocess
 import sys
+import os
+import subprocess
 from pathlib import Path
 
-# Finding labels across all templates: brooks-lint and slop
-FINDING_LABEL = re.compile(r"\[(PR BLOCKER|SHOULD FILE ISSUE|NOTE|SLOP|SLOP SUSPECT)\]")
+# Infrastructure paths that are forbidden as findings
+INFRA_PREFIXES = [
+    ".github/",
+    ".agents/",
+    "quality-control/",
+    "opencode/",
+    ".opencode/",
+    ".serena/",
+    ".claude/",
+    ".git/",
+    "nginx.conf",
+    ".envrc",
+    "justfile",
+    "home-justfile",
+    "pyproject.toml",
+    "package.json",
+    "package-lock.json",
+    "uv.lock",
+    ".gitignore",
+]
 
-# File-path-with-line evidence: something like "path/to/file.py:42"
-FILE_PATH = re.compile(r"[a-zA-Z0-9_\-./]+\.\w+:\d+")
+FORBIDDEN_CATEGORIES = [
+    "meta",
+    "infrastructure",
+    "ci-workflow",
+    "agent-config",
+    "harness",
+    "environment",
+]
 
-# Health Score mention
-HEALTH_SCORE = re.compile(r"Health\s+Score", re.IGNORECASE)
+CLEANUP_LABELS = ["NOTE", "cleanup", "refactor-suggestion"]
 
-MIN_CHARS = 200
+def is_infra_path(path_str: str) -> bool:
+    path_str = path_str.lstrip("./")
+    for prefix in INFRA_PREFIXES:
+        if path_str.startswith(prefix):
+            return True
+    return False
 
-# Mermaid block delimiter
-MERMAID_BLOCK = re.compile(r"```mermaid\n(.+?)\n```", re.DOTALL)
-
-
-def _validate_mermaid(block: str) -> list[str]:
-    """Validate a single Mermaid diagram via maid. Returns errors, empty = pass."""
+def check_file_exists_in_git(path: str, repo_sha: str) -> bool:
+    """Check if a file exists in the given git commit."""
     try:
-        result = subprocess.run(
-            ["npx", "@probelabs/maid", "--format", "json", "-"],
-            input=block,
+        # We check current working directory (which should be the repo root)
+        # Using cat-file -e is faster than ls-tree
+        subprocess.run(
+            ["git", "cat-file", "-e", f"{repo_sha}:{path}"],
             capture_output=True,
-            text=True,
-            timeout=30,
+            check=True
         )
-        parsed = json.loads(result.stdout)
-        if not parsed.get("valid", False):
-            return [parsed.get("error", "unknown error")]
-        return []
-    except subprocess.TimeoutExpired:
-        return ["maid timed out"]
-    except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
-        return [f"maid invocation failed: {e}"]
+        return True
+    except Exception:
+        # Fallback to local check if git fails (e.g. shallow clone without that SHA)
+        return Path(path).exists()
 
-
-def collect_violations(report: str) -> list[str]:
-    """Return a list of human-readable violation strings. Empty list = pass."""
-    violations: list[str] = []
-
-    stripped = report.strip()
-    if not stripped:
-        violations.append("Report is empty")
+def validate_finding(finding: dict, idx: int, repo_sha: str) -> list[str]:
+    violations = []
+    required_fields = ["tier", "label", "category", "location", "symptom", "source", "consequence", "remedy", "evidence"]
+    for field in required_fields:
+        if field not in finding:
+            violations.append(f"Finding #{idx} missing field: {field}")
+    
+    if violations:
         return violations
 
-    if len(stripped) < MIN_CHARS:
-        violations.append(
-            f"Report is too short ({len(stripped)} chars, minimum {MIN_CHARS})"
-        )
+    tier = finding.get("tier")
+    if tier not in ["tier1", "tier2"]:
+        violations.append(f"Finding #{idx} has invalid tier: {tier}")
 
-    if not FINDING_LABEL.search(stripped):
-        violations.append(
-            "No finding label found — expected at least one of "
-            "[PR BLOCKER], [SHOULD FILE ISSUE], [NOTE], [SLOP], [SLOP SUSPECT]"
-        )
+    category = str(finding.get("category", "")).lower()
+    for forbidden in FORBIDDEN_CATEGORIES:
+        if forbidden in category:
+            violations.append(f"Finding #{idx} has forbidden category: {category}")
 
-    if not HEALTH_SCORE.search(stripped):
-        violations.append("No Health Score mention found")
+    location = finding.get("location")
+    if not isinstance(location, dict):
+        violations.append(f"Finding #{idx} location must be a dict")
+    else:
+        path = location.get("path")
+        if not path:
+            violations.append(f"Finding #{idx} location missing path")
+        else:
+            if is_infra_path(path):
+                violations.append(f"Finding #{idx} on {path} is forbidden: no meta/infrastructure findings allowed")
+            if not check_file_exists_in_git(path, repo_sha):
+                violations.append(f"Finding #{idx} cites non-existent path in commit {repo_sha}: {path}")
 
-    if not FILE_PATH.search(stripped):
-        violations.append(
-            "No file:line reference found (e.g. path/to/file.py:42) — "
-            "evidence of actual source examination is required"
-        )
-
-    # Validate Mermaid diagrams
-    for idx, match in enumerate(MERMAID_BLOCK.finditer(stripped), start=1):
-        errors = _validate_mermaid(match.group(1))
-        if errors:
-            violations.append(
-                f"Mermaid diagram #{idx} has syntax errors: {'; '.join(errors)}"
-            )
+    evidence = finding.get("evidence")
+    if not isinstance(evidence, list) or not evidence:
+        violations.append(f"Finding #{idx} missing evidence of inspection (e.g. file-read evidence)")
 
     return violations
 
+def collect_violations(data: dict) -> list[str]:
+    violations: list[str] = []
+
+    if not isinstance(data, dict):
+        return ["Root must be a JSON object"]
+
+    required_keys = ["schema_version", "repo_sha", "pr_number", "review_scope", "findings", "checked_surfaces", "score", "report"]
+    for key in required_keys:
+        if key not in data:
+            violations.append(f"Missing required field: {key}")
+
+    if violations:
+        return violations
+
+    repo_sha = data["repo_sha"]
+    findings = data["findings"]
+    if not isinstance(findings, list):
+        violations.append("findings must be a list")
+    else:
+        has_tier1 = any(f.get("tier") == "tier1" for f in findings if isinstance(f, dict))
+        has_tier2 = any(f.get("tier") == "tier2" for f in findings if isinstance(f, dict))
+        
+        if has_tier1 and has_tier2:
+            violations.append("Tier 2 findings are not allowed if any Tier 1 findings exist. Clean the significant issues first.")
+
+        # Ensure no report with only cleanup findings unless Tier 1 is genuinely empty
+        if not has_tier1 and has_tier2:
+            # This is allowed by the priority rule, but we should ensure the findings are valid
+            pass
+
+        for idx, finding in enumerate(findings):
+            violations.extend(validate_finding(finding, idx, repo_sha))
+
+    if not findings and len(data.get("checked_surfaces", [])) == 0:
+        violations.append("Report has zero findings AND zero checked surfaces. Provide evidence of actual repository scanning.")
+
+    return violations
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print("Usage: uv run .agents/scripts/check-brooks-report.py <result.json>")
+        print("Usage: uv run check-brooks-report.py <result.json>")
         sys.exit(1)
 
-    verbose = "--verbose" in sys.argv
     result_path = Path(sys.argv[1])
-
     if not result_path.exists():
         print(f"Result file not found: {result_path}")
         sys.exit(1)
 
-    with open(result_path) as f:
-        data = json.load(f)
+    try:
+        with open(result_path) as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Report validation FAILED (Invalid JSON): {e}")
+        sys.exit(1)
 
-    report = data.get("report", "")
-    score = data.get("score")
-
-    if verbose:
-        print(f"Score: {score}")
-        print(f"Report length: {len(report)} chars")
-        print()
-
-    violations = collect_violations(report)
+    violations = collect_violations(data)
 
     if not violations:
-        if verbose:
-            print("Report validation PASSED")
+        print("Report validation PASSED")
         sys.exit(0)
 
     print(f"Report validation FAILED ({len(violations)} violation(s)):")
-    print()
     for v in violations:
         print(f"  - {v}")
-    print()
-    print("The report was NOT posted. Fix the agent output and re-run.")
     sys.exit(1)
-
 
 if __name__ == "__main__":
     main()

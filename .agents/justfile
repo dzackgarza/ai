@@ -1,19 +1,20 @@
-# Validate a brooks-lint/slop report and write it to the canonical artifact.
-# The agent MUST call this to submit a report — there is no other path.
-# - If validation fails → exits non-zero → agent retries
-# - If validation passes → writes .brooks-report-artifact.json (CI posts from this)
+# Submit a candidate brooks-lint/slop report.
+# This command is for agents to submit their analysis for validation by the CI harness.
 #
 # Usage:
-#   just post-brooks-review <result.json> <pr-number>
+#   just submit-brooks-candidate <result.json>
 set shell := ['bash', '-c']
 
 [private]
-post-brooks-review result pr-number:
+submit-brooks-candidate result:
     set -euo pipefail
 
-    # Validate — checker has PEP 723 metadata declared in its shebang
-    scripts/check-brooks-report.py "{{result}}"
+    # Ensure the target directory exists (the harness sets this up, but good to be safe)
+    # Note: agents might not have write access to /tmp/brooks/ if restricted, 
+    # but the harness will set up appropriate permissions.
+    TARGET_DIR="${RUNNER_TEMP:-/tmp}/brooks/candidates"
+    mkdir -p "$TARGET_DIR"
 
-    # Write canonical artifact (CI posts from this — no re-validation)
-    cp "{{result}}" .brooks-report-artifact.json
-    echo "Report validated. Artifact written to .brooks-report-artifact.json"
+    # Copy to a timestamped file to avoid overwriting and allow harvesting
+    cp "{{result}}" "$TARGET_DIR/candidate-$(date +%s).json"
+    echo "Candidate submitted to harness for validation."
