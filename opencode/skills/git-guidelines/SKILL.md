@@ -520,7 +520,7 @@ gh api repos/<owner>/<repo>/issues/<N>/comments
 
 If the user asks to use Jules for review, load:
 - [jules](file:///home/dzack/ai/opencode/skills/jules/SKILL.md)
-- [jules/references/anti-slop-issue-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md)
+- [jules/references/anti-slop-report-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md)
 - [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md)
 - [anti-slop](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md)
 - [reviewing-subagent-work](file:///home/dzack/ai/opencode/skills/reviewing-subagent-work/SKILL.md)
