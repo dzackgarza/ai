@@ -9,10 +9,10 @@ set shell := ['bash', '-c']
 submit-brooks-candidate result:
     set -euo pipefail
 
-    # Use /tmp/brooks/candidates explicitly, which is allowed by agent permissions
-    TARGET_DIR="/tmp/brooks/candidates"
+    # Use a directory inside the workspace to ensure agent has write permissions
+    TARGET_DIR=".agents/brooks/candidates"
     mkdir -p "$TARGET_DIR"
 
-    # Copy to a timestamped file to avoid overwriting and allow harvesting
+    # Copy to a timestamped file to allow harvesting multiple attempts
     cp "{{result}}" "$TARGET_DIR/candidate-$(date +%s).json"
     echo "Candidate submitted to harness for validation."

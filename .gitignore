@@ -119,3 +119,4 @@ opencode/context-mode/**/*.db-wal
 opencode/*.db
 opencode/*.db-shm
 opencode/*.db-wal
+.agents/brooks/

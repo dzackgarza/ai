@@ -133,7 +133,7 @@ def main():
     if not skills_dir.is_dir() or not template_path.is_file():
         print("FATAL: Missing dependencies", file=sys.stderr); sys.exit(1)
 
-    brooks_dir = pathlib.Path("/tmp/brooks")
+    brooks_dir = pathlib.Path(".agents/brooks").resolve()
     candidates_dir = brooks_dir / "candidates"
     candidates_dir.mkdir(parents=True, exist_ok=True)
     task_path = brooks_dir / "task.md"
