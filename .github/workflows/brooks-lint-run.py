@@ -94,13 +94,30 @@ def validate_candidate(candidate_path: pathlib.Path, repo_sha: str) -> tuple[boo
     return True, ""
 
 def run_opencode(task_path: pathlib.Path, candidates_dir: pathlib.Path, attempt: int) -> int:
-    cmd = ["opencode", "run", "--model", "opencode/deepseek-v4-flash-free", "--file", str(task_path)]
+    cmd = ["opencode", "run", "--model", "opencode/deepseek-v4-flash-free"]
     env = {**os.environ, "OPENCODE_PURE": "1", "RUNNER_TEMP": str(task_path.parent.parent)}
-    res = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=OPENCODE_TIMEOUT, env=env)
-    sys.stdout.write(res.stdout); sys.stderr.write(res.stderr)
+    with open(task_path, 'r') as f:
+        res = subprocess.run(
+            cmd,
+            stdin=f,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=OPENCODE_TIMEOUT,
+            env=env,
+        )
+    
+    # Forward stdout/stderr for logs
+    sys.stdout.write(res.stdout)
+    sys.stderr.write(res.stderr)
+    
+    # Extract fenced JSON blocks from stdout
+    import re
     blocks = re.findall(r"```json\n(.*?)\n```", res.stdout, re.DOTALL)
     for i, block in enumerate(blocks):
-        (candidates_dir / f"attempt-{attempt}-stdout-{i}.json").write_text(block.strip())
+        cpath = candidates_dir / f"attempt-{attempt}-stdout-{i}.json"
+        cpath.write_text(block.strip())
+        
     return res.returncode
 
 def main():
