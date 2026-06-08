@@ -107,7 +107,6 @@ def validate_finding(
             "symptom",
             "source",
             "consequence",
-            "remedy",
             "evidence",
         ]
 

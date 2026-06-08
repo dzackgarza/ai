@@ -64,7 +64,6 @@ The JSON must conform to the following schema precisely:
       "symptom": "...",
       "source": "...",
       "consequence": "...",
-      "remedy": "...",
       "evidence": [
         {
           "kind": "file-read",
@@ -88,6 +87,7 @@ The JSON must conform to the following schema precisely:
 }
 ```
 
+- **No Remediation**: Brooks review is an adversarial audit. You must diagnose defects and trace their causal path, not prescribe fixes. Finding fixes separately is the maintainer's job. Do not include remediation steps.
 - **Tier 1** (significant): Label as `[BLOCKER]` or `[SHOULD FILE ISSUE]`.
 - **Tier 2** (cleanup): Label as `[NOTE]`. Append ONLY if Tier 1 is empty.
 - Meta/infrastructure findings about agent configs, tests, CI workflows, or harness files are strictly forbidden and will cause rejection.
