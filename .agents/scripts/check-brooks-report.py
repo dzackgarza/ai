@@ -126,6 +126,10 @@ def validate_report_content(report: str) -> list[str]:
         if not re.search(marker, report, re.IGNORECASE):
             violations.append(f"Mandatory marker '{marker.replace(r'\\s+', ' ')}' not found in report field. You must provide detailed analysis for at least one finding.")
             
+    # REJECT CARGO CULT -O FINDINGS
+    if "-O" in report or "optimized mode" in report.lower():
+        violations.append("Finding rejected: We do NOT care about Python's optimized mode (-O). It is a trivial concern and we never run Python that way. Remove this cargo-cult finding.")
+
     return violations
 
 def collect_violations(data: dict) -> list[str]:

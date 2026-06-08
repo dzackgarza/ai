@@ -23,6 +23,7 @@ Baseline (from loaded skills):
 - Every assertion in a test must genuinely increase proof burden
 - Every finding must cite file paths, line numbers, and exploration evidence
 - **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
+- **Ignore Python `-O` Mode**: We do NOT care about Python's optimized mode (`-O`) that strips `assert` statements. It is a trivial, esoteric concern. Do NOT report the use of `assert` as a problem. Findings mentioning `-O` or "optimized mode" will be rejected.
 
 ## Task: Full Repository Slop Audit
 

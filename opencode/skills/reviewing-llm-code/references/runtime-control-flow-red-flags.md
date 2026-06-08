@@ -20,6 +20,8 @@ If the condition is missing data, bad config, missing dependency, failed IO, fai
 
 ## Why `assert X` Matters
 
+`assert X` states the admissible world. The code after the assertion is allowed to assume X. That is the point.
+
 Do not replace `assert X` with:
 
 ```python
@@ -28,8 +30,6 @@ if not X:
 ```
 
 That shape reintroduces a branch. It gives future agents a place to add logging, fallback, warnings, defaulting, metrics, cleanup, alternate return values, or "temporary" recovery.
-
-`assert X` states the admissible world. The code after the assertion is allowed to assume X. That is the point.
 
 For languages where native `assert` has caveats, use a single invariant primitive, not ad hoc branches:
 
@@ -46,6 +46,16 @@ assert!(condition, "owned invariant");
 ```
 
 But the call site must still be assertion-shaped. Do not scatter `if !condition { throw ... }` / `if not condition: raise ...` across runtime code.
+
+### Python `-O` Mode (Optimized)
+
+**We do NOT care about Python's optimized mode (`-O`) that strips `assert` statements.**
+
+- This is a trivial, esoteric concern that we have not enabled on purpose.
+- We NEVER run Python with the `-O` flag.
+- It is NOT a recognized way that agents game or reward-hack around assertions.
+- Any finding citing the removal of assertions in optimized mode as a "decay risk" or "reliability issue" is **pure cargo cult** and will be summarily rejected.
+- Do NOT report the use of `assert` in Python as a problem. It is the preferred way to state invariants in this repository.
 
 ---
 
