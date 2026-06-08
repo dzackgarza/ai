@@ -52,6 +52,8 @@ jobs:
 
       - name: Post PR Comment
         if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           report=$(jq -r '.report' .brooks-report-artifact.json)
           score=$(jq -r '.score // "N/A"' .brooks-report-artifact.json)
