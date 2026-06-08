@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 from datetime import datetime
 from pathlib import Path
@@ -46,8 +47,8 @@ class ModelMetadata(BaseModel):
             return True
         # Check both key naming conventions (input/prompt, output/completion)
         if self.cost:
-            prompt_cost = self.cost.get("input") or self.cost.get("prompt")
-            completion_cost = self.cost.get("output") or self.cost.get("completion")
+            prompt_cost = self.cost.get("input") if "input" in self.cost else self.cost.get("prompt")
+            completion_cost = self.cost.get("output") if "output" in self.cost else self.cost.get("completion")
             if prompt_cost == 0 and completion_cost == 0:
                 return True
         return False

@@ -314,7 +314,11 @@ def main():
         print(f"Syncing {name}...")
 
         # Get format descriptor
-        fmt = HARNESS_FORMATS.get(name, HARNESS_FORMATS["opencode"])
+        if name not in HARNESS_FORMATS:
+            print(f"  ERROR: Unknown harness format '{name}'. Valid formats are: {', '.join(HARNESS_FORMATS.keys())}")
+            import sys
+            sys.exit(1)
+        fmt = HARNESS_FORMATS[name]
 
         try:
             mcp_servers = build_mcp_config_for_harness(yaml_config, name, fmt)
