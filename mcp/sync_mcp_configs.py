@@ -26,9 +26,10 @@ import json
 import os
 import re
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 import yaml
 import tomlkit
@@ -40,11 +41,11 @@ class HarnessFormat:
 
     name: str
     remote_url_key: str = "url"
-    remote_type: Optional[str] = None
+    remote_type: str | None = None
     remote_headers: bool = False
-    local_type: Optional[str] = None
+    local_type: str | None = None
     command_as_list: bool = False
-    args_key: Optional[str] = "args"
+    args_key: str | None = "args"
     include_enabled: bool = False
     json_path: str = "mcp"
     is_toml: bool = False
