@@ -184,7 +184,7 @@ def main():
         repo_sha = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], text=True
         ).strip()
-    except:
+    except subprocess.CalledProcessError:
         repo_sha = "HEAD"
 
     system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))

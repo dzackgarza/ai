@@ -73,7 +73,7 @@ def check_file_exists_in_git(path: str, repo_sha: str) -> bool:
             check=True,
         )
         return True
-    except Exception:
+    except subprocess.CalledProcessError:
         # Fallback to local check if git fails (e.g. shallow clone without that SHA)
         return Path(path).exists()
 
