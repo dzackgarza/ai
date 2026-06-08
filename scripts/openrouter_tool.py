@@ -1,3 +1,13 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "httpx",
+#     "typer",
+#     "pydantic",
+#     "rich",
+# ]
+# ///
+
 from __future__ import annotations
 
 import asyncio
