@@ -1,80 +1,95 @@
 ---
-name: jules-anti-slop-issue-review
-description: Use when launching Jules as an asynchronous anti-slop review scout. Jules receives the full anti-slop/reviewing-LLM-code curriculum and opens a Linear issue with candidate findings. Do not use this workflow for immediate fixing, PR thread resolution, or implementation.
+name: jules-anti-slop-report-review
+description: Use when launching Jules as an asynchronous anti-slop review scout. Jules receives the full anti-slop/reviewing-LLM-code curriculum and writes a candidate JSON report file. Do not use this workflow for immediate fixing, PR thread resolution, or implementation.
 ---
-# Jules Anti-Slop Issue Review
 
-Jules is not trusted to complete complex work independently. Use Jules as an asynchronous review scout: prime it with the full anti-slop curriculum, ask it to inspect a PR/branch/diff thoroughly, and require it to open a Linear issue containing candidate findings.
+# Jules Anti-Slop Report Review
 
-The Jules issue is not an implementation instruction. It is a durable review artifact for later human/agent triage.
+Jules is not trusted to complete complex work independently.
+Use Jules as an asynchronous review scout: prime it with the full anti-slop curriculum,
+ask it to inspect a PR/branch/commit range thoroughly, and require it to write a
+candidate JSON report file matching the `check-brooks-report.py` validation schema.
 
-Do not keep the controller session blocked waiting to fix findings. Do not immediately pipe the issue back into implementation. Addressing the issue is a separate PR workflow.
+The Jules report is not an implementation instruction.
+It is a durable review artifact for later human/agent triage.
+
+Do not pipe Jules findings back into implementation without independent review.
+Addressing findings is a separate PR workflow.
 
 ## Workflow Separation
 
-### Phase A — Asynchronous review generation
+### Phase A — Asynchronous report generation
 
 1. **Identify the target**:
-   - repo
+   - repo (owner/name)
    - PR URL, branch, or commit range
    - original issue/task/PR contract if available
    - known constraints and non-goals
 
 2. **Build a large Jules prompt containing**:
    - full anti-slop guidance
-   - reviewing-llm-code guidance
-   - pattern catalog
-   - relevant LLM failure modes
-   - test-guidelines if tests/QC are in scope
-   - known-solution-first if dependency/reinvention is in scope
+   - `reviewing-llm-code` guidance
+   - pattern catalog and failure-mode references
+   - `test-guidelines` if tests/QC are in scope
+   - `known-solution-first` if dependency/reinvention is in scope
    - the target PR/branch/diff context
+   - the JSON schema and validation rules below
 
 3. **Launch Jules asynchronously**.
 
-4. **Jules performs the review and creates a Linear issue via the Linear MCP tool** (which automatically syncs to GitHub in the background).
+4. **Jules performs the review and writes a candidate JSON report file**.
 
-5. **The controller records the Jules session/issue link and stops**.
+5. **The controller records the Jules session link and stops**.
 
 No code is changed in this phase.
+No PR is opened.
+No issue is created.
 
 ### Phase B — Later remediation
 
-A later PR may address the Jules issue.
+A later PR may address the Jules report findings.
 
 That PR must:
-1. Load `pr-feedback-triage`, `reviewing-llm-code`, `anti-slop`, and `test-guidelines` as applicable.
-2. Triage each Jules finding independently.
+1. Load `pr-feedback-triage`, `reviewing-llm-code`, `anti-slop`, and `test-guidelines`
+   as applicable.
+2. Triage each finding independently.
 3. Accept, accept-with-modified-remediation, reject, or investigate each finding.
 4. Implement only accepted findings.
-5. Reply/comment on the issue with the disposition and evidence.
-6. Close the issue only when accepted findings are fixed or rejected findings are visibly dispositioned.
+5. Close the report only when accepted findings are fixed or all findings are visibly
+   dispositioned.
 
 Do not assume Jules findings are correct.
-Do not treat the issue as a task list until triaged.
+Do not treat the report as a task list until triaged.
 
 ## Prompt Construction
 
 The prompt must heavily constrain Jules:
 
-```markdown
-You are Jules. You are not implementing code in this task.
+```
+You are Jules.
+You are NOT implementing code in this task.
+You are performing an anti-slop review of LLM-produced work.
+Your only deliverable is a JSON report file written to the repo at
+`slop-report.json` (or a name matching `*slop-report*.json`).
 
-You are performing an anti-slop review of LLM-produced work. Your only deliverable is a Linear issue with candidate anti-slop findings, created via the Linear MCP tool.
-
+Do not edit source files.
 Do not open a PR.
-Do not edit files.
+Do not create any issue.
 Do not fix findings.
-Do not resolve review threads.
 Do not approve or reject the target PR.
 Do not perform a generic code review.
-You must use the Linear MCP tool to create the issue. Do not attempt to use the GitHub API or CLI to create the issue directly.
 
-You must use the supplied anti-slop curriculum. A finding is valid only if it maps to one of the supplied patterns and is supported by exact code evidence.
+You must output valid JSON matching the schema below.
+Validation is performed by `check-brooks-report.py`.
+If validation fails, the report is rejected and you will be re-prompted with
+the exact validation errors.
+
+The JSON file must be at the repo root and named `slop-report.json`.
 ```
 
 Then provide:
 
-```markdown
+```
 Target:
 - Repository:
 - PR / branch / commit range:
@@ -84,114 +99,180 @@ Target:
 
 Curriculum:
 <full anti-slop/reviewing-llm-code/pattern-catalog/failure-mode text>
+
+JSON Schema and Validation Rules:
+<schema and rules below>
 ```
 
-The review curriculum should be fully pasted/embedded into the prompt since Jules cannot be trusted to discover or apply it from memory.
+The review curriculum must be fully embedded into the prompt since Jules cannot be
+trusted to discover or apply it from memory.
 
-## Issue-Opening Mechanics
+## JSON Schema
 
-The subskill prefers issue creation, not PR creation. Both Jules and the controller have access to the Linear MCP server. Issues must be created using the Linear MCP tools, which will automatically sync to GitHub via background integration.
+The report must be valid JSON conforming to the following schema.
+Validation is performed by `uv run check-brooks-report.py slop-report.json`.
 
-Recommended controller/Jules command shape to invoke Jules:
+### Top-level fields
 
-```bash
-cat .jules/anti-slop-review-prompt.md | jules new --repo owner/repo
+| Field | Type | Required |
+|---|---|---|
+| `schema_version` | integer | yes |
+| `repo_sha` | string (commit SHA) | yes |
+| `review_scope` | object | yes |
+| `findings` | array of finding objects | yes |
+| `checked_surfaces` | array of surface objects | yes |
+| `score` | integer | yes |
+| `report` | string (markdown) | yes |
+| `report_type` | `"slop"` | yes |
+
+```json
+{
+  "schema_version": 1,
+  "report_type": "slop",
+  "repo_sha": "abc123...",
+  "review_scope": {
+    "changed_files": ["src/foo.ts", "src/bar.py"],
+    "excluded_files": [],
+    "required_surfaces": ["src/"]
+  },
+  "findings": [
+    {
+      "tier": "tier1",
+      "label": "SLOP",
+      "category": "bridge-burning",
+      "location": {
+        "path": "src/foo.ts",
+        "start_line": 10,
+        "end_line": 25
+      },
+      "pattern": "mechanism, not symptom",
+      "task_narrative": "What was the user actually asking for?",
+      "slop_narrative": "How did the agent produce this instead of fulfilling the task?",
+      "why_it_matters": "How this mechanism lets bad work pass or hides failures.",
+      "user_surprise": "How this minimizes agent errors at the cost of user surprise.",
+      "existential_justification": "Why does this code exist at all?",
+      "failure_mode": "name from loaded failure-mode skills",
+      "evidence": [
+        {
+          "kind": "file-read",
+          "path": "src/foo.ts",
+          "lines": [1, 80]
+        }
+      ]
+    }
+  ],
+  "checked_surfaces": [
+    {
+      "path": "src/foo.ts",
+      "reason": "slop-scan",
+      "lines_read": [1, 120],
+      "result": "finding"
+    }
+  ],
+  "score": 75,
+  "report": "## Slop Audit Summary\n\nFull formatted markdown report for human consumption."
+}
 ```
 
-## Issue Body Format
+### Finding fields (for `report_type: "slop"`)
 
-The issue is optimized for later triage, not immediate action:
+Each finding object must have exactly these fields:
 
-```markdown
-# Anti-slop review: <target>
+| Field | Type | Constraints |
+|---|---|---|
+| `tier` | string | `"tier1"` or `"tier2"` |
+| `label` | string | `"SLOP"`, `"SLOP SUSPECT"`, or `"NOTE"` |
+| `category` | string | must NOT contain any forbidden category (see below) |
+| `location` | object | must have `path`, `start_line`, `end_line`; path must exist in commit |
+| `pattern` | string | mechanism-level pattern name, not symptom |
+| `task_narrative` | string | what the user originally asked for |
+| `slop_narrative` | string | how the agent substituted the artifact for the task |
+| `why_it_matters` | string | how this lets bad work pass |
+| `user_surprise` | string | cost to user vs cost to agent |
+| `existential_justification` | string | why this code exists instead of using existing solutions |
+| `failure_mode` | string | name from loaded failure-mode skills |
+| `evidence` | array of objects | each with `kind`, `path`, `lines`; at least one required |
 
-## Target
+### `report` field — mandatory markdown markers
 
-- Repository:
-- PR / branch / commit:
-- Original task / contract:
-- Jules session:
-- Date:
-- Scope reviewed:
+The `report` string must contain all of the following markers (as regex patterns):
 
-## Status
+- `Finding \d+`
+- `Pattern:`
+- `Concrete evidence:`
+- `Original requested task narrative:`
+- `Descent into slop narrative:`
+- `Why this matters:`
+- `User surprise analysis:`
+- `Existential justification:`
+- `Failure mode:`
 
-This is a candidate anti-slop review generated by Jules.
-It has not been triaged.
-Do not implement directly from this issue without independent validation.
+The report must be at least 200 characters of substantive analysis.
 
-## Executive summary
+### Forbidden categories
 
-<One paragraph. Avoid approval/rejection language.>
+Findings in these categories will be rejected:
 
-## Candidate findings
+- `meta`
+- `infrastructure`
+- `ci-workflow`
+- `agent-config`
+- `harness`
+- `environment`
 
-### Finding 1: <pattern name>
+### Forbidden paths
 
-- Pattern source:
-- Files / lines:
-  - `<file:line>` — <evidence>
-  - `<file:line>` — <evidence>
-- Claim:
-  <What Jules believes is wrong>
-- Why this matches the pattern:
-  <Tie to supplied anti-slop guidance>
-- Why this is not merely a user design choice:
-  <Apply design-choice gate>
-- Suggested remediation direction:
-  <Delete / simplify / centralize / use dependency / restore proof loop / add debug surface>
-- Confidence:
-  high | medium | low
-- What would falsify this:
-  <Specific evidence that would prove Jules wrong>
+Findings against files under these paths will be rejected:
 
-## Rejected generic review comments
+- `.github/`
+- `.agents/`
+- `quality-control/`
+- `opencode/`
+- `.opencode/`
+- `.serena/`
+- `.claude/`
+- `.git/`
+- `nginx.conf`
+- `.envrc`
+- `justfile`
+- `home-justfile`
+- `pyproject.toml`
+- `package.json`
+- `package-lock.json`
+- `uv.lock`
+- `.gitignore`
 
-List generic comments Jules considered but rejected:
-- micro-optimization
-- enterprise hardening
-- sandbox paranoia
-- graceful fallback
-- broad edge-case handling
-- generic security framing
-- style-only comments
+### Tier rules
 
-## Suggested triage order
+- If any `tier1` finding exists, no `tier2` findings are allowed.
+  All tier2 findings must be dropped; only fix the tier1 issues first.
 
-1.
-2.
-3.
+### Rejected patterns
 
-## Later triage checklist
+The following concerns must NEVER appear as findings:
 
-For each finding, a later PR must mark:
-- accepted
-- accepted with modified remediation
-- rejected
-- needs investigation
+- Python's `-O` (optimized) mode or `assert` removal. This is an esoteric concern that
+  does not apply. Findings mentioning `-O` or "optimized mode" will be rejected.
 
-with evidence.
-```
+## File Output
 
-## What the Issue is For
+The report must be written to a JSON file at a path matching `*slop-report*.json` in
+the repo root (e.g., `slop-report.json`).
 
-The issue is a backlog artifact. It exists so that:
-- a long Jules review can finish asynchronously,
-- findings survive outside the Jules session,
-- later PRs can triage findings one by one,
-- invalid Jules findings can be rejected visibly,
-- useful findings can become scoped remediation work.
+Do not write to any other location.
+Do not write non-JSON formats.
+Do not create issues, PRs, or any other artifact.
 
-The issue is not a claim that the findings are true.
-The issue is not permission to implement everything listed.
-The issue is not a merge blocker until triaged by a stronger reviewer or the user.
+The pre-commit hook will validate that staged files matching `*slop-report*.json`
+or `*brooks-report*.json` pass `check-brooks-report.py`.
 
-## Addressing a Jules Anti-Slop Issue
+## Addressing a Jules Report
 
-This is a separate task. Use `pr-feedback-triage`, `reviewing-llm-code`, `anti-slop`, and `test-guidelines`.
+This is a separate task. Use `pr-feedback-triage`, `reviewing-llm-code`, `anti-slop`,
+and `test-guidelines`.
 
 A remediation PR should:
-1. Reference the Jules issue.
+1. Reference the Jules report.
 2. Select one or more findings to triage.
 3. For each selected finding, state:
    - Jules claim
@@ -199,5 +280,4 @@ A remediation PR should:
    - evidence
    - remediation or rejection rationale
 4. Implement only accepted findings.
-5. Comment back on the issue with the disposition.
-6. Leave untriaged findings open.
+5. Leave untriaged findings in the report.
