@@ -106,8 +106,7 @@ def resolve_env_tokens(value: Any) -> Any:
         for var_name in matches:
             env_val = os.environ.get(var_name)
             if env_val is None:
-                print(f"  WARNING: Environment variable {var_name} not set")
-                env_val = ""
+                raise ValueError(f"Required environment variable '{var_name}' is not set")
             value = value.replace(f"{{env:{var_name}}}", env_val)
         return value
     elif isinstance(value, list):

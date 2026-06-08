@@ -105,8 +105,10 @@ async def probe_model(model_id: str, check_tools: bool = False) -> tuple[bool, s
                 return False, "NO_TOOL_SUPPORT"
 
             return True, "UP"
-        except Exception as e:
-            return False, str(e)
+        except httpx.RequestError as e:
+            return False, f"Request error: {e}"
+        except json.JSONDecodeError:
+            return False, "Invalid JSON response"
 
 
 @app.command()
