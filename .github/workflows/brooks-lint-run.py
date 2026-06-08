@@ -68,16 +68,6 @@ def load_skills(skills_dir: pathlib.Path, slop_mode: bool = False) -> str:
     if repo_docs: guides.append(repo_docs)
     return "\n\n---\n\n".join(guides)
 
-def get_diff(base_ref: str | None) -> str:
-    cmds = [["git", "diff", f"origin/{base_ref}...HEAD"]] if base_ref else []
-    cmds.append(["git", "diff", "HEAD~1...HEAD"])
-    for cmd in cmds:
-        try:
-            res = subprocess.run(cmd, capture_output=True, text=True, check=False)
-            if res.returncode == 0 and res.stdout.strip(): return res.stdout.strip()
-        except FileNotFoundError: pass
-    return "No diff found."
-
 def substitute(template: str, **kwargs: str) -> str:
     for k, v in kwargs.items(): template = template.replace(f"{{{{{k}}}}}", v)
     return template
@@ -143,9 +133,8 @@ def main():
     except: repo_sha = "HEAD"
 
     system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))
-    diff = get_diff(args.base_ref)
     template = template_path.read_text()
-    body = substitute(template, DIFF=diff, PR_NUMBER=args.pr_number, CANDIDATES_DIR=str(candidates_dir), REPO_SHA=repo_sha)
+    body = substitute(template, PR_NUMBER=args.pr_number, CANDIDATES_DIR=str(candidates_dir), REPO_SHA=repo_sha)
     current_prompt = f"{system}\n\n{body}"
 
     for attempt in range(1, MAX_ATTEMPTS + 1):

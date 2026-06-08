@@ -17,16 +17,13 @@ Baseline:
 - Every assertion must genuinely increase proof burden
 - Every finding must cite file paths, line numbers, and exploration evidence
 - Findings about CI infrastructure are rejected (see sweep protocol exclusions)
+- **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
 
-## Task
+## Task: Fresh Repository Audit
 
-You have two jobs — do BOTH:
+Perform a comprehensive, fresh analysis of the entire repository at the current commit (`{{REPO_SHA}}`). 
 
-### 1. PR Review
-Review the diff below. Produce Symptom→Source→Consequence→Remedy findings for anything wrong in the changed code.
-
-### 2. Full Codebase Sweep
-Scan the entire repository for issues following the **CI Sweep Protocol** above:
+Follow the **CI Sweep Protocol** below:
 - Start with `tree -L 3` to understand structure
 - Find hotspots: most-churned files (last 3 months), oldest untouched files, recently modified files
 - Read key configs, docs, justfile commands
@@ -34,10 +31,7 @@ Scan the entire repository for issues following the **CI Sweep Protocol** above:
 - Check test quality, dead code, architectural problems
 - Apply the Six Decay Risks (R1-R6) to real files you read
 
-### Diff
-```diff
-{{DIFF}}
-```
+Identify and report structural code defects, architectural decay, and bridge-burning violations anywhere in the codebase.
 
 ### Output Format
 The harness requires a strict JSON file format. Plain text reports will be rejected.
@@ -49,7 +43,7 @@ The JSON must conform to the following schema precisely:
   "repo_sha": "{{REPO_SHA}}",
   "pr_number": {{PR_NUMBER}},
   "review_scope": {
-    "changed_files": ["list", "of", "files", "in", "diff"],
+    "changed_files": [],
     "excluded_files": [],
     "required_surfaces": []
   },
@@ -80,7 +74,7 @@ The JSON must conform to the following schema precisely:
   "checked_surfaces": [
     {
       "path": "src/foo.ts",
-      "reason": "changed-file",
+      "reason": "high-churn",
       "lines_read": [1, 120],
       "result": "finding"
     }

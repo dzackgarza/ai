@@ -1,7 +1,7 @@
 ## CI Constraints (MANDATORY)
 
 This runs in a CI environment. Follow these rules exactly:
-- **Do NOT modify any workflow files or CI infrastructure.** You are running in a restricted mode.
+- **Do NOT modify any workflow files, scripts, or CI infrastructure.** You are running in a restricted mode.
 - Do not ask questions. Do not request confirmation. Do not pause for input.
 
 ## Skills in Context
@@ -22,10 +22,11 @@ Baseline (from loaded skills):
 - No legacy flags, deprecated symbols, or feature-flag toggles
 - Every assertion in a test must genuinely increase proof burden
 - Every finding must cite file paths, line numbers, and exploration evidence
+- **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
 
-## Task
+## Task: Fresh Repository Slop Audit
 
-You have ONE job — run a **slop-focused audit** on the PR diff below.
+Perform a comprehensive, fresh analysis of the entire repository at the current commit (`{{REPO_SHA}}`) focused exclusively on **slop**.
 
 "Slop" means structural AI-generated-code defects as defined by the loaded skills:
 bridge-burning violations, validation-evasion constructs, runtime defaults, mocks/skips/fakes
@@ -33,39 +34,16 @@ in proof paths, proof-laundering, dead control flow, dependency-inversion failur
 bespoke reinvention of standard patterns, and myopic patching that hacks linters/tests
 into compliance.
 
-### Scope: Diff-Impacted Code
+### Execution
 
-Scan the diff below. For each file the diff touches, examine not just the changed lines
-but also the **surrounding context** — the functions, classes, and test files affected.
-
-Check these specific slop categories (from loaded references):
-
-1. **Bridge-Burning Red Flags** (from `reviewing-llm-code/references/bridge-burning-red-flags.md`):
-   Runtime defaults, fallbacks for missing dependencies, try-import patterns, mock/fake/skip
-   as proof, backwards-compatibility shims, boolean mode flags, stringly errors, soft guards
-   where hard assertions belong, and similar.
-
-2. **Runtime Control-Flow Red Flags** (from `reviewing-llm-code/references/runtime-control-flow-red-flags.md`):
-   Conditional logic that compensates for an AI model's inability to construct correct imports,
-   function calls, or data shapes at code-writing time.
-
-3. **Test Pattern Violations** (from `anti-slop/references/test-patterns.md`):
-   Meta-assertions on source content, helper-level proof laundered as boundary proof,
-   smoke tests in proof paths, fake/idealized data instead of real data.
-
-4. **Text Pattern Violations** (from `anti-slop/references/text-patterns.md`):
-   Weasel words, hedged claims, confusion between absence-of-evidence and
-   evidence-of-absence, burying the lede, or presenting procedural completion as
-   substantive completion.
-
-5. **UX Antipatterns** (from `anti-slop/references/ux-antipatterns.md`):
-   Silent failure modes, error swallowing, missing diagnostics, assumed user knowledge.
-
-### Diff
-
-```diff
-{{DIFF}}
-```
+1. Scan the repository to identify all Python and TypeScript source files.
+2. For each file, examine the code for the slop categories defined in the loaded references.
+3. Check these specific slop categories:
+   - **Bridge-Burning Red Flags**: Runtime defaults, fallbacks, try-import, mock/fake as proof, backwards-compat shims, boolean mode flags, stringly errors, soft guards.
+   - **Runtime Control-Flow Red Flags**: Conditional logic compensating for model code-writing failure.
+   - **Test Pattern Violations**: Meta-assertions on source, helper-level proof laundered as boundary proof, smoke tests in proof paths, fake data.
+   - **Text Pattern Violations**: Weasel words, hedged claims, presenting procedural completion as substantive.
+   - **UX Antipatterns**: Silent failure, error swallowing, missing diagnostics.
 
 ### Finding Labeling
 
@@ -83,10 +61,10 @@ The JSON must conform to the following schema precisely:
 ```json
 {
   "schema_version": 1,
-  "repo_sha": "HEAD",
+  "repo_sha": "{{REPO_SHA}}",
   "pr_number": {{PR_NUMBER}},
   "review_scope": {
-    "changed_files": ["src/example.py"],
+    "changed_files": [],
     "excluded_files": [],
     "required_surfaces": []
   },
@@ -96,10 +74,10 @@ The JSON must conform to the following schema precisely:
       "label": "SLOP",
       "category": "bridge-burning",
       "location": {
-        "path": "src/example.py",
+        "path": "src/foo.ts",
         "start_line": 10,
         "end_line": 25,
-        "quoted_text_sha256": ""
+        "quoted_text_sha256": "optional-sha"
       },
       "symptom": "...",
       "source": "...",
@@ -108,7 +86,7 @@ The JSON must conform to the following schema precisely:
       "evidence": [
         {
           "kind": "file-read",
-          "path": "src/example.py",
+          "path": "src/foo.ts",
           "lines": [1, 80]
         }
       ]
@@ -116,15 +94,15 @@ The JSON must conform to the following schema precisely:
   ],
   "checked_surfaces": [
     {
-      "path": "src/example.py",
-      "reason": "changed-file",
+      "path": "src/foo.ts",
+      "reason": "slop-scan",
       "lines_read": [1, 120],
       "result": "finding"
     }
   ],
   "rejected_easy_wins": [],
-  "score": 95,
-  "report": "Fallback markdown report summary here..."
+  "score": 85,
+  "report": "## Markdown Slop Review Summary\n\nInclude the full formatted report here for human consumption."
 }
 ```
 
@@ -135,6 +113,6 @@ The JSON must conform to the following schema precisely:
 
 The ONLY way to submit your candidate report is to write the JSON to a file in the candidates directory: `{{CANDIDATES_DIR}}`.
 
-1. Write your full JSON report to `{{CANDIDATES_DIR}}/attempt-0.json`.
+1. Write your full JSON report to a file like `{{CANDIDATES_DIR}}/candidate.json`.
 2. Do NOT try to write `.brooks-report-artifact.json` directly. The harness will validate your candidate and write the artifact itself if validation passes.
 3. If the harness rejects your candidate, it will automatically restart you with a continuation prompt containing the exact validation errors.
