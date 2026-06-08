@@ -26,13 +26,12 @@ import json
 import os
 import re
 import sys
-from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
 import tomlkit
+import yaml
 
 
 @dataclass
@@ -95,6 +94,10 @@ HARNESS_FORMATS = {
 }
 
 
+ENV_TOKEN_PATTERN = re.compile(r"\{env:([^}]+)\}")
+RECOMMENDED_SYNC_RECIPE = "just sync-mcp-configs"
+
+
 def expand_path(path: str) -> Path:
     """Expand ~ and environment variables in path."""
     return Path(os.path.expandvars(os.path.expanduser(path)))
@@ -107,7 +110,9 @@ def resolve_env_tokens(value: Any) -> Any:
         for var_name in matches:
             env_val = os.environ.get(var_name)
             if env_val is None:
-                raise ValueError(f"Required environment variable '{var_name}' is not set")
+                raise ValueError(
+                    f"Required environment variable '{var_name}' is not set"
+                )
             value = value.replace(f"{{env:{var_name}}}", env_val)
         return value
     elif isinstance(value, list):
@@ -199,7 +204,7 @@ def ensure_required_sync_environment():
     if os.environ.get("DIRENV_DIR") is None:
         print(
             "ERROR: direnv .envrc was not loaded before syncing MCP configs.\n"
-            f"Run this script via `just sync-mcp-configs` so direnv loads the required environment.",
+            "Run this script via `just sync-mcp-configs` so direnv loads the required environment.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -280,10 +285,6 @@ def sync_toml_harness(
     return True
 
 
-ENV_TOKEN_PATTERN = re.compile(r"\{env:([^}]+)\}")
-RECOMMENDED_SYNC_RECIPE = "just sync-mcp-configs"
-
-
 def main():
     parser = argparse.ArgumentParser(description="Sync MCP configurations")
     parser.add_argument("--dry-run", action="store_true", help="Dry run")
@@ -315,8 +316,11 @@ def main():
 
         # Get format descriptor
         if name not in HARNESS_FORMATS:
-            print(f"  ERROR: Unknown harness format '{name}'. Valid formats are: {', '.join(HARNESS_FORMATS.keys())}")
+            print(
+                f"  ERROR: Unknown harness format '{name}'. Valid formats are: {', '.join(HARNESS_FORMATS.keys())}"
+            )
             import sys
+
             sys.exit(1)
         fmt = HARNESS_FORMATS[name]
 
@@ -330,9 +334,13 @@ def main():
         json_path = harness_config.get("json_path", fmt.json_path)
 
         if fmt.is_toml:
-            success = sync_toml_harness(config_file_path, mcp_servers, json_path, args.dry_run)
+            success = sync_toml_harness(
+                config_file_path, mcp_servers, json_path, args.dry_run
+            )
         else:
-            success = sync_json_harness(config_file_path, mcp_servers, json_path, args.dry_run)
+            success = sync_json_harness(
+                config_file_path, mcp_servers, json_path, args.dry_run
+            )
 
             # Special case for OpenCode skeleton
             if name == "opencode":
