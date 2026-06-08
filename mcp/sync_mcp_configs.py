@@ -1,4 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "pyyaml",
+#     "tomlkit",
+# ]
+# ///
 """
 MCP Configuration Synchronizer
 ==============================
@@ -22,19 +29,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-try:
-    import yaml
-except ImportError:
-    print("Installing PyYAML...")
-    os.system("pip install pyyaml -q")
-    import yaml
-
-try:
-    import tomlkit
-except ImportError:
-    print("Installing tomlkit...")
-    os.system("pip install tomlkit -q")
-    import tomlkit
+import yaml
+import tomlkit
 
 
 def expand_path(path: str) -> Path:
