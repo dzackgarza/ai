@@ -76,9 +76,14 @@ def check_file_exists_in_git(path: str, repo_sha: str) -> bool:
         # Fallback to local check if git fails (e.g. shallow clone without that SHA)
         return Path(path).exists()
 
-def validate_finding(finding: dict, idx: int, repo_sha: str) -> list[str]:
+def validate_finding(finding: dict, idx: int, repo_sha: str, report_type: str) -> list[str]:
     violations = []
-    required_fields = ["tier", "label", "category", "location", "symptom", "source", "consequence", "remedy", "evidence"]
+    
+    if report_type == "slop":
+        required_fields = ["tier", "label", "category", "location", "pattern", "task_narrative", "slop_narrative", "why_it_matters", "user_surprise", "existential_justification", "failure_mode", "evidence"]
+    else:
+        required_fields = ["tier", "label", "category", "location", "symptom", "source", "consequence", "remedy", "evidence"]
+
     for field in required_fields:
         if field not in finding:
             violations.append(f"Finding #{idx} missing field: {field}")
@@ -114,7 +119,7 @@ def validate_finding(finding: dict, idx: int, repo_sha: str) -> list[str]:
 
     return violations
 
-def validate_report_content(report: str) -> list[str]:
+def validate_report_content(report: str, report_type: str) -> list[str]:
     """Validate that the human-readable report field contains the required markers."""
     violations = []
     
@@ -122,7 +127,28 @@ def validate_report_content(report: str) -> list[str]:
         violations.append("The 'report' field is too short or empty. Provide full substantive analysis.")
         return violations
 
-    for marker in MANDATORY_MARKERS:
+    if report_type == "slop":
+        markers = [
+            r"Finding\s+\d+",
+            r"Pattern:",
+            r"Concrete evidence:",
+            r"Original requested task narrative:",
+            r"Descent into slop narrative:",
+            r"Why this matters:",
+            r"User surprise analysis:",
+            r"Existential justification:",
+            r"Failure mode:"
+        ]
+    else:
+        markers = [
+            r"Finding\s+\d+",
+            r"Symptom:",
+            r"Source:",
+            r"Consequence:",
+            r"Remedy:",
+        ]
+
+    for marker in markers:
         if not re.search(marker, report, re.IGNORECASE):
             violations.append(f"Mandatory marker '{marker.replace(r'\\s+', ' ')}' not found in report field. You must provide detailed analysis for at least one finding.")
             
@@ -138,7 +164,7 @@ def collect_violations(data: dict) -> list[str]:
     if not isinstance(data, dict):
         return ["Root must be a JSON object"]
 
-    required_keys = ["schema_version", "repo_sha", "pr_number", "review_scope", "findings", "checked_surfaces", "score", "report"]
+    required_keys = ["schema_version", "repo_sha", "review_scope", "findings", "checked_surfaces", "score", "report", "report_type"]
     for key in required_keys:
         if key not in data:
             violations.append(f"Missing required field: {key}")
@@ -149,6 +175,7 @@ def collect_violations(data: dict) -> list[str]:
     repo_sha = data["repo_sha"]
     findings = data["findings"]
     report_text = data.get("report", "")
+    report_type = data.get("report_type", "brooks")
     
     if not isinstance(findings, list):
         violations.append("findings must be a list")
@@ -160,10 +187,10 @@ def collect_violations(data: dict) -> list[str]:
             violations.append("Tier 2 findings are not allowed if any Tier 1 findings exist. Clean the significant issues first.")
 
         for idx, finding in enumerate(findings):
-            violations.extend(validate_finding(finding, idx, repo_sha))
+            violations.extend(validate_finding(finding, idx, repo_sha, report_type))
 
     # SUBSTANTIVE CONTENT CHECK
-    violations.extend(validate_report_content(report_text))
+    violations.extend(validate_report_content(report_text, report_type))
 
     if not findings and len(data.get("checked_surfaces", [])) == 0:
         violations.append("Report has zero findings AND zero checked surfaces. Provide evidence of actual repository scanning.")

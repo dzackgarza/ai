@@ -64,6 +64,7 @@ The JSON must conform to the following schema precisely:
 ```json
 {
   "schema_version": 1,
+  "report_type": "slop",
   "repo_sha": "{{REPO_SHA}}",
   "review_scope": {
     "changed_files": [],
@@ -81,10 +82,13 @@ The JSON must conform to the following schema precisely:
         "end_line": 25,
         "quoted_text_sha256": "optional-sha"
       },
-      "symptom": "...",
-      "source": "...",
-      "consequence": "...",
-      "remedy": "...",
+      "pattern": "mechanism, not symptom",
+      "task_narrative": "What was the user actually asking for? What was the original scope of the task?",
+      "slop_narrative": "How did the agent go from the original task to producing THIS artifact instead of fulfilling it? What substitutions happened?",
+      "why_it_matters": "How this mechanism lets bad work pass, hides failures, or increases future agent damage.",
+      "user_surprise": "How does this behavior minimize what agents care about (reducing errors) at the cost of what users care about (minimizing surprise and confusion)?",
+      "existential_justification": "WHY does this code exist at all? What justified the agent writing it instead of using an existing solution?",
+      "failure_mode": "name from loaded failure-mode skills",
       "evidence": [
         {
           "kind": "file-read",
@@ -108,6 +112,7 @@ The JSON must conform to the following schema precisely:
 }
 ```
 
+- **No Remediation**: Slop review is an adversarial audit. You must diagnose the fraud and trace its causal path, not try to patch it. Do not include remediation steps.
 - Meta/infrastructure findings about agent configs, tests, CI workflows, or harness files are strictly forbidden and will cause rejection.
 - All locations must correspond to real files in the repository.
 

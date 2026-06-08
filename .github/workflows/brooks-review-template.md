@@ -43,6 +43,7 @@ The JSON must conform to the following schema precisely:
 ```json
 {
   "schema_version": 1,
+  "report_type": "brooks",
   "repo_sha": "{{REPO_SHA}}",
   "review_scope": {
     "changed_files": [],
