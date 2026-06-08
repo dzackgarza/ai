@@ -945,13 +945,7 @@ export function invariant(condition: unknown, message: string): asserts conditio
 ```
 Then ban local ad hoc versions.
 
-For Python, if native `assert` is unacceptable, define one canonical invariant primitive and require call-site usage:
-```python
-def invariant(condition: bool, message: str) -> None:
-    if not condition:
-        raise AssertionError(message)
-```
-The helper’s internal `if` is a single exempt implementation. Runtime code must call `invariant(...)`; it must not hand-roll branches.
+
 
 ---
 
