@@ -40,6 +40,21 @@ When one appears, ask:
 
 If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works.
 
+### Code Verbosity and Complexity Red Flags
+
+These patterns produce code that is harder to read, maintain, and review — the opposite of concise, provably correct code. They are not always bridge-burning (some are style failures) but they reliably indicate that the author was optimizing for "looks complete" instead of "is correct."
+
+| Red flag | Why it matters | Typical fix |
+| :--- | :--- | :--- |
+| **Filler documentation** | JSDoc/docstrings/block comments that restate the signature add no information. They make the real code harder to scan and give agents a cheap "documentation" checkbox. | Let the signature and body speak. Use docstrings only to explain non-obvious invariants, ownership, or side effects. |
+| **Overly verbose comments** | `// increment counter by 1` above `counter++` restates the obvious and buries real intent. | Delete the comment. If the code is not self-explanatory, restructure it. |
+| **Unnecessary intermediate variables** | A variable assigned once and used on the next line as a "documentation step" adds length without clarity. | Inline it. If the expression genuinely needs a name, keep it; otherwise delete. |
+| **Verbose variable names that obscure intent** | `currentUserAuthenticationStatusBoolean` vs `isAuthenticated` — more characters, less meaning. Every reader must parse the longer name and still infer the type. | Use short, type-signaling names for booleans (`isAdmin`, `hasAccess`), nouns for values (`user`, `session`). |
+| **"Just in case" code** | Unused parameters, dead code paths, unreachable branches, features built for hypothetical future needs. Every line that never executes is a review burden and a future confusion. | Code only what is needed now. Delete unreachable branches. If a parameter is unused, remove it. |
+| **Excessive defensive programming** | Superfluous null checks, try-catches, `is not None` guards, or validations on data that has already been validated upstream. These bloat the happy path and convert invariant violations into silent continuations. | Validate at the boundary; assert inside. If the invariant is guaranteed, do not check it again. |
+| **Boilerplate explosion** | Separate class/function/file for a trivial operation that should be a simple expression. Every extra artifact is a review surface. | Use a free function, inline expression, or a single line. |
+| **Over-abstraction** | Interface with exactly one implementation, factory that creates one concrete thing, strategy pattern wired for exactly two options that never diverge. | Delete the abstraction layer until a second caller or implementation exists. Concrete code is easier to change. |
+
 ---
 
 ## Cross-Cutting Textual Red Flags
