@@ -9,10 +9,8 @@ set shell := ['bash', '-c']
 submit-brooks-candidate result:
     set -euo pipefail
 
-    # Ensure the target directory exists (the harness sets this up, but good to be safe)
-    # Note: agents might not have write access to /tmp/brooks/ if restricted, 
-    # but the harness will set up appropriate permissions.
-    TARGET_DIR="${RUNNER_TEMP:-/tmp}/brooks/candidates"
+    # Use /tmp/brooks/candidates explicitly, which is allowed by agent permissions
+    TARGET_DIR="/tmp/brooks/candidates"
     mkdir -p "$TARGET_DIR"
 
     # Copy to a timestamped file to avoid overwriting and allow harvesting
