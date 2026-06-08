@@ -55,8 +55,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          report=$(jq -r '.report' .brooks-report-artifact.json)
-          score=$(jq -r '.score // "N/A"' .brooks-report-artifact.json)
+          report=$(cat .brooks-report-artifact.md)
+          score=$(cat .brooks-report-score.txt)
           body=$(printf '## Brooks-Lint Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
           gh pr comment ${{ github.event.number }} --body "$body"
 
@@ -64,7 +64,7 @@ jobs:
         if: ${{ vars.BROOKS_FAIL_BELOW != '' }}
         run: |
           threshold="${{ vars.BROOKS_FAIL_BELOW }}"
-          score=$(jq -r '.score // 0' .brooks-report-artifact.json)
+          score=$(cat .brooks-report-score.txt)
           if [ "$score" -lt "$threshold" ] 2>/dev/null; then
             echo "Health Score $score is below threshold $threshold"
             exit 1

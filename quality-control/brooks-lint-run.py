@@ -15,12 +15,15 @@ import sys
 import time
 import shutil
 import re
+import json
 
 IGNORE_DIRS = {
     ".git", "node_modules", ".venv", "__pycache__", "dist", "build", ".next", "coverage"
 }
 
 ARTIFACT_PATH = pathlib.Path(".brooks-report-artifact.json")
+MARKDOWN_PATH = pathlib.Path(".brooks-report-artifact.md")
+SCORE_PATH = pathlib.Path(".brooks-report-score.txt")
 CHECKER_PATH = pathlib.Path(".agents/scripts/check-brooks-report.py")
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
@@ -74,8 +77,6 @@ def substitute(template: str, **kwargs: str) -> str:
 
 def validate_candidate(candidate_path: pathlib.Path, repo_sha: str) -> tuple[bool, str]:
     print(f"--- Validating candidate {candidate_path} ---", file=sys.stderr)
-    # We pass the repo_sha to the checker for location validation
-    # Actually the checker reads it from the JSON.
     result = subprocess.run([sys.executable, str(CHECKER_PATH), str(candidate_path)], capture_output=True, text=True, check=False)
     if result.returncode != 0:
         msg = result.stdout.strip() + "\n" + result.stderr.strip()
@@ -134,8 +135,19 @@ def main():
 
     system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))
     template = template_path.read_text()
-    body = substitute(template, PR_NUMBER=args.pr_number, CANDIDATES_DIR=str(candidates_dir), REPO_SHA=repo_sha)
-    current_prompt = f"{system}\n\n{body}"
+    # Remove PR_NUMBER from the body entirely to de-anchor the agent
+    body = substitute(template, CANDIDATES_DIR=str(candidates_dir), REPO_SHA=repo_sha)
+    
+    # Prepend strict instruction to IGNORE PR context
+    header = """
+# IMPORTANT: IGNORE ALL PULL REQUEST CONTEXT
+
+You are NOT performing a PR review. You are performing a FRESH, COMPREHENSIVE REPOSITORY AUDIT.
+Do NOT look at recent commits or diffs to guide your analysis.
+Scan the ENTIRE repository source tree.
+Analyze all files as if this were a day-zero audit of a new codebase.
+"""
+    current_prompt = f"{header}\n\n{system}\n\n{body}"
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
         if attempt > 1: time.sleep(5)
@@ -155,6 +167,16 @@ def main():
         if valid_candidate:
             print("--- Report artifact validated ---", file=sys.stderr)
             shutil.copy(str(valid_candidate), str(ARTIFACT_PATH))
+            
+            # Extract markdown and score for CI
+            try:
+                with open(valid_candidate, 'r') as f:
+                    data = json.load(f)
+                MARKDOWN_PATH.write_text(str(data.get("report", "No report provided.")))
+                SCORE_PATH.write_text(str(data.get("score", "0")))
+            except Exception as e:
+                print(f"Warning: Failed to extract markdown/score: {e}", file=sys.stderr)
+
             sys.exit(0)
 
         if rejection_reasons:

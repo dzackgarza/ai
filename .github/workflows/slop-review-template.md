@@ -24,9 +24,11 @@ Baseline (from loaded skills):
 - Every finding must cite file paths, line numbers, and exploration evidence
 - **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
 
-## Task: Fresh Repository Slop Audit
+## Task: Full Repository Slop Audit
 
 Perform a comprehensive, fresh analysis of the entire repository at the current commit (`{{REPO_SHA}}`) focused exclusively on **slop**.
+
+**CRITICAL: Ignore all Pull Request context.** This is a repository-wide sweep, not a PR review. Analyze all files as if this were a day-zero audit.
 
 "Slop" means structural AI-generated-code defects as defined by the loaded skills:
 bridge-burning violations, validation-evasion constructs, runtime defaults, mocks/skips/fakes
@@ -36,7 +38,7 @@ into compliance.
 
 ### Execution
 
-1. Scan the repository to identify all Python and TypeScript source files.
+1. Scan the entire repository to identify all Python and TypeScript source files.
 2. For each file, examine the code for the slop categories defined in the loaded references.
 3. Check these specific slop categories:
    - **Bridge-Burning Red Flags**: Runtime defaults, fallbacks, try-import, mock/fake as proof, backwards-compat shims, boolean mode flags, stringly errors, soft guards.
@@ -62,7 +64,6 @@ The JSON must conform to the following schema precisely:
 {
   "schema_version": 1,
   "repo_sha": "{{REPO_SHA}}",
-  "pr_number": {{PR_NUMBER}},
   "review_scope": {
     "changed_files": [],
     "excluded_files": [],
@@ -102,7 +103,7 @@ The JSON must conform to the following schema precisely:
   ],
   "rejected_easy_wins": [],
   "score": 85,
-  "report": "## Markdown Slop Review Summary\n\nInclude the full formatted report here for human consumption."
+  "report": "## Markdown Slop Audit Summary\n\nInclude the full formatted report here for human consumption."
 }
 ```
 

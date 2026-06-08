@@ -19,9 +19,11 @@ Baseline:
 - Findings about CI infrastructure are rejected (see sweep protocol exclusions)
 - **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
 
-## Task: Fresh Repository Audit
+## Task: Full Repository Audit
 
 Perform a comprehensive, fresh analysis of the entire repository at the current commit (`{{REPO_SHA}}`). 
+
+**CRITICAL: Ignore all Pull Request context.** This is a repository-wide sweep, not a PR review. Analyze all files as if this were a day-zero audit.
 
 Follow the **CI Sweep Protocol** below:
 - Start with `tree -L 3` to understand structure
@@ -41,7 +43,6 @@ The JSON must conform to the following schema precisely:
 {
   "schema_version": 1,
   "repo_sha": "{{REPO_SHA}}",
-  "pr_number": {{PR_NUMBER}},
   "review_scope": {
     "changed_files": [],
     "excluded_files": [],
@@ -50,7 +51,7 @@ The JSON must conform to the following schema precisely:
   "findings": [
     {
       "tier": "tier1",
-      "label": "PR BLOCKER",
+      "label": "BLOCKER",
       "category": "semantic-regression",
       "location": {
         "path": "src/foo.ts",
@@ -81,11 +82,11 @@ The JSON must conform to the following schema precisely:
   ],
   "rejected_easy_wins": [],
   "score": 85,
-  "report": "## Markdown Report Summary\n\nInclude the full formatted report here for human consumption."
+  "report": "## Markdown Audit Report Summary\n\nInclude the full formatted report here for human consumption."
 }
 ```
 
-- **Tier 1** (significant): Label as `[PR BLOCKER]` or `[SHOULD FILE ISSUE]`.
+- **Tier 1** (significant): Label as `[BLOCKER]` or `[SHOULD FILE ISSUE]`.
 - **Tier 2** (cleanup): Label as `[NOTE]`. Append ONLY if Tier 1 is empty.
 - Meta/infrastructure findings about agent configs, tests, CI workflows, or harness files are strictly forbidden and will cause rejection.
 - All locations must correspond to real files in the repository.
