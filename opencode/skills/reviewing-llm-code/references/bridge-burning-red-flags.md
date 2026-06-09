@@ -13,7 +13,7 @@ When one appears, ask:
 > [!IMPORTANT]
 > **Burden Disposition Rule:** The correct response to a red flag is not automatically deletion. It is burden disposition: solved, invalidated, transferred to a real proof surface, or explicitly recorded as unresolved. Otherwise, agents will turn the red-flag catalog into another deletion-laundering mechanism.
 
-## Language-Agnostic Red Flags
+## **[LANG-AGNOSTIC]** Language-Agnostic Red Flags
 
 | Red flag | Why it matters |
 | :--- | :--- |
@@ -43,7 +43,7 @@ When one appears, ask:
 
 If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works.
 
-### Code Verbosity and Complexity Red Flags
+### **[VERBOSITY-COMPLEXITY]** Code Verbosity and Complexity Red Flags
 
 These patterns produce code that is harder to read, maintain, and review — the opposite of concise, provably correct code. They are not always bridge-burning (some are style failures) but they reliably indicate that the author was optimizing for "looks complete" instead of "is correct."
 
@@ -60,7 +60,7 @@ These patterns produce code that is harder to read, maintain, and review — the
 
 ---
 
-## Cross-Cutting Textual Red Flags
+## **[TEXTUAL-RED-FLAGS]** Cross-Cutting Textual Red Flags
 
 These words and phrases should trigger scrutiny:
 
@@ -97,7 +97,7 @@ They are not automatic findings. They are prompts to ask:
 
 ---
 
-## Testing Red Flags
+## **[TESTING-RED-FLAGS]** Testing Red Flags
 
 This section belongs in [test-guidelines](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) and the pattern catalog.
 
@@ -121,11 +121,11 @@ This section belongs in [test-guidelines](file:///home/dzack/ai/opencode/skills/
 
 ---
 
-## Python Red Flags
+## **[PYTHON-RED-FLAGS]** Python Red Flags
 
 Python is especially rich in slop affordances.
 
-### Defaults and Optionality
+### **[DEFAULTS-OPTIONALITY]** Defaults and Optionality
 ```python
 os.getenv("X", "default")
 config.get("key", default)
@@ -140,7 +140,7 @@ BaseModel(... = None)
 ```
 These are red flags when the value is required after initialization. The correct shape is complete config plus validation. Optionality should be at the boundary only.
 
-### Fallbacks and Fake Resilience
+### **[FALLBACKS-FAKE-RESILIENCE]** Fallbacks and Fake Resilience
 ```python
 try:
     import package
@@ -159,7 +159,7 @@ except Exception:
 ```
 These should usually be banned. If the dependency or operation is required, failure is the correct behavior.
 
-### Type/Proof Escape Hatches
+### **[TYPE-PROOF-ESCAPE]** Type/Proof Escape Hatches
 ```python
 Any
 dict[str, Any]
@@ -172,7 +172,7 @@ pytest.mark.xfail
 ```
 These are not small local conveniences. They are validator-silencing tools.
 
-### Mock/Test Poison
+### **[MOCK-TEST-POISON]** Mock/Test Poison
 ```python
 unittest.mock
 MagicMock
@@ -186,15 +186,15 @@ fake filesystem libraries
 ```
 Under the established policy, these belong in prohibited-pattern examples, not positive guidance.
 
-### Python-Specific Review Heuristic
+### **[PYTHON-HEURISTIC]** Python-Specific Review Heuristic
 > [!TIP]
 > If a Python test directly calls a helper with a synthetic boolean, None, or supplied error string, ask whether the real file/config/process boundary is being avoided.
 
 ---
 
-## JavaScript / TypeScript Red Flags
+## **[TS-RED-FLAGS]** JavaScript / TypeScript Red Flags
 
-### Type Escape
+### **[TYPE-ESCAPE]** Type Escape
 ```ts
 any
 unknown as X
@@ -209,7 +209,7 @@ skipLibCheck
 ```
 `skipLibCheck` may sometimes be tolerated for external libraries, but it is still a red flag and should not be extended to owned code or proof surfaces.
 
-### Runtime Defaults and Fallbacks
+### **[RUNTIME-DEFAULTS-FALLBACKS]** Runtime Defaults and Fallbacks
 ```ts
 value ?? defaultValue
 value || defaultValue
@@ -220,7 +220,7 @@ localStorage.getItem("x") ?? "default"
 ```
 In TypeScript/JavaScript code, these often hide missing config/state. Prefer explicit config and fatal validation.
 
-### Async Laundering
+### **[ASYNC-LAUNDERING]** Async Laundering
 ```ts
 promise.catch(console.error)
 void asyncOperation()
@@ -229,7 +229,7 @@ useEffect(() => { asyncCall().then(setState) }, [...]) // no stale guard when vi
 ```
 Race fixes can be aligned when stale async writes can overwrite user-visible state. They are not micro-optimizations.
 
-### Test Laundering
+### **[TEST-LAUNDERING]** Test Laundering
 ```ts
 jest.mock(...)
 vi.mock(...)
@@ -241,7 +241,7 @@ expect(...).not.toBeNull()
 ```
 A Playwright test with mocked Tauri IPC is a red flag even if renamed `browser-smoke`. If it is not proof-bearing, it should not be in a proof-shaped path.
 
-### Config/QC Red Flags
+### **[CONFIG-QC]** Config/QC Red Flags
 - Excluding playwright.config.ts or test helper files from tsconfig.
 - Separate tsconfig that misses owned test helpers.
 - Local lint/typecheck scripts instead of global QC.
@@ -249,11 +249,11 @@ Excluding config/helper files from typechecking is a proof-surface gap, not a st
 
 ---
 
-## Rust Red Flags
+## **[RUST-RED-FLAGS]** Rust Red Flags
 
 Rust has strong types, so agent slop often appears as `Option`, fallback defaults, string errors, and swallowed `Result`s.
 
-### Defaults and Optionality
+### **[DEFAULTS-OPTIONALITY]** Defaults and Optionality
 ```rust
 unwrap_or(...)
 unwrap_or_default()
@@ -265,7 +265,7 @@ field: Option<T> for required values
 ```
 For config, `serde(default)` is especially suspicious. If a user config exists, required fields should be required.
 
-### Swallowed Errors
+### **[SWALLOWED-ERRORS]** Swallowed Errors
 ```rust
 let _ = fs::remove_file(path);
 result.ok();
@@ -276,7 +276,7 @@ if path.exists() { fs::remove_file(path).ok(); }
 ```
 These are classic fail-fast violations. The only acceptable ignored error should be explicitly classified, e.g. `NotFound`.
 
-### Stringly Errors
+### **[STRINGLY-ERRORS]** Stringly Errors
 ```rust
 Result<T, String>
 Err("missing config".into())
@@ -284,19 +284,19 @@ assert_eq!(error, "missing config")
 ```
 For owned failures, prefer error enums. Strings are rendered at the edge.
 
-### Helper-Branch Proof
+### **[HELPER-BRANCH-PROOF]** Helper-Branch Proof
 ```rust
 require_or_default(None, true, "...", || default)
 ```
 This is a red flag because it tests branch selection, not real config state. The global rule should be “no defaults,” making the helper unnecessary.
 
-### Process Lifecycle
+### **[PROCESS-LIFECYCLE]** Process Lifecycle
 ```rust
 timeout(duration, child.wait_with_output())
 ```
 without kill/drop semantics is suspicious. Timeout must not leave owned processes running.
 
-### Attribute Bypasses
+### **[ATTRIBUTE-BYPASSES]** Attribute Bypasses
 ```rust
 #[allow(...)]
 #[cfg(test)] fake implementation
@@ -307,11 +307,11 @@ These may be valid in rare cases, but they should trigger scrutiny. `expected = 
 
 ---
 
-## Bash / Shell Red Flags
+## **[BASH-RED-FLAGS]** Bash / Shell Red Flags
 
 Shell is where agents often hide diagnostic failure.
 
-### Suppression and Synthetic Fallback
+### **[SUPPRESSION-FALLBACK]** Suppression and Synthetic Fallback
 ```bash
 cmd 2>/dev/null || echo "not found"
 cmd >/dev/null 2>&1
@@ -321,7 +321,7 @@ curl -s URL | jq '.expected.path'
 ```
 These replace raw feedback with the agent’s prior. Diagnostic commands must preserve stdout, stderr, and exit status.
 
-### Weak Shell Settings
+### **[WEAK-SHELL]** Weak Shell Settings
 ```bash
 set +e
 # no set -euo pipefail
@@ -329,14 +329,14 @@ pipeline_without_pipefail
 ```
 Shell scripts that own setup/build/test behavior should fail loudly.
 
-### Fallback Chains
+### **[FALLBACK-CHAINS]** Fallback Chains
 ```bash
 if command -v fd; then fd ...; else find ...; fi
 if command -v rofi; then rofi; elif command -v dmenu; then dmenu; fi
 ```
 For runtime behavior, these should usually be config choices, not ambient discovery.
 
-### Global Mutation
+### **[GLOBAL-MUTATION]** Global Mutation
 ```bash
 pip install ...
 npm install -g ...
@@ -345,7 +345,7 @@ sudo apt install ...
 ```
 These violate runner-first/tool-provisioning policy unless explicitly authorized as system administration.
 
-### Cleanup Laundering
+### **[CLEANUP-LAUNDERING]** Cleanup Laundering
 ```bash
 rm -rf something || true
 find . -name cache -exec rm -rf {} + 2>/dev/null
@@ -354,7 +354,7 @@ Sometimes cleanup suppression is intentional, but it must be marked non-diagnost
 
 ---
 
-## SQL / Database Red Flags
+## **[SQL-RED-FLAGS]** SQL / Database Red Flags
 
 Even if not central to the current repo, these are useful language-agnostic flags:
 ```text
@@ -371,7 +371,7 @@ The correct shape is: schema enforces required data; migration fails if data vio
 
 ---
 
-## Config and Schema Red Flags
+## **[CONFIG-SCHEMA]** Config and Schema Red Flags
 
 Config is where “no defaults” pays off most.
 
@@ -391,7 +391,7 @@ Better policy: A complete generated config is required. Startup validates it. Ma
 
 ---
 
-## PR / Review Red Flags
+## **[PR-REVIEW]** PR / Review Red Flags
 
 These catch laundering through human/agent review layers:
 ```text
@@ -409,11 +409,11 @@ The correct pattern is: feedback claim disposition, remediation disposition, pol
 
 ---
 
-## Mechanical QC Targets
+## **[QC-TARGETS]** Mechanical QC Targets
 
 These can be compiled into global QC detectors to act as warning or error gates.
 
-### Text / Grep Candidates
+### **[TEXT-GREP-CANDIDATES]** Text / Grep Candidates
 - `unwrap_or`, `unwrap_or_default`, `serde(default)`
 - `Result<.*, String>`, `let _ =`
 - `.filter_map(Result::ok)`, `.flatten()`
@@ -426,14 +426,14 @@ These can be compiled into global QC detectors to act as warning or error gates.
 - `npm install -g`, `pip install`, `curl | bash`
 - `fallback`, `default`, `best effort`, `graceful`, `smoke`, `non-proof`, `quarantine`, `covered elsewhere`
 
-### AST-Level Candidates (Python)
+### **[AST-PYTHON]** AST-Level Candidates (Python)
 - `ExceptHandler` for `ImportError` / broad `Exception`
 - `Call` to `os.getenv` or `dict.get` with default value
 - Subscript/annotation `Any`
 - `pytest` skip/xfail markers
 - `unittest.mock` imports
 
-### AST-Level Candidates (TypeScript)
+### **[AST-TYPESCRIPT]** AST-Level Candidates (TypeScript)
 - `TSAnyKeyword`
 - `TSAsExpression` to `any`
 - `TSNonNullExpression` (`!`)
@@ -442,13 +442,13 @@ These can be compiled into global QC detectors to act as warning or error gates.
 - `LogicalExpression` `||` with literal fallback
 - `NullishCoalescingExpression` with literal fallback
 
-### AST-Level Candidates (Rust)
+### **[AST-RUST]** AST-Level Candidates (Rust)
 - Method call `unwrap_or`, `unwrap_or_default`, `ok`
 - Attributes `serde(default)`, `allow`, `ignore`
 - `Result<T, String>`
 - `let _ =` for calls returning a `Result`
 
-### AST-Level Candidates (Bash)
+### **[AST-BASH]** AST-Level Candidates (Bash)
 - Redirecting stderr to `/dev/null`
 - `command -v` gating runtime behavior
 - `pip`/`npm` global installation commands
@@ -457,31 +457,31 @@ These can be compiled into global QC detectors to act as warning or error gates.
 
 ---
 
-## Non-Discriminating Assertion Red Flags
+## **[NON-DISCRIM-ASSERTIONS]** Non-Discriminating Assertion Red Flags
 
 These assertions are banned in ordinary project tests because they do not meaningfully
 raise confidence in repository-owned behavior:
 
-- existence-only assertions;
-- visibility-only assertions;
-- truthiness / non-empty assertions;
-- type-only or shape-only assertions;
-- no-throw assertions;
-- exact string assertions;
-- source-text / AST / implementation-shape assertions;
-- assertions for absence of banned constructs;
-- helper-only branch assertions;
-- boolean branch-forcing tests;
-- mock/spies/call-count assertions;
-- broad snapshots where exact output is not public contract;
-- import/module-load/constructor tests;
-- status-label assertions;
-- log/warning assertions;
-- HTTP status-only assertions;
-- database count/existence assertions;
-- round-trip tests where both directions share the same implementation;
-- timing/performance assertions in ordinary tests;
-- no-console-errors as sole proof.
+- **[LA-EXISTENCE]** existence-only assertions;
+- **[LA-VISIBILITY]** visibility-only assertions;
+- **[LA-TRUTHY]** truthiness / non-empty assertions;
+- **[LA-SHAPE]** type-only or shape-only assertions;
+- **[LA-NO-THROW]** no-throw assertions;
+- **[LA-STRING]** exact string assertions;
+- **[LA-SOURCE-TEXT]** source-text / AST / implementation-shape assertions;
+- **[LA-SOURCE-TEXT]** assertions for absence of banned constructs;
+- **[LA-HELPER-BRANCH]** helper-only branch assertions;
+- **[LA-BOOLEAN-FORCING]** boolean branch-forcing tests;
+- **[LA-MOCK-COUNT]** mock/spies/call-count assertions;
+- **[LA-SNAPSHOT]** broad snapshots where exact output is not public contract;
+- **[LA-IMPORT]** import/module-load/constructor tests;
+- **[LA-STATUS-LABEL]** status-label assertions;
+- **[LA-LOG-WARNING]** log/warning assertions;
+- **[LA-HTTP-STATUS]** HTTP status-only assertions;
+- **[LA-DB-COUNT]** database count/existence assertions;
+- **[LA-ROUND-TRIP]** round-trip tests where both directions share the same implementation;
+- **[LA-TIMING-PERF]** timing/performance assertions in ordinary tests;
+- **[LA-NO-CONSOLE-ERRORS]** no-console-errors as sole proof.
 
 For every such assertion, require one of:
 1. replace with real boundary proof;
@@ -492,11 +492,11 @@ For the canonical inventory of these banned patterns and their allowed replaceme
 
 ---
 
-## Remediation Policies
+## **[REMEDIATION-POLICIES]** Remediation Policies
 
 A red flag says "this is suspicious." A remediation policy says "replace it with this exact shape." Every remediation converts a slop-enabling pattern into a fail-loud, minimal-cruft equivalent.
 
-### Remediation [FALLBACK-HEDGE]: Fallback / Optional-Dependency / File-Availability Hedge
+### **[FALLBACK-HEDGE]** Remediation: Fallback / Optional-Dependency / File-Availability Hedge
 
 **Slop pattern:** A guard checks whether a dependency, file, binary, or resource exists before using it, with a silent fallback when absent.
 
@@ -531,7 +531,7 @@ Do not apply remediation when:
 - The app legitimately supports multiple optional backends chosen by config.
 - The resource is genuinely external and its absence is a valid runtime condition (e.g., network availability for a cache).
 
-### Remediation [SWALLOW-CATCH]: try/catch That Swallows or Hedges
+### **[SWALLOW-CATCH]** Remediation: try/catch That Swallows or Hedges
 
 **Slop pattern:** A try/catch around an operation that is expected to succeed, converting a useful diagnostic into a silent continuation or a weak log line.
 
@@ -568,7 +568,7 @@ Remediation applies when:
 - The catch clause is broad (`Exception`, bare `except`, or a type that does not match the recoverable error).
 - Recovery produces a sentinel value (`None`, `[]`, `""`, `False`) distinct from real results.
 
-### Remediation [DATA-PEEK]: Data-Peeking Inside Loops
+### **[DATA-PEEK]** Remediation: Data-Peeking Inside Loops
 
 **Slop pattern:** A loop that checks a condition on each element and routes logic inside the loop body, mixing filtering with processing and making the control flow harder to read.
 
@@ -598,7 +598,7 @@ Remediation applies when:
 - Filtering and processing can be separated without changing semantics.
 - The loop body has 2+ conditional branches that route on element properties.
 
-### Remediation [NESTED-CONDITIONAL]: Nested / Stacked Conditional Chains
+### **[NESTED-CONDITIONAL]** Remediation: Nested / Stacked Conditional Chains
 
 **Slop pattern:** A cascade of `if`/`elif`/`else` that branches on a single discriminant (type, enum, status, state) with implicit fall-through for unhandled cases.
 
@@ -639,7 +639,7 @@ Remediation applies when:
 - The default/else branch is missing, empty, or just logs and continues.
 - The discriminant is a bounded set (enum, string literal union, known type variants).
 
-### Remediation [DYNAMIC-FILE-CREATION]: Dynamic File / Config Creation from Code
+### **[DYNAMIC-FILE-CREATION]** Remediation: Dynamic File / Config Creation from Code
 
 **Slop pattern:** Code that writes a file (config, script, data file) by assembling content from raw strings, shell heredocs, or inline byte buffers — making the content invisible to review, diff, and static analysis.
 
@@ -680,7 +680,7 @@ Do not apply remediation when:
 - The app's express purpose IS file generation (template parser, code generator, build tool).
 - The content comes from genuine user data, not from strings embedded in the app's own code.
 
-### Remediation [INLINE-STRINGS]: Inline Large Strings / Prompts Embedded as Code
+### **[INLINE-STRINGS]** Remediation: Inline Large Strings / Prompts Embedded as Code
 
 **Slop pattern:** Embedding agent prompts, user-facing messages, instruction blocks, or any text longer than ~5 lines directly in source files as string literals. This treats data (strings) as code, making the text invisible to separate review, unversioned independently, and vulnerable to ad-hoc inline edits that bypass normal review.
 
@@ -735,7 +735,7 @@ Do not apply remediation when:
 - The string is a short label, error message, or single-line log format (< 5 lines, no structured sub-instructions).
 - The string is part of a test assertion where proximity to the assertion logic matters for readability.
 
-### Remediation [IMPLICIT-STATE]: Implicit / Defaulted / Discovered State
+### **[IMPLICIT-STATE]** Remediation: Implicit / Defaulted / Discovered State
 
 **Slop pattern:** The app relies on runtime defaults, ambient discovery (inferring config from machine state), hidden global state (shell/env/cache), or optional core state with "maybe initialized" logic — all of which bury configuration in unreviewable surfaces and make behavior depend on ephemeral external conditions.
 
@@ -759,7 +759,7 @@ Do not apply remediation when:
 - The value is genuinely a runtime choice the user makes per-invocation (e.g., `--output-format json`).
 - The ambient state is the domain (e.g., a file manager inspecting the filesystem).
 
-### Remediation [PARTIAL-RESULT]: Partial / Sentinel Results
+### **[PARTIAL-RESULT]** Remediation: Partial / Sentinel Results
 
 **Slop pattern:** An operation that can partially succeed produces a result object with some fields populated and others sentinel (None, empty, -1) — forcing every caller to check which parts are valid.
 
@@ -792,7 +792,7 @@ Do not apply remediation when:
 - The domain genuinely models multiple valid outcomes (e.g., a batch job where some items succeed and others fail).
 - The sentinel is the domain contract (e.g., `dict.get(key)` returns `None` for missing keys).
 
-### Remediation [BOOLEAN-MODE]: Boolean Mode Parameters
+### **[BOOLEAN-MODE]** Remediation: Boolean Mode Parameters
 
 **Slop pattern:** A function takes a boolean parameter that changes its behavior between two modes, forcing callers to read the function body to understand what each value means.
 
@@ -821,7 +821,7 @@ Remediation applies when:
 Do not apply remediation when:
 - The flag is a simple pass-through to a well-known standard library or external API that uses the same convention.
 
-### Remediation [BOUNDARY-BYPASS]: Boundary Test Bypass
+### **[BOUNDARY-BYPASS]** Remediation: Boundary Test Bypass
 
 **Slop pattern:** A test for a boundary condition (e.g., a null input, an edge case, a security check) tests the helper function that performs the check rather than the boundary where the check is enforced.
 
@@ -852,7 +852,7 @@ Do not apply remediation when:
 - The helper function is a public reusable library with its own contract independent of the boundary.
 - The boundary is explicitly tested separately and the helper test catches additional cases the boundary test cannot reach (pure logic, combinatorial).
 
-### Remediation [STRINGLY-ERROR]: String-Based Error Types
+### **[STRINGLY-ERROR]** Remediation: String-Based Error Types
 
 **Slop pattern:** Errors are represented as strings (string literals, error messages, or string enums) that force callers to match on exact text rather than structured error types. This makes error handling brittle, tests assert on message wording instead of error semantics, and catch-all handling becomes inevitable.
 
@@ -891,7 +891,7 @@ Do not apply remediation when:
 - The string is a user-facing message that is also the error identifier (and a structured alternative exists for programmatic handling).
 - The error is from an external library where you cannot control the type.
 
-### Remediation [ADMIN-ARTIFACT]: Non-Proof / Administrative Artifacts
+### **[ADMIN-ARTIFACT]** Remediation: Non-Proof / Administrative Artifacts
 
 **Slop pattern:** Test-shaped artifacts that prove nothing (smoke tests, coverage-only tests, import tests, constructor tests), quarantine labels that launder slop ("smoke", "non-proof", "diagnostic-only", "legacy"), and administrative records (issues, comments, docs) presented as completion of an implementation or proof obligation.
 
@@ -912,7 +912,7 @@ Do not apply remediation when:
 - The diagnostic surface is explicitly maintained for debugging and never cited in QC or reviews.
 - The administrative record genuinely closes the task (e.g., a research decision documented in an issue is the completion).
 
-### Remediation [QC-BYPASS]: Local QC Bypass
+### **[QC-BYPASS]** Remediation: Local QC Bypass
 
 **Slop pattern:** A project defines quality gates (test runner, type checker, linter) through local scripts or configs that bypass the global quality control system, giving agents a narrower set of checks to pass.
 
@@ -926,7 +926,7 @@ Do not apply remediation when:
 - The local recipe ADDS checks beyond the global baseline (stricter, not looser).
 - The global QC system does not cover the project's language or toolchain.
 
-### Remediation [VALIDATOR-BYPASS]: Validator Bypass Markers
+### **[VALIDATOR-BYPASS]** Remediation: Validator Bypass Markers
 
 **Slop pattern:** A comment, annotation, or config suppresses a validator (linter, type checker, test requirement) without fixing the underlying issue, converting validator failure into silent acceptance.
 
@@ -947,7 +947,7 @@ Do not apply remediation when:
 - The suppression targets a known false positive with a documented upstream bug link.
 - The suppression is temporary and tracked by an active issue.
 
-### Remediation [LEGACY-SHIM]: Compatibility / Legacy Shims
+### **[LEGACY-SHIM]** Remediation: Compatibility / Legacy Shims
 
 **Slop pattern:** Wrappers, adapters, deprecated-function stubs, or feature flags that preserve a wrong earlier interface alongside the replacement — keeping dead code alive and multiplying the surface area that must be maintained and reviewed.
 
@@ -969,7 +969,7 @@ Do not apply remediation when:
 - The old interface has external consumers outside the repo (published library, public API).
 - Migration requires coordinated changes across multiple repos and the shim is temporary with an owner and deadline.
 
-### Remediation [UNOBSERVED-FAILURE]: Unobserved-Failure Branches
+### **[UNOBSERVED-FAILURE]** Remediation: Unobserved-Failure Branches
 
 **Slop pattern:** Code that handles a failure case, edge condition, or error path that has never been observed in practice — branching on an event the author hypothesizes might happen rather than one demonstrated by a real failure.
 
@@ -1001,7 +1001,7 @@ Do not apply remediation when:
 - The failure is well-known in the domain and occurs regularly (e.g., network timeout on HTTP calls to external services).
 - The handling is required by the API contract (e.g., an interface method that must handle all enum variants).
 
-### Remediation [CODE-VERBOSITY]: Code Verbosity and Complexity
+### **[CODE-VERBOSITY]** Remediation: Code Verbosity and Complexity
 
 **Slop pattern:** Code that is longer, noisier, or more abstract than it needs to be — filler documentation, verbose comments that restate the obvious, unnecessary intermediate variables, verbose variable names ("currentUserAuthenticationStatusBoolean"), "just in case" dead code, excessive defensive checks on already-validated data, boilerplate explosion (one trivial operation = one file/class), and over-abstraction (interface with one implementation, factory with one product, strategy pattern that never diverges).
 
@@ -1024,7 +1024,7 @@ Do not apply remediation when:
 - The verbosity is required by the project's public API contract (e.g., comprehensive docstrings for a published library).
 - The defensive check protects against an observed (not hypothetical) upstream invariant violation.
 
-### Remediation [CODE-WITHIN-CODE]: Code Within Code / Embedded Cross-Language Programs
+### **[CODE-WITHIN-CODE]** Remediation: Code Within Code / Embedded Cross-Language Programs
 
 **Slop pattern:** A program in language A assembles and executes language B as a string — Python calling `subprocess.run("bash -c '...'")`, shell scripts inlining Perl/Python with `$(python -c '...')`, or any template-like generation where one language builds another inline. The embedded language is invisible to syntax checking, linting, static analysis, and independent debugging.
 
@@ -1087,7 +1087,7 @@ Do not apply remediation when:
 
 ---
 
-### Remediation [EXISTENCE-AS-PROOF]: Existence / Truthy / Shape as Proof
+### **[EXISTENCE-AS-PROOF]** Remediation: Existence / Truthy / Shape as Proof
 
 **Slop pattern:** A test asserts only that a value exists, is truthy, non-empty, or has the right type/shape, without checking its semantic content. Examples: `assert result is not None`, `assert items`, `assert len(output) > 0`, `assert isinstance(result, dict)`, `assert hasattr(payload, "items")`, `expect(result).toBeDefined()`.
 
@@ -1136,7 +1136,7 @@ Do not apply remediation when:
 - The existence check is one assertion among many in a test that also verifies semantic content (e.g., a precondition guard before the real assertion).
 - The test is explicitly a liveness/health check that only needs to prove the endpoint responds.
 
-### Remediation [NO-CRASH-PROOF]: No-Throw / No-Crash as Proof
+### **[NO-CRASH-PROOF]** Remediation: No-Throw / No-Crash as Proof
 
 **Slop pattern:** A test calls a function and asserts nothing about the result — it only proves the function did not crash. Examples: calling `run_operation()` without asserting on the output, asserting that `run()` returns without error but ignoring what it returns.
 
@@ -1172,7 +1172,7 @@ Do not apply remediation when:
 - The function is a void-returning command whose correctness is verified by a separate integration test that asserts on the system state.
 - The function genuinely has no observable output and is tested through its caller's boundary.
 
-### Remediation [MOCK-AS-PROOF]: Mock/Spy/Call-Count as Proof
+### **[MOCK-AS-PROOF]** Remediation: Mock/Spy/Call-Count as Proof
 
 **Slop pattern:** A test asserts that a mock was called, or called N times, with certain arguments, without asserting on the real effect at the boundary. The mock assertion proves the internal wiring is connected but not that the system produces correct output.
 
@@ -1206,7 +1206,7 @@ Do not apply remediation when:
 - The boundary is an external API that cannot be called in tests (third-party service, hardware) AND the mock is paired with a separate integration test that verifies the real interaction.
 - The mock assertion is supplementary to a real boundary assertion.
 
-### Remediation [SOURCE-POLICING]: Source Policing in Tests
+### **[SOURCE-POLICING]** Remediation: Source Policing in Tests
 
 **Slop pattern:** A test reads the source code of the application and asserts that certain strings, patterns, or symbols do or do not appear in the text. Examples: asserting `"fallback" not in source` to verify there are no fallback branches, scanning files for deprecated function names, asserting on line counts.
 
@@ -1239,7 +1239,7 @@ Do not apply remediation when:
 - The test operates on generated/compiled code (not hand-written source) and verifies code generation output.
 - The test is explicitly a meta-test that validates codegen templates produce expected output.
 
-### Remediation [DELETION-LAUNDERING]: Deletion Laundering / Proof-Burden Erasure
+### **[DELETION-LAUNDERING]** Remediation: Deletion Laundering / Proof-Burden Erasure
 
 **Slop pattern:** A criticized slop artifact is deleted without solving or recording the original problem it attempted to address. The codebase looks cleaner, but the proof burden is now hidden. The next agent is likely to recreate the same fake proof, fallback, wrapper, or harness because the original requirement is absent from the new PR narrative.
 
@@ -1273,7 +1273,7 @@ Do not apply remediation when:
 - The artifact was genuinely dead code with no corresponding requirement (no one asked for it, no test covered it, no spec mentioned it).
 - The deletion is part of a larger replacement that demonstrably covers the original requirement.
 
-### Remediation [BESPOKE-DEP]: Bespoke Dependency Reinvention
+### **[BESPOKE-DEP]** Remediation: Bespoke Dependency Reinvention
 
 **Slop pattern:** Application code reimplements what an existing, installed dependency already provides — custom React components when a UI library has them, hand-rolled YAML generation when a YAML library is installed, bespoke string parsing when a parser exists, custom pagination when a framework provides it. The model perceives the generic, tested solution as "abstraction layer bloat" and the bespoke reinvention as "clean, minimal code."
 
