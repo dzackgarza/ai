@@ -62,9 +62,9 @@ jobs:
       - name: Lockdown CI assets
         run: |
           sudo chown -R root:root quality-control/ci/
-          chmod -R 700 quality-control/ci/
-          chmod 755 quality-control/ci/
-          chmod 755 quality-control/ci/submit-candidate
+          sudo chmod -R 700 quality-control/ci/
+          sudo chmod 755 quality-control/ci/
+          sudo chmod 755 quality-control/ci/submit-candidate
           find . -name justfile -type f -exec chmod 000 {} +
 
       - name: Run General Review via OpenCode
