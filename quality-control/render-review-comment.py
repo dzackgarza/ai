@@ -1,11 +1,11 @@
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["cyclopts"]
 # ///
 """
 Render a validated review artifact (JSON) into a uniform PR comment (markdown).
 
-Reads the artifact JSON from the first argument, produces a markdown comment
-on stdout with a machine-parseable score anchor:
+Produces a markdown comment on stdout with a machine-parseable score anchor:
 
     **Score: 80/100**
 
@@ -19,6 +19,13 @@ The score is derived from findings:
 import json
 import pathlib
 import sys
+
+from cyclopts import App
+
+app = App(
+    name="render-review-comment",
+    help="Render a validated review artifact into a uniform PR comment.",
+)
 
 
 def compute_score(findings: list[dict]) -> int:
@@ -107,17 +114,18 @@ def render_finding(n: int, f: dict) -> str:
     return "\n".join(lines)
 
 
-def main() -> None:
-    if len(sys.argv) < 2:
-        print(f"Usage: uv run {sys.argv[0]} <artifact.json>", file=sys.stderr)
+@app.command
+def render(path: pathlib.Path):
+    """Render a validated review artifact into a uniform PR comment.
+
+    Args:
+        path: Path to the validated artifact JSON file.
+    """
+    if not path.is_file():
+        print(f"Error: file not found: {path}", file=sys.stderr)
         sys.exit(1)
 
-    artifact_path = pathlib.Path(sys.argv[1])
-    if not artifact_path.is_file():
-        print(f"Error: file not found: {artifact_path}", file=sys.stderr)
-        sys.exit(1)
-
-    with open(artifact_path) as f:
+    with open(path) as f:
         data = json.load(f)
 
     report_type = data.get("report_type", "unknown")
@@ -164,4 +172,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    app()

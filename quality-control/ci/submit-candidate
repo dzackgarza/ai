@@ -60,9 +60,14 @@ if ! [ -f "$CANDIDATE" ]; then
     exit 1
 fi
 
-if uv run "$CHECKER" "$CANDIDATE" 2>&1; then
+if [ -z "${REPORT_TYPE:-}" ]; then
+    echo "ERROR: REPORT_TYPE env var must be set (general or slop)" >&2
+    exit 1
+fi
+
+if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" 2>&1; then
     cp "$CANDIDATE" "$ARTIFACT"
-    uv run "$RENDERER" "$ARTIFACT" > "$COMMENT"
+    uv run "$RENDERER" render "$ARTIFACT" > "$COMMENT"
     echo "Report validated and comment rendered to $COMMENT"
     exit 0
 fi
