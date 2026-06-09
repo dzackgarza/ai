@@ -15,30 +15,30 @@ When one appears, ask:
 
 ## Language-Agnostic Red Flags
 
-| Red flag | Why it matters | Typical fix |
-| :--- | :--- | :--- |
-| **Runtime defaults** | Defaults preserve missing-data paths and force weak proof obligations. | Ship a complete config; validate at startup; fail if missing. |
-| **Fallback chains** | The app makes unreviewed decisions for the user. | Explicit config selection; no automatic alternate path. |
-| **Optional critical dependencies** | Lets the app pretend required tools are optional. | Doctor/setup verifies; runtime assumes. |
-| **Partial success objects** | Converts failed work into “mostly OK.” | Operation succeeds completely or fails. |
-| **Boolean mode flags** | Tests can force branches instead of constructing real state. | Split APIs or use explicit enum states. |
-| **Helper-local tests for boundary bugs** | Proves the patch, not the behavior under review. | Test the source-of-truth boundary. |
-| **Exact string assertions** | Often prove message plumbing, not semantic failure. | Structured error kinds; assert error type/key. |
-| **Stringly owned errors** | Makes exact-message testing and catch-all handling likely. | Domain error enums/classes. |
-| **Optional core state** | Keeps “maybe initialized” logic alive throughout the app. | Normalize once; core state is total. |
-| **Ambient discovery** | Infers behavior from machine state instead of explicit contract. | Config declares; doctor verifies. |
-| **Hidden global state** | Shell/env/home/cache state becomes unreviewed source of truth. | Explicit project config. |
-| **Non-proof tests** | Test-shaped artifacts that future agents can cite as proof. | Remove or move to non-QC diagnostic command. |
-| **Quarantine language** | “Smoke,” “non-proof,” “legacy,” “diagnostic-only” can launder slop. | Require burden disposition. |
-| **Deletion without burden transfer** | Removes evidence that a problem existed. | Solve, invalidate, or record the original burden. |
-| **Local QC surfaces** | Gives agents narrower gates to pass. | Delegate to global QC only. |
-| **Bypass comments** | Turns validator failure into validator silence. | Fix the code or escalate. |
-| **Compatibility/legacy shims** | Preserves wrong prior designs in pre-launch code. | Replace, do not shim. |
-| **Defensive guards in trusted core** | Bloats happy path and hides invariant violations. | Validate at boundary; assert internally. |
-| **Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. | Require observed failure before adding handling; if invariant, assert. |
-| **Dynamic file creation from code** | Writing configs, scripts, or any file from raw strings in code or shell destroys observability and is extremely brittle — the file cannot be reviewed, diffed, or tracked independently. | Create static files, commit them, and reference them at runtime. If dynamic content is truly needed, use a real templating engine with semantic templates; never compose file content from raw string manipulation. |
-| **Inline large strings / prompts as data** | Embedding agent prompts, user-facing messages, or any non-code text (>5 lines or containing structured instructions) directly in source files conflates code with data. Strings are not reviewable as separate artifacts, cannot be independently versioned, and encourage ad-hoc editing that bypasses normal review. | Extract into a standard data file (TOML, YAML, JSON) and load strings by label at runtime. The data file is the reviewed artifact; the code is a thin accessor. |
-| **Administrative completion** | Issues/comments/docs replace implementation or proof. | Treat them as records, not completion. |
+| Red flag | Why it matters |
+| :--- | :--- |
+| **Runtime defaults** | Defaults preserve missing-data paths and force weak proof obligations. |
+| **Fallback chains** | The app makes unreviewed decisions for the user. |
+| **Optional critical dependencies** | Lets the app pretend required tools are optional. |
+| **Partial success objects** | Converts failed work into "mostly OK." |
+| **Boolean mode flags** | Tests can force branches instead of constructing real state. |
+| **Helper-local tests for boundary bugs** | Proves the patch, not the behavior under review. |
+| **Exact string assertions** | Often prove message plumbing, not semantic failure. |
+| **Stringly owned errors** | Makes exact-message testing and catch-all handling likely. |
+| **Optional core state** | Keeps "maybe initialized" logic alive throughout the app. |
+| **Ambient discovery** | Infers behavior from machine state instead of explicit contract. |
+| **Hidden global state** | Shell/env/home/cache state becomes unreviewed source of truth. |
+| **Non-proof tests** | Test-shaped artifacts that future agents can cite as proof. |
+| **Quarantine language** | "Smoke," "non-proof," "legacy," "diagnostic-only" can launder slop. |
+| **Deletion without burden transfer** | Removes evidence that a problem existed. |
+| **Local QC surfaces** | Gives agents narrower gates to pass. |
+| **Bypass comments** | Turns validator failure into validator silence. |
+| **Compatibility/legacy shims** | Preserves wrong prior designs in pre-launch code. |
+| **Defensive guards in trusted core** | Bloats happy path and hides invariant violations. |
+| **Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. |
+| **Dynamic file creation from code** | Writing configs, scripts, or any file from raw strings in code or shell destroys observability and is extremely brittle — the file cannot be reviewed, diffed, or tracked independently. |
+| **Inline large strings / prompts as data** | Embedding agent prompts, user-facing messages, or any non-code text (>5 lines or containing structured instructions) directly in source files conflates code with data. Strings are not reviewable as separate artifacts, cannot be independently versioned, and encourage ad-hoc editing that bypasses normal review. |
+| **Administrative completion** | Issues/comments/docs replace implementation or proof. |
 
 If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works.
 
@@ -46,16 +46,16 @@ If a construct would let an agent preserve the appearance of correctness while w
 
 These patterns produce code that is harder to read, maintain, and review — the opposite of concise, provably correct code. They are not always bridge-burning (some are style failures) but they reliably indicate that the author was optimizing for "looks complete" instead of "is correct."
 
-| Red flag | Why it matters | Typical fix |
-| :--- | :--- | :--- |
-| **Filler documentation** | JSDoc/docstrings/block comments that restate the signature add no information. They make the real code harder to scan and give agents a cheap "documentation" checkbox. | Let the signature and body speak. Use docstrings only to explain non-obvious invariants, ownership, or side effects. |
-| **Overly verbose comments** | `// increment counter by 1` above `counter++` restates the obvious and buries real intent. | Delete the comment. If the code is not self-explanatory, restructure it. |
-| **Unnecessary intermediate variables** | A variable assigned once and used on the next line as a "documentation step" adds length without clarity. | Inline it. If the expression genuinely needs a name, keep it; otherwise delete. |
-| **Verbose variable names that obscure intent** | `currentUserAuthenticationStatusBoolean` vs `isAuthenticated` — more characters, less meaning. Every reader must parse the longer name and still infer the type. | Use short, type-signaling names for booleans (`isAdmin`, `hasAccess`), nouns for values (`user`, `session`). |
-| **"Just in case" code** | Unused parameters, dead code paths, unreachable branches, features built for hypothetical future needs. Every line that never executes is a review burden and a future confusion. | Code only what is needed now. Delete unreachable branches. If a parameter is unused, remove it. |
-| **Excessive defensive programming** | Superfluous null checks, try-catches, `is not None` guards, or validations on data that has already been validated upstream. These bloat the happy path and convert invariant violations into silent continuations. | Validate at the boundary; assert inside. If the invariant is guaranteed, do not check it again. |
-| **Boilerplate explosion** | Separate class/function/file for a trivial operation that should be a simple expression. Every extra artifact is a review surface. | Use a free function, inline expression, or a single line. |
-| **Over-abstraction** | Interface with exactly one implementation, factory that creates one concrete thing, strategy pattern wired for exactly two options that never diverge. | Delete the abstraction layer until a second caller or implementation exists. Concrete code is easier to change. |
+| Red flag | Why it matters |
+| :--- | :--- |
+| **Filler documentation** | JSDoc/docstrings/block comments that restate the signature add no information. They make the real code harder to scan and give agents a cheap "documentation" checkbox. |
+| **Overly verbose comments** | `// increment counter by 1` above `counter++` restates the obvious and buries real intent. |
+| **Unnecessary intermediate variables** | A variable assigned once and used on the next line as a "documentation step" adds length without clarity. |
+| **Verbose variable names that obscure intent** | `currentUserAuthenticationStatusBoolean` vs `isAuthenticated` — more characters, less meaning. Every reader must parse the longer name and still infer the type. |
+| **"Just in case" code** | Unused parameters, dead code paths, unreachable branches, features built for hypothetical future needs. Every line that never executes is a review burden and a future confusion. |
+| **Excessive defensive programming** | Superfluous null checks, try-catches, `is not None` guards, or validations on data that has already been validated upstream. These bloat the happy path and convert invariant violations into silent continuations. |
+| **Boilerplate explosion** | Separate class/function/file for a trivial operation that should be a simple expression. Every extra artifact is a review surface. |
+| **Over-abstraction** | Interface with exactly one implementation, factory that creates one concrete thing, strategy pattern wired for exactly two options that never diverge. |
 
 ---
 
@@ -734,9 +734,294 @@ Do not apply remediation when:
 - The string is a short label, error message, or single-line log format (< 5 lines, no structured sub-instructions).
 - The string is part of a test assertion where proximity to the assertion logic matters for readability.
 
----
+### Remediation: Implicit / Defaulted / Discovered State
 
-## Final Principle
+**Slop pattern:** The app relies on runtime defaults, ambient discovery (inferring config from machine state), hidden global state (shell/env/cache), or optional core state with "maybe initialized" logic — all of which bury configuration in unreviewable surfaces and make behavior depend on ephemeral external conditions.
+
+These are distinct variants of the same failure: state that should be explicit is implicit, discoverable only by reading non-code surfaces.
+
+**Remediation:** Declare all configuration explicitly in a committed project config file. Validate the config at startup; fail hard if values are missing or invalid. Core state is total — normalized once at initialization, never optional.
+
+```
+File layout:
+  config/app.toml         ← reviewed, diffable, committed
+  src/config/loader.py    ← reads app.toml, validates, fails on missing keys
+  src/app.py              ← imports config, uses total (non-optional) state
+```
+
+Remediation applies when:
+- Behavior changes based on ambient machine state (env vars, home dir, cache presence, installed tools).
+- Core app state is `None | T` (optional) when it could be `T` after initialization.
+- Configuration values have defaults that hide from explicit review.
+
+Do not apply remediation when:
+- The value is genuinely a runtime choice the user makes per-invocation (e.g., `--output-format json`).
+- The ambient state is the domain (e.g., a file manager inspecting the filesystem).
+
+### Remediation: Partial / Sentinel Results
+
+**Slop pattern:** An operation that can partially succeed produces a result object with some fields populated and others sentinel (None, empty, -1) — forcing every caller to check which parts are valid.
+
+```python
+# BAD: partial success object
+result = fetch_data(url)
+if result.status == "ok":
+    process(result.data)
+# else: caller must check every access
+```
+
+**Remediation:** An operation either succeeds completely or fails with a clear error. Do not return objects that are "mostly OK" with missing parts. If the operation genuinely has partial results, represent them as explicit alternatives (union type, enum variant, tagged sum).
+
+```python
+# Remediation: complete success or clear failure
+data = fetch_data(url)  # raises if any part fails
+# or, if partial results are domain-meaningful:
+match result:
+    case Complete(data=all_data): process(all_data)
+    case Partial(data=some_data, missing=ids): handle_missing(ids)
+    case Failure(error=err): raise err
+```
+
+Remediation applies when:
+- A function returns a result where some fields can be `None`, empty, or otherwise sentinel after partial failure.
+- Callers must check sentinel values on every access.
+- A single success/failure boolean would be sufficient.
+
+Do not apply remediation when:
+- The domain genuinely models multiple valid outcomes (e.g., a batch job where some items succeed and others fail).
+- The sentinel is the domain contract (e.g., `dict.get(key)` returns `None` for missing keys).
+
+### Remediation: Boolean Mode Parameters
+
+**Slop pattern:** A function takes a boolean parameter that changes its behavior between two modes, forcing callers to read the function body to understand what each value means.
+
+```python
+# BAD: boolean mode flag
+process_data(data, validate=True)   # what does False mean?
+send_notification(user, urgent=False)  # which behavior is default?
+```
+
+**Remediation:** Split into separate functions with descriptive names, or use an explicit enum where each variant name describes the mode.
+
+```python
+# Remediation: split API
+process_data_with_validation(data)
+process_data_fast(data)
+
+# Remediation: explicit enum
+NotificationPriority = enum(ROUTINE, URGENT)
+send_notification(user, NotificationPriority.URGENT)
+```
+
+Remediation applies when:
+- The boolean controls which code path is taken (not just a simple toggle of a single behavior like `verbose`).
+- The meaning of `True` vs `False` is not obvious from the function name alone.
+
+Do not apply remediation when:
+- The flag is a simple pass-through to a well-known standard library or external API that uses the same convention.
+
+### Remediation: Boundary Test Bypass
+
+**Slop pattern:** A test for a boundary condition (e.g., a null input, an edge case, a security check) tests the helper function that performs the check rather than the boundary where the check is enforced.
+
+```python
+# BAD: tests the helper, not the boundary
+def test_sanitize_input():
+    assert sanitize_input("<script>") == "&lt;script&gt;"
+
+# The real question: does the endpoint reject or escape XSS?
+```
+
+**Remediation:** Test the source-of-truth boundary — the public API, the route handler, the middleware, the validation gateway — not the internal helper. If the helper is the boundary (standalone library function), test it there. Otherwise, test through the boundary.
+
+```python
+# Remediation: test through the boundary
+def test_xss_prevention():
+    response = client.post("/comment", data={"text": "<script>alert('xss')</script>"})
+    assert response.status_code == 200
+    assert "<script>" not in response.text
+```
+
+Remediation applies when:
+- The test asserts behavior of an internal function that is called by a boundary function.
+- The boundary function could change its implementation (e.g., use a different helper) and the test would still pass while the boundary behavior breaks.
+- The failure mode is user-visible (crash, XSS, data loss) but the test only covers the internal helper.
+
+Do not apply remediation when:
+- The helper function is a public reusable library with its own contract independent of the boundary.
+- The boundary is explicitly tested separately and the helper test catches additional cases the boundary test cannot reach (pure logic, combinatorial).
+
+### Remediation: String-Based Error Types
+
+**Slop pattern:** Errors are represented as strings (string literals, error messages, or string enums) that force callers to match on exact text rather than structured error types. This makes error handling brittle, tests assert on message wording instead of error semantics, and catch-all handling becomes inevitable.
+
+```python
+# BAD: stringly error
+def process_file(path):
+    if not os.path.exists(path):
+        return "file not found"  # string error
+    # ... caller must compare strings
+
+# BAD: exact string assertion in test
+assert "file not found" in str(result)
+```
+
+**Remediation:** Define domain error types as explicit classes, enums, or exception types. Assert on error type/tag, not error message. Tests that need to verify error semantics should match on the error kind, not the rendered text.
+
+```python
+# Remediation: domain error type
+class FileError(Exception):
+    def __init__(self, kind: str, path: str):
+        self.kind = kind  # "not_found", "permission_denied", etc.
+        self.path = path
+
+# Remediation: test asserts on error type, not message
+with pytest.raises(FileError) as exc:
+    process_file("/nonexistent")
+assert exc.value.kind == "not_found"
+```
+
+Remediation applies when:
+- Callers use string comparisons to distinguish error cases.
+- Tests assert on error message text rather than error type.
+- Error handling uses broad `except` because the error type is too vague.
+
+Do not apply remediation when:
+- The string is a user-facing message that is also the error identifier (and a structured alternative exists for programmatic handling).
+- The error is from an external library where you cannot control the type.
+
+### Remediation: Non-Proof / Administrative Artifacts
+
+**Slop pattern:** Test-shaped artifacts that prove nothing (smoke tests, coverage-only tests, import tests, constructor tests), quarantine labels that launder slop ("smoke", "non-proof", "diagnostic-only", "legacy"), and administrative records (issues, comments, docs) presented as completion of an implementation or proof obligation.
+
+All three patterns share the same root: an artifact that looks like evidence but carries no proof weight, creating a surface future agents can cite as "already handled."
+
+**Remediation:** For each artifact, determine whether it carries a real proof burden:
+- Remove test-shaped artifacts that add no proof (they will be cited later as evidence of a real test suite).
+- Move non-proof diagnostics to a non-QC diagnostic surface (separate tool, separate command, separate directory, not in the test suite).
+- Require burden disposition for quarantine labels — either the artifact is real proof or it is removed.
+- Administrative records (issues, comments, docs) document what remains to be done; they do not close the obligation.
+
+Remediation applies when:
+- The test file uses "smoke", "non-proof", "diagnostic-only", or similar disclaimers.
+- The test asserts nothing about the source-of-truth boundary (imports, constructor, status labels).
+- An issue, PR comment, or doc change is presented as completion of a code/proof task.
+
+Do not apply remediation when:
+- The diagnostic surface is explicitly maintained for debugging and never cited in QC or reviews.
+- The administrative record genuinely closes the task (e.g., a research decision documented in an issue is the completion).
+
+### Remediation: Local QC Bypass
+
+**Slop pattern:** A project defines quality gates (test runner, type checker, linter) through local scripts or configs that bypass the global quality control system, giving agents a narrower set of checks to pass.
+
+**Remediation:** Route all quality gates through the global QC system (`quality-control/justfile`). Local justfiles may compose global recipes but must not define independent checks that duplicate or override global gates. A local QC surface that passes when global QC fails is a bypass.
+
+Remediation applies when:
+- A project-local test/lint/type-check recipe exists that does not delegate to global QC.
+- The local recipe uses different flags, coverage thresholds, or exclusion patterns than the global equivalent.
+
+Do not apply remediation when:
+- The local recipe ADDS checks beyond the global baseline (stricter, not looser).
+- The global QC system does not cover the project's language or toolchain.
+
+### Remediation: Validator Bypass Markers
+
+**Slop pattern:** A comment, annotation, or config suppresses a validator (linter, type checker, test requirement) without fixing the underlying issue, converting validator failure into silent acceptance.
+
+```python
+# BAD: bypass comment
+# type: ignore  # no explanation of why
+# pylint: disable=unused-argument  # used in template expansion but linter can't see it
+```
+
+**Remediation:** Either fix the code to satisfy the validator, or escalate the decision. If the validator is wrong (false positive), document the reason in a durable, specific comment and keep the suppression narrow. If the validator is right, fix the code. A bypass comment with no rationale is equivalent to silencing a diagnostic without addressing it.
+
+Remediation applies when:
+- The suppression covers more than one specific line (broad suppression that silences multiple diagnostics).
+- The suppression has no comment explaining why the validator is wrong.
+- The suppression is in project-owned code (not vendored or generated).
+
+Do not apply remediation when:
+- The suppression targets a known false positive with a documented upstream bug link.
+- The suppression is temporary and tracked by an active issue.
+
+### Remediation: Compatibility / Legacy Shims
+
+**Slop pattern:** Wrappers, adapters, deprecated-function stubs, or feature flags that preserve a wrong earlier interface alongside the replacement — keeping dead code alive and multiplying the surface area that must be maintained and reviewed.
+
+```python
+# BAD: keeps old interface alive
+def old_api(x, y):
+    return new_api(x=x, y=y)
+old_api.__doc__ = "Deprecated: use new_api instead"
+```
+
+**Remediation:** Replace the callers, then delete the old interface. In pre-launch code there are no legacy consumers — every shim is dead weight that doubles the review surface and preserves wrong patterns that future code will copy.
+
+Remediation applies when:
+- The shim exists "for compatibility" in pre-launch code with no known callers outside the repo.
+- The old interface is worse (wrong names, wrong types, wrong defaults) and the replacement is complete.
+- A deprecation warning or docstring is used instead of deleting the old code.
+
+Do not apply remediation when:
+- The old interface has external consumers outside the repo (published library, public API).
+- Migration requires coordinated changes across multiple repos and the shim is temporary with an owner and deadline.
+
+### Remediation: Unobserved-Failure Branches
+
+**Slop pattern:** Code that handles a failure case, edge condition, or error path that has never been observed in practice — branching on an event the author hypothesizes might happen rather than one demonstrated by a real failure.
+
+```python
+# BAD: branch for a failure never observed
+try:
+    data = api.fetch()
+except TimeoutError:
+    data = None  # API calls have never timed out in this environment
+```
+
+**Remediation:** Do not add handling for failure modes that have not been observed. If the condition is logically impossible (invariant already guaranteed upstream), assert rather than branch. When a failure IS observed, add targeted handling for that specific case.
+
+```python
+# Remediation: assert the invariant
+data = api.fetch()  # raises if network fails — correct behavior
+
+# When the invariant is guaranteed by the caller:
+assert data is not None, "upstream guarantees api.fetch returns data"
+process(data)
+```
+
+Remediation applies when:
+- The failure branch has no corresponding test that reproduces it.
+- The handler produces a sentinel or silent continuation.
+- The condition is logically impossible given upstream invariants.
+
+Do not apply remediation when:
+- The failure is well-known in the domain and occurs regularly (e.g., network timeout on HTTP calls to external services).
+- The handling is required by the API contract (e.g., an interface method that must handle all enum variants).
+
+### Remediation: Code Verbosity and Complexity
+
+**Slop pattern:** Code that is longer, noisier, or more abstract than it needs to be — filler documentation, verbose comments that restate the obvious, unnecessary intermediate variables, verbose variable names ("currentUserAuthenticationStatusBoolean"), "just in case" dead code, excessive defensive checks on already-validated data, boilerplate explosion (one trivial operation = one file/class), and over-abstraction (interface with one implementation, factory with one product, strategy pattern that never diverges).
+
+**Remediation:** Delete the noise. Every line that carries no proof or instruction burden is a liability:
+- Filler docstrings: delete; let the signature and body speak.
+- Verbose comments restating the obvious: delete; restructure the code if it is not self-explanatory.
+- Unnecessary intermediate variables: inline; keep only if the expression genuinely needs a name.
+- Verbose names that obscure intent: replace with short type-signaling names.
+- "Just in case" code: delete until a real call site demonstrates the need.
+- Defensive checks on already-validated data: delete; validate at the boundary, assert inside.
+- Boilerplate abstraction (one-class-per-trivial-operation): inline to a free function or expression.
+- Over-abstraction (interface with one impl, factory with one product): delete the abstraction layer until a second caller or implementation exists.
+
+Remediation applies when:
+- The code carries more lines than the logic warrants.
+- A reader must scan past filler to find the actual behavior.
+- The abstraction exists for hypothetical future variation.
+
+Do not apply remediation when:
+- The verbosity is required by the project's public API contract (e.g., comprehensive docstrings for a published library).
+- The defensive check protects against an observed (not hypothetical) upstream invariant violation.
 
 > **Agent-resistant codebases should be designed so that the easiest code to write is also the hardest code to fake.**
 
