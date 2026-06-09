@@ -9,7 +9,6 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")/../.." && pwd)"
 CANDIDATE="$HERE/.agents/review-runner/candidates/submitted.json"
 CHECKER="$HERE/quality-control/check-report.py"
-RENDERER="$HERE/quality-control/render-review-comment.py"
 ARTIFACT="$HERE/.review-report-artifact.json"
 COMMENT="$HERE/.review-report-comment.md"
 
@@ -67,7 +66,7 @@ fi
 
 if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" 2>&1; then
     cp "$CANDIDATE" "$ARTIFACT"
-    uv run "$RENDERER" render "$ARTIFACT" > "$COMMENT"
+    uv run "$CHECKER" render "$ARTIFACT" > "$COMMENT"
     echo "Report validated and comment rendered to $COMMENT"
     exit 0
 fi
