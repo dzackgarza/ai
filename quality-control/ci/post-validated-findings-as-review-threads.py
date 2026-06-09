@@ -265,6 +265,14 @@ def main() -> None:
         json.dump(summary, f, indent=2)
     print(f"\nSummary written to {summary_path}")
 
+    if not posted and findings:
+        print(
+            "FATAL: No findings could be posted as review threads. "
+            "This may indicate an authentication or API issue (GH_TOKEN, rate limits, permissions).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     if unthreadable:
         print(
             "WARNING: Some findings could not be posted as review threads. "

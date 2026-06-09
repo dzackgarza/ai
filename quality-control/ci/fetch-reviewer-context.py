@@ -56,8 +56,8 @@ def _extract_threads_from_index(body: str) -> tuple[list[str], list[str]]:
             current_section = "resolved"
         elif stripped.startswith("### "):
             current_section = None
-        elif current_section and stripped.startswith(
-            ("1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.")
+        elif (
+            current_section and "." in stripped and stripped.split(".", 1)[0].isdigit()
         ):
             target = unresolved if current_section == "unresolved" else resolved
             target.append(stripped)

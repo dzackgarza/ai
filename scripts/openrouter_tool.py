@@ -47,8 +47,16 @@ class ModelMetadata(BaseModel):
             return True
         # Check both key naming conventions (input/prompt, output/completion)
         if self.cost:
-            prompt_cost = self.cost.get("input") if "input" in self.cost else self.cost.get("prompt")
-            completion_cost = self.cost.get("output") if "output" in self.cost else self.cost.get("completion")
+            prompt_cost = (
+                self.cost.get("input")
+                if "input" in self.cost
+                else self.cost.get("prompt")
+            )
+            completion_cost = (
+                self.cost.get("output")
+                if "output" in self.cost
+                else self.cost.get("completion")
+            )
             if prompt_cost == 0 and completion_cost == 0:
                 return True
         return False
@@ -120,6 +128,8 @@ async def probe_model(model_id: str, check_tools: bool = False) -> tuple[bool, s
             return False, f"Request error: {e}"
         except json.JSONDecodeError:
             return False, "Invalid JSON response"
+        except Exception as e:
+            return False, f"Unexpected error: {e}"
 
 
 @app.command()

@@ -210,6 +210,13 @@ current code. The index is maintained by a separate gardener agent — respect i
             run_opencode(task_path)
         except subprocess.TimeoutExpired:
             print("--- opencode timed out ---", file=sys.stderr)
+        except FileNotFoundError:
+            print(
+                "FATAL: 'opencode' executable not found in PATH. "
+                "This is a non-transient failure — exiting immediately.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
         except Exception as e:
             print(f"--- opencode error: {e} ---", file=sys.stderr)
 
