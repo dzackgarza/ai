@@ -143,6 +143,11 @@ def main():
         default=str(HERE / "reviews" / "general" / "template.md"),
     )
     parser.add_argument("--pr-number", default="0")
+    parser.add_argument(
+        "--reviewer-context",
+        default=None,
+        help="Path to reviewer context file (existing issues on this PR)",
+    )
     args = parser.parse_args()
 
     skills_dir, template_path = (
@@ -175,6 +180,17 @@ Scan the ENTIRE repository source tree.
 Analyze all files as if this were a day-zero audit of a new codebase.
 """
     current_prompt = f"{header}\n\n{system}\n\n{body}"
+
+    # Prepend reviewer context if provided (existing issues on this PR)
+    if args.reviewer_context:
+        ctx_path = pathlib.Path(args.reviewer_context)
+        if not ctx_path.is_file():
+            print(
+                f"FATAL: --reviewer-context file not found: {ctx_path}", file=sys.stderr
+            )
+            sys.exit(1)
+        ctx = ctx_path.read_text()
+        current_prompt = f"{ctx}\n\n{current_prompt}"
 
     submitted_path = candidates_dir / SUBMITTED_CANDIDATE
 
