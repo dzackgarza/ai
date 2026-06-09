@@ -25,11 +25,10 @@ Report format (JSON written to .agents/review-runner/candidates/submitted.json):
   "schema_version": 1,
   "report_type": "general",
   "repo_sha": "<git-head-sha>",
-  "review_scope": {
-    "changed_files": [],
-    "excluded_files": [],
-    "required_surfaces": []
-  },
+  "review_scope": [
+    "src/main.ts",
+    "src/utils.ts"
+  ],
   "findings": [
     {
       "tier": "tier1",
@@ -59,7 +58,7 @@ Report format (JSON written to .agents/review-runner/candidates/submitted.json):
   ],
   "rejected_easy_wins": [],
   "score": 85,
-  "report": "## Markdown Audit Report Summary\n\nFull formatted report here."
+  "report": "## Findings\n\nFull formatted report here."
 }
 
 report_type must be "general" or "slop".
@@ -76,7 +75,7 @@ if ! [ -f "$CANDIDATE" ]; then
     exit 1
 fi
 
-if python3 "$CHECKER" "$CANDIDATE" 2>&1; then
+if uv run "$CHECKER" "$CANDIDATE" 2>&1; then
     cp "$CANDIDATE" "$ARTIFACT"
     exit 0
 fi

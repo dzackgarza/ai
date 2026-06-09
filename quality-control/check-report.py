@@ -1,210 +1,296 @@
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pydantic>=2"]
 # ///
 """
-Review report validator: validates candidate JSON artifacts against
-a review-type-specific schema loaded from reviews/<report_type>/schema.json.
+Review report validator: validates candidate JSON artifacts against type-specific
+pydantic models. The model is selected by report_type ("general" or "slop").
 
-Type-agnostic — the schema defines which fields are required per finding,
-which markers must appear in the human-readable report, and which content
-patterns to reject.
+Exits 0 on valid, 1 on any validation failure with diagnostic messages.
 """
 
 import json
-import pathlib
 import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import Annotated, Literal
 
-HERE = pathlib.Path(__file__).parent.resolve()
-REVIEWS_DIR = HERE / "reviews"
+from pydantic import BaseModel, Field, field_validator, model_validator
 
-# Infrastructure paths that are forbidden as findings
-INFRA_PREFIXES = [
-    ".github/",
-    ".agents/",
-    "quality-control/",
-    "opencode/skills/",
-]
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-REQUIRED_TOP_LEVEL_KEYS = [
-    "schema_version",
-    "repo_sha",
-    "review_scope",
-    "findings",
-    "checked_surfaces",
-    "score",
-    "report",
-    "report_type",
-]
+INFRA_PREFIXES = [".github/", ".agents/", "quality-control/", "opencode/skills/"]
+
+REPORT_MIN_LENGTH = 200
 
 
-def is_infra_path(path_str: str) -> bool:
-    path_str = path_str.lstrip("./")
-    for prefix in INFRA_PREFIXES:
-        if path_str.startswith(prefix):
-            return True
-    return False
-
-
-def check_file_exists_in_git(path: str, repo_sha: str) -> bool:
-    """Check if a file exists in the given git commit."""
+def _path_exists_in_git(path: Path, sha: str) -> bool:
+    """True if *path* exists at *sha* in the repository at CWD."""
     result = subprocess.run(
-        ["git", "cat-file", "-e", f"{repo_sha}:{path}"],
+        ["git", "cat-file", "-e", f"{sha}:{path.as_posix()}"],
         capture_output=True,
     )
-    # git cat-file -e exits 0 (exists), 1 (not found), or 128+ (real error)
     if result.returncode >= 2:
         raise RuntimeError(
-            f"git cat-file -e {repo_sha}:{path} failed: "
-            f"{result.stderr.decode().strip()}"
+            f"git cat-file -e {sha}:{path} failed: {result.stderr.decode().strip()}"
         )
     return result.returncode == 0
 
 
-def load_schema(report_type: str) -> dict:
-    schema_path = REVIEWS_DIR / report_type / "schema.json"
-    if not schema_path.is_file():
-        raise RuntimeError(
-            f"Unknown review type '{report_type}': no schema at {schema_path}"
-        )
-    with open(schema_path) as f:
-        return json.load(f)
+def _is_infra_path(p: Path) -> bool:
+    s = p.as_posix()
+    return any(s.startswith(prefix) for prefix in INFRA_PREFIXES)
 
 
-def validate_finding(finding: dict, idx: int, repo_sha: str, schema: dict) -> list[str]:
-    violations = []
-    required_fields = schema.get("finding_required_fields", [])
-
-    for field in required_fields:
-        if field not in finding:
-            violations.append(f"Finding #{idx} missing field: {field}")
-
-    if violations:
-        return violations
-
-    tier = finding.get("tier")
-    if tier not in ["tier1", "tier2"]:
-        violations.append(f"Finding #{idx} has invalid tier: {tier}")
-
-    forbidden_categories = schema.get("forbidden_categories", [])
-    category = str(finding.get("category", "")).lower()
-    for forbidden in forbidden_categories:
-        if forbidden in category:
-            violations.append(f"Finding #{idx} has forbidden category: {category}")
-
-    location = finding.get("location", {})
-    path = location.get("path", "")
-    if not path:
-        violations.append(f"Finding #{idx} location missing path")
-    else:
-        if is_infra_path(path):
-            violations.append(
-                f"Finding #{idx} on {path} is forbidden: no meta/infrastructure findings allowed"
-            )
-        if not check_file_exists_in_git(path, repo_sha):
-            violations.append(
-                f"Finding #{idx} cites non-existent path in commit {repo_sha}: {path}"
-            )
-
-    evidence = finding.get("evidence")
-    if not isinstance(evidence, list) or not evidence:
-        violations.append(
-            f"Finding #{idx} missing evidence of inspection (e.g. file-read evidence)"
-        )
-
-    return violations
+# ---------------------------------------------------------------------------
+# Shared leaf types
+# ---------------------------------------------------------------------------
 
 
-def validate_report_content(report: str, schema: dict) -> list[str]:
-    """Validate that the human-readable report field contains the required markers."""
-    violations = []
-    report_min_length = schema.get("report_min_length", 200)
-
-    if not report or len(report.strip()) < report_min_length:
-        violations.append(
-            "The 'report' field is too short or empty. Provide full substantive analysis."
-        )
-        return violations
-
-    markers = schema.get("report_required_markers", [])
-    for marker in markers:
-        if not re.search(marker, report, re.IGNORECASE):
-            violations.append(
-                f"Mandatory marker '{marker.replace(r'\\s+', ' ')}' not found in report field. "
-                "You must provide detailed analysis for at least one finding."
-            )
-
-    reject_patterns = schema.get("report_reject_patterns", [])
-    for pattern in reject_patterns:
-        if re.search(pattern, report, re.IGNORECASE):
-            violations.append(
-                f"Finding rejected: report contains prohibited pattern '{pattern}'. "
-                "Remove this content from the report."
-            )
-
-    return violations
+class Location(BaseModel):
+    path: Path
+    start_line: int = Field(ge=1)
+    end_line: int = Field(ge=1)
 
 
-def collect_violations(data: dict) -> list[str]:
-    violations: list[str] = []
+class Evidence(BaseModel):
+    kind: str
+    path: Path
+    lines: list[Annotated[int, Field(ge=1)]] = Field(min_length=2, max_length=2)
 
-    if not isinstance(data, dict):
-        return ["Root must be a JSON object"]
 
-    for key in REQUIRED_TOP_LEVEL_KEYS:
-        if key not in data:
-            violations.append(f"Missing required field: {key}")
+class CheckedSurface(BaseModel):
+    path: Path
+    reason: str
+    lines_read: list[Annotated[int, Field(ge=1)]] = Field(min_length=2, max_length=2)
+    result: str
 
-    if violations:
-        return violations
 
-    repo_sha = data.get("repo_sha", "")
-    report_type = data.get("report_type", "")
-    findings = data.get("findings", [])
-    report_text = data.get("report", "")
+# ---------------------------------------------------------------------------
+# General review
+# ---------------------------------------------------------------------------
 
-    if not isinstance(findings, list):
-        violations.append("findings must be a list")
-    else:
-        has_tier1 = any(
-            f.get("tier") == "tier1" for f in findings if isinstance(f, dict)
-        )
-        has_tier2 = any(
-            f.get("tier") == "tier2" for f in findings if isinstance(f, dict)
-        )
+_GENERAL_MARKERS = [
+    re.compile(r"Finding\s+\d+"),
+    re.compile(r"Symptom:"),
+    re.compile(r"Source:"),
+    re.compile(r"Consequence:"),
+]
 
-        if has_tier1 and has_tier2:
-            violations.append(
-                "Tier 2 findings are not allowed if any Tier 1 findings exist. "
-                "Clean the significant issues first."
-            )
+_GENERAL_REJECT = [
+    re.compile(p, re.IGNORECASE)
+    for p in [
+        "-O",
+        "optimized mode",
+        "passed without",
+        "no violations",
+        "clean code",
+        r"all.*(?:other|remaining).*(?:passed|clean|fine|acceptable)",
+        r"no.*(?:bridge.burning|runtime.control.flow).*violation",
+        r"nothing (?:to |)report",
+        "full repository sweep",
+        r"full.*sweep.*(?:excluding|excluded)",
+        "excluding forbidden",
+        "excluded targets",
+    ]
+]
 
-    try:
-        schema = load_schema(report_type)
-    except RuntimeError as e:
-        violations.append(str(e))
-        return violations
 
-    if isinstance(findings, list):
-        for idx, finding in enumerate(findings):
-            violations.extend(validate_finding(finding, idx, repo_sha, schema))
+class GeneralFinding(BaseModel):
+    tier: Literal["tier1", "tier2"]
+    label: str
+    category: str
+    location: Location
+    symptom: str
+    source: str
+    consequence: str
+    remedy: str
+    evidence: list[Evidence] = Field(min_length=1)
 
-    violations.extend(validate_report_content(report_text, schema))
+    @field_validator("category")
+    @classmethod
+    def _no_infra_categories(cls, v: str) -> str:
+        v_lower = v.lower()
+        for cat in ("infra", "infrastructure", "ci", "workflow", "config"):
+            if cat in v_lower:
+                raise ValueError(f"forbidden category: {v}")
+        return v
 
-    if not findings and len(data.get("checked_surfaces", [])) == 0:
-        violations.append(
-            "Report has zero findings AND zero checked surfaces. "
-            "Provide evidence of actual repository scanning."
-        )
 
-    return violations
+class GeneralReport(BaseModel):
+    schema_version: Annotated[int, Field(ge=1)] = 1
+    report_type: Literal["general"] = "general"
+    repo_sha: str = Field(min_length=40, max_length=40)
+    review_scope: list[Path] = Field(min_length=1)
+    findings: list[GeneralFinding] = Field(min_length=1)
+    checked_surfaces: list[CheckedSurface]
+    rejected_easy_wins: list[str]
+    score: Annotated[int, Field(ge=0, le=100)]
+    report: str = Field(min_length=REPORT_MIN_LENGTH)
+
+    @model_validator(mode="after")
+    def _check_git_paths(self) -> GeneralReport:
+        sha = self.repo_sha
+        for i, p in enumerate(self.review_scope):
+            if not _path_exists_in_git(p, sha):
+                raise ValueError(f"review_scope[{i}] path does not exist at {sha}: {p}")
+        for i, finding in enumerate(self.findings):
+            loc_path = finding.location.path
+            if _is_infra_path(loc_path):
+                raise ValueError(
+                    f"findings[{i}] location is an infrastructure path: {loc_path}"
+                )
+            if not _path_exists_in_git(loc_path, sha):
+                raise ValueError(
+                    f"findings[{i}] location path does not exist at {sha}: {loc_path}"
+                )
+            for j, ev in enumerate(finding.evidence):
+                if not _path_exists_in_git(ev.path, sha):
+                    raise ValueError(
+                        f"findings[{i}].evidence[{j}] path does not exist "
+                        f"at {sha}: {ev.path}"
+                    )
+        return self
+
+    @field_validator("report")
+    @classmethod
+    def _check_report_markers(cls, v: str) -> str:
+        for marker in _GENERAL_MARKERS:
+            if not marker.search(v):
+                raise ValueError(f"report missing required marker: {marker.pattern}")
+        for pat in _GENERAL_REJECT:
+            if pat.search(v):
+                raise ValueError(f"report contains prohibited pattern: {pat.pattern}")
+        return v
+
+
+# ---------------------------------------------------------------------------
+# Slop review
+# ---------------------------------------------------------------------------
+
+_SLOP_MARKERS = [
+    re.compile(r"Finding\s+\d+"),
+    re.compile(r"Pattern:"),
+    re.compile(r"Concrete evidence:"),
+    re.compile(r"Original requested task narrative:"),
+    re.compile(r"Descent into slop narrative:"),
+    re.compile(r"Why this matters:"),
+    re.compile(r"User surprise analysis:"),
+    re.compile(r"Existential justification:"),
+    re.compile(r"Failure mode:"),
+]
+
+_SLOP_REJECT = [
+    re.compile(p, re.IGNORECASE)
+    for p in [
+        "-O",
+        "optimized mode",
+        "passed without",
+        "no violations",
+        "clean code",
+        r"all.*(?:other|remaining).*(?:passed|clean|fine|acceptable)",
+        r"no.*(?:bridge.burning|runtime.control.flow).*violation",
+        r"nothing (?:to |)report",
+        "full repository sweep",
+        r"full.*sweep.*(?:excluding|excluded)",
+        "excluding forbidden",
+        "excluded targets",
+    ]
+]
+
+
+class SlopFinding(BaseModel):
+    tier: Literal["tier1", "tier2"]
+    label: str
+    category: str
+    location: Location
+    pattern: str
+    task_narrative: str
+    slop_narrative: str
+    why_it_matters: str
+    user_surprise: str
+    existential_justification: str
+    failure_mode: str
+    evidence: list[Evidence] = Field(min_length=1)
+
+    @field_validator("category")
+    @classmethod
+    def _no_infra_categories(cls, v: str) -> str:
+        v_lower = v.lower()
+        for cat in ("infra", "infrastructure", "ci", "workflow", "config"):
+            if cat in v_lower:
+                raise ValueError(f"forbidden category: {v}")
+        return v
+
+
+class SlopReport(BaseModel):
+    schema_version: Annotated[int, Field(ge=1)] = 1
+    report_type: Literal["slop"] = "slop"
+    repo_sha: str = Field(min_length=40, max_length=40)
+    review_scope: list[Path] = Field(min_length=1)
+    findings: list[SlopFinding] = Field(min_length=1)
+    checked_surfaces: list[CheckedSurface]
+    rejected_easy_wins: list[str]
+    score: Annotated[int, Field(ge=0, le=100)]
+    report: str = Field(min_length=REPORT_MIN_LENGTH)
+
+    @model_validator(mode="after")
+    def _check_git_paths(self) -> SlopReport:
+        sha = self.repo_sha
+        for i, p in enumerate(self.review_scope):
+            if not _path_exists_in_git(p, sha):
+                raise ValueError(f"review_scope[{i}] path does not exist at {sha}: {p}")
+        for i, finding in enumerate(self.findings):
+            loc_path = finding.location.path
+            if _is_infra_path(loc_path):
+                raise ValueError(
+                    f"findings[{i}] location is an infrastructure path: {loc_path}"
+                )
+            if not _path_exists_in_git(loc_path, sha):
+                raise ValueError(
+                    f"findings[{i}] location path does not exist at {sha}: {loc_path}"
+                )
+            for j, ev in enumerate(finding.evidence):
+                if not _path_exists_in_git(ev.path, sha):
+                    raise ValueError(
+                        f"findings[{i}].evidence[{j}] path does not exist "
+                        f"at {sha}: {ev.path}"
+                    )
+        return self
+
+    @field_validator("report")
+    @classmethod
+    def _check_report_markers(cls, v: str) -> str:
+        for marker in _SLOP_MARKERS:
+            if not marker.search(v):
+                raise ValueError(f"report missing required marker: {marker.pattern}")
+        for pat in _SLOP_REJECT:
+            if pat.search(v):
+                raise ValueError(f"report contains prohibited pattern: {pat.pattern}")
+        return v
+
+
+# ---------------------------------------------------------------------------
+# Dispatch
+# ---------------------------------------------------------------------------
+
+_MODEL_BY_TYPE: dict[str, type[GeneralReport | SlopReport]] = {
+    "general": GeneralReport,
+    "slop": SlopReport,
+}
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
 
 
 def main() -> None:
     if len(sys.argv) < 2:
-        print(f"Usage: uv run {sys.argv[0]} <result.json>")
+        print(f"Usage: uv run {sys.argv[0]} <report.json>")
         sys.exit(1)
 
     result_path = Path(sys.argv[1])
@@ -213,20 +299,25 @@ def main() -> None:
         sys.exit(1)
 
     with open(result_path) as f:
-        data = json.load(f)
+        data: dict = json.load(f)
 
-    violations = collect_violations(data)
+    report_type = data.get("report_type", "")
+    model_cls = _MODEL_BY_TYPE.get(report_type)
+    if model_cls is None:
+        print(f"Error: unknown report_type '{report_type}'", file=sys.stderr)
+        sys.exit(1)
 
-    if not violations:
-        print("Report validation PASSED")
-        sys.exit(0)
+    try:
+        model_cls(**data)
+    except Exception as exc:
+        msg = str(exc)
+        # pydantic ValidationError has .errors() with structured messages
+        # but str(exc) already renders them sanely.
+        print(f"Report validation FAILED:\n  {msg}")
+        sys.exit(1)
 
-    print(f"Report validation FAILED ({len(violations)} violation(s)):")
-    for v in violations:
-        print(f"  - {v}")
-
-    print("\nERROR: Your report failed validation.")
-    sys.exit(1)
+    print("Report validation PASSED")
+    sys.exit(0)
 
 
 if __name__ == "__main__":
