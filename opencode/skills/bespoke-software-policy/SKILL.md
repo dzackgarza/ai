@@ -24,6 +24,32 @@ They are not. A safety guarantee that has been disabled is a concrete defect
 that exists right now, even if no crash has occurred. The policy below makes
 this explicit.
 
+**Fallback behavior is ALWAYS slop — zero exceptions, zero tolerance.**
+
+Any construct whose primary effect is to accept data that does not match
+expectations and continue execution anyway is a 100/100 severity finding.
+It must be flagged in review and must be triaged. There are zero cases
+where a fallback is "justified," "allowed," "reasonable," "standard,"
+"intentional," or acceptable under any other framing. Linguistic gymnastics
+that condone fallback existence ("graceful degradation," "defensive
+programming," "belt and suspenders," "safety net") are themselves slop
+signals.
+
+The remediation is ALWAYS the same: require the environment to be EXACTLY
+right. Pass EXACTLY the right data. Proceed EXACTLY along known,
+deterministic, enumerated cases. Crash and burn IMMEDIATELY upon ANY
+deviation from these expectations. This is highly intentional. The code is
+MEANT to surface defects in the environment, the data, the configuration,
+and the dependencies. Every error induces a new, EXPLICITLY handled branch
+in the code with a CLEAR audit trail of EXACTLY why it was introduced.
+
+The agent MUST NOT make error-handling decisions FOR the user. A fallback
+hides the error and substitutes the agent's guess about what to do. The
+correct flow is: an error occurs → the program crashes → the user sees the
+error → the user decides what explicit logic to add, if any, to handle
+that specific error type. Fallbacks short-circuit this flow and deprive
+the user of the information needed to make that decision.
+
 ## Foundational Principle: Crash at the Boundary
 
 Every external boundary (SDK call, API response, config file, CLI input,
@@ -266,28 +292,22 @@ Report these even if no crash or wrong output has been observed:
   narrower type without a runtime check.
 
 ### Runtime Safety Evasion
-- **Silent error suppression is ALWAYS wrong.** `catch {}` / `catch (e) {}`
-  without error-type discrimination is never correct. The reason: the code
-  cannot enumerate what errors it is suppressing, so it is asserting knowledge
-  of the error space that it does not have. A comment like "session may be
-  gone" is not a defense — it is a guess about one possible failure mode,
-  but `catch {}` silently hides ALL failure modes (network errors, schema
-  mismatches, bugs in adjacent code, permission failures, malformed data).
-  The code should either:
-  - Check the precondition before calling (e.g., verify session exists)
-  - Catch and handle specific error types explicitly (`catch (e) { if (e.status === 404) { ... } else { throw e } }`)
-  - Or let the error propagate as a crash — crashes are the signal that the
-    error space is not understood
-- **`2>/dev/null` where stderr is diagnostic data, not noise** — same
-  principle. You are discarding information about a channel you do not fully
-  understand.
-- **Fallback defaults on critical configuration paths** — substituting a
-  hardcoded default for a missing API key, endpoint, or data source. The
-  app doesn't crash, but it runs on fake data, silently producing wrong
-  answers.
-- **Optional-import / conditional-dependency patterns** — `try: import x`
-  instead of declaring the dependency and failing if absent. The app runs
-  in a degraded state without warning.
+- **Fallback behavior is ALWAYS wrong — zero exceptions, zero tolerance.**
+  Including: `try/except` of any kind (even `except ImportError:`), `try:
+  import x` / conditional import patterns, `except:` / `except Exception:`
+  to catch and continue, substituting a default value for missing
+  configuration, catching an error to call a different implementation, or
+  any construct whose primary effect is to accept data that does not match
+  expectations and continue execution. The hard rules are explicit: *"Do
+  not try import. Do not conditionally import. Do not catch ImportError
+  and substitute a stub."* The dependency must be declared. Absent means
+  crash at startup with a clear traceback.
+
+- **`2>/dev/null` is ALWAYS wrong, period.** If stderr has no diagnostic
+  data, suppressing it does nothing — it is unnecessary. If stderr has
+  diagnostic data, suppressing it discards evidence of a problem. There
+  is no case where `2>/dev/null` is correct. The same applies to any
+  construct that discards or redirects diagnostic output.
 
 ### Diagnostic Signal Suppression
 - **Assertions that test the wrong thing** — assertions that would pass on a
@@ -419,17 +439,13 @@ not to, and then wrote the comment to insulate that choice from review.
 4. Future agents see the comment and suppress the finding — the laundering
    succeeded.
 
-**The rule:** A rationalizing comment on violating code is never a defense.
-It is a directive to fix the code. The only exception is a comment that
-documents a concrete, verifiable external constraint (e.g., "this environment
-lacks libfoo, so we cannot use library X; revisit when migrating to
-environment Y"). Internal reasoning ("session may be gone", "the SDK is
-designed this way") is never sufficient — it is always laundering.
+**The rule:** A rationalizing comment on violating code is NEVER a defense.
+It is a directive to fix the code. There are no exceptions.
 
 ### Common Misinterpretation: The "Slop Pass" Error
 
 Agents frequently misuse bespoke-software-policy to suppress valid findings
-by falsely categorizing them as speculative/enterprise. Four common patterns:
+by falsely categorizing them as speculative/enterprise. Five common patterns:
 
 **Pattern 1: Type-erasure slop pass.**
 1. A concrete type-safety defect is flagged (`as any`, `// @ts-ignore`,
@@ -475,13 +491,27 @@ by falsely categorizing them as speculative/enterprise. Four common patterns:
    concrete defect; the owner cannot trust the output. Tests, assertions,
    and schema validation are the only remedies.
 
+**Pattern 5: Fallback slop pass.**
+1. A `try/except` around an import, a bare `except`, a fallback default,
+   or any construct that accepts data not matching expectations is flagged.
+2. The agent invokes bespoke-software-policy, claiming "the fallback path
+   provides equivalent functionality" or "the try/except-first pattern is
+   intentional for graceful local-import fallback."
+3. This is WRONG. Fallback behavior is ALWAYS slop, zero exceptions. Even
+   `except ImportError:` is wrong — the dependency must be declared and
+   absent means crash. "Graceful fallback" is prohibited by both the Crash
+   at the Boundary principle and the Runtime Safety Evasion section.
+   The only acceptable remediation is to remove the try/except entirely
+   and let the crash surface the absent dependency to the user.
+
 **Litmus test for slop-pass invocations:** If the defense requires you to
 pretend a type-erasure construct is "speculative" (when it disables the
 compiler right now), "enterprise" (when it contradicts the fail-loudly
 rule), "proportional for a small tool" (when the bespoke code IS the
 complexity), "justified by a comment" (when the comment is laundering
-evidence), or "single-user / no regression" (when every line must be
-proven), the defense is misaligned. Report the finding.
+evidence), "single-user / no regression" (when every line must be proven),
+or a "graceful fallback" (when fallbacks are always slop), the defense is
+misaligned. Report the finding.
 
 Another agent might try to misread this section as "ah, so I should flag
 every `as any` anywhere in the codebase." No. `as any` in test data
