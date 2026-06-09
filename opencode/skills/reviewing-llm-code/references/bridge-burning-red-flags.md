@@ -496,7 +496,7 @@ For the canonical inventory of these banned patterns and their allowed replaceme
 
 A red flag says "this is suspicious." A remediation policy says "replace it with this exact shape." Every remediation converts a slop-enabling pattern into a fail-loud, minimal-cruft equivalent.
 
-### Remediation: Fallback / Optional-Dependency / File-Availability Hedge
+### Remediation [FALLBACK-HEDGE]: Fallback / Optional-Dependency / File-Availability Hedge
 
 **Slop pattern:** A guard checks whether a dependency, file, binary, or resource exists before using it, with a silent fallback when absent.
 
@@ -531,7 +531,7 @@ Do not apply remediation when:
 - The app legitimately supports multiple optional backends chosen by config.
 - The resource is genuinely external and its absence is a valid runtime condition (e.g., network availability for a cache).
 
-### Remediation: try/catch That Swallows or Hedges
+### Remediation [SWALLOW-CATCH]: try/catch That Swallows or Hedges
 
 **Slop pattern:** A try/catch around an operation that is expected to succeed, converting a useful diagnostic into a silent continuation or a weak log line.
 
@@ -568,7 +568,7 @@ Remediation applies when:
 - The catch clause is broad (`Exception`, bare `except`, or a type that does not match the recoverable error).
 - Recovery produces a sentinel value (`None`, `[]`, `""`, `False`) distinct from real results.
 
-### Remediation: Data-Peeking Inside Loops
+### Remediation [DATA-PEEK]: Data-Peeking Inside Loops
 
 **Slop pattern:** A loop that checks a condition on each element and routes logic inside the loop body, mixing filtering with processing and making the control flow harder to read.
 
@@ -598,7 +598,7 @@ Remediation applies when:
 - Filtering and processing can be separated without changing semantics.
 - The loop body has 2+ conditional branches that route on element properties.
 
-### Remediation: Nested / Stacked Conditional Chains
+### Remediation [NESTED-CONDITIONAL]: Nested / Stacked Conditional Chains
 
 **Slop pattern:** A cascade of `if`/`elif`/`else` that branches on a single discriminant (type, enum, status, state) with implicit fall-through for unhandled cases.
 
@@ -639,7 +639,7 @@ Remediation applies when:
 - The default/else branch is missing, empty, or just logs and continues.
 - The discriminant is a bounded set (enum, string literal union, known type variants).
 
-### Remediation: Dynamic File / Config Creation from Code
+### Remediation [DYNAMIC-FILE-CREATION]: Dynamic File / Config Creation from Code
 
 **Slop pattern:** Code that writes a file (config, script, data file) by assembling content from raw strings, shell heredocs, or inline byte buffers — making the content invisible to review, diff, and static analysis.
 
@@ -680,7 +680,7 @@ Do not apply remediation when:
 - The app's express purpose IS file generation (template parser, code generator, build tool).
 - The content comes from genuine user data, not from strings embedded in the app's own code.
 
-### Remediation: Inline Large Strings / Prompts Embedded as Code
+### Remediation [INLINE-STRINGS]: Inline Large Strings / Prompts Embedded as Code
 
 **Slop pattern:** Embedding agent prompts, user-facing messages, instruction blocks, or any text longer than ~5 lines directly in source files as string literals. This treats data (strings) as code, making the text invisible to separate review, unversioned independently, and vulnerable to ad-hoc inline edits that bypass normal review.
 
@@ -735,7 +735,7 @@ Do not apply remediation when:
 - The string is a short label, error message, or single-line log format (< 5 lines, no structured sub-instructions).
 - The string is part of a test assertion where proximity to the assertion logic matters for readability.
 
-### Remediation: Implicit / Defaulted / Discovered State
+### Remediation [IMPLICIT-STATE]: Implicit / Defaulted / Discovered State
 
 **Slop pattern:** The app relies on runtime defaults, ambient discovery (inferring config from machine state), hidden global state (shell/env/cache), or optional core state with "maybe initialized" logic — all of which bury configuration in unreviewable surfaces and make behavior depend on ephemeral external conditions.
 
@@ -759,7 +759,7 @@ Do not apply remediation when:
 - The value is genuinely a runtime choice the user makes per-invocation (e.g., `--output-format json`).
 - The ambient state is the domain (e.g., a file manager inspecting the filesystem).
 
-### Remediation: Partial / Sentinel Results
+### Remediation [PARTIAL-RESULT]: Partial / Sentinel Results
 
 **Slop pattern:** An operation that can partially succeed produces a result object with some fields populated and others sentinel (None, empty, -1) — forcing every caller to check which parts are valid.
 
@@ -792,7 +792,7 @@ Do not apply remediation when:
 - The domain genuinely models multiple valid outcomes (e.g., a batch job where some items succeed and others fail).
 - The sentinel is the domain contract (e.g., `dict.get(key)` returns `None` for missing keys).
 
-### Remediation: Boolean Mode Parameters
+### Remediation [BOOLEAN-MODE]: Boolean Mode Parameters
 
 **Slop pattern:** A function takes a boolean parameter that changes its behavior between two modes, forcing callers to read the function body to understand what each value means.
 
@@ -821,7 +821,7 @@ Remediation applies when:
 Do not apply remediation when:
 - The flag is a simple pass-through to a well-known standard library or external API that uses the same convention.
 
-### Remediation: Boundary Test Bypass
+### Remediation [BOUNDARY-BYPASS]: Boundary Test Bypass
 
 **Slop pattern:** A test for a boundary condition (e.g., a null input, an edge case, a security check) tests the helper function that performs the check rather than the boundary where the check is enforced.
 
@@ -852,7 +852,7 @@ Do not apply remediation when:
 - The helper function is a public reusable library with its own contract independent of the boundary.
 - The boundary is explicitly tested separately and the helper test catches additional cases the boundary test cannot reach (pure logic, combinatorial).
 
-### Remediation: String-Based Error Types
+### Remediation [STRINGLY-ERROR]: String-Based Error Types
 
 **Slop pattern:** Errors are represented as strings (string literals, error messages, or string enums) that force callers to match on exact text rather than structured error types. This makes error handling brittle, tests assert on message wording instead of error semantics, and catch-all handling becomes inevitable.
 
@@ -891,7 +891,7 @@ Do not apply remediation when:
 - The string is a user-facing message that is also the error identifier (and a structured alternative exists for programmatic handling).
 - The error is from an external library where you cannot control the type.
 
-### Remediation: Non-Proof / Administrative Artifacts
+### Remediation [ADMIN-ARTIFACT]: Non-Proof / Administrative Artifacts
 
 **Slop pattern:** Test-shaped artifacts that prove nothing (smoke tests, coverage-only tests, import tests, constructor tests), quarantine labels that launder slop ("smoke", "non-proof", "diagnostic-only", "legacy"), and administrative records (issues, comments, docs) presented as completion of an implementation or proof obligation.
 
@@ -912,7 +912,7 @@ Do not apply remediation when:
 - The diagnostic surface is explicitly maintained for debugging and never cited in QC or reviews.
 - The administrative record genuinely closes the task (e.g., a research decision documented in an issue is the completion).
 
-### Remediation: Local QC Bypass
+### Remediation [QC-BYPASS]: Local QC Bypass
 
 **Slop pattern:** A project defines quality gates (test runner, type checker, linter) through local scripts or configs that bypass the global quality control system, giving agents a narrower set of checks to pass.
 
@@ -926,7 +926,7 @@ Do not apply remediation when:
 - The local recipe ADDS checks beyond the global baseline (stricter, not looser).
 - The global QC system does not cover the project's language or toolchain.
 
-### Remediation: Validator Bypass Markers
+### Remediation [VALIDATOR-BYPASS]: Validator Bypass Markers
 
 **Slop pattern:** A comment, annotation, or config suppresses a validator (linter, type checker, test requirement) without fixing the underlying issue, converting validator failure into silent acceptance.
 
@@ -947,7 +947,7 @@ Do not apply remediation when:
 - The suppression targets a known false positive with a documented upstream bug link.
 - The suppression is temporary and tracked by an active issue.
 
-### Remediation: Compatibility / Legacy Shims
+### Remediation [LEGACY-SHIM]: Compatibility / Legacy Shims
 
 **Slop pattern:** Wrappers, adapters, deprecated-function stubs, or feature flags that preserve a wrong earlier interface alongside the replacement — keeping dead code alive and multiplying the surface area that must be maintained and reviewed.
 
@@ -969,7 +969,7 @@ Do not apply remediation when:
 - The old interface has external consumers outside the repo (published library, public API).
 - Migration requires coordinated changes across multiple repos and the shim is temporary with an owner and deadline.
 
-### Remediation: Unobserved-Failure Branches
+### Remediation [UNOBSERVED-FAILURE]: Unobserved-Failure Branches
 
 **Slop pattern:** Code that handles a failure case, edge condition, or error path that has never been observed in practice — branching on an event the author hypothesizes might happen rather than one demonstrated by a real failure.
 
@@ -1001,7 +1001,7 @@ Do not apply remediation when:
 - The failure is well-known in the domain and occurs regularly (e.g., network timeout on HTTP calls to external services).
 - The handling is required by the API contract (e.g., an interface method that must handle all enum variants).
 
-### Remediation: Code Verbosity and Complexity
+### Remediation [CODE-VERBOSITY]: Code Verbosity and Complexity
 
 **Slop pattern:** Code that is longer, noisier, or more abstract than it needs to be — filler documentation, verbose comments that restate the obvious, unnecessary intermediate variables, verbose variable names ("currentUserAuthenticationStatusBoolean"), "just in case" dead code, excessive defensive checks on already-validated data, boilerplate explosion (one trivial operation = one file/class), and over-abstraction (interface with one implementation, factory with one product, strategy pattern that never diverges).
 
@@ -1024,7 +1024,7 @@ Do not apply remediation when:
 - The verbosity is required by the project's public API contract (e.g., comprehensive docstrings for a published library).
 - The defensive check protects against an observed (not hypothetical) upstream invariant violation.
 
-### Remediation: Code Within Code / Embedded Cross-Language Programs
+### Remediation [CODE-WITHIN-CODE]: Code Within Code / Embedded Cross-Language Programs
 
 **Slop pattern:** A program in language A assembles and executes language B as a string — Python calling `subprocess.run("bash -c '...'")`, shell scripts inlining Perl/Python with `$(python -c '...')`, or any template-like generation where one language builds another inline. The embedded language is invisible to syntax checking, linting, static analysis, and independent debugging.
 
@@ -1087,7 +1087,7 @@ Do not apply remediation when:
 
 ---
 
-### Remediation: Existence / Truthy / Shape as Proof
+### Remediation [EXISTENCE-AS-PROOF]: Existence / Truthy / Shape as Proof
 
 **Slop pattern:** A test asserts only that a value exists, is truthy, non-empty, or has the right type/shape, without checking its semantic content. Examples: `assert result is not None`, `assert items`, `assert len(output) > 0`, `assert isinstance(result, dict)`, `assert hasattr(payload, "items")`, `expect(result).toBeDefined()`.
 
@@ -1136,7 +1136,7 @@ Do not apply remediation when:
 - The existence check is one assertion among many in a test that also verifies semantic content (e.g., a precondition guard before the real assertion).
 - The test is explicitly a liveness/health check that only needs to prove the endpoint responds.
 
-### Remediation: No-Throw / No-Crash as Proof
+### Remediation [NO-CRASH-PROOF]: No-Throw / No-Crash as Proof
 
 **Slop pattern:** A test calls a function and asserts nothing about the result — it only proves the function did not crash. Examples: calling `run_operation()` without asserting on the output, asserting that `run()` returns without error but ignoring what it returns.
 
@@ -1172,7 +1172,7 @@ Do not apply remediation when:
 - The function is a void-returning command whose correctness is verified by a separate integration test that asserts on the system state.
 - The function genuinely has no observable output and is tested through its caller's boundary.
 
-### Remediation: Mock/Spy/Call-Count as Proof
+### Remediation [MOCK-AS-PROOF]: Mock/Spy/Call-Count as Proof
 
 **Slop pattern:** A test asserts that a mock was called, or called N times, with certain arguments, without asserting on the real effect at the boundary. The mock assertion proves the internal wiring is connected but not that the system produces correct output.
 
@@ -1206,7 +1206,7 @@ Do not apply remediation when:
 - The boundary is an external API that cannot be called in tests (third-party service, hardware) AND the mock is paired with a separate integration test that verifies the real interaction.
 - The mock assertion is supplementary to a real boundary assertion.
 
-### Remediation: Source Policing in Tests
+### Remediation [SOURCE-POLICING]: Source Policing in Tests
 
 **Slop pattern:** A test reads the source code of the application and asserts that certain strings, patterns, or symbols do or do not appear in the text. Examples: asserting `"fallback" not in source` to verify there are no fallback branches, scanning files for deprecated function names, asserting on line counts.
 
@@ -1239,7 +1239,7 @@ Do not apply remediation when:
 - The test operates on generated/compiled code (not hand-written source) and verifies code generation output.
 - The test is explicitly a meta-test that validates codegen templates produce expected output.
 
-### Remediation: Deletion Laundering / Proof-Burden Erasure
+### Remediation [DELETION-LAUNDERING]: Deletion Laundering / Proof-Burden Erasure
 
 **Slop pattern:** A criticized slop artifact is deleted without solving or recording the original problem it attempted to address. The codebase looks cleaner, but the proof burden is now hidden. The next agent is likely to recreate the same fake proof, fallback, wrapper, or harness because the original requirement is absent from the new PR narrative.
 
@@ -1273,7 +1273,7 @@ Do not apply remediation when:
 - The artifact was genuinely dead code with no corresponding requirement (no one asked for it, no test covered it, no spec mentioned it).
 - The deletion is part of a larger replacement that demonstrably covers the original requirement.
 
-### Remediation: Bespoke Dependency Reinvention
+### Remediation [BESPOKE-DEP]: Bespoke Dependency Reinvention
 
 **Slop pattern:** Application code reimplements what an existing, installed dependency already provides — custom React components when a UI library has them, hand-rolled YAML generation when a YAML library is installed, bespoke string parsing when a parser exists, custom pagination when a framework provides it. The model perceives the generic, tested solution as "abstraction layer bloat" and the bespoke reinvention as "clean, minimal code."
 
