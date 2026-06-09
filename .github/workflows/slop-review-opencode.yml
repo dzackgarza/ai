@@ -85,16 +85,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          report=$(cat .review-report-artifact.md)
-          score=$(cat .review-report-score.txt)
-          body=$(printf '## Slop Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
-          gh pr comment ${{ github.event.number }} --body "$body"
+          comment=$(cat .review-report-comment.md)
+          gh pr comment ${{ github.event.number }} --body "$comment"
 
       - name: Check Slop Threshold
         if: ${{ vars.SLOP_FAIL_BELOW != '' }}
         run: |
           threshold="${{ vars.SLOP_FAIL_BELOW }}"
-          score=$(cat .review-report-score.txt)
+          tier1=$(jq '[.findings[] | select(.tier == "tier1")] | length' .review-report-artifact.json)
+          tier2=$(jq '[.findings[] | select(.tier == "tier2")] | length' .review-report-artifact.json)
+          score=$((100 - tier1 * 20 - tier2 * 5))
+          [ "$score" -lt 0 ] && score=0
           if [ "$score" -lt "$threshold" ] 2>/dev/null; then
             echo "Slop Health Score $score is below threshold $threshold"
             exit 1
