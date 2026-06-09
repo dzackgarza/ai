@@ -39,15 +39,16 @@ CI workflow triggers on PR
   → opencode agent:
         1. Reads template.md for instruction set
         2. Writes report to .agents/review-runner/candidates/submitted.json
-        3. Runs `submit-candidate --help` to review the schema
+        3. Runs `submit-candidate --help` to learn schema + rejection rules
         4. Fixes report to match schema
         5. Runs `quality-control/ci/submit-candidate` (no arguments)
-        6. If it exits 0 → done. If non-zero → fix same file, goto 5
+        6. If exit 0 → done. If non-zero → read error (has FIX: guidance) → fix same file → goto 5
   → submit-candidate calls `uv run check-report.py` (pydantic validation)
-  → On validation pass: cp to .review-report-artifact.json, exit 0
-  → On validation fail: print errors, exit 1
+  → On validation pass: cp to .review-report-artifact.json,
+    then runs `uv run render-review-comment.py` to produce .review-report-comment.md
+  → On validation fail: print errors with FIX: guidance, exit 1
   → harness checks .review-report-artifact.json exists after opencode exits
-      - exists → extract score + markdown, post PR comment, check threshold
+      - exists → read .review-report-comment.md, extract score via regex
       - missing → append continuation prompt, loop
 ```
 
@@ -90,154 +91,29 @@ The CI workflow executes these steps before the agent runs:
 | All `justfile`s in repo | `chmod 000` | Agent cannot run just recipes |
 | `/usr/local/bin/just` | replaced with `just-blocked.sh` | Any `just` invocation prints error and exits 1 |
 
-## Report Validation (`check-report.py`)
+## Report Validation
 
-The validator is a pydantic model that exits 0 (valid, submission proceeds) or
-exits 1 (invalid, agent must fix and re-run). Run via `uv run` from `submit-candidate`.
+The validator (`quality-control/check-report.py`) is a pydantic model. It exits 0
+(valid, submission proceeds) or exits 1 (invalid, agent must fix and re-run).
 
-### Dispatch
-
-The `report_type` field selects the model:
-
-- `"general"` → `GeneralReport`
-- `"slop"` → `SlopReport`
-
-Unknown types are rejected immediately.
-
-### Shared structure (both report types)
-
-```python
-class Location(BaseModel):
-    path: Path                          # must exist in git at repo_sha
-    start_line: int = Field(ge=1)
-    end_line: int = Field(ge=1)
-
-class Evidence(BaseModel):
-    kind: str                           # e.g. "file-read", "file-write"
-    path: Path                          # must exist in git at repo_sha
-    lines: list[int] = Field(min_length=2, max_length=2)  # [start, end], 1-indexed
-
-class CheckedSurface(BaseModel):
-    path: Path
-    reason: str                         # e.g. "high-churn", "diff-context"
-    lines_read: list[int] = Field(min_length=2, max_length=2)
-    result: str                         # e.g. "finding", "clean"
-```
-
-### GeneralReport fields
-
-| Field | Type | Constraints |
-|-------|------|-------------|
-| `schema_version` | `int` | `>= 1` (default 1) |
-| `report_type` | `Literal["general"]` | must be `"general"` |
-| `repo_sha` | `str` | `min_length=40, max_length=40` |
-| `review_scope` | `list[Path]` | `min_length=1`, every path validated to exist in git at `repo_sha` |
-| `findings` | `list[GeneralFinding]` | `min_length=1` |
-| `checked_surfaces` | `list[CheckedSurface]` | no minimum (may be empty) |
-| `rejected_easy_wins` | `list[str]` | no minimum |
-| `score` | `int` | 0-100 inclusive |
-| `report` | `str` | `min_length=200` |
-
-### GeneralFinding fields
-
-| Field | Type | Constraints |
-|-------|------|-------------|
-| `tier` | `Literal["tier1", "tier2"]` | |
-| `label` | `str` | free text |
-| `category` | `str` | forbidden values: `infra`, `infrastructure`, `ci`, `workflow`, `config` (substring match, case-insensitive) |
-| `location` | `Location` | `path` must not be an infra path (see below), must exist in git |
-| `symptom` | `str` | |
-| `source` | `str` | |
-| `consequence` | `str` | |
-| `remedy` | `str` | |
-| `evidence` | `list[Evidence]` | `min_length=1`, every path must exist in git |
-
-### SlopReport and SlopFinding fields
-
-Same structure as GeneralReport/GeneralFinding, except findings use:
-
-| Field | Type |
-|-------|------|
-| `pattern` | `str` |
-| `task_narrative` | `str` |
-| `slop_narrative` | `str` |
-| `why_it_matters` | `str` |
-| `user_surprise` | `str` |
-| `existential_justification` | `str` |
-| `failure_mode` | `str` |
-
-No `symptom`/`source`/`consequence`/`remedy` fields — those are general-review-only.
-
-### `report` field: marker and reject patterns
-
-The `report` field (the formatted markdown body) undergoes text validation for
-both report types:
-
-**Required markers (general review):**
+**The agent discovers the full schema and rejection rules via:**
 
 ```
-Finding \d+
-Symptom:
-Source:
-Consequence:
+quality-control/ci/submit-candidate --help
 ```
 
-Every general report must contain all four patterns. If any is missing,
-validation fails.
+Every validator error message includes a `FIX:` clause telling the agent what
+to change. The agent iterates: submit → read error → fix → re-submit.
 
-**Required markers (slop review):**
+Key points:
+- `report_type` selects the model: `"general"` → `GeneralReport`, `"slop"` → `SlopReport`
+- Every path in the report must exist in git at `repo_sha` (verified via `git cat-file -e`)
+- Finding locations are rejected if they target `.github/`, `.agents/`, `quality-control/`, or `opencode/skills/` paths
+- `score` and `report` fields are NOT allowed — `ConfigDict(extra="forbid")` rejects any unknown field
 
-```
-Finding \d+
-Pattern:
-Concrete evidence:
-Original requested task narrative:
-Descent into slop narrative:
-Why this matters:
-User surprise analysis:
-Existential justification:
-Failure mode:
-```
-
-Every slop report must contain all nine. If any is missing, validation fails.
-
-**Prohibited patterns (both types, case-insensitive):**
-
-| Pattern | Why banned |
-|---------|-----------|
-| `-O` | Compiler flag, not a review finding |
-| `optimized mode` | Claims about optimization that can't be verified from source |
-| `passed without` | Blanket completion claim |
-| `no violations` | Blanket clean-code claim |
-| `clean code` | Unsubstantiated positive assertion |
-| `all.*(?:other\|remaining).*(?:passed\|clean\|fine\|acceptable)` | Implies review is incomplete or partial |
-| `no.*(?:bridge.burning\|runtime.control.flow).*violation` | Specific negative claim about agent behavior |
-| `nothing (?:to \|)report` | Empty review |
-| `full repository sweep` | Claim of exhaustive coverage |
-| `full.*sweep.*(?:excluding\|excluded)` | Qualified sweep claim |
-| `excluding forbidden` | Infrastructure exclusion disclosure |
-| `excluded targets` | Scope smuggling |
-
-### Infrastructure path rejection
-
-Any `finding.location.path` whose posix representation starts with one of:
-
-```
-.github/
-.agents/
-quality-control/
-opencode/skills/
-```
-
-...is rejected. Findings cannot be about CI infrastructure, agent workflow files,
-validators, or skill prompts — those are not the target of PR review.
-
-### Git path existence validation
-
-Every path in `review_scope`, `finding.location.path`, and `evidence[].path` must
-exist in git at the commit specified by `repo_sha`. Verified via
-`git cat-file -e <sha>:<path>`. This prevents the agent from fabricating file paths
-or report targets.
+**This README does NOT duplicate the schema.** The schema lives in `check-report.py`
+and is exposed through `submit-candidate --help`. Always consult the live script
+and validator output for the exact current contract.
 
 ## Usage in Another Repo
 
@@ -260,17 +136,19 @@ This copies `general-review-opencode.yml` and `slop-review-opencode.yml` into
 
 ## Debugging
 
-Most validation failures produce a pydantic error message with the exact field
-and constraint. Common causes:
+All validator error messages now include `FIX:` guidance telling the agent what
+to change. The agent iterates: submit → read FIX → fix same file → re-submit.
 
-| Error | Likely cause |
-|-------|-------------|
-| `review_scope[0] path does not exist` | Path in scope doesn't exist in git HEAD |
-| `findings[0] location is an infrastructure path` | `finding.location.path` starts with `.github/`, `.agents/`, etc |
-| `finding.location.path does not exist` | File was possibly added in the PR diff but doesn't exist at `repo_sha` (note: validation checks the target commit, not the PR merge) |
-| `report missing required marker` | The `report` field's markdown body doesn't contain a required regex pattern |
-| `report contains prohibited pattern` | The `report` field has a blanket-claim pattern (e.g. "passed without" or "full repository sweep") |
-| `forbidden category: ci` | `finding.category` contains an infra-related substring |
-| `String should have at most 40 characters` | `repo_sha` is not a full 40-char hex SHA |
-| `Input should be 'general' or 'slop'` | `report_type` field has a typo or wrong value |
-| `report` is too short (<200 chars) | The `report` field must contain a substantial markdown body |
+Common causes and their FIX guidance:
+
+| Error prefix | FIX guidance |
+|-------------|--------------|
+| `violated_invariant contains prohibited pattern` | Name a specific violated contract/behavior, not a blanket claim. |
+| `forbidden category` | Use a defect-type category, not CI infrastructure terms. |
+| `is low-signal, must be tier2` | Change tier to `tier2` or use a non-low-signal category. |
+| `at least one finding must be substantive` | Add a Tier 1 finding or use a substantive category. |
+| `location is an infrastructure path` | Target source/test files in the PR diff, not infrastructure. |
+| `path does not exist at commit` | Verify with `git cat-file -e <sha>:<path>` before submitting. |
+| `Extra inputs are not permitted` | Remove `score` and `report` fields — those are computed by the renderer. |
+| `String should have at most 40 characters` | `repo_sha` must be the full 40-char hex SHA. |
+| `Input should be 'general' or 'slop'` | `report_type` must be exactly `"general"` or `"slop"`. |

@@ -13,7 +13,6 @@ On timeout or missing artifact, the harness re-prompts and loops.
 """
 
 import argparse
-import json
 import os
 import pathlib
 import subprocess
@@ -34,7 +33,7 @@ IGNORE_DIRS = {
 HERE = pathlib.Path(__file__).parent.resolve()
 
 ARTIFACT_PATH = pathlib.Path(".review-report-artifact.json")
-MARKDOWN_PATH = pathlib.Path(".review-report-artifact.md")
+COMMENT_PATH = pathlib.Path(".review-report-comment.md")
 SCORE_PATH = pathlib.Path(".review-report-score.txt")
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
@@ -197,14 +196,15 @@ Analyze all files as if this were a day-zero audit of a new codebase.
         if ARTIFACT_PATH.exists():
             print("--- Report artifact submitted ---", file=sys.stderr)
             try:
-                with open(ARTIFACT_PATH) as f:
-                    data = json.load(f)
-                MARKDOWN_PATH.write_text(str(data.get("report", "No report provided.")))
-                SCORE_PATH.write_text(str(data.get("score", "0")))
+                comment = COMMENT_PATH.read_text()
+                # Extract score from rendered comment (machine-parseable anchor)
+                import re
+
+                m = re.search(r"\*\*Score: (\d+)/100\*\*", comment)
+                score = m.group(1) if m else "0"
+                SCORE_PATH.write_text(score)
             except Exception as e:
-                print(
-                    f"Warning: Failed to extract markdown/score: {e}", file=sys.stderr
-                )
+                print(f"Warning: Failed to read rendered comment: {e}", file=sys.stderr)
             sys.exit(0)
 
         current_prompt += (

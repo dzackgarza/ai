@@ -9,17 +9,6 @@ This runs in a CI environment. Follow these rules exactly:
 These skills are loaded above — reference them directly:
 `policy-index`, `bespoke-software-policy`, `test-guidelines`
 
-Baseline:
-- No fallback suggestions (every missing resource must fail loudly)
-- No mock/fake/stub as proof (real data or nothing)
-- No runtime defaults for critical dependencies
-- No try-import or conditional stubs
-- Every assertion must genuinely increase proof burden
-- Every finding must cite file paths, line numbers, and exploration evidence
-- Findings about CI infrastructure are rejected (see sweep protocol exclusions)
-- **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
-- **No blanket affirmative claims.** Every statement about a file must cite specific evidence (code read, diff, analysis). "All other code passed without violations" is rejected — if you have nothing to say about a file, say nothing. Do not pad reports with unsubstantiated "clean" assertions.
-
 ## Task
 
 Analyze the repository at commit `{{REPO_SHA}}` for structural code defects, architectural decay, and quality regressions.
@@ -38,65 +27,26 @@ Analyze the repository at commit `{{REPO_SHA}}` for structural code defects, arc
 
 ### Output Format
 
-Identify and report structural code defects, architectural decay, and quality regressions anywhere in the codebase.
+Write a JSON report to `.agents/review-runner/candidates/submitted.json`.
 
-### Output Format
-The harness requires a strict JSON file format. Plain text reports will be rejected.
-The JSON must conform to the following schema precisely:
+To get the exact schema (fields, types, constraints), run:
+`quality-control/ci/submit-candidate --help`
 
-```json
-{
-  "schema_version": 1,
-  "report_type": "general",
-  "repo_sha": "{{REPO_SHA}}",
-  "review_scope": [
-    "src/main.ts",
-    "src/utils.ts",
-    "tests/test_main.ts"
-  ],
-  "findings": [
-    {
-      "tier": "tier1",
-      "label": "BLOCKER",
-      "category": "semantic-regression",
-      "location": {
-        "path": "src/foo.ts",
-        "start_line": 10,
-        "end_line": 25,
-        "quoted_text_sha256": "optional-sha"
-      },
-      "symptom": "...",
-      "source": "...",
-      "consequence": "...",
-      "remedy": "...",
-      "evidence": [
-        {
-          "kind": "file-read",
-          "path": "src/foo.ts",
-          "lines": [1, 80]
-        }
-      ]
-    }
-  ],
-  "checked_surfaces": [
-    {
-      "path": "src/foo.ts",
-      "reason": "high-churn",
-      "lines_read": [1, 120],
-      "result": "finding"
-    }
-  ],
-  "rejected_easy_wins": [],
-  "score": 85,
-  "report": "## Findings\n\nFull formatted report here. No Scope section — use checked_surfaces for that."
-}
-```
+Key rules every finding must satisfy:
 
-- **Tier 1** (significant): Label as `[BLOCKER]` or `[SHOULD FILE ISSUE]`.
-- **Tier 2** (cleanup): Label as `[NOTE]`. Append ONLY if Tier 1 is empty.
-- Meta/infrastructure findings about agent configs, tests, CI workflows, or harness files are strictly forbidden and will cause rejection.
-- All locations must correspond to real files in the repository.
-- **No "Scope" section in the report markdown.** The `checked_surfaces` array documents what files you read and why. The `report` field is for findings only.
+- `violated_invariant`: The named contract, behavior, or invariant that was violated. "This file is too long" is insufficient — what behavior fails because of this length? A violated invariant names a required behavior that is provably impossible, silently skipped, unverifiable, or non-deterministic.
+- `proof_command`: The exact command, grep pattern, or code path that proves the violation exists. A file path alone is not proof — show the command output, the code flow, or the diagnostic that demonstrates the failure.
+- `symptom`, `source`, `consequence`, `remedy`: Standard Brooks structure.
+- `evidence`: At least one entry with `kind`, `path`, and `lines` showing the exploration.
+
+**Tier rules:**
+- **Tier 1** (significant): Label as `[BLOCKER]` or `[SHOULD FILE ISSUE]`. Must have a non-low-signal category.
+- **Tier 2** (cleanup): Label as `[NOTE]`. Lower-signal categories (code-style, naming, formatting, file-length, etc.) must be Tier 2.
+
+**Forbidden:**
+- Findings whose `category` contains `infra`, `infrastructure`, `ci`, `workflow`, or `config`.
+- Findings about files in `.github/`, `.agents/`, `quality-control/`, or `opencode/skills/`.
+- `score` and `report` fields — the renderer derives the score from findings and builds the comment markdown automatically.
 
 ## Submitting Your Report
 
