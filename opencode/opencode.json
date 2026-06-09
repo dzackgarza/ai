@@ -143,52 +143,10 @@
         "baseURL": "http://localhost:3000/v1"
       },
       "models": {
-        "antigravity-claude-opus-4-6-thinking-low": {
-          "name": "Claude Opus 4.6 Think Low (Antigravity)",
+        "antigravity-claude-opus-4-6-thinking": {
+          "name": "Claude Opus 4.6 Thinking (Antigravity)",
           "limit": {
             "context": 1000000,
-            "output": 64000
-          }
-        },
-        "antigravity-claude-opus-4-6-thinking-medium": {
-          "name": "Claude Opus 4.6 Think Medium (Antigravity)",
-          "limit": {
-            "context": 1000000,
-            "output": 64000
-          }
-        },
-        "antigravity-claude-opus-4-6-thinking-high": {
-          "name": "Claude Opus 4.6 Think High (Antigravity)",
-          "limit": {
-            "context": 1000000,
-            "output": 64000
-          }
-        },
-        "antigravity-claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6 (Antigravity)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          }
-        },
-        "antigravity-claude-sonnet-4-6-thinking-low": {
-          "name": "Claude Sonnet 4.6 Think Low (Antigravity)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          }
-        },
-        "antigravity-claude-sonnet-4-6-thinking-medium": {
-          "name": "Claude Sonnet 4.6 Think Medium (Antigravity)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          }
-        },
-        "antigravity-claude-sonnet-4-6-thinking-high": {
-          "name": "Claude Sonnet 4.6 Think High (Antigravity)",
-          "limit": {
-            "context": 200000,
             "output": 64000
           }
         },
@@ -204,27 +162,6 @@
           "limit": {
             "context": 1048576,
             "output": 65536
-          }
-        },
-        "antigravity-gemini-2.5-flash-thinking": {
-          "name": "Gemini 2.5 Flash Thinking (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "antigravity-gemini-2.5-pro": {
-          "name": "Gemini 2.5 Pro (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "antigravity-gemini-3.1-pro-high": {
-          "name": "Gemini 3.1 Pro High (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
           }
         },
         "antigravity-gemini-3.1-pro-low": {
@@ -253,27 +190,6 @@
           "limit": {
             "context": 1048576,
             "output": 65536
-          }
-        },
-        "gemini-2.5-pro": {
-          "name": "Gemini 2.5 Pro (CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "antigravity-gemini-3.1-pro-low-cli": {
-          "name": "Gemini 3.1 Pro Low (CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          }
-        },
-        "antigravity-gemini-3.1-pro-high-cli": {
-          "name": "Gemini 3.1 Pro High (CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
           }
         }
       }
@@ -2043,6 +1959,30 @@
         "~openai/gpt-latest",
         "~openai/gpt-mini-latest"
       ]
+    },
+    "vectorengine": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "VectorEngine",
+      "options": {
+        "baseURL": "https://api.vectorengine.cn/v1",
+        "apiKey": "{env:VECTOR_ENGINE_API_KEY}"
+      },
+      "models": {
+        "deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash (VectorEngine)",
+          "limit": {
+            "context": 1048576,
+            "output": 131072
+          }
+        },
+        "deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro (VectorEngine)",
+          "limit": {
+            "context": 1048576,
+            "output": 384000
+          }
+        }
+      }
     },
     "z-ai": {
       "blacklist": [
