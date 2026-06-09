@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pydantic>=2"]
+# dependencies = ["pydantic>=2", "cyclopts"]
 # ///
 """
 Review report validator: validates candidate JSON artifacts against type-specific
@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 from typing import Annotated, Literal, Self
 
+from cyclopts import App
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -23,7 +24,11 @@ from pydantic import (
     field_validator,
     model_validator,
 )
-from pydantic.fields import FieldInfo
+
+app = App(
+    name="check-report",
+    help="Review report validator: validates candidate JSON artifacts against pydantic models.",
+)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -130,12 +135,28 @@ class CheckedSurface(BaseModel):
 
 
 class GeneralFinding(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "x-custom-validation": {
+                "_tier_category_consistency": {
+                    "rule": "Low-signal categories (see LOW_SIGNAL_CATEGORIES) require tier2",
+                    "validator": "_tier_category_consistency",
+                }
+            }
+        },
+    )
     tier: Literal["tier1", "tier2"] = Field(
         description="tier1: a real semantic regression, broken invariant, or "
         "incorrect behavior that changes program output or violates a correctness "
         "property. tier2: a minor concern, code quality observation, or low-risk "
         "issue. Low-signal categories (naming, formatting, etc.) are forced to "
         "tier2 by validation.",
+        json_schema_extra={
+            "x-custom-validation": {
+                "rule": "Low-signal categories must be tier2. See category field and _tier_category_consistency",
+                "validator": "_tier_category_consistency",
+            }
+        },
     )
     label: str = Field(
         description="Short label describing defect shape (not severity). "
@@ -151,6 +172,12 @@ class GeneralFinding(BaseModel):
         "Examples: semantic-regression, test-quality, null-safety, "
         "missing-error-handling, logic-error. "
         "Forbidden: infra, infrastructure, ci, workflow, config.",
+        json_schema_extra={
+            "x-custom-validation": {
+                "rule": "Rejected if value contains: infra, infrastructure, ci, workflow, config",
+                "validator": "_no_infra_categories",
+            }
+        },
     )
     location: Location = Field(
         description="File and line range where the finding occurs."
@@ -164,6 +191,15 @@ class GeneralFinding(BaseModel):
         "optimized mode, clean code, no violation, nothing to report, "
         "looks (good|correct|fine|right|ok), no issues found, appears correct, "
         "everything (looks|seems|is).",
+        json_schema_extra={
+            "x-custom-validation": {
+                "rule": "Must name a specific falsifiable contract. "
+                "Rejected against patterns: -O, optimized mode, clean code, "
+                "no violation, nothing to report, looks (good|correct|fine|right|ok), "
+                "no issues found, appears correct, everything (looks|seems|is)",
+                "validator": "_no_empty_invariant",
+            }
+        },
     )
     proof_command: str = Field(
         min_length=10,
@@ -225,7 +261,21 @@ class GeneralFinding(BaseModel):
 
 
 class GeneralReport(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "x-custom-validation": {
+                "_require_substantive_finding": {
+                    "rule": "At least one finding must be Tier 1 or non-low-signal category",
+                    "validator": "_require_substantive_finding",
+                },
+                "_check_git_paths": {
+                    "rule": "Every path must exist in git at repo_sha and not be in INFRA_PREFIXES",
+                    "validator": "_check_git_paths",
+                },
+            }
+        },
+    )
     schema_version: Annotated[int, Field(ge=1)] = Field(
         default=1,
         description="Report format version. Currently 1.",
@@ -321,6 +371,16 @@ class GeneralReport(BaseModel):
 
 
 class SlopFinding(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "x-custom-validation": {
+                "_tier_category_consistency": {
+                    "rule": "Low-signal categories (see LOW_SIGNAL_CATEGORIES) require tier2",
+                    "validator": "_tier_category_consistency",
+                }
+            }
+        },
+    )
     tier: Literal["tier1", "tier2"] = Field(
         description="tier1: a concrete bridge-burning pattern — runtime default, "
         "fallback, suppressed error, mock-pretending-as-proof, or similar "
@@ -328,6 +388,12 @@ class SlopFinding(BaseModel):
         "tier2: speculative over-engineering, minor style deviation, or a pattern "
         "that could become harmful under implausible conditions. "
         "Low-signal categories are forced to tier2 by validation.",
+        json_schema_extra={
+            "x-custom-validation": {
+                "rule": "Low-signal categories require tier2. Cross-field with category.",
+                "validator": "_tier_category_consistency",
+            }
+        },
     )
     label: str = Field(
         description="Short label grounded in the specific bridge-burning construct. "
@@ -342,6 +408,12 @@ class SlopFinding(BaseModel):
         "categories like: bridge-burning, runtime-control-flow, "
         "validation-evasion, defaults-and-fallbacks, proof-laundering. "
         "Forbidden: infra, infrastructure, ci, workflow, config.",
+        json_schema_extra={
+            "x-custom-validation": {
+                "rule": "Rejected if value contains: infra, infrastructure, ci, workflow, config",
+                "validator": "_no_infra_categories",
+            }
+        },
     )
     location: Location = Field(
         description="File and line range where the slop pattern occurs."
@@ -355,6 +427,15 @@ class SlopFinding(BaseModel):
         "optimized mode, clean code, no violation, nothing to report, "
         "looks (good|correct|fine|right|ok), no issues found, appears correct, "
         "everything (looks|seems|is).",
+        json_schema_extra={
+            "x-custom-validation": {
+                "rule": "Must name a specific falsifiable contract. "
+                "Rejected against patterns: -O, optimized mode, clean code, "
+                "no violation, nothing to report, looks (good|correct|fine|right|ok), "
+                "no issues found, appears correct, everything (looks|seems|is)",
+                "validator": "_no_empty_invariant",
+            }
+        },
     )
     proof_command: str = Field(
         min_length=10,
@@ -450,7 +531,21 @@ class SlopFinding(BaseModel):
 
 
 class SlopReport(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "x-custom-validation": {
+                "_require_substantive_finding": {
+                    "rule": "At least one finding must be Tier 1 or non-low-signal category",
+                    "validator": "_require_substantive_finding",
+                },
+                "_check_git_paths": {
+                    "rule": "Every path must exist in git at repo_sha and not be in INFRA_PREFIXES",
+                    "validator": "_check_git_paths",
+                },
+            }
+        },
+    )
     schema_version: Annotated[int, Field(ge=1)] = Field(
         default=1,
         description="Report format version. Currently 1.",
@@ -551,136 +646,34 @@ _MODEL_BY_TYPE: dict[str, type[GeneralReport | SlopReport]] = {
 
 
 # ---------------------------------------------------------------------------
-# Describe (model self-introspection)
-# ---------------------------------------------------------------------------
-
-
-def _describe_models() -> None:
-    """Print model self-description by introspecting pydantic fields."""
-    reports: list[
-        tuple[str, type[GeneralReport | SlopReport], type[GeneralFinding | SlopFinding]]
-    ] = [
-        ("General Review Report", GeneralReport, GeneralFinding),
-        ("Slop Review Report", SlopReport, SlopFinding),
-    ]
-
-    for title, report_cls, finding_cls in reports:
-        print(f"=== {title} ===")
-        print()
-        print("--- Report Fields ---")
-        _print_fields(report_cls)
-        print()
-        print("--- Finding Fields ---")
-        _print_fields(finding_cls)
-        print()
-        print("--- Shared Types ---")
-        _print_fields(Location)
-        print()
-        _print_fields(Evidence)
-        print()
-        _print_fields(CheckedSurface)
-        print()
-        print("--- Validation Rules ---")
-        print(
-            f"  Low-signal categories (forced to tier2): {sorted(LOW_SIGNAL_CATEGORIES)}"
-        )
-        print(f"  Infra path prefixes (findings cannot target): {INFRA_PREFIXES}")
-        print(
-            f"  Invariant reject patterns (blanket claims): {[p.pattern for p in _INVARIANT_REJECT]}"
-        )
-        print()
-
-
-def _print_fields(model_cls: type[BaseModel]) -> None:
-    for fname, finfo in model_cls.model_fields.items():
-        parts: list[str] = [f"  {fname}"]
-
-        # Required / default
-        if finfo.is_required():
-            parts.append("    REQUIRED")
-        elif finfo.default is not None:
-            parts.append(f"    default={finfo.default!r}")
-
-        # Type annotation
-        ann = finfo.annotation
-        if ann is not None:
-            type_str = str(ann).replace("typing.", "")
-            parts.append(f"    type={type_str}")
-
-        # Constraints from metadata
-        _emit_field_constraints(finfo, parts)
-
-        # Description
-        desc = finfo.description
-        if desc:
-            parts.append(f"    description={desc}")
-        print("\n".join(parts))
-        print()
-
-
-def _emit_field_constraints(finfo: FieldInfo, parts: list[str]) -> None:
-    """Emit constraint lines for a FieldInfo."""
-    constraints: dict[str, str | int] = {}
-
-    # Direct FieldInfo attributes (pydantic v2)
-    for attr in ("min_length", "max_length", "ge", "le", "gt", "lt", "multiple_of"):
-        val = getattr(finfo, attr, None)
-        if val is not None:
-            constraints[attr] = val
-
-    # Annotated metadata
-    for m in finfo.metadata:
-        if hasattr(m, "ge") and m.ge is not None:
-            constraints.setdefault("ge", m.ge)
-        if hasattr(m, "le") and m.le is not None:
-            constraints.setdefault("le", m.le)
-        if hasattr(m, "min_length") and m.min_length is not None:
-            constraints.setdefault("min_length", m.min_length)
-        if hasattr(m, "max_length") and m.max_length is not None:
-            constraints.setdefault("max_length", m.max_length)
-        if hasattr(m, "gt") and m.gt is not None:
-            constraints.setdefault("gt", m.gt)
-        if hasattr(m, "lt") and m.lt is not None:
-            constraints.setdefault("lt", m.lt)
-
-    if constraints:
-        parts.append(f"    constraints={constraints}")
-
-
-# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
 
-def main() -> None:
-    if len(sys.argv) >= 2 and sys.argv[1] == "--describe":
-        _describe_models()
-        sys.exit(0)
+@app.command
+def validate(path: Path, report_type: Literal["general", "slop"]):
+    """Validate a candidate report JSON file.
 
-    if len(sys.argv) < 2:
-        print(f"Usage: uv run {sys.argv[0]} [--describe | <report.json>]")
+    Args:
+        path: Path to the report JSON file.
+        report_type: Type of report — "general" or "slop".
+    """
+    if not path.is_file():
+        print(f"Error: file not found: {path}", file=sys.stderr)
         sys.exit(1)
 
-    result_path = Path(sys.argv[1])
-    if not result_path.is_file():
-        print(f"Error: file not found: {result_path}", file=sys.stderr)
-        sys.exit(1)
-
-    with open(result_path) as f:
+    with open(path) as f:
         data: dict = json.load(f)
 
-    report_type = data.get("report_type", "")
     model_cls = _MODEL_BY_TYPE.get(report_type)
     if model_cls is None:
-        print(f"Error: unknown report_type '{report_type}'", file=sys.stderr)
+        print(f"Error: unknown report_type '{report_type}'.", file=sys.stderr)
         sys.exit(1)
 
     try:
         model_cls(**data)
     except Exception as exc:
         msg = str(exc)
-        # pydantic ValidationError has .errors() with structured messages
-        # but str(exc) already renders them sanely.
         print(f"Report validation FAILED:\n  {msg}")
         sys.exit(1)
 
@@ -688,5 +681,27 @@ def main() -> None:
     sys.exit(0)
 
 
+@app.command
+def schema(type: Literal["general", "slop"] = None):
+    """Dump JSON Schema for a report type.
+
+    Args:
+        type: Which report schema to dump — "general" or "slop". Required.
+    """
+    if type is None:
+        print("Error: --type is required. Use 'general' or 'slop'.", file=sys.stderr)
+        sys.exit(1)
+
+    model_cls = _MODEL_BY_TYPE.get(type)
+    if model_cls is None:
+        print(
+            f"Error: unknown type '{type}'. Use 'general' or 'slop'.", file=sys.stderr
+        )
+        sys.exit(1)
+
+    print(json.dumps(model_cls.model_json_schema(), indent=2))
+    sys.exit(0)
+
+
 if __name__ == "__main__":
-    main()
+    app()

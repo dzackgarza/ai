@@ -21,84 +21,36 @@ Usage:
   quality-control/ci/submit-candidate            # validate and submit (default)
   quality-control/ci/submit-candidate --help     # print this message
 
-Report format (JSON written to .agents/review-runner/candidates/submitted.json):
+Write the report JSON to .agents/review-runner/candidates/submitted.json,
+then run this script with no arguments.
 
-{
-  "schema_version": 1,
-  "report_type": "general",
-  "repo_sha": "<git-head-sha>",
-  "review_scope": [
-    "src/main.ts",
-    "src/utils.ts"
-  ],
-  "findings": [
-    {
-      "tier": "tier1",
-      "label": "BLOCKER",
-      "category": "semantic-regression",
-      "location": {
-        "path": "src/foo.ts",
-        "start_line": 10,
-        "end_line": 25
-      },
-      "violated_invariant": "The CI runner silently swallows diff-retrieval failures instead of aborting",
-      "proof_command": "grep -rn 'get_diff' quality-control/run-review.py",
-      "symptom": "...",
-      "source": "...",
-      "consequence": "...",
-      "remedy": "...",
-      "evidence": [
-        {"kind": "file-read", "path": "src/foo.ts", "lines": [1, 80]}
-      ]
-    }
-  ],
-  "checked_surfaces": [
-    {
-      "path": "src/foo.ts",
-      "reason": "high-churn",
-      "lines_read": [1, 120],
-      "result": "finding"
-    }
-  ],
-  "rejected_easy_wins": []
-}
+The script validates the report against pydantic models in
+quality-control/check-report.py. On success, renders the PR comment to
+.review-report-comment.md and exits 0. On failure, prints errors with
+FIX: guidance and exits non-zero — fix the same file and re-run.
 
-report_type must be "general" or "slop".
+report_type must be "general" (selects GeneralFinding) or "slop" (selects SlopFinding).
 
---- Rejection Rules ---
+Every path (review_scope, location.path, evidence[].path) must exist in git
+at repo_sha. Verify with: git cat-file -e <sha>:<path>
 
-These cause immediate rejection. Learn them now — don't submit twice:
+The score and comment text are produced by the renderer, not by the report.
+Do not include "score" or "report" fields — they are rejected.
 
-BAD: {"violated_invariant": "clean code"}
-GOOD: {"violated_invariant": "The CI runner silently swallows diff-retrieval failures instead of aborting"}
+The structural example below shows the expected JSON shape.
+Validator error messages teach the field-level constraints — do not read the
+validator script directly; it is root-owned and not available to the agent.
 
-  * violated_invariant must name a specific violated behavior or contract (>=20 chars).
-    Blanket claims rejected: clean code, looks fine, nothing to report, no violations,
-    appears correct, everything looks fine, no issues found.
-  * proof_command must be a real command or code-path proving the violation (>=10 chars).
-
-  * score and report fields are NOT ALLOWED. The renderer computes score from findings
-    and builds comment markdown automatically. JSON with either field is rejected.
-
-  * category values containing 'infra', 'infrastructure', 'ci', 'workflow', or 'config'
-    are rejected. Categories describe the defect type (semantic-regression, incorrect-output,
-    test-quality, etc.), not CI infrastructure.
-
-  * Low-signal categories (code-style, naming, formatting, file-length, readability,
-    comment-style, duplication, etc.) MUST be tier2. Tier 1 findings must be substantive.
-
-  * At least one finding must be substantive (Tier 1 or non-low-signal category).
-    All-tier2-low-signal is rejected.
-
-  * finding.location.path may not be in .github/, .agents/, quality-control/, or
-    opencode/skills/. Findings target source and test files in the PR diff, not
-    infrastructure.
-
-  * Every path in review_scope, location.path, and evidence[].path must exist in git
-    at repo_sha. Check 'git cat-file -e <sha>:<path>' before submitting.
-
-All rejection rules produce error messages with 'FIX:' guidance on what to change.
+Example (general report — slop uses SlopFinding fields):
 HELP
+    echo ""
+    echo "Full JSON Schema (auto-generated from pydantic models):"
+    echo ""
+    if [ -z "${REPORT_TYPE:-}" ]; then
+        echo "Error: REPORT_TYPE env var must be set (general or slop)" >&2
+        exit 1
+    fi
+    uv run "$CHECKER" schema --type "$REPORT_TYPE"
     exit 0
 fi
 
