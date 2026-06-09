@@ -61,8 +61,8 @@ jobs:
 
       - name: Lockdown CI assets
         run: |
-          sudo chown root:root .agents/scripts/submit-candidate
           chmod 711 .agents/scripts/submit-candidate
+          sudo chown root:root .agents/scripts/submit-candidate
           find . -name justfile -type f -exec chmod 000 {} +
 
       - name: Run General Review via OpenCode
