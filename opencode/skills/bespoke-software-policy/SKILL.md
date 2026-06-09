@@ -178,7 +178,78 @@ size limits, an air-gapped machine). This must be documented at the site
 with the specific constraint. "Might be hard to install" is not a
 constraint — `uv add` or `npm install` is one command.
 
-## In Scope (Valid Findings)
+## Foundational Principle: Every Line Must Be Proven
+
+Every piece of checked-in code must prove it is correct. "Prove" does not
+mean "unit test" — proof can take many forms depending on complexity, but
+it must exist. Unproven code is a concrete defect: the owner cannot trust
+its output on any non-happy-path input, and in an agent-generated codebase,
+the probability that code silently fails, does the wrong thing, operates on
+hallucinated data shapes, or was written based on incomplete understanding
+of its inputs is extremely high. Proof is the only mitigation.
+
+**The proof hierarchy (prefer earlier methods):**
+
+1. **Assertions and stringent typing** — The simplest and most reliable
+   proof. Peppering a script with type assertions, runtime guards, `assert`
+   statements on data shapes, and `isinstance`/`instanceof` checks means
+   that the fact the script runs AT ALL is itself a witness that the
+   assertions passed. A script with a `assert isinstance(result, dict)
+   and "status" in result` before every critical operation proves, on
+   every execution, that its data looks correct. This is zero marginal
+   cost above writing the code itself.
+
+2. **Schema validation at boundaries** — Already covered by Crash at the
+   Boundary. A Zod/Pydantic parse is a proof that the data matches
+   expectations. A parse failure is a proof that it didn't.
+
+3. **Property-based or value-range proofs** — `assert 0 <= x <= 1`,
+   `assert len(results) > 0`, `assert all(isinstance(v, float) for v in
+   values)`. These prove invariants without needing test infrastructure.
+
+4. **Explicit test files with proof burdens** — For any logic with
+   branching, conditionals, external dependencies, state machines, or
+   data transformations. Every test must establish an a priori proof
+   burden — what claim about the code's behavior is being established? —
+   and then witness that claim with concrete inputs and expected outputs.
+
+**When each level applies:**
+
+- **Single scripts and modules in a file:** Levels 1-3 (assertions + type
+  guards + schema validation) are sufficient. A script that runs without
+  assertion failure has proven itself for that execution path.
+
+- **Code with branching, conditionals, external calls, data transforms, or
+  error handling:** At minimum Level 4 (explicit tests). If a function has
+  an `if/else`, a `try/except`, a loop over external data, or a
+  non-trivial transformation, its correctness cannot be proven by a single
+  execution path — it needs tests that exercise each branch.
+
+- **Agent-generated code of any significant size:** Level 4 is mandatory.
+  Agent code has an extremely high probability of being half-baked, written
+  based on guessed or incomplete data shapes, or referencing tools and
+  types that do not exist. Tests are the only way to verify the agent's
+  assumptions about the code's inputs and behavior.
+
+**Defenses that are NOT valid:**
+- "This is a single-user development tool" — The owner is the one who pays
+  the cost of silent failure. The owner benefits MOST from proof, because
+  there is no external user base to catch errors.
+- "This is not a multi-consumer library" — Correctness is not about
+  consumer count. It is about trust in the output.
+- "No regression has occurred" — Tests prove correctness, not catch
+  regressions. The absence of a regression is not evidence of correctness.
+- "Tests are an enterprise pattern" — Tests are basic code hygiene, on the
+  same level as type checking and syntax validation. Every language has a
+  test framework. Write tests or write assertions.
+- "Agent-generated code is obviously correct because the agent meant it to
+  be" — This is the slop hypothesis. The agent's confidence is not evidence.
+  Proof is evidence.
+
+**The Verification Rule interaction:** "Does the absence of proof cause a
+concrete problem for the owner RIGHT NOW?" Yes — the owner cannot trust
+the output of the code. Trust is only established by proof, not by the
+absence of observed failure.
 
 Report these even if no crash or wrong output has been observed:
 
@@ -358,7 +429,7 @@ designed this way") is never sufficient — it is always laundering.
 ### Common Misinterpretation: The "Slop Pass" Error
 
 Agents frequently misuse bespoke-software-policy to suppress valid findings
-by falsely categorizing them as speculative/enterprise. Three common patterns:
+by falsely categorizing them as speculative/enterprise. Four common patterns:
 
 **Pattern 1: Type-erasure slop pass.**
 1. A concrete type-safety defect is flagged (`as any`, `// @ts-ignore`,
@@ -391,12 +462,26 @@ by falsely categorizing them as speculative/enterprise. Three common patterns:
    wrong. The correct fix is discriminated error handling, not a
    rationalizing comment. See "Comments Are Laundering" above.
 
+**Pattern 4: Missing-proof slop pass.**
+1. Code with no assertions, no tests, and no correctness proof is flagged
+   (e.g., 359-line config tool with zero tests).
+2. The agent invokes bespoke-software-policy, claiming "this is a
+   single-user tool on a development system, not a multi-consumer library;
+   test absence is not a regression."
+3. This is WRONG. The "Every Line Must Be Proven" principle makes proof
+   mandatory for all checked-in code. "Single-user" is not an exclusion
+   category — it is the OPPOSITE: the owner has no external user base to
+   catch errors, so proof is MORE important. The absence of proof is the
+   concrete defect; the owner cannot trust the output. Tests, assertions,
+   and schema validation are the only remedies.
+
 **Litmus test for slop-pass invocations:** If the defense requires you to
 pretend a type-erasure construct is "speculative" (when it disables the
 compiler right now), "enterprise" (when it contradicts the fail-loudly
 rule), "proportional for a small tool" (when the bespoke code IS the
-complexity), or "justified by a comment" (when the comment is laundering
-evidence), the defense is misaligned. Report the finding.
+complexity), "justified by a comment" (when the comment is laundering
+evidence), or "single-user / no regression" (when every line must be
+proven), the defense is misaligned. Report the finding.
 
 Another agent might try to misread this section as "ah, so I should flag
 every `as any` anywhere in the codebase." No. `as any` in test data
