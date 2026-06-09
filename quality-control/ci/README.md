@@ -93,27 +93,15 @@ The CI workflow executes these steps before the agent runs:
 
 ## Report Validation
 
-The validator (`quality-control/check-report.py`) is a pydantic model. It exits 0
-(valid, submission proceeds) or exits 1 (invalid, agent must fix and re-run).
-
-**The agent discovers the full schema and rejection rules via:**
+The schema and rejection rules are defined in `submit-candidate --help`:
 
 ```
 quality-control/ci/submit-candidate --help
 ```
 
-Every validator error message includes a `FIX:` clause telling the agent what
-to change. The agent iterates: submit → read error → fix → re-submit.
-
-Key points:
-- `report_type` selects the model: `"general"` → `GeneralReport`, `"slop"` → `SlopReport`
-- Every path in the report must exist in git at `repo_sha` (verified via `git cat-file -e`)
-- Finding locations are rejected if they target `.github/`, `.agents/`, `quality-control/`, or `opencode/skills/` paths
-- `score` and `report` fields are NOT allowed — `ConfigDict(extra="forbid")` rejects any unknown field
-
-**This README does NOT duplicate the schema.** The schema lives in `check-report.py`
-and is exposed through `submit-candidate --help`. Always consult the live script
-and validator output for the exact current contract.
+The agent reads this to learn the expected JSON format and constraints before
+submitting. On validation failure, error messages include `FIX:` guidance
+telling the agent what to change.
 
 ## Usage in Another Repo
 
@@ -136,19 +124,5 @@ This copies `general-review-opencode.yml` and `slop-review-opencode.yml` into
 
 ## Debugging
 
-All validator error messages now include `FIX:` guidance telling the agent what
-to change. The agent iterates: submit → read FIX → fix same file → re-submit.
-
-Common causes and their FIX guidance:
-
-| Error prefix | FIX guidance |
-|-------------|--------------|
-| `violated_invariant contains prohibited pattern` | Name a specific violated contract/behavior, not a blanket claim. |
-| `forbidden category` | Use a defect-type category, not CI infrastructure terms. |
-| `is low-signal, must be tier2` | Change tier to `tier2` or use a non-low-signal category. |
-| `at least one finding must be substantive` | Add a Tier 1 finding or use a substantive category. |
-| `location is an infrastructure path` | Target source/test files in the PR diff, not infrastructure. |
-| `path does not exist at commit` | Verify with `git cat-file -e <sha>:<path>` before submitting. |
-| `Extra inputs are not permitted` | Remove `score` and `report` fields — those are computed by the renderer. |
-| `String should have at most 40 characters` | `repo_sha` must be the full 40-char hex SHA. |
-| `Input should be 'general' or 'slop'` | `report_type` must be exactly `"general"` or `"slop"`. |
+Validator error messages include `FIX:` guidance. The agent reads the error,
+fixes the report, and re-submits. The script's output is the debugging surface.
