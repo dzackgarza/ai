@@ -2,20 +2,20 @@
 # requires-python = ">=3.11"
 # ///
 """
-Review runner: manages the agent loop, harvesting, and validation.
+Review runner: manages the agent loop, harvesting, and finalization.
 
-The agent acts as a candidate generator. The harness finalizes the artifact.
-Takes --mode to select review type (review|slop), loads template and
-skills accordingly. Type-agnostic — adding a new review type means
-adding reviews/<type>/template.md + schema.json.
+The agent writes a candidate report to a fixed path, then calls
+.agents/scripts/submit-candidate (no arguments) to validate and submit.
+The script copies the validated report to .review-report-artifact.json
+on success. The harness only checks for existence of that artifact after
+the opencode session ends — the script owns validation and submission.
+On timeout or missing artifact, the harness re-prompts and loops.
 """
 
 import argparse
 import json
 import os
 import pathlib
-import re
-import shutil
 import subprocess
 import sys
 import time
@@ -36,7 +36,6 @@ HERE = pathlib.Path(__file__).parent.resolve()
 ARTIFACT_PATH = pathlib.Path(".review-report-artifact.json")
 MARKDOWN_PATH = pathlib.Path(".review-report-artifact.md")
 SCORE_PATH = pathlib.Path(".review-report-score.txt")
-CHECKER_PATH = HERE / "check-report.py"
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
 
@@ -71,9 +70,6 @@ def load_skills(skills_dir: pathlib.Path, slop_mode: bool = False) -> str:
     for skill_name in [
         "policy-index",
         "bespoke-software-policy",
-        "anti-slop",
-        "reviewing-llm-code",
-        "fixing-slop",
         "test-guidelines",
         "tool-provisioning-and-environment-hygiene",
     ]:
@@ -81,8 +77,11 @@ def load_skills(skills_dir: pathlib.Path, slop_mode: bool = False) -> str:
         if p.exists():
             guides.append(p.read_text())
 
-    ref_file = "bridge-burning-red-flags.md"
     if slop_mode:
+        for skill_name in ["anti-slop", "reviewing-llm-code", "fixing-slop"]:
+            p = skills_repo / skill_name / "SKILL.md"
+            if p.exists():
+                guides.append(p.read_text())
         for ref_dir in [
             skills_repo / "reviewing-llm-code" / "references",
             skills_repo / "anti-slop" / "references",
@@ -91,10 +90,6 @@ def load_skills(skills_dir: pathlib.Path, slop_mode: bool = False) -> str:
                 for f in sorted(ref_dir.iterdir()):
                     if f.suffix == ".md":
                         guides.append(f.read_text())
-    else:
-        p = skills_repo / "reviewing-llm-code" / "references" / ref_file
-        if p.exists():
-            guides.append(p.read_text())
 
     p = skills_dir / "brooks-review" / "pr-review-guide.md"
     if p.exists():
@@ -112,45 +107,16 @@ def substitute(template: str, **kwargs: str) -> str:
     return template
 
 
-def validate_candidate(candidate_path: pathlib.Path, repo_sha: str) -> tuple[bool, str]:
-    print(f"--- Validating candidate {candidate_path} ---", file=sys.stderr)
-    result = subprocess.run(
-        [sys.executable, str(CHECKER_PATH), str(candidate_path)],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode != 0:
-        msg = result.stdout.strip() + "\n" + result.stderr.strip()
-        print(f"--- Artifact validation FAILED ---\n{msg}", file=sys.stderr)
-        return False, msg
-    return True, ""
+SUBMITTED_CANDIDATE = "submitted.json"
 
 
-def run_opencode(
-    task_path: pathlib.Path, candidates_dir: pathlib.Path, attempt: int
-) -> int:
+def run_opencode(task_path: pathlib.Path) -> int:
     cmd = ["opencode", "run", "--model", "opencode/deepseek-v4-flash-free"]
-
-    # Block 'just' to prevent reward-hacking via linting-escape recipes
-    block_dir = pathlib.Path("/tmp/ci-blocked-commands")
-    block_dir.mkdir(parents=True, exist_ok=True)
-    just_wrapper = block_dir / "just"
-    if not just_wrapper.exists():
-        just_wrapper.write_text(
-            "#!/bin/sh\n"
-            'echo "BLOCKED: Your task is structural repository audit, not running'
-            ' just recipes."\n'
-            'echo "Use .agents/scripts/submit-candidate to submit your report."\n'
-            "exit 1\n"
-        )
-        just_wrapper.chmod(0o755)
 
     env = {
         **os.environ,
         "OPENCODE_PURE": "1",
         "RUNNER_TEMP": str(task_path.parent.parent),
-        "PATH": f"{block_dir}:{os.environ.get('PATH', '')}",
     }
     with open(task_path) as f:
         res = subprocess.run(
@@ -163,16 +129,8 @@ def run_opencode(
             env=env,
         )
 
-    # Forward stdout/stderr for logs
     sys.stdout.write(res.stdout)
     sys.stderr.write(res.stderr)
-
-    # Extract fenced JSON blocks from stdout
-    blocks = re.findall(r"```json\n(.*?)\n```", res.stdout, re.DOTALL)
-    for i, block in enumerate(blocks):
-        cpath = candidates_dir / f"attempt-{attempt}-stdout-{i}.json"
-        cpath.write_text(block.strip())
-
     return res.returncode
 
 
@@ -183,7 +141,7 @@ def main():
     parser.add_argument("--base-ref")
     parser.add_argument(
         "--template",
-        default=str(HERE / "reviews" / "brooks" / "template.md"),
+        default=str(HERE / "reviews" / "general" / "template.md"),
     )
     parser.add_argument("--pr-number", default="0")
     args = parser.parse_args()
@@ -206,7 +164,7 @@ def main():
     system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))
     template = template_path.read_text()
     # Remove PR_NUMBER from the body entirely to de-anchor the agent
-    body = substitute(template, CANDIDATES_DIR=str(candidates_dir), REPO_SHA=repo_sha)
+    body = substitute(template, REPO_SHA=repo_sha)
 
     # Prepend strict instruction to IGNORE PR context
     header = """
@@ -219,35 +177,27 @@ Analyze all files as if this were a day-zero audit of a new codebase.
 """
     current_prompt = f"{header}\n\n{system}\n\n{body}"
 
+    submitted_path = candidates_dir / SUBMITTED_CANDIDATE
+
     for attempt in range(1, MAX_ATTEMPTS + 1):
         if attempt > 1:
             time.sleep(5)
         task_path.write_text(current_prompt)
         print(f"--- opencode run attempt {attempt}/{MAX_ATTEMPTS} ---", file=sys.stderr)
-        for c in candidates_dir.glob("*.json"):
-            c.unlink()
+        # Clear any prior files to prevent stale submissions
+        submitted_path.unlink(missing_ok=True)
+        ARTIFACT_PATH.unlink(missing_ok=True)
         try:
-            run_opencode(task_path, candidates_dir, attempt)
+            run_opencode(task_path)
         except subprocess.TimeoutExpired:
             print("--- opencode timed out ---", file=sys.stderr)
         except Exception as e:
             print(f"--- opencode error: {e} ---", file=sys.stderr)
 
-        valid_candidate, rejection_reasons = None, []
-        for cpath in candidates_dir.glob("*.json"):
-            is_valid, err = validate_candidate(cpath, repo_sha)
-            if is_valid:
-                valid_candidate = cpath
-                break
-            rejection_reasons.append((cpath.name, err))
-
-        if valid_candidate:
-            print("--- Report artifact validated ---", file=sys.stderr)
-            shutil.copy(str(valid_candidate), str(ARTIFACT_PATH))
-
-            # Extract markdown and score for CI
+        if ARTIFACT_PATH.exists():
+            print("--- Report artifact submitted ---", file=sys.stderr)
             try:
-                with open(valid_candidate) as f:
+                with open(ARTIFACT_PATH) as f:
                     data = json.load(f)
                 MARKDOWN_PATH.write_text(str(data.get("report", "No report provided.")))
                 SCORE_PATH.write_text(str(data.get("score", "0")))
@@ -255,16 +205,14 @@ Analyze all files as if this were a day-zero audit of a new codebase.
                 print(
                     f"Warning: Failed to extract markdown/score: {e}", file=sys.stderr
                 )
-
             sys.exit(0)
 
-        if rejection_reasons:
-            rejections = "\n\n".join(
-                [f"Candidate {n} failed:\n{e}" for n, e in rejection_reasons]
-            )
-            current_prompt += f"\n\n## Continuation Context (Attempt {attempt})\n\nYour prior candidate was rejected for:\n{rejections}\n\nRepair only those defects. Reuse prior analysis where valid. Write fixed JSON to {candidates_dir}/attempt-{attempt + 1}.json."
-        else:
-            current_prompt += f"\n\n## Continuation Context (Attempt {attempt})\n\nYou did not produce any candidate JSON files in {candidates_dir} or in stdout fenced blocks."
+        current_prompt += (
+            f"\n\n## Continuation Context (Attempt {attempt})\n\n"
+            f"Your session ended without a valid report at {ARTIFACT_PATH}.\n"
+            f"Run .agents/scripts/submit-candidate (no arguments) after writing your "
+            f"report to {submitted_path}."
+        )
 
     print(f"FATAL: No report artifact after {MAX_ATTEMPTS} attempts", file=sys.stderr)
     sys.exit(1)

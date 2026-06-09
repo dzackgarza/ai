@@ -1,11 +1,11 @@
-# Brooks-Lint: code review via opencode run (free model, no API key)
-name: Brooks-Lint PR Review (OpenCode)
+# General Review: code review via opencode run (free model, no API key)
+name: General Review (OpenCode)
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  brooks-lint:
+  general-lint:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -28,6 +28,12 @@ jobs:
           curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
             | tar -xzf - -C /usr/local/bin just
 
+      - name: Block just — agent may not run it
+        run: |
+          rm -f /usr/local/bin/just
+          cp .agents/scripts/just-blocked.sh /usr/local/bin/just
+          chmod 755 /usr/local/bin/just
+
       - name: Install OpenCode
         run: npm install -g opencode-ai
 
@@ -41,7 +47,7 @@ jobs:
           cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
           # Copy policy skills for skill() tool
           mkdir -p ~/.config/opencode/skills
-          for skill in anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
+          for skill in policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
             [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
             echo "installed $skill"
           done
@@ -53,14 +59,20 @@ jobs:
         env:
           CC_SAFETY_NET_PARANOID: 1
 
-      - name: Run Brooks-Lint via OpenCode
+      - name: Lockdown CI assets
+        run: |
+          sudo chown root:root .agents/scripts/submit-candidate
+          chmod 711 .agents/scripts/submit-candidate
+          find . -name justfile -type f -exec chmod 000 {} +
+
+      - name: Run General Review via OpenCode
         id: review
         shell: bash
         run: |
           python3 quality-control/run-review.py \
             --mode review \
             --skills-dir opencode/skills \
-            --template quality-control/reviews/brooks/template.md \
+            --template quality-control/reviews/general/template.md \
             --base-ref "${{ github.base_ref }}" \
             --pr-number "${{ github.event.number }}"
 
@@ -71,13 +83,13 @@ jobs:
         run: |
           report=$(cat .review-report-artifact.md)
           score=$(cat .review-report-score.txt)
-          body=$(printf '## Brooks-Lint Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
+          body=$(printf '## General Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
           gh pr comment ${{ github.event.number }} --body "$body"
 
       - name: Check Threshold
-        if: ${{ vars.BROOKS_FAIL_BELOW != '' }}
+        if: ${{ vars.GENERAL_FAIL_BELOW != '' }}
         run: |
-          threshold="${{ vars.BROOKS_FAIL_BELOW }}"
+          threshold="${{ vars.GENERAL_FAIL_BELOW }}"
           score=$(cat .review-report-score.txt)
           if [ "$score" -lt "$threshold" ] 2>/dev/null; then
             echo "Health Score $score is below threshold $threshold"

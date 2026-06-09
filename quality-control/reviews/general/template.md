@@ -7,7 +7,7 @@ This runs in a CI environment. Follow these rules exactly:
 ## Skills in Context
 
 These skills are loaded above — reference them directly:
-`policy-index`, `bespoke-software-policy`, `anti-slop`, `reviewing-llm-code`, `test-guidelines`
+`policy-index`, `bespoke-software-policy`, `test-guidelines`
 
 Baseline:
 - No fallback suggestions (every missing resource must fail loudly)
@@ -18,8 +18,6 @@ Baseline:
 - Every finding must cite file paths, line numbers, and exploration evidence
 - Findings about CI infrastructure are rejected (see sweep protocol exclusions)
 - **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
-- **Policy Cross-Referencing**: Before reporting any finding, you MUST cross-reference it against the loaded policy documents (e.g., `bridge-burning-red-flags.md`, `runtime-control-flow-red-flags.md`). If a finding contradicts explicit policy (like the Python `-O` mode rule), it MUST be dropped. Do not report findings based on general software engineering intuition if they violate the repository's bespoke software policies.
-- **Ignore Python `-O` Mode**: We do NOT care about Python's optimized mode (`-O`) that strips `assert` statements. It is a trivial, esoteric concern. Do NOT report the use of `assert` as a problem. Findings mentioning `-O` or "optimized mode" will be rejected.
 
 ## Task: Full Repository Audit
 
@@ -35,7 +33,7 @@ Follow the **CI Sweep Protocol** below:
 - Check test quality, dead code, architectural problems
 - Apply the Six Decay Risks (R1-R6) to real files you read
 
-Identify and report structural code defects, architectural decay, and bridge-burning violations anywhere in the codebase.
+Identify and report structural code defects, architectural decay, and quality regressions anywhere in the codebase.
 
 ### Output Format
 The harness requires a strict JSON file format. Plain text reports will be rejected.
@@ -44,7 +42,7 @@ The JSON must conform to the following schema precisely:
 ```json
 {
   "schema_version": 1,
-  "report_type": "brooks",
+  "report_type": "general",
   "repo_sha": "{{REPO_SHA}}",
   "review_scope": {
     "changed_files": [],
@@ -96,9 +94,9 @@ The JSON must conform to the following schema precisely:
 
 ## Submitting Your Report
 
-The ONLY way to submit your candidate report is via `.agents/scripts/submit-candidate`.
+Write your report to `.agents/review-runner/candidates/submitted.json`.
+Then run `.agents/scripts/submit-candidate` (no arguments).
 
-1. Write your full JSON report to a temp file (e.g., `/tmp/report.json`).
-2. Run `.agents/scripts/submit-candidate /tmp/report.json`.
-3. If the script exits 0, your report was accepted. If it exits non-zero, read the errors and fix your report before resubmitting.
-4. Do NOT write to `.review-report-artifact.json` — that bypasses validation.
+If the script exits 0, your report was accepted and you are done.
+If it exits non-zero, read the errors, fix the SAME file, and re-run the script.
+Repeat until the script exits 0.

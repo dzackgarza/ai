@@ -1,37 +1,24 @@
 #!/bin/sh
-# Submit a report candidate for validation.
-# Usage: .agents/scripts/submit-candidate <report.json>
-# Validates the report, copies it to the candidates directory if valid.
-# Exits non-zero with errors if invalid — agent sees them immediately.
+# Validates the candidate report at the fixed path.
+# On success: copies to artifact path and exits 0.
+# On failure: prints errors and exits non-zero.
+# The agent fixes the same file and re-runs this script.
 
 set -euo pipefail
 
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 <report.json>"
-    exit 1
-fi
-
-REPORT_FILE="$1"
-if [ ! -f "$REPORT_FILE" ]; then
-    echo "Error: file not found: $REPORT_FILE"
-    exit 1
-fi
-
-# Resolve paths relative to repo root
 HERE="$(cd "$(dirname "$0")/../.." && pwd)"
+CANDIDATE="$HERE/.agents/review-runner/candidates/submitted.json"
 CHECKER="$HERE/quality-control/check-report.py"
-CANDIDATES_DIR="$HERE/.agents/review-runner/candidates"
+ARTIFACT="$HERE/.review-report-artifact.json"
 
-mkdir -p "$CANDIDATES_DIR"
-
-# Validate immediately
-if python3 "$CHECKER" "$REPORT_FILE" 2>&1; then
-    CANDIDATE="$CANDIDATES_DIR/candidate-$(date +%s).json"
-    cp "$REPORT_FILE" "$CANDIDATE"
-    echo "Candidate validated and submitted: $CANDIDATE"
-    exit 0
-else
-    echo ""
-    echo "ERROR: Report validation FAILED. Fix the issues above and resubmit."
+if ! [ -f "$CANDIDATE" ]; then
+    echo "ERROR: No report found at $CANDIDATE"
+    echo "Write your report to $CANDIDATE first, then run this script."
     exit 1
 fi
+
+if python3 "$CHECKER" "$CANDIDATE" 2>&1; then
+    cp "$CANDIDATE" "$ARTIFACT"
+    exit 0
+fi
+exit 1

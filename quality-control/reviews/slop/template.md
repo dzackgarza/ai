@@ -119,9 +119,9 @@ The JSON must conform to the following schema precisely:
 
 ## Submitting Your Report
 
-The ONLY way to submit your candidate report is via `.agents/scripts/submit-candidate`.
+Write your report to `.agents/review-runner/candidates/submitted.json`.
+Then run `.agents/scripts/submit-candidate` (no arguments).
 
-1. Write your full JSON report to a temp file (e.g., `/tmp/report.json`).
-2. Run `.agents/scripts/submit-candidate /tmp/report.json`.
-3. If the script exits 0, your report was accepted. If it exits non-zero, read the errors and fix your report before resubmitting.
-4. Do NOT write to `.review-report-artifact.json` — that bypasses validation.
+If the script exits 0, your report was accepted and you are done.
+If it exits non-zero, read the errors, fix the SAME file, and re-run the script.
+Repeat until the script exits 0.

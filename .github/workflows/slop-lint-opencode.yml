@@ -28,6 +28,12 @@ jobs:
           curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
             | tar -xzf - -C /usr/local/bin just
 
+      - name: Block just — agent may not run it
+        run: |
+          rm -f /usr/local/bin/just
+          cp .agents/scripts/just-blocked.sh /usr/local/bin/just
+          chmod 755 /usr/local/bin/just
+
       - name: Install OpenCode
         run: npm install -g opencode-ai
 
@@ -52,6 +58,12 @@ jobs:
           npx -y cc-safety-net rule sync
         env:
           CC_SAFETY_NET_PARANOID: 1
+
+      - name: Lockdown CI assets
+        run: |
+          sudo chown root:root .agents/scripts/submit-candidate
+          chmod 711 .agents/scripts/submit-candidate
+          find . -name justfile -type f -exec chmod 000 {} +
 
       - name: Run Slop-Lint via OpenCode
         id: review
