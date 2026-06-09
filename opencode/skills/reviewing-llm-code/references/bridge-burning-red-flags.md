@@ -17,29 +17,29 @@ When one appears, ask:
 
 | Red flag | Why it matters |
 | :--- | :--- |
-| **Runtime defaults** | Defaults preserve missing-data paths and force weak proof obligations. |
-| **Fallback chains** | The app makes unreviewed decisions for the user. |
-| **Optional critical dependencies** | Lets the app pretend required tools are optional. |
-| **Partial success objects** | Converts failed work into "mostly OK." |
-| **Boolean mode flags** | Tests can force branches instead of constructing real state. |
-| **Helper-local tests for boundary bugs** | Proves the patch, not the behavior under review. |
-| **Exact string assertions** | Often prove message plumbing, not semantic failure. |
-| **Stringly owned errors** | Makes exact-message testing and catch-all handling likely. |
-| **Optional core state** | Keeps "maybe initialized" logic alive throughout the app. |
-| **Ambient discovery** | Infers behavior from machine state instead of explicit contract. |
-| **Hidden global state** | Shell/env/home/cache state becomes unreviewed source of truth. |
-| **Non-proof tests** | Test-shaped artifacts that future agents can cite as proof. |
-| **Quarantine language** | "Smoke," "non-proof," "legacy," "diagnostic-only" can launder slop. |
-| **Deletion without burden transfer** | Removes evidence that a problem existed. |
-| **Local QC surfaces** | Gives agents narrower gates to pass. |
-| **Bypass comments** | Turns validator failure into validator silence. |
-| **Compatibility/legacy shims** | Preserves wrong prior designs in pre-launch code. |
-| **Defensive guards in trusted core** | Bloats happy path and hides invariant violations. |
-| **Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. |
-| **Dynamic file creation from code** | Writing configs, scripts, or any file from raw strings in code or shell destroys observability and is extremely brittle — the file cannot be reviewed, diffed, or tracked independently. |
-| **Inline large strings / prompts as data** | Embedding agent prompts, user-facing messages, or any non-code text (>5 lines or containing structured instructions) directly in source files conflates code with data. Strings are not reviewable as separate artifacts, cannot be independently versioned, and encourage ad-hoc editing that bypasses normal review. |
-| **Code within code / embedded cross-language programs** | Python that assembles and runs bash strings, shell scripts that inline Python/Perl, or any program that generates another program inline. Destroys syntax checking, breaks static analysis, and hides the real intent inside string concatenation. The embedded language cannot be reviewed, linted, or debugged independently. |
-| **Administrative completion** | Issues/comments/docs replace implementation or proof. |
+| **[RUNTIME-DEFAULTS] Runtime defaults** | Defaults preserve missing-data paths and force weak proof obligations. |
+| **[FALLBACK-CHAINS] Fallback chains** | The app makes unreviewed decisions for the user. |
+| **[OPTIONAL-DEPS] Optional critical dependencies** | Lets the app pretend required tools are optional. |
+| **[PARTIAL-SUCCESS] Partial success objects** | Converts failed work into "mostly OK." |
+| **[BOOLEAN-FLAGS] Boolean mode flags** | Tests can force branches instead of constructing real state. |
+| **[HELPER-BOUNDARY] Helper-local tests for boundary bugs** | Proves the patch, not the behavior under review. |
+| **[EXACT-STRING] Exact string assertions** | Often prove message plumbing, not semantic failure. |
+| **[STRINGLY-ERRORS] Stringly owned errors** | Makes exact-message testing and catch-all handling likely. |
+| **[OPTIONAL-STATE] Optional core state** | Keeps "maybe initialized" logic alive throughout the app. |
+| **[AMBIENT-DISCOVERY] Ambient discovery** | Infers behavior from machine state instead of explicit contract. |
+| **[GLOBAL-STATE] Hidden global state** | Shell/env/home/cache state becomes unreviewed source of truth. |
+| **[NON-PROOF-TESTS] Non-proof tests** | Test-shaped artifacts that future agents can cite as proof. |
+| **[QUARANTINE-LANG] Quarantine language** | "Smoke," "non-proof," "legacy," "diagnostic-only" can launder slop. |
+| **[DELETION-BURDEN] Deletion without burden transfer** | Removes evidence that a problem existed. |
+| **[LOCAL-QC] Local QC surfaces** | Gives agents narrower gates to pass. |
+| **[BYPASS-COMMENTS] Bypass comments** | Turns validator failure into validator silence. |
+| **[LEGACY-SHIMS] Compatibility/legacy shims** | Preserves wrong prior designs in pre-launch code. |
+| **[DEFENSIVE-GUARDS] Defensive guards in trusted core** | Bloats happy path and hides invariant violations. |
+| **[HYPOTHETICAL-PATH] Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. |
+| **[DYNAMIC-FILE] Dynamic file creation from code** | Writing configs, scripts, or any file from raw strings in code or shell destroys observability and is extremely brittle — the file cannot be reviewed, diffed, or tracked independently. |
+| **[INLINE-STRINGS-DATA] Inline large strings / prompts as data** | Embedding agent prompts, user-facing messages, or any non-code text (>5 lines or containing structured instructions) directly in source files conflates code with data. Strings are not reviewable as separate artifacts, cannot be independently versioned, and encourage ad-hoc editing that bypasses normal review. |
+| **[CODE-IN-CODE] Code within code / embedded cross-language programs** | Python that assembles and runs bash strings, shell scripts that inline Python/Perl, or any program that generates another program inline. Destroys syntax checking, breaks static analysis, and hides the real intent inside string concatenation. The embedded language cannot be reviewed, linted, or debugged independently. |
+| **[ADMIN-COMPLETION] Administrative completion** | Issues/comments/docs replace implementation or proof. |
 
 If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works.
 
@@ -49,14 +49,14 @@ These patterns produce code that is harder to read, maintain, and review — the
 
 | Red flag | Why it matters |
 | :--- | :--- |
-| **Filler documentation** | JSDoc/docstrings/block comments that restate the signature add no information. They make the real code harder to scan and give agents a cheap "documentation" checkbox. |
-| **Overly verbose comments** | `// increment counter by 1` above `counter++` restates the obvious and buries real intent. |
-| **Unnecessary intermediate variables** | A variable assigned once and used on the next line as a "documentation step" adds length without clarity. |
-| **Verbose variable names that obscure intent** | `currentUserAuthenticationStatusBoolean` vs `isAuthenticated` — more characters, less meaning. Every reader must parse the longer name and still infer the type. |
-| **"Just in case" code** | Unused parameters, dead code paths, unreachable branches, features built for hypothetical future needs. Every line that never executes is a review burden and a future confusion. |
-| **Excessive defensive programming** | Superfluous null checks, try-catches, `is not None` guards, or validations on data that has already been validated upstream. These bloat the happy path and convert invariant violations into silent continuations. |
-| **Boilerplate explosion** | Separate class/function/file for a trivial operation that should be a simple expression. Every extra artifact is a review surface. |
-| **Over-abstraction** | Interface with exactly one implementation, factory that creates one concrete thing, strategy pattern wired for exactly two options that never diverge. |
+| **[FILLER-DOCS] Filler documentation** | JSDoc/docstrings/block comments that restate the signature add no information. They make the real code harder to scan and give agents a cheap "documentation" checkbox. |
+| **[VERBOSE-COMMENTS] Overly verbose comments** | `// increment counter by 1` above `counter++` restates the obvious and buries real intent. |
+| **[INTERMEDIATE-VARS] Unnecessary intermediate variables** | A variable assigned once and used on the next line as a "documentation step" adds length without clarity. |
+| **[VERBOSE-NAMES] Verbose variable names that obscure intent** | `currentUserAuthenticationStatusBoolean` vs `isAuthenticated` — more characters, less meaning. Every reader must parse the longer name and still infer the type. |
+| **[JUST-IN-CASE] "Just in case" code** | Unused parameters, dead code paths, unreachable branches, features built for hypothetical future needs. Every line that never executes is a review burden and a future confusion. |
+| **[DEFENSIVE-EXCESS] Excessive defensive programming** | Superfluous null checks, try-catches, `is not None` guards, or validations on data that has already been validated upstream. These bloat the happy path and convert invariant violations into silent continuations. |
+| **[BOILERPLATE] Boilerplate explosion** | Separate class/function/file for a trivial operation that should be a simple expression. Every extra artifact is a review surface. |
+| **[OVER-ABSTRACTION] Over-abstraction** | Interface with exactly one implementation, factory that creates one concrete thing, strategy pattern wired for exactly two options that never diverge. |
 
 ---
 
@@ -103,18 +103,18 @@ This section belongs in [test-guidelines](file:///home/dzack/ai/opencode/skills/
 
 | Pattern | Red flag |
 | :--- | :--- |
-| **Mock/fake/stub/simulation** | Directly prohibited unless it is outside proof/QC and not test-shaped. |
-| **`skip`, `xfail`, conditional test gating** | Masks runtime reality. |
-| **“Smoke” tests in test suite** | Often fake proof with softer branding. |
-| **Helper tests after review pressure** | Patch-shaped proof, not behavior proof. |
-| **Test name overclaims** | Name says “existing config”; body passes `true`. |
-| **No real fixture** | Config/filesystem/network/process behavior tested without config/files/process. |
-| **Exact string assertion** | Especially bad when the test supplied the string. |
-| **`is not None`, `len > 0`, “renders” without semantic assertion** | Content-free proof. |
-| **“Covered elsewhere” without test name/command** | Deletion laundering. |
-| **Test would pass if production stopped calling helper** | Not protecting owned behavior. |
-| **Test proves a fallback** | The fallback probably should not exist. |
-| **Browser/E2E test with mocked IPC** | Honest-label laundering if called “smoke.” |
+| **[MOCK-STUB] Mock/fake/stub/simulation** | Directly prohibited unless it is outside proof/QC and not test-shaped. |
+| **[TEST-GATING] `skip`, `xfail`, conditional test gating** | Masks runtime reality. |
+| **[SMOKE-TEST] “Smoke” tests in test suite** | Often fake proof with softer branding. |
+| **[HELPER-PATCH] Helper tests after review pressure** | Patch-shaped proof, not behavior proof. |
+| **[OVERCLAIM] Test name overclaims** | Name says “existing config”; body passes `true`. |
+| **[NO-FIXTURE] No real fixture** | Config/filesystem/network/process behavior tested without config/files/process. |
+| **[TEST-EXACT-STRING] Exact string assertion** | Especially bad when the test supplied the string. |
+| **[CONTENT-FREE] `is not None`, `len > 0`, “renders” without semantic assertion** | Content-free proof. |
+| **[COVERED-ELSEWHERE] “Covered elsewhere” without test name/command** | Deletion laundering. |
+| **[STOPPED-HELPER] Test would pass if production stopped calling helper** | Not protecting owned behavior. |
+| **[FALLBACK-PROOF] Test proves a fallback** | The fallback probably should not exist. |
+| **[MOCKED-IPC] Browser/E2E test with mocked IPC** | Honest-label laundering if called “smoke.” |
 
 > [!NOTE]
 > If the original review concern is boundary-level, helper-level tests cannot resolve it. They may supplement proof, but they do not close the burden.
