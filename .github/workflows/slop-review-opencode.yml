@@ -1,11 +1,11 @@
-# General Review: code review via opencode run (free model, no API key)
-name: General Review (OpenCode)
+# Slop Review: AI-generated-code slop review via opencode run (free model, no API key)
+name: Slop Review (OpenCode)
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  general-lint:
+  slop-review:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -47,7 +47,7 @@ jobs:
           cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
           # Copy policy skills for skill() tool
           mkdir -p ~/.config/opencode/skills
-          for skill in policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
+          for skill in anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
             [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
             echo "installed $skill"
           done
@@ -65,14 +65,14 @@ jobs:
           chmod 711 .agents/scripts/submit-candidate
           find . -name justfile -type f -exec chmod 000 {} +
 
-      - name: Run General Review via OpenCode
+      - name: Run Slop Review via OpenCode
         id: review
         shell: bash
         run: |
           python3 quality-control/run-review.py \
-            --mode review \
+            --mode slop \
             --skills-dir opencode/skills \
-            --template quality-control/reviews/general/template.md \
+            --template quality-control/reviews/slop/template.md \
             --base-ref "${{ github.base_ref }}" \
             --pr-number "${{ github.event.number }}"
 
@@ -83,15 +83,15 @@ jobs:
         run: |
           report=$(cat .review-report-artifact.md)
           score=$(cat .review-report-score.txt)
-          body=$(printf '## General Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
+          body=$(printf '## Slop Review (OpenCode)\n\n%s\n\n---\n_Health Score: %s_' "$report" "$score")
           gh pr comment ${{ github.event.number }} --body "$body"
 
-      - name: Check Threshold
-        if: ${{ vars.GENERAL_FAIL_BELOW != '' }}
+      - name: Check Slop Threshold
+        if: ${{ vars.SLOP_FAIL_BELOW != '' }}
         run: |
-          threshold="${{ vars.GENERAL_FAIL_BELOW }}"
+          threshold="${{ vars.SLOP_FAIL_BELOW }}"
           score=$(cat .review-report-score.txt)
           if [ "$score" -lt "$threshold" ] 2>/dev/null; then
-            echo "Health Score $score is below threshold $threshold"
+            echo "Slop Health Score $score is below threshold $threshold"
             exit 1
           fi
