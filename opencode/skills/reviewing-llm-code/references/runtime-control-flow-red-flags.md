@@ -26,7 +26,7 @@ If the condition is missing data, bad config, missing dependency, failed IO, fai
 - Any finding citing the removal of assertions in optimized mode as a "decay risk" or "reliability issue" is **pure cargo cult** and will be summarily rejected.
 - Do NOT report the use of `assert` in Python as a problem. It is the preferred way to state invariants in this repository.
 
-### General Principle: No Pre-Emptive Path Code
+### **[NO-PREEMPTIVE-PATH]** General Principle: No Pre-Emptive Path Code
 
 A branch, guard, fallback, or defensive check must be motivated by a real observed failure, not by a hypothetical scenario. Code that handles a failure path that has never been observed, tested, or reported is speculative dead weight — it introduces branches, testing obligations, and maintenance surface for a world that does not exist.
 
@@ -42,7 +42,7 @@ A hypothetical scenario is not an edge case. It is an imaginary world. Code for 
 
 ---
 
-## Why `assert X` Matters
+## **[ASSERT-X]** Why `assert X` Matters
 
 `assert X` states the admissible world. The code after the assertion is allowed to assume X. That is the point.
 
@@ -115,7 +115,7 @@ If the branch does not distinguish real product cases, replace it with an assert
 
 ---
 
-## Banned Language-Agnostic Shapes
+## **[BANNED-SHAPES]** Banned Language-Agnostic Shapes
 
 These are the runtime shapes to ban outright. Any of these must trigger a red-flag finding:
 - `if missing -> return []`
@@ -141,7 +141,7 @@ These are the runtime shapes to ban outright. Any of these must trigger a red-fl
 
 ## Python Examples
 
-### Banned: empty-list laundering
+### **[LAUNDER-EMPTY-LIST]** Banned: empty-list laundering
 ```python
 def collect_records(source_path: Path) -> list[Record]:
     if not source_path.exists():
@@ -171,7 +171,7 @@ type RecordSet = NonEmptyRecordSet | EmptyRecordSet
 ```
 Do not use `[]` as both “valid empty” and “failed to load.”
 
-### Banned: falsy optional core state
+### **[FALSY-OPTIONAL-CORE]** Banned: falsy optional core state
 ```python
 def render_current_document(state: AppState) -> RenderedDocument | None:
     if not state.current_document:
@@ -198,7 +198,7 @@ class AppState(BaseModel):
     renderer_command: RendererCommand
 ```
 
-### Banned: config defaulting
+### **[CONFIG-DEFAULTING]** Banned: config defaulting
 ```python
 def load_runtime_config(config: dict[str, object]) -> RuntimeConfig:
     command = config.get("command") or "pandoc --to html"
@@ -218,7 +218,7 @@ def load_runtime_config(config_path: Path) -> RuntimeConfig:
 ```
 The starter config may contain defaults. Runtime logic should not.
 
-### Banned: try/except fallback
+### **[TRY-EXCEPT-FALLBACK]** Banned: try/except fallback
 ```python
 def load_document(path: Path) -> str:
     try:
@@ -235,7 +235,7 @@ def load_document(path: Path) -> str:
 ```
 If this is a public command boundary, convert the exception once into a structured fatal error. Do not return a falsy value.
 
-### Banned: try-import / optional dependency
+### **[TRY-IMPORT]** Banned: try-import / optional dependency
 ```python
 try:
     import rich
@@ -258,7 +258,7 @@ def print_report(report: Report) -> None:
 ```
 Dependency presence is setup/doctor/tool-provisioning’s problem, not runtime branching’s problem.
 
-### Banned: branch-forcing helper
+### **[BRANCH-FORCING-HELPER]** Banned: branch-forcing helper
 ```python
 def require_or_default(
     value: str | None,
@@ -283,7 +283,7 @@ def create_starter_config(config_path: Path) -> None:
 ```
 No helper should mix “required” and “default.”
 
-### Banned: catch-and-log continuation
+### **[CATCH-AND-LOG]** Banned: catch-and-log continuation
 ```python
 def refresh_index(paths: list[Path]) -> list[IndexEntry]:
     entries: list[IndexEntry] = []
@@ -306,7 +306,7 @@ If one path failing should not fail the whole operation, that must be explicit p
 
 ## TypeScript / JavaScript Examples
 
-### Banned: empty array as failed data
+### **[EMPTY-ARRAY-FAILED]** Banned: empty array as failed data
 ```ts
 export async function loadItems(sourcePath: string): Promise<Item[]> {
   if (!sourcePath) {
@@ -337,7 +337,7 @@ export async function loadItems(sourcePath: string): Promise<NonEmptyArray<Item>
 }
 ```
 
-### Banned: optional UI state fail-open
+### **[OPTIONAL-UI-FAILOPEN]** Banned: optional UI state fail-open
 ```ts
 function renderPreview(state: EditorState): PreviewModel | null {
   if (!state.document) {
@@ -373,7 +373,7 @@ function renderPreview(state: ReadyEditorState): PreviewModel {
 }
 ```
 
-### Banned: nullish/default config
+### **[NULLISH-DEFAULT]** Banned: nullish/default config
 ```ts
 function loadRuntimeConfig(raw: Partial<RuntimeConfig>): RuntimeConfig {
   return {
@@ -397,7 +397,7 @@ function loadRuntimeConfig(raw: unknown): RuntimeConfig {
 }
 ```
 
-### Banned: catch fallback
+### **[CATCH-FALLBACK]** Banned: catch fallback
 ```ts
 async function fetchRegistry(url: string): Promise<RegistryEntry[]> {
   try {
@@ -430,7 +430,7 @@ type RegistryResult =
 ```
 But do not return `[]` for failure.
 
-### Banned: test/smoke runtime mode
+### **[TEST-RUNTIME-MODE]** Banned: test/smoke runtime mode
 ```ts
 async function invokeCommand(command: string, payload: unknown): Promise<unknown> {
   if (process.env.NODE_ENV === "test") {
@@ -449,7 +449,7 @@ async function invokeCommand(command: CommandName, payload: CommandPayload): Pro
 ```
 Tests must cross the real boundary or not claim proof.
 
-### Banned: warning-and-continue
+### **[WARNING-CONTINUE]** Banned: warning-and-continue
 ```ts
 async function saveDocument(model: DocumentModel): Promise<{ ok: boolean; warnings: string[] }> {
   const warnings: string[] = [];
@@ -481,7 +481,7 @@ async function saveDocument(model: DocumentModel): Promise<void> {
 }
 ```
 
-### Banned: nested optional pyramid
+### **[NESTED-OPTIONAL-PYRAMID]** Banned: nested optional pyramid
 ```ts
 function selectedPath(state: AppState): string | undefined {
   if (state.workspace) {
@@ -523,7 +523,7 @@ function selectedPath(selection: SelectionState): string {
 
 ## Rust Examples
 
-### Banned: empty vector laundering
+### **[VECTOR-LAUNDERING]** Banned: empty vector laundering
 ```rust
 fn collect_entries(root: &Path) -> Vec<Entry> {
     if !root.exists() {
@@ -558,7 +558,7 @@ fn collect_entries(root: &Path) -> Result<Vec<Entry>, FsError> {
 ```
 If empty directory is a valid case, `Ok(vec![])` may be valid only after successful `read_dir`. It must not represent failure.
 
-### Banned: `Option` core state
+### **[OPTION-CORE-STATE]** Banned: `Option` core state
 ```rust
 struct AppState {
     workspace_root: Option<PathBuf>,
@@ -590,7 +590,7 @@ fn render(state: &AppState, markdown: &str) -> RenderResult {
 }
 ```
 
-### Banned: `unwrap_or` / defaulting
+### **[UNWRAP-OR]** Banned: `unwrap_or` / defaulting
 ```rust
 fn load_config(raw: RawConfig) -> RuntimeConfig {
     RuntimeConfig {
@@ -615,7 +615,7 @@ fn load_config(raw: RawConfig) -> Result<RuntimeConfig, ConfigError> {
 ```
 Better: deserialize directly into a non-optional config struct when possible.
 
-### Banned: `.ok()` / `let _ =`
+### **[OK-DISCARD]** Banned: `.ok()` / `let _ =`
 ```rust
 fn cleanup_backup(path: &Path) {
     let _ = std::fs::remove_file(path);
@@ -642,7 +642,7 @@ fn cleanup_backup(path: &Path) -> Result<(), CleanupError> {
 ```
 The accepted non-error state is explicit and narrow.
 
-### Banned: falsey `Result` conversion
+### **[FALSEY-RESULT]** Banned: falsey `Result` conversion
 ```rust
 fn load_registry(path: &Path) -> Vec<RegistryEntry> {
     match std::fs::read_to_string(path) {
@@ -660,7 +660,7 @@ fn load_registry(path: &Path) -> Result<Vec<RegistryEntry>, RegistryError> {
 }
 ```
 
-### Banned: `if` for required invariant
+### **[IF-REQUIRED-INVARIANT]** Banned: `if` for required invariant
 ```rust
 fn save_document(path: Option<PathBuf>, content: String) -> Result<(), SaveError> {
     if path.is_none() {
@@ -680,7 +680,7 @@ fn save_document(path: &Path, content: &str) -> Result<(), SaveError> {
 ```
 Better: make `path` non-optional before calling `save_document`.
 
-### Banned: `if let` optional branch for initialized state
+### **[IFLET-INITIALIZED]** Banned: `if let` optional branch for initialized state
 ```rust
 fn active_file_path(state: &AppState) -> Option<&Path> {
     if let Some(path) = state.file.as_deref() {
@@ -699,7 +699,7 @@ fn active_file_path(state: &ReadyAppState) -> &Path {
 ```
 If unselected is a real product case, represent it as an enum and dispatch at the UI boundary, not in every runtime function.
 
-### Banned: nested if chain
+### **[NESTED-IF-CHAIN]** Banned: nested if chain
 ```rust
 fn command_for(state: &AppState) -> Option<&str> {
     if let Some(config) = &state.config {
@@ -732,7 +732,7 @@ fn command_for(config: &AppConfig) -> &RenderCommand {
 
 ## Bash Examples
 
-### Banned: fallback chains
+### **[FALLBACK-CHAINS]** Banned: fallback chains
 ```bash
 if command -v fd >/dev/null 2>&1; then
   fd -e md -t f
@@ -748,7 +748,7 @@ exec $FINDER_COMMAND
 ```
 Better: the app config names the command; doctor verifies it.
 
-### Banned: empty output on failure
+### **[EMPTY-OUTPUT-FAILURE]** Banned: empty output on failure
 ```bash
 if ! output="$(renderer "$input" 2>/dev/null)"; then
   output=""
@@ -766,7 +766,7 @@ printf '%s\n' "$output"
 ```
 If the renderer fails, the script fails.
 
-### Banned: `|| true`
+### **[PIPE-TRUE]** Banned: `|| true`
 ```bash
 cleanup_artifact "$path" || true
 ```
@@ -786,7 +786,7 @@ rm -f -- "$path"
 ```
 But do not use this in diagnostic/build/test logic unless absence is an explicit contract.
 
-### Banned: status laundering
+### **[STATUS-LAUNDERING]** Banned: status laundering
 ```bash
 if curl -s "$endpoint" >/tmp/response.json; then
   jq '.items // []' /tmp/response.json
@@ -807,7 +807,7 @@ jq -e '.items | type == "array"' "$response" >/dev/null
 jq '.items' "$response"
 ```
 
-### Banned: test-mode fake
+### **[TEST-MODE-FAKE]** Banned: test-mode fake
 ```bash
 if [ "${APP_ENV:-}" = "test" ]; then
   echo '{"ok": true, "items": []}'
@@ -823,7 +823,7 @@ real_command "$@"
 ```
 Tests must use real fixture inputs and real outputs.
 
-### Banned: silent probing
+### **[SILENT-PROBING]** Banned: silent probing
 ```bash
 if git remote get-url origin 2>/dev/null | grep -q github.com; then
   echo "github"
@@ -880,7 +880,7 @@ esac
 
 ---
 
-## Nested If Ban
+## **[NESTED-IF-BAN]** Nested If Ban
 
 Nested `if` blocks over missing/optional/falsy state are banned.
 
@@ -896,7 +896,7 @@ Do not build pyramids of permission for code to proceed.
 
 ---
 
-## Fail-Open Ban
+## **[FAIL-OPEN-BAN]** Fail-Open Ban
 
 A branch fails open if the failing path returns any value that allows the caller to keep treating the operation as successful or empty-but-valid.
 
