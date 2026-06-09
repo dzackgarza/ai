@@ -116,6 +116,12 @@ opencode/events.jsonl
 .review-report-*
 .review-thread-summary.json
 
+# CC Safety Net (auto-generated)
+.cc-safety-net/
+
+# OpenCode session stats (auto-generated)
+opencode/context-mode/sessions/stats-*.json
+
 # SQLite databases (auto-generated runtime state)
 opencode/context-mode/**/*.db
 opencode/context-mode/**/*.db-shm
