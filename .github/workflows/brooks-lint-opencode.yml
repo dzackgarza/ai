@@ -45,9 +45,11 @@ jobs:
             [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
             echo "installed $skill"
           done
-          # CC Safety Net custom rules — block linting escapes (uvx ruff, uvx mypy, etc.)
+          # CC Safety Net project rules — block linting escapes (uvx ruff, uvx mypy, etc.)
           mkdir -p .cc-safety-net/rules/project-rules
-          cp opencode/configs/cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
+          cp quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
+          cp quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
+          npx -y cc-safety-net rule sync
         env:
           CC_SAFETY_NET_PARANOID: 1
 
