@@ -704,6 +704,63 @@ def schema(type: Literal["general", "slop"] = None):
 
 
 @app.command
+def metadata(path: Path):
+    """Print machine-parseable metadata from a validated artifact.
+
+    Args:
+        path: Path to the validated artifact JSON file.
+    """
+    if not path.is_file():
+        print(f"Error: file not found: {path}", file=sys.stderr)
+        sys.exit(1)
+
+    with open(path) as f:
+        data = json.load(f)
+
+    findings = data.get("findings", [])
+    result = {
+        "repo_sha": data.get("repo_sha", ""),
+        "report_type": data.get("report_type", "unknown"),
+        "finding_count": len(findings),
+        "tier1_count": sum(1 for f in findings if f.get("tier") == "tier1"),
+        "tier2_count": sum(1 for f in findings if f.get("tier") == "tier2"),
+    }
+    print(json.dumps(result))
+    sys.exit(0)
+
+
+@app.command
+def finding_body(path: Path, index: int):
+    """Render a single finding's markdown body for use as a review thread.
+
+    Args:
+        path: Path to the validated artifact JSON file.
+        index: 0-based index of the finding to render.
+    """
+    if not path.is_file():
+        print(f"Error: file not found: {path}", file=sys.stderr)
+        sys.exit(1)
+
+    with open(path) as f:
+        data = json.load(f)
+
+    findings = data.get("findings", [])
+    if index < 0 or index >= len(findings):
+        print(
+            f"Error: index {index} out of range (0-{len(findings) - 1})",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    report_type = data.get("report_type", "unknown")
+    repo_sha = data.get("repo_sha", "unknown")[:8]
+    finding = findings[index]
+    body = _render_finding_thread_body(index, finding, report_type, repo_sha)
+    print(body)
+    sys.exit(0)
+
+
+@app.command
 def render(path: Path):
     """Render a validated review artifact into a uniform PR comment.
 
@@ -825,6 +882,79 @@ def _render_finding(n: int, f: dict) -> str:
 
     lines.append("---")
     lines.append("")
+    return "\n".join(lines)
+
+
+def _render_finding_thread_body(
+    index: int,
+    finding: dict,
+    report_type: str,
+    repo_sha_short: str,
+) -> str:
+    """Render a single finding as a compact markdown body for a review thread.
+
+    This is the format posted as a GitHub PR review comment, not the full
+    rendered report.  The body is self-contained: tier, label, violated invariant,
+    proof command, evidence, and source attribution.
+    """
+    tier = finding.get("tier", "?")
+    label = finding.get("label", "?")
+    loc = finding.get("location", {})
+    loc_path = loc.get("path", "?")
+    start = loc.get("start_line", "?")
+    end = loc.get("end_line", "?")
+    violated = finding.get("violated_invariant", "")
+    proof = finding.get("proof_command", "")
+
+    report_label = "General Review" if report_type == "general" else "Slop Review"
+
+    lines = [
+        f"### [{report_label}][{tier}] {label}",
+        "",
+        f"**Location:** `{loc_path}:{start}-{end}`",
+    ]
+    if violated:
+        lines.append(f"**Violated invariant:** {violated}")
+    if proof:
+        lines.append(f"**Proof command:** `{proof}`")
+    lines.append("")
+
+    evidence = finding.get("evidence", [])
+    if evidence:
+        lines.append("**Evidence:**")
+        for ev in evidence:
+            p = ev.get("path", "?")
+            lo, hi = (ev.get("lines") or ["?", "?"])[:2]
+            lines.append(f"- `{p}:{lo}-{hi}` ({ev.get('kind', '?')})")
+        lines.append("")
+
+    # General narrative fields
+    if "symptom" in finding:
+        lines.append(f"**Symptom:** {finding['symptom']}")
+        lines.append("")
+    if "consequence" in finding:
+        lines.append(f"**Consequence:** {finding['consequence']}")
+        lines.append("")
+    if "remedy" in finding:
+        lines.append(f"**Remedy:** {finding['remedy']}")
+        lines.append("")
+
+    # Slop narrative fields (compact)
+    if "pattern" in finding:
+        lines.append(f"**Pattern:** {finding['pattern']}")
+        lines.append("")
+        if "why_it_matters" in finding:
+            lines.append(f"**Why this matters:** {finding['why_it_matters']}")
+            lines.append("")
+
+    lines.extend(
+        [
+            "---",
+            "",
+            f"Source: {report_label}, commit {repo_sha_short}.",
+        ]
+    )
+
     return "\n".join(lines)
 
 
