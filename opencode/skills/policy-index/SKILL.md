@@ -15,6 +15,7 @@ Central source-of-truth index for bridge-burning policies, red-flag catalogs, pr
 | What code/test red flags should I scan for? | [reviewing-llm-code/references/bridge-burning-red-flags.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) |
 | What runtime control-flow shapes are banned? | [reviewing-llm-code/references/runtime-control-flow-red-flags.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md) |
 | What policy applies to creating files dynamically from code? | [reviewing-llm-code/references/bridge-burning-red-flags.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) (red flag, remediation policy) + [fixing-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md) |
+| What policy applies to embedding large strings/prompts/messages inline in code? | [reviewing-llm-code/references/bridge-burning-red-flags.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) (red flag, remediation policy — "Inline large strings / prompts as data" section) |
 | How do I review LLM-produced code? | [reviewing-llm-code/SKILL.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md) |
 | How do I fix slop without laundering? | [fixing-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md) |
 | What makes a test valid proof? | [test-guidelines/SKILL.md](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) |

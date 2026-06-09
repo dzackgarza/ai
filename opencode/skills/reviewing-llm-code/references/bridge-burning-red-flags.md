@@ -37,6 +37,7 @@ When one appears, ask:
 | **Defensive guards in trusted core** | Bloats happy path and hides invariant violations. | Validate at boundary; assert internally. |
 | **Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. | Require observed failure before adding handling; if invariant, assert. |
 | **Dynamic file creation from code** | Writing configs, scripts, or any file from raw strings in code or shell destroys observability and is extremely brittle — the file cannot be reviewed, diffed, or tracked independently. | Create static files, commit them, and reference them at runtime. If dynamic content is truly needed, use a real templating engine with semantic templates; never compose file content from raw string manipulation. |
+| **Inline large strings / prompts as data** | Embedding agent prompts, user-facing messages, or any non-code text (>5 lines or containing structured instructions) directly in source files conflates code with data. Strings are not reviewable as separate artifacts, cannot be independently versioned, and encourage ad-hoc editing that bypasses normal review. | Extract into a standard data file (TOML, YAML, JSON) and load strings by label at runtime. The data file is the reviewed artifact; the code is a thin accessor. |
 | **Administrative completion** | Issues/comments/docs replace implementation or proof. | Treat them as records, not completion. |
 
 If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works.
@@ -677,6 +678,61 @@ Remediation applies when:
 Do not apply remediation when:
 - The app's express purpose IS file generation (template parser, code generator, build tool).
 - The content comes from genuine user data, not from strings embedded in the app's own code.
+
+### Remediation: Inline Large Strings / Prompts Embedded as Code
+
+**Slop pattern:** Embedding agent prompts, user-facing messages, instruction blocks, or any text longer than ~5 lines directly in source files as string literals. This treats data (strings) as code, making the text invisible to separate review, unversioned independently, and vulnerable to ad-hoc inline edits that bypass normal review.
+
+```python
+# BAD: agent prompt embedded as a string literal in application code
+PROMPT = """You are a helpful research assistant.
+Analyze the following paper:
+{paper_text}
+
+Consider:
+1. Main contributions
+2. Methodology
+3. Limitations
+
+Provide a structured summary with citations.
+"""
+```
+
+**Remediation:** Extract all non-code strings to a standard data file (TOML, YAML, JSON) keyed by label. Load them at runtime via a library. The data file is the reviewed, diffable artifact; the code is a thin accessor.
+
+```toml
+# prompts.toml — reviewed artifact, independently versioned
+[paper_analysis]
+template = """
+You are a helpful research assistant.
+Analyze the following paper:
+{paper_text}
+
+Consider:
+1. Main contributions
+2. Methodology
+3. Limitations
+
+Provide a structured summary with citations.
+"""
+```
+
+```python
+# Remediation: load from config, strings are data not code
+import tomllib
+with open("prompts.toml", "rb") as f:
+    prompts = tomllib.load(f)
+prompt = prompts["paper_analysis"]["template"].format(paper_text=paper_text)
+```
+
+Remediation applies when:
+- The string is an agent prompt, instruction block, user-facing message, or any text that is primarily data rather than code logic.
+- The string exceeds ~5 lines or contains structured multi-part instructions.
+- The string would benefit from independent review, versioning, or editing by non-developers.
+
+Do not apply remediation when:
+- The string is a short label, error message, or single-line log format (< 5 lines, no structured sub-instructions).
+- The string is part of a test assertion where proximity to the assertion logic matters for readability.
 
 ---
 
