@@ -119,8 +119,9 @@ The JSON must conform to the following schema precisely:
 
 ## Submitting Your Report
 
-The ONLY way to submit your candidate report is to write the JSON to a file in the candidates directory: `{{CANDIDATES_DIR}}`.
+The ONLY way to submit your candidate report is via `.agents/scripts/submit-candidate`.
 
-1. Write your full JSON report to a file like `{{CANDIDATES_DIR}}/candidate.json`.
-2. Do NOT try to write `.review-report-artifact.json` directly. The harness will validate your candidate and write the artifact itself if validation passes.
-3. If the harness rejects your candidate, it will automatically restart you with a continuation prompt containing the exact validation errors.
+1. Write your full JSON report to a temp file (e.g., `/tmp/report.json`).
+2. Run `.agents/scripts/submit-candidate /tmp/report.json`.
+3. If the script exits 0, your report was accepted. If it exits non-zero, read the errors and fix your report before resubmitting.
+4. Do NOT write to `.review-report-artifact.json` — that bypasses validation.

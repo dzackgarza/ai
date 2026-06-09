@@ -131,10 +131,26 @@ def run_opencode(
     task_path: pathlib.Path, candidates_dir: pathlib.Path, attempt: int
 ) -> int:
     cmd = ["opencode", "run", "--model", "opencode/deepseek-v4-flash-free"]
+
+    # Block 'just' to prevent reward-hacking via linting-escape recipes
+    block_dir = pathlib.Path("/tmp/ci-blocked-commands")
+    block_dir.mkdir(parents=True, exist_ok=True)
+    just_wrapper = block_dir / "just"
+    if not just_wrapper.exists():
+        just_wrapper.write_text(
+            "#!/bin/sh\n"
+            'echo "BLOCKED: Your task is structural repository audit, not running'
+            ' just recipes."\n'
+            'echo "Use .agents/scripts/submit-candidate to submit your report."\n'
+            "exit 1\n"
+        )
+        just_wrapper.chmod(0o755)
+
     env = {
         **os.environ,
         "OPENCODE_PURE": "1",
         "RUNNER_TEMP": str(task_path.parent.parent),
+        "PATH": f"{block_dir}:{os.environ.get('PATH', '')}",
     }
     with open(task_path) as f:
         res = subprocess.run(

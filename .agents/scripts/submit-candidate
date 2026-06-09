@@ -1,0 +1,37 @@
+#!/bin/sh
+# Submit a report candidate for validation.
+# Usage: .agents/scripts/submit-candidate <report.json>
+# Validates the report, copies it to the candidates directory if valid.
+# Exits non-zero with errors if invalid — agent sees them immediately.
+
+set -euo pipefail
+
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <report.json>"
+    exit 1
+fi
+
+REPORT_FILE="$1"
+if [ ! -f "$REPORT_FILE" ]; then
+    echo "Error: file not found: $REPORT_FILE"
+    exit 1
+fi
+
+# Resolve paths relative to repo root
+HERE="$(cd "$(dirname "$0")/../.." && pwd)"
+CHECKER="$HERE/quality-control/check-report.py"
+CANDIDATES_DIR="$HERE/.agents/review-runner/candidates"
+
+mkdir -p "$CANDIDATES_DIR"
+
+# Validate immediately
+if python3 "$CHECKER" "$REPORT_FILE" 2>&1; then
+    CANDIDATE="$CANDIDATES_DIR/candidate-$(date +%s).json"
+    cp "$REPORT_FILE" "$CANDIDATE"
+    echo "Candidate validated and submitted: $CANDIDATE"
+    exit 0
+else
+    echo ""
+    echo "ERROR: Report validation FAILED. Fix the issues above and resubmit."
+    exit 1
+fi

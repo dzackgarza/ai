@@ -1,18 +1,1 @@
-# Submit a candidate brooks-lint/slop report.
-# This command is for agents to submit their analysis for validation by the CI harness.
-#
-# Usage:
-#   just submit-brooks-candidate <result.json>
-set shell := ['bash', '-c']
 
-[private]
-submit-brooks-candidate result:
-    set -euo pipefail
-
-    # Use a directory inside the workspace to ensure agent has write permissions
-    TARGET_DIR=".agents/brooks/candidates"
-    mkdir -p "$TARGET_DIR"
-
-    # Copy to a timestamped file to allow harvesting multiple attempts
-    cp "{{result}}" "$TARGET_DIR/candidate-$(date +%s).json"
-    echo "Candidate submitted to harness for validation."
