@@ -64,7 +64,7 @@ jobs:
           sudo chown -R root:root .agents/ci/
           chmod -R 700 .agents/ci/
           chmod 755 .agents/ci/
-          chmod 711 .agents/ci/submit-candidate
+          chmod 755 .agents/ci/submit-candidate
           find . -name justfile -type f -exec chmod 000 {} +
 
       - name: Run Slop Review via OpenCode
