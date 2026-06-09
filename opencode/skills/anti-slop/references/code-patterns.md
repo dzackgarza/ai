@@ -964,8 +964,7 @@ The absence of an import is the defect, not the presence of the dependency.
 
 ### Correct Response
 
-**REFINE, REPLACE, REFACTOR** — migrate the bespoke implementation to use the dependency.
-Do not delete the dependency because it is “unused.”
+See `bridge-burning-red-flags.md` → **Remediation: Bespoke Dependency Reinvention**.
 
 * * *
 

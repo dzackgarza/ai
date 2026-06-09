@@ -143,9 +143,7 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - final report says the review item is resolved because the artifact is gone;
   - the original requirement is absent from the new PR narrative.
 
-  Correct response:
-  Require a burden disposition: solved, invalidated, transferred to real proof,
-  or explicitly open as unresolved.
+  Correct response: See `bridge-burning-red-flags.md` → **Remediation: Deletion Laundering / Proof-Burden Erasure**.
 
 - **Reviewer-signal whack-a-mole**:
   The agent treats every evaluator as a layer to appease: typechecker, compiler, test,
@@ -282,10 +280,7 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - No real fixture or boundary artifact (TOML file, temp directory) appears in the test.
   - The test would still pass even if the application stopped calling the helper entirely (meaningless for product correctness).
 
-  Correct Response:
-  - Reconstruct the original proof burden.
-  - Test the source-of-truth boundary (e.g. config loading, temp file fixtures).
-  - Keep helper tests only as supplementary unit coverage; do not accept helper coverage as resolution of boundary feedback.
+  Correct Response: See `bridge-burning-red-flags.md` → **Remediation: Boundary Test Bypass**.
 
 ## Documentation Patterns
 

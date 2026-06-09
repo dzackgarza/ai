@@ -110,12 +110,7 @@ def test_object_has_field():
     assert hasattr(payload, "items")
 ```
 *Why banned:* A broken implementation can return `{}`, create an empty file, or attach a junk field.
-*Better shape:*
-```python
-def test_artifact_contains_expected_semantics(tmp_path):
-    output_path = produce_artifact(tmp_path, source=fixture_path("valid_input.md"))
-    assert output_path.read_text() == expected_text("valid_output.html")
-```
+*Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### Truthy / non-empty
 **Ban:**
@@ -132,15 +127,7 @@ def test_response_ok():
     response = call_boundary(request_payload)
     assert response.ok
 ```
-*Better shape:*
-```python
-def test_collects_expected_domain_items():
-    items = collect_domain_items(fixture_path("source_with_two_items.md"))
-    assert items == [
-        DomainItem(key="alpha", title="First"),
-        DomainItem(key="beta", title="Second"),
-    ]
-```
+*Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### String assertions
 **Ban:**
@@ -154,16 +141,7 @@ def test_error_banner(page):
     page.click("button")
     assert "failed" in page.text_content("#status")
 ```
-*Better shape:*
-```python
-def test_existing_config_missing_required_key_fails(tmp_path):
-    config_path = tmp_path / "app.toml"
-    config_path.write_text("[runtime]\n")
-    with pytest.raises(ConfigError) as exc:
-        load_config(config_path)
-    assert exc.value.kind is ConfigErrorKind.MISSING_REQUIRED
-    assert exc.value.key == "runtime.command"
-```
+*Remediation:* Use structured error types and assert on error kind, not message. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
 ### Shape-only assertions
 **Ban:**
@@ -177,16 +155,7 @@ def test_items_are_models():
     items = collect_items(source)
     assert all(isinstance(item, DomainItem) for item in items)
 ```
-*Better shape:*
-```python
-def test_payload_encodes_domain_semantics():
-    payload = build_payload(domain_input)
-    assert payload == {
-        "title": "Expected title",
-        "body": "Expected body",
-        "metadata": {"source": "fixture-a", "kind": "article"},
-    }
-```
+*Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### No-throw tests
 **Ban:**
@@ -197,19 +166,7 @@ def test_operation_does_not_crash():
 def test_config_loads(tmp_path):
     load_config(tmp_path / "app.toml")
 ```
-*Better shape:*
-```python
-def test_config_loads_explicit_values(tmp_path):
-    config_path = tmp_path / "app.toml"
-    config_path.write_text("""
-    [runtime]
-    command = "tool --mode exact"
-    timeout_ms = 5000
-    """)
-    config = load_config(config_path)
-    assert config.runtime.command == "tool --mode exact"
-    assert config.runtime.timeout_ms == 5000
-```
+*Remediation:* Assert on exact output values, not just that the operation did not crash. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
 
 ### Source policing
 **Ban:**
@@ -224,6 +181,7 @@ def test_no_type_ignore_comments():
     assert "# type: ignore" not in source
 ```
 *Why banned:* This belongs to global QC/static analysis, not project behavior tests.
+*Remediation:* Move source-text assertions to global QC. Test runtime behavior instead. See [Remediation: Source Policing in Tests](bridge-burning-red-flags.md#remediation-source-policing-in-tests).
 
 ### Helper branch laundering
 **Ban:**
@@ -247,16 +205,7 @@ def test_absent_config_uses_defaults():
     assert value == 750
 ```
 *Why banned:* The test passes the boolean that chooses the branch. It does not construct an existing or absent config.
-*Better shape:*
-```python
-def test_existing_config_missing_required_value_fails_at_loader_boundary(tmp_path):
-    config_path = tmp_path / "app.toml"
-    config_path.write_text("[runtime]\ntimeout_ms = 750\n")
-    with pytest.raises(ConfigError) as exc:
-        load_config(config_path)
-    assert exc.value.kind is ConfigErrorKind.MISSING_REQUIRED
-    assert exc.value.key == "runtime.command"
-```
+*Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
 
 ### Try/except in tests
 **Ban:**
@@ -267,13 +216,7 @@ def test_expected_failure():
     except Exception as error:
         assert "missing" in str(error)
 ```
-*Better shape:*
-```python
-def test_expected_failure():
-    with pytest.raises(ConfigError) as exc:
-        load_config(config_path)
-    assert exc.value.kind is ConfigErrorKind.MISSING_REQUIRED
-```
+*Remediation:* Use the test framework's structured assertion and assert on error kind. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
 ### Mock/spy/call-count
 **Ban:**
@@ -287,7 +230,7 @@ def test_network_path(monkeypatch):
     monkeypatch.setattr(client, "get", lambda url: {"ok": True})
     assert load_remote_data(url)
 ```
-*Correct Response:* Assert the real effect at the owned boundary.
+*Remediation:* Assert the real effect at the owned boundary. See [Remediation: Mock/Spy/Call-Count as Proof](bridge-burning-red-flags.md#remediation-mockspycall-count-as-proof).
 
 ---
 
@@ -311,16 +254,7 @@ test("module exports function", async () => {
   expect(module.render).toBeTruthy();
 });
 ```
-*Better shape:*
-```ts
-test("collects expected domain items", () => {
-  const items = collectDomainItems(fixtureText("source-with-items.md"));
-  expect(items).toEqual([
-    { key: "alpha", title: "First" },
-    { key: "beta", title: "Second" },
-  ]);
-});
-```
+*Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### Visibility-only
 **Ban:**
@@ -337,16 +271,7 @@ test("status is ready", async ({ page }) => {
 });
 ```
 *Why banned:* A totally broken app can render a shell and display "ready."
-*Better shape:*
-```ts
-test("renders markdown through the real app boundary", async ({ page }) => {
-  await openRealDocument(page, "fixtures/minimal.md");
-  await page.getByRole("textbox", { name: /markdown/i }).fill("# Title");
-  await page.getByRole("button", { name: /render/i }).click();
-  await expect(page.getByTestId("preview-pane")).toContainText("Title");
-  await expect(page.getByTestId("render-error")).toBeHidden();
-});
-```
+*Remediation:* Assert on concrete output content, not visibility. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### Status / label / banner assertions
 **Ban:**
@@ -356,15 +281,7 @@ test("save shows success", async ({ page }) => {
   await expect(page.locator("#status")).toContainText("saved");
 });
 ```
-*Better shape:*
-```ts
-test("save writes the selected document", async ({ page }) => {
-  await openRealDocument(page, "notes/example.md");
-  await page.getByRole("textbox", { name: /markdown/i }).fill("# Updated");
-  await page.getByRole("button", { name: /save/i }).click();
-  expect(await readFile("notes/example.md")).toBe("# Updated\n");
-});
-```
+*Remediation:* Assert on the real side effect (file content, database state), not UI labels. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### String assertions
 **Ban:**
@@ -378,19 +295,7 @@ test("throws missing config", () => {
   expect(() => loadConfig(path)).toThrow("missing runtime.command");
 });
 ```
-*Better shape:*
-```ts
-test("missing required config key fails with structured code", () => {
-  const result = loadConfig(incompleteConfigPath);
-  expect(result).toEqual({
-    ok: false,
-    error: {
-      kind: "missing_required",
-      key: "runtime.command",
-    },
-  });
-});
-```
+*Remediation:* Assert on structured error types, not string messages. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
 ### Type-only / shape-only
 **Ban:**
@@ -405,13 +310,7 @@ test("has html property", () => {
   expect(result).toHaveProperty("html");
 });
 ```
-*Better shape:*
-```ts
-test("render output preserves expected heading", () => {
-  const result = render("# Title\n\nBody");
-  expect(normalizeHtml(result.html)).toBe("<h1>Title</h1><p>Body</p>");
-});
-```
+*Remediation:* Assert on concrete output values, not type/shape. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### No-throw
 **Ban:**
@@ -424,16 +323,7 @@ test("promise resolves", async () => {
   await expect(runOperation(input)).resolves.toBeDefined();
 });
 ```
-*Better shape:*
-```ts
-test("complete config produces exact runtime settings", () => {
-  const config = loadConfig(completeConfigPath);
-  expect(config.runtime).toEqual({
-    command: "tool --mode exact",
-    timeoutMs: 5000,
-  });
-});
-```
+*Remediation:* Assert on exact output values, not just absence of throw. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
 
 ### Source policing
 **Ban:**
@@ -491,16 +381,7 @@ test("handles bad config", () => {
   }
 });
 ```
-*Better shape:*
-```ts
-test("handles bad config", () => {
-  const result = loadConfig(path);
-  expect(result).toEqual({
-    ok: false,
-    error: { kind: "missing_required", key: "runtime.command" },
-  });
-});
-```
+*Remediation:* Test framework structured assertions with error types. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
 ---
 
@@ -527,18 +408,7 @@ fn items_present() {
     assert!(!items.is_empty());
 }
 ```
-*Better shape:*
-```rust
-#[test]
-fn produces_expected_artifact_content() {
-    let dir = tempfile::tempdir().unwrap();
-    let path = produce_artifact(dir.path(), source_fixture("minimal")).unwrap();
-    assert_eq!(
-        std::fs::read_to_string(path).unwrap(),
-        expected_fixture("minimal-output.html")
-    );
-}
-```
+*Remediation:* Assert on concrete output content against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### Exact string errors
 **Ban:**
@@ -555,17 +425,7 @@ fn config_panics() {
     load_config(incomplete_config_path()).unwrap();
 }
 ```
-*Better shape:*
-```rust
-#[test]
-fn missing_config_errors() {
-    let error = load_config(incomplete_config_path()).unwrap_err();
-    assert!(matches!(
-        error,
-        ConfigError::MissingRequired { key } if key == "runtime.command"
-    ));
-}
-```
+*Remediation:* Assert on structured error variants, not string rendering. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
 ### Helper branch proof
 **Ban:**
@@ -582,27 +442,7 @@ fn existing_config_requires_explicit_values() {
     assert_eq!(error, "missing runtime.command");
 }
 ```
-*Better shape:*
-```rust
-#[test]
-fn existing_config_missing_required_value_fails_at_loader_boundary() {
-    let dir = tempfile::tempdir().unwrap();
-    let config_path = dir.path().join("app.toml");
-    std::fs::write(
-        &config_path,
-        r#"
-        [runtime]
-        timeout_ms = 5000
-        "#,
-    )
-    .unwrap();
-    let error = load_config_from_path(&config_path).unwrap_err();
-    assert!(matches!(
-        error,
-        ConfigError::MissingRequired { key } if key == "runtime.command"
-    ));
-}
-```
+*Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
 
 ### Boolean branch-forcing
 **Ban:**
@@ -619,7 +459,7 @@ fn branch_for_absent_config() {
     assert_eq!(result.unwrap(), RuntimeConfig::default());
 }
 ```
-*Correct Response:* Construct actual existing/absent config state.
+*Remediation:* Construct actual config state via real files, not boolean flags. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
 
 ### Source policing
 **Ban:**
@@ -640,14 +480,7 @@ fn cleanup_does_not_crash_when_file_missing() {
     cleanup_backup(missing_path()).unwrap();
 }
 ```
-*Better shape:*
-```rust
-#[test]
-fn cleanup_propagates_permission_error() {
-    let error = cleanup_backup(unremovable_path()).unwrap_err();
-    assert!(matches!(error, CleanupError::RemoveFailed { .. }));
-}
-```
+*Remediation:* Assert on specific error variants or output values, not just absence of panic. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
 
 ### Process lifecycle source-shape test
 **Ban:**
@@ -658,18 +491,7 @@ fn renderer_uses_kill_on_drop() {
     assert!(source.contains("kill_on_drop(true)"));
 }
 ```
-*Better shape:*
-```rust
-#[tokio::test]
-async fn timeout_terminates_owned_child_process() {
-    let marker = unique_process_marker();
-    let error = run_with_timeout(command_that_sleeps_with_marker(&marker), 50)
-        .await
-        .unwrap_err();
-    assert!(matches!(error, ProcessError::Timeout { .. }));
-    assert_no_process_with_marker(&marker);
-}
-```
+*Remediation:* Test runtime process behavior, not source text patterns. See [Remediation: Source Policing in Tests](bridge-burning-red-flags.md#remediation-source-policing-in-tests).
 
 ---
 
@@ -682,19 +504,7 @@ test -f "$output_file"
 [ -s "$output_file" ]
 [ -n "$result" ]
 ```
-*Better shape:*
-```bash
-actual="$(cat "$output_file")"
-diff -u "$expected_file" "$output_file"
-```
-Or semantic JSON check:
-```bash
-jq -e '
-  .status == "rendered" and
-  .document.title == "Expected Title" and
-  .document.items == ["alpha", "beta"]
-' "$output_json"
-```
+*Remediation:* Assert on concrete output content (diff, structured JSON). See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### Grep string assertions
 **Ban:**
@@ -703,10 +513,7 @@ grep -q "ready" "$log_file"
 grep -q "success" "$output_file"
 grep -q "missing runtime.command" "$stderr_file"
 ```
-*Better shape:*
-```bash
-jq -e '.error.kind == "missing_required" and .error.key == "runtime.command"' "$output_json"
-```
+*Remediation:* Assert on structured output with jq, not grep strings. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
 ### Status-only
 **Ban:**
@@ -717,17 +524,7 @@ test "$?" -eq 0
 status="$(curl -s -o /dev/null -w '%{http_code}' "$url")"
 test "$status" = 200
 ```
-*Better shape:*
-```bash
-response="$(mktemp)"
-headers="$(mktemp)"
-curl -SsfD "$headers" "$url" -o "$response"
-jq -e '
-  .ok == true and
-  .result.kind == "expected_kind" and
-  .result.value == "expected_value"
-' "$response"
-```
+*Remediation:* Assert on concrete response content with structured checks. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
 ### Suppression / fallback
 **Ban:**

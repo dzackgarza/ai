@@ -1087,6 +1087,217 @@ Do not apply remediation when:
 
 ---
 
+### Remediation: Existence / Truthy / Shape as Proof
+
+**Slop pattern:** A test asserts only that a value exists, is truthy, non-empty, or has the right type/shape, without checking its semantic content. Examples: `assert result is not None`, `assert items`, `assert len(output) > 0`, `assert isinstance(result, dict)`, `assert hasattr(payload, "items")`, `expect(result).toBeDefined()`.
+
+```python
+# BAD: asserts existence, not semantics
+def test_result_exists():
+    result = run_owned_operation(input_payload)
+    assert result is not None
+
+def test_items_returned():
+    items = collect_domain_items(source_path)
+    assert items  # truthy — empty list would also fail but for wrong reason
+
+def test_file_created(tmp_path):
+    output_path = produce_artifact(tmp_path)
+    assert output_path.exists()  # empty file passes
+```
+
+These assertions pass even on broken output: `None` proves nothing; an empty file exists; a junk dict `{"x": 1}` is truthy.
+
+**Remediation:** Assert on exact expected values against real fixtures. The assertion should prove the output is correct, not just that it exists. Every existence assertion should be replaceable with a concrete value assertion against known test fixtures.
+
+```python
+# Remediation: assert exact semantics against fixtures
+def test_artifact_contains_expected_semantics(tmp_path):
+    output_path = produce_artifact(tmp_path, source=fixture_path("valid_input.md"))
+    assert output_path.read_text() == expected_text("valid_output.html")
+
+def test_collects_expected_ordered_items():
+    items = collect_domain_items(fixture_path("source_with_two_items.md"))
+    assert items == [
+        DomainItem(key="alpha", title="First"),
+        DomainItem(key="beta", title="Second"),
+    ]
+
+def test_loads_correct_payload():
+    payload = load_payload(fixture_path("config.toml"))
+    assert payload == {"host": "localhost", "port": 8080}
+```
+
+Remediation applies when:
+- The assertion proves only that a value exists (is not None, is truthy, is non-empty, has a field) but not that the value is correct.
+- A broken implementation could return a plausible-looking but wrong value and the test would still pass.
+
+Do not apply remediation when:
+- The existence check is one assertion among many in a test that also verifies semantic content (e.g., a precondition guard before the real assertion).
+- The test is explicitly a liveness/health check that only needs to prove the endpoint responds.
+
+### Remediation: No-Throw / No-Crash as Proof
+
+**Slop pattern:** A test calls a function and asserts nothing about the result — it only proves the function did not crash. Examples: calling `run_operation()` without asserting on the output, asserting that `run()` returns without error but ignoring what it returns.
+
+```python
+# BAD: no-crash is not proof of correctness
+def test_operation_does_not_crash():
+    run_operation(input_data)  # no assertion — any output passes
+
+def test_parse_does_not_raise():
+    result = parse_document(text)  # result is never inspected
+```
+
+**Remediation:** Assert exact output values or side effects. A test that proves nothing about correctness is noise. If the function returns a value, assert on it. If the function produces a side effect (file write, database insert, API call), assert on the side effect's result.
+
+```python
+# Remediation: assert on the output
+def test_operation_produces_correct_result():
+    result = run_operation(input_data)
+    assert result == ExpectedOutput(...)
+
+# Remediation: assert on the side effect
+def test_operation_writes_correct_file(tmp_path):
+    output_path = run_operation(input_data, output_dir=tmp_path)
+    assert output_path.read_text() == expected_content
+```
+
+Remediation applies when:
+- The test has no assertion on the function's output or side effects.
+- The test would pass if the function returned `None` or produced no side effects.
+- The only thing the test proves is that the code path was reachable.
+
+Do not apply remediation when:
+- The function is a void-returning command whose correctness is verified by a separate integration test that asserts on the system state.
+- The function genuinely has no observable output and is tested through its caller's boundary.
+
+### Remediation: Mock/Spy/Call-Count as Proof
+
+**Slop pattern:** A test asserts that a mock was called, or called N times, with certain arguments, without asserting on the real effect at the boundary. The mock assertion proves the internal wiring is connected but not that the system produces correct output.
+
+```python
+# BAD: asserts mock was called, not that output is correct
+def test_sends_notification():
+    mock_send = Mock()
+    notifier = Notifier(mock_send)
+    notifier.notify(user_email)
+    assert mock_send.called
+    mock_send.assert_called_once_with(to=user_email, body="...")
+```
+
+**Remediation:** Assert on the real boundary effect — the file that was written, the database row that was inserted, the API response that was returned. If the code path is simple enough that a mock assertion is the only way to verify it, consider whether the test adds value at all (the path is trivially correct by inspection) or whether an integration test would cover it.
+
+```python
+# Remediation: assert on the real effect
+def test_notification_logged_in_database():
+    service.notify(user_email)
+    log_entry = Log.query.filter_by(email=user_email).first()
+    assert log_entry is not None
+    assert log_entry.body contains expected_body
+```
+
+Remediation applies when:
+- The primary assertion is on mock call count or call arguments.
+- No real boundary effect is verified (no database, no file, no API response).
+- The mock is standing in for a side effect that is observable in the test environment.
+
+Do not apply remediation when:
+- The boundary is an external API that cannot be called in tests (third-party service, hardware) AND the mock is paired with a separate integration test that verifies the real interaction.
+- The mock assertion is supplementary to a real boundary assertion.
+
+### Remediation: Source Policing in Tests
+
+**Slop pattern:** A test reads the source code of the application and asserts that certain strings, patterns, or symbols do or do not appear in the text. Examples: asserting `"fallback" not in source` to verify there are no fallback branches, scanning files for deprecated function names, asserting on line counts.
+
+```python
+# BAD: test asserts on source code text
+def test_no_fallback():
+    source = Path("src/module.py").read_text()
+    assert "fallback" not in source  # source policing instead of behavior testing
+```
+
+**Remediation:** Move source-text assertions to global QC (lint rules, AST checks, dedicated static analysis). Tests assert on runtime behavior, not on source text. The runtime behavior — whether a fallback is actually reachable — is what matters; source text is an unreliable proxy.
+
+```python
+# Remediation: test the runtime behavior
+def test_no_fallback_used():
+    result = process_with_valid_input()
+    assert result == expected_output  # tests behavior, not source text
+    # Fallback reachability is a static analysis concern, not a test concern.
+
+# If static enforcement is needed:
+# .semgrep/ or .pre-commit-config.yaml — not in a test file
+```
+
+Remediation applies when:
+- The test reads `.py`, `.ts`, `.rs`, or other source files as strings and asserts on their text content.
+- The assertion is about code structure rather than runtime behavior.
+- A lint rule or AST check exists that could enforce the same constraint.
+
+Do not apply remediation when:
+- The test operates on generated/compiled code (not hand-written source) and verifies code generation output.
+- The test is explicitly a meta-test that validates codegen templates produce expected output.
+
+### Remediation: Deletion Laundering / Proof-Burden Erasure
+
+**Slop pattern:** A criticized slop artifact is deleted without solving or recording the original problem it attempted to address. The codebase looks cleaner, but the proof burden is now hidden. The next agent is likely to recreate the same fake proof, fallback, wrapper, or harness because the original requirement is absent from the new PR narrative.
+
+Detection:
+- deletion follows review or user criticism;
+- commit message emphasizes cleanup, removal, or simplification;
+- no replacement proof or capability exists;
+- no issue, contract, or blocker records the original problem;
+- final report says the review item is resolved because the artifact is gone;
+- the original requirement is absent from the new PR narrative.
+
+**Remediation:** Require a burden disposition: the original problem must be either solved, invalidated, transferred to real proof, or explicitly recorded as unresolved. Deletion is not a disposition — it is the removal of an artifact. The record of what was wrong and why must survive the deletion.
+
+```python
+# BAD: commit message says "removed dead code" — the original problem is gone
+# BAD: PR says "addressed review feedback by deleting the test" — no replacement
+
+# CORRECT dispositions:
+# - Solved: the problem was real and the replacement proof covers it
+# - Invalidated: the problem was spurious and has been demonstrated irrelevant
+# - Transferred: the proof burden moved to a different artifact (integration test, QC check)
+# - Recorded unresolved: the problem is real but deferred, with a visible issue or blocker
+```
+
+Remediation applies when:
+- A deletion follows criticism and the commit message frames it as cleanup.
+- The deleted artifact was the only coverage for a requirement, edge case, or failure mode.
+- The review finding was about existence of a proof, not about the artifact's labeling.
+
+Do not apply remediation when:
+- The artifact was genuinely dead code with no corresponding requirement (no one asked for it, no test covered it, no spec mentioned it).
+- The deletion is part of a larger replacement that demonstrably covers the original requirement.
+
+### Remediation: Bespoke Dependency Reinvention
+
+**Slop pattern:** Application code reimplements what an existing, installed dependency already provides — custom React components when a UI library has them, hand-rolled YAML generation when a YAML library is installed, bespoke string parsing when a parser exists, custom pagination when a framework provides it. The model perceives the generic, tested solution as "abstraction layer bloat" and the bespoke reinvention as "clean, minimal code."
+
+Examples:
+- Custom `AcademicCard.tsx` (~60 LOC) when `card.tsx` exists in the UI inventory.
+- Custom `FilterControls.tsx` with hand-rolled popover logic when `select.tsx`, `dropdown-menu.tsx`, and `scroll-area.tsx` already exist.
+- Custom `PaginatedScroller.tsx` with bespoke scroll logic when `scroll-area.tsx` + `pagination.tsx` already exist.
+- Custom string-concatenated YAML generation when a YAML library is installed.
+- Custom hand-rolled AST stringifier when the parser library already provides stringification.
+
+**Remediation:** REFINE, REPLACE, REFACTOR — migrate the bespoke implementation to use the dependency. For every custom function or component, ask: "Is there a standard library or installed dependency that already solves this?" If yes, the custom code is technical debt. Do not delete the dependency because it is "unused" — it was unused because the bespoke code was written instead of using it.
+
+Remediation applies when:
+- A dependency provides exactly the functionality reimplemented in custom code.
+- The custom code is larger, less tested, or less maintainable than the library alternative.
+- The library is already installed (the import is missing, not the package).
+
+Do not apply remediation when:
+- The dependency does not exist in the project and adding it would be disproportionate for the use case.
+- The custom code has genuinely different requirements that the library does not support.
+- The library is deprecated, unmaintained, or has known security issues.
+
+---
+
 > **Agent-resistant codebases should be designed so that the easiest code to write is also the hardest code to fake.**
 
 Defaults, fallbacks, mocks, skips, helper proofs, string errors, and local QC gates all make faking easier. The bridge-burning policies remove those moves from the game.
