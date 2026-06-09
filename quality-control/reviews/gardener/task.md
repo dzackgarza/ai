@@ -18,6 +18,15 @@ creating missing threads, and maintaining a thread index.
      existing threads or given their own thread?
    - Are there duplicate threads that should be cross-linked?
    - Does the index comment need updating?
+   - **Are there "Rejected Easy Wins" in review output comments that have
+     not been given their own threads?** "Rejected Easy Wins" are valid
+     findings that were set aside as easy wins during review. They are NOT
+     "rejected" in the sense of being wrong — they are still items that
+     need to be addressed. The gardener MUST extract them from review
+     output comments (`## Code Review: <type>` issue comments by
+     `github-actions`) and either create review threads for them or add
+     them to the index under "Unresolved" / "Unthreadable." Do NOT
+     preserve the "Rejected Easy Win" label — these are real tasks.
 
 3. For each required action, use `gh api` to make the change directly.
    GH_TOKEN is available.
