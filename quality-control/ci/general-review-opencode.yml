@@ -70,6 +70,8 @@ jobs:
       - name: Run General Review via OpenCode
         id: review
         shell: bash
+        env:
+          REPORT_TYPE: general
         run: |
           python3 quality-control/run-review.py \
             --mode review \

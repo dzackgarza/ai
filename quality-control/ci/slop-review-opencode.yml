@@ -70,6 +70,8 @@ jobs:
       - name: Run Slop Review via OpenCode
         id: review
         shell: bash
+        env:
+          REPORT_TYPE: slop
         run: |
           python3 quality-control/run-review.py \
             --mode slop \
