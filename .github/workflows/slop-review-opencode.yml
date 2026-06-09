@@ -67,6 +67,14 @@ jobs:
           sudo chmod 755 quality-control/ci/submit-candidate
           sudo find . -name justfile -type f -exec chmod 000 {} +
 
+      - name: Fetch reviewer context (existing threads)
+        id: ctx
+        run: |
+          uv run quality-control/ci/fetch-reviewer-context.py \
+            --pr-number ${{ github.event.number }} \
+            --repo ${{ github.repository }} \
+            --output .reviewer-context.md
+
       - name: Run Slop Review via OpenCode
         id: review
         shell: bash
@@ -78,7 +86,8 @@ jobs:
             --skills-dir opencode/skills \
             --template quality-control/reviews/slop/template.md \
             --base-ref "${{ github.base_ref }}" \
-            --pr-number "${{ github.event.number }}"
+            --pr-number "${{ github.event.number }}" \
+            --reviewer-context .reviewer-context.md
 
       - name: Post PR Comment
         if: github.event_name == 'pull_request'

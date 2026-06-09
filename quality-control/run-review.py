@@ -170,14 +170,18 @@ def main():
     # Remove PR_NUMBER from the body entirely to de-anchor the agent
     body = substitute(template, REPO_SHA=repo_sha)
 
-    # Prepend strict instruction to IGNORE PR context
+    # Prepend instruction to scan full repo (not just PR diff), but DO consider existing threads
     header = """
-# IMPORTANT: IGNORE ALL PULL REQUEST CONTEXT
+# INSTRUCTIONS: Repository-wide sweep, not PR-diff review
 
-You are NOT performing a PR review. You are performing a FRESH, COMPREHENSIVE REPOSITORY AUDIT.
-Do NOT look at recent commits or diffs to guide your analysis.
-Scan the ENTIRE repository source tree.
+You are performing a FRESH, COMPREHENSIVE REPOSITORY AUDIT.
+Scan the ENTIRE repository source tree — do NOT limit analysis to recent commits or diffs.
 Analyze all files as if this were a day-zero audit of a new codebase.
+
+HOWEVER: The context above lists existing review issues on this PR (from the thread index).
+Do NOT re-raise these issues unless you have new evidence, the problem reappears in a
+materially different form, or the previous resolution is directly contradicted by the
+current code. The index is maintained by a separate gardener agent — respect it.
 """
     current_prompt = f"{header}\n\n{system}\n\n{body}"
 
