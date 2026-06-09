@@ -45,18 +45,10 @@ class ModelMetadata(BaseModel):
             return True
         if self.id.endswith(":free"):
             return True
-        # Check both key naming conventions (input/prompt, output/completion)
         if self.cost:
-            prompt_cost = (
-                self.cost.get("input")
-                if "input" in self.cost
-                else self.cost.get("prompt")
-            )
-            completion_cost = (
-                self.cost.get("output")
-                if "output" in self.cost
-                else self.cost.get("completion")
-            )
+            # models.dev/api.json consistently uses input/output keys
+            prompt_cost = self.cost["input"]
+            completion_cost = self.cost["output"]
             if prompt_cost == 0 and completion_cost == 0:
                 return True
         return False
