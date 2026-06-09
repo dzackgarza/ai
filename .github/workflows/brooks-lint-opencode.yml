@@ -31,13 +31,25 @@ jobs:
       - name: Install OpenCode
         run: npm install -g opencode-ai
 
-      - name: Install policy skills for skill() tool
+      - name: Install CC Safety Net
+        run: npm install -g cc-safety-net
+
+      - name: Configure OpenCode and CC Safety Net
         run: |
+          # OpenCode global config — enable cc-safety-net plugin
+          mkdir -p ~/.config/opencode
+          cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
+          # Copy policy skills for skill() tool
           mkdir -p ~/.config/opencode/skills
           for skill in anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
             [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
             echo "installed $skill"
           done
+          # CC Safety Net custom rules — block linting escapes (uvx ruff, uvx mypy, etc.)
+          mkdir -p .cc-safety-net/rules/project-rules
+          cp opencode/configs/cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
+        env:
+          CC_SAFETY_NET_PARANOID: 1
 
       - name: Run Brooks-Lint via OpenCode
         id: review
