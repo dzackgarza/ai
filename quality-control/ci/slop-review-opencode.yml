@@ -65,7 +65,7 @@ jobs:
           sudo chmod -R 700 quality-control/ci/
           sudo chmod 755 quality-control/ci/
           sudo chmod 755 quality-control/ci/submit-candidate
-          find . -name justfile -type f -exec chmod 000 {} +
+          sudo find . -name justfile -type f -exec chmod 000 {} +
 
       - name: Run Slop Review via OpenCode
         id: review
