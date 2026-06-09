@@ -5,7 +5,7 @@
 Review runner: manages the agent loop, harvesting, and finalization.
 
 The agent writes a candidate report to a fixed path, then calls
-.agents/scripts/submit-candidate (no arguments) to validate and submit.
+.agents/ci/submit-candidate (no arguments) to validate and submit.
 The script copies the validated report to .review-report-artifact.json
 on success. The harness only checks for existence of that artifact after
 the opencode session ends — the script owns validation and submission.
@@ -210,7 +210,7 @@ Analyze all files as if this were a day-zero audit of a new codebase.
         current_prompt += (
             f"\n\n## Continuation Context (Attempt {attempt})\n\n"
             f"Your session ended without a valid report at {ARTIFACT_PATH}.\n"
-            f"Run .agents/scripts/submit-candidate (no arguments) after writing your "
+            f"Run .agents/ci/submit-candidate (no arguments) after writing your "
             f"report to {submitted_path}."
         )
 

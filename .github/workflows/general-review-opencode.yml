@@ -31,7 +31,7 @@ jobs:
       - name: Block just — agent may not run it
         run: |
           rm -f /usr/local/bin/just
-          cp .agents/scripts/just-blocked.sh /usr/local/bin/just
+          cp .agents/ci/just-blocked.sh /usr/local/bin/just
           chmod 755 /usr/local/bin/just
 
       - name: Install OpenCode
@@ -61,8 +61,10 @@ jobs:
 
       - name: Lockdown CI assets
         run: |
-          chmod 711 .agents/scripts/submit-candidate
-          sudo chown root:root .agents/scripts/submit-candidate
+          sudo chown -R root:root .agents/ci/
+          chmod -R 700 .agents/ci/
+          chmod 755 .agents/ci/
+          chmod 711 .agents/ci/submit-candidate
           find . -name justfile -type f -exec chmod 000 {} +
 
       - name: Run General Review via OpenCode

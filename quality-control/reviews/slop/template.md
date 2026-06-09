@@ -120,7 +120,7 @@ The JSON must conform to the following schema precisely:
 ## Submitting Your Report
 
 Write your report to `.agents/review-runner/candidates/submitted.json`.
-Then run `.agents/scripts/submit-candidate` (no arguments).
+Then run `.agents/ci/submit-candidate` (no arguments).
 
 If the script exits 0, your report was accepted and you are done.
 If it exits non-zero, read the errors, fix the SAME file, and re-run the script.
