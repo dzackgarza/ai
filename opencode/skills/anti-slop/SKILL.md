@@ -1178,6 +1178,29 @@ availability. If it ever does, the fix is an explicit assertion
   - adding code for environments that have never run the software
   - the entire genre of "this could fail in theory" review feedback
 
+### 22. No constants in runtime code
+
+Hardcoded constants in source files are defaults-in-waiting — even if nothing currently references them, their presence signals that a tunable parameter lives in code rather than config, and a future agent will treat them as a fallback to `unwrap_or` against.
+
+- **Rule:** Zero named constants in runtime source code. Every behavioral parameter belongs in a unified TOML config file (one source of truth). If the project is part of a larger ambient project, that project's config is the canonical source. If a parameter cannot reasonably live in config (rare — essentially: flags that define what the program *is*, not how it *behaves*), supply it as an explicit CLI flag.
+
+- **Rationale:** A named constant (`RECOMMENDED_SYNC_RECIPE`, `DEFAULT_TIMEOUT_MS`, `MAX_RETRIES`) is indistinguishable from a default. It encodes a value the author thought was reasonable — exactly the kind of implicit decision that belongs in a config file where the user can see and change it. In pre-launch bespoke software there are no consumers depending on these values; they are code smell from agent habit, not engineering necessity.
+
+- **True invariants (permitted):** Values that define the system's identity and cannot meaningfully differ — `APP_NAME`, `VERSION`, `SCHEMA_VERSION`, enum discriminant values, mathematical constants (PI, E). These are not behavioral parameters; they are fixed facts about the software. Moving them to config would be cargo-culting.
+
+- **Test:** *Would a different setup, machine, user, project, or point in time ever want a different value?* If yes, it belongs in config as a required field (no default).
+
+- **Enforcement:** Review findings should flag every named constant in runtime code as a policy violation, regardless of whether anything references it. Dead or alive, the constant is a behavioral parameter waiting to be misused.
+
+- **What this burns:**
+  - `RECOMMENDED_*` and `DEFAULT_*` constants
+  - dead constants left in place as "harmless"
+  - numerical/string literals elevated to named constants as a cleanup pretext while keeping them in code
+  - "suppressed per bespoke policy" laundering of constants
+  - constants as implicit fallback targets for future `unwrap_or`
+  - parameter accretion through named constants
+  - the entire "it's not a default, it's a constant" evasion
+
 ---
 
 ## Policy Exception Protocol

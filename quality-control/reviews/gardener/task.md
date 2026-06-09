@@ -35,6 +35,25 @@ creating missing threads, and maintaining a thread index.
    `<!-- review-thread-index -->`). If it exists, update it via PATCH.
    If not, create a new issue comment.
 
+5. **Post-action acknowledgment.** For every review thread that you
+   inspected — not just threads you modified this run — verify whether
+   ALL of its items are currently accounted for in the index. If yes,
+   reply to that thread's root comment with a brief acknowledgment
+   linking to the index comment. Example:
+   `"Incorporated into review thread index: <index-comment-link>"`
+   Use `POST .../{comment_id}/replies`. This gives per-thread evidence
+   that the gardener has processed that thread and verified its state.
+   Do NOT reply to issue comments (top-level PR comments) — only to
+   review threads on code.
+
+   **Rationale:** This produces eventual consistency. A thread that was
+   resolved by a previous gardener run but never got an acknowledgment
+   reply will get one on the next run. A thread whose items are still
+   pending gets no reply until they are incorporated. Over successive
+   runs, every thread converges to a visible "acknowledged" state.
+   This also heals past omissions: if a previous gardener forgot to
+   reply, this run catches it.
+
 ## Allowed Actions
 
 - Create missing review threads for actionable issues found in top-level
@@ -68,6 +87,10 @@ full thread set each time. Use this structure:
 <!-- review-thread-index -->
 ## Review thread index
 
+_Gardener run: <workflow-run-url>_
+_Last updated: <ISO-8601-timestamp>_
+_Comments processed in this run: <list of comment IDs or "all">_
+
 ### Unresolved
 
 1. <finding label>
@@ -89,6 +112,19 @@ full thread set each time. Use this structure:
 
 - <summary-of-orphaned-concern>
 ```
+
+**Metadata fields** (always include at the top of the index):
+
+- `Gardener run:` — URL to the specific workflow run that produced this index.
+  Use the `GITHUB_RUN_ID` or `GITHUB_SERVER_URL`/`GITHUB_REPOSITORY` env vars
+  to construct: `https://github.com/{owner}/{repo}/actions/runs/{run_id}`
+
+- `Last updated:` — ISO-8601 timestamp of this update.
+
+- `Comments processed in this run:` — List the comment IDs that were new or
+  changed since the last garden run. If this is the first run or you cannot
+  determine the delta, write "all existing comments." This lets a viewer see
+  whether a recently-added comment has been processed yet.
 
 ## GitHub API Reference
 
