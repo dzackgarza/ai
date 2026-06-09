@@ -80,6 +80,16 @@ jobs:
             --base-ref "${{ github.base_ref }}" \
             --pr-number "${{ github.event.number }}"
 
+      - name: Reconcile with prior comments
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          uv run quality-control/ci/reconcile-review-comment.py \
+            --artifact .review-report-artifact.json \
+            --comment .review-report-comment.md \
+            --pr-number ${{ github.event.number }} \
+            --repo ${{ github.repository }}
+
       - name: Post PR Comment
         if: github.event_name == 'pull_request'
         env:
