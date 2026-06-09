@@ -26,5 +26,14 @@
   ],
   "forbidden_categories": ["infra", "infrastructure", "ci", "workflow", "config"],
   "report_min_length": 200,
-  "report_reject_patterns": ["-O", "optimized mode"]
+  "report_reject_patterns": [
+    "-O",
+    "optimized mode",
+    "passed without",
+    "no violations",
+    "clean code",
+    "all.*(other|remaining).*(passed|clean|fine|acceptable)",
+    "no.*(bridge.burning|runtime.control.flow).*violation",
+    "nothing (to |)report"
+  ]
 }

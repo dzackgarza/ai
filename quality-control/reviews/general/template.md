@@ -18,6 +18,7 @@ Baseline:
 - Every finding must cite file paths, line numbers, and exploration evidence
 - Findings about CI infrastructure are rejected (see sweep protocol exclusions)
 - **PEP 723 Mandate**: Any agent-authored or modified Python script that imports third-party packages MUST declare dependencies via PEP 723 inline script metadata. Reject any finding that suggests adding to `pyproject.toml` for standalone scripts.
+- **No blanket affirmative claims.** Every statement about a file must cite specific evidence (code read, diff, analysis). "All other code passed without violations" is rejected — if you have nothing to say about a file, say nothing. Do not pad reports with unsubstantiated "clean" assertions.
 
 ## Task: Full Repository Audit
 
