@@ -1,0 +1,26 @@
+# Install CI workflows into a target repository.
+#
+# Usage:
+#   just -f quality-control/ci/justfile install /path/to/target-repo
+#
+# This copies the canonical workflow files from quality-control/ci/ into
+# the target repo's .github/workflows/ directory, enabling CI on that repo.
+# Existing files with the same name are backed up as *.checkpoint before
+# being overwritten.
+
+install target-dir:
+    #!/bin/sh
+    set -euo pipefail
+    SRC_DIR="{{justfile_directory()}}"
+    DST_DIR="{{target-dir}}/.github/workflows"
+    mkdir -p "$DST_DIR"
+    for f in "$SRC_DIR"/general-review-opencode.yml "$SRC_DIR"/slop-review-opencode.yml; do
+        name=$(basename "$f")
+        dst="$DST_DIR/$name"
+        if [ -f "$dst" ] && [ ! -L "$dst" ]; then
+            cp "$dst" "$dst.checkpoint"
+            echo "backed up existing $name -> $name.checkpoint"
+        fi
+        cp "$f" "$dst"
+        echo "installed $name"
+    done
