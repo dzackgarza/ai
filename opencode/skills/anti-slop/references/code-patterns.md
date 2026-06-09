@@ -1774,6 +1774,84 @@ For every branch and catch block:
 
 - Are there states in this state machine with no incoming transitions?
 
+### NOT Dead Code: Scaffolds, References, and Intentional Short-Circuits
+
+The DEAD-CONTROL-FLOW pattern above targets dead branches INSIDE active,
+live modules — logic that was once meaningful or was added as a patch and
+now serves no purpose but still executes (or pretends to) in a live path.
+
+A standalone file with an intentional short-circuit (unconditional `return;`,
+export of a no-op function, kill switch at the top of a handler) is NOT
+dead code. The short-circuit IS evidence of intention: a human (or agent)
+chose to add the short-circuit rather than delete the file. If the code was
+truly unwanted, the path of least resistance is to delete it. Adding a
+short-circuit requires MORE work than deleting. The short-circuit proves
+the code was intentionally preserved.
+
+**Why code is preserved as a scaffold:**
+
+- **Agent memory.** In agent-driven environments, a scaffold file documents
+  the shape of an API, SDK hook, or framework integration pattern. The next
+  agent session reads the file and understands the interface in one pass,
+  without re-discovering it from scratch. Deleting the file loses this
+  cache of prior labor — the next agent re-reads the same docs, re-writes
+  the same exploration code, re-makes the same mistakes.
+
+- **Reference for future implementation.** The 50+ lines of logic below a
+  `return;` are not "dead" — they are an executable specification showing
+  the full lifecycle of a hook (setup, accumulation, trigger detection,
+  cleanup). A future agent implementing the real version uses this as a
+  reference, avoiding structural mistakes that a clean-slate implementation
+  would reintroduce.
+
+- **Deliberate development state.** A short-circuited file in a `dev/`
+  directory is an intentional intermediate state. The developer is saying
+  "I explored this API, the hook interface works, the full implementation
+  is drafted but untested — park it here."
+
+**Three diagnostic questions for dead code vs. scaffold:**
+
+1. **Does it increase complexity of LIVE code?** A dead function in a live
+   module is real dead code — every reader must parse it, every refactor
+   must account for it. A standalone file with a short-circuit adds zero
+   complexity to live code — nothing imports it, nothing calls it, nothing
+   depends on it.
+
+2. **Does it arise from forgetfulness/negligence or from intention?** A
+   dead code path in a live module typically arises from accretion: a
+   refactor left an orphan, a patch added a branch that never fires, a
+   migration left a wrapper. These are unintentional. A short-circuit at
+   the top of a handler is intentional — the author chose to add the guard
+   rather than delete the body.
+
+3. **Is the code's value in its execution or its information?** If the code
+   only has value when it runs, and it never runs, it is dead code. If the
+   code has value as a reference — documenting an API shape, showing a
+   pattern, caching exploration labor — then it serves its purpose by
+   existing, not by executing.
+
+**What not to do:**
+
+- Do not flag standalone files in `dev/`, `experimental/`, `scaffold/`, or
+  similarly named directories as dead code solely because they are not
+  wired into the active build.
+- Do not flag files with an obvious intentional short-circuit
+  (unconditional early return, no-op export, disabled feature) as dead
+  code. The short-circuit itself proves the code was intentionally
+  preserved.
+- Do not recommend deleting scaffold files. The correct disposition is to
+  leave them as-is, optionally add `# Development scaffold — interface
+  reference, not production` to prevent future false positives.
+
+**What to flag (real dead code in active modules):**
+
+- An orphaned function inside a live module with no callers and no export
+- A condition that can never be true at any call site
+- A catch block that silently swallows and continues
+- A fallback path that fires when a dependency is absent (this is
+  bridge-burning, not dead code — see Runtime Safety Evasion in the
+  bespoke-software-policy)
+
 * * *
 
 ## **[MYOPIC-PATCHING]** Myopic Patching & Patch Accretion
