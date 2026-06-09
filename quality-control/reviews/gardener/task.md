@@ -93,14 +93,16 @@ _Comments processed in this run: <list of comment IDs or "all">_
 
 ### Unresolved
 
-1. <finding label>
-   Thread: <review-thread-link>
+1. <finding: verbatim label from review output>
+   Full analysis: <link to review comment or thread where finding was raised>
+   Thread: <review-thread-link> (if a thread was created for this finding)
    Sources: <source-origin-list>
-   Notes: <optional-notes>
+   Cross-refs: <optional-notes — factual only: duplicates, related threads>
 
 ### Resolved
 
-3. <finding label>
+3. <finding: verbatim label from review output>
+   Full analysis: <link to review comment or thread where finding was raised>
    Thread: <review-thread-link>
    Fix/disposition: <commit-or-reply-link>
 
@@ -110,7 +112,8 @@ _Comments processed in this run: <list of comment IDs or "all">_
 
 ### Unthreadable / needs triage
 
-- <summary-of-orphaned-concern>
+- <finding: verbatim label from review output>
+  Full analysis: <link to review comment or source>
 ```
 
 **Metadata fields** (always include at the top of the index):
@@ -125,6 +128,36 @@ _Comments processed in this run: <list of comment IDs or "all">_
   changed since the last garden run. If this is the first run or you cannot
   determine the delta, write "all existing comments." This lets a viewer see
   whether a recently-added comment has been processed yet.
+
+## Mandatory Constraints
+
+1. **Every index entry must link to provenance.** The "Full analysis" field is
+   the URL of the review comment, thread, or report where the finding was
+   originally surfaced. This is the source of truth for the finding's full
+   analysis. The index is a navigation aid, not a replacement.
+
+2. **No remediation judgments.** The index must not prescribe or imply how a
+   finding should be fixed. Prohibited patterns in any entry:
+   - "needs X" or "should be X" or "must be X"
+   - "extract to Y" / "move to Z" / "refactor into W"
+   - Any sentence containing "should", "need", "must", "requires"
+   - Assignment of priority, severity, or urgency not present in the original
+     finding
+   If the finding label or source comment itself contains such language,
+   quote it verbatim as the label but do not expand or editorialize.
+
+3. **Cross-refs, not notes.** The "Cross-refs" field (renamed from "Notes")
+   is restricted to factual metadata only:
+   - ✅ Duplicate detection: "Duplicate of thread X"
+   - ✅ Source consolidation: "Also reported in [other review output link]"
+   - ✅ Thread relationships: "Child of thread Y"
+   - ❌ Any statement about what should be done or how to fix it
+
+4. **Never decide remediation.** The gardener does not determine the fix,
+   does not propose solutions, does not evaluate whether a fix is "correct."
+   These decisions belong to the human maintainer or a designated remediation
+   agent. If a finding seems unclear, link to it and mark it as "needs triage"
+   — do not impose your interpretation.
 
 ## GitHub API Reference
 
