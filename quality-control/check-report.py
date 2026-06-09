@@ -16,7 +16,14 @@ import sys
 from pathlib import Path
 from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
+from pydantic.fields import FieldInfo
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -83,22 +90,38 @@ def _is_infra_path(p: Path) -> bool:
 
 
 class Location(BaseModel):
-    path: Path
-    start_line: int = Field(ge=1)
-    end_line: int = Field(ge=1)
+    path: Path = Field(
+        description="File path relative to repo root. Must exist in git at repo_sha."
+    )
+    start_line: int = Field(ge=1, description="Finding start line (1-indexed).")
+    end_line: int = Field(ge=1, description="Finding end line (1-indexed).")
 
 
 class Evidence(BaseModel):
-    kind: str
-    path: Path
-    lines: list[Annotated[int, Field(ge=1)]] = Field(min_length=2, max_length=2)
+    kind: str = Field(
+        description="Evidence type: file-read, diff-snippet, command-output."
+    )
+    path: Path = Field(
+        description="Evidence file path relative to repo root. Must exist in git at repo_sha."
+    )
+    lines: list[Annotated[int, Field(ge=1)]] = Field(
+        min_length=2,
+        max_length=2,
+        description="Line range [start, end] this evidence covers (1-indexed).",
+    )
 
 
 class CheckedSurface(BaseModel):
-    path: Path
-    reason: str
-    lines_read: list[Annotated[int, Field(ge=1)]] = Field(min_length=2, max_length=2)
-    result: str
+    path: Path = Field(description="File path examined during review.")
+    reason: str = Field(
+        description="Why this surface was selected: high-churn, diff-context, dependency-graph."
+    )
+    lines_read: list[Annotated[int, Field(ge=1)]] = Field(
+        min_length=2,
+        max_length=2,
+        description="Line range [start, end] read during review (1-indexed).",
+    )
+    result: str = Field(description="Outcome: finding, clean, needs-attention.")
 
 
 # ---------------------------------------------------------------------------
@@ -107,17 +130,57 @@ class CheckedSurface(BaseModel):
 
 
 class GeneralFinding(BaseModel):
-    tier: Literal["tier1", "tier2"]
-    label: str
-    category: str
-    location: Location
-    violated_invariant: str = Field(min_length=20)
-    proof_command: str = Field(min_length=10)
-    symptom: str
-    source: str
-    consequence: str
-    remedy: str
-    evidence: list[Evidence] = Field(min_length=1)
+    tier: Literal["tier1", "tier2"] = Field(
+        description="tier1: a real semantic regression, broken invariant, or "
+        "incorrect behavior that changes program output or violates a correctness "
+        "property. tier2: a minor concern, code quality observation, or low-risk "
+        "issue. Low-signal categories (naming, formatting, etc.) are forced to "
+        "tier2 by validation.",
+    )
+    label: str = Field(
+        description="Short label describing defect shape (not severity). "
+        "Ground it in what the code actually does wrong — e.g. if a function "
+        "returns wrong output: INCORRECT_OUTPUT; if stderr is silenced: "
+        "SUPPRESSED_ERROR; if Optional is unwrapped without guard: NULL_UNSAFE. "
+        "Look at the bridge-burning-red-flags.md and runtime-control-flow-red-flags.md "
+        "inventories in reviewing-llm-code for grounded pattern names.",
+    )
+    category: str = Field(
+        description="Defect type. Ground it in known categories from policy-index "
+        "and the bridge-burning rules. "
+        "Examples: semantic-regression, test-quality, null-safety, "
+        "missing-error-handling, logic-error. "
+        "Forbidden: infra, infrastructure, ci, workflow, config.",
+    )
+    location: Location = Field(
+        description="File and line range where the finding occurs."
+    )
+    violated_invariant: str = Field(
+        min_length=20,
+        description="A specific, verifiable contract or behavior that is violated. "
+        "Must name something falsifiable — provable or disprovable via a command or "
+        "code inspection. Not a blanket judgment. "
+        "Rejected patterns (blanket claims that name nothing specific): -O, "
+        "optimized mode, clean code, no violation, nothing to report, "
+        "looks (good|correct|fine|right|ok), no issues found, appears correct, "
+        "everything (looks|seems|is).",
+    )
+    proof_command: str = Field(
+        min_length=10,
+        description="Shell command or code path that proves the invariant is "
+        "violated. Must be reproducible by another agent. "
+        "Example: 'grep -rn get_diff quality-control/run-review.py'",
+    )
+    symptom: str = Field(description="Observable symptom of the defect.")
+    source: str = Field(
+        description="Root cause: what code or pattern produces the symptom."
+    )
+    consequence: str = Field(description="What breaks or degrades due to this defect.")
+    remedy: str = Field(description="How to fix the defect.")
+    evidence: list[Evidence] = Field(
+        min_length=1,
+        description="Supporting evidence proving the finding. At least one item required.",
+    )
 
     @field_validator("category")
     @classmethod
@@ -163,13 +226,39 @@ class GeneralFinding(BaseModel):
 
 class GeneralReport(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    schema_version: Annotated[int, Field(ge=1)] = 1
-    report_type: Literal["general"] = "general"
-    repo_sha: str = Field(min_length=40, max_length=40)
-    review_scope: list[Path] = Field(min_length=1)
-    findings: list[GeneralFinding] = Field(min_length=1)
-    checked_surfaces: list[CheckedSurface]
-    rejected_easy_wins: list[str]
+    schema_version: Annotated[int, Field(ge=1)] = Field(
+        default=1,
+        description="Report format version. Currently 1.",
+    )
+    report_type: Literal["general"] = Field(
+        default="general",
+        description="Must be 'general'. Selects the GeneralFinding model for validation.",
+    )
+    repo_sha: str = Field(
+        min_length=40,
+        max_length=40,
+        description="Full git commit SHA being reviewed. Used to verify all paths "
+        "exist in git; also recorded in PR comment metadata.",
+    )
+    review_scope: list[Path] = Field(
+        min_length=1,
+        description="Files examined during review, relative to repo root. "
+        "All must exist in git at repo_sha. Typically drawn from the PR diff.",
+    )
+    findings: list[GeneralFinding] = Field(
+        min_length=1,
+        description="General review findings. At least one required; at least one "
+        "must be substantive (Tier 1 or non-low-signal category).",
+    )
+    checked_surfaces: list[CheckedSurface] = Field(
+        description="Surfaces inspected during review, whether findings were found "
+        "or not. Documents review thoroughness.",
+    )
+    rejected_easy_wins: list[str] = Field(
+        description="Low-signal observations the agent considered but declined to "
+        "elevate to findings, with brief reason. Documents that non-trivial "
+        "patterns were evaluated and dismissed, not missed.",
+    )
 
     @model_validator(mode="after")
     def _check_git_paths(self) -> Self:
@@ -232,20 +321,90 @@ class GeneralReport(BaseModel):
 
 
 class SlopFinding(BaseModel):
-    tier: Literal["tier1", "tier2"]
-    label: str
-    category: str
-    location: Location
-    violated_invariant: str = Field(min_length=20)
-    proof_command: str = Field(min_length=10)
-    pattern: str
-    task_narrative: str
-    slop_narrative: str
-    why_it_matters: str
-    user_surprise: str
-    existential_justification: str
-    failure_mode: str
-    evidence: list[Evidence] = Field(min_length=1)
+    tier: Literal["tier1", "tier2"] = Field(
+        description="tier1: a concrete bridge-burning pattern — runtime default, "
+        "fallback, suppressed error, mock-pretending-as-proof, or similar "
+        "validation-evasion construct. "
+        "tier2: speculative over-engineering, minor style deviation, or a pattern "
+        "that could become harmful under implausible conditions. "
+        "Low-signal categories are forced to tier2 by validation.",
+    )
+    label: str = Field(
+        description="Short label grounded in the specific bridge-burning construct. "
+        "Look at the actual code pattern: is it a runtime default, a suppressed "
+        "error, a mock without assertion, a conditional import, a boolean mode "
+        "flag? The label should name the construct, not grade it. "
+        "See bridge-burning-red-flags.md for the inventory of recognized patterns.",
+    )
+    category: str = Field(
+        description="Slop pattern category from the anti-slop skill taxonomy. "
+        "Look at policy-index and the bridge-burning inventory for grounded "
+        "categories like: bridge-burning, runtime-control-flow, "
+        "validation-evasion, defaults-and-fallbacks, proof-laundering. "
+        "Forbidden: infra, infrastructure, ci, workflow, config.",
+    )
+    location: Location = Field(
+        description="File and line range where the slop pattern occurs."
+    )
+    violated_invariant: str = Field(
+        min_length=20,
+        description="A specific engineering invariant that is violated by the slop "
+        "pattern. Must name a concrete contract (e.g., 'every error path fails "
+        "loudly, but this code suppresses stderr'). Not a blanket judgment. "
+        "Rejected patterns (blanket claims that name nothing specific): -O, "
+        "optimized mode, clean code, no violation, nothing to report, "
+        "looks (good|correct|fine|right|ok), no issues found, appears correct, "
+        "everything (looks|seems|is).",
+    )
+    proof_command: str = Field(
+        min_length=10,
+        description="Shell command or code path that reproduces the slop pattern. "
+        "Must be reproducible by another agent. "
+        "Example: 'rg '2>/dev/null' quality-control/', "
+        "'probe search 'Optional.*Field' -- src/db/service.py'",
+    )
+    pattern: str = Field(
+        description="Structural pattern name. Ground it in the actual code construct "
+        "(is there a 2>/dev/null it's runtime-default? a mock without assertion? "
+        "a try/except ImportError? a boolean mode flag?). "
+        "See bridge-burning-red-flags.md and runtime-control-flow-red-flags.md "
+        "for the full pattern inventory.",
+    )
+    task_narrative: str = Field(
+        description="What the agent was supposed to build — capsulizes the task "
+        "context so the reader understands the assigned goal.",
+    )
+    slop_narrative: str = Field(
+        description="What the agent actually produced — the bridge-burning "
+        "substitution. Contrast with task_narrative.",
+    )
+    why_it_matters: str = Field(
+        description="Concrete consequence of this slop pattern: silent data loss, "
+        "masked failure, untestable branch, non-deterministic behavior, etc.",
+    )
+    user_surprise: str = Field(
+        description="What the user would observe that would trigger a 'why did this "
+        "happen' reaction. Epistemic: describe the observable surprise, not the "
+        "hypothetical.",
+    )
+    existential_justification: str = Field(
+        description="Why this finding exists. The agent's rationalization for the "
+        "bridge-burning choice (e.g., 'defensive coding', 'graceful degradation', "
+        "'backward compatibility', 'just in case').",
+    )
+    failure_mode: str = Field(
+        description="Which LLM failure mode this slop exploits. "
+        "See the llm-failure-modes skill for the full catalog. "
+        "Use the documented numbered labels (e.g. asymmetric-risk-model (#20), "
+        "false-binary (#7), reward-hacking (#13), epistemic-bottleneck (#4)), "
+        "not invented names.",
+    )
+    evidence: list[Evidence] = Field(
+        min_length=1,
+        description="Supporting evidence proving the slop pattern. At least one "
+        "item required. Should include file-read or diff-snippet showing the "
+        "offending construct.",
+    )
 
     @field_validator("category")
     @classmethod
@@ -292,13 +451,39 @@ class SlopFinding(BaseModel):
 
 class SlopReport(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    schema_version: Annotated[int, Field(ge=1)] = 1
-    report_type: Literal["slop"] = "slop"
-    repo_sha: str = Field(min_length=40, max_length=40)
-    review_scope: list[Path] = Field(min_length=1)
-    findings: list[SlopFinding] = Field(min_length=1)
-    checked_surfaces: list[CheckedSurface]
-    rejected_easy_wins: list[str]
+    schema_version: Annotated[int, Field(ge=1)] = Field(
+        default=1,
+        description="Report format version. Currently 1.",
+    )
+    report_type: Literal["slop"] = Field(
+        default="slop",
+        description="Must be 'slop'. Selects the SlopFinding model for validation.",
+    )
+    repo_sha: str = Field(
+        min_length=40,
+        max_length=40,
+        description="Full git commit SHA being reviewed. Used to verify all paths "
+        "exist in git; also recorded in PR comment metadata.",
+    )
+    review_scope: list[Path] = Field(
+        min_length=1,
+        description="Files examined during review, relative to repo root. "
+        "All must exist in git at repo_sha.",
+    )
+    findings: list[SlopFinding] = Field(
+        min_length=1,
+        description="Slop review findings. At least one required; at least one "
+        "must be substantive (Tier 1 or non-low-signal category).",
+    )
+    checked_surfaces: list[CheckedSurface] = Field(
+        description="Surfaces inspected during review, whether findings were found "
+        "or not. Documents review thoroughness.",
+    )
+    rejected_easy_wins: list[str] = Field(
+        description="Low-signal observations or potential slop patterns the agent "
+        "considered but declined to elevate. Brief reason for each. Documents "
+        "that non-trivial patterns were evaluated, not missed.",
+    )
 
     @model_validator(mode="after")
     def _check_git_paths(self) -> Self:
@@ -366,13 +551,114 @@ _MODEL_BY_TYPE: dict[str, type[GeneralReport | SlopReport]] = {
 
 
 # ---------------------------------------------------------------------------
+# Describe (model self-introspection)
+# ---------------------------------------------------------------------------
+
+
+def _describe_models() -> None:
+    """Print model self-description by introspecting pydantic fields."""
+    reports: list[
+        tuple[str, type[GeneralReport | SlopReport], type[GeneralFinding | SlopFinding]]
+    ] = [
+        ("General Review Report", GeneralReport, GeneralFinding),
+        ("Slop Review Report", SlopReport, SlopFinding),
+    ]
+
+    for title, report_cls, finding_cls in reports:
+        print(f"=== {title} ===")
+        print()
+        print("--- Report Fields ---")
+        _print_fields(report_cls)
+        print()
+        print("--- Finding Fields ---")
+        _print_fields(finding_cls)
+        print()
+        print("--- Shared Types ---")
+        _print_fields(Location)
+        print()
+        _print_fields(Evidence)
+        print()
+        _print_fields(CheckedSurface)
+        print()
+        print("--- Validation Rules ---")
+        print(
+            f"  Low-signal categories (forced to tier2): {sorted(LOW_SIGNAL_CATEGORIES)}"
+        )
+        print(f"  Infra path prefixes (findings cannot target): {INFRA_PREFIXES}")
+        print(
+            f"  Invariant reject patterns (blanket claims): {[p.pattern for p in _INVARIANT_REJECT]}"
+        )
+        print()
+
+
+def _print_fields(model_cls: type[BaseModel]) -> None:
+    for fname, finfo in model_cls.model_fields.items():
+        parts: list[str] = [f"  {fname}"]
+
+        # Required / default
+        if finfo.is_required():
+            parts.append("    REQUIRED")
+        elif finfo.default is not None:
+            parts.append(f"    default={finfo.default!r}")
+
+        # Type annotation
+        ann = finfo.annotation
+        if ann is not None:
+            type_str = str(ann).replace("typing.", "")
+            parts.append(f"    type={type_str}")
+
+        # Constraints from metadata
+        _emit_field_constraints(finfo, parts)
+
+        # Description
+        desc = finfo.description
+        if desc:
+            parts.append(f"    description={desc}")
+        print("\n".join(parts))
+        print()
+
+
+def _emit_field_constraints(finfo: FieldInfo, parts: list[str]) -> None:
+    """Emit constraint lines for a FieldInfo."""
+    constraints: dict[str, str | int] = {}
+
+    # Direct FieldInfo attributes (pydantic v2)
+    for attr in ("min_length", "max_length", "ge", "le", "gt", "lt", "multiple_of"):
+        val = getattr(finfo, attr, None)
+        if val is not None:
+            constraints[attr] = val
+
+    # Annotated metadata
+    for m in finfo.metadata:
+        if hasattr(m, "ge") and m.ge is not None:
+            constraints.setdefault("ge", m.ge)
+        if hasattr(m, "le") and m.le is not None:
+            constraints.setdefault("le", m.le)
+        if hasattr(m, "min_length") and m.min_length is not None:
+            constraints.setdefault("min_length", m.min_length)
+        if hasattr(m, "max_length") and m.max_length is not None:
+            constraints.setdefault("max_length", m.max_length)
+        if hasattr(m, "gt") and m.gt is not None:
+            constraints.setdefault("gt", m.gt)
+        if hasattr(m, "lt") and m.lt is not None:
+            constraints.setdefault("lt", m.lt)
+
+    if constraints:
+        parts.append(f"    constraints={constraints}")
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
 
 def main() -> None:
+    if len(sys.argv) >= 2 and sys.argv[1] == "--describe":
+        _describe_models()
+        sys.exit(0)
+
     if len(sys.argv) < 2:
-        print(f"Usage: uv run {sys.argv[0]} <report.json>")
+        print(f"Usage: uv run {sys.argv[0]} [--describe | <report.json>]")
         sys.exit(1)
 
     result_path = Path(sys.argv[1])

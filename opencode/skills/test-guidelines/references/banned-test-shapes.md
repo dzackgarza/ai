@@ -29,7 +29,7 @@ Variable names in examples are intentionally generic: `result`, `items`, `output
 
 ---
 
-## Try/Catch Ban
+## **[TRY-CATCH-BAN]** Try/Catch Ban
 
 Do not write try/catch/except/rescue blocks in tests or owned runtime code.
 
@@ -46,7 +46,7 @@ The only possible exception is an explicitly approved boundary renderer whose so
 
 ---
 
-## Per-Assertion Review Rubric
+## **[REVIEW-RUBRIC]** Per-Assertion Review Rubric
 
 For each assertion line, classify it:
 
@@ -60,30 +60,30 @@ A test passes review only if its proof-bearing assertions are sufficient without
 
 ---
 
-## Language-Agnostic Banned Shapes
+## **[LANG-AGNOSTIC-BANNED]** Language-Agnostic Banned Shapes
 
 These are banned regardless of language:
-- existence-only assertion
-- visibility-only assertion
-- truthy/non-empty assertion
-- string assertion
-- type-only assertion
-- shape-only assertion
-- no-throw assertion
-- source-text assertion
-- helper-branch assertion
-- boolean branch-forcing assertion
-- mock/spy/call-count assertion
-- snapshot assertion where exact output is not the product
-- import/module-load/constructor assertion
-- status-label assertion
-- log/warning assertion
-- HTTP status-only assertion
-- database count/existence assertion
-- round-trip assertion with shared implementation
-- timing/performance assertion in ordinary tests
-- "no console errors" as sole proof
-- "covered elsewhere" with no exact proof anchor
+- **[LA-EXISTENCE]** existence-only assertion
+- **[LA-VISIBILITY]** visibility-only assertion
+- **[LA-TRUTHY]** truthy/non-empty assertion
+- **[LA-STRING]** string assertion
+- **[LA-TYPE]** type-only assertion
+- **[LA-SHAPE]** shape-only assertion
+- **[LA-NO-THROW]** no-throw assertion
+- **[LA-SOURCE-TEXT]** source-text assertion
+- **[LA-HELPER-BRANCH]** helper-branch assertion
+- **[LA-BOOLEAN-FORCING]** boolean branch-forcing assertion
+- **[LA-MOCK-COUNT]** mock/spy/call-count assertion
+- **[LA-SNAPSHOT]** snapshot assertion where exact output is not the product
+- **[LA-IMPORT]** import/module-load/constructor assertion
+- **[LA-STATUS-LABEL]** status-label assertion
+- **[LA-LOG-WARNING]** log/warning assertion
+- **[LA-HTTP-STATUS]** HTTP status-only assertion
+- **[LA-DB-COUNT]** database count/existence assertion
+- **[LA-ROUND-TRIP]** round-trip assertion with shared implementation
+- **[LA-TIMING-PERF]** timing/performance assertion in ordinary tests
+- **[LA-NO-CONSOLE-ERRORS]** "no console errors" as sole proof
+- **[LA-COVERED-ELSEWHERE]** "covered elsewhere" with no exact proof anchor
 
 For every assertion line, force this question:
 > **"What broken app would still pass this line?"**
@@ -94,7 +94,7 @@ If the answer is "many," ban the line.
 
 ## Python / pytest Banned Shapes
 
-### Existence and non-null
+### **[PY-EXISTENCE]** Existence and non-null
 **Ban:**
 ```python
 def test_result_exists():
@@ -112,7 +112,7 @@ def test_object_has_field():
 *Why banned:* A broken implementation can return `{}`, create an empty file, or attach a junk field.
 *Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### Truthy / non-empty
+### **[PY-TRUTHY]** Truthy / non-empty
 **Ban:**
 ```python
 def test_items_returned():
@@ -129,7 +129,7 @@ def test_response_ok():
 ```
 *Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### String assertions
+### **[PY-STRINGS]** String assertions
 **Ban:**
 ```python
 def test_missing_config_message(tmp_path):
@@ -143,7 +143,7 @@ def test_error_banner(page):
 ```
 *Remediation:* Use structured error types and assert on error kind, not message. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
-### Shape-only assertions
+### **[PY-SHAPE]** Shape-only assertions
 **Ban:**
 ```python
 def test_payload_shape():
@@ -157,7 +157,7 @@ def test_items_are_models():
 ```
 *Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### No-throw tests
+### **[PY-NO-THROW]** No-throw tests
 **Ban:**
 ```python
 def test_operation_does_not_crash():
@@ -168,7 +168,7 @@ def test_config_loads(tmp_path):
 ```
 *Remediation:* Assert on exact output values, not just that the operation did not crash. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
 
-### Source policing
+### **[PY-SOURCE-POLICING]** Source policing
 **Ban:**
 ```python
 def test_no_fallbacks_in_config_source():
@@ -183,7 +183,7 @@ def test_no_type_ignore_comments():
 *Why banned:* This belongs to global QC/static analysis, not project behavior tests.
 *Remediation:* Move source-text assertions to global QC. Test runtime behavior instead. See [Remediation: Source Policing in Tests](bridge-burning-red-flags.md#remediation-source-policing-in-tests).
 
-### Helper branch laundering
+### **[PY-HELPER-BRANCH]** Helper branch laundering
 **Ban:**
 ```python
 def test_existing_config_requires_explicit_values():
@@ -207,7 +207,7 @@ def test_absent_config_uses_defaults():
 *Why banned:* The test passes the boolean that chooses the branch. It does not construct an existing or absent config.
 *Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
 
-### Try/except in tests
+### **[PY-TRY-EXCEPT]** Try/except in tests
 **Ban:**
 ```python
 def test_expected_failure():
@@ -218,7 +218,7 @@ def test_expected_failure():
 ```
 *Remediation:* Use the test framework's structured assertion and assert on error kind. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
-### Mock/spy/call-count
+### **[PY-MOCK-SPY]** Mock/spy/call-count
 **Ban:**
 ```python
 def test_calls_renderer(mocker):
@@ -236,7 +236,7 @@ def test_network_path(monkeypatch):
 
 ## TypeScript / JavaScript Banned Shapes
 
-### Existence / defined / truthy
+### **[TS-EXISTENCE]** Existence / defined / truthy
 **Ban:**
 ```ts
 test("returns result", () => {
@@ -256,7 +256,7 @@ test("module exports function", async () => {
 ```
 *Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### Visibility-only
+### **[TS-VISIBILITY]** Visibility-only
 **Ban:**
 ```ts
 test("editor shell renders", async ({ page }) => {
@@ -273,7 +273,7 @@ test("status is ready", async ({ page }) => {
 *Why banned:* A totally broken app can render a shell and display "ready."
 *Remediation:* Assert on concrete output content, not visibility. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### Status / label / banner assertions
+### **[TS-STATUS-LABEL]** Status / label / banner assertions
 **Ban:**
 ```ts
 test("save shows success", async ({ page }) => {
@@ -283,7 +283,7 @@ test("save shows success", async ({ page }) => {
 ```
 *Remediation:* Assert on the real side effect (file content, database state), not UI labels. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### String assertions
+### **[TS-STRINGS]** String assertions
 **Ban:**
 ```ts
 test("shows error", async ({ page }) => {
@@ -297,7 +297,7 @@ test("throws missing config", () => {
 ```
 *Remediation:* Assert on structured error types, not string messages. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
-### Type-only / shape-only
+### **[TS-TYPE-SHAPE]** Type-only / shape-only
 **Ban:**
 ```ts
 test("returns array", () => {
@@ -312,7 +312,7 @@ test("has html property", () => {
 ```
 *Remediation:* Assert on concrete output values, not type/shape. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### No-throw
+### **[TS-NO-THROW]** No-throw
 **Ban:**
 ```ts
 test("does not throw", () => {
@@ -325,7 +325,7 @@ test("promise resolves", async () => {
 ```
 *Remediation:* Assert on exact output values, not just absence of throw. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
 
-### Source policing
+### **[TS-SOURCE-POLICING]** Source policing
 **Ban:**
 ```ts
 test("does not use any", () => {
@@ -340,7 +340,7 @@ test("no fallbacks", () => {
 });
 ```
 
-### Mocked boundary / browser smoke laundering
+### **[TS-MOCKED-BOUNDARY]** Mocked boundary / browser smoke laundering
 **Ban:**
 ```ts
 test("browser shell renders", async ({ page }) => {
@@ -354,7 +354,7 @@ test("browser shell renders", async ({ page }) => {
 });
 ```
 
-### Spy/call count
+### **[TS-SPY-COUNT]** Spy/call count
 **Ban:**
 ```ts
 test("save calls backend", async () => {
@@ -370,7 +370,7 @@ test("render invoked", async ({ page }) => {
 });
 ```
 
-### Try/catch
+### **[TS-TRY-CATCH]** Try/catch
 **Ban:**
 ```ts
 test("handles bad config", () => {
@@ -387,7 +387,7 @@ test("handles bad config", () => {
 
 ## Rust Banned Shapes
 
-### `is_ok`, `is_some`, length, existence
+### **[RS-IS_OK]** `is_ok`, `is_some`, length, existence
 **Ban:**
 ```rust
 #[test]
@@ -410,7 +410,7 @@ fn items_present() {
 ```
 *Remediation:* Assert on concrete output content against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### Exact string errors
+### **[RS-STRING-ERRORS]** Exact string errors
 **Ban:**
 ```rust
 #[test]
@@ -427,7 +427,7 @@ fn config_panics() {
 ```
 *Remediation:* Assert on structured error variants, not string rendering. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
-### Helper branch proof
+### **[RS-HELPER-BRANCH]** Helper branch proof
 **Ban:**
 ```rust
 #[test]
@@ -444,7 +444,7 @@ fn existing_config_requires_explicit_values() {
 ```
 *Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
 
-### Boolean branch-forcing
+### **[RS-BOOLEAN-FORCING]** Boolean branch-forcing
 **Ban:**
 ```rust
 #[test]
@@ -461,7 +461,7 @@ fn branch_for_absent_config() {
 ```
 *Remediation:* Construct actual config state via real files, not boolean flags. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
 
-### Source policing
+### **[RS-SOURCE-POLICING]** Source policing
 **Ban:**
 ```rust
 #[test]
@@ -472,7 +472,7 @@ fn no_defaults_in_config_source() {
 }
 ```
 
-### Swallowed-error tests
+### **[RS-SWALLOWED-ERROR]** Swallowed-error tests
 **Ban:**
 ```rust
 #[test]
@@ -482,7 +482,7 @@ fn cleanup_does_not_crash_when_file_missing() {
 ```
 *Remediation:* Assert on specific error variants or output values, not just absence of panic. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
 
-### Process lifecycle source-shape test
+### **[RS-PROCESS-LIFECYCLE]** Process lifecycle source-shape test
 **Ban:**
 ```rust
 #[test]
@@ -497,7 +497,7 @@ fn renderer_uses_kill_on_drop() {
 
 ## Bash / Shell Banned Shapes
 
-### Existence-only
+### **[SH-EXISTENCE]** Existence-only
 **Ban:**
 ```bash
 test -f "$output_file"
@@ -506,7 +506,7 @@ test -f "$output_file"
 ```
 *Remediation:* Assert on concrete output content (diff, structured JSON). See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### Grep string assertions
+### **[SH-GREP-STRINGS]** Grep string assertions
 **Ban:**
 ```bash
 grep -q "ready" "$log_file"
@@ -515,7 +515,7 @@ grep -q "missing runtime.command" "$stderr_file"
 ```
 *Remediation:* Assert on structured output with jq, not grep strings. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
 
-### Status-only
+### **[SH-STATUS]** Status-only
 **Ban:**
 ```bash
 curl -s "$url" >/tmp/response
@@ -526,7 +526,7 @@ test "$status" = 200
 ```
 *Remediation:* Assert on concrete response content with structured checks. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
 
-### Suppression / fallback
+### **[SH-SUPPRESSION]** Suppression / fallback
 **Ban:**
 ```bash
 command_under_test 2>/dev/null || echo "ok"
@@ -534,7 +534,7 @@ grep -q pattern file || true
 run_check >/dev/null 2>&1
 ```
 
-### Source policing
+### **[SH-SOURCE-POLICING]** Source policing
 **Ban:**
 ```bash
 ! grep -R "unwrap_or" src

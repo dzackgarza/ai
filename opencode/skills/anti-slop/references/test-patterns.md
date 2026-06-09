@@ -14,15 +14,13 @@ meta-testing, fake-data confidence, inflated suites, and QC bypasses.
 
 ## Table of Contents
 
-- Content-Free Verification
+- **[ CONTENT-FREE ]** Content-Free Verification
 
-- Tautological Testing
+- **[ TAUTOLOGICAL ]** Tautological Testing
+- **[ MOCK-FIRST ]** Mock-First Evasion
+- **[ MASK-FAILURE ]** Masking Over Failure
 
-- Mock-First Evasion
-
-- Masking Over Failure
-
-## Content-Free Verification
+## **[ CONTENT-FREE ]** Content-Free Verification
 
 Tests that execute code but fail to verify meaningful output.
 They check for the presence of *something* rather than the correctness of *the thing*.
@@ -56,7 +54,7 @@ def test_items():
     assert items[0] == ExpectedItem(...)
 ```
 
-## Tautological Testing
+## **[ TAUTOLOGICAL ]** Tautological Testing
 
 Tests that merely prove a system is internally consistent, rather than correct relative
 to an external oracle or ground truth.
@@ -79,7 +77,7 @@ def test_group_order():
     assert G.order() == 120
 ```
 
-## Mock-First Evasion
+## **[ MOCK-FIRST ]** Mock-First Evasion
 
 Agents frequently use `unittest.mock` to bypass the actual boundaries of a system,
 creating tests that run fast but prove nothing about how the repository interlocks with
@@ -100,7 +98,7 @@ def test_fetch(mock_get):
 If you must test the boundary, test how the system interprets a real external response,
 not how well you can simulate `requests`.
 
-## Masking Over Failure
+## **[ MASK-FAILURE ]** Masking Over Failure
 
 When a refactor introduces a regression, agents often attempt to hide the failure rather
 than fixing the implementation.
@@ -119,13 +117,13 @@ Watch for:
 The implementation must rise to meet the tests; tests must not be relaxed to accommodate
 the implementation.
 
-## Helper-Level Proof Substitution (Helper-Branch Proof Laundering)
+## **[ HELPER-PROOF ]** Helper-Level Proof Substitution (Helper-Branch Proof Laundering)
 
 Replacing a global or boundary-crossing contract with a local helper unit proof that is easy to satisfy.
 
 The agent tests a small helper function in isolation (proving only that the helper's internal logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering: the helper test passes, but the actual entrypoint remains unverified. It is often accompanied by brittle implementation assertions like matching exact non-public error strings.
 
-### Red Flags in Helper Tests
+### **[ HELPER-RED-FLAGS ]** Red Flags in Helper Tests
 
 1. **Helper-local proof after boundary-level feedback:** Boundary feedback needs boundary proof. If the feedback is "startup config semantics are wrong," testing `require_or_default` is insufficient.
 2. **Defaults existing inside a required-value pathway:** A helper named something like `require_or_default` indicates a suspicious conflation of required config values and default fallbacks. If a config exists and the value is required, there should be no fallback value in scope. The presence of a fallback closure in the same helper that enforces required explicit values preserves a slop surface, making it easy to call with the wrong boolean and default a required value.
