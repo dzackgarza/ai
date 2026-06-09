@@ -43,9 +43,9 @@ CI workflow triggers on PR
         4. Fixes report to match schema
         5. Runs `quality-control/ci/submit-candidate` (no arguments)
         6. If exit 0 → done. If non-zero → read error (has FIX: guidance) → fix same file → goto 5
-  → submit-candidate calls `uv run check-report.py` (pydantic validation)
+  → submit-candidate calls `uv run check-report.py validate` (pydantic validation)
   → On validation pass: cp to .review-report-artifact.json,
-    then runs `uv run render-review-comment.py` to produce .review-report-comment.md
+    then runs `uv run check-report.py render` to produce .review-report-comment.md
   → On validation fail: print errors with FIX: guidance, exit 1
   → harness checks .review-report-artifact.json exists after opencode exits
       - exists → read .review-report-comment.md, extract score via regex
