@@ -16,8 +16,8 @@ if [ "${1:-}" = "--help" ]; then
 submit-candidate — validate and submit a review report
 
 Usage:
-  .agents/ci/submit-candidate            # validate and submit (default)
-  .agents/ci/submit-candidate --help     # print this message
+  quality-control/ci/submit-candidate            # validate and submit (default)
+  quality-control/ci/submit-candidate --help     # print this message
 
 Report format (JSON written to .agents/review-runner/candidates/submitted.json):
 

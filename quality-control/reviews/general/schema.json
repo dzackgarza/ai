@@ -20,6 +20,10 @@
     "clean code",
     "all.*(other|remaining).*(passed|clean|fine|acceptable)",
     "no.*(bridge.burning|runtime.control.flow).*violation",
-    "nothing (to |)report"
+    "nothing (to |)report",
+    "full repository sweep",
+    "full.*sweep.*(excluding|excluded)",
+    "excluding forbidden",
+    "excluded targets"
   ]
 }

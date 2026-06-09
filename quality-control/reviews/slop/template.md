@@ -68,11 +68,11 @@ The JSON must conform to the following schema precisely:
   "schema_version": 1,
   "report_type": "slop",
   "repo_sha": "{{REPO_SHA}}",
-  "review_scope": {
-    "changed_files": [],
-    "excluded_files": [],
-    "required_surfaces": []
-  },
+  "review_scope": [
+    "src/main.ts",
+    "src/utils.ts",
+    "tests/test_main.ts"
+  ],
   "findings": [
     {
       "tier": "tier1",
@@ -121,7 +121,7 @@ The JSON must conform to the following schema precisely:
 ## Submitting Your Report
 
 Write your report to `.agents/review-runner/candidates/submitted.json`.
-Then run `.agents/ci/submit-candidate` (no arguments).
+Then run `quality-control/ci/submit-candidate` (no arguments).
 
 If the script exits 0, your report was accepted and you are done.
 If it exits non-zero, read the errors, fix the SAME file, and re-run the script.
