@@ -1143,6 +1143,64 @@ PR remains incomplete unless original task was only to document/triage
   - metadata as progress
   - future-work as resolution
 
+### 21. No hypothetical-path code
+
+Do not add code (or propose adding code) for a failure path that has never been observed, tested, or reported.
+
+The wrong gradient: "This code could fail in scenario X, so add a fallback/guard/default for X." This converts absence-of-evidence into code — the failure path exists only in the reviewer's imagination, and the added code introduces branches, testing obligations, and maintenance surface for a world that does not exist.
+
+The correct gradient: assert invariants at the boundary, fail loudly outside happy paths. If the failure is later observed, handle it then.
+
+- **Bad finding:**
+```text
+WARNING: scripts/scaffold-sandbox.sh runs sudo without checking whether sudo is
+available or whether the user has passwordless sudo. In CI pipelines, headless
+containers, or locked-down environments, the script stalls on a password prompt.
+
+Remedy: Use sudo -n to test non-interactive availability, or fall back to a
+user-writable location when /var/sandbox is inaccessible.
+```
+  - Why it is wrong: the script is a dev setup tool that has never stalled in any environment. The finding proposes adding fallback code (passwordless sudo check, alternate writable directory) for scenarios no one has ever hit. The correct response is nothing until the failure is observed.
+
+- **Better disposition:**
+```text
+This script runs on this system only. It has never failed due to sudo
+availability. If it ever does, the fix is an explicit assertion
+(sudo -v at the top, fail loudly) — not a fallback path.
+```
+
+- **What this burns:**
+  - speculative fallback code
+  - cargo-cult review findings
+  - pre-emptive defensive guards
+  - "what if" branches masquerading as reliability improvements
+  - enterprise deployment-grace degradation in bespoke software
+  - adding code for environments that have never run the software
+  - the entire genre of "this could fail in theory" review feedback
+
+### 22. No constants in runtime code
+
+Hardcoded constants in source files are defaults-in-waiting — even if nothing currently references them, their presence signals that a tunable parameter lives in code rather than config, and a future agent will treat them as a fallback to `unwrap_or` against.
+
+- **Rule:** Zero named constants in runtime source code. Every behavioral parameter belongs in a unified TOML config file (one source of truth). If the project is part of a larger ambient project, that project's config is the canonical source. If a parameter cannot reasonably live in config (rare — essentially: flags that define what the program *is*, not how it *behaves*), supply it as an explicit CLI flag.
+
+- **Rationale:** A named constant (`RECOMMENDED_SYNC_RECIPE`, `DEFAULT_TIMEOUT_MS`, `MAX_RETRIES`) is indistinguishable from a default. It encodes a value the author thought was reasonable — exactly the kind of implicit decision that belongs in a config file where the user can see and change it. In pre-launch bespoke software there are no consumers depending on these values; they are code smell from agent habit, not engineering necessity.
+
+- **True invariants (permitted):** Values that define the system's identity and cannot meaningfully differ — `APP_NAME`, `VERSION`, `SCHEMA_VERSION`, enum discriminant values, mathematical constants (PI, E). These are not behavioral parameters; they are fixed facts about the software. Moving them to config would be cargo-culting.
+
+- **Test:** *Would a different setup, machine, user, project, or point in time ever want a different value?* If yes, it belongs in config as a required field (no default).
+
+- **Enforcement:** Review findings should flag every named constant in runtime code as a policy violation, regardless of whether anything references it. Dead or alive, the constant is a behavioral parameter waiting to be misused.
+
+- **What this burns:**
+  - `RECOMMENDED_*` and `DEFAULT_*` constants
+  - dead constants left in place as "harmless"
+  - numerical/string literals elevated to named constants as a cleanup pretext while keeping them in code
+  - "suppressed per bespoke policy" laundering of constants
+  - constants as implicit fallback targets for future `unwrap_or`
+  - parameter accretion through named constants
+  - the entire "it's not a default, it's a constant" evasion
+
 ---
 
 ## Policy Exception Protocol

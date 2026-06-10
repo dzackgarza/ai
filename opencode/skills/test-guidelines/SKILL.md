@@ -753,11 +753,7 @@ Red flags:
 - test would pass even if the application stopped calling the helper;
 - the helper did not exist before the review.
 
-Correct response:
-- reconstruct the original proof burden;
-- test the source-of-truth boundary;
-- keep helper tests only as supplementary unit coverage;
-- do not accept helper coverage as resolution of boundary feedback.
+Correct response: See `bridge-burning-red-flags.md` → **Remediation: Boundary Test Bypass**.
 
 * * *
 

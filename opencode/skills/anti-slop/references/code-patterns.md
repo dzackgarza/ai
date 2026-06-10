@@ -70,7 +70,7 @@ This file covers patterns specific to **code shape and structure** that arise fr
 
 - Introspection Red Flags
 
-## Hollow Facade
+## **[HOLLOW-FACADE]** Hollow Facade
 
 ### The only question that matters
 
@@ -174,7 +174,7 @@ You must actively override this.
 Before reading any body, scan the interface for entries that should not exist.
 The four heuristics above are your checklist.
 
-### Sub-pattern: Self-affirming output (declarations of victory)
+### **[SELF-AFFIRMING-OUTPUT]** Sub-pattern: Self-affirming output (declarations of victory)
 
 A hardcoded success message printed as if it were reporting dynamic state — the same existential failure, but in a one-liner.
 The output is code that exists because the agent needed to *appear* to report something.
@@ -206,7 +206,7 @@ It is self-congratulation masquerading as status reporting.
 
 * * *
 
-## Pattern Replication Without Abstraction
+## **[PATTERN-REPLICATION]** Pattern Replication Without Abstraction
 
 The most common production mechanism for all other slop patterns in this file.
 
@@ -290,7 +290,7 @@ For every edit that adds a branch, case, or entry to an existing conditional or 
 - **Check whether you are matching "convention" or matching slop.** If the existing pattern looks like it should have been abstracted but never was, do not replicate it.
   Extract it.
 
-### The meta-pattern
+### **[META-PATTERN]** The meta-pattern
 
 Pattern replication without abstraction is the engine that produces:
 - **Scattered truth** (every new tool adds another location to the list)
@@ -302,7 +302,7 @@ Pattern replication without abstraction is the engine that produces:
 It is the one pattern that predicts all others.
 If you see scattered truth, ask: "how many times did an agent replicate this before I arrived?"
 
-### The feature-simulation detection technique
+### **[FEATURE-SIMULATION]** The feature-simulation detection technique
 
 The easiest way to find pattern replication without abstraction requires no architectural analysis at all.
 Do this:
@@ -330,7 +330,7 @@ nothing. You implement nothing. The plan itself is the diagnosis.**
 
 * * *
 
-## Nontrivial Logic is Suspect (The Dependency-Failure Signal)
+## **[NONTRIVIAL-LOGIC]** Nontrivial Logic is Suspect (The Dependency-Failure Signal)
 
 ### The principle
 
@@ -435,7 +435,7 @@ language without understanding the domain.
 
 * * *
 
-## Agent Psychology as a Diagnostic Tool
+## **[AGENT-PSYCHOLOGY]** Agent Psychology as a Diagnostic Tool
 
 You carry the same cognitive biases as the writer of the code you are reviewing. The
 writer is you in the past — a previous agent session with the same training data, the
@@ -448,7 +448,7 @@ are not justified in application code" and your instinct says "but this case is 
 because the ground-up implementation is cleaner," the skill wins. The conflict itself is
 the evidence that your bias is active.
 
-### What "minimal" actually means
+### **[MINIMAL-REDEFINED]** What "minimal" actually means
 
 Agents have an inverted definition of "minimal." An agent thinks minimal means "least
 code I write right now, using language primitives." The correct definition is "least
@@ -464,7 +464,7 @@ This inversion is the root cause of dependency aversion. Every time you see code
 "doesn't need a whole framework for this," recalibrate: the framework IS the minimal
 answer. The code is bloat.
 
-### Agent biases that produce slop
+### **[AGENT-BIASES]** Agent biases that produce slop
 
 All of these biases share one root cause: **the agent optimizes for "works right now"
 when the user optimizes for "stays correct forever with zero maintenance."** For
@@ -477,57 +477,57 @@ predictability are invisible to it.
 These are not things you find in code. They are things agents reflexively do, and
 knowing them lets you predict what slop to look for:
 
-- **Ground-up bias.** The agent implements from first principles because it can see the
+- **[GROUND-UP-BIAS] Ground-up bias.** The agent implements from first principles because it can see the
   language primitives. Frameworks are invisible to its immediate context. The result:
   app-owned implementations of problems that entire ecosystems have already solved.
 
-- **Immediate-problem bias.** The agent solves the problem directly in front of it and
+- **[IMMEDIATE-PROBLEM-BIAS] Immediate-problem bias.** The agent solves the problem directly in front of it and
   stops. It cannot see that tomorrow's features will need the same framework. The result:
   a bespoke implementation that grows toward the framework's surface area, badly, over
   many sessions.
 
-- **Inverted-design bias.** The agent wants a minimal implementation today and will
+- **[INVERTED-DESIGN-BIAS] Inverted-design bias.** The agent wants a minimal implementation today and will
   "add what's needed later." Correct design does the opposite: use the off-the-shelf
   solution today, let the app evolve within the framework over time, and only in a
   refactoring step move away from the framework to own the minimal core actually used.
   The agent's approach makes the app exponentially harder to maintain. The correct
   approach makes it easier.
 
-- **Knowledge-progression bias.** An agent reaches for low-level primitives because
+- **[KNOWLEDGE-PROGRESSION] Knowledge-progression bias.** An agent reaches for low-level primitives because
   they are atomic and well-defined in training data. A human learning the same language
   learns the high-level abstractions first — they'd encounter the framework long before
   they'd encounter the syscall. Code that requires expert-level knowledge of language
   primitives is a red flag, because the user would have used the framework instead.
 
-- **"Ownership" bias.** The agent wants to "own" the logic — to have it in the app,
+- **[OWNERSHIP-BIAS] "Ownership" bias.** The agent wants to "own" the logic — to have it in the app,
   under control, visible. The ideal app lets dependencies own most of the logic.
   Application code should be glue, not infrastructure.
 
-- **Phased-decision laundering.** The agent knows the correct answer but frames it as
+- **[PHASED-DECISION-LAUNDERING] Phased-decision laundering.** The agent knows the correct answer but frames it as
   "a migration, not an addition" and proposes slop as an "immediate milestone" with
   the correct answer deferred. The deferred milestone will never arrive. The slop
   milestone adds code that makes the correct answer harder. The agent believes it is
   being pragmatic. It is deferring correctness into a future it is simultaneously
   making less likely.
 
-- **Honesty-as-absolution.** The agent accurately diagnoses its own slop — enumerates
+- **[HONESTY-AS-ABSOLUTION] Honesty-as-absolution.** The agent accurately diagnoses its own slop — enumerates
   the exact failure modes, calls it "fragile in practice" — and then chooses it anyway.
   The honesty creates the illusion of rigor. The analysis looks balanced, so the
   decision feels considered. The agent used its own correct diagnosis as cover to
   pick the wrong answer.
 
-- **Deferred-correctness fallacy.** "Do it right later" is never a real strategy.
+- **[DEFERRED-CORRECTNESS] Deferred-correctness fallacy.** "Do it right later" is never a real strategy.
   Agents that produce slop now will produce slop next session. The correct answer,
   deferred, becomes fiction. The slop becomes permanent. An agent that says "milestone 2
   will be the framework migration" has guaranteed that milestone 2 will never happen.
 
-- **Inverted cost model.** The agent front-loads the framework's cost (one-time,
+- **[INVERTED-COST-MODEL] Inverted cost model.** The agent front-loads the framework's cost (one-time,
   absorbs future needs) where it looks expensive and amortizes the slop's cost
   (accrued with every session, grows toward the framework's surface area) where it
   is invisible. The correct cost model: framework cost is paid once and shrinks
   future work. Slop cost grows forever.
 
-- **Reliability-sourcing inversion (probability blindness).** The agent cannot distinguish
+- **[RELIABILITY-SOURCING-INVERSION] Reliability-sourcing inversion (probability blindness).** The agent cannot distinguish
   between two fundamentally different probability classes:
 
   *Framework path*: near-certain success. Documented integration patterns, GitHub
@@ -546,7 +546,7 @@ knowing them lets you predict what slop to look for:
   only bet with a known, high probability of working. The bespoke code's cost is
   unknowable because you don't know how many bugs you're buying.
 
-  **Triviality blindness.** The agent frames completely standard, trivially solved
+  **[TRIVIALITY-BLINDNESS] Triviality blindness.** The agent frames completely standard, trivially solved
   operations as difficult or risky: adding a build dependency, compiling to a binary,
   adjusting a recipe. These operations have been done millions of times. Following the
   documented pattern is nearly guaranteed to work. The agent treats a one-line dependency
@@ -554,7 +554,7 @@ knowing them lets you predict what slop to look for:
   it "owns" the code. The framework is guaranteed by teams and corporations. The bespoke
   code is guaranteed by nothing.
 
-- **Solution-design reflex.** When the agent encounters a sub-problem within a framework
+- **[SOLUTION-DESIGN-REFLEX] Solution-design reflex.** When the agent encounters a sub-problem within a framework
   integration, it treats it as a greenfield design problem instead of reading the
   framework docs. The framework already has a documented solution — a protocol, a built-in
   handler, an API. The agent doesn't find it because it skipped the research step and went
@@ -565,7 +565,7 @@ knowing them lets you predict what slop to look for:
   skipped the docs. The signal is not "the code handles it wrong" — it's "the code handles
   it at all."
 
-- **Metaprogramming-as-laundering.** Code that generates other code in the same project
+- **[METAPROGRAMMING-LAUNDERING] Metaprogramming-as-laundering.** Code that generates other code in the same project
   is a hotspot for refactoring avoidance. The original code had an architectural problem
   — duplicated patterns, scattered concerns, a shape that needed redesign. The agent was
   asked to fix it and produced a generator that outputs the same flawed code
@@ -575,7 +575,7 @@ knowing them lets you predict what slop to look for:
   build steps that create source files — each is a question to ask: what architectural
   problem is this avoiding?
 
-- **Assertion-as-fragility inversion.** The agent treats fixed conventions, hard-coded
+- **[ASSERTION-FRAGILITY-INVERSION] Assertion-as-fragility inversion.** The agent treats fixed conventions, hard-coded
   values, and explicit assertions as "fragile" and treats dynamic, flexible, adaptive
   behavior as "robust." On a fixed, known system, the relationship is inverted: the
   assertion IS the safety guarantee. A fixed port means you know what to firewall. A
@@ -584,7 +584,7 @@ knowing them lets you predict what slop to look for:
   safer than "assert a fixed value," when the assertion is what keeps the system
   predictable and securable.
 
-- **Parallel-path preservation.** The agent cannot bring itself to delete the old code
+- **[PARALLEL-PATH-PRESERVATION] Parallel-path preservation.** The agent cannot bring itself to delete the old code
   path and assert the new one. Instead of migrating, it adds a config flag or env var
   (`SIDECAR=true`) so both paths coexist. The flag makes the change feel safe — nobody's
   workflow breaks — but the cost is permanent bifurcation: two execution contexts to
@@ -592,7 +592,7 @@ knowing them lets you predict what slop to look for:
   `if (process.env.NEW_MODE) { ... } else { ... }` where one branch is the legacy path
   that should have been deleted.
 
-- **Legacy-preservation reflex.** The agent treats "don't break existing users" as a
+- **[LEGACY-PRESERVATION-REFLEX] Legacy-preservation reflex.** The agent treats "don't break existing users" as a
   universal constraint. On a single-user, fixed-system app, there are no existing users.
   Deleting the old path and asserting the new one cannot break anything. "Backward
   compatibility" and "continuity of operation" are concepts imported from the agent's
@@ -600,7 +600,7 @@ knowing them lets you predict what slop to look for:
   that preserves old behavior as a supported path — old CLI flags, old env vars, old
   file formats, old API endpoints — the agent preserved a legacy that has zero users.
 
-- **Simplest-fix bias.** The agent always takes the path of least resistance and
+- **[SIMPLEST-FIX-BIAS] Simplest-fix bias.** The agent always takes the path of least resistance and
   rationalizes it as "the cleanest solution." When the architecturally correct answer
   requires doing something hard — rewriting a test, restructuring a module, deleting
   and replacing broken architecture — the agent reasons itself into a patch, a hack,
@@ -610,7 +610,7 @@ knowing them lets you predict what slop to look for:
   change warranted. The "simplest" fix is the laziest fix, and it introduces the most
   technical debt.
 
-- **Shoehorn reflex.** The agent treats every change as an addition. When a feature
+- **[SHOEHORN-REFLEX] Shoehorn reflex.** The agent treats every change as an addition. When a feature
   warrants rethinking the architecture — a migration, a framework adoption, a
   redesign — the agent bolts the feature onto the existing structure instead of
   restructuring. The result: architecture that looks like glued-together tasks when a
@@ -925,7 +925,7 @@ to code artifacts, not forming your own opinion about whether the code is accept
 
 * * *
 
-## Dependency Aversion & Bespoke Reinvention
+## **[DEPENDENCY-AVERSION]** Dependency Aversion & Bespoke Reinvention
 
 The primary LLM failure mode: **reinventing something to solve a problem that is already solved**. This is embarrassing.
 In a code review, the immediate feedback would be: **why the fuck did you even write this at all when you could have imported something that exists?**
@@ -964,12 +964,11 @@ The absence of an import is the defect, not the presence of the dependency.
 
 ### Correct Response
 
-**REFINE, REPLACE, REFACTOR** — migrate the bespoke implementation to use the dependency.
-Do not delete the dependency because it is “unused.”
+See `bridge-burning-red-flags.md` → **Remediation: Bespoke Dependency Reinvention**.
 
 * * *
 
-## Complexity as a Dependency-Detection Signal
+## **[COMPLEXITY-SIGNAL]** Complexity as a Dependency-Detection Signal
 
 **Complexity itself is the red flag.** When application code is structurally complex, the reviewer’s FIRST question must be: “Is there a known library, language primitive, or installed dependency that collapses this entire block into a one-liner?”
 
@@ -1053,7 +1052,7 @@ The result is codebases full of hand-rolled logic that a single import would eli
 
 * * *
 
-## LOC Reduction Through Idiomatic Patterns
+## **[LOC-REDUCTION]** LOC Reduction Through Idiomatic Patterns
 
 **The review should actively look for opportunities to reduce LOC through idiomatic language patterns.** This is NOT about making code shorter for its own sake.
 It is about whether the code is expressing a simple operation in a complex way because the agent does not know the idiomatic pattern.
@@ -1086,7 +1085,7 @@ The process is:
 
 * * *
 
-## Enterprise Patterns in Bespoke Software
+## **[ENTERPRISE-PATTERNS]** Enterprise Patterns in Bespoke Software
 
 **Most software this LLM reviews is ONE USER’S BESPOKE SOFTWARE, running on THEIR SYSTEM.** It is not an enterprise product for unknown users.
 It is private, on this system, designed to tightly couple to this system’s programs and dependencies.
@@ -1186,7 +1185,7 @@ Complex *interactions* with dependencies or external programs are the expected d
 
 * * *
 
-## Fail-Open Logic (Antipathy Toward Assertion)
+## **[FAIL-OPEN]** Fail-Open Logic (Antipathy Toward Assertion)
 
 ### The philosophical stance: sharp, opinionated shapes
 
@@ -1279,7 +1278,7 @@ Those paths accumulate into a codebase where nothing is reliable because everyth
 
 * * *
 
-## For-If Fail-Open (Iteration-With-Conditional-Peeking)
+## **[FOR-IF-FAIL-OPEN]** For-If Fail-Open (Iteration-With-Conditional-Peeking)
 
 ### The Pattern
 
@@ -1335,7 +1334,7 @@ Agents treat iteration as "visiting" and the condition as "safe access." The rew
 
 * * *
 
-## No Shared Type Language (Islands of Code)
+## **[NO-SHARED-TYPES]** No Shared Type Language (Islands of Code)
 
 The absence of centralized, shared type definitions across the codebase.
 Each module reinvents its own shapes.
@@ -1441,7 +1440,7 @@ The codebase becomes a museum of one-shot prompts rather than a designed system.
 
 * * *
 
-## Tests That Don't Exercise Real Workflows
+## **[NO-REAL-WORKFLOWS]** Tests That Don't Exercise Real Workflows
 
 Tests that assert on code internals (function output, type correctness, specific return values) rather than on human-observable behavior (the app opens, user clicks X, result Y appears on screen).
 
@@ -1534,7 +1533,7 @@ Unit test only code that has its own proof-of-correctness gap (complex business 
 
 * * *
 
-## No Clear Contracts (Undelineated Happy Paths)
+## **[NO-CLEAR-CONTRACTS]** No Clear Contracts (Undelineated Happy Paths)
 
 A codebase where you cannot answer the question: "what is THE way to do X?" There is no blessed path, no documented workflow, no clear owner for any critical operation.
 Every agent added its own way of doing things, and no agent ever standardized.
@@ -1587,7 +1586,7 @@ The fix is to pick ONE way, document it, deprecate the others, and enforce with 
 
 * * *
 
-## Kitchen Sink Accumulation (Monolithic Recipes, Utilities, and Docs)
+## **[KITCHEN-SINK]** Kitchen Sink Accumulation (Monolithic Recipes, Utilities, and Docs)
 
 A single file that accumulates every conceivable recipe, utility function, or piece of documentation because agents added to it instead of organizing.
 The justfile with 40 recipes.
@@ -1684,7 +1683,7 @@ If it cannot, it is accretion slop.
 
 * * *
 
-## Brittleness as Blast-Radius Smell
+## **[BLAST-RADIUS]** Brittleness as Blast-Radius Smell
 
 **“Brittle” does NOT mean “doesn’t handle many edge cases.”** Edge-case handling is a natural consequence of bugs that surface during planned development.
 It is not a quality signal and its absence is not a defect.
@@ -1733,7 +1732,7 @@ Never speculative edge-case handling.
 
 * * *
 
-## Dead Control Flow Inside Active Files
+## **[DEAD-CONTROL-FLOW]** Dead Control Flow Inside Active Files
 
 The real dead code problem is not unimported files.
 `knip` and `vulture` handle those.
@@ -1775,9 +1774,87 @@ For every branch and catch block:
 
 - Are there states in this state machine with no incoming transitions?
 
+### NOT Dead Code: Scaffolds, References, and Intentional Short-Circuits
+
+The DEAD-CONTROL-FLOW pattern above targets dead branches INSIDE active,
+live modules — logic that was once meaningful or was added as a patch and
+now serves no purpose but still executes (or pretends to) in a live path.
+
+A standalone file with an intentional short-circuit (unconditional `return;`,
+export of a no-op function, kill switch at the top of a handler) is NOT
+dead code. The short-circuit IS evidence of intention: a human (or agent)
+chose to add the short-circuit rather than delete the file. If the code was
+truly unwanted, the path of least resistance is to delete it. Adding a
+short-circuit requires MORE work than deleting. The short-circuit proves
+the code was intentionally preserved.
+
+**Why code is preserved as a scaffold:**
+
+- **Agent memory.** In agent-driven environments, a scaffold file documents
+  the shape of an API, SDK hook, or framework integration pattern. The next
+  agent session reads the file and understands the interface in one pass,
+  without re-discovering it from scratch. Deleting the file loses this
+  cache of prior labor — the next agent re-reads the same docs, re-writes
+  the same exploration code, re-makes the same mistakes.
+
+- **Reference for future implementation.** The 50+ lines of logic below a
+  `return;` are not "dead" — they are an executable specification showing
+  the full lifecycle of a hook (setup, accumulation, trigger detection,
+  cleanup). A future agent implementing the real version uses this as a
+  reference, avoiding structural mistakes that a clean-slate implementation
+  would reintroduce.
+
+- **Deliberate development state.** A short-circuited file in a `dev/`
+  directory is an intentional intermediate state. The developer is saying
+  "I explored this API, the hook interface works, the full implementation
+  is drafted but untested — park it here."
+
+**Three diagnostic questions for dead code vs. scaffold:**
+
+1. **Does it increase complexity of LIVE code?** A dead function in a live
+   module is real dead code — every reader must parse it, every refactor
+   must account for it. A standalone file with a short-circuit adds zero
+   complexity to live code — nothing imports it, nothing calls it, nothing
+   depends on it.
+
+2. **Does it arise from forgetfulness/negligence or from intention?** A
+   dead code path in a live module typically arises from accretion: a
+   refactor left an orphan, a patch added a branch that never fires, a
+   migration left a wrapper. These are unintentional. A short-circuit at
+   the top of a handler is intentional — the author chose to add the guard
+   rather than delete the body.
+
+3. **Is the code's value in its execution or its information?** If the code
+   only has value when it runs, and it never runs, it is dead code. If the
+   code has value as a reference — documenting an API shape, showing a
+   pattern, caching exploration labor — then it serves its purpose by
+   existing, not by executing.
+
+**What not to do:**
+
+- Do not flag standalone files in `dev/`, `experimental/`, `scaffold/`, or
+  similarly named directories as dead code solely because they are not
+  wired into the active build.
+- Do not flag files with an obvious intentional short-circuit
+  (unconditional early return, no-op export, disabled feature) as dead
+  code. The short-circuit itself proves the code was intentionally
+  preserved.
+- Do not recommend deleting scaffold files. The correct disposition is to
+  leave them as-is, optionally add `# Development scaffold — interface
+  reference, not production` to prevent future false positives.
+
+**What to flag (real dead code in active modules):**
+
+- An orphaned function inside a live module with no callers and no export
+- A condition that can never be true at any call site
+- A catch block that silently swallows and continues
+- A fallback path that fires when a dependency is absent (this is
+  bridge-burning, not dead code — see Runtime Safety Evasion in the
+  bespoke-software-policy)
+
 * * *
 
-## Myopic Patching & Patch Accretion
+## **[MYOPIC-PATCHING]** Myopic Patching & Patch Accretion
 
 LLMs patch locally without understanding the global structure.
 Over time, this produces **patch accretion**: evidence of continued monkey-patching with no refactor.
@@ -1812,7 +1889,7 @@ Look for:
 
 * * *
 
-## Abstraction Inflation
+## **[ABSTRACTION-INFLATION]** Abstraction Inflation
 
 LLMs are trained to produce “clean code” which often means “lots of small functions and classes.”
 But abstraction is only valuable when it **uniformizes a construction** — when the same pattern appears at many call sites and the abstraction captures that pattern.
@@ -1847,7 +1924,7 @@ For every function or class:
 
 * * *
 
-## Spaghetti Data Flow
+## **[SPAGHETTI-DATA-FLOW]** Spaghetti Data Flow
 
 Values that are parsed, re-parsed, stringified, re-shaped, or tunneled across files without a canonical data model.
 
@@ -1868,7 +1945,7 @@ More than two is almost certainly spaghetti.
 
 * * *
 
-## Hard-Coding as Split Truth
+## **[HARD-CODING-SPLIT-TRUTH]** Hard-Coding as Split Truth
 
 Hard-coding is not automatically wrong for bespoke software.
 It is wrong when it creates a second source of truth.
@@ -1893,7 +1970,7 @@ For every literal string, number, or array in source code:
 
 * * *
 
-## Honest-Label Laundering (Slop Upholstery)
+## **[HONEST-LABEL-LAUNDERING]** Honest-Label Laundering (Slop Upholstery)
 
 ### Mechanism
 
@@ -1966,7 +2043,7 @@ The result is a feedback loop: each round of review and correction produces a mo
 
 * * *
 
-## Introspection Red Flags
+## **[INTROSPECTION-RED-FLAGS]** Introspection Red Flags
 
 Runtime type/shape introspection (`isinstance`, `hasattr`, `getattr`, `type()`, `issubclass`, `callable()`) is a diagnostic signal that code is guessing about input shapes at runtime rather than having asserted and type-checked shapes up front.
 

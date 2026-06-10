@@ -110,7 +110,7 @@ Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, 
 | Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `quality-control`, `test-guidelines` |
 | Debugging failures | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
 | Adding local QC/checks | `quality-control` first |
-| Using Jules for review | `jules`, `jules/references/anti-slop-issue-review.md`; do not use Jules for immediate remediation |
+| Using Jules for review | `jules`, `jules/references/anti-slop-report-review.md`; do not use Jules for immediate remediation |
 
 # Serena Symbolic Code Tools: MANDATORY for All Code Operations
 

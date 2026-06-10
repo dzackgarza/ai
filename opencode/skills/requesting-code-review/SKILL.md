@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [code-review, security, verification, quality, pre-commit, auto-fix]
-    related_skills: [subagent-driven-development, writing-plans, test-driven-development, github-code-review, llm-failure-modes]
+    related_skills: [subagent-driven-development, writing-plans, test-driven-development, git-guidelines, llm-failure-modes]
 ---
 # Pre-Commit Code Verification
 
@@ -31,9 +31,9 @@ Fresh context finds what you miss.
 **Skip for:** documentation-only changes, pure config tweaks, or when user says “skip
 verification”.
 
-**This skill vs github-code-review:** This skill verifies YOUR changes before
-committing. `github-code-review` reviews OTHER people’s PRs on GitHub with inline
-comments.
+**This skill vs git-guidelines (code-review.md):** This skill verifies YOUR changes before
+committing. `git-guidelines` (see `code-review.md`) reviews OTHER people's PRs on GitHub
+with inline comments.
 
 ## Step 1 — Get the diff
 

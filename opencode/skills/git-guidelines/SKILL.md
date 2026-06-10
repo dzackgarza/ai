@@ -1,8 +1,26 @@
 ---
 name: git-guidelines
-description: 'Use when performing any git operation — staging, committing, branching, pushing, or deleting files.'
+description: 'Use when performing any git or GitHub operation — staging, committing, branching, pushing, PRs, code review, issues, auth, repo management, or deleting files. Consolidated entry point for all git skills.'
 ---
 # Git Guidelines
+
+## Structure
+
+This skill is the consolidated entry point for all git and GitHub operations.
+Reference docs within this skill:
+
+- `auth.md` — GitHub authentication (tokens, SSH, gh CLI, API access)
+- `pr-workflow.md` — branch, commit, push, CI monitoring, merge lifecycle
+- `code-review.md` — performing code reviews on local changes and PRs
+- `creating-prs.md` — PR worker guide (contracts, review readiness, feedback handling)
+- `reviewing-prs.md` — field guide for reviewing AI-assisted code
+- `issues.md` — issue management (view, create, manage, triage)
+- `repo-management.md` — clone, create, fork, settings, releases, workflows
+- `scripts/extract_unresolved_issues/` — PR review scanning tool (see PR Review Workflow below)
+
+The former separate skills `github-auth`, `github-pr-workflow`, `github-code-review`,
+`github-issues`, and `github-repo-management` have been consolidated here.
+Each old location remains as a redirect stub.
 
 ## The Edit Workflow (Mandatory)
 
@@ -235,6 +253,59 @@ For nontrivial features: branch + PR → tag `@codex review` → wait 3–5 min 
 reviewers (Codex, Qodo, etc.)
 to post.
 
+### extract_unresolved_issues: scan all PR feedback first
+
+Before reading any PR comments manually, **scan all feedback surfaces at once** using
+the bundled CLI tool. This is the primary entry point for handling PR feedback — it
+automatically pulls inline review threads, issue-style comments, and automated check-run
+errors (like Codacy) in a single command.
+
+```bash
+# Summarize all feedback on a PR
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
+    -m extract_unresolved_issues summarize <owner>/<repo>#<N>
+
+# Get only unresolved (actionable) issues
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
+    -m extract_unresolved_issues issues <owner>/<repo>#<N>
+```
+
+Usage from anywhere (full path to the module):
+```bash
+uv run -m extract_unresolved_issues --help
+```
+
+This tool pulls:
+- Top-level PR comments
+- Inline code review threads
+- Automated check-run errors (like Codacy static analysis)
+
+After dispositioning feedback, resolve threads with a required justification:
+```bash
+uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
+    -m extract_unresolved_issues resolve <COMMENT_ID> \
+    "Accepted in commit 1234abc. Reason: <why this satisfies the review concern>."
+```
+
+**The output is never stale.** Automated bots (Codacy, Gemini, kilo-code-bot) update
+comments in place when new commits land. Open threads stay listed until "Resolve
+Conversation" is clicked. Every item requires disposition — there is no such thing as
+an already-handled item that still appears.
+
+**All checks, warnings, and notices must be resolved before the PR can be accepted.**
+This includes low-severity notices from automated tools.
+
+**Loop until the check clears:**
+```bash
+while true; do
+    gh pr checks <N> --repo <owner>/<repo>
+    uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
+        -m extract_unresolved_issues issues <owner>/<repo>#<N>
+    sleep 90
+done
+```
+Stop only when `gh pr checks` shows all green and `issues` reports `NOT RESOLVED: 0`.
+
 ### Publish review guidance before submission
 
 Before opening a PR, updating a PR for review, or tagging automated reviewers, ensure
@@ -426,66 +497,6 @@ changed correctly.
 - Laundering feedback through process language such as “scanner clean”, “thread
   resolved”, or “bot pending” instead of stating the judgment made.
 
-### Scan ALL comment surfaces
-
-`gh pr view` only returns issue-level comments, not inline review thread comments.
-To properly parse and summarize all PR feedback, **use the bundled CLI tool**:
-
-```bash
-uv run -m extract_unresolved_issues --help
-```
-
-You can run it from anywhere in the codebase directly by providing the full path to the
-module inside the git-guidelines skill:
-
-```bash
-uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <owner>/<repo>#<N>
-```
-
-This tool automatically pulls:
-
-- Top-level PR comments
-
-- Inline code review threads
-
-- Automated check-run errors (like Codacy static analysis)
-
-Disposition every feedback item.
-For accepted inline feedback, reply with the human-readable disposition and fix commit,
-then resolve the thread using the tool’s `resolve` command:
-
-```bash
-uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues resolve <COMMENT_ID> "Accepted in commit 1234abc. Reason: <why this satisfies the review concern and repo policy>."
-```
-
-**The script never produces stale output.** Automated bots (Codacy, Gemini,
-kilo-code-bot) update their comments in place when new commits land.
-Open review threads stay listed until the “Resolve Conversation” button is clicked.
-Every item in the output requires disposition — fix it, reject it with evidence, or
-report why it is blocked.
-There is no such thing as an already-handled item that still appears.
-
-**All checks, warnings, and notices must be resolved before the PR can be accepted.**
-This includes low-severity notices from automated tools.
-If a check is failing, the PR is blocked regardless of how many threads have been
-resolved.
-
-**After pushing a fix, loop until the check clears.** Codacy re-runs typically complete
-within 1 minute. Poll with a 1–2 minute sleep between scans:
-
-```bash
-# Loop until all checks pass
-while true; do
-    gh pr checks <N> --repo <owner>/<repo>
-    uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues \
-        -m extract_unresolved_issues issues <owner>/<repo>#<N>
-    sleep 90
-done
-```
-
-Stop only when `gh pr checks` shows all green and the `issues` command reports
-`NOT RESOLVED: 0`.
-
 ### “Resolve” is overloaded — clear each surface separately
 
 | Object | How to resolve |
@@ -509,7 +520,7 @@ gh api repos/<owner>/<repo>/issues/<N>/comments
 
 If the user asks to use Jules for review, load:
 - [jules](file:///home/dzack/ai/opencode/skills/jules/SKILL.md)
-- [jules/references/anti-slop-issue-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-issue-review.md)
+- [jules/references/anti-slop-report-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md)
 - [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md)
 - [anti-slop](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md)
 - [reviewing-subagent-work](file:///home/dzack/ai/opencode/skills/reviewing-subagent-work/SKILL.md)

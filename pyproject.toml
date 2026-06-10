@@ -1,4 +1,0 @@
-[project]
-name = "ai"
-description = "Centralized configuration hub for AI agent harnesses"
-requires-python = ">=3.14"

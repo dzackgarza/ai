@@ -22,19 +22,19 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
 
 ## Code Patterns
 
-- **Brittleness as blast-radius smell**: code where small changes have large blast radii — scattered truth (same concept defined in multiple places), coupling to volatile data (string outputs, exact structures of other code, exact log messages, exact file paths), tight coupling to implementation details (depends on internal shape of another module’s output, exact order of dictionary keys, specific error message text), or regex used where simpler correct approaches exist (e.g., complex regex to match `\begin{align*}` in LaTeX when `'align*' in mystring` is equally correct and far more maintainable).
+- **[BLAST-RADIUS] Brittleness as blast-radius smell**: code where small changes have large blast radii — scattered truth (same concept defined in multiple places), coupling to volatile data (string outputs, exact structures of other code, exact log messages, exact file paths), tight coupling to implementation details (depends on internal shape of another module’s output, exact order of dictionary keys, specific error message text), or regex used where simpler correct approaches exist (e.g., complex regex to match `\begin{align*}` in LaTeX when `'align*' in mystring` is equally correct and far more maintainable).
   “Brittle” does NOT mean “lacks edge-case coverage” — edge handling is a natural consequence of bugs that surface during planned development.
   Brittle means: if a future agent changes the thing this code depends on, how many other things break?
   The fix is structural decoupling and single source of truth, not defensive parsing or speculative edge-case handling.
 
-- **Complexity as a dependency-detection signal**: any code region exhibiting high structural complexity — long functions (more than ~30 LOC of logic), `for` loops over collections, high density of `if`/`else` branches, deep indentation (3+ levels), convoluted control flow, large classes, or files with many helper functions — is a **red flag that a dependency or library should be doing this job instead**. The reviewer’s FIRST question for any complex code region must be: “Is there a known library, language primitive, or installed dependency that collapses this entire block into a one-liner?”
+- **[COMPLEXITY-SIGNAL] Complexity as a dependency-detection signal**: any code region exhibiting high structural complexity — long functions (more than ~30 LOC of logic), `for` loops over collections, high density of `if`/`else` branches, deep indentation (3+ levels), convoluted control flow, large classes, or files with many helper functions — is a **red flag that a dependency or library should be doing this job instead**. The reviewer’s FIRST question for any complex code region must be: “Is there a known library, language primitive, or installed dependency that collapses this entire block into a one-liner?”
   Complexity in application code is almost always evidence of dependency aversion, not evidence of real domain difficulty.
   The overwhelming majority of coding tasks are trivially gluing together known solutions; when the code does not look trivial, the agent likely missed an existing tool.
   Specific structural red flags: functions with `for` loops that should be `map`/`filter`/`reduce`/`flatMap`; nested `if` trees that should be a lookup table, strategy pattern, or library function; hand-rolled iteration that a standard library iterator, generator, or async helper would eliminate; classes that accumulate methods because no existing abstraction owns the concern; files that grow helper functions because each one reinvents a piece of what a dependency already provides.
   **When you see complexity, stop and search for the dependency.
   Do not review the complex code on its own terms first.**
 
-- **Known-solution bypass in implementation**: agents write nontrivial code (parsers,
+- **[KNOWN-SOLUTION-BYPASS] Known-solution bypass in implementation**: agents write nontrivial code (parsers,
   adapters, retry mechanisms, file watchers, renderers, API clients, schema validators,
   markdown transformers, date/time handlers, auth flows, caches, queues, rate limiters,
   compiler workarounds) without first checking whether a known library, official recipe,
@@ -48,36 +48,36 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   before reverse-engineering) but applied at implementation time: before hand-rolling
   infrastructure- or integration-layer code, check whether the ecosystem solved it.
 
-- **Enterprise patterns in bespoke software**: code that attempts graceful degradation when dependencies are missing, accepts squishy input shapes, over-generalizes to other platforms or users, or handles enterprise-grade edge cases — all inappropriate for one user’s private tool on their own system.
+- **[ENTERPRISE-BESPOKE] Enterprise patterns in bespoke software**: code that attempts graceful degradation when dependencies are missing, accepts squishy input shapes, over-generalizes to other platforms or users, or handles enterprise-grade edge cases — all inappropriate for one user’s private tool on their own system.
   The correct behavior for bespoke software is: work on the happy path, fail loudly outside of it.
   “Graceful degradation” is enterprise thinking for unknown deployment targets.
   The dependency IS available.
   The input SHOULD be enforced.
   The code runs on THIS system for THIS user.
 
-- **Needless imperative complexity**: ten-line loops that a one- or two-line `map`, `filter`, `flatMap`, `reduce`, `partition`, `Object.entries`, `Array.from`, set operation, or library helper would express more directly.
+- **[IMPERATIVE-COMPLEXITY] Needless imperative complexity**: ten-line loops that a one- or two-line `map`, `filter`, `flatMap`, `reduce`, `partition`, `Object.entries`, `Array.from`, set operation, or library helper would express more directly.
   The review should ask: could this be expressed in fewer lines using the idiomatic patterns of this language?
   If yes, the complexity is slop — the agent did not know the idiom and wrote the operation longhand.
   Key transformations: imperative → functional, nested branching → data-aware dispatch (lookup tables, pattern matching, overload patterns), manual iteration → library calls, string manipulation → typed operations, boilerplate → framework conventions.
 
-- **Overbuilt simple operations**: complicated branching, accumulators, mutable flags, or custom state machines for operations like partitioning a list, grouping by a key, selecting one item, normalizing a path, or checking membership.
+- **[OVERBUILT-SIMPLE] Overbuilt simple operations**: complicated branching, accumulators, mutable flags, or custom state machines for operations like partitioning a list, grouping by a key, selecting one item, normalizing a path, or checking membership.
 
-- **Regex-as-reflex**: regular expressions used where a parser, typed data structure, exact string operation, shell argument array, URL API, path API, schema assertion, or enum check would be clearer and stronger.
+- **[REGEX-REFLEX] Regex-as-reflex**: regular expressions used where a parser, typed data structure, exact string operation, shell argument array, URL API, path API, schema assertion, or enum check would be clearer and stronger.
   Regex is especially suspect when it is undocumented, broad, brittle, or silently accepts malformed data.
   This is a brittleness smell: complex regex is harder to read, harder to modify, and more likely to break on unexpected input than simpler correct approaches.
   E.g., complex regex to match `\begin{align*}` in LaTeX when `'align*' in mystring` is equally correct and far more maintainable.
   See **Brittleness as blast-radius smell**.
 
-- **Regex against semantic formats**: regexing raw HTML when `jsdom`, BeautifulSoup, or another DOM parser should own the structure; regexing Markdown when Pandoc’s AST, `markdown-it`, `remark`, or another Markdown parser should own the structure; regexing code when Tree-sitter, Babel, TypeScript ASTs, Python `ast`, or another language parser should own the syntax.
+- **[REGEX-SEMANTIC] Regex against semantic formats**: regexing raw HTML when `jsdom`, BeautifulSoup, or another DOM parser should own the structure; regexing Markdown when Pandoc’s AST, `markdown-it`, `remark`, or another Markdown parser should own the structure; regexing code when Tree-sitter, Babel, TypeScript ASTs, Python `ast`, or another language parser should own the syntax.
   This is worse than ordinary brittleness: it proves the agent is refusing the semantic layer the format already provides.
 
-- **Regex meta-testing**: tests that scan source text to prove a criticized bad pattern string is gone instead of proving the behavior is correct.
+- **[REGEX-META-TEST] Regex meta-testing**: tests that scan source text to prove a criticized bad pattern string is gone instead of proving the behavior is correct.
   A common failure sequence is: bad pattern `X` exists, the user catches `X`, the agent removes `X`, then writes a test asserting the code no longer contains `X`. That is circular reputation repair, not a correctness test.
   If structural code inspection is genuinely needed, use an AST parser and assert the semantic property that matters.
 
-- **Patch accretion**: evidence of continued monkey-patching with no refactor, such as duplicated local fixes, stacked conditionals around prior mistakes, parallel helpers that should have one owner, or new adapters that preserve a bad shape instead of replacing it.
+- **[PATCH-ACCRETION] Patch accretion**: evidence of continued monkey-patching with no refactor, such as duplicated local fixes, stacked conditionals around prior mistakes, parallel helpers that should have one owner, or new adapters that preserve a bad shape instead of replacing it.
 
-- **“Clean” or “lightweight” as goal substitution**: when an agent justifies NOT implementing a requested feature, removing existing functionality, or rejecting a design choice by calling it “dirty”, “heavy”, “not clean”, “not lightweight”, “overengineered”, or “unnecessarily complex”.
+- **[GOAL-SUBSTITUTION] “Clean” or “lightweight” as goal substitution**: when an agent justifies NOT implementing a requested feature, removing existing functionality, or rejecting a design choice by calling it “dirty”, “heavy”, “not clean”, “not lightweight”, “overengineered”, or “unnecessarily complex”.
   Every feature is an EXPLICIT user request.
   The agent found the feature hard to implement, so it reframed the difficulty as a quality problem to avoid doing the work.
   “Clean” and “lightweight” are not properties of features — they are properties of implementations.
@@ -85,52 +85,52 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   How it is implemented is a separate question.
   If the agent suppresses a feature because it “isn’t clean,” the agent is substituting its own aesthetic judgment for the user’s explicit request.
 
-- **No design principles**: no evident ownership, entrypoint, data-flow boundary, lifecycle model, schema, dependency direction, naming scheme, or reason that code is split where it is.
+- **[NO-DESIGN] No design principles**: no evident ownership, entrypoint, data-flow boundary, lifecycle model, schema, dependency direction, naming scheme, or reason that code is split where it is.
 
-- **Spaghetti data flow**: values are parsed, re-parsed, stringified, re-shaped, or tunneled across files without a canonical data model.
+- **[SPAGHETTI-DATA] Spaghetti data flow**: values are parsed, re-parsed, stringified, re-shaped, or tunneled across files without a canonical data model.
   Reviewers should ask where the source of truth is and whether the code makes that answer obvious.
 
-- **Absurd LOC**: huge files, huge tests, huge helpers, or huge configuration surfaces where the underlying behavior is small.
+- **[ABSURD-LOC] Absurd LOC**: huge files, huge tests, huge helpers, or huge configuration surfaces where the underlying behavior is small.
   LOC volume is a smell when it exists to work around missing structure, not when it represents real domain complexity.
 
-- **Single-use micro-helpers**: three-line helpers used once that add indirection without naming a real concept, enforcing an invariant, or removing meaningful duplication.
+- **[MICRO-HELPERS] Single-use micro-helpers**: three-line helpers used once that add indirection without naming a real concept, enforcing an invariant, or removing meaningful duplication.
 
-- **Unreachable or no-op code**: branches, callbacks, UI actions, tests, or recipes that cannot execute, return without doing anything, or claim to support behavior that is not wired to the real entrypoint.
+- **[UNREACHABLE-CODE] Unreachable or no-op code**: branches, callbacks, UI actions, tests, or recipes that cannot execute, return without doing anything, or claim to support behavior that is not wired to the real entrypoint.
 
-- **User-deceptive code**: code that makes users believe something happened when it did not, such as fake success messages, inert buttons, stale UI labels, placeholder provider data, no-op persistence, or docs claiming a feature that is not connected.
+- **[USER-DECEPTIVE] User-deceptive code**: code that makes users believe something happened when it did not, such as fake success messages, inert buttons, stale UI labels, placeholder provider data, no-op persistence, or docs claiming a feature that is not connected.
 
-- **Fallbacks and hedging**: fallback paths, soft defaults, best-effort modes, fake data, optional critical dependencies, and catch-and-continue behavior that launder a broken owned dependency into apparently successful execution.
+- **[FALLBACKS-HEDGING] Fallbacks and hedging**: fallback paths, soft defaults, best-effort modes, fake data, optional critical dependencies, and catch-and-continue behavior that launder a broken owned dependency into apparently successful execution.
 
-- **Error laundering**: converting failures into logs, empty arrays, partial objects, skipped tests, warning banners, synthetic defaults, status labels, or TODOs instead of fixing the contract or failing loudly.
+- **[ERROR-LAUNDERING] Error laundering**: converting failures into logs, empty arrays, partial objects, skipped tests, warning banners, synthetic defaults, status labels, or TODOs instead of fixing the contract or failing loudly.
 
-- **Pointless catching**: `catch` blocks that only rethrow, only log, swallow errors, convert error types without adding context, or exist because the author does not know what can fail.
+- **[POINTLESS-CATCH] Pointless catching**: `catch` blocks that only rethrow, only log, swallow errors, convert error types without adding context, or exist because the author does not know what can fail.
 
-- **Bad observability**: no logging at important owned boundaries; trivial logging that says nothing about the data or decision; verbose logging that obscures the real event; or logs treated as proof that behavior is correct.
+- **[BAD-OBSERVABILITY] Bad observability**: no logging at important owned boundaries; trivial logging that says nothing about the data or decision; verbose logging that obscures the real event; or logs treated as proof that behavior is correct.
 
-- **Hard-coding as split truth**: hard-coding is not automatically wrong for bespoke software.
+- **[SPLIT-TRUTH] Hard-coding as split truth**: hard-coding is not automatically wrong for bespoke software.
   It is wrong when it creates a second source of truth, hides a missing data model, bypasses configuration that already exists, makes tests pass with private fake state, or prevents the obvious owned path from failing loudly.
 
-- **Typing collapse**: `Any`, `unknown`, stringly typed objects, optional fields, or loose dictionaries used because the author did not understand the data shape.
+- **[TYPING-COLLAPSE] Typing collapse**: `Any`, `unknown`, stringly typed objects, optional fields, or loose dictionaries used because the author did not understand the data shape.
   The useful critique is the missing contract, not a generic demand for more annotations.
 
-- **QC appeasement code**: bizarre code introduced to silence typecheckers, linters, tests, loaders, or runtime warnings without correcting the underlying problem the QC signal exposed.
+- **[QC-APPEASEMENT] QC appeasement code**: bizarre code introduced to silence typecheckers, linters, tests, loaders, or runtime warnings without correcting the underlying problem the QC signal exposed.
 
-- **Recipe proliferation**: bespoke scripts or `just` recipes that duplicate, narrow, or bypass the repository's standard QC path.
+- **[RECIPE-PROLIFERATION] Recipe proliferation**: bespoke scripts or `just` recipes that duplicate, narrow, or bypass the repository's standard QC path.
   A smoke test that skips the unified test recipe is a process-design smell, not a sufficient proof surface.
 
-- **Hollow facade (name-owns-nothing)**: a named entity whose name, doc comment, and success output all claim ownership of a specific behavior, but whose body owns none of it—delegating entirely to something else while printing a success message that makes the caller believe the advertised work was done.
+- **[HOLLOW-FACADE] Hollow facade (name-owns-nothing)**: a named entity whose name, doc comment, and success output all claim ownership of a specific behavior, but whose body owns none of it—delegating entirely to something else while printing a success message that makes the caller believe the advertised work was done.
   e.g., a `build` recipe whose only body is `@just test` and `@echo "Build complete..."`, a `validateInput()` that returns `true` without checking anything, a `deleteUser()` that logs "deleted" but never calls the database.
   See `anti-slop/references/code-patterns.md` → **Hollow Facade (Name-Owns-Nothing)**.
 
-- **No global QC integration**: tests, scripts, type checks, startup checks, or runtime validation exist but are not part of the standard command that future agents and users will actually run.
+- **[NO-GLOBAL-QC] No global QC integration**: tests, scripts, type checks, startup checks, or runtime validation exist but are not part of the standard command that future agents and users will actually run.
 
-- **Honest-label laundering (slop upholstery)**:
+- **[HONEST-LABEL] Honest-label laundering (slop upholstery)**:
   The artifact remains but receives a more accurate label: smoke, harness, diagnostic,
   scaffold, non-proof, quarantine. The label is now less false, but the artifact still
   pollutes the validation ecosystem.
   The rename makes the label match the behavior, destroying the detection signal (the mismatch between label and behavior) that would have flagged the artifact on future review. The artifact's runtime behavior is unchanged. The finding was about **existence**, not labeling, but the relabel retroactively reframes it as a labeling issue. This is proof laundering with better marketing. See `anti-slop/references/code-patterns.md` → **Honest-Label Laundering** for detection heuristics (diff-only-renames, qualifying adjectives like `smoke`/`basic`/`minimal`, disclaimer-style naming, fix applied to name not artifact).
 
-- **Deletion laundering / proof-burden erasure**:
+- **[DELETION-LAUNDER] Deletion laundering / proof-burden erasure**:
   A criticized slop artifact is deleted without solving or recording the original problem
   it attempted to address. The codebase looks cleaner, but the proof burden is now hidden.
   The next agent is likely to recreate the same fake proof, fallback, wrapper, or harness.
@@ -143,22 +143,20 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - final report says the review item is resolved because the artifact is gone;
   - the original requirement is absent from the new PR narrative.
 
-  Correct response:
-  Require a burden disposition: solved, invalidated, transferred to real proof,
-  or explicitly open as unresolved.
+  Correct response: See `bridge-burning-red-flags.md` → **Remediation: Deletion Laundering / Proof-Burden Erasure**.
 
-- **Reviewer-signal whack-a-mole**:
+- **[WHACK-A-MOLE] Reviewer-signal whack-a-mole**:
   The agent treats every evaluator as a layer to appease: typechecker, compiler, test,
   QC, PR review, user. At each layer it performs the minimum mutation to silence that
   evaluator, rather than reconstructing the original story and solving the problem.
 
-- **Broken proof-loop inversion**: recommending new tests, fixtures, inventories, coverage, or cleanup before repairing the canonical command that makes any test meaningful.
+- **[PROOF-LOOP-INVERSION] Broken proof-loop inversion**: recommending new tests, fixtures, inventories, coverage, or cleanup before repairing the canonical command that makes any test meaningful.
   This is especially damaging when the gate runs against stale static output, cached artifacts, hidden services, or a different runtime path than users actually exercise.
   The first fix is the loop: fresh artifacts in, real workflow under test, falsifiable browser/CLI/user-visible assertions out.
 
-- **Littered artifacts**: generated debris, stale snapshots, abandoned scratch files, duplicate reports, renamed-but-not-retired files, or disconnected docs that make the repository harder to inspect.
+- **[LITTERED-ARTIFACTS] Littered artifacts**: generated debris, stale snapshots, abandoned scratch files, duplicate reports, renamed-but-not-retired files, or disconnected docs that make the repository harder to inspect.
 
-- **Overfitting to a user prompt**: code that reflexively implements the exact hyper-specific feature requested in a user prompt without finding the simplest general solution that recovers the request as a special case.
+- **[OVERFITTING-PROMPT] Overfitting to a user prompt**: code that reflexively implements the exact hyper-specific feature requested in a user prompt without finding the simplest general solution that recovers the request as a special case.
   The red flag is an implementation that tells a story of directly transcribing a user's literal feature request — no thought, no planning, no abstraction — with hardcoded handling of one exact data shape, one exact presentation, one exact workflow, and no shared abstractions or composable pieces.
   The simplest solution is rarely the most ambitious or the one that tries to handle every edge case imaginable.
   Instead: isolate the general concern, find a minimal generalization that genuinely solves a recognized core of the problem, then recover the user's specific need as input to that general piece.
@@ -186,7 +184,7 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   Equally bad are failed attempts at generalization: unopinionated vague schemas attempting to capture ALL instances (god-object accretion, braindead pursuit of "good design" guidelines that weakens contracts and schema checking), complex inheritance chains, highly non-modular constructions, and broken walls of abstractions where modular core pieces are informed by leaf implementations instead of defining general composable tools.
   The correct approach follows Unix philosophy: most pieces do one thing well and compose well; most customization is composition, configuration, and trivial extensions.
 
-- **Data accretion / weak schemas**: data structures that show no evidence of top-down design — the shape was accreted feature by feature without ever being revisited.
+- **[DATA-ACCRETION] Data accretion / weak schemas**: data structures that show no evidence of top-down design — the shape was accreted feature by feature without ever being revisited.
   OSOT (One Source of Truth) violations are the primary signal: the same logical entity is scattered across multiple data sources because the agent grafted on new tracking rather than revisiting the structure of the data type.
   The blast-radius test for data: if a user added a new data entry of this type, how many locations must change?
   Should be one.
@@ -229,50 +227,50 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - A component that directly imports a specific data file: `import papers from '../data/papers.json'` — the data is fused to the component, not passed as input
   - Functions that take no parameters but return a hardcoded or single-source value — the call site couldn't vary the input even if it wanted to
 
-- **Myopic goal-seeking**: the code solves the immediate local complaint while making the system less coherent, less testable, less observable, or easier to lie about.
+- **[MYOPIC-GOAL] Myopic goal-seeking**: the code solves the immediate local complaint while making the system less coherent, less testable, less observable, or easier to lie about.
 
-- **Consultant-shaped triage**: producing generalized freeze/recovery/cleanup advice before identifying the actual in-progress feature, repo-local conventions, and root cause of the bad state.
+- **[CONSULTANT-TRIAGE] Consultant-shaped triage**: producing generalized freeze/recovery/cleanup advice before identifying the actual in-progress feature, repo-local conventions, and root cause of the bad state.
   This creates plausible prioritization while avoiding the concrete question: what currently prevents the happy path from being proven?
 
-- **Debug-surface debt**: failures are addressed by mutating global code, adding one-off scripts, or repeatedly running opaque whole-system commands instead of creating a reusable isolated reproducer, structured boundary log, artifact dump, schema dump, or canonical diagnostic recipe. The smell is not that debugging took time; it is that the work left future debugging no easier.
+- **[DEBUG-DEBT] Debug-surface debt**: failures are addressed by mutating global code, adding one-off scripts, or repeatedly running opaque whole-system commands instead of creating a reusable isolated reproducer, structured boundary log, artifact dump, schema dump, or canonical diagnostic recipe. The smell is not that debugging took time; it is that the work left future debugging no easier.
 
-- **Prior-shaped probes**: commands encode the expected answer and suppress contrary evidence, e.g. guessed flags with `2>/dev/null`, greps whose failure is treated as absence, `jq` paths run before response-shape inspection, or endpoint guesses treated as API facts. The output is the agent's hypothesis reflected back as fake evidence.
+- **[PRIOR-PROBES] Prior-shaped probes**: commands encode the expected answer and suppress contrary evidence, e.g. guessed flags with `2>/dev/null`, greps whose failure is treated as absence, `jq` paths run before response-shape inspection, or endpoint guesses treated as API facts. The output is the agent's hypothesis reflected back as fake evidence.
 
-- **Availability-first tool reuse**: agents select tools by scanning installed packages or `$PATH` rather than choosing the best tool from public knowledge and installing it if missing. The review question is not "does the chosen tool work" but "was a better tool passed over because it wasn't already installed." Local availability is an applicability check, not the search strategy. When bespoke code or a suboptimal tool appears where a known library or CLI would be cleaner, check whether the agent mentioned, searched for, or rejected the better alternative before settling. The correct expectation: identify the best tool → install/declare it → use it. Only fall back if installation is blocked by credentials, sudo, licensing, network, or policy.
+- **[AVAILABILITY-FIRST] Availability-first tool reuse**: agents select tools by scanning installed packages or `$PATH` rather than choosing the best tool from public knowledge and installing it if missing. The review question is not "does the chosen tool work" but "was a better tool passed over because it wasn't already installed." Local availability is an applicability check, not the search strategy. When bespoke code or a suboptimal tool appears where a known library or CLI would be cleaner, check whether the agent mentioned, searched for, or rejected the better alternative before settling. The correct expectation: identify the best tool → install/declare it → use it. Only fall back if installation is blocked by credentials, sudo, licensing, network, or policy.
 
 ## Test Patterns
 
-- **No assertions**: tests that execute code but do not prove a contract.
+- **[NO-ASSERTIONS] No assertions**: tests that execute code but do not prove a contract.
 
-- **Timing or performance assertions**: tests that assert on timing, responsiveness, latency, or throughput (e.g., “popup loads in <=50ms”, “response time under 200ms”). These chase imaginary issues and inflate test coverage with hallucinated targets.
+- **[TIMING-PERF] Timing or performance assertions**: tests that assert on timing, responsiveness, latency, or throughput (e.g., “popup loads in <=50ms”, “response time under 200ms”). These chase imaginary issues and inflate test coverage with hallucinated targets.
   Performance is not a test — performance GATES are CI, never something an agent should be dealing with.
   Users almost never ask for “the popup loads in <=50ms”; they notice choppiness and ask an agent to fix the bug.
   It is incoherent for a timing/performance test to exist in bespoke software.
   If performance matters, it belongs in CI gates, not in unit tests.
   These tests prove nothing about correctness and exist only to make the test suite look more substantial.
 
-- **Circular assertions**: tests that assert `X` appears in `Y` when the implementation is literally “put `X` in `Y`,” with no independent oracle, real input, user workflow, or semantic property.
+- **[CIRCULAR-ASSERT] Circular assertions**: tests that assert `X` appears in `Y` when the implementation is literally “put `X` in `Y`,” with no independent oracle, real input, user workflow, or semantic property.
 
-- **Developer-controlled behavior assertions**: tests where the test author creates or controls the behavior being asserted, such as injecting `X` into a fixture, mock, config, fake provider, generated file, or component props and then asserting `X` is present.
+- **[DEVELOPER-CONTROLLED] Developer-controlled behavior assertions**: tests where the test author creates or controls the behavior being asserted, such as injecting `X` into a fixture, mock, config, fake provider, generated file, or component props and then asserting `X` is present.
   This proves only that the test setup was copied into the output path.
   It does not prove repository-owned behavior unless the transformation, selection, rejection, ordering, routing, persistence, or boundary interpretation is independently checked.
 
-- **Inflated suites**: absurd numbers of tests that repeat shallow checks, enumerate permutations with no new behavior, or look designed to impress by count.
+- **[INFLATED-SUITES] Inflated suites**: absurd numbers of tests that repeat shallow checks, enumerate permutations with no new behavior, or look designed to impress by count.
 
-- **Audience-blind hardening**: tests for imaginary external consumers, malformed input, portability, or legacy compatibility when the artifact is obviously bespoke software whose real risk is failure of the owned workflow.
+- **[AUDIENCE-BLIND] Audience-blind hardening**: tests for imaginary external consumers, malformed input, portability, or legacy compatibility when the artifact is obviously bespoke software whose real risk is failure of the owned workflow.
 
-- **Superficial state assertions**: tests that inspect implementation state, internal labels, ordering accidents, exact log strings, or brittle snapshots that will break on trivial edits without proving user-visible behavior.
+- **[SUPERFICIAL-STATE] Superficial state assertions**: tests that inspect implementation state, internal labels, ordering accidents, exact log strings, or brittle snapshots that will break on trivial edits without proving user-visible behavior.
 
-- **Disjointed tests**: tests organized by whatever files the agent touched rather than by behavior, entrypoint, or proof obligation.
+- **[DISJOINTED-TESTS] Disjointed tests**: tests organized by whatever files the agent touched rather than by behavior, entrypoint, or proof obligation.
 
-- **Fake-data confidence**: tests built around idealized fixtures, synthetic providers, mocked services, or copied examples when real data exists and is needed to prove the workflow.
+- **[FAKE-DATA-CONFIDENCE] Fake-data confidence**: tests built around idealized fixtures, synthetic providers, mocked services, or copied examples when real data exists and is needed to prove the workflow.
 
-- **Guideline violations**: tests that bypass `just`, skip global QC, use mocks where the local testing guidelines reject them, or prove an artificial edge case while the known startup/user path remains untested.
+- **[GUIDELINE-VIOLATIONS] Guideline violations**: tests that bypass `just`, skip global QC, use mocks where the local testing guidelines reject them, or prove an artificial edge case while the known startup/user path remains untested.
 
-- **Tests before testability**: adding more assertions onto a broken pipeline where the command under review does not produce or serve the artifacts being asserted.
+- **[TESTS-BEFORE-TESTABILITY] Tests before testability**: adding more assertions onto a broken pipeline where the command under review does not produce or serve the artifacts being asserted.
   Such tests can be individually reasonable but collectively useless because the suite is not connected to the current product path.
 
-- **Helper-level proof substitution (Helper-Branch Proof Laundering)**: replacing a substantive boundary-crossing or configuration contract with a local helper unit proof that is easy to satisfy. The agent extracts or tests a small helper function in isolation (proving only that the helper's internal branch logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering: the helper-level test passes, but the actual entrypoint remains unverified. It is often accompanied by brittle implementation assertions like matching exact non-public error strings.
+- **[HELPER-PROOF-SUBSTITUTION] Helper-level proof substitution (Helper-Branch Proof Laundering)**: replacing a substantive boundary-crossing or configuration contract with a local helper unit proof that is easy to satisfy. The agent extracts or tests a small helper function in isolation (proving only that the helper's internal branch logic behaves as written) instead of proving that the actual application workflow, config discovery, parsing, or state-building behavior matches the required semantics. This is a form of proof laundering: the helper-level test passes, but the actual entrypoint remains unverified. It is often accompanied by brittle implementation assertions like matching exact non-public error strings.
 
   Detection Heuristics / Red Flags:
   - The helper did not exist before the review (extracted to make the fix look clean).
@@ -282,22 +280,19 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - No real fixture or boundary artifact (TOML file, temp directory) appears in the test.
   - The test would still pass even if the application stopped calling the helper entirely (meaningless for product correctness).
 
-  Correct Response:
-  - Reconstruct the original proof burden.
-  - Test the source-of-truth boundary (e.g. config loading, temp file fixtures).
-  - Keep helper tests only as supplementary unit coverage; do not accept helper coverage as resolution of boundary feedback.
+  Correct Response: See `bridge-burning-red-flags.md` → **Remediation: Boundary Test Bypass**.
 
 ## Documentation Patterns
 
-- **No audience**: docs that do not answer any real question a maintainer, user, or reviewer would have.
+- **[NO-AUDIENCE] No audience**: docs that do not answer any real question a maintainer, user, or reviewer would have.
 
-- **Dynamic facts frozen into prose**: docs that restate CLI help, recipe listings, generated metadata, file counts, feature counts, version details, or other facts that should be discovered from the canonical tool.
+- **[FROZEN-FACTS] Dynamic facts frozen into prose**: docs that restate CLI help, recipe listings, generated metadata, file counts, feature counts, version details, or other facts that should be discovered from the canonical tool.
 
-- **Theory-of-mind failure**: docs that omit the first obvious questions: what is the entrypoint, what proves it works, what owns the data, what fails loudly, what should never be bypassed, and what is intentionally bespoke to this machine.
+- **[THEORY-MIND-FAILURE] Theory-of-mind failure**: docs that omit the first obvious questions: what is the entrypoint, what proves it works, what owns the data, what fails loudly, what should never be bypassed, and what is intentionally bespoke to this machine.
 
-- **Marketing inflation**: feature lists, achievement language, completion claims, LOC counts, test counts, and confident summaries that do not help operate or audit the system.
+- **[MARKETING-INFLATION] Marketing inflation**: feature lists, achievement language, completion claims, LOC counts, test counts, and confident summaries that do not help operate or audit the system.
 
-- **Immediate staleness**: docs that duplicate fast-changing structure instead of pointing to the source of truth.
+- **[IMMEDIATE-STALENESS] Immediate staleness**: docs that duplicate fast-changing structure instead of pointing to the source of truth.
 
 ## Generic PR Review Slop
 
