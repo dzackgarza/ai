@@ -9,7 +9,8 @@ quality-control/ci/submit-candidate (no arguments) to validate and submit.
 The script copies the validated report to .review-report-artifact.json
 on success. The harness only checks for existence of that artifact after
 the opencode session ends — the script owns validation and submission.
-On timeout or missing artifact, the harness re-prompts and loops.
+On timeout or missing artifact, the harness continues the opencode session
+with `opencode run -c`.
 """
 
 import argparse
@@ -37,7 +38,6 @@ COMMENT_PATH = pathlib.Path(".review-report-comment.md")
 SCORE_PATH = pathlib.Path(".review-report-score.txt")
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
-TRANSCRIPT_CHARS = 60_000
 
 
 def collect_repo_docs(repo_root: pathlib.Path) -> str:
@@ -110,25 +110,11 @@ def substitute(template: str, **kwargs: str) -> str:
 SUBMITTED_CANDIDATE = "submitted.json"
 
 
-def _decode_timeout_stream(value: str | bytes | None) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, bytes):
-        return value.decode(errors="replace")
-    return value
-
-
-def _bounded_transcript(text: str) -> str:
-    if len(text) <= TRANSCRIPT_CHARS:
-        return text
-    return (
-        f"[Transcript truncated to last {TRANSCRIPT_CHARS} characters.]\n"
-        + text[-TRANSCRIPT_CHARS:]
-    )
-
-
-def run_opencode(task_path: pathlib.Path) -> subprocess.CompletedProcess[str]:
-    cmd = ["opencode", "run", "--model", "opencode/deepseek-v4-flash-free"]
+def run_opencode(task_path: pathlib.Path, *, continue_session: bool) -> int:
+    cmd = ["opencode", "run"]
+    if continue_session:
+        cmd.append("-c")
+    cmd.extend(["--model", "opencode/deepseek-v4-flash-free"])
 
     env = {
         **os.environ,
@@ -148,7 +134,7 @@ def run_opencode(task_path: pathlib.Path) -> subprocess.CompletedProcess[str]:
 
     sys.stdout.write(res.stdout)
     sys.stderr.write(res.stderr)
-    return res
+    return res.returncode
 
 
 def main():
@@ -178,9 +164,7 @@ def main():
 
     run_dir = pathlib.Path(".agents/review-runner").resolve()
     candidates_dir = run_dir / "candidates"
-    transcripts_dir = run_dir / "transcripts"
     candidates_dir.mkdir(parents=True, exist_ok=True)
-    transcripts_dir.mkdir(parents=True, exist_ok=True)
     task_path = run_dir / "task.md"
 
     repo_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
@@ -203,7 +187,7 @@ Do NOT re-raise these issues unless you have new evidence, the problem reappears
 materially different form, or the previous resolution is directly contradicted by the
 current code. The index is maintained by a separate gardener agent — respect it.
 """
-    current_prompt = f"{header}\n\n{system}\n\n{body}"
+    initial_prompt = f"{header}\n\n{system}\n\n{body}"
 
     # Prepend reviewer context if provided (existing issues on this PR)
     if args.reviewer_context:
@@ -214,32 +198,30 @@ current code. The index is maintained by a separate gardener agent — respect i
             )
             sys.exit(1)
         ctx = ctx_path.read_text()
-        current_prompt = f"{ctx}\n\n{current_prompt}"
+        initial_prompt = f"{ctx}\n\n{initial_prompt}"
 
     submitted_path = candidates_dir / SUBMITTED_CANDIDATE
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
         if attempt > 1:
             time.sleep(5)
-        task_path.write_text(current_prompt)
+            prompt = (
+                f"The previous invocation in this opencode session ended without "
+                f"a valid report at {ARTIFACT_PATH}. Continue the existing session. "
+                f"Write the report to {submitted_path}, then run "
+                f"quality-control/ci/submit-candidate with no arguments."
+            )
+        else:
+            prompt = initial_prompt
+
+        task_path.write_text(prompt)
         print(f"--- opencode run attempt {attempt}/{MAX_ATTEMPTS} ---", file=sys.stderr)
         # Clear any prior files to prevent stale submissions
         submitted_path.unlink(missing_ok=True)
         ARTIFACT_PATH.unlink(missing_ok=True)
-
-        attempt_stdout = ""
-        attempt_stderr = ""
-        timed_out = False
         try:
-            result = run_opencode(task_path)
-            attempt_stdout = result.stdout
-            attempt_stderr = result.stderr
-        except subprocess.TimeoutExpired as e:
-            timed_out = True
-            attempt_stdout = _decode_timeout_stream(e.output)
-            attempt_stderr = _decode_timeout_stream(e.stderr)
-            sys.stdout.write(attempt_stdout)
-            sys.stderr.write(attempt_stderr)
+            run_opencode(task_path, continue_session=(attempt > 1))
+        except subprocess.TimeoutExpired:
             print("--- opencode timed out ---", file=sys.stderr)
         except FileNotFoundError:
             print(
@@ -248,13 +230,6 @@ current code. The index is maintained by a separate gardener agent — respect i
                 file=sys.stderr,
             )
             sys.exit(1)
-
-        transcript = _bounded_transcript(
-            f"# Attempt {attempt} stdout\n\n{attempt_stdout}\n\n"
-            f"# Attempt {attempt} stderr\n\n{attempt_stderr}\n"
-        )
-        transcript_path = transcripts_dir / f"attempt-{attempt}.log"
-        transcript_path.write_text(transcript)
 
         if ARTIFACT_PATH.exists():
             print("--- Report artifact submitted ---", file=sys.stderr)
@@ -269,21 +244,6 @@ current code. The index is maintained by a separate gardener agent — respect i
             except Exception as e:
                 print(f"Warning: Failed to read rendered comment: {e}", file=sys.stderr)
             sys.exit(0)
-
-        timeout_note = " The previous invocation timed out." if timed_out else ""
-        current_prompt += (
-            f"\n\n## Continuation Context (Attempt {attempt})\n\n"
-            f"The previous opencode invocation ended without a valid report at "
-            f"{ARTIFACT_PATH}.{timeout_note}\n"
-            f"Do not restart repository exploration from scratch. Continue from the "
-            f"previous attempt transcript below: reuse already discovered files, "
-            f"claims, paths, and partial findings, but correct any unsupported claims "
-            f"before submitting.\n\n"
-            f"Write the report to {submitted_path}, then run "
-            f"quality-control/ci/submit-candidate with no arguments.\n\n"
-            f"### Previous attempt transcript\n\n"
-            f"```text\n{transcript}\n```"
-        )
 
     print(f"FATAL: No report artifact after {MAX_ATTEMPTS} attempts", file=sys.stderr)
     sys.exit(1)
