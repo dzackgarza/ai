@@ -66,7 +66,7 @@ install-private-review-tools:
     sudo cp {{control_repo}}/quality-control/ci/report-to-sarif.py {{private_tools}}/report-to-sarif.py
 
     sudo chown -R root:root {{private_tools}}
-    sudo chmod 700 {{private_tools}}
+    sudo chmod 755 {{private_tools}}
     sudo chmod 500 {{private_tools}}/submit-candidate
     sudo chmod 400 {{private_tools}}/check-report.py
     sudo chmod 555 {{private_tools}}/report-to-sarif.py
