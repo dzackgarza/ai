@@ -71,11 +71,8 @@ install-private-review-tools:
     sudo chmod 400 {{private_tools}}/check-report.py
     sudo chmod 400 {{private_tools}}/report-to-sarif.py
 
-    sudo tee {{public_tools}}/submit-candidate >/dev/null <<'SH'
-    #!/bin/sh
-    set -eu
-    exec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO /opt/ai-review/private/submit-candidate "$@"
-    SH
+    printf '#!/bin/sh\nset -eu\nexec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO /opt/ai-review/private/submit-candidate "$@"\n' \
+      | sudo tee {{public_tools}}/submit-candidate >/dev/null
 
     sudo chown root:root {{public_tools}}/submit-candidate
     sudo chmod 755 {{public_tools}}/submit-candidate
