@@ -66,9 +66,12 @@ jobs:
           # Directory needs 755 (r-x) so non-root can traverse and open files.
           # (Previously 711 which blocked uv from resolving files inside it.)
           sudo chmod 755 quality-control/ci/
-          # submit-candidate is the only file the agent executes directly
+          # Lock all CI files to root-only, then selectively reopen what's needed
           sudo find quality-control/ci -type f -exec chmod 700 {} +
+          # Scripts the workflow runner executes after lockdown:
           sudo chmod 755 quality-control/ci/submit-candidate
+          sudo chmod 755 quality-control/ci/fetch-reviewer-context.py
+          sudo chmod 755 quality-control/ci/report-to-sarif.py
           # Block all justfiles — agent may not run arbitary recipes
           sudo find . -name justfile -type f -exec chmod 000 {} +
 
