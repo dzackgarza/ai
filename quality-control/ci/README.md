@@ -22,7 +22,7 @@ state (open / dismissed / fixed) across runs without PR comment spam.
 | `submit-candidate` | **Public wrapper** — delegates to locked implementation (no validation logic) |
 | `report-to-sarif.py` | Converts validated artifact to SARIF 2.1.0 for code scanning upload |
 | `fetch-reviewer-context.py` | Queries existing code scanning alerts for reviewer context |
-| `just-blocked.sh` | Static blocker — replaces `just` binary during agent runs |
+
 | `justfile` | `install` recipe to deploy workflow YAMLs to another repo |
 | `README.md` | This file |
 
@@ -142,7 +142,6 @@ The CI workflow runs as the default `runner` user. A dedicated `reviewer` user
 | `quality-control/ci/locked/check-report.py` | root:root | `400` | Root read only — agent cannot read |
 | Other `ci/*.py` helpers | root:root | `755` | Workflow executes them directly |
 | All `justfile`s in repo | — | `000` | Agent cannot run `just` recipes |
-| `/usr/local/bin/just` | — | replaced with `just-blocked.sh` | Any `just` invocation prints error and exits 1 |
 
 ### Sudo restriction
 

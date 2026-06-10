@@ -1,3 +1,0 @@
-reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate
-reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate *
-Defaults!/opt/ai-review/private/submit-candidate env_keep += "REPORT_TYPE REVIEWER_REPO CONTROL_REPO"
