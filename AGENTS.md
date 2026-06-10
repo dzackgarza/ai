@@ -222,6 +222,11 @@ Initialize a memories directory for the project if not already present.
 **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere.
 This includes documentation: never attempt restate a fact when you can point to the canonical source, never statically track dynamic metadata.
 
+**CI workflow files: edit OSOT only, then install.** The canonical workflow
+YAML files are in `quality-control/ci/`. Never edit `.github/workflows/*.yml`
+directly. To deploy changes, edit the source in `quality-control/ci/`, then run:
+`just -f quality-control/ci/justfile install <target-repo-dir>`.
+
 **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed.
 Error-path work is useless, proof-of-correctness is essential.
 Mocks do not prove anything.

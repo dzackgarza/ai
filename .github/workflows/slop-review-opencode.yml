@@ -65,6 +65,9 @@ jobs:
           sudo chmod -R 700 quality-control/ci/
           sudo chmod 711 quality-control/ci/
           sudo chmod 755 quality-control/ci/submit-candidate
+          sudo chmod 755 quality-control/ci/fetch-reviewer-context.py
+          sudo chmod 755 quality-control/ci/fetch-pr-discussion.py
+          sudo chmod 755 quality-control/ci/post-validated-findings-as-review-threads.py
           sudo find . -name justfile -type f -exec chmod 000 {} +
 
       - name: Fetch reviewer context (existing threads)
