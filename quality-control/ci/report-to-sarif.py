@@ -8,11 +8,12 @@ as GitHub code scanning alerts.
 Usage:
   uv run quality-control/ci/report-to-sarif.py \
     --artifact .review-report-artifact.json \
-    --output .review-report.sarif
+    --output .review-report.sarif \
+    --category ai-general-review
 
-The category is derived from the report_type field in the artifact:
-  "general" -> "ai-general-review"
-  "slop"    -> "ai-slop-review"
+The --category value is written to run.automationDetails.id in SARIF.
+Use "ai-general-review" or "ai-slop-review" to match GitHub category
+expectations from upload-sarif's category parameter.
 
 Each finding becomes one SARIF result.  The partialFingerprint is a
 deterministic hash of (category, label, path) — stable across line shifts
@@ -37,10 +38,6 @@ def _tool_name(report_type: str) -> str:
     return f"{CATEGORY_PREFIX}/{report_type}"
 
 
-def _category(report_type: str) -> str:
-    return report_type
-
-
 def _tier_to_level(tier: str) -> str:
     return "error" if tier == "tier1" else "warning"
 
@@ -56,7 +53,7 @@ def _fingerprint(category: str, label: str, path: str) -> dict[str, str]:
     return {"reviewFindingKey": h}
 
 
-def _build_artifact(artifact: dict, report_type: str) -> dict:
+def _build_artifact(artifact: dict, report_type: str, category: str) -> dict:
     findings: list[dict] = artifact.get("findings", [])
     run_sha = artifact.get("repo_sha", "?")
 
@@ -66,7 +63,7 @@ def _build_artifact(artifact: dict, report_type: str) -> dict:
     results: list[dict] = []
 
     for finding in findings:
-        category = finding.get("category", "?")
+        finding_category = finding.get("category", "?")
         label = finding.get("label", "?")
         tier = finding.get("tier", "tier2")
         violated = finding.get("violated_invariant", "")
@@ -76,19 +73,19 @@ def _build_artifact(artifact: dict, report_type: str) -> dict:
         end_line = loc.get("end_line", start_line)
 
         # Register rule if new
-        if category not in seen_rules:
+        if finding_category not in seen_rules:
             rule_index = len(rules)
-            seen_rules[category] = rule_index
+            seen_rules[finding_category] = rule_index
             rules.append(
                 {
-                    "id": category,
+                    "id": finding_category,
                     "name": label,
                     "shortDescription": {"text": violated[:200] if violated else label},
                     "defaultConfiguration": {"level": _tier_to_level(tier)},
                 }
             )
         else:
-            rule_index = seen_rules[category]
+            rule_index = seen_rules[finding_category]
 
         # Build location properties
         location_props: dict = {
@@ -103,7 +100,7 @@ def _build_artifact(artifact: dict, report_type: str) -> dict:
             region["endLine"] = end_line
 
         result: dict = {
-            "ruleId": category,
+            "ruleId": finding_category,
             "ruleIndex": rule_index,
             "level": _tier_to_level(tier),
             "message": {"text": violated},
@@ -115,11 +112,11 @@ def _build_artifact(artifact: dict, report_type: str) -> dict:
                     }
                 }
             ],
-            "partialFingerprints": _fingerprint(category, label, loc_path),
+            "partialFingerprints": _fingerprint(finding_category, label, loc_path),
             "properties": {
                 "label": label,
                 "tier": tier,
-                "category": category,
+                "category": finding_category,
             },
         }
 
@@ -154,7 +151,7 @@ def _build_artifact(artifact: dict, report_type: str) -> dict:
                     }
                 },
                 "automationDetails": {
-                    "id": _category(report_type),
+                    "id": category,
                 },
                 "results": results,
                 "originalUriBaseIds": {
@@ -187,6 +184,12 @@ def main() -> None:
         type=Path,
         help="Path to write .review-report.sarif",
     )
+    parser.add_argument(
+        "--category",
+        required=True,
+        type=str,
+        help="run.automationDetails.id (e.g. ai-general-review or ai-slop-review)",
+    )
     args = parser.parse_args()
 
     if not args.artifact.is_file():
@@ -204,7 +207,7 @@ def main() -> None:
         )
         sys.exit(1)
 
-    sarif = _build_artifact(artifact, report_type)
+    sarif = _build_artifact(artifact, report_type, category=args.category)
 
     with open(args.output, "w") as f:
         json.dump(sarif, f, indent=2)
