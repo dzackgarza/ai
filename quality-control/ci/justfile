@@ -80,7 +80,7 @@ install-private-review-tools:
     { echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate"; echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate *"; echo "Defaults!/opt/ai-review/private/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""; } | sudo tee /etc/sudoers.d/ai-review-submit
 
     sudo chmod 0440 /etc/sudoers.d/ai-review-submit
-    sudo visudo -c
+    sudo visudo -c -f /etc/sudoers.d/ai-review-submit
 
 materialize-reviewer-repo:
     sudo rm -rf {{reviewer_repo}}
