@@ -63,19 +63,19 @@ install-private-review-tools:
 
     sudo cp {{control_repo}}/quality-control/ci/locked/submit-candidate {{private_tools}}/submit-candidate
     sudo cp {{control_repo}}/quality-control/ci/locked/check-report.py {{private_tools}}/check-report.py
-    sudo cp {{control_repo}}/quality-control/ci/report-to-sarif.py {{private_tools}}/report-to-sarif.py
+    sudo cp {{control_repo}}/quality-control/ci/report-to-sarif.py {{public_tools}}/report-to-sarif.py
 
-    sudo chown -R root:root {{private_tools}}
-    sudo chmod 755 {{private_tools}}
+    sudo chown -R root:root {{private_tools}} {{public_tools}}/report-to-sarif.py
+    sudo chmod 700 {{private_tools}}
     sudo chmod 500 {{private_tools}}/submit-candidate
     sudo chmod 400 {{private_tools}}/check-report.py
-    sudo chmod 555 {{private_tools}}/report-to-sarif.py
 
     printf '#!/bin/sh\nset -eu\nexec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO /opt/ai-review/private/submit-candidate "$@"\n' \
       | sudo tee {{public_tools}}/submit-candidate >/dev/null
 
     sudo chown root:root {{public_tools}}/submit-candidate
     sudo chmod 755 {{public_tools}}/submit-candidate
+    sudo chmod 555 {{public_tools}}/report-to-sarif.py
 
     { echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate"; echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate *"; echo "Defaults!/opt/ai-review/private/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""; } | sudo tee /etc/sudoers.d/ai-review-submit
 
@@ -131,7 +131,7 @@ collect-review-output:
     fi
 
 convert-sarif category:
-    uv run {{private_tools}}/report-to-sarif.py \
+    uv run {{public_tools}}/report-to-sarif.py \
       --artifact {{control_repo}}/.review-report-artifact.json \
       --output {{control_repo}}/.review-report.sarif \
       --category "{{category}}"
