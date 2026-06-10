@@ -23,8 +23,8 @@ Usage:
 Write the report JSON to .agents/review-runner/candidates/submitted.json,
 then run this script with no arguments.
 
-The script validates the report against pydantic models in
-quality-control/check-report.py. On success, renders the PR comment to
+The script validates the report against pydantic models.
+On success, renders the PR comment to
 .review-report-comment.md and exits 0. On failure, prints errors with
 FIX: guidance and exits non-zero — fix the same file and re-run.
 
