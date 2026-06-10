@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Validates the candidate report at the fixed path within REVIEWER_REPO.
 # On success: copies to artifact path and exits 0.
 # On failure: prints errors and exits non-zero.
