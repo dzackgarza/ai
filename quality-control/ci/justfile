@@ -96,7 +96,9 @@ materialize-reviewer-repo:
       {{control_repo}}/ {{reviewer_repo}}/
 
     sudo mkdir -p {{reviewer_repo}}/.agents/review-runner/candidates
-    sudo cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
+    ls -la {{control_repo}}/.reviewer-context.md
+    sudo cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md || true
+    ls -la {{reviewer_repo}}/.reviewer-context.md
 
     sudo chown -R reviewer:reviewer {{reviewer_repo}}
 
