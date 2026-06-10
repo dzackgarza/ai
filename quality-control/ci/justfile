@@ -86,7 +86,7 @@ materialize-reviewer-repo:
     sudo rm -rf {{reviewer_repo}}
     sudo mkdir -p {{reviewer_repo}}
 
-    rsync -rlpD --delete \
+    sudo rsync -rl --delete \
       --exclude '.git' \
       --exclude '.github/workflows' \
       --exclude 'quality-control/ci' \
@@ -95,8 +95,8 @@ materialize-reviewer-repo:
       --exclude '.review-report.sarif' \
       {{control_repo}}/ {{reviewer_repo}}/
 
-    mkdir -p {{reviewer_repo}}/.agents/review-runner/candidates
-    cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
+    sudo mkdir -p {{reviewer_repo}}/.agents/review-runner/candidates
+    sudo cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
 
     sudo chown -R reviewer:reviewer {{reviewer_repo}}
 
