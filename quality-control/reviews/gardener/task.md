@@ -12,21 +12,15 @@ creating missing threads, and maintaining a thread index.
 
 2. Analyze the state:
 
-   - Are there actionable review concerns in top-level issue comments that
-     should be review threads?
+   - **Do NOT reconstruct our review findings from flat issue comments.**
+     Findings from our review workflows (General Review, Slop Review) are now
+     posted as GitHub PR review threads via `/pulls/{pr}/reviews`. They are
+     already inline review comments — do not re-ingest them from top-level
+     issue comments.
    - Are there external bot comments whose findings should be folded into
      existing threads or given their own thread?
    - Are there duplicate threads that should be cross-linked?
    - Does the index comment need updating?
-   - **Are there "Rejected Easy Wins" in review output comments that have
-     not been given their own threads?** "Rejected Easy Wins" are valid
-     findings that were set aside as easy wins during review. They are NOT
-     "rejected" in the sense of being wrong — they are still items that
-     need to be addressed. The gardener MUST extract them from review
-     output comments (`## Code Review: <type>` issue comments by
-     `github-actions`) and either create review threads for them or add
-     them to the index under "Unresolved" / "Unthreadable." Do NOT
-     preserve the "Rejected Easy Win" label — these are real tasks.
 
 3. For each required action, use `gh api` to make the change directly.
    GH_TOKEN is available.
@@ -56,8 +50,6 @@ creating missing threads, and maintaining a thread index.
 
 ## Allowed Actions
 
-- Create missing review threads for actionable issues found in top-level
-  comments (use `POST /repos/{owner}/{repo}/pulls/{num}/comments`)
 - Reply to an existing thread with links to duplicate reports or added
   evidence (use `POST .../{comment_id}/replies`)
 - Fold external bot comments into existing threads (reply with cross-link)

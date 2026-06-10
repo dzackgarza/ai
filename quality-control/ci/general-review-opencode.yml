@@ -89,13 +89,15 @@ jobs:
             --pr-number "${{ github.event.number }}" \
             --reviewer-context .reviewer-context.md
 
-      - name: Post PR Comment
+      - name: Post PR review
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          comment=$(cat .review-report-comment.md)
-          gh pr comment ${{ github.event.number }} --body "$comment"
+          uv run quality-control/ci/post-validated-findings-as-review-threads.py \
+            --artifact .review-report-artifact.json \
+            --pr-number ${{ github.event.number }} \
+            --repo ${{ github.repository }}
 
       - name: Check Threshold
         if: ${{ vars.GENERAL_FAIL_BELOW != '' }}

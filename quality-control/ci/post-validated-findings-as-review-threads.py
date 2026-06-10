@@ -2,10 +2,10 @@
 # requires-python = ">=3.11"
 # ///
 """
-Post validated review findings as individual GitHub PR review threads.
+Post validated review findings as a single GitHub PR review.
 
-Reads a validated GeneralReport/SlopReport artifact JSON and posts each
-finding as a separate PR review comment (thread) via the GitHub REST API.
+Reads a validated GeneralReport/SlopReport artifact JSON and submits
+one PR review with each finding as an inline review comment.
 
 Usage:
   uv run quality-control/ci/post-validated-findings-as-review-threads.py \
@@ -88,33 +88,50 @@ def _get_finding_body(path: Path, index: int) -> str:
     return result.stdout.strip()
 
 
-def _post_review_comment(
+def _build_review_body(artifact: dict) -> str:
+    """Build a short review body header from the artifact."""
+    findings = artifact.get("findings", [])
+    total = len(findings)
+    tier1 = sum(1 for f in findings if f.get("tier") == "tier1")
+    tier2 = sum(1 for f in findings if f.get("tier") == "tier2")
+    report_type = artifact.get("report_type", "review")
+    sha = artifact.get("repo_sha", "unknown")
+
+    header = f"{report_type.capitalize()} review run\n\n"
+    header += f"Commit: `{sha}`\n"
+    header += f"Findings: {total}\n"
+    header += f"Tier 1: {tier1}\n"
+    header += f"Tier 2: {tier2}"
+    return header
+
+
+def _post_review(
     repo: str,
     pr_number: int,
     commit_sha: str,
-    path: str,
-    line: int,
     body: str,
+    comments: list[dict],
     dry_run: bool,
-) -> dict | None:
-    """Post a single PR review comment via gh API.
+) -> dict:
+    """Submit one PR review with inline comments via gh API.
 
-    Returns the API response dict on success, None on failure.
-    On dry_run, prints what would be posted and returns a placeholder.
+    Returns the API response dict.
+    On dry_run, prints the payload and returns a placeholder.
     """
     payload = {
-        "body": body,
         "commit_id": commit_sha,
-        "path": path,
-        "line": line,
-        "side": "RIGHT",
+        "body": body,
+        "event": "COMMENT",
+        "comments": comments,
     }
 
     if dry_run:
-        print(f"  [DRY RUN] Would post review comment on {path}:{line}")
-        return {"html_url": f"<dry-run: {path}:{line}>"}
+        print(json.dumps(payload, indent=2))
+        return {
+            "id": 0,
+            "html_url": "<dry-run>",
+        }
 
-    # Write payload to a temp file to avoid shell escaping issues
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump(payload, f)
         tmp_path = f.name
@@ -124,7 +141,7 @@ def _post_review_comment(
             [
                 "gh",
                 "api",
-                f"repos/{repo}/pulls/{pr_number}/comments",
+                f"repos/{repo}/pulls/{pr_number}/reviews",
                 "--method",
                 "POST",
                 "--input",
@@ -134,20 +151,35 @@ def _post_review_comment(
             text=True,
         )
         if result.returncode != 0:
-            stderr = result.stderr.strip()
-            print(
-                f"  WARNING: Failed to post comment on {path}:{line}: {stderr}",
-                file=sys.stderr,
-            )
-            return None
+            _fail(f"Failed to post review: {result.stderr.strip()}")
         return json.loads(result.stdout)
     finally:
         os.unlink(tmp_path)
 
 
+def _fetch_review_comments(repo: str, pr_number: int, review_id: int) -> list[dict]:
+    """Fetch inline comments for a submitted review."""
+    result = subprocess.run(
+        [
+            "gh",
+            "api",
+            f"repos/{repo}/pulls/{pr_number}/reviews/{review_id}/comments",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(
+            f"  WARNING: Failed to fetch review comments: {result.stderr.strip()}",
+            file=sys.stderr,
+        )
+        return []
+    return json.loads(result.stdout)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Post validated review findings as GitHub PR review threads"
+        description="Post validated review findings as a single GitHub PR review"
     )
     parser.add_argument(
         "--artifact",
@@ -188,63 +220,83 @@ def main() -> None:
         else _get_pr_head_sha(args.repo, args.pr_number)
     )
 
-    posted: list[dict] = []
-    unthreadable: list[dict] = []
+    comments: list[dict] = []
+    unthreadable_indices: list[int] = []
 
     for i, finding in enumerate(findings):
         loc = finding.get("location", {})
         loc_path = loc.get("path", "")
         start_line = loc.get("start_line", 0)
+        end_line = loc.get("end_line", start_line)
 
         if not loc_path or not start_line:
-            unthreadable.append(finding)
+            unthreadable_indices.append(i)
             continue
 
-        body = _get_finding_body(args.artifact, i)
+        comment: dict = {
+            "path": loc_path,
+            "body": _get_finding_body(args.artifact, i),
+            "side": "RIGHT",
+        }
+
+        if end_line > start_line:
+            comment["start_line"] = start_line
+            comment["start_side"] = "RIGHT"
+            comment["line"] = end_line
+        else:
+            comment["line"] = start_line
+
+        comments.append(comment)
 
         print(
-            f"Posting finding {i}: {finding.get('label', '?')} on {loc_path}:{start_line}"
+            f"Queued finding {i}: {finding.get('label', '?')} on {loc_path}:{start_line}"
         )
 
-        response = _post_review_comment(
-            repo=args.repo,
-            pr_number=args.pr_number,
-            commit_sha=head_sha,
-            path=loc_path,
-            line=start_line,
-            body=body,
-            dry_run=args.dry_run,
-        )
+    review_body = _build_review_body(artifact)
 
-        if response is None:
-            unthreadable.append(finding)
-        else:
-            posted.append(
-                {
-                    "index": i,
-                    "label": finding.get("label", ""),
-                    "path": loc_path,
-                    "line": start_line,
-                    "url": response.get("html_url", ""),
-                    "id": response.get("id", 0),
-                }
-            )
+    print(f"\nSubmitting review with {len(comments)} inline comments...")
+
+    response = _post_review(
+        repo=args.repo,
+        pr_number=args.pr_number,
+        commit_sha=head_sha,
+        body=review_body,
+        comments=comments,
+        dry_run=args.dry_run,
+    )
+
+    review_id = response.get("id")
+    review_url = response.get("html_url")
+
+    # Fetch inline comment IDs for the summary
+    posted_comments: list[dict] = []
+    if not args.dry_run and review_id:
+        inline_comments = _fetch_review_comments(args.repo, args.pr_number, review_id)
+        for idx, ic in enumerate(inline_comments):
+            if idx < len(comments):
+                posted_comments.append(
+                    {
+                        "index": idx,
+                        "path": ic.get("path", ""),
+                        "line": ic.get("line", 0),
+                        "url": ic.get("html_url", ""),
+                        "id": ic.get("id", 0),
+                    }
+                )
 
     # Summary
     print()
     print("=" * 60)
-    print(f"Threads posted: {len(posted)}")
-    print(f"Unthreadable:   {len(unthreadable)}")
+    print(f"Review submitted: {review_url or '<dry-run>'}")
+    print(f"Review ID:       {review_id or 0}")
+    print(f"Findings posted: {len(comments)}")
+    print(f"Unthreadable:    {len(unthreadable_indices)}")
     print()
 
-    if posted:
-        print("Posted threads:")
-        for p in posted:
-            print(f"  {p['url']} -- {p['label']} on {p['path']}:{p['line']}")
-
-    if unthreadable:
-        print("Unthreadable findings (not posted as review threads):")
-        for f in unthreadable:
+    if unthreadable_indices:
+        print("Unthreadable findings (not posted as review comments):")
+        for i in unthreadable_indices:
+            f = findings[i]
             loc = f.get("location", {})
             print(
                 f"  {f.get('label', '?')} at "
@@ -256,27 +308,30 @@ def main() -> None:
         "repo": args.repo,
         "pr_number": args.pr_number,
         "commit_sha": head_sha,
-        "posted": posted,
-        "unthreadable_count": len(unthreadable),
-        "unthreadable_labels": [f.get("label", "") for f in unthreadable],
+        "review_id": review_id,
+        "review_url": review_url,
+        "finding_count": len(findings),
+        "posted_count": len(comments),
+        "unthreadable_count": len(unthreadable_indices),
+        "comments": posted_comments if posted_comments else None,
     }
     summary_path = Path(".review-thread-summary.json")
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)
     print(f"\nSummary written to {summary_path}")
 
-    if not posted and findings:
+    if not comments and findings:
         print(
-            "FATAL: No findings could be posted as review threads. "
+            "FATAL: No findings could be posted as review comments. "
             "This may indicate an authentication or API issue (GH_TOKEN, rate limits, permissions).",
             file=sys.stderr,
         )
         sys.exit(1)
 
-    if unthreadable:
+    if unthreadable_indices:
         print(
-            "WARNING: Some findings could not be posted as review threads. "
-            "They are listed above.  The gardener agent should process them.",
+            "WARNING: Some findings could not be posted as review comments. "
+            "They are listed above.",
             file=sys.stderr,
         )
 
