@@ -50,7 +50,7 @@ fetch-context category output:
     uv run {{control_repo}}/quality-control/ci/fetch-reviewer-context.py \
       --repo "${GITHUB_REPOSITORY}" \
       --categories "{{category}}" \
-      --output "{{output}}"
+      --output "{{control_repo}}/{{output}}"
 
 create-reviewer-user:
     sudo useradd -m -s /bin/bash reviewer || true
@@ -94,7 +94,7 @@ materialize-reviewer-repo:
       --exclude '.review-report.sarif' \
       {{control_repo}}/ {{reviewer_repo}}/
 
-    sudo cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md || true
+    sudo cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
 
     sudo chown -R reviewer:reviewer {{reviewer_repo}}
 
