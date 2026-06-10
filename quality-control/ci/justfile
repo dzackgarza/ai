@@ -1,26 +1,95 @@
-# Install CI workflows into a target repository.
-#
-# Usage:
-#   just -f quality-control/ci/justfile install /path/to/target-repo
-#
-# This copies the canonical workflow files from quality-control/ci/ into
-# the target repo's .github/workflows/ directory, enabling CI on that repo.
-# Existing files with the same name are backed up as *.checkpoint before
-# being overwritten.
+set shell := ["bash", "-euo", "pipefail", "-c"]
 
-install target-dir:
-    #!/bin/sh
-    set -euo pipefail
-    SRC_DIR="{{justfile_directory()}}"
-    DST_DIR="{{target-dir}}/.github/workflows"
-    mkdir -p "$DST_DIR"
-    for f in "$SRC_DIR"/general-review-opencode.yml "$SRC_DIR"/slop-review-opencode.yml; do
-        name=$(basename "$f")
-        dst="$DST_DIR/$name"
-        if [ -f "$dst" ] && [ ! -L "$dst" ]; then
-            cp "$dst" "$dst.checkpoint"
-            echo "backed up existing $name -> $name.checkpoint"
-        fi
-        cp "$f" "$dst"
-        echo "installed $name"
+repo := `pwd`
+
+install-uv:
+    curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
+
+install-just:
+    VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
+    curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+      | tar -xzf - -C /usr/local/bin just
+
+install-opencode:
+    npm install -g opencode-ai
+
+install-cc-safety-net:
+    npm install -g cc-safety-net
+
+install-tools: install-uv install-just install-opencode install-cc-safety-net
+
+block-just:
+    rm -f /usr/local/bin/just
+    cp quality-control/ci/just-blocked.sh /usr/local/bin/just
+    chmod 755 /usr/local/bin/just
+
+configure-opencode skill_list:
+    mkdir -p ~/.config/opencode
+    cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
+    mkdir -p ~/.config/opencode/skills
+    for skill in {{skill_list}}; do \
+      [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/; \
+      echo "installed $skill"; \
     done
+
+configure-cc-safety-net:
+    mkdir -p .cc-safety-net/rules/project-rules
+    cp quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
+    cp quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
+    CC_SAFETY_NET_PARANOID=1 npx -y cc-safety-net rule sync
+
+configure-general:
+    just -f quality-control/ci/justfile configure-opencode "policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
+    just -f quality-control/ci/justfile configure-cc-safety-net
+
+configure-slop:
+    just -f quality-control/ci/justfile configure-opencode "anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
+    just -f quality-control/ci/justfile configure-cc-safety-net
+
+fetch-context category output:
+    uv run quality-control/ci/fetch-reviewer-context.py \
+      --repo "${GITHUB_REPOSITORY}" \
+      --categories "{{category}}" \
+      --output "{{output}}"
+
+prepare-reviewer:
+    sudo useradd -m -s /bin/bash reviewer || true
+
+    mkdir -p .agents/review-runner/candidates
+    sudo chown -R reviewer:reviewer .agents
+
+    sudo chown root:root quality-control/ci/submit-candidate
+    sudo chmod 755 quality-control/ci/submit-candidate
+
+    sudo chown -R root:root quality-control/ci/locked
+    sudo chmod 700 quality-control/ci/locked
+    sudo chmod 500 quality-control/ci/locked/submit-candidate
+    sudo chmod 400 quality-control/ci/locked/check-report.py
+
+    LOCKED_SUBMIT="$(pwd)/quality-control/ci/locked/submit-candidate"; \
+    { \
+      echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT"; \
+      echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT *"; \
+      echo "Defaults!$LOCKED_SUBMIT env_keep += \"REPORT_TYPE\""; \
+    } | sudo tee /etc/sudoers.d/review-submit
+
+    sudo chmod 0440 /etc/sudoers.d/review-submit
+    sudo visudo -c
+
+    sudo find . -name justfile -type f -exec chmod 000 {} +
+
+run-review mode template report_type:
+    sudo -u reviewer -E env REPORT_TYPE="{{report_type}}" python3 quality-control/run-review.py \
+      --mode "{{mode}}" \
+      --skills-dir opencode/skills \
+      --template "{{template}}" \
+      --base-ref "${GITHUB_BASE_REF:-main}" \
+      --pr-number "${PR_NUMBER:-0}" \
+      --reviewer-context .reviewer-context.md
+
+convert-sarif category:
+    sudo uv run quality-control/ci/locked/check-report.py metadata .review-report-artifact.json
+    uv run quality-control/ci/report-to-sarif.py \
+      --artifact .review-report-artifact.json \
+      --output .review-report.sarif \
+      --category "{{category}}"
