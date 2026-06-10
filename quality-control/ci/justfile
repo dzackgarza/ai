@@ -25,17 +25,17 @@ install-tools: install-uv install-opencode install-cc-safety-net
 
 configure-opencode skill_list:
     mkdir -p ~/.config/opencode
-    cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
+    cp {{control_repo}}/quality-control/ci-opencode.json ~/.config/opencode/opencode.json
     mkdir -p ~/.config/opencode/skills
     for skill in {{skill_list}}; do \
-      [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/; \
+      [ -d "{{control_repo}}/opencode/skills/$skill" ] && cp -r "{{control_repo}}/opencode/skills/$skill" ~/.config/opencode/skills/; \
       echo "installed $skill"; \
     done
 
 configure-cc-safety-net:
     mkdir -p .cc-safety-net/rules/project-rules
-    cp quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
-    cp quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
+    cp {{control_repo}}/quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
+    cp {{control_repo}}/quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
     CC_SAFETY_NET_PARANOID=1 npx -y cc-safety-net rule sync
 
 configure-general:
@@ -47,7 +47,7 @@ configure-slop:
     just configure-cc-safety-net
 
 fetch-context category output:
-    uv run quality-control/ci/fetch-reviewer-context.py \
+    uv run {{control_repo}}/quality-control/ci/fetch-reviewer-context.py \
       --repo "${GITHUB_REPOSITORY}" \
       --categories "{{category}}" \
       --output "{{output}}"
@@ -61,9 +61,9 @@ install-private-review-tools:
     sudo rm -rf {{private_tools}} {{public_tools}}
     sudo mkdir -p {{private_tools}} {{public_tools}}
 
-    sudo cp quality-control/ci/locked/submit-candidate {{private_tools}}/submit-candidate
-    sudo cp quality-control/ci/locked/check-report.py {{private_tools}}/check-report.py
-    sudo cp quality-control/ci/report-to-sarif.py {{private_tools}}/report-to-sarif.py
+    sudo cp {{control_repo}}/quality-control/ci/locked/submit-candidate {{private_tools}}/submit-candidate
+    sudo cp {{control_repo}}/quality-control/ci/locked/check-report.py {{private_tools}}/check-report.py
+    sudo cp {{control_repo}}/quality-control/ci/report-to-sarif.py {{private_tools}}/report-to-sarif.py
 
     sudo chown -R root:root {{private_tools}}
     sudo chmod 700 {{private_tools}}
