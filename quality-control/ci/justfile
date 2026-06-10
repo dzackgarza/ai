@@ -21,7 +21,7 @@ install-opencode:
 install-cc-safety-net:
     npm install -g cc-safety-net
 
-install-tools: install-uv install-just install-opencode install-cc-safety-net
+install-tools: install-uv install-opencode install-cc-safety-net
 
 configure-opencode skill_list:
     mkdir -p ~/.config/opencode
