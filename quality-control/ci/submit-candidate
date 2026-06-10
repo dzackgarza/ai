@@ -1,6 +1,4 @@
 #!/bin/sh
-# Public wrapper — delegates to locked implementation.
-# The agent can run this but cannot read the locked directory.
 set -eu
 
 HERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"

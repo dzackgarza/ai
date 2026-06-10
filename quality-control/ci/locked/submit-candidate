@@ -6,11 +6,11 @@
 
 set -euo pipefail
 
-HERE="$(CDPATH= cd -- "$(dirname "$0")/../../.." && pwd)"
-CANDIDATE="$HERE/.agents/review-runner/candidates/submitted.json"
-CHECKER="$HERE/quality-control/ci/locked/check-report.py"
-ARTIFACT="$HERE/.review-report-artifact.json"
-COMMENT="$HERE/.review-report-comment.md"
+REPO_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)"
+CANDIDATE="$REPO_ROOT/.agents/review-runner/candidates/submitted.json"
+CHECKER="$REPO_ROOT/quality-control/ci/locked/check-report.py"
+ARTIFACT="$REPO_ROOT/.review-report-artifact.json"
+COMMENT="$REPO_ROOT/.review-report-comment.md"
 
 if [ "${1:-}" = "--help" ]; then
     cat <<'HELP'
