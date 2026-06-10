@@ -1,14 +1,18 @@
-# Slop Review: AI-generated-code slop review via opencode run (free model, no API key)
+# Slop Review: repo-wide AI-generated-code slop audit via opencode run
 name: Slop Review (OpenCode)
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 4' # weekly Thursday 08:00
+  push:
+    branches: [main]
 
 jobs:
   slop-review:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write
+      security-events: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,16 +46,13 @@ jobs:
 
       - name: Configure OpenCode and CC Safety Net
         run: |
-          # OpenCode global config — enable cc-safety-net plugin
           mkdir -p ~/.config/opencode
           cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
-          # Copy policy skills for skill() tool
           mkdir -p ~/.config/opencode/skills
           for skill in anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
             [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
             echo "installed $skill"
           done
-          # CC Safety Net project rules — block linting escapes (uvx ruff, uvx mypy, etc.)
           mkdir -p .cc-safety-net/rules/project-rules
           cp quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
           cp quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
@@ -62,22 +63,23 @@ jobs:
       - name: Lockdown CI assets
         run: |
           sudo chown -R root:root quality-control/ci/
-          sudo chmod -R 700 quality-control/ci/
-          sudo chmod 711 quality-control/ci/
+          # Directory needs 755 (r-x) so non-root can traverse and open files.
+          # (Previously 711 which blocked uv from resolving files inside it.)
+          sudo chmod 755 quality-control/ci/
+          # submit-candidate is the only file the agent executes directly
+          sudo find quality-control/ci -type f -exec chmod 700 {} +
           sudo chmod 755 quality-control/ci/submit-candidate
-          sudo chmod 755 quality-control/ci/fetch-reviewer-context.py
-          sudo chmod 755 quality-control/ci/fetch-pr-discussion.py
-          sudo chmod 755 quality-control/ci/post-validated-findings-as-review-threads.py
+          # Block all justfiles — agent may not run arbitary recipes
           sudo find . -name justfile -type f -exec chmod 000 {} +
 
-      - name: Fetch reviewer context (existing threads)
+      - name: Fetch reviewer context (existing alerts)
         id: ctx
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           uv run quality-control/ci/fetch-reviewer-context.py \
-            --pr-number ${{ github.event.number }} \
             --repo ${{ github.repository }} \
+            --categories ai-slop-review \
             --output .reviewer-context.md
 
       - name: Run Slop Review via OpenCode
@@ -91,18 +93,20 @@ jobs:
             --skills-dir opencode/skills \
             --template quality-control/reviews/slop/template.md \
             --base-ref "${{ github.base_ref }}" \
-            --pr-number "${{ github.event.number }}" \
+            --pr-number 0 \
             --reviewer-context .reviewer-context.md
 
-      - name: Post PR review
-        if: github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Convert review report to SARIF
         run: |
-          uv run quality-control/ci/post-validated-findings-as-review-threads.py \
+          uv run quality-control/ci/report-to-sarif.py \
             --artifact .review-report-artifact.json \
-            --pr-number ${{ github.event.number }} \
-            --repo ${{ github.repository }}
+            --output .review-report.sarif
+
+      - name: Upload review findings
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: .review-report.sarif
+          category: ai-slop-review
 
       - name: Check Slop Threshold
         if: ${{ vars.SLOP_FAIL_BELOW != '' }}
