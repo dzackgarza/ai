@@ -60,21 +60,6 @@ jobs:
         env:
           CC_SAFETY_NET_PARANOID: 1
 
-      - name: Lockdown CI assets
-        run: |
-          sudo chown -R root:root quality-control/ci/
-          # Directory needs 755 (r-x) so non-root can traverse and open files.
-          # (Previously 711 which blocked uv from resolving files inside it.)
-          sudo chmod 755 quality-control/ci/
-          # Lock all CI files to root-only, then selectively reopen what's needed
-          sudo find quality-control/ci -type f -exec chmod 700 {} +
-          # Scripts the workflow runner executes after lockdown:
-          sudo chmod 755 quality-control/ci/submit-candidate
-          sudo chmod 755 quality-control/ci/fetch-reviewer-context.py
-          sudo chmod 755 quality-control/ci/report-to-sarif.py
-          # Block all justfiles — agent may not run arbitary recipes
-          sudo find . -name justfile -type f -exec chmod 000 {} +
-
       - name: Fetch reviewer context (existing alerts)
         id: ctx
         env:
@@ -85,22 +70,49 @@ jobs:
             --categories ai-slop-review \
             --output .reviewer-context.md
 
+      - name: Prepare reviewer sandbox and lock validation
+        run: |
+          sudo useradd -m -s /bin/bash reviewer || true
+
+          mkdir -p .agents/review-runner/candidates
+          sudo chown -R reviewer:reviewer .agents
+
+          sudo chown root:root quality-control/ci/submit-candidate
+          sudo chmod 755 quality-control/ci/submit-candidate
+
+          sudo chown -R root:root quality-control/ci/locked
+          sudo chmod 700 quality-control/ci/locked
+          sudo chmod 500 quality-control/ci/locked/submit-candidate
+          sudo chmod 400 quality-control/ci/locked/check-report.py
+
+          LOCKED_SUBMIT="$(pwd)/quality-control/ci/locked/submit-candidate"
+          {
+            echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT"
+            echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT *"
+            echo "Defaults!$LOCKED_SUBMIT env_keep += \"REPORT_TYPE\""
+          } | sudo tee /etc/sudoers.d/review-submit
+          sudo chmod 0440 /etc/sudoers.d/review-submit
+          sudo visudo -c
+
+          sudo find . -name justfile -type f -exec chmod 000 {} +
+
       - name: Run Slop Review via OpenCode
         id: review
         shell: bash
         env:
           REPORT_TYPE: slop
         run: |
-          python3 quality-control/run-review.py \
+          sudo -u reviewer -E python3 quality-control/run-review.py \
             --mode slop \
             --skills-dir opencode/skills \
             --template quality-control/reviews/slop/template.md \
             --base-ref "${{ github.base_ref }}" \
-            --pr-number 0 \
+            --pr-number "${{ github.event.number }}" \
             --reviewer-context .reviewer-context.md
 
       - name: Convert review report to SARIF
         run: |
+          sudo uv run quality-control/ci/locked/check-report.py metadata .review-report-artifact.json
           uv run quality-control/ci/report-to-sarif.py \
             --artifact .review-report-artifact.json \
             --output .review-report.sarif
