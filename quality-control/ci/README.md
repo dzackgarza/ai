@@ -19,18 +19,26 @@ state (open / dismissed / fixed) across runs without PR comment spam.
 |------|---------|
 | `general-review-opencode.yml` | CI workflow definition — general review |
 | `slop-review-opencode.yml` | CI workflow definition — slop review |
-| `submit-candidate` | Script the agent runs to validate + submit a report |
+| `submit-candidate` | **Public wrapper** — delegates to locked implementation (no validation logic) |
 | `report-to-sarif.py` | Converts validated artifact to SARIF 2.1.0 for code scanning upload |
 | `fetch-reviewer-context.py` | Queries existing code scanning alerts for reviewer context |
 | `just-blocked.sh` | Static blocker — replaces `just` binary during agent runs |
 | `justfile` | `install` recipe to deploy workflow YAMLs to another repo |
 | `README.md` | This file |
 
+### Locked directory (`quality-control/ci/locked/`)
+
+Root-owned, agent cannot read. Contains validation/submission implementation.
+
+| File | Purpose | Perms |
+|------|---------|-------|
+| `submit-candidate` | Private validator — validates report JSON, renders PR comment | `500` (root execute) |
+| `check-report.py` | Pydantic models, schema printer, validator, renderer | `400` (root read) |
+
 ### Outside this directory (`quality-control/`)
 
 | File | Purpose |
 |------|---------|
-| `check-report.py` | Pydantic validator — dispatches to `GeneralReport` or `SlopReport` by `report_type` |
 | `run-review.py` | Harness — feeds template to opencode, retries on timeout, collects artifact |
 | `reviews/general/template.md` | Agent prompt for general review |
 | `reviews/slop/template.md` | Agent prompt for slop review |
@@ -50,7 +58,8 @@ CI workflow triggers (scheduled / workflow_dispatch / push main)
       5. Fixes report to match schema
       6. Runs `quality-control/ci/submit-candidate` (no arguments)
       7. If exit 0 → done. If non-zero → read error (has FIX: guidance) → fix same file → goto 6
-  → submit-candidate calls `uv run check-report.py validate` (pydantic validation)
+   → submit-candidate (public wrapper) calls locked/submit-candidate via sudo
+   → locked/submit-candidate calls `uv run check-report.py validate` (pydantic validation)
    → On validation pass: cp to .review-report-artifact.json
    → On validation fail: print errors with FIX: guidance, exit 1
   → harness checks .review-report-artifact.json exists after opencode exits
@@ -117,27 +126,50 @@ the code scanning API using the `tool_name` filter.
 - **Everything is invisible to the agent** except: the template.md it receives, its own
   submitted report, the validator's pass/fail output, reviewer context, and the `--help` schema.
 
-## Security Model: Exact Lockdown
+## Security Model: Two-User Lockdown
 
-The CI workflow executes these steps before the agent runs:
+The CI workflow runs as the default `runner` user. A dedicated `reviewer` user
+(runs opencode) has no passwordless sudo except one narrow rule.
 
-```yaml
-- name: Lockdown CI assets
-  run: |
-    sudo chown -R root:root quality-control/ci/
-    sudo chmod 755 quality-control/ci/
-    sudo find quality-control/ci -type f -exec chmod 700 {} +
-    sudo chmod 755 quality-control/ci/submit-candidate
-    sudo find . -name justfile -type f -exec chmod 000 {} +
+### Filesystem permissions
+
+| Target | Owner | Mode | Rationale |
+|--------|-------|------|-----------|
+| `quality-control/ci/` | root:root | `755` | Non-root can traverse and open known files |
+| `quality-control/ci/locked/` | root:root | `700` | Agent cannot list or read locked directory |
+| `quality-control/ci/submit-candidate` | root:root | `755` | Agent can execute wrapper (no validation logic) |
+| `quality-control/ci/locked/submit-candidate` | root:root | `500` | Root execute only — agent cannot read |
+| `quality-control/ci/locked/check-report.py` | root:root | `400` | Root read only — agent cannot read |
+| Other `ci/*.py` helpers | root:root | `755` | Workflow executes them directly |
+| All `justfile`s in repo | — | `000` | Agent cannot run `just` recipes |
+| `/usr/local/bin/just` | — | replaced with `just-blocked.sh` | Any `just` invocation prints error and exits 1 |
+
+### Sudo restriction
+
+Only one sudo rule exists for the `reviewer` user:
+
+```
+reviewer ALL=(root) NOPASSWD: /path/to/quality-control/ci/locked/submit-candidate *
 ```
 
-| Target | Permission | Rationale |
-|--------|-----------|-----------|
-| `quality-control/ci/` (directory) | `chmod 755`, root-owned | Non-root can traverse and open known files |
-| `submit-candidate` | `chmod 755`, root-owned | Agent can execute (shell script) but not modify |
-| Everything else in `ci/` | `chmod 700`, root-owned | Agent cannot read workflow configs or helper scripts |
-| All `justfile`s in repo | `chmod 000` | Agent cannot run `just` recipes |
-| `/usr/local/bin/just` | replaced with `just-blocked.sh` | Any `just` invocation prints error and exits 1 |
+`reviewer` may run exactly the locked submit command as root. It cannot `sudo cat`,
+`sudo chmod`, or any other arbitrary command.
+
+### Enforcement
+
+The agent runs as `reviewer`. It can:
+
+- Read the repo source and write its candidate report
+- Execute `quality-control/ci/submit-candidate --help` (shows schema)
+- Execute `quality-control/ci/submit-candidate` (validates via locked impl)
+- Read stdout/stderr of the locked implementation
+
+It cannot:
+
+- List or read `quality-control/ci/locked/`
+- Read `quality-control/ci/locked/check-report.py`
+- Read `quality-control/ci/locked/submit-candidate`
+- Run arbitrary `sudo` commands
 
 ## Report Validation
 
