@@ -1,9 +1,9 @@
-# Slop Review: repo-wide AI-generated-code slop audit via opencode run
 name: Slop Review (OpenCode)
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 8 * * 4' # weekly Thursday 08:00
+    - cron: '0 8 * * 4'
   push:
     branches: [main]
 
@@ -11,8 +11,9 @@ jobs:
   slop-review:
     runs-on: ubuntu-latest
     permissions:
-      security-events: write
       contents: read
+      security-events: write
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,100 +24,36 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
+      - name: Install tools
+        run: just -f quality-control/ci/justfile install-tools
 
-      - name: Install just
-        run: |
-          VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
-          curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
-            | tar -xzf - -C /usr/local/bin just
+      - name: Configure reviewer tools
+        run: just -f quality-control/ci/justfile configure-slop
 
-      - name: Block just — agent may not run it
-        run: |
-          rm -f /usr/local/bin/just
-          cp quality-control/ci/just-blocked.sh /usr/local/bin/just
-          chmod 755 /usr/local/bin/just
-
-      - name: Install OpenCode
-        run: npm install -g opencode-ai
-
-      - name: Install CC Safety Net
-        run: npm install -g cc-safety-net
-
-      - name: Configure OpenCode and CC Safety Net
-        run: |
-          mkdir -p ~/.config/opencode
-          cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
-          mkdir -p ~/.config/opencode/skills
-          for skill in anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene; do
-            [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/
-            echo "installed $skill"
-          done
-          mkdir -p .cc-safety-net/rules/project-rules
-          cp quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
-          cp quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
-          npx -y cc-safety-net rule sync
-        env:
-          CC_SAFETY_NET_PARANOID: 1
-
-      - name: Fetch reviewer context (existing alerts)
-        id: ctx
+      - name: Fetch reviewer context
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          echo "$GH_TOKEN" | gh auth login --with-token 2>/dev/null || true
-          uv run quality-control/ci/fetch-reviewer-context.py \
-            --repo ${{ github.repository }} \
-            --categories ai-slop-review \
-            --output .reviewer-context.md
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: just -f quality-control/ci/justfile fetch-context ai-slop-review .reviewer-context.md
 
-      - name: Prepare reviewer sandbox and lock validation
-        run: |
-          sudo useradd -m -s /bin/bash reviewer || true
+      - name: Prepare reviewer
+        run: just -f quality-control/ci/justfile prepare-reviewer
 
-          mkdir -p .agents/review-runner/candidates
-          sudo chown -R reviewer:reviewer .agents
-
-          sudo chown root:root quality-control/ci/submit-candidate
-          sudo chmod 755 quality-control/ci/submit-candidate
-
-          sudo chown -R root:root quality-control/ci/locked
-          sudo chmod 700 quality-control/ci/locked
-          sudo chmod 500 quality-control/ci/locked/submit-candidate
-          sudo chmod 400 quality-control/ci/locked/check-report.py
-
-          LOCKED_SUBMIT="$(pwd)/quality-control/ci/locked/submit-candidate"
-          {
-            echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT"
-            echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT *"
-            echo "Defaults!$LOCKED_SUBMIT env_keep += \"REPORT_TYPE\""
-          } | sudo tee /etc/sudoers.d/review-submit
-          sudo chmod 0440 /etc/sudoers.d/review-submit
-          sudo visudo -c -f /etc/sudoers.d/review-submit
-
-          sudo find . -name justfile -type f -exec chmod 000 {} +
-
-      - name: Run Slop Review via OpenCode
-        id: review
-        shell: bash
+      - name: Run Slop Review
         env:
-          REPORT_TYPE: slop
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+          PR_NUMBER: ${{ github.event.number }}
         run: |
-          sudo -u reviewer -E python3 quality-control/run-review.py \
-            --mode slop \
-            --skills-dir opencode/skills \
-            --template quality-control/reviews/slop/template.md \
-            --base-ref "${{ github.base_ref }}" \
-            --pr-number "${{ github.event.number }}" \
-            --reviewer-context .reviewer-context.md
+          just -f quality-control/ci/justfile run-review \
+            slop \
+            quality-control/reviews/slop/template.md \
+            slop
 
-      - name: Convert review report to SARIF
-        run: |
-          sudo uv run quality-control/ci/locked/check-report.py metadata .review-report-artifact.json
-          uv run quality-control/ci/report-to-sarif.py \
-            --artifact .review-report-artifact.json \
-            --output .review-report.sarif
+      - name: Collect review output
+        run: just -f quality-control/ci/justfile collect-review-output
+
+      - name: Convert report to SARIF
+        run: just -f quality-control/ci/justfile convert-sarif ai-slop-review
 
       - name: Upload review findings
         uses: github/codeql-action/upload-sarif@v3

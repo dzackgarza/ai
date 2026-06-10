@@ -1,6 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-control_repo := env_var_or_default("GITHUB_WORKSPACE", "/home/runner/work/ai/ai")
+control_repo := env_var("GITHUB_WORKSPACE")
 reviewer_home := "/home/reviewer"
 reviewer_repo := "/home/reviewer/repo"
 reviewer_bin := "/home/reviewer/bin"
@@ -80,7 +80,11 @@ install-private-review-tools:
     sudo chown root:root {{public_tools}}/submit-candidate
     sudo chmod 755 {{public_tools}}/submit-candidate
 
-    sudo cp quality-control/ci/locked/sudoers-ai-review /etc/sudoers.d/ai-review-submit
+    {
+      echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate"
+      echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate *"
+      echo "Defaults!/opt/ai-review/private/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""
+    } | sudo tee /etc/sudoers.d/ai-review-submit
 
     sudo chmod 0440 /etc/sudoers.d/ai-review-submit
     sudo visudo -c
