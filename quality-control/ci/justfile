@@ -106,7 +106,8 @@ install-reviewer-path:
 prepare-reviewer: create-reviewer-user install-private-review-tools materialize-reviewer-repo install-reviewer-path
 
 run-review mode template report_type:
-    sudo -u reviewer -H env \
+    sudo -u reviewer env \
+      HOME={{reviewer_home}} \
       PATH="{{reviewer_bin}}:/usr/local/bin:/usr/bin:/bin" \
       REPORT_TYPE="{{report_type}}" \
       REVIEWER_REPO="{{reviewer_repo}}" \
