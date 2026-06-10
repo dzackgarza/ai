@@ -39,12 +39,12 @@ configure-cc-safety-net:
     CC_SAFETY_NET_PARANOID=1 npx -y cc-safety-net rule sync
 
 configure-general:
-    just -f quality-control/ci/justfile configure-opencode "policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
-    just -f quality-control/ci/justfile configure-cc-safety-net
+    just configure-opencode "policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
+    just configure-cc-safety-net
 
 configure-slop:
-    just -f quality-control/ci/justfile configure-opencode "anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
-    just -f quality-control/ci/justfile configure-cc-safety-net
+    just configure-opencode "anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
+    just configure-cc-safety-net
 
 fetch-context category output:
     uv run quality-control/ci/fetch-reviewer-context.py \
