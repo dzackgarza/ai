@@ -1,6 +1,11 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-repo := `pwd`
+control_repo := env_var_or_default("GITHUB_WORKSPACE", "/home/runner/work/ai/ai")
+reviewer_home := "/home/reviewer"
+reviewer_repo := "/home/reviewer/repo"
+reviewer_bin := "/home/reviewer/bin"
+private_tools := "/opt/ai-review/private"
+public_tools := "/opt/ai-review/bin"
 
 install-uv:
     curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
@@ -17,11 +22,6 @@ install-cc-safety-net:
     npm install -g cc-safety-net
 
 install-tools: install-uv install-just install-opencode install-cc-safety-net
-
-block-just:
-    rm -f /usr/local/bin/just
-    cp quality-control/ci/just-blocked.sh /usr/local/bin/just
-    chmod 755 /usr/local/bin/just
 
 configure-opencode skill_list:
     mkdir -p ~/.config/opencode
@@ -52,44 +52,86 @@ fetch-context category output:
       --categories "{{category}}" \
       --output "{{output}}"
 
-prepare-reviewer:
+create-reviewer-user:
     sudo useradd -m -s /bin/bash reviewer || true
+    sudo mkdir -p {{reviewer_home}}
+    sudo chown reviewer:reviewer {{reviewer_home}}
 
-    mkdir -p .agents/review-runner/candidates
-    sudo chown -R reviewer:reviewer .agents
+install-private-review-tools:
+    sudo rm -rf {{private_tools}} {{public_tools}}
+    sudo mkdir -p {{private_tools}} {{public_tools}}
 
-    sudo chown root:root quality-control/ci/submit-candidate
-    sudo chmod 755 quality-control/ci/submit-candidate
+    sudo cp quality-control/ci/locked/submit-candidate {{private_tools}}/submit-candidate
+    sudo cp quality-control/ci/locked/check-report.py {{private_tools}}/check-report.py
+    sudo cp quality-control/ci/report-to-sarif.py {{private_tools}}/report-to-sarif.py
 
-    sudo chown -R root:root quality-control/ci/locked
-    sudo chmod 700 quality-control/ci/locked
-    sudo chmod 500 quality-control/ci/locked/submit-candidate
-    sudo chmod 400 quality-control/ci/locked/check-report.py
+    sudo chown -R root:root {{private_tools}}
+    sudo chmod 700 {{private_tools}}
+    sudo chmod 500 {{private_tools}}/submit-candidate
+    sudo chmod 400 {{private_tools}}/check-report.py
+    sudo chmod 400 {{private_tools}}/report-to-sarif.py
 
-    LOCKED_SUBMIT="$(pwd)/quality-control/ci/locked/submit-candidate"; \
-    { \
-      echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT"; \
-      echo "reviewer ALL=(root) NOPASSWD: $LOCKED_SUBMIT *"; \
-      echo "Defaults!$LOCKED_SUBMIT env_keep += \"REPORT_TYPE\""; \
-    } | sudo tee /etc/sudoers.d/review-submit
+    sudo tee {{public_tools}}/submit-candidate >/dev/null <<'SH'
+    #!/bin/sh
+    set -eu
+    exec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO /opt/ai-review/private/submit-candidate "$@"
+    SH
 
-    sudo chmod 0440 /etc/sudoers.d/review-submit
+    sudo chown root:root {{public_tools}}/submit-candidate
+    sudo chmod 755 {{public_tools}}/submit-candidate
+
+    sudo cp quality-control/ci/locked/sudoers-ai-review /etc/sudoers.d/ai-review-submit
+
+    sudo chmod 0440 /etc/sudoers.d/ai-review-submit
     sudo visudo -c
 
-    sudo find . -name justfile -type f -exec chmod 000 {} +
+materialize-reviewer-repo:
+    sudo rm -rf {{reviewer_repo}}
+    sudo mkdir -p {{reviewer_repo}}
+
+    rsync -a --delete \
+      --exclude '.git' \
+      --exclude '.github/workflows' \
+      --exclude 'quality-control/ci' \
+      --exclude '.review-report-artifact.json' \
+      --exclude '.review-report-comment.md' \
+      --exclude '.review-report.sarif' \
+      {{control_repo}}/ {{reviewer_repo}}/
+
+    mkdir -p {{reviewer_repo}}/.agents/review-runner/candidates
+    cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
+
+    sudo chown -R reviewer:reviewer {{reviewer_repo}}
+
+install-reviewer-path:
+    sudo mkdir -p {{reviewer_bin}}
+    sudo ln -sf {{public_tools}}/submit-candidate {{reviewer_bin}}/submit-candidate
+    sudo chown -R reviewer:reviewer {{reviewer_bin}}
+
+prepare-reviewer: create-reviewer-user install-private-review-tools materialize-reviewer-repo install-reviewer-path
 
 run-review mode template report_type:
-    sudo -u reviewer -E env REPORT_TYPE="{{report_type}}" python3 quality-control/run-review.py \
-      --mode "{{mode}}" \
-      --skills-dir opencode/skills \
-      --template "{{template}}" \
-      --base-ref "${GITHUB_BASE_REF:-main}" \
-      --pr-number "${PR_NUMBER:-0}" \
-      --reviewer-context .reviewer-context.md
+    sudo -u reviewer -H env \
+      PATH="{{reviewer_bin}}:/usr/local/bin:/usr/bin:/bin" \
+      REPORT_TYPE="{{report_type}}" \
+      REVIEWER_REPO="{{reviewer_repo}}" \
+      CONTROL_REPO="{{control_repo}}" \
+      bash -lc 'cd {{reviewer_repo}} && python3 quality-control/run-review.py \
+        --mode "{{mode}}" \
+        --skills-dir opencode/skills \
+        --template "{{template}}" \
+        --base-ref "${GITHUB_BASE_REF:-main}" \
+        --pr-number "${PR_NUMBER:-0}" \
+        --reviewer-context .reviewer-context.md'
+
+collect-review-output:
+    cp {{reviewer_repo}}/.review-report-artifact.json {{control_repo}}/.review-report-artifact.json
+    if [ -f {{reviewer_repo}}/.review-report-comment.md ]; then \
+      cp {{reviewer_repo}}/.review-report-comment.md {{control_repo}}/.review-report-comment.md; \
+    fi
 
 convert-sarif category:
-    sudo uv run quality-control/ci/locked/check-report.py metadata .review-report-artifact.json
-    uv run quality-control/ci/report-to-sarif.py \
-      --artifact .review-report-artifact.json \
-      --output .review-report.sarif \
+    uv run {{private_tools}}/report-to-sarif.py \
+      --artifact {{control_repo}}/.review-report-artifact.json \
+      --output {{control_repo}}/.review-report.sarif \
       --category "{{category}}"

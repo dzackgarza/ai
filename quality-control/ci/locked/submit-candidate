@@ -1,24 +1,26 @@
 #!/bin/sh
-# Validates the candidate report at the fixed path.
+# Validates the candidate report at the fixed path within REVIEWER_REPO.
 # On success: copies to artifact path and exits 0.
 # On failure: prints errors and exits non-zero.
 # The agent fixes the same file and re-runs this script.
 
 set -euo pipefail
 
-REPO_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)"
-CANDIDATE="$REPO_ROOT/.agents/review-runner/candidates/submitted.json"
-CHECKER="$REPO_ROOT/quality-control/ci/locked/check-report.py"
-ARTIFACT="$REPO_ROOT/.review-report-artifact.json"
-COMMENT="$REPO_ROOT/.review-report-comment.md"
+REVIEWER_REPO="${REVIEWER_REPO:?REVIEWER_REPO is required}"
+CONTROL_REPO="${CONTROL_REPO:?CONTROL_REPO is required}"
+
+CANDIDATE="$REVIEWER_REPO/.agents/review-runner/candidates/submitted.json"
+CHECKER="/opt/ai-review/private/check-report.py"
+ARTIFACT="$REVIEWER_REPO/.review-report-artifact.json"
+COMMENT="$REVIEWER_REPO/.review-report-comment.md"
 
 if [ "${1:-}" = "--help" ]; then
     cat <<'HELP'
 submit-candidate — validate and submit a review report
 
 Usage:
-  quality-control/ci/submit-candidate            # validate and submit (default)
-  quality-control/ci/submit-candidate --help     # print this message
+  submit-candidate            # validate and submit (default)
+  submit-candidate --help     # print this message
 
 Write the report JSON to .agents/review-runner/candidates/submitted.json,
 then run this script with no arguments.
