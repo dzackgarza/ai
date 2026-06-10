@@ -65,6 +65,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          echo "$GH_TOKEN" | gh auth login --with-token 2>/dev/null || true
           uv run quality-control/ci/fetch-reviewer-context.py \
             --repo ${{ github.repository }} \
             --categories ai-general-review \
