@@ -37,6 +37,7 @@ COMMENT_PATH = pathlib.Path(".review-report-comment.md")
 SCORE_PATH = pathlib.Path(".review-report-score.txt")
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
+TRANSCRIPT_CHARS = 60_000
 
 
 def collect_repo_docs(repo_root: pathlib.Path) -> str:
@@ -109,7 +110,24 @@ def substitute(template: str, **kwargs: str) -> str:
 SUBMITTED_CANDIDATE = "submitted.json"
 
 
-def run_opencode(task_path: pathlib.Path) -> int:
+def _decode_timeout_stream(value: str | bytes | None) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode(errors="replace")
+    return value
+
+
+def _bounded_transcript(text: str) -> str:
+    if len(text) <= TRANSCRIPT_CHARS:
+        return text
+    return (
+        f"[Transcript truncated to last {TRANSCRIPT_CHARS} characters.]\n"
+        + text[-TRANSCRIPT_CHARS:]
+    )
+
+
+def run_opencode(task_path: pathlib.Path) -> subprocess.CompletedProcess[str]:
     cmd = ["opencode", "run", "--model", "opencode/deepseek-v4-flash-free"]
 
     env = {
@@ -130,7 +148,7 @@ def run_opencode(task_path: pathlib.Path) -> int:
 
     sys.stdout.write(res.stdout)
     sys.stderr.write(res.stderr)
-    return res.returncode
+    return res
 
 
 def main():
@@ -160,7 +178,9 @@ def main():
 
     run_dir = pathlib.Path(".agents/review-runner").resolve()
     candidates_dir = run_dir / "candidates"
+    transcripts_dir = run_dir / "transcripts"
     candidates_dir.mkdir(parents=True, exist_ok=True)
+    transcripts_dir.mkdir(parents=True, exist_ok=True)
     task_path = run_dir / "task.md"
 
     repo_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
@@ -206,9 +226,20 @@ current code. The index is maintained by a separate gardener agent — respect i
         # Clear any prior files to prevent stale submissions
         submitted_path.unlink(missing_ok=True)
         ARTIFACT_PATH.unlink(missing_ok=True)
+
+        attempt_stdout = ""
+        attempt_stderr = ""
+        timed_out = False
         try:
-            run_opencode(task_path)
-        except subprocess.TimeoutExpired:
+            result = run_opencode(task_path)
+            attempt_stdout = result.stdout
+            attempt_stderr = result.stderr
+        except subprocess.TimeoutExpired as e:
+            timed_out = True
+            attempt_stdout = _decode_timeout_stream(e.output)
+            attempt_stderr = _decode_timeout_stream(e.stderr)
+            sys.stdout.write(attempt_stdout)
+            sys.stderr.write(attempt_stderr)
             print("--- opencode timed out ---", file=sys.stderr)
         except FileNotFoundError:
             print(
@@ -217,8 +248,13 @@ current code. The index is maintained by a separate gardener agent — respect i
                 file=sys.stderr,
             )
             sys.exit(1)
-        except Exception as e:
-            print(f"--- opencode error: {e} ---", file=sys.stderr)
+
+        transcript = _bounded_transcript(
+            f"# Attempt {attempt} stdout\n\n{attempt_stdout}\n\n"
+            f"# Attempt {attempt} stderr\n\n{attempt_stderr}\n"
+        )
+        transcript_path = transcripts_dir / f"attempt-{attempt}.log"
+        transcript_path.write_text(transcript)
 
         if ARTIFACT_PATH.exists():
             print("--- Report artifact submitted ---", file=sys.stderr)
@@ -234,11 +270,19 @@ current code. The index is maintained by a separate gardener agent — respect i
                 print(f"Warning: Failed to read rendered comment: {e}", file=sys.stderr)
             sys.exit(0)
 
+        timeout_note = " The previous invocation timed out." if timed_out else ""
         current_prompt += (
             f"\n\n## Continuation Context (Attempt {attempt})\n\n"
-            f"Your session ended without a valid report at {ARTIFACT_PATH}.\n"
-            f"Run quality-control/ci/submit-candidate (no arguments) after writing your "
-            f"report to {submitted_path}."
+            f"The previous opencode invocation ended without a valid report at "
+            f"{ARTIFACT_PATH}.{timeout_note}\n"
+            f"Do not restart repository exploration from scratch. Continue from the "
+            f"previous attempt transcript below: reuse already discovered files, "
+            f"claims, paths, and partial findings, but correct any unsupported claims "
+            f"before submitting.\n\n"
+            f"Write the report to {submitted_path}, then run "
+            f"quality-control/ci/submit-candidate with no arguments.\n\n"
+            f"### Previous attempt transcript\n\n"
+            f"```text\n{transcript}\n```"
         )
 
     print(f"FATAL: No report artifact after {MAX_ATTEMPTS} attempts", file=sys.stderr)
