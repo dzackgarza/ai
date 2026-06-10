@@ -92,7 +92,7 @@ jobs:
             echo "Defaults!$LOCKED_SUBMIT env_keep += \"REPORT_TYPE\""
           } | sudo tee /etc/sudoers.d/review-submit
           sudo chmod 0440 /etc/sudoers.d/review-submit
-          sudo visudo -c
+          sudo visudo -c -f /etc/sudoers.d/review-submit
 
           sudo find . -name justfile -type f -exec chmod 000 {} +
 
