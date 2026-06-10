@@ -86,7 +86,7 @@ materialize-reviewer-repo:
     sudo rm -rf {{reviewer_repo}}
     sudo mkdir -p {{reviewer_repo}}
 
-    rsync -a --delete \
+    rsync -a --no-group --no-owner --delete \
       --exclude '.git' \
       --exclude '.github/workflows' \
       --exclude 'quality-control/ci' \
