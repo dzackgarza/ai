@@ -144,14 +144,16 @@ _check-python-project:
 			failed=1
 		fi
 		# 3. Check for local QC tool overrides in pyproject.toml sections.
-		#    These tools' configs are owned by global QC — projects must not set them locally.
+		#    These tools' configs are owned by global QC — projects must not set
+		#    them locally. import-linter is deliberately NOT in this list: import
+		#    contracts name project packages, so they are per-project architecture
+		#    declarations (required by _import-linter), not tool tuning.
 		for section in \
 			'\[tool\.ruff' \
 			'\[tool\.mypy' \
 			'\[tool\.coverage' \
 			'\[tool\.deptry' \
-			'\[tool\.vulture' \
-			'\[tool\.import-linter'; do
+			'\[tool\.vulture'; do
 			if grep -qP "$section" pyproject.toml 2>/dev/null; then
 				echo "ERROR: pyproject.toml contains section matching '$section' — global QC owns this tool config."
 				echo "       DELETE this section from pyproject.toml. The global config for this tool"
@@ -163,8 +165,9 @@ _check-python-project:
 			fi
 		done
 	fi
-	# 4. Check for standalone Python tool config files (also QC overrides)
-	for config in ruff.toml .ruff.toml mypy.ini .mypy.ini grain.toml .coveragerc .importlinter; do
+	# 4. Check for standalone Python tool config files (also QC overrides).
+	#    .importlinter is allowed: per-project architecture contracts (see #3).
+	for config in ruff.toml .ruff.toml mypy.ini .mypy.ini grain.toml .coveragerc; do
 		if [ -f "$config" ]; then
 			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
 			echo "       DELETE this file. The global config for this tool already exists in"
@@ -426,7 +429,20 @@ _import-linter: _install-tools
 		config="pyproject.toml"
 	fi
 	if [ -z "$config" ]; then
-		echo "ERROR: import-linter: no project-specific import-linter config found. Add [tool.import-linter] to pyproject.toml or create .importlinter."
+		echo "ERROR: import-linter: no project-specific import-linter config found."
+		echo "       Import contracts are per-project architecture declarations."
+		echo "       FIX: add [tool.importlinter] to pyproject.toml (or create .importlinter)"
+		echo "       with root_packages naming this project's package(s) and at least"
+		echo "       one real contract."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	# lint-imports must be able to import the package: the project has to be
+	# installable. Route that setup failure distinctly from contract violations.
+	if ! grep -qP '^\[build-system\]' pyproject.toml 2>/dev/null; then
+		echo "ERROR: import-linter: project is not an installable package — no [build-system] table in pyproject.toml."
+		echo "       import-linter imports the package to verify contracts, via 'uvx --with-editable .'."
+		echo "       FIX: add a [build-system] table (e.g. hatchling) to pyproject.toml."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
