@@ -226,7 +226,6 @@ class GeneralFinding(BaseModel):
         description="Root cause: what code or pattern produces the symptom."
     )
     consequence: str = Field(description="What breaks or degrades due to this defect.")
-    remedy: str = Field(description="How to fix the defect.")
     evidence: list[Evidence] = Field(
         min_length=1,
         description="Supporting evidence proving the finding. At least one item required.",
