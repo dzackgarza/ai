@@ -45,10 +45,11 @@ _check-envrc:
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	# 3. No .env files — they are env var definitions outside .envrc
-	if find . -maxdepth 3 -name '.env*' -type f -not -path '*/.git/*' -not -path '*/node_modules/*' 2>/dev/null | grep -q .; then
+	# 3. No .env files — they are env var definitions outside .envrc.
+	#    .envrc itself (required by check 1) and tool-managed trees are not findings.
+	if find . -maxdepth 3 -name '.env*' -type f -not -name '.envrc' -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.venv/*' 2>/dev/null | grep -q .; then
 		echo "ERROR: Found .env files — these are env var definitions that belong in .envrc."
-		find . -maxdepth 3 -name '.env*' -type f -not -path '*/.git/*' -not -path '*/node_modules/*' 2>/dev/null
+		find . -maxdepth 3 -name '.env*' -type f -not -name '.envrc' -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.venv/*' 2>/dev/null
 		echo "       Move these variables to .envrc and delete the .env files."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
@@ -91,6 +92,11 @@ _no-bypass:
 		if [ ! -f "$file" ]; then
 			continue
 		fi
+		# Vendored docs catalog banned patterns as examples — documenting a
+		# bypass is not using one.
+		case "$file" in
+			*/vendor/*|vendor/*|*/third_party/*|third_party/*) continue ;;
+		esac
 		if grep -n "# pragma: no cover" "$file" 2>/dev/null; then
 			echo "ERROR: $file contains '# pragma: no cover' — fix coverage, don't hide it"
 			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"

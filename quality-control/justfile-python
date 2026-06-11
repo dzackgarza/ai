@@ -116,7 +116,16 @@ _mypy: _install-tools
 	else
 		effective_config="$global_config"
 	fi
-	if ! uvx --python 3.14 --from mypy mypy \
+	# Installable packages are type-checked inside the project environment so
+	# mypy resolves the project's declared dependencies (and their py.typed
+	# stubs) instead of reporting import-not-found for every third-party
+	# import. Non-package projects fall back to an isolated mypy.
+	if grep -qP '^\[build-system\]' pyproject.toml 2>/dev/null; then
+		mypy_runner=(uv run --python 3.14 --group dev --with mypy mypy)
+	else
+		mypy_runner=(uvx --python 3.14 --from mypy mypy)
+	fi
+	if ! "${mypy_runner[@]}" \
 		--config-file "$effective_config" \
 		"${python_files[@]}"; then
 		ec=$?
@@ -313,7 +322,14 @@ _diff-cover: _pytest_with_coverage
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	if ! uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch ${DIFF_COVER_BASE:-main}; then
+	base="${DIFF_COVER_BASE:-main}"
+	if ! git rev-parse --verify --quiet "$base" >/dev/null; then
+		echo "diff-cover: base branch '$base' does not exist — repository bootstrap"
+		echo "(no commit on '$base' yet), so there is no diff to measure. The total"
+		echo "coverage gate above already enforced 100% on all code. Skipping."
+		exit 0
+	fi
+	if ! uvx --from diff-cover diff-cover "$coverage_xml" --compare-branch "$base"; then
 		ec=$?
 		echo "ERROR: diff-cover found coverage gaps in changed code."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
@@ -334,8 +350,13 @@ _vulture: _install-tools
 		exit 1
 	fi
 
+	# Decorator-registered callables (pydantic validators, cyclopts/click
+	# commands) and console-script entry points are invoked by framework
+	# machinery vulture cannot see — not dead code.
 	if ! uvx --from vulture vulture \
 		--config {{justfile_directory()}}/pyproject.toml \
+		--ignore-decorators "@field_validator,@model_validator,@validator,@*.command,@app.command" \
+		--ignore-names "cls,main" \
 		"${python_files[@]}" \
 		"$whitelist_file"; then
 		ec=$?
@@ -355,7 +376,15 @@ _deptry: _install-tools
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
-	if ! uvx --from deptry deptry .; then
+	# src-layout packages are first-party: deptry otherwise reports a
+	# package's own self-imports as missing dependencies (DEP001).
+	kfp_args=()
+	if [ -d src ]; then
+		while IFS= read -r pkg; do
+			kfp_args+=(--known-first-party "$pkg")
+		done < <(find src -mindepth 1 -maxdepth 1 -type d -printf '%f\n')
+	fi
+	if ! uvx --from deptry deptry . "${kfp_args[@]}"; then
 		ec=$?
 		echo "ERROR: deptry found dependency issues in project."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
@@ -551,7 +580,7 @@ _codeql:
 test: _check-python-project _normalize _python-syntax _mypy _deptry _import-linter _ast-grep _jscpd-python _lizard-python _vulture _grain _pytest_with_coverage _diff-cover
 	#!/usr/bin/env bash
 	set -euo pipefail
-	just -f {{justfile_directory()}}/justfile _global-qc
+	just -f {{justfile_directory()}}/justfile -d . _global-qc
 	echo "Local quality checks completed"
 
 # public: test-ci = test + live/isolated checks
@@ -559,5 +588,5 @@ test: _check-python-project _normalize _python-syntax _mypy _deptry _import-lint
 test-ci: test
 	#!/usr/bin/env bash
 	set -euo pipefail
-	just -f {{justfile_directory()}}/justfile _global-qc-ci
+	just -f {{justfile_directory()}}/justfile -d . _global-qc-ci
 	echo "CI checks completed"
