@@ -42,7 +42,8 @@ sudo chmod 0440 /etc/sudoers.d/ai-review-submit
 sudo visudo -c -f /etc/sudoers.d/ai-review-submit
 
 # Sanitized reviewer checkout.
-rsync -a --delete \
+rsync -rlptD --delete \
+  --no-owner --no-group \
   --exclude '.git' \
   --exclude '.github/workflows' \
   --exclude 'quality-control/ci' \
