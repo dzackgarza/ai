@@ -1,6 +1,6 @@
 # CI Review Runner
 
-Opencode-powered repo-wide review infrastructure. Two review types:
+OpenCode-powered repo-wide review infrastructure. Two review types:
 
 - **General review** — structural code quality audit: architectural decay, dead code,
   test quality, dependency mismanagement, semantic regressions.
@@ -13,31 +13,26 @@ state (open / dismissed / fixed) across runs without PR comment spam.
 
 ## File Inventory
 
-### In this directory (`quality-control/ci/`)
+### Runner-owned (visible to CI, not visible to reviewer)
 
-| File | Purpose |
+| Path | Purpose |
 |------|---------|
-| `general-review-opencode.yml` | CI workflow definition — general review |
-| `slop-review-opencode.yml` | CI workflow definition — slop review |
-| `submit-candidate` | **Public wrapper** — delegates to locked implementation (no validation logic) |
+| `runner.just` | Justfile with all CI setup/run/collect/convert recipes |
+| `private/submit-candidate` | Root-owned validator — validates report JSON, renders PR comment |
+| `private/check-report.py` | Pydantic models, schema printer, validator, renderer |
 | `report-to-sarif.py` | Converts validated artifact to SARIF 2.1.0 for code scanning upload |
 | `fetch-reviewer-context.py` | Queries existing code scanning alerts for reviewer context |
+| `reviewer_home/` | Template for `/home/reviewer` — configs, public wrapper, dotfiles |
 
-| `justfile` | `install` recipe to deploy workflow YAMLs to another repo |
-| `README.md` | This file |
+### Reviewer-visible (inside `/home/reviewer/repo`)
 
-### Locked directory (`quality-control/ci/locked/`)
-
-Root-owned, agent cannot read. Contains validation/submission implementation.
-
-| File | Purpose | Perms |
-|------|---------|-------|
-| `submit-candidate` | Private validator — validates report JSON, renders PR comment | `500` (root execute) |
-| `check-report.py` | Pydantic models, schema printer, validator, renderer | `400` (root read) |
+| Path | Purpose |
+|------|---------|
+| `bin/submit-candidate` | Public wrapper — delegates to `/opt/ai-review/private/submit-candidate` via sudo |
 
 ### Outside this directory (`quality-control/`)
 
-| File | Purpose |
+| Path | Purpose |
 |------|---------|
 | `run-review.py` | Harness — feeds template to opencode, retries on timeout, collects artifact |
 | `reviews/general/template.md` | Agent prompt for general review |
@@ -47,24 +42,25 @@ Root-owned, agent cannot read. Contains validation/submission implementation.
 
 ```
 CI workflow triggers (scheduled / workflow_dispatch / push main)
-  → Lockdown (see below)
-  → fetch-reviewer-context.py queries existing code scanning alerts
-  → run-review.py feeds template + skills + context to `opencode run`
-  → opencode agent:
+  → runner.just prepares reviewer user, installs private tools, copies reviewer home
+  → runner.just fetch-context (queries existing code scanning alerts)
+  → runner.just run-review (feeds template + skills + context to `opencode` as reviewer)
+  → opencode agent (runs as `reviewer` user):
       1. Reads template.md for instruction set
       2. Reads reviewer context (existing alerts — do not re-report)
       3. Writes report to .agents/review-runner/candidates/submitted.json
       4. Runs `submit-candidate --help` to learn schema + rejection rules
       5. Fixes report to match schema
-      6. Runs `quality-control/ci/submit-candidate` (no arguments)
+      6. Runs `submit-candidate` (no arguments)
       7. If exit 0 → done. If non-zero → read error (has FIX: guidance) → fix same file → goto 6
-   → submit-candidate (public wrapper) calls locked/submit-candidate via sudo
-   → locked/submit-candidate calls `uv run check-report.py validate` (pydantic validation)
+   → submit-candidate (public wrapper, /home/reviewer/bin/submit-candidate)
+     → sudo to /opt/ai-review/private/submit-candidate (root-owned, not readable by reviewer)
+       → calls `uv run check-report.py validate` (pydantic validation)
    → On validation pass: cp to .review-report-artifact.json
    → On validation fail: print errors with FIX: guidance, exit 1
-  → harness checks .review-report-artifact.json exists after opencode exits
-      - exists → report-to-sarif.py converts to SARIF → upload to code scanning
-      - missing → append continuation prompt, loop
+   → runner collects output (collect-output recipe)
+   → runner converts to SARIF (convert-sarif recipe)
+   → upload to code scanning
 ```
 
 ## Data Flow
@@ -73,7 +69,7 @@ CI workflow triggers (scheduled / workflow_dispatch / push main)
 Review artifact (.review-report-artifact.json)
   → report-to-sarif.py
     → .review-report.sarif
-      → github/codeql-action/upload-sarif@v3
+      → github/codeql-action/upload-sarif@v4
         → GitHub code scanning alerts (persistent state)
 
 Next review run:
@@ -122,60 +118,50 @@ the code scanning API using the `tool_name` filter.
 - `submit-candidate` takes **no arguments** (except `--help`). It reads the fixed path,
   validates, and either exits 0 (copied to artifact path) or non-zero (errors printed).
 - Agent discovers the schema via `submit-candidate --help` — never reads CI infrastructure files.
-- Harness does NOT re-validate. It only checks artifact file existence after opencode exits.
-- **Everything is invisible to the agent** except: the template.md it receives, its own
-  submitted report, the validator's pass/fail output, reviewer context, and the `--help` schema.
+- Runner does NOT re-validate. It only checks artifact file existence after opencode exits.
+- **CI infrastructure is invisible to the agent**: no `.github/workflows/`,
+  no `quality-control/ci/`, no `/opt/ai-review/private/`.
 
-## Security Model: Two-User Lockdown
+## Security Model: Two-User Isolation
 
-The CI workflow runs as the default `runner` user. A dedicated `reviewer` user
-(runs opencode) has no passwordless sudo except one narrow rule.
-
-### Filesystem permissions
-
-| Target | Owner | Mode | Rationale |
-|--------|-------|------|-----------|
-| `quality-control/ci/` | root:root | `755` | Non-root can traverse and open known files |
-| `quality-control/ci/locked/` | root:root | `700` | Agent cannot list or read locked directory |
-| `quality-control/ci/submit-candidate` | root:root | `755` | Agent can execute wrapper (no validation logic) |
-| `quality-control/ci/locked/submit-candidate` | root:root | `500` | Root execute only — agent cannot read |
-| `quality-control/ci/locked/check-report.py` | root:root | `400` | Root read only — agent cannot read |
-| Other `ci/*.py` helpers | root:root | `755` | Workflow executes them directly |
-| All `justfile`s in repo | — | `000` | Agent cannot run `just` recipes |
+The CI workflow runs as `runner`. A dedicated `reviewer` user runs opencode
+with no passwordless sudo except one narrow rule permitting exactly one command.
 
 ### Sudo restriction
 
 Only one sudo rule exists for the `reviewer` user:
 
 ```
-reviewer ALL=(root) NOPASSWD: /path/to/quality-control/ci/locked/submit-candidate *
+reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate *
 ```
 
-`reviewer` may run exactly the locked submit command as root. It cannot `sudo cat`,
-`sudo chmod`, or any other arbitrary command.
+`reviewer` may run exactly the private submit command as root. It cannot `sudo cat`,
+`sudo chmod`, any other path, or any arbitrary command.
 
 ### Enforcement
 
 The agent runs as `reviewer`. It can:
 
-- Read the repo source and write its candidate report
-- Execute `quality-control/ci/submit-candidate --help` (shows schema)
-- Execute `quality-control/ci/submit-candidate` (validates via locked impl)
-- Read stdout/stderr of the locked implementation
+- Read the source checkout (sanitized copy in `/home/reviewer/repo`)
+- Write its candidate report to the fixed path
+- Execute `submit-candidate --help` (shows schema)
+- Execute `submit-candidate` (validates via private impl)
+- Read stdout/stderr of the private implementation
 
 It cannot:
 
-- List or read `quality-control/ci/locked/`
-- Read `quality-control/ci/locked/check-report.py`
-- Read `quality-control/ci/locked/submit-candidate`
-- Run arbitrary `sudo` commands
+- Read or list `quality-control/ci/`
+- Read or list `.github/workflows/`
+- Read `/opt/ai-review/private/check-report.py` or `submit-candidate`
+- Run any other `sudo` command
+- Access sudo without `--preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO`
 
 ## Report Validation
 
 The schema and rejection rules are defined in `submit-candidate --help`:
 
 ```
-quality-control/ci/submit-candidate --help
+submit-candidate --help
 ```
 
 The agent reads this to learn the expected JSON format and constraints before
@@ -197,6 +183,16 @@ resolution is directly contradicted by the current code.
 This is the mechanism that prevents new review agents from rediscovering
 previously reported findings.
 
+## Workflows
+
+Two workflows in `.github/workflows/`:
+
+- `general-review-opencode.yml` — runs weekly (Mon) and on push to main
+- `slop-review-opencode.yml` — runs weekly (Thu) and on push to main
+
+Both install `just` inline, then delegate all setup/review/collect/convert steps
+to `just -f quality-control/ci/runner.just`.
+
 ## Usage in Another Repo
 
 Requirements in the consuming repo:
@@ -207,15 +203,9 @@ Requirements in the consuming repo:
 - Report staging directory: `.agents/review-runner/candidates/`
 - GitHub Code Security / code scanning enabled (free for public repos)
 
-To install the workflows:
-
-```bash
-just -f path/to/quality-control/ci/justfile install path/to/target-repo
-```
-
-This copies `general-review-opencode.yml` and `slop-review-opencode.yml` into
-`.github/workflows/`. Any existing file with the same name is backed up as
-`.checkpoint` (symlinks are overwritten without backup).
+Copy `.github/workflows/general-review-opencode.yml` and
+`slop-review-opencode.yml` into the target repo, then copy the entire
+`quality-control/ci/` directory.
 
 ## Debugging
 
@@ -228,4 +218,12 @@ For SARIF debugging, run the converter locally:
 uv run quality-control/ci/report-to-sarif.py \
   --artifact .review-report-artifact.json \
   --output .review-report.sarif
+```
+
+For workflow debugging, use `gh`:
+
+```bash
+gh workflow run "General Review (OpenCode)" --ref <branch>
+gh run list --branch <branch> --limit 10
+gh run view <RUN_ID> --log-failed
 ```
