@@ -1,0 +1,110 @@
+{
+  "rulebook_version": 1,
+  "name": "ci-gaming-block",
+  "version": "1.0.0",
+  "description": "Blocks CI-gaming: rerunning/cancelling runs, disabling workflows, bypassing protections, self-approval.",
+  "author": "dzackgarza",
+  "allowed_commands": [
+    "gh"
+  ],
+  "rules": [
+    {
+      "name": "block-gh-run-rerun",
+      "command": "gh",
+      "subcommand": "run",
+      "block_args": [
+        "rerun"
+      ],
+      "reason": "CI reruns chase green instead of diagnosing \u2014 the failure is evidence. Read the failing check's logs and fix the cause; suspected flaky infra \u2192 stop, ask the user. LOAD `pr-feedback-triage` skill."
+    },
+    {
+      "name": "block-gh-run-cancel-delete",
+      "command": "gh",
+      "subcommand": "run",
+      "block_args": [
+        "cancel",
+        "delete"
+      ],
+      "reason": "CI runs are evidence \u2014 never cancel or delete them. Let runs finish; a stuck run is a blocker to report to the user."
+    },
+    {
+      "name": "block-gh-workflow-disable",
+      "command": "gh",
+      "subcommand": "workflow",
+      "block_args": [
+        "disable"
+      ],
+      "reason": "Workflows are mandatory QC \u2014 never disable them. Failing workflow \u2192 fix the cause or report the blocker to the user. LOAD `quality-control` skill."
+    },
+    {
+      "name": "block-gh-pr-merge-admin",
+      "command": "gh",
+      "subcommand": "pr",
+      "block_args": [
+        "--admin"
+      ],
+      "reason": "Never bypass branch protection. Merge only after checks pass and all feedback is addressed with commits. LOAD `pr-feedback-triage` skill."
+    },
+    {
+      "name": "block-gh-pr-approve",
+      "command": "gh",
+      "subcommand": "pr",
+      "block_args": [
+        "--approve"
+      ],
+      "reason": "Agents never approve PRs \u2014 approval belongs to the user and reviewers. Respond to reviews with comments + committed remediation. LOAD `pr-feedback-triage` skill."
+    }
+  ],
+  "tests": [
+    {
+      "command": "gh run rerun 123",
+      "expect": "blocked",
+      "rule": "block-gh-run-rerun"
+    },
+    {
+      "command": "gh run cancel 123",
+      "expect": "blocked",
+      "rule": "block-gh-run-cancel-delete"
+    },
+    {
+      "command": "gh run delete 123",
+      "expect": "blocked",
+      "rule": "block-gh-run-cancel-delete"
+    },
+    {
+      "command": "gh workflow disable ci.yml",
+      "expect": "blocked",
+      "rule": "block-gh-workflow-disable"
+    },
+    {
+      "command": "gh pr merge 5 --admin",
+      "expect": "blocked",
+      "rule": "block-gh-pr-merge-admin"
+    },
+    {
+      "command": "gh pr review 5 --approve",
+      "expect": "blocked",
+      "rule": "block-gh-pr-approve"
+    },
+    {
+      "command": "gh run view 123",
+      "expect": "allowed"
+    },
+    {
+      "command": "gh run watch 123",
+      "expect": "allowed"
+    },
+    {
+      "command": "gh workflow list",
+      "expect": "allowed"
+    },
+    {
+      "command": "gh pr view 5",
+      "expect": "allowed"
+    },
+    {
+      "command": "gh pr merge 5 --squash",
+      "expect": "allowed"
+    }
+  ]
+}

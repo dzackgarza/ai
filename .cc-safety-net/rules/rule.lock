@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "rulebooks": [
+    {
+      "spec": "ci-gaming-block",
+      "kind": "local-directory",
+      "path": "ci-gaming-block",
+      "name": "ci-gaming-block",
+      "version": "1.0.0",
+      "digest": "sha256:87bd6c7be5bdd13202d96d166e60a8aba524e24ae11dd0f2fe72f9dfb2ff69aa"
+    }
+  ]
+}

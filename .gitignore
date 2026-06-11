@@ -116,8 +116,8 @@ opencode/events.jsonl
 .review-report-*
 .review-thread-summary.json
 
-# CC Safety Net (auto-generated)
-.cc-safety-net/
+# CC Safety Net (rules are tracked — published as a GitHub rulebook source; cache is generated)
+.cc-safety-net/cache/
 
 # OpenCode session stats (auto-generated)
 opencode/context-mode/sessions/stats-*.json
