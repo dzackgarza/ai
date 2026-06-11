@@ -1,6 +1,0 @@
-{
-  "plugin": [
-    "cc-safety-net@latest"
-  ],
-  "model": "opencode/deepseek-v4-flash-free"
-}

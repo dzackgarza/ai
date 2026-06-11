@@ -222,12 +222,16 @@ Initialize a memories directory for the project if not already present.
 **OSOT: One Source of Truth.** Any constant, hard-coded, or re-used data should be defined in one canonical place and referenced elsewhere.
 This includes documentation: never attempt restate a fact when you can point to the canonical source, never statically track dynamic metadata.
 
-**CI review workflows.** In this repo, `.github/workflows/` is the canonical
-location for the review workflow YAMLs (`_review.yml` + its thin callers);
-edit them directly. Runner-side review infrastructure (validator, SARIF
-converter, thread poster, reviewer home template) lives in
-`quality-control/ci/` — see `quality-control/ci/README.md`, including the
-copy list for installing the system into another repo.
+**CI review workflows.** The review CI is centrally managed in
+[dzackgarza/ai-review-ci](https://github.com/dzackgarza/ai-review-ci); this
+repo carries only the three repo-owned trigger files
+(`.github/workflows/review-{general,slop,pr}.yml`), which reference the
+upstream reusable workflow and are edited directly for crons/thresholds/ref
+pinning. Behavior changes are made in ai-review-ci (runs clone it fresh —
+no reinstall); triggers were installed once via
+`uvx git+https://github.com/dzackgarza/ai-review-ci install`. Canonical
+operations (running repo-wide reviews; querying the outstanding-issues
+ledger in code scanning) are documented in the ai-review-ci README.
 
 **Tests are meant to prove correctness**. Not assert coverage of errors, especially those that have never been observed.
 Error-path work is useless, proof-of-correctness is essential.

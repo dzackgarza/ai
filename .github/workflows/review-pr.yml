@@ -1,3 +1,5 @@
+# Repo-owned configuration: edit triggers and `with:` values directly.
+# All review behavior lives upstream in the referenced workflow.
 name: PR Review
 
 on:
@@ -5,7 +7,7 @@ on:
 
 jobs:
   general:
-    uses: ./.github/workflows/_review.yml
+    uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
     permissions:
       contents: read
       security-events: write
@@ -16,7 +18,7 @@ jobs:
       scope: diff
 
   slop:
-    uses: ./.github/workflows/_review.yml
+    uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
     permissions:
       contents: read
       security-events: write

@@ -1,3 +1,5 @@
+# Repo-owned configuration: edit triggers (cron, branches) and `with:` values
+# directly. All review behavior lives upstream in the referenced workflow.
 name: General Review
 
 on:
@@ -9,7 +11,7 @@ on:
 
 jobs:
   general:
-    uses: ./.github/workflows/_review.yml
+    uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
     permissions:
       contents: read
       security-events: write

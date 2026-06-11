@@ -599,6 +599,35 @@ This repository utilizes the following JSON configuration files:
   The expected structure is defined by the plugin’s TypeScript implementation in its
   source repository.
 
+## Review CI
+
+Automated code review (general quality + AI-slop audits) is centrally managed
+in [dzackgarza/ai-review-ci](https://github.com/dzackgarza/ai-review-ci).
+This repo carries only the three repo-owned trigger workflows
+(`.github/workflows/review-{general,slop,pr}.yml`), installed once via:
+
+```bash
+uvx git+https://github.com/dzackgarza/ai-review-ci install
+```
+
+Canonical operations:
+
+- **Repo-wide reviews** run automatically on every push to main and on weekly
+  crons, and on demand via `gh workflow run "General Review"` /
+  `gh workflow run "Slop Review"`.
+- **PR reviews** run on every pull request, diff-scoped: new findings block
+  via the code-scanning check and are posted as resolvable review threads.
+- **Outstanding issues ledger**: GitHub code scanning alerts (Security tab),
+  tool names `ai-review/general` / `ai-review/slop`. Query with
+  `gh api "repos/dzackgarza/ai/code-scanning/alerts?state=open&tool_name=ai-review/slop"`
+  or render the full reviewer-context document with
+  `uvx git+https://github.com/dzackgarza/ai-review-ci fetch-context --repo dzackgarza/ai`.
+
+Trigger tweaks (crons, thresholds, `@ref` pinning) are direct YAML edits in
+this repo; all review behavior changes happen in ai-review-ci and apply on
+the next run — every run clones it fresh. Full documentation:
+[ai-review-ci README](https://github.com/dzackgarza/ai-review-ci#readme).
+
 ## Environment Configuration
 
 The AI Configuration repository uses a modular approach for managing environment
