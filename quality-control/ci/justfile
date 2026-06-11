@@ -11,7 +11,7 @@ install-uv:
     curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
 
 install-just:
-    VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
+    VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name') && \
     curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
       | tar -xzf - -C /usr/local/bin just
 
