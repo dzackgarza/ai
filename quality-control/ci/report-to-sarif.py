@@ -16,7 +16,7 @@ Use "ai-general-review" or "ai-slop-review" to match GitHub category
 expectations from upload-sarif's category parameter.
 
 Each finding becomes one SARIF result.  The partialFingerprint is a
-deterministic hash of (category, label, path) — stable across line shifts
+deterministic hash of (category, path) — stable across line shifts
 so the same finding maps to the same code scanning alert across runs.
 """
 
