@@ -13,6 +13,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      actions: read
 
     steps:
       - uses: actions/checkout@v4
@@ -25,42 +26,45 @@ jobs:
           python-version: '3.11'
 
       - name: Install tools
-        run: |
-          VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
-          curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
-            | tar -xzf - -C /usr/local/bin just
-          just -f quality-control/ci/justfile install-tools
+        run: bash quality-control/ci/steps/install-tools.sh
 
       - name: Configure reviewer tools
-        run: just -f quality-control/ci/justfile configure-general
+        run: bash quality-control/ci/steps/configure-general.sh
 
       - name: Fetch reviewer context
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: just -f quality-control/ci/justfile fetch-context ai-general-review .reviewer-context.md
+        run: bash quality-control/ci/steps/fetch-context.sh ai-general-review .reviewer-context.md
 
       - name: Prepare reviewer
-        run: just -f quality-control/ci/justfile prepare-reviewer
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        run: bash quality-control/ci/steps/prepare-reviewer.sh
 
       - name: Run General Review
         env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
-          just -f quality-control/ci/justfile run-review \
+          bash quality-control/ci/steps/run-review.sh \
             review \
             quality-control/reviews/general/template.md \
             general
 
       - name: Collect review output
-        run: just -f quality-control/ci/justfile collect-review-output
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        run: bash quality-control/ci/steps/collect-review-output.sh
 
       - name: Convert report to SARIF
-        run: just -f quality-control/ci/justfile convert-sarif ai-general-review
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        run: bash quality-control/ci/steps/convert-sarif.sh ai-general-review
 
       - name: Upload review findings
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: .review-report.sarif
           category: ai-general-review
