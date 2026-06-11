@@ -1,4 +1,5 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+set working-directory := '../..'
 
 control_repo := env_var("GITHUB_WORKSPACE")
 reviewer_home := "/home/reviewer"
