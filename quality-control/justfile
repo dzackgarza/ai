@@ -15,6 +15,8 @@
 #   .jscpd.json       → jscpd (--config flag)
 #   .slopconfig.yaml  → ai-slop-detector (--config flag)
 
+set no-cd
+
 # ── Cross-language recipes ────────────────────────────────────────
 
 _check-envrc:

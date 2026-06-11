@@ -17,6 +17,8 @@
 # HOOKS: pre-commit.hook and pre-push.hook both block on `just test`.
 #   Copy/symlink into .git/hooks/ to activate.
 
+set no-cd
+
 default:
   @just test
 

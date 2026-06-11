@@ -22,6 +22,8 @@
 # CONFIG: This justfile uses justfile_directory() to reference configs
 # in this directory.
 
+set no-cd
+
 # private recipes (prefix with _ — never run individually)
 
 # QC file-scope excludes (directories to skip), sourced from qc-excludes.toml.

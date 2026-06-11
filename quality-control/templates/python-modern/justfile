@@ -3,17 +3,8 @@ set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 install:
     uv sync --dev
 
-format:
-    uv run ruff format .
-    uv run ruff check --fix .
-
-lint:
-    uv run ruff check .
-
-typecheck:
-    uv run pyright
-
 test:
-    uv run pytest
+    just -f ~/ai/quality-control/justfile-python test
 
-check: lint typecheck test
+test-ci:
+    just -f ~/ai/quality-control/justfile-python test-ci

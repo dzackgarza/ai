@@ -7,9 +7,9 @@ quality-control posture without bringing in obsolete Claude hook scaffolding.
 
 - `AGENTS.md`: agent-facing project rules.
 
-- `justfile`: canonical command entrypoints.
+- `justfile`: canonical command entrypoints delegating to global QC.
 
-- `pyproject.toml`: `uv`, `ruff`, pytest, and type-check configuration seed.
+- `pyproject.toml`: `uv` project metadata and pytest configuration seed.
 
 - `src/example_project/__init__.py`: package placeholder.
 
