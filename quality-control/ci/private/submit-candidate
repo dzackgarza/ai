@@ -8,6 +8,7 @@ set -euo pipefail
 
 REVIEWER_REPO="${REVIEWER_REPO:?REVIEWER_REPO is required}"
 CONTROL_REPO="${CONTROL_REPO:?CONTROL_REPO is required}"
+GITHUB_SHA="${GITHUB_SHA:?GITHUB_SHA is required}"
 
 CANDIDATE="$REVIEWER_REPO/.agents/review-runner/candidates/submitted.json"
 CHECKER="/opt/ai-review/private/check-report.py"
@@ -28,13 +29,11 @@ The script validates the report against pydantic models.
 On success, exits 0. On failure, prints errors with
 FIX: guidance and exits non-zero — fix the same file and re-run.
 
-report_type must be "general" (selects GeneralFinding) or "slop" (selects SlopFinding).
+Your report contains analysis only. Commit provenance is stamped
+automatically — do not include a "repo_sha" field.
 
-repo_sha must be exactly the commit SHA given in your task instructions.
-It is checked against the reviewed checkout by the validator.
-
-Every path (review_scope, location.path, evidence[].path) must exist in git
-at repo_sha. The validator checks this against the reviewed checkout.
+Every path (review_scope, location.path, evidence[].path) must be a real
+file in the repository, relative to the repo root.
 
 Do not include "score" or "report" fields — they are rejected.
 
@@ -66,12 +65,12 @@ if [ -z "${REPORT_TYPE:-}" ]; then
     exit 1
 fi
 
-# Validate from the control repo: git-based checks (repo_sha, path existence)
-# must run against the real checkout, never the reviewer's writable copy.
+# Validate from the control repo: path-existence checks must run against
+# the real checkout, never the reviewer's writable copy.
 cd "$CONTROL_REPO"
 
-if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" 2>&1; then
-    cp "$CANDIDATE" "$ARTIFACT"
+if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" \
+      --repo-sha "$GITHUB_SHA" --output "$ARTIFACT" 2>&1; then
     uv run "$CHECKER" metadata "$ARTIFACT"
     echo "Report validated and submitted to $ARTIFACT"
     exit 0

@@ -6,7 +6,7 @@ This runs in a CI environment. Follow these rules exactly:
 
 ## Task
 
-Analyze the code in scope (defined by the scope instructions above) at commit `{{REPO_SHA}}` for structural code defects, architectural decay, and quality regressions.
+Analyze the code in scope (defined by the scope instructions above) for structural code defects, architectural decay, and quality regressions.
 
 ### Execution
 

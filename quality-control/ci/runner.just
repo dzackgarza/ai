@@ -41,7 +41,7 @@ install-reviewer-home:
 install-sudo-rule:
     { echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate"; \
       echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate *"; \
-      echo "Defaults!{{private_tools}}/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""; \
+      echo "Defaults!{{private_tools}}/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO GITHUB_SHA\""; \
     } | sudo tee /etc/sudoers.d/ai-review-submit >/dev/null
     sudo chmod 0440 /etc/sudoers.d/ai-review-submit
     sudo visudo -c -f /etc/sudoers.d/ai-review-submit

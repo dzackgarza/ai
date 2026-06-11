@@ -1,5 +1,5 @@
 #!/bin/sh
 set -eu
 
-exec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO \
+exec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO,GITHUB_SHA \
   /opt/ai-review/private/submit-candidate "$@"

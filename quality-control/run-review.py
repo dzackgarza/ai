@@ -84,12 +84,6 @@ def load_manifest(manifest_path: pathlib.Path) -> str:
     return "\n\n---\n\n".join(sections)
 
 
-def substitute(template: str, **kwargs: str) -> str:
-    for k, v in kwargs.items():
-        template = template.replace(f"{{{{{k}}}}}", v)
-    return template
-
-
 SUBMITTED_CANDIDATE = "submitted.json"
 
 
@@ -145,9 +139,7 @@ def main():
     candidates_dir.mkdir(parents=True, exist_ok=True)
     task_path = run_dir / "task.md"
 
-    repo_sha = os.environ["GITHUB_SHA"]
-
-    body = substitute(template_path.read_text(), REPO_SHA=repo_sha)
+    body = template_path.read_text()
     sections = [
         ctx_path.read_text(),
         scope_path.read_text(),

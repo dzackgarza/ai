@@ -6,7 +6,7 @@ This runs in a CI environment. Follow these rules exactly:
 
 ## Task: Slop Audit
 
-Perform a comprehensive, fresh analysis of the code in scope (defined by the scope instructions above) at commit `{{REPO_SHA}}` focused exclusively on **slop**.
+Perform a comprehensive, fresh analysis of the code in scope (defined by the scope instructions above) focused exclusively on **slop**.
 
 "Slop" means structural AI-generated-code defects as defined by the loaded skills:
 bridge-burning violations, validation-evasion constructs, runtime defaults, mocks/skips/fakes

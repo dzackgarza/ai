@@ -11,7 +11,6 @@ Exits 0 on valid, 1 on any validation failure with diagnostic messages.
 
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 from typing import Annotated, Literal, Self
@@ -71,17 +70,9 @@ _INVARIANT_REJECT = [
 ]
 
 
-def _path_exists_in_git(path: Path, sha: str) -> bool:
-    """True if *path* exists at *sha* in the repository at CWD."""
-    result = subprocess.run(
-        ["git", "cat-file", "-e", f"{sha}:{path.as_posix()}"],
-        capture_output=True,
-    )
-    if result.returncode >= 2:
-        raise RuntimeError(
-            f"git cat-file -e {sha}:{path} failed: {result.stderr.decode().strip()}"
-        )
-    return result.returncode == 0
+def _path_in_checkout(path: Path) -> bool:
+    """True if *path* exists in the reviewed checkout (the CWD)."""
+    return (Path.cwd() / path).is_file()
 
 
 def _is_infra_path(p: Path) -> bool:
@@ -96,7 +87,7 @@ def _is_infra_path(p: Path) -> bool:
 
 class Location(BaseModel):
     path: Path = Field(
-        description="File path relative to repo root. Must exist in git at repo_sha."
+        description="File path relative to repo root. Must exist in the reviewed checkout."
     )
     start_line: int = Field(ge=1, description="Finding start line (1-indexed).")
     end_line: int = Field(ge=1, description="Finding end line (1-indexed).")
@@ -107,7 +98,7 @@ class Evidence(BaseModel):
         description="Evidence type: file-read, diff-snippet, command-output."
     )
     path: Path = Field(
-        description="Evidence file path relative to repo root. Must exist in git at repo_sha."
+        description="Evidence file path relative to repo root. Must exist in the reviewed checkout."
     )
     lines: list[Annotated[int, Field(ge=1)]] = Field(
         min_length=2,
@@ -269,9 +260,9 @@ class GeneralReport(BaseModel):
                     "rule": "At least one finding must be Tier 1 or non-low-signal category",
                     "validator": "_require_substantive_finding",
                 },
-                "_check_git_paths": {
-                    "rule": "Every path must exist in git at repo_sha and not be in INFRA_PREFIXES",
-                    "validator": "_check_git_paths",
+                "_check_paths": {
+                    "rule": "Every path must exist in the reviewed checkout and not be in INFRA_PREFIXES",
+                    "validator": "_check_paths",
                 },
             }
         },
@@ -284,16 +275,10 @@ class GeneralReport(BaseModel):
         default="general",
         description="Must be 'general'. Selects the GeneralFinding model for validation.",
     )
-    repo_sha: str = Field(
-        min_length=40,
-        max_length=40,
-        description="Full git commit SHA being reviewed. Used to verify all paths "
-        "exist in git; also recorded in PR comment metadata.",
-    )
     review_scope: list[Path] = Field(
         min_length=1,
         description="Files examined during review, relative to repo root. "
-        "All must exist in git at repo_sha. Typically drawn from the PR diff.",
+        "All must exist in the reviewed checkout. Typically drawn from the PR diff.",
     )
     findings: list[GeneralFinding] = Field(
         min_length=1,
@@ -311,15 +296,14 @@ class GeneralReport(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check_git_paths(self) -> Self:
-        sha = self.repo_sha
+    def _check_paths(self) -> Self:
         for i, p in enumerate(self.review_scope):
-            if not _path_exists_in_git(p, sha):
+            if not _path_in_checkout(p):
                 raise ValueError(
                     f"REJECTED: review_scope[{i}] path '{p}' does not exist "
-                    f"at commit {sha[:8]}. "
-                    f"FIX: only list files that exist in git at repo_sha. "
-                    f"Run 'git cat-file -e {sha}:{p}' to verify."
+                    f"in the reviewed checkout. "
+                    f"FIX: only list files that exist in the repository, "
+                    f"relative to the repo root."
                 )
         for i, finding in enumerate(self.findings):
             loc_path = finding.location.path
@@ -330,20 +314,20 @@ class GeneralReport(BaseModel):
                     f"FIX: findings must target source or test files in the PR diff, "
                     f"not CI/agent infrastructure files."
                 )
-            if not _path_exists_in_git(loc_path, sha):
+            if not _path_in_checkout(loc_path):
                 raise ValueError(
                     f"REJECTED: findings[{i}] location path '{loc_path}' "
-                    f"does not exist at commit {sha[:8]}. "
-                    f"FIX: every finding path must exist in git at repo_sha. "
-                    f"Run 'git cat-file -e {sha}:{loc_path}' to verify."
+                    f"does not exist in the reviewed checkout. "
+                    f"FIX: every finding path must be a real file in the "
+                    f"repository, relative to the repo root."
                 )
             for j, ev in enumerate(finding.evidence):
-                if not _path_exists_in_git(ev.path, sha):
+                if not _path_in_checkout(ev.path):
                     raise ValueError(
                         f"REJECTED: findings[{i}].evidence[{j}] path '{ev.path}' "
-                        f"does not exist at commit {sha[:8]}. "
-                        f"FIX: every evidence path must exist in git at repo_sha. "
-                        f"Run 'git cat-file -e {sha}:{ev.path}' to verify."
+                        f"does not exist in the reviewed checkout. "
+                        f"FIX: every evidence path must be a real file in the "
+                        f"repository, relative to the repo root."
                     )
         return self
 
@@ -539,9 +523,9 @@ class SlopReport(BaseModel):
                     "rule": "At least one finding must be Tier 1 or non-low-signal category",
                     "validator": "_require_substantive_finding",
                 },
-                "_check_git_paths": {
-                    "rule": "Every path must exist in git at repo_sha and not be in INFRA_PREFIXES",
-                    "validator": "_check_git_paths",
+                "_check_paths": {
+                    "rule": "Every path must exist in the reviewed checkout and not be in INFRA_PREFIXES",
+                    "validator": "_check_paths",
                 },
             }
         },
@@ -554,16 +538,10 @@ class SlopReport(BaseModel):
         default="slop",
         description="Must be 'slop'. Selects the SlopFinding model for validation.",
     )
-    repo_sha: str = Field(
-        min_length=40,
-        max_length=40,
-        description="Full git commit SHA being reviewed. Used to verify all paths "
-        "exist in git; also recorded in PR comment metadata.",
-    )
     review_scope: list[Path] = Field(
         min_length=1,
         description="Files examined during review, relative to repo root. "
-        "All must exist in git at repo_sha.",
+        "All must exist in the reviewed checkout.",
     )
     findings: list[SlopFinding] = Field(
         min_length=1,
@@ -581,15 +559,14 @@ class SlopReport(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check_git_paths(self) -> Self:
-        sha = self.repo_sha
+    def _check_paths(self) -> Self:
         for i, p in enumerate(self.review_scope):
-            if not _path_exists_in_git(p, sha):
+            if not _path_in_checkout(p):
                 raise ValueError(
                     f"REJECTED: review_scope[{i}] path '{p}' does not exist "
-                    f"at commit {sha[:8]}. "
-                    f"FIX: only list files that exist in git at repo_sha. "
-                    f"Run 'git cat-file -e {sha}:{p}' to verify."
+                    f"in the reviewed checkout. "
+                    f"FIX: only list files that exist in the repository, "
+                    f"relative to the repo root."
                 )
         for i, finding in enumerate(self.findings):
             loc_path = finding.location.path
@@ -600,20 +577,20 @@ class SlopReport(BaseModel):
                     f"FIX: findings must target source or test files in the PR diff, "
                     f"not CI/agent infrastructure files."
                 )
-            if not _path_exists_in_git(loc_path, sha):
+            if not _path_in_checkout(loc_path):
                 raise ValueError(
                     f"REJECTED: findings[{i}] location path '{loc_path}' "
-                    f"does not exist at commit {sha[:8]}. "
-                    f"FIX: every finding path must exist in git at repo_sha. "
-                    f"Run 'git cat-file -e {sha}:{loc_path}' to verify."
+                    f"does not exist in the reviewed checkout. "
+                    f"FIX: every finding path must be a real file in the "
+                    f"repository, relative to the repo root."
                 )
             for j, ev in enumerate(finding.evidence):
-                if not _path_exists_in_git(ev.path, sha):
+                if not _path_in_checkout(ev.path):
                     raise ValueError(
                         f"REJECTED: findings[{i}].evidence[{j}] path '{ev.path}' "
-                        f"does not exist at commit {sha[:8]}. "
-                        f"FIX: every evidence path must exist in git at repo_sha. "
-                        f"Run 'git cat-file -e {sha}:{ev.path}' to verify."
+                        f"does not exist in the reviewed checkout. "
+                        f"FIX: every evidence path must be a real file in the "
+                        f"repository, relative to the repo root."
                     )
         return self
 
@@ -651,12 +628,23 @@ _MODEL_BY_TYPE: dict[str, type[GeneralReport | SlopReport]] = {
 
 
 @app.command
-def validate(path: Path, report_type: Literal["general", "slop"]):
-    """Validate a candidate report JSON file.
+def validate(
+    path: Path,
+    report_type: Literal["general", "slop"],
+    repo_sha: str,
+    output: Path,
+):
+    """Validate a candidate report and write the provenance-stamped artifact.
+
+    The agent's report contains analysis only. Provenance (repo_sha) is
+    supplied by the CI environment, never by the agent, and is stamped into
+    the artifact here on successful validation.
 
     Args:
-        path: Path to the report JSON file.
+        path: Path to the candidate report JSON file.
         report_type: Type of report — "general" or "slop".
+        repo_sha: Commit SHA under review, from the CI environment.
+        output: Where to write the validated, stamped artifact.
     """
     if not path.is_file():
         print(f"Error: file not found: {path}", file=sys.stderr)
@@ -670,27 +658,6 @@ def validate(path: Path, report_type: Literal["general", "slop"]):
         print(f"Error: unknown report_type '{report_type}'.", file=sys.stderr)
         sys.exit(1)
 
-    head = subprocess.run(
-        ["git", "rev-parse", "HEAD"], capture_output=True, text=True
-    )
-    if head.returncode != 0:
-        print(
-            f"Error: git rev-parse HEAD failed in {Path.cwd()}: "
-            f"{head.stderr.strip()}",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-    expected_sha = head.stdout.strip()
-    if data.get("repo_sha") != expected_sha:
-        print(
-            "Report validation FAILED:\n"
-            f"  repo_sha {data.get('repo_sha')!r} does not match the reviewed "
-            f"checkout HEAD {expected_sha!r}.\n"
-            f"  FIX: set repo_sha to exactly {expected_sha} — the commit SHA "
-            "given in your task instructions. Do not derive it any other way."
-        )
-        sys.exit(1)
-
     try:
         model_cls(**data)
     except Exception as exc:
@@ -698,6 +665,8 @@ def validate(path: Path, report_type: Literal["general", "slop"]):
         print(f"Report validation FAILED:\n  {msg}")
         sys.exit(1)
 
+    data["repo_sha"] = repo_sha
+    output.write_text(json.dumps(data, indent=2) + "\n")
     print("Report validation PASSED")
     sys.exit(0)
 
