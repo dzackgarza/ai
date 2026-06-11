@@ -1,6 +1,6 @@
 # CI Review Runner
 
-OpenCode-powered repo-wide review infrastructure. Two review types:
+OpenCode-powered review infrastructure. Two review types:
 
 - **General review** — structural code quality audit: architectural decay, dead code,
   test quality, dependency mismanagement, semantic regressions.
@@ -8,59 +8,83 @@ OpenCode-powered repo-wide review infrastructure. Two review types:
   control-flow defects, test/text antipatterns, validation-evasion constructs,
   defaults/fallbacks/mocks/skips.
 
+Each type runs in two scopes:
+
+- **Repo scope** — full-repository sweep (weekly cron, push to main, manual dispatch).
+- **Diff scope** — PR review confined to the diff against the base branch
+  (every pull request).
+
 Findings are uploaded as SARIF to GitHub code scanning alerts, providing persistent
-state (open / dismissed / fixed) across runs without PR comment spam.
+state (open / dismissed / fixed) across runs. PR runs upload under the same SARIF
+categories as the repo-wide runs, so code scanning natively computes "new alerts
+introduced by this PR" and annotates the diff — no comment posting, no thread
+maintenance.
 
 ## File Inventory
 
-### Runner-owned (visible to CI, not visible to reviewer)
+### Workflows (`.github/workflows/`)
+
+| Path | Purpose |
+|------|---------|
+| `_review.yml` | Reusable workflow — parameterized by `report_type` (general/slop), `scope` (repo/diff), optional `fail_below` |
+| `review-general.yml` | Caller — general/repo on dispatch, weekly (Mon), push to main |
+| `review-slop.yml` | Caller — slop/repo on dispatch, weekly (Thu), push to main |
+| `review-pr.yml` | Caller — both types, diff-scoped, on every pull request |
+
+### Runner-owned (`quality-control/ci/` — visible to CI, not visible to reviewer)
 
 | Path | Purpose |
 |------|---------|
 | `runner.just` | Justfile with all CI setup/run/collect/convert recipes |
-| `private/submit-candidate` | Root-owned validator — validates report JSON, renders PR comment |
-| `private/check-report.py` | Pydantic models, schema printer, validator, renderer |
+| `private/submit-candidate` | Root-owned validator — validates report JSON |
+| `private/check-report.py` | Pydantic models, schema printer, validator, metadata |
 | `report-to-sarif.py` | Converts validated artifact to SARIF 2.1.0 for code scanning upload |
 | `fetch-reviewer-context.py` | Queries existing code scanning alerts for reviewer context |
-| `reviewer_home/` | Template for `/home/reviewer` — configs, public wrapper, dotfiles |
+| `reviewer_home/` | Static template for `/home/reviewer` — opencode config (incl. model), cc-safety-net rules, public wrapper |
 
-### Reviewer-visible (inside `/home/reviewer/repo`)
+### Review definitions (`quality-control/reviews/`)
+
+| Path | Purpose |
+|------|---------|
+| `general/template.md`, `slop/template.md` | Agent task prompt per review type |
+| `general/manifest.txt`, `slop/manifest.txt` | Static list of documents (skills, guides) inlined into the prompt |
+| `scope-repo.md`, `scope-diff.md` | Scope framing prepended to the prompt |
+
+### Harness (`quality-control/`)
+
+| Path | Purpose |
+|------|---------|
+| `run-review.py` | Assembles prompt (context + scope + manifest + repo docs + template), loops opencode until a validated artifact exists |
+
+### Reviewer-visible (inside `/home/reviewer`)
 
 | Path | Purpose |
 |------|---------|
 | `bin/submit-candidate` | Public wrapper — delegates to `/opt/ai-review/private/submit-candidate` via sudo |
 
-### Outside this directory (`quality-control/`)
-
-| Path | Purpose |
-|------|---------|
-| `run-review.py` | Harness — feeds template to opencode, retries on timeout, collects artifact |
-| `reviews/general/template.md` | Agent prompt for general review |
-| `reviews/slop/template.md` | Agent prompt for slop review |
-
 ## How the Reporting Loop Works
 
 ```
-CI workflow triggers (scheduled / workflow_dispatch / push main)
-  → runner.just prepares reviewer user, installs private tools, copies reviewer home
-  → runner.just fetch-context (queries existing code scanning alerts)
-  → runner.just run-review (feeds template + skills + context to `opencode` as reviewer)
-  → opencode agent (runs as `reviewer` user):
-      1. Reads template.md for instruction set
+Workflow caller triggers (cron / dispatch / push main / pull_request)
+  → _review.yml: install tools, fetch-context, prepare reviewer
+  → [diff scope only] stage-pr-diff writes .reviewer-diff.patch into reviewer repo
+  → run-review (as `reviewer` user): run-review.py assembles the prompt and
+    loops `opencode run` (continuing the session) until the artifact exists
+  → opencode agent:
+      1. Reads scope instructions, inlined skills, and task template
       2. Reads reviewer context (existing alerts — do not re-report)
       3. Writes report to .agents/review-runner/candidates/submitted.json
       4. Runs `submit-candidate --help` to learn schema + rejection rules
-      5. Fixes report to match schema
-      6. Runs `submit-candidate` (no arguments)
-      7. If exit 0 → done. If non-zero → read error (has FIX: guidance) → fix same file → goto 6
+      5. Runs `submit-candidate` (no arguments)
+      6. If exit 0 → done. If non-zero → read error (has FIX: guidance) → fix same file → repeat
    → submit-candidate (public wrapper, /home/reviewer/bin/submit-candidate)
      → sudo to /opt/ai-review/private/submit-candidate (root-owned, not readable by reviewer)
        → calls `uv run check-report.py validate` (pydantic validation)
-   → On validation pass: cp to .review-report-artifact.json
-   → On validation fail: print errors with FIX: guidance, exit 1
-   → runner collects output (collect-output recipe)
-   → runner converts to SARIF (convert-sarif recipe)
-   → upload to code scanning
+       → on pass: cp to .review-report-artifact.json
+       → on fail: print errors with FIX: guidance, exit 1
+   → collect-output copies the artifact to the control repo
+   → convert-sarif converts it (report-to-sarif.py)
+   → github/codeql-action/upload-sarif@v4 → code scanning alerts
 ```
 
 ## Data Flow
@@ -72,11 +96,28 @@ Review artifact (.review-report-artifact.json)
       → github/codeql-action/upload-sarif@v4
         → GitHub code scanning alerts (persistent state)
 
-Next review run:
+Next review run (any scope):
   → fetch-reviewer-context.py queries code scanning alerts
     → .reviewer-context.md
       → opencode agent (instructed not to re-report existing findings)
+
+PR runs: same category as repo runs → code scanning diffs alerts against
+the base analysis → "new alerts" annotations appear on the PR.
 ```
+
+## Prompt Assembly
+
+`run-review.py` builds the reviewer prompt from static files, in order:
+
+1. `.reviewer-context.md` — existing tracked findings (do-not-re-report)
+2. `reviews/scope-{repo,diff}.md` — what to look at
+3. `reviews/<type>/manifest.txt` — every listed document inlined verbatim
+   (a directory entry inlines its top-level `*.md`, sorted; missing entries fatal)
+4. Repo docs — all README/AGENTS files in the reviewer's copy
+5. `reviews/<type>/template.md` — the task and output contract
+
+The reviewer model is set in `reviewer_home/.config/opencode/opencode.json`,
+not in code.
 
 ## SARIF Mapping
 
@@ -108,8 +149,8 @@ never attempted.
 | General | `ai-review/general` | `ai-general-review` |
 | Slop | `ai-review/slop` | `ai-slop-review` |
 
-These are used by `fetch-reviewer-context.py` to query existing alerts via
-the code scanning API using the `tool_name` filter.
+Both scopes of a type share one category. `fetch-reviewer-context.py` uses
+these to query existing alerts via the code scanning API (`tool_name` filter).
 
 ## Key invariants
 
@@ -121,6 +162,8 @@ the code scanning API using the `tool_name` filter.
 - Runner does NOT re-validate. It only checks artifact file existence after opencode exits.
 - **CI infrastructure is invisible to the agent**: no `.github/workflows/`,
   no `quality-control/ci/`, no `/opt/ai-review/private/`.
+- Everything the reviewer sees is statically declared in the repo: home dir
+  template, model, manifests, scope files, task templates.
 
 ## Security Model: Two-User Isolation
 
@@ -181,17 +224,7 @@ resolution is directly contradicted by the current code.
 ```
 
 This is the mechanism that prevents new review agents from rediscovering
-previously reported findings.
-
-## Workflows
-
-Two workflows in `.github/workflows/`:
-
-- `general-review-opencode.yml` — runs weekly (Mon) and on push to main
-- `slop-review-opencode.yml` — runs weekly (Thu) and on push to main
-
-Both install `just` inline, then delegate all setup/review/collect/convert steps
-to `just -f quality-control/ci/runner.just`.
+previously reported findings, across both repo-wide and PR runs.
 
 ## Usage in Another Repo
 
@@ -200,12 +233,11 @@ Requirements in the consuming repo:
 - Python >=3.11 with `uv` installed
 - OpenCode CLI (`npm install -g opencode-ai`)
 - CC Safety Net (`npm install -g cc-safety-net`)
-- Report staging directory: `.agents/review-runner/candidates/`
 - GitHub Code Security / code scanning enabled (free for public repos)
 
-Copy `.github/workflows/general-review-opencode.yml` and
-`slop-review-opencode.yml` into the target repo, then copy the entire
-`quality-control/ci/` directory.
+Copy `.github/workflows/{_review,review-general,review-slop,review-pr}.yml`,
+the `quality-control/ci/` directory, `quality-control/run-review.py`, and
+`quality-control/reviews/` into the target repo.
 
 ## Debugging
 
@@ -223,7 +255,7 @@ uv run quality-control/ci/report-to-sarif.py \
 For workflow debugging, use `gh`:
 
 ```bash
-gh workflow run "General Review (OpenCode)" --ref <branch>
+gh workflow run "General Review" --ref <branch>
 gh run list --branch <branch> --limit 10
 gh run view <RUN_ID> --log-failed
 ```
