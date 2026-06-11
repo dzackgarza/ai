@@ -167,10 +167,7 @@ def _alert_category(alert: dict) -> str:
 
 def _alert_location(alert: dict) -> str:
     loc = alert.get("most_recent_instance", {}).get("location", {})
-    path = loc.get("physical_location", {}).get("artifact_location", {}).get("uri", "?")
-    region = loc.get("physical_location", {}).get("region", {})
-    line = region.get("startLine", "?")
-    return f"{path}:{line}"
+    return f"{loc.get('path', '?')}:{loc.get('start_line', '?')}"
 
 
 def _alert_url(alert: dict) -> str:
