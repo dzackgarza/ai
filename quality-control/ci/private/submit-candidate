@@ -12,7 +12,6 @@ CONTROL_REPO="${CONTROL_REPO:?CONTROL_REPO is required}"
 CANDIDATE="$REVIEWER_REPO/.agents/review-runner/candidates/submitted.json"
 CHECKER="/opt/ai-review/private/check-report.py"
 ARTIFACT="$REVIEWER_REPO/.review-report-artifact.json"
-COMMENT="$REVIEWER_REPO/.review-report-comment.md"
 
 if [ "${1:-}" = "--help" ]; then
     cat <<'HELP'
@@ -26,8 +25,7 @@ Write the report JSON to .agents/review-runner/candidates/submitted.json,
 then run this script with no arguments.
 
 The script validates the report against pydantic models.
-On success, renders the PR comment to
-.review-report-comment.md and exits 0. On failure, prints errors with
+On success, exits 0. On failure, prints errors with
 FIX: guidance and exits non-zero — fix the same file and re-run.
 
 report_type must be "general" (selects GeneralFinding) or "slop" (selects SlopFinding).
@@ -35,7 +33,6 @@ report_type must be "general" (selects GeneralFinding) or "slop" (selects SlopFi
 Every path (review_scope, location.path, evidence[].path) must exist in git
 at repo_sha. Verify with: git cat-file -e <sha>:<path>
 
-The score and comment text are produced by the renderer, not by the report.
 Do not include "score" or "report" fields — they are rejected.
 
 The structural example below shows the expected JSON shape.
@@ -68,9 +65,8 @@ fi
 
 if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" 2>&1; then
     cp "$CANDIDATE" "$ARTIFACT"
-    uv run "$CHECKER" render "$ARTIFACT" > "$COMMENT"
     uv run "$CHECKER" metadata "$ARTIFACT"
-    echo "Report validated and comment rendered to $COMMENT"
+    echo "Report validated and submitted to $ARTIFACT"
     exit 0
 fi
 exit 1
