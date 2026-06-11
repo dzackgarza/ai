@@ -37,20 +37,10 @@ install-reviewer-home:
     sudo chown -R reviewer:reviewer {{reviewer_home}}
     sudo chmod 755 {{reviewer_home}}/bin/submit-candidate
 
-install-reviewer-skills skill_list:
-    sudo -u reviewer mkdir -p {{reviewer_home}}/.config/opencode/skills
-    for skill in {{skill_list}}; do \
-      if [ -d "opencode/skills/$skill" ]; then \
-        sudo rsync -a --delete "opencode/skills/$skill" "{{reviewer_home}}/.config/opencode/skills/"; \
-      fi; \
-    done
-    sudo chown -R reviewer:reviewer {{reviewer_home}}/.config
-
 install-sudo-rule:
-    {
-      echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate";
-      echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate *";
-      echo "Defaults!{{private_tools}}/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\"";
+    { echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate"; \
+      echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate *"; \
+      echo "Defaults!{{private_tools}}/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""; \
     } | sudo tee /etc/sudoers.d/ai-review-submit >/dev/null
     sudo chmod 0440 /etc/sudoers.d/ai-review-submit
     sudo visudo -c
@@ -61,50 +51,40 @@ copy-reviewer-repo:
       --exclude '.github' \
       --exclude 'quality-control/ci' \
       --exclude '.review-report-artifact.json' \
-      --exclude '.review-report-comment.md' \
       --exclude '.review-report.sarif' \
       {{control_repo}}/ {{reviewer_repo}}/
     sudo mkdir -p {{reviewer_repo}}/.agents/review-runner/candidates
     sudo cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
     sudo chown -R reviewer:reviewer {{reviewer_repo}}
 
-prepare-general:
+prepare:
     just -f quality-control/ci/runner.just create-reviewer
     just -f quality-control/ci/runner.just install-private-tools
     just -f quality-control/ci/runner.just install-reviewer-home
-    just -f quality-control/ci/runner.just install-reviewer-skills "policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
     just -f quality-control/ci/runner.just install-sudo-rule
     just -f quality-control/ci/runner.just copy-reviewer-repo
 
-prepare-slop:
-    just -f quality-control/ci/runner.just create-reviewer
-    just -f quality-control/ci/runner.just install-private-tools
-    just -f quality-control/ci/runner.just install-reviewer-home
-    just -f quality-control/ci/runner.just install-reviewer-skills "anti-slop reviewing-llm-code fixing-slop policy-index test-guidelines bespoke-software-policy tool-provisioning-and-environment-hygiene"
-    just -f quality-control/ci/runner.just install-sudo-rule
-    just -f quality-control/ci/runner.just copy-reviewer-repo
+stage-pr-diff base_ref:
+    git -C {{control_repo}} diff "origin/{{base_ref}}...HEAD" > "${RUNNER_TEMP:-/tmp}/reviewer-diff.patch"
+    test -s "${RUNNER_TEMP:-/tmp}/reviewer-diff.patch"
+    sudo cp "${RUNNER_TEMP:-/tmp}/reviewer-diff.patch" {{reviewer_repo}}/.reviewer-diff.patch
+    sudo chown reviewer:reviewer {{reviewer_repo}}/.reviewer-diff.patch
 
-run-review mode template report_type:
+run-review template scope manifest report_type:
     sudo -u reviewer -H env \
       PATH="{{reviewer_home}}/bin:/usr/local/bin:/usr/bin:/bin" \
       REPORT_TYPE="{{report_type}}" \
       REVIEWER_REPO="{{reviewer_repo}}" \
       CONTROL_REPO="{{control_repo}}" \
-      GITHUB_BASE_REF="${GITHUB_BASE_REF:-main}" \
-      PR_NUMBER="${PR_NUMBER:-0}" \
+      GITHUB_SHA="${GITHUB_SHA}" \
       bash -lc 'cd {{reviewer_repo}} && opencode --version && python3 quality-control/run-review.py \
-        --mode "{{mode}}" \
-        --skills-dir opencode/skills \
         --template "{{template}}" \
-        --base-ref "${GITHUB_BASE_REF:-main}" \
-        --pr-number "${PR_NUMBER:-0}" \
+        --scope "{{scope}}" \
+        --manifest "{{manifest}}" \
         --reviewer-context .reviewer-context.md'
 
 collect-output:
     cp {{reviewer_repo}}/.review-report-artifact.json {{control_repo}}/.review-report-artifact.json
-    if [ -f {{reviewer_repo}}/.review-report-comment.md ]; then \
-      cp {{reviewer_repo}}/.review-report-comment.md {{control_repo}}/.review-report-comment.md; \
-    fi
 
 convert-sarif category:
     uv run quality-control/ci/report-to-sarif.py \
