@@ -56,8 +56,7 @@ cp "$CONTROL_REPO/.reviewer-context.md" "$REVIEWER_REPO/.reviewer-context.md"
 
 sudo chown -R reviewer:reviewer "$REVIEWER_REPO"
 
-sudo mkdir -p "$REVIEWER_HOME/.config"
-sudo cp -r ~/.config/opencode "$REVIEWER_HOME/.config/opencode"
+sudo cp -r quality-control/ci/reviewer-home/. "$REVIEWER_HOME/"
 sudo chown -R reviewer:reviewer "$REVIEWER_HOME/.config"
 
 sudo mkdir -p "$REVIEWER_HOME/bin"
