@@ -39,7 +39,7 @@ sudo chmod 755 "$PUBLIC_TOOLS/submit-candidate"
   echo "Defaults!$PRIVATE_TOOLS/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""
 } | sudo tee /etc/sudoers.d/ai-review-submit >/dev/null
 sudo chmod 0440 /etc/sudoers.d/ai-review-submit
-sudo visudo -c
+sudo visudo -c -f /etc/sudoers.d/ai-review-submit
 
 # Sanitized reviewer checkout.
 rsync -a --delete \
