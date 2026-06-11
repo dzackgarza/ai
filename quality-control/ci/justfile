@@ -21,21 +21,21 @@ install-opencode:
 install-cc-safety-net:
     npm install -g cc-safety-net
 
-install-tools: install-uv install-opencode install-cc-safety-net
+install-tools: install-uv install-just install-opencode install-cc-safety-net
 
 configure-opencode skill_list:
     mkdir -p ~/.config/opencode
-    cp {{control_repo}}/quality-control/ci-opencode.json ~/.config/opencode/opencode.json
+    cp quality-control/ci-opencode.json ~/.config/opencode/opencode.json
     mkdir -p ~/.config/opencode/skills
     for skill in {{skill_list}}; do \
-      [ -d "{{control_repo}}/opencode/skills/$skill" ] && cp -r "{{control_repo}}/opencode/skills/$skill" ~/.config/opencode/skills/; \
+      [ -d "opencode/skills/$skill" ] && cp -r "opencode/skills/$skill" ~/.config/opencode/skills/; \
       echo "installed $skill"; \
     done
 
 configure-cc-safety-net:
     mkdir -p .cc-safety-net/rules/project-rules
-    cp {{control_repo}}/quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
-    cp {{control_repo}}/quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
+    cp quality-control/ci-cc-safety-net-rules.json .cc-safety-net/rules/rule.json
+    cp quality-control/ci-cc-safety-net.json .cc-safety-net/rules/project-rules/rulebook.json
     CC_SAFETY_NET_PARANOID=1 npx -y cc-safety-net rule sync
 
 configure-general:
@@ -47,10 +47,10 @@ configure-slop:
     just configure-cc-safety-net
 
 fetch-context category output:
-    uv run {{control_repo}}/quality-control/ci/fetch-reviewer-context.py \
+    uv run quality-control/ci/fetch-reviewer-context.py \
       --repo "${GITHUB_REPOSITORY}" \
       --categories "{{category}}" \
-      --output "{{control_repo}}/{{output}}"
+      --output "{{output}}"
 
 create-reviewer-user:
     sudo useradd -m -s /bin/bash reviewer || true
@@ -61,32 +61,40 @@ install-private-review-tools:
     sudo rm -rf {{private_tools}} {{public_tools}}
     sudo mkdir -p {{private_tools}} {{public_tools}}
 
-    sudo cp {{control_repo}}/quality-control/ci/locked/submit-candidate {{private_tools}}/submit-candidate
-    sudo cp {{control_repo}}/quality-control/ci/locked/check-report.py {{private_tools}}/check-report.py
-    sudo cp {{control_repo}}/quality-control/ci/report-to-sarif.py {{public_tools}}/report-to-sarif.py
+    sudo cp quality-control/ci/locked/submit-candidate {{private_tools}}/submit-candidate
+    sudo cp quality-control/ci/locked/check-report.py {{private_tools}}/check-report.py
+    sudo cp quality-control/ci/report-to-sarif.py {{private_tools}}/report-to-sarif.py
 
-    sudo chown -R root:root {{private_tools}} {{public_tools}}/report-to-sarif.py
+    sudo chown -R root:root {{private_tools}}
     sudo chmod 700 {{private_tools}}
     sudo chmod 500 {{private_tools}}/submit-candidate
     sudo chmod 400 {{private_tools}}/check-report.py
+    sudo chmod 400 {{private_tools}}/report-to-sarif.py
 
-    printf '#!/bin/sh\nset -eu\nexec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO /opt/ai-review/private/submit-candidate "$@"\n' \
-      | sudo tee {{public_tools}}/submit-candidate >/dev/null
+    sudo tee {{public_tools}}/submit-candidate >/dev/null <<'SH'
+    #!/bin/sh
+    set -eu
+    exec sudo -n --preserve-env=REPORT_TYPE,REVIEWER_REPO,CONTROL_REPO /opt/ai-review/private/submit-candidate "$@"
+    SH
 
     sudo chown root:root {{public_tools}}/submit-candidate
     sudo chmod 755 {{public_tools}}/submit-candidate
-    sudo chmod 555 {{public_tools}}/report-to-sarif.py
 
-    { echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate"; echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate *"; echo "Defaults!/opt/ai-review/private/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""; } | sudo tee /etc/sudoers.d/ai-review-submit
+    {
+      echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate"
+      echo "reviewer ALL=(root) NOPASSWD: /opt/ai-review/private/submit-candidate *"
+      echo "Defaults!/opt/ai-review/private/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""
+    } | sudo tee /etc/sudoers.d/ai-review-submit
 
     sudo chmod 0440 /etc/sudoers.d/ai-review-submit
-    sudo visudo -c -f /etc/sudoers.d/ai-review-submit
+    sudo visudo -c
 
 materialize-reviewer-repo:
     sudo rm -rf {{reviewer_repo}}
     sudo mkdir -p {{reviewer_repo}}
 
-    sudo rsync -rl --delete \
+    rsync -a --delete \
+      --exclude '.git' \
       --exclude '.github/workflows' \
       --exclude 'quality-control/ci' \
       --exclude '.review-report-artifact.json' \
@@ -94,10 +102,8 @@ materialize-reviewer-repo:
       --exclude '.review-report.sarif' \
       {{control_repo}}/ {{reviewer_repo}}/
 
-    sudo cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
-
-    sudo mkdir -p {{reviewer_home}}/.config/opencode
-    sudo chown -R reviewer:reviewer {{reviewer_home}}/.config
+    mkdir -p {{reviewer_repo}}/.agents/review-runner/candidates
+    cp {{control_repo}}/.reviewer-context.md {{reviewer_repo}}/.reviewer-context.md
 
     sudo chown -R reviewer:reviewer {{reviewer_repo}}
 
@@ -110,8 +116,6 @@ prepare-reviewer: create-reviewer-user install-private-review-tools materialize-
 
 run-review mode template report_type:
     sudo -u reviewer -H env \
-      HOME={{reviewer_home}} \
-      XDG_CONFIG_HOME={{reviewer_home}}/.config \
       PATH="{{reviewer_bin}}:/usr/local/bin:/usr/bin:/bin" \
       REPORT_TYPE="{{report_type}}" \
       REVIEWER_REPO="{{reviewer_repo}}" \
@@ -131,7 +135,7 @@ collect-review-output:
     fi
 
 convert-sarif category:
-    uv run {{public_tools}}/report-to-sarif.py \
+    uv run {{private_tools}}/report-to-sarif.py \
       --artifact {{control_repo}}/.review-report-artifact.json \
       --output {{control_repo}}/.review-report.sarif \
       --category "{{category}}"

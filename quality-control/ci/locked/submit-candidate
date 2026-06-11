@@ -69,10 +69,7 @@ fi
 if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" 2>&1; then
     cp "$CANDIDATE" "$ARTIFACT"
     uv run "$CHECKER" render "$ARTIFACT" > "$COMMENT"
-    # Emit machine-parseable metadata for downstream use (thread poster etc.)
-    UV_OUTPUT=$(uv run "$CHECKER" metadata "$ARTIFACT" 2>/dev/null)
-    REPO_SHA=$(echo "$UV_OUTPUT" | python3 -c "import sys,json; print(json.load(sys.stdin)['repo_sha'])")
-    echo "REPO_SHA=$REPO_SHA"
+    uv run "$CHECKER" metadata "$ARTIFACT"
     echo "Report validated and comment rendered to $COMMENT"
     exit 0
 fi
