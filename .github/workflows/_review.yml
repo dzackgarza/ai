@@ -50,7 +50,7 @@ jobs:
       - name: Fetch reviewer context
         env:
           GH_TOKEN: ${{ github.token }}
-        run: just -f quality-control/ci/runner.just fetch-context "ai-${{ inputs.report_type }}-review" .reviewer-context.md "${{ github.event.number || 0 }}"
+        run: just -f quality-control/ci/runner.just fetch-context "ai-review/${{ inputs.report_type }}" .reviewer-context.md "${{ github.event.number || 0 }}"
 
       - name: Prepare reviewer
         run: just -f quality-control/ci/runner.just prepare

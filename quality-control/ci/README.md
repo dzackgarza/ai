@@ -153,8 +153,10 @@ accepted cost of making "don't re-raise pending remediation" stick.
 | General | `ai-review/general` | `ai-general-review` |
 | Slop | `ai-review/slop` | `ai-slop-review` |
 
-Both scopes of a type share one category. `fetch-reviewer-context.py` uses
-these to query existing alerts via the code scanning API (`tool_name` filter).
+Both scopes of a type share one category. The alerts API filters by the
+**tool name** (`tool.driver.name`), not the upload category —
+`fetch-reviewer-context.py` queries with `ai-review/general` /
+`ai-review/slop`.
 
 ## Key invariants
 

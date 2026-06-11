@@ -7,14 +7,15 @@ Generate a compact reviewer context file from code scanning alert state.
 This context is given to review agents before they run, to prevent re-raising
 existing issues without new evidence.
 
-Queries code scanning alerts for the relevant tool categories
-(ai-general-review, ai-slop-review) and formats them by state
-(open, dismissed, fixed).
+Queries code scanning alerts for the relevant SARIF tool names
+(ai-review/general, ai-review/slop) and formats them by state
+(open, dismissed, fixed). The alerts API filters by tool.driver.name,
+NOT by the upload-sarif category.
 
 Usage:
   uv run quality-control/ci/fetch-reviewer-context.py \
     --repo owner/repo \
-    --categories ai-general-review,ai-slop-review \
+    --tool-names ai-review/general,ai-review/slop \
     --output .reviewer-context.md
 
 The output is a markdown file with open/dismissed/fixed findings grouped
@@ -193,9 +194,9 @@ def main() -> None:
         help="Repository in owner/repo format",
     )
     parser.add_argument(
-        "--categories",
-        default="ai-general-review,ai-slop-review",
-        help="Comma-separated list of tool/category names to query",
+        "--tool-names",
+        default="ai-review/general,ai-review/slop",
+        help="Comma-separated SARIF tool names (tool.driver.name) to query",
     )
     parser.add_argument(
         "--output",
@@ -212,7 +213,7 @@ def main() -> None:
     args = parser.parse_args()
 
     repo = args.repo
-    categories = [c.strip() for c in args.categories.split(",") if c.strip()]
+    tool_names = [c.strip() for c in args.tool_names.split(",") if c.strip()]
 
     lines: list[str] = []
     lines.append("## Existing repo-wide review findings")
@@ -225,7 +226,7 @@ def main() -> None:
     )
     lines.append("")
 
-    for cat in categories:
+    for cat in tool_names:
         alerts = _fetch_alerts(repo, tool_name=cat)
         if args.pr_number:
             pr_alerts = _fetch_alerts(

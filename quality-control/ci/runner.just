@@ -11,10 +11,10 @@ install-tools:
     npm install -g opencode-ai
     npm install -g cc-safety-net
 
-fetch-context category output pr_number:
+fetch-context tool_name output pr_number:
     uv run quality-control/ci/fetch-reviewer-context.py \
       --repo "${GITHUB_REPOSITORY}" \
-      --categories "{{category}}" \
+      --tool-names "{{tool_name}}" \
       --output "{{output}}" \
       --pr-number "{{pr_number}}"
 
