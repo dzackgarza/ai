@@ -25,7 +25,11 @@ jobs:
           python-version: '3.11'
 
       - name: Install tools
-        run: just -f quality-control/ci/justfile install-tools
+        run: |
+          VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
+          curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+            | tar -xzf - -C /usr/local/bin just
+          just -f quality-control/ci/justfile install-tools
 
       - name: Configure reviewer tools
         run: just -f quality-control/ci/justfile configure-general
