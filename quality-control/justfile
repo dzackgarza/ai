@@ -172,6 +172,48 @@ _check-no-local-qc-override:
 	fi
 	echo "No local QC overrides detected"
 
+_check-canonical-qc-delegation expected-justfile template-path:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: canonical QC delegation check ==="
+	echo "# Verifies the project justfile delegates test/test-ci to the global QC contract"
+	if [ -f justfile ]; then
+		project_justfile=justfile
+	elif [ -f Justfile ]; then
+		project_justfile=Justfile
+	else
+		echo "ERROR: Project root has no justfile."
+		echo "       Global QC is invoked through a repo-local justfile so hooks and agents"
+		echo "       have one canonical command surface."
+		echo "       FIX: copy the canonical template from {{template-path}} and adapt"
+		echo "       only project metadata, not the QC command contract."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	expected_path="{{expected-justfile}}"
+	if rg -q "^[[:space:]@-]*just[[:space:]]+(-f|--justfile)[[:space:]]+(~|\\$HOME|/home/dzack)/ai/quality-control/${expected_path}[[:space:]]+test([[:space:]]|$)" "$project_justfile"; then
+		echo "Canonical QC delegation OK"
+		exit 0
+	fi
+	if rg -q "^[[:space:]]*(format|lint|typecheck|check):|uv[[:space:]]+run[[:space:]]+(ruff|pyright|pytest)|ruff[[:space:]]+(format|check)|pyright|pytest" "$project_justfile"; then
+		echo "ERROR: $project_justfile contains local QC drift instead of global QC delegation."
+		echo "       Local lint/typecheck/test recipes let agents run narrower gates than"
+		echo "       the repository contract and can miss global preflight rules."
+		echo "       FIX: follow {{template-path}}:"
+		echo "       test:"
+		echo "           just -f ~/ai/quality-control/${expected_path} test"
+		echo "       test-ci:"
+		echo "           just -f ~/ai/quality-control/${expected_path} test-ci"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	echo "ERROR: $project_justfile does not delegate to ~/ai/quality-control/${expected_path}."
+	echo "       FIX: follow {{template-path}} and make the repo-local test/test-ci"
+	echo "       recipes call the global QC justfile directly."
+	"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+	exit 1
+
 _semgrep:
 	#!/usr/bin/env bash
 	set -euo pipefail
