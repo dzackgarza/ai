@@ -670,6 +670,27 @@ def validate(path: Path, report_type: Literal["general", "slop"]):
         print(f"Error: unknown report_type '{report_type}'.", file=sys.stderr)
         sys.exit(1)
 
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+    )
+    if head.returncode != 0:
+        print(
+            f"Error: git rev-parse HEAD failed in {Path.cwd()}: "
+            f"{head.stderr.strip()}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    expected_sha = head.stdout.strip()
+    if data.get("repo_sha") != expected_sha:
+        print(
+            "Report validation FAILED:\n"
+            f"  repo_sha {data.get('repo_sha')!r} does not match the reviewed "
+            f"checkout HEAD {expected_sha!r}.\n"
+            f"  FIX: set repo_sha to exactly {expected_sha} — the commit SHA "
+            "given in your task instructions. Do not derive it any other way."
+        )
+        sys.exit(1)
+
     try:
         model_cls(**data)
     except Exception as exc:

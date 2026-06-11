@@ -30,8 +30,11 @@ FIX: guidance and exits non-zero — fix the same file and re-run.
 
 report_type must be "general" (selects GeneralFinding) or "slop" (selects SlopFinding).
 
+repo_sha must be exactly the commit SHA given in your task instructions.
+It is checked against the reviewed checkout by the validator.
+
 Every path (review_scope, location.path, evidence[].path) must exist in git
-at repo_sha. Verify with: git cat-file -e <sha>:<path>
+at repo_sha. The validator checks this against the reviewed checkout.
 
 Do not include "score" or "report" fields — they are rejected.
 
@@ -62,6 +65,10 @@ if [ -z "${REPORT_TYPE:-}" ]; then
     echo "ERROR: REPORT_TYPE env var must be set (general or slop)" >&2
     exit 1
 fi
+
+# Validate from the control repo: git-based checks (repo_sha, path existence)
+# must run against the real checkout, never the reviewer's writable copy.
+cd "$CONTROL_REPO"
 
 if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" 2>&1; then
     cp "$CANDIDATE" "$ARTIFACT"
