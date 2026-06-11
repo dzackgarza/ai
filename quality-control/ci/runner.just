@@ -44,7 +44,7 @@ install-sudo-rule:
       echo "Defaults!{{private_tools}}/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""; \
     } | sudo tee /etc/sudoers.d/ai-review-submit >/dev/null
     sudo chmod 0440 /etc/sudoers.d/ai-review-submit
-    sudo visudo -c
+    sudo visudo -c -f /etc/sudoers.d/ai-review-submit
 
 copy-reviewer-repo:
     sudo rsync -a --delete \
