@@ -135,15 +135,16 @@ Each finding in the validated artifact becomes one code scanning alert:
 | `location.path` | `physicalLocation.artifactLocation.uri` |
 | `location.start_line` | `physicalLocation.region.startLine` |
 | `location.end_line` | `physicalLocation.region.endLine` |
-| (category + label + path) | `partialFingerprints.reviewFindingKey` (SHA256) |
+| (category + path) | `partialFingerprints.reviewFindingKey` (SHA256) |
 
 ### Fingerprint stability
 
 The `reviewFindingKey` fingerprint is a deterministic hash of
-`category | label | path`.  It deliberately excludes line numbers, timestamps,
-and commit SHAs so the same finding maps to the same alert across code
-movement.  The fingerprint exists only for alert lookup — deduplication is
-never attempted.
+`category | path`.  It deliberately excludes line numbers, timestamps,
+commit SHAs, and the agent-chosen label (free text reinvented each run) so
+the same defect class in the same file maps to one identity across runs and
+code movement.  Two distinct same-category findings in one file merge — the
+accepted cost of making "don't re-raise pending remediation" stick.
 
 ### SARIF categories
 
@@ -230,7 +231,7 @@ Anchor classification is computed from the diff before posting:
 | File in diff, lines outside hunks | Thread on the file's first visible line (body carries the real range) |
 | File not in the diff | Top-level body list only (already in code scanning) |
 
-Each thread body embeds `ai-review-fingerprint: <sha256(category|label|path)>`
+Each thread body embeds `ai-review-fingerprint: <sha256(category|path)>`
 (same components as the SARIF `reviewFindingKey`). Before posting, existing
 threads on the PR are scanned for these markers and matching findings are
 skipped — resolved threads count as dispositions and stay skipped. Thread

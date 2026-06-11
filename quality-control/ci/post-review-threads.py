@@ -9,7 +9,8 @@ never involves the reviewer agent. One review per run: a top-level body
 (summary + metadata) plus one inline, individually-resolvable comment per
 finding. Findings are deduplicated against threads already on the PR via a
 fingerprint marker (same components as the SARIF reviewFindingKey:
-category | label | path — see report-to-sarif.py).
+category | path — see report-to-sarif.py; agent-chosen labels are excluded
+because they are free text reinvented each run).
 
 Anchor classification (computed from the diff before posting, no fallbacks):
 - a finding line visible in the diff       -> line-anchored thread
@@ -66,8 +67,8 @@ def _gh_json(args: list[str], body: dict | None = None) -> dict | list:
     return json.loads(result.stdout)
 
 
-def _fingerprint(category: str, label: str, path: str) -> str:
-    raw = "|".join([category, label, path])
+def _fingerprint(category: str, path: str) -> str:
+    raw = "|".join([category, path])
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
@@ -244,7 +245,7 @@ def main() -> None:
     skipped = 0
     for finding in findings:
         loc = finding["location"]
-        fp = _fingerprint(finding["category"], finding["label"], str(loc["path"]))
+        fp = _fingerprint(finding["category"], str(loc["path"]))
         if fp in seen:
             skipped += 1
             continue

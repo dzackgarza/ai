@@ -43,13 +43,16 @@ def _tier_to_level(tier: str) -> str:
     return "error" if tier == "tier1" else "warning"
 
 
-def _fingerprint(category: str, label: str, path: str) -> dict[str, str]:
-    """Deterministic hash for alert identity.  Stable across line shifts.
+def _fingerprint(category: str, path: str) -> dict[str, str]:
+    """Deterministic hash for alert identity.  Stable across line shifts
+    and across runs.
 
-    Components: category + label + path.
+    Components: category + path. The agent-chosen label is deliberately
+    excluded — labels are free text reinvented each run, and including
+    them re-keyed the same defect into a new alert on every review.
     No line numbers, no timestamps, no commit SHAs.
     """
-    raw = "|".join([category, label, path])
+    raw = "|".join([category, path])
     h = hashlib.sha256(raw.encode()).hexdigest()
     return {"reviewFindingKey": h}
 
@@ -113,7 +116,7 @@ def _build_artifact(artifact: dict, report_type: str, category: str) -> dict:
                     }
                 }
             ],
-            "partialFingerprints": _fingerprint(finding_category, label, loc_path),
+            "partialFingerprints": _fingerprint(finding_category, loc_path),
             "properties": {
                 "label": label,
                 "tier": tier,
