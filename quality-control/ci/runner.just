@@ -74,6 +74,11 @@ stage-pr-diff base_ref:
 run-review template scope manifest report_type:
     sudo -u reviewer -H env \
       PATH="{{reviewer_home}}/bin:/usr/local/bin:/usr/bin:/bin" \
+      HOME="{{reviewer_home}}" \
+      XDG_CONFIG_HOME="{{reviewer_home}}/.config" \
+      XDG_DATA_HOME="{{reviewer_home}}/.local/share" \
+      XDG_STATE_HOME="{{reviewer_home}}/.local/state" \
+      XDG_CACHE_HOME="{{reviewer_home}}/.cache" \
       REPORT_TYPE="{{report_type}}" \
       REVIEWER_REPO="{{reviewer_repo}}" \
       CONTROL_REPO="{{control_repo}}" \
