@@ -45,6 +45,7 @@ jobs:
       - name: Run Slop Review
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
+          GITHUB_SHA: ${{ github.sha }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
           PR_NUMBER: ${{ github.event.number }}
         run: |

@@ -13,6 +13,7 @@ sudo -u reviewer -H env \
   REPORT_TYPE="$report_type" \
   REVIEWER_REPO="$REVIEWER_REPO" \
   CONTROL_REPO="$CONTROL_REPO" \
+  GITHUB_SHA="${GITHUB_SHA:?GITHUB_SHA is required}" \
   GITHUB_BASE_REF="${GITHUB_BASE_REF:-main}" \
   PR_NUMBER="${PR_NUMBER:-0}" \
   bash -lc "cd '$REVIEWER_REPO' && python3 quality-control/run-review.py \

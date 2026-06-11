@@ -167,7 +167,7 @@ def main():
     candidates_dir.mkdir(parents=True, exist_ok=True)
     task_path = run_dir / "task.md"
 
-    repo_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    repo_sha = os.environ["GITHUB_SHA"]
 
     system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))
     template = template_path.read_text()
