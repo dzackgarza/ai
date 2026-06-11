@@ -1,14 +1,24 @@
-name: General Review (OpenCode)
+name: AI Review (reusable)
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 8 * * 1'
-  push:
-    branches: [main]
+  workflow_call:
+    inputs:
+      report_type:
+        description: 'Review type: general or slop'
+        required: true
+        type: string
+      scope:
+        description: 'Review scope: repo or diff'
+        required: true
+        type: string
+      fail_below:
+        description: 'Fail the run if the health score drops below this value'
+        required: false
+        type: string
+        default: ''
 
 jobs:
-  general-review:
+  review:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -25,7 +35,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install just for runner
+      - name: Install just
         run: |
           mkdir -p "$RUNNER_TEMP/bin"
           VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
@@ -39,48 +49,43 @@ jobs:
       - name: Fetch reviewer context
         env:
           GH_TOKEN: ${{ github.token }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: just -f quality-control/ci/runner.just fetch-context ai-general-review .reviewer-context.md
+        run: just -f quality-control/ci/runner.just fetch-context "ai-${{ inputs.report_type }}-review" .reviewer-context.md
 
       - name: Prepare reviewer
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-        run: just -f quality-control/ci/runner.just prepare-general
+        run: just -f quality-control/ci/runner.just prepare
 
-      - name: Run General Review
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-          GITHUB_BASE_REF: ${{ github.base_ref }}
-          PR_NUMBER: ${{ github.event.number }}
+      - name: Stage PR diff
+        if: inputs.scope == 'diff'
+        run: just -f quality-control/ci/runner.just stage-pr-diff "${{ github.base_ref }}"
+
+      - name: Run review
         run: |
           just -f quality-control/ci/runner.just run-review \
-            review \
-            quality-control/reviews/general/template.md \
-            general
+            "quality-control/reviews/${{ inputs.report_type }}/template.md" \
+            "quality-control/reviews/scope-${{ inputs.scope }}.md" \
+            "quality-control/reviews/${{ inputs.report_type }}/manifest.txt" \
+            "${{ inputs.report_type }}"
 
       - name: Collect review output
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: just -f quality-control/ci/runner.just collect-output
 
       - name: Convert report to SARIF
-        run: just -f quality-control/ci/runner.just convert-sarif ai-general-review
+        run: just -f quality-control/ci/runner.just convert-sarif "ai-${{ inputs.report_type }}-review"
 
       - name: Upload review findings
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: .review-report.sarif
-          category: ai-general-review
+          category: ai-${{ inputs.report_type }}-review
 
-      - name: Check Threshold
-        if: ${{ vars.GENERAL_FAIL_BELOW != '' }}
+      - name: Check threshold
+        if: inputs.fail_below != ''
         run: |
-          threshold="${{ vars.GENERAL_FAIL_BELOW }}"
           tier1=$(jq '[.findings[] | select(.tier == "tier1")] | length' .review-report-artifact.json)
           tier2=$(jq '[.findings[] | select(.tier == "tier2")] | length' .review-report-artifact.json)
           score=$((100 - tier1 * 20 - tier2 * 5))
-          [ "$score" -lt 0 ] && score=0
-          if [ "$score" -lt "$threshold" ] 2>/dev/null; then
-            echo "Health Score $score is below threshold $threshold"
+          score=$(( score < 0 ? 0 : score ))
+          if [ "$score" -lt "${{ inputs.fail_below }}" ]; then
+            echo "Health score $score is below threshold ${{ inputs.fail_below }}"
             exit 1
           fi

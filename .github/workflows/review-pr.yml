@@ -1,0 +1,25 @@
+name: PR Review
+
+on:
+  pull_request:
+
+jobs:
+  general:
+    uses: ./.github/workflows/_review.yml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      report_type: general
+      scope: diff
+
+  slop:
+    uses: ./.github/workflows/_review.yml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      report_type: slop
+      scope: diff

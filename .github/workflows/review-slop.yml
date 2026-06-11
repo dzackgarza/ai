@@ -1,0 +1,20 @@
+name: Slop Review
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 4'
+  push:
+    branches: [main]
+
+jobs:
+  slop:
+    uses: ./.github/workflows/_review.yml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      report_type: slop
+      scope: repo
+      fail_below: ${{ vars.SLOP_FAIL_BELOW }}
