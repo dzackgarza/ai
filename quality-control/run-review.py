@@ -2,15 +2,19 @@
 # requires-python = ">=3.11"
 # ///
 """
-Review runner: manages the agent loop, harvesting, and finalization.
+Review harness: assembles the reviewer prompt and loops opencode until a
+validated report artifact exists.
+
+Prompt assembly order: reviewer context (existing tracked findings), scope
+instructions (repo-wide sweep or PR diff), manifest documents (skills and
+guides, statically declared per review type), repo docs, task template.
 
 The agent writes a candidate report to a fixed path, then calls
-submit-candidate (no arguments) to validate and submit.
-The script copies the validated report to .review-report-artifact.json
-on success. The harness only checks for existence of that artifact after
-the opencode session ends — the script owns validation and submission.
-On timeout or missing artifact, the harness continues the opencode session
-with `opencode run -c`.
+submit-candidate (no arguments) to validate and submit. submit-candidate
+copies the validated report to .review-report-artifact.json. This harness
+only checks for that artifact's existence after each opencode invocation;
+on timeout or a missing artifact it continues the session with
+`opencode run -c`.
 """
 
 import argparse
@@ -31,11 +35,7 @@ IGNORE_DIRS = {
     "coverage",
 }
 
-HERE = pathlib.Path(__file__).parent.resolve()
-
 ARTIFACT_PATH = pathlib.Path(".review-report-artifact.json")
-COMMENT_PATH = pathlib.Path(".review-report-comment.md")
-SCORE_PATH = pathlib.Path(".review-report-score.txt")
 MAX_ATTEMPTS = 5
 OPENCODE_TIMEOUT = 600
 
@@ -55,50 +55,33 @@ def collect_repo_docs(repo_root: pathlib.Path) -> str:
     )
 
 
-def load_skills(skills_dir: pathlib.Path, slop_mode: bool = False) -> str:
-    skills_repo = pathlib.Path("opencode/skills").resolve()
-    guides = []
-    for fname in ["common.md", "source-coverage.md", "decay-risks.md"]:
-        p = skills_dir / "_shared" / fname
-        if p.exists():
-            guides.append(p.read_text())
+def load_manifest(manifest_path: pathlib.Path) -> str:
+    """Inline every document listed in the manifest, in order.
 
-    ci_protocol = pathlib.Path("opencode/skills/_shared/ci-sweep-protocol.md").resolve()
-    if ci_protocol.exists():
-        guides.append(ci_protocol.read_text())
-
-    for skill_name in [
-        "policy-index",
-        "bespoke-software-policy",
-        "test-guidelines",
-        "tool-provisioning-and-environment-hygiene",
-    ]:
-        p = skills_repo / skill_name / "SKILL.md"
-        if p.exists():
-            guides.append(p.read_text())
-
-    if slop_mode:
-        for skill_name in ["anti-slop", "reviewing-llm-code", "fixing-slop"]:
-            p = skills_repo / skill_name / "SKILL.md"
-            if p.exists():
-                guides.append(p.read_text())
-        for ref_dir in [
-            skills_repo / "reviewing-llm-code" / "references",
-            skills_repo / "anti-slop" / "references",
-        ]:
-            if ref_dir.exists():
-                for f in sorted(ref_dir.iterdir()):
-                    if f.suffix == ".md":
-                        guides.append(f.read_text())
-
-    p = skills_dir / "brooks-review" / "pr-review-guide.md"
-    if p.exists():
-        guides.append(p.read_text())
-
-    repo_docs = collect_repo_docs(pathlib.Path.cwd())
-    if repo_docs:
-        guides.append(repo_docs)
-    return "\n\n---\n\n".join(guides)
+    One repo-relative path per line. A directory entry inlines all of its
+    top-level *.md files, sorted by name. Missing entries are fatal.
+    """
+    sections = []
+    for raw in manifest_path.read_text().splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        p = pathlib.Path(line)
+        if p.is_dir():
+            files = sorted(p.glob("*.md"))
+            if not files:
+                print(f"FATAL: manifest dir has no .md files: {p}", file=sys.stderr)
+                sys.exit(1)
+            sections.extend(f.read_text() for f in files)
+        elif p.is_file():
+            sections.append(p.read_text())
+        else:
+            print(f"FATAL: manifest entry not found: {p}", file=sys.stderr)
+            sys.exit(1)
+    if not sections:
+        print(f"FATAL: manifest is empty: {manifest_path}", file=sys.stderr)
+        sys.exit(1)
+    return "\n\n---\n\n".join(sections)
 
 
 def substitute(template: str, **kwargs: str) -> str:
@@ -114,7 +97,6 @@ def run_opencode(task_path: pathlib.Path, *, continue_session: bool) -> int:
     cmd = ["opencode", "run"]
     if continue_session:
         cmd.append("-c")
-    cmd.extend(["--model", "opencode/deepseek-v4-flash-free"])
 
     env = {
         **os.environ,
@@ -139,28 +121,24 @@ def run_opencode(task_path: pathlib.Path, *, continue_session: bool) -> int:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", default="review")
-    parser.add_argument("--skills-dir", default="opencode/skills")
-    parser.add_argument("--base-ref")
-    parser.add_argument(
-        "--template",
-        default=str(HERE / "reviews" / "general" / "template.md"),
-    )
-    parser.add_argument("--pr-number", default="0")
+    parser.add_argument("--template", required=True)
+    parser.add_argument("--scope", required=True, help="Path to scope instructions md")
+    parser.add_argument("--manifest", required=True, help="Path to prompt manifest")
     parser.add_argument(
         "--reviewer-context",
-        default=None,
-        help="Path to reviewer context file (existing issues on this PR)",
+        required=True,
+        help="Path to reviewer context file (existing tracked findings)",
     )
     args = parser.parse_args()
 
-    skills_dir, template_path = (
-        pathlib.Path(args.skills_dir),
-        pathlib.Path(args.template),
-    )
-    if not skills_dir.is_dir() or not template_path.is_file():
-        print("FATAL: Missing dependencies", file=sys.stderr)
-        sys.exit(1)
+    template_path = pathlib.Path(args.template)
+    scope_path = pathlib.Path(args.scope)
+    manifest_path = pathlib.Path(args.manifest)
+    ctx_path = pathlib.Path(args.reviewer_context)
+    for p in (template_path, scope_path, manifest_path, ctx_path):
+        if not p.is_file():
+            print(f"FATAL: required input not found: {p}", file=sys.stderr)
+            sys.exit(1)
 
     run_dir = pathlib.Path(".agents/review-runner").resolve()
     candidates_dir = run_dir / "candidates"
@@ -169,36 +147,17 @@ def main():
 
     repo_sha = os.environ["GITHUB_SHA"]
 
-    system = load_skills(skills_dir, slop_mode=(args.mode == "slop"))
-    template = template_path.read_text()
-    # Remove PR_NUMBER from the body entirely to de-anchor the agent
-    body = substitute(template, REPO_SHA=repo_sha)
-
-    # Prepend instruction to scan full repo (not just PR diff), but DO consider existing threads
-    header = """
-# INSTRUCTIONS: Repository-wide sweep, not PR-diff review
-
-You are performing a FRESH, COMPREHENSIVE REPOSITORY AUDIT.
-Scan the ENTIRE repository source tree — do NOT limit analysis to recent commits or diffs.
-Analyze all files as if this were a day-zero audit of a new codebase.
-
-HOWEVER: The context above lists existing review issues on this PR (from the thread index).
-Do NOT re-raise these issues unless you have new evidence, the problem reappears in a
-materially different form, or the previous resolution is directly contradicted by the
-current code. The index is maintained by a separate gardener agent — respect it.
-"""
-    initial_prompt = f"{header}\n\n{system}\n\n{body}"
-
-    # Prepend reviewer context if provided (existing issues on this PR)
-    if args.reviewer_context:
-        ctx_path = pathlib.Path(args.reviewer_context)
-        if not ctx_path.is_file():
-            print(
-                f"FATAL: --reviewer-context file not found: {ctx_path}", file=sys.stderr
-            )
-            sys.exit(1)
-        ctx = ctx_path.read_text()
-        initial_prompt = f"{ctx}\n\n{initial_prompt}"
+    body = substitute(template_path.read_text(), REPO_SHA=repo_sha)
+    sections = [
+        ctx_path.read_text(),
+        scope_path.read_text(),
+        load_manifest(manifest_path),
+    ]
+    repo_docs = collect_repo_docs(pathlib.Path.cwd())
+    if repo_docs:
+        sections.append(repo_docs)
+    sections.append(body)
+    initial_prompt = "\n\n".join(sections)
 
     submitted_path = candidates_dir / SUBMITTED_CANDIDATE
 
@@ -233,16 +192,6 @@ current code. The index is maintained by a separate gardener agent — respect i
 
         if ARTIFACT_PATH.exists():
             print("--- Report artifact submitted ---", file=sys.stderr)
-            try:
-                comment = COMMENT_PATH.read_text()
-                # Extract score from rendered comment (machine-parseable anchor)
-                import re
-
-                m = re.search(r"\*\*Score: (\d+)/100\*\*", comment)
-                score = m.group(1) if m else "0"
-                SCORE_PATH.write_text(score)
-            except Exception as e:
-                print(f"Warning: Failed to read rendered comment: {e}", file=sys.stderr)
             sys.exit(0)
 
     print(f"FATAL: No report artifact after {MAX_ATTEMPTS} attempts", file=sys.stderr)

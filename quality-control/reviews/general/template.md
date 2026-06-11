@@ -4,26 +4,16 @@ This runs in a CI environment. Follow these rules exactly:
 - **Do NOT modify any workflow files, scripts, or CI infrastructure.** You are running in a restricted mode.
 - Do not ask questions. Do not request confirmation. Do not pause for input.
 
-## Skills in Context
-
-These skills are loaded above — reference them directly:
-`policy-index`, `bespoke-software-policy`, `test-guidelines`
-
 ## Task
 
-Analyze the repository at commit `{{REPO_SHA}}` for structural code defects, architectural decay, and quality regressions.
-
-**CRITICAL: Ignore all Pull Request context.** This is not a PR review.
+Analyze the code in scope (defined by the scope instructions above) at commit `{{REPO_SHA}}` for structural code defects, architectural decay, and quality regressions.
 
 ### Execution
 
-1. Run `tree -L 3` to understand directory layout.
-2. Identify hotspots: most-churned files (last 3 months), oldest untouched files, recently modified files.
-3. Read key configs, docs, justfile commands.
-4. Read source code from high-churn and old files.
-5. Check test quality, dead code, architectural problems.
-6. Apply the Six Decay Risks (R1-R6) to real files you read.
-7. Record every file you read in `checked_surfaces` with the reason and lines examined.
+1. Cover the code in scope following the coverage strategy from the scope instructions above.
+2. Check test quality, dead code, architectural problems.
+3. Apply the Six Decay Risks (R1-R6) to real files you read.
+4. Record every file you read in `checked_surfaces` with the reason and lines examined.
 
 ### Output Format
 
@@ -46,7 +36,7 @@ Key rules every finding must satisfy:
 **Forbidden:**
 - Findings whose `category` contains `infra`, `infrastructure`, `ci`, `workflow`, or `config`.
 - Findings about files in `.github/`, `.agents/`, `quality-control/`, or `opencode/skills/`.
-- `score` and `report` fields — the renderer derives the score from findings and builds the comment markdown automatically.
+- `score` and `report` fields — rejected by the validator.
 
 ## Submitting Your Report
 

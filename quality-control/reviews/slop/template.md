@@ -4,20 +4,9 @@ This runs in a CI environment. Follow these rules exactly:
 - **Do NOT modify any workflow files, scripts, or CI infrastructure.** You are running in a restricted mode.
 - Do not ask questions. Do not request confirmation. Do not pause for input.
 
-## Skills in Context
+## Task: Slop Audit
 
-These skills are loaded above — reference them directly:
-`policy-index`, `anti-slop`, `reviewing-llm-code`, `fixing-slop`, `test-guidelines`
-
-All reference files from `reviewing-llm-code/references/` and `anti-slop/references/` are also
-loaded — the full pattern catalogues, case studies, test patterns, text patterns, UX antipatterns,
-bridge-burning red flags, and runtime control-flow red flags.
-
-## Task: Full Repository Slop Audit
-
-Perform a comprehensive, fresh analysis of the entire repository at the current commit (`{{REPO_SHA}}`) focused exclusively on **slop**.
-
-**CRITICAL: Ignore all Pull Request context.** This is a repository-wide sweep, not a PR review. Analyze all files as if this were a day-zero audit.
+Perform a comprehensive, fresh analysis of the code in scope (defined by the scope instructions above) at commit `{{REPO_SHA}}` focused exclusively on **slop**.
 
 "Slop" means structural AI-generated-code defects as defined by the loaded skills:
 bridge-burning violations, validation-evasion constructs, runtime defaults, mocks/skips/fakes
@@ -27,7 +16,7 @@ into compliance.
 
 ### Execution
 
-1. Scan the entire repository to identify all Python and TypeScript source files.
+1. Identify the Python and TypeScript source files in scope.
 2. For each file, examine the code for the slop categories defined in the loaded references.
 3. Check these specific slop categories:
    - **Bridge-Burning Red Flags**: Runtime defaults, fallbacks, try-import, mock/fake as proof, backwards-compat shims, boolean mode flags, stringly errors, soft guards.
@@ -66,7 +55,7 @@ Key rules every finding must satisfy:
 **Forbidden:**
 - Findings whose `category` contains `infra`, `infrastructure`, `ci`, `workflow`, or `config`.
 - Findings about files in `.github/`, `.agents/`, `quality-control/`, or `opencode/skills/`.
-- `score` and `report` fields — the renderer derives the score from findings and builds the comment markdown automatically.
+- `score` and `report` fields — rejected by the validator.
 
 ## Submitting Your Report
 
