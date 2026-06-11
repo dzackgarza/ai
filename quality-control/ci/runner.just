@@ -41,7 +41,7 @@ install-reviewer-home:
 install-sudo-rule:
     { echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate"; \
       echo "reviewer ALL=(root) NOPASSWD: {{private_tools}}/submit-candidate *"; \
-      echo "Defaults!{{private_tools}}/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO GITHUB_SHA\""; \
+      echo "Defaults!{{private_tools}}/submit-candidate env_keep += \"REPORT_TYPE REVIEWER_REPO CONTROL_REPO\""; \
     } | sudo tee /etc/sudoers.d/ai-review-submit >/dev/null
     sudo chmod 0440 /etc/sudoers.d/ai-review-submit
     sudo visudo -c -f /etc/sudoers.d/ai-review-submit
@@ -82,7 +82,6 @@ run-review template scope manifest report_type:
       REPORT_TYPE="{{report_type}}" \
       REVIEWER_REPO="{{reviewer_repo}}" \
       CONTROL_REPO="{{control_repo}}" \
-      GITHUB_SHA="${GITHUB_SHA}" \
       bash -lc 'cd {{reviewer_repo}} && opencode --version && python3 quality-control/run-review.py \
         --template "{{template}}" \
         --scope "{{scope}}" \

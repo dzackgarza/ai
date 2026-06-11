@@ -22,6 +22,7 @@ so the same finding maps to the same code scanning alert across runs.
 
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -55,7 +56,7 @@ def _fingerprint(category: str, label: str, path: str) -> dict[str, str]:
 
 def _build_artifact(artifact: dict, report_type: str, category: str) -> dict:
     findings: list[dict] = artifact.get("findings", [])
-    run_sha = artifact.get("repo_sha", "?")
+    run_sha = os.environ["GITHUB_SHA"]
 
     # Rules — deduplicated by category
     seen_rules: dict[str, int] = {}

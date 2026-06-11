@@ -75,6 +75,11 @@ def _path_in_checkout(path: Path) -> bool:
     return (Path.cwd() / path).is_file()
 
 
+def _line_count(path: Path) -> int:
+    """Number of lines in *path* within the reviewed checkout."""
+    return len((Path.cwd() / path).read_text(errors="replace").splitlines())
+
+
 def _is_infra_path(p: Path) -> bool:
     s = p.as_posix()
     return any(s.startswith(prefix) for prefix in INFRA_PREFIXES)
@@ -92,6 +97,15 @@ class Location(BaseModel):
     start_line: int = Field(ge=1, description="Finding start line (1-indexed).")
     end_line: int = Field(ge=1, description="Finding end line (1-indexed).")
 
+    @model_validator(mode="after")
+    def _ordered_lines(self) -> Self:
+        if self.start_line > self.end_line:
+            raise ValueError(
+                f"REJECTED: start_line {self.start_line} > end_line "
+                f"{self.end_line}. FIX: start_line must not exceed end_line."
+            )
+        return self
+
 
 class Evidence(BaseModel):
     kind: str = Field(
@@ -105,6 +119,15 @@ class Evidence(BaseModel):
         max_length=2,
         description="Line range [start, end] this evidence covers (1-indexed).",
     )
+
+    @model_validator(mode="after")
+    def _ordered_lines(self) -> Self:
+        if self.lines[0] > self.lines[1]:
+            raise ValueError(
+                f"REJECTED: evidence lines {self.lines} are not an ascending "
+                f"[start, end] range. FIX: start must not exceed end."
+            )
+        return self
 
 
 class CheckedSurface(BaseModel):
@@ -321,6 +344,14 @@ class GeneralReport(BaseModel):
                     f"FIX: every finding path must be a real file in the "
                     f"repository, relative to the repo root."
                 )
+            n_lines = _line_count(loc_path)
+            if finding.location.end_line > n_lines:
+                raise ValueError(
+                    f"REJECTED: findings[{i}] location lines "
+                    f"{finding.location.start_line}-{finding.location.end_line} "
+                    f"exceed the length of '{loc_path}' ({n_lines} lines). "
+                    f"FIX: use line numbers that exist in the file."
+                )
             for j, ev in enumerate(finding.evidence):
                 if not _path_in_checkout(ev.path):
                     raise ValueError(
@@ -328,6 +359,13 @@ class GeneralReport(BaseModel):
                         f"does not exist in the reviewed checkout. "
                         f"FIX: every evidence path must be a real file in the "
                         f"repository, relative to the repo root."
+                    )
+                ev_lines = _line_count(ev.path)
+                if ev.lines[1] > ev_lines:
+                    raise ValueError(
+                        f"REJECTED: findings[{i}].evidence[{j}] lines {ev.lines} "
+                        f"exceed the length of '{ev.path}' ({ev_lines} lines). "
+                        f"FIX: use line numbers that exist in the file."
                     )
         return self
 
@@ -584,6 +622,14 @@ class SlopReport(BaseModel):
                     f"FIX: every finding path must be a real file in the "
                     f"repository, relative to the repo root."
                 )
+            n_lines = _line_count(loc_path)
+            if finding.location.end_line > n_lines:
+                raise ValueError(
+                    f"REJECTED: findings[{i}] location lines "
+                    f"{finding.location.start_line}-{finding.location.end_line} "
+                    f"exceed the length of '{loc_path}' ({n_lines} lines). "
+                    f"FIX: use line numbers that exist in the file."
+                )
             for j, ev in enumerate(finding.evidence):
                 if not _path_in_checkout(ev.path):
                     raise ValueError(
@@ -591,6 +637,13 @@ class SlopReport(BaseModel):
                         f"does not exist in the reviewed checkout. "
                         f"FIX: every evidence path must be a real file in the "
                         f"repository, relative to the repo root."
+                    )
+                ev_lines = _line_count(ev.path)
+                if ev.lines[1] > ev_lines:
+                    raise ValueError(
+                        f"REJECTED: findings[{i}].evidence[{j}] lines {ev.lines} "
+                        f"exceed the length of '{ev.path}' ({ev_lines} lines). "
+                        f"FIX: use line numbers that exist in the file."
                     )
         return self
 
@@ -631,20 +684,18 @@ _MODEL_BY_TYPE: dict[str, type[GeneralReport | SlopReport]] = {
 def validate(
     path: Path,
     report_type: Literal["general", "slop"],
-    repo_sha: str,
     output: Path,
 ):
-    """Validate a candidate report and write the provenance-stamped artifact.
+    """Validate a candidate report and write the artifact.
 
-    The agent's report contains analysis only. Provenance (repo_sha) is
-    supplied by the CI environment, never by the agent, and is stamped into
-    the artifact here on successful validation.
+    The report contains analysis only — findings, scope, surfaces. All
+    run provenance (commit, ref, repo) is owned by the CI environment and
+    attached at SARIF conversion/upload, never by the agent or this tool.
 
     Args:
         path: Path to the candidate report JSON file.
         report_type: Type of report — "general" or "slop".
-        repo_sha: Commit SHA under review, from the CI environment.
-        output: Where to write the validated, stamped artifact.
+        output: Where to write the validated artifact.
     """
     if not path.is_file():
         print(f"Error: file not found: {path}", file=sys.stderr)
@@ -665,7 +716,7 @@ def validate(
         print(f"Report validation FAILED:\n  {msg}")
         sys.exit(1)
 
-    data["repo_sha"] = repo_sha
+    data["report_type"] = report_type
     output.write_text(json.dumps(data, indent=2) + "\n")
     print("Report validation PASSED")
     sys.exit(0)
@@ -709,7 +760,6 @@ def metadata(path: Path):
 
     findings = data.get("findings", [])
     result = {
-        "repo_sha": data.get("repo_sha", ""),
         "report_type": data.get("report_type", "unknown"),
         "finding_count": len(findings),
         "tier1_count": sum(1 for f in findings if f.get("tier") == "tier1"),
