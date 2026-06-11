@@ -192,6 +192,19 @@ _check-python-project:
 		echo "       via qc-excludes.toml if they are not project sources."
 		failed=1
 	fi
+	# 7. PEP 723 inline-metadata scripts cannot be validated by package-level QC
+	if rg -l -g '*.py' '^# /// script' >/dev/null 2>&1; then
+		echo "ERROR: PEP 723 inline-script-metadata (.py with '# /// script') found in a python-typed project."
+		echo "       Package-level QC (mypy, coverage, vulture, import-linter) cannot resolve"
+		echo "       per-script dependencies, so the chain produces misleading cascade failures"
+		echo "       (import-not-found, untyped decorators, uncovered code) instead of real findings."
+		echo "       FIX: restructure per the 'writing-scripts-and-cli-interfaces' skill —"
+		echo "       a src/ package (cyclopts subcommands as the presentation layer, pydantic"
+		echo "       models as the spec), script dependencies declared in pyproject.toml, each"
+		echo "       script becoming a package module invoked via 'uv run --project . <cli> <cmd>'."
+		echo "       Standalone PEP 723 scripts are for one-off agent tooling, not project code."
+		failed=1
+	fi
 	if [ "$failed" -ne 0 ]; then
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
@@ -442,7 +455,8 @@ _import-linter: _install-tools
 	if ! grep -qP '^\[build-system\]' pyproject.toml 2>/dev/null; then
 		echo "ERROR: import-linter: project is not an installable package — no [build-system] table in pyproject.toml."
 		echo "       import-linter imports the package to verify contracts, via 'uvx --with-editable .'."
-		echo "       FIX: add a [build-system] table (e.g. hatchling) to pyproject.toml."
+		echo "       FIX: add a [build-system] table (e.g. hatchling) to pyproject.toml, structuring"
+		echo "       the project as a src/ package per the 'writing-scripts-and-cli-interfaces' skill."
 		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
