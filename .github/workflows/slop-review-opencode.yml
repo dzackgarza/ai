@@ -25,31 +25,35 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install tools
-        run: bash quality-control/ci/steps/install-tools.sh
+      - name: Install just for runner
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          VERSION=$(curl -sL https://api.github.com/repos/casey/just/releases/latest | jq -r '.tag_name')
+          curl -sL "https://github.com/casey/just/releases/download/${VERSION}/just-${VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+            | tar -xzf - -C "$RUNNER_TEMP/bin" just
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
 
-      - name: Configure reviewer tools
-        run: bash quality-control/ci/steps/configure-slop.sh
+      - name: Install tools
+        run: just -f quality-control/ci/runner.just install-tools
 
       - name: Fetch reviewer context
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: bash quality-control/ci/steps/fetch-context.sh ai-slop-review .reviewer-context.md
+        run: just -f quality-control/ci/runner.just fetch-context ai-slop-review .reviewer-context.md
 
       - name: Prepare reviewer
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
-        run: bash quality-control/ci/steps/prepare-reviewer.sh
+        run: just -f quality-control/ci/runner.just prepare-slop
 
       - name: Run Slop Review
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
-          GITHUB_SHA: ${{ github.sha }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
-          bash quality-control/ci/steps/run-review.sh \
+          just -f quality-control/ci/runner.just run-review \
             slop \
             quality-control/reviews/slop/template.md \
             slop
@@ -57,12 +61,10 @@ jobs:
       - name: Collect review output
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
-        run: bash quality-control/ci/steps/collect-review-output.sh
+        run: just -f quality-control/ci/runner.just collect-output
 
       - name: Convert report to SARIF
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-        run: bash quality-control/ci/steps/convert-sarif.sh ai-slop-review
+        run: just -f quality-control/ci/runner.just convert-sarif ai-slop-review
 
       - name: Upload review findings
         uses: github/codeql-action/upload-sarif@v4

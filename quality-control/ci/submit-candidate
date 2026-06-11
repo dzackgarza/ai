@@ -1,7 +1,0 @@
-#!/bin/sh
-set -eu
-
-HERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-LOCKED="$HERE/locked/submit-candidate"
-
-exec sudo -n --preserve-env=REPORT_TYPE "$LOCKED" "$@"
