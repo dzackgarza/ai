@@ -81,6 +81,10 @@ declare dependencies as PEP 723 inline script metadata and run through `uv`. No
 separate install step. No implicit environment assumption. No `pip install` prelude.
 The full policy (hierarchy, forbidden pathways, canonical template, review rule) is in
 `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts with uv".
+Scope: PEP 723 scripts are for one-off agent tooling OUTSIDE python-typed projects.
+Inside a python-typed project they fail QC preflight — project code must be a src/
+package (cyclopts presentation + pydantic spec, deps in pyproject.toml) per the
+`writing-scripts-and-cli-interfaces` skill, invoked via `uv run --project`.
 
 ## Bridge-Burning Policy Router
 
@@ -992,6 +996,10 @@ Do not label tasks as "complete" by producing more artifacts that describe the p
 A valid plan must make “fix the issue” the acceptance condition, not “produce an audit artifact.”
 
 # Review Guidelines
+
+<!-- Verbatim distribution copy of ~/ai/PR_GUIDANCE.md (the canonical source,
+     required repo-locally because external review agents read AGENTS.md).
+     Edit PR_GUIDANCE.md and re-sync this section; never edit it here. -->
 
 These are additional requirements for reviewing agent work.
 They do not replace the reviewer’s normal role, repo-specific standards, or technical
