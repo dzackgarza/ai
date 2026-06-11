@@ -10,6 +10,7 @@ jobs:
       contents: read
       security-events: write
       actions: read
+      pull-requests: write
     with:
       report_type: general
       scope: diff
@@ -20,6 +21,7 @@ jobs:
       contents: read
       security-events: write
       actions: read
+      pull-requests: write
     with:
       report_type: slop
       scope: diff

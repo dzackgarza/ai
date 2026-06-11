@@ -11,11 +11,12 @@ install-tools:
     npm install -g opencode-ai
     npm install -g cc-safety-net
 
-fetch-context category output:
+fetch-context category output pr_number:
     uv run quality-control/ci/fetch-reviewer-context.py \
       --repo "${GITHUB_REPOSITORY}" \
       --categories "{{category}}" \
-      --output "{{output}}"
+      --output "{{output}}" \
+      --pr-number "{{pr_number}}"
 
 create-reviewer:
     sudo useradd -m -s /bin/bash reviewer || true
@@ -66,9 +67,9 @@ prepare:
     just -f quality-control/ci/runner.just copy-reviewer-repo
 
 stage-pr-diff base_ref:
-    git -C {{control_repo}} diff "origin/{{base_ref}}...HEAD" > "${RUNNER_TEMP:-/tmp}/reviewer-diff.patch"
-    test -s "${RUNNER_TEMP:-/tmp}/reviewer-diff.patch"
-    sudo cp "${RUNNER_TEMP:-/tmp}/reviewer-diff.patch" {{reviewer_repo}}/.reviewer-diff.patch
+    git -C {{control_repo}} diff "origin/{{base_ref}}...HEAD" > "${RUNNER_TEMP}/reviewer-diff.patch"
+    test -s "${RUNNER_TEMP}/reviewer-diff.patch"
+    sudo cp "${RUNNER_TEMP}/reviewer-diff.patch" {{reviewer_repo}}/.reviewer-diff.patch
     sudo chown reviewer:reviewer {{reviewer_repo}}/.reviewer-diff.patch
 
 run-review template scope manifest report_type:
@@ -90,6 +91,13 @@ run-review template scope manifest report_type:
 
 collect-output:
     cp {{reviewer_repo}}/.review-report-artifact.json {{control_repo}}/.review-report-artifact.json
+
+post-threads pr_number:
+    uv run quality-control/ci/post-review-threads.py \
+      --artifact .review-report-artifact.json \
+      --diff "${RUNNER_TEMP}/reviewer-diff.patch" \
+      --repo "${GITHUB_REPOSITORY}" \
+      --pr-number "{{pr_number}}"
 
 convert-sarif category:
     uv run quality-control/ci/report-to-sarif.py \

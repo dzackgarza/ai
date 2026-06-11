@@ -57,8 +57,10 @@ def _gh_api_json(
     return json.loads(result.stdout)
 
 
-def _fetch_alerts(repo: str, tool_name: str | None = None) -> list[dict]:
-    """Fetch code scanning alerts for a repo, optionally filtering by tool.
+def _fetch_alerts(
+    repo: str, tool_name: str | None = None, ref: str | None = None
+) -> list[dict]:
+    """Fetch code scanning alerts for a repo, optionally filtering by tool/ref.
 
     Returns an empty list when no analysis exists (404), which is the
     expected state before the first SARIF upload.
@@ -66,6 +68,8 @@ def _fetch_alerts(repo: str, tool_name: str | None = None) -> list[dict]:
     params: dict = {"per_page": "100"}
     if tool_name:
         params["tool_name"] = tool_name
+    if ref:
+        params["ref"] = ref
 
     path = f"repos/{repo}/code-scanning/alerts"
     args = ["gh", "api", "--method", "GET", path]
@@ -82,6 +86,62 @@ def _fetch_alerts(repo: str, tool_name: str | None = None) -> list[dict]:
         return []
 
     _fail(f"gh api GET {path} failed: {result.stderr.strip()}")
+
+
+_THREADS_QUERY = """
+query($owner: String!, $name: String!, $number: Int!, $cursor: String) {
+  repository(owner: $owner, name: $name) {
+    pullRequest(number: $number) {
+      reviewThreads(first: 100, after: $cursor) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          isResolved
+          comments(first: 1) { nodes { path body } }
+        }
+      }
+    }
+  }
+}
+"""
+
+
+def _fetch_pr_threads(repo: str, pr_number: int) -> list[dict]:
+    """Digest of existing review threads on the PR: path, headline, state."""
+    owner, name = repo.split("/")
+    threads: list[dict] = []
+    cursor: str | None = None
+    while True:
+        args = [
+            "gh", "api", "graphql",
+            "-f", f"query={_THREADS_QUERY}",
+            "-F", f"owner={owner}",
+            "-F", f"name={name}",
+            "-F", f"number={pr_number}",
+        ]
+        if cursor:
+            args.extend(["-F", f"cursor={cursor}"])
+        result = subprocess.run(args, capture_output=True, text=True)
+        if result.returncode != 0:
+            _fail(f"gh api graphql reviewThreads failed: {result.stderr.strip()}")
+        page = json.loads(result.stdout)["data"]["repository"]["pullRequest"][
+            "reviewThreads"
+        ]
+        for node in page["nodes"]:
+            comments = node["comments"]["nodes"]
+            if not comments:
+                continue
+            headline = comments[0]["body"].splitlines()[0] if comments[0]["body"] else ""
+            threads.append(
+                {
+                    "path": comments[0].get("path") or "?",
+                    "headline": headline,
+                    "resolved": node["isResolved"],
+                }
+            )
+        if not page["pageInfo"]["hasNextPage"]:
+            break
+        cursor = page["pageInfo"]["endCursor"]
+    return threads
 
 
 def _alert_label(alert: dict) -> str:
@@ -142,6 +202,13 @@ def main() -> None:
         default=None,
         help="Output file path (default: stdout)",
     )
+    parser.add_argument(
+        "--pr-number",
+        type=int,
+        default=0,
+        help="PR number for diff-scoped runs; adds PR-ref alerts and the "
+        "digest of review threads already on the PR (0 = not a PR run)",
+    )
     args = parser.parse_args()
 
     repo = args.repo
@@ -159,14 +226,13 @@ def main() -> None:
     lines.append("")
 
     for cat in categories:
-        try:
-            alerts = _fetch_alerts(repo, tool_name=cat)
-        except Exception as e:
-            lines.append(f"### {cat}")
-            lines.append("")
-            lines.append(f"_Error querying alerts: {e}_")
-            lines.append("")
-            continue
+        alerts = _fetch_alerts(repo, tool_name=cat)
+        if args.pr_number:
+            pr_alerts = _fetch_alerts(
+                repo, tool_name=cat, ref=f"refs/pull/{args.pr_number}/merge"
+            )
+            known = {a.get("number") for a in alerts}
+            alerts.extend(a for a in pr_alerts if a.get("number") not in known)
 
         if not alerts:
             lines.append(f"### {cat}")
@@ -202,6 +268,23 @@ def main() -> None:
             for a in fixed_alerts:
                 lines.append(_format_alert(a))
 
+        lines.append("")
+
+    if args.pr_number:
+        threads = _fetch_pr_threads(repo, args.pr_number)
+        lines.append("## Review items already surfaced on this PR")
+        lines.append("")
+        lines.append(
+            "These findings already have review threads on this pull request. "
+            "Do not re-raise them; a resolved thread is a disposition."
+        )
+        lines.append("")
+        if threads:
+            for t in threads:
+                state = "resolved" if t["resolved"] else "open"
+                lines.append(f"- [{state}] `{t['path']}` — {t['headline']}")
+        else:
+            lines.append("_No existing review threads._")
         lines.append("")
 
     output = "\n".join(lines).strip() + "\n"

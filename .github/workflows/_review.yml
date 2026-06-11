@@ -24,6 +24,7 @@ jobs:
       contents: read
       security-events: write
       actions: read
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
@@ -49,7 +50,7 @@ jobs:
       - name: Fetch reviewer context
         env:
           GH_TOKEN: ${{ github.token }}
-        run: just -f quality-control/ci/runner.just fetch-context "ai-${{ inputs.report_type }}-review" .reviewer-context.md
+        run: just -f quality-control/ci/runner.just fetch-context "ai-${{ inputs.report_type }}-review" .reviewer-context.md "${{ github.event.number || 0 }}"
 
       - name: Prepare reviewer
         run: just -f quality-control/ci/runner.just prepare
@@ -77,6 +78,12 @@ jobs:
         with:
           sarif_file: .review-report.sarif
           category: ai-${{ inputs.report_type }}-review
+
+      - name: Post review threads
+        if: inputs.scope == 'diff'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: just -f quality-control/ci/runner.just post-threads "${{ github.event.number }}"
 
       - name: Check threshold
         if: inputs.fail_below != ''

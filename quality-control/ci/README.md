@@ -39,7 +39,8 @@ maintenance.
 | `private/submit-candidate` | Root-owned validator — validates report JSON |
 | `private/check-report.py` | Pydantic models, schema printer, validator, metadata |
 | `report-to-sarif.py` | Converts validated artifact to SARIF 2.1.0 for code scanning upload |
-| `fetch-reviewer-context.py` | Queries existing code scanning alerts for reviewer context |
+| `fetch-reviewer-context.py` | Queries existing code scanning alerts (and, on PR runs, existing PR review threads) for reviewer context |
+| `post-review-threads.py` | PR runs only — posts the artifact as one review: summary body + one resolvable thread per finding |
 | `reviewer_home/` | Static template for `/home/reviewer` — opencode config (incl. model), cc-safety-net rules, public wrapper |
 
 ### Review definitions (`quality-control/reviews/`)
@@ -85,6 +86,8 @@ Workflow caller triggers (cron / dispatch / push main / pull_request)
    → collect-output copies the artifact to the control repo
    → convert-sarif converts it (report-to-sarif.py)
    → github/codeql-action/upload-sarif@v4 → code scanning alerts
+   → [diff scope only] post-threads posts the artifact to the PR as one
+     review: summary body + one resolvable thread per finding
 ```
 
 ## Data Flow
@@ -211,6 +214,29 @@ The agent reads this to learn the expected JSON format and constraints before
 submitting. On validation failure, error messages include `FIX:` guidance
 telling the agent what to change.
 
+## PR Review Threads
+
+On diff-scoped runs, `post-review-threads.py` consumes the validated artifact
+plus the staged diff and posts a single PR review: a top-level body (run link,
+finding counts, off-diff list) with one inline, individually-resolvable
+comment per finding. The reviewer agent is not involved — this is pure
+artifact post-processing.
+
+Anchor classification is computed from the diff before posting:
+
+| Finding location | Surfacing |
+|------------------|-----------|
+| Line visible in the diff | Line-anchored resolvable thread |
+| File in diff, lines outside hunks | Thread on the file's first visible line (body carries the real range) |
+| File not in the diff | Top-level body list only (already in code scanning) |
+
+Each thread body embeds `ai-review-fingerprint: <sha256(category|label|path)>`
+(same components as the SARIF `reviewFindingKey`). Before posting, existing
+threads on the PR are scanned for these markers and matching findings are
+skipped — resolved threads count as dispositions and stay skipped. Thread
+bodies are diagnosis-only; remediation is out of scope for reviewers and is
+never rendered.
+
 ## Reviewer Context (Avoiding Repeats)
 
 Before the agent runs, `fetch-reviewer-context.py` queries the repo's existing
@@ -225,6 +251,11 @@ resolution is directly contradicted by the current code.
 
 This is the mechanism that prevents new review agents from rediscovering
 previously reported findings, across both repo-wide and PR runs.
+
+On PR runs the context additionally includes alerts on the PR ref and a
+digest of every review thread already on the PR (any author — including
+other bots), each marked open or resolved, with the same do-not-re-raise
+instruction.
 
 ## Usage in Another Repo
 
