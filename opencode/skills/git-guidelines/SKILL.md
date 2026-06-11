@@ -73,6 +73,26 @@ Bundling unrelated work is not cleaner history — it is missing provenance.
 `rm` is irreversible.
 Before deleting: “Can this be recovered if I’m wrong?”
 
+## Recovering Previous States (Append-Only History)
+
+History is append-only. Never use `git checkout --`, `restore`, `reset`, `revert`,
+`stash`, or `clean` to move backwards — CC-safety-net blocks them, and the block is
+correct, not an obstacle to route around.
+
+The forward-facing recovery procedure:
+
+1. Commit the current state — mistakes included — as a checkpoint.
+2. View the target state in history: `git show <ref>:<path>` (never dump old versions
+   over files).
+3. Apply careful forward-facing EDITS restoring the desired state.
+4. Commit. History must clearly show: original file(s), the possibly-incorrect edits,
+   and the follow-up edits restoring the previous state.
+
+Destructive operations are not the agent's prerogative — they are STRICTLY gated on an
+EXPLICIT user request for EXACTLY that operation. The user not literally asking for
+checkout/reset/etc means *do not do it*. A safety-net block you cannot resolve with the
+forward procedure is a blocker to report, never to bypass.
+
 ## Commit Messages
 
 Commit messages are the canonical record of completed work.

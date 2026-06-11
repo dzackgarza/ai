@@ -61,6 +61,7 @@ Load matching row(s) BEFORE acting. Depth lives in the skill, not here.
 | Delegating to subagents | `subagent-delegation`; afterwards `reviewing-subagent-work` |
 | Complex/high-stakes reasoning checkpoint | `llm-failure-modes` |
 | Which policy skill owns a rule | `policy-index` |
+| CC-safety-net block fires | the skill named in the block message (usually `git-guidelines` / `quality-control` / `tool-provisioning-and-environment-hygiene`); never bypass |
 
 Bridge-burning invariant (always-on): test line admissible only if increases epistemic status of repository-owned proof burden. Assertion would pass on plausibly broken app → banned.
 Runtime defaults, fallbacks, optional critical deps, mocks/fakes/stubs, smoke tests in proof paths, helper-level proof for boundary obligations, stringly errors, boolean mode flags, deletion without burden transfer = hard red flags.
@@ -87,13 +88,7 @@ No `try import`, conditional import, `ImportError` + stub. Dependency needed →
 
 **Checkpoint before every edit.** `git commit` (or `git add`) current state BEFORE editing. Verify with `git diff` after. Touch only intended files; verify with `git diff` before responding. (Full workflow: `git-guidelines`.)
 
-**Never use `rm`.** Use `trash` or `gio trash`. Deletions must be recoverable.
-
-**NEVER use git checkout, revert, reset, stash or any other destructive git operation.** WIPES OUT your + everyone else's work, forever, unrecoverable.
-Blocked by safety policies → STOP IMMEDIATELY, FOLLOW SAFETY GUIDANCE. No workaround, no pivot, no bypass.
-Reaching for reset/revert → correct op = VIEW target state in git history, apply FORWARD-facing edits restoring it. No dumping old git versions over files — careful EDITS only.
-Git history must CLEARLY show: original file(s), possibly-incorrect edits, follow-up edits restoring previous state.
-Destructive ops STRICTLY gated by EXPLICIT user requests for EXACTLY these operations. User didn't literally ask → *do not* do it.
+**CC-safety-net hooks enforce non-destructive workflows** — destructive git ops, unrecoverable deletion (`rm`, `find -delete`), `sed`, blanket staging, raw test/QC tool invocations, global package mutations. Rules + messages: `~/.cc-safety-net/rules/`. A block firing = corrective feedback, not an obstacle: follow its message exactly — apply the stated workflow, LOAD the routed skill. Never bypass, retry variants, or work around; unresolvable → stop, report to user. Recovery of prior states = forward-facing edits only (`git-guidelines`, "Recovering Previous States"); destructive ops run only on EXPLICIT user request for exactly that operation.
 
 **Self-contained Python scripts (mandatory).** Agent-authored Python importing third-party packages: PEP 723 inline metadata, run through `uv`. No `pip install` prelude. Full policy: `tool-provisioning-and-environment-hygiene`. Inside python-typed project: PEP 723 scripts fail QC preflight — project code = src/ package per `writing-scripts-and-cli-interfaces`, invoked via `uv run --project`.
 
