@@ -55,6 +55,11 @@ mkdir -p "$REVIEWER_REPO/.agents/review-runner/candidates"
 cp "$CONTROL_REPO/.reviewer-context.md" "$REVIEWER_REPO/.reviewer-context.md"
 
 sudo chown -R reviewer:reviewer "$REVIEWER_REPO"
+
+sudo mkdir -p "$REVIEWER_HOME/.config"
+sudo cp -r ~/.config/opencode "$REVIEWER_HOME/.config/opencode"
+sudo chown -R reviewer:reviewer "$REVIEWER_HOME/.config"
+
 sudo mkdir -p "$REVIEWER_HOME/bin"
 sudo ln -sf "$PUBLIC_TOOLS/submit-candidate" "$REVIEWER_HOME/bin/submit-candidate"
 sudo chown -R reviewer:reviewer "$REVIEWER_HOME/bin"
