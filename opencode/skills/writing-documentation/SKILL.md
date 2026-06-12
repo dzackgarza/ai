@@ -1,279 +1,153 @@
 ---
 name: writing-documentation
-description: "Use when writing or improving technical documentation — READMEs, guides, API docs, or architecture docs."
+description: Use when writing, reviewing, or improving technical documentation, including READMEs, guides, API docs, architecture docs, runbooks, tutorials, and CLI docs.
 ---
-# Writing Documentation Skill
 
-Apply Strunk & White’s *Elements of Style* principles to produce concise, clear
-technical documentation.
-
-## When to Use This Skill
-
-**Use this skill when:**
-
-- Writing new documentation (README, API docs, guides, tutorials, architecture docs)
-
-- Improving existing documentation
-
-- Reviewing documentation for quality
-
-- User asks to “make this more concise” or “improve clarity”
-
-- User mentions: documentation, docs, README, guide, tutorial, API docs
-
-**Do NOT use this skill for:**
-
-- Code comments (different context, separate skill needed)
-
-- Marketing copy (requires persuasive voice, not neutral clarity)
-
-- Personal blog posts (requires individual voice)
-
-## Workflows
-
-### Workflow 1: Write New Documentation
-
-**Steps:**
-
-1. **Understand the purpose**
-
-   - [ ] What is the primary goal of this documentation?
-
-   - [ ] Who is the target audience?
-
-   - [ ] What do readers need to accomplish after reading?
-
-2. **Load writing principles**
-
-   - [ ] Read `reference/strunk-white-principles.md` to internalize core principles
-
-3. **Determine documentation type**
-
-   - [ ] Read `reference/doc-types.md` to select appropriate type
-
-   - [ ] Identify essential sections based on guidelines
-
-4. **Draft the documentation**
-
-   - [ ] Apply Strunk & White principles while writing
-
-5. **Validate quality**
-
-   - [ ] Run through Quality Checklist (below)
-
-   - [ ] Verify all essential information is present
-
-   - [ ] Confirm document achieves its purpose
-
-### Workflow 2: Improve Existing Documentation
-
-**Steps:**
-
-1. **Read the current documentation**
-
-   - [ ] Understand its purpose and audience
-
-   - [ ] Note specific problems (verbosity, unclear sections, missing info)
-
-2. **Load writing principles**
-
-   - [ ] Read `reference/strunk-white-principles.md`
-
-   - [ ] Review `reference/examples.md` for before/after patterns
-
-3. **Apply improvements**
-
-   - [ ] Remove needless words
-
-   - [ ] Convert passive to active voice
-
-   - [ ] Strengthen vague statements
-
-   - [ ] Eliminate redundancy
-
-   - [ ] Improve organization if needed
-
-4. **Validate improvements**
-
-   - [ ] Run through Quality Checklist
-
-   - [ ] Verify no information was lost
-
-   - [ ] Confirm clarity improved
-
-### Workflow 3: Review Documentation
-
-**Steps:**
-
-1. **Load writing principles**
-
-   - [ ] Read `reference/strunk-white-principles.md`
-
-   - [ ] Review relevant guidelines in `reference/doc-types.md`
-
-2. **Assess against quality criteria**
-
-   - [ ] Run through Quality Checklist (below)
-
-   - [ ] Note specific violations with examples
-
-3. **Provide feedback**
-
-   - [ ] List specific issues found
-
-   - [ ] Reference violated principles
-
-   - [ ] Suggest concrete improvements
-
-## Decision Framework
-
-### When to Write vs Improve
-
-**Write new documentation when:**
-
-- No documentation exists
-
-- Existing documentation is fundamentally wrong or outdated
-
-- Complete restructuring needed (cheaper to rewrite)
-
-**Improve existing documentation when:**
-
-- Core structure and information are sound
-
-- Style or clarity issues can be fixed incrementally
-
-- Specific sections need enhancement
-
-### Choosing Documentation Type
-
-See `reference/doc-types.md` for detailed guidelines.
-Quick reference:
-
-- **README**: Project overview, quick start, primary entry point
-
-- **API Documentation**: Reference for function/endpoint signatures and behavior
-
-- **Tutorial/Guide**: Step-by-step learning path for accomplishing specific goals
-
-- **Architecture/Design Doc**: Explain system structure, decisions, and tradeoffs
-
-- **CLI Tool Documentation**: Command reference with options and examples
-
-### Prioritizing Conciseness vs Comprehensiveness
-
-**Prioritize conciseness when:**
-
-- Documentation type is reference (README, API docs, CLI docs)
-
-- Readers need to scan quickly
-
-- Getting started / quick start sections
-
-**Prioritize comprehensiveness when:**
-
-- Documentation type is learning-focused (tutorials, guides)
-
-- Complex concepts require detailed explanation
-
-- Architecture decisions need thorough justification
-
-**Balance both:**
-
-- Use concise overview sections with detailed subsections
-
-- Link to comprehensive resources rather than embedding everything
-
-- Apply progressive disclosure pattern
-
-## Quality Checklist
-
-### Content
-
-- [ ] Purpose is clear
-
-- [ ] Essential information is present
-
-- [ ] No unnecessary information
-
-- [ ] Correct and accurate
-
-### Writing (Core Principles)
-
-- [ ] Active voice predominates
-
-- [ ] Definite statements (not hedging)
-
-- [ ] Positive form
-
-- [ ] Specific, concrete language
-
-- [ ] Concise (no needless words)
-
-### Structure
-
-- [ ] Logical organization
-
-- [ ] Clear headings
-
-- [ ] Scannable
-
-- [ ] Examples where helpful
-
-### Technical Documentation
-
-- [ ] Code examples are executable
-
-- [ ] Commands include full context
-
-- [ ] Prerequisites are stated
-
-- [ ] Error cases are covered
-
-## Reference Files
-
-### When to Load Each Reference
-
-**Load `reference/strunk-white-principles.md`:**
-
-- At the start of EVERY documentation writing/improvement task
-
-- When reviewing documentation
-
-**Load `reference/doc-types.md`:**
-
-- When choosing what type of documentation to write
-
-- When unsure about essential sections for a doc type
-
-- When reviewing documentation structure
-
-**Load `reference/examples.md`:**
-
-- When improving existing documentation (see patterns)
-
-- When you want concrete before/after examples
-
-## Common Pitfalls
-
-**Skipping Principle Loading**: ALWAYS load `reference/strunk-white-principles.md`
-before writing.
-
-**Following Guidelines Rigidly**: Adapt to the specific project’s needs.
-Some projects don’t need all sections; some need additional ones.
-
-**Over-Editing**: “Omit needless words” means remove words that add no value.
-Keep all information that serves the reader’s purpose.
-
-**Sacrificing Accuracy for Brevity**: Accuracy always wins.
-Express explanations concisely, but never misleadingly.
-
-**Inconsistent Terminology**: Choose one term for each concept and use it consistently.
-
-## Notes
-
-- This skill works iteratively - you can run it multiple times on the same document
-  without degrading quality (idempotent)
-
-- Quality over quantity - a short, clear document is better than a comprehensive,
-  confusing one
+# Writing Documentation
+
+Write documentation that lets its intended reader decide, install, use, verify,
+debug, or extend the thing being documented.
+
+This skill is the source of truth for general documentation workflow and quality
+criteria. Use narrower skills, such as `writing-readmes`, only for
+type-specific gates.
+
+## Required References
+
+Load references only as needed for the current documentation type:
+
+- Always load `reference/strunk-white-principles.md` before writing,
+  reviewing, or rewriting documentation.
+- Load `reference/doc-types.md` before choosing structure, reviewing
+  structure, or working on README, API, tutorial, guide, architecture, CLI, or
+  operations docs.
+- Load `reference/examples.md` when improving existing prose or when the task
+  needs before/after patterns.
+
+## Core Policy
+
+- Start from the reader's task, not from the repository's internal structure.
+- Preserve every fact the reader needs to succeed.
+  Concision never justifies deleting prerequisites, commands, expected output,
+  limits, risks, or decision context.
+- Prefer canonical sources over duplication.
+  Link to API reference, CLI help, schemas, changelogs, or design docs when
+  those are the maintained source.
+- Do not replace necessary facts with vague pointers.
+  A pointer to another document is valid only after the current document gives
+  enough information for its own purpose.
+- Write facts, commands, examples, constraints, and boundaries.
+  Delete slogans, mood-setting, and claims that cannot be verified from the
+  repository or a cited source.
+
+## Documentation Workflow
+
+Before writing or rewriting:
+
+- Identify the document type from `reference/doc-types.md`.
+- State the target reader.
+- State the reader task the document must enable.
+- Inspect the current document, nearby docs, and canonical sources for the
+  facts the reader needs.
+- Decide which facts belong in the current document and which belong in linked
+  canonical sources.
+
+When drafting:
+
+- Lead with the reader's first decision or first action.
+- Use executable examples and complete commands.
+- Include expected output when the reader needs verification.
+- State prerequisites before commands that depend on them.
+- Use the public interface: package names, CLI commands, public modules,
+  public configuration keys, request shapes, and documented file locations.
+- Move implementation internals to architecture or contributor docs unless a
+  consumer must interact with them.
+
+When reviewing:
+
+- Check whether the document achieves its reader task.
+- Check whether examples still run or are sourced from a maintained test,
+  example, or help output.
+- Check whether links point to canonical sources.
+- Check whether any fact is duplicated in a way likely to drift.
+- Check whether any essential fact was removed for brevity.
+
+## Concision Rule
+
+Omit needless words, not needed information.
+
+Delete:
+
+- sentences true of any project;
+- promotional adjectives without measurements or evidence;
+- contributor or release process details from consumer docs;
+- repeated facts already maintained in a canonical source;
+- backstory that does not change installation, use, evaluation, or operation.
+
+Keep or add:
+
+- the reason the project exists, stated as a concrete problem;
+- installation and verification commands;
+- minimal working examples;
+- expected output or observable success criteria;
+- prerequisites, credentials, permissions, and network behavior;
+- data, security, caching, persistence, and privacy boundaries;
+- status, maturity, limits, and cases where the tool should not be used;
+- links to deeper docs when the reader has enough context to choose them.
+
+## One Source Of Truth
+
+Documentation should point at canonical sources instead of cloning them.
+
+Use this rule:
+
+- If the reader needs one command to begin, include the command.
+- If the reader needs a complete option reference, link to `--help`, API docs,
+  schema docs, or generated reference.
+- If the reader needs one configuration example, include the example.
+- If the reader needs every configuration key, link to the schema or reference.
+- If the reader needs project history, link to changelog or releases.
+- If the reader needs contributor process, link to `CONTRIBUTING.md` or the
+  developer guide.
+
+Do not use OSOT as an excuse to omit the minimum usable path.
+
+## Type Routing
+
+- README: project entry point for evaluation, installation, first use, and
+  links to deeper docs. Also load `writing-readmes`.
+- API reference: public signatures, parameters, return values, errors, and
+  examples.
+- CLI documentation: commands, arguments, options, examples, configuration,
+  and exit behavior.
+- Tutorial or guide: task-oriented path with verification at meaningful
+  checkpoints.
+- Architecture documentation: system structure, data flow, decisions,
+  tradeoffs, and consequences.
+- Runbook or operations guide: deployment, credentials, state, monitoring,
+  recovery, and failure modes.
+
+## Validation Checklist
+
+- [ ] The target reader and reader task are clear.
+- [ ] The document type matches `reference/doc-types.md`.
+- [ ] Required prerequisites are stated before use.
+- [ ] Commands and examples are complete enough to run.
+- [ ] Expected output or verification is present where needed.
+- [ ] Necessary limits, risks, and unsupported cases are stated.
+- [ ] Public names and interfaces are documented where consumers need them.
+- [ ] Implementation internals are omitted unless consumers must interact with
+      them.
+- [ ] Canonical sources are linked instead of duplicated.
+- [ ] Brevity did not remove information required for the reader task.
+- [ ] Prose follows `reference/strunk-white-principles.md`.
+
+## Anti-Patterns
+
+| Pattern | Why it fails | Do instead |
+| --- | --- | --- |
+| Compressing to an arbitrary line count | Hides required installation, usage, or boundary facts | Keep the shortest document that satisfies the reader task |
+| Linking to docs before answering the entry question | Forces readers to search before knowing whether they care | Give enough context, then link |
+| Copying generated reference material | Drifts from CLI help, schemas, or API docs | Include one working path and link to the canonical reference |
+| Writing from internal architecture outward | Makes newcomers decode implementation names | Start with the public problem and interface |
+| Replacing facts with adjectives | Produces claims the reader cannot verify | State behavior, measurements, examples, and limits |

@@ -74,12 +74,19 @@ project’s needs.
 
 ### Purpose
 
-Primary entry point answering: What is this?
-Why should I care? How do I get started?
+Repository entry point for consumers and cloners.
+
+It answers: What is this?
+Why does it exist?
+Should I use it?
+How do I install it?
+How do I run the first useful example?
+How do I verify that it worked?
+Where do I go next?
 
 ### Target Audience
 
-Developers evaluating whether to use your project and getting started for the first
+Readers evaluating whether to use the project and readers getting started for the first
 time.
 
 ### Typical Sections
@@ -88,15 +95,21 @@ time.
 
 - Project name
 
-- One-sentence description
+- One-sentence description of the concrete thing
 
-- Who it’s for (if not obvious)
+- Concrete problem solved
+
+- Audience or use case, if not obvious
+
+- Status or maturity, if it affects adoption
 
 **Installation** (required):
 
 - Primary installation method
 
 - Prerequisites (language version, system requirements)
+
+- Credentials, services, permissions, or accounts required before first use
 
 - Verification step
 
@@ -106,15 +119,27 @@ time.
 
 - Expected output
 
-- Link to full documentation
+- Observable success criteria
+
+- Link to full documentation after the example
 
 **Features** (if not obvious from description):
 
-- 3-7 main capabilities
+- Main public capabilities
 
 - Distinguishing characteristics
 
 - Key use cases
+
+- Limits and unsupported cases, when they affect fit
+
+**Configuration and Data Boundaries** (if relevant):
+
+- Required configuration for first use
+
+- Config file locations or environment variables users must touch
+
+- Network calls, local state, caching, persistence, telemetry, or privacy boundaries
 
 **Documentation Links** (if docs exist elsewhere):
 
@@ -123,6 +148,10 @@ time.
 - API Reference
 
 - Advanced Usage
+
+- CLI reference or `--help`
+
+- Architecture, operations, or contributing docs when relevant
 
 **License** (required for open source):
 
@@ -144,15 +173,19 @@ time.
 
 ### Key Guidelines
 
-- Keep under 300 lines (preferably under 200)
+- Keep the README as short as possible while preserving the consumer path
 
-- Focus on getting started quickly
+- Do not enforce arbitrary line counts
 
-- Link to detailed docs rather than embedding everything
+- Focus on evaluation, installation, first use, and verification
 
-- Use working, tested code examples
+- Link to detailed docs rather than embedding maintained references
 
-- Update as the project evolves
+- Use working, tested examples with expected output
+
+- State limits, prerequisites, and surprises before they block the reader
+
+- Update README facts when public interfaces or setup change
 
 * * *
 

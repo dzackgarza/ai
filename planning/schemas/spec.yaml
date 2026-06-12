@@ -75,6 +75,19 @@ fields:
 - name: acceptanceCriteria
   type: array
   itemType: string
+- name: constructorNameInventories
+  type: array
+  itemType: object
+  schema:
+  - name: owner
+    type: string
+  - name: sageConstructorNames
+    type: array
+    itemType: string
+  - name: projectOwnedConstructionNames
+    type: array
+    itemType: string
+  displayInline: false
 - name: tags
   type: array
   itemType: string
