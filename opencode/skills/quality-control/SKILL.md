@@ -798,11 +798,11 @@ the adversarial depth their domain requires.
 
 ## Hooks
 
-Pre-commit and pre-push hooks block on `just test`. Copy/symlink into `.git/hooks/`:
+Pre-commit and pre-push hooks block on `just test`. Install the centralized global
+hook collection from `~/ai/quality-control/global-hooks/`:
 
 ```bash
-ln -s ~/ai/quality-control/pre-commit.hook .git/hooks/pre-commit
-ln -s ~/ai/quality-control/pre-push.hook .git/hooks/pre-push
+just --justfile ~/ai/justfile install-global-hooks
 ```
 
 ## Global Configs

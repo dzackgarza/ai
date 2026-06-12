@@ -13,6 +13,8 @@ home := env_var("HOME")
 opencode_dir := repo / "opencode"
 quality_control_dir := repo / "quality-control"
 dotfiles_dir := repo / "dotfiles"
+global_hooks_source_dir := quality_control_dir / "global-hooks"
+global_hooks_dir := env_var_or_default("GIT_GLOBAL_HOOKS_DIR", home / ".config/git/hooks")
 
 # Core assets
 
@@ -165,6 +167,46 @@ install:
     echo "System prompts (actual):"
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
     [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
+
+# Install globally managed Git hooks.
+# Usage: just install-global-hooks
+install-global-hooks:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    echo "Verifying global hook sources..."
+    for hook in pre-commit pre-push; do
+        source="{{ global_hooks_source_dir }}/$hook"
+        if [[ ! -f "$source" ]]; then
+            echo "Error: global hook source missing: $source"
+            exit 1
+        fi
+        if [[ ! -x "$source" ]]; then
+            echo "Error: global hook source is not executable: $source"
+            exit 1
+        fi
+    done
+
+    mkdir -p "{{ global_hooks_dir }}"
+
+    for hook in pre-commit pre-push; do
+        source="{{ global_hooks_source_dir }}/$hook"
+        target="{{ global_hooks_dir }}/$hook"
+        if [[ -e "$target" && ! -L "$target" ]]; then
+            echo "Error: refusing to replace non-symlink global hook: $target"
+            echo "Move it aside manually, then rerun this recipe."
+            exit 1
+        fi
+        ln -snf "$source" "$target"
+    done
+
+    git config --global core.hooksPath "{{ global_hooks_dir }}"
+
+    echo "Global Git hooks installed:"
+    printf "%-30s -> %s\n" "core.hooksPath" "$(git config --global core.hooksPath)"
+    for hook in pre-commit pre-push; do
+        printf "%-30s -> %s\n" "$hook" "$(readlink "{{ global_hooks_dir }}/$hook")"
+    done
 
 # Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:
