@@ -44,8 +44,6 @@ web_dashboard_listen_address: 127.0.0.1
 #       may be higher if you have multiple instances running; try ports 24283, 24284, etc.)
 # Further information: https://oraios.github.io/serena/02-usage/060_dashboard.html
 web_dashboard_open_on_launch: true
-
-# address where JetBrains plugin servers are running (only relevant when using the JetBrains language backend)
 jetbrains_plugin_server_address: 127.0.0.1
 
 # the minimum log level for the GUI log window and the dashboard (10 = debug, 20 = info, 30 = warning, 40 = error)
@@ -124,6 +122,7 @@ projects:
 - /home/dzack/ai/opencode/plugins
 - /home/dzack/ai/opencode/skills
 - /home/dzack/archive/zotero-attachment-plugin
+- /home/dzack/bots
 - /home/dzack/lattice_interface
 - /home/dzack/notes
 - /home/dzack/opencode-git
@@ -134,6 +133,7 @@ projects:
 - /home/dzack/opencode-plugins/plugins/opencode-plugin-improved-todowrite
 - /home/dzack/opencode-plugins/plugins/opencode-plugin-improved-webtools
 - /home/dzack/opencode-plugins/plugins/opencode-plugin-prompt-transformer
+- /home/dzack/pandoc-preview-editor
 - /home/dzack/pdf-extraction
 - /home/dzack/research
 - /home/dzack/sage-mypy-plugin
@@ -183,8 +183,25 @@ ignored_memory_patterns: []
 #      opening the dashboard in browser tabs when selected from the tray menu.
 #      This is EXPERIMENTAL. It is tested on Windows only. We will establish macOS support, but it is yet untested.
 #      On Linux, this cannot be universally supported, but it may work in some desktop environments.
+#      On NixOS, when using the package from flake.nix, both modern AppIndicator trays as well as
+#      older Xorg-/XEmbed-based trays should be supported.
 # See https://oraios.github.io/serena/02-usage/060_dashboard.html
 web_dashboard_interface:
 
 # list of optional tools (which are disabled by default) to be included
 included_optional_tools: []
+
+# trusted hosts used to access the web dashboard.
+# By default, only allow access via local addresses for security reasons.
+# If you want to allow access from remote machines, add the hostname used to access the dashboard to this list.
+# If the list is empty/undefined, all hosts are trusted.
+web_dashboard_trusted_hosts:
+- 127.0.0.1
+- localhost
+
+# command used to launch a JetBrains IDE on demand (only relevant when using the JetBrains language backend)
+# If this is non-empty and, at project activation, the Serena JetBrains Plugin server instance corresponding
+# to the project is not found, use this command to spawn a new instance.
+# Specifically, if this is <cmd>, then `<cmd> <projectDir>` is launched.
+# Provide the full path to the executable/script (e.g., "/usr/bin/idea" or "C:/Users/bob/AppData/Local/JetBrains/Toolbox/scripts/idea.cmd").
+jetbrains_launch_command:
