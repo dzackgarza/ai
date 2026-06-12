@@ -88,10 +88,10 @@ Before writing, reviewing, or fixing code/tests/QC, load:
 
 - `policy-index` to identify which policy skill owns the rule.
 - `anti-slop` for bridge-burning policies and anti-laundering doctrine.
-- `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
-- `reviewing-llm-code/references/runtime-control-flow-red-flags.md` for runtime control-flow rules.
+- `policy-index/references/red-flags.md` for the canonical red-flag inventory.
+- `policy-index/references/runtime-control-flow.md` for runtime control-flow rules.
 - `test-guidelines` for proof/test obligations.
-- `test-guidelines/references/banned-test-shapes.md` for banned test assertion patterns.
+- `policy-index/references/test-proof-rules.md` for banned test assertion patterns.
 - `fixing-slop` when an artifact is being renamed, deleted, quarantined, or “made honest.”
 - `pr-feedback-triage` when acting on review comments or automated review feedback.
 
@@ -103,8 +103,8 @@ Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, 
 
 | Situation | Load |
 | --- | --- |
-| Writing or reviewing code/tests/QC | `policy-index`, `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `test-guidelines` |
-| Seeing defaults/fallbacks/mocks/skips/smoke/quarantine/deletion | `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `fixing-slop` |
+| Writing or reviewing code/tests/QC | `policy-index`, `anti-slop`, `policy-index/references/red-flags.md`, `policy-index/references/runtime-control-flow.md`, `test-guidelines` |
+| Seeing defaults/fallbacks/mocks/skips/smoke/quarantine/deletion | `anti-slop`, `policy-index/references/red-flags.md`, `fixing-slop` |
 | Fixing a slop finding | `fixing-slop` before editing |
 | Reviewing LLM/agent output | `reviewing-subagent-work`, `reviewing-llm-code`, `anti-slop` |
 | Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `test-guidelines` |

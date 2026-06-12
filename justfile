@@ -458,15 +458,18 @@ broken-symlinks:
 # Check markdown files for broken local file references
 
 # Usage: just check-markdown [directory]
-check-markdown *args:
+check-markdown search_dir=".":
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # Default to current directory if no args provided
-    search_dir="${1:-.}"
+    search_dir="{{search_dir}}"
+    if [[ ! -d "$search_dir" ]]; then
+        printf 'check-markdown target is not a directory: %s\n' "$search_dir" >&2
+        exit 64
+    fi
 
     # Directories to skip (same as broken-symlinks)
-    skip_dirs=(
+    skip_names=(
         "node_modules"
         "__pycache__"
         ".git"
@@ -477,7 +480,6 @@ check-markdown *args:
         ".venv"
         "venv"
         ".conda"
-        ".local/share/virtualenvs"
         ".cargo"
         "target"
         "build"
@@ -520,16 +522,23 @@ check-markdown *args:
         ".turbo"
         "Trash"
         ".Trash"
+        ".worktrees"
+        "skills.bak.*"
+    )
+    skip_paths=(
+        ".local/share/virtualenvs"
         ".local/share/Trash"
     )
 
-    # Build find command with -prune for each skip dir
-    prune_expr=""
-    for dir in "${skip_dirs[@]}"; do
-        prune_expr="$prune_expr -name '$dir' -prune -o"
+    find_args=("$search_dir")
+    for dir in "${skip_names[@]}"; do
+        find_args+=(-name "$dir" -prune -o)
+    done
+    for path in "${skip_paths[@]}"; do
+        find_args+=(-path "*/$path" -prune -o)
     done
 
     # Find all markdown files and pass to lychee
     echo "Checking markdown files in: $search_dir"
-    eval "find '$search_dir' $prune_expr -type f \( -name '*.md' -o -name '*.markdown' -o -name '*.mdx' \) -print0" 2>/dev/null | \
-        xargs -0 lychee --no-progress
+    find "${find_args[@]}" -type f \( -name '*.md' -o -name '*.markdown' -o -name '*.mdx' \) -print0 |
+        xargs -0 --no-run-if-empty lychee --no-progress
