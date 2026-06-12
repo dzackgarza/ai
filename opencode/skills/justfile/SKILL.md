@@ -74,17 +74,17 @@ If the new behavior is a sub-step of an existing recipe, it should be `[private]
 
 ### Single `test` recipe under global QC
 
-For projects governed by `~/ai/quality-control`, the public QC surface is exactly `test`
+For projects governed by `~/ai-review-ci`, the public QC surface is exactly `test`
 and `test-ci`, both delegating to the global QC justfile. No public `lint`, `fmt`,
 `typecheck`, `coverage`, `check`, `test-unit`, `test-integration`, or other generic QC
 recipes exist at the project level.
 
 ```just
 test:
-    @just -f ~/ai/quality-control/justfile test
+    @just -f ~/ai-review-ci/justfiles/python.just test
 
 test-ci:
-    @just -f ~/ai/quality-control/justfile test-ci
+    @just -f ~/ai-review-ci/justfiles/python.just test-ci
 ```
 
 **CI uses the same public recipes as local development.**
@@ -171,7 +171,7 @@ Every just recipe that runs a diagnostic, build, or test command should preserve
 
 A justfile that grows beyond ~30 lines of recipe bodies is usually reinventing something that already exists:
 
-- Reusable QC recipes (type-checking, linting, test-running, coverage) are in `~/ai/quality-control/`. Import them instead of rewriting them.
+- Reusable QC recipes (type-checking, linting, test-running, coverage) are in `~/ai-review-ci/`. Import them instead of rewriting them.
   See the `quality-control` skill.
 - Repo-specific build logic belongs in the build tool's config (`vite.config.ts`, `pyproject.toml`, `Cargo.toml`), not in a justfile recipe.
 - Granular utility subcommands belong in a proper CLI tool (see **Progressive disclosure via CLI** above), not as recipes.

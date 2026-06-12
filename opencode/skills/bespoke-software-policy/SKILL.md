@@ -363,7 +363,7 @@ tool" is not a defense against reimplementing what a library provides.
 ### Meta / Infrastructure
 - The agent's own configuration (AGENTS.md, .agents/, skills/, prompts/).
   If it had a concrete defect, the user would see task failures.
-- CI pipeline files (.github/workflows/, quality-control/). The mechanism
+- CI pipeline files (.github/workflows/, ~/ai-review-ci/). The mechanism
   is not the target.
 - Stale backup files, temporary markers, throwaway comments. Housekeeping
   is Tier 2 at most and only reported when no significant issues exist.

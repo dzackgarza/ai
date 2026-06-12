@@ -21,7 +21,7 @@ Central source-of-truth index for bridge-burning policies, red-flag catalogs, pr
 | How do I fix slop without laundering? | [fixing-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md) |
 | What makes a test valid proof? | [test-guidelines/SKILL.md](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) |
 | What test assertion patterns are banned? | [test-guidelines/references/banned-test-shapes.md](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md) |
-| Who owns QC invocation/config/tooling? | [quality-control/SKILL.md](file:///home/dzack/ai/opencode/skills/quality-control/SKILL.md) |
+| Who owns QC invocation/config/tooling? | [quality-control/SKILL.md](file:///home/dzack/ai-review-ci/skills/quality-control/SKILL.md) |
 | How do I triage PR feedback? | [pr-feedback-triage/SKILL.md](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md) |
 | How do I debug without prior-shaped probing? | [reality-grounded-debugging](file:///home/dzack/ai/opencode/skills/reality-grounded-debugging/SKILL.md) + [systematic-debugging](file:///home/dzack/ai/opencode/skills/systematic-debugging/SKILL.md) |
 | How do I handle external tool/library/compiler uncertainty? | [known-solution-first](file:///home/dzack/ai/opencode/skills/known-solution-first/SKILL.md) |

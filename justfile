@@ -11,23 +11,12 @@ home := env_var("HOME")
 # Repository targets (top-level source of truth)
 
 opencode_dir := repo / "opencode"
-quality_control_dir := repo / "quality-control"
 dotfiles_dir := repo / "dotfiles"
-global_hooks_source_dir := quality_control_dir / "global-hooks"
-global_hooks_dir := env_var_or_default("GIT_GLOBAL_HOOKS_DIR", home / ".config/git/hooks")
 
 # Core assets
 
 agents_md := opencode_dir / "AGENTS.md"
 skills_dir := opencode_dir / "skills"
-
-# Linter/formatter configurations
-
-ruff_config := quality_control_dir / "ruff-global.toml"
-mypy_config := quality_control_dir / "mypy-global.ini"
-black_config := quality_control_dir / "black-global.toml"
-eslint_config := quality_control_dir / "eslint-global.json"
-prettier_config := quality_control_dir / "prettier-global.json"
 
 # Tool configs
 
@@ -67,8 +56,7 @@ install:
 
     # Assertion of existence
     echo "Verifying repository targets..."
-    for target in "{{ agents_md }}" "{{ skills_dir }}" "{{ ruff_config }}" "{{ mypy_config }}" \
-                  "{{ black_config }}" "{{ eslint_config }}" "{{ prettier_config }}" \
+    for target in "{{ agents_md }}" "{{ skills_dir }}" \
                   "{{ cc_safety_net }}" "{{ opencode_permission_policy_config_dir }}/config.toml" \
                   "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
                   "{{ tmux_powerline_theme }}"; do
@@ -97,14 +85,6 @@ install:
     ln -snf "{{ opencode_permission_policy_config_dir }}" "{{ opencode_permission_policy_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
     ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
-
-    # Linter/formatter configurations
-    mkdir -p "{{ home }}/.config/ruff" "{{ home }}/.config/black"
-    ln -snf "{{ ruff_config }}" "{{ home }}/.config/ruff/ruff.toml"
-    ln -snf "{{ mypy_config }}" "{{ home }}/.mypy.ini"
-    ln -snf "{{ black_config }}" "{{ home }}/.config/black/black.toml"
-    ln -snf "{{ eslint_config }}" "{{ home }}/.eslintrc.json"
-    ln -snf "{{ prettier_config }}" "{{ home }}/.prettierrc"
 
     # tmux config symlinks
     ln -snf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
@@ -157,56 +137,11 @@ install:
     printf "%-30s -> %s\n" "~/.gemini/AGENTS.md" "$(readlink {{ gemini_home }}/AGENTS.md)"
     printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
     printf "%-30s -> %s\n" "~/.config/opencode-permission-policy-compiler" "$(readlink {{ opencode_permission_policy_home }})"
-    printf "%-30s -> %s\n" "~/.config/ruff/ruff.toml" "$(readlink {{ home }}/.config/ruff/ruff.toml)"
-    printf "%-30s -> %s\n" "~/.config/black/black.toml" "$(readlink {{ home }}/.config/black/black.toml)"
-    printf "%-30s -> %s\n" "~/.mypy.ini" "$(readlink {{ home }}/.mypy.ini)"
-    printf "%-30s -> %s\n" "~/.eslintrc.json" "$(readlink {{ home }}/.eslintrc.json)"
-    printf "%-30s -> %s\n" "~/.prettierrc" "$(readlink {{ home }}/.prettierrc)"
     printf "%-30s -> %s\n" "~/.cc-safety-net/config.json" "$(readlink {{ cc_safety_net_home }}/config.json)"
     echo ""
     echo "System prompts (actual):"
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
     [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
-
-# Install globally managed Git hooks.
-# Usage: just install-global-hooks
-install-global-hooks:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    echo "Verifying global hook sources..."
-    for hook in pre-commit pre-push; do
-        source="{{ global_hooks_source_dir }}/$hook"
-        if [[ ! -f "$source" ]]; then
-            echo "Error: global hook source missing: $source"
-            exit 1
-        fi
-        if [[ ! -x "$source" ]]; then
-            echo "Error: global hook source is not executable: $source"
-            exit 1
-        fi
-    done
-
-    mkdir -p "{{ global_hooks_dir }}"
-
-    for hook in pre-commit pre-push; do
-        source="{{ global_hooks_source_dir }}/$hook"
-        target="{{ global_hooks_dir }}/$hook"
-        if [[ -e "$target" && ! -L "$target" ]]; then
-            echo "Error: refusing to replace non-symlink global hook: $target"
-            echo "Move it aside manually, then rerun this recipe."
-            exit 1
-        fi
-        ln -snf "$source" "$target"
-    done
-
-    git config --global core.hooksPath "{{ global_hooks_dir }}"
-
-    echo "Global Git hooks installed:"
-    printf "%-30s -> %s\n" "core.hooksPath" "$(git config --global core.hooksPath)"
-    for hook in pre-commit pre-push; do
-        printf "%-30s -> %s\n" "$hook" "$(readlink "{{ global_hooks_dir }}/$hook")"
-    done
 
 # Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:

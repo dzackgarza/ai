@@ -783,7 +783,7 @@ If that sentence cannot be written clearly, the test is likely not well-targeted
 ## Comprehensive Quality Gates (`just test`)
 
 All code must be hard-gated by a comprehensive suite of checks.
-These gates are owned by the global QC system at `~/ai/quality-control` — see the
+These gates are owned by the global QC system at `~/ai-review-ci` — see the
 `quality-control` skill. The project justfile delegates to global QC and may add only
 domain-specific private checks per the QC Extension Gate.
 

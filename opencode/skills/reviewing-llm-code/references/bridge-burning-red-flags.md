@@ -916,7 +916,7 @@ Do not apply remediation when:
 
 **Slop pattern:** A project defines quality gates (test runner, type checker, linter) through local scripts or configs that bypass the global quality control system, giving agents a narrower set of checks to pass.
 
-**Remediation:** Route all quality gates through the global QC system (`quality-control/justfile`). Local justfiles may compose global recipes but must not define independent checks that duplicate or override global gates. A local QC surface that passes when global QC fails is a bypass.
+**Remediation:** Route all quality gates through the global QC system (`~/ai-review-ci/justfiles/<language>.just`). Local justfiles may compose global recipes but must not define independent checks that duplicate or override global gates. A local QC surface that passes when global QC fails is a bypass.
 
 Remediation applies when:
 - A project-local test/lint/type-check recipe exists that does not delegate to global QC.

@@ -194,10 +194,10 @@ These directories and files contain agent infrastructure — NOT the project's p
 Do NOT report findings about these files unless a change in them introduces a bug in project code.
 
 - `.github/workflows/` — CI pipeline definitions
-- `quality-control/` — QC template copies
+- `~/ai-review-ci/` — external QC and review CI infrastructure
 - `opencode/skills/` — agent-facing skill definitions
 - `AGENTS.md` and `.agents/` — agent behavioral configuration and process docs
-- `quality-control/run-review.py` and `quality-control/reviews/` — review tooling (type-agnostic runner + type-specific schemas/templates)
+- `~/ai-review-ci/tool-artifacts/run-review.py` and `~/ai-review-ci/reviews/` — review tooling (type-agnostic runner + type-specific schemas/templates)
 - Any `prompt` or `prompts` directory — agent prompt templates
 
 Exception: If the repository's *purpose* is agent tooling or skill authoring, do not exclude them.
@@ -230,7 +230,7 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 2. **Fallback suggestions.** Do not suggest adding a fallback path, graceful degradation, or silent default. If a resource does not exist, it should fail loudly. System policy: no fallbacks, no try-import, no conditional stubs.
 
-3. **Vapid DRY violations in infrastructure tooling.** CI pipeline files, workflow runners, and prompt templates are by their nature duplicated or structurally similar. Reporting knowledge duplication or shotgun surgery in `.github/workflows/` or `quality-control/` is noise. These files are infrastructure, not product code.
+3. **Vapid DRY violations in infrastructure tooling.** CI pipeline files, workflow runners, and prompt templates are by their nature duplicated or structurally similar. Reporting knowledge duplication or shotgun surgery in `.github/workflows/` or `~/ai-review-ci/` is noise. These files are infrastructure, not product code.
 
 4. **Config file length / DRY violations in data sections.** "JSON config is 1921 lines" or "7 providers each list model IDs" is not complexity — it is domain cardinality. Proposing a registry or refactoring that preserves the same number of distinct entries is rearrangement, not simplification. Config data is not source code.
 

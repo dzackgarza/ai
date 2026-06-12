@@ -16,7 +16,7 @@ source of truth.
 
 **Do not configure basedpyright, Ruff, pytest, or other generic QC tools locally in the
 project.** These tools, their configs, and invocation patterns belong in global QC at
-`~/ai/quality-control`. The project's `pyproject.toml` declares only repo-owned runtime,
+`~/ai-review-ci`. The project's `pyproject.toml` declares only repo-owned runtime,
 build, plugin, and domain-test dependencies.
 
 ## Standalone Python Scripts
@@ -157,13 +157,13 @@ Generate JSON Schema from Pydantic models for:
 
 ### 5. basedpyright — Global QC
 
-basedpyright strict mode is configured in global QC at `~/ai/quality-control`.
+basedpyright strict mode is configured in global QC at `~/ai-review-ci`.
 Do not configure it in the project `pyproject.toml`. The global config covers all
 projects.
 
 ### 6. Ruff — Global QC
 
-Ruff runs as part of the global QC gate (`just test` from `~/ai/quality-control`).
+Ruff runs as part of the global QC gate (`just test` from `~/ai-review-ci`).
 Do not run it ad-hoc. If you need to check generated code, use `just test` to run the
 full gate, which includes Ruff checks automatically after normalization.
 

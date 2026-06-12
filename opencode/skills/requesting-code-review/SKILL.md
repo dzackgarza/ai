@@ -78,7 +78,7 @@ git diff --cached | grep "^+" | grep -E "execute\(f\"|\.format\(.*SELECT|\.forma
 ## Step 3 — Baseline quality gate
 
 All quality checks (tests, lint, type checking) are owned by global QC at
-`~/ai/quality-control`. Do not probe for or run tools locally.
+`~/ai-review-ci`. Do not probe for or run tools locally.
 
 Run the global QC gate to establish the baseline:
 

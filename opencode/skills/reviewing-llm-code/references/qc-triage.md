@@ -12,7 +12,7 @@ When a QC check fails and the triage directive is emitted, the agent MUST:
    Do not continue with any in-progress task.
 
 2. **NOT probe QC configs.** Do not read, inspect, or modify any file in
-   `~/ai/quality-control/`. Do not read the configs, scripts, tool pins,
+   `~/ai-review-ci/`. Do not read the configs, scripts, tool pins,
    ML models, or templates in that directory. Probing QC is reward-hacking.
 
 3. **NOT self-fix findings.** Do not attempt to fix any finding yourself.
@@ -60,7 +60,7 @@ They are not the same agent.
 
 | Behavior | Why | Instead |
 |----------|-----|---------|
-| Reading `~/ai/quality-control/` to "understand the tool" | Gives the agent config info it can later game | Read nothing. Present findings to user. |
+| Reading `~/ai-review-ci/` to "understand the tool" | Gives the agent config info it can later game | Read nothing. Present findings to user. |
 | Running isolated checks (just `ruff`, just `mypy`) to "verify" | Cherry-picking bypasses the full QC gate | Run `just test` only (after fix subagent is done) |
 | Adding bypass comments (`# noqa`, `@ts-ignore`) | Hides the symptom without fixing the cause | Fix the underlying code |
 | Editing QC configs or thresholds | Weakens QC for all future runs | Change only project code |

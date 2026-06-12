@@ -107,9 +107,8 @@ Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, 
 | Seeing defaults/fallbacks/mocks/skips/smoke/quarantine/deletion | `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `fixing-slop` |
 | Fixing a slop finding | `fixing-slop` before editing |
 | Reviewing LLM/agent output | `reviewing-subagent-work`, `reviewing-llm-code`, `anti-slop` |
-| Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `quality-control`, `test-guidelines` |
+| Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `test-guidelines` |
 | Debugging failures | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
-| Adding local QC/checks | `quality-control` first |
 | Using Jules for review | `jules`, `jules/references/anti-slop-report-review.md`; do not use Jules for immediate remediation |
 
 # Serena Symbolic Code Tools: MANDATORY for All Code Operations
@@ -634,7 +633,7 @@ build:
     @project-cli build
 
 test:
-    @just -f ~/ai/quality-control/justfile test
+    @project-cli test
     @just -f .agents/justfile _test-agent
 
 serve:

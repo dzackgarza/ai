@@ -162,7 +162,7 @@ job from public knowledge (docs, ecosystem, examples).
 Use it ephemerally by default (`uvx`, `npx -y`, `bunx`).
 Declare it in the project manifest only if it is a repo-owned dependency (runtime,
 build, plugin, or domain-test dependency).
-Promote generic tooling to `~/ai/quality-control` rather than installing it per-repo.
+Promote generic tooling to `~/ai-review-ci` rather than installing it per-repo.
 Local availability is an applicability check, not a selection strategy. Do not
 constrain the solution to currently installed tools. If provisioning is blocked by
 credentials, sudo, licensing, or network, state the blocker. Do not treat the local

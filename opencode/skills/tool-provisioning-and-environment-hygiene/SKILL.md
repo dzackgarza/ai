@@ -35,7 +35,7 @@ documents it.
 - Never install globally (`npm install -g`, `cargo install`, `go install`) just to avoid
   using an ephemeral runner or declaring a project dependency.
 - Never install generic QC tools (ruff, mypy, pytest, pytest-cov, coverage, basedpyright,
-  etc.) as per-repo dev dependencies. These belong in global QC at `~/ai/quality-control`.
+  etc.) as per-repo dev dependencies. These belong in global QC at `~/ai-review-ci`.
   Project dev dependencies are for repo-owned runtime/build/plugin/domain-test dependencies.
 - Never decide against a better dependency because it is not currently installed.
   Local availability is an applicability check, not a selection strategy.
@@ -113,7 +113,7 @@ chmod +x script.py
 
 | Scenario | Mechanism |
 | --- | --- |
-| Generic QC tool / inspection tool | Ephemeral runner, usually from global QC (`~/ai/quality-control`). See `quality-control`. |
+| Generic QC tool / inspection tool | Ephemeral runner, usually from global QC (`~/ai-review-ci`). See `quality-control`. |
 | Python CLI tool | `uvx tool ...` |
 | Python CLI where package name differs from command | `uvx --from package command ...` |
 | One-shot Python snippet with dependencies | `uv run --with package python - <<'PY' ... PY` |

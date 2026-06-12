@@ -37,7 +37,7 @@ applications. Targets the **latest Python** — no backwards compatibility hedgi
 
 6. **Always a venv** — managed by uv
 
-7. **Always pyproject.toml** — project-owned metadata and runtime/build dependencies live here. Generic QC config lives in `~/ai/quality-control`.
+7. **Always pyproject.toml** — project-owned metadata and runtime/build dependencies live here. Generic QC config lives in `~/ai-review-ci`.
 
 8. **Always a justfile** — all dev commands go through `just`
 
@@ -509,10 +509,10 @@ setup:
 
 # Delegate all QC (fmt, lint, typecheck, test, coverage) to global QC.
 test:
-    @just -f ~/ai/quality-control/justfile test
+    @just -f ~/ai-review-ci/justfiles/python.just test
 
 test-ci:
-    @just -f ~/ai/quality-control/justfile test-ci
+    @just -f ~/ai-review-ci/justfiles/python.just test-ci
 
 # Clean build artifacts
 clean:
