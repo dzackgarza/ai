@@ -1,400 +1,363 @@
 rules:
-  - id: no-explicit-promise-return-type
-    pattern: 'function $F(...): Promise<$T> { ... }'
-    message: "Explicit `: Promise<$T>` return type triggers no-undef in Codacy's LWC
-      ESLint env. Remove the annotation; TypeScript infers the return type."
-    languages:
-      - typescript
-    severity: ERROR
-  - id: no-promise-global-usage
-    patterns:
-      - pattern: Promise.resolve(...)
-      - pattern: Promise.reject(...)
-      - pattern: Promise.all(...)
-      - pattern: Promise.race(...)
-      - pattern: new Promise(...)
-    message: Direct use of the Promise global triggers no-undef in Codacy's LWC ESLint
-      env. Use .then()/.catch() chains.
-    languages:
-      - typescript
-    severity: ERROR
-  - id: no-print-statements
-    pattern: print(...)
-    message: Print statements should not be committed
-    languages:
-      - python
-    severity: ERROR
-  - id: no-console-log
-    pattern: console.log(...)
-    message: Console.log should not be committed
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: no-nullish-coalescing
-    pattern: $X ?? $Y
-    message: 'Nullish coalescing (??) creates a runtime fallback. Use an explicit assertion or fail loudly if the value can be null/undefined.'
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: no-const-assignment
-    patterns:
-      - pattern: 'const $X = $VALUE;'
-      - pattern-not: 'const $X = require($VALUE);'
-    message: 'Const assignment creates a binding that pretends immutability. Use `let` — constants belong in config files, not source code.'
-    paths:
-      exclude:
-        - '*config*'
-        - '*.config.*'
-        - '*.d.ts'
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: rust-no-const
-    pattern: 'const $X: $T = $VALUE;'
-    message: 'Compile-time constant in source code. Move to config or use `let mut`.'
-    paths:
-      exclude:
-        - '*config*'
-    languages:
-      - rust
-    severity: ERROR
-  - id: rust-no-static
-    pattern: 'static $X: $T = $VALUE;'
-    message: 'Static variable in source code. Move to config or use `let mut`.'
-    paths:
-      exclude:
-        - '*config*'
-    languages:
-      - rust
-    severity: ERROR
-  - id: no-double-cast
-    pattern: $X as $T as $Z
-    message: Double-casting (x as T as U) bypasses TypeScript's type system entirely.
-    languages:
-      - typescript
-    severity: ERROR
-  - id: no-first-element-child-hydration
-    pattern: $X.firstElementChild !== null
-    message: firstElementChild check does not prove hydration success.
-    languages:
-      - typescript
-    severity: ERROR
-  - id: no-status-only-assertion
-    pattern-either:
-      - pattern: expect($X.status).toBe(200)
-      - pattern: expect($X.status()).toBe(200)
-    message: HTTP status-only assertions do not verify content validity.
-    languages:
-      - typescript
-    severity: ERROR
-  - id: rust-silenced-result
-    pattern: let _ = $EXPR;
-    message: let _ = silences a Result — handle errors explicitly.
-    languages:
-      - rust
-    severity: ERROR
-  - id: py-no-getenv-default
-    pattern: os.getenv($KEY, $DEFAULT)
-    message: os.getenv with default creates a runtime fallback. Use os.environ['KEY']
-      or validate at startup.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-dict-get-default
-    pattern: $DICT.get($KEY, $DEFAULT)
-    message:
-      dict.get with default hides missing keys. Use subscript access or a complete
-      config model.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-getattr-default
-    pattern: getattr($OBJ, $ATTR, $DEFAULT)
-    message: getattr with default hides missing attributes. Required attributes should
-      not be optional.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-setdefault
-    pattern: $DICT.setdefault($KEY, $DEFAULT)
-    message: dict.setdefault is a runtime default. Use explicit check-and-set.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-defaultdict
-    pattern: defaultdict($TYPE)
-    message: defaultdict creates implicit default values on missing-key access.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-optional-type
-    pattern-either:
-      - pattern: '$VAR: Optional[$TYPE]'
-      - pattern: '$VAR: $TYPE | None'
-    message: Optional types preserve undefined-value paths. Required values should be
-      total (non-optional).
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-try-import
-    pattern: "try:\n    import $MOD\nexcept ImportError:\n    ..."
-    message: try/except ImportError makes a required dependency optional.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-hardcoded-env-var
-    pattern-either:
-      - pattern: os.environ[$KEY] = $VALUE
-      - pattern: os.environ[$KEY] = $VALUE
-    message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
-    languages:
-      - python
-    severity: ERROR
-  - id: ts-no-hardcoded-env-var
-    pattern-either:
-      - pattern: process.env.$KEY = $VALUE
-      - pattern: process.env[$KEY] = $VALUE
-    message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: rust-no-hardcoded-env-var
-    pattern-either:
-      - pattern: env::set_var($KEY, $VALUE)
-      - pattern: std::env::set_var($KEY, $VALUE)
-    message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
-    languages:
-      - rust
-    severity: ERROR
-  - id: py-no-bare-except
-    pattern: "except:\n    pass"
-    message: 'Bare except: catches SystemExit and KeyboardInterrupt.'
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-suppress
-    pattern: contextlib.suppress($EXC)
-    message: contextlib.suppress silently swallows exceptions.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-mock-import
-    pattern-either:
-      - pattern: from unittest.mock import $X
-      - pattern: import unittest.mock
-    message: unittest.mock imports bypass real boundaries. Use real fixtures.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-magicmock
-    pattern-either:
-      - pattern: MagicMock(...)
-      - pattern: Mock(...)
-    message: Mock/MagicMock objects bypass real behavior. Use real fixtures.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-monkeypatch
-    pattern: monkeypatch.setattr(...)
-    message: monkeypatch replaces real behavior with test seams.
-    languages:
-      - python
-    severity: ERROR
-  - id: py-no-skip-test
-    pattern-either:
-      - pattern: '@pytest.mark.skip'
-      - pattern: '@pytest.mark.xfail'
-    message: pytest.skip/xfail bypass test execution. Fix or remove.
-    languages:
-      - python
-    severity: ERROR
-  - id: ts-no-nullish-default
-    pattern: $X ?? $DEFAULT
-    message: Nullish coalescing with default creates silent fallback.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: ts-no-or-default
-    pattern: $X || $DEFAULT
-    message: Logical OR with default creates silent fallback on any falsy value.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: ts-no-env-default
-    pattern: process.env.$KEY || $DEFAULT
-    message: process.env with default creates runtime fallback for missing env vars.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: ts-no-jest-mock
-    pattern: jest.mock(...)
-    message: jest.mock replaces module boundaries with fake implementations.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: ts-no-vi-mock
-    pattern: vi.mock(...)
-    message: vi.mock replaces module boundaries with fake implementations.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: ts-no-skip-test
-    pattern-either:
-      - pattern: test.skip(...)
-      - pattern: describe.skip(...)
-      - pattern: test.fixme(...)
-    message: test.skip/fixme bypass test execution.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: ts-no-catch-console
-    pattern-either:
-      - pattern: .catch(console.error)
-      - pattern: .catch(console.warn)
-    message: .catch(console.error) silently swallows async errors.
-    languages:
-      - typescript
-      - javascript
-    severity: ERROR
-  - id: rs-no-unwrap-or
-    message: unwrap_or provides default on failure — fail explicitly.
-    languages:
-      - rust
-    severity: ERROR
-    pattern-regex: .unwrap_or($DEFAULT)
-  - id: rs-no-unwrap-or-default
-    message: unwrap_or_default uses Default trait — fail explicitly.
-    languages:
-      - rust
-    severity: ERROR
-    pattern-regex: .unwrap_or_default()
-  - id: rs-no-result-ok
-    message: Result.ok() discards the error. Handle it explicitly.
-    languages:
-      - rust
-    severity: ERROR
-    pattern-regex: .ok()
-  - id: rs-no-filter-map-ok
-    pattern: filter_map(Result::ok)
-    message: filter_map(Result::ok) discards errors. Handle each explicitly.
-    languages:
-      - rust
-    severity: ERROR
-  - id: rs-no-stringly-error
-    message: Result<T, String> are stringly-typed. Use a proper error enum.
-    languages:
-      - rust
-    severity: ERROR
-    pattern-regex: Result<[^<>]+,\s*String>
-  - id: rs-no-serde-default
-    pattern: '#[serde(default)]'
-    message: '#[serde(default)] silently fills missing config. Make config mandatory.'
-    languages:
-      - rust
-    severity: ERROR
-  - id: rs-no-allow-attr
-    pattern-either:
-      - pattern: '#[allow($ARGS)]'
-      - pattern: '#![allow($ARGS)]'
-    message: '#[allow(...)] suppresses warnings. Fix the underlying issue.'
-    languages:
-      - rust
-    severity: ERROR
-  - id: sh-no-command-v-runtime
-    pattern: "if command -v $TOOL >/dev/null 2>&1; then\n  $CMD\nelse\n  $FALLBACK\n\
-      fi"
-    message: command -v fallback chain — should be config-declared.
-    languages:
-      - bash
-    severity: ERROR
-  - id: sh-no-or-true
-    pattern: '|| true'
-    message: '|| true silences command failure.'
-    languages:
-      - bash
-    severity: ERROR
-  - id: sh-no-pip-install
-    pattern: pip install $PACKAGE
-    message: pip install violates tool-provisioning. Use uv/uvx/bun.
-    languages:
-      - bash
-    severity: ERROR
-  - id: ts-no-partial
-    message: Partial<T> makes all fields optional, creating undefined-value paths in
-      core state. Define an explicit type with only the optional fields instead.
-    languages:
-      - typescript
-    severity: ERROR
-    pattern-either:
-      - pattern: Partial<$TYPE>
-      - pattern: type $T = Partial<$U>
-      - pattern: '$X: Partial<$Y>'
-  - id: rs-no-cfg-test-fake
-    pattern: "#[cfg(test)]\nmod tests {\n    use super::*;\n    ...\n}"
-    message: '#[cfg(test)] test modules must not contain fake/override implementations
-      that shadow production behavior. Use dependency injection for test seams.'
-    languages:
-      - rust
-    severity: ERROR
-  - id: sh-no-stderr-suppress
-    pattern-regex: 2\s*>\s*/dev/null
-    message: Stderr suppression (2>/dev/null) hides diagnostic output. Use explicit
-      error handling or logging instead.
-    languages:
-      - bash
-    severity: ERROR
-  - id: rs-no-match-bool
-    pattern: "match $X {\n    true => $A,\n    false => $B,\n}"
-    message: match on a bool value is equivalent to an if/else expression. Use `if $X
-      { $A } else { $B }` or refactor to an enum.
-    languages:
-      - rust
-    severity: ERROR
-  - id: just-no-env-var-or-default
-    pattern-regex: env_var_or_default\s*\(
-    message:
-      env_var_or_default(...) provides a runtime default for environment variables
-      in justfiles. Use env_var() which fails loudly if the variable is not set.
-    languages:
-      - generic
-    severity: ERROR
-  - id: just-no-option-or-default
-    pattern-regex: option_or_default\s*\(
-    message:
-      option_or_default(...) provides a runtime default for CLI options in justfiles.
-      Use option() which fails loudly if the option is not provided.
-    languages:
-      - generic
-    severity: ERROR
-  - id: just-no-or-fallback
-    pattern-regex: \|\|
-    message: '|| provides a fallback/default in justfiles. Require values explicitly
-      instead of using OR fallback.'
-    languages:
-      - generic
-    severity: ERROR
-  - id: just-no-command-v
-    pattern-regex: command\s+-v\s+
-    message: command -v checks whether a command exists before using it, enabling silent
-      fallback when a tool is absent. In justfiles this is never legitimate —
-      require the tool to be present and fail loudly if it is not.
-    languages:
-      - generic
-    severity: ERROR
-  - id: py-no-deprecated-typing
-    message: "Deprecated typing imports. Python >=3.9 supports native generics (dict, list, type, set, tuple) and `|` syntax for Union/Optional. Abstract base classes (Callable, Iterable, Mapping, Sequence) should be imported from `collections.abc`."
-    languages:
-      - python
-    severity: ERROR
-    pattern-regex: '^\s*from\s+typing\s+import.*?\b(Dict|List|Tuple|Set|Type|Optional|Union|Callable|Iterable|Mapping|Sequence)\b'
-
+- id: no-print-statements
+  pattern: print(...)
+  message: Print statements should not be committed
+  languages:
+  - python
+  severity: ERROR
+- id: no-console-log
+  pattern: console.log(...)
+  message: Console.log should not be committed
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: no-nullish-coalescing
+  pattern: $X ?? $Y
+  message: Nullish coalescing (??) creates a runtime fallback. Use an explicit assertion or fail loudly if the value can be null/undefined.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: no-const-assignment
+  patterns:
+  - pattern: const $X = $VALUE;
+  - pattern-not: const $X = require($VALUE);
+  message: Const assignment creates a binding that pretends immutability. Use `let` — constants belong in config files, not source code.
+  paths:
+    exclude:
+    - '*config*'
+    - '*.config.*'
+    - '*.d.ts'
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: rust-no-const
+  pattern: 'const $X: $T = $VALUE;'
+  message: Compile-time constant in source code. Move to config or use `let mut`.
+  paths:
+    exclude:
+    - '*config*'
+  languages:
+  - rust
+  severity: ERROR
+- id: rust-no-static
+  pattern: 'static $X: $T = $VALUE;'
+  message: Static variable in source code. Move to config or use `let mut`.
+  paths:
+    exclude:
+    - '*config*'
+  languages:
+  - rust
+  severity: ERROR
+- id: no-double-cast
+  pattern: $X as $T as $Z
+  message: Double-casting (x as T as U) bypasses TypeScript's type system entirely.
+  languages:
+  - typescript
+  severity: ERROR
+- id: no-first-element-child-hydration
+  pattern: $X.firstElementChild !== null
+  message: firstElementChild check does not prove hydration success.
+  languages:
+  - typescript
+  severity: ERROR
+- id: no-status-only-assertion
+  pattern-either:
+  - pattern: expect($X.status).toBe(200)
+  - pattern: expect($X.status()).toBe(200)
+  message: HTTP status-only assertions do not verify content validity.
+  languages:
+  - typescript
+  severity: ERROR
+- id: rust-silenced-result
+  pattern: let _ = $EXPR;
+  message: let _ = silences a Result — handle errors explicitly.
+  languages:
+  - rust
+  severity: ERROR
+- id: py-no-getenv-default
+  pattern: os.getenv($KEY, $DEFAULT)
+  message: os.getenv with default creates a runtime fallback. Use os.environ['KEY'] or validate at startup.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-dict-get-default
+  pattern: $DICT.get($KEY, $DEFAULT)
+  message: dict.get with default hides missing keys. Use subscript access or a complete config model.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-getattr-default
+  pattern: getattr($OBJ, $ATTR, $DEFAULT)
+  message: getattr with default hides missing attributes. Required attributes should not be optional.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-setdefault
+  pattern: $DICT.setdefault($KEY, $DEFAULT)
+  message: dict.setdefault is a runtime default. Use explicit check-and-set.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-defaultdict
+  pattern: defaultdict($TYPE)
+  message: defaultdict creates implicit default values on missing-key access.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-optional-type
+  pattern-either:
+  - pattern: '$VAR: Optional[$TYPE]'
+  - pattern: '$VAR: $TYPE | None'
+  message: Optional types preserve undefined-value paths. Required values should be total (non-optional).
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-try-import
+  pattern: "try:\n    import $MOD\nexcept ImportError:\n    ..."
+  message: try/except ImportError makes a required dependency optional.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-hardcoded-env-var
+  pattern-either:
+  - pattern: os.environ[$KEY] = $VALUE
+  - pattern: os.environ[$KEY] = $VALUE
+  message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
+  languages:
+  - python
+  severity: ERROR
+- id: ts-no-hardcoded-env-var
+  pattern-either:
+  - pattern: process.env.$KEY = $VALUE
+  - pattern: process.env[$KEY] = $VALUE
+  message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: rust-no-hardcoded-env-var
+  pattern-either:
+  - pattern: env::set_var($KEY, $VALUE)
+  - pattern: std::env::set_var($KEY, $VALUE)
+  message: Hardcoded env var definition in code. Move to .envrc — environment variables must be defined in .envrc, not source code.
+  languages:
+  - rust
+  severity: ERROR
+- id: py-no-bare-except
+  pattern: "except:\n    pass"
+  message: 'Bare except: catches SystemExit and KeyboardInterrupt.'
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-suppress
+  pattern: contextlib.suppress($EXC)
+  message: contextlib.suppress silently swallows exceptions.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-mock-import
+  pattern-either:
+  - pattern: from unittest.mock import $X
+  - pattern: import unittest.mock
+  message: unittest.mock imports bypass real boundaries. Use real fixtures.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-magicmock
+  pattern-either:
+  - pattern: MagicMock(...)
+  - pattern: Mock(...)
+  message: Mock/MagicMock objects bypass real behavior. Use real fixtures.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-monkeypatch
+  pattern: monkeypatch.setattr(...)
+  message: monkeypatch replaces real behavior with test seams.
+  languages:
+  - python
+  severity: ERROR
+- id: py-no-skip-test
+  pattern-either:
+  - pattern: '@pytest.mark.skip'
+  - pattern: '@pytest.mark.xfail'
+  message: pytest.skip/xfail bypass test execution. Fix or remove.
+  languages:
+  - python
+  severity: ERROR
+- id: ts-no-nullish-default
+  pattern: $X ?? $DEFAULT
+  message: Nullish coalescing with default creates silent fallback.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: ts-no-or-default
+  pattern: $X || $DEFAULT
+  message: Logical OR with default creates silent fallback on any falsy value.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: ts-no-env-default
+  pattern: process.env.$KEY || $DEFAULT
+  message: process.env with default creates runtime fallback for missing env vars.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: ts-no-jest-mock
+  pattern: jest.mock(...)
+  message: jest.mock replaces module boundaries with fake implementations.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: ts-no-vi-mock
+  pattern: vi.mock(...)
+  message: vi.mock replaces module boundaries with fake implementations.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: ts-no-skip-test
+  pattern-either:
+  - pattern: test.skip(...)
+  - pattern: describe.skip(...)
+  - pattern: test.fixme(...)
+  message: test.skip/fixme bypass test execution.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: ts-no-catch-console
+  pattern-either:
+  - pattern: .catch(console.error)
+  - pattern: .catch(console.warn)
+  message: .catch(console.error) silently swallows async errors.
+  languages:
+  - typescript
+  - javascript
+  severity: ERROR
+- id: rs-no-unwrap-or
+  message: unwrap_or provides default on failure — fail explicitly.
+  languages:
+  - rust
+  severity: ERROR
+  pattern-regex: .unwrap_or($DEFAULT)
+- id: rs-no-unwrap-or-default
+  message: unwrap_or_default uses Default trait — fail explicitly.
+  languages:
+  - rust
+  severity: ERROR
+  pattern-regex: .unwrap_or_default()
+- id: rs-no-result-ok
+  message: Result.ok() discards the error. Handle it explicitly.
+  languages:
+  - rust
+  severity: ERROR
+  pattern-regex: .ok()
+- id: rs-no-filter-map-ok
+  pattern: filter_map(Result::ok)
+  message: filter_map(Result::ok) discards errors. Handle each explicitly.
+  languages:
+  - rust
+  severity: ERROR
+- id: rs-no-stringly-error
+  message: Result<T, String> are stringly-typed. Use a proper error enum.
+  languages:
+  - rust
+  severity: ERROR
+  pattern-regex: Result<[^<>]+,\s*String>
+- id: rs-no-serde-default
+  pattern: '#[serde(default)]'
+  message: '#[serde(default)] silently fills missing config. Make config mandatory.'
+  languages:
+  - rust
+  severity: ERROR
+- id: rs-no-allow-attr
+  pattern-either:
+  - pattern: '#[allow($ARGS)]'
+  - pattern: '#![allow($ARGS)]'
+  message: '#[allow(...)] suppresses warnings. Fix the underlying issue.'
+  languages:
+  - rust
+  severity: ERROR
+- id: sh-no-command-v-runtime
+  pattern: "if command -v $TOOL >/dev/null 2>&1; then\n  $CMD\nelse\n  $FALLBACK\nfi"
+  message: command -v fallback chain — should be config-declared.
+  languages:
+  - bash
+  severity: ERROR
+- id: sh-no-or-true
+  pattern: '|| true'
+  message: '|| true silences command failure.'
+  languages:
+  - bash
+  severity: ERROR
+- id: sh-no-pip-install
+  pattern: pip install $PACKAGE
+  message: pip install violates tool-provisioning. Use uv/uvx/bun.
+  languages:
+  - bash
+  severity: ERROR
+- id: ts-no-partial
+  message: Partial<T> makes all fields optional, creating undefined-value paths in core state. Define an explicit type with only the optional fields instead.
+  languages:
+  - typescript
+  severity: ERROR
+  pattern-either:
+  - pattern: Partial<$TYPE>
+  - pattern: type $T = Partial<$U>
+  - pattern: '$X: Partial<$Y>'
+- id: rs-no-cfg-test-fake
+  pattern: "#[cfg(test)]\nmod tests {\n    use super::*;\n    ...\n}"
+  message: '#[cfg(test)] test modules must not contain fake/override implementations that shadow production behavior. Use dependency injection for test seams.'
+  languages:
+  - rust
+  severity: ERROR
+- id: sh-no-stderr-suppress
+  pattern-regex: 2\s*>\s*/dev/null
+  message: Stderr suppression (2>/dev/null) hides diagnostic output. Use explicit error handling or logging instead.
+  languages:
+  - bash
+  severity: ERROR
+- id: rs-no-match-bool
+  pattern: "match $X {\n    true => $A,\n    false => $B,\n}"
+  message: match on a bool value is equivalent to an if/else expression. Use `if $X { $A } else { $B }` or refactor to an enum.
+  languages:
+  - rust
+  severity: ERROR
+- id: just-no-env-var-or-default
+  pattern-regex: env_var_or_default\s*\(
+  message: env_var_or_default(...) provides a runtime default for environment variables in justfiles. Use env_var() which fails loudly if the variable is not set.
+  languages:
+  - generic
+  severity: ERROR
+- id: just-no-option-or-default
+  pattern-regex: option_or_default\s*\(
+  message: option_or_default(...) provides a runtime default for CLI options in justfiles. Use option() which fails loudly if the option is not provided.
+  languages:
+  - generic
+  severity: ERROR
+- id: just-no-or-fallback
+  pattern-regex: \|\|
+  message: '|| provides a fallback/default in justfiles. Require values explicitly instead of using OR fallback.'
+  languages:
+  - generic
+  severity: ERROR
+- id: just-no-command-v
+  pattern-regex: command\s+-v\s+
+  message: command -v checks whether a command exists before using it, enabling silent fallback when a tool is absent. In justfiles this is never legitimate — require the tool to be present and fail loudly if it is not.
+  languages:
+  - generic
+  severity: ERROR
+- id: py-no-deprecated-typing
+  message: Deprecated typing imports. Python >=3.9 supports native generics (dict, list, type, set, tuple) and `|` syntax for Union/Optional. Abstract base classes (Callable, Iterable, Mapping, Sequence) should be imported from `collections.abc`.
+  languages:
+  - python
+  severity: ERROR
+  pattern-regex: ^\s*from\s+typing\s+import.*?\b(Dict|List|Tuple|Set|Type|Optional|Union|Callable|Iterable|Mapping|Sequence)\b

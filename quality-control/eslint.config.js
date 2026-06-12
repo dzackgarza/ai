@@ -79,19 +79,21 @@ export default [
       "promise/param-names": "error",
       "promise/catch-or-return": "error",
       "promise/no-native": "off",
-      // Nesting/callback rules: Codacy does not report these so don't fail locally.
+      // Nesting/callback rules are intentionally off to avoid over-constraining
+      // promise composition in application code.
       "promise/no-nesting": "off",
       "promise/no-promise-in-callback": "off",
       "promise/no-callback-in-promise": "off",
 
       // eslint-plugin-fp (functional programming)
       // fp/no-nil: every function must end with an explicit return statement,
-      // so it never implicitly returns undefined. Codacy enforces this.
+      // so it never implicitly returns undefined.
       "fp/no-nil": "error",
       "fp/no-this": "warn",
       "fp/no-mutating-assign": "error",
       "fp/no-mutating-methods": "off", // too strict for most codebases
-      // fp/no-let: disabled — Codacy does not run it, and enabling it here
+      // fp/no-let: disabled because global QC permits local mutable bindings
+      // when they make state transitions explicit.
 
       // eslint-plugin-react-hooks (React)
       "react-hooks/rules-of-hooks": "error",

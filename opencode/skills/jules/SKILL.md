@@ -432,7 +432,7 @@ For the full end-to-end workflow using `improved-jules-cli`:
    uvx git+https://github.com/dzackgarza/improved-jules-cli watch-callback SESSION_ID "echo done"
    ```
 
-4. **Wait for Reviews** — 5-10 minutes for bots (Qodo, Codacy, Gemini, kilo-code-bot).
+4. **Wait for Reviews** — wait for configured review bots and CI checks to finish.
 
 5. **Check Issues** — Use `extract_unresolved_issues` from `git-guidelines` skill (see
    above).

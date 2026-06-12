@@ -258,7 +258,7 @@ to post.
 Before reading any PR comments manually, **scan all feedback surfaces at once** using
 the bundled CLI tool. This is the primary entry point for handling PR feedback — it
 automatically pulls inline review threads, issue-style comments, and automated check-run
-errors (like Codacy) in a single command.
+errors in a single command.
 
 ```bash
 # Summarize all feedback on a PR
@@ -278,7 +278,7 @@ uv run -m extract_unresolved_issues --help
 This tool pulls:
 - Top-level PR comments
 - Inline code review threads
-- Automated check-run errors (like Codacy static analysis)
+- Automated check-run errors
 
 After dispositioning feedback, resolve threads with a required justification:
 ```bash
@@ -287,7 +287,7 @@ uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolve
     "Accepted in commit 1234abc. Reason: <why this satisfies the review concern>."
 ```
 
-**The output is never stale.** Automated bots (Codacy, Gemini, kilo-code-bot) update
+**The output is never stale.** Automated bots (Gemini, kilo-code-bot, and CI checks) update
 comments in place when new commits land. Open threads stay listed until "Resolve
 Conversation" is clicked. Every item requires disposition — there is no such thing as
 an already-handled item that still appears.

@@ -206,7 +206,7 @@ This will automatically fetch:
 
 - Inline code review threads
 
-- Automated check-run errors (like Codacy static analysis)
+- Automated check-run errors
 
 #### 2. Inspect structured PR state manually (fallback)
 
@@ -229,13 +229,12 @@ For machine-readable inspection:
 gh pr checks <PR_NUMBER> --json name,state,bucket,link
 ```
 
-#### Codacy Automated Checks
+#### Automated Check Runs
 
-Codacy posts its own check-run with annotations surfaced via GitHub’s API. The Codacy
-web interface is the authoritative source — GitHub’s annotation feed can lag or remain
-stale after follow-up fixes.
+Automated checks can post annotations surfaced via GitHub’s API. Treat GitHub check
+state and the linked check details as the current authority for that check.
 
-**Read Codacy check status:**
+**Read check status:**
 
 ```bash
 # List check runs for the PR head commit
@@ -246,21 +245,7 @@ gh api repos/<OWNER>/<REPO>/check-runs/<CHECK_RUN_ID>/annotations
 ```
 
 Each annotation includes `message`, `path`, `start_line`, `annotation_level`, and a
-`details_url` pointing to the Codacy web report.
-
-**Codacy is the authoritative source:**
-
-The `details_url` from the annotation payload links to Codacy’s web report.
-Open it for the current, complete issue list with categories, per-file breakdowns, and
-severity — especially when the GitHub annotation feed appears stale or noisy.
-
-**What Codacy typically reports:**
-
-- `method-length` / `complexity`: function size and cyclomatic complexity
-
-- `assert-usage`: test assertion patterns
-
-- `subprocess-warnings`: shell invocation safety
+`details_url` pointing to the check’s detailed report when the provider exposes one.
 
 #### 4. Read formal review objects in chronological order
 

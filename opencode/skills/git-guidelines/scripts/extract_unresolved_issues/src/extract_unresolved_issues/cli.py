@@ -19,7 +19,7 @@ app = App(
     help="""Extract and manage PR review issues and automated checks.
     
 This tool is used during the PR review process to gather inline review 
-threads, high-level comments, and automated checks (e.g. Codacy issues), 
+threads, high-level comments, and automated checks,
 and provides commands to resolve them while enforcing proper justification.
 
 Common workflows:
@@ -37,8 +37,7 @@ def summarize(
 ) -> None:
     """Summarize all PR comments and automated checks (token-friendly).
 
-    Retrieves all PR comments, reviews, and automated check runs (like
-    Codacy analysis and GH Actions) and formats them cleanly. This should
+    Retrieves all PR comments, reviews, and automated check runs and formats them cleanly. This should
     be the primary tool used to quickly assess the feedback on a PR.
 
     Args:
