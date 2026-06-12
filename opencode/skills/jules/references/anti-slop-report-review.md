@@ -8,7 +8,7 @@ description: Use when launching Jules as an asynchronous anti-slop review scout.
 Jules is not trusted to complete complex work independently.
 Use Jules as an asynchronous review scout: prime it with the full anti-slop curriculum,
 ask it to inspect a PR/branch/commit range thoroughly, and require it to write a
-candidate JSON report file matching the `quality-control/ci/submit-candidate` validation schema (which exposes review-type-specific schemas via `--help`).
+candidate JSON report file matching the `submit-candidate` validation schema (which exposes review-type-specific schemas via `--help`).
 
 The Jules report is not an implementation instruction.
 It is a durable review artifact for later human/agent triage.
@@ -80,7 +80,7 @@ Do not approve or reject the target PR.
 Do not perform a generic code review.
 
 You must output valid JSON matching the schema below.
-Validation is performed by `quality-control/ci/submit-candidate`.
+Validation is performed by `submit-candidate`.
 If validation fails, the report is rejected and you will be re-prompted with
 the exact validation errors.
 
@@ -110,7 +110,7 @@ trusted to discover or apply it from memory.
 ## JSON Schema
 
 The report must be valid JSON conforming to the following schema.
-Validation is performed by `quality-control/ci/submit-candidate --help` (displays schema) followed by `quality-control/ci/submit-candidate` (validates the report).
+Validation is performed by `submit-candidate --help` (displays schema) followed by `submit-candidate` (validates the report).
 
 ### Top-level fields
 
@@ -264,7 +264,7 @@ Do not write non-JSON formats.
 Do not create issues, PRs, or any other artifact.
 
 The pre-commit hook will validate that staged files matching `*slop-report*.json`
-or `*brooks-report*.json` pass `quality-control/ci/submit-candidate`.
+or `*brooks-report*.json` pass `submit-candidate`.
 
 ## Addressing a Jules Report
 
