@@ -15,7 +15,7 @@ Before attempting to remediate or fix code quality/slop findings, consult the ce
 
 You cannot fix slop by removing it. You fix slop by reconstructing the narrative that produced it, identifying the correct intention, and fulfilling that intention with the right implementation.
 
-Remediation must strictly respect the **Bridge-Burning Policies** (defined in [anti-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)). Any fix that introduces fallbacks, defaults, mocks, optional critical dependencies, or boolean flags to "remediate" a finding is violating policy and is considered laundering.
+Remediation must strictly respect the **Bridge-Burning Policies** (defined in [policy-index/SKILL.md](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)). Any fix that introduces fallbacks, defaults, mocks, optional critical dependencies, or boolean flags to "remediate" a finding is violating policy and is considered laundering.
 
 ## Slop Is Never Localized: The Blast Radius Rule
 
@@ -122,7 +122,7 @@ Valid:
 - move code-shape enforcement to global QC;
 - record unresolved proof debt.
 
-Consult the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md) for the inventory of banned and preferred assertion patterns.
+Consult the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/test-proof-rules.md) for the inventory of banned and preferred assertion patterns.
 
 ## The Golden Rule
 
@@ -149,5 +149,5 @@ suggested fix.
 
 - **`anti-slop/references/code-patterns.md`** → **Honest-Label Laundering** — The specific detection heuristics for renaming/relabeling.
 - **`anti-slop/SKILL.md`** — The analysis skill; use this FIRST to identify slop, then use fixing-slop to remediate.
-- **anti-slop → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) are the core criteria for what constitutes a correct, non-evasive implementation. Any fix must follow them as hard constraints. For a detailed list of prohibited code constructs and testing red flags, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md).
+- **policy-index → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) are the core criteria for what constitutes a correct, non-evasive implementation. Any fix must follow them as hard constraints. For a detailed list of prohibited code constructs and testing red flags, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/runtime-control-flow.md).
 - **`handling-corrections/SKILL.md`** — The anti-thrashing protocol; use when a fix attempt is rejected as laundering.

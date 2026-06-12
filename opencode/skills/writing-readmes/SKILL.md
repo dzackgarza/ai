@@ -162,7 +162,7 @@ Reject or rewrite a README when:
 ## Anti-Slop Rejection Patterns
 
 > [!IMPORTANT]
-> Any code, CLI examples, installation steps, or configuration options documented under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Documented configuration options must represent a complete, fatal configuration regime rather than documenting default values or fallbacks in runtime logic.
+> Any code, CLI examples, installation steps, or configuration options documented under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Documented configuration options must represent a complete, fatal configuration regime rather than documenting default values or fallbacks in runtime logic.
 
 Write READMEs that are honest, specific, and short.
 Every sentence must earn its place.

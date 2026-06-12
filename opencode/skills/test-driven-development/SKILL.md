@@ -326,7 +326,7 @@ If you catch yourself doing any of these, delete the code and restart with TDD:
 
 - “This is different because …”
 
-- Violating any of the non-negotiable [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) (e.g. including mocks/fakes in proof paths, using runtime defaults, writing fallback paths, using boolean mode flags in owned APIs).
+- Violating any of the non-negotiable [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) (e.g. including mocks/fakes in proof paths, using runtime defaults, writing fallback paths, using boolean mode flags in owned APIs).
 
 **All of these mean: Delete code.
 Start over with TDD.**
@@ -442,7 +442,7 @@ Never fix bugs without a test.
   Catalogs field-observed testing failures: checker removal, test expectation
   modification, and plausible fixture injection.
 
-- **anti-slop → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md). For the catalog of assertion constraints, see the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md).
+- **policy-index → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md). For the catalog of assertion constraints, see the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/test-proof-rules.md).
 
 ## Final Rule
 

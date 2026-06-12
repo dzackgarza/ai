@@ -5,7 +5,7 @@ description: Use when creating new skills, editing existing skills, or verifying
 # Creating Skills
 
 > [!IMPORTANT]
-> All skills authored or modified under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. Any skill that relates to writing, editing, refactoring, testing, or building code MUST include a prominent warning forcing agents to comply with these policies as non-negotiable hard constraints.
+> All skills authored or modified under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. Any skill that relates to writing, editing, refactoring, testing, or building code MUST include a prominent warning forcing agents to comply with these policies as non-negotiable hard constraints.
 
 A skill encodes **behavioral policy**, not reference documentation.
 It tells agents **how to work**, **what to check**, and **what to avoid**—it does not
@@ -212,7 +212,7 @@ Before adding content, ask:
 
 - Task-specific decomposition rules
 
-- **Bridge-Burning Policies**: When authoring coding, testing, or review skills, you must reference and respect the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`.
+- **Bridge-Burning Policies**: When authoring coding, testing, or review skills, you must reference and respect the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md`.
 
 ## Skill Location
 
@@ -406,7 +406,7 @@ Success: Agent follows rule under maximum pressure.
 
 - [ ] Addresses specific failure modes observed
 
-- [ ] Cross-references other skills where needed, and explicitly references the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) if the skill touches writing, editing, refactoring, building, or testing code
+- [ ] Cross-references other skills where needed, and explicitly references the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) if the skill touches writing, editing, refactoring, building, or testing code
 
 - [ ] Includes validation checklist for outputs
 

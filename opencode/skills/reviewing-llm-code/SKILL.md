@@ -96,10 +96,10 @@ Before producing review findings, load these skills in this order:
   The canonical catalog of concrete LLM code, test, QC, and documentation failure patterns.
   Read this to learn the specific signatures to look for.
 
-- **`references/bridge-burning-red-flags.md`** — Read third.
+- **`../policy-index/references/red-flags.md`** — Read third.
   The canonical reference catalog of validation-evasion "red flags" (such as runtime defaults, fallbacks, mocks, skips, and bypass comments) that are strictly prohibited under the bridge-burning policies. Read this to audit implementations for validator-silencing behavior.
 
-- **`references/runtime-control-flow-red-flags.md`** — Read fourth.
+- **`../policy-index/references/runtime-control-flow.md`** — Read fourth.
   The canonical reference catalog of runtime control-flow policy rules, invariant assertions, and disallowed control-flow shapes. Read this to audit control-flow branching in runtime code.
 
 - **`llm-failure-modes`** — Read fifth.
@@ -724,10 +724,10 @@ The important move is to stop treating this as a case-by-case review problem. Ag
 
 The recurring pattern is that an agent first tries to satisfy checking/validation surfaces (such as the compiler/typechecker, QC gates, PR review, or user queries) by manipulating the validation surface (e.g. by adding fallbacks, defaults, mocks, try/except blocks, or bypass comments) instead of reconstructing the original obligation and solving it. The policy answer is to remove the vocabulary that enables that manipulation.
 
-Adhering to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` is a non-negotiable hard constraint for all development. These rules eliminate common agent validation-evasion pathways (such as runtime defaults, fallbacks, mocks, and diagnostic smoke tests in proof paths). Refer to them as hard boundaries.
+Adhering to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` is a non-negotiable hard constraint for all development. These rules eliminate common agent validation-evasion pathways (such as runtime defaults, fallbacks, mocks, and diagnostic smoke tests in proof paths). Refer to them as hard boundaries.
 
 > [!IMPORTANT]
-> **Bridge-Burning Red Flags:** If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. For a comprehensive catalog of code signatures, keywords, and patterns to look for, see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md).
+> **Bridge-Burning Red Flags:** If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. For a comprehensive catalog of code signatures, keywords, and patterns to look for, see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/runtime-control-flow.md).
 
 ---
 

@@ -353,7 +353,9 @@ If you cannot identify the live goal and proof loop, you are not ready to analyz
 
 For code, tests, QC, and documentation, **always** load:
 
-- `reviewing-llm-code`, its `references/pattern-catalog.md` (canonical catalog of regex-against-semantic-formats, fallback laundering, no-op behavior, QC appeasement code, and recipe bypasses), its `references/bridge-burning-red-flags.md` (canonical reference catalog of validation-evasion red flags), and its `references/runtime-control-flow-red-flags.md` (canonical reference catalog of runtime control-flow rules).
+- `reviewing-llm-code` and its `references/pattern-catalog.md` for LLM-specific review patterns.
+
+- `policy-index/references/red-flags.md` for validation-evasion red flags and `policy-index/references/runtime-control-flow.md` for runtime control-flow rules.
 
 - `llm-failure-modes` — the cognitive failure modes that produce slop (overconfidence, confabulation, premature solution generation, replacement instinct).
 

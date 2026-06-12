@@ -124,7 +124,7 @@ Apply the baseline prompt above, plus these explicit review rules:
    - Do not over-index on micro-optimizations, but do flag avoidable orchestration
      complexity that makes the implementation more brittle.
 
-8. **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)) are non-negotiable hard constraints.
+8. **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)) are non-negotiable hard constraints.
 
    - Any implementation or refactoring suggestion must strictly respect the policies (e.g. no runtime defaults, no fallbacks, no mocks in proof paths, no boolean flags in owned APIs, no optional critical dependencies).
 
@@ -382,4 +382,4 @@ cleaner decomposition.
 - **test-guidelines** → Load alongside when code-quality issues affect tests, QC, or
   proof surfaces.
 
-- **anti-slop → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) are the core criteria for what constitutes a correct, non-evasive implementation. Any code quality review must enforce them as hard, non-negotiable boundaries.
+- **policy-index → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) are the core criteria for what constitutes a correct, non-evasive implementation. Any code quality review must enforce them as hard, non-negotiable boundaries.

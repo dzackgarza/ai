@@ -143,7 +143,7 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - final report says the review item is resolved because the artifact is gone;
   - the original requirement is absent from the new PR narrative.
 
-  Correct response: See `bridge-burning-red-flags.md` → **Remediation: Deletion Laundering / Proof-Burden Erasure**.
+  Correct response after triage: See `policy-index/references/remediations.md` → **Remediation: Deletion Laundering / Proof-Burden Erasure**.
 
 - **[WHACK-A-MOLE] Reviewer-signal whack-a-mole**:
   The agent treats every evaluator as a layer to appease: typechecker, compiler, test,
@@ -280,7 +280,7 @@ Name the pattern, explain why it is ridiculous or deceptive in this repository, 
   - No real fixture or boundary artifact (TOML file, temp directory) appears in the test.
   - The test would still pass even if the application stopped calling the helper entirely (meaningless for product correctness).
 
-  Correct Response: See `bridge-burning-red-flags.md` → **Remediation: Boundary Test Bypass**.
+  Correct response after triage: See `policy-index/references/remediations.md` → **Remediation: Boundary Test Bypass**.
 
 ## Documentation Patterns
 
