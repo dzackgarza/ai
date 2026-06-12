@@ -1,3 +1,6 @@
-#!/usr/bin/env sh
-set -e
-just test
+#!/usr/bin/env bash
+set -euo pipefail
+
+QC_ROOT="${QC_ROOT:-$HOME/ai/quality-control}"
+
+just -f "$QC_ROOT/justfile" _no-bypass
