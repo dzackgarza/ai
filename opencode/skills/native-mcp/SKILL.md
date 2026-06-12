@@ -37,7 +37,7 @@ authoring or reshaping a server.
 
 ## Prerequisites
 
-- **mcp Python package** -- optional dependency; install with `pip install mcp`. If not
+- **mcp Python package** -- optional dependency; install with `uv add mcp`. If not
   installed, MCP support is silently disabled.
 
 - **Node.js** -- required for `npx`-based MCP servers (most community servers)
@@ -47,9 +47,9 @@ authoring or reshaping a server.
 Install the MCP SDK:
 
 ```bash
-pip install mcp
+uv add mcp
 # or, if using uv:
-uv pip install mcp
+uv uv add mcp
 ```
 
 ## Quick Start
@@ -278,7 +278,7 @@ The `mcp` Python package is not installed.
 Install it:
 
 ```bash
-pip install mcp
+uv add mcp
 ```
 
 ### “No MCP servers configured”
@@ -307,7 +307,7 @@ Your `mcp` package version doesn’t include HTTP client support.
 Upgrade:
 
 ```bash
-pip install --upgrade mcp
+uv sync --upgrade-package mcp
 ```
 
 ### Tools not appearing

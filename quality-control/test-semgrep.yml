@@ -1,0 +1,7 @@
+rules:
+  - id: py-no-deprecated-typing
+    message: 'Deprecated typing imports. Python >=3.9 supports native generics (dict, list, type, set, tuple) and `|` syntax for Union/Optional. Abstract base classes (Callable, Iterable, Mapping, Sequence) should be imported from `collections.abc`.'
+    languages:
+      - python
+    severity: ERROR
+    pattern-regex: '^\s*from\s+typing\s+import.*?\b(Dict|List|Tuple|Set|Type|Optional|Union|Callable|Iterable|Mapping|Sequence)\b'

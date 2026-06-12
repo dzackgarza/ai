@@ -1,0 +1,26 @@
+{
+  "ignores": [
+    "**/*.generated.*",
+    "**/*.min.*",
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/__pycache__/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/_ci-support/**",
+    "**/codeql-db/**",
+    "**/@girs/**",
+    "**/__stubs__/**",
+    "**/external/**",
+    "**/target/**",
+    "**/*.bak/**",
+    "**/.git/**",
+    "**/.next/**",
+    "**/.lake/**",
+    "**/.worktrees/**",
+    "**/vendor/**",
+    "**/third_party/**",
+    "**/venv/**"
+  ]
+}

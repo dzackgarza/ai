@@ -111,9 +111,9 @@ phases while preserving the original writing philosophy and reference files.
 
 | Library | Install | Purpose |
 | --- | --- | --- |
-| `semanticscholar` | `pip install semanticscholar` | Semantic Scholar wrapper |
-| `arxiv` | `pip install arxiv` | arXiv search and download |
-| `habanero` | `pip install habanero` | CrossRef client |
+| `semanticscholar` | `uv add semanticscholar` | Semantic Scholar wrapper |
+| `arxiv` | `uv add arxiv` | arXiv search and download |
+| `habanero` | `uv add habanero` | CrossRef client |
 
 ### Citation Verification
 

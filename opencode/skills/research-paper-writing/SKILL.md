@@ -1793,7 +1793,7 @@ format for rebuttal supplements.
 Install and use for publication-quality plots:
 
 ```bash
-pip install SciencePlots
+uv add SciencePlots
 ```
 
 ```python
@@ -2261,7 +2261,7 @@ only cross-list where genuinely relevant.
 ```bash
 # Check if your paper's title is already taken on arXiv
 # (before choosing a title)
-pip install arxiv
+uv add arxiv
 python -c "
 import arxiv
 results = list(arxiv.Search(query='ti:\"Your Exact Title\"', max_results=5).results())

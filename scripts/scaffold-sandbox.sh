@@ -19,8 +19,8 @@ fi
 
 echo "Scaffolding $SANDBOX..."
 # /var/sandbox is root-owned but world-writable — sudo only needed on parent
-sudo mkdir -p "$SANDBOX_ROOT"
-sudo chown "$(whoami)" "$SANDBOX_ROOT"
+sudo -n mkdir -p "$SANDBOX_ROOT"
+sudo -n chown "$(whoami)" "$SANDBOX_ROOT"
 mkdir -p "$SANDBOX"
 
 # Clone execa (real codebase — depth 1 strips history so git log can't reveal what's "real")

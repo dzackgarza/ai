@@ -1,6 +1,17 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "httpx",
+#     "typer",
+#     "pydantic",
+#     "rich",
+# ]
+# ///
+
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 from datetime import datetime
 from pathlib import Path
@@ -34,10 +45,10 @@ class ModelMetadata(BaseModel):
             return True
         if self.id.endswith(":free"):
             return True
-        # Check both key naming conventions (input/prompt, output/completion)
         if self.cost:
-            prompt_cost = self.cost.get("input") or self.cost.get("prompt")
-            completion_cost = self.cost.get("output") or self.cost.get("completion")
+            # models.dev/api.json consistently uses input/output keys
+            prompt_cost = self.cost["input"]
+            completion_cost = self.cost["output"]
             if prompt_cost == 0 and completion_cost == 0:
                 return True
         return False
@@ -105,8 +116,12 @@ async def probe_model(model_id: str, check_tools: bool = False) -> tuple[bool, s
                 return False, "NO_TOOL_SUPPORT"
 
             return True, "UP"
+        except httpx.RequestError as e:
+            return False, f"Request error: {e}"
+        except json.JSONDecodeError:
+            return False, "Invalid JSON response"
         except Exception as e:
-            return False, str(e)
+            return False, f"Unexpected error: {e}"
 
 
 @app.command()

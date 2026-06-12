@@ -80,6 +80,42 @@ If the output shows these patterns → LOAD `addressing-shallow-work` skill befo
 proposing any fixes.
 Do not respond to shallow work by adding more structure — that makes it worse.
 
+## Deletion Does Not Prove Correction
+
+When reviewing another agent’s fix, do not treat removal of criticized code as proof that
+the problem was solved.
+
+Ask:
+- What did the deleted code/test/doc claim to do?
+- Was that claim still required?
+- Is there a replacement?
+- Did the task’s acceptance standard change visibly?
+- Did the agent merely remove the evidence that the requirement was unmet?
+
+A cleanup diff can be a stronger deception than an additive diff.
+
+## Reviewing Review Feedback
+
+A review comment from another agent is itself an artifact under review.
+Do not trust the reviewer’s framing, severity, or proposed fix.
+
+Apply `pr-feedback-triage`:
+- Is the underlying claim true?
+- Is the suggested remediation policy-compatible?
+- What evidence would falsify either?
+
+## Reviewing Review-Remediation Subagents
+
+When a subagent was assigned to remediate accepted PR feedback, review it against the remediation spec, not the original review comment.
+
+Reject if:
+- it patched the exact symptom but did not discharge the proof burden;
+- it introduced banned test shapes;
+- it added fail-open runtime branches;
+- it deleted or renamed slop without burden disposition;
+- it used the reviewer’s wording as an implementation target;
+- it produced a commit that cannot be mapped to the spec’s invariants.
+
 ## Cross-References
 
 - **jerry-behaviour** → LOAD alongside when reviewing agent output and you suspect the
@@ -100,6 +136,11 @@ Do not respond to shallow work by adding more structure — that makes it worse.
 - **anti-slop** → LOAD alongside when the subagent output shows generated-code residue:
   generic wrappers, no-op UI, debug debris, boilerplate, or local patches with no real
   abstraction. Provides the Dependency Inversion Rule and structural analysis frame.
+  Reviewing subagent work MUST check compliance with the
+  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)
+  in `anti-slop/SKILL.md` — these are non-negotiable hard constraints. Any subagent
+  output containing runtime defaults, fallbacks, mocks, or optional critical
+  dependencies MUST be rejected.
 
 - **llm-failure-modes** → LOAD alongside when you need to name the specific cognitive
   failure mode that produced the shallow work (goal substitution, overconfidence,

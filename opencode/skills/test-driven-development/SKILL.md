@@ -107,7 +107,8 @@ Vague name, tests mock not real code.
 - Clear descriptive name ("and" in name?
   Split it)
 
-- Real code, not mocks (unless truly unavoidable)
+- Real code, not mocks. No exceptions.
+  See `test-guidelines` for the no-mock policy.
 
 - Name describes behavior, not implementation
 
@@ -117,7 +118,7 @@ Vague name, tests mock not real code.
 
 ```bash
 # Use terminal tool to run the specific test
-pytest tests/test_feature.py::test_specific_behavior -v
+uv run pytest tests/test_feature.py::test_specific_behavior -v
 ```
 
 Confirm:
@@ -172,10 +173,11 @@ We’ll fix it in REFACTOR.
 
 ```bash
 # Run the specific test
-pytest tests/test_feature.py::test_specific_behavior -v
+uv run pytest tests/test_feature.py::test_specific_behavior -v
 
 # Then run ALL tests to check for regressions
-pytest tests/ -q
+# (Final completion proof must use global QC: just test)
+uv run pytest tests/ -q
 ```
 
 Confirm:
@@ -324,6 +326,8 @@ If you catch yourself doing any of these, delete the code and restart with TDD:
 
 - “This is different because …”
 
+- Violating any of the non-negotiable [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) (e.g. including mocks/fakes in proof paths, using runtime defaults, writing fallback paths, using boolean mode flags in owned APIs).
+
 **All of these mean: Delete code.
 Start over with TDD.**
 
@@ -339,24 +343,24 @@ Before marking work complete:
 
 - [ ] Wrote minimal code to pass each test
 
-- [ ] All tests pass
+- [ ] All tests pass (final proof via `just test` — global QC)
 
 - [ ] Output pristine (no errors, warnings)
 
-- [ ] Tests use real code (mocks only if unavoidable)
+- [ ] Tests use real code, no mocks. See `test-guidelines`.
 
 - [ ] Edge cases and errors covered
 
-Can’t check all boxes?
+Can't check all boxes?
 You skipped TDD. Start over.
 
 ## When Stuck
 
 | Problem | Solution |
 | --- | --- |
-| Don’t know how to test | Write the wished-for API. Write the assertion first. Ask the user. |
+| Don't know how to test | Write the wished-for API. Write the assertion first. Ask the user. |
 | Test too complicated | Design too complicated. Simplify the interface. |
-| Must mock everything | Code too coupled. Use dependency injection. |
+| Must mock everything | Code too coupled. The missing artifact is a boundary fixture or debug surface, not a mock. See `test-guidelines` no-mock policy. |
 | Test setup huge | Extract helpers. Still complex? Simplify the design. |
 
 ## Hermes Agent Integration
@@ -367,13 +371,13 @@ Use the `terminal` tool to run tests at each step:
 
 ```python
 # RED — verify failure
-terminal("pytest tests/test_feature.py::test_name -v")
+terminal("uv run pytest tests/test_feature.py::test_name -v")
 
 # GREEN — verify pass
-terminal("pytest tests/test_feature.py::test_name -v")
+terminal("uv run pytest tests/test_feature.py::test_name -v")
 
 # Full suite — verify no regressions
-terminal("pytest tests/ -q")
+terminal("uv run pytest tests/ -q")
 ```
 
 ### With delegate_task
@@ -392,7 +396,13 @@ delegate_task(
     5. Refactor if needed
     6. Commit
 
-    Project test command: pytest tests/ -q
+    Testing epistemology: test-guidelines (no mocks, substantive assertions).
+    Tooling: tool-provisioning (uv, PEP 723).
+    Final verification: quality-control global just test/test-ci.
+    Debugging: reality-grounded-debugging.
+    External-tool uncertainty: known-solution-first.
+
+    Project test command (during red/green isolation): uv run pytest tests/ -q
     Project structure: [describe relevant files]
     """,
     toolsets=['terminal', 'file']
@@ -408,8 +418,8 @@ Never fix bugs without a test.
 
 ## Testing Anti-Patterns
 
-- **Testing mock behavior instead of real behavior** — mocks should verify interactions,
-  not replace the system under test
+- **Testing mock behavior instead of real behavior** — mocks never verify interactions.
+  Use real objects, live boundaries, captured real responses, or explicit owned adapters.
 
 - **Testing implementation details** — test behavior/results, not internal method calls
 
@@ -431,6 +441,8 @@ Never fix bugs without a test.
   or CI configuration.
   Catalogs field-observed testing failures: checker removal, test expectation
   modification, and plausible fixture injection.
+
+- **anti-slop → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md). For the catalog of assertion constraints, see the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md).
 
 ## Final Rule
 

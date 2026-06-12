@@ -22,14 +22,11 @@ Batch process multiple repositories (local or remote) using the repomix CLI tool
 
 ### Installation
 
-Requires Python 3.10+ and repomix CLI:
+Requires Python 3.10+ and repomix CLI (ephemeral via `npx -y repomix`):
 
 ```bash
-# Install repomix
-npm install -g repomix
-
-# Install Python dependencies (if needed)
-pip install pytest pytest-cov pytest-mock  # For running tests
+# Python test dependencies (if needed — prefer global QC for generic tools)
+uv add --group dev pytest pytest-cov  # For running tests
 ```
 
 ### Usage
@@ -152,14 +149,14 @@ python repomix_batch.py /repo1 /repo2 \
 
 ### Testing
 
-Run tests with coverage:
+This is a repo-owned script fixture. It uses global QC for completion proof — see
+`quality-control` for the standard gate. For local red/green isolation during
+development:
 
 ```bash
 cd tests
-pytest test_repomix_batch.py -v --cov=repomix_batch --cov-report=term-missing
+uv run pytest test_repomix_batch.py -v
 ```
-
-Current coverage: 99%
 
 ### Exit Codes
 
@@ -170,9 +167,7 @@ Current coverage: 99%
 ### Troubleshooting
 
 **repomix not found:**
-```bash
-npm install -g repomix
-```
+Run via `npx -y repomix` instead. No global install needed.
 
 **Permission denied:**
 ```bash

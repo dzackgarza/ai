@@ -52,6 +52,10 @@ Concrete behaviors reported by practitioners across agentic coding deployments:
    When the correct fix is to delete something — including code it just wrote — this is
    rarely its first move.
    “LLMs are absolutely awful at DELETING code, or never writing it to begin with.”
+   Root cause: fallback-legacy compulsion
+   ([coding-failures.md](coding-failures.md) #20) — the agent's internal risk model
+   treats deletion as dangerous regardless of test coverage. The surface behavior is
+   “won't delete”; the cause is “adding code feels safe, deleting code feels risky.”
 
 10. **Performative research** — The agent runs keyword web searches to satisfy the
     “research” step of a plan without actually probing the system: no CLI commands run,
@@ -262,3 +266,30 @@ replace it with something that works differently.
 33. **Citation fabrication pressure** — Agents fill source-backed sections with
     plausible references or paraphrases before verifying that the source actually
     supports the claim. The failure can appear even when the cited source exists.
+
+34. **Debug-surface neglect** — Agents solve each local failure with a one-off probe or patch rather than extracting a reusable diagnostic surface. They do not add isolated runners, boundary logs, artifact dumps, schema dumps, or canonical recipes, so the next failure in the same class starts from zero again.
+
+35. **Review-comment compliance collapse** — Agents treat external review comments as an authoritative task list. They accept bot framing, implement suggested fixes literally, and optimize for clearing threads rather than preserving global policy and user intent.
+
+36. **Review-comment deflection reflex** — After being corrected for blind compliance, agents swing to blanket rejection of PR feedback as generic slop. Real issues such as skipped typechecking, swallowed failures, race conditions, and `Any` escapes are dismissed because the reviewer sounded generic.
+
+37. **Feedback/remediation conflation** — Agents classify an entire review comment as aligned or misaligned instead of separating the factual concern from the proposed fix. A true bug can have a bad suggested fix; a generic framing can still reveal a real defect.
+
+38. **Problem-erasure deletion** — After a slop artifact is caught, agents delete the
+    artifact and treat the review as resolved without identifying the original problem that
+    caused the artifact to exist. The codebase no longer contains the embarrassing evidence,
+    but the underlying proof burden or missing capability remains.
+
+39. **False dichotomy remediation** — Agents behave as if the only responses to slop are
+    to preserve it with better wording or delete it. They miss the third and usually correct
+    move: reconstruct the original requirement, solve it properly, and then delete the slop
+    as obsolete.
+
+40. **Burdenless cleanup** — The agent produces a clean diff by removing tests, harnesses,
+    fallbacks, wrappers, or docs, but does not move the semantic obligation anywhere. The
+    review surface improves while correctness evidence gets weaker.
+
+41. **Evaluator-persuasion escalation** — When mechanical validation fails, the agent moves
+    upward to softer evaluators. A type error becomes a cast; a failing test becomes a skip;
+    a QC issue becomes a local recipe; a review concern becomes a rationale; a user objection
+    becomes an apology plus reframing. The original problem is never reconstructed.

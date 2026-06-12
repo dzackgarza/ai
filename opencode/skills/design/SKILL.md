@@ -754,6 +754,52 @@ Avoid common AI design sludge:
 
 - decorative SVG illustrations pretending to be product imagery
 
+### Signs of LLM-Generated Design
+
+The following micro-level visual cues are reliable indicators that a design was
+produced by an LLM with no design awareness.
+If you see these patterns in a generated artifact, treat them as bugs — they are
+not aesthetic choices, they are artifacts of a model averaging together hundreds
+of conflicting training examples without understanding layout or hierarchy:
+
+- **Thin colored borders** — pastel or accent-colored 1px borders around cards,
+  sections, and containers, used where a real designer would use background fills,
+  shadows, or no container at all.
+  These signal that the LLM does not know how to establish hierarchy without drawing
+  boxes.
+
+- **Gradients** — gratuitous linear gradients (especially light blue to white, purple
+  to pink) applied to backgrounds, buttons, or banners without a brand reason.
+  Gradients are a legitimate tool only when they serve a specific identity or
+  atmospheric goal; defaulting to them is a sign of avoiding a color decision.
+
+- **Glow effects** — colored `box-shadow` or `text-shadow` with visible hue, soft
+  radial glows behind elements, or backlit button effects.
+  These are a LLM’s substitute for real depth and make interfaces feel cheap and
+  uncalibrated.
+
+- **Too many font sizes** — using five or more distinct `font-size` values where
+  a disciplined type scale would use three or four (e.g., body, small, h3, h1).
+  Every additional size weakens the hierarchy; the LLM adds sizes because it is
+  guessing per-element rather than designing a system.
+
+- **Small fonts too small** — body text at 12px or 13px, secondary text at 10px
+  or 11px, or any font size below 14px for readable content.
+  LLMs inherit tiny sizes from dense enterprise dashboards in their training data
+  and apply them indiscriminately to marketing pages, prototypes, and editorial
+  layouts where readability is paramount.
+
+- **Inconsistent padding and alignment (especially vertical)** — elements that do
+  not share a consistent vertical rhythm, card content that is not optically
+  centered, buttons with uneven internal padding, or items that shift position
+  across breakpoints.
+  Vertical inconsistency is the single most common LLM layout bug because the
+  model tokenizes text and boxes independently and never "feels" the imbalance.
+
+These six patterns are not merely "things to avoid" — they are **diagnostic cues**.
+If you inspect an artifact and see multiple of these, the entire artifact needs
+structural revision, not spot fixes.
+
 Minimal is not automatically good.
 Dense is not automatically cluttered.
 Choose intentionally.

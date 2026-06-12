@@ -6,44 +6,73 @@ description: Use when creating shell scripts, Python CLI tools, or command-line 
 
 ## Default Stack
 
-**Cyclopts + Pydantic v2 + basedpyright + Ruff + pytest**
+**Project-owned:** Cyclopts + Pydantic v2 (for CLI presentation and input contracts).
+**Global QC (see `quality-control`):** basedpyright, Ruff, pytest, coverage, etc.
 
 Use Cyclopts for CLI presentation.
 Use Pydantic as the actual spec.
 This converges help text, validation, config loading, schemas, docs, and tests on one
 source of truth.
 
+**Do not configure basedpyright, Ruff, pytest, or other generic QC tools locally in the
+project.** These tools, their configs, and invocation patterns belong in global QC at
+`~/ai/quality-control`. The project's `pyproject.toml` declares only repo-owned runtime,
+build, plugin, and domain-test dependencies.
+
 ## Standalone Python Scripts
 
-When writing standalone Python scripts that require external dependencies (i.e. not part
-of a larger package with a `pyproject.toml`), **always** use `uv`’s inline script
-metadata to define dependencies, and run them with `uv run`. This allows for zero-setup
-execution with isolated, automatically managed virtual environments.
+### Mandatory Policy
 
-Add a `# /// script` block at the very top of the file:
+Any Python script created by an agent that imports non-stdlib packages must be
+self-contained with PEP 723 inline script metadata and run through `uv`. No separate
+install step. No implicit environment assumption. No `pip install` prelude.
+See `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts
+with uv" for the full hierarchy and forbidden pathways.
+
+### Canonical Template
+
+Add a `# /// script` block at the very top of the file. For executable scripts, add the
+shebang line before the metadata block:
 
 ```python
+#!/usr/bin/env -S uv run --script
 # /// script
+# requires-python = ">=3.12"
 # dependencies = [
-#   "httpx",
-#   "loguru",
-#   "pydantic>=2.0.0"
+#   "httpx>=0.28",
+#   "rich>=13",
 # ]
 # ///
 
 from __future__ import annotations
+
 import httpx
-from loguru import logger
-...
+from rich.pretty import pprint
+
+response = httpx.get("https://example.com")
+response.raise_for_status()
+pprint(response.text[:200])
 ```
 
-Then execute via:
+### Execution
+
+Run as either:
 
 ```bash
 uv run my_script.py
 ```
 
+or, if the shebang is present and the file is executable:
+
+```bash
+chmod +x my_script.py
+./my_script.py
+```
+
 ## Mandatory Requirements
+
+> [!IMPORTANT]
+> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 Every CLI must have:
 
@@ -53,7 +82,7 @@ Every CLI must have:
 
 3. **Progressive disclosure** — flat CLIs banned after trivial size; use subcommands
 
-4. **Documented defaults** — every default value explained
+4. **Documented defaults** — every default value explained in config files and CLI help text (NOT runtime fallback defaults — those are prohibited by [Bridge-Burning Policy 1](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies))
 
 5. **Centralized config** — knobs/levers in YAML config files, not ad-hoc env vars
 
@@ -126,25 +155,19 @@ Generate JSON Schema from Pydantic models for:
 
 - Structured output validation
 
-### 5. basedpyright Strict Mode
+### 5. basedpyright — Global QC
 
-Enable strict mode to turn “typed-looking code” into actually checked code.
-Configure in `pyproject.toml`:
+basedpyright strict mode is configured in global QC at `~/ai/quality-control`.
+Do not configure it in the project `pyproject.toml`. The global config covers all
+projects.
 
-```toml
-[tool.basedpyright]
-strict = ["src"]
-```
+### 6. Ruff — Global QC
+
+Ruff runs as part of the global QC gate (`just test` from `~/ai/quality-control`).
+Do not run it ad-hoc. If you need to check generated code, use `just test` to run the
+full gate, which includes Ruff checks automatically after normalization.
 
 Rejects untyped public functions and unknown types.
-
-### 6. Ruff as Hygiene Gate
-
-Run immediately on generated code:
-
-```bash
-ruff check . && ruff format .
-```
 
 ## Why Not Typer
 
@@ -337,8 +360,8 @@ Apply these rules to force quality:
 7. Every command has at least one substantive behavioral test proving it correctly
    invokes the underlying logic or fails on invalid input.
 
-8. Run Ruff immediately — reject untyped public functions, unknown types, and lint
-   failures
+8. Run `just test` (the full global QC gate) before declaring work complete — Ruff,
+   basedpyright, pytest, and all other checks run automatically
 
 ## Anti-Patterns
 

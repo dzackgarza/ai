@@ -287,8 +287,15 @@ Always report agreement metrics.
 Without them, reviewers assume your annotations are unreliable.
 
 ```python
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "krippendorff>=0.7",
+# ]
+# ///
+
 # Krippendorff's alpha (preferred — handles missing data, any scale)
-# pip install krippendorffs-alpha
 import krippendorff
 
 # Ratings: rows = annotators, columns = items, values = scores
@@ -607,7 +614,7 @@ Constrain scope (what to include) not length.
 Install SciencePlots for publication-ready defaults:
 
 ```bash
-pip install SciencePlots matplotlib numpy
+uv add SciencePlots matplotlib numpy
 ```
 
 **Option A: SciencePlots styles** (recommended — handles most defaults automatically):

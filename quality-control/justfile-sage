@@ -1,34 +1,33 @@
 # justfile-sage — SageMath-specific quality control
 #
-# Builds on the standard Python justfile and adds Sage-specific checks.
-# Sage projects should use this file instead of the standard justfile.
-#
-# Standard QC recipes are delegated to justfile via `just -f`.
-# Sage projects can still provide sage-mypy-plugin.ini to add the
-# sage_mypy_category_plugin to mypy's config via the standard merge logic.
-#
-# Usage:
+# Imports shared and Python QC recipes and adds Sage-specific checks.
+# Sage projects delegate to this file:
 #   just -f ~/ai/quality-control/justfile-sage test
-#   just -f ~/ai/quality-control/justfile-sage test-ci
+#
+# Shared + Python recipes (imported transitively via justfile-python):
+#   All cross-language (justfile) and Python (justfile-python) recipes.
+#
+# Sage-specific recipes:
+#   _sage-qc-files, _sage-syntax, _vulture (Sage-aware preparse)
+#
+# WORKFLOW:
+#   just test      — local quality checks (Sage syntax + Python QC)
+#   just test-ci  — test + live/isolated checks
 
-std := justfile_directory() + "/justfile"
+default:
+  @just test
 
 _sage-qc-files:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	exclude_args=()
+	while IFS= read -r dir; do
+		exclude_args+=(-g "!**/$dir/**")
+	done < <(uv run {{justfile_directory()}}/scripts/read_qc_excludes.py)
 	rg --files \
 		-g '*.sage' \
 		-g '!*.sage.py' \
-		-g '!**/external/**' \
-		-g '!**/node_modules/**' \
-		-g '!**/__pycache__/**' \
-		-g '!**/.venv/**' \
-		-g '!**/dist/**' \
-		-g '!**/build/**' \
-		-g '!**/coverage/**' \
-		-g '!**/codeql-db/**' \
-		-g '!**/*.bak/**' \
-		-g '!**/*.bak/**' || true
+		"${exclude_args[@]}" || true
 
 _sage-syntax:
 	#!/usr/bin/env bash
@@ -36,15 +35,17 @@ _sage-syntax:
 	echo "============================="
 	echo "=== Running: Sage syntax validation ==="
 	echo "# Preparses .sage files and byte-compiles the generated Python to catch syntax errors early"
-	mapfile -t sage_files < <(just -f {{justfile_directory()}}/justfile-sage -d . _sage-qc-files)
+	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
 	if [ "${#sage_files[@]}" -eq 0 ]; then
-		echo "Skipping Sage syntax validation: no Sage files found."
-		exit 0
+		echo "ERROR: Sage syntax validation: no .sage files found in a Sage project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
 	fi
 
 	sage_bin="${SAGE_BIN:-sage}"
 	if ! command -v "$sage_bin" >/dev/null 2>&1; then
 		echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -76,6 +77,7 @@ _sage-syntax:
 		fi
 	done
 	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -98,6 +100,7 @@ _sage-syntax:
 	raise SystemExit(1 if failed else 0)
 	PY
 	then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
@@ -107,19 +110,21 @@ _vulture: _sage-qc-files
 	echo "============================="
 	echo "=== Running: vulture dead code detection (Sage-aware) ==="
 	echo "# Finds unused code in Python and Sage files"
-	mapfile -t python_files < <(just -f {{std}} -d . _python-qc-files)
-	mapfile -t sage_files < <(just -f {{justfile_directory()}}/justfile-sage -d . _sage-qc-files)
+	mapfile -t python_files < <(just -f {{justfile_directory()}}/justfile-python _python-qc-files)
+	mapfile -t sage_files < <(just --justfile {{justfile()}} -d . _sage-qc-files)
 	generated_sage_python_files=()
 	whitelist_file="{{justfile_directory()}}/vulture_whitelist.py"
 	if [ "${#python_files[@]}" -eq 0 ] && [ "${#sage_files[@]}" -eq 0 ]; then
-		echo "Skipping vulture: no Python or Sage files found."
-		exit 0
+		echo "ERROR: vulture: no Python or Sage files found in a Sage project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
 	fi
 
 	if [ "${#sage_files[@]}" -gt 0 ]; then
 		sage_bin="${SAGE_BIN:-sage}"
 		if ! command -v "$sage_bin" >/dev/null 2>&1; then
 			echo "ERROR: .sage files found, but Sage is unavailable. Set SAGE_BIN or put sage on PATH."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 
@@ -141,6 +146,7 @@ _vulture: _sage-qc-files
 		for generated_file in "${generated_sage_python_files[@]}"; do
 			if [ ! -f "$generated_file" ]; then
 				echo "ERROR: Sage preparse did not produce $generated_file"
+				"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 				exit 1
 			fi
 		done
@@ -155,22 +161,11 @@ _vulture: _sage-qc-files
 test: _sage-syntax _vulture
 	#!/usr/bin/env bash
 	set -euo pipefail
-	just -f {{std}} _python-syntax
-	just -f {{std}} _no-bypass
-	just -f {{std}} _mypy
-	just -f {{std}} _normalize
-	just -f {{std}} _deptry
-	just -f {{std}} _import-linter
-	just -f {{std}} _semgrep
-	just -f {{std}} _ast-grep
-	just -f {{std}} _jscpd
-	just -f {{std}} _lizard
-	just -f {{std}} _grain
-	just -f {{std}} _codeql
-	just -f {{std}} _pytest_with_coverage
-	just -f {{std}} _diff-cover
-	just -f {{std}} _slop
-	just -f {{std}} _slop-scan
+	just -f {{justfile_directory()}}/justfile _check-envrc _check-no-local-qc-override
+	# Run the full Python QC chain via the Python justfile
+	python_qc_repo="{{justfile_directory()}}/justfile-python"
+	python_qc_recipes=(_python-syntax _no-bypass _mypy _normalize _deptry _import-linter _semgrep _ast-grep _jscpd _lizard _grain _pytest_with_coverage _diff-cover _slop _vibecheck)
+	just -f "$python_qc_repo" "${python_qc_recipes[@]}"
 	echo "Sage QC checks completed"
 
 test-ci: test

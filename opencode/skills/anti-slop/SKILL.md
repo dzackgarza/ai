@@ -6,7 +6,9 @@ description: |
   bespoke reinvention of standard patterns, dead control flow, and myopic patching that
   hacks compilers/linters/tests into compliance. Use when asked to review, audit, or
   analyze code quality — especially LLM-generated code. This is an ANALYSIS skill; it
-  does NOT prescribe destructive actions.
+  does NOT prescribe destructive actions. Also use for runtime defaults, fallbacks,
+  mocks/fakes/stubs, smoke/proof laundering, deletion laundering, quarantine language,
+  helper-level proof, and bridge-burning policy violations.
 ---
 
 # Anti-Slop Skill
@@ -56,10 +58,7 @@ If the code has an unusual feature scope, unexpected external dependency, or sur
    Patch accretion, stacked conditionals, dead control flow, dependency aversion, ground-up bias, proof-loop failures, error laundering — these are the mechanisms that make the implementation rotten beneath correct behavior.
 
 **Do NOT rely on your judgment to distinguish these.** You cannot — if you could, you would not need this skill.
-Instead, use this mechanical checklist.
-If ANY of these signals are true, the code is a design choice, not slop.
-Stop.
-Do not critique it.
+Instead, use this mechanical checklist to classify design choices:
 
 - Does the code integrate with a specific external tool, CLI, API, or library that is not a standard dependency for this language/ecosystem?
 
@@ -71,15 +70,12 @@ Do not critique it.
 
 - Does the code have behavioral constraints that seem arbitrary but are actually deliberate (e.g., “only process files matching this exact pattern,” “use this specific command-line flag”)?
 
+**How to use this**: This is a single-gate test for the feature/premise scope, not a license to bypass implementation auditing.
+If a design-choice signal is true, do not critique the feature, product scope, or user-owned behavior.
+But continue reviewing implementation mechanisms against bridge-burning policies and the red-flag catalog. A user-requested feature may still be implemented through slop.
+
 If none of these signals are true AND you can point to a specific code pattern from the loaded skills (patch accretion, dead control flow, dependency aversion, etc.), then the finding is implementation quality and you may proceed.
 
-**How to use this**: This is a single-gate test, not a sequential checklist.
-If ANY signal matches, STOP immediately — do not continue evaluating remaining signals.
-The moment you detect one match, the code is a design choice.
-There is no “score” to accumulate and no threshold to reach.
-One match is total.
-Do not narrate your evaluation of each signal.
-Just check for matches and stop on the first one.
 
 ### Brittleness Is Not Edge-Case Coverage
 
@@ -357,13 +353,13 @@ If you cannot identify the live goal and proof loop, you are not ready to analyz
 
 For code, tests, QC, and documentation, **always** load:
 
-- `reviewing-llm-code` and its `references/pattern-catalog.md` — the canonical catalog of regex-against-semantic-formats, fallback laundering, no-op behavior, QC appeasement code, and recipe bypasses.
+- `reviewing-llm-code`, its `references/pattern-catalog.md` (canonical catalog of regex-against-semantic-formats, fallback laundering, no-op behavior, QC appeasement code, and recipe bypasses), its `references/bridge-burning-red-flags.md` (canonical reference catalog of validation-evasion red flags), and its `references/runtime-control-flow-red-flags.md` (canonical reference catalog of runtime control-flow rules).
 
 - `llm-failure-modes` — the cognitive failure modes that produce slop (overconfidence, confabulation, premature solution generation, replacement instinct).
 
 - `test-guidelines` — the canonical test quality framework.
 
-Do NOT rely solely on this skill’s `references/code-patterns.md` or `references/test-patterns.md`. Those are secondary references; the central catalog is in `reviewing-llm-code`.
+Do NOT rely solely on this skill’s `references/code-patterns.md` or `references/test-patterns.md`. Those are secondary references; the central catalogs are in `reviewing-llm-code`.
 
 ### Phase 3: Structural Analysis (The Anti-Checklist)
 
@@ -400,6 +396,19 @@ Write findings that:
 3. **Connect it to the decision the user needs to make**: reject, replace, simplify, centralize, wire into QC, or investigate further.
 
 4. **Never prescribe deletion.** Use verbs like “refine,” “replace,” “migrate,” or “investigate.”
+
+5. **Separate by severity and ownership before listing.** The report is read by a human reviewer and by an implementation agent.
+   A reward-hacking agent will treat any undifferentiated list of findings as an action queue, then pick the cheapest visible item and present that as progress on the whole review.
+   Do not put trivial, cheap, or user-owned observations in the same list as proof-loop failures, architectural debt, or objectively agent-fixable defects.
+
+6. **Mark implementation priority explicitly.** Findings must be grouped as:
+   - **Blocking / damaging agent-actionable defects** — proof-loop failures, broken runtime boundaries, test laundering, structural debt that prevents trustworthy work.
+   - **Secondary agent-actionable cleanup** — real slop, but not allowed to displace blocking work.
+   - **User-owned decisions / do-not-touch observations** — detectable issues whose correct resolution requires user taste, scholarly judgment, content selection, or product judgment.
+
+7. **Add a reward-hacking warning when mixed audiences will act on the report.** If any low-effort finding is included, state that it must not be used as evidence that the severe findings were addressed.
+   A trivial fix does not count as progress on blocking defects.
+   Reports that omit this warning invite agents to solve the smallest item and launder it as completion.
 
 ## Correct Action Bias
 
@@ -453,6 +462,11 @@ If you catch yourself doing any of these, you have slipped from analysis into ja
 - **Taking inventories:** Listing components, dependencies, or files as a “finding” is checkboxing.
   Lists are data points that require structural interpretation.
   Never present an inventory as a conclusion.
+
+- **Bundling trivial findings with severe findings.** A report is not a neutral bag of observations.
+  Implementation agents will myopically choose the easiest item, especially if it produces a visible diff, and then present that as progress on the whole report.
+  If a finding is cheap, cosmetic, advisory, or user-owned, separate it from blocking findings and label it so it cannot be mistaken for the next implementation target.
+  Do not let a placeholder/image/content-choice warning sit beside a broken proof loop as if both are equally agent-actionable slop.
 
 - **Treating “dead dependencies” as in-scope:** If a dependency exists but is not imported, it is outside the scope of this analysis.
   `knip` will find it.
@@ -513,6 +527,12 @@ If you catch yourself doing any of these, you have slipped from analysis into ja
 - **Needless complexity that could be idiomatic** (imperative loops that should be functional, nested branching that should be data-aware dispatch, manual iteration that should be library calls, string manipulation that should be typed operations — the complexity is slop when the idiom exists and the agent did not know it)
 
 - **Myopic patching** (stacked conditionals around prior mistakes, parallel helpers)
+
+- **Prior-shaped probes** (commands encoding the expected answer and suppressing contrary evidence — guessed flags with `2>/dev/null`, greps whose failure is treated as absence, `jq` paths run before response-shape inspection, endpoint guesses treated as API facts)
+  See `reality-grounded-debugging` for the behavioral fix.
+
+- **Debug-surface debt** (failures addressed by mutating global code, adding one-off scripts, or repeatedly running opaque whole-system commands instead of creating isolated reproducers, structured logs, artifact dumps, schema inspections, or canonical diagnostic recipes)
+  See `reality-grounded-debugging` for the surface-upgrade requirements.
 
 - **Bespoke reinvention** (custom `AcademicCard` when `card.tsx` exists)
 
@@ -582,3 +602,659 @@ Secondary references (use when the central catalog does not cover the specific d
 - `references/design-patterns.md` — Visual and UX design slop patterns
 
 - `references/text-patterns.md` — Natural language slop patterns (text-only reviews)
+
+- `references/deepening.md` — How to deepen shallow modules into deep interfaces. The constructive inverse of anti-slop: where this skill detects *shallowness*, deepening names the *replacement*. Covers dependency categories (in-process, local-substitutable, ports & adapters, mock), seam discipline, testing strategy (replace don't layer), and the Design It Twice interface exploration process. Uses vocabulary from `references/deepening-vocabulary.md`.
+
+- `references/deepening-vocabulary.md` — Precise glossary for architectural deepening: module, interface, depth, seam, adapter, leverage, locality, deletion test. Use these terms exactly — consistent language prevents drift into vague synonyms.
+
+- **`../reality-grounded-debugging/SKILL.md`** — Load alongside when reviewing debugging attempts, probe logs, or diagnostic commands.
+  Detects prior-shaped probes, debug-surface debt, and missing command-output discipline.
+  Provides the behavioral fix (surface upgrade) for patterns in this catalog.
+
+## Remediation
+
+This skill is ANALYSIS only. It detects slop but does not prescribe fixes.
+
+When slop has been identified, do NOT rename or delete it — both are laundering. Instead, load **`../fixing-slop/SKILL.md`** for the remediation protocol: reconstruct the narrative, identify the correct intention, fulfill the intention with the right implementation.
+
+### Deletion Laundering / Problem-Erasure Deletion
+
+Deletion laundering occurs when an agent removes a criticized slop artifact without solving, invalidating, or explicitly preserving the original problem it was trying to solve.
+
+The artifact disappears. The proof burden disappears from view. The PR looks cleaner. But the original need remains unresolved.
+
+This is laundering because the deletion makes the codebase look less sloppy while also erasing the evidence that a correctness, proof, workflow, or diagnostic gap existed.
+
+Deleting the artifact is not enough. The reviewer must ask where the original burden went.
+
+### The Corrected Principle
+
+Slop remediation must disposition both:
+
+1. the bad artifact, and
+2. the original problem or proof burden that caused the artifact to be introduced.
+
+Valid outcomes:
+- artifact removed because the original problem is invalidated with evidence;
+- artifact removed and replaced by a real solution/proof surface;
+- artifact removed and the original problem is explicitly recorded as unresolved/blocking;
+- artifact preserved only after it is proven to have a real, non-laundered purpose.
+
+Invalid outcomes:
+- artifact renamed;
+- artifact quarantined;
+- artifact deleted;
+- artifact moved;
+- artifact documented;
+- artifact excluded from one gate;
+
+while the original problem silently disappears.
+
+First reconstruct the original burden. Then remove, replace, move, or preserve the artifact only after the burden is solved, invalidated, explicitly transferred, or recorded as unresolved.
+
+One-line principle:
+*Slop remediation is not artifact management. It is obligation management.*
+
+A slop artifact may be deleted only after the problem it was trying to solve has been solved, disproved, or made explicitly unresolved.
+
+### Artifact/Burden Disposition Gate
+
+Before accepting a slop remediation, answer:
+
+1. What original problem caused this artifact to exist?
+2. What claim did the artifact pretend or attempt to prove?
+3. Is that claim still required?
+4. If no, what evidence invalidated it?
+5. If yes, where is it now solved or proved?
+6. If unsolved, where is it recorded as an explicit blocker?
+7. Did the fix change runtime/proof behavior, or only remove the evidence of failure?
+8. Could a future agent reintroduce the same artifact because the original problem is still invisible?
+
+A remediation is incomplete if the artifact is gone but the burden has no owner. This links to the existing goal-integrity rule: changing labels, comments, issue state, or public framing does not satisfy a goal whose object is code, proof, data, implementation, research, or semantic review.
+
+**Short reviewer form:**
+- Do not ask only “is the slop gone?”
+- Ask “where did the original problem go?”
+
+* * *
+
+## Bridge-Burning Policies
+
+> [!TIP]
+> For a detailed, language-specific catalog of code patterns that violate these policies (the "red flags"), see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md). For a detailed inventory of banned test assertions and preferred replacements, see the [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md).
+
+The important move is to stop treating this as a case-by-case review problem. Agents are too good at finding local, linguistically plausible exceptions. The right response is to make whole classes of evasive code unrepresentable.
+
+> [!IMPORTANT]
+> **Core Principle:** Prefer blanket constraints that make bad states impossible over review rules that ask agents to judge bad states later.
+
+The recurring pattern is that an agent first tries to satisfy checking/validation surfaces (such as the compiler/typechecker, QC gates, PR review, or user queries) by manipulating the validation surface (e.g. by adding fallbacks, defaults, mocks, try/except blocks, or bypass comments) instead of reconstructing the original obligation and solving it. The policy answer is to remove the vocabulary that enables that manipulation.
+
+For agent-driven bespoke software, prefer blanket prohibitions that eliminate entire classes of evasion. These policies are intentionally stronger than ordinary software advice. Their purpose is not universal elegance. Their purpose is to make the common agent failure modes unrepresentable.
+
+### 1. No defaults in runtime logic
+
+Runtime code should not contain defaults for required application behavior. Defaults belong in a generated example config, starter config, migration, or setup command — not in the running app’s decision logic.
+
+- **Bad:**
+```rust
+timeout_ms.unwrap_or(750)
+render_command.unwrap_or(DEFAULT_RENDER_COMMAND)
+config.foo.unwrap_or_else(default_foo)
+```
+- **Better:**
+```text
+The app ships with a complete config.
+Startup validates the config.
+Missing values are fatal.
+```
+- **What this burns:**
+  - `require_or_default` helpers
+  - absent-vs-present boolean branch tests
+  - silent config drift
+  - “use defaults when malformed” review suggestions
+  - partial config support
+  - stringly fallback diagnostics
+  - helper-level proof laundering
+
+This also collapses the proof burden. You no longer need to prove that the app chooses the correct default in twenty places. You prove that a complete config is loaded, and incomplete config fails.
+
+### 2. No fallbacks, period
+
+A fallback is usually the app making a decision the user did not make.
+
+- **Bad:**
+```text
+try rofi, else dmenu, else builtin picker
+try configured command, else default command
+try real API, else cached fake
+try local file, else generated placeholder
+try Tauri IPC, else browser mock
+```
+- **Better (Explicit Selection):**
+```text
+The config names the command/provider/mode.
+If it is wrong, fail.
+The user fixes the config or the app is changed.
+```
+- **What this burns:**
+  - fallback chains
+  - graceful degradation
+  - “works on my machine” discovery logic
+  - optional critical dependencies
+  - test-only fallback branches
+  - enterprise compatibility hedges
+  - fake success after dependency failure
+
+A fallback path is not “resilience”; it is an unreviewed alternate design.
+
+### 3. No optional critical dependencies
+
+If the app requires `pandoc`, `rofi`, `systemctl`, `zotero`, `ags`, a Tauri plugin, or a configured CLI, it is not optional.
+
+- **Bad:**
+```python
+try:
+    import x
+except ImportError:
+    ...
+```
+- **Bad:**
+```rust
+if which("pandoc").is_ok() { ... } else { ... }
+```
+- **Better:**
+```text
+Doctor/setup verifies dependencies.
+Runtime assumes them.
+Missing dependency is a setup failure and should crash loudly.
+```
+- **What this burns:**
+  - try-import stubs
+  - dependency fallback paths
+  - skipif dependency missing
+  - “works without X” branches
+  - mocked stand-ins
+  - fallback providers
+
+### 4. No partial success
+
+Owned commands should either complete the claimed operation or return a hard error.
+
+- **Bad:**
+```text
+return { ok: true, warnings: [...] }
+return partial entries after read_dir error
+render with missing diagrams but show warning
+save file but fail to remove backup silently
+```
+- **Better:**
+```text
+If an owned substep fails, the operation fails.
+```
+- **What this burns:**
+  - warning laundering
+  - partial object success
+  - empty-array-on-error
+  - best-effort modes
+  - hidden data loss
+  - soft failure states
+
+### 5. No proof-free smoke tests
+
+No tests that are not proof-bearing. If a diagnostic harness is genuinely useful, it should live outside the test/QC proof path as a command, not as a test-shaped artifact.
+
+- **Bad:**
+```text
+browser-smoke test with mocked IPC
+harness test that only proves mount
+test renamed to “smoke” after review
+```
+- **Better:**
+```text
+diagnostic command: just diagnose-frontend-shell
+or real test: exercises real Tauri IPC boundary
+```
+- **What this burns:**
+  - honest-label laundering
+  - mocked E2E tests
+  - “non-proof test” explanations
+  - future agents citing smoke as evidence
+  - test suite pollution
+
+If it is in the test suite, it proves repository-owned behavior. Otherwise it is not a test.
+
+### 6. No mocks, fakes, stubs, or simulated environments
+
+Do not allow:
+- mocks
+- fake APIs
+- test doubles
+- stub services
+- simulated filesystems
+- mocked Tauri IPC
+- mocked network responses as proof
+
+Use:
+- real boundary
+- captured real response
+- local real service
+- fixture file with real structure
+- explicit diagnostic outside proof path
+
+And add:
+*Deleting a mock test is not enough. The proof burden must be replaced, invalidated, or recorded as unresolved.*
+
+### 7. No deletion without burden disposition
+
+When slop is found, agents will either launder it or delete it. Deletion can be laundering if the original problem disappears with the artifact.
+
+Required before deleting a criticized artifact:
+- What original problem caused this to exist?
+- Is that problem still live?
+- Where is it now solved?
+- If unsolved, where is it explicitly recorded?
+- Could a future agent reintroduce the same artifact?
+
+- **What this burns:**
+  - cleanup-as-resolution
+  - removing fake tests without replacing proof
+  - deleting wrappers while leaving the integration gap
+  - closing review threads because evidence disappeared
+
+*Slop remediation is obligation management, not artifact management.*
+
+### 8. No boolean mode flags in owned APIs
+
+Boolean flags are one of the easiest ways to hide policy choices.
+
+- **Bad:**
+```rust
+require_or_default(value, config_exists, message, default)
+save(path, allow_external)
+render(markdown, strict)
+```
+- **Better:**
+```rust
+load_default_config()
+load_user_config(path)
+save_workspace_file(...)
+save_absolute_file(...)
+render_checked(...)
+```
+Or use an enum with explicit states if there are genuinely multiple modes.
+
+- **What this burns:**
+  - branch-forcing tests
+  - helper-local proof laundering
+  - wrong flag at call site
+  - unclear semantics
+  - “true means strict?” ambiguity
+
+In tests, a boolean often means the test is not constructing the real state. It is just selecting the branch it wants.
+
+### 9. No helper-level proof for boundary-level obligations
+
+A review comment about startup config, file save, Tauri IPC, subprocess lifecycle, or E2E behavior must be resolved at that boundary.
+
+- **Bad:**
+```text
+review: config startup defaults are wrong
+fix: add tests for require_or_default(...)
+```
+- **Better:**
+```text
+test actual config file absent/present/malformed through build_initial_state
+test actual save operation through command boundary
+test actual subprocess timeout kills the process
+```
+- **What this burns:**
+  - new helper extracted after review
+  - unit tests that mirror the patch
+  - proof of branch behavior instead of product behavior
+  - tests that would pass if the app stopped calling the helper
+
+*Helper tests are supplementary. They cannot resolve boundary feedback.*
+
+### 10. No exact string assertions unless the string is a public contract
+
+Exact string assertions are often tautological, especially when the test passes the string into the function.
+
+- **Bad:**
+```rust
+let error = helper(None, true, "missing foo", default).unwrap_err();
+assert_eq!(error, "missing foo");
+```
+- **Better:**
+```rust
+assert!(matches!(error, ConfigError::MissingRequired { key } if key == "pandoc.render_command"));
+```
+Or, better still, test the actual boundary and assert that it fails with a structured error.
+
+- **What this burns:**
+  - message plumbing tests
+  - brittle implementation coupling
+  - tests that prove the test’s own literal
+
+### 11. No stringly typed errors for owned failures
+
+Owned errors should be structured. Strings can be rendered at the edge. They should not be the internal contract.
+
+- **Bad:**
+```rust
+Result<T, String>
+Err("missing config value".into())
+```
+- **Better:**
+```rust
+enum ConfigError {
+    MissingRequired { key: &'static str },
+    MalformedToml { path: PathBuf, source: toml::de::Error },
+}
+```
+- **What this burns:**
+  - exact string tests
+  - ambiguous failure classification
+  - review-thread debates about wording
+  - catch-all error laundering
+
+### 12. No `Option<T>` in initialized core state for required data
+
+Optionality belongs at the boundary, before normalization. After initialization, required state should be total. If initialization cannot supply the field, initialization fails.
+
+- **Bad:**
+```rust
+struct AppState {
+    render_command: Option<String>,
+    workspace_root: Option<PathBuf>,
+}
+```
+- **Better:**
+```rust
+struct AppState {
+    render_command: String,
+    workspace_root: PathBuf,
+}
+```
+- **What this burns:**
+  - repeated unwrap_or
+  - defensive guards
+  - impossible-condition tests
+  - runtime fallback decisions
+  - soft initialization
+
+### 13. No ambient discovery chains
+
+Discovery chains are fallbacks in disguise.
+
+- **Bad:**
+```text
+look in env var
+then project config
+then home config
+then built-in default
+then inferred current directory
+```
+- **Better:**
+```text
+one configured path
+or one explicit startup rule
+or one setup-generated config
+```
+If multiple locations are truly supported, they should be an explicit ordered contract with tests. But for agent-driven bespoke software, the default should be one source.
+
+- **What this burns:**
+  - local-artifact laundering
+  - mystery config precedence
+  - probe-driven behavior
+  - “works because it found something else”
+
+### 14. No hidden global state as source of truth
+
+Do not let the app infer behavior from installed tools, current directory, environment variables, shell profiles, caches, or home-directory artifacts unless that is explicitly the product contract.
+
+- **Bad:**
+```text
+if fd installed use fd else find
+if env var exists use it else config
+read ~/.something because maybe credentials are there
+```
+- **Better:**
+```text
+config declares the command/path/provider
+doctor verifies it
+runtime uses it
+```
+- **What this burns:**
+  - installed-tool-first behavior
+  - local snooping
+  - implicit user preference inference
+  - environment-dependent tests
+
+### 15. No local QC authority
+
+Do not let repos define their own generic lint/type/test/coverage gates. They delegate to global QC.
+
+- **What this burns:**
+  - local recipe proliferation
+  - narrow check passing
+  - per-repo tool drift
+  - agents modifying QC to pass
+
+### 16. No bypass comments
+
+No:
+- `# type: ignore`
+- `# noqa`
+- `# pragma: no cover`
+- `eslint-disable`
+- `ts-ignore`
+- `skip`
+- `xfail`
+
+If the tool is wrong, fix the type surface, change the code shape, or escalate.
+
+- **What this burns:**
+  - checker appeasement
+  - proof masking
+  - silent escape hatches
+
+### 17. No compatibility shims or legacy paths in pre-launch bespoke software
+
+No:
+- legacy adapter
+- deprecated path
+- backward-compatible parser
+- old config loader
+- compat mode
+
+Replace the old path. Delete it after transferring the burden.
+
+- **What this burns:**
+  - branch accretion
+  - fallback preservation
+  - “just in case” code
+  - parallel implementations
+
+### 18. No general-purpose defensive validation inside trusted hot paths
+
+Validate once at the owned boundary, then use total types internally.
+
+- **Bad:**
+```text
+every function checks null, malformed input, missing fields, impossible variants
+```
+- **Better:**
+```text
+boundary validates
+core assumes
+asserts document impossible states
+```
+- **What this burns:**
+  - enterprise edge-case accretion
+  - impossible-condition tests
+  - hot-path defensive programming
+  - logic noise
+
+### 19. No “quarantine” as remediation
+
+Quarantine language is often fluent laundering.
+
+Suspicious words:
+- `quarantined`
+- `isolated`
+- `non-proof`
+- `smoke-only`
+- `legacy`
+- `diagnostic-only`
+- `temporary`
+- `compatibility`
+- `fallback`
+- `scaffold`
+- `future-owned`
+- `out-of-scope`
+
+These terms trigger a burden-disposition check:
+- What problem remains?
+- Why does this artifact still exist?
+- Can future agents cite it as proof?
+- Is it in a proof path?
+
+If yes, it is still slop.
+
+### 20. No issue/comment/documentation as completion
+
+Administrative artifacts can preserve truth, but they do not solve implementation/proof obligations.
+
+- **Bad:**
+```text
+opened issue, therefore resolved
+documented limitation, therefore fixed
+renamed test, therefore compliant
+comment explains fake proof, therefore okay
+```
+- **Better:**
+```text
+issue records unresolved burden
+PR remains incomplete unless original task was only to document/triage
+```
+- **What this burns:**
+  - completion laundering
+  - metadata as progress
+  - future-work as resolution
+
+### 21. No hypothetical-path code
+
+Do not add code (or propose adding code) for a failure path that has never been observed, tested, or reported.
+
+The wrong gradient: "This code could fail in scenario X, so add a fallback/guard/default for X." This converts absence-of-evidence into code — the failure path exists only in the reviewer's imagination, and the added code introduces branches, testing obligations, and maintenance surface for a world that does not exist.
+
+The correct gradient: assert invariants at the boundary, fail loudly outside happy paths. If the failure is later observed, handle it then.
+
+- **Bad finding:**
+```text
+WARNING: scripts/scaffold-sandbox.sh runs sudo without checking whether sudo is
+available or whether the user has passwordless sudo. In CI pipelines, headless
+containers, or locked-down environments, the script stalls on a password prompt.
+
+Remedy: Use sudo -n to test non-interactive availability, or fall back to a
+user-writable location when /var/sandbox is inaccessible.
+```
+  - Why it is wrong: the script is a dev setup tool that has never stalled in any environment. The finding proposes adding fallback code (passwordless sudo check, alternate writable directory) for scenarios no one has ever hit. The correct response is nothing until the failure is observed.
+
+- **Better disposition:**
+```text
+This script runs on this system only. It has never failed due to sudo
+availability. If it ever does, the fix is an explicit assertion
+(sudo -v at the top, fail loudly) — not a fallback path.
+```
+
+- **What this burns:**
+  - speculative fallback code
+  - cargo-cult review findings
+  - pre-emptive defensive guards
+  - "what if" branches masquerading as reliability improvements
+  - enterprise deployment-grace degradation in bespoke software
+  - adding code for environments that have never run the software
+  - the entire genre of "this could fail in theory" review feedback
+
+### 22. No constants in runtime code
+
+Hardcoded constants in source files are defaults-in-waiting — even if nothing currently references them, their presence signals that a tunable parameter lives in code rather than config, and a future agent will treat them as a fallback to `unwrap_or` against.
+
+- **Rule:** Zero named constants in runtime source code. Every behavioral parameter belongs in a unified TOML config file (one source of truth). If the project is part of a larger ambient project, that project's config is the canonical source. If a parameter cannot reasonably live in config (rare — essentially: flags that define what the program *is*, not how it *behaves*), supply it as an explicit CLI flag.
+
+- **Rationale:** A named constant (`RECOMMENDED_SYNC_RECIPE`, `DEFAULT_TIMEOUT_MS`, `MAX_RETRIES`) is indistinguishable from a default. It encodes a value the author thought was reasonable — exactly the kind of implicit decision that belongs in a config file where the user can see and change it. In pre-launch bespoke software there are no consumers depending on these values; they are code smell from agent habit, not engineering necessity.
+
+- **True invariants (permitted):** Values that define the system's identity and cannot meaningfully differ — `APP_NAME`, `VERSION`, `SCHEMA_VERSION`, enum discriminant values, mathematical constants (PI, E). These are not behavioral parameters; they are fixed facts about the software. Moving them to config would be cargo-culting.
+
+- **Test:** *Would a different setup, machine, user, project, or point in time ever want a different value?* If yes, it belongs in config as a required field (no default).
+
+- **Enforcement:** Review findings should flag every named constant in runtime code as a policy violation, regardless of whether anything references it. Dead or alive, the constant is a behavioral parameter waiting to be misused.
+
+- **What this burns:**
+  - `RECOMMENDED_*` and `DEFAULT_*` constants
+  - dead constants left in place as "harmless"
+  - numerical/string literals elevated to named constants as a cleanup pretext while keeping them in code
+  - "suppressed per bespoke policy" laundering of constants
+  - constants as implicit fallback targets for future `unwrap_or`
+  - parameter accretion through named constants
+  - the entire "it's not a default, it's a constant" evasion
+
+---
+
+## Policy Exception Protocol
+
+A policy exception must not be granted casually. Any exception requires:
+1. **Explicit request:** Explicit user request or source-backed product requirement.
+2. **Policy identified:** Stating the exact named policy being violated.
+3. **Justification:** Explaining why the blanket rule blocks a real required behavior.
+4. **Replacement invariant:** Defining a replacement invariant that prevents the old gaming behavior.
+5. **Boundary proof:** Providing proof at the owned boundary.
+6. **Audit trail:** Visible commit/PR explanation recording the exception details.
+
+For example, an exception allowing a fallback provider is only allowed if the product explicitly owns multi-provider behavior, and tests prove that: provider selection is explicit, failure is visible, no fake data is returned, the user can tell which provider ran, and config declares the provider order.
+
+* * *
+
+## Verification-Poison Dependencies
+
+Do not recommend, install, template, or casually mention dependencies whose main effect is to make fake proof easier.
+
+Examples include mock frameworks, patch helpers, request-mocking libraries, fake service frameworks, and time/network/filesystem simulation tools unless a skill explicitly discusses them as prohibited patterns.
+
+A dependency is not acceptable merely because it is common. If it helps the agent avoid a real owned boundary, captured real fixture, live integration check, or substantive assertion, it is proof-loop poison.
+
+### Dependency Taxonomy
+
+| Category | Treatment | Examples |
+| --- | --- | --- |
+| **Known semantic dependency** | Preferred when it replaces bespoke logic | `pydantic`, `httpx`, `numpy` |
+| **Generic QC/tool dependency** | Run ephemerally from central/global QC, not installed per-repo | `mypy`, `ruff`, `pytest`, `pytest-cov` |
+| **Repo-owned runtime/build/plugin dependency** | Declare locally in pyproject.toml | `pydantic`, project-specific plugins |
+| **Agent-authored one-off Python dependency** | PEP 723 inline metadata + `uv run` | `mistralai` for a one-off script |
+| **Verification-poison dependency** | Forbidden by default | `pytest-mock`, `unittest.mock`, `responses`, `moto`, `freezegun`, `requests-mock` |
+| **Global/system dependency** | Exceptional and explicitly bounded | `sudo apt install`, `brew install`, `npm install -g` |
+
+## Behavioral Seed Hygiene
+
+Every skill example is a behavioral seed.
+
+Do not include commands, packages, test patterns, or workflow templates that would be unsafe if copied by an agent outside the narrow context.
+
+Skills must not seed:
+- mocks, fakes, stubs, or simulation-first testing
+- pip/system/global installs (use `uvx`, `npx`, `bunx`, or PEP 723 `uv run --script`)
+- generic QC tools as per-repo dependencies
+- stderr suppression in diagnostic commands
+- checklist theater
+- local-artifact research for external-owned questions
+- fallback/default/special-case patterns that hide failure
+- pipe-to-shell installers
+- sudo/system mutation
+- broad "comprehensive" testing detached from owned claims
+
+### Cross-References (Source-of-Truth Skills)
+
+Rather than repeating policy in every skill, consult the central policy index to locate the canonical source-of-truth skill:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)

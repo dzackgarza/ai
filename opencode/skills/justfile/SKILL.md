@@ -7,6 +7,23 @@ description: Use when working with just command runner, defining recipes, or man
 
 ## Interface Design — What Belongs in a Justfile
 
+### The universal convention: all workflows through just
+
+`just` is the project-management API for every repository on this system. A user should be
+able to clone any project, run `just`, and see the same set of familiar recipes —
+regardless of language, framework, or build tooling. `just run` always starts the app.
+`just test` always runs the test suite. `just build` always produces the artifact.
+
+There are no exceptions. A Rust project does not route `cargo run` directly as the user
+interface. A Node project does not expose `npm run dev` as the canonical entry point.
+These are underlying implementations. The user never needs to know them. They run `just
+run`. The justfile calls `cargo` or `npm` internally.
+
+Routing workflows directly through language-specific build tools — `cargo run`, `npm run
+build`, `python -m pytest`, `make` — spreads sources of truth across disparate tooling and
+forces the user to do archaeology before interacting with the project. The justfile
+centralizes the project interface into one place, one command.
+
 ### The recipe list is the project's architecture
 
 Every recipe in `just --list` communicates to every future reader: **"this is a distinct, independently useful operation."** If a recipe is not independently useful, exposing it is architectural debt — it pollutes the surface, signals wrong ownership, and normalizes accretion by one-shot prompts.
@@ -55,41 +72,33 @@ The result is a justfile whose public surface is the complete history of one-sho
 The fix is not to avoid adding recipes — it's to **stop and read the existing surface** before adding another one.
 If the new behavior is a sub-step of an existing recipe, it should be `[private]` or inlined.
 
-### Single `test` recipe, always
+### Single `test` recipe under global QC
 
-There should be exactly **one** public test recipe.
-All sub-tasks — unit tests, integration tests, visual regression, snapshot generation, linting, type-checking, hygiene checks — are `[private]` recipes that `test` composes.
+For projects governed by `~/ai/quality-control`, the public QC surface is exactly `test`
+and `test-ci`, both delegating to the global QC justfile. No public `lint`, `fmt`,
+`typecheck`, `coverage`, `check`, `test-unit`, `test-integration`, or other generic QC
+recipes exist at the project level.
 
 ```just
-[private]
-_typecheck:
-    npx tsc --noEmit
+test:
+    @just -f ~/ai/quality-control/justfile test
 
-[private]
-_unit:
-    npx vitest --run
-
-[private]
-_integration:
-    npx playwright test
-
-[private]
-_snapshots:
-    npx playwright test --update-snapshots
-
-test: _typecheck _unit _integration _snapshots
-    @echo "All gates passed"
+test-ci:
+    @just -f ~/ai/quality-control/justfile test-ci
 ```
 
-Never expose `test-unit`, `test-integration`, `test-visual-regression`, `update-snapshots`, `check-hygiene`, or any other test sub-step as a public recipe.
-If a developer needs to run a subset locally, they run the CLI tool directly (`npx vitest --run tests/unit`) — the justfile is not a test-discovery interface.
+**CI uses the same public recipes as local development.**
+If CI needs different behavior, the CI config passes arguments or sets environment
+variables — it does not get a third public recipe.
 
-The requirement to produce a full-site snapshot gallery on every test run is not a separate recipe — it's a `[private]` dependency of `test`. Snapshot updates are part of the test gate; they are not a distinct user-facing operation.
-If snapshots must be rebaselined, that's `npx playwright test --update-snapshots` at the CLI, not `just update-snapshots`.
+All sub-tasks — unit tests, integration tests, visual regression, snapshot generation,
+linting, type-checking, hygiene checks — are `[private]` recipes that `test` composes,
+or they are owned by the global QC system. The justfile is not a test-discovery
+interface. If a developer needs to run a subset locally, they run the CLI tool directly
+(`npx vitest --run tests/unit`), not a public just recipe.
 
-**CI uses the same `test` recipe.** CI never gets its own recipe.
-If CI needs different behavior, the CI config passes arguments to `just test` or sets environment variables.
-A separate `test-ci` or `test-staging` recipe is always a sign that the developer and CI gates have diverged — which means CI verifies something different from what developers run, which means CI failures are surprises.
+**Exception: projects not under global QC** follow the standard rule: exactly one public
+`test` recipe, no `test-ci`.
 
 ### One entry point per concern
 
@@ -135,10 +144,28 @@ Group recipes by who runs them:
 
 - **User** (runs the project's output): `build`, `serve`
 - **Developer** (works on the project): `test`, `setup`, `clean`
-- **CI** (automated pipelines): the same `test` recipe — CI should never have its own recipe that duplicates or narrows the developer's test path
+- **CI** (automated pipelines): the same `test` recipe — CI should never have its own recipe that duplicates or narrows the developer's test path (exception: under global QC regime, see §Exception: Global QC Regime)
 
 Recipes that don't fit one of these three categories are suspect.
 `update-snapshots` and `test-staging` are operations that should happen automatically (as part of the test gate) or on demand via a CLI subcommand, not as distinct recipes a user must know about.
+
+### Agent-facing recipes (`.agents/justfile`)
+
+Projects also need recipes that serve agents, not users or developers: QC guardrails, hygiene checks, debugging surfaces, anti-gaming measures, and hook scripts. These must never appear in `just --list` or the top-level justfile.
+
+- Agent-facing recipes live in `.agents/justfile`, a separate file at the project root.
+- **All agent-facing recipes are `[private]`**, invisible to `just --list`.
+- The top-level `justfile` routes through agent recipes where mandatory enforcement is needed:
+  ```justfile
+  test:
+      @project-cli test
+      @just -f .agents/justfile _test-agent
+  ```
+- `.agents/justfile` recipes cover: hygiene checks (dead code, duplication, complexity, slop), anti-gaming measures, debug surfaces (isolated reproducers, artifact dumps, fixture runners), and hook scripts (pre-commit, pre-push).
+
+This is documented in the `Project Structure: User vs. Agent` section of `AGENTS.md`.
+
+Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on `uv sync`), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See `reality-grounded-debugging` for command-output discipline and surface-upgrade requirements.
 
 ### Large justfiles are a smell
 
@@ -213,12 +240,19 @@ deploy:
   echo "Deploying..."
 
 # Python — recipe body IS Python, no heredoc, no subprocess
+# For stdlib-only scripts, #!/usr/bin/env python3 is acceptable.
+# For scripts with dependencies, use the [script] attribute with uv run --script:
 analyze:
-  #!/usr/bin/env python3
+  #!/usr/bin/env -S uv run --script
+  # /// script
+  # requires-python = ">=3.11"
+  # dependencies = ["httpx", "pydantic"]
+  # ///
   import sys
-  from pathlib import Path
+  import httpx
+  from pydantic import BaseModel
   print(f"Python {sys.version}")
-  print(Path.home())  # ✅ works fine — just doesn't parse shebang recipe bodies
+  # ✅ uv auto-installs dependencies into an isolated environment
 
 # Node
 gen-config:
@@ -313,9 +347,9 @@ repo := env_var_or_default("REPO", env_var("HOME") / "myproject")
 build target="debug":
   cargo build --{{target}}
 
-# Variadic parameter
-test *args:
-  pytest {{args}}
+# Variadic parameter (avoid for test — use private recipes composed under single test gate)
+run *files:
+  ./process {{files}}
 ```
 
 `{{justfile_directory()}}` — directory containing the justfile (stable, use instead of `$PWD`) `{{justfile()}}` — absolute path to the justfile itself
@@ -361,30 +395,27 @@ install:
 clean:
   rm -rf {{config_dir}}
 
-# ✅ Use dependency recipes + direct binary paths
-venv:
-  [ -d .venv ] || python3 -m venv .venv
-
-run: venv
-  .venv/bin/python3 main.py
+# ✅ Use dependency recipes + uv direct execution
+run:
+  uv run main.py
 ```
 
 * * *
 
 ## Groups
 
+Groups organize private recipes for display.
+They are acceptable for internal composition but must never expose generic QC operations
+as public sub-recipes.
+
 ```just
-[group('test')]
-test-unit:
-  pytest tests/unit
-
-[group('test')]
-test-integration:
-  pytest tests/integration
-
 [group('build')]
 build:
   cargo build
+
+[group('build')]
+_bundle-assets:
+  rsync -a dist/ output/
 ```
 
 ```bash

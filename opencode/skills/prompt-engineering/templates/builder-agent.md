@@ -100,7 +100,7 @@ Do NOT declare success until user stories are verified.
 | `{{background_information}}` | Context the builder needs | “I generate weekly reports from markdown notes” |
 | `{{tech_stack}}` | Languages/frameworks | “Python 3.11, no external deps beyond stdlib + markdown lib” |
 | `{{output_path}}` | Where to put files | “/Users/Hal/clawd/scripts/” |
-| `{{dependencies}}` | What’s already available | “Python 3.11 installed, pip available” |
+| `{{dependencies}}` | What’s already available | “Python 3.11 installed, uv available” |
 | `{{technical_constraints}}` | Limits | “Must work offline, no API calls” |
 
 * * *

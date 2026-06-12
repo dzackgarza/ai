@@ -62,7 +62,7 @@ python skills/diagramming/excalidraw/scripts/upload.py ~/diagrams/my_diagram.exc
 ```
 
 This uploads to excalidraw.com (no account needed) and prints a shareable URL. Requires
-the `cryptography` pip package (`pip install cryptography`).
+the `cryptography` package (`uv add cryptography`).
 
 * * *
 

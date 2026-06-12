@@ -53,7 +53,11 @@ SCOPES = [
     "https://www.googleapis.com/auth/documents.readonly",
 ]
 
-REQUIRED_PACKAGES = ["google-api-python-client", "google-auth-oauthlib", "google-auth-httplib2"]
+REQUIRED_PACKAGES = [
+    "google-api-python-client",
+    "google-auth-oauthlib",
+    "google-auth-httplib2",
+]
 
 # OAuth redirect for "out of band" manual code copy flow.
 # Google deprecated OOB, so we use a localhost redirect and tell the user to
@@ -79,7 +83,9 @@ def _missing_scopes_from_payload(payload: dict) -> list[str]:
     raw = payload.get("scopes") or payload.get("scope")
     if not raw:
         return []
-    granted = {s.strip() for s in (raw.split() if isinstance(raw, str) else raw) if s.strip()}
+    granted = {
+        s.strip() for s in (raw.split() if isinstance(raw, str) else raw) if s.strip()
+    }
     return sorted(scope for scope in SCOPES if scope not in granted)
 
 
@@ -95,8 +101,9 @@ def _format_missing_scopes(missing_scopes: list[str]) -> str:
 def install_deps():
     """Install Google API packages if missing. Returns True on success."""
     try:
-        import googleapiclient  # noqa: F401
         import google_auth_oauthlib  # noqa: F401
+        import googleapiclient  # noqa: F401
+
         print("Dependencies already installed.")
         return True
     except ImportError:
@@ -105,26 +112,22 @@ def install_deps():
     print("Installing Google API dependencies...")
     try:
         subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "--quiet"] + REQUIRED_PACKAGES,
+            ["uv", "add"] + REQUIRED_PACKAGES,
             stdout=subprocess.DEVNULL,
         )
         print("Dependencies installed.")
         return True
     except subprocess.CalledProcessError as e:
         print(f"ERROR: Failed to install dependencies: {e}")
-        print(
-            "On environments without pip (e.g. Nix), install the optional extra instead:"
-        )
-        print("  pip install 'hermes-agent[google]'")
-        print(f"Or manually: {sys.executable} -m pip install {' '.join(REQUIRED_PACKAGES)}")
+        print("Run: uv add " + " ".join(REQUIRED_PACKAGES))
         return False
 
 
 def _ensure_deps():
     """Check deps are available, install if not, exit on failure."""
     try:
-        import googleapiclient  # noqa: F401
         import google_auth_oauthlib  # noqa: F401
+        import googleapiclient  # noqa: F401
     except ImportError:
         if not install_deps():
             sys.exit(1)
@@ -137,8 +140,8 @@ def check_auth():
         return False
 
     _ensure_deps()
-    from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
 
     try:
         # Don't pass scopes — user may have authorized only a subset.
@@ -154,7 +157,9 @@ def check_auth():
     if creds.valid:
         missing_scopes = _missing_scopes_from_payload(payload)
         if missing_scopes:
-            print(f"AUTHENTICATED (partial): Token valid but missing {len(missing_scopes)} scopes:")
+            print(
+                f"AUTHENTICATED (partial): Token valid but missing {len(missing_scopes)} scopes:"
+            )
             for s in missing_scopes:
                 print(f"  - {s}")
         print(f"AUTHENTICATED: Token valid at {TOKEN_PATH}")
@@ -169,9 +174,13 @@ def check_auth():
                     indent=2,
                 )
             )
-            missing_scopes = _missing_scopes_from_payload(_load_token_payload(TOKEN_PATH))
+            missing_scopes = _missing_scopes_from_payload(
+                _load_token_payload(TOKEN_PATH)
+            )
             if missing_scopes:
-                print(f"AUTHENTICATED (partial): Token refreshed but missing {len(missing_scopes)} scopes:")
+                print(
+                    f"AUTHENTICATED (partial): Token refreshed but missing {len(missing_scopes)} scopes:"
+                )
                 for s in missing_scopes:
                     print(f"  - {s}")
             print(f"AUTHENTICATED: Token refreshed at {TOKEN_PATH}")
@@ -199,7 +208,9 @@ def store_client_secret(path: str):
 
     if "installed" not in data and "web" not in data:
         print("ERROR: Not a Google OAuth client secret file (missing 'installed' key).")
-        print("Download the correct file from: https://console.cloud.google.com/apis/credentials")
+        print(
+            "Download the correct file from: https://console.cloud.google.com/apis/credentials"
+        )
         sys.exit(1)
 
     CLIENT_SECRET_PATH.write_text(json.dumps(data, indent=2))
@@ -292,12 +303,15 @@ def exchange_auth_code(code: str):
     raw_callback = code
     code, returned_state = _extract_code_and_state(code)
     if returned_state and returned_state != pending_auth["state"]:
-        print("ERROR: OAuth state mismatch. Run --auth-url again to start a fresh session.")
+        print(
+            "ERROR: OAuth state mismatch. Run --auth-url again to start a fresh session."
+        )
         sys.exit(1)
 
     _ensure_deps()
-    from google_auth_oauthlib.flow import Flow
     from urllib.parse import parse_qs, urlparse
+
+    from google_auth_oauthlib.flow import Flow
 
     # Extract granted scopes from the callback URL if the user pasted the full redirect URL.
     granted_scopes = list(SCOPES)
@@ -330,7 +344,11 @@ def exchange_auth_code(code: str):
     # Store only the scopes actually granted by the user, not what was requested.
     # creds.to_json() writes the requested scopes, which causes refresh to fail
     # with invalid_scope if the user only authorized a subset.
-    actually_granted = list(creds.granted_scopes or []) if hasattr(creds, "granted_scopes") and creds.granted_scopes else []
+    actually_granted = (
+        list(creds.granted_scopes or [])
+        if hasattr(creds, "granted_scopes") and creds.granted_scopes
+        else []
+    )
     if actually_granted:
         token_payload["scopes"] = actually_granted
     elif granted_scopes != SCOPES:
@@ -339,7 +357,9 @@ def exchange_auth_code(code: str):
 
     missing_scopes = _missing_scopes_from_payload(token_payload)
     if missing_scopes:
-        print(f"WARNING: Token missing some Google Workspace scopes: {', '.join(missing_scopes)}")
+        print(
+            f"WARNING: Token missing some Google Workspace scopes: {', '.join(missing_scopes)}"
+        )
         print("Some services may not be available.")
 
     TOKEN_PATH.write_text(json.dumps(token_payload, indent=2))
@@ -355,8 +375,8 @@ def revoke():
         return
 
     _ensure_deps()
-    from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
 
     try:
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
@@ -364,6 +384,7 @@ def revoke():
             creds.refresh(Request())
 
         import urllib.request
+
         urllib.request.urlopen(
             urllib.request.Request(
                 f"https://oauth2.googleapis.com/revoke?token={creds.token}",
@@ -381,14 +402,28 @@ def revoke():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Google Workspace OAuth setup for Hermes")
+    parser = argparse.ArgumentParser(
+        description="Google Workspace OAuth setup for Hermes"
+    )
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--check", action="store_true", help="Check if auth is valid (exit 0=yes, 1=no)")
-    group.add_argument("--client-secret", metavar="PATH", help="Store OAuth client_secret.json")
-    group.add_argument("--auth-url", action="store_true", help="Print OAuth URL for user to visit")
-    group.add_argument("--auth-code", metavar="CODE", help="Exchange auth code for token")
-    group.add_argument("--revoke", action="store_true", help="Revoke and delete stored token")
-    group.add_argument("--install-deps", action="store_true", help="Install Python dependencies")
+    group.add_argument(
+        "--check", action="store_true", help="Check if auth is valid (exit 0=yes, 1=no)"
+    )
+    group.add_argument(
+        "--client-secret", metavar="PATH", help="Store OAuth client_secret.json"
+    )
+    group.add_argument(
+        "--auth-url", action="store_true", help="Print OAuth URL for user to visit"
+    )
+    group.add_argument(
+        "--auth-code", metavar="CODE", help="Exchange auth code for token"
+    )
+    group.add_argument(
+        "--revoke", action="store_true", help="Revoke and delete stored token"
+    )
+    group.add_argument(
+        "--install-deps", action="store_true", help="Install Python dependencies"
+    )
     args = parser.parse_args()
 
     if args.check:

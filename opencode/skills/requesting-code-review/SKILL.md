@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [code-review, security, verification, quality, pre-commit, auto-fix]
-    related_skills: [subagent-driven-development, writing-plans, test-driven-development, github-code-review, llm-failure-modes]
+    related_skills: [subagent-driven-development, writing-plans, test-driven-development, git-guidelines, llm-failure-modes]
 ---
 # Pre-Commit Code Verification
 
@@ -31,9 +31,9 @@ Fresh context finds what you miss.
 **Skip for:** documentation-only changes, pure config tweaks, or when user says “skip
 verification”.
 
-**This skill vs github-code-review:** This skill verifies YOUR changes before
-committing. `github-code-review` reviews OTHER people’s PRs on GitHub with inline
-comments.
+**This skill vs git-guidelines (code-review.md):** This skill verifies YOUR changes before
+committing. `git-guidelines` (see `code-review.md`) reviews OTHER people's PRs on GitHub
+with inline comments.
 
 ## Step 1 — Get the diff
 
@@ -75,47 +75,23 @@ git diff --cached | grep "^+" | grep -E "pickle\.loads?\("
 git diff --cached | grep "^+" | grep -E "execute\(f\"|\.format\(.*SELECT|\.format\(.*INSERT"
 ```
 
-## Step 3 — Baseline tests and linting
+## Step 3 — Baseline quality gate
 
-Detect the project language and run the appropriate tools.
-Capture the failure count BEFORE your changes as **baseline_failures** (stash changes,
-run, pop). Only NEW failures introduced by your changes block the commit.
+All quality checks (tests, lint, type checking) are owned by global QC at
+`~/ai/quality-control`. Do not probe for or run tools locally.
 
-**Test frameworks** (auto-detect by project files):
+Run the global QC gate to establish the baseline:
+
 ```bash
-# Python (pytest)
-python -m pytest --tb=no -q 2>&1 | tail -5
-
-# Node (npm test)
-npm test -- --passWithNoTests 2>&1 | tail -5
-
-# Rust
-cargo test 2>&1 | tail -5
-
-# Go
-go test ./... 2>&1 | tail -5
+just test
 ```
 
-**Linting and type checking** (run only if installed):
-```bash
-# Python
-which ruff && ruff check . 2>&1 | tail -10
-which mypy && mypy . --ignore-missing-imports 2>&1 | tail -10
+If no `justfile` exists in the project, the project is too immature for QC gating;
+skip this step and proceed to Step 4.
 
-# Node
-which npx && npx eslint . 2>&1 | tail -10
-which npx && npx tsc --noEmit 2>&1 | tail -10
-
-# Rust
-cargo clippy -- -D warnings 2>&1 | tail -10
-
-# Go
-which go && go vet ./... 2>&1 | tail -10
-```
-
-**Baseline comparison:** If baseline was clean and your changes introduce failures,
-that’s a regression.
-If baseline already had failures, only count NEW ones.
+**Baseline comparison:** Stash your changes, run `just test`, note the result, pop
+your changes, run `just test` again. Only NEW failures introduced by your changes
+block the commit.
 
 ## Step 4 — Self-review checklist
 
@@ -156,14 +132,36 @@ FAIL-CLOSED RULES:
 - Cannot parse diff -> passed must be false
 - Only set passed=true when BOTH lists are empty
 
+CONSTRAINTS:
+- You are not allowed to recommend generic production hardening, graceful fallback,
+  mocking, broad sandboxing, micro-optimization, type ignores, skips, or local QC changes.
+- If you identify a concern, separate the concern from the remediation.
+- Mark remediation as required only when it preserves the repository authority hierarchy.
+
+SEVERITY RUBRIC:
+Blockers (auto-FAIL; list in security_concerns or logic_errors):
+- typechecking or QC exclusion
+- `any` / type escape in owned proof surface
+- skip/mask/mock/fake proof
+- fail-fast violation
+- swallowed errors
+- user-visible race/stale state
+- broken owned contract
+
+Usually reject (do not flag as blockers or suggestions):
+- micro-optimization without measured/user-visible problem
+- security hardening that conflicts with single-user workflow
+- graceful fallback or defaulting
+- broad compatibility/platform advice
+
 SECURITY (auto-FAIL): hardcoded secrets, backdoors, data exfiltration,
 shell injection, SQL injection, path traversal, eval()/exec() with user input,
 pickle.loads(), obfuscated commands.
 
 LOGIC ERRORS (auto-FAIL): wrong conditional logic, missing error handling for
-I/O/network/DB, off-by-one errors, race conditions, code contradicts intent.
+I/O/network/DB, off-by-one errors, user-visible race/stale state, code contradicts intent.
 
-SUGGESTIONS (non-blocking): missing tests, style, performance, naming.
+SUGGESTIONS (non-blocking): missing tests, style, naming.
 
 <static_scan_results>
 [INSERT ANY FINDINGS FROM STEP 2]
@@ -211,17 +209,26 @@ Suggestions (non-blocking): [list]
 
 **Maximum 2 fix-and-reverify cycles.**
 
-Spawn a THIRD agent context — not you (the implementer), not the reviewer.
-It fixes ONLY the reported issues:
+If the reviewer finds issues, do not send its raw findings directly to the fixer. The controller must first translate each accepted finding into a first-principles remediation spec (following the spec template in [pr-feedback-triage](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md)) and strip the reviewer's suggested patch wording.
+
+Spawn a THIRD agent context — not you (the implementer), not the reviewer. It implements the remediation spec:
 
 ```python
 delegate_task(
-    goal="""You are a code fix agent. Fix ONLY the specific issues listed below.
-Do NOT refactor, rename, or change anything else. Do NOT add features.
+    goal="""You are an independent remediation agent.
+Implement the remediation spec below from first principles. Do NOT patch the reviewer's wording or make minimal edits to satisfy raw comment findings. Treat the current implementation as suspect and replace the relevant implementation/proof surface if necessary.
 
-Issues to fix:
+Rules:
+- Do not add defaults, fallbacks, mocks, skips, source-policing tests, exact string assertions, fail-open branches, or helper-level proof.
+- Do not minimally patch the current implementation to silence the concern.
+- Treat current implementation/tests at the target boundary as suspect.
+- Replace the implementation/proof surface if needed.
+- Prove the required behavior at the owned boundary.
+- If the spec cannot be satisfied, report the blocker. Do not produce a partial patch.
+
+Remediation spec:
 ---
-[INSERT security_concerns AND logic_errors FROM REVIEWER]
+[INSERT FIRST-PRINCIPLES REMEDIATION SPEC]
 ---
 
 Current diff for context:
@@ -229,8 +236,8 @@ Current diff for context:
 [INSERT GIT DIFF]
 ---
 
-Fix each issue precisely. Describe what you changed and why.""",
-    context="Fix only the reported issues. Do not change anything else.",
+Satisfy the spec precisely. Describe what you changed and why.""",
+    context="Implement the remediation spec. Do not make minimal reviewer-appeasing patches.",
     toolsets=["terminal", "file"]
 )
 ```
@@ -462,8 +469,6 @@ if isinstance(domain, IntegerRangeFinite): ...
 - **False positives** — if reviewer flags something intentional, note it in fix prompt
 
 - **No test framework found** — skip regression check, reviewer verdict still runs
-
-- **Lint tools not installed** — skip that check silently, don’t fail
 
 - **Auto-fix introduces new issues** — counts as a new failure, cycle continues
 

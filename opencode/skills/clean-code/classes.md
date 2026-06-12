@@ -244,3 +244,11 @@ on concrete details.
 
 If a system is decoupled enough to be tested this way, it will also be more flexible and
 promote more reuse.
+
+## Cross-References
+
+- **anti-slop → deepening-vocabulary** — The DIP example above (Portfolio/StockExchange) is an instance of the **seam** and **adapter** pattern from `anti-slop/references/deepening-vocabulary.md`. The `StockExchange` interface is a seam; `FixedStockExchangeStub` and the real exchange are adapters. DIP is the principle; deepening vocabulary gives you the language to reason about *where* to place the seam and *whether* it's justified (one adapter = hypothetical seam; two = real seam).
+
+- **anti-slop → deepening** — The Sql refactor (from monolithic to closed subclasses) is a deepening move: a shallow module with a wide interface (many public methods for each SQL variant) becomes deep (a small `generate()` interface, behaviour concentrated behind it). See `anti-slop/references/deepening.md` for the full framework.
+
+- **thermo-nuclear-code-quality-review** — When SRP violations make a file cross 1k lines, the review skill pushes for decomposition; deepening vocabulary names what the decomposition should achieve (leverage at the interface, locality in the implementation).

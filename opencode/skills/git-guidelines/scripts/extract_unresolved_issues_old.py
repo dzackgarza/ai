@@ -14,18 +14,18 @@ Usage:
 
 import argparse
 import json
+import re
 import subprocess
 import sys
-import re
 from datetime import datetime
 from pathlib import Path
 
 try:
-    import typer
     import rich
+    import typer
 except ImportError:
     print(
-        "Error: typer and rich are required. Install with: pip install typer rich",
+        "Error: typer and rich are required. Run: uv add typer rich",
         file=sys.stderr,
     )
     sys.exit(1)

@@ -1,0 +1,77 @@
+#!/bin/sh
+# Validates the candidate report at the fixed path.
+# On success: copies to artifact path and exits 0.
+# On failure: prints errors and exits non-zero.
+# The agent fixes the same file and re-runs this script.
+
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")/../.." && pwd)"
+CANDIDATE="$HERE/.agents/review-runner/candidates/submitted.json"
+CHECKER="$HERE/quality-control/check-report.py"
+ARTIFACT="$HERE/.review-report-artifact.json"
+COMMENT="$HERE/.review-report-comment.md"
+
+if [ "${1:-}" = "--help" ]; then
+    cat <<'HELP'
+submit-candidate — validate and submit a review report
+
+Usage:
+  quality-control/ci/submit-candidate            # validate and submit (default)
+  quality-control/ci/submit-candidate --help     # print this message
+
+Write the report JSON to .agents/review-runner/candidates/submitted.json,
+then run this script with no arguments.
+
+The script validates the report against pydantic models in
+quality-control/check-report.py. On success, renders the PR comment to
+.review-report-comment.md and exits 0. On failure, prints errors with
+FIX: guidance and exits non-zero — fix the same file and re-run.
+
+report_type must be "general" (selects GeneralFinding) or "slop" (selects SlopFinding).
+
+Every path (review_scope, location.path, evidence[].path) must exist in git
+at repo_sha. Verify with: git cat-file -e <sha>:<path>
+
+The score and comment text are produced by the renderer, not by the report.
+Do not include "score" or "report" fields — they are rejected.
+
+The structural example below shows the expected JSON shape.
+Validator error messages teach the field-level constraints — do not read the
+validator script directly; it is root-owned and not available to the agent.
+
+Example (general report — slop uses SlopFinding fields):
+HELP
+    echo ""
+    echo "Full JSON Schema (auto-generated from pydantic models):"
+    echo ""
+    if [ -z "${REPORT_TYPE:-}" ]; then
+        echo "Error: REPORT_TYPE env var must be set (general or slop)" >&2
+        exit 1
+    fi
+    uv run "$CHECKER" schema --type "$REPORT_TYPE"
+    exit 0
+fi
+
+if ! [ -f "$CANDIDATE" ]; then
+    echo "ERROR: No report found at $CANDIDATE"
+    echo "Write your report to $CANDIDATE first, then run this script."
+    exit 1
+fi
+
+if [ -z "${REPORT_TYPE:-}" ]; then
+    echo "ERROR: REPORT_TYPE env var must be set (general or slop)" >&2
+    exit 1
+fi
+
+if uv run "$CHECKER" validate "$CANDIDATE" --report-type "$REPORT_TYPE" 2>&1; then
+    cp "$CANDIDATE" "$ARTIFACT"
+    uv run "$CHECKER" render "$ARTIFACT" > "$COMMENT"
+    # Emit machine-parseable metadata for downstream use (thread poster etc.)
+    UV_OUTPUT=$(uv run "$CHECKER" metadata "$ARTIFACT" 2>/dev/null)
+    REPO_SHA=$(echo "$UV_OUTPUT" | python3 -c "import sys,json; print(json.load(sys.stdin)['repo_sha'])")
+    echo "REPO_SHA=$REPO_SHA"
+    echo "Report validated and comment rendered to $COMMENT"
+    exit 0
+fi
+exit 1

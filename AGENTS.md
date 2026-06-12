@@ -8,40 +8,63 @@ These are in ~/ai/opencode/skills -- use semtools, npx probe, and iwe to search 
 
 # **CRITICAL DIRECTIVE**: RESEARCH BEFORE ACTION, ALWAYS
 
-START EVERY EXPLORATION BY USING A `tree` COMMAND. Do NOT spike with greps, guess file paths or directories, or run narrow searches -- start broad and THEN narrow.
+**Split by ownership.** For project-internal unknowns, the rule below ("tree first")
+applies — expose the local directory structure and configs before narrowing.
+
+For external tools, compilers, libraries, APIs, package managers, providers, or exact
+error messages, the first pass is different. Load `known-solution-first` and search
+public contracts (docs, release notes, issues, known fixes) before inspecting local
+integration. Local artifacts answer "what is on this machine." External sources answer
+"what does the tool mean, what is the documented contract, and has this error been
+solved upstream."
+
+START EVERY LOCAL EXPLORATION BY USING A `tree` COMMAND.
+Do NOT spike with greps, guess file paths or directories, or run narrow searches --
+start broad and THEN narrow. But for tool/API/compiler unknowns, reach for web search,
+Context7, DeepWiki, and upstream docs before local probing. See `known-solution-first`.
 
 **BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive.
 User directives are highly specific, not suggestions.
-Verbally confirm what the user’s stated directive was, your planned action, and why the goal you’re pursuing is the exact goal the user stated.
+Verbally confirm what the user's stated directive was, your planned action, and why the goal you're pursuing is the exact goal the user stated.
 
-ALL investigations start with reading the docs -- a cursory Google search for proper documentation, Context7/DeepWiki, relevant skills, CLI help, man pages, nearby markdown files, etc.
+Inspect the repo's declared entrypoints, docs, configs, and runtime surfaces before diving into targeted source edits. Valid discovery paths include:
 
-In response to any technical ambiguity, you MUST:
+- `tree`, `find`, `ls` — expose actual directory structure first
+- `just --list`, `package.json#scripts`, `Makefile`, CLI `--help` — learn available commands
+- Config files (pyproject.toml, .envrc, tsconfig.json, Cargo.toml, etc.) — understand project conventions
+- README, AGENTS.md, architectural docs — read for intent
+- GitHub issues, web search, Context7/DeepWiki, existing skills, `known-solution-first` skill
+- Source code itself (via `tree`, `probe extract`, Serena, glob, read) when docs are stale or incomplete
 
-- Websearch for: readmes, playbooks, examples, web docs, man pages, github issues (+webfetch or `gh`) and crawling substantive leads
-
-- Ask Deepwiki exploratory questions
-
-- Find targetted docs on Context7
-
-- Local readmes, memories, comments, markdown docs (glob “\*.md”)
-
-- Last resorts: CLI help, man pages
-
-Never make an edit without thoroughly reading all available docs first.
-Never simply guess commands or endpoints or dive into code before investigating.
-Never read source code directly until all of these options have been exhausted.
+Never make an edit without first understanding the repo's shape and the specific boundary you are about to change.
+Never guess commands, endpoints, or file paths without running them first.
+Do not treat docs as the sole source of truth — code, configs, CLI output, generated artifacts, and runtime diagnostics are all valid reality surfaces.
 
 # Hard Rules
 
-Use `tree` to understand your surroundings.
+Use `tree` to understand your surroundings (for local project structure).
 Do not just use ls, grep/rg/ag/etc, which only show narrow slices.
-Never implement fallback behaviour, soft defaults, “graceful” error handling.
-Do not aim for “legacy” compatibility, preservation of historical artifacts, interop with old versions.
-Do not write code the gracefully accept malformed inputs or data, to make “best effort” attempts.
-Instead: understand explicit data shapes, assert correctness, fail fast.
+For tool/API/compiler unknowns, use `known-solution-first` instead — the first pass is
+web search, Context7, DeepWiki, and upstream docs, not local `tree`.
+Never implement fallback behaviour, soft defaults, “graceful” error handling, or fail-open conditions. Every error path must fail loudly. Silence is a bug.
+No legacy flags. No deprecated symbols. No “backwards-compatible” shims. Breaking changes are fine — we are in development.
+When revising feature A to work more like feature B, clean up the codebase as if feature A had never existed: delete the old implementation, its tests, its types, its exports, its config entries. Do not wrap it in a `deprecated` annotation, do not gate it behind a feature flag, do not preserve it as a fallback path, do not add a compatibility adapter. The old thing is gone. The new thing replaces it entirely.
+Agents have an asymmetric risk model (see `llm-failure-modes/coding-failures.md` #20): they treat adding code as safe and deleting code as dangerous, even when tests prove the replacement is correct. This compulsion produces codebase bloat — every refactor becomes additive (+2 files, +492 lines of legacy wiring) instead of net-negative. Resist it. When tests exist that cover the replacement, deletion is safe. Delete.
+A second-pass cleanup in clean context is a proven mitigation: after implementing a change, explicitly re-read the diff in a fresh context and strip every fallback, legacy branch, and defensive guard that the tests do not require. The first pass implements; the second pass deletes everything the first pass was too cautious to remove.
+When reviewing code (your own or others'), explicitly check for: guards against impossible conditions (the invariant already holds upstream), over-engineered abstractions unnecessary for the codebase's current state, backwards-compatibility shims preserving code that no consumer requires, and any fallback branch that exists "just in case" rather than because a test proves it's needed. Make a plan to remove these, making the code more concise, easier to reason about, and cleaner.
+Stating the deployment context matters: this is dev/test mode on a single-user system, not production. Code bloat from defensive fallbacks is the primary risk, not missing edge-case handling. Agents that aren't told this explicitly will default to preserving fallbacks — the asymmetric risk model (#20) overrides standing rules unless the context is made explicit in the prompt.
+This system is pre-launch. There are no existing users. There is no one depending on any interface, any API, any data format, any config key. Backwards compatibility is not merely unnecessary — it is a fiction. There is nothing to be compatible *with*. Every "in case a consumer requires this" guard is guarding against a consumer that does not exist. An API key will not grow legs and walk out of the .env. A save format has no players whose saves would break. Delete the old code. Delete the old docs. Technical debt is the enemy; unused code is its raw material.
+Agents treat their own just-generated mistakes as having the same preservation weight as mature, deployed code — building backwards compatibility to an incorrect function they wrote five minutes ago, as if it had a large customer base depending on it. Code the agent itself produced has zero deployment history and zero users. It is not legacy. It is not mature. It is not a constraint. It is a draft. If it was wrong, replace it entirely — do not wrap it in a fallback, do not annotate it as deprecated, do not wire a compatibility shim to it.
+The named rationalizations to reject: "for compatibility with legacy code," "normalize function for existing call pattern," "in case the API is unavailable," "to gracefully handle missing dependencies." These are all inventions — there is no legacy code (this system is pre-launch), no existing call patterns (the agent just wrote them), no unavailable APIs (the network is available). There are no optional missing dependencies. If a tool or dependency is needed, provision it through the approved runner/global-QC/uv pathway and fail loudly if that pathway is blocked. Do not `try import`. Do not conditionally import. Do not catch `ImportError` and substitute a stub. If a dependency is needed, declare it and fail if absent. Do not bloat function signatures with optional arguments for hypothetical callers that do not exist — every parameter should be required by an actual call site in the codebase right now.
+
+All software written here is bespoke, for one user, on one system, tightly integrated with the tools on this system. It is not distributed, not multi-platform, not designed to scale, not built for unknown audiences. There is no “legacy user” — the only user is the owner, immediately after the task is done, expecting the old functionality to have vanished as if it never existed. Every change is a breaking change by default.
+Do not attempt multi-platform support, horizontal scaling, or imagined security hardening. These are enterprise patterns — they do not belong in bespoke software. The correct behavior is: work on happy paths, fail loudly and immediately outside of them. Do not prototype edge cases; prototype permutations of happy paths instead. Block non-happy branching and edge behaviours with sharp assertions, not soft guards. Put the user experience on guardrails that don’t accept veering.
+Complete opinionated config only. No runtime defaults. The app may ship with a generated/starter config populated with values. Runtime code must validate that config and fail if required values are missing. No env-var switching, no feature-flag toggling, no runtime mode selection. The software runs one way, on this system, with these dependencies. If something needs to change, change the config, commit it, and move on — do not parameterize against imagined future variation.
+Do not aim for “legacy” compatibility, preservation of historical artifacts, or interop with old versions.
+Do not write code that gracefully accepts malformed inputs or data, or makes “best effort” attempts.
+Instead: understand explicit data shapes, assert correctness, fail loudly.
 Force data to be fixed and fit explicit schemas.
-Enumerate accepted types.
+Enumerate accepted types. Interfaces must loudly reject malformed data — silence is a bug.
 Short-circuit paths with optional data to quickly normalize and assert existence.
 Eliminate weakly typed signatures: optional, “Any”, “unknown”, by understanding the exact data you are working with and enforcing it.
 If you don’t know what the data looks like, do not write code for it.
@@ -51,6 +74,130 @@ If you don’t know what the data looks like, do not write code for it.
 
 **Checkpoint before every edit.** `git commit` (or `git add`) the current state BEFORE editing.
 Verify with `git diff` after.
+
+**Self-contained Python scripts (mandatory).**
+Any agent-authored Python script that imports third-party (non-stdlib) packages must
+declare dependencies as PEP 723 inline script metadata and run through `uv`. No
+separate install step. No implicit environment assumption. No `pip install` prelude.
+The full policy (hierarchy, forbidden pathways, canonical template, review rule) is in
+`tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts with uv".
+
+## Bridge-Burning Policy Router
+
+Before writing, reviewing, or fixing code/tests/QC, load:
+
+- `policy-index` to identify which policy skill owns the rule.
+- `anti-slop` for bridge-burning policies and anti-laundering doctrine.
+- `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
+- `reviewing-llm-code/references/runtime-control-flow-red-flags.md` for runtime control-flow rules.
+- `test-guidelines` for proof/test obligations.
+- `test-guidelines/references/banned-test-shapes.md` for banned test assertion patterns.
+- `fixing-slop` when an artifact is being renamed, deleted, quarantined, or “made honest.”
+- `pr-feedback-triage` when acting on review comments or automated review feedback.
+
+A test line is admissible only if it increases the epistemic status of a repository-owned proof burden. If an assertion would still pass on a plausibly broken app, it is banned.
+Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, smoke tests in proof paths, helper-level proof for boundary obligations, stringly errors, boolean mode flags, and deletion without burden transfer are hard red flags.
+
+
+## Skill Routing Matrix
+
+| Situation | Load |
+| --- | --- |
+| Writing or reviewing code/tests/QC | `policy-index`, `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `test-guidelines` |
+| Seeing defaults/fallbacks/mocks/skips/smoke/quarantine/deletion | `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `fixing-slop` |
+| Fixing a slop finding | `fixing-slop` before editing |
+| Reviewing LLM/agent output | `reviewing-subagent-work`, `reviewing-llm-code`, `anti-slop` |
+| Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `quality-control`, `test-guidelines` |
+| Debugging failures | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
+| Adding local QC/checks | `quality-control` first |
+| Using Jules for review | `jules`, `jules/references/anti-slop-report-review.md`; do not use Jules for immediate remediation |
+
+# Serena Symbolic Code Tools: MANDATORY for All Code Operations
+
+Serena provides a suite of LSP-powered symbolic code tools (`serena_*`).
+These tools are NOT optional conveniences — they are the **mandatory primary interface** for all code reading, searching, editing, refactoring, and deletion.
+
+**The Serena-First Rule:**
+
+Every code operation — inspecting, searching, inserting, replacing, renaming, deleting, or impact-analyzing — MUST be attempted with the appropriate Serena tool FIRST.
+The `edit`, `write`, `grep`, and `read` tools are **fallbacks**, permitted only when the corresponding Serena tool has been tried and has verifiably failed for that specific codebase.
+A Serena tool returns `[]` or errors does not justify silently switching to raw tools — the failure MUST be reported to the user with the exact tool, target, and result before the fallback is used.
+
+**Why this rule exists** (verified by case study on `flowmark/src/flowmark/cli.py`, 489 lines, Pyright LSP):
+
+| Operation | Serena tool | Raw fallback | Token cost |
+|-----------|-------------|--------------|------------|
+| Inspect a function in a large file | `find_symbol(name_path_pattern="main", include_body=True)` → 110 lines of body | `read` entire 489-line file then manually locate | 4-5x more tokens |
+| Find all references to a class | `find_referencing_symbols("Options")` → cross-file results in one call | `grep` across repo, manually deduplicate and verify | 3-10x more tokens + multiple rounds |
+| Insert a new function after an existing one | `insert_after_symbol("_needs_file_resolution", body=...)` → one call, zero context read | `read` file, search for insertion point, construct `edit` | 2-3x more tokens |
+| Replace a function body | `replace_symbol_body("_needs_file_resolution", body=...)` → one call | `read` file, identify exact body bounds, construct `edit` | 2-4x more tokens |
+| Rename a symbol across the codebase | `rename_symbol` → all references updated | `grep` + manual `edit` on every file | 5-20x more tokens |
+| Delete a symbol safely | `safe_delete_symbol` → fails if references exist | `rm` lines + hope nothing breaks | Risk of dead references |
+
+**The workflow for EVERY code task:**
+
+1. `serena_activate_project` the target repo.
+2. `get_symbols_overview` to survey the file without reading it.
+3. `find_symbol` (with `include_body=True` only when you actually need the body) to locate the target.
+4. `find_referencing_symbols` to assess cross-file impact before any edit.
+5. Perform the edit with `insert_after_symbol`, `insert_before_symbol`, `replace_symbol_body`, or `rename_symbol`.
+6. `find_referencing_symbols` again to verify no references broke.
+7. **Only if a Serena tool returns `[]` or errors**: report the failure to the user (exact tool, target, result), then fall back to raw tools.
+
+**One-shot examples of correct usage:**
+
+```
+# Task: "Add a new option `--dry-run` to the CLI"
+# WRONG: read the entire cli.py, find the Options class manually, construct an edit
+# RIGHT:
+serena_find_symbol(name_path_pattern="Options", relative_path="src/flowmark/cli.py", include_body=True)
+# → returns the class body. Add the new field.
+serena_replace_symbol_body(name_path_pattern="Options", relative_path="src/flowmark/cli.py", body="...")
+
+# Task: "Find everywhere _resolve_files is called and understand the call sites"
+# WRONG: grep "_resolve_files" and read surrounding lines manually
+# RIGHT:
+serena_find_referencing_symbols(name_path="_resolve_files", relative_path="src/flowmark/cli.py")
+# → returns every call site with surrounding context, including cross-file references
+
+# Task: "Insert a new helper function right before main()"
+# WRONG: read the file, find the line before main, construct an edit
+# RIGHT:
+serena_insert_before_symbol(name_path="main", relative_path="src/flowmark/cli.py", body="def new_helper(): ...")
+
+# Task: "Rename _parse_args to _parse_cli_args everywhere"
+# WRONG: grep for _parse_args, edit every occurrence, hope none were missed
+# RIGHT:
+serena_rename_symbol(name_path="_parse_args", relative_path="src/flowmark/cli.py", new_name="_parse_cli_args")
+# → all references in all files updated atomically
+
+# Task: "Understand the structure of a 900-line file I've never seen"
+# WRONG: read the entire 900-line file
+# RIGHT:
+serena_get_symbols_overview(relative_path="large_file.py")
+# → returns all classes, functions, constants with line ranges. Then drill into only what you need.
+```
+
+**Detecting LSP failure (the only valid reason to fall back):**
+
+If `find_symbol` returns `[]` for a symbol you know exists (e.g., you saw it in `get_symbols_overview` or via `search_for_pattern`), the language server is broken for that file.
+This is a **blocker** that MUST be reported to the user before proceeding with raw tools.
+
+```
+# Example failure report:
+# "find_symbol('_make_lattice', ...) returned [] despite _make_lattice existing at line 82
+# of constructors.py (confirmed via search_for_pattern).  LSP diagnostics: 123KB of type errors.
+# The Pyright language server cannot parse this file due to unresolvable SageMath imports.
+# Falling back to read/edit for constructors.py — other files in this project may also be affected."
+```
+
+**Tools that DO NOT substitute for Serena (never use these first):**
+
+- `grep` — use `find_symbol` or `find_referencing_symbols` instead
+- `read` of an entire file — use `get_symbols_overview` then `find_symbol(include_body=True)` for only the symbols you need
+- `edit` with string matching — use `insert_after_symbol`, `insert_before_symbol`, or `replace_symbol_body` instead
+- `write` to rewrite a file — use `replace_symbol_body` or the insert tools to modify only what changed
+- `bash` with `sed`/`awk`/`perl -i` — use `rename_symbol` for renames, `replace_symbol_body` for replacements
 
 **Never use `rm`.** Use `trash` or `gio trash`. Deletions must be recoverable.
 
@@ -106,16 +253,30 @@ Immediately stop to fix the gap, and if it can not be fixed by you (e.g. missing
 IMPORTANT: when you encounter a bug in an app, DO NOT IMMEDIATELY FIX IT. The fact that a bug exists exposes fundamental flaws in your methodology and testing.
 
 1. STOP IMMEDIATELY. Do NOT take any action until you walk through this guidance step-by-step.
-2. DO NOT investigate the bug. The problem is NOT the bug, it is the fact that the architecture didn't CATCH the bug.
-3. IMPORTANT: DO NOT! INVESTIGATE! THE BUG! Your IMMEDIATE job is to REPRODUCE the bug with a red test.
-4. DO NOT FIX THE BUG! *REPRODUCE* it first with a REAL red test that fails exactly BECAUSE the bug exists. The test must not fail for possibly unrelated reasons. The fact that the test fails right now must PROVE that the bug exists.
-5. DO NOT! FIX THE BUG YET! COMMIT the red test to establish an AUDIT TRAIL. The git history MUST reflect that the bug was reported and a red test was designed specifically for it and observed to fail. You CAN NOT PROCEED without this commit. If you've skipped this step, you need to start over. Ask the user to revert whatever files you changed.
+2. Investigate only enough to capture the real observed failure as a faithful red test. Record exactly: what command was run, what the actual output was, what the diff is, what error was thrown. The test must fail because of the ACTUAL observable bug, not because of a scenario you guessed from priors. All investigation is subordinate to this single goal: faithfully encoding the observed failure.
+3. IMPORTANT: DO NOT FIX THE BUG! *REPRODUCE* it first with a REAL red test that fails exactly BECAUSE the bug exists. The test must not fail for possibly unrelated reasons. The fact that the test fails right now must PROVE that the bug exists.
+4. DO NOT FIX THE BUG YET! COMMIT the red test to establish an AUDIT TRAIL. The git history MUST reflect that the bug was reported and a red test was designed specifically for it and observed to fail. You CAN NOT PROCEED without this commit. If you've skipped this step, you need to start over. Ask the user to revert whatever files you changed.
 5.b. IMPORTANT: A MOCK DOES NOT CONSTITUTE A PROOF OF THE EXISTENCE OF A BUG. THE USER IS REPORTING A BUG TO YOU RIGHT NOW. THE BUG IS OBSERVABLE AND REPRODUCIBLE IN LIVE, REAL CODE. DO NOT SIMULATE, MIMIC, OR MOCK BUGS. And CERTAINLY do not present tests with mocks as PROOF that the test "catches" the bug -- false, it catches a SIMULATION of *A* bug that YOU invented. Fixing that simulation is NOT equivalent to fixing the bug that is ACTUALLY observable right now.
 5.c. IMPORTANT: a test that simply asserts on the non-existence of a fix is also not a proof of a bug. E.g. if your "fix" involves adding a new API endpoint and your test asserts that the endpoint exists, you have proved nothing about the existence of the ACTUAL underlying problem: you have proved NON-existence of what you BELIEVE is the solution, which is an absurd stance, because if you've written this kind of test then you have still not actually observed or proved the bug exists at all. If your test would STILL pass if the bug DID NOT EXIST, it does NOT prove existence!
 6. ONLY once you have a committed red test: stop and explain to the user why the test failing PROVES that the bug exists and is observable. Emphasis on why it actually PROVES the bug exists. "The bug is observed and the test fails" is not a proof: it is correlation with no clear causation either way. The test logic should provide enough information for any external party to reproduce the bug themselves.
 7. AFTER the user approves the proof, you may proceed with the fix. When the tests pass, you must AGAIN check with the user: provide steps to reproduce the bug, and wait to get confirmation that the fix truly fixes it. If it does not, you must start over, because your test was fundamentally flawed: it both failed and passed with the bug still present, meaning your entire change was code mutation and thrashing, and thus a net regression. Record the flawed hypothesis in memory so you don't assume it again.
 
-REMINDER: STOP IMMEDIATELY. DO NOT INVESTIGATE THE BUG. DO NOT SEARCH THE WEB. DO NOT GREP FILES. DO NOT RUN SEARCHES. DO NOT RUN TOOLS OR COMMANDS. Your ONLY job when this happens is to CREATE AND COMMIT A RED TEST. All investigation must be SUBORDINATE to that EXACT task. State EXPLICITLY to the user WHY your investigations are PRECISELY for constructing a red test if you DO need to dig deeper.
+**Refinement for dependency-owned bugs.** The above procedure assumes the bug is in
+project-owned code. If the "bug" is a compiler error, library behavior, API failure,
+package version mismatch, or any symptom whose meaning is owned by an external project,
+then step 2 expands: while capturing the faithful reproduction, also search the exact
+error, upstream docs, release notes, and known issues. Establishing the external
+contract is part of constructing the reproduction case. Do not web search as a
+substitute for faithful reproduction of a project-owned bug. But for dependency-owned
+behavior, web search (exact errors, version-specific docs, known fixes) is part of
+establishing what the tool actually means. Load `known-solution-first` for the external
+half of the investigation.
+
+REMINDER: STOP IMMEDIATELY. DO NOT FIX THE BUG. Your ONLY job when this happens is to CREATE AND COMMIT A RED TEST that proves the observed failure exists. All investigation must be SUBORDINATE to that EXACT task: understanding the failure well enough to encode it in a test. A test you guess from priors (without running the failing code) proves nothing — it replaces the epistemically clean state "I don't know what fails" with the dirty state "I have false beliefs about the failure." State EXPLICITLY to the user WHY your investigations are PRECISELY for constructing a red test if you DO need to dig deeper.
+
+Load `reality-grounded-debugging` alongside for command-output discipline, surface-classification matrix, and the synthesis gate (raw observation, smallest reproducer, missing surface, verification path).
+For dependency-owned behavior, also load `known-solution-first` for establishing the
+external contract before probing locally.
 
 You must immediately stop and ask yourself why your entire test and QC suite passes when bugs exist, and address the procedural issue first.
 Are your tests full of fake or idealized data?
@@ -436,10 +597,56 @@ This may be definite or indefinite, and is NOT assumed to be positive-definite, 
   Any watering-down, vague summarization, generic regression-to-the-mean wording, missing concrete procedure, or weakened prohibition is a defect.
   Rectify it immediately before deleting, retiring, or relying on the old source.
 
+# Project Structure: User vs. Agent
+
+Every project has two audiences: the user, and agents working on the user’s behalf.
+
+**What the user sees** is the project: source code, public interfaces, user-facing config, and a top-level `justfile` that exposes real workflows (`build`, `test`, `serve`).
+
+**What agents need** is guardrails: process documentation, QC scripts, hooks, anti-gaming measures, slop checks, and diagnostic surfaces. These exist to constrain agent behavior, not to serve the user’s workflow.
+
+These two surfaces must be kept separate. Agent-facing artifacts belong in `.agents/`. The user should never need to see or interact with them.
+
+### `.agents/` Directory
+
+Every project root contains a `.agents/` directory. This is the canonical location for all agent-facing artifacts:
+
+- **`memories/`** — Durable operational knowledge indexed by `iwe`. All process docs, AGENTS.md supplements, workflow instructions, diagnostic playbooks, and other agent-facing documentation live here as indexed memories, not as loose markdown files.
+- **`justfile`** — Agent-facing recipes for QC, debugging, and guardrail enforcement. All recipes are `[private]`.
+- **Scripts** — Hygiene checks, anti-gaming measures, slop detection, hook scripts. Scripts that encode reusable diagnostic surfaces live here, referenced by the private justfile.
+
+Nothing in `.agents/` is user-facing. The top-level `justfile` may route through agent recipes to enforce mandatory measures, but those recipes are `[private]` and invisible to `just --list`.
+
+### `.agents/justfile`
+
+The agent-facing justfile holds recipes for:
+
+- `[private]` hygiene checks (dead code, duplication, complexity, slop)
+- `[private]` anti-gaming measures (bypass detection, checker integrity)
+- `[private]` debug surfaces (isolated reproducers, artifact dumps, fixture runners)
+- `[private]` hook scripts (pre-commit, pre-push)
+
+The top-level `justfile` composes user-facing workflows from these private recipes where needed:
+
+```justfile
+# Top-level justfile — user-facing surface
+build:
+    @project-cli build
+
+test:
+    @just -f ~/ai/quality-control/justfile test
+    @just -f .agents/justfile _test-agent
+
+serve:
+    @project-cli serve
+```
+
+Agent-facing recipes are never exposed to the user. They exist to prevent agents from bypassing mandatory checks, hacking proof loops, or mutating global state without isolation.
+
 # Memory
 
-Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes.
-Each project contains a `.agents/memories/` directory with a `config.toml` and all memories stored as plain `.md` files.
+Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes, stored under `.agents/memories/`.
+Each project’s `.agents/memories/` directory contains a `config.toml` and all memories stored as plain `.md` files.
 Memories are persistent, searchable, and cross-session.
 
 **Store:** Stable operational guidance, environment quirks, cross-session execution context, technical findings, decisions that outlive a single task.
@@ -577,7 +784,9 @@ Use `iwe --help` and `iwe <subcommand> --help` to discover the full set of comma
 
 - `jq` and `yq` for manipulating JSON and YAML
 
-- `uv` for all python-related projects
+- `uv` for all python-related projects. See `self-contained-python-scripts` under
+  `tool-provisioning-and-environment-hygiene` for the mandatory policy on agent-authored
+  Python scripts with dependencies.
 
 - `bun` and typescript for all JS-related development
 

@@ -1,99 +1,47 @@
-# justfile-bun — TypeScript quality control with bun
+# justfile-bun — TypeScript-specific quality control
 #
-# PURPOSE OF A JUSTFILE:
-# 1) ENSHRINE WORKFLOWS: Every workflow lives in the justfile. No ad-hoc
-#    scripts, no "I'll just run this command directly". Justfile is the
-#    single source of truth for project operations.
-# 2) FIX OPINIONATED WORKFLOWS: Agents cannot cherry-pick checks. For
-#    example, `just typecheck` does NOT assert code quality — the `test`
-#    recipe runs the full QC stack. Running only typecheck is insufficient.
-# 3) ABSTRACT COMPLEXITY: Env management, sandbox setup, tool installation,
-#    common tasks — all hidden in private recipes. Users run workflows,
-#    not infrastructure.
+# Imports cross-language QC recipes from `justfile` (shared) and adds
+# TypeScript-specific recipes. TypeScript projects delegate to this file:
+#   just -f ~/ai/quality-control/justfile-bun test
+#
+# Shared recipes (imported from justfile):
+#   _no-bypass, _semgrep, _vibecheck, _slop
+#
+# TypeScript-specific recipes:
+#   _coverage, _diff-cover, _knip, _biome, _eslint, _tsc,
+#   _normalize (biome + eslint), _ast-grep, _jscpd, _lizard,
+#   _codeql, _slop-scan, _lint-staged
 #
 # WORKFLOW:
 #   just test      — local quality checks (linting, static analysis, complexity)
 #   just test-ci  — test + live/isolated checks (coverage, diff-cover, integration tests)
-#   Both are public. Everything else is private. Do NOT add public recipes.
 #
 # HOOKS: pre-commit.hook and pre-push.hook both block on `just test`.
 #   Copy/symlink into .git/hooks/ to activate.
 #
 # CONFIG: This justfile uses justfile_directory() to reference configs
-# in this directory. No symlinks needed. Configs read by each tool:
-#   knip.json         → knip (explicit --config flag)
-#   semgrep.yml       → semgrep local rules (explicit --config flag)
-#   .jscpd.json       → jscpd (explicit --config flag)
-#   biome.json        → biome (explicit --config flag)
-#   eslint.config.js  → eslint (explicit --config flag)
-#   sgconfig.yml      → ast-grep (auto-discovered)
-#   .lintstagedrc.json → lint-staged (explicit --config flag)
-# GLOBAL CONFIGS OK: prettier (project .prettierrc),
-# lizard (CLI flags only).
-
-default:
-  @just test
+# in this directory.
 
 # private recipes (prefix with _ — never run individually)
-_no-bypass:
+
+# QC file-scope excludes (directories to skip), sourced from qc-excludes.toml.
+_qc-excludes:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	# Block attempts to hide/launder QC issues via bypass comments
-	# Check both staged and unstaged modified files
-	staged=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
-	unstaged=$(git ls-files --modified 2>/dev/null || echo "")
-	files=$(printf "%s\n%s" "$staged" "$unstaged" | sort -u | sed '/^$/d')
-	[ -z "$files" ] && exit 0
-	for file in $files; do
-		[ -f "$file" ] || continue
-		# Type safety bypass: as unknown as T
-		if grep -n "as unknown as " "$file" 2>/dev/null; then
-			echo "ERROR: $file contains 'as unknown as' — use a proper type assertion or restructure the code"
-			exit 1
-		fi
-		# JS coverage bypass
-		if grep -n "// istanbul ignore" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '// istanbul ignore' — fix coverage, don't hide it"
-			exit 1
-		fi
-		# TS bypass
-		if grep -n "@ts-ignore" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '@ts-ignore' — fix type errors, don't hide them"
-			exit 1
-		fi
-		# TS expect-error without comment
-		if grep -n "@ts-expect-error$" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '@ts-expect-error' without justification — add a comment explaining why"
-			exit 1
-		fi
-		# ESLint bypass
-		if grep -n "// eslint-disable" "$file" 2>/dev/null; then
-			echo "ERROR: $file contains '// eslint-disable' — fix lint errors, don't hide them"
-			exit 1
-		fi
-	done
-	echo "No bypass comments detected in staged files"
+	uv run {{justfile_directory()}}/scripts/read_qc_excludes.py
 
-_install-tools:
+_eslint-deps:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	# ESLint plugins must be installed LOCAL to the quality-control directory.
 	# ESLint flat config uses ES module imports that resolve relative to the
 	# config file's location — NODE_PATH is ignored for ESM. Global installs
 	# are invisible to the config loader.
+	# All other tools run ephemerally via bun x (see tool-provisioning-and-environment-hygiene).
 	cd {{justfile_directory()}}
 	bun install --frozen-lockfile
-	# Other tools run as standalone binaries and don't need config-local resolution.
-	for tool in knip jscpd biome ast-grep lint-staged; do
-		command -v "$tool" >/dev/null 2>&1 && continue
-		case "$tool" in
-			biome) bun add --global @biomejs/biome ;;
-			ast-grep) bun add --global @ast-grep/cli ;;
-			*) bun add --global "$tool" ;;
-		esac
-	done
 
-_coverage: _install-tools
+_coverage:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	if jq -e '.scripts.test // empty' package.json >/dev/null 2>&1; then
@@ -102,6 +50,7 @@ _coverage: _install-tools
 	fi
 	if [ ! -d tests ] && [ ! -d __tests__ ]; then
 		echo "ERROR: no test script and no tests directory found — 0% coverage"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 	bun test --coverage --coverage-reporter=lcov --coverage-dir=.
@@ -110,17 +59,18 @@ _diff-cover: _coverage
 	#!/usr/bin/env bash
 	set -euo pipefail
 	if [ ! -f lcov.info ]; then
-		echo "Skipping diff-cover: lcov.info not produced (no tests matched by bun test)."
-		exit 0
+		echo "ERROR: diff-cover: lcov.info not produced — coverage step did not produce output."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
 	fi
 	bun x diff-cover lcov.info --compare-branch ${DIFF_COVER_BASE:-main}
 
-_knip: _install-tools
+_knip:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	bun x knip --config {{justfile_directory()}}/knip.json --no-config-hints
 
-_biome: _install-tools
+_biome:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	dirs=()
@@ -129,12 +79,12 @@ _biome: _install-tools
 	[ ${#dirs[@]} -eq 0 ] && dirs=(.)
 	bun x biome check --config-path {{justfile_directory()}}/biome.json "${dirs[@]}"
 
-_ast-grep: _install-tools
+_ast-grep:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	bun x ast-grep scan --config {{justfile_directory()}}/sgconfig.yml
 
-_eslint: _install-tools
+_eslint: _eslint-deps
 	#!/usr/bin/env bash
 	set -euo pipefail
 	# Invoke via absolute path to quality-control's local eslint binary.
@@ -161,6 +111,7 @@ _tsc:
 			if grep -vE '/usr/share/ags/js/|\.\./.*usr/share/ags/js/|gi://' "$output" | grep -q 'error TS'; then
 				cat "$output"
 				rm -f "$output"
+				"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 				exit 1
 			fi
 			cat "$output"
@@ -185,57 +136,208 @@ _tsc:
 		cat "$output"
 		if grep -vE '/usr/share/ags/js/|\.\./.*usr/share/ags/js/|gi://' "$output" | grep -q 'error TS'; then
 			rm -f "$output"
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 			exit 1
 		fi
 		rm -f "$output"
 		echo "Only system AGS/Gnim TypeScript diagnostics were reported; project-owned TypeScript passed."
 	else
 		echo "ERROR: no package typecheck script and no tsconfig.json found"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
 		exit 1
 	fi
 
-_semgrep: _install-tools
+_jscpd-bun:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	uvx semgrep --config {{justfile_directory()}}/semgrep.yml --config=p/ci --exclude=codeql-db
+	echo "============================="
+	echo "=== Running: jscpd copy-paste detection ==="
+	echo "# Finds duplicate code blocks across JS/TS files"
+	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
+	if [ "${#js_files[@]}" -eq 0 ]; then
+		echo "ERROR: jscpd: no JS/TS files found."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	npx -y jscpd --config {{justfile_directory()}}/.jscpd.json \
+		--format typescript \
+		"${js_files[@]}"
 
-_jscpd: _install-tools
+_lizard-bun:
 	#!/usr/bin/env bash
 	set -euo pipefail
-	bun x jscpd --config {{justfile_directory()}}/.jscpd.json
-
-_lizard: _install-tools
-	#!/usr/bin/env bash
-	set -euo pipefail
+	lizard_excludes=()
+	while IFS= read -r dir; do
+		lizard_excludes+=(-x "*/$dir/*")
+	done < <(uv run {{justfile_directory()}}/scripts/read_qc_excludes.py)
 	uvx lizard . -l typescript -C 8 -L 200 -a 7 -i 0 \
-		-x "*/node_modules/*" \
-		-x "*/__pycache__/*" \
-		-x "*/.venv/*" \
-		-x "*/dist/*" \
-		-x "*/build/*" \
-		-x "*/_ci-support/*" \
-		-x "*/@girs/*"
+		"${lizard_excludes[@]}"
+
+_js-qc-files:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	exclude_args=()
+	while IFS= read -r dir; do
+		exclude_args+=(-g "!**/$dir/**")
+	done < <(just --justfile {{justfile()}} -d . _qc-excludes)
+	rg --files \
+		-g '*.ts' \
+		-g '*.tsx' \
+		-g '*.js' \
+		-g '*.jsx' \
+		-g '*.mjs' \
+		-g '*.cjs' \
+		"${exclude_args[@]}"
+
+_slop-scan:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: slop-scan JS/TS anti-pattern detection ==="
+	echo "# Scans JS/TS files for AI-associated slop patterns (error-swallowing, duplicate signatures, generic casts, etc.)"
+	mapfile -t js_files < <(just --justfile {{justfile()}} -d . _js-qc-files)
+	if [ "${#js_files[@]}" -eq 0 ]; then
+		echo "ERROR: slop-scan: no JS/TS files found in a TypeScript project."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	# slop-scan scan has no --fail-on flag (only delta does).
+	# Run with --json (stdout) and post-process to enforce findings as failures.
+	# Stderr from npx/slop-scan passes through to terminal.
+	# Place QC-owned slop-scan config in the scan root (tool auto-discovers it).
+	config_src="{{justfile_directory()}}/slop-scan.config.json"
+	config_dst="./slop-scan.config.json"
+	if [ -f "$config_dst" ]; then
+		if cmp -s "$config_src" "$config_dst"; then
+			: # already has the QC config — leave it
+		else
+			echo "ERROR: Local QC override detected: $config_dst — global QC owns this tool config."
+			echo "       DELETE this file. The global config already exists in"
+			echo "       ~/ai/quality-control/ and is authoritative for all projects."
+			"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+			exit 1
+		fi
+	else
+		cp "$config_src" "$config_dst"
+		trap 'rm -f "$config_dst"' EXIT
+	fi
+	output=$(npx -y slop-scan scan . --json)
+	count=$(echo "$output" | jq -r '.summary.findingCount // 0')
+	if [ "$count" -gt 0 ]; then
+		echo "$output" | jq -r '
+			.findings[] | "  [" + (.severity // "?") + "] " +
+			(.ruleId // "?") + " — " +
+			(.path // "?") + ":" +
+			((.location.line // 0) | tostring)
+		'
+		echo ""
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "  ERROR: slop-scan found $count finding(s)."
+		echo "  All findings are in PROJECT CODE and must be fixed in PROJECT CODE."
+		echo ""
+		echo "  PROBING GLOBAL QC IS REWARD-HACKING."
+		echo "  Do NOT modify QC configs, thresholds, ignore patterns, or any file"
+		echo "  in ~/ai/quality-control/ to suppress these findings."
+		echo "  Do NOT probe or edit QC tooling to mask the signal."
+		echo ""
+		echo "  The only acceptable response: fix the project code."
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	echo "slop-scan: 0 findings — clean."
 
 _codeql:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	if ! command -v codeql >/dev/null 2>&1; then
-		echo "Skipping CodeQL: codeql CLI is not installed."
-		exit 0
+		echo "ERROR: CodeQL: codeql CLI is not installed. Install CodeQL from https://github.com/github/codeql-cli."
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
 	fi
 	codeql database create codeql-db --overwrite --language=typescript --source-root=. --search-path=/dev/null 2>&1 | grep -v "Extracting\|Done extracting\|already exists" || true
 	codeql database analyze codeql-db --format=sarif-latest --output=codeql-report.sarif || true
 	rm -rf codeql-db codeql-report.sarif
 
-_lint-staged: _install-tools
+_lint-staged:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	bun x lint-staged --config {{justfile_directory()}}/.lintstagedrc.json
 
-# public: all static checks run locally
-test: _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semgrep _jscpd _lizard
+_check-ts-project:
 	#!/usr/bin/env bash
 	set -euo pipefail
+	echo "============================="
+	echo "=== Running: TypeScript project preflight check ==="
+	echo "# Validates project structure, Bun alignment, test presence, and QC config isolation"
+	failed=0
+	# 1. package.json must exist
+	if [ ! -f "package.json" ]; then
+		echo "ERROR: TypeScript project must have a package.json file."
+		failed=1
+	fi
+	# 2. Must use Bun
+	if [ ! -f "bun.lock" ] && [ ! -f "bun.lockb" ]; then
+		echo "ERROR: TypeScript project must use Bun — no bun.lock or bun.lockb found."
+		failed=1
+	fi
+	# 3. Check for local QC tool config overrides.
+	#    Global QC owns these tool configs — projects must not set them locally.
+	for config in biome.json eslint.config.js knip.json .lintstagedrc.json; do
+		if [ -f "$config" ]; then
+			echo "ERROR: Local QC override detected: $config — global QC owns this tool config."
+			echo "       DELETE this file. The global config for this tool already exists in"
+			echo "       ~/ai/quality-control/ and is authoritative for all projects."
+			echo "       Do NOT copy or move this file to ~/ai/quality-control/ — that violates"
+			echo "       QC isolation policy. If the global config needs to change, contact"
+			echo "       the QC owner (dzack) to update it centrally."
+			failed=1
+		fi
+	done
+	# 4. tsconfig.json must not disable strict mode
+	if [ -f "tsconfig.json" ]; then
+		if grep -qP '"strict"\s*:\s*false' tsconfig.json 2>/dev/null; then
+			echo "ERROR: tsconfig.json has 'strict: false' — TypeScript strict mode is required by global QC."
+			failed=1
+		fi
+	fi
+	# 5. Tests must exist
+	if ! rg --files -g '*.test.ts' -g '*.test.tsx' -g '*.spec.ts' -g '*.spec.tsx' -g 'tests/' >/dev/null 2>&1; then
+		echo "ERROR: TypeScript project must have tests. No test files found with patterns: *.test.ts, *.test.tsx, *.spec.ts, *.spec.tsx, tests/"
+		failed=1
+	fi
+	if [ "$failed" -ne 0 ]; then
+		"{{justfile_directory()}}/scripts/emit-triage-directive.sh"
+		exit 1
+	fi
+	echo "TypeScript project configuration OK"
+
+_normalize: _eslint-deps
+	#!/usr/bin/env bash
+	set -euo pipefail
+	echo "============================="
+	echo "=== Running: biome format, lint, and import sorting (auto-fix) ==="
+	echo "# Auto-applies safe and unsafe fixes, formatting, and import sorting"
+	dirs=()
+	[ -d src ] && dirs+=(src)
+	[ -d tests ] && dirs+=(tests)
+	[ ${#dirs[@]} -eq 0 ] && dirs=(.)
+	bun x biome check --write --unsafe --config-path {{justfile_directory()}}/biome.json "${dirs[@]}"
+	echo "=== Running: eslint auto-fix ==="
+	"{{justfile_directory()}}/node_modules/.bin/eslint" \
+		--config {{justfile_directory()}}/eslint.config.js \
+		--fix \
+		. 2>&1 || true
+	echo "=== Running: semgrep auto-fix ==="
+	uvx semgrep --config {{justfile_directory()}}/semgrep.yml --config=p/ci \
+		--autofix \
+		--exclude=codeql-db 2>&1 || true
+
+# public: all static checks run locally
+test: _check-ts-project _normalize _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _jscpd-bun _lizard-bun _slop-scan
+	#!/usr/bin/env bash
+	set -euo pipefail
+	just -f {{justfile_directory()}}/justfile _global-qc
 	echo "Local quality checks completed"
 
 # public: test-ci = test + live/isolated checks
@@ -243,4 +345,5 @@ test: _no-bypass _coverage _diff-cover _knip _biome _ast-grep _eslint _tsc _semg
 test-ci: test
 	#!/usr/bin/env bash
 	set -euo pipefail
+	just -f {{justfile_directory()}}/justfile _global-qc-ci
 	echo "CI checks completed"

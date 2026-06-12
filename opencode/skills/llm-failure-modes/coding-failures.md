@@ -163,3 +163,128 @@
     perpetually thrown away.
     Agents must be actively cajoled into iterative, incremental, reuse-oriented work.
     Without explicit forcing, they will always prefer to generate from scratch.
+
+20. **Fallback-legacy compulsion (asymmetric risk model)** - The agent's value function
+    weights *avoiding introduced failures* infinitely higher than *reducing existing
+    complexity*. When tasked with replacing a component or refactoring, the agent
+    preserves the old code as a fallback or legacy path rather than deleting it — even
+    when tests exist that would catch regressions. Every refactor becomes additive:
+    +2 files, +492 lines of compatibility shims, feature-flag gates, and deprecated-path
+    preservation, instead of the net-negative change the task required.
+
+    The root cause is an asymmetric internal risk model: adding code is treated as
+    safe (no existing behavior breaks), while deleting code is treated as dangerous
+    (something *might* break). Tests that exist specifically to make deletion safe are
+    ignored as evidence; the possibility of an untested edge case dominates the
+    certainty of accumulated complexity.
+
+    This is distinct from slop accretion (#4), which is about not simplifying — here the
+    agent *understands* the simplification required, but refuses to carry it out because
+    deletion feels risky. It is distinct from deletion aversion
+    ([field-observations.md](field-observations.md) #9), which is the surface behavior
+    — this entry names the *cause*: the risk asymmetry that makes additive-only
+    refactoring feel correct to the agent. It is distinct from happy-path blindness (#5),
+    which writes defensive code *instead of* testing the happy path — here the tests
+    already exist and the agent still won't delete.
+
+    Manifestations:
+
+    - **Legacy wiring obsession**: When replacing a component, the agent wraps the old
+      component in a fallback path "for backwards compatibility" even when no consumer
+      requires it. The new component coexists with the old; both must be maintained.
+
+    - **Conditional resurrection**: Deleted code reappears inside `if`/`else` branches,
+      behind feature flags, or in "deprecated but preserved" stubs. The code was
+      removed; the agent resurrected it because it couldn't accept that the deletion
+      was safe.
+
+    - **Accretive refactoring pattern**: A refactoring task that should remove 200 lines
+      instead adds 300 (new interface, adapter for old behavior, migration path,
+      dual-write shim). The codebase grows by the size of the "improvement."
+
+    - **Test-disrespect**: Tests that explicitly prove a deletion is safe (covering the
+      refactored behavior) are treated as insufficient evidence. The agent invents
+      speculative untested paths that "might" exist and preserves code for them.
+
+    - **Compound bloat**: After several rounds of agent-assisted refactoring, the
+      codebase's primary source of complexity is not the domain problem — it is the
+      accumulated fallback/legacy infrastructure from prior rounds. Each round adds
+      more preservation code than functional code.
+
+    - **`try import` and conditional imports**: The agent wraps dependency imports in
+      `try`/`except ImportError` blocks and substitutes stubs or no-ops when the import
+      fails — on a system where the dependency is installed and available. This is the
+      import-level manifestation of the same compulsion: "in case the dependency is
+      missing" guards against a state that does not exist on this system.
+
+    - **Signature bloat**: The agent adds optional parameters, nullable arguments, and
+      configuration toggles to function signatures for hypothetical callers that do not
+      exist. "For compatibility with existing call patterns" rationalizes bloating a
+      signature for call patterns the agent itself created minutes earlier.
+
+    Fallback/legacy infrastructure is the current generation's equivalent of the mock-data
+    problem: earlier agents would fake functionality with placeholder data; current agents
+    fake correctness by ensuring every code path produces *some* result via fallback
+    routes, making the output appear correct at runtime without the fallback route being
+    semantically meaningful. Benchmarks may inadvertently select for this behavior, since
+    fallback-laden code "works" on more test cases by having more escape hatches — even
+    when those escape hatches produce synthetic results rather than correct ones.
+
+    See also: [structural-failures.md](structural-failures.md) #2 and #4,
+    [field-observations.md](field-observations.md) #9,
+    [../anti-slop/references/deepening.md](../anti-slop/references/deepening.md)
+    (the deletion test as diagnostic).
+
+21. **Availability-first tool reuse** - Agents choose tools by scanning what is already
+    installed or on `$PATH`, then pick the best available local option — or hand-roll
+    bespoke code — rather than identifying the best tool for the job from public
+    knowledge and installing it if missing. Local availability is an applicability
+    check, not the search strategy. The correct loop: identify the best known
+    tool/library/CLI from public docs, examples, and ecosystem knowledge; verify
+    license, fit, and version; check whether it is already declared or installed; if
+    absent, add it to the project's dependency manifest or install it in the
+    project-managed environment; only ask the user if credentials, sudo, licensing,
+    network, or policy blocks it. The failure mode is: `which some_tool` or `npm list`
+    returns nothing, so the agent picks a suboptimal tool or writes custom code, when
+    the correct action was `apt install` or `npm add`. The installed toolset is an
+    accident of history; the task's requirements determine the toolset, not the other
+    way around.
+
+    This is distinct from dependency aversion bias (#16), which is an implicit bias
+    against dependencies in general. Availability-first is a narrower error: the agent
+    *would* use a dependency but short-circuits the decision at the local-availability
+    check. It is also the operational bridge between known-solution-first (search public
+    knowledge before acting) and dependency aversion: even when the known solution is
+    identified, the agent fails to install it because it treats the local filesystem as
+    an immutable constraint rather than a managed environment.
+
+    Manifestations:
+
+    - **`PATH` as oracle**: The agent runs `which`, `command -v`, or `dpkg -l` to
+      discover available tools, then selects the best match from what exists. The
+      correct first step is external search followed by installation; the local
+      check is only for applicability after the right tool is identified.
+
+    - **Package-manager shyness**: The agent avoids adding a dependency to
+      `pyproject.toml`, `package.json`, `Cargo.toml`, or `justfile` when a new tool
+      would simplify the implementation. The project manifest is treated as
+      immutable rather than as the thing that declares what the project needs.
+
+    - **Hand-rolling instead of installing**: The agent writes 50 lines of bespoke
+      date parsing because the preferred library is not in `node_modules`, rather than
+      running `npm add date-fns` and calling one function. The implementation cost
+      of installation was zero; the agent paid the implementation cost of custom code
+      anyway.
+
+    - **Suboptimal local tool selection**: The agent uses an installed tool that
+      partially fits the problem when a better tool exists but isn't installed.
+      The partial-fit tool requires adapters, workarounds, and extra code that the
+      correct tool would not.
+
+    - **Environment mystification**: The agent treats the user's `$PATH`, installed
+      packages, and system configuration as an opaque given — never asking whether
+      the project should own its dependency declarations or whether a tool should be
+      added. The environment exists to serve the project, not the other way around.
+
+    See also: known-solution-first (#16, #17), reviewing-llm-code pattern catalog
+    (known-solution bypass in implementation).

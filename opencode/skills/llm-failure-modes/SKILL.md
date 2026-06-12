@@ -62,7 +62,8 @@ Load the relevant section for your context:
   [investigation-failures.md](investigation-failures.md) Premature solution generation,
   thrashing, question dissolution, verification theater, tool output blindness,
   unfalsified external attribution, concept label substitution, analysis-action
-  concurrency. (13 items)
+  concurrency, prior-shaped inspection, local-artifact laundering, reverse-engineering
+  before lookup. (17 items)
 
 - **Self-evaluation and introspection failures** —
   [introspection-failures.md](introspection-failures.md) Attribution error, narrative
@@ -91,8 +92,9 @@ Load the relevant section for your context:
   Scope explosion, specification drift, slop accretion, critic hallucination, outcome
   blindness in review, failure mode inversion, impact miscalibration, replacement
   instinct, reimplementation impulse, dependency aversion bias, meta-artifact
-  delegation, scale-complexity confusion, ground-up bias (churn-first workflow).
-  (19 items)
+  delegation, scale-complexity confusion, ground-up bias (churn-first workflow),
+  fallback-legacy compulsion (asymmetric risk model).
+  (20 items)
 
 ### Structural and Behavioral Observations
 
@@ -124,6 +126,10 @@ Load the relevant section for your context:
 - **anti-slop** → Load alongside when the failure mode produces surface-level quality
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
+  All implementation work influenced by this skill is subject to the
+  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)
+  in `anti-slop/SKILL.md` as non-negotiable hard constraints — no runtime defaults,
+  fallbacks, mocks, or optional critical dependencies.
 
 - **reviewing-llm-code pattern catalog** →
   [../reviewing-llm-code/references/pattern-catalog.md](../reviewing-llm-code/references/pattern-catalog.md)

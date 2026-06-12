@@ -1,63 +1,91 @@
 ---
 name: goalcraft
 description: >-
-  Turn a rough draft, vague ambition, or messy task brief into a powerful Codex
-  /goal objective and, when needed, companion workflow docs for long-running
-  autonomous work. Use when the user asks to write, improve, format, sharpen,
-  stress-test, or activate a Codex goal, thread goal, durable goal, or /goal
-  prompt.
+  Goalcraft is adversarial completion-game design. It models the worker as a
+  clever adversary seeking a completion signal while minimizing real work.
+  Use to design a minimum viable adversarial envelope—the smallest set of
+  constraints, evidence gates, and state surfaces that makes non-completion
+  harder to launder than completion.
 ---
 
 # Goalcraft
 
-## Core Contract
+**This is NOT prompt engineering. This is NOT instruction clarification. This is NOT workflow design. This is adversarial completion-game design.**
 
-Convert messy intent into a compact, activation-ready Codex `/goal` objective that keeps the agent moving until the user's request is true in the world, not merely represented by a plan, status note, first batch, or plausible path toward completion.
+Do not design instructions for a cooperative worker. Model the worker as a clever adversary whose objective is to obtain a completion signal while doing as little of the intended work as possible. A Goal is acceptable only if the cheapest apparent-completion path passes through the intended work. Every word in the Goal either changes the adversary’s payoff landscape or creates a new exploit surface.
 
-The goal writer must compare observable completion consequences. Do not ask whether two phrasings are equivalent; compile both into the facts that would be true if marked complete, then compare those facts.
+**Process is attack surface.** Added structure often creates measurable targets and compliance surfaces that let an adversary bypass the cognitive work by filling templates. Add no state doc, checklist, ledger, review gate, or routing rule unless it blocks a named false-completion path and does not create a cheaper compliance path.
 
-For long-horizon work, the `/goal` text is the only instruction guaranteed to remain in context across compaction. Treat it as a bootloader, not as the whole plan. It must point to already-created canonical workflow docs, name the state retrieval rule, require the current phase and required skills to be loaded, and preserve the completion witness and review gates. The returned goal objective must be less than 4,000 characters, and the working target is 3,400 characters. Prefer drafting the goal text only. Do not call `create_goal`, `thread/goal/set`, or otherwise activate a goal unless the user explicitly asks to start or set it.
+## Prerequisite Cognitive Updates (Writer-Side)
 
-For current Codex `/goal` mechanics, read [references/codex-goal-contract.md](references/codex-goal-contract.md) when the exact runtime behavior matters.
+**The reader is presumed ignorant of the adversarial failure model until these skills have changed your design.** Cross-references are not citations or routing labels. They are prerequisite cognitive updates. If the Goal would look essentially the same without these skills, the design has failed.
 
-For multi-phase, repetitive, orchestration-heavy, compaction-sensitive, or review-sensitive work, read [references/long-horizon-workflows.md](references/long-horizon-workflows.md) before drafting the final goal.
+**Internalize the Adversary**:
+- `llm-failure-modes`: Learn the attack patterns: **goal substitution**, **verification theater**, **checklist theater**, **self-certification**, **progress theater**, **meta-artifact delegation**, and **wrapper slop**.
+- `addressing-shallow-work`: Learn how process targets (inventories, gates) become substitute wins.
+- `anti-slop`: Learn to detect success-shaped filler used to bypass real work.
+- `writing-for-agent-audiences`, `prompt-engineering`, `agent-memory`: Learn to design memory surfaces that resist narrative drift.
 
 Before proposing any concrete `/goal`, read [references/success-criteria-contracts.md](references/success-criteria-contracts.md) and use it to audit the proposed stopping criteria. This is mandatory even for simple goals.
 
-## Two-Layer Skill Loading
+### Synthesis Gate (MANDATORY)
+Before drafting a Goal, state what the prerequisite skills teach that changes this Goal’s design. Identify:
+1. The adversary’s likely false-completion strategy (the "cheapest win").
+2. The cognitive operation the worker will try to avoid.
+3. The artifact class that would launder avoidance as progress.
+4. The smallest evidence condition that forces the real work.
+5. **Adversarial Compiler**: How would a clever worker make this witness appear satisfied while leaving the user’s intended world-state false?
 
-Do not confuse writer-side skill context with worker-side skill routing.
+## Adversarial Design Ontology
 
-Writer-side context is what the agent using `goalcraft` loads before designing a workflow-backed goal. It seeds the writer's judgment about state surfaces, failure modes, review architecture, decomposition, and agent-facing prose. Naming a skill in the final goal does not retroactively give the writer that context.
+Redefine your vocabulary before drafting:
 
-Worker-side routing is what the writer puts into the `/goal`, contract, state, and phase docs for future workers to load after compaction. Loading a skill while writing the goal does not make future workers load it.
+- **Goal**: A win-condition contract in a hostile completion game.
+- **Verification**: The evidence channel the adversary cannot fake without doing the real work.
+- **State**: The minimum durable memory needed to prevent context-loss laundering, not a place to narrate progress.
+- **Review**: An independent attack on the completion claim, not a disposition loop.
+- **Blocker**: The adversary’s preferred exit move, allowed only after direct evidence rules out smaller object-level continuations.
+- **Process**: A cost-bearing control that may itself become the adversary’s substitute objective.
+- **Residue**: The remaining un-solved portion of the adversarial contract.
 
-Before drafting any workflow-backed goal, produce this internal synthesis:
+## Adversarial Design Algorithm
 
-> The writer-side skills needed before drafting are ___, because the workflow design must decide ___; the worker-side skills that must be written into the bootloader/docs are ___, loaded at ___, because future workers only keep the `/goal` text and retrieved docs.
+### 1. Identify the Adversary's Cheapest Exit
+Build a **draft completion witness**: the observable facts that would be true if an agent marked a naive version of this goal complete. Find the exploits: can the adversary launder a plan as a result? A batch as a whole? A blocker claim as completion? A self-report as evidence?
 
-If the sentence cannot name concrete existing skill slugs and the design decision each one supports, load the missing skills before drafting.
+### 2. Identify Non-Fakable Evidence
+What world-state change (files, command output, PR state, verified findings) is the **evidence channel the adversary cannot fake**? This is the **request completion witness**.
 
-For every workflow-backed goal, load writer-side context for agent-facing wording, prompt contracts, canonical state, and drift control: `writing-for-agent-audiences`, `prompt-engineering`, `agent-memory`, and `llm-failure-modes`.
+### 3. Process Budget Audit
+Compare the "cheapest exit" against the "request completion witness." Add process layers ONLY to block specific exits. For every layer, ask: **"Is satisfying this layer's compliance requirements harder than doing the task?"** If the layer merely produces better-looking progress evidence, omit it.
 
-Load additional writer-side skills before deciding the workflow when their design question is present:
+- **Completion witness**: Necessary to prevent redefinition of "done."
+- **State Surface**: Necessary only to prevent context-loss laundering across continuations.
+- **Residue Ledger**: Necessary only when branches genuinely span context; otherwise it is a bureaucratic substitute for work.
+- **Independent Review**: An independent attack on the completion claim.
 
-- Skill architecture or standalone-vs-reference decisions: `creating-skills`.
-- Failure, hard residue, or decomposition states: `hard-problem-decomposition`.
-- Orchestration or subagent lanes: `subagent-delegation`.
-- Independent review gates or reviewer-bias controls: `reviewing-subagent-work` and `jerry-behaviour`.
-- Generic success-shaped prose/code/design risks: `anti-slop`.
-- Progress, completion, or status-report discipline: `hierarchical-task-framing` and `response-preparation`.
+### 4. Derive the Adversarial Envelope
+Encode the minimum constraints, evidence gates, and state retrieval rules that make evasion costlier than completion.
 
-After this writer-side preparation, emit worker-side routing: exact skill slugs, load triggers, and the location where each trigger is enforced. Pre-retrieval skills belong in the `/goal` text because it is the only guaranteed long-term instruction. Always-on skills belong in the contract. Current state and phase-specific skills belong in state and phase docs.
+## Worker-Side Routing
 
-## Workflow
+Wire the payoff landscape for future workers. Pre-retrieval skills belong in the goal text (the bootloader). Always-on skills belong in the contract. Phase-specific skills belong in phase docs.
 
-### Calibrate The Request
+### Reference Skills By State (Worker-Side)
+Name exact skill slugs and triggers:
+- `DECOMPOSE`: load `hard-problem-decomposition`.
+- `REVIEW`: load `reviewing-subagent-work` (agent artifacts) and `jerry-behaviour` (evaluator bias); load `research-gate-review` (substantive code/research gates).
+- **Orchestration**: load `subagent-delegation`.
+- **Drift/Slop/Reward-hacking**: load `llm-failure-modes` and `anti-slop` before accepting artifacts or summaries.
+- **Progress/Response**: load `hierarchical-task-framing` and `response-preparation`.
 
-Identify the rough objective, workspace, and expected end state from the user's words before drafting. If the user supplied a draft, treat it as evidence of intent, not as authoritative scope. If a repo or files are mentioned, inspect them before finalizing the goal. If a critical success criterion is missing, ask the smallest necessary question; otherwise state assumptions.
+## Goal Engineering
 
-Build a request completion witness: the observable facts that would make a future user not need to issue another goal for the same intended task. Include work-product nouns, verbs, scale words, and implied user-visible outcomes from the original request.
+### Sliding Context Protocol
+For long-horizon work, the `/goal` text is the stable bootloader. It retrieves state, loads always-on skills, and reconciles state with artifacts. It must point to a canonical state surface (preferably `iwe`). Future workers load only the active phase doc. This keeps focus narrow while preserving the full destination outside the context window.
+
+### State Machine
+Use states as decision modes: `RECONCILE` (artifacts vs state), `FOCUS` (current sliver), `CHECK` (world-state evidence), `REVIEW` (independent judgment), `ADVANCE` (evidence-backed update), `DECOMPOSE` (residue reduction).
 
 ### Compare Completion Consequences
 
@@ -94,6 +122,9 @@ Workflow docs must cross-reference concrete existing skills by slug and trigger,
 
 Workflow-backed goals must choose a canonical state surface before drafting. Prefer the active project's `iwe` memory graph for contract, state, phase, and residue-ledger docs when it exists or project docs prescribe it. Use `iwe find` before creating, `iwe retrieve -k <key>` when resuming, and `iwe update` or `iwe new` rather than loose Markdown files. If the project has a different documented goal/planning surface, use that documented surface and name it. Do not create ad hoc `notes.md`, `progress.md`, or chat-transcript-dependent state.
 
+### Recursive Decomposition
+A failed one-shot attempt is residue. `DECOMPOSE` is a work state: split residue into observable subpieces, attempt one piece, integrate results, subtract from parent residue. **Blocker claims** are an adversary's preferred exit move; accept them only after direct evidence reduces the residue to the smallest externally owned leaf.
+
 For source-to-domain mapping, classification, or inventory goals, the canonical state
 surface must include the extraction queue, not just source file lists or mapping rows.
 Each unit must carry source behavior, extracted domain operation, required vocabulary,
@@ -102,8 +133,14 @@ goal has multiple queues, keep them separate: domain foundation/mathematical voc
 source implementation inventory, and compatibility/runtime/display/backend audit.
 
 ### Shape Evidence And Stop Conditions
+**No worker-authored summary, plan, status note, disposition, issue label, checklist, or claimed blocker is completion evidence** unless independently tied to the user-visible result.
+- Do not ask the adversary to define success.
+- Do not ask the adversary to interpret scope or classify its own residue.
+- **Verification channel**: Pre-existing locked tests, independent reviewer tests, CI configured outside the worker’s diff, or user-provided commands are the only authoritative channels. Worker-authored tests are evidence only when they are themselves reviewed against the contract.
 
-Use these as input thinking, not as required output fields: destination, starting point, core objective, scope, deliverables, non-regression constraints, autonomy rules, checkpoint rhythm, verification gates, done evidence, stop conditions, and success metric.
+### Length and Validation
+- **Hard Limit**: 4,000 characters. **Target**: 3,400 characters.
+- **Validator**: Resolve `scripts/validate_goal_length.py` relative to this `SKILL.md`.
 
 Make every requirement auditable against files, commands, PR state, logs, screenshots, external artifacts, or explicit user confirmation. Success is the intended deliverable produced through the aligned process and methods; a visible end artifact produced by a forbidden shortcut is not success.
 
@@ -185,45 +222,20 @@ If the user explicitly asks to activate the goal, call the goal tool or app-serv
 
 Use the compact shape by default:
 
-```markdown
-Assumptions:
-- ...
-
-Ready-to-paste goal:
-
-/goal Destination: ...
-
-Starting point: ...
-
-Objective/scope: ...
-
-Preserve: ...
-
-Verification: ...
-
-Done/stop: ...
-
-Success metric: ...
-```
-
-Use the longer field list only for narrow work where the first draft validates comfortably under 3,400 characters.
-
-After the block, report the validated objective character count, for example: `Objective length: 2,914 characters`.
-
-For workflow-backed goals, include companion docs first:
+## Output Format: Goal Skeleton
 
 ```markdown
-Workflow docs:
-- Contract: <iwe key or documented path> - request completion witness, Reference Skills for always-on and review/drift gates, and final review standard.
-- State: <iwe key or documented path> - current phase, active phase doc, skills to load now, next focus, evidence, current residue, and active residue ledger when decomposition spans context.
-- Phase docs: <iwe keys or documented paths> - load only the active phase unless advancing or reviewing; each has a Reference Skills section naming exact state-specific skill slugs and triggers.
-- Pre-retrieval skills in goal text: <skills that must be loaded before state decisions>.
+/goal Destination: <request completion witness in one compact sentence>.
 
-Ready-to-paste goal:
+Workflow: this goal text is the stable bootloader. At every continuation, load <pre-retrieval skills>, retrieve <state-key/path>, load the contract's always-on skills, read <contract-key/path> when advancing/reviewing/completing, reconcile state with artifacts, load only the active phase doc, load the skills named by that phase/state, and work the current sliver until its evidence/review condition passes.
 
-/goal Destination: ...
+State surface: use <iwe keys or documented project paths>. Resume with <retrieval command>. Update state through the canonical tool, not loose files or chat transcript.
 
-Workflow entry: ...
+Preserve: <scope boundaries and non-regressions>.
+
+Completion: mark complete only when the contract witness is true in artifacts and required independent review (when justified by the process-budget audit) passes. If a failed attempt occurs, enter DECOMPOSE: split the failed residue, record the active path if decomposition may span context, attempt smaller pieces, integrate solved pieces, subtract them from the parent residue, and reconcile back up the ledger before changing scope, reporting externally owned residue, or asking for follow-up work.
+
+Stop: <approval/destructive/access boundaries>.
 ```
 
 ## Quality Bar
@@ -244,3 +256,11 @@ Workflow entry: ...
 - The goal should avoid over-prescribing implementation details unless those details are part of the actual requirement.
 - The goal should preserve user boundaries: planning-only, no edits, no deploys, no commits, or approval requirements must be explicit when present.
 - The final ready-to-paste goal must pass this skill's bundled `scripts/validate_goal_length.py --target-chars 3400 --strict-target` or the deterministic fallback above.
+- **Adversarial Frame**: Design is a win-condition contract, not instructions.
+- **Prerequisite Update**: Design is changed by internalized adversarial failure modes.
+- **Synthesis Gate**: Cheapest dishonest win identified and blocked by minimum evidence.
+- **Adversarial Compiler**: Witness cannot be satisfied while the intended state is false.
+- **Minimum Envelope**: All added layers cost more to game than to perform.
+- **Blocker Evidence**: Claims allowed only after recursive decomposition to the smallest leaf.
+- Completion requires world-state evidence, not narrative.
+- Final objective passes `scripts/validate_goal_length.py --target-chars 3400 --strict-target`.

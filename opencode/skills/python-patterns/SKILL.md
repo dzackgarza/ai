@@ -30,12 +30,14 @@ applications. Targets the **latest Python** — no backwards compatibility hedgi
    syntax
 
 5. **Always uv** — never pip, never pip-tools, never poetry.
-   Use `uv run` with `# /// script` metadata blocks for standalone scripts with external
-   dependencies.
+   Use PEP 723 inline script metadata for standalone scripts with external dependencies.
+   Run via `uv run script.py`. Executable scripts get `#!/usr/bin/env -S uv run --script`.
+   See `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts
+   with uv" for the full hierarchy, forbidden pathways, and review rule.
 
 6. **Always a venv** — managed by uv
 
-7. **Always pyproject.toml** — all config lives here (ruff, mypy, pytest, etc.)
+7. **Always pyproject.toml** — project-owned metadata and runtime/build dependencies live here. Generic QC config lives in `~/ai/quality-control`.
 
 8. **Always a justfile** — all dev commands go through `just`
 
@@ -470,7 +472,7 @@ from mypackage.models import User
 from mypackage.utils import format_name
 ```
 
-### pyproject.toml — All Config Lives Here
+### pyproject.toml — Project Metadata and Dependencies
 
 ```toml
 [project]
@@ -482,38 +484,18 @@ dependencies = [
     "httpx>=0.27",
 ]
 
+# Generic QC tools (ruff, mypy, pytest, etc.) run from central/global QC — do not install per-repo.
+# See the `quality-control` skill.
 [dependency-groups]
-dev = [
-    "pytest>=8.0",
-    "pytest-cov>=5.0",
-    "ruff>=0.8",
-    "mypy>=1.13",
-]
-
-[tool.ruff]
-line-length = 120
-target-version = "py313"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "TCH", "RUF"]
-
-[tool.ruff.lint.isort]
-known-first-party = ["mypackage"]
-
-[tool.mypy]
-python_version = "3.13"
-strict = true
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_any_generics = true
+dev = []
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=mypackage --cov-report=term-missing --tb=short -q"
+addopts = "--tb=short -q"
+# Remaining QC config (ruff, mypy, coverage, etc.) belongs in global QC.
 ```
 
-### justfile — All Dev Commands
+### justfile — Project Dev Commands (QC Delegated)
 
 ```just
 # Default: show available commands
@@ -525,43 +507,17 @@ setup:
     uv venv
     uv sync
 
-# Run the full lint + type check + test suite
-check: lint typecheck test
+# Delegate all QC (fmt, lint, typecheck, test, coverage) to global QC.
+test:
+    @just -f ~/ai/quality-control/justfile test
 
-# Format code
-fmt:
-    uv run ruff format .
-    uv run ruff check --fix .
-
-# Lint code
-lint:
-    uv run ruff check .
-
-# Type check
-typecheck:
-    uv run mypy .
-
-# Run tests
-test *ARGS:
-    uv run pytest {{ARGS}}
-
-# Run tests with verbose output
-test-verbose:
-    uv run pytest -v --tb=long
-
-# Run tests matching a pattern
-test-match PATTERN:
-    uv run pytest -k "{{PATTERN}}" -v
-
-# Run tests with coverage report
-coverage:
-    uv run pytest --cov=mypackage --cov-report=html
-    @echo "Coverage report: htmlcov/index.html"
+test-ci:
+    @just -f ~/ai/quality-control/justfile test-ci
 
 # Clean build artifacts
 clean:
     rm -rf .mypy_cache .pytest_cache .ruff_cache htmlcov .coverage
-    find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+    find . -type d -name __pycache__ -exec rm -rf {} + || true
 
 # Add a dependency
 add *PKGS:
@@ -584,7 +540,7 @@ update:
 mkdir myproject && cd myproject
 uv init --lib
 uv add pydantic
-uv add --group dev pytest pytest-cov ruff mypy
+# Generic QC tools (ruff, mypy, pytest, etc.) run from central/global QC — see the `quality-control` skill
 # Copy justfile from above
 # Run: just setup
 ```
@@ -665,13 +621,9 @@ result = "".join(str(item) for item in items)
 | Error handling | Assert invariants, fail fast, no speculative try/catch |
 | Package manager | `uv` only |
 | Environment | `uv venv`, always |
-| Config | All in `pyproject.toml` |
+| Project config | In `pyproject.toml`; QC config (lint/typecheck/coverage) belongs in global QC |
 | Dev commands | All in `justfile`, run via `just` |
-| Formatting | `ruff format` via `just fmt` |
-| Linting | `ruff check` via `just lint` |
-| Type checking | `mypy --strict` via `just typecheck` |
-| Testing | `pytest` via `just test` |
-| Full check | `just check` (lint + typecheck + test) |
+| QC (fmt/lint/typecheck/test/coverage) | Delegated to global QC — use `just test` and see the `quality-control` skill |
 | Target Python | Latest (3.13+), no backwards compat |
 
 ## Anti-Patterns to Avoid
@@ -706,14 +658,15 @@ try:
 except Exception:
     result = default
 
-# Bad: pip install
-# pip install package  # use: uv add package
+# Use: uv add package
+# Use: PEP 723 metadata + uv run script.py (for standalone scripts)
+# Use: inline dependencies block (instead of requirements.txt for scripts)
 
 # Bad: Config in setup.cfg, tox.ini, .pylintrc, etc.
 # All config belongs in pyproject.toml
 
 # Bad: Running tools directly
-# ruff check .        # use: just lint
+# ruff check .        # use: just test (all QC delegated)
 # pytest              # use: just test
 
 # Bad: Bare except or broad except
@@ -763,7 +716,7 @@ except FileNotFoundError:
     return False   # wrong: if notify-send is missing, the system is broken
 
 # Good: crash. The setup problem is real; hiding it is not.
-subprocess.run(["notify-send", msg], check=True)   # CalledProcessError propagates correctly
+subprocess.run(["notify-send", msg], check=True)
 
 # Bad: guard for an error that has never been observed
 try:
@@ -775,8 +728,38 @@ except OverflowError:
 result = parse_date(user_input)
 ```
 
+## Bridge-Burning Policies
+
+The important move is to stop treating this as a case-by-case review problem. Agents are too good at finding local, linguistically plausible exceptions. The right response is to make whole classes of evasive code unrepresentable.
+
+> [!IMPORTANT]
+> **Core Principle:** Prefer blanket constraints that make bad states impossible over review rules that ask agents to judge bad states later.
+
+The recurring pattern is that an agent first tries to satisfy checking/validation surfaces (such as the compiler/typechecker, QC gates, PR review, or user queries) by manipulating the validation surface (e.g. by adding fallbacks, defaults, mocks, try/except blocks, or bypass comments) instead of reconstructing the original obligation and solving it. The policy answer is to remove the vocabulary that enables that manipulation.
+
+Adhering to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` is a non-negotiable hard constraint for all development. These rules eliminate common agent validation-evasion pathways (such as runtime defaults, fallbacks, mocks, and diagnostic smoke tests in proof paths). Refer to them as hard boundaries.
+
+> [!IMPORTANT]
+> **Bridge-Burning Red Flags:** If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. For a detailed list of Python-specific red flags (such as `os.getenv` defaults, fake resilience try/except blocks, `Any` escapes, mock/test poison, etc.), see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md).
+
+---
+
+## Policy Exception Protocol
+
+A policy exception must not be granted casually. Any exception requires:
+1. **Explicit request:** Explicit user request or source-backed product requirement.
+2. **Policy identified:** Stating the exact named policy being violated.
+3. **Justification:** Explaining why the blanket rule blocks a real required behavior.
+4. **Replacement invariant:** Defining a replacement invariant that prevents the old gaming behavior.
+5. **Boundary proof:** Providing proof at the owned boundary.
+6. **Audit trail:** Visible commit/PR explanation recording the exception details.
+
+For example, an exception allowing a fallback provider is only allowed if the product explicitly owns multi-provider behavior, and tests prove that: provider selection is explicit, failure is visible, no fake data is returned, the user can tell which provider ran, and config declares the provider order.
+
+---
+
 **Remember**: Fail fast.
 Type everything. Use pydantic.
-Run `just check` before committing.
+Run `just test` (all QC, delegated to global QC) before committing.
 No exceptions without evidence of a specific observed failure.
 No variadics, no `Any`, no silent `None` on deterministic paths.

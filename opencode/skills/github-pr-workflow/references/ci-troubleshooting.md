@@ -31,7 +31,7 @@ ERROR tests/test_foo.py - ModuleNotFoundError
 
 2. Use `read_file` to read the failing test
 
-3. Check if it’s a logic error in the code or a stale test assertion
+3. Check if it's a logic error in the code or a stale test assertion
 
 4. Look for `ModuleNotFoundError` — usually a missing dependency in CI
 
@@ -39,9 +39,7 @@ ERROR tests/test_foo.py - ModuleNotFoundError
 
 - Update assertion to match new expected behavior
 
-- Add missing dependency to requirements.txt / pyproject.toml
-
-- Fix flaky test (add retry, mock external service, fix race condition)
+- Add missing dependency to pyproject.toml
 
 * * *
 
@@ -58,15 +56,14 @@ error: would reformat src/utils.py
 
 1. Read the specific file:line numbers mentioned
 
-2. Check which linter is complaining (flake8, ruff, black, isort, mypy)
+2. Check which linter is complaining
 
 **Common fixes:**
 
-- Run the formatter locally: `black .`, `isort .`, `ruff check --fix .`
+- Lint/format checks are owned by global QC (`just test`). Run `just test` to see
+  what the CI gate expects. Do not run linters or formatters ad-hoc.
 
 - Fix the specific style violation by editing the file
-
-- If using `patch`, make sure to match existing indentation style
 
 * * *
 
@@ -82,7 +79,7 @@ src/models.py:45: error: Missing return statement
 
 1. Read the file at the mentioned line
 
-2. Check the function signature and what’s being passed
+2. Check the function signature and what's being passed
 
 **Common fixes:**
 
@@ -90,7 +87,7 @@ src/models.py:45: error: Missing return statement
 
 - Fix the function signature
 
-- Add `# type: ignore` comment as last resort (with explanation)
+- **Do not** use `# type: ignore` to silence type errors. Fix the underlying type.
 
 * * *
 
@@ -105,17 +102,17 @@ npm ERR! Could not resolve dependency
 
 **Diagnosis:**
 
-1. Check requirements.txt / package.json for the missing or incompatible dependency
+1. Check pyproject.toml / package.json for the missing or incompatible dependency
 
 2. Compare local vs CI Python/Node version
 
 **Common fixes:**
 
-- Add missing dependency to requirements file
+- Add missing dependency to pyproject.toml
 
 - Pin compatible version
 
-- Update lockfile (`pip freeze`, `npm install`)
+- Update lockfile via `uv lock` (Python) or `npm install` (Node) — **never** `pip freeze`
 
 * * *
 
@@ -140,7 +137,7 @@ Error: Resource not accessible by integration
 
 - Verify secrets exist: `gh secret list` or check repo settings
 
-- For fork PRs: some secrets aren’t available by design
+- For fork PRs: some secrets aren't available by design
 
 * * *
 
@@ -200,10 +197,10 @@ CI Failed
 ├── Test failure
 │   ├── Assertion mismatch → update test or fix logic
 │   └── Import/module error → add dependency
-├── Lint failure → run formatter, fix style
-├── Type error → fix types
+├── Lint failure → run just test to see global QC gate, fix style
+├── Type error → fix types (no # type: ignore)
 ├── Build failure
-│   ├── Missing dep → add to requirements
+│   ├── Missing dep → add to pyproject.toml
 │   └── Version conflict → update pins
 ├── Permission error → update workflow permissions (needs user)
 └── Timeout → investigate perf (may need user input)
@@ -214,7 +211,6 @@ CI Failed
 ```bash
 git add <fixed_files> && git commit -m "fix: resolve CI failure" && git push
 
-# Then monitor
-gh pr checks --watch 2>/dev/null || \
-  echo "Poll with: curl -s -H 'Authorization: token ...' https://api.github.com/repos/.../commits/$(git rev-parse HEAD)/status"
+# Then monitor via gh
+gh pr checks --watch
 ```

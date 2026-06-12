@@ -112,3 +112,22 @@ dist/
 opencode/events.jsonl
 .opencode/events.jsonl
 .opencode/opencode.json
+
+# Review runner runtime artifacts
+.review-report-*
+.review-thread-summary.json
+
+# CC Safety Net (auto-generated)
+.cc-safety-net/
+
+# OpenCode session stats (auto-generated)
+opencode/context-mode/sessions/stats-*.json
+
+# SQLite databases (auto-generated runtime state)
+opencode/context-mode/**/*.db
+opencode/context-mode/**/*.db-shm
+opencode/context-mode/**/*.db-wal
+opencode/*.db
+opencode/*.db-shm
+opencode/*.db-wal
+.agents/brooks/

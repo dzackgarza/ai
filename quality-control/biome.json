@@ -3,12 +3,28 @@
   "files": {
     "includes": [
       "**",
+      "!tsconfig.json",
+      "!**/tsconfig.json",
+      "!**/node_modules/**",
+      "!**/.venv/**",
+      "!**/__pycache__/**",
+      "!**/dist/**",
+      "!**/build/**",
+      "!**/coverage/**",
+      "!**/_ci-support/**",
+      "!**/codeql-db/**",
       "!**/@girs/**",
       "!**/__stubs__/**",
-      "!**/env.d.ts",
-      "!**/codeql-db/**",
-      "!tsconfig.json",
-      "!**/tsconfig.json"
+      "!**/external/**",
+      "!**/target/**",
+      "!**/*.bak/**",
+      "!**/.git/**",
+      "!**/.next/**",
+      "!**/.lake/**",
+      "!**/.worktrees/**",
+      "!**/vendor/**",
+      "!**/third_party/**",
+      "!**/venv/**"
     ]
   },
   "assist": {
@@ -32,6 +48,11 @@
       "quoteStyle": "double",
       "trailingCommas": "all",
       "semicolons": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }

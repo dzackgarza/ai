@@ -11,8 +11,10 @@ accuracy.
 
 ### 1. Research & Discovery
 
-- **Check Tooling First**: Run `npx tool --help` or `tool --help` for every tool before
-  concluding it lacks search/download capability.
+- **Identify the authoritative source first** — official docs, marketplace pages, or
+  GitHub readmes — before probing CLIs. After identifying the tool and contract, use
+  official CLIs through ephemeral runners when the docs indicate they are the right
+  interface.
 
 - **Exhaustive Discovery**: If initial searches yield nothing, pivot search terms
   immediately. Do not conclude absence based on one failure.
@@ -36,8 +38,9 @@ accuracy.
 
 ### 2. Acquisition & Installation
 
-- **Use Official CLI**: Prefer native CLI tools for search/install when non-interactive
-  flags exist.
+- **Ephemeral CLI first**: Prefer `npx -y`, `uvx`, or `bunx` for CLI invocations over
+  global installs. See `known-solution-first` for the external-tool discovery protocol:
+  start with public contracts (docs, release notes, issues) before probing CLIs.
 
 - **Installation Locations**: Most agent CLIs (Smithery, LobeHub, Claude Code, Codex,
   etc.) install skills to paths that are **symlinked** to the canonical OpenCode skills
@@ -137,23 +140,23 @@ Use Smithery to search or inspect a skill without manually downloading files fir
 
 ```bash
 # Search by keyword
-npx @smithery/cli skill search "pdf processing"
+npx -y @smithery/cli skill search "pdf processing"
 
 # View skill details/content without installing
-npx @smithery/cli skill view <namespace>/<name>
+npx -y @smithery/cli skill view <namespace>/<name>
 ```
 
 ### Installing
 
 ```bash
-npx @smithery/cli skill add <namespace>/<name> -a opencode --global
+npx -y @smithery/cli skill add <namespace>/<name> -a opencode --global
 ```
 
 The `--global` flag installs to `~/.agents/skills/` (symlinked to
 `~/ai/opencode/skills/`), which is the canonical OpenCode skills path.
 Available agent targets: `claude-code`, `cursor`, `codex`, `windsurf`, `opencode`,
 `github-copilot`, and 30+ others.
-Run `npx @smithery/cli skill agents` to list them.
+Run `npx -y @smithery/cli skill agents` to list them.
 
 ## LobeHub Marketplace
 

@@ -4,6 +4,9 @@ description: Build GUI applications for Linux desktop environments using AGS. Us
 ---
 # Developing Linux GUIs
 
+> [!IMPORTANT]
+> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+
 ## Core Policy
 
 **Use AGS (Aylur’s GTK Shell)** for all Linux GUI development.

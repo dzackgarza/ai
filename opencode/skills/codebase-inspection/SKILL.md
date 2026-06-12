@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [LOC, Code Analysis, pygount, Codebase, Metrics, Repository]
-    related_skills: [github-repo-management]
+    related_skills: [git-guidelines]
 prerequisites:
   commands: [pygount]
 ---
@@ -31,7 +31,7 @@ code-vs-comment ratios using `pygount`.
 ## Prerequisites
 
 ```bash
-pip install --break-system-packages pygount 2>/dev/null || pip install pygount
+uvx pygount --help
 ```
 
 ## 1. Basic Summary (Most Common)
@@ -40,7 +40,7 @@ Get a full language breakdown with file counts, code lines, and comment lines:
 
 ```bash
 cd /path/to/repo
-pygount --format=summary \
+uvx pygount --format=summary \
   --folders-to-skip=".git,node_modules,venv,.venv,__pycache__,.cache,dist,build,.next,.tox,.eggs,*.egg-info" \
   .
 ```
@@ -67,33 +67,33 @@ Adjust based on the project type:
 
 ```bash
 # Only count Python files
-pygount --suffix=py --format=summary .
+uvx pygount --suffix=py --format=summary .
 
 # Only count Python and YAML
-pygount --suffix=py,yaml,yml --format=summary .
+uvx pygount --suffix=py,yaml,yml --format=summary .
 ```
 
 ## 4. Detailed File-by-File Output
 
 ```bash
 # Default format shows per-file breakdown
-pygount --folders-to-skip=".git,node_modules,venv" .
+uvx pygount --folders-to-skip=".git,node_modules,venv" .
 
 # Sort by code lines (pipe through sort)
-pygount --folders-to-skip=".git,node_modules,venv" . | sort -t$'\t' -k1 -nr | head -20
+uvx pygount --folders-to-skip=".git,node_modules,venv" . | sort -t$'\t' -k1 -nr | head -20
 ```
 
 ## 5. Output Formats
 
 ```bash
 # Summary table (default recommendation)
-pygount --format=summary .
+uvx pygount --format=summary .
 
 # JSON output for programmatic use
-pygount --format=json .
+uvx pygount --format=json .
 
-# Pipe-friendly: Language, file count, code, docs, empty, string
-pygount --format=summary . 2>/dev/null
+# Language, file count, code, docs, empty, string (capture stderr separately if piping)
+uvx pygount --format=summary .
 ```
 
 ## 6. Interpreting Results

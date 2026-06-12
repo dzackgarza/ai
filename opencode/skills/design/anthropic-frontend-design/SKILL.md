@@ -114,6 +114,49 @@ These rules override the parent `design` skill’s defaults when this subskill i
 - Motion must serve the aesthetic: one well-orchestrated page-load stagger creates more
   impact than scattered micro-interactions.
 
+### Diagnostic Signs of LLM-Generated Design
+
+The following patterns are the most reliable visual cues that a design was
+produced by an LLM rather than a designer.
+If you see these in an artifact, they indicate the model defaulted to averaged
+training-set patterns instead of making intentional choices — fix them before
+showing the artifact to anyone:
+
+- **Thin colored borders on cards and sections** — pastel 1px borders that an
+  LLM adds because it cannot decide between fill, shadow, or no container.
+  Real designers pick one structural treatment per component.
+
+- **Gratuitous gradients** — light-blue-to-white, purple-to-pink, or any gradient
+  that serves no brand or atmospheric purpose.
+  LLMs default to gradients because they are the "safe decorative" option; a
+  deliberate designer treats gradients as a specific identity choice.
+
+- **Glow effects** — colored box-shadows, text-shadows with visible hue, or
+  radial glows that substitute for real depth.
+  These are the LLM equivalent of comic-book emphasis — they signal "I don't know
+  how to make this look important without lighting it on fire."
+
+- **Too many font sizes** — five or more distinct sizes where a disciplined
+  scale would use three or four.
+  The LLM sizes each text element independently rather than treating type as a
+  system.
+
+- **Body text below 14px** — especially on non-dashboard surfaces (landing pages,
+  marketing sections, editorial layouts).
+  The model inherits tiny sizes from enterprise dashboards and applies them
+  indiscriminately.
+
+- **Inconsistent vertical rhythm** — uneven padding between unrelated elements
+  that should share spacing, card content not optically centered, buttons with
+  asymmetric internal padding.
+  Vertical inconsistency is the most sensitive diagnostic: it is nearly universal
+  in LLM output and almost never appears in human-designed work at the same
+  frequency.
+
+These cues are not just "things to avoid" — they are the specific patterns that
+make LLM-generated design immediately recognizable.
+Eliminating them is the minimum bar for an artifact to be taken seriously.
+
 ## Policy
 
 - This subskill is for **artifacts that need to be memorable and distinctive**. For

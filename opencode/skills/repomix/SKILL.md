@@ -27,37 +27,24 @@ Use when:
 
 ## Quick Start
 
-### Check Installation
-
-```bash
-repomix --version
-```
-
-### Install
-
-```bash
-# npm
-npm install -g repomix
-
-# Homebrew (macOS/Linux)
-brew install repomix
-```
-
 ### Basic Usage
 
 ```bash
 # Package current directory (generates repomix-output.xml)
-repomix
+npx -y repomix
 
 # Specify output format
-repomix --style markdown
-repomix --style json
+npx -y repomix --style markdown
+npx -y repomix --style json
 
 # Package remote repository
-npx repomix --remote owner/repo
+npx -y repomix --remote owner/repo
 
 # Custom output with filters
-repomix --include "src/**/*.ts" --remove-comments -o output.md
+npx -y repomix --include "src/**/*.ts" --remove-comments -o output.md
+
+# Pin to a specific version
+npx -y repomix@0.2.31 --remote owner/repo
 ```
 
 ## Core Capabilities
@@ -80,13 +67,13 @@ Process remote repositories without cloning:
 
 ```bash
 # Shorthand
-npx repomix --remote yamadashy/repomix
+npx -y repomix --remote yamadashy/repomix
 
 # Full URL
-npx repomix --remote https://github.com/owner/repo
+npx -y repomix --remote https://github.com/owner/repo
 
 # Specific commit
-npx repomix --remote https://github.com/owner/repo/commit/hash
+npx -y repomix --remote https://github.com/owner/repo/commit/hash
 ```
 
 ### Comment Removal
@@ -95,7 +82,7 @@ Strip comments from supported languages (HTML, CSS, JavaScript, TypeScript, Vue,
 Python, PHP, Ruby, C, C#, Java, Go, Rust, Swift, Kotlin, Dart, Shell, YAML):
 
 ```bash
-repomix --remove-comments
+npx -y repomix --remove-comments
 ```
 
 ## Common Use Cases
@@ -104,35 +91,35 @@ repomix --remove-comments
 
 ```bash
 # Package feature branch for AI review
-repomix --include "src/**/*.ts" --remove-comments -o review.md --style markdown
+npx -y repomix --include "src/**/*.ts" --remove-comments -o review.md --style markdown
 ```
 
 ### Security Audit
 
 ```bash
 # Package third-party library
-npx repomix --remote vendor/library --style xml -o audit.xml
+npx -y repomix --remote vendor/library --style xml -o audit.xml
 ```
 
 ### Documentation Generation
 
 ```bash
 # Package with docs and code
-repomix --include "src/**,docs/**,*.md" --style markdown -o context.md
+npx -y repomix --include "src/**,docs/**,*.md" --style markdown -o context.md
 ```
 
 ### Bug Investigation
 
 ```bash
 # Package specific modules
-repomix --include "src/auth/**,src/api/**" -o debug-context.xml
+npx -y repomix --include "src/auth/**,src/api/**" -o debug-context.xml
 ```
 
 ### Implementation Planning
 
 ```bash
 # Full codebase context
-repomix --remove-comments --copy
+npx -y repomix --remove-comments --copy
 ```
 
 ## Command Line Reference
@@ -141,39 +128,39 @@ repomix --remove-comments --copy
 
 ```bash
 # Include specific patterns
-repomix --include "src/**/*.ts,*.md"
+npx -y repomix --include "src/**/*.ts,*.md"
 
 # Ignore additional patterns
-repomix -i "tests/**,*.test.js"
+npx -y repomix -i "tests/**,*.test.js"
 
 # Disable .gitignore rules
-repomix --no-gitignore
+npx -y repomix --no-gitignore
 ```
 
 ### Output Options
 
 ```bash
 # Output format
-repomix --style markdown  # or xml, json, plain
+npx -y repomix --style markdown  # or xml, json, plain
 
 # Output file path
-repomix -o output.md
+npx -y repomix -o output.md
 
 # Remove comments
-repomix --remove-comments
+npx -y repomix --remove-comments
 
 # Copy to clipboard
-repomix --copy
+npx -y repomix --copy
 ```
 
 ### Configuration
 
 ```bash
 # Use custom config file
-repomix -c custom-config.json
+npx -y repomix -c custom-config.json
 
 # Initialize new config
-repomix --init  # creates repomix.config.json
+npx -y repomix --init  # creates repomix.config.json
 ```
 
 ## Token Management
@@ -209,7 +196,7 @@ Best practices:
 Disable security checks if needed:
 
 ```bash
-repomix --no-security-check
+npx -y repomix --no-security-check
 ```
 
 ## Implementation Workflow

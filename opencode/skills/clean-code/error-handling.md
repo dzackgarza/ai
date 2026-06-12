@@ -8,6 +8,11 @@ handling.
 
 ## Use Exceptions Rather Than Return Codes
 
+**Note:** This skill is subordinate to repo-specific rules. In this environment, the
+`python-patterns` skill's "fail fast, no speculative try/catch" doctrine takes
+precedence over the patterns below. Exceptions are added only after observing a specific
+failure, not pre-emptively. See the authority hierarchy in `quality-control`.
+
 Return codes clutter the caller and are easy to forget:
 
 ```java
@@ -49,16 +54,18 @@ private void tryToShutDown() throws DeviceShutDownError {
 Two concerns (device shutdown algorithm and error handling) are now separated.
 You can understand each independently.
 
-## Write Your Try-Catch-Finally Statement First
+## Handle Exceptions Only After Observing a Failure
 
 Try blocks are like transactions—your catch must leave the program in a consistent
 state.
 
-**Start with try-catch-finally when writing code that could throw.** This defines what
-users should expect no matter what goes wrong.
+**Do not add try/catch pre-emptively.** In this environment, the fail-loud policy
+(`python-patterns`) takes precedence: add exception handling only after a specific
+failure has been observed in practice. Start with assertions and let errors propagate.
+See the authority hierarchy in `quality-control`.
 
-Use TDD: Write tests that force exceptions, then add behavior to satisfy tests.
-Build the transaction scope first.
+When a specific failure has been observed, add the minimal exception handling needed,
+keeping the happy path clear.
 
 ## Use Unchecked Exceptions
 
@@ -117,39 +124,37 @@ try {
 
 **Wrapping third-party APIs is a best practice:**
 
-- Minimizes dependencies
+- Defines an owned semantic boundary
 
-- Easy to mock in tests
+- Centralizes contract validation
 
-- Not tied to vendor’s design choices
+- Not tied to vendor's design choices
 
 - Can define an API you like
 
 Often a single exception class is fine.
 Use different classes only when you need to catch one and let another pass through.
 
-## Define the Normal Flow
+## Define the Normal Flow — With Domain-Semantic Special Cases Only
 
-Sometimes you don’t want to abort on special cases:
+When a special case is a real domain semantic (not a defensive default), model it
+explicitly:
 
 ```java
-// Bad - exception clutters logic
-try {
-    MealExpenses expenses = expenseReportDAO.getMeals(employee.getID());
-    m_total += expenses.getTotal();
-} catch(MealExpensesNotFound e) {
-    m_total += getMealPerDiem();
-}
-
-// Good - special case pattern
+// Good - special case pattern for real domain semantics
 MealExpenses expenses = expenseReportDAO.getMeals(employee.getID());
 m_total += expenses.getTotal();
 // DAO returns PerDiemMealExpenses when no meals, which returns per diem as total
 ```
 
 **SPECIAL CASE PATTERN:** Create a class that handles the special case, so client code
-doesn’t deal with exceptional behavior.
-The behavior is encapsulated in the special case object.
+doesn't deal with exceptional behavior.
+
+**Restriction:** Special cases are allowed only when they encode explicit domain
+semantics — not as soft defaults or defensive against conditions that should not occur.
+In this environment, fail-loud policy (`python-patterns`) takes precedence: if an
+impossible condition occurs, `assert False` is the correct response, not a special-case
+object that silently absorbs the error. See the authority hierarchy in `quality-control`.
 
 ## Don’t Return Null
 

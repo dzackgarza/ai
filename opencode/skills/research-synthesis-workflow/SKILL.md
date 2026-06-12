@@ -4,45 +4,20 @@ description: Use when combining multiple sources into a single evidence-linked s
 ---
 # Research Synthesis Workflow
 
-Copy this checklist and track your progress:
+## Synthesis Gates (not checklists)
 
-```
-Research Progress:
-- [ ] Step 1: Read all source documents
-- [ ] Step 2: Identify key themes
-- [ ] Step 3: Cross-reference claims
-- [ ] Step 4: Create structured summary
-- [ ] Step 5: Verify citations
-```
+Before producing output, answer each gate. If you cannot answer a gate, you have not
+done the synthesis.
 
-**Step 1: Read all source documents**
+1. **What claim changed?** — State the strongest claim the synthesis adds or refutes.
+   Do not list every topic covered. Name the delta.
 
-Review each document in the `sources/` directory.
-Note the main arguments and supporting evidence.
+2. **What sources support this claim?** — Cite specific documents, sections, or data
+   points. "Multiple sources agree" is not a citation.
 
-**Step 2: Identify key themes**
+3. **What disagrees?** — If all sources agree, say so explicitly. If any source
+   contradicts or qualifies the claim, state the disagreement and how you resolved it.
 
-Look for patterns across sources.
-What themes appear repeatedly?
-Where do sources agree or disagree?
-
-**Step 3: Cross-reference claims**
-
-For each major claim, verify it appears in the source material.
-Note which source supports each point.
-
-**Step 4: Create structured summary**
-
-Organize findings by theme.
-Include:
-
-- Main claim
-
-- Supporting evidence from sources
-
-- Conflicting viewpoints (if any)
-
-**Step 5: Verify citations**
-
-Check that every claim references the correct source document.
-If citations are incomplete, return to Step 3.
+4. **What remains uncertain?** — Identify gaps, missing sources, low-confidence
+   inferences, or open questions. This is not a self-deprecation exercise — it bounds
+   the synthesis so a reader knows where to invest verification effort.

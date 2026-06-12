@@ -4,6 +4,9 @@ description: Use when creating implementation plans that will pass review and ex
 ---
 # Creating Implementation Plans
 
+> [!IMPORTANT]
+> All implementation plans created under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Plans must specify how these constraints are enforced for the target code.
+
 A plan is good when it can be executed by someone who wasn’t in the design conversation,
 produces verifiable results, and doesn’t require mid-execution course corrections.
 
@@ -125,7 +128,7 @@ Each task must specify:
 
 ### 7. Validation must be externalized
 
-Validate through observable checks: tests, linters, typecheckers, smoke commands, proof
+Validate through observable checks: tests, linters, typecheckers, smoke commands (must not be proof-free smoke tests, see Policy 5), proof
 obligations, file inventories, diff checks, reproducible outputs, schema validation,
 link/build checks.
 
@@ -291,7 +294,7 @@ validation method
 
 - Integration checks
 
-- Representative real-use smoke tests
+- Representative real-use smoke tests (must be real, proof-bearing boundary tests or diagnostic commands, not proof-free smoke tests per Policy 5)
 
 ### H. Risk Handling
 
@@ -416,7 +419,7 @@ Additional requirements:
 
 - Migration order for producers before consumers
 
-Useful validations: CLI `--help`, real install, import smoke tests, schema validation,
+Useful validations: CLI `--help`, real install, import smoke tests (must be real boundary tests/diagnostic commands, not proof-free smoke tests per Policy 5), schema validation,
 CI reproduction, end-to-end command execution.
 
 ### Documentation / Knowledge Base / Writing

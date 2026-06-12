@@ -9,23 +9,16 @@ should be avoided or cleaned up.
 
 ## Table of Contents
 
-- Overused Transition Phrases
+- **[ OVERUSE ]** Overused Transition Phrases
+- **[ HEDGE ]** Generic Hedge Language
+- **[ META ]** Unnecessary Meta-Commentary
+- **[ BUZZWORD ]** Corporate Buzzword Clusters
+- **[ QUALIFIER ]** Redundant Qualifiers
+- **[ INTENSIFIER ]** Empty Intensifiers
+- **[ FILLER ]** Filler Constructions
+- **[ DETECT ]** Detection Patterns
 
-- Generic Hedge Language
-
-- Unnecessary Meta-Commentary
-
-- Corporate Buzzword Clusters
-
-- Redundant Qualifiers
-
-- Empty Intensifiers
-
-- Filler Constructions
-
-- Detection Patterns
-
-## Overused Transition Phrases
+## **[ OVERUSE ]** Overused Transition Phrases
 
 These phrases appear disproportionately in AI-generated text and signal low-quality
 content:
@@ -72,7 +65,7 @@ content:
 
 - “that being said”
 
-## Generic Hedge Language
+## **[ HEDGE ]** Generic Hedge Language
 
 Excessive hedging that adds no value:
 
@@ -99,7 +92,7 @@ Excessive hedging that adds no value:
 **Better approach:** Be direct.
 If uncertain, state the uncertainty concretely.
 
-## Unnecessary Meta-Commentary
+## **[ META ]** Unnecessary Meta-Commentary
 
 Self-referential statements that add no information:
 
@@ -120,7 +113,7 @@ Self-referential statements that add no information:
 **Better approach:** Just say the thing.
 Skip the stage directions.
 
-## Corporate Buzzword Clusters
+## **[ BUZZWORD ]** Corporate Buzzword Clusters
 
 Excessive business jargon that obscures meaning:
 
@@ -166,7 +159,7 @@ Excessive business jargon that obscures meaning:
 
 - “maximize value”
 
-## Redundant Qualifiers
+## **[ QUALIFIER ]** Redundant Qualifiers
 
 Phrases that repeat themselves:
 
@@ -190,7 +183,7 @@ Phrases that repeat themselves:
 
 - “final outcome”
 
-## Empty Intensifiers
+## **[ INTENSIFIER ]** Empty Intensifiers
 
 Words that try to add emphasis but fail:
 
@@ -206,7 +199,7 @@ Words that try to add emphasis but fail:
 
 - “actually” (when not contrasting)
 
-## Filler Constructions
+## **[ FILLER ]** Filler Constructions
 
 ### Wordy Phrases with Simple Alternatives
 
@@ -230,7 +223,7 @@ Words that try to add emphasis but fail:
 
 - “There exists a need for...” → “We need …”
 
-## Detection Patterns
+## **[ DETECT ]** Detection Patterns
 
 ### Sentence-Level Red Flags
 

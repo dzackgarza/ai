@@ -7,10 +7,25 @@ description: Use when writing, reviewing, or refactoring code — especially whe
 ## Overview
 
 Clean code reads like well-written prose.
+
+**Authority note:** This skill is subordinate to repo-specific policies.
+Where this skill's patterns conflict with higher-ranked skills in the authority
+hierarchy (see `quality-control`), the higher-ranked skill wins. In particular:
+
+- `python-patterns`' "fail fast, no speculative try/catch" overrides "start with
+  try-catch-finally" (see `error-handling.md`).
+
+- `test-guidelines`'s "no mocks, no exceptions" overrides any mock-enabling rationale.
+
+- The fail-loud policy means special cases and default objects are allowed only as
+  explicit domain semantics, not as defensive soft defaults.
+
+- **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)) are HARD, non-negotiable rules that eliminate validation-evasion pathways (such as runtime defaults, mocks, and fallbacks) and must be strictly followed.
+
 Every name reveals intent.
 Every function tells a story.
 Every class has a single purpose.
-The goal isn’t just working code—it’s code that others can understand quickly, modify
+The goal isn't just working code—it's code that others can understand quickly, modify
 safely, and extend confidently.
 
 > “Clean code always looks like it was written by someone who cares.”
@@ -149,7 +164,7 @@ comment would be unnecessary.
 | --- | --- |
 | Use exceptions over return codes | Separates algorithm from error handling |
 | Provide context | Include operation that failed and type of failure |
-| Wrap third-party APIs | Minimizes dependencies, enables mocking |
+| Wrap third-party APIs | Defines owned semantic boundary, centralizes contract validation |
 | Use Special Case Pattern | Return object that handles special case (empty list, default values) |
 | **Don’t return null** | Creates work, invites NullPointerException |
 | **Don’t pass null** | Worse than returning null—forbid it by default |
@@ -191,7 +206,7 @@ Add new behavior via subclassing, not modifying existing code.
 ### Dependency Inversion Principle (DIP)
 
 Depend on abstractions, not concrete details.
-Inject dependencies for testability.
+Inject dependencies for explicit dependency flow and boundary control.
 
 ```python
 # Bad - can't test without network
@@ -199,7 +214,7 @@ class Portfolio:
     def __init__(self):
         self.exchange = TokyoStockExchange()
 
-# Good - injectable, testable
+# Good - explicit dependency flow, boundary control
 class Portfolio:
     def __init__(self, exchange: StockExchange):
         self.exchange = exchange
@@ -343,3 +358,13 @@ into decoupled units.
 
 Don’t. Go back. Clean it up.
 Leave it better than you found it.
+
+## Cross-References
+
+- **anti-slop → deepening** — This skill's SRP and DIP guidance overlaps with the deepening vocabulary in `anti-slop/references/deepening-vocabulary.md`. Where this skill says "classes should be small" and "depend on abstractions," deepening gives precise language: a module should be **deep** (high leverage at the interface, high locality in the implementation), and seams should only be introduced where there are at least two adapters. The deletion test is a concrete check for SRP: if deleting the class makes complexity vanish, it was a pass-through, not a real responsibility.
+
+- **anti-slop → deepening** — `anti-slop/references/deepening.md` provides the process for turning shallow modules (wide interfaces, pass-throughs) into deep ones. When this skill identifies cohesion breakdown or SRP violations, the deepening reference tells you how to consolidate them: classify dependencies (in-process, local-substitutable, ports & adapters, mock), place seams, and test through the deepened interface.
+
+- **thermo-nuclear-code-quality-review** — For aggressive simplification that goes beyond "clean code" into restructuring, load thermo-nuclear alongside this skill.
+
+- **anti-slop → Bridge-Burning Policies** — Modern development requires adhering strictly to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md`. These represent non-negotiable constraints to prevent agent evasion (such as runtime defaults, fallbacks, and mocks). For a detailed catalog of code constructs that violate these policies, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md).

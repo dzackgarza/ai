@@ -23,9 +23,9 @@ npm install -g @openai/codex
 # Gemini CLI
 npm install -g @google/gemini-cli
 
-# Qwen Code
-npm install -g @qwen-code/qwen-code
-# Alternative quick install: bash -c "$(curl -fsSL https://qwen-code-assets.oss-cn-hangzhou.aliyuncs.com/installation/install-qwen.sh)"
+# Antigravity CLI
+npm install -g @antigravity/cli
+# Alternative: bash <(curl -fsSL https://antigravity.codes/install.sh)
 
 # OpenCode
 npm install -g opencode
@@ -33,10 +33,6 @@ npm install -g opencode
 
 # Kilo Code
 npm install -g @kilocode/cli
-# Alternative: Install via VS Code extension or JetBrains plugin
-
-# Amp (native install with auto-updates)
-curl -fsSL https://ampcode.com/install.sh | bash
 ```
 
 **Cursor CLI** (required for Cursor ACP provider in OpenCode):
@@ -63,10 +59,9 @@ just --justfile ~/ai/home-justfile install-mcps
 claude
 codex
 gemini
-qwen
+agy
 opencode
 kilo
-amp
 ```
 
 ## Harnesses
@@ -76,10 +71,9 @@ amp
 | claude | `~/.claude/CLAUDE.md` | `CLAUDE.md` in project root | — | `~/.claude/skills/` | [docs](https://docs.anthropic.com/en/docs/claude-code/overview) |
 | codex | `~/.codex/AGENTS.md` | `AGENTS.md` in project root | — | `~/.codex/skills/` | [docs](https://developers.openai.com/codex/guides/agents-md/) |
 | gemini | `~/.gemini/GEMINI.md` | `GEMINI.md` in workspace | `GEMINI_SYSTEM_MD` env var | `~/.agents/skills/` | [context](https://geminicli.com/docs/cli/gemini-md/), [skills](https://geminicli.com/docs/cli/skills/), [system](https://geminicli.com/docs/cli/system-prompt/) |
-| qwen | `~/.qwen/QWEN.md` | `QWEN.md` in workspace | `QWEN_SYSTEM_MD` env var | `~/.qwen/skills/` | [docs](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/) |
+| agy | `~/.gemini/AGENTS.md` | `AGENTS.md`, `CLAUDE.md` in project root | — | `~/.gemini/antigravity-cli/skills/` | [docs](https://antigravity.codes/blog/antigravity-agents-md-guide) |
 | opencode | `~/.config/opencode/AGENTS.md` | `AGENTS.md` in project root | `prompt` field in agent config | `~/.claude/skills/` (fallback) | [docs](https://opencode.ai/docs/rules/) |
 | kilo | `~/.config/kilo/AGENTS.md` | `AGENTS.md` in project root | `prompt` field in agent config | `~/.kilocode/skills/` | [docs](https://kilo.ai/docs/agent-behavior/agents-md/), [skills](https://kilo.ai/docs/agent-behavior/skills) |
-| amp | `~/.config/amp/AGENTS.md`, `~/.config/AGENTS.md` | `AGENTS.md` in cwd, parent dirs, subtrees | — | `~/.config/agents/skills/`, `~/.config/amp/skills/`, `.agents/skills/`, `.claude/skills/`, `~/.claude/skills/` | [docs](https://ampcode.com/manual) |
 
 **Master files (symlinked to all harnesses):**
 
@@ -113,16 +107,18 @@ amp
 
 - System prompt override: See [System Prompt Override](#system-prompt-override) section
 
-**Qwen Code**
-([source](https://qwenlm.github.io/qwen-code-docs/en/users/configuration/settings/)):
+**Antigravity CLI (agy)**
+([docs](https://antigravity.codes/blog/antigravity-agents-md-guide)):
 
-- Forked from Gemini CLI, uses similar context system
+- AGENTS.md support added in v1.20.3 (March 2026)
 
-- Default context file: `QWEN.md` (configurable via `context.fileName`)
+- Precedence: `GEMINI.md` > `AGENTS.md` > `.agent/rules/`
 
-- Skills from `.qwen/skills/` (workspace) and `~/.qwen/skills/` (user)
+- Global context: `~/.gemini/AGENTS.md` or `~/.gemini/GEMINI.md`
 
-- System prompt override: See [System Prompt Override](#system-prompt-override) section
+- Project context: `AGENTS.md` or `CLAUDE.md` in project root
+
+- Skills: `~/.gemini/antigravity-cli/skills/` (home), `.antigravity-cli/skills/` (project)
 
 **OpenCode** ([source](https://opencode.ai/docs/rules/)):
 
@@ -136,40 +132,41 @@ amp
 
 #### OpenCode Config Architecture
 
-`opencode.json` is a **built artifact** and should not be edited directly.
-Manual changes will be overwritten.
-The configuration is assembled from:
+`opencode.json` is a **built artifact — never manually edited, touched, or maintained.**
+It is assembled by `scripts/build_config.py` from two disjoint source layers:
 
-- **Skeleton**: `opencode/configs/config_skeleton.json` (base template, MCP, global
-  permissions)
+1. **Skeleton** (`opencode/configs/config_skeleton.json`): permanent top-level defaults
+   (MCP servers, permissions, formatter, LSP). One-time setup. Rarely changes.
 
-- **Providers**: `opencode/configs/providers/*.json` (merged into the `provider` key)
+2. **Provider files** (`opencode/configs/providers/*.json`): per-provider model
+   configuration — blocklists, renames, and overrides that shadow the automatic
+   population from [models.dev](https://models.dev).
 
-- **Agents**: Compiled from `ai-prompts` into `opencode/agents/*.md` with injected
-  permissions.
+The entire point of this split is to modularize what is, by construction, a massive
+`opencode.json`. OpenCode automatically populates models from the model registry; the
+provider files are **deliberate shadows** over that automatic list — explicitly blocking
+non-wanted models and explicitly renaming/annotating wanted models to match local naming
+conventions. Without them, the models list would contain hundreds of useless entries
+under opaque upstream names. The 1921-line `opencode.json` is not accidental complexity
+— it is domain cardinality, directly proportional to the model ecosystem's size.
 
-**Build Commands:**
+**Maintaining provider files is expected, designed, ongoing work.**
+Adding a model to a blocklist or a rename is not "technical debt" — it is the intended
+mechanism for fine-grained model selection. The provider files *are* the source of truth
+for model policy.
+
+**Build commands (run both, in order):**
 
 ```bash
 # 1. Compile permissions and agents
 cd opencode && uv run permissions/main.py --apply
 
-# 2. Merge skeleton and providers into opencode.json
+# 2. Merge skeleton + providers into opencode.json
 cd opencode && uv run scripts/build_config.py
 ```
 
-See `opencode/README.md` for the full technical breakdown.
-
-**Amp** ([source](https://ampcode.com/manual)):
-
-- Global: `$HOME/.config/amp/AGENTS.md` or `$HOME/.config/AGENTS.md`
-
-- Project: `AGENTS.md` in cwd, parent dirs (up to `$HOME`), subtrees
-
-- Fallback: If no `AGENTS.md`, reads `AGENT.md` or `CLAUDE.md`
-
-- Skills precedence (first wins): `~/.config/agents/skills/` → `~/.config/amp/skills/` →
-  `.agents/skills/` → `.claude/skills/` → `~/.claude/skills/`
+See `opencode/configs/AGENTS.md` for the full architectural breakdown and
+`opencode/configs/providers/` for provider source files.
 
 **Claude Code** ([source](https://docs.anthropic.com/en/docs/claude-code/overview)):
 
@@ -200,43 +197,54 @@ Place these in your project root:
 | Claude | `CLAUDE.md` | `.claude/commands/` (slash commands) | — |
 | Codex | `AGENTS.md` | — | — |
 | Gemini | `GEMINI.md` | `.gemini/skills/` | `.gemini/settings.json` |
-| Qwen | `QWEN.md` | `.qwen/skills/` | `.qwen/settings.json` |
+| Agy | `AGENTS.md`, `CLAUDE.md` | `.antigravity-cli/skills/` | — |
 | OpenCode | `AGENTS.md` | — | `opencode.json` |
 | Kilo | `AGENTS.md` | `.kilocode/skills/` | `.kilocode/launchConfig.json` |
-| Amp | `AGENTS.md` | `.agents/skills/` | — |
 
 **Precedence (workspace > user > built-in):**
 
 | Harness | Context Hierarchy | Skills Hierarchy |
 | --- | --- | --- |
 | Gemini | Project `.gemini/GEMINI.md` > `~/.gemini/GEMINI.md` > JIT | `.agents/skills/` > `.gemini/skills/` > `~/.gemini/skills/` |
-| Qwen | Project `.qwen/QWEN.md` > `~/.qwen/QWEN.md` | `.qwen/skills/` > `~/.qwen/skills/` |
+| Agy | `GEMINI.md` > `AGENTS.md` > `.agent/rules/` (project root) | `.antigravity-cli/skills/` > `~/.gemini/antigravity-cli/skills/` |
 | Codex | Walks project root → cwd reading `AGENTS.md` | — |
 | OpenCode | `AGENTS.md` in project root > `~/.config/opencode/AGENTS.md` | `~/.claude/skills/` (fallback only) |
 | Kilo | `AGENTS.md` in project root > `~/.config/kilo/AGENTS.md` | `.kilocode/skills/` > `~/.kilocode/skills/` |
-| Amp | cwd → parent dirs (to `$HOME`) → subtrees | `.agents/skills/` > `.claude/skills/` > `~/.claude/skills/` |
 
 **Example project structure:**
 
 ```
 my-project/
-├── AGENTS.md              # Context for Codex, OpenCode, Kilo, Amp
-├── GEMINI.md              # Context for Gemini (or configure to read AGENTS.md)
-├── QWEN.md                # Context for Qwen
-├── CLAUDE.md              # Context for Claude
+├── AGENTS.md              # Context for Codex, OpenCode, Kilo, Agy
+├── CLAUDE.md              # Context for Claude, Agy (fallback)
+├── GEMINI.md              # Context for Gemini, Agy (primary)
 ├── .gemini/
 │   ├── settings.json      # Gemini project config
 │   └── skills/            # Gemini project skills
-├── .qwen/
-│   ├── settings.json      # Qwen project config
-│   └── skills/            # Qwen project skills
+├── .antigravity-cli/
+│   └── skills/            # Agy project skills
 ├── .kilocode/
 │   ├── launchConfig.json  # Kilo project config
 │   └── skills/            # Kilo project skills
 ├── .agents/
-│   └── skills/            # Amp project skills
+│   └── skills/            # Shared project skills
 └── opencode.json          # OpenCode project config
 ```
+
+### Skills Directory Structure
+
+`opencode/skills/` contains ~150 skill directories loaded by various harnesses via
+their `skill()` tool (or equivalent). The flat single-directory layout is
+**vendor-imposed** — each harness expects skills at a specific path and resolves them
+by name, not by subdirectory. Hierarchical nesting (e.g., `math/lean4/`,
+`devtools/probe/`) would break skill discovery.
+
+Skills are inherently heterogeneous because they cover the full range of domains the
+agent works in: mathematical research, debugging, CLI workflows, writing,
+linting, and system configuration. A flat directory of independently loadable modules
+is the correct pattern for this interface.
+
+See `opencode/skills/` for the full list.
 
 ### Context Files vs System Prompts
 
@@ -251,12 +259,11 @@ variables:
 | Harness | Context File (appended) | System Prompt Override (replaces) |
 | --- | --- | --- |
 | Gemini | GEMINI.md | `GEMINI_SYSTEM_MD` env var |
-| Qwen | QWEN.md | `QWEN_SYSTEM_MD` env var |
+| Agy | AGENTS.md, CLAUDE.md | — |
 | OpenCode | AGENTS.md | `prompt` field in agent config |
 | Kilo | AGENTS.md | `prompt` field in agent config |
 | Claude | CLAUDE.md | — |
 | Codex | AGENTS.md | — |
-| Amp | AGENTS.md | — |
 
 **When to override the system prompt:**
 
@@ -303,14 +310,10 @@ GEMINI_SYSTEM_MD=1
 
 When active, Gemini shows `|⌐■_■|` indicator in the UI.
 
-**Qwen Code**:
+**Antigravity CLI**:
 
-Forked from Gemini CLI - same mechanism with `QWEN_SYSTEM_MD`. Like Gemini, this is
-automatically configured to point to the interactive agent prompt by `just install`.
-
-```bash
-QWEN_SYSTEM_MD=/path/to/system.md qwen
-```
+Reads `~/.gemini/AGENTS.md` (global) or `AGENTS.md`/`CLAUDE.md` in the project root.
+See [AGENTS.md guide](https://antigravity.codes/blog/antigravity-agents-md-guide) for details.
 
 **OpenCode** ([docs](https://opencode.ai/docs/agents/)):
 
@@ -528,14 +531,8 @@ Or edit `settings.json`:
 
 Config files: `~/.gemini/settings.json` (user), `.gemini/settings.json` (project)
 
-**Qwen Code** ([docs](https://qwenlm.github.io/qwen-code-docs/)): Forked from Gemini CLI
-\- same configuration pattern:
-
-```bash
-qwen mcp add --transport http <name> <url>
-```
-
-Config files: `~/.qwen/settings.json` (user), `.qwen/settings.json` (project)
+**Antigravity CLI (agy)**: MCP config follows the same format as Gemini CLI.
+Config files: `~/.gemini/settings.json` (shared with Gemini)
 
 **Kilo**: Edit `~/.kilocode/cli/global/settings/mcp_settings.json`:
 
@@ -552,9 +549,6 @@ Config files: `~/.qwen/settings.json` (user), `.qwen/settings.json` (project)
 }
 ```
 
-**Amp** ([docs](https://ampcode.com/manual)): Amp reads MCP config from multiple
-locations. Check `~/.config/amp/` or harness documentation for current format.
-
 ## OpenCode Plugins
 
 Config: `~/ai/opencode/opencode.json`
@@ -565,7 +559,6 @@ Config: `~/ai/opencode/opencode.json`
 | --- | --- | --- |
 | `opencode-antigravity-auth@latest` | Antigravity provider auth (Gemini, Claude via Google) | https://github.com/NoeFabris/opencode-antigravity-auth |
 | `opencode-anthropic-auth@latest` | Anthropic OAuth authentication | https://github.com/anomalyco/opencode-anthropic-auth |
-| `opencode-qwencode-auth` | Qwen OAuth authentication | https://github.com/anomalyco/opencode/issues/11557 |
 | `opencode-openai-codex-auth` | OpenAI Codex auth (GPT-5.x Codex models) | https://github.com/numman-ali/opencode-openai-codex-auth |
 | `@rama_nigg/open-cursor@latest` | Cursor ACP provider (requires Cursor CLI) | https://github.com/Nomadcxx/opencode-cursor |
 

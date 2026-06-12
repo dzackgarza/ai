@@ -124,6 +124,10 @@ Apply the baseline prompt above, plus these explicit review rules:
    - Do not over-index on micro-optimizations, but do flag avoidable orchestration
      complexity that makes the implementation more brittle.
 
+8. **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies)) are non-negotiable hard constraints.
+
+   - Any implementation or refactoring suggestion must strictly respect the policies (e.g. no runtime defaults, no fallbacks, no mocks in proof paths, no boolean flags in owned APIs, no optional critical dependencies).
+
 ## Primary Review Questions
 
 For every meaningful change, ask:
@@ -365,9 +369,17 @@ cleaner decomposition.
   box-checking. Provides structural-scrutiny patterns for detecting work that satisfies
   format without satisfying intent.
 
+- **anti-slop → deepening** → Load `references/deepening.md` and
+  `references/deepening-vocabulary.md` alongside when identifying pass-through wrappers,
+  shallow abstractions, or missed deepening opportunities. The deepening vocabulary gives
+  precise language for describing what's wrong (shallow module, pass-through) and what
+  should replace it (deep module, concentrated leverage, seam discipline).
+
 - **reviewing-subagent-work** → Load alongside when reviewing code produced by a
   subagent. Provides the Synthesis Gate for verifying that code actually achieves the
   stated goal.
 
 - **test-guidelines** → Load alongside when code-quality issues affect tests, QC, or
   proof surfaces.
+
+- **anti-slop → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) are the core criteria for what constitutes a correct, non-evasive implementation. Any code quality review must enforce them as hard, non-negotiable boundaries.

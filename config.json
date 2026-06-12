@@ -1,0 +1,99 @@
+{
+  "rotation": {
+    "strategy": "hybrid",
+    "cooldown": {
+      "defaultDurationMs": 60000,
+      "maxDurationMs": 3600000
+    }
+  },
+  "scoring": {
+    "healthRange": {
+      "min": 0,
+      "max": 100,
+      "initial": 100
+    },
+    "penalties": {
+      "apiError": -10,
+      "refreshError": -20,
+      "fatalError": -50,
+      "systemicError": -5
+    },
+    "rewards": {
+      "success": 1
+    },
+    "weights": {
+      "health": 2,
+      "lru": 0.1
+    }
+  },
+  "models": {
+    "blacklist": [],
+    "routing": {
+      "sandboxKeywords": [
+        "gpt",
+        "antigravity",
+        "image"
+      ],
+      "cliKeywords": [
+        "claude",
+        "gemini-2.0",
+        "gemini-2.5",
+        "-preview"
+      ],
+      "forceToSandbox": [
+        "gpt"
+      ]
+    },
+    "timeouts": {
+      "default": 30000,
+      "claude": 60000,
+      "gemini-3-pro": 45000,
+      "gemini-3.1-pro": 45000,
+      "thinking": 120000
+    }
+  },
+  "retry": {
+    "maxAttempts": 5,
+    "transientRetryThresholdSeconds": 5
+  },
+  "tokens": {
+    "expiryBufferMs": 60000
+  },
+  "quota": {
+    "refreshIntervalMs": 300000,
+    "initialDelayMs": 10000
+  },
+  "endpoints": {
+    "sandbox": [
+      "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+      "https://cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+      "https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+      "https://autopush-cloudcode-pa.sandbox.googleapis.com/v1internal:streamGenerateContent?alt=sse"
+    ],
+    "cli": [
+      "https://cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+      "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+      "https://autopush-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse"
+    ]
+  },
+  "logging": {
+    "maxBufferSize": 200,
+    "enableConsoleCapture": true
+  },
+  "features": {
+    "googleSearchGrounding": false,
+    "groundingMode": "auto",
+    "keepThinking": false,
+    "sanitizeToolNames": true,
+    "pidOffsetEnabled": false,
+    "softQuotaThresholdPercent": 90,
+    "jitterEnabled": true,
+    "jitterMinMs": 50,
+    "jitterMaxMs": 300
+  },
+  "scheduling": {
+    "mode": "cache_first",
+    "maxCacheFirstWaitSeconds": 60,
+    "maxRateLimitWaitSeconds": 300
+  }
+}

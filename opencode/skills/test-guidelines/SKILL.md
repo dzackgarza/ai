@@ -6,8 +6,12 @@ Note: if you are working with a PR, read the adjacent pr-guide.md file.
 
 # HIGH-QUALITY TESTING STANDARDS (GUIDELINES)
 
+Before writing, reviewing, or modifying tests or Quality Control configurations, consult the central policy index:
+[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
+
 **MANDATORY FIRST STEP: You MUST read this entire file before taking ANY action.
 This is the source of truth for all test work.**
+
 
 ## Core Principle
 
@@ -153,8 +157,10 @@ functionality.
 
 1. **Action-First** — Execute tool calls BEFORE any explanation.
 
-2. **Exploration Parallelism** — Make 3 parallel tool calls (e.g., `read`, `grep`,
-   `glob`) during initial context gathering.
+2. **Split by ownership in initial investigation** — For project-internal unknowns,
+   start with `tree`/shape inspection. For external tool/API/compiler unknowns, load
+   `known-solution-first` and search public contracts first. Do not force a rigid
+   parallel tool-call pattern — use the appropriate model for the uncertainty type.
 
 3. **REQUIRED: Reference Skills** — Strictly follow `prompt-engineering`,
    `agent-orchestration`, and the guidelines below.
@@ -385,33 +391,59 @@ The local fixture source for these tests is
 
 * * *
 
-## Assertion Rule
+## Proof-Only Assertion Policy
 
-Assertions should express the nontrivial claim being proven.
+A project test is admitted only if every assertion increases confidence in a repository-owned behavior.
+A test line is admissible only if it increases the epistemic status of a repository-owned proof burden.
+If an assertion would still pass on a plausibly broken app, it is banned.
+No assertion without discrimination.
 
-**Prefer:**
+A test line is banned if it would pass when:
+- the app is not wired to the real boundary;
+- the implementation returns arbitrary non-empty junk;
+- the helper under test is no longer used by production;
+- the error is wrong but the string matches;
+- the UI shell renders but the feature is broken;
+- the code was merely reshaped to appease a reviewer;
+- the assertion checks existence, visibility, type, or structure without semantics.
 
-- Exact transformed values
+Project tests prove behavior.
+Global QC enforces code-shape policy.
+Issues record unresolved proof burdens.
+Nothing else belongs in the test suite.
 
-- Exact contract output
+For the canonical catalog of banned test shapes and their allowed replacements, see the [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md).
 
-- Exact interpretation of representative external input
+## Try/Catch Ban
 
-- Exact failure behavior
+Do not write try/catch/except/rescue blocks in tests or owned runtime code.
 
-- Exact repository-owned semantics
+Banned:
+- Python `try/except`
+- JavaScript/TypeScript `try/catch`
+- Ruby `begin/rescue`
+- shell `cmd || fallback`, `set +e` around normal execution, or fallback branches
+- Rust `let _ =`, `.ok()`, `unwrap_or`, `unwrap_or_else`, `match Err(_) => fallback`
 
-**Avoid primary assertions like:**
+Expected failures must be asserted by structured test-framework mechanisms or structured error values. Unexpected failures must propagate.
 
-- `is not None`
+The only possible exception is an explicitly approved boundary renderer whose sole job is to translate a structured internal error into a user-facing protocol. That boundary must not continue execution, must not default, and must not return partial success.
 
-- `len(x) > 0`
 
-- “returns a list”
+## Line Admission Gate
 
-- “serialization succeeded”
+Before keeping any assertion line, answer:
 
-- “field equals constructor input” (when that is merely framework storage)
+1. What exact proof burden does this line raise confidence in?
+2. What plausible broken implementation would this line fail on?
+3. Does it exercise the real owned boundary?
+4. Is it asserting product semantics rather than existence, visibility, type, string, structure, or review compliance?
+5. Would it still pass if production stopped using the helper or artifact under test?
+
+If no plausible broken implementation is excluded, delete the line.
+If the claim is code-shape policy, move it to global QC.
+If the burden remains unproved, record the proof debt; do not add a low-information assertion.
+
 
 * * *
 
@@ -621,6 +653,108 @@ Test-data cleanup is not permission to mock.
 The test should still exercise the real storage/service boundary; the marker only makes
 the resulting state safe to remove.
 
+## Web Application and Frontend Testing
+
+To test local web applications, write native Python Playwright scripts.
+
+**Helper Scripts Available**:
+- `scripts/with_server.py` (in `test-guidelines/`) - Manages server lifecycle (supports multiple servers)
+
+**Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is absolutely necessary. These scripts exist to be called directly as black-box scripts rather than ingested into your context window.
+
+### Decision Tree: Choosing Your Approach
+
+1. **Is it static HTML?**
+   - **Yes** → Read HTML file directly to identify selectors → Write Playwright script using selectors.
+   - **No/Fails** → Treat as dynamic (below).
+
+2. **Is the server already running?**
+   - **No** → Run `python scripts/with_server.py --help` → Use the helper + write simplified Playwright script.
+   - **Yes** → Reconnaissance-then-action:
+     1. Navigate and wait for `networkidle`.
+     2. Take screenshot or inspect DOM.
+     3. Identify selectors from rendered state.
+     4. Execute actions with discovered selectors.
+
+### Reconnaissance-Then-Action Pattern
+
+1. **Inspect rendered DOM**:
+   ```python
+   page.screenshot(path='/tmp/inspect.png', full_page=True)
+   content = page.content()
+   page.locator('button').all()
+   ```
+
+2. **Identify selectors** from inspection results.
+
+3. **Execute actions** using discovered selectors.
+
+### Common Pitfalls and Best Practices
+
+- ❌ **Don't** inspect the DOM before waiting for `networkidle` on dynamic apps.
+- ✅ **Do** wait for `page.wait_for_load_state('networkidle')` before inspection.
+- **Use bundled scripts as black boxes** - Use `scripts/with_server.py` to handle common, complex workflows reliably without cluttering the context window.
+- Use `sync_playwright()` for synchronous scripts and always close the browser when done.
+- Use descriptive selectors: `text=`, `role=`, CSS selectors, or IDs.
+- Add appropriate waits: `page.wait_for_selector()` or `page.wait_for_timeout()`.
+
+For pattern examples, see:
+- `references/webapp-testing/element_discovery.py`
+- `references/webapp-testing/static_html_automation.py`
+- `references/webapp-testing/console_logging.py`
+
+* * *
+
+## Smoke and Harness Checks
+
+If it is test-shaped and in the test suite, it must be proof-bearing. Non-proof smoke/harness diagnostics belong in a diagnostic command outside the QC proof path.
+
+A smoke check may prove that the test harness, frontend shell, or diagnostic fixture starts.
+It does not prove feature behavior.
+
+A mocked smoke check:
+- cannot satisfy feature proof
+- cannot replace real boundary tests
+- must not be counted as coverage for product correctness
+- should be removed if its existence encourages proof laundering
+
+Renaming a mock test to `smoke` is not a fix for missing proof.
+
+## No Proof-Burden Erasure
+
+Deleting a fake, mocked, skipped, or weak test is not sufficient.
+
+Before deleting a bad test, identify the claim it was attempting to prove.
+
+Valid deletion:
+- the claim is not repository-owned;
+- the claim is already proved by a real test, named explicitly;
+- the claim is invalidated by the current contract;
+- the claim remains required and a blocker/issue is opened or the current task is reported incomplete.
+
+Invalid deletion:
+- remove the test and claim the suite is cleaner;
+- remove the test and close the review thread;
+- remove the test and leave no proof of the original behavior;
+- remove the test because making it real is hard.
+
+A deleted fake proof must be paired with proof replacement, proof invalidation, or explicit proof debt.
+
+## Helper-Branch Proof Laundering
+
+When review feedback concerns a product boundary, agents often extract a tiny helper and
+test that helper’s branches instead of testing the original boundary.
+
+Red flags:
+- test name describes system state, but body passes a boolean flag (branch-forcing);
+- exact string asserted was supplied by the test itself (tautological plumbing validation);
+- fallback value/closure remains in a required-value path (defaults in required-value code are suspect — a default is valid only in the absent-config regime. Once a user config exists, missing required values should fail through the real config-loading boundary, not through a helper branch selected by a boolean in a unit test);
+- no fixture or real boundary artifact appears;
+- test would pass even if the application stopped calling the helper;
+- the helper did not exist before the review.
+
+Correct response: See `bridge-burning-red-flags.md` → **Remediation: Boundary Test Bypass**.
+
 * * *
 
 ## Verification Rigor
@@ -649,15 +783,15 @@ If that sentence cannot be written clearly, the test is likely not well-targeted
 ## Comprehensive Quality Gates (`just test`)
 
 All code must be hard-gated by a comprehensive suite of checks.
-These must be enshrined in a version-controlled `justfile` (or similar global config) to
-prevent bypasses.
+These gates are owned by the global QC system at `~/ai/quality-control` — see the
+`quality-control` skill. The project justfile delegates to global QC and may add only
+domain-specific private checks per the QC Extension Gate.
 
-The `justfile` must consistently set up the venv/test environment and expose testing
-recipes that run the *entire* suite of related checks rather than allowing individual
-“pieces” to be tested in isolation (e.g., no running just typechecks without the rest of
-the suite). This combined recipe should be the primary `test` command.
+**Do not** reconfigure these gates locally (no per-repo tool installs, no local
+config overrides for generic QC tools). The global QC system owns tool pins, configs,
+and invocation patterns.
 
-The following checks are **mandatory** gates:
+The following checks are **mandatory** gates (all owned by global QC):
 
 1. **Tests pass**
 
@@ -785,6 +919,34 @@ code.**
 
 * * *
 
+## Bridge-Burning Policies
+
+The important move is to stop treating this as a case-by-case review problem. Agents are too good at finding local, linguistically plausible exceptions. The right response is to make whole classes of evasive code unrepresentable.
+
+> [!IMPORTANT]
+> **Core Principle:** Prefer blanket constraints that make bad states impossible over review rules that ask agents to judge bad states later.
+
+The recurring pattern is that an agent first tries to satisfy checking/validation surfaces (such as the compiler/typechecker, QC gates, PR review, or user queries) by manipulating the validation surface (e.g. by adding fallbacks, defaults, mocks, try/except blocks, or bypass comments) instead of reconstructing the original obligation and solving it. The policy answer is to remove the vocabulary that enables that manipulation.
+
+Adhering to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` is a non-negotiable hard constraint for all development. These rules eliminate common agent validation-evasion pathways (such as runtime defaults, fallbacks, mocks, and diagnostic smoke tests in proof paths). Refer to them as hard boundaries.
+
+> [!IMPORTANT]
+> **Bridge-Burning Red Flags:** If the original review concern is boundary-level, helper-level tests cannot resolve it. They may supplement proof, but they do not close the burden. If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. For a detailed list of testing red flags (such as mock/fake/stub/simulation usage, smoke tests in the suite, exact string assertions, etc.), see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md).
+
+---
+
+## Policy Exception Protocol
+
+A policy exception must not be granted casually. Any exception requires:
+1. **Explicit request:** Explicit user request or source-backed product requirement.
+2. **Policy identified:** Stating the exact named policy being violated.
+3. **Justification:** Explaining why the blanket rule blocks a real required behavior.
+4. **Replacement invariant:** Defining a replacement invariant that prevents the old gaming behavior.
+5. **Boundary proof:** Providing proof at the owned boundary.
+6. **Audit trail:** Visible commit/PR explanation recording the exception details.
+
+For example, an exception allowing a fallback provider is only allowed if the product explicitly owns multi-provider behavior, and tests prove that: provider selection is explicit, failure is visible, no fake data is returned, the user can tell which provider ran, and config declares the provider order.
+
 ## Cross-References
 
 - **llm-failure-modes/testing-failures** → Load alongside during test audit or test
@@ -801,6 +963,12 @@ code.**
   documentation produced by an LLM. Provides the canonical pattern catalog for
   LLM-generated test artifacts: developer-controlled assertions, fallback laundering,
   no-op behavior, and recipe bypasses.
+
+- **reality-grounded-debugging** → Load alongside when a test failure must be
+  reproduced as a faithful red test (the "RED" in RED-GREEN-REFACTOR). Provides
+  command-output discipline, surface-classification matrix, and the rule that a red
+  test must encode the observed failure — not a scenario guessed from priors.
+  Ensures the failing boundary is visible before writing or mutating application code.
 
 - **anti-slop** → Load alongside when tests show generated-code residue: tautological
   assertions, mock-first evasion, content-free verification, or test-cheat escalation.

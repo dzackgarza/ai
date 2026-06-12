@@ -103,6 +103,25 @@ abstractions as if they were external API, fake stubs, broad Any/object escapes,
 suppressions, diagnostic filtering, deletion of required data, broad type widening, and
 any move that makes checks pass by weakening the problem instead of solving it.
 
+## When Acting on Review Feedback
+
+A positive disposition requires a commit.
+
+Do not resolve an accepted review comment until the code/proof remediation is committed and the reply cites the commit.
+
+Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed. A thread cannot be resolved on intent or future work.
+
+Rejected and modified feedback must be collected in a top-level PR comment titled `Review feedback disposition ledger` so resolved threads do not hide the audit trail.
+
+Review comments are not implementation specs. The worker must translate accepted feedback into first-principles remediation requirements before assigning implementation.
+
+For each comment:
+- Identify the concern.
+- Identify the proposed fix.
+- Decide whether the concern is true under global + repo policy.
+- Decide whether the proposed fix preserves those policies.
+- If the concern is true but the fix is wrong, apply a policy-compatible remediation.
+
 ## Writing the Review
 
 Write nuanced feedback for an intelligent reader.

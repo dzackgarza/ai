@@ -1,0 +1,43 @@
+# QC vendor/external directory exclusions — single source of truth.
+#
+# Directories listed here contain third-party, generated, or vendored code
+# that must never be linted, type-checked, scanned, or analyzed by any QC tool.
+#
+# UNION of all excepted directories across:
+#   - justfile-python     _python-qc-files   (-g '!**/dir/**')
+#   - justfile-bun        _qc-excludes       (rg --files exclusions)
+#   - justfile-rust       _rust-qc-files     (find -not -path)
+#   - justfile-sage       _sage-qc-files     (-g '!**/dir/**')
+#   - eslint.config.js                       (ignores)
+#   - biome.json                             (files.includes negation)
+#   - knip.json                              (ignore)
+#   - .jscpd.json                            (ignore)
+#   - slop-scan.config.json                  (ignores)
+#   - grain.toml                             (exclude)
+#   - pyright-local.json                     (exclude)
+#
+# Each tool config references this file as its single source of truth.
+# Do NOT add tool-specific ignores here — add them in the tool's own config.
+
+directories = [
+    "node_modules",
+    ".venv",
+    "__pycache__",
+    "dist",
+    "build",
+    "coverage",
+    "_ci-support",
+    "codeql-db",
+    "@girs",
+    "__stubs__",
+    "external",
+    "target",
+    "*.bak",
+    ".git",
+    ".next",
+    ".lake",
+    ".worktrees",
+    "vendor",
+    "third_party",
+    "venv",
+]
