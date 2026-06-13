@@ -745,6 +745,10 @@ Use `iwe --help` and `iwe <subcommand> --help` to discover the full set of comma
 
 - PDFs are stored in `~/pdfs` and should be organized into library-like subfolder trees.
 
+- Review CI is owned by `dzackgarza/ai-review-ci`; this repo carries only the
+  `.github/workflows/review-{general,slop,pr}.yml` trigger files. Edit schedules,
+  thresholds, and `with:` inputs here; edit review behavior upstream.
+
 - **Before editing any JSON or YAML file: LOAD `config-file-editing` skill.** Never raw-edit config files.
 
 # Preferred Libraries and Tools
