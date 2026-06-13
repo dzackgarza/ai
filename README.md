@@ -608,7 +608,7 @@ keeps only the GitHub Actions trigger files under `.github/workflows/review-*.ym
 Install or refresh those trigger files with:
 
 ```bash
-uvx git+https://github.com/dzackgarza/ai-review-ci install
+uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci install
 ```
 
 Change review behavior in `ai-review-ci`. Change only schedules, branches, thresholds,
