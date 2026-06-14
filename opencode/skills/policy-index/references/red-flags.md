@@ -36,6 +36,7 @@ When one appears, ask:
 | **[LEGACY-SHIMS] Compatibility/legacy shims** | Preserves wrong prior designs in pre-launch code. |
 | **[DEFENSIVE-GUARDS] Defensive guards in trusted core** | Bloats happy path and hides invariant violations. |
 | **[HYPOTHETICAL-PATH] Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. |
+| **[UNTYPED-IMPORT] Untyped dependency ingress** | Missing stubs or `py.typed` lets an external library enter owned code as `Any`; remediation restores a typed boundary rather than changing libraries. |
 | **[DYNAMIC-FILE] Dynamic file creation from code** | Writing configs, scripts, or any file from raw strings in code or shell destroys observability and is extremely brittle — the file cannot be reviewed, diffed, or tracked independently. |
 | **[INLINE-STRINGS-DATA] Inline large strings / prompts as data** | Embedding agent prompts, user-facing messages, or any non-code text (>5 lines or containing structured instructions) directly in source files conflates code with data. Strings are not reviewable as separate artifacts, cannot be independently versioned, and encourage ad-hoc editing that bypasses normal review. |
 | **[CODE-IN-CODE] Code within code / embedded cross-language programs** | Python that assembles and runs bash strings, shell scripts that inline Python/Perl, or any program that generates another program inline. Destroys syntax checking, breaks static analysis, and hides the real intent inside string concatenation. The embedded language cannot be reviewed, linted, or debugged independently. |
@@ -171,6 +172,20 @@ pytest.mark.skip
 pytest.mark.xfail
 ```
 These are not small local conveniences. They are validator-silencing tools.
+
+### **[UNTYPED-IMPORT]** Untyped Dependency Ingress
+```text
+mypy: Skipping analyzing "library": module is installed, but missing library stubs or py.typed marker [import-untyped]
+```
+This means the import would enter owned code as `Any`. Treat it as a boundary problem, not a library-selection problem.
+
+Red flags:
+- direct imports of the untyped dependency throughout owned code;
+- replacing a correct library with a weaker typed-looking library to appease mypy;
+- `# type: ignore[import-untyped]`, `ignore_missing_imports`, or local mypy excludes;
+- wrappers that re-export untyped objects without named project-owned types.
+
+Allowed detector carve-out: a global-QC-owned typed-firewall convention may exempt the single module that imports the untyped dependency. That module must be named and shaped as a boundary, and global QC must still forbid direct imports elsewhere.
 
 ### **[MOCK-TEST-POISON]** Mock/Test Poison
 ```python
@@ -425,6 +440,7 @@ These can be compiled into global QC detectors to act as warning or error gates.
 - `2>/dev/null`, `|| true`
 - `npm install -g`, `pip install`, `curl | bash`
 - `fallback`, `default`, `best effort`, `graceful`, `smoke`, `non-proof`, `quarantine`, `covered elsewhere`
+- `import-untyped`, `missing library stubs`, `py.typed`, `ignore_missing_imports`
 
 ### **[AST-PYTHON]** AST-Level Candidates (Python)
 - `ExceptHandler` for `ImportError` / broad `Exception`

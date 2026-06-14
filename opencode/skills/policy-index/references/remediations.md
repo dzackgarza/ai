@@ -16,6 +16,7 @@ remediation map.
 | `REMEDIATE.REAL_PROOF_LOOP` | `POLICY.NO_SMOKE_PROOF`, `POLICY.NO_MOCK_PROOF`, `POLICY.NO_SKIP_MASK`, `POLICY.NO_HELPER_PROOF`, `POLICY.NO_EXACT_STRING_PROOF` | Replace fake or masked proof with tests that cross the real boundary, use real fixtures/data/services available to the project, and assert semantic output or side effects. Commit red proof before green fixes for reported bugs. |
 | `REMEDIATE.API_SPLIT_OR_VARIANT` | `POLICY.NO_BOOLEAN_MODE` | Split behavior into named functions when the modes are separate operations. Use an explicit enum/tagged variant only when the mode is domain data, and dispatch exhaustively. |
 | `REMEDIATE.STRUCTURED_TYPES` | `POLICY.NO_TYPE_ESCAPE` | Replace casts, `Any`, broad `Partial`, string errors, and dict-shaped owned data with explicit domain types, schemas, enums, and structured errors. Tests assert semantic variants, not string rendering or shape. |
+| `REMEDIATE.TYPED_DEPENDENCY_BOUNDARY` | `POLICY.NO_UNTYPED_IMPORT_LEAK` | Preserve the correct library. Restore type information with stubs when practical; otherwise isolate the untyped import in one typed firewall module that returns project-owned typed values. |
 | `REMEDIATE.REMOVE_SUPPRESSION_WITH_EXCEPTION_PROTOCOL` | `POLICY.NO_QC_SILENCING` | Remove the suppression and fix the underlying invariant. If a validator is wrong, stop for explicit policy exception approval with policy code, justification, replacement invariant, boundary proof, and audit trail. |
 | `REMEDIATE.DELEGATE_GLOBAL_QC` | `POLICY.GLOBAL_QC_AUTHORITY` | Route public `test` and `test-ci` through `~/ai-review-ci/justfiles/<language>.just`. Keep project-specific semantic checks private and composed after the global gate. |
 | `REMEDIATE.TRACK_STATIC_ARTIFACT` | `POLICY.NO_DYNAMIC_ARTIFACTS` | Move owned prompts, scripts, configs, templates, and static data into tracked files. Runtime code loads the reviewed artifact rather than constructing it from inline strings. |
@@ -362,6 +363,76 @@ Remediation applies when:
 
 Do not apply remediation when:
 - The flag is a simple pass-through to a well-known standard library or external API that uses the same convention.
+
+### [UNTYPED-IMPORT-BOUNDARY] Remediation: Untyped Third-Party Imports
+
+Slop pattern: A mypy `import-untyped` diagnostic appears because a dependency lacks stubs or a `py.typed` marker. The agent treats the diagnostic as a reason to change the dependency, hand-roll the feature, suppress mypy, or scatter casts.
+
+```python
+# BAD: direct untyped import in product code
+from untyped_yaml import load
+
+payload = load(text)
+```
+
+```toml
+# BAD: local validator silence
+[[tool.mypy.overrides]]
+module = ["untyped_yaml.*"]
+ignore_missing_imports = true
+```
+
+Remediation order:
+
+- Preserve the correct library unless product requirements independently reject it. Do not replace a library solely because it is untyped.
+- If maintained stubs exist, add the stub package through the approved dependency path. Generic reusable stubs belong in global QC/tooling; repo-specific runtime or test stubs belong in the repo only when they are part of the project’s declared dependency surface.
+- If no maintained stubs exist and the needed API is small, add minimal `.pyi` stubs for the exact imported module and symbols. Stub only the surface the project uses.
+- If stubbing would be large or brittle, isolate the untyped import in one typed firewall module. The firewall imports the untyped library, validates or converts its outputs, and returns project-owned named types. Owned code imports the firewall, not the untyped library.
+- Global QC should provide the only allowed `import-untyped` carve-out: firewall modules may be exempt from that specific diagnostic, while direct imports elsewhere remain blockers.
+
+Firewall shape:
+
+```python
+# src/project/_type_firewalls/untyped_yaml.py
+from dataclasses import dataclass
+
+from untyped_yaml import load
+
+
+@dataclass(frozen=True)
+class ParsedConfig:
+    command: str
+    timeout_ms: int
+
+
+def parse_config(text: str) -> ParsedConfig:
+    raw = load(text)
+    assert isinstance(raw, dict), "config must parse to a mapping"
+    command = raw["command"]
+    timeout_ms = raw["timeout_ms"]
+    assert isinstance(command, str), "command must be a string"
+    assert isinstance(timeout_ms, int), "timeout_ms must be an integer"
+    return ParsedConfig(command=command, timeout_ms=timeout_ms)
+```
+
+Firewall constraints:
+- exactly one module imports the untyped dependency;
+- no untyped dependency objects cross the firewall boundary;
+- the firewall returns named project-owned types, not `dict[str, object]`, `Any`, or library-native objects;
+- downstream code has no `Any`, casts, or mypy ignores for the dependency;
+- semantic tests exercise the project boundary that consumes the typed result.
+
+Canonical exclusion rule: global QC may ignore `import-untyped` only for modules under the project’s type-firewall convention, such as `src/<package>/_type_firewalls/<dependency>.py`. The same gate must still reject the untyped import outside that convention. Repo-local mypy config, file-level ignore comments, and blanket `ignore_missing_imports` remain validator bypasses.
+
+Remediation applies when:
+- mypy reports `import-untyped`, `missing library stubs`, or missing `py.typed`;
+- the dependency is otherwise the correct library for the job;
+- owned code would receive `Any` from that import.
+
+Do not apply remediation when:
+- the library is wrong for product reasons unrelated to type checking;
+- a typed first-party API or official replacement is already the documented successor;
+- the import is unused and can be deleted without changing the intended capability.
 
 <a id="remediation-boundary-test-bypass"></a>
 

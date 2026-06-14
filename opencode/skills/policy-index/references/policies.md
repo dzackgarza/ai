@@ -23,7 +23,7 @@ Each policy record contains:
 - **Runtime, Config, and State**: `POLICY.RUNTIME_DEFAULT`, `POLICY.TOTAL_CORE_STATE`, `POLICY.NO_HIDDEN_CONFIG`, `POLICY.NO_AMBIENT_DISCOVERY`, `POLICY.NO_DEFENSIVE_HOTPATH`
 - **Fail-Loud Execution**: `POLICY.FAIL_OPEN`, `POLICY.CRITICAL_DEPENDENCY`, `POLICY.NO_PARTIAL_SUCCESS`, `POLICY.NO_ERROR_DISCARD`
 - **Proof and Test Integrity**: `POLICY.NO_SMOKE_PROOF`, `POLICY.NO_MOCK_PROOF`, `POLICY.NO_SKIP_MASK`, `POLICY.NO_HELPER_PROOF`, `POLICY.NO_EXACT_STRING_PROOF`
-- **Type and Interface Integrity**: `POLICY.NO_BOOLEAN_MODE`, `POLICY.NO_TYPE_ESCAPE`
+- **Type and Interface Integrity**: `POLICY.NO_BOOLEAN_MODE`, `POLICY.NO_TYPE_ESCAPE`, `POLICY.NO_UNTYPED_IMPORT_LEAK`
 - **QC Authority**: `POLICY.NO_QC_SILENCING`, `POLICY.GLOBAL_QC_AUTHORITY`
 - **Artifact Ownership**: `POLICY.NO_DYNAMIC_ARTIFACTS`
 - **Migration and Remediation Integrity**: `POLICY.NO_LEGACY_SHIM`, `POLICY.NO_QUARANTINE_REMEDIATION`, `POLICY.NO_ADMIN_COMPLETION`, `POLICY.NO_DELETION_LAUNDERING`
@@ -230,6 +230,18 @@ Invalid local fixes: Adding a narrower cast without proving the boundary; assert
 Detection handles: `TYPE-PROOF-ESCAPE`, `TYPE-ESCAPE`, `TSAnyKeyword`, `Any`, `Partial<T>`
 
 Related remediation: `REMEDIATE.STRUCTURED_TYPES`
+
+#### `POLICY.NO_UNTYPED_IMPORT_LEAK` — No untyped dependency leakage
+
+Category: Type and Interface Integrity
+
+Rule: Untyped third-party libraries may not leak `Any` into owned code. A mypy `import-untyped` diagnostic means the dependency boundary lacks stubs or a `py.typed` marker; owned code must restore a typed boundary before using that library broadly.
+
+Invalid local fixes: Replacing the library solely to satisfy mypy; hand-rolling library behavior; adding `ignore_missing_imports`; adding `# type: ignore[import-untyped]`; casting imported values to expected types; exposing untyped library objects from a wrapper; adding local QC config or excludes.
+
+Detection handles: `UNTYPED-IMPORT`, `IMPORT-UNTYPED`, `MISSING-STUBS`, `MISSING-PY-TYPED`, `ANY-INGRESS`, `TYPE-FIREWALL`
+
+Related remediation: `REMEDIATE.TYPED_DEPENDENCY_BOUNDARY`
 
 ### QC Authority
 
