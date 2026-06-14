@@ -49,6 +49,9 @@ policy_compiler_dir := repo / "../opencode-plugins/clis/opencode-permission-poli
 default:
     @just --list
 
+test:
+    @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
+
 # Install all symlinks and environment variables
 install:
     #!/usr/bin/env bash
@@ -455,81 +458,45 @@ broken-symlinks:
         fi
     done | sort
 
-# Check markdown files for broken local file references
-
-# Usage: just check-markdown [directory]
+# Check markdown files for broken local file references.
+#
+# Usage: just check-markdown [path ...]
 check-markdown *args:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # Default to current directory if no args provided
-    search_dir="${1:-.}"
+    repo_root="$(git rev-parse --show-toplevel)"
+    markdown_files=()
 
-    # Directories to skip (same as broken-symlinks)
-    skip_dirs=(
-        "node_modules"
-        "__pycache__"
-        ".git"
-        ".cache"
-        ".npm"
-        ".yarn"
-        ".pnpm-store"
-        ".venv"
-        "venv"
-        ".conda"
-        ".local/share/virtualenvs"
-        ".cargo"
-        "target"
-        "build"
-        "dist"
-        ".next"
-        ".nuxt"
-        ".turbo"
-        ".swc"
-        ".eslintcache"
-        ".pytest_cache"
-        ".mypy_cache"
-        ".ruff_cache"
-        ".coverage"
-        "htmlcov"
-        ".tox"
-        ".eggs"
-        "*.egg-info"
-        ".sass-cache"
-        ".DS_Store"
-        "Thumbs.db"
-        ".idea"
-        ".vscode"
-        ".vs"
-        "logs"
-        "tmp"
-        "temp"
-        ".tmp"
-        ".temp"
-        ".babel-cache"
-        ".parcel-cache"
-        ".vercel"
-        ".netlify"
-        ".firebase"
-        ".amplify"
-        ".serverless"
-        ".wrangler"
-        ".deno"
-        ".bun"
-        ".nx"
-        ".turbo"
-        "Trash"
-        ".Trash"
-        ".local/share/Trash"
-    )
+    collect_tracked_markdown() {
+        mapfile -d '' markdown_files < <(
+            git -C "$repo_root" ls-files -z -- '*.md' '*.markdown' '*.mdx'
+        )
+    }
 
-    # Build find command with -prune for each skip dir
-    prune_expr=""
-    for dir in "${skip_dirs[@]}"; do
-        prune_expr="$prune_expr -name '$dir' -prune -o"
-    done
+    collect_path_markdown() {
+        local input="$1"
 
-    # Find all markdown files and pass to lychee
-    echo "Checking markdown files in: $search_dir"
-    eval "find '$search_dir' $prune_expr -type f \( -name '*.md' -o -name '*.markdown' -o -name '*.mdx' \) -print0" 2>/dev/null | \
-        xargs -0 lychee --no-progress
+        if [[ -d "$input" ]]; then
+            while IFS= read -r -d '' path; do
+                markdown_files+=("$path")
+            done < <(
+                find "$input" -type f \
+                    \( -name '*.md' -o -name '*.markdown' -o -name '*.mdx' \) \
+                    -print0
+            )
+        else
+            markdown_files+=("$input")
+        fi
+    }
+
+    if [[ -z "{{ args }}" ]]; then
+        collect_tracked_markdown
+    else
+        for input in {{ args }}; do
+            collect_path_markdown "$input"
+        done
+    fi
+
+    ((${#markdown_files[@]} > 0))
+    lychee --offline --no-progress --root-dir "$repo_root" "${markdown_files[@]}"
