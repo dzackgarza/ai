@@ -143,6 +143,53 @@ A Serena tool returns `[]` or errors does not justify silently switching to raw 
 6. `find_referencing_symbols` again to verify no references broke.
 7. **Only if a Serena tool returns `[]` or errors**: report the failure to the user (exact tool, target, result), then fall back to raw tools.
 
+**Project language configuration gate:**
+
+Serena symbol tools depend on the active project's `.serena/project.yml` language
+list. Before trusting any symbol lookup result in a repo, verify that activation reports
+the languages used by the files you need to inspect.
+
+- `serena_activate_project` must print the expected project path and language list.
+  If a Python repo activates as `Programming languages: cpp`, Python symbol lookup is
+  misconfigured even if file search tools can still see the file.
+- Inspect `.serena/project.yml` when the activation language list is wrong. Set
+  `languages:` to the real source languages whose symbols agents must inspect, for
+  example:
+
+  ```yaml
+  languages:
+  - python
+  ```
+
+- Multi-language repos must list every language whose symbols are task-relevant.
+  Put the primary language first because Serena uses the first language server as the
+  default/fallback for files without a better match.
+- After changing `.serena/project.yml`, reactivate the project and run
+  `get_symbols_overview` on a known source file in each configured language. Do not
+  treat the repair as complete until Serena extracts symbols from those files.
+
+**Symbol lookup failure triage:**
+
+When a symbol lookup fails, diagnose in this order:
+
+- Wrong active project: run `get_current_config` and confirm the active project path is
+  the repo you intend to inspect.
+- Wrong language config: run `get_symbols_overview` on the file. If it errors with
+  `Active languages: [...]` that exclude the file's language, fix `.serena/project.yml`
+  before trying more lookups.
+- Bad target: confirm the target is a file in the active project, not a directory, JSON
+  file, Markdown file, ignored path, absolute path outside the project, or stale
+  filename.
+- Wrong symbol name or nesting: use `get_symbols_overview` for the file, then call
+  `find_symbol` with the exact `name_path` Serena reports.
+- Real LSP failure: only after the active project, language list, file target, and
+  symbol name are proven correct may you conclude that the language server failed.
+
+An empty `find_symbol` result does not by itself prove LSP failure. If text search
+shows the symbol exists but `get_symbols_overview` cannot extract symbols because the
+active languages are wrong, the root cause is project configuration, not a broken
+language server.
+
 **One-shot examples of correct usage:**
 
 ```
