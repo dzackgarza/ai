@@ -599,6 +599,21 @@ This repository utilizes the following JSON configuration files:
   The expected structure is defined by the plugin’s TypeScript implementation in its
   source repository.
 
+## Review CI
+
+Review workflows are centrally managed in
+[dzackgarza/ai-review-ci](https://github.com/dzackgarza/ai-review-ci). This repository
+keeps only the GitHub Actions trigger files under `.github/workflows/review-*.yml`.
+
+Install or refresh those trigger files with:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci install
+```
+
+Change review behavior in `ai-review-ci`. Change only schedules, branches, thresholds,
+or `with:` inputs in this repository.
+
 ## Environment Configuration
 
 The AI Configuration repository uses a modular approach for managing environment
