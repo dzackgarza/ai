@@ -49,6 +49,9 @@ policy_compiler_dir := repo / "../opencode-plugins/clis/opencode-permission-poli
 default:
     @just --list
 
+test:
+    @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
+
 # Install all symlinks and environment variables
 install:
     #!/usr/bin/env bash
@@ -455,90 +458,45 @@ broken-symlinks:
         fi
     done | sort
 
-# Check markdown files for broken local file references
-
-# Usage: just check-markdown [directory]
-check-markdown search_dir=".":
+# Check markdown files for broken local file references.
+#
+# Usage: just check-markdown [path ...]
+check-markdown *args:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    search_dir="{{search_dir}}"
-    if [[ ! -d "$search_dir" ]]; then
-        printf 'check-markdown target is not a directory: %s\n' "$search_dir" >&2
-        exit 64
+    repo_root="$(git rev-parse --show-toplevel)"
+    markdown_files=()
+
+    collect_tracked_markdown() {
+        mapfile -d '' markdown_files < <(
+            git -C "$repo_root" ls-files -z -- '*.md' '*.markdown' '*.mdx'
+        )
+    }
+
+    collect_path_markdown() {
+        local input="$1"
+
+        if [[ -d "$input" ]]; then
+            while IFS= read -r -d '' path; do
+                markdown_files+=("$path")
+            done < <(
+                find "$input" -type f \
+                    \( -name '*.md' -o -name '*.markdown' -o -name '*.mdx' \) \
+                    -print0
+            )
+        else
+            markdown_files+=("$input")
+        fi
+    }
+
+    if [[ -z "{{ args }}" ]]; then
+        collect_tracked_markdown
+    else
+        for input in {{ args }}; do
+            collect_path_markdown "$input"
+        done
     fi
 
-    # Directories to skip (same as broken-symlinks)
-    skip_names=(
-        "node_modules"
-        "__pycache__"
-        ".git"
-        ".cache"
-        ".npm"
-        ".yarn"
-        ".pnpm-store"
-        ".venv"
-        "venv"
-        ".conda"
-        ".cargo"
-        "target"
-        "build"
-        "dist"
-        ".next"
-        ".nuxt"
-        ".turbo"
-        ".swc"
-        ".eslintcache"
-        ".pytest_cache"
-        ".mypy_cache"
-        ".ruff_cache"
-        ".coverage"
-        "htmlcov"
-        ".tox"
-        ".eggs"
-        "*.egg-info"
-        ".sass-cache"
-        ".DS_Store"
-        "Thumbs.db"
-        ".idea"
-        ".vscode"
-        ".vs"
-        "logs"
-        "tmp"
-        "temp"
-        ".tmp"
-        ".temp"
-        ".babel-cache"
-        ".parcel-cache"
-        ".vercel"
-        ".netlify"
-        ".firebase"
-        ".amplify"
-        ".serverless"
-        ".wrangler"
-        ".deno"
-        ".bun"
-        ".nx"
-        ".turbo"
-        "Trash"
-        ".Trash"
-        ".worktrees"
-        "skills.bak.*"
-    )
-    skip_paths=(
-        ".local/share/virtualenvs"
-        ".local/share/Trash"
-    )
-
-    find_args=("$search_dir")
-    for dir in "${skip_names[@]}"; do
-        find_args+=(-name "$dir" -prune -o)
-    done
-    for path in "${skip_paths[@]}"; do
-        find_args+=(-path "*/$path" -prune -o)
-    done
-
-    # Find all markdown files and pass to lychee
-    echo "Checking markdown files in: $search_dir"
-    find "${find_args[@]}" -type f \( -name '*.md' -o -name '*.markdown' -o -name '*.mdx' \) -print0 |
-        xargs -0 --no-run-if-empty lychee --no-progress
+    ((${#markdown_files[@]} > 0))
+    lychee --offline --no-progress --root-dir "$repo_root" "${markdown_files[@]}"

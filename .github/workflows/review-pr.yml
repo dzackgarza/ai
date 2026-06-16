@@ -1,0 +1,28 @@
+# Repo-owned configuration: edit triggers and `with:` values directly.
+# All review behavior lives upstream in the referenced workflow.
+name: PR Review
+on:
+  pull_request:
+jobs:
+  general:
+    uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      pull-requests: write
+    with:
+      report_type: general
+      scope: diff
+      fail_below: ${{ vars.GENERAL_FAIL_BELOW }}
+  slop:
+    uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      pull-requests: write
+    with:
+      report_type: slop
+      scope: diff
+      fail_below: ${{ vars.SLOP_FAIL_BELOW }}
