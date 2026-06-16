@@ -70,23 +70,52 @@ The reviewer MUST:
   real slop is laundering — the precise reward-hack this protocol exists to stop. "The body
   is not literally empty / the rule mismatched" is not a valid clearance.
 
+## The Three Roles (each unbiased by what it is not allowed to see)
+
+Triage is split across three isolated roles. The isolation IS the mechanism: each role is
+kept unbiased by being denied the inputs that would let it launder.
+
+- **A — Orchestrator** (this agent): is alerted to the QC findings and routes them. Makes
+  no judgment, proposes no disposition, proposes no fix. Sees everything, decides nothing.
+- **B — Disposition subagent**: is given ONLY the raw findings + locations, is forced to
+  read all policies, and determines policy-aligned **dispositions** (per finding: is it a
+  real violation, and which `POLICY.*` does it violate — or is it cleared, with the policy
+  proof). **B is never shown, and never proposes, a remediation or fix.** B does not see
+  the fixer, the remediation index, or any "correct shape." Disposition only.
+- **C — Remediation subagent**: is given ONLY B's policy-aligned dispositions (the
+  violations + their `POLICY.*` codes), looks each up in the **remediation policy index**
+  (`policy-index/references/remediations.md`), and from that derives and implements the
+  policy-aligned fix. C does not receive B's prose, "root causes," or any suggested fix —
+  C derives the remediation from the policy index, not from anyone's opinion.
+
+Why B may not suggest fixes: if B proposes a remediation, B's bias about *how much* to
+change (minimize, under-fix, launder) propagates to C, and the independence is gone. The
+disposition→remediation firewall forces C to derive the fix from the canonical remediation
+index given only "what policy is violated," not "what B thinks should change."
+
 ## Triage Workflow (After User Approval)
 
 Once the user approves, execute these steps in exactly this order:
 
-### Step 1: Slop Report Subagent
+### Step 1: Disposition Subagent (B)
 
-Spawn a SUBAGENT to perform an independent `reviewing-llm-code` slop report on the QC
-findings. This subagent must:
+Spawn a SUBAGENT to determine policy-aligned dispositions for the QC findings. This
+subagent must:
 
-- Load **all** the bridge-burning policies explicitly — name them in the dispatch:
+- Load **all** the disposition policies explicitly — name them in the dispatch:
   `policy-index` (and its `references/red-flags.md`, `runtime-control-flow.md`,
-  `policies.md`, `test-proof-rules.md`, `remediations.md`), `anti-slop`,
-  `reviewing-llm-code`, `bespoke-software-policy`, `test-guidelines`, and `fixing-slop`.
-- Review the flagged code against the FULL policy, classify each finding, and cite the
-  `POLICY.*` code (per "Classification Belongs to the Reviewer Subagent" above)
-- Return its own verdict and a structured report of all bridge-burning violations,
-  including architectural root causes
+  `policies.md`, `test-proof-rules.md`), `anti-slop`, `reviewing-llm-code`,
+  `bespoke-software-policy`, and `test-guidelines`. (It is NOT given the remediation index
+  — that belongs to C.)
+- Review the flagged code against the FULL policy and, per finding, return a **disposition
+  only**: VIOLATION (with the `POLICY.*` code it violates) or CLEARED (with the quoted
+  policy proof). Cite codes, not rule labels (per "Classification Belongs to the Reviewer
+  Subagent" above).
+
+**B is forbidden from proposing, sketching, or implying any remediation, fix, "correct
+shape," patch, or refactor.** Its entire output is the disposition list: finding → verdict
+→ `POLICY.*` code. If B emits a fix suggestion, its output is contaminated and must be
+re-run — the suggestion would bias C. B never sees C, the fixer, or the remediation index.
 
 #### Dispatch hygiene: what you may and may NOT say to the reviewer
 
@@ -115,20 +144,25 @@ the **reviewer's** verdict — you never override it, "sanity-check" it, or subs
 own. If you find you have an opinion about the outcome, that opinion is contraband: it does
 not enter the dispatch and it does not survive the review.
 
-### Step 2: Fix Subagent
+### Step 2: Remediation Subagent (C)
 
-Spawn a **separate** SUBAGENT to fix the underlying architectural issues
-identified by the slop report. This subagent must:
+Spawn a **separate** SUBAGENT to remediate. This subagent must:
 
-- Be a different subagent instance from the reviewer
-- Receive the slop report as input
-- Fix the architectural root causes, not just the surface symptoms
-- Verify the fix passes QC by running `just test`
-- Report the fix outcome back
+- Be a different instance from B.
+- Receive ONLY B's policy-aligned dispositions — the list of `VIOLATION → POLICY.* code`
+  entries (with file/line). It MUST NOT receive B's prose, "root causes," any suggested
+  fix, or the orchestrator's opinion. Dispatch hygiene (above) applies to C as well: no
+  seeded remediation.
+- Load the **remediation policy index** (`policy-index/references/remediations.md`) plus
+  `fixing-slop`. For each disposition, look up the `POLICY.*` code in the index, read the
+  matching `REMEDIATE.*` entry, and derive the policy-aligned fix from it — not from anyone's
+  suggestion.
+- Implement the fix, then verify with `just test`.
+- Report the fix outcome back.
 
-The reviewer and fixer MUST be different subagent instances.
-The reviewer analyses. The fixer fixes.
-They are not the same agent.
+B, C, and the orchestrator are three different agents. B disposes (no fixes). C remediates
+from the index (given only dispositions). A routes (no judgment). None of them does another's
+job.
 
 ## Prohibited Behaviors
 
@@ -141,7 +175,9 @@ They are not the same agent.
 | Running isolated checks (just `ruff`, just `mypy`) to "verify" | Cherry-picking bypasses the full QC gate | Run `just test` only (after fix subagent is done) |
 | Adding bypass comments (`# noqa`, `@ts-ignore`) | Hides the symptom without fixing the cause | Fix the underlying code |
 | Editing QC configs or thresholds | Weakens QC for all future runs | Change only project code |
-| Merging the slop report and fix into one subagent | The reviewer games the fix criteria | Always separate subagents |
+| Merging disposition and remediation into one subagent | B games the fix criteria | Always separate B and C |
+| B (disposition) proposing a fix / "correct shape" / refactor | Biases C toward B's preferred (possibly under-) fix | B returns dispositions + `POLICY.*` codes only |
+| C (remediation) receiving B's prose or a suggested fix | Destroys C's independent derivation from the remediation index | C gets only `VIOLATION → POLICY.*` dispositions; derives fix from `remediations.md` |
 | Presenting partial or summarized QC output | The user cannot assess the full failure | Show complete raw tool output |
 | Continuing work on the original task after QC fails | The original output is likely defective | Triage first, then assess if retry is needed |
 
@@ -155,7 +191,8 @@ Before reporting any triage step complete, these must be true:
       analysis (raw finding + named policies only)
 - [ ] QC findings presented to user in full (raw tool output)
 - [ ] User explicitly approved triage
-- [ ] Slop report subagent loaded all policies explicitly and produced its own verdict +
-      structured violation report
-- [ ] Fix subagent made code changes and verified with `just test`
-- [ ] Separate subagents were used for review and fix
+- [ ] Disposition subagent (B) loaded all policies explicitly and returned dispositions
+      ONLY (`VIOLATION → POLICY.*` / CLEARED) — no remediation, fix, or "correct shape"
+- [ ] Remediation subagent (C) received only B's dispositions, derived fixes from
+      `policy-index/references/remediations.md`, and verified with `just test`
+- [ ] A, B, and C were three different agents; none did another's job
