@@ -26,6 +26,33 @@ When a QC check fails and the triage directive is emitted, the agent MUST:
 5. **Wait for explicit user approval.** Do not proceed without explicit
    user approval. "Approval" means a direct statement that triage may begin.
 
+## Classifying a Finding Before Triage
+
+A QC finding's rule name is a **pointer to investigate**, never the definition of the
+violation. Before disposing of any finding, classify the flagged code against the FULL
+bridge-burning policy and cite the `POLICY.*` code it does or does not violate — not the
+rule's literal label. A non-empty `except`, a rule named "empty X" that hit non-empty Y,
+or any "the linter over-matched" intuition does NOT clear the code: ask whether the code
+is slop under *any* policy (`FAIL_LOUD_BOUNDARY`, `NO_ERROR_DISCARD`, the graceful-handling
+ban, `STRINGLY-ERRORS`, etc.).
+
+Distinguish two failure kinds, because they have opposite dispositions:
+
+- **Tool-execution failure** — the QC tool did not run: exit 127 (command not found),
+  a crash, or a config-load error. This is a tooling defect, not a project-code finding.
+  It is legitimate to diagnose the tool/environment and fix it upstream. Do NOT edit
+  project code in response; do NOT report it as a code violation.
+- **Tool finding** — the tool ran and flagged code. The flagged code must be classified
+  against the full policy. A **"false positive" disposition, or any move to narrow,
+  disable, `# noqa`, or otherwise weaken the detector, carries the same burden as a
+  formal policy exception**: policy code, justification, replacement invariant, boundary
+  proof, and audit trail. Siding with flagged code by weakening its detector is
+  laundering — the precise reward-hack this protocol exists to stop.
+
+The reviewer subagent (Step 1) MUST perform this classification explicitly and cite the
+policy code, not the rule label. "The body is not literally empty / the rule mismatched"
+is not a valid clearance.
+
 ## Triage Workflow (After User Approval)
 
 Once the user approves, execute these steps in exactly this order:
