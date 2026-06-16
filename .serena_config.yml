@@ -117,12 +117,15 @@ projects:
 - /home/dzack/.worktrees/opencode-plugins/opencode-time-travel-plugin/migration-cli-first-architecture
 - /home/dzack/.worktrees/opencode-plugins/opencode-zotero-plugin/migration-cli-first-architecture
 - /home/dzack/ai
+- /home/dzack/ai-review-ci
+- /home/dzack/ai-review-ci-deptry-fix
 - /home/dzack/ai/opencode
 - /home/dzack/ai/opencode/agents
 - /home/dzack/ai/opencode/plugins
 - /home/dzack/ai/opencode/skills
 - /home/dzack/archive/zotero-attachment-plugin
 - /home/dzack/bots
+- /home/dzack/iwe2
 - /home/dzack/lattice_interface
 - /home/dzack/notes
 - /home/dzack/opencode-git
