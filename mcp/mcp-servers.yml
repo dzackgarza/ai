@@ -12,11 +12,13 @@ common:
       SDL_CONFIG: /home/dzack/ai/mcp/sdlmcp.config.json
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
-    command: uvx
+    command: uv
     args:
-    - --from
-    - git+https://github.com/dzackgarza/opencode-plugin-improved-webtools#subdirectory=mcp-server
-    - improved-webtools-mcp
+    - run
+    - --directory
+    - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server
+    - python
+    - server.py
     enabled: true
     exclude_harnesses:
     - opencode
