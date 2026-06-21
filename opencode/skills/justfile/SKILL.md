@@ -5,6 +5,21 @@ description: Use when working with just command runner, defining recipes, or man
 
 # Justfile
 
+## Using a project's justfile (agent usage)
+
+`just` is the project-management API for every repository on this system. When working in
+any repo:
+
+- **Always look for an existing justfile first** and use its recipes. Run `just --list` to
+  discover the available workflows before doing anything by hand.
+- **Never bypass it.** Do not run tests, type-checking, builds, publishing, or other
+  workflows manually (`cargo test`, `npm run build`, `python -m pytest`, `make`, raw
+  `git`/CLI invocations) when a recipe exists — route them through `just`.
+- If a needed workflow has no recipe, add or extend one (see the authoring rules below)
+  rather than running the raw command ad hoc.
+
+There are no exceptions: one place to look, one command to run.
+
 ## Interface Design — What Belongs in a Justfile
 
 ### The universal convention: all workflows through just

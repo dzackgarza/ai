@@ -14,9 +14,8 @@ title: Conventions for This System
   - Project-local envrc files should be tracked via git, and thus never store true secrets, only env vars.
     If a project truly needs a local secret (rare), then it should be in a gitignore .env file and the envrc file should source it.
 
-- All projects must have centralized recipes in a justfile and be run with `just`. Always look for one and use its recipes, never bypass them.
-
-  - In particular, all tests, type-checking, builds, publishing, etc must be routed through `just`, never run such processes or commands “manually”.
+- All project automation routes through `just`: always look for an existing justfile and use its recipes, and never run tests, type-checking, builds, publishing, or other workflows manually when a recipe exists.
+  Load the `justfile` skill when working with justfiles or project tasks.
 
 - Dependencies between projects should be routed through github and use `uvx`/`npx -y` calls when possible, or explicitly declared as dependencies.
   Do not tie across file system boundaries unless absolutely necessary.

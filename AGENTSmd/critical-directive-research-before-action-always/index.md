@@ -29,7 +29,7 @@ Inspect the repo's declared entrypoints, docs, configs, and runtime surfaces bef
 - Config files (pyproject.toml, .envrc, tsconfig.json, Cargo.toml, etc.) — understand project conventions
 - README, AGENTS.md, architectural docs — read for intent
 - GitHub issues, web search, Context7/DeepWiki, existing skills, `known-solution-first` skill
-- Source code itself (via `tree`, `probe extract`, Serena, glob, read) when docs are stale or incomplete
+- Source code itself (via `tree`, `probe extract`, glob, read) when docs are stale or incomplete
 
 Never make an edit without first understanding the repo's shape and the specific boundary you are about to change.
 Never guess commands, endpoints, or file paths without running them first.
