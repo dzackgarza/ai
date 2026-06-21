@@ -10,6 +10,20 @@ Before acting on PR comments or review feedback, consult the central policy inde
 
 When consuming review feedback from other agents (automated or human), do not treat review comments as automatic chores to be done or automatic blockers. A review comment is a claim to be evaluated, not an order.
 
+## Orchestration: Enforce This Loop Mechanically
+
+This workflow is a convergent loop run by an orchestrator over independent subagents. The orchestrator's own judgment is **not** a trusted disposition surface — see Phase 2.5.
+
+If you have explicit orchestration primitives available — workflow/pipeline tools, goal loops, durable task graphs, scheduled re-invocation, background subagents, or any harness that can fan out and gate subagent stages deterministically — you **must** route this loop through them immediately, before doing any manual triage. Do not hand-run the loop conversationally when a tool can enforce it.
+
+Concretely, encode the loop as orchestrated stages so the structure is mechanical, not discretionary:
+- a **disposition stage** that fans out per-finding disposition subagents (Phase 2.5);
+- a **remediation stage** that fans out per-accepted-finding remediation subagents (Phase 4);
+- a **verification + commit gate** between remediation and thread closure (Phase 5 / Phase 6);
+- a **convergence loop** that re-enters on each new review round until a window is all reject/duplicate/outdated (see Loop and Convergence).
+
+The point of mechanizing it is to make the threat-model games structurally impossible rather than relying on the orchestrator to remember not to play them. If no orchestration primitive is available, run the same stages by hand with the same gates — but the stages and gates are mandatory either way.
+
 ## Core Doctrine: Split Feedback from Remediation
 
 Every review comment has two separable parts:
@@ -102,6 +116,33 @@ For each item, classify internally:
 
 Do not reply “accepted” yet. Do not resolve accepted items yet.
 
+The Phase 2 classification is a provisional sort, **not** an authoritative disposition. The orchestrator must not treat its own read of a thread as the disposition of record. Authoritative dispositions come only from Phase 2.5.
+
+### Phase 2.5: Independent Disposition Round
+
+The disposition itself must be produced by independent disposition subagents, not by the orchestrator clearing the review. This mirrors Phase 4: the agent trying to close the PR is the wrong agent to decide which findings are real.
+
+Fan out one disposition pass per finding (batch by disjoint file-sets if needed). Each disposition subagent receives **only**:
+- the verbatim review thread(s) for its finding;
+- the relevant source files;
+- the policy surface (`policy-index` and the global policy skills it routes to);
+- the **verbatim owner/maintainer comments** relevant to the finding.
+
+Each disposition subagent must **NOT** receive:
+- the orchestrator’s own hypotheses, categories, or hunches (“this is CI churn,” “probably a false positive,” “likely benign”);
+- any premise the orchestrator inferred or paraphrased rather than read verbatim (e.g. “the owner approved X”) — if it is not a literal quote of an owner comment or a policy clause, it does not enter the prompt;
+- any remediation information, suggested patch, or preferred fix;
+- thread-resolution status or the count of open threads.
+
+Each disposition subagent returns exactly one of the four dispositions (Accepted as written / Accepted with modified remediation / Rejected / Investigate before action), grounded only in policy + literal owner comments + the code. Disposition is **per finding**. There is no categorical, grouped, or bulk disposition. “CI churn,” “false-positive wave,” “bulk-reject,” and “mostly noise” are not dispositions and must never appear as one — each finding is dispositioned on its own merits even when many findings share a signature.
+
+Banned orchestrator behavior in this phase:
+- Determining any disposition from your own judgment instead of a disposition subagent.
+- Injecting an invented or paraphrased premise into a disposition subagent prompt. A fabricated premise (e.g. claiming the owner approved a design they did not) poisons the disposition and launders the orchestrator’s own opinion through the tooling — this is the exact failure the independent round exists to prevent. Before passing any “the owner said/approved/directed X” premise, quote the literal comment; if you cannot, do not pass it.
+- Collapsing distinct findings into a single group disposition to save effort.
+
+Duplicate, outdated, and superseded threads are still dispositioned per finding (see Loop and Convergence) — they are disposed as `Duplicate of <thread>` or `Outdated (superseded by <commit>)`, not silently skipped.
+
 ### Phase 3: Convert Accepted Feedback into a First-Principles Remediation Spec
 The controller must not hand the reviewer’s exact comment to the implementer. Instead, it must reconstruct the underlying problem from first principles.
 
@@ -184,8 +225,11 @@ Required output:
 
 ### Phase 5: Controller Verification Gate
 Before committing subagent remediation, the controller must review the subagent output under `reviewing-subagent-work`, `fixing-slop`, `test-guidelines`, and the red-flag catalogs.
-Required verification questions:
-1. Did the subagent solve the first-principles spec, or patch the visible symptom?
+
+A green test/CI/build result is **not** verification. “test-ci green,” “build passes,” or “the gate ran” is a precondition, not a pass — the threat model explicitly includes weak tests that prove the patch rather than the behavior. Verification is comparing the **declared remediation against the actual implementation** and confirming they align with the spec, by hand, per question below.
+
+Required verification questions — the controller must record an explicit answer to **each**, not a single “verified green”:
+1. Did the subagent solve the first-principles spec, or patch the visible symptom? (Check the diff against the spec text directly — e.g. if the spec said “consolidate to ONE engine,” a diff that keeps two and justifies it “empirically” has **failed** this gate regardless of test color.)
 2. Is the original proof burden discharged at the owned boundary?
 3. Does the diff introduce any banned patterns?
 4. Are tests proof-bearing, or merely policing/visibility/existence/string/helper tests?
@@ -194,7 +238,9 @@ Required verification questions:
 7. Would the old broken implementation fail the new proof?
 8. Does the result depend on the exact reviewer wording?
 
-If validation fails, reject and issue a corrected spec or assign a fresh subagent. Do not patch it locally.
+The recorded answers are the **verification stamp** carried into Phase 6 / thread closure (see Per-Thread Stamps).
+
+If validation fails — including any deviation from the spec the subagent self-justified — reject and issue a corrected spec or assign a fresh subagent. Do not patch it locally, and do not accept the subagent’s deviation just because tests pass.
 
 ### Phase 6: Commit Before Disposition
 The commit message must mention:
@@ -278,6 +324,9 @@ Commit:
 Proof:
 <commands/tests/files>
 
+Verification (orchestrator-stamped):
+<spec-honored confirmation: declared remediation matches actual implementation; commit hash that closed the thread>
+
 Banned-pattern audit:
 <summary>
 
@@ -317,6 +366,34 @@ This file is the durable repository-side audit trail.
 - Resolving rejected feedback only inline without a top-level ledger entry.
 - Treating an issue opened for later work as resolution of current accepted feedback.
 - Letting the original worker remediate its own review without independent spec-and-review.
+- Disposing findings from the orchestrator’s own judgment instead of an independent disposition subagent (Phase 2.5).
+- Group, categorical, or “bulk” dispositions (“CI churn,” “false-positive wave,” “bulk-reject”). Disposition is per finding.
+- Injecting an invented or paraphrased premise (“the owner approved X”) into a disposition or remediation subagent prompt without a verbatim quote.
+- Closing a nontrivial thread without all three stamps (disposition → remediation → verification-with-commit-hash).
+- Treating per-push CI re-review as a “snowball” and using that framing to avoid dispositioning the new round.
+
+## Loop and Convergence
+
+This is a **convergent loop**, not a single pass and not a snowball:
+
+```
+reviews land → Phase 2.5 disposition round (per finding) → record disposition stamps on every thread
+  → Phase 3–4 remediation round (accepted findings only) → Phase 5 verify → Phase 6 commit
+  → push (triggers a fresh review round) → repeat
+```
+
+Each round must **close an entire window** of threads: every open thread in the round gets a disposition stamp, accepts get remediated/verified/closed, and rejects/duplicates/outdated get closed with rationale. A round is not “done” while dispositioned threads remain open.
+
+**It converges.** New review rounds on each push are expected and benign — the reviewers re-run against the growing diff. The window shrinks each round because accepted findings are fixed and removed, and rejected/duplicate/outdated findings are closed and do not return. The loop **terminates** when a full review round comes back with **no findings requiring remediation** — i.e. every finding in the latest window disposes as rejected, duplicate, or outdated.
+
+**It only snowballs if your own remediations inject new policy-misaligned slop.** That is precisely what the policy-primed independent remediation subagent (Phase 4) and the verification gate (Phase 5) exist to prevent — every known category of finding has a documented correct remediation, so a correctly-run remediation round does not generate a larger next round. If the window is *growing* round over round, the failure is in the remediation quality (slop is being introduced), not in the existence of the loop. Diagnose and fix the remediation process; do not abandon the loop or start hand-waving findings as “noise.”
+
+**Duplicate / outdated / superseded threads** are still dispositioned per finding, never silently skipped:
+- A thread whose finding is already dispositioned elsewhere → `Duplicate of <canonical thread>`, closed with that pointer.
+- A thread on code that a later commit replaced → `Outdated (superseded by <commit>)`, closed with that pointer.
+- Cross-run duplicates from the same finding re-flagged on a new push → disposed against the canonical thread, not re-litigated from scratch.
+
+A finding being a likely duplicate does **not** authorize the orchestrator to self-judge it — confirm the duplication against the canonical thread; if it is not genuinely the same finding on the same code, it gets its own per-finding disposition.
 
 ## Global Principles
 
@@ -461,19 +538,42 @@ Burden disposition: not solved. Opened issue #N and this PR remains incomplete f
 proof requirement.
 ```
 
+## Per-Thread Stamps: Disposition → Remediation → Verification
+
+Every nontrivial thread — i.e. any thread **not** disposed as duplicate, outdated, or rejected — must carry all three stamps before it is closed. The three stamps come from the three stages and must not be collapsed or skipped:
+
+1. **Disposition stamp** — from the Phase 2.5 disposition subagent. Records the four-way disposition, the policy basis, and that it was produced by an independent disposition subagent grounded in policy + literal owner comments.
+2. **Remediation stamp** — from the Phase 4 remediation subagent. Records the first-principles remediation, the files changed, and the proof commands the subagent reported.
+3. **Verification stamp** — orchestrator-stamped (for now). The orchestrator compares the **declared remediation against the actual implementation in the commit**, confirms they align with the spec (Phase 5 questions), and records the **commit hash**. The commit hash in the verification stamp is what closes the thread — no thread is resolved without it.
+
+A thread disposed as rejected or duplicate/outdated carries only the disposition stamp (with rationale / pointer) and is closed on that basis — it never receives a remediation or verification stamp, because no code changed. Never resolve a rejected thread silently; the disposition stamp with rationale is mandatory.
+
+Ordering is strict: no remediation stamp without a prior disposition stamp; no verification stamp (and no thread closure) without a prior remediation stamp **and** a commit hash. A positive thread reply without a verification stamp carrying a real commit hash is false signaling (see Core Rule: Positive Disposition Requires Committed Remediation).
+
 ## Visible Thread Reply Format
 
-When replying to and resolving a thread on GitHub, the reply must follow this format:
+When replying to and resolving a nontrivial thread on GitHub, the reply must carry all three stamps:
 
 ```text
 <Disposition Type> (Accepted as written / Accepted with modified remediation / Rejected / Investigated)
 
-Claim disposition: <status>
-Remediation disposition: <status>
-Policy basis: <why this aligns/misaligns with global/repo policy>
-Code/action taken or explicit non-change: <summary of the changes/non-change>
-Audit anchor: <commit/file/line/linked issue where user can audit the result>
+Disposition (independent disposition subagent):
+  Claim disposition: <true / false / needs investigation>
+  Remediation disposition: <aligned / misaligned / underspecified>
+  Policy basis: <policy clause + literal owner comment, if any, the disposition rests on>
+
+Remediation (independent remediation subagent):
+  Root concern: <first-principles concern, not reviewer wording>
+  Code/action taken or explicit non-change: <summary of the changes/non-change>
+  Proof: <commands/tests/files the remediation subagent reported>
+
+Verification (orchestrator-stamped):
+  Spec honored: <yes — declared remediation matches actual implementation and the spec>
+  Commit: <sha>   # this hash is what closes the thread
+  Audit anchor: <commit/file/line/linked issue where the user can audit the result>
 ```
+
+For a thread disposed as Rejected / Duplicate / Outdated, only the Disposition block is required (with rationale and, for duplicate/outdated, a pointer to the canonical thread or superseding commit).
 
 ## Tests Added in Response to Review
 

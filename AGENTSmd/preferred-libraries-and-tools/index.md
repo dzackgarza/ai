@@ -11,7 +11,13 @@ Prefer tool-routing skills over memorized commands:
 - Local structure and debugging surfaces: `reality-grounded-debugging`
 - External docs, Context7, DeepWiki, package/API/compiler/provider errors:
   `known-solution-first`
-- Semantic code search: `probe` or `ast-grep`
+- Name/text discovery: `rg` and `fd`
+- Semantic narrowing after broad discovery: `probe`
+- Structural search and syntax-aware rewrites: `ast-grep`
+- Workspace symbols/references/rename when the language server is known-good: `lsp-cli`
+- Language-specific semantic rename: `gorename`, `clang-rename`, `ts-morph`, `rope`,
+  or OpenRewrite
+- Repeatable JavaScript/TypeScript codemods: `jscodeshift`
 - JSON/YAML edits: `config-file-editing`
 - Python scripts, `uv`, missing dependencies, install choices:
   `tool-provisioning-and-environment-hygiene`

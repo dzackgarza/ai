@@ -49,7 +49,7 @@ If a plan does not answer those questions, it is **underspecified**.
 
 4. **Subagent Review**: Launch a subagent to review the plan for gaps and logic.
 
-5. **Finalize**: Save to `.serena/plans/`.
+5. **Finalize**: Save to `.hermes/plans/`.
 
 * * *
 

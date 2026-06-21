@@ -313,11 +313,21 @@ These conventions apply only to the CLI fallback. They do not describe built-in 
 - Use `--out` or `--out-dir` to control output paths; keep filenames stable and descriptive.
 
 ### Dependencies
+Prefer `uv` for dependency management in this repo.
 
+Required Python package:
 ```bash
-uv run scripts/image_gen.py --help
-uv run scripts/remove_chroma_key.py --help
+uv pip install openai
 ```
+
+Required for local chroma-key removal and optional downscaling:
+```bash
+uv pip install pillow
+```
+
+Portability note:
+- If you are using the installed skill outside this repo, install dependencies into that environment with its package manager.
+- In uv-managed environments, `uv pip install ...` remains the preferred path.
 
 ### Environment
 - `OPENAI_API_KEY` must be set for live API calls.

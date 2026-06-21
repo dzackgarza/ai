@@ -332,7 +332,7 @@ If a finding matches any of these, suppress it without reporting:
 ### Portability
 - Hardcoded `/home/dzack/` paths or any absolute local paths. Directory
   structure is enforced across the owner's machines. These are intentional.
-- Machine-specific config files (`.serena_config.yml`, local editor configs,
+- Machine-specific config files (local agent-tool configs, local editor configs,
   personal tool configs). They are machine-specific by design.
 - Non-portable conventions, shell aliases, or tool choices. Portability
   across machines is not a goal.

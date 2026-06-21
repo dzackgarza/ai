@@ -83,17 +83,6 @@
     }
   },
   "mcp": {
-    "serena": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--project-from-cwd"
-      ]
-    },
     "sdl-mcp": {
       "type": "local",
       "command": [

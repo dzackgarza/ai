@@ -436,7 +436,6 @@ all harnesses using `just --justfile ~/ai/home-justfile install-mcps`.
 
 | Name | Description | Common | Link |
 | --- | --- | --- | --- |
-| serena | Code intelligence, symbol navigation | Yes | https://github.com/oraios/serena |
 | cut-copy-paste-mcp | Clipboard operations | Yes | https://github.com/fastmcp-me/cut-copy-paste-mcp |
 | improved-webtools | Web search and fetching | Most\* | [repo](https://github.com/dzackgarza/opencode-plugin-improved-webtools) |
 | opencode-memory | Git-backed markdown memory store | Most\* | [repo](https://github.com/dzackgarza/opencode-memory-plugin) |

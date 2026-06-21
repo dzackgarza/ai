@@ -229,7 +229,7 @@ Findings against files under these paths will be rejected:
 - `~/ai-review-ci/`
 - `opencode/`
 - `.opencode/`
-- `.serena/`
+- local agent-tool state directories
 - `.claude/`
 - `.git/`
 - `nginx.conf`

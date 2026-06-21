@@ -11,7 +11,21 @@ Split by ownership before investigating.
   and dependency choices: load `known-solution-first` before local probing.
 - Project automation and validation commands: load `justfile` and use declared recipes
   when they exist.
-- Semantic code search after broad discovery: load `probe` or `ast-grep`.
+- Semantic code work after broad discovery: route to explicit CLI tools by operation.
+
+CLI routing for code navigation and edits:
+
+- Name/text discovery: use `rg` and `fd`.
+- Semantic narrowing after broad discovery: use `probe`.
+- Structural search or syntax-aware rewrites: use `ast-grep`.
+- Workspace symbols, references, definitions, and rename through a known-good language
+  server: use `lsp-cli`.
+- Language-specific semantic rename: use `gorename` for Go, `clang-rename` for C/C++,
+  `ts-morph` for TypeScript/JavaScript, `rope` for Python, and OpenRewrite for Java/JVM.
+- Repeatable JavaScript/TypeScript codemods: use `jscodeshift`.
+- If the language server, project registration, or symbol index is not already working,
+  do not spend task budget repairing it unless the user asked for that setup; use the
+  explicit CLI route above or ordinary file edits instead.
 
 **BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive.
 User directives are highly specific, not suggestions.
