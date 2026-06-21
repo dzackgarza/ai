@@ -1,6 +1,8 @@
 ---
 name: handling-corrections
 description: Use when the user corrects an error, challenges an action, or asks "why did you do that" — covers anti-thrashing protocol, debris cleanup, and "why" question handling.
+metadata:
+  creation_context: Created to prevent agents from treating user corrections as social repair prompts or implicit authorization to make guessed fixes. It forces correction handling to stop, reconstruct the reasoning error, identify damaged artifacts, inspect evidence when needed, and only then fix or answer. It specifically targets acknowledgment tokens, correction-to-action collapse, reflexive revert or overcorrection, debris preservation, and honest-label laundering.
 ---
 # Handling Corrections
 
