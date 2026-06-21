@@ -1,27 +1,33 @@
 ---
 name: policy-index
-description: Use before code review, slop review, PR feedback triage, testing, QC changes, or remediation when deciding which global policy skill owns the rule. Central source-of-truth index for bridge-burning policies, red-flag catalogs, proof/test rules, QC authority, and slop remediation.
+description: Use before code review, slop review, PR feedback triage, testing, QC changes, or remediation when deciding which global policy rule owns the obligation. Central source of truth for bridge-burning policy identity, red-flag catalogs, proof/test rules, QC authority, and slop remediation routing.
 ---
 
 # Policy Index
 
-Canonical source of truth for codenamed bridge-burning policies.
+Canonical source of truth for bridge-burning policy identity and policy-owned reference
+catalogs.
 
-When a QC finding, review finding, or slop finding cites a policy code, load this skill
-and use the code here as the authoritative rule. Other skills may explain how to
-review, test, or fix within their domain, but they must point back here for policy
-identity.
+Other skills may teach how to review, test, debug, or remediate within their domains.
+They must not define competing bridge-burning policy text. They point here for policy
+codes, red flags, runtime control-flow rules, banned test shapes, exception rules, and
+remediation routing.
 
-Remediation instructions are deliberately not in this file. The agent that sees or
-classifies the issue must not see the preferred remediation, because that couples
-detection to fixing and trains local appeasement. Remediation lives in
+Remediation instructions are deliberately separated from detector instructions. The
+agent that sees or classifies an issue must not see the preferred remediation, because
+that couples detection to fixing and trains local appeasement. Remediation lives in
 `references/remediations.md` and is loaded only by the remediation agent after triage
 assigns a policy code.
 
 ## Use Protocol
 
+- Load this skill before code review, slop review, PR feedback triage, test review, QC
+  changes, or remediation.
+- Use `POLICY.*` codes from this skill and `references/policies.md` as authoritative.
+- Use `references/red-flags.md` to classify validation-evasion constructs.
+- Use `references/runtime-control-flow.md` to classify runtime branch shapes.
+- Use `references/test-proof-rules.md` to classify proof and assertion shapes.
 - Do not remediate from the detector message alone.
-- Look up every cited `POLICY.*` code here.
 - State the weakened obligation before editing.
 - Use a separate reviewer/fixer context when QC triage requires it.
 - If acting as the issue-seeing reviewer, do not open `references/remediations.md`.
@@ -29,6 +35,27 @@ assigns a policy code.
   receiving the policy code from triage.
 - Treat local token replacement as invalid unless the remediation reference explicitly
   says the finding is mechanical.
+
+## Database Files
+
+| File | Audience | Contents |
+| --- | --- | --- |
+| `references/policies.md` | Reviewers, triage agents, fixers after code assignment | Categorized policy database with named `POLICY.*` records. |
+| `references/red-flags.md` | Reviewers and detector authors | Validation-evasion red flags, language-specific signatures, and QC detector targets. |
+| `references/runtime-control-flow.md` | Reviewers and detector authors | Runtime branch admission rules, banned branch shapes, assertion guidance, and examples. |
+| `references/test-proof-rules.md` | Test writers, test reviewers, detector authors | Banned test/assertion shapes and proof-admission rules. |
+| `references/remediations.md` | Fixers only after triage | Remediation registry and detailed restoration procedures keyed by policy/remediation code. |
+
+## Policy Categories
+
+- Runtime, Config, and State
+- Fail-Loud Execution
+- Proof and Test Integrity
+- Type and Interface Integrity
+- QC Authority
+- Artifact Ownership
+- Migration and Remediation Integrity
+- Anti-Speculation
 
 ## Policy Registry
 
@@ -46,7 +73,8 @@ assigns a policy code.
 | `POLICY.NO_BOOLEAN_MODE` | No boolean mode flags in owned APIs | Boolean parameters that select behavior hide multiple operations behind one call surface. Use separate functions or an explicit domain variant with exhaustive dispatch. | Renaming `flag` to `mode`; replacing `bool` with an enum without splitting obligations; testing both branches directly instead of constructing real state. |
 | `POLICY.TOTAL_CORE_STATE` | No optional core state | Normalize required state once at the boundary. Inside owned core logic, required data is total and non-optional. | Sprinkling null checks; using `Optional`, `Partial`, `Any`, sentinel fields, or "maybe initialized" state in core paths. |
 | `POLICY.NO_TYPE_ESCAPE` | No type-system escape hatches | Owned code must not bypass static guarantees with `Any`, casts, double casts, `as any`, `unknown as`, broad `Partial`, stringly errors, or untyped blobs for structured state. | Adding a narrower cast without proving the boundary; asserting type shape in tests; hiding data in JSON/dicts. |
-| `POLICY.NO_ERROR_DISCARD` | No swallowed errors | Errors and failed results must be propagated, handled immediately as a real domain alternative, or converted into structured failure. They must not be discarded. | `.ok()`, `let _ =`, `filter_map(Result::ok)`, `except: pass`, `catch(() => default)`, `|| true`, stderr suppression. |
+| `POLICY.NO_UNTYPED_IMPORT_LEAK` | No untyped dependency leakage | Untyped third-party libraries may not leak `Any` into owned code. Direct imports of untyped libraries belong behind stubs or a typed firewall module that returns project-owned typed values. | Replacing the library solely to satisfy mypy; adding `ignore_missing_imports`, `# type: ignore[import-untyped]`, casts, local QC excludes, or untyped wrapper pass-throughs. |
+| `POLICY.NO_ERROR_DISCARD` | No swallowed errors | Errors and failed results must be propagated, handled immediately as a real domain alternative, or converted into structured failure. They must not be discarded. | `.ok()`, `let _ =`, `filter_map(Result::ok)`, `except: pass`, `catch(() => default)`, `\|\| true`, stderr suppression. |
 | `POLICY.NO_QC_SILENCING` | No validator bypass | Suppression comments, allow attributes, ignore globs, disabled rules, lowered thresholds, local QC overrides, and broad excludes convert validator failure into validator silence. | Narrowing the suppression while keeping the violation; adding post-hoc prose; weakening the rule or threshold. |
 | `POLICY.GLOBAL_QC_AUTHORITY` | No local QC authority | Generic lint, type, format, coverage, dead-code, duplication, slop, and tool-config behavior belong to global QC. Repos delegate; they do not reimplement or override. | Adding local `lint`/`typecheck` recipes; copying global configs downstream; running narrower local checks as proof. |
 | `POLICY.NO_HIDDEN_CONFIG` | No hidden behavioral config in code | Behavioral parameters, thresholds, paths, provider choices, retries, feature flags, and policy decisions belong in the declared config surface as required values. | Moving to `constants.*`; using `const`/`static`/top-level literals; calling it a true invariant without applying the invariant test. |
@@ -91,19 +119,20 @@ A policy exception requires all of:
 
 | Question | Canonical source |
 | --- | --- |
-| What hard bridge-burning policies apply? | This skill, [Policy Registry](#policy-registry). |
+| What named policy applies? | `references/policies.md` and [Policy Registry](#policy-registry). |
+| What code/test red flags should I scan for? | `references/red-flags.md`. |
+| What runtime control-flow shapes are banned? | `references/runtime-control-flow.md`. |
+| What test assertion patterns are banned? | `references/test-proof-rules.md`. |
 | What codenamed remediation applies? | `references/remediations.md`, loaded only by the remediation/fixer agent after triage. |
-| What code/test red flags should I scan for? | [reviewing-llm-code/references/bridge-burning-red-flags.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) |
-| What runtime control-flow shapes are banned? | [reviewing-llm-code/references/runtime-control-flow-red-flags.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md) |
-| What policy applies to creating files dynamically from code? | `POLICY.NO_DYNAMIC_ARTIFACTS` in this skill. |
-| What policy applies to embedding large strings/prompts/messages inline in code? | `POLICY.NO_DYNAMIC_ARTIFACTS` in this skill. |
-| What policy applies to embedding one language inside another (code within code)? | `POLICY.NO_DYNAMIC_ARTIFACTS` in this skill. |
-| How do I review LLM-produced code? | [reviewing-llm-code/SKILL.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md) |
-| How do I fix slop without laundering? | [fixing-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md) |
-| What makes a test valid proof? | [test-guidelines/SKILL.md](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) |
-| What test assertion patterns are banned? | [test-guidelines/references/banned-test-shapes.md](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md) |
-| Who owns QC invocation/config/tooling? | [quality-control/SKILL.md](file:///home/dzack/ai-review-ci/skills/quality-control/SKILL.md) |
-| How do I triage PR feedback? | [pr-feedback-triage/SKILL.md](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md) |
-| How do I debug without prior-shaped probing? | [reality-grounded-debugging](file:///home/dzack/ai/opencode/skills/reality-grounded-debugging/SKILL.md) + [systematic-debugging](file:///home/dzack/ai/opencode/skills/systematic-debugging/SKILL.md) |
-| How do I handle external tool/library/compiler uncertainty? | [known-solution-first](file:///home/dzack/ai/opencode/skills/known-solution-first/SKILL.md) |
-| How do I provision tools? | [tool-provisioning-and-environment-hygiene](file:///home/dzack/ai/opencode/skills/tool-provisioning-and-environment-hygiene/SKILL.md) |
+| What policy applies to creating files dynamically from code? | `POLICY.NO_DYNAMIC_ARTIFACTS` in `references/policies.md`. |
+| What policy applies to embedding large strings/prompts/messages inline in code? | `POLICY.NO_DYNAMIC_ARTIFACTS` in `references/policies.md`. |
+| What policy applies to embedding one language inside another? | `POLICY.NO_DYNAMIC_ARTIFACTS` in `references/policies.md`. |
+| What policy applies to mypy `import-untyped`, missing stubs, or missing `py.typed`? | `POLICY.NO_UNTYPED_IMPORT_LEAK`; remediation is `REMEDIATE.TYPED_DEPENDENCY_BOUNDARY`, not dependency churn. |
+| How do I review LLM-produced code? | [reviewing-llm-code/SKILL.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md). |
+| How do I fix slop without laundering? | [fixing-slop/SKILL.md](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md) plus fixer-only `references/remediations.md`. |
+| What makes a test valid proof? | [test-guidelines/SKILL.md](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) plus `references/test-proof-rules.md`. |
+| Who owns QC invocation/config/tooling? | `POLICY.GLOBAL_QC_AUTHORITY`; operational QC invocation remains in the global `quality-control` skill. |
+| How do I triage PR feedback? | [pr-feedback-triage/SKILL.md](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md). |
+| How do I debug without prior-shaped probing? | [reality-grounded-debugging](file:///home/dzack/ai/opencode/skills/reality-grounded-debugging/SKILL.md) + [systematic-debugging](file:///home/dzack/ai/opencode/skills/systematic-debugging/SKILL.md). |
+| How do I handle external tool/library/compiler uncertainty? | [known-solution-first](file:///home/dzack/ai/opencode/skills/known-solution-first/SKILL.md). |
+| How do I provision tools? | [tool-provisioning-and-environment-hygiene](file:///home/dzack/ai/opencode/skills/tool-provisioning-and-environment-hygiene/SKILL.md). |

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Proof Obligation Workflow"
+  short_description: "Trace requirements into verified implementation"
+  default_prompt: "Use $proof-obligation-workflow to route a project from requirements through proof obligations, tests, QC, and PR review."

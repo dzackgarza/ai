@@ -75,7 +75,7 @@ The following are BANNED at external boundaries:
 - **Schema validation that defaults or falls back** — `z.object({...}).passthrough()`,
   `parse()` with a fallback default, or any construct that accepts data that
   doesn't match the expected shape and tries to "make it work." See
-  `anti-slop` bridge-burning policies.
+  the `policy-index` bridge-burning policies.
 
 **The correct pattern:** A runtime assertion that crashes on mismatch.
 
@@ -315,7 +315,7 @@ Report these even if no crash or wrong output has been observed:
   substituted for boundary-level proof. See `test-guidelines`.
 - **Mocks in proof paths** — substituting a simulated component for a real
   one in a test that is supposed to prove correctness. Mocks prove nothing.
-  See `reviewing-llm-code/references/bridge-burning-red-flags.md`.
+  See `policy-index/references/red-flags.md`.
 - **Deletion without burden transfer** — deleting dead code, quarantined
   paths, or legacy branches without adding an assertion or invariant that
   would warn if the deletion was wrong. See `fixing-slop`.
@@ -412,8 +412,8 @@ These are NOT in any Out of Scope category. Do NOT suppress them:
 
 - **Runtime-suppression patterns like `try { ... } catch { /* ignore */ }`
   or `2>/dev/null` without an explicit reason.** See
-  `anti-slop` bridge-burning policies and
-  `reviewing-llm-code/references/bridge-burning-red-flags.md`.
+  the `policy-index` bridge-burning policies and
+  `policy-index/references/red-flags.md`.
 
 ### Comments Are Laundering (Treat Adversarially)
 

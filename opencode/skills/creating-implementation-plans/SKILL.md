@@ -5,7 +5,7 @@ description: Use when creating implementation plans that will pass review and ex
 # Creating Implementation Plans
 
 > [!IMPORTANT]
-> All implementation plans created under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) in `anti-slop/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Plans must specify how these constraints are enforced for the target code.
+> All implementation plans created under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Plans must specify how these constraints are enforced for the target code.
 
 A plan is good when it can be executed by someone who wasn’t in the design conversation,
 produces verifiable results, and doesn’t require mid-execution course corrections.

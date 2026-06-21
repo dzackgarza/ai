@@ -47,7 +47,7 @@ If the user has not asked for a durable repo artifact, use a temporary scratchpa
 The ledger must contain enough structure that another agent can inspect the reasoning, find contradictions, and continue without reading private chain-of-thought.
 If a conclusion is not written in the ledger with its evidence and inference path, it is not established.
 
-No fix is allowed that violates the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` — these are hard architectural boundaries.
+No fix is allowed that violates the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` — these are hard architectural boundaries.
 
 ## When To Use
 
@@ -517,7 +517,7 @@ These are process violations:
 - Replacing diagnostics with synthetic fallback output.
 - Editing tests to match current behavior before proving the test was wrong.
 - Treating mocks, probes, or monkey patches as evidence before proving the instrumentation itself observes the real path.
-- Violating any of the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` (e.g. converting hard failures into graceful fallbacks, introducing runtime defaults, or masking missing dependencies).
+- Violating any of the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` (e.g. converting hard failures into graceful fallbacks, introducing runtime defaults, or masking missing dependencies).
 - Replacing strict types with broad types to make diagnostics disappear.
 - Declaring root cause from a single compatible observation.
 - Continuing after a contradiction because a nearby workaround appears to pass.

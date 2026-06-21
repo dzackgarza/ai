@@ -1,4 +1,4 @@
-# Banned Test Shapes
+# Test Proof Rules Database
 
 This catalog lists test and assertion shapes that are structurally incapable of proving repository-owned behavior. These are not weak patterns. They are banned.
 
@@ -7,6 +7,7 @@ A test line is admissible only if it excludes a plausible broken implementation 
 Project tests prove product behavior.
 Global QC polices code shape.
 Issues record unresolved proof burdens.
+Policy identity lives in `policies.md`; fixer-side restoration details live in `remediations.md`.
 
 ---
 
@@ -110,7 +111,7 @@ def test_object_has_field():
     assert hasattr(payload, "items")
 ```
 *Why banned:* A broken implementation can return `{}`, create an empty file, or attach a junk field.
-*Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[PY-TRUTHY]** Truthy / non-empty
 **Ban:**
@@ -127,7 +128,7 @@ def test_response_ok():
     response = call_boundary(request_payload)
     assert response.ok
 ```
-*Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[PY-STRINGS]** String assertions
 **Ban:**
@@ -141,7 +142,7 @@ def test_error_banner(page):
     page.click("button")
     assert "failed" in page.text_content("#status")
 ```
-*Remediation:* Use structured error types and assert on error kind, not message. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
+*Remediation:* Use structured error types and assert on error kind, not message. See [Remediation: String-Based Error Types](remediations.md#remediation-string-based-error-types).
 
 ### **[PY-SHAPE]** Shape-only assertions
 **Ban:**
@@ -155,7 +156,7 @@ def test_items_are_models():
     items = collect_items(source)
     assert all(isinstance(item, DomainItem) for item in items)
 ```
-*Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[PY-NO-THROW]** No-throw tests
 **Ban:**
@@ -166,7 +167,7 @@ def test_operation_does_not_crash():
 def test_config_loads(tmp_path):
     load_config(tmp_path / "app.toml")
 ```
-*Remediation:* Assert on exact output values, not just that the operation did not crash. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
+*Remediation:* Assert on exact output values, not just that the operation did not crash. See [Remediation: No-Throw / No-Crash as Proof](remediations.md#remediation-no-throw--no-crash-as-proof).
 
 ### **[PY-SOURCE-POLICING]** Source policing
 **Ban:**
@@ -181,7 +182,7 @@ def test_no_type_ignore_comments():
     assert "# type: ignore" not in source
 ```
 *Why banned:* This belongs to global QC/static analysis, not project behavior tests.
-*Remediation:* Move source-text assertions to global QC. Test runtime behavior instead. See [Remediation: Source Policing in Tests](bridge-burning-red-flags.md#remediation-source-policing-in-tests).
+*Remediation:* Move source-text assertions to global QC. Test runtime behavior instead. See [Remediation: Source Policing in Tests](remediations.md#remediation-source-policing-in-tests).
 
 ### **[PY-HELPER-BRANCH]** Helper branch laundering
 **Ban:**
@@ -205,7 +206,7 @@ def test_absent_config_uses_defaults():
     assert value == 750
 ```
 *Why banned:* The test passes the boolean that chooses the branch. It does not construct an existing or absent config.
-*Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
+*Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](remediations.md#remediation-boundary-test-bypass).
 
 ### **[PY-TRY-EXCEPT]** Try/except in tests
 **Ban:**
@@ -216,7 +217,7 @@ def test_expected_failure():
     except Exception as error:
         assert "missing" in str(error)
 ```
-*Remediation:* Use the test framework's structured assertion and assert on error kind. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
+*Remediation:* Use the test framework's structured assertion and assert on error kind. See [Remediation: String-Based Error Types](remediations.md#remediation-string-based-error-types).
 
 ### **[PY-MOCK-SPY]** Mock/spy/call-count
 **Ban:**
@@ -230,7 +231,7 @@ def test_network_path(monkeypatch):
     monkeypatch.setattr(client, "get", lambda url: {"ok": True})
     assert load_remote_data(url)
 ```
-*Remediation:* Assert the real effect at the owned boundary. See [Remediation: Mock/Spy/Call-Count as Proof](bridge-burning-red-flags.md#remediation-mockspycall-count-as-proof).
+*Remediation:* Assert the real effect at the owned boundary. See [Remediation: Mock/Spy/Call-Count as Proof](remediations.md#remediation-mockspycall-count-as-proof).
 
 ---
 
@@ -254,7 +255,7 @@ test("module exports function", async () => {
   expect(module.render).toBeTruthy();
 });
 ```
-*Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on concrete values against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[TS-VISIBILITY]** Visibility-only
 **Ban:**
@@ -271,7 +272,7 @@ test("status is ready", async ({ page }) => {
 });
 ```
 *Why banned:* A totally broken app can render a shell and display "ready."
-*Remediation:* Assert on concrete output content, not visibility. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on concrete output content, not visibility. See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[TS-STATUS-LABEL]** Status / label / banner assertions
 **Ban:**
@@ -281,7 +282,7 @@ test("save shows success", async ({ page }) => {
   await expect(page.locator("#status")).toContainText("saved");
 });
 ```
-*Remediation:* Assert on the real side effect (file content, database state), not UI labels. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on the real side effect (file content, database state), not UI labels. See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[TS-STRINGS]** String assertions
 **Ban:**
@@ -295,7 +296,7 @@ test("throws missing config", () => {
   expect(() => loadConfig(path)).toThrow("missing runtime.command");
 });
 ```
-*Remediation:* Assert on structured error types, not string messages. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
+*Remediation:* Assert on structured error types, not string messages. See [Remediation: String-Based Error Types](remediations.md#remediation-string-based-error-types).
 
 ### **[TS-TYPE-SHAPE]** Type-only / shape-only
 **Ban:**
@@ -310,7 +311,7 @@ test("has html property", () => {
   expect(result).toHaveProperty("html");
 });
 ```
-*Remediation:* Assert on concrete output values, not type/shape. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on concrete output values, not type/shape. See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[TS-NO-THROW]** No-throw
 **Ban:**
@@ -323,7 +324,7 @@ test("promise resolves", async () => {
   await expect(runOperation(input)).resolves.toBeDefined();
 });
 ```
-*Remediation:* Assert on exact output values, not just absence of throw. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
+*Remediation:* Assert on exact output values, not just absence of throw. See [Remediation: No-Throw / No-Crash as Proof](remediations.md#remediation-no-throw--no-crash-as-proof).
 
 ### **[TS-SOURCE-POLICING]** Source policing
 **Ban:**
@@ -381,7 +382,7 @@ test("handles bad config", () => {
   }
 });
 ```
-*Remediation:* Test framework structured assertions with error types. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
+*Remediation:* Test framework structured assertions with error types. See [Remediation: String-Based Error Types](remediations.md#remediation-string-based-error-types).
 
 ---
 
@@ -408,7 +409,7 @@ fn items_present() {
     assert!(!items.is_empty());
 }
 ```
-*Remediation:* Assert on concrete output content against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on concrete output content against fixtures. See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[RS-STRING-ERRORS]** Exact string errors
 **Ban:**
@@ -425,7 +426,7 @@ fn config_panics() {
     load_config(incomplete_config_path()).unwrap();
 }
 ```
-*Remediation:* Assert on structured error variants, not string rendering. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
+*Remediation:* Assert on structured error variants, not string rendering. See [Remediation: String-Based Error Types](remediations.md#remediation-string-based-error-types).
 
 ### **[RS-HELPER-BRANCH]** Helper branch proof
 **Ban:**
@@ -442,7 +443,7 @@ fn existing_config_requires_explicit_values() {
     assert_eq!(error, "missing runtime.command");
 }
 ```
-*Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
+*Remediation:* Test the source-of-truth boundary, not an extracted helper. See [Remediation: Boundary Test Bypass](remediations.md#remediation-boundary-test-bypass).
 
 ### **[RS-BOOLEAN-FORCING]** Boolean branch-forcing
 **Ban:**
@@ -459,7 +460,7 @@ fn branch_for_absent_config() {
     assert_eq!(result.unwrap(), RuntimeConfig::default());
 }
 ```
-*Remediation:* Construct actual config state via real files, not boolean flags. See [Remediation: Boundary Test Bypass](bridge-burning-red-flags.md#remediation-boundary-test-bypass).
+*Remediation:* Construct actual config state via real files, not boolean flags. See [Remediation: Boundary Test Bypass](remediations.md#remediation-boundary-test-bypass).
 
 ### **[RS-SOURCE-POLICING]** Source policing
 **Ban:**
@@ -480,7 +481,7 @@ fn cleanup_does_not_crash_when_file_missing() {
     cleanup_backup(missing_path()).unwrap();
 }
 ```
-*Remediation:* Assert on specific error variants or output values, not just absence of panic. See [Remediation: No-Throw / No-Crash as Proof](bridge-burning-red-flags.md#remediation-no-throw--no-crash-as-proof).
+*Remediation:* Assert on specific error variants or output values, not just absence of panic. See [Remediation: No-Throw / No-Crash as Proof](remediations.md#remediation-no-throw--no-crash-as-proof).
 
 ### **[RS-PROCESS-LIFECYCLE]** Process lifecycle source-shape test
 **Ban:**
@@ -491,7 +492,7 @@ fn renderer_uses_kill_on_drop() {
     assert!(source.contains("kill_on_drop(true)"));
 }
 ```
-*Remediation:* Test runtime process behavior, not source text patterns. See [Remediation: Source Policing in Tests](bridge-burning-red-flags.md#remediation-source-policing-in-tests).
+*Remediation:* Test runtime process behavior, not source text patterns. See [Remediation: Source Policing in Tests](remediations.md#remediation-source-policing-in-tests).
 
 ---
 
@@ -504,7 +505,7 @@ test -f "$output_file"
 [ -s "$output_file" ]
 [ -n "$result" ]
 ```
-*Remediation:* Assert on concrete output content (diff, structured JSON). See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on concrete output content (diff, structured JSON). See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[SH-GREP-STRINGS]** Grep string assertions
 **Ban:**
@@ -513,7 +514,7 @@ grep -q "ready" "$log_file"
 grep -q "success" "$output_file"
 grep -q "missing runtime.command" "$stderr_file"
 ```
-*Remediation:* Assert on structured output with jq, not grep strings. See [Remediation: String-Based Error Types](bridge-burning-red-flags.md#remediation-string-based-error-types).
+*Remediation:* Assert on structured output with jq, not grep strings. See [Remediation: String-Based Error Types](remediations.md#remediation-string-based-error-types).
 
 ### **[SH-STATUS]** Status-only
 **Ban:**
@@ -524,7 +525,7 @@ test "$?" -eq 0
 status="$(curl -s -o /dev/null -w '%{http_code}' "$url")"
 test "$status" = 200
 ```
-*Remediation:* Assert on concrete response content with structured checks. See [Remediation: Existence / Truthy / Shape as Proof](bridge-burning-red-flags.md#remediation-existence--truthy--shape-as-proof).
+*Remediation:* Assert on concrete response content with structured checks. See [Remediation: Existence / Truthy / Shape as Proof](remediations.md#remediation-existence--truthy--shape-as-proof).
 
 ### **[SH-SUPPRESSION]** Suppression / fallback
 **Ban:**

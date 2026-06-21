@@ -964,7 +964,7 @@ The absence of an import is the defect, not the presence of the dependency.
 
 ### Correct Response
 
-See `bridge-burning-red-flags.md` → **Remediation: Bespoke Dependency Reinvention**.
+See `policy-index/references/remediations.md` → **Remediation: Bespoke Dependency Reinvention**.
 
 * * *
 

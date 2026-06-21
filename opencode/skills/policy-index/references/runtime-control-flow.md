@@ -1,4 +1,4 @@
-# Runtime Control-Flow Red Flags
+# Runtime Control-Flow Policy Database
 
 This catalog lists runtime control-flow shapes that are banned or considered highly suspicious because they allow code to fail open, launder invalid states, or bypass required invariants.
 
@@ -234,6 +234,28 @@ def load_document(path: Path) -> str:
     return path.read_text()
 ```
 If this is a public command boundary, convert the exception once into a structured fatal error. Do not return a falsy value.
+
+### **[STRINGLY-BOUNDARY-EXIT]** Banned: stringly graceful exit at a CLI boundary
+```python
+def main() -> None:
+    try:
+        run()
+    except UsageError as error:
+        print(str(error), file=sys.stderr)   # stringifies — loses type + traceback
+        raise SystemExit(2) from error        # magic exit code; tests then pin exact stderr
+```
+
+**Correct shape** (bespoke single-user software): let it propagate as a real traceback.
+```python
+def main() -> None:
+    run()
+```
+"Convert the exception once into a structured fatal error" (above) means raise or keep
+the TYPED error with its stack intact — NOT stringify it into a message plus a magic
+exit code. Tell-tale: if a test asserts the exact stderr text or a magic exit code, you
+built a stringly graceful exit, not a structured fatal error. A non-empty `except` is
+not automatically clean — catch-to-rethrow and catch-to-graceful-exit are slop even
+though the body is not `pass`.
 
 ### **[TRY-IMPORT]** Banned: try-import / optional dependency
 ```python

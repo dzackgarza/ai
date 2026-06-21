@@ -182,7 +182,7 @@ Stop patching and add/repair a debug surface when:
 * a probe used a guessed flag/path/field/endpoint
 * the fix requires changing global pipeline code before a minimal reproducer exists
 * the agent cannot state what observation would falsify the current hypothesis
-* the agent is about to violate any of the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` (e.g. adding a fallback, runtime default, mock, try/except, bypass comment, or legacy shim).
+* the agent is about to violate any of the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` (e.g. adding a fallback, runtime default, mock, try/except, bypass comment, or legacy shim).
 
 ## Completion Evidence
 
@@ -207,7 +207,7 @@ Load alongside:
 - `llm-failure-modes` — cognitive failure modes (premature solution, thrashing,
   prior-shaped inspection, tool output blindness, local-artifact laundering)
 - `anti-slop` — implementation-quality analysis, patch accretion, myopic fixes
-- **anti-slop → Bridge-Burning Policies** — Any debugging activity must respect the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md#bridge-burning-policies) defined in `anti-slop/SKILL.md` as non-negotiable architectural constraints.
+- **policy-index → Bridge-Burning Policies** — Any debugging activity must respect the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` as non-negotiable architectural constraints.
 - `test-guidelines` — substantive assertions, owned-surface discipline
 - `quality-control` — global QC as single source of truth, no-bypass policy
 - `justfile` — recipe list as project API, source-of-truth commands

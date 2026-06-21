@@ -425,7 +425,7 @@ A mocked or synthetic browser smoke check can only be a diagnostic health check,
 When a review item is resolved by deletion, require the same scrutiny as a code fix. Never accept “removed” as a complete disposition. The deletion must disposition both the artifact and the original problem or proof burden that caused the artifact to be introduced, ensuring the original burden is either solved, invalidated, explicitly transferred, or recorded as unresolved.
 
 ### 10. Scan remediations for Bridge-Burning Red Flags
-If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. Reviewers and triage agents must audit changes against the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/bridge-burning-red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/runtime-control-flow-red-flags.md) to detect validation-evasion moves (such as runtime defaults, fallbacks, mocks, exact string assertions, and fail-open control branches).
+If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. Reviewers and triage agents must audit changes against the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/runtime-control-flow.md) to detect validation-evasion moves (such as runtime defaults, fallbacks, mocks, exact string assertions, and fail-open control branches).
 
 ## Routing Matrix
 
@@ -583,7 +583,7 @@ When a review response adds tests, classify every assertion:
 - **Policing assertion**: checks source shape, review compliance, helper branch, existence, visibility, exact string, or absence of a banned token.
 - **Setup assertion**: only prepares the test and must not be cited as proof.
 
-Review feedback is not resolved by policing or setup assertions. Consult the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/test-guidelines/references/banned-test-shapes.md) to ensure all added assertions are proof-bearing.
+Review feedback is not resolved by policing or setup assertions. Consult the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/test-proof-rules.md) to ensure all added assertions are proof-bearing.
 
 ### Response Examples
 
@@ -594,7 +594,7 @@ Review feedback is not resolved by policing or setup assertions. Consult the cen
 > Remediation disposition: Misaligned. The suggested remediation to log and continue is not aligned with repo policy because failures at this boundary must stop the operation.
 > Policy basis: Fail-fast outranks graceful degradation.
 > Code/action taken or explicit non-change: Fixed in commit `1234abc` by throwing a specific error with context.
-> Audit anchor: [api_client.py:L45-L52](file:///home/dzack/ai/src/api_client.py#L45-L52)
+> Audit anchor: `src/api_client.py:45-52`
 
 **Rejected:**
 > Rejected.
@@ -603,7 +603,7 @@ Review feedback is not resolved by policing or setup assertions. Consult the cen
 > Remediation disposition: Misaligned. The proposed canonicalization hardening would break editor semantics.
 > Policy basis: The app is a single-user editor, and intentional symlinked files are part of the expected workflow. No security boundary is owned here.
 > Code/action taken or explicit non-change: No code change made.
-> Audit anchor: [file_handler.py:L12](file:///home/dzack/ai/src/file_handler.py#L12)
+> Audit anchor: `src/file_handler.py:12`
 
 **Investigated:**
 > Investigated, then accepted.
@@ -612,4 +612,4 @@ Review feedback is not resolved by policing or setup assertions. Consult the cen
 > Remediation disposition: Aligned.
 > Policy basis: Correct type-checking contract across the codebase.
 > Code/action taken or explicit non-change: Checked config files and aligned `tsconfig.json` module resolution.
-> Audit anchor: [tsconfig.json](file:///home/dzack/ai/tsconfig.json)
+> Audit anchor: `tsconfig.json`
