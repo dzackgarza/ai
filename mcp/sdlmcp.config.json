@@ -5,49 +5,158 @@
       "rootPath": "/home/dzack/ai",
       "ignore": [
         "**/.git/**",
-        "**/node_modules/**",
         "**/dist/**",
+        "**/dist-*/**",
         "**/build/**",
         "**/out/**",
         "**/target/**",
         "**/coverage/**",
-        "**/.venv/**",
-        "**/venv/**",
+        "**/*.min.js",
+        "**/*.min.css",
+        "**/node_modules/**",
+        "**/vendor/**",
+        "**/.pnp.*",
+        "**/.yarn/**",
+        "**/.next/**",
+        "**/.nuxt/**",
+        "**/.svelte-kit/**",
+        "**/.output/**",
         "**/__pycache__/**",
         "**/.pytest_cache/**",
+        "**/*.pyc",
+        "**/.venv/**",
+        "**/venv/**",
+        "**/.tox/**",
         "**/.mypy_cache/**",
-        "**/.ruff_cache/**",
-        "**/.cache/**",
         "**/.tmp/**",
         "**/tmp/**",
         "**/.claude/**",
         "**/.codex/**",
-        "**/.serena/**",
+        "**/.cursor/**",
+        "**/.aider*/**",
+        "**/.windsurf/**",
+        "**/.continue/**",
         "**/.sdl-memory/**",
+        "**/.sisyphus/**",
+        "**/.worktree*",
         "**/.env",
+        "**/.env/**",
         "**/.env.*",
+        "**/*.key",
+        "**/*.pem",
+        "**/*.p12",
+        "**/secrets/**",
+        "**/credentials/**",
+        "**/.secrets",
+        "**/.secrets/**",
+        "**/*token*",
+        "**/*api_key*",
+        "**/*apikey*",
+        "**/*secret*",
+        "**/*credential*",
+        "**/**/__pycache__/**",
+        "**/*.py[cod]",
+        "**/*$py.class",
+        "**/*.so",
+        "**/.Python",
+        "**/.Python/**",
+        "**/develop-eggs/**",
+        "**/downloads/**",
+        "**/eggs/**",
+        "**/.eggs/**",
+        "**/lib/**",
+        "**/lib64/**",
+        "**/parts/**",
+        "**/sdist/**",
+        "**/var/**",
+        "**/wheels/**",
+        "**/*.egg-info/**",
+        "**/.installed.cfg",
+        "**/.installed.cfg/**",
+        "**/*.egg",
+        "**/**/.venv/**",
+        "**/**/venv/**",
+        "**/ENV/**",
+        "**/**/ENV/**",
+        "**/env/**",
+        "**/**/env/**",
+        "**/**/.pytest_cache/**",
+        "**/**/.ruff_cache/**",
+        "**/**/.mypy_cache/**",
+        "**/**/.hypothesis/**",
+        "**/.idea/**",
+        "**/.vscode/**",
+        "**/*.swp",
+        "**/*.swo",
+        "**/*~",
+        "**/.DS_Store",
+        "**/.DS_Store/**",
+        "**/.DS_Store?",
+        "**/._*",
+        "**/.Spotlight-V100",
+        "**/.Spotlight-V100/**",
+        "**/.Trashes",
+        "**/.Trashes/**",
+        "**/ehthumbs.db",
+        "**/ehthumbs.db/**",
+        "**/Thumbs.db",
+        "**/Thumbs.db/**",
         "**/*.log",
+        "**/*.tmp",
+        "**/*.temp",
+        "**/.cache/**",
         "**/*.jsonl",
-        "**/*.sqlite",
-        "**/*.db",
-        "**/*.db-shm",
-        "**/*.db-wal"
+        "**/test_results/**",
+        "**/*.csv",
+        "**/.mcp/**",
+        "**/.claude/.credentials.json",
+        "**/.claude/.credentials.json/**",
+        "**/.claude-session-key",
+        "**/.claude-session-key/**",
+        "**/*.js.map",
+        "**/*.d.ts",
+        "**/.serena/cache/**",
+        "**/.serena/plans/**",
+        "**/.serena/memories/**",
+        "**/.serena/*.tmp",
+        "**/.serena/project.yml",
+        "**/.serena/project.yml/**",
+        "**/opencode/events.jsonl",
+        "**/opencode/events.jsonl/**",
+        "**/.opencode/events.jsonl",
+        "**/.opencode/events.jsonl/**",
+        "**/.opencode/opencode.json",
+        "**/.opencode/opencode.json/**",
+        "**/.review-report-*",
+        "**/.review-thread-summary.json",
+        "**/.review-thread-summary.json/**",
+        "**/.cc-safety-net/**",
+        "**/opencode/context-mode/sessions/stats-*.json",
+        "**/opencode/context-mode/**/*.db",
+        "**/opencode/context-mode/**/*.db-shm",
+        "**/opencode/context-mode/**/*.db-wal",
+        "**/opencode/*.db",
+        "**/opencode/*.db-shm",
+        "**/opencode/*.db-wal",
+        "**/.agents/brooks/**"
       ],
       "languages": [
-        "js",
         "ts",
-        "tsx",
+        "js",
         "py",
-        "sh",
-        "rs"
+        "sh"
       ],
       "maxFileBytes": 2000000,
-      "includeNodeModulesTypes": false
+      "includeNodeModulesTypes": true,
+      "packageJsonPath": null,
+      "tsconfigPath": null,
+      "workspaceGlobs": null
     }
   ],
   "performanceTier": "auto",
+  "dbPath": "/home/dzack/ai/mcp/sdlmcp.sqlite",
   "graphDatabase": {
-    "path": "/home/dzack/.config/sdl-mcp/sdl-mcp-graph.lbug"
+    "path": "/home/dzack/ai/mcp/sdl-mcp-graph.lbug"
   },
   "policy": {
     "maxWindowLines": 180,
@@ -62,17 +171,142 @@
     "patterns": []
   },
   "indexing": {
-    "enableFileWatching": false,
-    "maxWatchedFiles": 25000
+    "pipeline": "auto",
+    "providerFirst": {
+      "activation": "shadowDb",
+      "readyState": "graphPlusAlgorithms",
+      "stagingFormat": "parquet",
+      "maxLegacyFallbackFiles": 1000000,
+      "maxSemanticEligibleFallbackFiles": 0,
+      "lsp": {
+        "mode": "primaryWithCaps",
+        "workspaceSymbolLimit": 5000,
+        "documentSymbolFileLimit": 500,
+        "documentSymbolTimeoutMs": 10000,
+        "documentSymbolFailureLimit": 20,
+        "documentSymbolCollectionTimeoutMs": 120000,
+        "referenceCandidateLimit": 200,
+        "diagnosticsLimit": 5000,
+        "diagnosticsTimeoutMs": 5000
+      }
+    },
+    "concurrency": 8,
+    "enableFileWatching": true,
+    "maxWatchedFiles": 25000,
+    "engine": "rust",
+    "watchDebounceMs": 300,
+    "pass2Concurrency": 4,
+    "algorithmRefresh": {
+      "enabled": true,
+      "pageRank": {
+        "enabled": true
+      },
+      "kCore": {
+        "enabled": true
+      },
+      "louvain": {
+        "enabled": true,
+        "maxCallEdges": 10000
+      },
+      "workerTimeoutMs": 120000
+    }
   },
   "liveIndex": {
-    "enabled": false
+    "enabled": true,
+    "debounceMs": 75,
+    "idleCheckpointMs": 15000,
+    "maxDraftFiles": 200,
+    "reconcileConcurrency": 1,
+    "clusterRefreshThreshold": 25
   },
-  "semantic": {
-    "enabled": false,
-    "provider": "mock"
+  "slice": {
+    "defaultMaxCards": 60,
+    "defaultMaxTokens": 12000,
+    "edgeWeights": {
+      "call": 1,
+      "import": 0.6,
+      "config": 0.8,
+      "implements": 0.9
+    }
   },
   "prefetch": {
-    "enabled": false
+    "enabled": true,
+    "maxBudgetPercent": 20,
+    "warmTopN": 0,
+    "policy": {
+      "enabled": true,
+      "mode": "safe",
+      "minSamples": 20,
+      "suppressionWasteRate": 0.8,
+      "boostHitRate": 0.35,
+      "retentionDays": 14,
+      "maxPriorityBoost": 25,
+      "maxBudgetTrimPercent": 50
+    }
+  },
+  "tracing": {
+    "enabled": true,
+    "serviceName": "sdl-mcp",
+    "exporterType": "console",
+    "sampleRate": 1
+  },
+  "observability": {
+    "enabled": true,
+    "sampleIntervalMs": 2000,
+    "retentionShortMinutes": 15,
+    "retentionLongHours": 24,
+    "pprMetricsEnabled": true,
+    "packedStatsEnabled": true,
+    "scipIngestMetrics": true,
+    "beamExplainCapacity": 128,
+    "beamExplainEntriesPerSlice": 512,
+    "sseHeartbeatMs": 15000,
+    "sseMaxStreamMs": 3600000
+  },
+  "parallelScorer": {
+    "enabled": true
+  },
+  "httpAuth": {
+    "enabled": false,
+    "token": null,
+    "rateLimit": {
+      "bucketSize": 30,
+      "refillPerSec": 0.5
+    }
+  },
+  "http": {
+    "allowRemote": false
+  },
+  "codeMode": {
+    "enabled": true,
+    "exclusive": true,
+    "maxWorkflowSteps": 20,
+    "maxWorkflowTokens": 50000,
+    "maxWorkflowDurationMs": 60000,
+    "ladderValidation": "warn",
+    "etagCaching": true
+  },
+  "runtime": {
+    "enabled": true,
+    "allowedRuntimes": [
+      "node",
+      "typescript",
+      "python",
+      "ruby",
+      "php",
+      "shell"
+    ],
+    "allowedExecutables": [],
+    "maxDurationMs": 30000,
+    "maxStdoutBytes": 1048576,
+    "maxStderrBytes": 262144,
+    "maxArtifactBytes": 10485760,
+    "maxResponseArtifactsPerRepo": 128,
+    "maxResponseArtifactBytesPerRepo": 1342177280,
+    "maxResponseArtifactBytesTotal": 2684354560,
+    "maxResponseArtifactsTotal": 512,
+    "artifactTtlHours": 24,
+    "maxConcurrentJobs": 2,
+    "envAllowlist": []
   }
 }

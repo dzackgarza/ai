@@ -3,13 +3,13 @@ common:
     description: SDL MCP server
     command: npx
     args:
-    - --yes
-    - sdl-mcp@0.11.7
-    - --config
-    - /home/dzack/ai/mcp/sdlmcp.config.json
+    - -y
+    - sdl-mcp
     - serve
     - --stdio
     enabled: true
+    env:
+      SDL_CONFIG: /home/dzack/ai/mcp/sdlmcp.config.json
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
     command: /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/.venv/bin/python

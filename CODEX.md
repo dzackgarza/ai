@@ -1,0 +1,13 @@
+# CODEX.md - SDL-MCP
+
+Use SDL-MCP as the default path for repository `ai`.
+
+## SDL-MCP Skill Bootstrap
+
+At the start of every new Codex session in this repository, load and follow the `sdl-mcp-agent-workflow` skill before repository exploration, command execution, or edits. The generated `.codex/hooks/load-sdl-skill.mjs` SessionStart hook also injects the lean skill body as a system message. If the skill is unavailable, use [SDL.md](./SDL.md) as the fallback workflow.
+
+When the SDL-MCP PID file is present, treat native repo-local shell and file tools as fallback-only. Use SDL runtime for shell actions with `stdin` for multiline input, the Iris ladder for indexed reads, `symbol.edit` for one-symbol indexed writes, `searchEditPreview` with `targeting:"identifier"`/`"structural"` or `operations[]` for cross-file indexed edits, and `file.read`/`file.write` for non-indexed files. Native access is reserved for `.codex/**`, `.claude/**`, and non-repo agent skills, memories, and session internals.
+
+SDL-MCP (Symbol Delta Ledger MCP Server) - an MCP server providing cards-first code context for polyglot repositories. Replaces bulk code reads with structured symbol cards, graph slices, delta packs, and gated code windows. Uses LadybugDB (graph DB), tree-sitter (AST parsing), and optional Rust native addon (napi-rs) for performance.
+
+> Optimized tool-use workflow for agents: see [SDL.md](./SDL.md).
