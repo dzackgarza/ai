@@ -4,30 +4,25 @@ title: Quick Start
 ---
 
 ```bash
-# Initialize the memory store in a project
-iwe init
+# Create a memory (types: decision, trap, advice, context, reference, plan)
+agent-memory add --scope project --type decision --title "Parser choice" --content "Use the existing parser boundary."
 
-# Create a new memory
-iwe new "My Memory"
+# Retrieve a memory by key
+agent-memory retrieve projects/<project-id>/decisions/parser-choice
 
-# Retrieve a memory with surrounding context
-iwe retrieve -k my-memory
+# Default search when unsure which mode fits (returns deduped JSON)
+agent-memory search --scope both "parser"
 
-# Search across all memories (fuzzy text + YAML field filters)
-iwe find "search term"
+# Explicit search modes
+agent-memory search keys --scope project "parser"
+agent-memory search content --scope both --mode exact "literal text"
+agent-memory search content --scope both --mode fuzzy "approximate topic"
+agent-memory search content --scope both --mode ranked "semantic context"
+agent-memory search metadata --scope project --type decision --tag project
 
-# Count memories matching criteria
-iwe count --filter 'status: draft'
-
-# Normalize all memories to consistent formatting
-iwe normalize
-
-# View the hierarchy tree from any starting point
-iwe tree
-
-# Analyze the memory store
-iwe stats
-
-# Export the memory graph as DOT for visualization
-iwe export -f dot
+# Read-only inspection of a large vault
+agent-memory inspect overview --scope both --format json
+agent-memory inspect tree --scope project --depth 2 --format json
 ```
+
+Run `agent-memory --help` and `agent-memory <subcommand> --help` for the full surface.

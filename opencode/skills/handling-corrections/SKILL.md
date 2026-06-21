@@ -12,21 +12,39 @@ metadata:
 ## When the user corrects any action
 
 Stop. Do not pivot immediately.
-Do not produce text.
 Do not acknowledge.
+Do not fix.
+Do not infer the action the user wants.
 
-## Synthesis Gate
+The next assistant turn is a correction-routing turn. It is not an implementation turn,
+a repair turn, or a social-repair turn.
 
-Produce this statement internally before doing anything else:
+## Correction-Routing Turn
 
-**“The reasoning error was _____, it damaged _____, and the fix is _____.”**
+On the next assistant turn after any correction, challenge, or "why" question, produce
+only this visible routing record:
 
-If you cannot fill all three blanks, you do not yet understand the correction well
-enough to act. Use tools to investigate (git diff, read files, check what was changed)
-until you can.
+```text
+Trigger: <quote or paraphrase the correction in one sentence>
+Reasoning error: <what prior assumption, inference, or action is under challenge>
+Damage: <what artifact, decision, state, or user trust may have been damaged; say
+"unknown" if not yet inspected>
+Evidence needed: <exact files, diffs, transcript, command output, or external source
+needed before acting>
+Next action: <answer-only, investigate-only, or wait-for-user; never "fix now">
+Stop point: <where this turn stops>
+```
 
-Once you can fill all three blanks: fix the problem immediately with tools.
-Text explanation comes ONLY AFTER the fix is done, if needed at all.
+If any field is unknown, say `unknown` and set `Next action` to `investigate-only`.
+Then perform only the investigation needed to fill the field. Do not edit, delete,
+rename, revert, commit, close, resolve, or relabel anything in the same turn.
+
+If all fields are known, still do not act immediately. State the proposed action in
+`Next action` and stop for user confirmation unless the user asked only for an
+evidence-backed explanation.
+
+For explanation-only turns, answer the question from evidence and stop. Do not append
+a fix.
 
 ## What NOT to produce
 
@@ -35,6 +53,9 @@ of the user’s perspective.
 These are the same failure class as receipt-checking — visible artifacts of engagement
 that substitute for substantive work.
 Acknowledgment tokens produce social repair without fixing the problem.
+
+Do not write “Using `handling-corrections`”, “loading correction guidance”, or similar
+compliance announcements. The routing record is the compliance surface.
 
 Do not pivot immediately to a fix while leaving debris from the mistake.
 Check what was damaged first.
@@ -47,6 +68,9 @@ Do not use `git restore` or `git checkout` — these are destructive in noisy re
 Every “why” question is a research task, not a conversation opener.
 
 - Look it up: read transcripts, search docs, find real evidence
+
+- Use the correction-routing record before the answer unless the answer can be given
+  directly from evidence already present in the current turn
 
 - Do **not** answer with supplication, invented feelings, or promises about future
   behavior
@@ -62,6 +86,8 @@ Answering a question and then immediately acting on your own answer is a violati
 | --- | --- | --- |
 | “Why does this function have param x?” | “You’re right, it’s not needed, removing it.” [deletes] | “x is used for Y. It may no longer be needed.” [waits] |
 | “Why did you edit that file?” | Explain + immediately restore it | Explain root cause, assess damage, wait for direction |
+| “Why are you normalizing this body?” | “You’re right, removing normalization.” [edits] | Routing record -> inspect why normalization exists -> answer -> wait |
+| “That is bad metadata. Delete it.” | Load skill -> delete immediately | Routing record -> verify damaged item and proposed deletion -> wait |
 
 The user’s response to your answer may change the intended action entirely.
 **Do not act until the question is resolved.**

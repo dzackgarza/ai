@@ -3,7 +3,7 @@ order: 110
 title: Preferred Libraries and Tools
 ---
 
-- `iwe` for managing memories and agent-facing documentation
+- `agent-memory` for managing memories and agent-facing documentation (see the Memory section)
 
 - `gh` for all Github operations (alternative to webfetching)
 

@@ -103,8 +103,8 @@ If a user did not literally and precisely ask for a checkout/reset/etc, then *do
 If one applies, load it.
 Do not proceed until verified.
 
-**Run in every new conversation:** `serena_activate_project`, then list memories using `iwe` (see `Memories` section below).
-Initialize a memories directory for the project if not already present.
+**Run in every new conversation:** `serena_activate_project`, then survey memories with `agent-memory` (e.g. `agent-memory inspect tree` or `agent-memory search`; see the Memory section).
+Bind the project to a vault with `agent-memory init project` if not already present (verify with `agent-memory doctor`).
 
 **Never write or discuss time estimates for work you suggest.**
 

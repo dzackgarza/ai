@@ -58,8 +58,9 @@ def include_block(md: Path) -> str:
 
 SKIP: set[Path] = set()
 
-# Build machinery / generated artifact (not fragments): never walked, never a section.
-MACHINERY = {"justfile", "assemble.py", "filters", "AGENTS.md"}
+# Non-fragment files in the content tree (tooling lives under .agents/, already skipped
+# as a dotdir; only the module README sits alongside the fragments).
+MACHINERY = {"README.md"}
 
 
 def children(d: Path) -> list[Path]:

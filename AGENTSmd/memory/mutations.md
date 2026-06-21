@@ -4,29 +4,15 @@ title: Mutations
 ---
 
 ```bash
-# Rename a memory (all links update automatically)
-iwe rename old-key new-key
+# Update a memory body
+agent-memory update projects/<project-id>/decisions/parser-choice --content "Updated Markdown body."
 
-# Delete a single memory (references cleaned up)
-iwe delete memory-key
+# Delete a memory
+agent-memory delete projects/<project-id>/decisions/parser-choice
 
-# Bulk delete by filter
-iwe delete --filter 'status: archived'
-
-# Overwrite a memory body
-iwe update -k memory-key -c "new content"
-
-# Update frontmatter fields
-iwe update --filter 'status: draft' --set reviewed=true
-
-# Extract a section into its own memory
-iwe extract memory-key --section "Title"
-
-# Inline a referenced memory back into its parent
-iwe inline memory-key --reference "other-memory"
-
-# Attach a memory via a configured action (e.g., daily notes)
-iwe attach --to today -k memory-key
+# Restructure (kept separate from normal CRUD)
+agent-memory maintain move <key> --to global/traps
+agent-memory maintain split <key> --section "Section Title"
+agent-memory maintain merge <key> --reference <other-key>
+agent-memory maintain squash <key> --depth 3
 ```
-
-Use `iwe --help` and `iwe <subcommand> --help` to discover the full set of commands and options.
