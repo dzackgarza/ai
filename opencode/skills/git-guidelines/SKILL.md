@@ -73,6 +73,25 @@ Bundling unrelated work is not cleaner history — it is missing provenance.
 `rm` is irreversible.
 Before deleting: “Can this be recovered if I’m wrong?”
 
+## Destructive Git Operations
+
+Never run `git checkout`, `git reset`, `git revert`, `git restore`, `git stash`, or any
+other history/state operation that discards or hides work unless the user literally and
+precisely requested that operation.
+
+If you need to recover an old state:
+
+- inspect the old content with read-only commands such as `git show`
+- apply forward edits that restore the desired content
+- commit the restoration as new history
+
+Do not dump an old git version over a file as a shortcut.
+The audit trail must show the original state, the mistaken edit, and the forward-facing
+repair.
+
+If a safety policy blocks a destructive operation, stop.
+Do not work around the block or pivot to a different state-manipulation command.
+
 ## Commit Messages
 
 Commit messages are the canonical record of completed work.

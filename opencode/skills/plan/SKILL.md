@@ -1,8 +1,6 @@
 ---
 name: plan
 description: "Plan mode: write markdown plan to .hermes/plans/, no exec."
-version: 1.0.0
-author: Hermes Agent
 license: MIT
 metadata:
   hermes:
@@ -19,14 +17,25 @@ For this turn, you are planning only.
 
 - Do not implement code.
 
-- Do not edit project files except the plan markdown file.
+- Do not edit project files except the requested plan artifact.
 
 - Do not run mutating terminal commands, commit, push, or perform external actions.
 
 - You may inspect the repo or other context with read-only commands/tools when needed.
 
-- Your deliverable is a markdown plan saved inside the active workspace under
-  `.hermes/plans/`.
+- Your deliverable is a durable plan artifact, not a chat-only outline.
+
+## Storage
+
+When `agent-memory` is available, file plans as project memories with type `plan`.
+Use the `agent-memory` skill for the exact command surface.
+
+If the runtime or user explicitly requires a repo-local markdown plan, save it under:
+
+- `.hermes/plans/YYYY-MM-DD_HHMMSS-<slug>.md`
+
+If `agent-memory` is required by the active instruction set but unavailable, report the
+blocker instead of creating an untracked substitute.
 
 ## Output requirements
 
@@ -51,19 +60,6 @@ Include, when relevant:
 If the task is code-related, include exact file paths, likely test targets, and
 verification steps.
 
-## Save location
-
-Save the plan with `write_file` under:
-
-- `.hermes/plans/YYYY-MM-DD_HHMMSS-<slug>.md`
-
-Treat that as relative to the active working directory / backend workspace.
-Hermes file tools are backend-aware, so using this relative path keeps the plan with the
-workspace on local, docker, ssh, modal, and daytona backends.
-
-If the runtime provides a specific target path, use that exact path.
-If not, create a sensible timestamped filename yourself under `.hermes/plans/`.
-
 ## Interaction style
 
 - If the request is clear enough, write the plan directly.
@@ -74,4 +70,18 @@ If not, create a sensible timestamped filename yourself under `.hermes/plans/`.
 - If it is genuinely underspecified, ask a brief clarifying question instead of
   guessing.
 
-- After saving the plan, reply briefly with what you planned and the saved path.
+- After saving the plan, reply briefly with the saved memory key or path.
+
+## Plan Review Surface
+
+When the user asks to read, inspect, annotate, or give feedback on a plan, generate the
+review surface on demand:
+
+- render the entire plan as one self-contained HTML page
+- serve it from an ephemeral local server
+- include inline annotation controls and a global Post button
+- save the annotation payload to a file
+- read that payload back before revising or acting
+
+The review page is not a standing service.
+Create it only for the requested plan-review turn.

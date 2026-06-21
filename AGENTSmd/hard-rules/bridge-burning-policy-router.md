@@ -7,6 +7,7 @@ Before writing, reviewing, or fixing code/tests/QC, load:
 
 - `policy-index` to identify which policy skill owns the rule.
 - `anti-slop` for bridge-burning policies and anti-laundering doctrine.
+- `bespoke-software-policy` for single-user, pre-launch, no-fallback constraints.
 - `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
 - `reviewing-llm-code/references/runtime-control-flow-red-flags.md` for runtime control-flow rules.
 - `test-guidelines` for proof/test obligations.
@@ -15,4 +16,7 @@ Before writing, reviewing, or fixing code/tests/QC, load:
 - `pr-feedback-triage` when acting on review comments or automated review feedback.
 
 A test line is admissible only if it increases the epistemic status of a repository-owned proof burden. If an assertion would still pass on a plausibly broken app, it is banned.
-Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, smoke tests in proof paths, helper-level proof for boundary obligations, stringly errors, boolean mode flags, and deletion without burden transfer are hard red flags.
+Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, smoke
+tests in proof paths, helper-level proof for boundary obligations, stringly errors,
+boolean mode flags, compatibility shims, and deletion without burden transfer are hard
+red flags.
