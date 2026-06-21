@@ -1,0 +1,78 @@
+{
+  "repos": [
+    {
+      "repoId": "ai",
+      "rootPath": "/home/dzack/ai",
+      "ignore": [
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/out/**",
+        "**/target/**",
+        "**/coverage/**",
+        "**/.venv/**",
+        "**/venv/**",
+        "**/__pycache__/**",
+        "**/.pytest_cache/**",
+        "**/.mypy_cache/**",
+        "**/.ruff_cache/**",
+        "**/.cache/**",
+        "**/.tmp/**",
+        "**/tmp/**",
+        "**/.claude/**",
+        "**/.codex/**",
+        "**/.serena/**",
+        "**/.sdl-memory/**",
+        "**/.env",
+        "**/.env.*",
+        "**/*.log",
+        "**/*.jsonl",
+        "**/*.sqlite",
+        "**/*.db",
+        "**/*.db-shm",
+        "**/*.db-wal"
+      ],
+      "languages": [
+        "js",
+        "ts",
+        "tsx",
+        "py",
+        "sh",
+        "rs"
+      ],
+      "maxFileBytes": 2000000,
+      "includeNodeModulesTypes": false
+    }
+  ],
+  "performanceTier": "auto",
+  "graphDatabase": {
+    "path": "/home/dzack/.config/sdl-mcp/sdl-mcp-graph.lbug"
+  },
+  "policy": {
+    "maxWindowLines": 180,
+    "maxWindowTokens": 1400,
+    "requireIdentifiers": true,
+    "allowBreakGlass": false,
+    "defaultDenyRaw": true
+  },
+  "redaction": {
+    "enabled": true,
+    "includeDefaults": true,
+    "patterns": []
+  },
+  "indexing": {
+    "enableFileWatching": false,
+    "maxWatchedFiles": 25000
+  },
+  "liveIndex": {
+    "enabled": false
+  },
+  "semantic": {
+    "enabled": false,
+    "provider": "mock"
+  },
+  "prefetch": {
+    "enabled": false
+  }
+}
