@@ -1,4 +1,4 @@
-// Custom tool: write_plan - writes a plan document to .serena/plans/
+// Custom tool: write_plan - writes a plan document to .agents/plans/
 import { type Plugin, tool } from "@opencode-ai/plugin";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
@@ -45,7 +45,7 @@ export const WritePlanPlugin: Plugin = async () => {
           const slug = generateSlug(args.plan);
           const timestamp = formatDateTime();
           const filename = `${slug}-${timestamp}.md`;
-          const filepath = `${directory}/.serena/plans/${filename}`;
+          const filepath = `${directory}/.agents/plans/${filename}`;
 
           await mkdir(dirname(filepath), { recursive: true });
           await writeFile(filepath, args.plan, "utf-8");

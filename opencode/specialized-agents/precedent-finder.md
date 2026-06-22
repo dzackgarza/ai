@@ -50,36 +50,6 @@ permission:
   cut-copy-paste-mcp_get_operation_history: allow
   cut-copy-paste-mcp_show_clipboard: allow
   cut-copy-paste-mcp_undo_last_paste: allow
-  serena_read_file: deny
-  serena_list_dir: deny
-  serena_find_file: deny
-  serena_search_for_pattern: deny
-  serena_get_symbols_overview: *id001
-  serena_find_symbol: *id001
-  serena_find_referencing_symbols: *id001
-  serena_create_text_file: deny
-  serena_replace_content: deny
-  serena_replace_symbol_body: *id002
-  serena_insert_after_symbol: *id002
-  serena_insert_before_symbol: *id002
-  serena_rename_symbol: *id002
-  serena_read_memory: deny
-  serena_list_memories: deny
-  serena_write_memory: deny
-  serena_edit_memory: deny
-  serena_delete_memory: deny
-  serena_rename_memory: deny
-  serena_activate_project: allow
-  serena_check_onboarding_performed: deny
-  serena_get_current_config: deny
-  serena_onboarding: deny
-  serena_prepare_for_new_conversation: deny
-  serena_initial_instructions: deny
-  serena_think_about_collected_information: deny
-  serena_think_about_task_adherence: deny
-  serena_think_about_whether_you_are_done: deny
-  serena_execute_shell_command: deny
-  serena_switch_modes: deny
   gemini_quota: allow
   cut-copy-paste-mcp_cut: *id002
   cut-copy-paste-mcp_copy: *id002
@@ -93,7 +63,7 @@ permission:
    abstract descriptions.
    Every finding must include source evidence.
 
-2. **Memories First, Codebase Second** — Check Serena memories for past decisions and
+2. **Memories First, Codebase Second** — Check agent-memory records for past decisions and
    patterns before searching the codebase.
    Memories are faster and often more relevant.
 
@@ -124,7 +94,7 @@ live codebase (existing patterns, conventions, implementations).
 
 | Source | What It Contains | When to Check |
 | --- | --- | --- |
-| **Serena memories** | Past decisions, lessons learned, environment quirks, operational guidance | Always check first |
+| **agent-memory records** | Past decisions, lessons learned, environment quirks, operational guidance | Always check first |
 | **Codebase patterns** | Existing implementations, naming conventions, error handling, file organization | When memories don’t cover it, or to find concrete code examples |
 
 ## Process

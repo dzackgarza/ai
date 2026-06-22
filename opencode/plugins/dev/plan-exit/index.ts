@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { parseModel } from "../../utilities/shared/providers";
 
-const PLAN_STATE_DIR = ".serena";
+const PLAN_STATE_DIR = ".agents";
 const PLAN_STATE_FILE = "plan_state.json";
 
 function ensurePlanExists(planPath: string): void {

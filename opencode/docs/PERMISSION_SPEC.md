@@ -308,7 +308,7 @@ No stage may self-certify its own output for the next gate.
 This mode intentionally prevents Source and Test writers from reading each other’s
 directories and is the default policy.
 
-1. Planner produces behavior spec + rubric in `.serena/plans/`.
+1. Planner produces behavior spec + rubric in `.agents/plans/`.
 
 2. Orchestrator assigns Test Writer first.
 
@@ -431,17 +431,12 @@ For **ALL_AGENTS**:
 
 - `bash`: deny by default at global baseline
 
-- `serena_execute_shell_command`: deny (non-overridable)
 
-- Serena memory CRUD is allowed (`serena_read_memory`, `serena_list_memories`,
-  `serena_write_memory`, `serena_edit_memory`, `serena_delete_memory`,
-  `serena_rename_memory`)
+- agent-memory retrieval/search is allowed through the documented `agent-memory` workflow
 
-- disable Serena onboarding/workflow helpers (`serena_onboarding`,
-  `serena_prepare_for_new_conversation`, `serena_initial_instructions`,
-  `serena_think_about_*`) and enforce this via global deny list
+- disable legacy onboarding/workflow helpers (`legacy_onboarding`,
 
-- Serena file read/write tools are path-scoped through role profiles (same policy
+- agent file read/write tools are path-scoped through role profiles (same policy
   boundary as built-in read/edit tools)
 
 - require evidence-based completion claims
@@ -459,9 +454,9 @@ For **PURE_AGENTS** (all non-subagent agents, including top-level roles):
 
 Policy assumes these structured directories exist and are stable:
 
-- `.serena/`
+- `.agents/`
 
-- `.serena/plans/`
+- `.agents/plans/`
 
 - `docs/`
 
@@ -544,7 +539,7 @@ Allow:
 
 - read/write `src/`
 
-- read `.serena/plans/` for requirements context
+- read `.agents/plans/` for requirements context
 
 Deny:
 
@@ -560,7 +555,7 @@ Allow:
 
 - read/write `test/` and `tests/`
 
-- read `.serena/plans/` for requirements context
+- read `.agents/plans/` for requirements context
 
 Deny:
 
@@ -574,7 +569,7 @@ Allow:
 
 - read/write `docs/`
 
-- read `.serena/plans/` for requirements context
+- read `.agents/plans/` for requirements context
 
 Deny:
 
