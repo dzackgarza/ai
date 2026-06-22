@@ -52,6 +52,8 @@ default:
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
 
+test-ci: test
+
 # Install all symlinks and environment variables
 install:
     #!/usr/bin/env bash
