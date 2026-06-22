@@ -147,6 +147,28 @@ commands, commits, artifacts, green checks, policy declarations, and environment
 not top-level progress items unless they are attached to the substantive obligation they
 prove or unblock.
 
+### Tracking item quality
+
+A PR checkbox is reviewer-hacking when it is easy to tick but empty of correctness. Top-level
+items must start from externally meaningful behavior, decisions, or work products, then
+attach commits, commands, tests, and artifacts as evidence under that obligation.
+
+"Drive Beamer PDF export from the app menu" is a valid tracking item because it names a
+user path, expected output, and proof surface. "Re-run proof coverage," "Update
+Implementation-Status," or "Commit proof-artifacts/run.json" is weak unless the item is
+nested under the obligation it proves and states the criterion, content, and reviewer use.
+
+Sequencing work is valid when the PR cannot be reviewed correctly without it. "Publish
+local review guidance in AGENTS.md before review" can be a legitimate precondition because
+it calibrates reviewers against the governing policy. Classification labels such as
+`env-blocked` are not standalone tasks; put them under the blocked substantive item with
+concrete evidence and an unblock condition.
+
+Do not add amendment-auditability, PR-comment-versioning, or tracking-the-tracking
+checkboxes. GitHub already preserves PR comments and review history. When a plan changes,
+update the source plan or PR body and use normal review discussion for the decision; do
+not make a deliverable out of proving that the discussion exists.
+
 ## Content placement
 
 Put each fact in the surface that can represent and enforce it:

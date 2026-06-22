@@ -151,6 +151,25 @@ same proof, then run the relevant system gate.
 Tasks should be assignment-sized: small enough for a focused implementation pass, but not
 so small that they track typing, file touching, classification, or environment trivia.
 
+## Language and Referents
+
+Treat "neural-ese" as a planning defect, not a style preference. A plan item fails
+when it uses deictic language without a stable antecedent, invented shorthand, vague
+jargon, aphoristic status language, or authority priming that gestures at seriousness
+without naming the behavior, decision, surface, and evidence.
+
+Bad plan language usually makes a task sound inspectable while hiding what a reviewer
+would judge. "Update proof obligations" is not a task; "define the proof obligation that
+PDF export from the app menu produces the expected Beamer artifact, then prove it through
+the repo E2E recipe" is a task. "Classify this as env-blocked" is not a task unless it
+is nested under the substantive obligation and names the concrete blocker, owner,
+evidence, and unblock condition.
+
+Tooling and environment steps belong in the proof path, not as standalone progress,
+unless the shared artifact or external precondition is itself reviewer-relevant. "Ensure
+Playwright is installed" is normally subsumed by the proof task that uses Playwright; the
+plan item is the boundary behavior being proven and the admissible evidence for it.
+
 ## Milestones and Execution Graph
 
 Milestones describe delivered capability or restored correctness. The progress checklist
@@ -239,6 +258,9 @@ Before saving or handing off a plan, verify:
 | Test ID as task | Private shorthand hides the obligation | Define the user/system outcome, then cite the test |
 | File-touch checklist | Activity is counted as progress | Tie each edit to an obligation and acceptance criterion |
 | Vague action verbs | `update`, `reconcile`, or `clean up` can mean anything | State concrete before/after behavior |
+| Neural-ese | Deictic wording, invented jargon, status language, or authority priming hides the referent | Rewrite into exact behavior, decision, surface, and evidence |
+| Tool step as task | Environment trivia becomes visible progress | Nest setup under the boundary proof it enables |
+| Classification as task | Labels such as `env-blocked` replace the real obstacle | Record blocker evidence and unblock condition under the substantive task |
 | Chat-only plan | Work cannot survive context rollover | Save a durable plan artifact through the active plan/memory workflow |
 | Frozen plan | Discoveries and decisions leave the artifact stale | Update progress, discoveries, decisions, and revision notes |
 | Implementation-defined success | Code determines its own acceptance after the fact | Lock acceptance and proof before implementation |
