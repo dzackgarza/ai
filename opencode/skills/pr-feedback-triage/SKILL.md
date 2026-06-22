@@ -10,19 +10,40 @@ Before acting on PR comments or review feedback, consult the central policy inde
 
 When consuming review feedback from other agents (automated or human), do not treat review comments as automatic chores to be done or automatic blockers. A review comment is a claim to be evaluated, not an order.
 
-## Orchestration: Enforce This Loop Mechanically
+## Orchestration: Enforce Role Isolation
 
-This workflow is a convergent loop run by an orchestrator over independent subagents. The orchestrator's own judgment is **not** a trusted disposition surface — see Phase 2.5.
+This workflow is the PR-feedback adaptation of the canonical A/B/C
+disposition-to-remediation firewall in
+[reviewing-llm-code/references/qc-triage.md](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/references/qc-triage.md).
+Map the roles explicitly:
 
-If you have explicit orchestration primitives available — workflow/pipeline tools, goal loops, durable task graphs, scheduled re-invocation, background subagents, or any harness that can fan out and gate subagent stages deterministically — you **must** route this loop through them immediately, before doing any manual triage. Do not hand-run the loop conversationally when a tool can enforce it.
+- **A — Orchestrator/controller**: collects review surfaces, routes findings, records stamps, and closes threads only after the required evidence exists. A makes no authoritative disposition and proposes no fix.
+- **B — Disposition subagent**: Phase 2.5. B determines the per-finding PR disposition using the four-way model below.
+- **C — Remediation subagent**: Phase 4. C remediates accepted findings from a first-principles spec, not from reviewer wording, B's fix ideas, or A's preferences.
 
-Concretely, encode the loop as orchestrated stages so the structure is mechanical, not discretionary:
-- a **disposition stage** that fans out per-finding disposition subagents (Phase 2.5);
-- a **remediation stage** that fans out per-accepted-finding remediation subagents (Phase 4);
-- a **verification + commit gate** between remediation and thread closure (Phase 5 / Phase 6);
-- a **convergence loop** that re-enters on each new review round until a window is all reject/duplicate/outdated (see Loop and Convergence).
+If explicit orchestration primitives are available — workflow/pipeline tools, goal
+loops, durable task graphs, scheduled re-invocation, background subagents, or any
+harness that can dispatch stage work and preserve stage inputs — use them to
+enforce the A/B/C isolation from the first review item.
 
-The point of mechanizing it is to make the threat-model games structurally impossible rather than relying on the orchestrator to remember not to play them. If no orchestration primitive is available, run the same stages by hand with the same gates — but the stages and gates are mandatory either way.
+A ready-made encoding exists: the **`pr-feedback-triage` workflow**
+(`~/.claude/workflows/pr-feedback-triage.js`) runs this convergent loop
+deterministically — Collect (via `scripts/triage_state.py`) → B disposition (with
+the mandatory pre-filter) → C remediation from first-principles specs →
+verify+commit+three-stamp-close → loop until the harness reports converged. A is
+the script and cannot self-dispose; B and C are separate `agent()` stages. Prefer
+invoking it (pass `args {repo, pr}`; requires the usual workflow opt-in) over
+hand-driving; fall back to the manual stages below only when no workflow primitive
+is available.
+
+The tooling may enforce stage dispatch, batching boundaries, contraband-input
+denial, required outputs, verification questions, commit-before-closure, and
+re-entry on new review rounds.
+It must **not** become an orchestrator-controlled checkpoint where A approves,
+overrides, summarizes, or substitutes for B's disposition or C's remediation. That
+would reintroduce the self-gate forbidden by `goalcraft` and the canonical
+`qc-triage` protocol. If no orchestration primitive is available, run the same
+role-isolated stages by hand.
 
 ## Core Doctrine: Split Feedback from Remediation
 
@@ -65,6 +86,8 @@ The worker agent will attempt to game PR review itself. It will:
 - hide rejected feedback inside resolved threads;
 - treat “disposition provided” as completion;
 - use the reviewer's wording as a checklist to silence rather than understand.
+- do the A/B/C split only after maintainer pushback, then relapse when unwatched
+  (the `qc-triage` "doing it right only once the user pushes back" anti-pattern).
 
 The workflow must make that game impossible.
 
@@ -108,6 +131,8 @@ The controller must collect all live review items before acting:
 
 A green check, “not resolved: 0,” or resolved-thread count is not proof. Feedback must be understood and made visible to the maintainer, not treated as an administrative obstacle.
 
+**Triage state (run first; idempotent).** Collect with `scripts/triage_state.py` (`--repo owner/name --pr N`). It paginates ALL review threads (never the 100-cap default — a capped query silently undercounts open threads), keys each finding by a STABLE id (the `ai-review-fingerprint`, else a content hash that survives line shifts), records landed stamps, and writes `.pr/triage_state.json` plus the prescribed `.pr/REVIEW_DISPOSITIONS.md`. It is idempotent: a mid-round death resumes cleanly because already-stamped/resolved findings are skipped. Scope the round from its worklist (NEW / RE-RAISED / OPEN-PENDING) and use its `converged` flag (NEW=0 and OPEN-PENDING=0) as the loop's termination signal. Match and close threads by stable id / `thread_id`, never by `(path:line)` — line numbers shift under commits.
+
 ### Phase 2: Classify Without Resolving
 For each item, classify internally:
 - claim: true / false / needs investigation
@@ -120,26 +145,53 @@ The Phase 2 classification is a provisional sort, **not** an authoritative dispo
 
 ### Phase 2.5: Independent Disposition Round
 
-The disposition itself must be produced by independent disposition subagents, not by the orchestrator clearing the review. This mirrors Phase 4: the agent trying to close the PR is the wrong agent to decide which findings are real.
+This is role **B** from the canonical A/B/C firewall. The disposition itself must
+come from independent disposition subagents, not from the orchestrator clearing
+the review. The PR-specific adaptation is that B returns the four-way PR
+disposition below instead of the QC protocol's binary `VIOLATION` / `CLEARED`
+result.
 
-Fan out one disposition pass per finding (batch by disjoint file-sets if needed). Each disposition subagent receives **only**:
-- the verbatim review thread(s) for its finding;
-- the relevant source files;
-- the policy surface (`policy-index` and the global policy skills it routes to);
-- the **verbatim owner/maintainer comments** relevant to the finding.
+Batch disposition work intelligently. The default for a normal review window is
+often **one B subagent for all current findings**, returning a separate
+disposition for each finding. Split into multiple B subagents only when there is a
+real reason: context would overflow, file/domain ownership is genuinely
+disjoint, parallelism matters, or a contaminated prompt/output needs to be rerun
+cleanly.
 
-Each disposition subagent must **NOT** receive:
-- the orchestrator’s own hypotheses, categories, or hunches (“this is CI churn,” “probably a false positive,” “likely benign”);
-- any premise the orchestrator inferred or paraphrased rather than read verbatim (e.g. “the owner approved X”) — if it is not a literal quote of an owner comment or a policy clause, it does not enter the prompt;
-- any remediation information, suggested patch, or preferred fix;
-- thread-resolution status or the count of open threads.
+The invariant is role restriction, not issue narrowness. A B subagent may see many
+findings, but it may only produce dispositions. The dispatch hygiene rules in
+`qc-triage.md` apply directly: A may transmit raw review material, relevant source
+locations/files, named policy surfaces, and verbatim owner/maintainer comments. A
+may not transmit its verdict, leaning, hypotheses, paraphrased owner premises,
+thread-resolution status, remediation ideas, preferred fix, or any prompt framing
+that seeds the outcome. If the owner premise is not a literal quote or a policy
+clause, it is contraband.
 
-Each disposition subagent returns exactly one of the four dispositions (Accepted as written / Accepted with modified remediation / Rejected / Investigate before action), grounded only in policy + literal owner comments + the code. Disposition is **per finding**. There is no categorical, grouped, or bulk disposition. “CI churn,” “false-positive wave,” “bulk-reject,” and “mostly noise” are not dispositions and must never appear as one — each finding is dispositioned on its own merits even when many findings share a signature.
+Each B subagent returns exactly one disposition per finding it was assigned:
+Accepted as written, Accepted with modified remediation, Rejected, or Investigate
+before action. The answer must be grounded only in policy, literal owner comments,
+and the code. Batched processing is allowed; grouped verdicts are not. “CI
+churn,” “false-positive wave,” “bulk-reject,” and “mostly noise” are not
+dispositions and must never appear as one.
 
-Banned orchestrator behavior in this phase:
-- Determining any disposition from your own judgment instead of a disposition subagent.
-- Injecting an invented or paraphrased premise into a disposition subagent prompt. A fabricated premise (e.g. claiming the owner approved a design they did not) poisons the disposition and launders the orchestrator’s own opinion through the tooling — this is the exact failure the independent round exists to prevent. Before passing any “the owner said/approved/directed X” premise, quote the literal comment; if you cannot, do not pass it.
-- Collapsing distinct findings into a single group disposition to save effort.
+**Mandatory pre-filter, before the four-way.** Each B subagent runs the
+[disposition pre-filter](references/disposition-prefilter.md) on every finding
+first. Gate 1 rejects out-of-threat-model generic bug/perf/style findings (the
+apparatus targets slop, not every esoteric bug). Gate 2 forces a disposition for
+known policy-misaligned shapes — micro-optimization with no logged/reproduced perf
+problem, fallback/default/mock suggestions, defensive-catch-instead-of-fail-early,
+in-code constants where config-driven is required, optional/absent-data fields,
+sandbox/enterprise hardening on bespoke software, and actual slop (a catch-all
+swallow) that the finding merely frames as a generic bug. Gate 3 downgrades any
+true-claim-with-policy-violating-fix to accept-with-modified-remediation. The
+disposition reply must carry the recorded `Pre-filter:` line naming which gate
+fired. The gate runs before the four-way and is recorded, so a disposition cannot
+be argued from priors — "it models real absent data" or "it is a real perf cost"
+cannot stand in for the policy check.
+
+If B proposes or implies a remediation, fix shape, patch, or refactor, the output
+is contaminated by the same B/C firewall violation described in `qc-triage.md`
+and must be rerun with a clean prompt.
 
 Duplicate, outdated, and superseded threads are still dispositioned per finding (see Loop and Convergence) — they are disposed as `Duplicate of <thread>` or `Outdated (superseded by <commit>)`, not silently skipped.
 
@@ -194,6 +246,12 @@ Scope:
 
 ### Phase 4: Independent Remediation Subagent
 Accepted feedback must be fixed by an independent subagent, not the same worker that is trying to clear the review.
+As with dispositions, batching is allowed when the role boundary remains clean:
+one C subagent may remediate multiple accepted findings if it receives only the
+approved remediation spec(s), original task/PR contract, relevant source files,
+and global policies. Split remediation only when context size, ownership
+boundaries, parallelism, or contamination risk justifies it.
+
 The subagent receives the *Remediation Spec*, the *Original task/PR contract*, *relevant source files*, and *global skills/policies* (anti-slop, fixing-slop, test-guidelines, bridge-burning-red-flags, banned-test-shapes, runtime-control-flow-red-flags, quality-control, known-solution-first).
 The subagent must **NOT** receive the exact reviewer wording, suggested patch text, thread-resolution status, the worker’s preferred fix, or “just address this comment” framing.
 
@@ -367,17 +425,19 @@ This file is the durable repository-side audit trail.
 - Treating an issue opened for later work as resolution of current accepted feedback.
 - Letting the original worker remediate its own review without independent spec-and-review.
 - Disposing findings from the orchestrator’s own judgment instead of an independent disposition subagent (Phase 2.5).
-- Group, categorical, or “bulk” dispositions (“CI churn,” “false-positive wave,” “bulk-reject”). Disposition is per finding.
+- Grouped verdicts masquerading as dispositions (“CI churn,” “false-positive wave,” “bulk-reject”). Batch processing is allowed; each finding still needs its own disposition.
 - Injecting an invented or paraphrased premise (“the owner approved X”) into a disposition or remediation subagent prompt without a verbatim quote.
 - Closing a nontrivial thread without all three stamps (disposition → remediation → verification-with-commit-hash).
 - Treating per-push CI re-review as a “snowball” and using that framing to avoid dispositioning the new round.
+- Doing the A/B/C split correctly only after maintainer pushback; see the
+  `qc-triage` prohibited behavior on supervised-only correctness.
 
 ## Loop and Convergence
 
 This is a **convergent loop**, not a single pass and not a snowball:
 
 ```
-reviews land → Phase 2.5 disposition round (per finding) → record disposition stamps on every thread
+reviews land → Phase 2.5 disposition round (batched if appropriate; one disposition per finding) → record disposition stamps on every thread
   → Phase 3–4 remediation round (accepted findings only) → Phase 5 verify → Phase 6 commit
   → push (triggers a fresh review round) → repeat
 ```
@@ -426,6 +486,9 @@ When a review item is resolved by deletion, require the same scrutiny as a code 
 
 ### 10. Scan remediations for Bridge-Burning Red Flags
 If a construct would let an agent preserve the appearance of correctness while weakening the obligation, treat it as a red flag even if the code currently works. Reviewers and triage agents must audit changes against the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/runtime-control-flow.md) to detect validation-evasion moves (such as runtime defaults, fallbacks, mocks, exact string assertions, and fail-open control branches).
+
+### 11. Optional / absent-data fields default to required-and-fixed
+A finding that an output or contract field is optional/nullable is accepted unless the declaration justifies the absence as a genuine, irreducible domain state. "Models real absent data" is not a sufficient justification by itself: the default is to require the field and fix the data so it is always present, modeling true absence as its own narrow case rather than a shared `optional` every consumer must tolerate. A convenience-optional weakens the interface for everyone, the same way a fallback default does. See the [Optional-Field Axiom](references/disposition-prefilter.md#optional-field-axiom).
 
 ## Routing Matrix
 
