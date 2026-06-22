@@ -35,12 +35,13 @@ git push -u origin HEAD
 
 **With gh:**
 ```bash
-# Externalize the finalized plan into an epic/issue tree first.
-# Prepare .pr/PR_BODY.md from that issue tree and tracked PR contract.
+# Externalize the finalized plan into an epic/issue tree and GitHub milestone first.
+# Prepare .pr/PR_BODY.md from that issue tree and include Closes lines for in-scope issues.
 # See creating-prs.md for the admission gate and issue-linked Milestone Tree format.
 gh pr create \
   --title "feat: add JWT-based user authentication" \
   --body-file .pr/PR_BODY.md \
+  --milestone "<milestone>" \
   --draft
 
 # Later, after every in-scope PR-body checklist item is complete and evidenced:
@@ -226,14 +227,15 @@ git checkout main && git pull origin main
 
 # 2. Branch
 git checkout -b fix/login-redirect-bug
-
-# 3. Externalize the finalized plan into a GitHub epic and issue tree.
+# 3. Externalize the finalized plan into a GitHub milestone, epic, and issue tree.
 #    Create or update .pr/PR_BODY.md from that issue tree before implementation defines
-#    its own success criteria, then open the draft PR as the live tracking surface.
+#    its own success criteria. Include Closes lines for in-scope issues and Refs for the epic.
+gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<scope>"
 git add .pr/PR_BODY.md
 git commit -m "Add PR tracking contract"
 git push -u origin HEAD
-gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --draft
+gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --milestone "<milestone>" --draft
+gh pr view --json title,body,milestone,closingIssuesReferences,isDraft
 
 # 4. (Agent makes code changes while the draft PR tracks open in-scope work)
 
@@ -245,7 +247,7 @@ git commit -m "fix: correct redirect URL after login"
 git push -u origin HEAD
 
 # 7. Republish the PR body as checklist items are completed; keep deferred work out of checkboxes
-gh pr edit --body-file .pr/PR_BODY.md
+gh pr edit --body-file .pr/PR_BODY.md --milestone "<milestone>"
 
 # 8. Monitor CI while finishing the in-scope PR-body checklist; deferred work stays out of checkboxes
 gh pr checks --watch
