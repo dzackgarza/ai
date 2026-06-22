@@ -62,8 +62,15 @@ verification steps.
 
 ## Transformation-Ready Plans
 
-When a plan may become a PR body, issue contract, multi-agent tracking surface, or
-handoff artifact, write it so conversion is a projection, not another planning pass.
+When a plan may become a GitHub epic, issue tree, PR body, multi-agent tracking surface,
+or handoff artifact, write it so conversion is a projection, not another planning pass.
+
+Interactive planning may stay exploratory while the user and agent converge on the
+right decomposition. Do not force the first draft into GitHub mechanics. Once the user
+finalizes the plan, the next durable tracking surface for nontrivial implementation work
+is a GitHub epic issue with linked child issues, using native sub-issues when the active
+GitHub surface supports them. A draft PR comes after that and
+links its top-level checklist nodes to the relevant issues.
 
 The plan must fix the semantic target before implementation or publication:
 
@@ -85,13 +92,18 @@ The plan must fix the semantic target before implementation or publication:
   debugging notes, current machine state, and review policy copies belong in the surface
   that owns them, not in the plan as progress.
 
+- Mark which finalized milestones or workstreams should become GitHub issues. If the plan
+  cannot be externalized as an epic plus issue tree without inventing scope, acceptance,
+  dependencies, or proof burdens, keep planning instead of opening a PR.
+
 If fragmented repository notes, subplans, scratchpads, or transcripts are the source
 material, consolidate propositions by semantic role before writing the plan. Preserve
 valid meaning, dependencies, obligations, and proof burdens; do not inherit wording,
 checkmarks, duplicate status, or local identifiers as public truth.
 
-If any milestone, scope boundary, dependency, acceptance criterion, or proof burden must
-be invented during conversion, stop and report that the plan is not ready.
+If any milestone, scope boundary, dependency, acceptance criterion, proof burden, or
+issue hierarchy must be invented during conversion, stop and report that the plan is not
+ready to externalize.
 
 ## Interaction style
 

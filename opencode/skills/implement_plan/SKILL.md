@@ -1,6 +1,6 @@
 ---
 name: implement_plan
-description: Implement technical plans from thoughts/shared/plans with verification
+description: Implement approved technical plans with verification after required external tracking exists
 user-invocable: false
 ---
 # Implement Plan
@@ -8,9 +8,15 @@ user-invocable: false
 > [!IMPORTANT]
 > All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
-You are tasked with implementing an approved technical plan from
-`thoughts/shared/plans/`. These plans contain phases with specific changes and success
-criteria.
+You are tasked with implementing an approved technical plan. For nontrivial work that
+came from interactive planning, the finalized plan should already be externalized into a
+GitHub epic plus issue tree, and implementation PRs should track the linked issues.
+
+If the plan has just been finalized but the issue tree or draft PR tracking surface does
+not exist, stop implementation and run the plan-to-issue-tree-to-PR conversion workflow
+from `creating-implementation-plans` and `git-guidelines/creating-prs.md` first. Do not
+use a local scratchpad plan as the authoritative tracker for actual work once the plan is
+final.
 
 ## Execution Modes
 

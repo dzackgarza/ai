@@ -456,7 +456,8 @@ For the full end-to-end workflow using `improved-jules-cli`:
 
 For any PR initiated by Jules, a contract must be written **before** implementation
 begins, committed to the branch, and used as the authoritative source of truth for the
-PR body. Do not let the code define the task after the fact.
+PR body. For nontrivial work, the contract must also point at the GitHub issue or issue
+tree that owns the tracked work. Do not let the code define the task after the fact.
 
 ### Why a contract?
 
@@ -480,6 +481,11 @@ The contract must supply, in advance:
 5. the boundaries of the change,
 
 6. the exact unresolved questions, if any.
+
+If the delegated task is already represented by a GitHub issue, use that issue as the
+owning work item. If the task has multiple independently reviewable milestones or
+workstreams, create or attach child issues and link them from the parent epic before
+opening the PR. Use native sub-issues only when the active GitHub surface supports them.
 
 ### Phase 0: Create the contract before writing code
 
@@ -549,7 +555,12 @@ dataset.
 List the files or subsystems expected to change.
 Gives reviewers a prior on what collateral damage to reject.
 
-#### 8. Open questions
+#### 8. Tracking issues
+
+Link the parent issue and any child issues that own the PR's top-level work items.
+For nontrivial work, each top-level PR checklist item must link to one of these issues.
+
+#### 9. Open questions
 
 List explicitly anything unresolved.
 Do not silently substitute your own answer.
@@ -591,6 +602,13 @@ Use this exact structure in `.pr/PR_BODY.md`:
 Expected touched files / subsystems:
 
 - ...
+
+# Tracking issues
+
+- Epic: #...
+- Top-level work items:
+  - #...
+  - #...
 
 # Open questions
 
@@ -648,7 +666,7 @@ Rules while implementing:
 ### Phase 3: Force the PR body from the contract file
 
 Do not type the PR body interactively.
-Always use the tracked file.
+Always use the tracked file, and make it point to the issue tree that owns the work.
 
 Create the PR with:
 
@@ -665,8 +683,9 @@ If the PR already exists, update it from the same file:
 gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md
 ```
 
-**Rule:** Every time acceptance criteria, scope, or evidence changes, update
-`.pr/PR_BODY.md`, commit it, and re-publish the PR body from that file.
+**Rule:** Every time acceptance criteria, scope, evidence, or issue ownership changes,
+update the owning issue(s), update `.pr/PR_BODY.md`, commit it, and re-publish the PR
+body from that file.
 The PR description is not a summary written after the work — it is a tracked interface
 between worker and reviewer.
 

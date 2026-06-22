@@ -1,6 +1,6 @@
 ---
 name: creating-implementation-plans
-description: Use when creating, writing, reviewing, or revising implementation plans, source plans, PR-ready plans, or durable execution specs; use before multi-step work, delegation, plan review, or plan-to-PR conversion.
+description: Use when creating, writing, reviewing, or revising implementation plans, source plans, externalization-ready plans, or durable execution specs; use before multi-step work, delegation, plan review, or plan-to-issue-tree-to-PR conversion.
 ---
 # Creating Implementation Plans
 
@@ -10,8 +10,9 @@ description: Use when creating, writing, reviewing, or revising implementation p
 > runtime defaults, proof-free smoke checks, or other validation-evasion paths unless a
 > narrower loaded policy explicitly permits them.
 
-This is the canonical planning skill. Use this skill for implementation plans, source plans, delegation handoffs,
-plan-review revisions, and plans that may become PR tracking surfaces.
+This is the canonical planning skill. Use this skill for implementation plans, source
+plans, delegation handoffs, plan-review revisions, and plans that may become GitHub
+epics, issue trees, or PR tracking surfaces.
 
 A plan is not a todo list or chat outline. It is a constrained execution specification
 that fixes success, failure, order, ownership, and proof before implementation begins.
@@ -192,8 +193,8 @@ produces, consumes, and must preserve for integration.
 
 ## Transformation-Ready Source Plans
 
-When a plan may become a PR body, issue contract, multi-agent tracker, or handoff, write
-it so conversion is a lossless projection without semantic invention.
+When a plan may become a GitHub epic, issue tree, PR body, multi-agent tracker, or
+handoff, write it so conversion is a lossless projection without semantic invention.
 
 A projection may add execution metadata: owner, branch, status, blocker, commit, run,
 artifact, review link, and GitHub formatting. It must not add, delete, demote, or
@@ -208,6 +209,8 @@ Before conversion, the plan must fix:
 - stacked foundations, parallel lanes, handoff contracts, and integration obligations;
 - every obligation's actor, trigger or context, intended result, acceptance criteria,
   proof burden, dependencies, and supplied artifacts;
+- which finalized milestones, workstreams, or obligations should become issues linked
+  under the epic, using native sub-issues only when supported;
 - proof design before implementation assessment.
 
 Do not let test IDs, commands, filenames, commits, labels, green checks, or artifact names
@@ -249,6 +252,33 @@ Stop and repair the source plan when conversion would require inventing scope, u
 behavior, acceptance criteria, proof burdens, dependency order, ownership, unresolved
 architecture decisions, or a reconciliation choice among contradictory source claims.
 
+## Plan to Issue Tree to PR
+
+Interactive planning is allowed to be a roadmap while the decomposition is still being
+discovered. The issue hierarchy is created after the user finalizes the plan, not before
+the plan has a stable semantic shape.
+
+For nontrivial implementation work, use this externalization sequence:
+
+1. Finalize the plan with the user.
+2. Create or update a parent GitHub issue that acts as the epic.
+3. Create or attach child issues for the top-level milestones, foundations, workstreams,
+   or independently reviewable obligations. Use native sub-issues when the active GitHub
+   surface supports them; otherwise link the child issues from the epic body as a task
+   list.
+4. Verify the issue tree preserves the finalized plan's scope, dependencies,
+   acceptance criteria, and proof burdens.
+5. Draft implementation PRs from that issue tree. Each top-level PR checklist item must
+   link to the relevant issue unless the PR is genuinely trivial.
+
+The issue tree becomes the external tracking source. Local plan files and scratchpads may
+explain how the tree was derived, but they must not remain the authoritative tracker once
+GitHub issues exist.
+
+Do not use issue creation as a substitute for planning. If the issue tree cannot be
+created without adding new scope, choosing between unresolved alternatives, or weakening a
+proof burden, return to planning.
+
 ## Living-Document Discipline
 
 A plan remains authoritative only while it is current.
@@ -278,8 +308,8 @@ Before saving or handing off a plan, verify:
 - **Proof quality:** validation happens at the real use boundary and would fail on a
   plausible broken implementation.
 - **Restartability:** another agent can resume from the plan alone.
-- **PR readiness:** if the plan will be projected into a PR, no semantic invention is
-  needed.
+- **Externalization readiness:** if the plan will be projected into a GitHub issue tree
+  and PR, no semantic invention is needed.
 - **Projection integrity:** translation causes no semantic loss, invention, demotion, or
   proxy promotion; stacked, parallel, handoff, and integration structure stays explicit.
 - **Evidence discrimination:** proof design distinguishes provenance, execution,

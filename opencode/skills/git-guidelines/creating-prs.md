@@ -29,10 +29,11 @@ This guide therefore imposes one hard rule:
 > See the **Jules skill → PR Contract** section for the full mandatory workflow,
 > template, and required contents.
 
-> **Other PRs:** For any nontrivial PR, or any PR derived from a local plan,
-> produce a tracked source plan or contract before opening the PR and use the PR body to
-> expose that plan externally. Contract files are optional only for truly trivial changes
-> whose outcome, scope, acceptance criteria, and evidence fit directly in the PR body.
+> **Other PRs:** For any nontrivial PR, or any PR derived from a finalized local plan,
+> externalize the plan into a GitHub epic plus issue tree before opening the PR. Use the
+> PR body to expose the issue-linked tracking tree. Contract files are optional only for
+> truly trivial changes whose outcome, scope, acceptance criteria, and evidence fit
+> directly in the PR body.
 
 * * *
 
@@ -63,12 +64,24 @@ That is what enables strong process-alignment feedback.
 
 * * *
 
-## Source plan admission gate
+## Source plan to issue tree admission gate
 
-PR creation must be a lossless projection from a source plan or contract, not a second
-round of planning. If the worker cannot convert the source plan into a PR body without
-inventing scope, user behavior, acceptance criteria, proof burdens, or dependency order,
-the source plan is not ready.
+PR creation must be a lossless projection from the GitHub issue tree created from the
+finalized source plan or contract, not a second round of planning. If the worker cannot
+convert the source plan into an epic plus issue tree without inventing scope, user
+behavior, acceptance criteria, proof burdens, or dependency order, the source plan is not
+ready to externalize.
+
+The normal sequence is:
+
+1. finalize the plan interactively;
+2. create or update the epic issue;
+3. create or attach top-level milestone/workstream issues and link them from the epic
+   body as a task list; use native sub-issues when the active GitHub surface supports
+   them;
+4. verify the issue tree against the finalized plan;
+5. draft the PR from the issue tree and link each top-level PR checklist item to the
+   corresponding issue.
 
 Before creating the PR, verify that the source plan fixes:
 
@@ -88,9 +101,10 @@ Before creating the PR, verify that the source plan fixes:
 - proof design before implementation assessment. Evidence answers declared criteria; it
   does not define the criteria after code happens to pass.
 
-The PR projection may add owner, branch, status, blocker, commit, run, artifact, and
-review-link metadata. It must not add, delete, demote, or reinterpret scope, behavior,
-acceptance criteria, proof burdens, dependencies, handoffs, or integration semantics.
+The issue-tree and PR projections may add owner, branch, status, blocker, commit, run,
+artifact, and review-link metadata. They must not add, delete, demote, or reinterpret
+scope, behavior, acceptance criteria, proof burdens, dependencies, handoffs, or
+integration semantics.
 
 Stop and repair the source plan when any of these are true:
 
@@ -120,10 +134,14 @@ Stop and repair the source plan when any of these are true:
 - old checkmarks, repeated claims, or source-by-source summaries would become public
   progress without re-evaluation against current acceptance criteria.
 
+- a nontrivial top-level PR checkbox would lack a link to a GitHub issue that owns its
+  scope, acceptance criteria, and proof burden.
+
 ## PR body as Milestone Tree
 
-Use a Milestone Tree as the primary tracking surface for nontrivial PRs. The PR body must
-make the current plan externally legible, not expose an internal scratchpad.
+Use an issue-linked Milestone Tree as the primary tracking surface for nontrivial PRs.
+The PR body must make the current issue tree externally legible, not expose an internal
+scratchpad.
 
 Minimum body shape:
 
@@ -140,11 +158,11 @@ Minimum body shape:
 <what is stacked, what is parallel, and what integrates last>
 
 ## Milestone Tree
-- [ ] **M1 - <root milestone outcome>**
+- [ ] **M1 - <root milestone outcome>** ([epic #123](https://github.com/OWNER/REPO/issues/123))
   - Complete when: <observable completion condition>
-  - [ ] **F1 - <shared foundation>** [stacked; blocks W1/W2]
-  - [ ] **W1 - <parallel capability>** [depends on F1]
-    - [ ] **O1 - <externally meaningful obligation>**
+  - [ ] **F1 - <shared foundation>** ([#124](https://github.com/OWNER/REPO/issues/124)) [stacked; blocks W1/W2]
+  - [ ] **W1 - <parallel capability>** ([#125](https://github.com/OWNER/REPO/issues/125)) [depends on F1]
+    - [ ] **O1 - <externally meaningful obligation>** ([#126](https://github.com/OWNER/REPO/issues/126), if independently tracked)
       - Behavior: <actor/trigger/action/result>
       - Acceptance: <objective criteria>
       - Evidence: <proof mapped to each criterion>
@@ -166,6 +184,10 @@ a meaningful portion of the plan that can be independently judged complete. Test
 commands, commits, artifacts, green checks, policy declarations, and environment setup are
 not top-level progress items unless they are attached to the substantive obligation they
 prove or unblock.
+
+For nontrivial PRs, every top-level checkbox must link to the GitHub issue that owns that
+work item. Deeper checklist nodes may link to issues when they are independently tracked;
+otherwise they remain acceptance/proof detail under the owning issue-linked node.
 
 ### Tracking item quality
 
@@ -193,9 +215,13 @@ not make a deliverable out of proving that the discussion exists.
 
 Put each fact in the surface that can represent and enforce it:
 
+- GitHub epic and issue tree: externalized tracking source for the finalized plan,
+  including the epic, top-level milestones/workstreams, independently reviewable
+  obligations, dependencies, acceptance criteria, and proof burdens.
+
 - PR body: current PR-specific milestone, scope, dependency structure, obligations,
   substantive tasks, ownership, meaningful blockers, acceptance criteria, and evidence
-  mappings.
+  mappings, with top-level checklist items linked to the relevant GitHub issues.
 
 - Repository guidance or skills: global review policy, definitions of proof/completion,
   evidence standards, naming conventions, and agent calibration.
@@ -214,8 +240,9 @@ Put each fact in the surface that can represent and enforce it:
   raw transcripts, obsolete alternatives, repeated classifications, and environment setup.
   Link them only for optional depth when the public node is self-contained.
 
-- Linked issues or subplans: work that is too large or orthogonal for the PR body but
-  still needs a stable external contract.
+- Linked subplans or local scratchpads: derivation material that is too detailed or
+  provisional for the issue tree. These are optional depth, not the authoritative tracker
+  after issue externalization.
 
 Do not duplicate global policy in the PR body. A PR may include a sequencing task to
 publish or sync required guidance before review, but the policy itself stays in the
@@ -232,6 +259,22 @@ alternatives, or manually maintained histories of PR-body edits as progress.
 > **PR contract workflow:** The full contract creation workflow, required contents, and
 > template are in the **Jules skill → PR Contract** section.
 > That section is the authoritative source for Jules-initiated PRs.
+
+For nontrivial non-Jules PRs, use the plan-to-issue-tree sequence first:
+
+```bash
+# Create the parent epic issue.
+gh issue create --title "Epic: <outcome>" --body-file .pr/EPIC_ISSUE.md --label enhancement
+
+# Create child issues as ordinary issues first.
+gh issue create --title "<milestone or workstream>" --body-file .pr/ISSUE_<id>.md --label enhancement
+
+# Add child issue links to .pr/EPIC_ISSUE.md as a task list, then update the epic.
+gh issue edit <EPIC_ISSUE_NUMBER> --body-file .pr/EPIC_ISSUE.md
+
+# Verify the externally visible issue-linked checklist before drafting the PR.
+gh issue view <EPIC_ISSUE_NUMBER> --json title,body,url
+```
 
 * * *
 
@@ -628,25 +671,35 @@ whether the tests are tautological.
 A practical sequence:
 
 ```bash
-# 0. create tracked PR contract before implementation
+# 0. externalize the finalized plan into a GitHub issue tree
 mkdir -p .pr
-$EDITOR .pr/PR_BODY.md   # see Jules skill → PR Contract for required contents
+$EDITOR .pr/EPIC_ISSUE.md
+$EDITOR .pr/ISSUE_F1.md
+$EDITOR .pr/ISSUE_W1.md
+gh issue create --title "Epic: <outcome>" --body-file .pr/EPIC_ISSUE.md --label enhancement
+gh issue create --title "<foundation>" --body-file .pr/ISSUE_F1.md --label enhancement
+gh issue create --title "<workstream>" --body-file .pr/ISSUE_W1.md --label enhancement
+# Add the child issue links to .pr/EPIC_ISSUE.md as task-list items, then publish them.
+gh issue edit <EPIC_ISSUE_NUMBER> --body-file .pr/EPIC_ISSUE.md
+
+# 1. create tracked PR contract/body from the issue tree before implementation
+$EDITOR .pr/PR_BODY.md   # link top-level checklist nodes to the GitHub issues above
 $EDITOR .pr/REVIEW_LOG.md
 
-# 1. commit contract early
+# 2. commit contract early
 git add .pr/PR_BODY.md .pr/REVIEW_LOG.md
 git commit -m "Add PR contract and review log"
 
-# 2. write failing tests / failing verification
+# 3. write failing tests / failing verification
 pytest path/to/test_file.py -q
 
-# 3. implement narrowly and re-run verification
+# 4. implement narrowly and re-run verification
 pytest path/to/test_file.py -q
 
-# 4. create draft PR from the tracked contract
+# 5. create draft PR from the tracked issue-linked contract
 gh pr create --title "<title>" --body-file .pr/PR_BODY.md --draft
 
-# 5. after review arrives, read all feedback surfaces
+# 6. after review arrives, read all feedback surfaces
 gh pr view <PR_NUMBER> --comments
 gh pr view <PR_NUMBER> --json title,body,reviewDecision,latestReviews,reviews,comments,files,statusCheckRollup
 gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/reviews
@@ -654,14 +707,16 @@ gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/comments
 gh api repos/<OWNER>/<REPO>/issues/<PR_NUMBER>/comments
 gh pr checks <PR_NUMBER> --watch
 
-# 6. update the contract file if needed
+# 7. update the issue tree and contract file if needed
+$EDITOR .pr/EPIC_ISSUE.md
+$EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/PR_BODY.md
 $EDITOR .pr/REVIEW_LOG.md
 
 git add .pr/PR_BODY.md .pr/REVIEW_LOG.md <changed code/tests>
 git commit -m "Address review feedback"
 
-# 7. republish PR body from the tracked contract
+# 8. republish PR body from the tracked contract
 gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md
 ```
 
@@ -689,29 +744,34 @@ If the PR does not expose those answers directly, it is not review-ready.
 
 ## Final rule set
 
-1. Write the PR contract before implementation.
+1. Finalize the plan before externalization.
 
-2. Commit it to the branch.
+2. Externalize the finalized plan into a GitHub epic plus issue tree.
 
-3. Derive the PR body from that file, not from memory or the web form.
+3. Write the PR contract/body before implementation.
 
-4. Lock acceptance criteria before code exists.
+4. Link nontrivial top-level PR checklist items to the owning issues.
 
-5. Use failing verification first.
+5. Derive the PR body from the tracked contract file and issue tree, not from memory or
+   the web form.
 
-6. Keep the diff within the declared boundary.
+6. Lock acceptance criteria before code exists.
 
-7. Read every review surface with `gh`.
+7. Use failing verification first.
 
-8. Log every actionable review item atomically.
+8. Keep the diff within the declared boundary.
 
-9. Do not mark feedback addressed without an identifying commit.
+9. Read every review surface with `gh`.
 
-10. If feedback changes the target, update the contract first.
+10. Log every actionable review item atomically.
 
-11. Do not let the implementation define its own success criteria.
+11. Do not mark feedback addressed without an identifying commit.
 
-12. Do not let a reviewer guess what “done” means.
+12. If feedback changes the target, update the issue tree and contract first.
+
+13. Do not let the implementation define its own success criteria.
+
+14. Do not let a reviewer guess what “done” means.
 
 A PR that follows these rules is much easier to review well, much harder to rubber-stamp
 for the wrong reasons, and much less likely to drift into post-hoc self-justifying

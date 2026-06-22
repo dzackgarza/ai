@@ -35,8 +35,9 @@ git push -u origin HEAD
 
 **With gh:**
 ```bash
-# Prepare .pr/PR_BODY.md from the tracked source plan or PR contract first.
-# See creating-prs.md for the admission gate and Milestone Tree format.
+# Externalize the finalized plan into an epic/issue tree first.
+# Prepare .pr/PR_BODY.md from that issue tree and tracked PR contract.
+# See creating-prs.md for the admission gate and issue-linked Milestone Tree format.
 gh pr create \
   --title "feat: add JWT-based user authentication" \
   --body-file .pr/PR_BODY.md \
@@ -223,8 +224,9 @@ git checkout main && git pull origin main
 # 2. Branch
 git checkout -b fix/login-redirect-bug
 
-# 3. Create or update .pr/PR_BODY.md from the source plan or PR contract
-#    before implementation defines its own success criteria.
+# 3. Externalize the finalized plan into a GitHub epic and issue tree.
+#    Create or update .pr/PR_BODY.md from that issue tree before implementation defines
+#    its own success criteria.
 
 # 4. (Agent makes code changes)
 
@@ -235,7 +237,7 @@ git commit -m "fix: correct redirect URL after login"
 # 6. Push
 git push -u origin HEAD
 
-# 7. Create draft PR from the tracked body
+# 7. Create draft PR from the tracked issue-linked body
 gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --draft
 
 # 8. Monitor CI
