@@ -1,6 +1,6 @@
 ---
 name: creating-implementation-plans
-description: Use when creating implementation plans that will pass review and execute cleanly. Covers plan structure, task decomposition, verification design, and quality gates.
+description: Use when creating implementation plans that will pass review and execute cleanly. Covers self-contained living-document plans, plan structure, task decomposition, milestones, verification design, and quality gates.
 ---
 # Creating Implementation Plans
 
@@ -13,6 +13,41 @@ produces verifiable results, and doesn’t require mid-execution course correcti
 A plan is not a to-do list.
 It is a **constrained execution specification** that makes success, failure, order, and
 validation explicit.
+
+## Self-Containment and Living Documents
+
+Write every plan so a contributor with no prior context — only the current working tree
+and this one plan file — can implement it end to end. A plan must be restartable from
+itself alone: if every other note vanished, the plan still carries everything needed to
+finish.
+
+- Embed required knowledge in the plan, in your own words. Do not link to external blogs
+  or docs, and do not write "as defined previously" or "see the architecture doc."
+  Repeat any assumption you rely on, even at the cost of redundancy.
+
+- Define every term of art in plain language at first use, or do not use it. When you
+  name a non-obvious concept ("daemon", "middleware", "adapter"), state immediately how
+  it manifests here — which files or commands embody it.
+
+- If the plan builds on a prior plan checked into the repo, incorporate it by reference
+  to its repository-relative path. If that prior plan is not checked in, copy the
+  relevant context into this plan.
+
+- Do not outsource key decisions to the reader. When ambiguity exists, resolve it in the
+  plan and explain why you chose that path, rather than leaving the implementer to guess.
+
+A plan is a living document, not a frozen spec. Revise it as work proceeds, as
+discoveries occur, and as decisions are finalized; every revision must remain
+self-contained. At each stopping point, update the plan to state the progress made and
+the next steps — split a partly done task into a "done" part and a "remaining" part
+rather than leaving its status ambiguous. Record not just what changed but why: it must
+always be unambiguous why any change to the plan was made. After revising, append a short
+note at the end of the plan stating what changed and the reason.
+
+To hold this discipline, every plan carries four standing sections that are updated
+throughout execution, not written once: `Progress`, `Surprises & Discoveries`,
+`Decision Log`, and `Outcomes & Retrospective`. Their formats are defined under
+[Living-Document Sections](#living-document-sections-required) below.
 
 ## Purpose: What Every Plan Must Answer
 
@@ -156,6 +191,10 @@ For risky work, define:
 
 - Conditions triggering rollback
 
+Steps should also be safely repeatable: write them so running the plan again causes no
+damage or drift. If a step can fail halfway, state how to retry or recover; for a
+destructive or migrating step, spell out the backup or safe fallback first.
+
 ### 10. Scope must be complete and explicitly bounded
 
 Identify full target set AND exclusions.
@@ -179,6 +218,24 @@ For multi-repo/tool/phase work, specify:
 
 Validate the system as it will actually be used: CLI invocation, import path, rendered
 document, search result, proof compilation, published artifact, or file layout.
+
+### 13. Purpose and observable behavior come first
+
+Open the plan by explaining, in a few sentences, why the work matters from a user's
+perspective: what someone can do after the change that they could not before, and how to
+see it working. Phrase acceptance as behavior a human can verify ("after starting the
+server, GET /health returns 200 with body OK"), not internal attributes ("added a
+HealthCheck struct"). The plan must produce demonstrably working behavior, not code that
+satisfies the letter of a definition while doing nothing meaningful. For a purely
+internal change, show impact another way: a test that fails before and passes after, plus
+a scenario that exercises the new behavior.
+
+### 14. Record evidence that proves success
+
+When steps produce terminal output, short diffs, or logs that demonstrate the change
+works, capture concise excerpts in the plan. Prefer file-scoped diffs or small snippets a
+reader can recreate by following the steps over large pasted blobs. Evidence is what
+lets a later reader distinguish real success from a green checkmark.
 
 * * *
 
@@ -240,6 +297,37 @@ integration tests, end-to-end flows).
 - **Mitigation**: Strategies to handle risks
 
 - **Rollback**: How to undo changes if implementation fails
+
+* * *
+
+## Milestones
+
+Milestones tell the story of the work; the `Progress` checklist tracks granular steps.
+Both must exist and they are distinct. Introduce each milestone with a short paragraph
+giving its scope, what will exist at the end that did not before, the commands to run,
+and the acceptance you expect to observe — goal, work, result, proof. Each milestone must
+be independently verifiable and must move the overall goal forward incrementally. Do not
+abbreviate a milestone for brevity; detail omitted here becomes a gap for the next
+contributor.
+
+### Prototyping milestones
+
+When requirements carry significant unknowns, include an explicit prototyping milestone
+that builds a proof of concept or toy implementation to test feasibility before
+committing to a full build. Read the source of any library you depend on — find or
+acquire it — rather than guessing at its behavior. Keep prototypes additive and testable,
+label their scope as prototyping, describe how to run and observe them, and state the
+criteria for promoting the prototype to real work or discarding it. When several new
+libraries or feature areas are involved, prototype each in isolation (a "spike") to prove
+it works on its own before integrating them.
+
+### Parallel implementations during migration
+
+Parallel implementations are acceptable when they reduce risk: keep an adapter alongside
+an older path during a migration so tests keep passing, then retire the old path once the
+new one is proven. Prefer additive changes first, then subtractions that keep tests
+green. Describe how to validate both paths and how to remove one safely with the suite
+still passing.
 
 * * *
 
@@ -524,6 +612,11 @@ duplicate detection, checksum or content equivalence checks.
 ```md
 # <Plan Title>
 
+## Purpose / Big Picture
+
+- What the user can do after this change that they could not before:
+- How to see it working (observable behavior):
+
 ## Goal
 
 - Current defect/state:
@@ -617,6 +710,27 @@ Tasks:
 - [ ] <!-- status: pending --> Actionability verified
 - [ ] <!-- status: pending --> Design sensibility verified
 - [ ] <!-- status: pending --> Test quality verified
+
+## Surprises & Discoveries
+
+- Observation:
+  Evidence:
+
+## Decision Log
+
+- Decision:
+  Rationale:
+  Date/Author:
+
+## Outcomes & Retrospective
+
+- Achieved:
+- Remaining:
+- Lessons:
+
+## Revision Notes
+
+- <date>: <what changed in this plan and why>
 ```
 
 * * *
@@ -634,6 +748,45 @@ A plan is **good** if it is:
 - **Stoppable**: Explicit gates prevent drift, compounding errors, and fake completion
 
 Anything less is usually not a plan but a wish list.
+
+* * *
+
+## Living-Document Sections (Required)
+
+Every plan carries these four sections and keeps them current as work proceeds. They are
+how the plan stays restartable from itself: progress, what was learned, what was decided
+and why, and how the result compared to the goal.
+
+### Progress
+
+A checklist of granular steps; see the format under
+[Progress Tracking](#progress-tracking-execution-checklist) below. Every stopping point
+is recorded here, even when that means splitting a partly done task into "done" and
+"remaining." Stamp entries with timestamps (for example `(2025-10-01 13:00Z)`) so the
+rate of progress is visible.
+
+### Surprises & Discoveries
+
+Unexpected behavior, bugs, performance tradeoffs, or insights found during
+implementation, each with concise evidence — test output is ideal.
+
+    - Observation: the optimizer reorders the two passes.
+      Evidence: bench shows 1.4x when pass B runs before pass A.
+
+### Decision Log
+
+Every decision made while working the plan, with its rationale, so the reasoning survives
+for the next contributor. If you change course mid-implementation, record why here and
+reflect the consequence in `Progress`.
+
+    - Decision: use library X for date handling.
+      Rationale: timezone correctness; avoids a hand-rolled parser.
+      Date/Author: 2025-10-01 / Z.G.
+
+### Outcomes & Retrospective
+
+At each major milestone and at completion, summarize what was achieved, what remains, and
+lessons learned, measured against the original purpose.
 
 * * *
 
@@ -692,4 +845,5 @@ Every plan must include a task checklist at the end to track progress.
 
 **Usage:** Check off items as they complete.
 Use `[/]` for blocked (add reason) and `[-]` for skipped (add reason).
-Reference this checklist in responses to indicate current progress.
+Stamp entries with a timestamp (for example `(2025-10-01 13:00Z)`) so progress rate is
+visible. Reference this checklist in responses to indicate current progress.

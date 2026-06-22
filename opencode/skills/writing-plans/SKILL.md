@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [planning, design, implementation, workflow, documentation]
-    related_skills: [subagent-driven-development, test-driven-development, requesting-code-review]
+    related_skills: [creating-implementation-plans, subagent-driven-development, test-driven-development, requesting-code-review]
 ---
 # Writing Implementation Plans
 
@@ -25,6 +25,12 @@ or problem domain. Assume they don’t know good test design very well.
 
 **Core principle:** A good plan makes implementation obvious.
 If someone has to guess, the plan is incomplete.
+
+For longer-horizon work, treat the plan as a self-contained living document: it must be
+restartable from itself alone, and it carries standing `Progress`, `Surprises &
+Discoveries`, `Decision Log`, and `Outcomes & Retrospective` sections kept current as
+work proceeds. See `creating-implementation-plans` for that discipline, narrative
+milestones, and prototyping milestones.
 
 ## When to Use
 
