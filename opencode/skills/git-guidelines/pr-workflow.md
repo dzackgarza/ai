@@ -35,9 +35,12 @@ git push -u origin HEAD
 
 **With gh:**
 ```bash
+# Prepare .pr/PR_BODY.md from the tracked source plan or PR contract first.
+# See creating-prs.md for the admission gate and Milestone Tree format.
 gh pr create \
   --title "feat: add JWT-based user authentication" \
-  --body "## Summary\nAdds login and register API endpoints.\n\nCloses #42"
+  --body-file .pr/PR_BODY.md \
+  --draft
 ```
 
 Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base develop`
@@ -46,16 +49,17 @@ Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base d
 ```bash
 BRANCH=$(git branch --show-current)
 
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls \
-  -d "{
-    \"title\": \"feat: add JWT-based user authentication\",
-    \"body\": \"## Summary\nAdds login and register API endpoints.\n\nCloses #42\",
-    \"head\": \"$BRANCH\",
-    \"base\": \"main\"
-  }"
+jq -n \
+  --arg title "feat: add JWT-based user authentication" \
+  --rawfile body .pr/PR_BODY.md \
+  --arg head "$BRANCH" \
+  --arg base "main" \
+  '{title: $title, body: $body, head: $head, base: $base}' \
+  | curl -s -X POST \
+      -H "Authorization: token $GITHUB_TOKEN" \
+      -H "Accept: application/vnd.github.v3+json" \
+      https://api.github.com/repos/$OWNER/$REPO/pulls \
+      -d @-
 ```
 
 ### Extracting Owner/Repo from Git Remote
@@ -219,21 +223,24 @@ git checkout main && git pull origin main
 # 2. Branch
 git checkout -b fix/login-redirect-bug
 
-# 3. (Agent makes code changes)
+# 3. Create or update .pr/PR_BODY.md from the source plan or PR contract
+#    before implementation defines its own success criteria.
 
-# 4. Commit
+# 4. (Agent makes code changes)
+
+# 5. Commit
 git add src/auth/login.py tests/test_login.py
 git commit -m "fix: correct redirect URL after login"
 
-# 5. Push
+# 6. Push
 git push -u origin HEAD
 
-# 6. Create PR
-gh pr create --title "fix: correct redirect URL after login" --body "Closes #42"
+# 7. Create draft PR from the tracked body
+gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --draft
 
-# 7. Monitor CI
+# 8. Monitor CI
 gh pr checks --watch
 
-# 8. Merge when green
+# 9. Merge when green
 gh pr merge --squash --delete-branch
 ```

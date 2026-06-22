@@ -60,6 +60,39 @@ Include, when relevant:
 If the task is code-related, include exact file paths, likely test targets, and
 verification steps.
 
+## Transformation-Ready Plans
+
+When a plan may become a PR body, issue contract, multi-agent tracking surface, or
+handoff artifact, write it so conversion is a projection, not another planning pass.
+
+The plan must fix the semantic target before implementation or publication:
+
+- State the externally meaningful milestone, included scope, explicit exclusions,
+  preserved behavior, and observable completion condition.
+
+- Define stable vocabulary and expand private referents. A future reader should not need
+  transcript context, test mnemonics, issue numbers, file names, or agent scratchpads to
+  know what the plan means.
+
+- Represent real dependency structure: stacked foundations, parallel workstreams, and
+  integration obligations. Do not flatten dependency order into a status checklist.
+
+- Attach each task to an externally meaningful obligation with acceptance criteria and
+  proof burden. Commands, commits, test IDs, green checks, artifact names, and labels are
+  evidence or automation, not substitutes for the obligation.
+
+- Separate internal execution material from the public plan. Classifications, local TODOs,
+  debugging notes, current machine state, and review policy copies belong in the surface
+  that owns them, not in the plan as progress.
+
+If fragmented repository notes, subplans, scratchpads, or transcripts are the source
+material, consolidate propositions by semantic role before writing the plan. Preserve
+valid meaning, dependencies, obligations, and proof burdens; do not inherit wording,
+checkmarks, duplicate status, or local identifiers as public truth.
+
+If any milestone, scope boundary, dependency, acceptance criterion, or proof burden must
+be invented during conversion, stop and report that the plan is not ready.
+
 ## Interaction style
 
 - If the request is clear enough, write the plan directly.

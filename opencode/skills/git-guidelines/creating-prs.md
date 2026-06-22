@@ -29,9 +29,10 @@ This guide therefore imposes one hard rule:
 > See the **Jules skill → PR Contract** section for the full mandatory workflow,
 > template, and required contents.
 
-> **Other PRs:** Follow standard review procedures, but use the PR body to clearly state
-> the intended outcome, acceptance criteria, and verification plan.
-> Contract files are optional but recommended.
+> **Other PRs:** For any nontrivial PR, or any PR derived from a local plan,
+> produce a tracked source plan or contract before opening the PR and use the PR body to
+> expose that plan externally. Contract files are optional only for truly trivial changes
+> whose outcome, scope, acceptance criteria, and evidence fit directly in the PR body.
 
 * * *
 
@@ -59,6 +60,116 @@ The worker must therefore supply, in advance:
 6. the exact unresolved questions, if any.
 
 That is what enables strong process-alignment feedback.
+
+* * *
+
+## Source plan admission gate
+
+PR creation must be a lossless projection from a source plan or contract, not a second
+round of planning. If the worker cannot convert the source plan into a PR body without
+inventing scope, user behavior, acceptance criteria, proof burdens, or dependency order,
+the source plan is not ready.
+
+Before creating the PR, verify that the source plan fixes:
+
+- the externally meaningful milestone, included scope, explicit exclusions, preserved
+  behavior, and observable completion condition;
+
+- the dependency graph, including stacked foundations, parallel workstreams, handoff
+  contracts, and integration obligations;
+
+- every obligation's actor, trigger or context, intended result, acceptance criteria,
+  proof burden, dependencies, and supplied artifacts;
+
+- stable vocabulary and complete referents, so labels such as test IDs, issue numbers,
+  file names, transcript phrases, and local shorthand are evidence pointers rather than
+  unexplained requirements;
+
+- proof design before implementation assessment. Evidence answers declared criteria; it
+  does not define the criteria after code happens to pass.
+
+Stop and repair the source plan when any of these are true:
+
+- the root milestone is defined as tests passing, review readiness, checklist completion,
+  or another derived status;
+
+- a user or system behavior is represented only by a test ID, file name, command, commit,
+  issue number, or implementation detail;
+
+- an obligation lacks objective acceptance criteria or proof burden;
+
+- a task can be completed by touching documentation, changing a label, classifying a
+  failure, or making a check green while leaving the intended behavior unresolved;
+
+- scope relies on private phrases such as "remaining", "in flight", "other relevant", or
+  transcript-only context;
+
+- the plan has unresolved product, architecture, dependency, ownership, or sequencing
+  decisions.
+
+## PR body as Milestone Tree
+
+Use a Milestone Tree as the primary tracking surface for nontrivial PRs. The PR body must
+make the current plan externally legible, not expose an internal scratchpad.
+
+Minimum body shape:
+
+```markdown
+## Intended result
+<externally observable project or user result>
+
+## Scope
+- Included: <finite surface>
+- Excluded: <explicit non-goals>
+- Preserved behavior: <baseline that must remain true>
+
+## Execution structure
+<what is stacked, what is parallel, and what integrates last>
+
+## Milestone Tree
+- [ ] **M1 - <root milestone outcome>**
+  - Complete when: <observable completion condition>
+  - [ ] **F1 - <shared foundation>** [stacked; blocks W1/W2]
+  - [ ] **W1 - <parallel capability>** [depends on F1]
+    - [ ] **O1 - <externally meaningful obligation>**
+      - Behavior: <actor/trigger/action/result>
+      - Acceptance: <objective criteria>
+      - Evidence: <proof mapped to each criterion>
+  - [ ] **I1 - <integrated outcome>**
+
+## Automated gates
+<authoritative checks named, with live truth owned by CI or rulesets>
+```
+
+Checklist items must earn reviewer attention. A checkbox is valid only when it represents
+a meaningful portion of the plan that can be independently judged complete. Test names,
+commands, commits, artifacts, green checks, policy declarations, and environment setup are
+not top-level progress items unless they are attached to the substantive obligation they
+prove or unblock.
+
+## Content placement
+
+Put each fact in the surface that can represent and enforce it:
+
+- PR body: current PR-specific milestone, scope, dependency structure, obligations,
+  substantive tasks, ownership, meaningful blockers, acceptance criteria, and evidence
+  mappings.
+
+- Repository guidance or skills: global review policy, definitions of proof/completion,
+  evidence standards, naming conventions, and agent calibration.
+
+- CI, rulesets, and security settings: machine-derived invariants such as tests passing,
+  required artifact schemas, branch protection, and policy synchronization.
+
+- PR comments or review threads: discussion, resolved objections, local debugging detail,
+  and historical context that should not become the current tracking surface.
+
+- Linked issues or subplans: work that is too large or orthogonal for the PR body but
+  still needs a stable external contract.
+
+Do not duplicate global policy in the PR body. A PR may include a sequencing task to
+publish or sync required guidance before review, but the policy itself stays in the
+canonical governing source.
 
 * * *
 
