@@ -80,8 +80,9 @@ The normal sequence is:
    body as a task list; use native sub-issues when the active GitHub surface supports
    them;
 4. verify the issue tree against the finalized plan;
-5. draft the PR from the issue tree and link each top-level PR checklist item to the
-   corresponding issue.
+5. open the PR as a draft from the issue tree and link each top-level PR checklist item
+   to the corresponding issue;
+6. keep the PR draft until every in-scope checklist item is complete and evidenced.
 
 Before creating the PR, verify that the source plan fixes:
 
@@ -137,11 +138,17 @@ Stop and repair the source plan when any of these are true:
 - a nontrivial top-level PR checkbox would lack a link to a GitHub issue that owns its
   scope, acceptance criteria, and proof burden.
 
+- the PR checklist would include deferred work, out-of-scope work, backlog work,
+  follow-up work for later PRs, unchosen alternatives, or other items that are not
+  required before this PR can be ready for review.
+
 ## PR body as Milestone Tree
 
-Use an issue-linked Milestone Tree as the primary tracking surface for nontrivial PRs.
-The PR body must make the current issue tree externally legible, not expose an internal
-scratchpad.
+Use an issue-linked Milestone Tree as the centralized live tracking surface for the
+current PR's in-scope plan execution. The issue tree owns the broader decomposition; the
+PR body owns the reviewable work for this branch. If a checkbox appears in the PR body,
+completing it is required before the PR can leave draft. The PR body must make the
+current issue tree externally legible, not expose an internal scratchpad or backlog.
 
 Minimum body shape:
 
@@ -189,6 +196,17 @@ For nontrivial PRs, every top-level checkbox must link to the GitHub issue that 
 work item. Deeper checklist nodes may link to issues when they are independently tracked;
 otherwise they remain acceptance/proof detail under the owning issue-linked node.
 
+Do not add checkbox items for deferred work, explicitly excluded scope, future PRs,
+parking-lot ideas, unresolved alternatives, or nice-to-have cleanup. Put those in the
+`Scope` section, linked issues, or review discussion as prose. A visible open checkbox
+means the PR is not done; a checkbox that does not need to be completed before review is
+a false blocker and makes the PR impossible to read as complete.
+
+Keep the PR in draft while any in-scope checklist item remains open. Mark it ready for
+review only after the checklist represents no remaining required work, the evidence under
+each item is current, and the automated gates are either green or named as real blockers.
+If later feedback reopens required work, convert the PR back to draft.
+
 ### Tracking item quality
 
 A PR checkbox is reviewer-hacking when it is easy to tick but empty of correctness. Top-level
@@ -219,9 +237,11 @@ Put each fact in the surface that can represent and enforce it:
   including the epic, top-level milestones/workstreams, independently reviewable
   obligations, dependencies, acceptance criteria, and proof burdens.
 
-- PR body: current PR-specific milestone, scope, dependency structure, obligations,
-  substantive tasks, ownership, meaningful blockers, acceptance criteria, and evidence
-  mappings, with top-level checklist items linked to the relevant GitHub issues.
+- PR body: centralized live tracker for the current PR's in-scope milestone, scope,
+  dependency structure, obligations, substantive tasks, ownership, meaningful blockers,
+  acceptance criteria, and evidence mappings, with top-level checklist items linked to
+  the relevant GitHub issues. Deferred or excluded work belongs in prose or linked
+  issues, not as PR checkboxes.
 
 - Repository guidance or skills: global review policy, definitions of proof/completion,
   evidence standards, naming conventions, and agent calibration.
@@ -690,16 +710,23 @@ $EDITOR .pr/REVIEW_LOG.md
 git add .pr/PR_BODY.md .pr/REVIEW_LOG.md
 git commit -m "Add PR contract and review log"
 
-# 3. write failing tests / failing verification
-pytest path/to/test_file.py -q
-
-# 4. implement narrowly and re-run verification
-pytest path/to/test_file.py -q
-
-# 5. create draft PR from the tracked issue-linked contract
+# 3. create draft PR from the tracked issue-linked contract before implementation
 gh pr create --title "<title>" --body-file .pr/PR_BODY.md --draft
 
-# 6. after review arrives, read all feedback surfaces
+# 4. write failing tests / failing verification
+pytest path/to/test_file.py -q
+
+# 5. implement narrowly and re-run verification
+pytest path/to/test_file.py -q
+
+# 6. keep the PR draft while PR-body checklist items remain open
+# Republish .pr/PR_BODY.md as the centralized tracker changes.
+gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md
+
+# Only after every in-scope item is complete and evidenced:
+gh pr ready <PR_NUMBER>
+
+# 7. after review arrives, read all feedback surfaces
 gh pr view <PR_NUMBER> --comments
 gh pr view <PR_NUMBER> --json title,body,reviewDecision,latestReviews,reviews,comments,files,statusCheckRollup
 gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/reviews
@@ -707,7 +734,10 @@ gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/comments
 gh api repos/<OWNER>/<REPO>/issues/<PR_NUMBER>/comments
 gh pr checks <PR_NUMBER> --watch
 
-# 7. update the issue tree and contract file if needed
+# 8. if review feedback reopens required checklist work, return to draft before continuing
+gh pr ready <PR_NUMBER> --undo
+
+# Update the issue tree and contract file if needed
 $EDITOR .pr/EPIC_ISSUE.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/PR_BODY.md
@@ -716,8 +746,11 @@ $EDITOR .pr/REVIEW_LOG.md
 git add .pr/PR_BODY.md .pr/REVIEW_LOG.md <changed code/tests>
 git commit -m "Address review feedback"
 
-# 8. republish PR body from the tracked contract
+# 9. republish PR body from the tracked contract
 gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md
+
+# 10. after reopened in-scope checklist work is complete and evidenced, mark ready again
+gh pr ready <PR_NUMBER>
 ```
 
 * * *
@@ -752,26 +785,30 @@ If the PR does not expose those answers directly, it is not review-ready.
 
 4. Link nontrivial top-level PR checklist items to the owning issues.
 
-5. Derive the PR body from the tracked contract file and issue tree, not from memory or
+5. Keep deferred, excluded, future, and out-of-scope work out of PR checkboxes.
+
+6. Keep the PR draft until every in-scope PR checkbox is complete and evidenced.
+
+7. Derive the PR body from the tracked contract file and issue tree, not from memory or
    the web form.
 
-6. Lock acceptance criteria before code exists.
+8. Lock acceptance criteria before code exists.
 
-7. Use failing verification first.
+9. Use failing verification first.
 
-8. Keep the diff within the declared boundary.
+10. Keep the diff within the declared boundary.
 
-9. Read every review surface with `gh`.
+11. Read every review surface with `gh`.
 
-10. Log every actionable review item atomically.
+12. Log every actionable review item atomically.
 
-11. Do not mark feedback addressed without an identifying commit.
+13. Do not mark feedback addressed without an identifying commit.
 
-12. If feedback changes the target, update the issue tree and contract first.
+14. If feedback changes the target, update the issue tree and contract first.
 
-13. Do not let the implementation define its own success criteria.
+15. Do not let the implementation define its own success criteria.
 
-14. Do not let a reviewer guess what “done” means.
+16. Do not let a reviewer guess what "done" means.
 
 A PR that follows these rules is much easier to review well, much harder to rubber-stamp
 for the wrong reasons, and much less likely to drift into post-hoc self-justifying

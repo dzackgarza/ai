@@ -42,6 +42,9 @@ gh pr create \
   --title "feat: add JWT-based user authentication" \
   --body-file .pr/PR_BODY.md \
   --draft
+
+# Later, after every in-scope PR-body checklist item is complete and evidenced:
+gh pr ready
 ```
 
 Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base develop`
@@ -226,23 +229,30 @@ git checkout -b fix/login-redirect-bug
 
 # 3. Externalize the finalized plan into a GitHub epic and issue tree.
 #    Create or update .pr/PR_BODY.md from that issue tree before implementation defines
-#    its own success criteria.
+#    its own success criteria, then open the draft PR as the live tracking surface.
+git add .pr/PR_BODY.md
+git commit -m "Add PR tracking contract"
+git push -u origin HEAD
+gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --draft
 
-# 4. (Agent makes code changes)
+# 4. (Agent makes code changes while the draft PR tracks open in-scope work)
 
-# 5. Commit
+# 5. Commit code changes
 git add src/auth/login.py tests/test_login.py
 git commit -m "fix: correct redirect URL after login"
 
-# 6. Push
+# 6. Push implementation updates
 git push -u origin HEAD
 
-# 7. Create draft PR from the tracked issue-linked body
-gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --draft
+# 7. Republish the PR body as checklist items are completed; keep deferred work out of checkboxes
+gh pr edit --body-file .pr/PR_BODY.md
 
-# 8. Monitor CI
+# 8. Monitor CI while finishing the in-scope PR-body checklist; deferred work stays out of checkboxes
 gh pr checks --watch
 
-# 9. Merge when green
+# 9. Mark ready only after every in-scope checklist item is complete and evidenced
+gh pr ready
+
+# 10. Merge when green
 gh pr merge --squash --delete-branch
 ```
