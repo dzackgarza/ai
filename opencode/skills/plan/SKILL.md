@@ -74,6 +74,9 @@ links its top-level checklist nodes to the relevant issues.
 
 The plan must fix the semantic target before implementation or publication:
 
+- Start from user stories and user-observable outcomes, and derive milestones, dependencies, and
+  acceptance criteria from those stories.
+
 - State the externally meaningful milestone, included scope, explicit exclusions,
   preserved behavior, and observable completion condition.
 
@@ -87,6 +90,9 @@ The plan must fix the semantic target before implementation or publication:
 - Attach each task to an externally meaningful obligation with acceptance criteria and
   proof burden. Commands, commits, test IDs, green checks, artifact names, and labels are
   evidence or automation, not substitutes for the obligation.
+
+- Treat proof burdens as first-class deliverables: each task exists to resolve a user-story
+  obligation, not to satisfy a named test artifact alone.
 
 - Separate internal execution material from the public plan. Classifications, local TODOs,
   debugging notes, current machine state, and review policy copies belong in the surface
@@ -122,11 +128,11 @@ ready to externalize.
 When the user asks to read, inspect, annotate, or give feedback on a plan, generate the
 review surface on demand:
 
-- render the entire plan as one self-contained HTML page
-- serve it from an ephemeral local server
-- include inline annotation controls and a global Post button
-- save the annotation payload to a file
-- read that payload back before revising or acting
+- Generate the plan review artifact in plain HTML as `<plan>.html` under `.lavish/` unless
+  another location is requested.
+- Launch and share it with `npx -y lavish-axi .lavish/<plan>.html` (or provided path).
+- Read feedback with `npx -y lavish-axi poll .lavish/<plan>.html` before revising or acting.
+- Save the annotation payload file returned by lavish and include it in handoff notes.
 
 The review page is not a standing service.
 Create it only for the requested plan-review turn.
