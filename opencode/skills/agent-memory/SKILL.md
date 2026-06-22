@@ -57,88 +57,81 @@ Check memories when starting related work:
 
 - When resuming work after a conversation break
 
-## iWe Setup and Usage
+## Agent Memory Setup and Usage
 
-Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes.
-Each project contains a `.agents/memories/config.toml` after `iwe init`. The actual
-`.md` files are stored in iwe’s internal graph — use `iwe find`, `iwe retrieve`, and
-`iwe tree` to inspect them, never raw file reads.
+`agent-memory` is the only agent-facing interface for durable memories and
+project planning state. Agents do not need to know or call the storage backend
+during normal project work.
 
-### First-time setup in a project
+The project binding is `.agent-memory.toml` at the repository root. Memory files
+live in the configured vault and are managed by `agent-memory`; do not create,
+inspect, edit, or reorganize memory directories by hand.
 
-```bash
-# Initialize the memory store in the project
-iwe init
-```
+### Tool Availability
 
-### Creating and managing memories
+Use the GitHub `uvx` runner as the canonical no-install invocation:
 
 ```bash
-# Create a new memory (accepts content via stdin or editor)
-iwe new "Memory Title"
-
-# Search across all memories (fuzzy text + YAML field filters)
-iwe find "search term"
-
-# Retrieve a memory with surrounding context
-iwe retrieve -k my-memory
-
-# Overwrite a memory body
-iwe update -k memory-key -c "new content"
-
-# Update frontmatter fields
-iwe update --filter 'status: draft' --set reviewed=true
-
-# Rename a memory (all links update automatically)
-iwe rename old-key new-key
-
-# Delete a single memory (references cleaned up)
-iwe delete memory-key
-
-# Extract a section into its own memory
-iwe extract memory-key --section "Title"
-
-# Inline a referenced memory back into its parent
-iwe inline memory-key --reference "other-memory"
-
-# Attach a memory via a configured action (e.g., daily notes)
-iwe attach --to today -k memory-key
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory --help
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor
 ```
 
-### Browsing and inspecting
+Use a bare `agent-memory` command only after a verified setup has placed it on `PATH`.
+If the `uvx` runner exits before showing help because a required runtime dependency is
+missing, treat that as a setup failure. Do not bypass the doctor gate and do not call
+`iwe` directly for normal memory work.
+
+To provision persistent runtime dependencies, use the checkout:
 
 ```bash
-# View the hierarchy tree from any starting point
-iwe tree
-
-# Count memories matching criteria
-iwe count --filter 'status: draft'
-
-# Analyze the memory store
-iwe stats
-
-# Export the memory graph as DOT for visualization
-iwe export -f dot
-
-# Normalize all memories to consistent formatting
-iwe normalize
+cd /home/dzack/gitclones/agent-memory
+just install
 ```
 
-Use `iwe --help` and `iwe <subcommand> --help` to discover the full set of commands and
-options.
+### First-time Setup
+
+Initialize the global vault once:
+
+```bash
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory maintain init-global --vault /path/to/vault
+```
+
+Bind a repository to that vault:
+
+```bash
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory init project --vault /path/to/vault
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor
+```
+
+### Creating and Managing Memories
+
+Prefer the wrapper commands for normal work. Examples below use the short command for readability after tool availability has been verified; otherwise use the full `uvx` runner prefix above:
+
+```bash
+agent-memory search "search term"
+agent-memory add --scope project --type decision --title "Memory Title" --content "..."
+agent-memory retrieve projects/<project-id>/decisions/<key>
+agent-memory update <key> --title "New Title"
+agent-memory delete <key>
+agent-memory inspect --help
+```
+
+Use the `uvx` runner with `--help`, or a verified installed `agent-memory` command,
+to discover the current command surface before relying on old examples.
 
 ## Memory Interaction Workflow
 
-1. **`iwe find` first** — Before writing a new memory, search existing memories
+1. **Search first** — Before writing a new memory, search existing memories with
+   `agent-memory search`
 
-2. **Prefer `iwe update`** — If relevant memory exists, update it with
-   `iwe update -k key -c "content"` instead of creating a duplicate
+2. **Prefer update** — If relevant memory exists, update it with
+   `agent-memory update` instead of creating a duplicate
 
-3. **Never refactor or remove** — Do not attempt to refactor, reorganize, or remove
-   existing memory content outside of iwe
+3. **Never refactor or remove behind the tool** — Do not attempt to refactor,
+   reorganize, or remove existing memory content outside `agent-memory`
 
-4. **Create via `iwe new`** — If no relevant memory exists, create a new entry via
-   `iwe new "Title"`
+4. **Create via `agent-memory add`** — If no relevant memory exists, create a new
+   typed entry through the wrapper
 
 ## Where Information Lives
 
@@ -146,10 +139,11 @@ options.
 | --- | --- | --- |
 | Reusable operational rules | Memory files | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
 | High-level decisions with future relevance | Memory files | “Chose process constraint over declarative rules because …” |
+| Plans, phase state, contracts, and residue ledgers | `agent-memory` plan records | “Current phase is extraction; active residue is parser boundary proof” |
 | Current gaps, TODOs | GitHub issues | Issue tagged `TODO` or `needs-investigation` |
 
 Completed work belongs in commits.
-Lessons and decisions needed for future work belong in memory.
+Lessons, decisions, and planning state needed for future work belong in memory.
 TODOs and gaps belong in GitHub issues, not repo artifacts.
 
 ## Decision Test
@@ -172,9 +166,7 @@ All four must pass. If any fails, the entry does not belong in memory.
 
 ## Entry Format
 
-Memories are stored as Markdown files with YAML frontmatter.
-The frontmatter `title` is used as the canonical identifier.
-Tags are used for filtering via `iwe find --filter`.
+Memories are stored as typed Markdown records managed by `agent-memory`.
 
 ```yaml
 ---
