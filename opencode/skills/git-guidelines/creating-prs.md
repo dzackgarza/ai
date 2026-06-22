@@ -88,6 +88,10 @@ Before creating the PR, verify that the source plan fixes:
 - proof design before implementation assessment. Evidence answers declared criteria; it
   does not define the criteria after code happens to pass.
 
+The PR projection may add owner, branch, status, blocker, commit, run, artifact, and
+review-link metadata. It must not add, delete, demote, or reinterpret scope, behavior,
+acceptance criteria, proof burdens, dependencies, handoffs, or integration semantics.
+
 Stop and repair the source plan when any of these are true:
 
 - the root milestone is defined as tests passing, review readiness, checklist completion,
@@ -105,7 +109,16 @@ Stop and repair the source plan when any of these are true:
   transcript-only context;
 
 - the plan has unresolved product, architecture, dependency, ownership, or sequencing
-  decisions.
+  decisions;
+
+- scattered sources disagree and the worker would need to choose between competing
+  intent, implementation state, hypotheses, or status claims;
+
+- evidence is only provenance, command execution, artifact existence, or green status,
+  without showing attained behavior and why the witness rejects plausible broken cases;
+
+- old checkmarks, repeated claims, or source-by-source summaries would become public
+  progress without re-evaluation against current acceptance criteria.
 
 ## PR body as Milestone Tree
 
@@ -140,6 +153,13 @@ Minimum body shape:
 ## Automated gates
 <authoritative checks named, with live truth owned by CI or rulesets>
 ```
+
+Use typed nodes. A milestone states the delivered result and completion condition; a
+foundation or workstream states sequence, parallelism, owner, and supplied capability; an
+obligation states actor or trigger, behavior, criteria, and proof burden; a substantive
+task states meaningful transformation beneath one primary obligation; an evidence block
+links witnesses to named criteria. Parent completion follows from semantic attainment and
+supported evidence, not merely from checked descendants.
 
 Checklist items must earn reviewer attention. A checkbox is valid only when it represents
 a meaningful portion of the plan that can be independently judged complete. Test names,
@@ -186,12 +206,24 @@ Put each fact in the surface that can represent and enforce it:
 - PR comments or review threads: discussion, resolved objections, local debugging detail,
   and historical context that should not become the current tracking surface.
 
+- Evidence artifacts: generated outputs, screenshots, structured run reports, logs, CI
+  runs, and baselines. Artifact existence is not itself progress; link each witness
+  beneath the obligation and criterion it supports.
+
+- Local scratchpads and setup surfaces: source inventories, worksheets, command history,
+  raw transcripts, obsolete alternatives, repeated classifications, and environment setup.
+  Link them only for optional depth when the public node is self-contained.
+
 - Linked issues or subplans: work that is too large or orthogonal for the PR body but
   still needs a stable external contract.
 
 Do not duplicate global policy in the PR body. A PR may include a sequencing task to
 publish or sync required guidance before review, but the policy itself stays in the
 canonical governing source.
+
+Publish the current plan, not the consolidation process. Do not expose source-by-source
+diaries, normalization worksheets, raw agent reasoning, local command history, obsolete
+alternatives, or manually maintained histories of PR-body edits as progress.
 
 * * *
 

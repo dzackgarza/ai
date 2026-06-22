@@ -195,6 +195,11 @@ produces, consumes, and must preserve for integration.
 When a plan may become a PR body, issue contract, multi-agent tracker, or handoff, write
 it so conversion is a lossless projection without semantic invention.
 
+A projection may add execution metadata: owner, branch, status, blocker, commit, run,
+artifact, review link, and GitHub formatting. It must not add, delete, demote, or
+reinterpret the milestone, scope, baseline, vocabulary, execution graph, obligations,
+tasks, handoffs, integration duties, proof burdens, or review prerequisites.
+
 Before conversion, the plan must fix:
 
 - externally meaningful milestone, finite scope, exclusions, preserved behavior, and
@@ -214,9 +219,35 @@ notes, consolidate propositions by semantic role before writing the public plan.
 valid meaning, dependencies, obligations, and proof burdens. Do not inherit wording,
 checkboxes, duplicate status, or private identifiers as public truth.
 
+Classify each proposition before consolidation:
+
+- governing intent: milestone, scope, behavior, constraints, or acceptance criteria;
+- work decomposition: substantive transformations, dependencies, lanes, handoffs, or
+  integration work;
+- scratchpad observation: symptom, command result, hypothesis, local TODO, or provisional
+  idea;
+- current execution state: ownership, branch, blocker, or completion claim that must be
+  verified current before use;
+- evidence material: output, screenshot, artifact, log, CI run, or report that must map
+  to a named criterion;
+- policy or automation: global review, proof, environment, or enforcement behavior that
+  belongs in skills, CI, rulesets, or repository settings;
+- residue: obsolete alternatives, raw commands, duplicated reminders, private reasoning,
+  and notes with no continuing coordination or evidentiary value.
+
+When sources disagree, do not use latest-file-wins, most-detailed-text-wins, or
+most-confident-language-wins. Identify the conflicting propositions, distinguish intended
+behavior from implementation state and hypothesis, resolve the contradiction in the
+source plan, and publish only the coherent current obligation.
+
+Normalize propositions, not prose blocks. Split paragraphs that mix obligations,
+hypotheses, commands, and status claims. Expand internal referents, keep internal IDs only
+as aliases, and convert micro-actions into their substantive parent. Do not inherit
+checkmarks; re-evaluate old local status against current acceptance criteria, and count repeated claims once.
+
 Stop and repair the source plan when conversion would require inventing scope, user
-behavior, acceptance criteria, proof burdens, dependency order, ownership, or unresolved
-architecture decisions.
+behavior, acceptance criteria, proof burdens, dependency order, ownership, unresolved
+architecture decisions, or a reconciliation choice among contradictory source claims.
 
 ## Living-Document Discipline
 
@@ -249,6 +280,13 @@ Before saving or handing off a plan, verify:
 - **Restartability:** another agent can resume from the plan alone.
 - **PR readiness:** if the plan will be projected into a PR, no semantic invention is
   needed.
+- **Projection integrity:** translation causes no semantic loss, invention, demotion, or
+  proxy promotion; stacked, parallel, handoff, and integration structure stays explicit.
+- **Evidence discrimination:** proof design distinguishes provenance, execution,
+  attainment, and adequacy; evidence applies to the current revision and named criteria.
+- **Closure:** every scope item maps to an obligation, every obligation maps to tasks and
+  proof burdens, every task has one primary parent, and no repeated internal mention earns
+  duplicate progress.
 
 ## Anti-Patterns
 
@@ -261,6 +299,9 @@ Before saving or handing off a plan, verify:
 | Neural-ese | Deictic wording, invented jargon, status language, or authority priming hides the referent | Rewrite into exact behavior, decision, surface, and evidence |
 | Tool step as task | Environment trivia becomes visible progress | Nest setup under the boundary proof it enables |
 | Classification as task | Labels such as `env-blocked` replace the real obstacle | Record blocker evidence and unblock condition under the substantive task |
+| Inherited checkmark | Old local status is treated as current public truth | Re-evaluate against current acceptance criteria and evidence |
+| Duplicate corroboration | One claim repeated in several artifacts becomes several progress signals | Collapse repeats into one claim and require independent evidence |
+| Evidence dumping | Commits, runs, logs, or artifacts are listed without a criterion | Map each witness to the obligation and false positive it rejects |
 | Chat-only plan | Work cannot survive context rollover | Save a durable plan artifact through the active plan/memory workflow |
 | Frozen plan | Discoveries and decisions leave the artifact stale | Update progress, discoveries, decisions, and revision notes |
 | Implementation-defined success | Code determines its own acceptance after the fact | Lock acceptance and proof before implementation |
