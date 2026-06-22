@@ -191,7 +191,7 @@
       }
     },
     "concurrency": 8,
-    "enableFileWatching": true,
+    "enableFileWatching": false,
     "maxWatchedFiles": 25000,
     "engine": "rust",
     "watchDebounceMs": 300,
@@ -306,7 +306,7 @@
     "maxResponseArtifactBytesTotal": 2684354560,
     "maxResponseArtifactsTotal": 512,
     "artifactTtlHours": 24,
-    "maxConcurrentJobs": 2,
+    "maxConcurrentJobs": 10,
     "envAllowlist": []
   }
 }
