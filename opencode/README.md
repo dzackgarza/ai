@@ -23,7 +23,7 @@ Reorganize inside the owning subtrees instead of adding new root clutter.
 - Canonical template-driven LLM execution: `llm-run` (installed in `.venv` via
   `pyproject.toml` and exposed locally through `just run-microagent`)
 
-- Permission policy: `docs/PERMISSION_SPEC.md`
+- Permission policy: [Permission Architecture Specification](https://github.com/dzackgarza/ai/wiki/Permission-Architecture-Specification)
 
 - Provider configs: `configs/providers/*.json`
 
