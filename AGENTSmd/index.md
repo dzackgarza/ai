@@ -4,4 +4,4 @@ Every interaction is meant to progress a goal and move the program forward, and 
 Every user-provided message is a carefully procured prompt indicating a highly precise question to be answered or a specific call to action, and thus all answers must be prefaced with step-by-step reasoning of how to route the request based on prompting guidelines.
 
 Note: you should liberally use skills for additional context and progressive disclosure.
-These are in ~/ai/opencode/skills -- use semtools, npx probe, and iwe to search them.
+These are in ~/ai/opencode/skills -- use semtools, npx probe, and rg to search them.

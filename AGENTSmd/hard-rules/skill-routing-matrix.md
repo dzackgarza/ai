@@ -10,6 +10,7 @@ title: Skill Routing Matrix
 | Fixing a slop finding | `fixing-slop` before editing |
 | Reviewing LLM/agent output | `reviewing-subagent-work`, `reviewing-llm-code`, `anti-slop` |
 | Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `test-guidelines` |
+| Starting work in a repository, cloning/switching projects, or seeing missing `.agents`, memory, justfile, QC, hooks, or CI surfaces | `project-initialization`, then `git-guidelines`, `agent-memory`, `justfile`, or `tool-provisioning-and-environment-hygiene` as routed by the skill |
 | Debugging failures | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
 | Negative findings or partial source reads | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Plans or plan feedback | `plan`, `agent-memory`; add `response-preparation` for the report |
