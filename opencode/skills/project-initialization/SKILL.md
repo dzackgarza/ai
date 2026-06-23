@@ -66,6 +66,36 @@ Establish the repository boundary and freshness.
 Do not pull, rebase, stash, discard, or initialize a repository in an ambiguous
 directory without applying `git-guidelines`.
 
+### GitHub Public State
+
+If the confirmed remote is GitHub-backed, establish the public execution graph before
+treating local docs, plans, or transcripts as authoritative.
+
+- Determine `<owner>/<repo>` from the remote.
+- Check the wiki state. Use the GitHub Wiki section of the active `AGENTS.md`
+  guidance for the exact wiki probes and first-page bootstrap behavior.
+- Inspect task-relevant open milestones, issues, PRs, and draft PRs. Search by the
+  repo name, user-provided feature names, active branch, failing gate, and touched
+  module when those terms exist.
+- Treat linked milestones, controlling issues, child issues, PR contracts, and review
+  threads as canonical execution state. Local plans, `.agents` notes, memory records,
+  transcripts, and scratchpads are leads unless the current GitHub surface confirms
+  them.
+- For long-horizon, cross-repo, or review-track work, externalize finalized plans into
+  a GitHub issue tree, milestone, or draft PR using `creating-implementation-plans` and
+  `git-guidelines`. Once public artifacts exist, they become the tracker; local plans
+  may explain derivation but must not stay authoritative.
+- When an observed failure class repeats, causes false green, blocks convergence, or
+  requires human rescue, route it to the durable enforcement surface that owns it:
+  wiki user stories or proof burdens for product obligations, issues/PR contracts for
+  project work, skills for agent behavior, and fixtures or global QC gates for
+  mechanically checkable rules.
+
+Do not create GitHub issues, milestones, PRs, or wiki edits merely because they are
+missing. Create or update them only when the user requested public tracking or the task
+requires it; otherwise record the missing public surface as an initialization finding and
+continue with the requested scope.
+
 ### SDL-MCP
 
 If the client exposes SDL-MCP, or repo instructions require it, make the repository
@@ -227,13 +257,14 @@ user explicitly requested only an audit or diagnosis.
 Prefer this order:
 
 1. Stabilize git state and freshness.
-2. Register or refresh SDL-MCP context if available/required.
-3. Load repo instructions and task-relevant memories.
-4. Initialize or repair `.agents/` and memory binding.
-5. Normalize `justfile` public/private surfaces.
-6. Delegate QC to `~/ai-review-ci` and install hooks/workflows where appropriate.
-7. Run the smallest proof that the normalized surface works.
-8. Continue the user's original task.
+2. Inspect GitHub public state when the remote is GitHub-backed.
+3. Register or refresh SDL-MCP context if available/required.
+4. Load repo instructions and task-relevant memories.
+5. Initialize or repair `.agents/` and memory binding.
+6. Normalize `justfile` public/private surfaces.
+7. Delegate QC to `~/ai-review-ci` and install hooks/workflows where appropriate.
+8. Run the smallest proof that the normalized surface works.
+9. Continue the user's original task.
 
 If normalization itself is nontrivial, make it a visible subtask and stop before
 risky migrations. Do not silently turn a feature request into a broad repo
@@ -246,6 +277,7 @@ Before moving into implementation, record a compact status:
 ```markdown
 Project initialization:
 - Git: <root, branch, dirty/freshness/remote status>
+- GitHub: <wiki state, relevant issues/milestones/PRs, canonical tracker or gap>
 - SDL-MCP: <registered/current/unavailable/not applicable>
 - Instructions: <README/AGENTS/memory surfaces checked>
 - Memory: <initialized? relevant memories searched?>
