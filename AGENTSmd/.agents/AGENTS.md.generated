@@ -53,6 +53,8 @@ That skill owns the strongest-live-goal gate and anti-laundering rules:
 - remaining work is measured against the user’s original completion standard
 - feedback resolution requires evidence, disposition, and visible notes
 - agreement language is not action
+- corrections are bounded deltas to the live goal, not regime changes or permission to
+  proceduralize the work
 
 If the action only changes representation, say so and either continue the substantive
 work or report the real blocker.

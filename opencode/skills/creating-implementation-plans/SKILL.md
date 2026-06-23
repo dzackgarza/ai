@@ -35,6 +35,27 @@ A valid plan must:
 If a plan leaves the implementer to decide the milestone, scope, dependency graph,
 acceptance criteria, or proof burden, the plan is not ready.
 
+## Plan Fit Gate
+
+Use planning to preserve intent, state, coordination, and proof. Do not use planning as a
+substitute for available object-level work.
+
+If concrete feedback already names actions, sources, examples, user stories, or cases,
+first ask whether representative instances can be resolved directly with existing repo
+surfaces. Write a new plan, schema, router, taxonomy, script, or gate only when it
+controls a real risk, preserves restartable state, coordinates multiple actors, or
+captures repetition already observed in direct work.
+
+For heterogeneous queues, size is not semantic homogeneity. Do not batch interpretive
+decisions behind classifiers, ledgers, schemas, or automation merely because there are
+many items. Automate navigation, retrieval, bookkeeping, and repeated mechanical
+transforms; preserve item-level judgment for interpretation, source selection, and
+mutation decisions.
+
+Formalize successful behavior after representative traces exist. A plan may require
+several direct case resolutions before it can honestly define stable categories, proof
+burdens, or reusable workflow machinery.
+
 ## Required Discovery
 
 Before drafting tasks:
