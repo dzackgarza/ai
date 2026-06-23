@@ -329,9 +329,9 @@ Stop only when `gh pr checks` shows all green and `issues` reports `NOT RESOLVED
 
 Before opening a PR, updating a PR for review, or tagging automated reviewers, ensure
 the target repo’s local `AGENTS.md` contains the canonical review guidance from
-`~/ai/PR_GUIDANCE.md`.
+the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
-`~/ai/PR_GUIDANCE.md` is the source of truth.
+The [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page is the durable source of truth.
 The repo-local `AGENTS.md` copy is a required distribution copy because Codex and other
 review agents read the target repo’s local guidance.
 Do not replace it with a link, summary, or paraphrase.
@@ -339,13 +339,13 @@ Do not replace it with a link, summary, or paraphrase.
 Required handling:
 
 - If the target repo has no local `AGENTS.md`, create one containing the canonical
-  `# Review Guidelines` section from `~/ai/PR_GUIDANCE.md`.
+  `# Review Guidelines` section from the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
 - If local `AGENTS.md` already has a top-level `# Review Guidelines` section, replace
-  that section with the current contents of `~/ai/PR_GUIDANCE.md`.
+  that section with the current contents of the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
 - If local `AGENTS.md` lacks that section, append the current contents of
-  `~/ai/PR_GUIDANCE.md`.
+  the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
 - Do not create duplicate `# Review Guidelines` sections.
 

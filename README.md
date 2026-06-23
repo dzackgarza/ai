@@ -1,5 +1,10 @@
 # AI Configuration
 
+
+## Doctrine
+
+The durable doctrine for agentic delivery lives in the [Agentic Delivery Doctrine](https://github.com/dzackgarza/ai/wiki/Agentic-Delivery-Doctrine) wiki page. Use it when changing prompts, skills, memory behavior, review workflows, or cross-repo agent operating rules.
+
 ## Installation
 
 **Prerequisites:**

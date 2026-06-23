@@ -495,7 +495,7 @@ A finding that an output or contract field is optional/nullable is accepted unle
 When routing PR review workflows, follow these rules:
 
 - **User asks to review a PR**:
-  Load `git-guidelines` (see `code-review.md`) + `PR_GUIDANCE` + `reviewing-llm-code` + `test-guidelines`.
+  Load `git-guidelines` (see `code-review.md`) + the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page + `reviewing-llm-code` + `test-guidelines`.
   If the PR is agent-produced, also load `reviewing-subagent-work`.
 
 - **User asks to address, resolve, reply to, or classify PR review comments**:
