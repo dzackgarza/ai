@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Plan mode: write markdown plan to .hermes/plans/, no exec."
+description: "Plan mode: create or revise durable plan records through agent-memory, no exec."
 license: MIT
 metadata:
   hermes:
@@ -27,15 +27,16 @@ For this turn, you are planning only.
 
 ## Storage
 
-When `agent-memory` is available, file plans as project memories with type `plan`.
+File every durable plan as a project-scoped `agent-memory` record with type `plan`.
 Use the `agent-memory` skill for the exact command surface.
 
-If the runtime or user explicitly requires a repo-local markdown plan, save it under:
+Do not create repo-local Markdown plans as the authoritative store. If a runtime or user
+explicitly requires a local Markdown export, first create or update the vault-owned plan
+record, then write the local file as a non-authoritative compatibility copy that points
+back to the memory key.
 
-- `.hermes/plans/YYYY-MM-DD_HHMMSS-<slug>.md`
-
-If `agent-memory` is required by the active instruction set but unavailable, report the
-blocker instead of creating an untracked substitute.
+If `agent-memory` is unavailable, report the blocker instead of creating an untracked
+substitute.
 
 ## Output requirements
 
@@ -121,7 +122,8 @@ ready to externalize.
 - If it is genuinely underspecified, ask a brief clarifying question instead of
   guessing.
 
-- After saving the plan, reply briefly with the saved memory key or path.
+- After saving the plan, reply briefly with the saved memory key. Include a local export
+  path only when one was explicitly created.
 
 ## Plan Review Surface
 

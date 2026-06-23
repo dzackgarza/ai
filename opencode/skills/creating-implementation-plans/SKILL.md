@@ -36,6 +36,30 @@ A valid plan must:
 If a plan leaves the implementer to decide the milestone, scope, dependency graph,
 acceptance criteria, or proof burden, the plan is not ready.
 
+## Plan Ownership Lifecycle
+
+Plans start as `agent-memory` plan records in the central vault. A repo-local Markdown
+file may be a review/export artifact, but it is not the durable source of truth unless it
+points back to the vault-owned plan key.
+
+Keep a plan vault-owned while it is exploratory, single-agent, or still converging with
+the user.
+Promote it to GitHub-owned execution state when any of these become true:
+
+- the plan coordinates multiple agents, branches, repos, milestones, or handoffs;
+- the plan defines public user stories, project direction, proof burdens, or roadmap
+  commitments;
+- work will span enough time that GitHub visibility is needed for auditability or
+  resumption;
+- the plan has been finalized by the user and is ready to become an issue tree,
+  milestone, or draft PR contract;
+- unresolved gaps, bugs, or follow-up obligations should be discoverable by future
+  agents without reading vault internals.
+
+After promotion, GitHub issues, milestones, and PRs are the execution tracker. Keep the
+vault plan as derivation context or a restart aid, but do not let it diverge into a second
+private source of truth.
+
 ## Plan Fit Gate
 
 Use planning to preserve intent, state, coordination, and proof. Do not use planning as a
@@ -281,15 +305,16 @@ the plan has a stable semantic shape.
 
 For nontrivial implementation work, use this externalization sequence:
 
-1. Finalize the plan with the user.
-2. Create or update a parent GitHub issue that acts as the epic.
-3. Create or attach child issues for the top-level milestones, foundations, workstreams,
+1. Create or update the vault-owned `agent-memory` plan record.
+2. Finalize the plan with the user.
+3. Create or update a parent GitHub issue that acts as the epic.
+4. Create or attach child issues for the top-level milestones, foundations, workstreams,
    or independently reviewable obligations. Use native sub-issues when the active GitHub
    surface supports them; otherwise link the child issues from the epic body as a task
    list.
-4. Verify the issue tree preserves the finalized plan's scope, dependencies,
+5. Verify the issue tree preserves the finalized plan's scope, dependencies,
    acceptance criteria, and proof burdens.
-5. Draft implementation PRs from that issue tree. Each top-level PR checklist item must
+6. Draft implementation PRs from that issue tree. Each top-level PR checklist item must
    link to the relevant issue unless the PR is genuinely trivial.
 
 The issue tree becomes the external tracking source. Local plan files and scratchpads may

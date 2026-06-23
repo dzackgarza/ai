@@ -7,8 +7,8 @@ At the start of a session in a repository, load `project-initialization` before
 substantive implementation.
 
 That skill owns the normal-form check: git root/freshness, GitHub public state
-(wiki, issues, milestones, and PRs), SDL-MCP registration/indexing when available,
-repo instructions, `.agents/`,
+(wiki, issues, milestones, and PRs), durable state surface classification,
+SDL-MCP registration/indexing when available, repo instructions, `.agents/`,
 agent-memory binding and memory search, `justfile` shape, and `~/ai-review-ci`
 QC/hooks/CI wiring.
 

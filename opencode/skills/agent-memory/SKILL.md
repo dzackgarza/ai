@@ -1,6 +1,6 @@
 ---
 name: agent-memory
-description: "Use when deciding what belongs in agent memory, defining memory policy, or converting historical notes into reusable operational rules."
+description: "Use when deciding what belongs in agent memory, plan records, the central vault, GitHub, or wiki; defining memory policy; or converting historical notes into reusable operational rules."
 ---
 # Agent Memory
 
@@ -45,6 +45,10 @@ Save memories when you discover something worth preserving:
 
 - Architectural decisions and their rationale
 
+- Corrections that should change future agent behavior
+
+- Decisions whose rationale should be available to future agents
+
 - In-progress work that may be resumed later
 
 ### When to Check Memories
@@ -62,6 +66,25 @@ Check memories when starting related work:
 `agent-memory` is the only agent-facing interface for durable memories and
 project planning state. Agents do not need to know or call the storage backend
 during normal project work.
+
+### Central Vault Policy
+
+The configured vault is the only durable agent-facing store for memory and plan state.
+Do not create loose repo-local Markdown plans, correction logs, decision ledgers, or
+agent-facing doctrine files as substitutes for typed `agent-memory` records.
+
+Use repo-local files only as temporary scratchpads while working through in-the-weeds
+investigation. Before handoff, delete the scratchpad or promote its durable content:
+
+- reusable agent behavior, corrections, traps, and decisions -> typed memories;
+- plans, phase state, queues, and residue ledgers -> `plan` records;
+- public product/project doctrine, user stories, roadmaps, and proof burdens -> wiki;
+- public execution state, bugs, gaps, and handoff contracts -> GitHub issues,
+  milestones, or PRs.
+
+If the same fact appears in multiple surfaces, choose one authoritative owner and replace
+other copies with links or delete them. Memory can point at GitHub or wiki artifacts, but
+it should not duplicate their live status.
 
 The project binding is `.agent-memory.toml` at the repository root. Memory files
 live in the configured vault and are managed by `agent-memory`; do not create,
@@ -137,14 +160,15 @@ to discover the current command surface before relying on old examples.
 
 | Information | Location | Example |
 | --- | --- | --- |
-| Reusable operational rules | Memory files | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
-| High-level decisions with future relevance | Memory files | “Chose process constraint over declarative rules because …” |
-| Plans, phase state, contracts, and residue ledgers | `agent-memory` plan records | “Current phase is extraction; active residue is parser boundary proof” |
-| Current gaps, TODOs | GitHub issues | Issue tagged `TODO` or `needs-investigation` |
+| Reusable operational rules, traps, and corrections | Typed memories in the vault | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
+| Decisions with future agent relevance | Typed memories in the vault | “Treat generated AGENTS output as derived; edit fragments instead” |
+| Plans, phase state, contracts, queues, and residue ledgers | `agent-memory` plan records in the vault | “Current phase is extraction; active residue is parser boundary proof” |
+| Public project doctrine, user stories, roadmaps, and proof burdens | GitHub wiki | Feature page linked to stories, proof burdens, and issues |
+| Public execution state, bugs, gaps, handoffs, and TODOs | GitHub issues, milestones, and PRs | Issue tagged `needs-investigation`; draft PR linked to milestone |
 
 Completed work belongs in commits.
-Lessons, decisions, and planning state needed for future work belong in memory.
-TODOs and gaps belong in GitHub issues, not repo artifacts.
+Lessons, corrections, decisions, and planning state needed for future work belong in the
+vault. TODOs and gaps belong in GitHub issues, not repo artifacts.
 
 ## Decision Test
 
@@ -163,6 +187,19 @@ Before writing a memory entry, answer all four:
 4. **Is it primarily “what changed” (changelog)?** If yes → commit message, not memory.
 
 All four must pass. If any fails, the entry does not belong in memory.
+
+## Promotion Test
+
+After deciding that a memory is warranted, decide whether memory alone is sufficient.
+Also update GitHub or the wiki when the correction or decision affects:
+
+- public project direction, requirements, user stories, roadmaps, or proof burdens;
+- work that multiple agents, branches, repos, or future PRs must coordinate;
+- observed bugs, inefficiencies, false greens, or follow-up gaps in an owned repo;
+- handoff state that should be auditable without reading the private vault.
+
+Use memory for the reusable lesson and GitHub/wiki for the public project state.
+Do not use memory to hide actionable repo work from the owning repo's issue tracker.
 
 ## Entry Format
 

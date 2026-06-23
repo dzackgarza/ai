@@ -9,4 +9,8 @@ Every project has two audiences: the user, and agents working on the user’s be
 
 **What agents need** is guardrails: process documentation, QC scripts, hooks, anti-gaming measures, slop checks, and diagnostic surfaces. These exist to constrain agent behavior, not to serve the user’s workflow.
 
-These two surfaces must be kept separate. Agent-facing artifacts belong in `.agents/`. The user should never need to see or interact with them.
+These two surfaces must be kept separate. Agent-facing automation belongs in `.agents/`.
+Durable agent knowledge and plans belong in the central `agent-memory` vault; durable
+project doctrine belongs on the wiki; public execution state belongs in GitHub issues,
+milestones, and PRs. The user should never need to inspect `.agents/` to understand the
+project.

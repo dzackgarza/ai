@@ -236,8 +236,15 @@ Use `git add`/`git commit` for checkpoints.
 ## Issues
 
 Most tools in this environment are sourced from repos on the `dzackgarza` Github account.
-If you run into failures or unexpected surprises, stop and ask the user if you should file an issue on the repo.
+Small observed errors, app inefficiencies, tool friction, false greens, and recurring
+surprises in owned repos should become either an immediate fix or a GitHub issue on the
+owning repo.
 Do not file “bugs” for errors that have never actually been observed.
+If the issue is observed, owned, and not fixed in the current coherent work unit, prefer
+filing it over leaving it in chat, a local scratchpad, or memory.
+For ambiguous ownership, broad policy changes, or interruptions outside the user’s scope,
+ask before filing.
+
 For issue creation, triage, labels, assignment, and cross-repo issue work, load
 `git-guidelines`.
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.
@@ -362,12 +369,21 @@ Memories are typed plain-Markdown files in a vault, addressed by key (e.g. `pro
 - **project** — knowledge bound to a single repository via `.agent-memory.toml`.
 
 Memory **types** are `decision`, `trap`, `advice`, `context`, `reference`, and `plan`.
-Use `plan` records for contracts, phase state, queues, residue ledgers, and other planning state that must survive context windows.
+Use `plan` records for every plan, contract, phase state, queue, residue ledger, and
+other planning state that must survive context windows.
+Plans belong in the central vault through `agent-memory`, not as loose repo-local
+Markdown.
 
-**Store:** Stable operational guidance, environment quirks, cross-session execution context, technical findings, decisions that outlive a single task.
+**Store:** Stable operational guidance, environment quirks, cross-session execution
+context, technical findings, corrections that should change future behavior, and
+decisions that outlive a single task.
 
-**Do not store:** Audit trails, changelogs, work summaries.
-Those belong in git.
+**Promote:** If a decision changes public project direction, user stories, proof burdens,
+roadmaps, or cross-agent handoff state, update the owning GitHub issue, milestone, PR, or
+wiki page as well as any needed memory.
+
+**Do not store:** Audit trails, changelogs, work summaries, or live TODO lists.
+Those belong in git or GitHub issues.
 
 **Setup:** use the `uvx` runner for normal invocation and project binding:
 `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory init project --vault <vault>`.
@@ -384,14 +400,16 @@ Use the GitHub `uvx` runner by default:
 uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory --help
 ```
 
-Use it for memory search, retrieval, project binding, doctor checks, and adding typed
-project/global memories. Use a bare `agent-memory` command only after verified setup has
-placed it on `PATH`.
+Use it for memory search, retrieval, project binding, doctor checks, adding typed
+project/global memories, and creating or updating `plan` records. Use a bare
+`agent-memory` command only after verified setup has placed it on `PATH`.
 Prefer `inspect` and `search` before broad filesystem scans of memory vaults.
 
 Store stable operational guidance, environment quirks, cross-session execution context,
-technical findings, and durable decisions.
-Do not store changelogs or audit trails; those belong in git.
+technical findings, durable corrections, durable decisions, and all plan state that must
+survive a context window.
+Do not store changelogs or audit trails; those belong in git. Do not store live TODOs;
+those belong in GitHub issues when they outlive the immediate task.
 
 ## Mutations
 
@@ -461,7 +479,11 @@ message bodies because they trigger shell escaping hazards.
 ## Live User Feedback
 
 When the user asks for a plan, load `plan` and `agent-memory`.
-Plans are durable artifacts, not chat-only outlines.
+Plans are durable artifacts, not chat-only outlines, and must be stored as
+`agent-memory` plan records in the central vault.
+If the plan becomes nontrivial public execution state, load `git-guidelines` and
+`creating-implementation-plans` to promote it into a GitHub issue tree, milestone, or
+draft PR after the user finalizes it.
 
 Never begin implementation from a plan until the user has approved it.
 
@@ -476,7 +498,11 @@ Every project has two audiences: the user, and agents working on the user’s be
 
 **What agents need** is guardrails: process documentation, QC scripts, hooks, anti-gaming measures, slop checks, and diagnostic surfaces. These exist to constrain agent behavior, not to serve the user’s workflow.
 
-These two surfaces must be kept separate. Agent-facing artifacts belong in `.agents/`. The user should never need to see or interact with them.
+These two surfaces must be kept separate. Agent-facing automation belongs in `.agents/`.
+Durable agent knowledge and plans belong in the central `agent-memory` vault; durable
+project doctrine belongs on the wiki; public execution state belongs in GitHub issues,
+milestones, and PRs. The user should never need to inspect `.agents/` to understand the
+project.
 
 ## Project Initialization
 
@@ -484,13 +510,39 @@ At the start of a session in a repository, load `project-initialization` before
 substantive implementation.
 
 That skill owns the normal-form check: git root/freshness, GitHub public state
-(wiki, issues, milestones, and PRs), SDL-MCP registration/indexing when available,
-repo instructions, `.agents/`,
+(wiki, issues, milestones, and PRs), durable state surface classification,
+SDL-MCP registration/indexing when available, repo instructions, `.agents/`,
 agent-memory binding and memory search, `justfile` shape, and `~/ai-review-ci`
 QC/hooks/CI wiring.
 
 If a project is in a mixed state, normalize that state before feature work unless
 the user explicitly asked only for diagnosis or audit.
+
+## Durable State Surfaces
+
+Every project should converge toward one organized state model:
+
+- `agent-memory` central vault: plans, phase state, queues, residue ledgers,
+  durable corrections, reusable decisions, traps, advice, and project context.
+- GitHub wiki: durable long-horizon project knowledge, user stories, feature doctrine,
+  roadmaps, proof burdens, requirements, architecture decisions, and design rationale.
+- GitHub issues, milestones, and PRs: public project organization, external execution
+  state, long-running handoffs, user-visible gaps, accepted work contracts, and
+  auditable progress.
+- `.agents/`: private agent automation, guardrail recipes, diagnostics, hook helpers,
+  and scripts. It is not a durable documentation or planning store.
+- Repo-local scratch files: temporary work surfaces for in-the-weeds investigation only.
+  Before handoff, delete them or promote their durable content to the vault, wiki, or
+  GitHub surface that owns it.
+
+Do not keep the same durable fact authoritative in more than one place.
+When a repo is mixed, classify each local note, plan, TODO, scratchpad, and process doc by
+its durable owner, then migrate or link it instead of letting local residue accumulate.
+
+Small observed errors or inefficiencies in repos this system owns should become either an
+immediate fix or a GitHub issue on the owning repo.
+Do not let repeated surprises, user corrections, tool friction, false greens, or app
+paper cuts remain only in chat, local notes, or memory.
 
 ## GitHub Wiki
 
@@ -560,14 +612,24 @@ Wiki pages may link to those canonical planning artifacts, but they do not repla
 
 ## .agents Directory
 
-Every project root contains a `.agents/` directory. This is the canonical location for agent-facing project artifacts that are not durable memory:
+Every project root contains a `.agents/` directory. This is the canonical location for
+agent-facing project artifacts that are not durable memory or durable documentation:
 
 - **`justfile`** — Agent-facing recipes for QC, debugging, and guardrail enforcement. All recipes are `[private]`.
 - **Scripts** — Hygiene checks, anti-gaming measures, slop detection, hook scripts. Scripts that encode reusable diagnostic surfaces live here, referenced by the private justfile.
 
-Durable operational knowledge and planning state are managed through `agent-memory` and bound by `.agent-memory.toml`; they are not maintained as loose markdown under `.agents/`.
+Durable operational knowledge, corrections, decisions, and planning state are managed
+through `agent-memory` and bound by `.agent-memory.toml`; they are not maintained as loose
+markdown under `.agents/`.
+Durable project doctrine, requirements, user stories, roadmaps, and proof burdens belong
+on the wiki.
+If a local `.agents/` note starts carrying durable guidance, migrate it to the vault,
+wiki, or GitHub issue/PR surface that owns it, then remove or replace the local note with
+a pointer.
 
-Nothing in `.agents/` is user-facing. The top-level `justfile` may route through agent recipes to enforce mandatory measures, but those recipes are `[private]` and invisible to `just --list`.
+Nothing in `.agents/` is user-facing. The top-level `justfile` may route through agent
+recipes to enforce mandatory measures, but those recipes are `[private]` and invisible to
+`just --list`.
 
 ## .agents/justfile
 

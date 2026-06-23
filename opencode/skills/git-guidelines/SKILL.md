@@ -548,6 +548,22 @@ If the user asks to use Jules for review, load:
 
 ## Issue Workflow
 
+### Owned Repo Improvement Loop
+
+For repos owned by this system, observed defects should not remain as chat residue or
+private notes.
+If an app, tool, plugin, QC gate, or agent workflow has a small observed error,
+inefficiency, false green, confusing edge case, or recurring paper cut, do one of these
+before handoff:
+
+- fix it in the current coherent work unit and commit the fix;
+- file a GitHub issue on the owning repo with evidence and concrete expected behavior;
+- if ownership or scope is ambiguous, ask the user where to file it.
+
+Do not file speculative bugs. Do not create issues for vague dissatisfaction without an
+observed example. Do not bury observed owned-repo defects only in memory; memory can note
+the durable lesson, but the actionable project gap belongs on GitHub.
+
 ### Filing Issues
 
 **All issues must be labeled immediately upon creation.**
@@ -610,9 +626,11 @@ Create a local `.md` file for the body and pass it to `gh issue create --body-fi
 
 - `documentation`: Improvements or additions to documentation.
 
-**Mandatory**: If a concrete problem is observed but cannot be fixed trivially in the
-current task, log it as an issue.
-Do not file speculative concerns; frame them as `enhancement` if necessary.
+**Mandatory**: If an observed owned-repo defect, inefficiency, false green, or recurring
+paper cut cannot be fixed in the current coherent work unit, log it as an issue on the
+owning repo.
+Do not file speculative concerns; frame observed improvement ideas as `enhancement` when
+they are not bugs.
 
 ## Common Rationalizations
 

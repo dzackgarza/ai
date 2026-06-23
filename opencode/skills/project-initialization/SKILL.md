@@ -3,9 +3,9 @@ name: project-initialization
 description: >-
   Use at the start of work in any repository, after cloning or switching projects,
   or when a project appears partially set up. Establishes the normal project form:
-  git/remote freshness, SDL-MCP registration/indexing, .agents, agent-memory,
-  justfile, ai-review-ci QC/hooks/CI, and task-relevant memory lookup before
-  implementation.
+  git/remote freshness, GitHub public state, durable surface ownership, SDL-MCP
+  registration/indexing, .agents, agent-memory, justfile, ai-review-ci QC/hooks/CI,
+  and task-relevant memory lookup before implementation.
 ---
 
 # Project Initialization
@@ -127,6 +127,25 @@ Load the repository's own instructions before editing.
   repo-local planning files.
 - If instructions conflict, direct user instructions win; then prefer the most
   local repo instructions over broader AGENTSmd/global skill guidance.
+
+### Durable Surface Convergence
+
+When repo-local docs, scratchpads, plans, TODO files, or agent process notes already
+exist, classify each one by durable owner before relying on it:
+
+- plan, phase state, queue, or residue ledger -> `agent-memory` plan record;
+- correction, trap, reusable decision, or durable agent behavior -> typed memory;
+- user story, requirement, roadmap, feature doctrine, proof burden, or architecture
+  rationale -> wiki;
+- observed bug, inefficiency, gap, public handoff, or follow-up obligation -> GitHub
+  issue, milestone, or PR;
+- private diagnostic recipe, hook helper, or guardrail script -> `.agents/`;
+- temporary investigation notes -> delete before handoff or keep only as an explicitly
+  non-authoritative scratchpad.
+
+Do not normalize by copying the same content into every surface.
+Promote the durable content to its owner, replace local residue with links when a pointer
+is useful, and continue the user's task from the authoritative surface.
 
 ### `.agents/`
 
@@ -258,13 +277,14 @@ Prefer this order:
 
 1. Stabilize git state and freshness.
 2. Inspect GitHub public state when the remote is GitHub-backed.
-3. Register or refresh SDL-MCP context if available/required.
-4. Load repo instructions and task-relevant memories.
-5. Initialize or repair `.agents/` and memory binding.
-6. Normalize `justfile` public/private surfaces.
-7. Delegate QC to `~/ai-review-ci` and install hooks/workflows where appropriate.
-8. Run the smallest proof that the normalized surface works.
-9. Continue the user's original task.
+3. Classify local docs, plans, TODOs, and scratchpads by durable owner.
+4. Register or refresh SDL-MCP context if available/required.
+5. Load repo instructions and task-relevant memories.
+6. Initialize or repair `.agents/` and memory binding.
+7. Normalize `justfile` public/private surfaces.
+8. Delegate QC to `~/ai-review-ci` and install hooks/workflows where appropriate.
+9. Run the smallest proof that the normalized surface works.
+10. Continue the user's original task.
 
 If normalization itself is nontrivial, make it a visible subtask and stop before
 risky migrations. Do not silently turn a feature request into a broad repo
@@ -281,6 +301,7 @@ Project initialization:
 - SDL-MCP: <registered/current/unavailable/not applicable>
 - Instructions: <README/AGENTS/memory surfaces checked>
 - Memory: <initialized? relevant memories searched?>
+- Durable state: <local docs/plans classified? migrations or pointers needed?>
 - Justfile: <present? public surface? global-QC delegation?>
 - QC/hooks/CI: <ai-review-ci scaffold/hooks/workflows status>
 - Blockers or normalization done: <none / list>
