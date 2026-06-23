@@ -113,7 +113,7 @@ too — and the crash ensures that change cannot be ignored.
 is on the ABSENCE of a dependency, not its presence. Dependency-dodging code
 (hand-rolling what a library already provides) must have a strong, explicit,
 auditable justification for remaining in the codebase — recorded as a comment
-at the site or a memory indexed by `iwe`.
+at the site or in `agent-memory`.
 
 **Bespoke tools are GLUE.** A "small tool" / "not a production service" /
 "259-line CLI utility" has almost NO need to reproduce any solved problem,

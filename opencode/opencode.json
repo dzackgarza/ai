@@ -84,13 +84,8 @@
   },
   "mcp": {
     "sdl-mcp": {
-      "type": "local",
-      "command": [
-        "npx",
-        "sdl-mcp@latest",
-        "serve",
-        "--stdio"
-      ]
+      "type": "remote",
+      "url": "http://127.0.0.1:39150/mcp"
     }
   },
   "default_agent": "Interactive",

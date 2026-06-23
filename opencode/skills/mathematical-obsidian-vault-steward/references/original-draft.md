@@ -935,23 +935,6 @@ PDFs or large document collections.
 Treat parsed output as an intermediate source, not as verified truth.
 Keep original documents and compare formulas/figures manually.
 
-### IWE CLI
-
-The `iwe` CLI may be used for Markdown knowledge graph operations such as finding,
-retrieving with context, tree inspection, normalization, extracting sections, inlining
-references, renaming, and graph analysis.
-Use it as a graph/refactoring assistant, not as a license for uncontrolled bulk edits.
-
-Before `iwe normalize` or any command that modifies files in place:
-
-```shell
-git status --short
-git add -A && git commit -m "checkpoint before iwe normalize"
-iwe normalize
-git diff --stat
-git diff
-```
-
 ### Dataview/Bases
 
 Use Dataview or Bases for dashboards, queues, and metadata-driven views.
@@ -1017,7 +1000,7 @@ Required protocol:
 
 1. Define the exact problem and scope.
 
-2. Search candidates with `ripgrep`, Obsidian CLI, or IWE.
+2. Search candidates with `ripgrep`, Obsidian CLI, or controlled scripts.
 
 3. Produce a candidate list and count.
 
@@ -1085,7 +1068,7 @@ Do not delete high-risk sources until review and retirement criteria are satisfi
 ### Tool-blind editing
 
 Bad agents edit Markdown as plain files and break links/properties.
-Prefer Obsidian CLI, IWE, and controlled scripts.
+Prefer Obsidian CLI and controlled scripts.
 
 ### Regex cascade corruption
 
@@ -1304,7 +1287,3 @@ Consult current docs before relying on tool behavior:
 - Dataview docs — https://blacksmithgu.github.io/obsidian-dataview/
 
 - SemTools — https://github.com/run-llama/semtools
-
-- IWE CLI — https://iwe.md/docs/cli/
-
-- IWE normalize — https://iwe.md/docs/cli/normalize/

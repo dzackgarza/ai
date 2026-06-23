@@ -13,7 +13,7 @@ A failed one-shot attempt is raw evidence, not a diagnosis. The hard part is not
 
 If no smaller piece has been attempted and either solved, integrated, or split into a strictly smaller failed leaf with evidence, no hard core has been isolated.
 
-If decomposition may span context or branch, the active path must be externalized in the workflow's canonical state surface before going deeper. Prefer the project-local `iwe` state note when the project uses `iwe`; otherwise use the documented project planning surface. Do not trust the chat transcript or the worker's memory to remember where the leaf came from.
+If decomposition may span context or branch, the active path must be externalized in `agent-memory` before going deeper. Do not trust the chat transcript or the worker's memory to remember where the leaf came from.
 
 ## Residue Gate
 
@@ -31,7 +31,7 @@ Define the current residue: the smallest statement of what remains false in the 
 
 Decompose the residue into smaller subpieces whose outcomes can be observed. Use the natural structure of the work: files, tests, invariants, pages, queue units, proof lemmas, data slices, API boundaries, UI states, review comments, or dependency edges.
 
-Before descending into a subpiece that can outlive the context window, write the active path into the canonical state note or residue ledger: root objective, parent residue, active leaf, open siblings, and what evidence would remove the leaf from its parent. Use the canonical tool for that surface, such as `iwe retrieve` then `iwe update` for project-local `iwe`. This is not optional bookkeeping; it is the only way a resumed worker can climb back to the parent without inventing state.
+Before descending into a subpiece that can outlive the context window, write the active path into the canonical state note or residue ledger: root objective, parent residue, active leaf, open siblings, and what evidence would remove the leaf from its parent. Use the canonical tool for that surface, such as `agent-memory search`, `agent-memory retrieve`, and `agent-memory update` for project memory. This is not optional bookkeeping; it is the only way a resumed worker can climb back to the parent without inventing state.
 
 Attempt one smaller subpiece with the real toolchain, data, proof method, artifact standard, or reviewer standard. Planning the attempt is not an attempt. A useful attempt changes the artifact or produces decisive evidence about that subpiece.
 

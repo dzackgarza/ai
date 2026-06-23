@@ -540,6 +540,12 @@ It should not be a broad memorialization of incidental internal details.
 Regression tests are for unintentional broken behavior (bugs), not for intentional
 design decisions. Intentional feature removals, deprecations, or breaking changes do not
 need regression tests — these are design choices, not defects.
+For bug-fix work, the first proof is end-to-end reproduction of the failing path;
+unit tests should follow and should be derived from the reproduced failure, not replace it.
+For E2E or full-system reproductions, save an evidence bundle in the test artifact directory:
+- a screenshot of the observable failure state and post-repro state,
+- a video or trace of the end-to-end flow when browser tooling supports it, and
+- command/session logs that show the boundary inputs, outputs, and errors.
 
 * * *
 
@@ -621,6 +627,9 @@ If the user-visible interface is a CLI text report, do not prove only an interna
 JSON helper. If the boundary is a real file, service, database, PDF, or model response,
 use representative captured or live data at that boundary rather than an invented
 internal object.
+For E2E or GUI-facing behavior, green proof requires attached evidence artifacts (at least
+one screenshot, one persisted log stream, and one replayable trace or video where
+available).
 
 For persistence claims, use cross-session or cross-process checks when feasible: create
 state through the public boundary, reopen through a separate invocation, and assert the
@@ -758,9 +767,11 @@ Correct response after triage: See `policy-index/references/remediations.md` →
 * * *
 
 ## Verification Rigor
-
 - **FRESH PROOF**: A claim of “tests pass” requires fresh command output from the
   current turn showing 0 failures.
+
+- **REPRO-FIRST**: For bug claims, the end-to-end reproduction must be captured and
+  verified before test-green is treated as proof of correction.
 
 - **RED-GREEN-REVERT**: A regression test is verified only if it fails when the fix is
   removed.

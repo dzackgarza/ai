@@ -79,7 +79,7 @@ Real issues discovered across 15 reviews:
 | SPEC-MAPPING-FORMS | G1 | Source Coverage Ledger missing quadratic_form__local_field_invariants.py |
 | SPEC-MAPPING-TENSOR | G5 | Stale TRIAGE.md reference (file deleted, superseded by decision card) |
 | SPEC-DISCRIMINANTGROUP | G1 | Source rot: theory file deleted in checkpoint commit |
-| SPEC-FORMS-ISOMETRY | G1 | Stale theory path (actual file under .agents/memories/) |
+| SPEC-FORMS-ISOMETRY | G1 | Stale theory path (actual record in agent-memory) |
 | SPEC-FORMS-DIVISIBILITY | G1 | 2 relocated theory file references |
 | PHASE-CAT-OBJECT-SURFACE | G3 | Success criterion 5 lacks explicit child task owner |
 | PHASE-LITERAL-METHOD | G3 | Stray undeclared task artifact in directory |

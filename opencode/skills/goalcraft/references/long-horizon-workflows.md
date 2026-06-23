@@ -23,12 +23,12 @@ Compare witnesses. If the draft witness is satisfied by plan-production, batch-s
 A workflow-backed goal uses the `/goal` as a stable entrypoint and stores volatile context in canonical memory surfaces. The `/goal` text is the stable bootloader; it must recover the game state after context compaction.
 
 **Storage Split**:
-- **Contract, State, Phase, and Residue-Ledger**: Project-local `iwe` notes.
-- **Durable Operational Lessons**: `agent-memory` via `iwe`.
+- **Contract, State, Phase, and Residue-Ledger**: `agent-memory` plan records.
+- **Durable Operational Lessons**: `agent-memory` decision, trap, advice, context, or reference records.
 - **Work History**: Git commits, not narrative summaries.
 - **External Gaps**: GitHub issues, not goal completion criteria.
 
-Use `iwe new` only after `iwe find` fails to locate an existing contract for the same game. A state artifact that cannot be found by the next agent is not durable memory.
+Use `agent-memory search` before creating a new contract for the same game. A state artifact that cannot be found by the next agent is not durable memory.
 
 ## Designing the Minimum Adversarial Envelope (Workflow Pack)
 
@@ -114,7 +114,7 @@ named implementation or migration obligation.
 
 Workflow: this goal text is the stable bootloader. At every continuation, load <pre-retrieval skills named here>, retrieve <state-key/path>, load the contract's always-on skills, read <contract-key/path> when advancing/reviewing/completing, reconcile state with artifacts, load only the active phase doc, load the skills named by that phase/state, and work the current sliver until its evidence/review condition passes.
 
-State surface: use <iwe keys or documented project state paths>. Resume with <retrieval command>. Update state through the canonical tool, not loose files or chat transcript.
+State surface: use <agent-memory keys>. Resume with <agent-memory retrieve command>. Update state through `agent-memory`, not loose files or chat transcript.
 
 Preserve: <scope boundaries and non-regressions>.
 

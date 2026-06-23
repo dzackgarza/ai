@@ -1,15 +1,9 @@
 common:
   sdl-mcp:
-    description: SDL MCP server
-    command: npx
-    args:
-    - -y
-    - sdl-mcp
-    - serve
-    - --stdio
+    description: SDL MCP server (shared HTTP service, systemd --user)
+    type: remote
+    url: http://127.0.0.1:39150/mcp
     enabled: true
-    env:
-      SDL_CONFIG: /home/dzack/ai/mcp/sdlmcp.config.json
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
     command: uv

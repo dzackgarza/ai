@@ -463,12 +463,15 @@ No implementation fix is allowed until the ledger contains:
 - No unresolved contradiction.
 - A causal chain from facts to root cause.
 - A test or proof surface that will fail for the root cause, not merely for absence of the intended fix.
+- A reproducible end-to-end failure artifact (command/input sequence + environment) before any patch is planned.
 
 The fix must change one causal factor.
 Do not bundle refactors, cleanup, formatting-only changes, test rewrites, dependency changes, and behavior changes unless the ledger proves they are the same causal factor.
 
 For user-reported bugs:
 
+- Capture and preserve an end-to-end reproduction command/action sequence before the fix attempt;
+  do not let a unit test be the first proof of the bug.
 - Create the red test or proof surface before fixing when project policy requires it.
 - The test must fail because the bug exists, not because the proposed fix is absent.
 - A mock proves only the mock unless the ledger proves the mock is observing the same boundary as the real failure.

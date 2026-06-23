@@ -68,6 +68,14 @@ If all fields are known, still do not act immediately. State the proposed action
 `Next action` and stop for user confirmation unless the user asked only for an
 evidence-backed explanation.
 
+For bug-fix corrections, this is an additional hard stop:
+
+- Reproduction evidence must be captured before any implementation change.
+- A unit-test pass is not sufficient proof by itself. It can only confirm a behavior
+  after the end-to-end repro is established.
+- If reproduction is unknown, set `Next action` to `investigate-only` and include the
+  exact command/input sequence and environment needed to reproduce.
+
 For explanation-only turns, answer the question from evidence and stop. Do not append
 a fix.
 
@@ -123,6 +131,18 @@ If feedback is closed, resolved, hidden, or made less visible, leave a durable
 human-auditable note explaining why.
 If the platform cannot preserve the note where the user will see it, do not resolve the
 item; report the blocker.
+
+## Correction Memory Rule
+
+For every verified correction related to a bug or failure, add a project memory note
+after the fix is validated.
+
+- The core method is not hand-writing a local notebook: write the lesson to project
+  memory so learning is retained as collective state.
+- Record, at minimum: reproducer command/action, root-cause boundary, the fix applied,
+  and the specific anti-laundering rule that prevented skipping or relabeling.
+- This is deliberate `沉淀` (deposited learning): the project state should get better
+  after each correction.
 
 ## When the user asks “why”
 
