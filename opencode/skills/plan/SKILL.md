@@ -97,6 +97,18 @@ loses the ambient, user-facing outcome entirely. The upward parent pointer keeps
 outcome one hop away at every depth. When you open or resume a child plan, restate the
 parent outcome it serves before working.
 
+**Routing gate (mandatory).** Do not draft a plan body until you have named the tier and
+loaded its reference. The tier reference supplies the work-decomposition body, quality bar,
+and tier-specific guidance; the universal skeleton and policies in this file apply to every
+tier.
+
+- roadmap / strategic → `references/tier-roadmap.md`
+- workstream / organizational → `references/tier-workstream.md`
+- implementation-adjacent → `references/tier-implementation.md`
+
+Additionally load `references/externalization.md` whenever the plan will become a GitHub
+issue tree, PR, or multi-agent tracker — at any tier.
+
 ## Storage and Ownership Lifecycle
 
 File every durable plan as a project-scoped `agent-memory` record with type `plan`.
@@ -147,20 +159,9 @@ Formalize successful behavior after representative traces exist. A plan may requ
 several direct case resolutions before it can honestly define stable categories, proof
 burdens, or reusable workflow machinery.
 
-Coalescing is not classifying. Grouping a heterogeneous set into typed workstreams — a
-count, a shared remediation shape, and shared acceptance — is the correct organizational
-move and is exactly what a feedback-driven plan must do. What is banned is encoding the
-per-item interpretive decision into a classifier, schema, or state machine so the agent
-never has to read the item again. Coalesce to the workstream; leave item-level judgment to
-execution.
-
-When the hard part of a task is intelligent judgment, the implementation is often an agent
-pass with a loose, open-ended prompt and a freeform prose ledger, not deterministic control
-flow. Plan toward that: state the problem, the criteria, and the output shape, then let the
-agent reason. Do not cage judgment an agent should perform inside rules, scoring tables,
-exact-match pipelines, certificates, or schemas. For these tasks the real planning work is
-eliciting and freezing the user's domain criteria up front — the per-type "good enough"
-rules, preferences, and tie-breakers — and that is the deliverable, not a workflow engine.
+The detailed application of this gate to feedback-driven and judgment-heavy work —
+coalescing into typed workstreams, criteria elicitation, and implementing through an
+intelligent pass rather than deterministic machinery — lives in `references/tier-workstream.md`.
 
 ### Proportionality and Surface Placement
 
@@ -206,7 +207,8 @@ repo can show the real surface.
 
 ## Plan Structure
 
-Use this structure unless the user or repo supplies a stricter one:
+Every plan shares the skeleton below. Your tier reference (loaded at the routing gate)
+supplies the work-decomposition body that fills the `<Work decomposition>` slot.
 
 ```markdown
 # <Plan Title>
@@ -242,28 +244,10 @@ Use this structure unless the user or repo supplies a stricter one:
 - Integration points:
 - Handoff contracts:
 
-## Milestones
-### <Milestone name>
-- Result:
-- Dependencies:
-- Acceptance:
-- Verification:
-- Stop conditions:
-
-## Task Plan
-### <Task name>
-- Obligation served:
-- Files:
-- Preconditions:
-- Change:
-- Acceptance criteria:
-- Proof / verification:
-- Commit boundary:
-
-## System-Level Validation
-- Real boundary checks:
-- Regression checks:
-- Review or artifact checks:
+## <Work decomposition — supplied by your tier reference>
+- roadmap -> Milestones
+- workstream -> Workstreams
+- implementation-adjacent -> Task Plan + System-Level Validation
 
 ## Risks / Recovery / Stop Rules
 - Risks:
@@ -292,37 +276,9 @@ Use this structure unless the user or repo supplies a stricter one:
 - <date>: <what changed in this plan and why>
 ```
 
-Use the sections your tier needs, not all of them. A roadmap-tier plan stops at Purpose,
-Scope, Invariants, Execution Graph, and Milestones, and carries no Task Plan. A
-workstream-tier plan replaces a granular Task Plan with typed workstreams. Reserve the full
-Task Plan, with its file- and commit-level detail, for the implementation-adjacent tier —
-and only when the leaf is written as an artifact at all.
-
-## Task Quality
-
-Every nontrivial task must answer:
-
-- **Where:** exact file, module, command, route, artifact, or external surface.
-- **What:** the concrete state change, not a vague action verb.
-- **Why:** the obligation or milestone it serves.
-- **Before:** dependencies and inputs that must already exist.
-- **Done:** observable acceptance criteria.
-- **Proof:** command, test, artifact, diff, or inspection that would fail if the work were
-  wrong.
-- **Commit:** the smallest coherent checkpoint boundary.
-
-Scale this to the tier. At the implementation-adjacent tier these fields are exact. Above
-it, **Where** and **What** name the endpoint and observable result, not the diff or the
-lines to touch; the exactness lives in **Done** and **Proof**, which must still be sharp
-enough to score a result. For judgment tasks, **What** is the problem statement, criteria,
-and output shape handed to an intelligent pass — not a control-flow specification.
-
-For code tasks, include the TDD or reproducer sequence when applicable: write or identify
-the failing proof, confirm it fails for the intended reason, implement narrowly, rerun the
-same proof, then run the relevant system gate.
-
-Tasks should be assignment-sized: small enough for a focused implementation pass, but not
-so small that they track typing, file touching, classification, or environment trivia.
+A roadmap plan fills the slot with Milestones; a workstream plan with typed Workstreams; an
+implementation-adjacent plan with a Task Plan and System-Level Validation. Use only the
+skeleton sections your tier needs.
 
 ## Language and Referents
 
@@ -347,120 +303,6 @@ The same defect has a high-altitude form: a Purpose, milestone, or invariant tha
 weighty but rules nothing out ("build a robust system for X"). Judge every altitude by what
 it constrains, not by how serious it sounds. A Purpose or milestone that no implementation
 could violate is not direction; it is decoration.
-
-## Milestones and Execution Graph
-
-Milestones describe delivered capability or restored correctness. The progress checklist
-tracks granular execution. Keep them separate.
-
-A milestone must state:
-
-- the result that will exist at the end;
-- what it blocks or depends on;
-- which work can happen in parallel;
-- how integration is verified;
-- what observable evidence proves it is complete.
-
-Use a prototyping milestone when requirements depend on unknown library, runtime, UI,
-API, or proof behavior. A prototype must be additive, bounded, and tied to a promotion or
-discard decision.
-
-Use parallel workstreams only when their interfaces are explicit. State what each stream
-produces, consumes, and must preserve for integration.
-
-## Transformation-Ready Source Plans
-
-When a plan may become a GitHub epic, issue tree, PR body, multi-agent tracker, or
-handoff, write it so conversion is a lossless projection without semantic invention.
-
-Start from user stories and user-observable outcomes, and derive milestones,
-dependencies, and acceptance criteria from those stories. A projection may add execution
-metadata: owner, branch, status, blocker, commit, run, artifact, review link, and GitHub
-formatting. It must not add, delete, demote, or reinterpret the milestone, scope,
-baseline, vocabulary, execution graph, obligations, tasks, handoffs, integration duties,
-proof burdens, or review prerequisites.
-
-Before conversion, the plan must fix:
-
-- externally meaningful milestone, finite scope, exclusions, preserved behavior, and
-  observable completion state;
-- stable vocabulary and complete referents. A future reader should not need transcript
-  context, test mnemonics, issue numbers, file names, or agent scratchpads to know what
-  the plan means;
-- stacked foundations, parallel lanes, handoff contracts, and integration obligations;
-- every obligation's actor, trigger or context, intended result, acceptance criteria,
-  proof burden, dependencies, and supplied artifacts;
-- which finalized milestones, workstreams, or obligations should become issues linked
-  under the epic, using native sub-issues only when supported;
-- proof design before implementation assessment.
-
-Do not let test IDs, commands, filenames, commits, labels, green checks, or artifact names
-stand in for obligations. They are evidence or automation only when attached to a declared
-criterion.
-
-If source material is scattered across plans, scratchpads, transcripts, comments, or run
-notes, consolidate propositions by semantic role before writing the public plan. Preserve
-valid meaning, dependencies, obligations, and proof burdens. Do not inherit wording,
-checkboxes, duplicate status, or private identifiers as public truth.
-
-Classify each proposition before consolidation:
-
-- governing intent: milestone, scope, behavior, constraints, or acceptance criteria;
-- work decomposition: substantive transformations, dependencies, lanes, handoffs, or
-  integration work;
-- scratchpad observation: symptom, command result, hypothesis, local TODO, or provisional
-  idea;
-- current execution state: ownership, branch, blocker, or completion claim that must be
-  verified current before use;
-- evidence material: output, screenshot, artifact, log, CI run, or report that must map
-  to a named criterion;
-- policy or automation: global review, proof, environment, or enforcement behavior that
-  belongs in skills, CI, rulesets, or repository settings;
-- residue: obsolete alternatives, raw commands, duplicated reminders, private reasoning,
-  and notes with no continuing coordination or evidentiary value.
-
-When sources disagree, do not use latest-file-wins, most-detailed-text-wins, or
-most-confident-language-wins. Identify the conflicting propositions, distinguish intended
-behavior from implementation state and hypothesis, resolve the contradiction in the
-source plan, and publish only the coherent current obligation.
-
-Normalize propositions, not prose blocks. Split paragraphs that mix obligations,
-hypotheses, commands, and status claims. Expand internal referents, keep internal IDs only
-as aliases, and convert micro-actions into their substantive parent. Do not inherit
-checkmarks; re-evaluate old local status against current acceptance criteria, and count
-repeated claims once.
-
-Stop and repair the source plan when conversion would require inventing scope, user
-behavior, acceptance criteria, proof burdens, dependency order, ownership, unresolved
-architecture decisions, or a reconciliation choice among contradictory source claims.
-
-## Plan to Issue Tree to PR
-
-Interactive planning is allowed to be a roadmap while the decomposition is still being
-discovered. The issue hierarchy is created after the user finalizes the plan, not before
-the plan has a stable semantic shape.
-
-For nontrivial implementation work, use this externalization sequence:
-
-1. Create or update the vault-owned `agent-memory` plan record.
-2. Finalize the plan with the user.
-3. Create or update a parent GitHub issue that acts as the epic.
-4. Create or attach child issues for the top-level milestones, foundations, workstreams,
-   or independently reviewable obligations. Use native sub-issues when the active GitHub
-   surface supports them; otherwise link the child issues from the epic body as a task
-   list.
-5. Verify the issue tree preserves the finalized plan's scope, dependencies,
-   acceptance criteria, and proof burdens.
-6. Draft implementation PRs from that issue tree. Each top-level PR checklist item must
-   link to the relevant issue unless the PR is genuinely trivial.
-
-The issue tree becomes the external tracking source. Local plan files and scratchpads may
-explain how the tree was derived, but they must not remain the authoritative tracker once
-GitHub issues exist.
-
-Do not use issue creation as a substitute for planning. If the issue tree cannot be
-created without adding new scope, choosing between unresolved alternatives, or weakening a
-proof burden, return to planning.
 
 ## Living-Document Discipline
 
@@ -496,7 +338,7 @@ Before saving or handing off a plan, verify:
   plausible broken implementation.
 - **Restartability:** another agent can resume from the plan alone.
 - **Externalization readiness:** if the plan will be projected into a GitHub issue tree
-  and PR, no semantic invention is needed.
+  and PR, no semantic invention is needed (see `references/externalization.md`).
 - **Projection integrity:** translation causes no semantic loss, invention, demotion, or
   proxy promotion; stacked, parallel, handoff, and integration structure stays explicit.
 - **Evidence discrimination:** proof design distinguishes provenance, execution,
@@ -554,6 +396,19 @@ review surface on demand:
 
 The review page is not a standing service. Create it only for the requested plan-review
 turn.
+
+## References
+
+Load on demand after the routing gate:
+
+- `references/tier-roadmap.md` — roadmap / strategic plans: phases, invariants, milestones,
+  user stories, child-plan spawning.
+- `references/tier-workstream.md` — workstream / organizational plans: coalescing gathered
+  feedback or item sets into typed workstreams; criteria elicitation; intelligent-pass
+  implementation.
+- `references/tier-implementation.md` — implementation-adjacent plans: rubric calibration,
+  task plan, task quality, system-level validation.
+- `references/externalization.md` — converting any plan into a GitHub issue tree and PRs.
 
 ## Related Skills
 
