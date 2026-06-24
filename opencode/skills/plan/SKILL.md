@@ -49,11 +49,53 @@ A valid plan must:
 - identify canonical source material and required repo/runtime evidence;
 - order work by real dependencies rather than convenient checklist order;
 - attach every substantive task to an obligation, acceptance criterion, and proof burden;
-- name exact files, commands, expected observations, and stop conditions;
+- make acceptance and proof exact enough to score a result — name the commands, expected
+  observations, and stop conditions that would fail a wrong implementation — without
+  prescribing the implementation diff (see Plan Tier and the Plan Tree);
 - stay current as execution proceeds.
 
 If a plan leaves the implementer to decide the milestone, scope, dependency graph,
 acceptance criteria, or proof burden, the plan is not ready.
+
+## Plan Tier and the Plan Tree
+
+There is no single plan shape. A plan is a node in a tree of plans, and its tier sets how
+tight it should be. Decide the tier first; do not slide into implementation research just
+to produce the plan.
+
+**Tiers (rough and flexible, not a rigid ladder):**
+
+- **Roadmap / strategic.** Defines phases, invariants, user stories, and outcomes. Carries
+  no task-level detail. Its job is to name the phases and mark which are complex enough to
+  spawn their own child plan.
+- **Workstream / organizational.** Takes real requirements, feedback, or a heterogeneous
+  item set and coalesces it into *typed workstreams*: a count, a shared remediation shape,
+  and shared acceptance ("15 items are book sections to migrate to an ambient book with a
+  real Zotero book-section sub-item"). It defers per-item judgment to execution. Resolving
+  every item's disposition inside the plan is doing the implementer's research, and a plan
+  that never forces you to read the gathered feedback has failed at this tier.
+- **Implementation-adjacent.** A scoring rubric for one coherent piece of work: endpoint,
+  constraints, acceptance, proof. Loose on mechanism. Often a *leaf that is not written as
+  an artifact at all* — when the parent constrains the endpoint enough, the implementer's
+  own internal planning covers it, and a written leaf only steps on their toes while
+  tracking nothing more auditable than the resulting commits.
+
+**Calibration — rubric, not leash.** A plan is tight enough to (1) tell an implementer
+roughly what the right endpoint is and (2) serve as a diagnostic rubric that could rank
+several independent implementations of it — and loose enough that many implementations
+satisfy it. Prescribing the exact line edits is an anti-pattern: strong implementers make
+that micro-plan internally, and the diff is no more auditable than the commits and PRs.
+Spend tightness on outcomes, criteria, and invariants, not on mechanism.
+
+**The tree.** Every plan declares its parent plan key (or marks itself root / user-facing).
+A high-tier plan marks each phase too complex to expand inline as one that must spawn its
+own child plan. Store the whole tree as keyed `agent-memory` plan records so parent and
+child links live in one place.
+
+The tree exists to stop the most common drift: an agent descends into a sub-sub-plan and
+loses the ambient, user-facing outcome entirely. The upward parent pointer keeps that
+outcome one hop away at every depth. When you open or resume a child plan, restate the
+parent outcome it serves before working.
 
 ## Storage and Ownership Lifecycle
 
@@ -105,6 +147,21 @@ Formalize successful behavior after representative traces exist. A plan may requ
 several direct case resolutions before it can honestly define stable categories, proof
 burdens, or reusable workflow machinery.
 
+Coalescing is not classifying. Grouping a heterogeneous set into typed workstreams — a
+count, a shared remediation shape, and shared acceptance — is the correct organizational
+move and is exactly what a feedback-driven plan must do. What is banned is encoding the
+per-item interpretive decision into a classifier, schema, or state machine so the agent
+never has to read the item again. Coalesce to the workstream; leave item-level judgment to
+execution.
+
+When the hard part of a task is intelligent judgment, the implementation is often an agent
+pass with a loose, open-ended prompt and a freeform prose ledger, not deterministic control
+flow. Plan toward that: state the problem, the criteria, and the output shape, then let the
+agent reason. Do not cage judgment an agent should perform inside rules, scoring tables,
+exact-match pipelines, certificates, or schemas. For these tasks the real planning work is
+eliciting and freezing the user's domain criteria up front — the per-type "good enough"
+rules, preferences, and tie-breakers — and that is the deliverable, not a workflow engine.
+
 ### Proportionality and Surface Placement
 
 The Plan Fit Gate is where disproportionate machinery is cheapest to prevent. Agent
@@ -139,7 +196,10 @@ Before drafting tasks:
 - identify canonical source files and damaged derivatives;
 - confirm whether the work is recovery, implementation, migration, documentation, or
   review-track preparation;
-- ask only questions that block a concrete plan decision.
+- ask only questions that block a concrete plan decision. For judgment-heavy work the
+  criteria are themselves a blocking decision: elicit the user's per-type standards,
+  preferences, and tie-breakers before drafting, because a plan that invents them licenses
+  fresh subagents to reinvent requirements mid-task.
 
 Do not start from expected filenames, remembered commands, or generic templates when the
 repo can show the real surface.
@@ -151,6 +211,9 @@ Use this structure unless the user or repo supplies a stricter one:
 ```markdown
 # <Plan Title>
 
+> Tier: <roadmap | workstream | implementation-adjacent>
+> Parent plan: <agent-memory key, or "root / user-facing">
+
 ## Purpose / Observable Result
 - What someone can do or verify after this work:
 - Why the current state is insufficient:
@@ -161,6 +224,10 @@ Use this structure unless the user or repo supplies a stricter one:
 - Excluded:
 - Preserved behavior:
 - Constraints and prohibitions:
+
+## Invariants
+- Properties that must hold throughout and after the work (constrain outcomes without
+  dictating implementation):
 
 ## Sources and Current State
 - Canonical sources:
@@ -225,6 +292,12 @@ Use this structure unless the user or repo supplies a stricter one:
 - <date>: <what changed in this plan and why>
 ```
 
+Use the sections your tier needs, not all of them. A roadmap-tier plan stops at Purpose,
+Scope, Invariants, Execution Graph, and Milestones, and carries no Task Plan. A
+workstream-tier plan replaces a granular Task Plan with typed workstreams. Reserve the full
+Task Plan, with its file- and commit-level detail, for the implementation-adjacent tier —
+and only when the leaf is written as an artifact at all.
+
 ## Task Quality
 
 Every nontrivial task must answer:
@@ -237,6 +310,12 @@ Every nontrivial task must answer:
 - **Proof:** command, test, artifact, diff, or inspection that would fail if the work were
   wrong.
 - **Commit:** the smallest coherent checkpoint boundary.
+
+Scale this to the tier. At the implementation-adjacent tier these fields are exact. Above
+it, **Where** and **What** name the endpoint and observable result, not the diff or the
+lines to touch; the exactness lives in **Done** and **Proof**, which must still be sharp
+enough to score a result. For judgment tasks, **What** is the problem statement, criteria,
+and output shape handed to an intelligent pass — not a control-flow specification.
 
 For code tasks, include the TDD or reproducer sequence when applicable: write or identify
 the failing proof, confirm it fails for the intended reason, implement narrowly, rerun the
@@ -263,6 +342,11 @@ Tooling and environment steps belong in the proof path, not as standalone progre
 unless the shared artifact or external precondition is itself reviewer-relevant. "Ensure
 Playwright is installed" is normally subsumed by the proof task that uses Playwright; the
 plan item is the boundary behavior being proven and the admissible evidence for it.
+
+The same defect has a high-altitude form: a Purpose, milestone, or invariant that sounds
+weighty but rules nothing out ("build a robust system for X"). Judge every altitude by what
+it constrains, not by how serious it sounds. A Purpose or milestone that no implementation
+could violate is not direction; it is decoration.
 
 ## Milestones and Execution Graph
 
@@ -398,10 +482,14 @@ comments, and green checks are not completion unless they satisfy the declared o
 
 Before saving or handing off a plan, verify:
 
+- **Tier and tree placement:** the plan declares its tier and parent (or root), tightness
+  matches the tier, and any phase too complex to expand inline is marked to spawn a child
+  plan rather than being prescribed down to the diff.
 - **Completeness:** goal, scope, exclusions, preserved behavior, dependencies, risks, and
   stop rules are explicit.
-- **Actionability:** tasks name exact files or surfaces, preconditions, changes,
-  acceptance, proof, and commit boundaries.
+- **Actionability:** at the implementation-adjacent tier, tasks name exact files or
+  surfaces, preconditions, changes, acceptance, proof, and commit boundaries; higher tiers
+  name endpoints, workstreams, and acceptance instead of diffs.
 - **Design sense:** the approach follows repo patterns, removes avoidable duplication,
   and does not introduce fallback or compatibility shims as a substitute for correctness.
 - **Proof quality:** validation happens at the real use boundary and would fail on a
@@ -437,6 +525,12 @@ Before saving or handing off a plan, verify:
 | Premature institution | Plan invents roles, owners, gates, or doctrine before actors or a demonstrated failure exist | Plan controls only against a demonstrated failure mode, using the simplest standard mechanism |
 | Status in the product | Plan routes ephemeral status, MVP state, or roadmap into a README or user-facing doc | Keep work state in the plan record, issues, and milestones; keep docs task-facing |
 | Bespoke-over-standard | Plan designs a custom system where a database, git, PR review, or issues already fit | Justify any bespoke mechanism against the standard tool it replaces, or use the standard tool |
+| Line-edit leash | Plan prescribes the exact diff or files to touch, doing the implementer's job and tracking nothing more auditable than the commits | Constrain the endpoint and acceptance as a rubric; leave the mechanism to the implementer |
+| Feedback-blind plan | A plan so high-level it could run without ever consulting the gathered feedback, licensing reinvention on fresh context | Coalesce the actual feedback into typed workstreams with counts, shared shape, and shared acceptance |
+| Orphan plan | Plan has no parent pointer, so a deep sub-plan loses the user-facing outcome | Declare the parent plan key or mark the plan root; restate the parent outcome on resume |
+| Materialized leaf | Writing a leaf plan artifact the parent already constrains | Do not write it; let the implementer plan internally and score against the parent rubric |
+| Deterministic cage | A judgment task is encoded into rules, scoring tables, exact-match pipelines, certificates, or schemas | Hand judgment to an intelligent agent pass with a loose prompt and a freeform ledger; freeze only the user's criteria |
+| Aspirational framing | A Purpose, milestone, or invariant that sounds like a mission statement and rules nothing out | Judge every altitude by what it constrains; state the observable boundary, not the ambition |
 
 ## Interaction Style
 
