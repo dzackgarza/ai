@@ -102,6 +102,13 @@ Load the relevant section for your context:
   leakage, control-payload inversion, circular doctrine, and reviewer frame capture.
   (15 items)
 
+- **Agent cognitive-distortion index** —
+  [references/agent-distortion-index.md](references/agent-distortion-index.md) Compact
+  shorthand (R/T/L/O/C/V codes) for the distortions that produce slop in documents, plans,
+  schemas, and project structure, plus the reviewer-infection failure modes to watch for in
+  your own analysis. Use the codes to label findings; keep report vocabulary neutral.
+  (60 codes + composite clusters)
+
 ### Structural and Behavioral Observations
 
 - **Structural and optimization failures** —

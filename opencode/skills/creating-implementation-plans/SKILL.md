@@ -81,6 +81,30 @@ Formalize successful behavior after representative traces exist. A plan may requ
 several direct case resolutions before it can honestly define stable categories, proof
 burdens, or reusable workflow machinery.
 
+### Proportionality and Surface Placement
+
+The Plan Fit Gate is where disproportionate machinery is cheapest to prevent. Agent
+planning drifts toward inventing classification systems, governance, roles, and gates
+before there is a demonstrated failure mode or an organization to need them. Apply three
+checks before a plan proposes structure:
+
+- **A control earns its place only against a demonstrated failure mode, and only as the
+  simplest standard mechanism for it.** Prefer the machinery society has already
+  internalized — databases, git, pull requests, issues, milestones, ordinary access
+  control, citations, hashes — over a bespoke symbolic framework. Plan a custom gate,
+  status system, taxonomy, or doctrine only when a standard tool demonstrably fails the
+  specific risk. See `bespoke-software-policy` → **Proportionality: Earned vs. Manufactured
+  Complexity**.
+- **Do not plan institutions before they exist.** Roles, stewards, owners, councils,
+  approval tiers, and separation-of-duty rules are not planning placeholders. Plan them
+  when there are real actors to fill them and a real boundary they enforce, not as
+  front-loaded structure.
+- **Place state on the surface that owns it.** Ephemeral status, current-MVP plans,
+  roadmaps, and work state belong in `agent-memory` plan records, GitHub issues,
+  milestones, and PRs — never dumped into a README or user-facing doc, which would require
+  constant babysitting and staleness review. The plan's own living state stays in the plan
+  record, not in the product's documentation.
+
 ## Required Discovery
 
 Before drafting tasks:
@@ -381,6 +405,9 @@ Before saving or handing off a plan, verify:
 | Chat-only plan | Work cannot survive context rollover | Save a durable plan artifact through the active plan/memory workflow |
 | Frozen plan | Discoveries and decisions leave the artifact stale | Update progress, discoveries, decisions, and revision notes |
 | Implementation-defined success | Code determines its own acceptance after the fact | Lock acceptance and proof before implementation |
+| Premature institution | Plan invents roles, owners, gates, or doctrine before actors or a demonstrated failure exist | Plan controls only against a demonstrated failure mode, using the simplest standard mechanism |
+| Status in the product | Plan routes ephemeral status, MVP state, or roadmap into a README or user-facing doc | Keep work state in the plan record, issues, and milestones; keep docs task-facing |
+| Bespoke-over-standard | Plan designs a custom system where a database, git, PR review, or issues already fit | Justify any bespoke mechanism against the standard tool it replaces, or use the standard tool |
 
 ## Related Skills
 

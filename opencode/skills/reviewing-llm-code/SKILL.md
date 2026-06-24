@@ -409,6 +409,42 @@ That IS the finding.
 
 **This is the difference between a linter report and an agent-failure audit.** A linter says "this line could be shorter." This audit says "this line should never have been written, and the fact that it exists proves the agent did not search for an existing solution."
 
+## Reviewing Documents and Project Structure
+
+The Idiot Test above is tuned for owned code. Agent-generated **documents** (READMEs,
+architecture docs, roadmaps, schemas, prompts) and **project structure** (directory
+layouts, status systems, governance) carry their own slop, often with clean prose and
+clean code around it. Two posture rules apply before any finding:
+
+- **Establish external reality before adopting the artifact's vocabulary.** Do not review
+  a project's preferred documentation on its own terms; start from what runs, what data
+  exists, and what a user receives. Reviewers get captured by an internally coherent frame
+  (`V1`–`V9` in
+  [llm-failure-modes/references/agent-distortion-index.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/references/agent-distortion-index.md)).
+  Keep findings in ordinary engineering language.
+- **Reconcile bespoke constructs against the standard alternative, not on their own terms.**
+  The capturing question is "is this gate matrix / status system / ownership model well
+  designed?" The grounding question is "which observable workflow requires this instead of
+  ordinary validation, git, PR review, issues, or access control?" The bespoke construct
+  carries the burden of proof for departing from standard practice.
+
+The concrete patterns are catalogued, not duplicated here:
+
+- Document patterns and forcing questions:
+  [llm-failure-modes/documentation-failures.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/documentation-failures.md)
+  and the `PRIVATE-ONTOLOGY` / `CONTROL-PAYLOAD-INVERSION` / `DISCLOSURE-AS-REPAIR` /
+  `CIRCULAR-DOCTRINE` / `FRAME-CAPTURE-REVIEW` entries in
+  [references/pattern-catalog.md](references/pattern-catalog.md).
+- Project-structure tells (empty-stub sprawl, classification baked into the filesystem,
+  control plane larger than payload): `anti-slop` →
+  **Structural and Organizational Slop (Project-Level)**.
+- The proportionality rule that prevents false-positiving intentional bespoke complexity:
+  `bespoke-software-policy` → **Proportionality: Earned vs. Manufactured Complexity**.
+
+When a document's or structure's whole frame is contaminated, do not propose in-place
+edits as the fix — route to `fixing-slop` →
+**Contaminated Artifacts Cannot Be Repaired In Place**.
+
 ## Review Procedure
 
 Read the artifacts in this order:

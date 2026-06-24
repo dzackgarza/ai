@@ -145,6 +145,49 @@ A review-driven slop fix must be written as a first-principles spec and implemen
 an independent subagent or fresh context. The spec must not expose the reviewer’s exact
 suggested fix.
 
+## Contaminated Artifacts Cannot Be Repaired In Place
+
+Some slop is not a localized defect inside an otherwise sound artifact — the artifact's
+**entire frame** is contaminated. This is common in agent-generated prose artifacts:
+READMEs, architecture docs, roadmaps, schemas, and prompts that have accreted private
+ontology, correction history, invented institutions, or governance machinery
+disproportionate to the work. See
+[llm-failure-modes/documentation-failures.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/documentation-failures.md)
+and the `L10`/`C9`/`T8` codes in
+[llm-failure-modes/references/agent-distortion-index.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/references/agent-distortion-index.md).
+
+**An agent holding the contaminated artifact and its correction history in context cannot
+cleanly repair it.** It reads the existing material as gospel (treats generated residue as
+a requirement), and every correction it receives gets written *into* the artifact rather
+than fixing the process that produced it. In-place editing reseeds the same slop in
+cleaner prose. Agents do reliable greenfield work and unreliable brownfield work, so the
+only safe repair is to **force the brownfield job to look like a greenfield job**:
+
+1. **Encode the standard.** The skill that owns the artifact type must already state what
+   a correct and an incorrect such artifact looks like (`writing-readmes`,
+   `writing-documentation`, the plan skills, etc.). This is the priming, not the
+   contaminated artifact.
+2. **Adversarial requirement extraction (fresh agent).** A fresh agent, primed on the
+   owning skill and *not* carrying the correction history, audits the contaminated
+   artifact and extracts only the real, externally-verifiable, user-facing requirements
+   and surviving facts. It must verify each surviving claim against inspected reality
+   (code, data, command output, external sources), not against other generated documents.
+   Anything that cannot be grounded is dropped, not relabeled.
+3. **Greenfield rebuild (separate fresh agent).** A second fresh agent, primed the same
+   way and given only the extracted requirements — never the original artifact or the
+   reviewer's framing — produces the replacement from scratch.
+4. **Independent review pass.** Review the rebuild against the owning skill and the
+   extracted requirements.
+
+Do not skip to step 3 by handing an agent the old artifact and asking it to "rewrite this
+properly." That is brownfield work wearing a greenfield label, and it reinfects.
+
+This protocol is the correct disposition for the **mold-on-bread** case in the Blast
+Radius Rule: when the visible artifact is a sample of a contaminated production process,
+you throw out the loaf and rebake from sound ingredients — you do not scrape the mold off.
+The delegation mechanics (two fresh subagents, no shared contaminated context) live in
+[subagent-delegation](file:///home/dzack/ai/opencode/skills/subagent-delegation/SKILL.md).
+
 ## Cross-References
 
 - **`anti-slop/references/code-patterns.md`** → **Honest-Label Laundering** — The specific detection heuristics for renaming/relabeling.

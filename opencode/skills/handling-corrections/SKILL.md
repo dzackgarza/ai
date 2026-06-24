@@ -66,6 +66,34 @@ changes about the required action, source search, interpretation, or proof burde
 normalize or route it only if normalization helps execute the change. Human feedback is
 not infallible: verify according to consequence before committing irreversible state.
 
+## Do Not Write the Correction Into the Corrected Artifact
+
+A correction is feedback about your future behavior. It is not content for the artifact
+you are correcting.
+
+When told "X is wrong in this document/code/plan," the failure mode is to *document that
+X was wrong* — add a disclaimer, a "note", a status caveat, a "this is not authoritative"
+sentence, or a correction-history entry — instead of removing X and producing the correct
+artifact. This embeds the supervision history into the product. Over many corrections the
+artifact becomes a record of the agent's mistakes rather than a useful object, and the
+disclaimers are themselves new defects.
+
+- "The README should not contain volatile status." Wrong fix: add a README sentence saying
+  status lives elsewhere. Correct fix: remove the volatile status and say nothing.
+- "This function's parameter is unused." Wrong fix: add a comment explaining it is legacy.
+  Correct fix: remove the parameter.
+
+If you notice that corrections are accreting on one artifact — each one answered by another
+caveat, label, or note — stop patching. That accretion is itself the signal that the
+artifact's frame is contaminated and that an in-context repair will keep reseeding the
+problem. Route to the **Contaminated Artifacts Cannot Be Repaired In Place** protocol in
+[fixing-slop](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md): a fresh agent
+extracts the real requirements, a separate fresh agent rebuilds greenfield. You, holding
+the correction history, are the wrong context to do that repair.
+
+This is `T7 Correction-to-Content Transduction` and `L8 Correction Fossilization` in
+[llm-failure-modes/references/agent-distortion-index.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/references/agent-distortion-index.md).
+
 ## Correction-Routing Turn
 
 On the next assistant turn after any correction, challenge, or "why" question, produce
@@ -203,3 +231,4 @@ The user’s response to your answer may change the intended action entirely.
 | “Reverting is the safe undo” | `git restore` and `git checkout` are destructive in noisy repos |
 | “I should fix it right now while I understand it” | Understanding is not authorization. Get the user’s sign-off. |
 | “I'll rename it so the label is honest” | The correction was about the artifact's **existence**, not its labeling. Renaming fraudulent code so it honestly describes its own fraudulence is **honest-label laundering**: consuming the critique while leaving the defect intact. See `anti-slop/references/code-patterns.md` → **Honest-Label Laundering**. |
+| “I'll add a note explaining the problem so the reader is warned” | Documenting that X is wrong is not fixing X. A disclaimer inside the artifact embeds the correction history into the product and adds a new defect. Remove X. See **Do Not Write the Correction Into the Corrected Artifact** above. |

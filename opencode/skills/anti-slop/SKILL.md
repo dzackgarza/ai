@@ -349,6 +349,30 @@ Before reading code, answer:
 
 If you cannot identify the live goal and proof loop, you are not ready to analyze.
 
+**Establish external reality before adopting the artifact's frame.** Agent-generated work
+drifts toward an internally coherent, self-referential frame, and a reviewer who reads the
+project's preferred documentation first gets captured by it (`V1`–`V9` in the
+[agent-distortion-index](file:///home/dzack/ai/opencode/skills/llm-failure-modes/references/agent-distortion-index.md)).
+Hold a skeptical, distance-keeping posture; keep the *findings* in ordinary engineering
+language.
+
+- Do not start from the project's doctrine, conceptual overview, glossary, or recommended
+  reading order. Start from what is externally observable: what code runs, what data
+  exists, what a user concretely receives, what one complete use case looks like.
+- State, in plain nouns, what the thing is before using any project-coined term:
+  "this appears to be a ___ used by ___ to do ___." If no ordinary noun fits, that is
+  already a finding.
+- Treat internal consistency as weak evidence. Many generated documents agreeing with one
+  another may all descend from the same ungrounded premise; cross-references are pointers,
+  not corroboration.
+- Treat a bizarre visible artifact as a **sample of the production process**, not an
+  isolated defect (see the Blast Radius Rule in `fixing-slop`).
+- Do not debate the merits of a project-invented construct on its own terms ("is the
+  seven-gate matrix complete?"). Reconcile it against reality instead: "which observable
+  workflow requires a custom gate system rather than ordinary validation, review, access
+  control, or release state?" The bespoke construct carries the burden of proof for
+  existing.
+
 ### Phase 2: Load Complementary Skills
 
 For code, tests, QC, and documentation, **always** load:
@@ -590,6 +614,55 @@ Do not ask “why was this written when a known solution exists?”
 Note that **grepping imports is an EXPLICIT anti-pattern for this task.** Taking inventories is checkboxing.
 **The skill must FORCE multiple data points.**
 
+## Structural and Organizational Slop (Project-Level)
+
+The same cognitive distortions that produce slop inside a function also show up in the
+**structure and complexity of the project itself** — directory layouts, schemas, status
+systems, governance, and documentation organization — independent of any single file's
+code quality. A project can have clean functions and still be slop at the structural level.
+
+This is a **different axis** from the dependency-complexity signal above. There, complex
+*owned code* usually means a missed library. Here, the tell is **organizational and
+process complexity that is disproportionate to a demonstrated problem**: the control plane
+outgrows the payload. Hold the proportionality rule from `bespoke-software-policy` →
+**Proportionality: Earned vs. Manufactured Complexity**: the question is whether this is
+the simplest standard mechanism for a demonstrated failure mode, not whether it is complex.
+
+Structural tells (each is a pointer to verify, not a verdict):
+
+- **Empty-stub sprawl** — large directory trees, many files, or schemas that are mostly
+  placeholders, with little inspectable payload. Volume of files/commits is treated as
+  progress (`O12 Activity Simulation`).
+- **Classification baked into structure** — passes, matrices, tiers, "canonical roots",
+  numbered cells, or authority classes imposed on ordinary folders. A Dewey-decimal system
+  for one's own work is itself the red flag (`O2`, `O4`).
+- **Control plane larger than payload** — more code, config, or docs devoted to
+  governance, trust, gates, receipts, status, and review flow than to the useful thing
+  delivered (`O6 Process–Payload Inversion`).
+- **Schemas/tests for invented concepts** — a schema or test exists chiefly to make a named
+  but unimplemented concept appear real; it proves conformity to the invention, not value
+  (`C6`).
+- **Invented institutions in structure** — `CODEOWNERS`, role directories, approval
+  workflows, or separation-of-duty layout for an organization that does not exist (`O3`).
+- **Recursive meta-structure** — directories of documentation about the documentation,
+  inventories of inventories, trees explaining where other trees sit (`O13`).
+- **Threat-model-driven layout** — subsystems, lanes, and tiers for every conceivable
+  hazard before the common user path is demonstrated (`O9`, `O10`).
+
+Apply the same false-positive discipline as for code: a deliberately elaborate structure
+that a real demonstrated constraint forces (genuine domain complexity, a real
+multi-actor workflow, a real compliance boundary) is a design choice, not slop. Run the
+**Design Choices Are Not Slop** gate. The finding is structural slop only when the
+machinery precedes the incident, the categories precede the instances, or the organization
+is justified by internal documents rather than an observable need.
+
+For agent-generated documents specifically (READMEs, architecture docs, roadmaps), the
+concrete patterns and forcing questions live in
+[llm-failure-modes/documentation-failures.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/documentation-failures.md).
+When a structural artifact's whole frame is contaminated, the remediation is a
+fresh-context greenfield rebuild, not in-place editing — see `fixing-slop` →
+**Contaminated Artifacts Cannot Be Repaired In Place**.
+
 ## Reference Files
 
 The primary reference for LLM-produced code failure patterns is:
@@ -612,6 +685,8 @@ Secondary references (use when the central catalog does not cover the specific d
 - **`../reality-grounded-debugging/SKILL.md`** — Load alongside when reviewing debugging attempts, probe logs, or diagnostic commands.
   Detects prior-shaped probes, debug-surface debt, and missing command-output discipline.
   Provides the behavioral fix (surface upgrade) for patterns in this catalog.
+
+- **`../llm-failure-modes/documentation-failures.md`** and **`../llm-failure-modes/references/agent-distortion-index.md`** — Load when reviewing agent-generated documents or project structure. The first is the concrete documentation-failure catalog; the second is the R/T/L/O/C/V distortion shorthand (including the reviewer-infection codes to watch for in your own analysis).
 
 ## Remediation
 

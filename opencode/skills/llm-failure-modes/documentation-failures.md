@@ -152,8 +152,17 @@ them require subtraction, relocation, or evidence, not elaboration.
 
 ## Cross-References
 
+- `references/agent-distortion-index.md`: the R/T/L/O/C/V shorthand for these failures
+  (and reviewer-infection codes), usable to label findings compactly.
 - `writing-readmes`: public/private boundary gate for README edits.
 - `writing-documentation`: general documentation workflow and anti-patterns.
 - `reviewing-llm-code/references/pattern-catalog.md`: canonical pattern names for
   review reports.
 - `reviewing-subagent-work`: independence discipline for agent-produced reviews.
+- `anti-slop` → **Structural and Organizational Slop (Project-Level)**: the same failures
+  expressed in directory layouts, schemas, status systems, and governance — not just prose.
+- `fixing-slop` → **Contaminated Artifacts Cannot Be Repaired In Place**: the
+  fresh-context greenfield rebuild protocol for a document whose whole frame is
+  contaminated.
+- `bespoke-software-policy` → **Proportionality: Earned vs. Manufactured Complexity**: the
+  guard against false-positiving intentional bespoke complexity as slop.
