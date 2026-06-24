@@ -20,6 +20,10 @@ If a listed skill applies, that skill owns the detailed procedure.
 - Completion reports and concise user-facing status: `response-preparation`
 - Corrections, critiques, remaining-work questions, and anti-laundering:
   `handling-corrections`
+- Nontrivial roadmap, PRD, feature, cross-agent, review-track, or proof-bearing work:
+  `project-initialization`, `plan`, `agent-memory`, and `git-guidelines`; add
+  `proof-obligation-workflow`, `implement_plan`, or `subagent-driven-development` when
+  their work starts
 
 Never write or discuss time estimates for work you suggest.
 Never insert manual section counters in Markdown.

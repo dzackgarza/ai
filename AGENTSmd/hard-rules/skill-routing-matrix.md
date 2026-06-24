@@ -14,4 +14,5 @@ title: Skill Routing Matrix
 | Debugging failures | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
 | Negative findings or partial source reads | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Plans or plan feedback | `plan`, `agent-memory`; add `response-preparation` for the report |
+| Nontrivial roadmap, PRD, feature, cross-agent, review-track, or proof-bearing work | `project-initialization`, `plan`, `agent-memory`, `git-guidelines`; add `proof-obligation-workflow` when stories/proof burdens are in scope and `implement_plan` or `subagent-driven-development` before execution |
 | Using Jules for review | `jules`, `jules/references/anti-slop-report-review.md`; do not use Jules for immediate remediation |

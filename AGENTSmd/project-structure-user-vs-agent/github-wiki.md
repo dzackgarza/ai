@@ -26,8 +26,13 @@ clone or update it.
 Use the wiki for durable, long-horizon project knowledge: philosophy, requirements,
 architectural decisions, feature doctrine, roadmaps, feature lists, user stories, and
 design rationale that should outlive a branch or session.
-Do not use the wiki as a scratchpad, transcript, session log, task checklist, or live
-implementation plan.
+Do not use the wiki as a scratchpad, transcript, session log, task checklist, live
+implementation plan, or manually maintained status mirror.
+
+A wiki roadmap may render or link the GitHub issue tree, milestones, and draft PRs, but
+active execution state belongs in GitHub issues, GitHub Milestones, and PR claim maps. In
+mixed-state repos, migrate live wiki status into those GitHub surfaces and leave the wiki
+as narrative context plus links.
 
 A repo wiki should be user-story-first.
 Its primary project-management content is an extensive, explicit set of user stories:

@@ -15,4 +15,8 @@ ask before filing.
 
 For issue creation, triage, labels, assignment, and cross-repo issue work, load
 `git-guidelines`.
+For roadmap, PRD, feature, proof-bearing, or cross-agent work, do not file a flat issue
+unless it is truly atomic. Load `plan/references/externalization.md` through `plan`, then
+create or update the story-shaped issue tree, sub-issue edges, blocker dependencies,
+GitHub Milestone scope, and linked PR claim map.
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.

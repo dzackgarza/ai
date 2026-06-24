@@ -11,6 +11,6 @@ Every project has two audiences: the user, and agents working on the user’s be
 
 These two surfaces must be kept separate. Agent-facing automation belongs in `.agents/`.
 Durable agent knowledge and plans belong in the central `agent-memory` vault; durable
-project doctrine belongs on the wiki; public execution state belongs in GitHub issues,
-milestones, and PRs. The user should never need to inspect `.agents/` to understand the
-project.
+project doctrine belongs on the wiki; public execution state belongs in the GitHub issue
+tree, GitHub Milestones, and PR claim maps. The user should never need to inspect
+`.agents/` to understand the project.

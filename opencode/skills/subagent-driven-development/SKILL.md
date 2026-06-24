@@ -48,8 +48,9 @@ Use this skill when:
 
 ### 1. Read and Parse Plan
 
-Read the plan file. Extract ALL tasks with their full text and context upfront.
-Create a todo list:
+Read the plan file and, if the plan is externalized, the linked GitHub issue tree,
+GitHub Milestone, and draft PR claim map. Extract ALL tasks with their full text, parent
+issue, claimed proof obligations, and context upfront. Create a todo list:
 
 ```python
 # Read the plan
@@ -80,6 +81,9 @@ delegate_task(
     goal="Implement Task 1: Create User model with email and password_hash fields",
     context="""
     TASK FROM PLAN:
+    - Parent issue / claim scope: <GitHub issue or subtree this task serves>
+    - Milestone: <GitHub Milestone, if externalized>
+    - Proof obligations claimed by this task: <named obligations>
     - Create: src/models/user.py
     - Add User class with email (str) and password_hash (str) fields
     - Use bcrypt for password hashing
@@ -231,6 +235,9 @@ git add -A && git commit -m "feat: complete [feature name] implementation"
 
 - Start implementation without a plan
 
+- Start from an externalized plan without passing parent issue, milestone, PR claim
+  scope, and claimed proof obligations to the subagent
+
 - Skip reviews (spec compliance OR code quality)
 
 - Proceed with unfixed critical/important issues
@@ -311,7 +318,7 @@ This skill EXECUTES plans created by the plan skill:
 
 1. User requirements → plan → implementation plan
 
-2. Implementation plan → subagent-driven-development → working code
+2. Implementation plan -> GitHub issue tree / milestone / PR claim map -> subagent-driven-development -> working code
 
 ### Inherited Parent Policies
 

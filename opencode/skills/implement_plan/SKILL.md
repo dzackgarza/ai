@@ -10,13 +10,13 @@ user-invocable: false
 
 You are tasked with implementing an approved technical plan. For nontrivial work that
 came from interactive planning, the finalized plan should already be externalized into a
-GitHub epic plus issue tree, and implementation PRs should track the linked issues.
+GitHub issue tree, GitHub Milestone scope, and draft PR claim map. Implementation PRs
+should track the selected issue set or subtree they claim.
 
-If the plan has just been finalized but the issue tree or draft PR tracking surface does
-not exist, stop implementation and run the plan-to-issue-tree-to-PR conversion workflow
-from `plan` and `git-guidelines/creating-prs.md` first. Do not
-use a local scratchpad plan as the authoritative tracker for actual work once the plan is
-final.
+If the plan has just been finalized but the GitHub issue tree, milestone scope, or draft
+PR claim map does not exist, stop implementation and run the plan-to-issue-tree-to-PR
+conversion workflow from `plan` and `git-guidelines/creating-prs.md` first. Do not use a
+local scratchpad plan as the authoritative tracker for actual work once the plan is final.
 
 ## Execution Modes
 
@@ -55,7 +55,8 @@ When given a plan path:
 
 - Read the plan completely and check for any existing checkmarks (- [x])
 
-- Read the original ticket and all files mentioned in the plan
+- Read the original ticket, linked GitHub issue tree, milestone, draft PR claim map, and
+  all files mentioned in the plan
 
 - **Read files fully** - never use limit/offset parameters, you need complete context
 
@@ -137,9 +138,11 @@ After implementing a phase:
 
 - Fix any issues before proceeding
 
-- Update your progress in both the plan and your todos
+- Update your progress in the canonical tracker: the PR claim map and GitHub issue tree
+  after externalization, or the vault-owned plan record while the work is still private
 
-- Check off completed items in the plan file itself using Edit
+- Do not treat a local Markdown checklist as authoritative once GitHub execution state
+  exists
 
 - **Pause for human verification**: After completing all automated verification for a
   phase, pause and inform the human that the phase is ready for manual testing.

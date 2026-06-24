@@ -34,6 +34,11 @@ work decomposition:
 Milestones describe delivered capability or restored correctness. The progress checklist
 tracks granular execution. Keep them separate.
 
+When a roadmap is externalized, each milestone should usually cut a coherent issue
+subtree that can be assigned to a GitHub Milestone object. The GitHub Milestone tracks
+delivery for issues and PRs; it does not replace the roadmap tree, sub-issue edges, or
+story-shaped node bodies.
+
 A milestone must state:
 
 - the result that will exist at the end;
@@ -52,10 +57,18 @@ Execution Graph).
 
 ## User stories first
 
-Derive milestones, dependencies, and acceptance criteria from user stories and
-user-observable outcomes, not from implementation guesses. Do not invent thin stories from
-implementation details. When stories are missing, vague, or conflicting, prompt the user
-for the product and workflow facts needed to write them before drafting milestones.
+Derive the roadmap tree, milestones, dependencies, and acceptance criteria from user
+stories and user-observable outcomes, not from implementation guesses. Do not invent
+thin stories from implementation details.
+
+A roadmap issue may be a broad story; feature and implementation issues are narrower
+stories at lower altitude. Every node must state what condition becomes true, who or
+what observes it, and why it matters. Only split a proof obligation into a child issue
+when it is independently trackable; otherwise keep it in the parent node body as the
+definition of done.
+
+When stories are missing, vague, or conflicting, prompt the user for the product and
+workflow facts needed to write them before drafting milestones.
 
 ## Invariants
 

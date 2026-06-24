@@ -112,6 +112,43 @@ curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
 gh issue edit 42 --add-assignee username
 ```
 
+### Parent and Sub-Issues
+
+Use native sub-issues for tree edges when the repository's GitHub surface supports them.
+Do not use labels, title numbering, or dependencies to simulate ordinary parent/child
+order.
+
+```bash
+# Create a new child issue under a parent.
+gh issue create --title "<child story or implementation node>" --body-file issue.md --parent 42
+
+# Attach or detach existing issues.
+gh issue edit 42 --add-sub-issue 43
+gh issue edit 42 --remove-sub-issue 43
+
+gh issue edit 43 --parent 42
+gh issue edit 43 --remove-parent
+```
+
+### Dependencies
+
+Use dependencies for blockers, not roadmap traversal order.
+
+```bash
+gh issue create --title "<blocked work>" --body-file issue.md --blocked-by 41
+gh issue edit 42 --add-blocked-by 41 --add-blocking 44
+gh issue edit 42 --remove-blocked-by 41 --remove-blocking 44
+```
+
+### Milestones
+
+Milestones are delivery/progress buckets over issues and PRs. They do not replace the
+issue tree.
+
+```bash
+gh issue edit 42 --milestone "<milestone>"
+```
+
 ### Commenting
 
 ```bash
@@ -164,6 +201,9 @@ gh issue list --label "wontfix" --json number --jq '.[].number' | \
 | Create issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
 | Add labels | `gh issue edit N --add-label ...` | `POST /repos/{o}/{r}/issues/N/labels` |
 | Assign | `gh issue edit N --add-assignee ...` | `POST /repos/{o}/{r}/issues/N/assignees` |
+| Add sub-issue | `gh issue edit PARENT --add-sub-issue CHILD` | Use GitHub CLI native sub-issue support |
+| Add blocker | `gh issue edit N --add-blocked-by BLOCKER` | Use GitHub CLI native dependency support |
+| Set milestone | `gh issue edit N --milestone "<milestone>"` | `PATCH /repos/{o}/{r}/issues/N` |
 | Comment | `gh issue comment N --body ...` | `POST /repos/{o}/{r}/issues/N/comments` |
 | Close | `gh issue close N` | `PATCH /repos/{o}/{r}/issues/N` |
 | Search | `gh issue list --search "..."` | `GET /search/issues?q=...` |

@@ -5,12 +5,18 @@ title: Live User Feedback
 
 When the user asks for a plan, load `plan` and `agent-memory`.
 Plans are durable artifacts, not chat-only outlines, and must be stored as
-`agent-memory` plan records in the central vault.
-If the plan becomes nontrivial public execution state, load `git-guidelines` and
-`plan` to promote it into a GitHub issue tree, milestone, or
-draft PR after the user finalizes it.
+`agent-memory` plan records in the central vault while private or converging.
 
-Never begin implementation from a plan until the user has approved it.
+Nontrivial plans must decide where they fit in the GitHub execution tree before
+implementation begins. Load `git-guidelines` and `plan/references/externalization.md` when
+a plan may become public execution state, a GitHub issue tree, a GitHub Milestone, a draft
+PR, or a multi-agent handoff. The plan must name the tree root or parent issue, milestone
+scope, issue set or subtree claimed, close/reference split, and proof obligations claimed
+or not claimed.
+
+Never begin implementation from a plan until the user has approved it and the required
+GitHub issue-tree, milestone, and PR-claim surfaces either exist or are explicitly out of
+scope for a trivial direct commit.
 
 When the user asks to read, annotate, or give feedback on a plan, the `plan` skill owns
 the on-demand HTML review surface and annotation workflow.

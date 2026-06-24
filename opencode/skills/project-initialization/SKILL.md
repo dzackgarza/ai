@@ -74,17 +74,18 @@ treating local docs, plans, or transcripts as authoritative.
 - Determine `<owner>/<repo>` from the remote.
 - Check the wiki state. Use the GitHub Wiki section of the active `AGENTS.md`
   guidance for the exact wiki probes and first-page bootstrap behavior.
-- Inspect task-relevant open milestones, issues, PRs, and draft PRs. Search by the
-  repo name, user-provided feature names, active branch, failing gate, and touched
-  module when those terms exist.
-- Treat linked milestones, controlling issues, child issues, PR contracts, and review
-  threads as canonical execution state. Local plans, `.agents` notes, memory records,
-  transcripts, and scratchpads are leads unless the current GitHub surface confirms
-  them.
+- Inspect task-relevant open issue trees, sub-issues, dependencies, milestones, PRs,
+  and draft PR claim maps. Search by the repo name, user-provided feature names,
+  active branch, failing gate, and touched module when those terms exist.
+- Treat the GitHub issue tree, sub-issue edges, blocker dependencies, GitHub Milestone
+  scopes, linked PR claim maps, and review threads as canonical execution state. Wiki
+  roadmap pages are readable projections or narrative context unless they explicitly own
+  top-level order. Local plans, `.agents` notes, memory records, transcripts, and
+  scratchpads are leads unless the current GitHub surface confirms them.
 - For long-horizon, cross-repo, or review-track work, externalize finalized plans into
-  a GitHub issue tree, milestone, or draft PR using `plan` and
-  `git-guidelines`. Once public artifacts exist, they become the tracker; local plans
-  may explain derivation but must not stay authoritative.
+  a GitHub issue tree, GitHub Milestone scope, and draft PR claim map using `plan` and
+  `git-guidelines`. Once public artifacts exist, they become the tracker; local plans may
+  explain derivation but must not stay authoritative.
 - When an observed failure class repeats, causes false green, blocks convergence, or
   requires human rescue, route it to the durable enforcement surface that owns it:
   wiki user stories or proof burdens for product obligations, issues/PR contracts for
@@ -135,10 +136,11 @@ exist, classify each one by durable owner before relying on it:
 
 - plan, phase state, queue, or residue ledger -> `agent-memory` plan record;
 - correction, trap, reusable decision, or durable agent behavior -> typed memory;
-- user story, requirement, roadmap, feature doctrine, proof burden, or architecture
-  rationale -> wiki;
-- observed bug, inefficiency, gap, public handoff, or follow-up obligation -> GitHub
-  issue, milestone, or PR;
+- durable project narrative, feature doctrine, architecture rationale, and readable
+  roadmap/proof projections -> wiki;
+- active user story, requirement, roadmap node, feature contract, proof burden,
+  observed bug, inefficiency, gap, public handoff, or follow-up obligation -> GitHub
+  issue tree, milestone, or PR claim map;
 - private diagnostic recipe, hook helper, or guardrail script -> `.agents/`;
 - temporary investigation notes -> delete before handoff or keep only as an explicitly
   non-authoritative scratchpad.

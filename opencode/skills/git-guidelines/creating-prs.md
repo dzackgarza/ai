@@ -30,10 +30,11 @@ This guide therefore imposes one hard rule:
 > template, and required contents.
 
 > **Other PRs:** For any nontrivial PR, or any PR derived from a finalized local plan,
-> externalize the plan into a GitHub epic plus issue tree before opening the PR. Use the
-> PR body to expose the issue-linked tracking tree. Contract files are optional only for
-> truly trivial changes whose outcome, scope, acceptance criteria, and evidence fit
-> directly in the PR body.
+> externalize the plan into the repository's GitHub issue tree and milestone scope before
+> opening the PR. Use the PR body to expose the selected issue set or subtree this branch
+> claims, plus the implementation plan and evidence for that claim. Contract files are
+> optional only for truly trivial changes whose outcome, scope, acceptance criteria, and
+> evidence fit directly in the PR body.
 
 * * *
 
@@ -66,54 +67,60 @@ That is what enables strong process-alignment feedback.
 
 ## Source plan to issue tree admission gate
 
-PR creation must be a lossless projection from the GitHub issue tree created from the
-finalized source plan or contract, not a second round of planning. If the worker cannot
-convert the source plan into an epic plus issue tree without inventing scope, user
-behavior, acceptance criteria, proof burdens, or dependency order, the source plan is not
-ready to externalize.
+PR creation must be a lossless projection from the finalized source plan or contract into
+GitHub's issue tree, milestone scope, and PR claim map. It is not a second round of
+planning. If the worker cannot place the work under an existing roadmap node, issue
+subtree, or new top-level roadmap issue without inventing scope, user behavior,
+acceptance criteria, proof burdens, milestone cuts, or dependency order, the source plan
+is not ready to externalize.
 
 The normal sequence is:
 
 1. finalize the plan interactively;
-2. create or select a GitHub milestone for the work unit;
-3. create or update the epic issue and assign it to that milestone;
-4. create or attach top-level milestone/workstream issues, assign them to the same
-   GitHub milestone, and link them from the epic body as a task list; use native
-   sub-issues when the active GitHub surface supports them;
-5. verify the issue tree and milestone assignments against the finalized plan;
-6. open the PR as a draft from the issue tree, assign it to the same GitHub milestone,
-   and link each top-level PR checklist item to the corresponding issue;
-7. add PR Development links with closing keywords for every in-scope issue that this PR
-   should close on merge;
-8. keep the PR draft until every in-scope checklist item is complete and evidenced.
+2. inspect existing GitHub issues, sub-issues, milestones, draft PRs, and wiki roadmap
+   projection;
+3. create or update story-shaped issues under the correct parent issue, using native
+   sub-issues for parent/child edges when the active GitHub surface supports them;
+4. preserve sibling order through sub-issue order where available, and use issue
+   dependencies only for blockers;
+5. create or select a GitHub Milestone object for the delivery slice, with scope stated
+   as a subtree root or explicit issue set;
+6. assign descendant issues that count toward delivery, and the PRs linked to those
+   issues, to the milestone;
+7. open the PR as a draft from the selected issue set or subtree, assign the milestone,
+   and state the close/reference split in the PR body;
+8. add PR Development links or closing keywords only for issues this PR fully satisfies
+   on merge;
+9. keep the PR draft until every claimed issue or proof obligation is complete and
+   evidenced.
 
 Before creating the PR, verify that the source plan fixes:
 
-- the externally meaningful milestone, included scope, explicit exclusions, preserved
+- the externally meaningful story, included scope, explicit exclusions, preserved
   behavior, and observable completion condition;
 
-- the dependency graph, including stacked foundations, parallel workstreams, handoff
-  contracts, and integration obligations;
+- the tree placement: root roadmap issue, parent issue or wiki roadmap node, sibling
+  order, milestone-sized subtree, and blocker dependencies;
 
-- every obligation's actor, trigger or context, intended result, acceptance criteria,
-  proof burden, dependencies, and supplied artifacts;
+- every proof obligation's actor, trigger or context, intended result, acceptance
+  criteria, proof burden, dependencies, and supplied artifacts;
 
 - stable vocabulary and complete referents, so labels such as test IDs, issue numbers,
   file names, transcript phrases, and local shorthand are evidence pointers rather than
   unexplained requirements;
 
 - proof design before implementation assessment. Evidence answers declared criteria; it
-  does not define the criteria after code happens to pass.
+  does not define the criteria after code happens to pass;
 
-- the GitHub milestone that groups the epic, child issues, and PR;
+- the GitHub Milestone that groups the delivery slice's issues and linked PRs;
 
-- which issues the PR should close on merge, and which broader, deferred, or epic issues
-  it should only reference.
+- which issues the PR should close on merge, which issues it partially advances, and
+  which broader parent, deferred, or excluded issues it should only reference.
 
-The issue-tree and PR projections may add owner, branch, status, blocker, commit, run,
-artifact, and review-link metadata. They must not add, delete, demote, or reinterpret
-scope, behavior, acceptance criteria, proof burdens, dependencies, handoffs, or
-integration semantics.
+The issue-tree, milestone, wiki, and PR projections may add owner, branch, status,
+blocker, commit, run, artifact, and review-link metadata. They must not add, delete,
+demote, or reinterpret scope, behavior, acceptance criteria, proof burdens,
+dependencies, handoffs, or integration semantics.
 
 Stop and repair the source plan when any of these are true:
 
@@ -153,16 +160,19 @@ Stop and repair the source plan when any of these are true:
 - the PR body would only mention issues in checklist prose without closing keywords or
   manual Development links for issues this PR is meant to close.
 
-- a closing keyword would target an epic, deferred issue, future issue, or out-of-scope
-  issue that this PR does not fully complete.
+- a closing keyword would target a parent issue, deferred issue, future issue, partial
+  claim, or out-of-scope issue that this PR does not fully complete.
 
-## PR body as Milestone Tree
+- the PR would span multiple GitHub Milestones without either splitting the PR or naming
+  the broader milestone/release that owns the cross-milestone claim and why.
 
-Use an issue-linked Milestone Tree as the centralized live tracking surface for the
-current PR's in-scope plan execution. The issue tree owns the broader decomposition; the
-PR body owns the reviewable work for this branch. If a checkbox appears in the PR body,
-completing it is required before the PR can leave draft. The PR body must make the
-current issue tree externally legible, not expose an internal scratchpad or backlog.
+## PR body as issue claim map
+
+Use an issue-linked claim map as the centralized live tracking surface for the current
+branch. The issue tree owns the broader decomposition. The GitHub Milestone owns the
+delivery grouping. The PR body owns this branch's selected issue set or subtree,
+implementation plan, proof claims, evidence, and explicit non-claims. If a checkbox
+appears in the PR body, completing it is required before the PR can leave draft.
 
 Minimum body shape:
 
@@ -176,51 +186,49 @@ Minimum body shape:
 - Preserved behavior: <baseline that must remain true>
 
 ## GitHub tracking
-- Milestone: <GitHub milestone that contains the epic, child issues, and this PR>
-- Development links:
-  - Closes #<issue completed by this PR>
-  - Refs #<epic or broader issue not fully closed by this PR>
+- Target issue set / subtree: <#root, #child list, or explicit issue set>
+- Milestone: <GitHub Milestone assigned to the delivery slice and this PR>
+- Closes on merge:
+  - Closes #<issue fully completed by this PR>
+- References only:
+  - Refs #<parent, deferred, partial, or excluded issue not closed by this PR>
 
-## Execution structure
+## Implementation plan
 <what is stacked, what is parallel, and what integrates last>
 
-## Milestone Tree
-- [ ] **M1 - <root milestone outcome>** ([epic #123](https://github.com/OWNER/REPO/issues/123))
-  - Complete when: <observable completion condition>
-  - [ ] **F1 - <shared foundation>** ([#124](https://github.com/OWNER/REPO/issues/124)) [stacked; blocks W1/W2]
-  - [ ] **W1 - <parallel capability>** ([#125](https://github.com/OWNER/REPO/issues/125)) [depends on F1]
-    - [ ] **O1 - <externally meaningful obligation>** ([#126](https://github.com/OWNER/REPO/issues/126), if independently tracked)
-      - Behavior: <actor/trigger/action/result>
-      - Acceptance: <objective criteria>
-      - Evidence: <proof mapped to each criterion>
-  - [ ] **I1 - <integrated outcome>**
+## Claim map
+- [ ] **<#issue or story node> - <claim this PR makes>**
+  - Proof obligations claimed: <named obligations>
+  - Partial / not claimed: <obligations this PR does not satisfy>
+  - Evidence required: <proof mapped to each criterion>
+  - Current evidence: <links to tests, CI, screenshots, logs, artifacts, or review>
 
 ## Automated gates
 <authoritative checks named, with live truth owned by CI or rulesets>
 ```
 
 Use closing keywords only for issues the PR fully completes and should close on merge.
-Use `Refs` or prose for the epic, future work, deferred work, excluded scope, and issues
-that remain open after this PR. If the PR targets a non-default branch or GitHub does
-not show the expected Development links, add the manual Development links before asking
-for review.
+Use `Refs` or prose for parent issues, future work, deferred work, excluded scope,
+partial claims, and issues that remain open after this PR. If the PR targets a
+non-default branch or GitHub does not show the expected Development links, add the
+manual Development links before asking for review.
 
-Use typed nodes. A milestone states the delivered result and completion condition; a
-foundation or workstream states sequence, parallelism, owner, and supplied capability; an
-obligation states actor or trigger, behavior, criteria, and proof burden; a substantive
-task states meaningful transformation beneath one primary obligation; an evidence block
-links witnesses to named criteria. Parent completion follows from semantic attainment and
-supported evidence, not merely from checked descendants.
+Use typed nodes. A roadmap, phase, feature, story, proof obligation, or implementation
+task should stay at its own altitude. Proof obligations normally live in the owning issue
+body as definition-of-done material; split them into child issues only when they are
+independently trackable. Parent completion follows from semantic attainment and supported
+evidence, not merely from checked descendants.
 
 Checklist items must earn reviewer attention. A checkbox is valid only when it represents
-a meaningful portion of the plan that can be independently judged complete. Test names,
-commands, commits, artifacts, green checks, policy declarations, and environment setup are
-not top-level progress items unless they are attached to the substantive obligation they
-prove or unblock.
+a meaningful portion of the PR claim that can be independently judged complete. Test
+names, commands, commits, artifacts, green checks, policy declarations, and environment
+setup are not top-level progress items unless they are attached to the substantive
+obligation they prove or unblock.
 
 For nontrivial PRs, every top-level checkbox must link to the GitHub issue that owns that
-work item. Deeper checklist nodes may link to issues when they are independently tracked;
-otherwise they remain acceptance/proof detail under the owning issue-linked node.
+claim, acceptance criteria, and proof burden. Deeper checklist nodes may link to issues
+when they are independently tracked; otherwise they remain acceptance/proof detail under
+the owning issue-linked node.
 
 Do not add checkbox items for deferred work, explicitly excluded scope, future PRs,
 parking-lot ideas, unresolved alternatives, or nice-to-have cleanup. Put those in the
@@ -228,10 +236,10 @@ parking-lot ideas, unresolved alternatives, or nice-to-have cleanup. Put those i
 means the PR is not done; a checkbox that does not need to be completed before review is
 a false blocker and makes the PR impossible to read as complete.
 
-Keep the PR in draft while any in-scope checklist item remains open. Mark it ready for
-review only after the checklist represents no remaining required work, the evidence under
-each item is current, and the automated gates are either green or named as real blockers.
-If later feedback reopens required work, convert the PR back to draft.
+Keep the PR in draft while any in-scope claim item remains open. Mark it ready for review
+only after the claim map represents no remaining required work, the evidence under each
+item is current, and the automated gates are either green or named as real blockers. If
+later feedback reopens required work, convert the PR back to draft.
 
 ### Tracking item quality
 
@@ -259,21 +267,25 @@ not make a deliverable out of proving that the discussion exists.
 
 Put each fact in the surface that can represent and enforce it:
 
-- GitHub milestone: release, project phase, or work-unit grouping that contains the epic,
-  child issues, and PR so GitHub can show aggregate open/closed progress.
+- GitHub issue tree: canonical public decomposition for the finalized plan, including
+  roadmap nodes, feature/story nodes, parent-child edges, sibling order, blocker
+  dependencies, acceptance criteria, and proof obligations.
+
+- GitHub Milestone: delivery or progress bucket over issues and PRs. It should name the
+  subtree root or explicit issue set it covers, then attach the descendant issues and
+  linked PRs that count toward that delivery slice.
 
 - GitHub PR Development links: closing-keyword or manual links between the PR and the
   in-scope issues that should close when the PR merges.
 
-- GitHub epic and issue tree: externalized tracking source for the finalized plan,
-  including the epic, top-level milestones/workstreams, independently reviewable
-  obligations, dependencies, acceptance criteria, and proof burdens.
+- PR body: centralized live claim map for the current branch's issue set or subtree,
+  implementation plan, substantive tasks, meaningful blockers, acceptance criteria,
+  evidence mappings, close/reference split, and checklist items linked to the relevant
+  GitHub issues. Deferred or excluded work belongs in prose or linked issues, not as PR
+  checkboxes.
 
-- PR body: centralized live tracker for the current PR's in-scope milestone, scope,
-  dependency structure, obligations, substantive tasks, ownership, meaningful blockers,
-  acceptance criteria, evidence mappings, Development-link keywords, and top-level
-  checklist items linked to the relevant GitHub issues. Deferred or excluded work belongs
-  in prose or linked issues, not as PR checkboxes.
+- GitHub wiki: durable narrative context and readable roadmap projection. It may render
+  or link the issue tree, but it must not become a manually maintained live status mirror.
 
 - Repository guidance or skills: global review policy, definitions of proof/completion,
   evidence standards, naming conventions, and agent calibration.
@@ -315,21 +327,24 @@ alternatives, or manually maintained histories of PR-body edits as progress.
 For nontrivial non-Jules PRs, use the plan-to-issue-tree sequence first:
 
 ```bash
-# Create or select the GitHub milestone for this plan/issue tree.
-# If the milestone does not exist yet, create it through the REST endpoint.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<scope>"
+# Create or select the GitHub Milestone object for this delivery slice.
+# State the subtree root or explicit issue set in the description.
+gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
 
-# Create the parent epic issue inside that milestone.
-gh issue create --title "Epic: <outcome>" --body-file .pr/EPIC_ISSUE.md --label enhancement --milestone "<milestone>"
+# Create or update the roadmap/story node that owns this work.
+gh issue create --title "<story-shaped outcome>" --body-file .pr/ISSUE_ROOT.md --label enhancement --milestone "<milestone>"
 
-# Create child issues as ordinary issues in the same milestone first.
-gh issue create --title "<milestone or workstream>" --body-file .pr/ISSUE_<id>.md --label enhancement --milestone "<milestone>"
+# Create child issues under the correct parent when native sub-issues are available.
+gh issue create --title "<child story or implementation node>" --body-file .pr/ISSUE_<id>.md --label enhancement --milestone "<milestone>" --parent <PARENT_ISSUE_NUMBER>
 
-# Add child issue links to .pr/EPIC_ISSUE.md as a task list, then update the epic.
-gh issue edit <EPIC_ISSUE_NUMBER> --body-file .pr/EPIC_ISSUE.md --milestone "<milestone>"
+# Attach existing issues as sub-issues when needed.
+gh issue edit <PARENT_ISSUE_NUMBER> --add-sub-issue <CHILD_ISSUE_NUMBER>
 
-# Verify the issue-linked checklist and milestone before drafting the PR.
-gh issue view <EPIC_ISSUE_NUMBER> --json title,body,url,milestone
+# Encode blockers as dependencies, not as roadmap order.
+gh issue edit <ISSUE_NUMBER> --add-blocked-by <BLOCKER_ISSUE_NUMBER>
+
+# Verify tree placement and milestone scope before drafting the PR claim map.
+gh issue view <PARENT_ISSUE_NUMBER> --json title,body,url,milestone
 ```
 
 * * *
@@ -727,28 +742,29 @@ whether the tests are tautological.
 A practical sequence:
 
 ```bash
-# 0. externalize the finalized plan into a GitHub milestone and issue tree
+# 0. externalize the finalized plan into a GitHub issue tree and milestone scope
 mkdir -p .pr
-$EDITOR .pr/EPIC_ISSUE.md
+$EDITOR .pr/ISSUE_ROOT.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/ISSUE_W1.md
 # Create the milestone if it does not already exist.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<scope>"
-gh issue create --title "Epic: <outcome>" --body-file .pr/EPIC_ISSUE.md --label enhancement --milestone "<milestone>"
-gh issue create --title "<foundation>" --body-file .pr/ISSUE_F1.md --label enhancement --milestone "<milestone>"
-gh issue create --title "<workstream>" --body-file .pr/ISSUE_W1.md --label enhancement --milestone "<milestone>"
-# Add the child issue links to .pr/EPIC_ISSUE.md as task-list items, then publish them.
-gh issue edit <EPIC_ISSUE_NUMBER> --body-file .pr/EPIC_ISSUE.md --milestone "<milestone>"
+gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
+gh issue create --title "<story-shaped outcome>" --body-file .pr/ISSUE_ROOT.md --label enhancement --milestone "<milestone>"
+gh issue create --title "<foundation>" --body-file .pr/ISSUE_F1.md --label enhancement --milestone "<milestone>" --parent <ISSUE_ROOT_NUMBER>
+gh issue create --title "<workstream>" --body-file .pr/ISSUE_W1.md --label enhancement --milestone "<milestone>" --parent <ISSUE_ROOT_NUMBER>
+# Attach existing issues as sub-issues when needed, and encode blockers separately.
+gh issue edit <ISSUE_ROOT_NUMBER> --add-sub-issue <CHILD_ISSUE_NUMBER>
+gh issue edit <ISSUE_W1_NUMBER> --add-blocked-by <ISSUE_F1_NUMBER>
 
-# 1. create tracked PR contract/body from the issue tree before implementation
-$EDITOR .pr/PR_BODY.md   # include Closes for in-scope issues; use Refs for the epic/deferred work
+# 1. create tracked PR claim map from the selected issue set before implementation
+$EDITOR .pr/PR_BODY.md   # include Closes only for full claims; use Refs for parents/partials/deferred work
 $EDITOR .pr/REVIEW_LOG.md
 
 # 2. commit contract early
 git add .pr/PR_BODY.md .pr/REVIEW_LOG.md
 git commit -m "Add PR contract and review log"
 
-# 3. create draft PR from the tracked issue-linked contract before implementation
+# 3. create draft PR from the tracked issue-linked claim map before implementation
 gh pr create --title "<title>" --body-file .pr/PR_BODY.md --milestone "<milestone>" --draft
 
 gh pr view <PR_NUMBER> --json title,body,milestone,closingIssuesReferences,isDraft
@@ -759,11 +775,11 @@ pytest path/to/test_file.py -q
 # 5. implement narrowly and re-run verification
 pytest path/to/test_file.py -q
 
-# 6. keep the PR draft while PR-body checklist items remain open
-# Republish .pr/PR_BODY.md as the centralized tracker changes.
+# 6. keep the PR draft while claimed issue/proof work remains open
+# Republish .pr/PR_BODY.md as the claim map changes.
 gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md --milestone "<milestone>"
 
-# Only after every in-scope item is complete and evidenced:
+# Only after every claimed item is complete and evidenced:
 gh pr ready <PR_NUMBER>
 
 # 7. after review arrives, read all feedback surfaces
@@ -774,11 +790,11 @@ gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/comments
 gh api repos/<OWNER>/<REPO>/issues/<PR_NUMBER>/comments
 gh pr checks <PR_NUMBER> --watch
 
-# 8. if review feedback reopens required checklist work, return to draft before continuing
+# 8. if review feedback reopens required claim work, return to draft before continuing
 gh pr ready <PR_NUMBER> --undo
 
 # Update the issue tree and contract file if needed
-$EDITOR .pr/EPIC_ISSUE.md
+$EDITOR .pr/ISSUE_ROOT.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/PR_BODY.md
 $EDITOR .pr/REVIEW_LOG.md
@@ -789,7 +805,7 @@ git commit -m "Address review feedback"
 # 9. republish PR body from the tracked contract
 gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md --milestone "<milestone>"
 
-# 10. after reopened in-scope checklist work is complete and evidenced, mark ready again
+# 10. after reopened claim work is complete and evidenced, mark ready again
 gh pr ready <PR_NUMBER>
 ```
 
@@ -819,25 +835,25 @@ If the PR does not expose those answers directly, it is not review-ready.
 
 1. Finalize the plan before externalization.
 
-2. Externalize the finalized plan into a GitHub milestone, epic, and issue tree.
+2. Externalize the finalized plan into a GitHub issue tree and GitHub Milestone scope.
 
-3. Assign the epic, child issues, and PR to the same GitHub milestone.
+3. Assign descendant delivery issues and linked PRs to that GitHub Milestone.
 
 4. Write the PR contract/body before implementation.
 
-5. Add closing-keyword Development links for in-scope issues the PR should close on merge.
+5. Add closing-keyword Development links only for issues the PR fully satisfies on merge.
 
-6. Use `Refs` or prose, not closing keywords, for the epic, deferred work, future work,
-   and out-of-scope issues.
+6. Use `Refs` or prose, not closing keywords, for parent issues, partial claims,
+   deferred work, future work, and out-of-scope issues.
 
-7. Link nontrivial top-level PR checklist items to the owning issues.
+7. Link nontrivial top-level PR claim items to the owning issues.
 
 8. Keep deferred, excluded, future, and out-of-scope work out of PR checkboxes.
 
-9. Keep the PR draft until every in-scope PR checkbox is complete and evidenced.
+9. Keep the PR draft until every claimed issue and proof obligation is complete and evidenced.
 
-10. Derive the PR body from the tracked contract file and issue tree, not from memory or
-    the web form.
+10. Derive the PR body from the tracked contract file, issue tree, and claim map, not
+    from memory or the web form.
 
 11. Lock acceptance criteria before code exists.
 
@@ -851,7 +867,7 @@ If the PR does not expose those answers directly, it is not review-ready.
 
 16. Do not mark feedback addressed without an identifying commit.
 
-17. If feedback changes the target, update the issue tree and contract first.
+17. If feedback changes the target, update the issue tree, milestone scope, and claim map first.
 
 18. Do not let the implementation define its own success criteria.
 

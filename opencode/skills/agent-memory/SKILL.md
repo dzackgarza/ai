@@ -78,9 +78,11 @@ investigation. Before handoff, delete the scratchpad or promote its durable cont
 
 - reusable agent behavior, corrections, traps, and decisions -> typed memories;
 - plans, phase state, queues, and residue ledgers -> `plan` records;
-- public product/project doctrine, user stories, roadmaps, and proof burdens -> wiki;
-- public execution state, bugs, gaps, and handoff contracts -> GitHub issues,
-  milestones, or PRs.
+- durable product/project doctrine, architecture rationale, and readable roadmap/proof
+  projections -> wiki;
+- active public user stories, roadmap nodes, feature contracts, proof burdens,
+  execution state, bugs, gaps, and handoff contracts -> GitHub issue trees,
+  milestones, or PR claim maps.
 
 If the same fact appears in multiple surfaces, choose one authoritative owner and replace
 other copies with links or delete them. Memory can point at GitHub or wiki artifacts, but
@@ -163,8 +165,8 @@ to discover the current command surface before relying on old examples.
 | Reusable operational rules, traps, and corrections | Typed memories in the vault | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
 | Decisions with future agent relevance | Typed memories in the vault | “Treat generated AGENTS output as derived; edit fragments instead” |
 | Plans, phase state, contracts, queues, and residue ledgers | `agent-memory` plan records in the vault | “Current phase is extraction; active residue is parser boundary proof” |
-| Public project doctrine, user stories, roadmaps, and proof burdens | GitHub wiki | Feature page linked to stories, proof burdens, and issues |
-| Public execution state, bugs, gaps, handoffs, and TODOs | GitHub issues, milestones, and PRs | Issue tagged `needs-investigation`; draft PR linked to milestone |
+| Durable project doctrine, architecture rationale, and readable roadmap/proof projections | GitHub wiki | Feature page linked to stories, proof burdens, issues, and roadmap projections |
+| Active public stories, roadmap nodes, proof burdens, execution state, bugs, gaps, handoffs, and TODOs | GitHub issue trees, milestones, and PR claim maps | Story issue with proof obligations; draft PR linked to milestone and claim set |
 
 Completed work belongs in commits.
 Lessons, corrections, decisions, and planning state needed for future work belong in the

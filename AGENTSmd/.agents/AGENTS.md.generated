@@ -247,6 +247,10 @@ ask before filing.
 
 For issue creation, triage, labels, assignment, and cross-repo issue work, load
 `git-guidelines`.
+For roadmap, PRD, feature, proof-bearing, or cross-agent work, do not file a flat issue
+unless it is truly atomic. Load `plan/references/externalization.md` through `plan`, then
+create or update the story-shaped issue tree, sub-issue edges, blocker dependencies,
+GitHub Milestone scope, and linked PR claim map.
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.
 
 ## PRs
@@ -267,8 +271,13 @@ Load `git-guidelines` before opening, updating, reviewing, or merging PRs.
 PRs are for significant work: whole features, broad changes, sensitive regressions, or
 work that needs review.
 
+For significant work, the PR is a claim against a selected GitHub issue set or subtree,
+not a free-standing implementation plan. Before opening or updating the PR, use
+`git-guidelines/creating-prs.md` to confirm the issue-tree parent, GitHub Milestone scope,
+close/reference split, and proof obligations claimed or not claimed.
+
 Simple doc changes, trivial fixes, and one-off edits usually should stay as direct
-commits unless the user asks for PR workflow.
+commits unless the user asks for PR workflow or the work needs public issue-tree tracking.
 
 # Hard Rules
 
@@ -324,6 +333,7 @@ red flags.
 | Debugging failures | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
 | Negative findings or partial source reads | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Plans or plan feedback | `plan`, `agent-memory`; add `response-preparation` for the report |
+| Nontrivial roadmap, PRD, feature, cross-agent, review-track, or proof-bearing work | `project-initialization`, `plan`, `agent-memory`, `git-guidelines`; add `proof-obligation-workflow` when stories/proof burdens are in scope and `implement_plan` or `subagent-driven-development` before execution |
 | Using Jules for review | `jules`, `jules/references/anti-slop-report-review.md`; do not use Jules for immediate remediation |
 
 ## Operational Rules
@@ -345,6 +355,10 @@ If a listed skill applies, that skill owns the detailed procedure.
 - Completion reports and concise user-facing status: `response-preparation`
 - Corrections, critiques, remaining-work questions, and anti-laundering:
   `handling-corrections`
+- Nontrivial roadmap, PRD, feature, cross-agent, review-track, or proof-bearing work:
+  `project-initialization`, `plan`, `agent-memory`, and `git-guidelines`; add
+  `proof-obligation-workflow`, `implement_plan`, or `subagent-driven-development` when
+  their work starts
 
 Never write or discuss time estimates for work you suggest.
 Never insert manual section counters in Markdown.
@@ -480,12 +494,18 @@ message bodies because they trigger shell escaping hazards.
 
 When the user asks for a plan, load `plan` and `agent-memory`.
 Plans are durable artifacts, not chat-only outlines, and must be stored as
-`agent-memory` plan records in the central vault.
-If the plan becomes nontrivial public execution state, load `git-guidelines` and
-`plan` to promote it into a GitHub issue tree, milestone, or
-draft PR after the user finalizes it.
+`agent-memory` plan records in the central vault while private or converging.
 
-Never begin implementation from a plan until the user has approved it.
+Nontrivial plans must decide where they fit in the GitHub execution tree before
+implementation begins. Load `git-guidelines` and `plan/references/externalization.md` when
+a plan may become public execution state, a GitHub issue tree, a GitHub Milestone, a draft
+PR, or a multi-agent handoff. The plan must name the tree root or parent issue, milestone
+scope, issue set or subtree claimed, close/reference split, and proof obligations claimed
+or not claimed.
+
+Never begin implementation from a plan until the user has approved it and the required
+GitHub issue-tree, milestone, and PR-claim surfaces either exist or are explicitly out of
+scope for a trivial direct commit.
 
 When the user asks to read, annotate, or give feedback on a plan, the `plan` skill owns
 the on-demand HTML review surface and annotation workflow.
@@ -500,9 +520,9 @@ Every project has two audiences: the user, and agents working on the user’s be
 
 These two surfaces must be kept separate. Agent-facing automation belongs in `.agents/`.
 Durable agent knowledge and plans belong in the central `agent-memory` vault; durable
-project doctrine belongs on the wiki; public execution state belongs in GitHub issues,
-milestones, and PRs. The user should never need to inspect `.agents/` to understand the
-project.
+project doctrine belongs on the wiki; public execution state belongs in the GitHub issue
+tree, GitHub Milestones, and PR claim maps. The user should never need to inspect
+`.agents/` to understand the project.
 
 ## Project Initialization
 
@@ -510,30 +530,64 @@ At the start of a session in a repository, load `project-initialization` before
 substantive implementation.
 
 That skill owns the normal-form check: git root/freshness, GitHub public state
-(wiki, issues, milestones, and PRs), durable state surface classification,
-SDL-MCP registration/indexing when available, repo instructions, `.agents/`,
-agent-memory binding and memory search, `justfile` shape, and `~/ai-review-ci`
-QC/hooks/CI wiring.
+(wiki, issue tree, sub-issues, milestones, PRs, and draft PR claim maps), durable state
+surface classification, SDL-MCP registration/indexing when available, repo instructions,
+`.agents/`, agent-memory binding and memory search, `justfile` shape, and
+`~/ai-review-ci` QC/hooks/CI wiring.
 
-If a project is in a mixed state, normalize that state before feature work unless
-the user explicitly asked only for diagnosis or audit.
+If a project is in a mixed state, normalize that state before feature work unless the user
+explicitly asked only for diagnosis or audit. Normalization means identifying the current
+GitHub issue-tree root or creating the missing public execution tree from the accepted
+plan, assigning GitHub Milestone scope, and replacing local duplicate status with links to
+wiki, `agent-memory`, issues, milestones, or PRs as appropriate.
+
+If nontrivial work has no known issue-tree parent, milestone scope, or PR claim set, do
+not begin implementation. Load `plan`, `agent-memory`, and `git-guidelines`; use
+`plan/references/externalization.md` to decide where the work fits or to report the public
+state blocker.
 
 ## Durable State Surfaces
 
 Every project should converge toward one organized state model:
 
-- `agent-memory` central vault: plans, phase state, queues, residue ledgers,
-  durable corrections, reusable decisions, traps, advice, and project context.
-- GitHub wiki: durable long-horizon project knowledge, user stories, feature doctrine,
-  roadmaps, proof burdens, requirements, architecture decisions, and design rationale.
-- GitHub issues, milestones, and PRs: public project organization, external execution
-  state, long-running handoffs, user-visible gaps, accepted work contracts, and
-  auditable progress.
+- `agent-memory` central vault: private or converging plans, phase state, queues,
+  residue ledgers, durable corrections, reusable decisions, traps, advice, and project
+  context.
+- GitHub issue tree, GitHub Milestones, and PR claim maps: public execution state for
+  nontrivial work, active user stories, roadmap nodes, feature contracts, proof burdens,
+  long-running handoffs, accepted work contracts, and auditable progress.
+- GitHub wiki: durable long-horizon project knowledge, feature doctrine, requirements,
+  architecture decisions, design rationale, user-story narrative, and readable roadmap or
+  proof projections. It is not the live execution tracker.
 - `.agents/`: private agent automation, guardrail recipes, diagnostics, hook helpers,
   and scripts. It is not a durable documentation or planning store.
 - Repo-local scratch files: temporary work surfaces for in-the-weeds investigation only.
   Before handoff, delete them or promote their durable content to the vault, wiki, or
   GitHub surface that owns it.
+
+All nontrivial work must route through the GitHub execution model before implementation
+or public handoff. Nontrivial work includes roadmap, PRD, feature, cross-agent,
+long-running, review-track, or proof-bearing work. The route is:
+
+1.  Use `project-initialization` to inspect existing wiki, issue tree, milestones, PRs,
+    draft PRs, and memory binding.
+2.  Use `plan` and `agent-memory` while the plan is private or converging.
+3.  Before implementation, use `plan/references/externalization.md` and `git-guidelines`
+    to place the work in the GitHub issue tree, select or create the GitHub Milestone
+    scope, and create the PR claim map when a branch claims work.
+4.  Use `implement_plan` or `subagent-driven-development` only after the issue tree,
+    milestone scope, and PR claim set are known, unless the user explicitly requested a
+    diagnosis-only or audit-only pass.
+
+Trivial direct commits are allowed only when the outcome, scope, proof, and rollback are
+obvious from the diff itself and no public coordination surface is needed.
+
+Mixed-state repos must be migrated into this model before feature work. Classify each
+local note, plan, TODO, scratchpad, wiki page, issue, PR, and memory record by durable
+owner. Preserve durable narrative in the wiki, private restart state in `agent-memory`,
+and active execution state in GitHub issues, milestones, and PRs. Replace duplicate local
+status with links to the canonical surface, and delete scratch that has no continuing
+coordination value.
 
 Do not keep the same durable fact authoritative in more than one place.
 When a repo is mixed, classify each local note, plan, TODO, scratchpad, and process doc by
@@ -569,8 +623,13 @@ clone or update it.
 Use the wiki for durable, long-horizon project knowledge: philosophy, requirements,
 architectural decisions, feature doctrine, roadmaps, feature lists, user stories, and
 design rationale that should outlive a branch or session.
-Do not use the wiki as a scratchpad, transcript, session log, task checklist, or live
-implementation plan.
+Do not use the wiki as a scratchpad, transcript, session log, task checklist, live
+implementation plan, or manually maintained status mirror.
+
+A wiki roadmap may render or link the GitHub issue tree, milestones, and draft PRs, but
+active execution state belongs in GitHub issues, GitHub Milestones, and PR claim maps. In
+mixed-state repos, migrate live wiki status into those GitHub surfaces and leave the wiki
+as narrative context plus links.
 
 A repo wiki should be user-story-first.
 Its primary project-management content is an extensive, explicit set of user stories:
@@ -621,8 +680,9 @@ agent-facing project artifacts that are not durable memory or durable documentat
 Durable operational knowledge, corrections, decisions, and planning state are managed
 through `agent-memory` and bound by `.agent-memory.toml`; they are not maintained as loose
 markdown under `.agents/`.
-Durable project doctrine, requirements, user stories, roadmaps, and proof burdens belong
-on the wiki.
+Durable project narrative and readable roadmap/proof projections belong on the wiki.
+Active user stories, roadmap nodes, feature contracts, proof burdens, and handoffs belong
+in the GitHub issue tree, GitHub Milestones, and PR claim maps.
 If a local `.agents/` note starts carrying durable guidance, migrate it to the vault,
 wiki, or GitHub issue/PR surface that owns it, then remove or replace the local note with
 a pointer.

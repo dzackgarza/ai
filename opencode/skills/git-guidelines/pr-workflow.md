@@ -35,16 +35,16 @@ git push -u origin HEAD
 
 **With gh:**
 ```bash
-# Externalize the finalized plan into an epic/issue tree and GitHub milestone first.
-# Prepare .pr/PR_BODY.md from that issue tree and include Closes lines for in-scope issues.
-# See creating-prs.md for the admission gate and issue-linked Milestone Tree format.
+# Externalize the finalized plan into a GitHub issue tree and milestone scope first.
+# Prepare .pr/PR_BODY.md as a claim map for the selected issue set or subtree.
+# See creating-prs.md for the admission gate and issue-linked claim-map format.
 gh pr create \
   --title "feat: add JWT-based user authentication" \
   --body-file .pr/PR_BODY.md \
   --milestone "<milestone>" \
   --draft
 
-# Later, after every in-scope PR-body checklist item is complete and evidenced:
+# Later, after every claimed issue/proof item is complete and evidenced:
 gh pr ready
 ```
 
@@ -227,17 +227,18 @@ git checkout main && git pull origin main
 
 # 2. Branch
 git checkout -b fix/login-redirect-bug
-# 3. Externalize the finalized plan into a GitHub milestone, epic, and issue tree.
-#    Create or update .pr/PR_BODY.md from that issue tree before implementation defines
-#    its own success criteria. Include Closes lines for in-scope issues and Refs for the epic.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<scope>"
+# 3. Externalize the finalized plan into a GitHub issue tree and milestone scope.
+#    Create or update .pr/PR_BODY.md as the issue-linked claim map before implementation
+#    defines its own success criteria. Include Closes only for full claims and Refs for
+#    parents, partial claims, and deferred work.
+gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
 git add .pr/PR_BODY.md
 git commit -m "Add PR tracking contract"
 git push -u origin HEAD
 gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --milestone "<milestone>" --draft
 gh pr view --json title,body,milestone,closingIssuesReferences,isDraft
 
-# 4. (Agent makes code changes while the draft PR tracks open in-scope work)
+# 4. (Agent makes code changes while the draft PR tracks open claim work)
 
 # 5. Commit code changes
 git add src/auth/login.py tests/test_login.py
@@ -246,13 +247,13 @@ git commit -m "fix: correct redirect URL after login"
 # 6. Push implementation updates
 git push -u origin HEAD
 
-# 7. Republish the PR body as checklist items are completed; keep deferred work out of checkboxes
+# 7. Republish the PR body as claim items are completed; keep deferred work out of checkboxes
 gh pr edit --body-file .pr/PR_BODY.md --milestone "<milestone>"
 
-# 8. Monitor CI while finishing the in-scope PR-body checklist; deferred work stays out of checkboxes
+# 8. Monitor CI while finishing claimed issue/proof work; deferred work stays out of checkboxes
 gh pr checks --watch
 
-# 9. Mark ready only after every in-scope checklist item is complete and evidenced
+# 9. Mark ready only after every claimed issue/proof item is complete and evidenced
 gh pr ready
 
 # 10. Merge when green

@@ -12,8 +12,9 @@ agent-facing project artifacts that are not durable memory or durable documentat
 Durable operational knowledge, corrections, decisions, and planning state are managed
 through `agent-memory` and bound by `.agent-memory.toml`; they are not maintained as loose
 markdown under `.agents/`.
-Durable project doctrine, requirements, user stories, roadmaps, and proof burdens belong
-on the wiki.
+Durable project narrative and readable roadmap/proof projections belong on the wiki.
+Active user stories, roadmap nodes, feature contracts, proof burdens, and handoffs belong
+in the GitHub issue tree, GitHub Milestones, and PR claim maps.
 If a local `.agents/` note starts carrying durable guidance, migrate it to the vault,
 wiki, or GitHub issue/PR surface that owns it, then remove or replace the local note with
 a pointer.

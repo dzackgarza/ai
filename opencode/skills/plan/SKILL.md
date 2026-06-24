@@ -16,9 +16,10 @@ metadata:
 > narrower loaded policy explicitly permits them.
 
 This is the canonical planning skill. Use it for implementation plans, source plans,
-delegation handoffs, plan-review revisions, and plans that may become GitHub epics, issue
-trees, or PR tracking surfaces. It is also the plan-mode skill: when the user invokes
-`/plan` or asks for a plan instead of execution, the **Plan Mode** contract below governs
+delegation handoffs, plan-review revisions, and plans that may become or fit into
+GitHub issue trees, milestones, wiki projections, or PR claim maps. It is also the
+plan-mode skill: when the user invokes `/plan` or asks for a plan instead of execution,
+the **Plan Mode** contract below governs
 the turn.
 
 A plan is not a todo list or chat outline. It is a constrained execution specification
@@ -106,8 +107,10 @@ tier.
 - workstream / organizational → `references/tier-workstream.md`
 - implementation-adjacent → `references/tier-implementation.md`
 
-Additionally load `references/externalization.md` whenever the plan will become a GitHub
-issue tree, PR, or multi-agent tracker — at any tier.
+Additionally load `references/externalization.md` whenever the plan will become or must
+fit into a GitHub issue tree, GitHub milestone, wiki projection, draft PR, or multi-agent
+tracker -- at any tier. Implementation-adjacent plans must decide their tree fit before
+becoming local task lists or PR draft plans.
 
 ## Storage and Ownership Lifecycle
 
@@ -134,9 +137,14 @@ the user. Promote it to GitHub-owned execution state when any of these become tr
 - unresolved gaps, bugs, or follow-up obligations should be discoverable by future
   agents without reading vault internals.
 
-After promotion, GitHub issues, milestones, and PRs are the execution tracker. Keep the
-vault plan as derivation context or a restart aid, but do not let it diverge into a second
-private source of truth.
+Before promotion drives implementation, fill the externalization Plan Fit Gate: tree root,
+parent issue or roadmap/wiki node, GitHub milestone, issue set or subtree claimed,
+close/reference split, and claimed/non-claimed proof obligations.
+
+After promotion, the GitHub issue tree, GitHub Milestones, and PR claim maps are the
+execution tracker. Wiki pages are readable projections or durable narrative context, not
+live status owners. Keep the vault plan as derivation context or a restart aid, but do not
+let it diverge into a second private source of truth.
 
 ## Plan Fit Gate
 
@@ -197,6 +205,8 @@ Before drafting tasks:
 - identify canonical source files and damaged derivatives;
 - confirm whether the work is recovery, implementation, migration, documentation, or
   review-track preparation;
+- if the work may touch public execution state, inspect the relevant GitHub issue tree,
+  milestones, draft PRs, and wiki projection before naming local tasks;
 - ask only questions that block a concrete plan decision. For judgment-heavy work the
   criteria are themselves a blocking decision: elicit the user's per-type standards,
   preferences, and tie-breakers before drafting, because a plan that invents them licenses
@@ -215,6 +225,7 @@ supplies the work-decomposition body that fills the `<Work decomposition>` slot.
 
 > Tier: <roadmap | workstream | implementation-adjacent>
 > Parent plan: <agent-memory key, or "root / user-facing">
+> Externalized fit: <private, or GitHub tree root + parent issue + milestone + PR claim set>
 
 ## Purpose / Observable Result
 - What someone can do or verify after this work:
@@ -337,8 +348,9 @@ Before saving or handing off a plan, verify:
 - **Proof quality:** validation happens at the real use boundary and would fail on a
   plausible broken implementation.
 - **Restartability:** another agent can resume from the plan alone.
-- **Externalization readiness:** if the plan will be projected into a GitHub issue tree
-  and PR, no semantic invention is needed (see `references/externalization.md`).
+- **Externalization readiness:** if the plan will be projected into or executed from a
+  GitHub issue tree, milestone, wiki projection, or PR, the Plan Fit Gate is filled and
+  no semantic invention is needed (see `references/externalization.md`).
 - **Projection integrity:** translation causes no semantic loss, invention, demotion, or
   proxy promotion; stacked, parallel, handoff, and integration structure stays explicit.
 - **Evidence discrimination:** proof design distinguishes provenance, execution,
