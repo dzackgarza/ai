@@ -44,6 +44,23 @@ worker’s self-report is **the artifact under review, not evidence about the ar
 This is not just low-signal; it is structurally biased toward approving shallow work.
 Trusting it creates a circular validation loop: LLM validates LLM validates LLM.
 
+## Shared Frames Are Not Independent Evidence
+
+Multiple agents exposed to the same prompt, transcript, README, plan, or generated
+doctrine are one contaminated witness until proven otherwise. Agreement is not
+corroboration; it may only show that the same frame was copied.
+
+When the artifact under review uses project-created terms, internal status labels, or
+cross-references to generated artifacts, keep two ledgers:
+
+- Observed reality: files, code, data, commands, outputs, external sources, and
+  user-visible behavior actually inspected.
+- Project narrative: names, roles, statuses, doctrine, plans, and claims asserted by
+  agents or docs.
+
+Never move a claim from narrative to reality because several agents repeat it,
+formalize it, or mark it confirmed.
+
 ## What Real Review Requires
 
 Before concluding, your review MUST contain:

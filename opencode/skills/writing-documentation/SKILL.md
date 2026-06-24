@@ -39,6 +39,10 @@ Load references only as needed for the current documentation type:
 - Write facts, commands, examples, constraints, and boundaries.
   Delete slogans, mood-setting, and claims that cannot be verified from the
   repository or a cited source.
+- Keep agent-control material out of user-facing docs.
+  Prompts, correction history, private status systems, review gates, live planning
+  state, and supervision doctrine belong in agent-owned or planning surfaces, not
+  consumer documentation.
 
 ## Documentation Workflow
 
@@ -47,6 +51,9 @@ Before writing or rewriting:
 - Identify the document type from `reference/doc-types.md`.
 - State the target reader.
 - State the reader task the document must enable.
+- Establish external reality before adopting project vocabulary: artifact type, real
+  reader, smallest complete use case, useful payload, and current implementation
+  boundary.
 - Inspect the current document, nearby docs, and canonical sources for the
   facts the reader needs.
 - Decide which facts belong in the current document and which belong in linked
@@ -71,6 +78,8 @@ When reviewing:
 - Check whether links point to canonical sources.
 - Check whether any fact is duplicated in a way likely to drift.
 - Check whether any essential fact was removed for brevity.
+- Check whether the document asks the reader to enter a private ontology before it
+  names the ordinary thing, task, input, output, and evidence.
 
 ## Concision Rule
 
@@ -151,3 +160,6 @@ Do not use OSOT as an excuse to omit the minimum usable path.
 | Copying generated reference material | Drifts from CLI help, schemas, or API docs | Include one working path and link to the canonical reference |
 | Writing from internal architecture outward | Makes newcomers decode implementation names | Start with the public problem and interface |
 | Replacing facts with adjectives | Produces claims the reader cannot verify | State behavior, measurements, examples, and limits |
+| Publishing agent meta-work as product docs | Makes prompts, correction history, or review doctrine look like user-facing architecture | Move private process material to the agent-owned surface and keep docs task-facing |
+| Explaining why a bad doc pattern is bad inside the doc | Substitutes disclosure for remediation and fossilizes the correction | Remove the bad pattern; link to the correct canonical surface only when the reader needs it |
+| Treating names as evidence | Gives invented components authority before locating code, data, or workflows | Verify named things against implementation, payload, examples, or external sources |

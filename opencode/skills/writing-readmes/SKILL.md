@@ -116,6 +116,28 @@ Do not delete public names users must type: package names, commands, import
 paths, public modules, public configuration keys, endpoint paths, file formats,
 and documented state locations are consumer-facing facts.
 
+## Public/Private Boundary Gate
+
+Before keeping README material, identify:
+
+- the ordinary noun for the artifact;
+- the real reader and the decision or task they bring;
+- the smallest complete input-to-output use case;
+- the useful payload the README exposes before any governance or process material;
+- which claims describe current behavior, future work, domain facts, or agent process.
+
+Reject any README frame that requires private context before the reader can identify the
+artifact, task, input, output, or evidence. Red flags include pass numbers, canonical
+roots, custom status systems, ownership declarations, correction history, agent
+instructions, prompt residues, and governance for roles or processes that do not exist
+outside the agent workflow.
+
+Do not repair a contaminated README by adding disclaimers such as "status lives
+elsewhere" or "this README is not authoritative." If volatile status, agent-control
+machinery, or correction history does not belong in the README, remove it and say
+nothing. Public docs should not publish supervision history unless it changes adoption
+risk for the reader.
+
 ## Evidence Rules
 
 Every important claim needs evidence available to the reader.
@@ -157,7 +179,9 @@ Reject or rewrite a README when:
 - it hides credentials, network behavior, state, privacy, or destructive
   behavior;
 - it uses arbitrary line limits to remove required facts;
-- it has a "features" list where the reader still cannot tell what to do.
+- it has a "features" list where the reader still cannot tell what to do;
+- it exposes agent-control machinery, correction history, private ontology, or
+  invented institutional structure as if it were product documentation.
 
 ## Anti-Slop Rejection Patterns
 

@@ -96,6 +96,12 @@ Load the relevant section for your context:
   fallback-legacy compulsion (asymmetric risk model).
   (20 items)
 
+- **Documentation and frame-contamination failures** —
+  [documentation-failures.md](documentation-failures.md) Private-context leakage,
+  naming-as-existence, audience collapse, disclosure substitution, correction-history
+  leakage, control-payload inversion, circular doctrine, and reviewer frame capture.
+  (15 items)
+
 ### Structural and Behavioral Observations
 
 - **Structural and optimization failures** —
