@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [delegation, subagent, implementation, workflow, parallel]
-    related_skills: [creating-implementation-plans, requesting-code-review, test-driven-development]
+    related_skills: [plan, requesting-code-review, test-driven-development]
 ---
 # Subagent-Driven Development
 
@@ -26,7 +26,7 @@ high quality, fast iteration.
 
 Use this skill when:
 
-- You have an implementation plan (from creating-implementation-plans skill or user requirements)
+- You have an implementation plan (from plan skill or user requirements)
 
 - Tasks are mostly independent
 
@@ -305,11 +305,11 @@ git add -A && git commit -m "feat: complete [feature name] implementation"
 
 ## Integration with Other Skills
 
-### With creating-implementation-plans
+### With plan
 
-This skill EXECUTES plans created by the creating-implementation-plans skill:
+This skill EXECUTES plans created by the plan skill:
 
-1. User requirements → creating-implementation-plans → implementation plan
+1. User requirements → plan → implementation plan
 
 2. Implementation plan → subagent-driven-development → working code
 

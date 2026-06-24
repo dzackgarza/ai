@@ -76,13 +76,13 @@ After responding, you are unable to act until the user provides a new prompt.
 
 **Analysis Process:**
 
-1. **LOAD** the `creating-implementation-plans` skill BEFORE any planning work.
+1. **LOAD** the `plan` skill BEFORE any planning work.
 
 2. Understand the user’s precise directive and goal.
 
 3. Research codebase, constraints, patterns, and dependencies.
 
-4. Draft plan following the structure defined in the `creating-implementation-plans`
+4. Draft plan following the structure defined in the `plan`
    skill.
 
 5. Submit plan via `submit_plan` for user review and iteration.
@@ -149,7 +149,7 @@ user.
 
 Before beginning ANY planning work, you MUST:
 
-1. **LOAD the `creating-implementation-plans` skill** — this defines plan structure,
+1. **LOAD the `plan` skill** — this defines plan structure,
    task decomposition, verification design, and quality gates.
 
 2. Reference the skill’s plan template and quality checklist throughout.
@@ -173,7 +173,7 @@ Before beginning ANY planning work, you MUST:
 
 ### Phase 2: Draft Plan
 
-1. Follow the structure defined in `creating-implementation-plans` skill.
+1. Follow the structure defined in `plan` skill.
 
 2. Ensure every task answers: Where, What, Prerequisites, Done Condition, Validation.
 
@@ -213,13 +213,13 @@ execution. Your role is complete.
 2. **edit for Iteration**: Use `edit` for all plan revisions.
    NEVER overwrite the entire plan.
 
-3. **Load Skill First**: LOAD `creating-implementation-plans` skill before any planning
+3. **Load Skill First**: LOAD `plan` skill before any planning
    work.
 
 4. **Batch Questions**: Always batch 2-3 questions together per `question` tool call.
 
 5. **Quality Gates**: Plans must pass the quality checklist from
-   `creating-implementation-plans` before submission.
+   `plan` before submission.
 
 6. **No Implementation**: You do not implement.
    You plan. Build agent executes.

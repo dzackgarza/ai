@@ -82,7 +82,7 @@ treating local docs, plans, or transcripts as authoritative.
   transcripts, and scratchpads are leads unless the current GitHub surface confirms
   them.
 - For long-horizon, cross-repo, or review-track work, externalize finalized plans into
-  a GitHub issue tree, milestone, or draft PR using `creating-implementation-plans` and
+  a GitHub issue tree, milestone, or draft PR using `plan` and
   `git-guidelines`. Once public artifacts exist, they become the tracker; local plans
   may explain derivation but must not stay authoritative.
 - When an observed failure class repeats, causes false green, blocks convergence, or

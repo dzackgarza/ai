@@ -13,7 +13,7 @@ metadata:
     - investigation
     related_skills:
     - test-driven-development
-    - creating-implementation-plans
+    - plan
     - subagent-driven-development
 ---
 

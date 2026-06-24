@@ -14,7 +14,7 @@ GitHub epic plus issue tree, and implementation PRs should track the linked issu
 
 If the plan has just been finalized but the issue tree or draft PR tracking surface does
 not exist, stop implementation and run the plan-to-issue-tree-to-PR conversion workflow
-from `creating-implementation-plans` and `git-guidelines/creating-prs.md` first. Do not
+from `plan` and `git-guidelines/creating-prs.md` first. Do not
 use a local scratchpad plan as the authoritative tracker for actual work once the plan is
 final.
 

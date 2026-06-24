@@ -1,127 +1,449 @@
 ---
 name: plan
-description: "Plan mode: create or revise durable plan records through agent-memory, no exec."
+description: "The canonical planning skill and plan mode: create, write, review, or revise durable implementation plans, source plans, and externalization-ready execution specs through agent-memory. When invoked as plan mode, plan only — no execution this turn."
 license: MIT
 metadata:
   hermes:
     tags: [planning, plan-mode, implementation, workflow]
-    related_skills: [creating-implementation-plans, subagent-driven-development]
+    related_skills: [subagent-driven-development, requesting-code-review, test-driven-development, git-guidelines]
 ---
-# Plan Mode
+# Plan
 
-Use this skill when the user wants a plan instead of execution.
+> [!IMPORTANT]
+> Plans created under this skill must respect the Bridge-Burning Policies in
+> `policy-index`. Do not plan fallbacks, mocks, optional critical dependencies,
+> runtime defaults, proof-free smoke checks, or other validation-evasion paths unless a
+> narrower loaded policy explicitly permits them.
 
-## Core behavior
+This is the canonical planning skill. Use it for implementation plans, source plans,
+delegation handoffs, plan-review revisions, and plans that may become GitHub epics, issue
+trees, or PR tracking surfaces. It is also the plan-mode skill: when the user invokes
+`/plan` or asks for a plan instead of execution, the **Plan Mode** contract below governs
+the turn.
 
-For this turn, you are planning only.
+A plan is not a todo list or chat outline. It is a constrained execution specification
+that fixes success, failure, order, ownership, and proof before implementation begins.
+
+## Plan Mode (This-Turn Behavior)
+
+When the user wants a plan instead of execution, for that turn you are planning only:
 
 - Do not implement code.
-
 - Do not edit project files except the requested plan artifact.
-
 - Do not run mutating terminal commands, commit, push, or perform external actions.
-
 - You may inspect the repo or other context with read-only commands/tools when needed.
-
 - Your deliverable is a durable plan artifact, not a chat-only outline.
 
-## Storage
+Never begin implementation from a plan until the user has approved it.
+
+## Core Policy
+
+Write plans so a contributor with only the current working tree and the plan can execute
+or review the work without private context.
+
+A valid plan must:
+
+- explain the user-visible or repository-visible result being delivered;
+- state the current defect, gap, or need and why it matters;
+- define scope, exclusions, preserved behavior, and non-negotiable constraints;
+- identify canonical source material and required repo/runtime evidence;
+- order work by real dependencies rather than convenient checklist order;
+- attach every substantive task to an obligation, acceptance criterion, and proof burden;
+- name exact files, commands, expected observations, and stop conditions;
+- stay current as execution proceeds.
+
+If a plan leaves the implementer to decide the milestone, scope, dependency graph,
+acceptance criteria, or proof burden, the plan is not ready.
+
+## Storage and Ownership Lifecycle
 
 File every durable plan as a project-scoped `agent-memory` record with type `plan`.
-Use the `agent-memory` skill for the exact command surface.
+Use the `agent-memory` skill for the exact command surface. If `agent-memory` is
+unavailable, report the blocker instead of creating an untracked substitute.
 
-Do not create repo-local Markdown plans as the authoritative store. If a runtime or user
+A repo-local Markdown file may be a review/export artifact, but it is not the durable
+source of truth unless it points back to the vault-owned plan key. If a runtime or user
 explicitly requires a local Markdown export, first create or update the vault-owned plan
 record, then write the local file as a non-authoritative compatibility copy that points
 back to the memory key.
 
-If `agent-memory` is unavailable, report the blocker instead of creating an untracked
-substitute.
+Keep a plan vault-owned while it is exploratory, single-agent, or still converging with
+the user. Promote it to GitHub-owned execution state when any of these become true:
 
-## Output requirements
+- the plan coordinates multiple agents, branches, repos, milestones, or handoffs;
+- the plan defines public user stories, project direction, proof burdens, or roadmap
+  commitments;
+- work will span enough time that GitHub visibility is needed for auditability or
+  resumption;
+- the plan has been finalized by the user and is ready to become an issue tree,
+  milestone, or draft PR contract;
+- unresolved gaps, bugs, or follow-up obligations should be discoverable by future
+  agents without reading vault internals.
 
-Write a markdown plan that is concrete and actionable.
+After promotion, GitHub issues, milestones, and PRs are the execution tracker. Keep the
+vault plan as derivation context or a restart aid, but do not let it diverge into a second
+private source of truth.
 
-Include, when relevant:
+## Plan Fit Gate
 
-- Goal
+Use planning to preserve intent, state, coordination, and proof. Do not use planning as a
+substitute for available object-level work.
 
-- Current context / assumptions
+If concrete feedback already names actions, sources, examples, user stories, or cases,
+first ask whether representative instances can be resolved directly with existing repo
+surfaces. Write a new plan, schema, router, taxonomy, script, or gate only when it
+controls a real risk, preserves restartable state, coordinates multiple actors, or
+captures repetition already observed in direct work.
 
-- Proposed approach
+For heterogeneous queues, size is not semantic homogeneity. Do not batch interpretive
+decisions behind classifiers, ledgers, schemas, or automation merely because there are
+many items. Automate navigation, retrieval, bookkeeping, and repeated mechanical
+transforms; preserve item-level judgment for interpretation, source selection, and
+mutation decisions.
 
-- Step-by-step plan
+Formalize successful behavior after representative traces exist. A plan may require
+several direct case resolutions before it can honestly define stable categories, proof
+burdens, or reusable workflow machinery.
 
-- Files likely to change
+### Proportionality and Surface Placement
 
-- Tests / validation
+The Plan Fit Gate is where disproportionate machinery is cheapest to prevent. Agent
+planning drifts toward inventing classification systems, governance, roles, and gates
+before there is a demonstrated failure mode or an organization to need them. Apply three
+checks before a plan proposes structure:
 
-- Risks, tradeoffs, and open questions
+- **A control earns its place only against a demonstrated failure mode, and only as the
+  simplest standard mechanism for it.** Prefer the machinery society has already
+  internalized — databases, git, pull requests, issues, milestones, ordinary access
+  control, citations, hashes — over a bespoke symbolic framework. Plan a custom gate,
+  status system, taxonomy, or doctrine only when a standard tool demonstrably fails the
+  specific risk. See `bespoke-software-policy` → **Proportionality: Earned vs. Manufactured
+  Complexity**.
+- **Do not plan institutions before they exist.** Roles, stewards, owners, councils,
+  approval tiers, and separation-of-duty rules are not planning placeholders. Plan them
+  when there are real actors to fill them and a real boundary they enforce, not as
+  front-loaded structure.
+- **Place state on the surface that owns it.** Ephemeral status, current-MVP plans,
+  roadmaps, and work state belong in `agent-memory` plan records, GitHub issues,
+  milestones, and PRs — never dumped into a README or user-facing doc, which would require
+  constant babysitting and staleness review. The plan's own living state stays in the plan
+  record, not in the product's documentation.
 
-If the task is code-related, include exact file paths, likely test targets, and
-verification steps.
+## Required Discovery
 
-## Transformation-Ready Plans
+Before drafting tasks:
 
-When a plan may become a GitHub epic, issue tree, PR body, multi-agent tracking surface,
-or handoff artifact, write it so conversion is a projection, not another planning pass.
+- load repo instructions and task-relevant skills;
+- inspect the repo shape, existing plans, tests, just recipes, configs, and nearby
+  implementation patterns;
+- identify canonical source files and damaged derivatives;
+- confirm whether the work is recovery, implementation, migration, documentation, or
+  review-track preparation;
+- ask only questions that block a concrete plan decision.
 
-Interactive planning may stay exploratory while the user and agent converge on the
-right decomposition. Do not force the first draft into GitHub mechanics. Once the user
-finalizes the plan, the next durable tracking surface for nontrivial implementation work
-is a GitHub epic issue with linked child issues, using native sub-issues when the active
-GitHub surface supports them. A draft PR comes after that and
-links its top-level checklist nodes to the relevant issues.
+Do not start from expected filenames, remembered commands, or generic templates when the
+repo can show the real surface.
 
-The plan must fix the semantic target before implementation or publication:
+## Plan Structure
 
-- Start from user stories and user-observable outcomes, and derive milestones, dependencies, and
-  acceptance criteria from those stories.
+Use this structure unless the user or repo supplies a stricter one:
 
-- State the externally meaningful milestone, included scope, explicit exclusions,
-  preserved behavior, and observable completion condition.
+```markdown
+# <Plan Title>
 
-- Define stable vocabulary and expand private referents. A future reader should not need
-  transcript context, test mnemonics, issue numbers, file names, or agent scratchpads to
-  know what the plan means.
+## Purpose / Observable Result
+- What someone can do or verify after this work:
+- Why the current state is insufficient:
+- Observable completion condition:
 
-- Represent real dependency structure: stacked foundations, parallel workstreams, and
-  integration obligations. Do not flatten dependency order into a status checklist.
+## Scope
+- Included:
+- Excluded:
+- Preserved behavior:
+- Constraints and prohibitions:
 
-- Attach each task to an externally meaningful obligation with acceptance criteria and
-  proof burden. Commands, commits, test IDs, green checks, artifact names, and labels are
-  evidence or automation, not substitutes for the obligation.
+## Sources and Current State
+- Canonical sources:
+- Relevant existing behavior:
+- Known damaged or superseded artifacts:
+- Assumptions already verified:
+- Unknowns that still block planning:
 
-- Treat proof burdens as first-class deliverables: each task exists to resolve a user-story
-  obligation, not to satisfy a named test artifact alone.
+## Execution Graph
+- Stacked prerequisites:
+- Parallel workstreams:
+- Integration points:
+- Handoff contracts:
 
-- Separate internal execution material from the public plan. Classifications, local TODOs,
-  debugging notes, current machine state, and review policy copies belong in the surface
-  that owns them, not in the plan as progress.
+## Milestones
+### <Milestone name>
+- Result:
+- Dependencies:
+- Acceptance:
+- Verification:
+- Stop conditions:
 
-- Mark which finalized milestones or workstreams should become GitHub issues. If the plan
-  cannot be externalized as an epic plus issue tree without inventing scope, acceptance,
-  dependencies, or proof burdens, keep planning instead of opening a PR.
+## Task Plan
+### <Task name>
+- Obligation served:
+- Files:
+- Preconditions:
+- Change:
+- Acceptance criteria:
+- Proof / verification:
+- Commit boundary:
 
-If fragmented repository notes, subplans, scratchpads, or transcripts are the source
-material, consolidate propositions by semantic role before writing the plan. Preserve
-valid meaning, dependencies, obligations, and proof burdens; do not inherit wording,
-checkmarks, duplicate status, or local identifiers as public truth.
+## System-Level Validation
+- Real boundary checks:
+- Regression checks:
+- Review or artifact checks:
 
-If any milestone, scope boundary, dependency, acceptance criterion, proof burden, or
-issue hierarchy must be invented during conversion, stop and report that the plan is not
-ready to externalize.
+## Risks / Recovery / Stop Rules
+- Risks:
+- Recovery path:
+- Stop and ask when:
 
-## Interaction style
+## Progress
+- [ ] <granular task> -- evidence required:
+
+## Surprises & Discoveries
+- Observation:
+  Evidence:
+  Consequence for the plan:
+
+## Decision Log
+- Decision:
+  Rationale:
+  Date/author:
+
+## Outcomes & Retrospective
+- Achieved:
+- Remaining:
+- Lessons:
+
+## Revision Notes
+- <date>: <what changed in this plan and why>
+```
+
+## Task Quality
+
+Every nontrivial task must answer:
+
+- **Where:** exact file, module, command, route, artifact, or external surface.
+- **What:** the concrete state change, not a vague action verb.
+- **Why:** the obligation or milestone it serves.
+- **Before:** dependencies and inputs that must already exist.
+- **Done:** observable acceptance criteria.
+- **Proof:** command, test, artifact, diff, or inspection that would fail if the work were
+  wrong.
+- **Commit:** the smallest coherent checkpoint boundary.
+
+For code tasks, include the TDD or reproducer sequence when applicable: write or identify
+the failing proof, confirm it fails for the intended reason, implement narrowly, rerun the
+same proof, then run the relevant system gate.
+
+Tasks should be assignment-sized: small enough for a focused implementation pass, but not
+so small that they track typing, file touching, classification, or environment trivia.
+
+## Language and Referents
+
+Treat "neural-ese" as a planning defect, not a style preference. A plan item fails
+when it uses deictic language without a stable antecedent, invented shorthand, vague
+jargon, aphoristic status language, or authority priming that gestures at seriousness
+without naming the behavior, decision, surface, and evidence.
+
+Bad plan language usually makes a task sound inspectable while hiding what a reviewer
+would judge. "Update proof obligations" is not a task; "define the proof obligation that
+PDF export from the app menu produces the expected Beamer artifact, then prove it through
+the repo E2E recipe" is a task. "Classify this as env-blocked" is not a task unless it
+is nested under the substantive obligation and names the concrete blocker, owner,
+evidence, and unblock condition.
+
+Tooling and environment steps belong in the proof path, not as standalone progress,
+unless the shared artifact or external precondition is itself reviewer-relevant. "Ensure
+Playwright is installed" is normally subsumed by the proof task that uses Playwright; the
+plan item is the boundary behavior being proven and the admissible evidence for it.
+
+## Milestones and Execution Graph
+
+Milestones describe delivered capability or restored correctness. The progress checklist
+tracks granular execution. Keep them separate.
+
+A milestone must state:
+
+- the result that will exist at the end;
+- what it blocks or depends on;
+- which work can happen in parallel;
+- how integration is verified;
+- what observable evidence proves it is complete.
+
+Use a prototyping milestone when requirements depend on unknown library, runtime, UI,
+API, or proof behavior. A prototype must be additive, bounded, and tied to a promotion or
+discard decision.
+
+Use parallel workstreams only when their interfaces are explicit. State what each stream
+produces, consumes, and must preserve for integration.
+
+## Transformation-Ready Source Plans
+
+When a plan may become a GitHub epic, issue tree, PR body, multi-agent tracker, or
+handoff, write it so conversion is a lossless projection without semantic invention.
+
+Start from user stories and user-observable outcomes, and derive milestones,
+dependencies, and acceptance criteria from those stories. A projection may add execution
+metadata: owner, branch, status, blocker, commit, run, artifact, review link, and GitHub
+formatting. It must not add, delete, demote, or reinterpret the milestone, scope,
+baseline, vocabulary, execution graph, obligations, tasks, handoffs, integration duties,
+proof burdens, or review prerequisites.
+
+Before conversion, the plan must fix:
+
+- externally meaningful milestone, finite scope, exclusions, preserved behavior, and
+  observable completion state;
+- stable vocabulary and complete referents. A future reader should not need transcript
+  context, test mnemonics, issue numbers, file names, or agent scratchpads to know what
+  the plan means;
+- stacked foundations, parallel lanes, handoff contracts, and integration obligations;
+- every obligation's actor, trigger or context, intended result, acceptance criteria,
+  proof burden, dependencies, and supplied artifacts;
+- which finalized milestones, workstreams, or obligations should become issues linked
+  under the epic, using native sub-issues only when supported;
+- proof design before implementation assessment.
+
+Do not let test IDs, commands, filenames, commits, labels, green checks, or artifact names
+stand in for obligations. They are evidence or automation only when attached to a declared
+criterion.
+
+If source material is scattered across plans, scratchpads, transcripts, comments, or run
+notes, consolidate propositions by semantic role before writing the public plan. Preserve
+valid meaning, dependencies, obligations, and proof burdens. Do not inherit wording,
+checkboxes, duplicate status, or private identifiers as public truth.
+
+Classify each proposition before consolidation:
+
+- governing intent: milestone, scope, behavior, constraints, or acceptance criteria;
+- work decomposition: substantive transformations, dependencies, lanes, handoffs, or
+  integration work;
+- scratchpad observation: symptom, command result, hypothesis, local TODO, or provisional
+  idea;
+- current execution state: ownership, branch, blocker, or completion claim that must be
+  verified current before use;
+- evidence material: output, screenshot, artifact, log, CI run, or report that must map
+  to a named criterion;
+- policy or automation: global review, proof, environment, or enforcement behavior that
+  belongs in skills, CI, rulesets, or repository settings;
+- residue: obsolete alternatives, raw commands, duplicated reminders, private reasoning,
+  and notes with no continuing coordination or evidentiary value.
+
+When sources disagree, do not use latest-file-wins, most-detailed-text-wins, or
+most-confident-language-wins. Identify the conflicting propositions, distinguish intended
+behavior from implementation state and hypothesis, resolve the contradiction in the
+source plan, and publish only the coherent current obligation.
+
+Normalize propositions, not prose blocks. Split paragraphs that mix obligations,
+hypotheses, commands, and status claims. Expand internal referents, keep internal IDs only
+as aliases, and convert micro-actions into their substantive parent. Do not inherit
+checkmarks; re-evaluate old local status against current acceptance criteria, and count
+repeated claims once.
+
+Stop and repair the source plan when conversion would require inventing scope, user
+behavior, acceptance criteria, proof burdens, dependency order, ownership, unresolved
+architecture decisions, or a reconciliation choice among contradictory source claims.
+
+## Plan to Issue Tree to PR
+
+Interactive planning is allowed to be a roadmap while the decomposition is still being
+discovered. The issue hierarchy is created after the user finalizes the plan, not before
+the plan has a stable semantic shape.
+
+For nontrivial implementation work, use this externalization sequence:
+
+1. Create or update the vault-owned `agent-memory` plan record.
+2. Finalize the plan with the user.
+3. Create or update a parent GitHub issue that acts as the epic.
+4. Create or attach child issues for the top-level milestones, foundations, workstreams,
+   or independently reviewable obligations. Use native sub-issues when the active GitHub
+   surface supports them; otherwise link the child issues from the epic body as a task
+   list.
+5. Verify the issue tree preserves the finalized plan's scope, dependencies,
+   acceptance criteria, and proof burdens.
+6. Draft implementation PRs from that issue tree. Each top-level PR checklist item must
+   link to the relevant issue unless the PR is genuinely trivial.
+
+The issue tree becomes the external tracking source. Local plan files and scratchpads may
+explain how the tree was derived, but they must not remain the authoritative tracker once
+GitHub issues exist.
+
+Do not use issue creation as a substitute for planning. If the issue tree cannot be
+created without adding new scope, choosing between unresolved alternatives, or weakening a
+proof burden, return to planning.
+
+## Living-Document Discipline
+
+A plan remains authoritative only while it is current.
+
+Update the plan at every stopping point:
+
+- mark completed tasks only when their acceptance and proof are satisfied;
+- split partly done work into completed and remaining parts;
+- record blockers with the evidence or missing input;
+- add discoveries that change the plan;
+- log decisions and their rationale;
+- append a revision note explaining what changed and why.
+
+Do not use progress edits to launder incomplete work. Administrative updates, labels,
+comments, and green checks are not completion unless they satisfy the declared obligation.
+
+## Quality Gates
+
+Before saving or handing off a plan, verify:
+
+- **Completeness:** goal, scope, exclusions, preserved behavior, dependencies, risks, and
+  stop rules are explicit.
+- **Actionability:** tasks name exact files or surfaces, preconditions, changes,
+  acceptance, proof, and commit boundaries.
+- **Design sense:** the approach follows repo patterns, removes avoidable duplication,
+  and does not introduce fallback or compatibility shims as a substitute for correctness.
+- **Proof quality:** validation happens at the real use boundary and would fail on a
+  plausible broken implementation.
+- **Restartability:** another agent can resume from the plan alone.
+- **Externalization readiness:** if the plan will be projected into a GitHub issue tree
+  and PR, no semantic invention is needed.
+- **Projection integrity:** translation causes no semantic loss, invention, demotion, or
+  proxy promotion; stacked, parallel, handoff, and integration structure stays explicit.
+- **Evidence discrimination:** proof design distinguishes provenance, execution,
+  attainment, and adequacy; evidence applies to the current revision and named criteria.
+- **Closure:** every scope item maps to an obligation, every obligation maps to tasks and
+  proof burdens, every task has one primary parent, and no repeated internal mention earns
+  duplicate progress.
+
+## Anti-Patterns
+
+| Pattern | Failure | Required correction |
+| --- | --- | --- |
+| "Make tests pass" | Derived status replaces intended behavior | State the behavior and attach tests as evidence |
+| Test ID as task | Private shorthand hides the obligation | Define the user/system outcome, then cite the test |
+| File-touch checklist | Activity is counted as progress | Tie each edit to an obligation and acceptance criterion |
+| Vague action verbs | `update`, `reconcile`, or `clean up` can mean anything | State concrete before/after behavior |
+| Neural-ese | Deictic wording, invented jargon, status language, or authority priming hides the referent | Rewrite into exact behavior, decision, surface, and evidence |
+| Tool step as task | Environment trivia becomes visible progress | Nest setup under the boundary proof it enables |
+| Classification as task | Labels such as `env-blocked` replace the real obstacle | Record blocker evidence and unblock condition under the substantive task |
+| Inherited checkmark | Old local status is treated as current public truth | Re-evaluate against current acceptance criteria and evidence |
+| Duplicate corroboration | One claim repeated in several artifacts becomes several progress signals | Collapse repeats into one claim and require independent evidence |
+| Evidence dumping | Commits, runs, logs, or artifacts are listed without a criterion | Map each witness to the obligation and false positive it rejects |
+| Chat-only plan | Work cannot survive context rollover | Save a durable plan artifact through the active plan/memory workflow |
+| Frozen plan | Discoveries and decisions leave the artifact stale | Update progress, discoveries, decisions, and revision notes |
+| Implementation-defined success | Code determines its own acceptance after the fact | Lock acceptance and proof before implementation |
+| Premature institution | Plan invents roles, owners, gates, or doctrine before actors or a demonstrated failure exist | Plan controls only against a demonstrated failure mode, using the simplest standard mechanism |
+| Status in the product | Plan routes ephemeral status, MVP state, or roadmap into a README or user-facing doc | Keep work state in the plan record, issues, and milestones; keep docs task-facing |
+| Bespoke-over-standard | Plan designs a custom system where a database, git, PR review, or issues already fit | Justify any bespoke mechanism against the standard tool it replaces, or use the standard tool |
+
+## Interaction Style
 
 - If the request is clear enough, write the plan directly.
-
 - If no explicit instruction accompanies `/plan`, infer the task from the current
   conversation context.
-
-- If it is genuinely underspecified, ask a brief clarifying question instead of
-  guessing.
-
+- If it is genuinely underspecified, ask a brief clarifying question instead of guessing.
 - After saving the plan, reply briefly with the saved memory key. Include a local export
   path only when one was explicitly created.
 
@@ -136,5 +458,12 @@ review surface on demand:
 - Read feedback with `npx -y lavish-axi poll .lavish/<plan>.html` before revising or acting.
 - Save the annotation payload file returned by lavish and include it in handoff notes.
 
-The review page is not a standing service.
-Create it only for the requested plan-review turn.
+The review page is not a standing service. Create it only for the requested plan-review
+turn.
+
+## Related Skills
+
+- `subagent-driven-development`: executes approved plans task by task.
+- `test-driven-development` and `test-guidelines`: proof design for code changes.
+- `git-guidelines`: checkpoint, commit, PR, and review workflow.
+- `agent-memory`: storage command surface for vault-owned plan records.
