@@ -203,8 +203,11 @@ run-microagent *args:
 # Steps:
 #   1. build-config — compile opencode.json from skeleton + provider fragments, apply global permission policy
 #   2. build-agents — fetch ai-prompts slugs, compile managed agent markdown
-#   3. _build-opencode-agents-md — render AGENTS.md template and count tokens
-build: build-config build-agents _build-opencode-agents-md
+#
+# AGENTS.md is NOT built here. It is assembled from the AGENTSmd/ fragment tree via
+# `just -f AGENTSmd/.agents/justfile assemble`; the repo-root AGENTS.md (and the
+# opencode/AGENTS.md symlink) point at that generated artifact.
+build: build-config build-agents
 
 # Build only the compiled OpenCode config pipeline.
 # Usage: just build-config
@@ -330,25 +333,8 @@ _build-opencode-managed-agents:
 
 
 # =============================================================================
-# AGENTS.md Template
+# Utilities
 # =============================================================================
-
-[private]
-_build-opencode-agents-md:
-    @just --justfile {{ justfile() }} _build-opencode-agents-md-render
-    @just --justfile {{ justfile() }} count-tokens {{ repo }}/opencode/AGENTS.md
-
-# Render the repo-local AGENTS.md from the published system template.
-# Steps:
-# - fetch the system/AGENTS prompt body from ai-prompts
-# - write it into ~/ai/opencode/AGENTS.md
-[private]
-_build-opencode-agents-md-render:
-    @uvx --from git+https://github.com/dzackgarza/ai-prompts.git ai-prompts get system/AGENTS --json \
-      | jq -r '.text' \
-      | tee {{ repo }}/opencode/AGENTS.md \
-      | wc -c \
-      | xargs -I {} echo "Wrote {{ repo }}/opencode/AGENTS.md ({} bytes)"
 
 # Count tokens in any file using tiktoken (cl100k_base).
 count-tokens file:
