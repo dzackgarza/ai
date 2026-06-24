@@ -164,8 +164,8 @@ cleaner prose. Agents do reliable greenfield work and unreliable brownfield work
 only safe repair is to **force the brownfield job to look like a greenfield job**:
 
 1. **Encode the standard.** The skill that owns the artifact type must already state what
-   a correct and an incorrect such artifact looks like (`writing-readmes`,
-   `writing-documentation`, the plan skills, etc.). This is the priming, not the
+   a correct and an incorrect such artifact looks like (`writing-documentation`,
+   the `plan` skill, etc.). This is the priming, not the
    contaminated artifact.
 2. **Adversarial requirement extraction (fresh agent).** A fresh agent, primed on the
    owning skill and *not* carrying the correction history, audits the contaminated

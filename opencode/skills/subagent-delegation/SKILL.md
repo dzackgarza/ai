@@ -667,8 +667,8 @@ old artifact treats its residue as requirements and reseeds the slop.
 Force the brownfield job to look like greenfield work with two fresh, separately-scoped
 subagents:
 
-1. **Extractor.** Prime on the skill that owns the artifact type (`writing-readmes`,
-   `writing-documentation`, `creating-implementation-plans`, etc.). Give it the
+1. **Extractor.** Prime on the skill that owns the artifact type (`writing-documentation`,
+   `plan`, etc.). Give it the
    contaminated artifact and the instruction to extract only the real, externally
    verifiable, user-facing requirements and surviving facts, each grounded in inspected
    reality (code, data, command output, external source) rather than other generated

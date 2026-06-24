@@ -154,8 +154,9 @@ them require subtraction, relocation, or evidence, not elaboration.
 
 - `references/agent-distortion-index.md`: the R/T/L/O/C/V shorthand for these failures
   (and reviewer-infection codes), usable to label findings compactly.
-- `writing-readmes`: public/private boundary gate for README edits.
-- `writing-documentation`: general documentation workflow and anti-patterns.
+- `writing-documentation`: general documentation workflow, anti-patterns, and the
+  README acceptance contract / public/private boundary gate (see its **Writing READMEs**
+  section).
 - `reviewing-llm-code/references/pattern-catalog.md`: canonical pattern names for
   review reports.
 - `reviewing-subagent-work`: independence discipline for agent-produced reviews.
