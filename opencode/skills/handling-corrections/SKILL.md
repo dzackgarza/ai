@@ -194,6 +194,25 @@ after the fix is validated.
 - This is deliberate `沉淀` (deposited learning): the project state should get better
   after each correction.
 
+Most corrections are not bug fixes — they are the user re-stating an app decision,
+ownership boundary, purpose, goal, or expectation that the agent misunderstood because it
+was never encoded. Every such correction would have been unnecessary had the expectation
+lived in the knowledge base. So for any correction that exposes a previously-unencoded or
+divergently-encoded expectation:
+
+- Persist the underlying expectation immediately as the appropriate typed memory
+  (`decision`, `context`, `advice`, or `trap`), recorded in the user's own terms — what was
+  decided or expected, what it governs, and why.
+- Reconcile it against the durable surfaces. If memory, the wiki, or the GitHub issue tree
+  already says something divergent, the correction is authoritative: update the stale
+  surface so every record agrees. Promote public-direction expectations to the owning
+  issue, milestone, PR, or wiki page.
+- The test is whether the same correction could recur. If it could, the expectation is not
+  yet adequately encoded — encode it before reporting the correction handled.
+
+This obligation is not satisfied by acknowledging the correction or by the fix alone; it is
+satisfied only when the expectation is durably captured and consistent across surfaces.
+
 ## When the user asks “why”
 
 Every “why” question is a research task, not a conversation opener.
