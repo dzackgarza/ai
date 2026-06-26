@@ -27,7 +27,7 @@ Each policy record contains:
 - **QC Authority**: `POLICY.NO_QC_SILENCING`, `POLICY.GLOBAL_QC_AUTHORITY`
 - **Artifact Ownership**: `POLICY.NO_DYNAMIC_ARTIFACTS`
 - **Migration and Remediation Integrity**: `POLICY.NO_LEGACY_SHIM`, `POLICY.NO_QUARANTINE_REMEDIATION`, `POLICY.NO_ADMIN_COMPLETION`, `POLICY.NO_DELETION_LAUNDERING`
-- **Anti-Speculation**: `POLICY.NO_HYPOTHETICAL_PATH`
+- **Anti-Speculation**: `POLICY.NO_HYPOTHETICAL_PATH`, `POLICY.PREFER_ASSERTION`
 
 ## Policy Records
 
@@ -339,10 +339,22 @@ Related remediation: `REMEDIATE.BURDEN_DISPOSITION`
 
 Category: Anti-Speculation
 
-Rule: Do not add branches for failure modes that have not been observed, tested, or reported. Assert invariants now; handle real incidents when they exist.
+Rule: Do not add branches for failure modes that have not been observed, tested, or reported. Assert invariants now; handle real incidents when they exist. Converting an existing `assert` into `if/raise` to defend against `python -O` stripping assertions is itself a hypothetical-path fix: `-O` is an unobserved failure mode in bespoke software that is never run with it. Keep the assertion. See `POLICY.PREFER_ASSERTION`.
 
-Invalid local fixes: "What if" guards; speculative fallback code; enterprise deployment branches for bespoke local tools.
+Invalid local fixes: "What if" guards; speculative fallback code; enterprise deployment branches for bespoke local tools; replacing `assert` with `if/raise` on a generic "asserts are disabled under `-O`" argument that names no observed failure.
 
-Detection handles: `HYPOTHETICAL-PATH`, `NO-PREEMPTIVE-PATH`, `UNOBSERVED-FAILURE`
+Detection handles: `HYPOTHETICAL-PATH`, `NO-PREEMPTIVE-PATH`, `UNOBSERVED-FAILURE`, `ASSERT-TO-RAISE-O-STRIP`
 
 Related remediation: `REMEDIATE.OBSERVE_BEFORE_BRANCHING`
+
+#### `POLICY.PREFER_ASSERTION` — Prefer assertions over `if/raise` for invariants
+
+Category: Anti-Speculation
+
+Rule: Assertions are the strongly-preferred idiom for invariants, preconditions, and type-narrowing in owned code. An `assert` records what the author believes must be provably true at that point — it forces the writer to engage with the data, enumerate real (observed) failure modes, name them, narrow types for the checker, and short-circuit early so later logic can rely on a proven condition. Code should be littered with assertions. `if/raise` (especially `raise ValueError`/`RuntimeError`) on what is actually an invariant is the red flag, not the assertion: it is adjacent to timid, fail-open, splat-guessing slop and removes the auditable proof an assertion provides. The threat model is slop and unproven logic, not someone running the app under `-O`; protecting downstream users who pass optimization flags is not an owned obligation. If assertion cost ever becomes a real measured problem, the fix is a dedicated optimization pass (cython/rust/library change), never pre-emptively swapping asserts for raises.
+
+Invalid local fixes: Replacing an `assert` with `if/raise`/`ValueError`/`RuntimeError` to satisfy a reviewer or a `python -O` argument; adding a raise-based guard where an assertion would document the precondition; weakening an assertion into a tolerant branch.
+
+Detection handles: `RAISE-FOR-INVARIANT`, `ASSERT-TO-RAISE-O-STRIP`, `ASSERT-WEAKENING`
+
+Related remediation: `REMEDIATE.PREFER_ASSERTION`
