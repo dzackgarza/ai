@@ -1,4 +1,4 @@
-generated_at: "2026-06-27T04:10:29.242868+00:00"
+generated_at: "2026-06-27T13:35:53.847387+00:00"
 sources:
   - "/home/dzack/.envrc"
   - "https://models.dev/api.json"
@@ -1310,7 +1310,7 @@ providers:
     status: "ok"
     endpoint: "https://openrouter.ai/api/v1/models"
     free_only: true
-    model_count: 23
+    model_count: 26
     models:
       - id: "cohere/north-mini-code:free"
         name: "Cohere: North Mini Code (free)"
@@ -1339,6 +1339,15 @@ providers:
         models_dev_name: "Nemotron 3 Ultra (free)"
         models_dev_family: "nemotron"
         models_dev_context: 1000000
+      - id: "openrouter/owl-alpha"
+        name: "Owl Alpha"
+        context_length: 1048756
+        models_dev_matched: true
+        models_dev_id: "openrouter/owl-alpha"
+        models_dev_provider: "openrouter"
+        models_dev_name: "Owl Alpha"
+        models_dev_family: "alpha"
+        models_dev_context: 1048756
       - id: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
         name: "NVIDIA: Nemotron 3 Nano Omni (free)"
         context_length: 256000
@@ -1384,6 +1393,24 @@ providers:
         models_dev_name: "Gemma 4 31B (free)"
         models_dev_family: "gemma"
         models_dev_context: 262144
+      - id: "google/lyria-3-pro-preview"
+        name: "Google: Lyria 3 Pro Preview"
+        context_length: 1048576
+        models_dev_matched: true
+        models_dev_id: "google/lyria-3-pro-preview"
+        models_dev_provider: "openrouter"
+        models_dev_name: "Lyria 3 Pro Preview"
+        models_dev_family: "lyria"
+        models_dev_context: 1048576
+      - id: "google/lyria-3-clip-preview"
+        name: "Google: Lyria 3 Clip Preview"
+        context_length: 1048576
+        models_dev_matched: true
+        models_dev_id: "google/lyria-3-clip-preview"
+        models_dev_provider: "openrouter"
+        models_dev_name: "Lyria 3 Clip Preview"
+        models_dev_family: "lyria"
+        models_dev_context: 1048576
       - id: "nvidia/nemotron-3-super-120b-a12b:free"
         name: "NVIDIA: Nemotron 3 Super (free)"
         context_length: 1000000
