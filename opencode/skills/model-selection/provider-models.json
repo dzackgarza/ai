@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T13:35:53.847387+00:00",
+  "generated_at": "2026-06-27T14:02:04.913071+00:00",
   "sources": [
     "/home/dzack/.envrc",
     "https://models.dev/api.json"
@@ -2079,6 +2079,80 @@
           "name": "",
           "models_dev_matched": false,
           "description": ""
+        }
+      ]
+    },
+    "ollama": {
+      "status": "ok",
+      "endpoint": "http://localhost:11434/api/tags",
+      "model_count": 7,
+      "models": [
+        {
+          "id": "gemma4:31b-cloud",
+          "name": "gemma4:31b-cloud",
+          "models_dev_matched": false,
+          "description": "gemma4:31b-cloud"
+        },
+        {
+          "id": "qwen3.5:cloud",
+          "name": "qwen3.5:cloud",
+          "models_dev_matched": false,
+          "description": "qwen3.5:cloud"
+        },
+        {
+          "id": "minimax-m2.7:cloud",
+          "name": "minimax-m2.7:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "minimax-m2.7",
+          "models_dev_provider": "aihubmix",
+          "models_dev_name": "MiniMax M2.7",
+          "models_dev_family": "minimax",
+          "models_dev_context": 204800,
+          "description": "minimax-m2.7:cloud"
+        },
+        {
+          "id": "deepseek-v4-pro:cloud",
+          "name": "deepseek-v4-pro:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "deepseek-v4-pro",
+          "models_dev_provider": "wafer.ai",
+          "models_dev_name": "DeepSeek V4 Pro",
+          "models_dev_family": "deepseek-thinking",
+          "models_dev_context": 1000000,
+          "description": "deepseek-v4-pro:cloud"
+        },
+        {
+          "id": "deepseek-v4-flash:cloud",
+          "name": "deepseek-v4-flash:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "deepseek-v4-flash",
+          "models_dev_provider": "wafer.ai",
+          "models_dev_name": "DeepSeek V4 Flash",
+          "models_dev_family": "deepseek-flash",
+          "models_dev_context": 1000000,
+          "description": "deepseek-v4-flash:cloud"
+        },
+        {
+          "id": "glm-5.1:cloud",
+          "name": "glm-5.1:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "glm-5.1",
+          "models_dev_provider": "zhipuai-coding-plan",
+          "models_dev_name": "GLM-5.1",
+          "models_dev_family": "glm",
+          "models_dev_context": 200000,
+          "description": "glm-5.1:cloud"
+        },
+        {
+          "id": "kimi-k2.6:cloud",
+          "name": "kimi-k2.6:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "kimi-k2.6",
+          "models_dev_provider": "aihubmix",
+          "models_dev_name": "Kimi K2.6",
+          "models_dev_family": "kimi-k2",
+          "models_dev_context": 262144,
+          "description": "kimi-k2.6:cloud"
         }
       ]
     },
