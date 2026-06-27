@@ -152,7 +152,7 @@ def fetch_provider_models(
         "cloudflare": bool(
             env.get("CLOUDFLARE_API_KEY") and env.get("CLOUDFLARE_ACCOUNT_ID")
         ),
-        "ollama": True,  # Local daemon does not require an API key
+        "ollama": bool(env.get("OLLAMA_CLOUD_API_KEY")),
         "tavily": bool(env.get("TAVILY_API_KEY")),
     }
 
