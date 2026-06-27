@@ -3525,7 +3525,7 @@
       "status": "unsupported",
       "reason": "No standard public model-list endpoint tied to this env key.",
       "model_count": 0,
-      "models": null
+      "models": []
     }
   },
   "version": 1
