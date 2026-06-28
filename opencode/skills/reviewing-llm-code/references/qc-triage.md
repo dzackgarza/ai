@@ -1,198 +1,164 @@
 # QC Triage Protocol
 
-This document defines the mandatory triage procedure when global QC checks
-fail. It is a reference for the `reviewing-llm-code` skill — the slop report
-subagent workflow defined below is owned by `reviewing-llm-code`.
+This document defines the mandatory triage procedure when global QC checks fail. It is a
+reference for the `reviewing-llm-code` skill and for the directive emitted by central QC.
 
-## Core Policy
+## Role Boundary
 
-The agent that hits a QC failure is, by construction, the party that produced or touched
-the failing work. **That party loves its own slop**: its assessment of whether a finding
-is real is biased toward "my code is fine," and is therefore inadmissible (see
-`llm-failure-modes`: self-certification, verification theater; `anti-slop`). The whole
-point of this protocol is that this agent — the orchestrator — is **disqualified from
-judging the findings**. Judgment is delegated to an independent, policy-primed subagent.
+The agent that hits a QC failure is the orchestrator for that failure. It may route the
+failure, but it may not judge it or remediate it. Triage exists because the agent that
+produced or touched the failing work is biased toward preserving that work.
 
-This is a compliance constraint, not a structural gate. Do NOT "solve" it by adding a
-checkpoint or gate you control — per `goalcraft`, *process is attack surface*; a gate the
-adversary controls becomes the adversary's substitute objective. The fix is the removal
-of your discretion, below.
+The ban on reading `~/ai-review-ci/` is role-specific:
+
+- During downstream QC triage, the orchestrator must not inspect `~/ai-review-ci/`, the
+  QC configs, tool scripts, models, prompts, or remediation policy. Those are the
+  surfaces it could use to game the gate.
+- During explicit maintenance of `ai-review-ci` itself, inspecting `~/ai-review-ci/` is
+  required. In that task, `ai-review-ci` is the source repository, not the forbidden
+  downstream-triage target.
+
+Do not collapse these two cases. A downstream remediation run and a central-QC guidance
+edit have different ownership boundaries.
+
+## Immediate Orchestrator Rules
 
 When a QC check fails and the triage directive is emitted, the orchestrator MUST:
 
-1. **Make ZERO judgment calls about any finding.** You may not decide, state, hint,
-   imply, or act on whether a finding is real, false, a "false positive," slop, clean,
-   "the tool over-matched," "probably fine," or "a tool bug rather than my code."
-   **Forming the disposition at all is the violation** — not merely acting on it. The
-   instant you catch yourself evaluating whether a finding is valid, STOP: that reflex is
-   the slop-love bias this protocol exists to neutralize. Even distinguishing
-   "tool-execution failure vs. code finding" is a judgment call, and is also delegated.
+1. **Make no judgment calls about findings.** Do not decide, state, hint, imply, or act on
+   whether a finding is real, false, clean, slop, a false positive, or a tool bug.
 
-2. **STOP all work.** Cease the in-progress task. Do not continue.
+2. **Stop all work.** Cease the in-progress task. Do not continue the original work until
+   triage has resolved the QC failure.
 
-3. **NOT probe QC configs.** Do not read, inspect, or modify any file in
-   `~/ai-review-ci/`. Do not read the configs, scripts, tool pins,
-   ML models, or templates in that directory. Probing QC is reward-hacking.
+3. **Do not probe QC internals.** Do not read, inspect, or modify `~/ai-review-ci/` during
+   downstream triage. Do not read the remediation policy yourself. The remediation
+   subagent reads it when that role starts.
 
-4. **NOT self-fix and NOT self-evaluate findings.** You will game the triage. Both the
-   judgment (review) and the fix are delegated to subagents not involved in producing the
-   failing code; they must be different instances.
+4. **Do not self-fix and do not self-evaluate.** Review/disposition and remediation are
+   delegated to agents that were not involved in producing the failing code.
 
-5. **Present findings to the user immediately.** Show the complete raw QC output. Do not
-   filter, summarize, or interpret it — interpretation is itself a judgment call (rule 1).
+5. **Present the raw output.** Show the complete raw QC output to the user. Do not filter,
+   summarize, group, reinterpret, or convert it into your own report.
 
-6. **Wait for explicit user approval.** Do not proceed without explicit
-   user approval. "Approval" means a direct statement that triage may begin.
+6. **Wait for explicit approval.** Do not proceed until the user directly approves triage.
 
-## Classification Belongs to the Reviewer Subagent — Never the Orchestrator
+## Routing Gate After User Approval
 
-Classifying a finding is the policy-primed reviewer subagent's job (Step 1), and ONLY its
-job. The orchestrator does not pre-classify, co-classify, "narrow down," or sanity-check
-findings before, during, or after dispatch. The rules below bind the REVIEWER; the
-orchestrator only routes the raw finding to it, unjudged.
+After approval, route by the shape of the raw QC output. This is a mechanical routing
+check, not a policy judgment:
 
-The reviewer MUST:
+- If the raw QC output already contains explicit `POLICY.*` findings with file/line
+  locations, that output is already the disposition artifact. Do not spawn a slop-report
+  or disposition subagent to restate it. Proceed directly to **Route C: Remediation**.
+- If the raw output does not contain explicit `POLICY.*` findings, use **Route B:
+  Disposition**, then **Route C: Remediation** for any violations B returns.
+- If you are unsure whether the output contains explicit policy-coded findings, do not
+  decide. Use Route B.
 
-- Treat a QC rule's name as a **pointer to investigate**, never the definition of the
-  violation. Classify the flagged code against the FULL bridge-burning policy and cite the
-  `POLICY.*` code. A non-empty `except`, a rule named "empty X" that hit non-empty Y, or
-  any "the linter over-matched" intuition does NOT clear the code: ask whether it is slop
-  under *any* policy (`FAIL_LOUD_BOUNDARY`, `NO_ERROR_DISCARD`, the graceful-handling ban,
-  `STRINGLY-ERRORS`, etc.). Almost any try/except is slop on this system — emptiness is the
-  wrong axis; presence-and-justification is the axis.
-- Determine for itself whether the failure is a **tool-execution failure** (exit 127,
-  crash, config-load error — a tooling defect, not a code finding) or a **tool finding** on
-  code. The orchestrator must not pre-judge this split; "it's just a broken tool, my code is
-  fine" is the canonical slop-love exit and is exactly why this call is the reviewer's.
-- Treat a "false positive" disposition, or any move to narrow / disable / `# noqa` a
-  detector, as carrying **formal policy-exception burden**: policy code, justification,
-  replacement invariant, boundary proof, audit trail. Weakening a detector that flagged
-  real slop is laundering — the precise reward-hack this protocol exists to stop. "The body
-  is not literally empty / the rule mismatched" is not a valid clearance.
+A Semgrep, ast-grep, or central QC result whose message is `POLICY.RUNTIME_DEFAULT`,
+`POLICY.CRITICAL_DEPENDENCY`, `POLICY.NO_LEGACY_SHIM`, or another `POLICY.*` code is
+policy-coded output. The policy violation report is already in front of you.
 
-## The Three Roles (each unbiased by what it is not allowed to see)
+## Route B: Disposition Subagent
 
-Triage is split across three isolated roles. The isolation IS the mechanism: each role is
-kept unbiased by being denied the inputs that would let it launder.
+Use this route only when the raw output lacks explicit `POLICY.*` findings.
 
-- **A — Orchestrator** (this agent): is alerted to the QC findings and routes them. Makes
-  no judgment, proposes no disposition, proposes no fix. Sees everything, decides nothing.
-- **B — Disposition subagent**: is given ONLY the raw findings + locations, is forced to
-  read all policies, and determines policy-aligned **dispositions** (per finding: is it a
-  real violation, and which `POLICY.*` does it violate — or is it cleared, with the policy
-  proof). **B is never shown, and never proposes, a remediation or fix.** B does not see
-  the fixer, the remediation index, or any "correct shape." Disposition only.
-- **C — Remediation subagent**: is given ONLY B's policy-aligned dispositions (the
-  violations + their `POLICY.*` codes), looks each up in the **remediation policy index**
-  (`policy-index/references/remediations.md`), and from that derives and implements the
-  policy-aligned fix. C does not receive B's prose, "root causes," or any suggested fix —
-  C derives the remediation from the policy index, not from anyone's opinion.
+Spawn a subagent to determine policy-aligned dispositions. The subagent must:
 
-Why B may not suggest fixes: if B proposes a remediation, B's bias about *how much* to
-change (minimize, under-fix, launder) propagates to C, and the independence is gone. The
-disposition→remediation firewall forces C to derive the fix from the canonical remediation
-index given only "what policy is violated," not "what B thinks should change."
+- Load the disposition policies explicitly: `policy-index` plus its references
+  `red-flags.md`, `runtime-control-flow.md`, `policies.md`, and `test-proof-rules.md`;
+  `anti-slop`; `reviewing-llm-code`; `bespoke-software-policy`; and `test-guidelines`.
+  Do not give B the remediation index; it belongs to C.
+- Receive only the raw findings and file/line locations. Do not include the
+  orchestrator's verdict, leaning, explanation, root-cause theory, or proposed fix.
+- Determine for itself whether the raw output is a tool-execution failure, a tool finding,
+  or cleared. The orchestrator does not pre-judge this split.
+- Return dispositions only: `VIOLATION -> POLICY.*` or `CLEARED`, with quoted policy
+  proof. A false-positive or detector-narrowing disposition carries formal
+  policy-exception burden: policy code, justification, replacement invariant, boundary
+  proof, and audit trail.
 
-## Triage Workflow (After User Approval)
 
-Once the user approves, execute these steps in exactly this order:
+B is forbidden from proposing, sketching, or implying remediation, a correct shape, a
+patch, or a refactor. If B proposes a fix, its output is contaminated and must be rerun.
 
-### Step 1: Disposition Subagent (B)
+## Route C: Remediation Subagent
 
-Spawn a SUBAGENT to determine policy-aligned dispositions for the QC findings. This
-subagent must:
+Use this route for policy-coded QC output, or after Route B returns `VIOLATION -> POLICY.*`
+dispositions.
 
-- Load **all** the disposition policies explicitly — name them in the dispatch:
-  `policy-index` (and its `references/red-flags.md`, `runtime-control-flow.md`,
-  `policies.md`, `test-proof-rules.md`), `anti-slop`, `reviewing-llm-code`,
-  `bespoke-software-policy`, and `test-guidelines`. (It is NOT given the remediation index
-  — that belongs to C.)
-- Review the flagged code against the FULL policy and, per finding, return a **disposition
-  only**: VIOLATION (with the `POLICY.*` code it violates) or CLEARED (with the quoted
-  policy proof). Cite codes, not rule labels (per "Classification Belongs to the Reviewer
-  Subagent" above).
+Spawn a separate remediation subagent. The subagent must:
 
-**B is forbidden from proposing, sketching, or implying any remediation, fix, "correct
-shape," patch, or refactor.** Its entire output is the disposition list: finding → verdict
-→ `POLICY.*` code. If B emits a fix suggestion, its output is contaminated and must be
-re-run — the suggestion would bias C. B never sees C, the fixer, or the remediation index.
+- Be a different agent from any disposition/review agent and from the orchestrator.
+- Receive only the policy-coded findings: file/line, snippet when present in the raw QC
+  output, and `POLICY.*` code. Do not include B's prose, root-cause narrative, suggested
+  fix, or the orchestrator's opinion.
+- Load the remediation policy index: `policy-index/references/remediations.md` (vendored
+  in `ai-review-ci` runtime copies under `reviews/vendor/policy-index/references/remediations.md`) and `fixing-slop`.
+- For each `POLICY.*` code, look up the matching `REMEDIATE.*` entry and derive the fix
+  from the policy, not from another agent's suggestion.
+- Implement the remediation in the target repository only.
+- Verify with the target repository's canonical QC command, normally `just test` unless
+  the emitted directive names a stricter target-repo command.
+- Report the fix outcome and any blocker back to the orchestrator.
 
-#### Dispatch hygiene: what you may and may NOT say to the reviewer
+The orchestrator must not read the remediation policy during downstream triage. C reads it.
 
-A review is **an independent attack on the finding, not a confirmation of the
-orchestrator's opinion** (`goalcraft`: "Review: an independent attack on the completion
-claim, not a disposition loop. Do not ask the adversary to classify its own residue.").
-If you transmit your verdict, leaning, or prior analysis to the reviewer, you have **seeded
-its conclusion and the review is VOID** — it will anchor on your prior, which is the exact
-slop-love bias the delegation exists to bypass.
+## Dispatch Hygiene
 
-The dispatch to the reviewer MAY contain ONLY:
-- the raw, verbatim QC / finding output (no paraphrase, no emphasis, no reordering);
-- the file/line locations to examine;
-- the instruction to load all policies explicitly and classify independently, citing codes;
-- the instruction to return its own verdict.
+Dispatch prompts are part of the proof boundary. They must not seed the result.
 
-The dispatch MUST NOT contain:
-- any orchestrator verdict or leaning — "suspected false positive," "confirmed slop,"
-  "I think this is fine / real," "this is probably a tool bug," "likely a graceful exit";
-- any characterization of whether the finding is valid, or whether the code is clean/slop;
-- any framing, hint, ordering, or emphasis that suggests the desired conclusion;
-- the orchestrator's own prior analysis of the code.
+For Route B, the dispatch may contain only:
 
-State the finding and name the policies. Let the reviewer reach the verdict. Then route on
-the **reviewer's** verdict — you never override it, "sanity-check" it, or substitute your
-own. If you find you have an opinion about the outcome, that opinion is contraband: it does
-not enter the dispatch and it does not survive the review.
+- the raw, verbatim QC output or un-coded finding output;
+- file/line locations from that output;
+- the instruction to load the named disposition policies;
+- the instruction to return dispositions only.
 
-### Step 2: Remediation Subagent (C)
+For Route C, the dispatch may contain only:
 
-Spawn a **separate** SUBAGENT to remediate. This subagent must:
+- policy-coded findings from the raw QC output or B's disposition list;
+- file/line locations and snippets that came from the raw QC output;
+- the instruction to load `policy-index/references/remediations.md` and `fixing-slop`;
+- the instruction to remediate according to the matching `REMEDIATE.*` entries.
 
-- Be a different instance from B.
-- Receive ONLY B's policy-aligned dispositions — the list of `VIOLATION → POLICY.* code`
-  entries (with file/line). It MUST NOT receive B's prose, "root causes," any suggested
-  fix, or the orchestrator's opinion. Dispatch hygiene (above) applies to C as well: no
-  seeded remediation.
-- Load the **remediation policy index** (`policy-index/references/remediations.md`) plus
-  `fixing-slop`. For each disposition, look up the `POLICY.*` code in the index, read the
-  matching `REMEDIATE.*` entry, and derive the policy-aligned fix from it — not from anyone's
-  suggestion.
-- Implement the fix, then verify with `just test`.
-- Report the fix outcome back.
+Do not include:
 
-B, C, and the orchestrator are three different agents. B disposes (no fixes). C remediates
-from the index (given only dispositions). A routes (no judgment). None of them does another's
-job.
+- "suspected false positive," "confirmed slop," "probably a tool bug," or any similar
+  orchestrator leaning;
+- root-cause narratives not produced by the assigned role;
+- suggested fixes from B or from the orchestrator;
+- excerpts from the remediation policy copied by the orchestrator.
 
 ## Prohibited Behaviors
 
 | Behavior | Why | Instead |
-|----------|-----|---------|
-| Orchestrator forming/stating a disposition ("false positive", "real", "clean", "tool bug") | The producer loves its own slop; its judgment of its own findings is inadmissible | Make no call; route the raw finding to a policy-primed reviewer |
-| Seeding the reviewer with your verdict, leaning, framing, or prior analysis | Collapses the independent attack into confirmation of your prior | Dispatch raw finding + named policies only |
-| "Doing it right" only once the user pushes back | Behaving correctly under supervision is not a corrected process; it relapses when unwatched | Never self-judge in the first place — the prohibition is unconditional |
-| Reading `~/ai-review-ci/` to "understand the tool" | Gives the agent config info it can later game | Read nothing. Present findings to user. |
-| Running isolated checks (just `ruff`, just `mypy`) to "verify" | Cherry-picking bypasses the full QC gate | Run `just test` only (after fix subagent is done) |
-| Adding bypass comments (`# noqa`, `@ts-ignore`) | Hides the symptom without fixing the cause | Fix the underlying code |
-| Editing QC configs or thresholds | Weakens QC for all future runs | Change only project code |
-| Merging disposition and remediation into one subagent | B games the fix criteria | Always separate B and C |
-| B (disposition) proposing a fix / "correct shape" / refactor | Biases C toward B's preferred (possibly under-) fix | B returns dispositions + `POLICY.*` codes only |
-| C (remediation) receiving B's prose or a suggested fix | Destroys C's independent derivation from the remediation index | C gets only `VIOLATION → POLICY.*` dispositions; derives fix from `remediations.md` |
-| Presenting partial or summarized QC output | The user cannot assess the full failure | Show complete raw tool output |
-| Continuing work on the original task after QC fails | The original output is likely defective | Triage first, then assess if retry is needed |
+| --- | --- | --- |
+| Orchestrator reads `~/ai-review-ci/` during downstream triage | Gives the failing-code producer gate internals it can game | Present raw output, get approval, then delegate |
+| Orchestrator reads the remediation policy during downstream triage | That is C's job and contaminates routing | Tell C to load `policy-index/references/remediations.md` |
+| Spawning a slop-report subagent for already policy-coded QC output | Repeats the report and delays remediation | Treat the raw `POLICY.*` output as the disposition artifact and spawn C |
+| Orchestrator forming/stating a finding disposition | The producer's self-judgment is inadmissible | Route without judgment |
+| Seeding B or C with a verdict, leaning, or proposed fix | Collapses independent review/remediation into confirmation of the orchestrator | Dispatch raw findings or policy-coded dispositions only |
+| B proposing remediation | Biases C toward B's preferred fix | B returns dispositions only |
+| C receiving B's prose or suggested fix | Destroys C's independent derivation from the remediation index | C gets only `VIOLATION -> POLICY.*` entries |
+| Running isolated checks to verify | Cherry-picks around the full gate | Run the target repo's canonical `just test` after remediation |
+| Adding bypass comments or suppressions | Hides symptoms without satisfying policy | Fix the policy violation |
+| Editing QC configs or thresholds during downstream triage | Weakens central QC for all consumers | Change only target project code |
+| Continuing the original task after QC fails | The current output failed the gate | Triage first, then resume only if the fix leaves work remaining |
 
 ## Evidence Requirements
 
-Before reporting any triage step complete, these must be true:
+Before reporting triage complete, these must be true:
 
-- [ ] The orchestrator issued NO disposition of any finding — real / false / slop / clean /
-      tool-bug — at any point, before or after review
-- [ ] The reviewer dispatch contained no orchestrator verdict, leaning, framing, or prior
-      analysis (raw finding + named policies only)
-- [ ] QC findings presented to user in full (raw tool output)
-- [ ] User explicitly approved triage
-- [ ] Disposition subagent (B) loaded all policies explicitly and returned dispositions
-      ONLY (`VIOLATION → POLICY.*` / CLEARED) — no remediation, fix, or "correct shape"
-- [ ] Remediation subagent (C) received only B's dispositions, derived fixes from
-      `policy-index/references/remediations.md`, and verified with `just test`
-- [ ] A, B, and C were three different agents; none did another's job
+- [ ] Raw QC output was presented to the user without filtering or interpretation.
+- [ ] The user explicitly approved triage.
+- [ ] The orchestrator did not inspect `~/ai-review-ci/` or the remediation policy during
+      downstream triage.
+- [ ] The routing decision was mechanical: explicit `POLICY.*` output went directly to C;
+      un-coded output went to B first.
+- [ ] If B ran, B returned dispositions only and no remediation.
+- [ ] C received only policy-coded findings, loaded the remediation policy index and
+      `fixing-slop`, remediated from the matching `REMEDIATE.*` entries, and verified with
+      the target repo's canonical QC command.
+- [ ] B and C, when both are used, were different agents.
