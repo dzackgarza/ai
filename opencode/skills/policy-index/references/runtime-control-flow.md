@@ -941,17 +941,50 @@ Fail-open branches are banned.
 
 ## Assertion Style Guide
 
-Use assertions to state admissible runtime worlds.
+<a id="addd-assert-dump-data-direct"></a>
+
+### ADDD: Assert, Dump Data, Direct
+
+All code follows ADDD at runtime boundaries and invariant checkpoints:
+
+- **Assert** the admissible world as early as the code can know it. Then write the following code linearly as if the assertion holds. Use the assertion to narrow types, remove defensive branches, and make invalid states disappear from the rest of the function.
+- **Dump data** in the assertion payload. A failed assertion should give the next maintainer enough related data to fix the cause without re-running blind probes.
+- **Direct** the reader to the owning fix surface: the file to edit, the config to correct, the command or API usage to change, or the owned tool repository where an issue belongs.
+
+The assertion message is part of the debugging contract. It should name the invariant and include the relevant observed shape, not just say that something failed.
+
+For a file with a broken schema, dump:
+
+- the file path and file role;
+- the schema or model that was expected;
+- the found schema, top-level keys, types, or shortest useful shape summary;
+- the loader, command, or config surface that consumed the file;
+- the place to correct the data or schema.
+
+For a required dependency, dump the required binary/package/service/model, the declared config or setup surface that should provide it, and the command the agent should use to repair setup. Do not dump secrets or raw credentials.
+
+For tool defects, direct to an issue only when the user owns the tool repo. For unowned external tools, report the blocker with the assertion data and the upstream surface to inspect; do not file issues unless the user asks.
 
 **Good:**
 ```python
-assert config.runtime.command is not None
+assert config.runtime.command is not None, (
+    "runtime.command is required; config=.agents/config.toml; "
+    f"found runtime={summarize_shape(config.runtime)}; "
+    "fix the config file or the schema that loads it"
+)
 ```
 ```ts
-invariant(config.runtime.command.length > 0, "runtime.command is required");
+invariant(
+  config.runtime.command.length > 0,
+  `runtime.command is required; config=.agents/config.toml; found=${summarizeShape(config.runtime)}; fix the config file or loader schema`,
+);
 ```
 ```rust
-assert!(!config.runtime.command.as_str().is_empty(), "runtime.command is required");
+assert!(
+    !config.runtime.command.as_str().is_empty(),
+    "runtime.command is required; config=.agents/config.toml; found runtime={:?}; fix config or schema",
+    config.runtime,
+);
 ```
 
 **Bad:**
@@ -969,7 +1002,7 @@ if config.runtime.command.is_empty() {
     return Err("runtime.command is required".into());
 }
 ```
-The bad form creates a branch-shaped surface. Branch-shaped surfaces accumulate fallbacks.
+The bad form creates a branch-shaped surface and withholds the data needed to fix the broken input. Branch-shaped surfaces accumulate fallbacks.
 
 For TypeScript, define a canonical helper:
 ```ts
@@ -979,7 +1012,8 @@ export function invariant(condition: unknown, message: string): asserts conditio
   }
 }
 ```
-Then ban local ad hoc versions.
+Then ban local ad hoc versions. The helper may throw internally, but call sites must remain assertion-shaped and ADDD-shaped.
+
 
 
 

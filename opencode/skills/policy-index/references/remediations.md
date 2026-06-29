@@ -22,7 +22,7 @@ remediation map.
 | `REMEDIATE.TRACK_STATIC_ARTIFACT` | `POLICY.NO_DYNAMIC_ARTIFACTS` | Move owned prompts, scripts, configs, templates, and static data into tracked files. Runtime code loads the reviewed artifact rather than constructing it from inline strings. |
 | `REMEDIATE.REPLACE_LEGACY_PATH` | `POLICY.NO_LEGACY_SHIM` | Migrate all callers to the new path, prove the migrated behavior, then remove the obsolete interface with burden disposition. |
 | `REMEDIATE.OBSERVE_BEFORE_BRANCHING` | `POLICY.NO_HYPOTHETICAL_PATH` | Do not add code. Preserve the invariant as an assertion or fail-loud boundary. Add a branch only after a real observed incident establishes the domain case. |
-| `REMEDIATE.PREFER_ASSERTION` | `POLICY.PREFER_ASSERTION`, `POLICY.NO_HYPOTHETICAL_PATH` | Reject suggestions to replace `assert` with `if/raise` (especially the `python -O` argument). Keep the assertion and strengthen it to the strongest provably-true invariant. See `[ASSERT-OVER-RAISE]`. |
+| `REMEDIATE.PREFER_ASSERTION` | `POLICY.PREFER_ASSERTION`, `POLICY.NO_HYPOTHETICAL_PATH` | Reject suggestions to replace `assert` with `if/raise` (especially the `python -O` argument). Keep the assertion, make it ADDD-shaped, and strengthen it to the strongest provably-true invariant. See `[ASSERT-OVER-RAISE]`. |
 | `REMEDIATE.BURDEN_DISPOSITION` | `POLICY.NO_QUARANTINE_REMEDIATION`, `POLICY.NO_ADMIN_COMPLETION`, `POLICY.NO_DELETION_LAUNDERING` | Reconstruct the original obligation, then mark it solved, invalidated, transferred to a real proof surface, or recorded unresolved. Do not treat labels, docs, deletion, or comments as resolution. |
 | `REMEDIATE.BLAST_RADIUS_REPAIR` | Any slop finding | Inspect the owning boundary, adjacent call sites, tests, config surface, and history for the same failure process. Fix the full damaged obligation, not only the matched token. |
 
@@ -39,6 +39,8 @@ obligation at the widest real boundary. Do not pick the smallest local edit.
 ## [REMEDIATION-POLICIES] Detailed Remediation Policies
 
 A red flag says "this is suspicious." A remediation policy says "replace it with this exact shape." Every remediation converts a slop-enabling pattern into a fail-loud, minimal-cruft equivalent.
+
+All remediation code follows [ADDD: Assert, Dump Data, Direct](runtime-control-flow.md#addd-assert-dump-data-direct). Assert the invariant at the earliest owned boundary, include the related observed data in the failure payload, then direct the reader to the file, config, command, usage, or owned tool repo that fixes the cause. After the assertion, simplify the remaining code as if the invariant holds.
 
 ### [FALLBACK-HEDGE] Remediation: Fallback / Optional-Dependency / File-Availability Hedge
 
@@ -643,12 +645,16 @@ Why this is wrong here: Assertions are the strongly-preferred idiom. An `assert`
 def global_vault_path() -> Path:
     override = os.environ.get("AGENT_MEMORY_VAULT")
     if override is not None:
-        assert override.strip(), "AGENT_MEMORY_VAULT must name a path when set"
+        assert override.strip(), (
+            "AGENT_MEMORY_VAULT must name a path when set; "
+            "config source=environment; "
+            "fix ~/.envrc or unset the variable before running agent-memory"
+        )
         return Path(override).expanduser()
     ...
 ```
 
-Remediation: Reject the suggestion. Restore (or keep) the `assert`. Then audit the assertion itself — is it the strongest provably-true statement available at that point? Strengthen it if a more precise invariant holds. Do not add a raise-based escape hatch.
+Remediation: Reject the suggestion. Restore (or keep) the `assert`. Then audit the assertion itself: is it the strongest provably-true statement available at that point, does it dump the related data needed to repair the failure, and does it direct the maintainer to the owning config, data file, command, usage surface, or owned tool repository? Strengthen it if a more precise invariant or more useful ADDD payload holds. Do not add a raise-based escape hatch.
 
 Do not apply remediation when:
 - The raise is a genuine domain error on observed external input the app contractually owns (see `[STRINGLY-ERROR]` for using structured error types there) — not an internal invariant.

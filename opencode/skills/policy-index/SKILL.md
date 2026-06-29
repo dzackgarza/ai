@@ -26,6 +26,7 @@ assigns a policy code.
 - Use `POLICY.*` codes from this skill and `references/policies.md` as authoritative.
 - Use `references/red-flags.md` to classify validation-evasion constructs.
 - Use `references/runtime-control-flow.md` to classify runtime branch shapes.
+- Use `references/runtime-control-flow.md#addd-assert-dump-data-direct` as the canonical ADDD coding style lookup for assertions: assert early, dump related data, then direct the maintainer to the owning fix surface.
 - Use `references/test-proof-rules.md` to classify proof and assertion shapes.
 - Do not remediate from the detector message alone.
 - State the weakened obligation before editing.
@@ -42,7 +43,7 @@ assigns a policy code.
 | --- | --- | --- |
 | `references/policies.md` | Reviewers, triage agents, fixers after code assignment | Categorized policy database with named `POLICY.*` records. |
 | `references/red-flags.md` | Reviewers and detector authors | Validation-evasion red flags, language-specific signatures, and QC detector targets. |
-| `references/runtime-control-flow.md` | Reviewers and detector authors | Runtime branch admission rules, banned branch shapes, assertion guidance, and examples. |
+| `references/runtime-control-flow.md` | Reviewers, detector authors, and fixers after code assignment | Runtime branch admission rules, banned branch shapes, ADDD assertion style, and examples. |
 | `references/test-proof-rules.md` | Test writers, test reviewers, detector authors | Banned test/assertion shapes and proof-admission rules. |
 | `references/remediations.md` | Fixers only after triage | Remediation registry and detailed restoration procedures keyed by policy/remediation code. |
 
@@ -123,6 +124,7 @@ A policy exception requires all of:
 | What named policy applies? | `references/policies.md` and [Policy Registry](#policy-registry). |
 | What code/test red flags should I scan for? | `references/red-flags.md`. |
 | What runtime control-flow shapes are banned? | `references/runtime-control-flow.md`. |
+| What is the coding style for assertions and invariant failures? | `references/runtime-control-flow.md#addd-assert-dump-data-direct`. |
 | What test assertion patterns are banned? | `references/test-proof-rules.md`. |
 | What codenamed remediation applies? | `references/remediations.md`, loaded only by the remediation/fixer agent after triage. |
 | What policy applies to creating files dynamically from code? | `POLICY.NO_DYNAMIC_ARTIFACTS` in `references/policies.md`. |
