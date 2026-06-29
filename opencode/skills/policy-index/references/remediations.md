@@ -22,7 +22,7 @@ remediation map.
 | `REMEDIATE.TRACK_STATIC_ARTIFACT` | `POLICY.NO_DYNAMIC_ARTIFACTS` | Move owned prompts, scripts, configs, templates, and static data into tracked files. Runtime code loads the reviewed artifact rather than constructing it from inline strings. |
 | `REMEDIATE.REPLACE_LEGACY_PATH` | `POLICY.NO_LEGACY_SHIM` | Migrate all callers to the new path, prove the migrated behavior, then remove the obsolete interface with burden disposition. |
 | `REMEDIATE.OBSERVE_BEFORE_BRANCHING` | `POLICY.NO_HYPOTHETICAL_PATH` | Do not add code. Preserve the invariant as an assertion or fail-loud boundary. Add a branch only after a real observed incident establishes the domain case. |
-| `REMEDIATE.PREFER_ASSERTION` | `POLICY.PREFER_ASSERTION`, `POLICY.NO_HYPOTHETICAL_PATH` | Reject suggestions to replace `assert` with `if/raise` (especially the `python -O` argument). Keep the assertion, make it ADDD-shaped, and strengthen it to the strongest provably-true invariant. See `[ASSERT-OVER-RAISE]`. |
+| `REMEDIATE.PREFER_ASSERTION` | `POLICY.PREFER_ASSERTION`, `POLICY.NO_HYPOTHETICAL_PATH` | Reject suggestions to replace `assert` with `if/raise` (especially the `python -O` argument). Keep the assertion, make it ADDD-shaped, delete any `AssertionError` catch path, and strengthen it to the strongest provably-true invariant. See `[ASSERT-OVER-RAISE]`. |
 | `REMEDIATE.BURDEN_DISPOSITION` | `POLICY.NO_QUARANTINE_REMEDIATION`, `POLICY.NO_ADMIN_COMPLETION`, `POLICY.NO_DELETION_LAUNDERING` | Reconstruct the original obligation, then mark it solved, invalidated, transferred to a real proof surface, or recorded unresolved. Do not treat labels, docs, deletion, or comments as resolution. |
 | `REMEDIATE.BLAST_RADIUS_REPAIR` | Any slop finding | Inspect the owning boundary, adjacent call sites, tests, config surface, and history for the same failure process. Fix the full damaged obligation, not only the matched token. |
 
@@ -80,6 +80,8 @@ Do not apply remediation when:
 ### [SWALLOW-CATCH] Remediation: try/catch That Swallows or Hedges
 
 Slop pattern: A try/catch around an operation that is expected to succeed, converting a useful diagnostic into a silent continuation or a weak log line.
+
+Catching `AssertionError` is worse than ordinary swallowing: an assertion is a proof claim about code state, not a runtime error. Do not recover from it, translate it, or test it as product behavior.
 
 ```python
 # BAD: swallows diagnostic
@@ -625,7 +627,7 @@ Do not apply remediation when:
 
 Policy: `POLICY.PREFER_ASSERTION`, `POLICY.NO_HYPOTHETICAL_PATH`
 
-Slop pattern: An invariant or precondition is enforced with `if not cond: raise ValueError(...)`/`RuntimeError(...)` instead of `assert cond, "..."`. The most common trigger is a reviewer (often an automated one) recommending "replace `assert` with `if/raise` because assertions are stripped under `python -O`." Accepting that recommendation is the slop.
+Slop pattern: An invariant or precondition is enforced with `if not cond: raise ValueError(...)`/`RuntimeError(...)` instead of `assert cond, "..."`, or an existing assertion is wrapped in `try/except AssertionError`. The most common trigger is a reviewer (often an automated one) recommending "replace `assert` with `if/raise` because assertions are stripped under `python -O`." Accepting that recommendation is the slop. Catching assertion failure is the same slop in catch-form: it turns a provable claim about state into runtime logic.
 
 ```python
 # BAD: if/raise on what is an invariant, "to survive python -O"
@@ -636,6 +638,14 @@ def global_vault_path() -> Path:
             raise ValueError("AGENT_MEMORY_VAULT must not be empty when set")
         return Path(override).expanduser()
     ...
+
+# BAD: catching an assertion turns proof into runtime behavior
+def run_with_config(config: RuntimeConfig) -> None:
+    try:
+        assert config.command, "runtime command is required"
+    except AssertionError:
+        repair_or_continue()
+    run(config.command)
 ```
 
 Why this is wrong here: Assertions are the strongly-preferred idiom. An `assert` is an auditable proof of what the author believes must be true at that point; it forces the writer to engage with the data, name real failure modes, and narrow types so the checker can validate the branch. `if/raise` on an invariant is adjacent to timid, fail-open, splat-guessing slop and removes that proof. The `python -O` argument is hypothetical fiction (`POLICY.NO_HYPOTHETICAL_PATH`): these are bespoke tools that are never run with `-O`, the assertion-stripping failure has never been observed, and protecting downstream users who pass optimization flags is not an owned obligation.
@@ -654,7 +664,7 @@ def global_vault_path() -> Path:
     ...
 ```
 
-Remediation: Reject the suggestion. Restore (or keep) the `assert`. Then audit the assertion itself: is it the strongest provably-true statement available at that point, does it dump the related data needed to repair the failure, and does it direct the maintainer to the owning config, data file, command, usage surface, or owned tool repository? Strengthen it if a more precise invariant or more useful ADDD payload holds. Do not add a raise-based escape hatch.
+Remediation: Reject the suggestion. Restore (or keep) the `assert`. Then audit the assertion itself: is it the strongest provably-true statement available at that point, does it dump the related data needed to repair the failure, and does it direct the maintainer to the owning config, data file, command, usage surface, or owned tool repository? Strengthen it if a more precise invariant or more useful ADDD payload holds. Do not add a raise-based escape hatch or a catch-based recovery path.
 
 Do not apply remediation when:
 - The raise is a genuine domain error on observed external input the app contractually owns (see `[STRINGLY-ERROR]` for using structured error types there) — not an internal invariant.

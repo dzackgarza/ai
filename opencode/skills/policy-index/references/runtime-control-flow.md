@@ -46,6 +46,8 @@ A hypothetical scenario is not an edge case. It is an imaginary world. Code for 
 
 `assert X` states the admissible world. The code after the assertion is allowed to assume X. That is the point.
 
+Never catch `AssertionError` or an equivalent invariant-failure exception in owned runtime code. An assertion is not runtime logic, not a domain error, and not an error handler. It records a nontrivial provable claim about code state at that point. Catching it turns the claim into a branch and gives future agents a place to recover, warn, retry, default, or convert invariant failure into product behavior.
+
 Do not replace `assert X` with:
 
 ```python
@@ -234,6 +236,34 @@ def load_document(path: Path) -> str:
     return path.read_text()
 ```
 If this is a public command boundary, convert the exception once into a structured fatal error. Do not return a falsy value.
+
+### **[ASSERTION-CATCH]** Banned: catching assertion failures
+```python
+def load_runtime_config(config_path: Path) -> RuntimeConfig:
+    config = RuntimeConfig.model_validate(tomllib.loads(config_path.read_text()))
+    try:
+        assert config.schema_version == CURRENT_SCHEMA, (
+            f"runtime config schema mismatch; file={config_path}; "
+            f"expected={CURRENT_SCHEMA}; found={config.schema_version}; "
+            "fix the config file or schema migration"
+        )
+    except AssertionError:
+        return RuntimeConfig.default()
+    return config
+```
+
+**Correct shape:**
+```python
+def load_runtime_config(config_path: Path) -> RuntimeConfig:
+    config = RuntimeConfig.model_validate(tomllib.loads(config_path.read_text()))
+    assert config.schema_version == CURRENT_SCHEMA, (
+        f"runtime config schema mismatch; file={config_path}; "
+        f"expected={CURRENT_SCHEMA}; found={config.schema_version}; "
+        "fix the config file or schema migration"
+    )
+    return config
+```
+Assertions are provable state claims. They are allowed to stop execution; they are not errors for product code to catch, translate, retry, or recover from.
 
 ### **[STRINGLY-BOUNDARY-EXIT]** Banned: stringly graceful exit at a CLI boundary
 ```python

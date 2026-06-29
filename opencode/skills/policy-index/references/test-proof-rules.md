@@ -24,6 +24,7 @@ The pattern is banned whenever the assertion:
 - checks helper branches instead of real boundaries;
 - checks that a mock was called instead of checking a real effect;
 - catches and inspects an exception instead of asserting a structured failure;
+- catches or expects `AssertionError` as product behavior instead of treating assertions as provable state claims;
 - would pass on arbitrary non-empty junk.
 
 Variable names in examples are intentionally generic: `result`, `items`, `output_path`, `config_path`, `source`, `status`, `payload`, `boundary`, `helper`, `fallback`. They gesture at the general shape.
@@ -40,8 +41,9 @@ Banned:
 - Ruby `begin/rescue`
 - shell `cmd || fallback`, `set +e` around normal execution, or fallback branches
 - Rust `let _ =`, `.ok()`, `unwrap_or`, `unwrap_or_else`, `match Err(_) => fallback`
+- Catching or expecting assertion failures as the unit under test: Python `except AssertionError` / `pytest.raises(AssertionError)`, JavaScript `toThrow(AssertionError)`, or equivalents
 
-Expected failures must be asserted by structured test-framework mechanisms or structured error values. Unexpected failures must propagate.
+Expected failures must be asserted by structured test-framework mechanisms or structured error values. Unexpected failures must propagate. Assertion failures are not expected product failures; they are failed proof claims about state. A test may contain assertions, but it must not make catching an assertion failure the behavior being proved.
 
 The only possible exception is an explicitly approved boundary renderer whose sole job is to translate a structured internal error into a user-facing protocol. That boundary must not continue execution, must not default, and must not return partial success.
 

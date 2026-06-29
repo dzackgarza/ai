@@ -36,6 +36,7 @@ When one appears, ask:
 | **[LEGACY-SHIMS] Compatibility/legacy shims** | Preserves wrong prior designs in pre-launch code. |
 | **[DEFENSIVE-GUARDS] Defensive guards in trusted core** | Bloats happy path and hides invariant violations. |
 | **[HYPOTHETICAL-PATH] Hypothetical-path code** | Adds branches for failures never observed; turns absence-of-evidence into code without proof the path exists. |
+| **[ASSERTION-CATCH] Catching assertion failures** | Treats provable state claims as runtime errors, giving agents a branch to recover, warn, retry, default, or convert the assertion into product logic. |
 | **[UNTYPED-IMPORT] Untyped dependency ingress** | Missing stubs or `py.typed` lets an external library enter owned code as `Any`; remediation restores a typed boundary rather than changing libraries. |
 | **[DYNAMIC-FILE] Dynamic file creation from code** | Writing configs, scripts, or any file from raw strings in code or shell destroys observability and is extremely brittle — the file cannot be reviewed, diffed, or tracked independently. |
 | **[INLINE-STRINGS-DATA] Inline large strings / prompts as data** | Embedding agent prompts, user-facing messages, or any non-code text (>5 lines or containing structured instructions) directly in source files conflates code with data. Strings are not reviewable as separate artifacts, cannot be independently versioned, and encourage ad-hoc editing that bypasses normal review. |
@@ -89,6 +90,10 @@ safe fallback
 if available
 if installed
 try X else Y
+AssertionError
+except AssertionError
+pytest.raises(AssertionError)
+catch assertion
 ```
 
 They are not automatic findings. They are prompts to ask:
@@ -157,8 +162,16 @@ result = maybe() or default
 contextlib.suppress(...)
 except Exception:
     pass
+
+try:
+    assert state_is_valid, "state invariant"
+except AssertionError:
+    recover_or_continue()
+
+with pytest.raises(AssertionError):
+    call_product_boundary()
 ```
-These should usually be banned. If the dependency or operation is required, failure is the correct behavior.
+These should usually be banned. If the dependency or operation is required, failure is the correct behavior. `AssertionError` is stricter: it is not a domain error at all. Catching it, including in tests, turns a provable claim about state into runtime behavior.
 
 ### **[TYPE-PROOF-ESCAPE]** Type/Proof Escape Hatches
 ```python
@@ -443,7 +456,7 @@ These can be compiled into global QC detectors to act as warning or error gates.
 - `import-untyped`, `missing library stubs`, `py.typed`, `ignore_missing_imports`
 
 ### **[AST-PYTHON]** AST-Level Candidates (Python)
-- `ExceptHandler` for `ImportError` / broad `Exception`
+- `ExceptHandler` for `AssertionError`, `ImportError`, or broad `Exception`
 - `Call` to `os.getenv` or `dict.get` with default value
 - Subscript/annotation `Any`
 - `pytest` skip/xfail markers
