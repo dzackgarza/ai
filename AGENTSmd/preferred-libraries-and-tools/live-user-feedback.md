@@ -18,5 +18,10 @@ Never begin implementation from a plan until the user has approved it and the re
 GitHub issue-tree, milestone, and PR-claim surfaces either exist or are explicitly out of
 scope for a trivial direct commit.
 
+When the user asks for a simple plan, write the minimal workflow in positive terms. Still
+include the concrete interception point, data path, state owner before and after the
+action, and proof point. Do not replace those details with extra artifacts, governance, or
+a list of rejected mechanisms.
+
 When the user asks to read, annotate, or give feedback on a plan, the `plan` skill owns
 the on-demand HTML review surface and annotation workflow.

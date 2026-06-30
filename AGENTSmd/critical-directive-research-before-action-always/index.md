@@ -34,3 +34,18 @@ Verbally confirm what the user's stated directive was, your planned action, and 
 Never make an edit without first understanding the repo's shape and the specific boundary you are about to change.
 Never guess commands, endpoints, or file paths without running them first.
 Do not treat docs as the sole source of truth — code, configs, CLI output, generated artifacts, and runtime diagnostics are all valid reality surfaces.
+
+When a request names an existing workflow or recurring friction, reset around the workflow
+before proposing machinery:
+
+- State the user gesture, the object being acted on, the existing substrate, and the
+  smallest boundary that can intercept or observe it.
+- Separate capture-time facts from later enrichment, review, cataloging, or citation work.
+- Name the owner system before and after each handoff.
+- Keep technical proof attributes out of user-facing identity or organization unless the
+  workflow actually needs a content-addressed store.
+- Prefer native substrate: browser or extension hooks before helper apps, identifier lookup
+  before manual metadata, collection or membership state before new statuses, and
+  artifact-native metadata before external sidecars.
+- Do not add logs, queues, lifecycle states, managers, or sidecars until the native owner,
+  available facts, and required state transition are known.

@@ -15,3 +15,8 @@ The judgment-bearing question is what the user needs to trust, keep, reject, rev
 do next.
 File existence, hashes, command logs, summaries, and worker reports are receipts only,
 not evidence that the work is correct or useful.
+
+Before judging a solution, identify the user's actual workflow and the object that must
+change. A coherent artifact that solves an invented lifecycle, audit, cataloging, or
+governance problem is still wrong if the user needed a smaller intervention in an existing
+workflow.
