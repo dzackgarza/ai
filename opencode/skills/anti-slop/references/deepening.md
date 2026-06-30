@@ -69,5 +69,5 @@ When exploring alternative interfaces for a deepened module, use a parallel sub-
 - [`code-patterns.md`](code-patterns.md) — Detects the shallow patterns that deepening replaces.
 - [`simplification.md`](simplification.md) — Patterns for simplifying existing code toward depth.
 - **thermo-nuclear-code-quality-review** — Identifies missed deepening opportunities during code quality reviews. Uses this vocabulary for pass-through wrappers and "code judo" moves.
-- **clean-code/classes.md** — SRP and DIP overlap with deepening's emphasis on interface concentration.
+- **code-patterns/references/classes.md** — SRP and DIP overlap with deepening's emphasis on interface concentration.
 - **addressing-shallow-work** — The "shallow work" concept maps directly to shallow modules. Deepening vocabulary gives it precise structure.

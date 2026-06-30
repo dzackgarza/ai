@@ -47,5 +47,5 @@ What maintainers get from depth. Change, bugs, knowledge, and verification conce
 
 - **anti-slop** → Uses this vocabulary to name what's shallow and what deepening would replace it with.
 - **thermo-nuclear-code-quality-review** → Uses this vocabulary when identifying pass-through wrappers and missed deepening opportunities.
-- **clean-code/classes.md** → Overlaps on DIP and cohesion; deepening vocabulary adds the *leverage* and *locality* dimensions.
+- **code-patterns/references/classes.md** → Overlaps on DIP and cohesion; deepening vocabulary adds the *leverage* and *locality* dimensions.
 - **addressing-shallow-work** → "Shallow work" in that skill's sense maps directly to "shallow modules" in this vocabulary.

@@ -156,6 +156,6 @@ spot-check of any agent-produced artifact.
 - `reality-grounded-debugging` — command-output discipline, stderr preservation,
   surface-classification matrix.
 
-- `python-patterns` — uv-only, PEP 723 inline metadata for standalone scripts.
+- `code-patterns-python` — uv-only, PEP 723 inline metadata for standalone scripts.
 
 - `writing-scripts-and-cli-interfaces` — standalone script template, Cyclopts/Pydantic.

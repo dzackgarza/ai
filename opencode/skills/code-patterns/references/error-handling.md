@@ -9,7 +9,7 @@ handling.
 ## Use Exceptions Rather Than Return Codes
 
 **Note:** This skill is subordinate to repo-specific rules. In this environment, the
-`python-patterns` skill's "fail fast, no speculative try/catch" doctrine takes
+`code-patterns-python` skill's "fail fast, no speculative try/catch" doctrine takes
 precedence over the patterns below. Exceptions are added only after observing a specific
 failure, not pre-emptively. See the authority hierarchy in `quality-control`.
 
@@ -60,7 +60,7 @@ Try blocks are like transactions—your catch must leave the program in a consis
 state.
 
 **Do not add try/catch pre-emptively.** In this environment, the fail-loud policy
-(`python-patterns`) takes precedence: add exception handling only after a specific
+(`code-patterns-python`) takes precedence: add exception handling only after a specific
 failure has been observed in practice. Start with assertions and let errors propagate.
 See the authority hierarchy in `quality-control`.
 
@@ -152,7 +152,7 @@ doesn't deal with exceptional behavior.
 
 **Restriction:** Special cases are allowed only when they encode explicit domain
 semantics — not as soft defaults or defensive against conditions that should not occur.
-In this environment, fail-loud policy (`python-patterns`) takes precedence: if an
+In this environment, fail-loud policy (`code-patterns-python`) takes precedence: if an
 impossible condition occurs, `assert False` is the correct response, not a special-case
 object that silently absorbs the error. See the authority hierarchy in `quality-control`.
 
