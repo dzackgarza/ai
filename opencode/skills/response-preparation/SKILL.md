@@ -87,6 +87,20 @@ pattern: what each correction had to remove, which prior assumption survived too
 and where the agent should have reset the frame. A final solution summary is not a
 substitute for that analysis.
 
+## Positive Artifact Gate
+
+Do not preserve correction history inside the artifact or answer unless the user asked
+for the history. A final plan, spec, recommendation, or implementation note should state
+what to do, not carry a scar tissue list of rejected alternatives.
+
+If your draft contains "do not" bullets, caveats, or disclaimers that exist only because
+earlier turns were wrong, rewrite the artifact as a positive contract. Keep negative
+rules only when they are durable constraints a future worker must obey.
+
+If a correction stripped the answer down to a simple solution, check that the response
+still contains the concrete boundary the user needs: where action happens, what data
+moves, what owns the result, and how correctness would be observed.
+
 ## Why Not Checklists
 
 This skill deliberately avoids forcing questions, numbered steps, and item-by-item

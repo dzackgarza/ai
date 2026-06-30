@@ -288,3 +288,24 @@
 
     See also: known-solution-first (#16, #17), reviewing-llm-code pattern catalog
     (known-solution bypass in implementation).
+
+22. **Workflow phase collapse** - Agents move work from a later phase into the live
+    workflow moment because it makes the design feel complete. Capture becomes
+    cataloging; intake becomes metadata research; promotion becomes transfer plus audit
+    trail. The resulting system burdens the user exactly where the workflow needed to be
+    lighter. Correct behavior separates immediate preservation from later enrichment,
+    adjudication, citation resolution, or cleanup.
+
+23. **State-channel proliferation** - Agents add status flags, logs, sidecars, ledgers,
+    and promotion records for state already represented by ownership, membership,
+    artifact metadata, git history, issue state, or a database row. The extra channel
+    creates reconciliation work and stale-state risk without adding a query, recovery,
+    audit, or coordination capability. Correct behavior is to identify the canonical
+    owner of each state before adding another representation.
+
+24. **Abstraction rebound after simplification** - After corrections strip away
+    overbuilt machinery, agents retreat to a slogan-level simple plan and omit the
+    technical boundary that would make it executable. This is the mirror image of
+    overengineering: the agent avoids invented systems but also avoids naming the
+    interception point, data path, ownership transition, and proof surface. Correct
+    behavior is simple but concrete.

@@ -193,6 +193,29 @@ If two or more user corrections remove invented mechanisms from the same plan, s
 patching the plan locally. Treat the corrections as falsifying the plan frame, reset to
 the workflow gesture, and rebuild only from the remaining user-visible problem.
 
+### Phase, Capability, Ownership, and State Gates
+
+For workflow-friction plans, complete these gates before adding any machinery:
+
+- **Phase separation.** Identify what must happen at the live workflow moment and what
+  can happen later. Do not move later enrichment, cataloging, adjudication, promotion,
+  or research into capture/intake unless the user explicitly needs it there.
+- **Capability realism.** List only facts available at the workflow boundary. If the
+  app, browser, API, file, or command does not actually expose a field, do not make it a
+  required invariant. Record missing data as later enrichment or a real blocker.
+- **Ownership boundary.** Name which system owns the object before and after each
+  transition. Do not place objects into a downstream projection merely because that
+  projection is familiar; move or project only when the object satisfies that system's
+  contract.
+- **State minimization.** Before adding a status flag, log, ledger, or sidecar, ask
+  whether membership, ownership, filename, artifact metadata, git history, an issue, or
+  the database row already represents the state. Extra state requires a concrete query,
+  recovery, audit, or coordination need.
+- **Simplicity with substance.** If correction removes overbuilt machinery and leaves a
+  simple plan, the next deliverable still needs the technical boundary: interception
+  point, data path, ownership transition, and proof surface. Do not replace
+  overengineering with a slogan.
+
 ### Proportionality and Surface Placement
 
 The Plan Fit Gate is where disproportionate machinery is cheapest to prevent. Agent

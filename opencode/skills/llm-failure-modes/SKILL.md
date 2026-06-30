@@ -93,8 +93,10 @@ Load the relevant section for your context:
   blindness in review, failure mode inversion, impact miscalibration, replacement
   instinct, reimplementation impulse, dependency aversion bias, meta-artifact
   delegation, scale-complexity confusion, ground-up bias (churn-first workflow),
-  fallback-legacy compulsion (asymmetric risk model).
-  (20 items)
+  fallback-legacy compulsion (asymmetric risk model), availability-first tool reuse,
+  workflow phase collapse, state-channel proliferation, abstraction rebound after
+  simplification.
+  (24 items)
 
 - **Documentation and frame-contamination failures** —
   [documentation-failures.md](documentation-failures.md) Private-context leakage,
