@@ -171,6 +171,28 @@ The detailed application of this gate to feedback-driven and judgment-heavy work
 coalescing into typed workstreams, criteria elicitation, and implementing through an
 intelligent pass rather than deterministic machinery — lives in `references/tier-workstream.md`.
 
+### Workflow-First Reset Gate
+
+When the request concerns friction in an existing workflow, plan from the workflow
+gesture before planning architecture.
+
+Before proposing components, records, statuses, logs, sidecars, queues, or lifecycle
+states, write the smallest observable user action that should become easier:
+
+```text
+User is doing <existing workflow action>.
+The friction is <specific lost information, repeated manual step, broken handoff, or
+visibility gap>.
+The smallest intervention is at <owned boundary already present in that workflow>.
+```
+
+If the plan cannot fill those blanks, it is not ready to add structure. Inspect the
+actual workflow or ask the user for the missing workflow fact.
+
+If two or more user corrections remove invented mechanisms from the same plan, stop
+patching the plan locally. Treat the corrections as falsifying the plan frame, reset to
+the workflow gesture, and rebuild only from the remaining user-visible problem.
+
 ### Proportionality and Surface Placement
 
 The Plan Fit Gate is where disproportionate machinery is cheapest to prevent. Agent

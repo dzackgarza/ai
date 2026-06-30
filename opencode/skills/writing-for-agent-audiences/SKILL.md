@@ -148,6 +148,23 @@ Keep run numbers, transcript postmortems, scoring rubrics, wrapper output format
 evaluator complaints out of object-level skills unless those mechanics are themselves
 the task.
 
+### Mine Correction Sequences for Reset Gates
+
+A long correction sequence is stronger evidence than a single bad answer. Do not distill
+it as "avoid X" for each corrected detail. First map the sequence:
+
+- What did each correction force the agent to remove?
+- Which assumption survived across multiple corrections?
+- Where should the agent have abandoned the frame instead of locally patching it?
+
+Write the resulting skill addition as a reset gate or decision rule. Good rules force an
+observable action: restate the workflow gesture, identify the existing substrate, stop
+after repeated mechanism-removal corrections, or ask for the missing workflow fact.
+
+Do not paste the case study, quote the transcript, or preserve the domain topic unless
+the skill is about that domain. The skill should receive the generalized operational
+constraint that would have prevented the correction sequence.
+
 * * *
 
 ## Structure & Progressive Disclosure

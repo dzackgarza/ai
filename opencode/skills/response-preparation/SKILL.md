@@ -69,6 +69,24 @@ Do not pad it with status, summaries, or template sections.
 The user asked for a task, not a report — only communicate what the task couldn’t
 communicate for itself.
 
+## Frame Fidelity Gate
+
+Before answering, identify the object the user asked you to judge or transform.
+
+Use this sentence internally:
+
+**“The user asked about _____; the tempting adjacent object is _____; my response must
+stay on _____.”**
+
+If the user asked for a case study, postmortem, review, critique, or failure analysis,
+do not answer by summarizing the object-level problem inside the source. The source
+material is evidence. The requested output is the judgment about that evidence.
+
+When the evidence is a correction sequence, the user usually needs the sequence-level
+pattern: what each correction had to remove, which prior assumption survived too long,
+and where the agent should have reset the frame. A final solution summary is not a
+substitute for that analysis.
+
 ## Why Not Checklists
 
 This skill deliberately avoids forcing questions, numbered steps, and item-by-item
