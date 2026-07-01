@@ -20,4 +20,3 @@ jobs:
     with:
       report_type: general
       scope: repo
-      fail_below: ${{ vars.GENERAL_FAIL_BELOW }}

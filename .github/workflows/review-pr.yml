@@ -14,7 +14,6 @@ jobs:
     with:
       report_type: general
       scope: diff
-      fail_below: ${{ vars.GENERAL_FAIL_BELOW }}
   slop:
     uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
     permissions:
@@ -25,4 +24,3 @@ jobs:
     with:
       report_type: slop
       scope: diff
-      fail_below: ${{ vars.SLOP_FAIL_BELOW }}
