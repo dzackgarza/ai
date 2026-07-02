@@ -4,14 +4,8 @@
     "openai/gpt-oss-120b:free": {
       "name": "Openai/Gpt-Oss-120B (Free)"
     },
-    "z-ai/glm-4.5-air:free": {
-      "name": "Z-Ai/Glm-4.5-Air (Free)"
-    },
     "meta-llama/llama-3.3-70b-instruct:free": {
       "name": "Llama 3.3 70B Instruct (free)"
-    },
-    "minimax/minimax-m2.5:free": {
-      "name": "MiniMax M2.5 (free)"
     },
     "openrouter/free": {
       "name": "Free Models Router"
@@ -22,12 +16,6 @@
     "poolside/laguna-xs.2:free": {
       "name": "Laguna XS.2"
     },
-    "openrouter/owl-alpha": {
-      "name": "Owl Alpha"
-    },
-    "baidu/cobuddy:free": {
-      "name": "Baidu CoBuddy (free)"
-    },
     "google/gemma-4-31b-it:free": {
       "name": "Gemma 4 31B (free)"
     },
@@ -37,14 +25,11 @@
     "qwen/qwen3-coder:free": {
       "name": "Qwen3 Coder (free)"
     },
-    "deepseek/deepseek-v4-flash:free": {
-      "name": "DeepSeek V4 Flash (free)"
-    },
-    "moonshotai/kimi-k2.6:free": {
-      "name": "Kimi K2.6 (free)"
-    },
     "cohere/north-mini-code:free": {
       "name": "Cohere North Mini Code (free)"
+    },
+    "nvidia/nemotron-3-ultra-550b-a55b:free": {
+      "name": "Nemotron 3 Ultra 550B (free)"
     }
   },
   "blacklist": [
@@ -135,6 +120,7 @@
     "baai/bge-base-en-v1.5",
     "baai/bge-large-en-v1.5",
     "baai/bge-m3",
+    "baidu/cobuddy:free",
     "baidu/ernie-4.5-21b-a3b",
     "baidu/ernie-4.5-21b-a3b-thinking",
     "baidu/ernie-4.5-300b-a47b",
@@ -199,6 +185,7 @@
     "deepseek/deepseek-v3.2-exp",
     "deepseek/deepseek-v3.2-speciale",
     "deepseek/deepseek-v4-flash",
+    "deepseek/deepseek-v4-flash:free",
     "deepseek/deepseek-v4-pro",
     "eleutherai/llemma_7b",
     "essentialai/rnj-1-instruct",
@@ -342,6 +329,7 @@
     "minimax/minimax-m2-her",
     "minimax/minimax-m2.1",
     "minimax/minimax-m2.5",
+    "minimax/minimax-m2.5:free",
     "minimax/minimax-m2.7",
     "mistralai/codestral-2501",
     "mistralai/codestral-2508",
@@ -392,6 +380,7 @@
     "moonshotai/kimi-k2-thinking",
     "moonshotai/kimi-k2.5",
     "moonshotai/kimi-k2.6",
+    "moonshotai/kimi-k2.6:free",
     "moonshotai/kimi-vl-a3b-thinking",
     "moonshotai/moonlight-16b-a3b-instruct",
     "morph/morph-v3-fast",
@@ -432,6 +421,7 @@
     "nvidia/nemotron-3-nano-omni-30b-a3b",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
     "nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nemotron-3.5-content-safety:free",
     "nvidia/nemotron-4-340b-instruct",
     "nvidia/nemotron-nano-12b-v2-vl",
     "nvidia/nemotron-nano-12b-v2-vl:free",
@@ -536,6 +526,7 @@
     "openrouter/horizon-alpha",
     "openrouter/horizon-beta",
     "openrouter/optimus-alpha",
+    "openrouter/owl-alpha",
     "openrouter/pareto-code",
     "openrouter/polaris-alpha",
     "openrouter/pony-alpha",
@@ -630,6 +621,7 @@
     "qwen/qwen3.6-flash",
     "qwen/qwen3.6-max-preview",
     "qwen/qwen3.6-plus",
+    "qwen/qwen3.6-plus:free",
     "qwen/qwen3.7-max",
     "qwen/qwq-32b",
     "qwen/qwq-32b-preview",
@@ -724,6 +716,7 @@
     "z-ai/glm-4-32b",
     "z-ai/glm-4.5",
     "z-ai/glm-4.5-air",
+    "z-ai/glm-4.5-air:free",
     "z-ai/glm-4.5v",
     "z-ai/glm-4.6",
     "z-ai/glm-4.6v",

@@ -39,6 +39,12 @@ MODELS_DEV_API = "https://models.dev/api.json"
 OPENROUTER_CHAT_COMPLETIONS_API = "https://openrouter.ai/api/v1/chat/completions"
 SCHEMA_USER_AGENT = "opencode-config-builder/1.0"
 IGNORED_PROVIDERS = {"qwen-code"}
+# Providers whose live catalog is a large multi-modal reseller marketplace
+# (TTS/image/video/etc.) rather than a curated text-model list: only the
+# "did our chosen models rot" half of the live check is meaningful for them.
+# Flagging every uncurated model as "unaccounted" would produce hundreds of
+# unactionable findings and teach people to ignore --strict failures.
+NARROW_ALLOWLIST_PROVIDERS = {"vectorengine"}
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -315,14 +321,24 @@ def validate_openai_compatible_provider(
         issues.append(message)
         logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
 
-    unaccounted = sorted(live_ids - known)
-    if unaccounted:
-        message = (
-            f"{provider_id}: {len(unaccounted)} live model(s) absent from both "
-            f"whitelist and blacklist (unclassified/new): {unaccounted}"
+    unaccounted: list[str] = []
+    if provider_id in NARROW_ALLOWLIST_PROVIDERS:
+        logger.info(
+            "[dim]%s: narrow-allowlist provider, skipping unaccounted-model "
+            "check (%d live models not curated)[/dim]",
+            provider_id,
+            len(live_ids - known),
+            extra={"markup": True},
         )
-        issues.append(message)
-        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+    else:
+        unaccounted = sorted(live_ids - known)
+        if unaccounted:
+            message = (
+                f"{provider_id}: {len(unaccounted)} live model(s) absent from "
+                f"both whitelist and blacklist (unclassified/new): {unaccounted}"
+            )
+            issues.append(message)
+            logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
 
     if not missing_whitelist and not unaccounted:
         logger.info(
@@ -362,7 +378,6 @@ def show_provider_partition_diff(
         whitelist = {model.replace(":cloud", "") for model in whitelist}
         blacklist = {model.replace(":cloud", "") for model in blacklist}
 
-    local_models = whitelist | blacklist
     models_dev_models = get_models_dev_provider_models(models_dev_data, provider_id)
     if models_dev_models is None:
         logger.info(
@@ -371,6 +386,31 @@ def show_provider_partition_diff(
         return whitelist, []
 
     issues: list[str] = []
+
+    if not whitelist:
+        # Blacklist-only config: default-allow, so "every non-blacklisted
+        # models.dev model" is expected and not drift. The only meaningful
+        # check is that blacklisted ids still resolve to a real model.
+        stale_blacklist = sorted(blacklist - models_dev_models)
+        if stale_blacklist:
+            message = (
+                f"{provider_id}: {len(stale_blacklist)} blacklisted id(s) no "
+                f"longer resolve in models.dev (typo or fully removed): "
+                f"{stale_blacklist[:15]}"
+            )
+            issues.append(message)
+            logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+        else:
+            logger.info(
+                "[green]Validated %s (blacklist-only, default-allow)[/green] "
+                "(blacklist=%d)",
+                provider_id,
+                len(blacklist),
+                extra={"markup": True},
+            )
+        return whitelist, issues
+
+    local_models = whitelist | blacklist
     in_local_not_dev = sorted(local_models - models_dev_models)
     in_dev_not_local = sorted(models_dev_models - local_models)
     if in_local_not_dev or in_dev_not_local:
@@ -494,14 +534,19 @@ def validate_openrouter(config: dict[str, Any]) -> list[str]:
     free_live_ids = {
         str(model.get("id", "")) for model in live_models if is_openrouter_free(model)
     }
+    # Being free does not make blacklisting wrong: notes/openrouter-model-
+    # vetting.md documents deliberate quality exclusions (failed tool-calling,
+    # <35B parameter issues) among exactly these ids. This is expected state,
+    # not drift, so it's informational only and does not fail --strict.
     blacklisted_free = sorted(free_live_ids & blacklist)
     if blacklisted_free:
-        message = (
-            f"OpenRouter: {len(blacklisted_free)} free model(s) blacklisted: "
-            f"{blacklisted_free[:25]}"
+        logger.info(
+            "[dim]OpenRouter: %d free model(s) deliberately blacklisted: "
+            "%s[/dim]",
+            len(blacklisted_free),
+            blacklisted_free[:25],
+            extra={"markup": True},
         )
-        issues.append(message)
-        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: No free models are present in the blacklist[/green]",
