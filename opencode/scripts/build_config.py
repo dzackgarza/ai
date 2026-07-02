@@ -344,6 +344,16 @@ def _diff_live_ids(
             len(live_ids - known),
             extra={"markup": True},
         )
+    elif not whitelist:
+        # Empty whitelist means default-allow (e.g. anthropic.json is
+        # blacklist-only): every non-blacklisted live model is expected and
+        # not drift, so there's nothing to triage here.
+        logger.info(
+            "[dim]%s: default-allow (blacklist-only), skipping "
+            "unaccounted-model check[/dim]",
+            provider_id,
+            extra={"markup": True},
+        )
     else:
         unaccounted = sorted(live_ids - known)
         if unaccounted:
@@ -476,51 +486,12 @@ def show_provider_partition_diff(
         )
         return whitelist, []
 
-    issues: list[str] = []
-
-    if not whitelist:
-        # Blacklist-only config: default-allow, so "every non-blacklisted
-        # models.dev model" is expected and not drift. The only meaningful
-        # check is that blacklisted ids still resolve to a real model.
-        stale_blacklist = sorted(blacklist - models_dev_models)
-        if stale_blacklist:
-            message = (
-                f"{provider_id}: {len(stale_blacklist)} blacklisted id(s) no "
-                f"longer resolve in models.dev (typo or fully removed): "
-                f"{stale_blacklist[:15]}"
-            )
-            issues.append(message)
-            logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
-        else:
-            logger.info(
-                "[green]Validated %s (blacklist-only, default-allow)[/green] "
-                "(blacklist=%d)",
-                provider_id,
-                len(blacklist),
-                extra={"markup": True},
-            )
-        return whitelist, issues
-
-    local_models = whitelist | blacklist
-    in_local_not_dev = sorted(local_models - models_dev_models)
-    in_dev_not_local = sorted(models_dev_models - local_models)
-    if in_local_not_dev or in_dev_not_local:
-        message = (
-            f"{provider_id} differs from models.dev "
-            f"(local_only={len(in_local_not_dev)}: {in_local_not_dev[:15]}, "
-            f"upstream_only={len(in_dev_not_local)}: {in_dev_not_local[:15]})"
-        )
-        issues.append(message)
-        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
-    else:
-        logger.info(
-            "[green]Validated %s against models.dev[/green] "
-            "(whitelist=%d blacklist=%d)",
-            provider_id,
-            len(whitelist),
-            len(blacklist),
-            extra={"markup": True},
-        )
+    # Stale blacklist entries (no longer resolving in models.dev at all) are
+    # dead weight, not drift: the model is already rejected either way, so
+    # there's nothing to act on. Only whitelist entries going dead, or new
+    # live models needing triage, are real issues -- the same rule
+    # _diff_live_ids already applies to every live-endpoint-checked provider.
+    issues = _diff_live_ids(provider_id, models_dev_models, whitelist, blacklist)
     return whitelist, issues
 
 
