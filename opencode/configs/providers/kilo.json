@@ -418,5 +418,12 @@
     "poolside/laguna-xs.2:free": {
       "name": "Laguna XS.2 (Free)"
     }
-  }
+  },
+  "whitelist": [
+    "kilo-auto/free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "openrouter/free",
+    "poolside/laguna-m.1:free",
+    "poolside/laguna-xs.2:free"
+  ]
 }

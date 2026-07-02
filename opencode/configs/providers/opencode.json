@@ -92,5 +92,15 @@
     "nemotron-3-ultra-free": {
       "name": "Nemotron 3 Ultra (Free)"
     }
-  }
+  },
+  "whitelist": [
+    "big-pickle",
+    "deepseek-v4-flash-free",
+    "mimo-v2-omni-free",
+    "mimo-v2-pro-free",
+    "minimax-m2.5-free",
+    "minimax-m3-free",
+    "nemotron-3-super-free",
+    "nemotron-3-ultra-free"
+  ]
 }

@@ -75,6 +75,23 @@
       "name": "Gemini 3.5 Flash Low (Antigravity)"
     }
   },
+  "whitelist": [
+    "claude-opus-4-6-thinking",
+    "claude-sonnet-4-6",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash-thinking",
+    "gemini-2.5-pro",
+    "gemini-3-flash",
+    "gemini-3-flash-agent",
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-pro-high",
+    "gemini-3.1-pro-low",
+    "gemini-3.5-flash-extra-low",
+    "gemini-3.5-flash-low",
+    "gemini-pro-agent",
+    "gpt-oss-120b-medium"
+  ],
   "blacklist": [
     "antigravity-gemini-2.5-flash",
     "gemini-3.1-flash-image",

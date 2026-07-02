@@ -70,6 +70,29 @@
       "name": "gemma-4-31b-it"
     }
   },
+  "whitelist": [
+    "deepseek-ai/deepseek-v4-flash",
+    "deepseek-ai/deepseek-v4-pro",
+    "google/gemma-4-31b-it",
+    "meta/codellama-70b",
+    "meta/llama-3.3-70b-instruct",
+    "meta/llama-4-maverick-17b-128e-instruct",
+    "minimaxai/minimax-m2.7",
+    "minimaxai/minimax-m3",
+    "mistralai/mistral-large-3-675b-instruct-2512",
+    "mistralai/mistral-medium-3.5-128b",
+    "mistralai/mistral-nemotron",
+    "moonshotai/kimi-k2.6",
+    "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "nvidia/nemotron-3-nano-30b-a3b",
+    "nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nemotron-3-ultra-550b-a55b",
+    "nvidia/nemotron-4-340b-instruct",
+    "openai/gpt-oss-120b",
+    "qwen/qwen3.5-397b-a17b",
+    "stepfun-ai/step-3.5-flash"
+  ],
   "blacklist": [
     "01-ai/yi-large",
     "abacusai/dracarys-llama-3.1-70b-instruct",
