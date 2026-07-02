@@ -32,6 +32,18 @@
       "name": "Nemotron 3 Ultra 550B (free)"
     }
   },
+  "whitelist": [
+    "cohere/north-mini-code:free",
+    "google/gemma-4-31b-it:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "openai/gpt-oss-120b:free",
+    "openrouter/free",
+    "poolside/laguna-m.1:free",
+    "poolside/laguna-xs.2:free",
+    "qwen/qwen3-coder:free"
+  ],
   "blacklist": [
     "01-ai/yi-1.5-34b-chat",
     "01-ai/yi-34b",
