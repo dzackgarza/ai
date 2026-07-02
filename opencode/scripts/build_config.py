@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import glob
 import json
 import logging
@@ -239,11 +240,108 @@ def get_models_dev_provider_models(
     return set((provider.get("models") or {}).keys())
 
 
+def resolve_env_template(value: Any) -> str | None:
+    """Resolve a "{env:VAR}" placeholder to its environment value, if present."""
+    if not isinstance(value, str):
+        return None
+    if value.startswith("{env:") and value.endswith("}"):
+        return os.environ.get(value[len("{env:") : -1])
+    return value
+
+
+def fetch_openai_compatible_models(base_url: str, api_key: str | None) -> list[dict[str, Any]]:
+    """Fetch the live model list from an OpenAI-compatible `/models` endpoint."""
+    headers = {"User-Agent": SCHEMA_USER_AGENT}
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    url = base_url.rstrip("/") + "/models"
+    request = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(request, timeout=15) as response:
+        payload = json.loads(response.read().decode())
+    return payload.get("data", [])
+
+
+def validate_openai_compatible_provider(
+    provider_id: str, provider_cfg: dict[str, Any]
+) -> list[str]:
+    """Validate a directly-queryable OpenAI-compatible provider against its own
+    live `/models` endpoint, rather than the third-party models.dev mirror.
+
+    This is the authoritative check for providers like NVIDIA NIM or
+    VectorEngine that models.dev may track late or not at all: it catches both
+    whitelisted models that have rotated off the live catalog and new live
+    models that have not yet been triaged into the whitelist or blacklist.
+    """
+    issues: list[str] = []
+    options = provider_cfg.get("options") or {}
+    base_url = options.get("baseURL")
+    if not base_url:
+        return issues
+
+    api_key = None
+    if "apiKey" in options:
+        api_key = resolve_env_template(options["apiKey"])
+        if not api_key:
+            logger.warning(
+                "[yellow]%s: apiKey env var unset, skipping live validation[/yellow]",
+                provider_id,
+                extra={"markup": True},
+            )
+            return issues
+
+    try:
+        live_models = fetch_openai_compatible_models(base_url, api_key)
+    except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
+        logger.warning(
+            "[yellow]%s: live model list unreachable (%s), skipping live "
+            "validation[/yellow]",
+            provider_id,
+            exc,
+            extra={"markup": True},
+        )
+        return issues
+
+    live_ids = {str(model.get("id", "")) for model in live_models if model.get("id")}
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+    known = whitelist | blacklist
+
+    missing_whitelist = sorted(whitelist - live_ids)
+    if missing_whitelist:
+        message = (
+            f"{provider_id}: {len(missing_whitelist)} whitelisted model(s) "
+            f"missing from the live catalog (rotated/dead): {missing_whitelist}"
+        )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+
+    unaccounted = sorted(live_ids - known)
+    if unaccounted:
+        message = (
+            f"{provider_id}: {len(unaccounted)} live model(s) absent from both "
+            f"whitelist and blacklist (unclassified/new): {unaccounted}"
+        )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+
+    if not missing_whitelist and not unaccounted:
+        logger.info(
+            "[green]Validated %s against its live catalog[/green] "
+            "(whitelist=%d blacklist=%d live=%d)",
+            provider_id,
+            len(whitelist),
+            len(blacklist),
+            len(live_ids),
+            extra={"markup": True},
+        )
+    return issues
+
+
 def show_provider_partition_diff(
     config: dict[str, Any],
     models_dev_data: dict[str, Any],
     provider_id: str,
-) -> set[str]:
+) -> tuple[set[str], list[str]]:
     provider_cfg = (config.get("provider") or {}).get(provider_id)
     if provider_cfg is None:
         raise RuntimeError(
@@ -270,19 +368,19 @@ def show_provider_partition_diff(
         logger.info(
             "[dim]%s: not in models.dev[/dim]", provider_id, extra={"markup": True}
         )
-        return whitelist
+        return whitelist, []
 
+    issues: list[str] = []
     in_local_not_dev = sorted(local_models - models_dev_models)
     in_dev_not_local = sorted(models_dev_models - local_models)
     if in_local_not_dev or in_dev_not_local:
-        logger.warning(
-            "[yellow]%s differs from models.dev "
-            "(local_only=%d, upstream_only=%d)[/yellow]",
-            provider_id,
-            len(in_local_not_dev),
-            len(in_dev_not_local),
-            extra={"markup": True},
+        message = (
+            f"{provider_id} differs from models.dev "
+            f"(local_only={len(in_local_not_dev)}: {in_local_not_dev[:15]}, "
+            f"upstream_only={len(in_dev_not_local)}: {in_dev_not_local[:15]})"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]Validated %s against models.dev[/green] "
@@ -292,29 +390,30 @@ def show_provider_partition_diff(
             len(blacklist),
             extra={"markup": True},
         )
-    return whitelist
+    return whitelist, issues
 
 
-def validate_openrouter(config: dict[str, Any]) -> None:
-    """Validate OpenRouter provider.
+def validate_openrouter(config: dict[str, Any]) -> list[str]:
+    """Validate OpenRouter provider against its live model list.
 
-    Warning-only checks:
+    Checks (each runs independently so one finding cannot hide another):
     1. Whitelisted models missing from the live OpenRouter model list
     2. Whitelisted models that are live but no longer free
     3. Free-suffix whitelist entries whose paid base model still exists
     4. Whitelisted models that fail a minimal chat completion call
     5. Free models present in the blacklist
+    6. Free models live but absent from both whitelist and blacklist (new drift)
 
-    Each warning-only check must run independently so one warning cannot hide
-    another.
+    Returns the list of issue messages found; callers decide whether to treat
+    them as fatal.
     """
+    issues: list[str] = []
     provider_cfg = (config.get("provider") or {}).get("openrouter")
     if provider_cfg is None:
-        logger.warning(
-            "[yellow]OpenRouter provider not found in config[/yellow]",
-            extra={"markup": True},
-        )
-        return
+        message = "OpenRouter provider not found in config"
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+        return issues
 
     whitelist = set((provider_cfg.get("models") or {}).keys())
     blacklist_raw = provider_cfg.get("blacklist", [])
@@ -326,13 +425,12 @@ def validate_openrouter(config: dict[str, Any]) -> None:
     live_ids = set(live_by_id)
     missing_whitelist = sorted(whitelist - live_ids)
     if missing_whitelist:
-        logger.warning(
-            "[yellow]OpenRouter: %d whitelisted model(s) missing from the live "
-            "model list: %s[/yellow]",
-            len(missing_whitelist),
-            missing_whitelist[:15],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(missing_whitelist)} whitelisted model(s) missing "
+            f"from the live model list: {missing_whitelist[:15]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All whitelisted models are present in the live "
@@ -346,13 +444,12 @@ def validate_openrouter(config: dict[str, Any]) -> None:
         if not is_openrouter_free(live_by_id[model_id])
     )
     if paid_whitelist:
-        logger.warning(
-            "[yellow]OpenRouter: %d whitelisted model(s) are priced above zero: "
-            "%s[/yellow]",
-            len(paid_whitelist),
-            paid_whitelist[:15],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(paid_whitelist)} whitelisted model(s) are priced "
+            f"above zero: {paid_whitelist[:15]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All live whitelisted models are priced at zero[/green]",
@@ -367,13 +464,13 @@ def validate_openrouter(config: dict[str, Any]) -> None:
         and not is_openrouter_free(live_by_id[model_id.removesuffix(":free")])
     )
     if missing_free_with_paid_base:
-        logger.warning(
-            "[yellow]OpenRouter: %d missing whitelisted free model(s) have paid "
-            "base models still listed: %s[/yellow]",
-            len(missing_free_with_paid_base),
-            missing_free_with_paid_base[:15],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(missing_free_with_paid_base)} missing whitelisted "
+            f"free model(s) have paid base models still listed: "
+            f"{missing_free_with_paid_base[:15]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
 
     invocation_failures = {
         model_id: error
@@ -381,13 +478,12 @@ def validate_openrouter(config: dict[str, Any]) -> None:
         if (error := check_openrouter_model_invocation(model_id)) is not None
     }
     if invocation_failures:
-        logger.warning(
-            "[yellow]OpenRouter: %d whitelisted model(s) failed a minimal chat "
-            "completion call: %s[/yellow]",
-            len(invocation_failures),
-            list(invocation_failures.items())[:10],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(invocation_failures)} whitelisted model(s) failed "
+            f"a minimal chat completion call: {list(invocation_failures.items())[:10]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All whitelisted models passed a minimal chat "
@@ -400,12 +496,12 @@ def validate_openrouter(config: dict[str, Any]) -> None:
     }
     blacklisted_free = sorted(free_live_ids & blacklist)
     if blacklisted_free:
-        logger.warning(
-            "[yellow]OpenRouter: %d free model(s) blacklisted: %s[/yellow]",
-            len(blacklisted_free),
-            blacklisted_free[:25],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(blacklisted_free)} free model(s) blacklisted: "
+            f"{blacklisted_free[:25]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: No free models are present in the blacklist[/green]",
@@ -414,26 +510,37 @@ def validate_openrouter(config: dict[str, Any]) -> None:
 
     unaccounted_free = sorted(free_live_ids - whitelist - blacklist)
     if unaccounted_free:
-        logger.warning(
-            "[yellow]OpenRouter: %d free model(s) absent from both whitelist and "
-            "blacklist: %s[/yellow]",
-            len(unaccounted_free),
-            unaccounted_free,
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(unaccounted_free)} free model(s) absent from both "
+            f"whitelist and blacklist: {unaccounted_free}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All live free models are accounted for[/green]",
             extra={"markup": True},
         )
 
+    return issues
 
-def validate_provider_partitions(config: dict[str, Any]) -> None:
+
+def validate_provider_partitions(
+    config: dict[str, Any], only_provider: str | None = None
+) -> list[str]:
     models_dev_data = fetch_models_dev_api()
-    for provider_id in sorted((config.get("provider") or {}).keys()):
+    all_issues: list[str] = []
+    provider_ids = sorted((config.get("provider") or {}).keys())
+    if only_provider is not None:
+        if only_provider not in provider_ids:
+            raise RuntimeError(f"Unknown provider '{only_provider}'")
+        provider_ids = [only_provider]
+
+    for provider_id in provider_ids:
+        provider_cfg = config["provider"][provider_id]
         if provider_id == "openrouter":
             # OpenRouter uses live API validation, not models.dev
-            validate_openrouter(config)
+            all_issues.extend(validate_openrouter(config))
             continue
         if provider_id in IGNORED_PROVIDERS:
             logger.warning(
@@ -443,24 +550,81 @@ def validate_provider_partitions(config: dict[str, Any]) -> None:
                 extra={"markup": True},
             )
             continue
-        show_provider_partition_diff(config, models_dev_data, provider_id)
+        if provider_cfg.get("npm") == "@ai-sdk/openai-compatible" and (
+            provider_cfg.get("options") or {}
+        ).get("baseURL"):
+            # Directly-queryable providers (NVIDIA NIM, VectorEngine, ...) are
+            # validated against their own live catalog, which is authoritative
+            # over the third-party models.dev mirror.
+            all_issues.extend(
+                validate_openai_compatible_provider(provider_id, provider_cfg)
+            )
+            continue
+        _, issues = show_provider_partition_diff(config, models_dev_data, provider_id)
+        all_issues.extend(issues)
+
+    return all_issues
 
 
-def build_config() -> Path:
+def build_config(
+    strict: bool = False,
+    validate_only: bool = False,
+    only_provider: str | None = None,
+) -> Path:
     config = load_config_sources()
-    schema = fetch_config_schema(config)
-    remove_model_enum(schema)
-    validate_config_schema(config, schema)
-    _write_json(OUTPUT_PATH, config)
-    logger.info(
-        "[green]Validated and wrote %s[/green]", OUTPUT_PATH, extra={"markup": True}
-    )
-    validate_provider_partitions(config)
+
+    if not validate_only:
+        schema = fetch_config_schema(config)
+        remove_model_enum(schema)
+        validate_config_schema(config, schema)
+        _write_json(OUTPUT_PATH, config)
+        logger.info(
+            "[green]Validated and wrote %s[/green]",
+            OUTPUT_PATH,
+            extra={"markup": True},
+        )
+
+    issues = validate_provider_partitions(config, only_provider=only_provider)
+
+    if issues:
+        logger.warning(
+            "[yellow]%d provider partition issue(s) found[/yellow]",
+            len(issues),
+            extra={"markup": True},
+        )
+        if strict:
+            for issue in issues:
+                logger.error("[red]- %s[/red]", issue, extra={"markup": True})
+            raise SystemExit(1)
+
     return OUTPUT_PATH
 
 
 def main() -> None:
-    build_config()
+    parser = argparse.ArgumentParser(
+        description="Build opencode.json and validate provider model partitions."
+    )
+    parser.add_argument(
+        "--validate-only",
+        action="store_true",
+        help="Skip schema fetch/write; only run provider partition validation.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit non-zero if any provider partition issue is found.",
+    )
+    parser.add_argument(
+        "--provider",
+        default=None,
+        help="Restrict validation to a single provider id.",
+    )
+    args = parser.parse_args()
+    build_config(
+        strict=args.strict,
+        validate_only=args.validate_only,
+        only_provider=args.provider,
+    )
 
 
 if __name__ == "__main__":

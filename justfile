@@ -333,6 +333,31 @@ _build-opencode-managed-agents:
 
 
 # =============================================================================
+# Provider Config Validation
+# =============================================================================
+# Validate opencode/configs/providers/*.json against live catalogs (for
+# directly-queryable providers like NVIDIA/VectorEngine/Antigravity) or
+# models.dev (for OAuth-only providers). Fails (non-zero exit) on drift:
+# whitelisted models that rotted off the live catalog, or live models not yet
+# triaged into a whitelist/blacklist.
+#
+# Usage: just providers-validate [provider]
+providers-validate provider="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd {{ opencode_dir }}
+    if [[ -n "{{ provider }}" ]]; then
+        uv run --python .venv/bin/python scripts/build_config.py --validate-only --strict --provider {{ provider }}
+    else
+        uv run --python .venv/bin/python scripts/build_config.py --validate-only --strict
+    fi
+
+# Show provider partition diagnostics for one provider without failing.
+# Usage: just providers-debug <provider>
+providers-debug provider:
+    @cd {{ opencode_dir }} && uv run --python .venv/bin/python scripts/build_config.py --validate-only --provider {{ provider }}
+
+# =============================================================================
 # Utilities
 # =============================================================================
 
