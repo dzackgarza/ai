@@ -5,7 +5,6 @@
     "groq",
     "mistral",
     "cloudflare-ai-gateway",
-    "cloudflare-workers-ai",
     "huggingface",
     "morph",
     "kaggle-ollama"
