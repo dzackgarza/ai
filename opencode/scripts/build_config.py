@@ -45,6 +45,17 @@ IGNORED_PROVIDERS = {"qwen-code"}
 # Flagging every uncurated model as "unaccounted" would produce hundreds of
 # unactionable findings and teach people to ignore --strict failures.
 NARROW_ALLOWLIST_PROVIDERS = {"vectorengine"}
+# models.dev's own provider registry (not just its per-provider model lists)
+# publishes the real api base URL and auth env var name for providers we
+# don't self-host connection details for locally. That structural metadata
+# (which provider, which base URL) changes far less often than the model
+# list itself, so it's a reasonable source for *where to check live* even
+# though the model list it reports can lag. Some of models.dev's declared
+# env var names don't match this repo's .envrc naming; known aliases here.
+KNOWN_ENV_ALIASES = {
+    "OLLAMA_API_KEY": "OLLAMA_CLOUD_API_KEY",
+}
+GOOGLE_GENERATIVE_LANGUAGE_API = "https://generativelanguage.googleapis.com/v1beta/models"
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -246,6 +257,46 @@ def get_models_dev_provider_models(
     return set((provider.get("models") or {}).keys())
 
 
+def get_models_dev_provider_meta(
+    models_dev_data: dict[str, Any], provider_id: str
+) -> dict[str, Any] | None:
+    """Return models.dev's structural metadata (api base URL, npm package,
+    auth env var names) for a provider, distinct from its model list."""
+    provider = models_dev_data.get(provider_id)
+    if not provider:
+        return None
+    return {
+        "npm": provider.get("npm"),
+        "api": provider.get("api"),
+        "env": provider.get("env") or [],
+    }
+
+
+def resolve_first_env(env_names: list[str]) -> str | None:
+    for name in env_names:
+        value = os.environ.get(name) or os.environ.get(
+            KNOWN_ENV_ALIASES.get(name, "")
+        )
+        if value:
+            return value
+    return None
+
+
+def fetch_google_models(api_key: str) -> list[str]:
+    """Fetch the live model list from the Google Generative Language API."""
+    request = urllib.request.Request(
+        f"{GOOGLE_GENERATIVE_LANGUAGE_API}?key={api_key}&pageSize=200",
+        headers={"User-Agent": SCHEMA_USER_AGENT},
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        payload = json.loads(response.read().decode())
+    return [
+        str(m["name"]).removeprefix("models/")
+        for m in payload.get("models", [])
+        if m.get("name")
+    ]
+
+
 def resolve_env_template(value: Any) -> str | None:
     """Resolve a "{env:VAR}" placeholder to its environment value, if present."""
     if not isinstance(value, str):
@@ -267,49 +318,12 @@ def fetch_openai_compatible_models(base_url: str, api_key: str | None) -> list[d
     return payload.get("data", [])
 
 
-def validate_openai_compatible_provider(
-    provider_id: str, provider_cfg: dict[str, Any]
+def _diff_live_ids(
+    provider_id: str, live_ids: set[str], whitelist: set[str], blacklist: set[str]
 ) -> list[str]:
-    """Validate a directly-queryable OpenAI-compatible provider against its own
-    live `/models` endpoint, rather than the third-party models.dev mirror.
-
-    This is the authoritative check for providers like NVIDIA NIM or
-    VectorEngine that models.dev may track late or not at all: it catches both
-    whitelisted models that have rotated off the live catalog and new live
-    models that have not yet been triaged into the whitelist or blacklist.
-    """
+    """Shared whitelist/blacklist-vs-live-catalog diff, used by every live
+    provider check regardless of API shape."""
     issues: list[str] = []
-    options = provider_cfg.get("options") or {}
-    base_url = options.get("baseURL")
-    if not base_url:
-        return issues
-
-    api_key = None
-    if "apiKey" in options:
-        api_key = resolve_env_template(options["apiKey"])
-        if not api_key:
-            logger.warning(
-                "[yellow]%s: apiKey env var unset, skipping live validation[/yellow]",
-                provider_id,
-                extra={"markup": True},
-            )
-            return issues
-
-    try:
-        live_models = fetch_openai_compatible_models(base_url, api_key)
-    except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
-        logger.warning(
-            "[yellow]%s: live model list unreachable (%s), skipping live "
-            "validation[/yellow]",
-            provider_id,
-            exc,
-            extra={"markup": True},
-        )
-        return issues
-
-    live_ids = {str(model.get("id", "")) for model in live_models if model.get("id")}
-    whitelist = set((provider_cfg.get("models") or {}).keys())
-    blacklist = set(provider_cfg.get("blacklist") or [])
     known = whitelist | blacklist
 
     missing_whitelist = sorted(whitelist - live_ids)
@@ -351,6 +365,83 @@ def validate_openai_compatible_provider(
             extra={"markup": True},
         )
     return issues
+
+
+def validate_openai_compatible_provider(
+    provider_id: str,
+    provider_cfg: dict[str, Any],
+    base_url_override: str | None = None,
+    api_key_override: str | None = None,
+) -> list[str]:
+    """Validate a directly-queryable OpenAI-compatible provider against its own
+    live `/models` endpoint, rather than the third-party models.dev mirror.
+
+    This is the authoritative check for providers like NVIDIA NIM or
+    VectorEngine that models.dev may track late or not at all: it catches both
+    whitelisted models that have rotated off the live catalog and new live
+    models that have not yet been triaged into the whitelist or blacklist.
+
+    base_url_override/api_key_override let callers supply connection details
+    for providers that don't self-declare options.baseURL locally (e.g.
+    ollama-cloud, which relies on opencode's own built-in provider registry)
+    but whose base URL and auth env var are known from models.dev's provider
+    metadata.
+    """
+    issues: list[str] = []
+    options = provider_cfg.get("options") or {}
+    base_url = base_url_override or options.get("baseURL")
+    if not base_url:
+        return issues
+
+    api_key = api_key_override
+    if api_key is None and "apiKey" in options:
+        api_key = resolve_env_template(options["apiKey"])
+        if not api_key:
+            logger.warning(
+                "[yellow]%s: apiKey env var unset, skipping live validation[/yellow]",
+                provider_id,
+                extra={"markup": True},
+            )
+            return issues
+
+    try:
+        live_models = fetch_openai_compatible_models(base_url, api_key)
+    except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
+        logger.warning(
+            "[yellow]%s: live model list unreachable (%s), skipping live "
+            "validation[/yellow]",
+            provider_id,
+            exc,
+            extra={"markup": True},
+        )
+        return issues
+
+    live_ids = {str(model.get("id", "")) for model in live_models if model.get("id")}
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+    return _diff_live_ids(provider_id, live_ids, whitelist, blacklist)
+
+
+def validate_google_provider(
+    provider_id: str, provider_cfg: dict[str, Any], api_key: str
+) -> list[str]:
+    """Validate the Google provider against the live Generative Language API
+    (different auth/response shape than the OpenAI-compatible providers)."""
+    try:
+        live_ids = set(fetch_google_models(api_key))
+    except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
+        logger.warning(
+            "[yellow]%s: live model list unreachable (%s), skipping live "
+            "validation[/yellow]",
+            provider_id,
+            exc,
+            extra={"markup": True},
+        )
+        return []
+
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+    return _diff_live_ids(provider_id, live_ids, whitelist, blacklist)
 
 
 def show_provider_partition_diff(
@@ -605,6 +696,38 @@ def validate_provider_partitions(
                 validate_openai_compatible_provider(provider_id, provider_cfg)
             )
             continue
+
+        # Providers that don't self-declare options.baseURL locally (they
+        # rely on opencode's own built-in provider registry) but whose real
+        # base URL and auth env var are published in models.dev's provider
+        # metadata (not its lagging model list). If we hold a working
+        # credential, check live truth instead of the model-list mirror.
+        meta = get_models_dev_provider_meta(models_dev_data, provider_id)
+        if meta:
+            api_key = resolve_first_env(meta.get("env") or [])
+            if meta.get("npm") == "@ai-sdk/openai-compatible" and meta.get("api") and api_key:
+                all_issues.extend(
+                    validate_openai_compatible_provider(
+                        provider_id,
+                        provider_cfg,
+                        base_url_override=meta["api"],
+                        api_key_override=api_key,
+                    )
+                )
+                continue
+            if meta.get("npm") == "@ai-sdk/google" and api_key:
+                all_issues.extend(
+                    validate_google_provider(provider_id, provider_cfg, api_key)
+                )
+                continue
+            logger.info(
+                "[dim]%s: no credential for live validation (needs one of "
+                "%s), falling back to models.dev model-list diff[/dim]",
+                provider_id,
+                meta.get("env"),
+                extra={"markup": True},
+            )
+
         _, issues = show_provider_partition_diff(config, models_dev_data, provider_id)
         all_issues.extend(issues)
 
