@@ -206,11 +206,28 @@ def fetch_openrouter_api() -> dict[str, Any]:
         raise RuntimeError(f"Failed to fetch OpenRouter API: {exc}") from exc
 
 
-def check_openrouter_model_invocation(model_id: str) -> str | None:
-    """Return a call-time error for unusable OpenRouter models."""
+def _is_upstream_rate_limit(error_body: str) -> bool:
+    """True if an OpenRouter error is a specific free model's upstream
+    inference backend throttling it, not the model being broken.
+
+    Confirmed live against several free models: the literal phrase
+    "rate-limited upstream" appears in error.metadata.raw when the primary
+    backend is saturated (e.g. Venice, OpenInference), with or without a
+    retry_after_seconds hint depending on the backend. When OpenRouter fails
+    over to a BYOK-only backup provider after the free backend is
+    rate-limited (observed for google/gemma-4-31b-it:free -> Google AI
+    Studio), the original rate-limit is preserved in error.metadata.
+    previous_errors instead of the top-level raw field. Matching the
+    substring anywhere in the body catches both shapes without having to
+    enumerate every fallback-chain structure OpenRouter might produce."""
+    return "rate-limited upstream" in error_body
+
+
+def check_openrouter_model_invocation(model_id: str) -> tuple[str | None, bool]:
+    """Return (call-time error or None, is_upstream_rate_limit) for a model."""
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
-        return "OPENROUTER_API_KEY is not set"
+        return "OPENROUTER_API_KEY is not set", False
 
     payload = {
         "model": model_id,
@@ -229,10 +246,11 @@ def check_openrouter_model_invocation(model_id: str) -> str | None:
         )
     except urllib.error.HTTPError as exc:
         error_body = exc.read().decode(errors="replace")
-        return f"HTTP {exc.code}: {_extract_error_message(error_body)}"
+        message = f"HTTP {exc.code}: {_extract_error_message(error_body)}"
+        return message, _is_upstream_rate_limit(error_body)
     except Exception as exc:
-        return f"{type(exc).__name__}: {exc}"
-    return None
+        return f"{type(exc).__name__}: {exc}", False
+    return None, False
 
 
 def is_openrouter_free(model: dict[str, Any]) -> bool:
@@ -574,11 +592,26 @@ def validate_openrouter(config: dict[str, Any]) -> list[str]:
         issues.append(message)
         logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
 
-    invocation_failures = {
-        model_id: error
-        for model_id in sorted(whitelist)
-        if (error := check_openrouter_model_invocation(model_id)) is not None
-    }
+    invocation_failures: dict[str, str] = {}
+    rate_limited: dict[str, str] = {}
+    for model_id in sorted(whitelist):
+        error, is_rate_limit = check_openrouter_model_invocation(model_id)
+        if error is None:
+            continue
+        (rate_limited if is_rate_limit else invocation_failures)[model_id] = error
+
+    if rate_limited:
+        # Real, reachable, viable free models -- the upstream inference
+        # backend (e.g. Venice) is temporarily saturated for that specific
+        # model. Not evidence of breakage, informational only.
+        logger.info(
+            "[dim]OpenRouter: %d whitelisted model(s) temporarily rate-limited "
+            "upstream (still viable, kept whitelisted): %s[/dim]",
+            len(rate_limited),
+            list(rate_limited.items())[:10],
+            extra={"markup": True},
+        )
+
     if invocation_failures:
         message = (
             f"OpenRouter: {len(invocation_failures)} whitelisted model(s) failed "
