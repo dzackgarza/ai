@@ -1,1 +1,1 @@
-/home/dzack/ai/AGENTS.md
+../AGENTS.md
