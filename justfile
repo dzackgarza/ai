@@ -21,7 +21,6 @@ skills_dir := opencode_dir / "skills"
 # Tool configs
 
 cc_safety_net := opencode_dir / "configs" / "cc-safety-net.json"
-opencode_permission_policy_config_dir := opencode_dir / "configs" / "opencode-permission-policy-compiler"
 tmux_conf := dotfiles_dir / "tmux.conf"
 tmux_powerline_config := dotfiles_dir / "tmux-powerline" / "config.sh"
 tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.sh"
@@ -33,15 +32,11 @@ codex_home := home / ".codex"
 gemini_home := home / ".gemini"
 qoder_home := home / ".qoder"
 opencode_home := home / ".config/opencode"
-opencode_permission_policy_home := home / ".config/opencode-permission-policy-compiler"
 kilo_home := home / ".config/kilo"
 agents_home := home / ".agents"
 kilocode_home := home / ".kilocode"
 opencode_root := home / ".opencode"
 cc_safety_net_home := home / ".cc-safety-net"
-managed_agents_dir := env_var_or_default("AGENTS_DIR", opencode_dir / "agents")
-ai_prompts_source := "git+https://github.com/dzackgarza/ai-prompts.git"
-policy_compiler_dir := repo / "../opencode-plugins/clis/opencode-permission-policy-compiler"
 
 # Show available recipes
 
@@ -62,7 +57,7 @@ install:
     # Assertion of existence
     echo "Verifying repository targets..."
     for target in "{{ agents_md }}" "{{ skills_dir }}" \
-                  "{{ cc_safety_net }}" "{{ opencode_permission_policy_config_dir }}/config.toml" \
+                  "{{ cc_safety_net }}" \
                   "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
                   "{{ tmux_powerline_theme }}"; do
         if [ ! -e "$target" ]; then
@@ -84,10 +79,6 @@ install:
     ln -snf "{{ agents_md }}" "{{ home }}/.config/AGENTS.md"
     ln -snf "{{ agents_md }}" "{{ gemini_home }}/AGENTS.md"
     ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
-    if [ -d "{{ opencode_permission_policy_home }}" ] && [ ! -L "{{ opencode_permission_policy_home }}" ]; then
-        mv "{{ opencode_permission_policy_home }}" "{{ opencode_permission_policy_home }}.bak.$(date +%Y%m%d%H%M%S)"
-    fi
-    ln -snf "{{ opencode_permission_policy_config_dir }}" "{{ opencode_permission_policy_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
     ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
 
@@ -141,7 +132,6 @@ install:
     printf "%-30s -> %s\n" "~/.gemini/GEMINI.md" "$(readlink {{ gemini_home }}/GEMINI.md)"
     printf "%-30s -> %s\n" "~/.gemini/AGENTS.md" "$(readlink {{ gemini_home }}/AGENTS.md)"
     printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
-    printf "%-30s -> %s\n" "~/.config/opencode-permission-policy-compiler" "$(readlink {{ opencode_permission_policy_home }})"
     printf "%-30s -> %s\n" "~/.cc-safety-net/config.json" "$(readlink {{ cc_safety_net_home }}/config.json)"
     echo ""
     echo "System prompts (actual):"
@@ -201,8 +191,8 @@ run-microagent *args:
 # Build the full OpenCode pipeline in canonical order.
 # Usage: just build
 # Steps:
-#   1. build-config — compile opencode.json from skeleton + provider fragments, apply global permission policy
-#   2. build-agents — fetch ai-prompts slugs, compile managed agent markdown
+#   1. build-config — compile opencode.json from skeleton + provider fragments
+#   2. build-agents — validate tracked manual agent markdown
 #
 # AGENTS.md is NOT built here. It is assembled from the AGENTSmd/ fragment tree via
 # `just -f AGENTSmd/.agents/justfile assemble`; the repo-root AGENTS.md (and the
@@ -212,125 +202,38 @@ build: build-config build-agents
 # Build only the compiled OpenCode config pipeline.
 # Usage: just build-config
 # Steps:
-#   1. _build-opencode-inject-agent-ext-dirs — sync external_directory whitelist from skeleton into primary agents
-#   2. _build-opencode-config-compile — compile opencode.json from source config fragments
-#   3. _build-opencode-config-apply-policy — apply global permission baseline to compiled config
+#   - _build-opencode-config-compile — compile opencode.json from source config fragments
 build-config:
-    @just --justfile {{ justfile() }} _build-opencode-inject-agent-ext-dirs
     @just --justfile {{ justfile() }} _build-opencode-config-compile
-    # @just --justfile {{ justfile() }} _build-opencode-config-apply-policy
 
-# Build only the managed OpenCode agent markdown files.
+# Validate manually managed OpenCode agent markdown files.
 # Usage: just build-agents
-# Steps:
-#   - Fetch each published ai-prompts slug (autonomous, orchestrator, build, plan, etc.)
-#   - Compile prompt permissions with external policy compiler
-#   - Write generated markdown to managed agents directory
 build-agents:
-    @just --justfile {{ justfile() }} _build-opencode-managed-agents
-
-[private]
-_build-opencode-inject-agent-ext-dirs:
-    @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/inject_agent_permissions.py
+    @just --justfile {{ justfile() }} _validate-opencode-agents
 
 [private]
 _build-opencode-config-compile:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python scripts/build_config.py
 
 [private]
-_build-opencode-config-apply-policy:
-    @cd {{ policy_compiler_dir }} && uv run opencode-permission-policy-compiler set-global-policy global
+_validate-opencode-agents:
+    #!/usr/bin/env python3
+    from pathlib import Path
+    import re
+    import yaml
 
-[private]
-_build-opencode-managed-agents:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    output_dir="{{ managed_agents_dir }}"
-    compiler_dir="{{ policy_compiler_dir }}"
-
-    if [[ ! -d "$compiler_dir" ]]; then
-        echo "Missing compiler repo: $compiler_dir" >&2
-        exit 1
-    fi
-
-    mkdir -p "$output_dir"
-
-    echo "Building autonomous.md from interactive-agents/autonomous"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/autonomous \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/autonomous.md"
-
-    echo "Building orchestrator.md from interactive-agents/orchestrator"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/orchestrator \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/orchestrator.md"
-
-    echo "Building build.md from interactive-agents/build"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/build \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/build.md"
-
-    echo "Building plan.md from interactive-agents/plan"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/plan \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/plan.md"
-
-    echo "Building compaction.md from micro-agents/compaction"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/compaction \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/compaction.md"
-
-    echo "Building correction-finder-ask.md from sub-agents/correction-finder-ask"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/correction-finder-ask \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/correction-finder-ask.md"
-
-    echo "Building general.md from sub-agents/general"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/general \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/general.md"
-
-    echo "Building explore.md from sub-agents/explore"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/explore \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/explore.md"
-
-    echo "Building interactive.md from interactive-agents/interactive"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/interactive \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/interactive.md"
-
-    echo "Building minimal.md from interactive-agents/minimal"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/minimal \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/minimal.md"
-
-    echo "Building prover.md from sub-agents/prover"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/prover \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/prover.md"
-
-    echo "Building summary.md from micro-agents/summary"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/summary \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/summary.md"
-
-    echo "Building title.md from micro-agents/title"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get micro-agents/title \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/title.md"
-
-    echo "Building unrestricted-test.md from interactive-agents/unrestricted-test"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get interactive-agents/unrestricted-test \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/unrestricted-test.md"
-
-    echo "Building sagemath-coder.md from sub-agents/sagemath-coder"
-    uvx --refresh --from {{ ai_prompts_source }} ai-prompts get sub-agents/sagemath-coder \
-      | (cd "$compiler_dir" && uv run opencode-permission-policy-compiler) \
-      > "$output_dir/sagemath-coder.md"
-
+    agents_dir = Path("{{ opencode_dir }}") / "agents"
+    agent_files = sorted(agents_dir.glob("*.md"))
+    assert agent_files, f"no agent markdown files found in {agents_dir}"
+    for path in agent_files:
+        text = path.read_text()
+        match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+        assert match, f"missing YAML frontmatter: {path}"
+        frontmatter = yaml.safe_load(match.group(1))
+        assert isinstance(frontmatter, dict), f"frontmatter must be a mapping: {path}"
+        assert frontmatter.get("name"), f"missing agent name: {path}"
+        assert "permission" in frontmatter, f"manual permission block required: {path}"
+    print(f"validated {len(agent_files)} manually managed OpenCode agent files")
 
 # =============================================================================
 # Provider Config Validation

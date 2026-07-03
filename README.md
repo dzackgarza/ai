@@ -160,15 +160,15 @@ Adding a model to a blocklist or a rename is not "technical debt" — it is the 
 mechanism for fine-grained model selection. The provider files *are* the source of truth
 for model policy.
 
-**Build commands (run both, in order):**
+**Build commands:**
 
 ```bash
-# 1. Compile permissions and agents
-cd opencode && uv run permissions/main.py --apply
-
-# 2. Merge skeleton + providers into opencode.json
-cd opencode && uv run scripts/build_config.py
+just build
 ```
+
+`just build-agents` validates the manually managed OpenCode agent markdown files in
+`opencode/agents/*.md`. `just build-config` merges the skeleton and provider fragments
+into `opencode.json`.
 
 See `opencode/configs/AGENTS.md` for the full architectural breakdown and
 `opencode/configs/providers/` for provider source files.
@@ -342,12 +342,10 @@ The `prompt` field completely replaces the built-in system prompt for that agent
 
 ### Interactive Agents
 
-**Agent definitions are authored in the external `ai-prompts` repository but
-materialized here into `opencode/agents/*.md`.** These local files are consumed by
-OpenCode at runtime.
-Run `just build-agents` to synchronize them from the source repository.
-See the `ai-prompts` repo for documentation on specific agents.
-This file contains only general notes about agent behavior patterns.
+**Agent definitions are manually authored in `opencode/agents/*.md`.** These local
+files are consumed by OpenCode at runtime and carry their own prompt bodies,
+frontmatter, and permission blocks. Run `just build-agents` to validate them.
+This section contains general notes about agent behavior patterns.
 
 **Mode-switch indicators:**
 
@@ -385,7 +383,7 @@ User → interactive
 implementation plans | | build | Executes implementation plans | | minimal | Minimal
 agent template |
 
-### Subagents (`ai-prompts` slugs under `sub-agents/`)
+### Subagents
 
 **Internal agents - called by top-level agents, not meant for direct user invocation.**
 
@@ -414,7 +412,7 @@ agent template |
 | project-initializer | Generates ARCHITECTURE.md and CODE_STYLE.md |
 | plan-contract-validator | Constraint compliance, pattern consistency, smell detection |
 
-### Specialized Agents (`ai-prompts` slugs under `interactive-agents/` and `sub-agents/`)
+### Specialized Agents
 
 **Specialized agents with extra local tools - usable both interactively AND
 autonomously.**
@@ -431,8 +429,8 @@ Workers are domain-specific agents that can be:
 | test_engineer | Design test strategy with user | Run test coverage audits |
 | lattice_documentor | Plan docs structure | Generate missing docs |
 
-Each specialized prompt lives in `ai-prompts`; support material is expanded into the
-fetched prompt document by slug.
+Any specialized OpenCode prompt that is active at runtime must live as a tracked
+markdown agent under `opencode/agents/`.
 
 ## MCP Servers
 

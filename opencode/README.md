@@ -8,34 +8,29 @@ Read the justfile!
 ## OpenCode Workspace
 
 `~/ai/opencode` is the live OpenCode config directory, symlinked into
-`~/.config/opencode`. Keep runtime-discovered paths stable.
-Reorganize inside the owning subtrees instead of adding new root clutter.
+`~/.config/opencode`. Keep runtime-discovered paths stable. Reorganize inside the
+owning subtrees instead of adding new root clutter.
 
 ### Source Of Truth
 
-- Permissions and markdown-agent generation: `permissions/main.py`
+- Manual OpenCode agent definitions: `agents/*.md`
 
 - Config assembly: `scripts/build_config.py`
 
-- Canonical prompt templating: `llm-templating-engine` (installed in `.venv` via
-  `pyproject.toml`)
+- Provider configs: `configs/providers/*.json`
+
+- Top-level OpenCode defaults: `configs/config_skeleton.json`
 
 - Canonical template-driven LLM execution: `llm-run` (installed in `.venv` via
   `pyproject.toml` and exposed locally through `just run-microagent`)
-
-- Permission policy: [Permission Architecture Specification](https://github.com/dzackgarza/ai/wiki/Permission-Architecture-Specification)
-
-- Provider configs: `configs/providers/*.json`
-
-- Managed agent prompt slugs: resolved through the `ai-prompts` dependency
-
-- Generated OpenCode markdown agents: `agents/*.md`
 
 - Plugin code: `plugins/`
 
 - Plugin-local runtime config: `configs/local-plugins.json`
 
 ### Stable Paths
+
+- `agents/`
 
 - `configs/`
 
@@ -49,13 +44,11 @@ Reorganize inside the owning subtrees instead of adding new root clutter.
 
 ### Canonical Pathways
 
+- `just build`
+
 - `just build-agents`
 
-- `just permissions-apply`
-
-- `just config-build`
-
-- `just rebuild`
+- `just build-config`
 
 - `just providers-validate`
 
@@ -65,62 +58,45 @@ Reorganize inside the owning subtrees instead of adding new root clutter.
 
 ### Layout
 
-- `configs/providers/`: provider source files, notes, and maintenance scripts
+- `agents/`: manually managed OpenCode markdown agents consumed at runtime. Edit the
+  prompt body, frontmatter, and `permission` block here.
 
-- `agents/`: generated OpenCode markdown agents consumed at runtime
+- `configs/config_skeleton.json`: top-level defaults merged into `opencode.json`.
 
-- `ai-prompts`: canonical prompt library, resolved by slug through `pyproject.toml`
+- `configs/providers/`: provider source files, notes, and maintenance scripts.
 
-- `plugins/`: runtime-loaded plugins and plugin-owned utilities
+- `plugins/`: runtime-loaded plugins and plugin-owned utilities.
 
 - `plugins/utilities/harness/`: compatibility wrapper/docs for the extracted session
-  automation CLI
+  automation CLI.
 
-- `scripts/`: repo-wide maintenance entrypoints
+- `scripts/`: repo-wide maintenance entrypoints.
 
-- `docs/`: policy and organization docs
+- `docs/`: policy and organization docs.
 
 ### Prompt Templating
 
-- All prompt rendering is centralized in `llm-templating-engine`. Do not reimplement
-  prompt parsing, frontmatter handling, Jinja rendering, or include semantics inside
-  `permissions/`, plugins, or ad hoc helper scripts.
+- OpenCode runtime agents are authored directly in `agents/*.md`; do not route them
+  through external prompt slugs or generated permission blocks.
 
-- `ai-prompts` is the canonical prompt source.
-  Callers in this repo resolve prompt slugs through the dependency instead of reading
-  workspace-local prompt files.
+- `llm-templating-engine` and `llm-run` remain the canonical path for template-driven
+  one-off LLM execution through `just run-microagent`.
 
-- Prompt templates are markdown files with YAML frontmatter.
-  The templating engine preserves frontmatter; runner-reserved execution fields such as
-  `kind`, `models`, `system_template`, `temperature`, `max_tokens`, `retries`,
-  `output_schema`, and `response_template` belong to `llm-runner`.
-
-- Jinja `{% include %}` and `{% import %}` are supported through the canonical
-  `llm-templating-engine` environment.
-  Included prompt templates contribute only their markdown body.
-  Child frontmatter is ignored by design.
-
-- If a new use case needs different prompt composition or LLM execution semantics,
-  extend `llm-templating-engine` or `llm-runner` rather than adding a repo-local second
-  path. Verify there are no regressions for both template-defined runs (`llm-run` or
-  `just run-microagent`) and markdown-agent generation (`permissions/main.py`).
+- If a runtime OpenCode agent needs different behavior, edit the corresponding markdown
+  file in `agents/` and keep its `permission` block explicit in that file.
 
 ### Build Behavior
 
-- `just build-agents` is the canonical full build for managed agents.
-  It:
+- `just build` rebuilds `opencode.json` from the config sources and validates tracked
+  manual agent markdown.
 
-  1. Regenerates `agents/*.md` from `ai-prompts` prompt slugs
+- `just build-config` merges `configs/config_skeleton.json` plus
+  `configs/providers/*.json` through `scripts/build_config.py` and writes
+  `opencode.json`.
 
-  2. Rebuilds `opencode.json` through `scripts/build_config.py`
-
-  3. Validates the generated config against its schema
-
-  4. Verifies the expected generated agent names appear in `opencode agent list`
-
-- The builder also counts tokens for fully rendered prompts and warns when any generated
-  agent exceeds the configured threshold (`OPENCODE_AGENT_TOKEN_WARNING_THRESHOLD`,
-  default `5000`).
+- `just build-agents` validates that every tracked OpenCode markdown agent has
+  frontmatter, a `name`, and an explicit manual `permission` block. It does not generate
+  or rewrite agent files.
 
 * * *
 
