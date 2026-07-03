@@ -2,12 +2,13 @@
   "$schema": "https://opencode.ai/config.json",
   "snapshot": false,
   "disabled_providers": [
-    "groq",
-    "mistral",
     "cloudflare-ai-gateway",
+    "groq",
     "huggingface",
+    "kaggle-ollama",
+    "mistral",
     "morph",
-    "kaggle-ollama"
+    "openai"
   ],
   "instructions": [
     "/home/dzack/.config/opencode/AGENTS.caveman.md"

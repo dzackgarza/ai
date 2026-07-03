@@ -107,7 +107,6 @@
 
    - openrouter.json - remove 3 models, add 5 free models
 
-   - openai.json - add 38 models to blacklist
 
    - google.json - add gemini-2.5-* models to blacklist
 
