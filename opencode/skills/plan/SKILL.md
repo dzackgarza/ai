@@ -55,6 +55,34 @@ A valid plan must:
   prescribing the implementation diff (see Plan Tier and the Plan Tree);
 - stay current as execution proceeds.
 
+## Mandatory pre-implementation modeling gate
+
+Before drafting any implementation-adjacent plan, the planner must first produce a
+pre-implementation modeling plan for the target slice. Use:
+
+- `references/type-system-prepass-template.md` as the required artifact structure.
+- The transcript `~/Modeling-with-Type-Systems.md` as the accepted model playbook source.
+
+This pre-pass is a required sequencing gate, not optional style guidance. It must:
+
+- define the slice’s bounded contexts and the exact language terms used in that context;
+- enumerate valid/invalid examples, lifecycle transitions, and invariants;
+- model the domain as a compact typed algebra (bounded primitives, product types,
+  sum types, workflow signatures, typed errors, and explicit state transitions) before coding
+  tasks are ordered;
+- separate pure transformations from effectful operations and define ports/interfaces for each
+  side effect;
+- declare boundary parser policy (`unknown`/parsing at adapters, stronger types in domain);
+- define stub/contract strategy for untyped integration points (typed façades, adapter stubs, and compile-time boundary checks) before any task ordering;
+- define shared algorithm-policy types before implementation decisions (ordering, retries,
+  conflict resolution, IDs, clocks, idempotency, pagination, rounding, etc.);
+- set explicit escape-hatch policy and debt ledger (`any`/`unknown`/casts/type assertions).
+
+No implementation-adjacent plan is accepted until the pre-pass artifact is complete,
+reviewable, and linked as the prerequisite source for tasks.
+
+
+
 If a plan leaves the implementer to decide the milestone, scope, dependency graph,
 acceptance criteria, or proof burden, the plan is not ready.
 
@@ -465,6 +493,8 @@ Load on demand after the routing gate:
   implementation.
 - `references/tier-implementation.md` — implementation-adjacent plans: rubric calibration,
   task plan, task quality, system-level validation.
+- `references/type-system-prepass-template.md` — mandatory pre-implementation type-model
+  template used before implementation-adjacent plan tasks.
 - `references/externalization.md` — converting any plan into a GitHub issue tree and PRs.
 
 ## Related Skills

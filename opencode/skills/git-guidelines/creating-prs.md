@@ -74,48 +74,17 @@ subtree, or new top-level roadmap issue without inventing scope, user behavior,
 acceptance criteria, proof burdens, milestone cuts, or dependency order, the source plan
 is not ready to externalize.
 
-The normal sequence is:
+The canonical model for this projection — the issue-tree/milestone/PR-claim mapping, the
+externalization sequence, the source-plan requirements, and the Plan Fit Gate — is owned
+by `plan/references/externalization.md`. Load and follow it; this guide does not restate
+the model. Before opening the PR, the source plan must already satisfy that reference's
+Plan Fit Gate: tree root, parent or roadmap node, GitHub Milestone scope, the claimed
+issue set or subtree, the close/reference split, and the proof obligations claimed versus
+not claimed.
 
-1. finalize the plan interactively;
-2. inspect existing GitHub issues, sub-issues, milestones, draft PRs, and wiki roadmap
-   projection;
-3. create or update story-shaped issues under the correct parent issue, using native
-   sub-issues for parent/child edges when the active GitHub surface supports them;
-4. preserve sibling order through sub-issue order where available, and use issue
-   dependencies only for blockers;
-5. create or select a GitHub Milestone object for the delivery slice, with scope stated
-   as a subtree root or explicit issue set;
-6. assign descendant issues that count toward delivery, and the PRs linked to those
-   issues, to the milestone;
-7. open the PR as a draft from the selected issue set or subtree, assign the milestone,
-   and state the close/reference split in the PR body;
-8. add PR Development links or closing keywords only for issues this PR fully satisfies
-   on merge;
-9. keep the PR draft until every claimed issue or proof obligation is complete and
-   evidenced.
-
-Before creating the PR, verify that the source plan fixes:
-
-- the externally meaningful story, included scope, explicit exclusions, preserved
-  behavior, and observable completion condition;
-
-- the tree placement: root roadmap issue, parent issue or wiki roadmap node, sibling
-  order, milestone-sized subtree, and blocker dependencies;
-
-- every proof obligation's actor, trigger or context, intended result, acceptance
-  criteria, proof burden, dependencies, and supplied artifacts;
-
-- stable vocabulary and complete referents, so labels such as test IDs, issue numbers,
-  file names, transcript phrases, and local shorthand are evidence pointers rather than
-  unexplained requirements;
-
-- proof design before implementation assessment. Evidence answers declared criteria; it
-  does not define the criteria after code happens to pass;
-
-- the GitHub Milestone that groups the delivery slice's issues and linked PRs;
-
-- which issues the PR should close on merge, which issues it partially advances, and
-  which broader parent, deferred, or excluded issues it should only reference.
+This guide adds only the PR-execution specializations: the claim-map body shape below,
+closing-keyword discipline, and the stop rules specific to projecting one finalized plan
+into a single PR.
 
 The issue-tree, milestone, wiki, and PR projections may add owner, branch, status,
 blocker, commit, run, artifact, and review-link metadata. They must not add, delete,

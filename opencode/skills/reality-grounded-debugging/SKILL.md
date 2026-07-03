@@ -24,6 +24,24 @@ The fix will be verified through ____ rather than by repeating the original opaq
 
 If any blank cannot be filled with concrete command output, source text, logs, artifact paths, API responses, or test results, do not patch yet. Surface data first.
 
+## Feedback Loop Quality Gate
+
+The first substantive artifact for a bug is a tight, red-capable feedback loop: one
+agent-runnable command, script, test, fixture, trace replay, browser script, or
+measurement harness that has already been run and can catch the user's exact symptom.
+
+Before hypothesizing, make the loop sharper:
+
+- assert the specific symptom rather than no-crash success;
+- isolate unrelated setup, global state, filesystem, network, and time;
+- for flaky bugs, raise the reproduction rate with repetition, stress, pinned seeds or
+  clocks, and narrowed timing windows;
+- if the bug is performance, build a timing/profiling baseline before adding logs.
+
+If no red-capable loop can be built, stop and report what was tried plus the missing
+artifact, environment, trace, log, recording, or instrumentation permission needed. Do not
+continue with code reading as a substitute for the loop.
+
 ## Observed Bug Protocol
 
 When the user reports a project-owned bug, do not fix it first.
@@ -190,7 +208,8 @@ A debugging task is not complete until the report includes:
 
 * the original failure command and raw relevant output
 * the root cause at the owned boundary
-* the smallest reproducer or fixture
+* the tight feedback loop command and why it is red-capable for this symptom
+* the smallest reproducer or fixture, minimized until every remaining element is load-bearing
 * the observability/isolation surface added or used
 * the targeted verification result
 * the global verification result

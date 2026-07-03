@@ -23,6 +23,17 @@ proof obligation, implementation task. Do not introduce fake node labels such as
 ROOT, epic, milestone issue, or custom status layers unless the repository already
 uses them. GitHub issues store nodes; sub-issues store tree edges.
 
+The roadmap must be a single root issue whose ordered sub-issues are the roadmap
+items. This is not optional decoration: GitHub's issue list has no native ordering
+for top-level issues, so a set of unparented "top-level roadmap issues" cannot
+express the order of the roadmap. The only place GitHub stores adjacent-node order
+is sub-issue order under a parent (reprioritized via the sub-issue `before_id` /
+`after_id` REST endpoint). Therefore every roadmap item must hang off one root issue
+so its order is real GitHub state, not a title prefix (`M1`, `M2`) or a hand-kept
+list. The root issue is just named for what it is — the roadmap — not `ROOT`. The
+same rule applies recursively: sibling order at every level is sub-issue order under
+the shared parent. Dependencies encode blockers only, never ordinary roadmap order.
+
 Every issue should be story-shaped at its own altitude. A roadmap issue may state
 a broad user story. A feature issue states a narrower user story. An
 implementation issue may state a developer, operator, reviewer, or system story.
@@ -52,6 +63,26 @@ narrative context and generated tree/status views, but it must not own live issu
 PR, or completion state. A wiki may own the ordered top-level roadmap list only if
 GitHub's issue/sub-issue ordering cannot represent that order cleanly; all
 decomposition and execution state still belongs to issues, milestones, and PRs.
+
+## Draft PRs Scope Units of Work, as a Planning Step
+
+Creating the issue tree is not the last planning step. The natural next step is to open
+small draft PRs that each claim a coherent unit of work — a group of related issues or a
+subtree node — so the unit a future agent picks up is already scoped by planning rather
+than invented at pickup time.
+
+This belongs to planning, not triage. Without pre-scoped draft PRs, agents arriving later
+default to grabbing a single issue per PR. Individual issues are often narrow, so
+one-issue-per-PR fragments the work into many tiny PRs, each pulling in a human review pass
+and possibly several review rounds — a large, recurring waste of reviewer time for little
+delivered value. Pre-scoped draft PRs stop agents from reinventing the unit of work and
+keep review attention on coherent, review-sized changes.
+
+So, when externalizing a plan, create draft PRs over coherent issue groups or subtree
+nodes as part of the plan output, once a claimable issue set exists. Scope each draft PR to
+the smallest coherent delivery still worth a single review pass — usually a sibling group
+or a milestone-sized subtree. A lone single-issue PR is right only when that issue is
+itself a coherent, review-worthy unit.
 
 ## Source Plan Requirements
 
@@ -123,7 +154,9 @@ When scaffolding a project roadmap with the user, proceed top-down:
 7. Split only the parts that need implementation tracking.
 8. Create issues/sub-issues for the accepted tree.
 9. Create GitHub Milestones for milestone subtrees.
-10. Open draft PRs only when a claimable issue set exists.
+10. Open draft PRs that each scope a coherent unit of work — a sibling issue group or a
+    subtree node — once a claimable issue set exists, so downstream agents pick up
+    pre-scoped units instead of one narrow issue at a time.
 11. Render or refresh the wiki projection from the resulting GitHub state.
 
 Do not start by asking the user for issue titles, labels, implementation tasks, or
@@ -192,4 +225,7 @@ Stop and repair the source plan before externalizing when:
 - dependencies are being used to encode ordinary traversal order;
 - the wiki would manually mirror live issue/PR status;
 - issue creation would require inventing user stories, proof obligations, scope, or
-  milestone cuts not present in the source plan.
+  milestone cuts not present in the source plan;
+- a planning pass publishes an issue tree but leaves its coherent units of work unscoped
+  by draft PRs, so downstream agents must reinvent PR scope or default to one narrow issue
+  per PR.

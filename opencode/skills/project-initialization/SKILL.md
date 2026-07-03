@@ -82,10 +82,19 @@ treating local docs, plans, or transcripts as authoritative.
   roadmap pages are readable projections or narrative context unless they explicitly own
   top-level order. Local plans, `.agents` notes, memory records, transcripts, and
   scratchpads are leads unless the current GitHub surface confirms them.
+- Before characterizing or normalizing an existing planning tree, load and read
+  `plan/references/externalization.md`. You MUST read it before judging whether the tree
+  is well-formed — whether a single root roadmap issue owns top-level order, whether nodes
+  are story-shaped at their own altitude, whether milestones are scoped to subtree roots,
+  and whether proof obligations live in the issue bodies. Do not call a tree well-formed or
+  malformed from issue titles, labels, sub-issue edges, or milestone counts alone: that is
+  structure, not conformance to the model. Treating structure as evidence of conformance is
+  the failure this gate exists to prevent.
 - For long-horizon, cross-repo, or review-track work, externalize finalized plans into
-  a GitHub issue tree, GitHub Milestone scope, and draft PR claim map using `plan` and
-  `git-guidelines`. Once public artifacts exist, they become the tracker; local plans may
-  explain derivation but must not stay authoritative.
+  a GitHub issue tree, GitHub Milestone scope, and draft PR claim map. Load and read
+  `plan/references/externalization.md` and use `plan` and `git-guidelines` first; do not
+  create or restructure tree nodes before reading it. Once public artifacts exist, they
+  become the tracker; local plans may explain derivation but must not stay authoritative.
 - When an observed failure class repeats, causes false green, blocks convergence, or
   requires human rescue, route it to the durable enforcement surface that owns it:
   wiki user stories or proof burdens for product obligations, issues/PR contracts for

@@ -4,7 +4,13 @@ Consolidated from the former `github-issues` skill.
 
 Issue *filing rules and templates* are in SKILL.md (Issue Workflow section).
 This reference covers the CLI mechanics for viewing, creating, managing, and triaging
-issues.
+issues. It is mechanics only.
+
+For planning-tree issues — roadmap, phase, feature, story, proof obligation, or
+implementation node — load and read `plan/references/externalization.md` before
+creating or restructuring anything. The model it defines (single root roadmap issue,
+story-shaped nodes at altitude, milestones scoped to subtree roots, proof obligations
+in issue bodies) is not reconstructable from the CLI commands below.
 
 ## Setup
 

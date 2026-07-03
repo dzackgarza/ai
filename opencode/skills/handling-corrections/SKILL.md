@@ -184,15 +184,54 @@ item; report the blocker.
 
 ## Correction Memory Rule
 
-For every verified correction related to a bug or failure, add a project memory note
-after the fix is validated.
+### Scan for an accepted remediation before routing
 
-- The core method is not hand-writing a local notebook: write the lesson to project
-  memory so learning is retained as collective state.
-- Record, at minimum: reproducer command/action, root-cause boundary, the fix applied,
-  and the specific anti-laundering rule that prevented skipping or relabeling.
-- This is deliberate `沉淀` (deposited learning): the project state should get better
-  after each correction.
+A correction is rarely the first of its kind. Before filling the routing record, search
+memory for prior corrections of the same class and their accepted remediations:
+
+```text
+agent-memory search "<the misbehavior, boundary, or expectation the correction names>"
+```
+
+If a prior correction memory already records the accepted remediation for this class,
+apply that remediation instead of re-deriving one, and cite the memory key in the routing
+record's `Evidence needed` field. Re-deriving a fix the project has already settled is the
+same waste the correction is meant to prevent — the point of the memory is that the same
+correction never has to be worked twice. If the scan returns nothing, note that the class
+is new; it becomes a fresh memory once the remediation is validated (below).
+
+### Persist the correction — global by default
+
+For every verified correction, add a typed memory once the remediation is validated.
+
+- Most corrections are about agent behavior, not one repo's code — how to work, what
+  boundary to respect, what to never do again. Those are **cross-repo operational
+  knowledge**, so they default to **global scope** (`--scope global`), typically
+  `--type trap` (a correction that must change future behavior) or `--type advice`. A
+  correction whose fact is genuinely local to one repository's code or data is the
+  exception that stays `--scope project`.
+- The core method is not hand-writing a local notebook: write the lesson to the vault so
+  learning is retained as collective state across every repo the agent touches.
+- Record, at minimum: the misbehavior or expectation in the user's terms, the root-cause
+  boundary, the **accepted remediation** (the fix or rule that resolves this class), and
+  the specific anti-laundering rule that prevented skipping or relabeling. For bug-fix
+  corrections also record the reproducer command/action.
+- This is deliberate `沉淀` (deposited learning): the system state should get better after
+  each correction, not just this repo's.
+
+### Maintain accepted-remediation memories
+
+These memories are durable, not write-once. Per the `agent-memory` workflow, **search
+first and prefer `update` over a duplicate**:
+
+- When the scan above surfaces an existing remediation memory for this class, `update`
+  it — sharpen the rule, add the new instance, or correct a remediation that turned out
+  wrong. Do not create a second near-identical memory.
+- When a later correction proves an accepted remediation was incomplete or mistaken, the
+  newest correction is authoritative: update the memory so it records the now-accepted
+  remediation, and reconcile any divergent wiki or GitHub surface (see below).
+- A remediation memory that no longer reflects how the class is actually resolved is a
+  defect — fix it the same turn you discover the divergence.
 
 Most corrections are not bug fixes — they are the user re-stating an app decision,
 ownership boundary, purpose, goal, or expectation that the agent misunderstood because it

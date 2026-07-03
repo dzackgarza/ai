@@ -20,6 +20,90 @@ any repo:
 
 There are no exceptions: one place to look, one command to run.
 
+## Required baseline form
+
+Every justfile this system owns starts from the same shape. These are not stylistic
+preferences — they are the conventions most often missed when a justfile accretes from
+one-shot prompts. Apply them before adding any project-specific recipe.
+
+1. **A header comment block** stating what the justfile is, where the real source of
+   truth lives, and what each surface delegates to. The reader should learn the project's
+   automation model from the top of the file, not by reverse-engineering recipe bodies.
+2. **A `default` recipe that lists recipes**, so a bare `just` is always a safe,
+   informative no-op:
+   ```just
+   # Show available recipes
+   default:
+       @just --list
+   ```
+3. **A doc comment on every public recipe** (see *Self-documenting `just --list`* below).
+   A public recipe with no comment is an undocumented entry point.
+4. **QC delegated upstream**, not reimplemented: `test`/`test-ci` route to
+   `~/ai-review-ci` (see *Single `test` recipe under global QC*). A justfile that hand-rolls
+   `lint`, `typecheck`, `coverage`, etc. is duplicating the global QC system.
+5. **Implementation steps marked `[private]`** (see *Public vs private discipline*). The
+   public surface is the designed interface; everything else is hidden.
+
+Canonical skeleton for a project under global QC:
+
+```just
+# <project> — <one line: what this is>.
+#
+# <Where the real build/test logic lives and what this file delegates to.>
+# Underlying tools (cargo/npm/uv/...) are implementation details, never the interface.
+
+# Show available recipes
+default:
+    @just --list
+
+# Build the distribution artifact
+build:
+    @<build-tool> build
+
+# Start the dev/preview server
+serve: build
+    @<build-tool> serve
+
+# Run the full QC gate (delegates to global QC)
+test:
+    @just -f ~/ai-review-ci/justfiles/<lang>.just -d . test
+
+test-ci:
+    @just -f ~/ai-review-ci/justfiles/<lang>.just -d . test-ci
+
+[private]
+_assemble:
+    @<internal step>
+```
+
+## Self-documenting `just --list`
+
+`just --list` is the project's front door. It must read like a table of contents, not a
+bare list of names. `just` renders the **comment on the line immediately above a recipe**
+as that recipe's description in `--list` — so the documentation lives right where the
+recipe is defined.
+
+```just
+# Build the distribution artifact   <- becomes the --list description
+build:
+    @cargo build --release
+```
+
+Rules, all verified against `just` behavior:
+
+- The comment must be on the line **directly above** the recipe with **no blank line**
+  between them. A blank line orphans the comment and the recipe shows up undocumented.
+- Write the comment for the *user* of the recipe: what it does and any required argument,
+  not how it is implemented. One line, imperative.
+- Use the plain `#`-comment idiom, **not** the `[doc('...')]` attribute. Every justfile in
+  this ecosystem uses the comment form; `[doc()]` is heavier and used nowhere — stay
+  consistent.
+- `[private]` recipes are hidden from `--list`, so they do not need a user-facing doc
+  comment (a `# _foo: internal step of build` note for the next reader is still welcome).
+- If you cannot write a one-line doc that a user would understand, that is a signal the
+  recipe should be `[private]` or folded into another recipe — see *The recipe list is the
+  project's architecture*.
+
 ## Interface Design — What Belongs in a Justfile
 
 ### The universal convention: all workflows through just
@@ -463,11 +547,10 @@ This differs from a plain `#!/usr/bin/env python3` shebang recipe: `[script]` pa
 
 ## Common patterns
 
-```just
-# Default recipe shows help
-default:
-  @just --list
+The `default` recipe is covered in *Required baseline form* above; these are additional
+building blocks.
 
+```just
 # Require a variable to be set
 deploy:
   #!/usr/bin/env bash

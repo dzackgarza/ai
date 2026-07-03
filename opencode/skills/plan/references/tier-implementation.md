@@ -7,6 +7,30 @@
 An implementation-adjacent plan is a scoring rubric for one coherent piece of work:
 endpoint, constraints, acceptance, proof. It is loose on mechanism and tight on outcome.
 
+
+## Required pre-implementation model pass
+
+Every implementation-adjacent plan must be preceded by a pre-implementation modeling
+plan. Use:
+
+- `type-system-prepass-template.md` as the required template.
+- `~/Modeling-with-Type-Systems.md` as the canonical playbook source.
+- required typed stubs and at least one explicit compile-time checking step for those stubs and typed boundaries before task execution.
+
+This required pass defines the slice’s domain language before task ordering and captures:
+
+- bounded context and terminology map;
+- invariants and illegal-state checks;
+- typed domain core (bounded primitives, product/sum types, explicit transitions, typed errors);
+- pure versus effectful boundary separation with ports/interactions;
+- boundary parsing policy (untrusted input enters adapters, domain consumes typed values);
+- shared algorithm-policy contracts (ordering, retries, idempotency, rounding, conflict
+  resolution, pagination, clocks, identifiers, etc.);
+- escape-hatch policy and debt ledger (`any`/`unknown`/casts/type assertions).
+
+No implementation-adjacent plan is complete until this model pass exists and is linked as a
+prerequisite.
+
 ## First question: does this leaf need to exist?
 
 Often it does not. When the parent plan already constrains the endpoint, a strong

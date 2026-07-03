@@ -13,5 +13,9 @@ or artifact cannot already show.
 Only report gaps, skipped surprises, undocumented decisions, incomplete required work,
 and next actions.
 
+For PR-scoped work, draft PR status, unpushed commits, an unstarted automated review loop,
+or untriaged returned review feedback are incomplete required work. Report those gaps
+instead of a completion claim.
+
 Before responding after file edits, load `git-guidelines` if not already active and
 verify the intended diff.

@@ -268,9 +268,20 @@ Completed work history belongs in commits, never in repo docs.
 
 ## PR Review Workflow
 
-For nontrivial features: branch + PR → tag `@codex review` → wait 3–5 min for automated
-reviewers (Codex, Qodo, etc.)
-to post.
+For nontrivial features: branch + draft PR tracks implementation while work is still
+incomplete. Completion is not local implementation; it includes GitHub PR state.
+
+A PR-scoped task is not complete until:
+
+- the branch is pushed and the PR body or claim map is current;
+- the PR is no longer draft (`gh pr ready <PR_NUMBER>`);
+- the automated review loop has been explicitly triggered (`gh pr comment <PR_NUMBER>
+  --body '@codex review'`, or the repo's documented equivalent);
+- returned review and check feedback has been scanned with `extract_unresolved_issues`
+  and routed through `pr-feedback-triage`, or a real blocker has been reported.
+
+Do not write a completion report while any of those remain undone. Report the missing
+PR-state or review-loop step as incomplete required work.
 
 ### extract_unresolved_issues: scan all PR feedback first
 

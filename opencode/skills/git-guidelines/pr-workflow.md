@@ -45,7 +45,8 @@ gh pr create \
   --draft
 
 # Later, after every claimed issue/proof item is complete and evidenced:
-gh pr ready
+gh pr ready <PR_NUMBER>
+gh pr comment <PR_NUMBER> --body '@codex review'
 ```
 
 Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base develop`
@@ -254,7 +255,8 @@ gh pr edit --body-file .pr/PR_BODY.md --milestone "<milestone>"
 gh pr checks --watch
 
 # 9. Mark ready only after every claimed issue/proof item is complete and evidenced
-gh pr ready
+gh pr ready <PR_NUMBER>
+gh pr comment <PR_NUMBER> --body '@codex review'
 
 # 10. Merge when green
 gh pr merge --squash --delete-branch

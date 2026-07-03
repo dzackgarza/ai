@@ -12,6 +12,14 @@ title: Engineering Rules
 - For long-running commands, use PTYs/sessions and poll them.
   Do not create artificial short timeouts for ordinary engineering work.
 
+- When you kick off a long-running background job — build, test suite, training run,
+  batch, remote task, or dispatched agent — and will stop to wait for it, give the user
+  an expected-completion ETA before you wait, grounded in the job's own reported
+  duration, its historical runtime, or its observed progress rate. Do not go silent and
+  leave the user blind to when the job should return. This concrete completion ETA for an
+  already-running job is operational status, not a time estimate for proposed work, and is
+  the explicit exception to the "never write time estimates" ban.
+
 - For git checkpoints, diffs, commits, and recoverable deletion, load `git-guidelines`.
 
 - For standalone Python scripts, dependency provisioning, missing tools, or install
