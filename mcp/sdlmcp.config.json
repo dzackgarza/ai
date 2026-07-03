@@ -148,6 +148,13 @@
     }
   ],
   "performanceTier": "auto",
+  "concurrency": {
+    "maxSessions": 32,
+    "maxToolConcurrency": 8,
+    "readPoolSize": 4,
+    "writeQueueTimeoutMs": 30000,
+    "toolQueueTimeoutMs": 30000
+  },
   "dbPath": "/home/dzack/ai/mcp/sdlmcp.sqlite",
   "graphDatabase": {
     "path": "/home/dzack/ai/mcp/sdl-mcp-graph.lbug"
