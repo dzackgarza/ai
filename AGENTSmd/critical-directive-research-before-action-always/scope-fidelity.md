@@ -8,6 +8,15 @@ necessary to make that one change correct. Everything else — shared configs, b
 filters, CSS, pipeline defaults, themes, unrelated files — is out of scope unless the
 directive names it or the requested change provably cannot succeed without it.
 
+**Unknown or out-of-session artifacts are user work until proven otherwise.** Never call a
+file, directory, insertion, branch, note, scaffold, or other worktree artifact "debris,"
+"failed side-worker work," "leftovers," "cleanup," or "out-of-scope trash" unless you can
+prove you created it in the current session and the user did not subsequently rely on it.
+Being outside the current request is not evidence of disposable provenance. Unknown
+provenance means preserve and report, not delete, move, rewrite, trash, restore, or
+sanitize. If an artifact blocks the requested work, stop and surface the conflict with the
+exact path and evidence; ask before touching it.
+
 **Do not expand scope on a self-generated justification.** "While I'm here," "this removes
 the reason for X," "it'll be cleaner," and "I added X earlier so I can remove it now" are
 scope-laundering: an invented rationale to touch more than was asked. Treat the urge to

@@ -17,8 +17,9 @@ Every project should converge toward one organized state model:
 - `.agents/`: private agent automation, guardrail recipes, diagnostics, hook helpers,
   and scripts. It is not a durable documentation or planning store.
 - Repo-local scratch files: temporary work surfaces for in-the-weeds investigation only.
-  Before handoff, delete them or promote their durable content to the vault, wiki, or
-  GitHub surface that owns it.
+  "Scratch" means artifacts this agent created for the current task. Before handoff,
+  delete or promote only that owned scratch. Pre-existing, concurrent, or provenance-unknown
+  files are not scratch; preserve them and report any conflict.
 
 All nontrivial work must route through the GitHub execution model before implementation
 or public handoff. Nontrivial work includes roadmap, PRD, feature, cross-agent,
@@ -41,8 +42,9 @@ Mixed-state repos must be migrated into this model before feature work. Classify
 local note, plan, TODO, scratchpad, wiki page, issue, PR, and memory record by durable
 owner. Preserve durable narrative in the wiki, private restart state in `agent-memory`,
 and active execution state in GitHub issues, milestones, and PRs. Replace duplicate local
-status with links to the canonical surface, and delete scratch that has no continuing
-coordination value.
+status with links to the canonical surface. Delete only scratch this agent created and
+can prove has no continuing coordination value; unknown-origin artifacts require an
+explicit user decision.
 
 Do not keep the same durable fact authoritative in more than one place.
 When a repo is mixed, classify each local note, plan, TODO, scratchpad, and process doc by
