@@ -16,7 +16,14 @@ Load after `code-patterns` for Python-specific rules.
   branches unless the user explicitly asks for multi-version support.
 - Type every owned function signature. Avoid `Any`; use a typed boundary for untyped
   third-party libraries.
+- Do not use `# type: ignore` comments in owned code. Resolve underlying signature mismatches instead.
 - Use modern union syntax: `X | None`, not `Optional[X]`; `X | Y`, not `Union[X, Y]`.
+- Treat Pydantic as the boundary where untyped external data becomes typed. Do not use
+  `typing.cast` or return `Any` or `dict[str, Any]` outside of Pydantic models.
+- Route external API communications through dedicated Response or API objects/types that
+  encapsulate communication and validation rather than using stateless helper functions returning raw JSON dictionaries.
+- Pydantic models validate automatically on construction. Do not write manual checks or manually
+  invoke internal/external validation helpers; simply construct the type directly or use `.model_validate()`.
 - Use Pydantic models for structured data and external contracts. Do not introduce
   dataclasses or `NamedTuple` for new data containers unless the project already owns that
   representation and the local boundary requires it.

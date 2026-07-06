@@ -71,6 +71,21 @@ applications. Targets the **latest Python** — no backwards compatibility hedgi
     the crash is the correct behavior.
     The `doctor` command exists to diagnose setup errors; runtime code does not.
 
+15. **No `# type: ignore` comments in owned code** — type variables properly or resolve
+    signature mismatches at the boundary instead of silencing type checkers.
+
+16. **Pydantic is the Type Boundary** — untyped external data (like JSON or dict payloads)
+    becomes typed at Pydantic models. Do not use `typing.cast` or return `Any` or
+    `dict[str, Any]` outside of Pydantic models.
+
+17. **Route API communication through dedicated Response or API objects/types** — encapsulate
+    requests, validation, and parsing inside typed models/classes rather than stateless
+    functions returning raw dictionaries.
+
+18. **Automatic validation on construction** — Pydantic models validate themselves automatically.
+    Do not manually invoke validation internals or write manual parameter-validation helpers;
+    construct the type directly or use `.model_validate()`.
+
 ## Core Principles
 
 ### 1. Readability Counts
@@ -722,6 +737,49 @@ except OverflowError:
 
 # Good: let it crash until you have a real incident to handle
 result = parse_date(user_input)
+
+# Bad: type ignoring to get mypy green
+from mypackage.api import send_request
+result = send_request("data")  # type: ignore[arg-type]
+
+# Good: properly resolve type signature or construct a valid boundary type
+from mypackage.api import send_request, RequestPayload
+result = send_request(RequestPayload(data="data"))
+
+# Bad: casting or returning Any/dict[str, Any] from boundary functions
+from typing import Any, cast
+def fetch_user_data(user_id: str) -> dict[str, Any]:
+    raw_json = client.get(f"/users/{user_id}").json()
+    return cast(dict[str, Any], raw_json)
+
+# Good: Pydantic is the boundary; return a typed model
+from mypackage.models import UserProfile
+def fetch_user_data(user_id: str) -> UserProfile:
+    raw_json = client.get(f"/users/{user_id}").json()
+    return UserProfile.model_validate(raw_json)
+
+# Bad: stateless helper returning raw json/dict for API responses
+def get_github_issue(issue_id: int) -> dict[str, Any]:
+    return client.get(f"/issues/{issue_id}").json()
+
+# Good: Route API responses through dedicated classes/models
+from pydantic import BaseModel
+class GitHubIssueResponse(BaseModel):
+    id: int
+    title: str
+    state: str
+    
+    def is_open(self) -> bool:
+        return self.state == "open"
+
+# Bad: manually calling Pydantic validation internals or helper validation commands
+def create_issue(data: dict) -> Issue:
+    validate_issue_fields(data)  # manual validation helper
+    return Issue(**data)
+
+# Good: construct type directly to leverage automatic validation on construction
+def create_issue(data: dict) -> Issue:
+    return Issue.model_validate(data)
 ```
 
 ## Bridge-Burning Policies
