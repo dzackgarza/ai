@@ -1,6 +1,6 @@
 ---
 name: code-patterns
-description: Use when writing, reviewing, or refactoring code and deciding naming, function shape, module boundaries, error handling, code style, or language-specific implementation patterns.
+description: Use when writing, reviewing, or refactoring code, looking for style guides and system coding conventions, and deciding naming, function shape, module boundaries, error handling, code style, or language-specific implementation patterns.
 ---
 # Code Patterns and Style
 

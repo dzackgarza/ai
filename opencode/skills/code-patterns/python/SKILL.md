@@ -1,6 +1,6 @@
 ---
 name: code-patterns-python
-description: Use when writing, reviewing, or refactoring Python code, Python project structure, Pydantic models, uv scripts, type boundaries, or module public interfaces.
+description: Use when writing, reviewing, or refactoring Python code, looking for Python style guides and system conventions, Python project structure, Pydantic models, uv scripts, type boundaries, or module public interfaces.
 ---
 # Python Code Patterns
 
