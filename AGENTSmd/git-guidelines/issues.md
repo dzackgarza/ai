@@ -19,4 +19,11 @@ For roadmap, PRD, feature, proof-bearing, or cross-agent work, do not file a fla
 unless it is truly atomic. Load `plan/references/externalization.md` through `plan`, then
 create or update the story-shaped issue tree, sub-issue edges, blocker dependencies,
 GitHub Milestone scope, and linked PR claim map.
+
+To manage the issue tree and discover traversal order programmatically, use the `itree` tool:
+- `itree next OWNER/REPO` to find the next open task and its enclosing work unit.
+- `itree doctor OWNER/REPO` to verify the tree structure.
+- `itree attach OWNER/REPO#PARENT OWNER/REPO#CHILD` to attach a child issue.
+- `itree move OWNER/REPO#CHILD --under OWNER/REPO#PARENT` to reparent or reorder.
+
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.
