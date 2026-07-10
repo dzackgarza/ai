@@ -3,125 +3,352 @@
 # requires-python = ">=3.11"
 # dependencies = ["python-frontmatter>=1.1"]
 # ///
+
 """Assemble the AGENTSmd fragment tree into a single AGENTS.md.
 
-The filesystem tree IS the structure. This walker does ONLY structure mapping:
-it reads each fragment's YAML frontmatter (title, order), sorts siblings by
-`order`, and emits a pandoc outline of synthesized section headings plus
-`{.include}` directives. All markdown processing -- transclusion, heading-level
-rebasing, normalization -- is delegated to pandoc + the standard include-files.lua
-filter (`-M include-auto` shifts each fragment's own headings to sit under its
-synthesized section heading). Frontmatter is stripped by pandoc.read automatically.
+The filesystem tree defines document structure. Each fragment may carry
+classification tags from the build configuration. The compiler validates the
+taxonomy, omits fragments matching active exclusions, emits a Pandoc outline,
+and reports the selection decision for every discovered fragment.
 
-A directory is a section: its heading text comes from its `index.md` frontmatter,
-its body is `index.md`'s content. The root `index.md` is the preamble (no heading).
-Every non-root directory MUST have an `index.md`; every fragment MUST declare
-`title` and `order`. Anything missing is a hard error -- no fallbacks.
+A directory is a section: its heading text comes from its `index.md`
+frontmatter, and its body is that file's content. The root `index.md` is the
+preamble and has no synthesized heading. If a directory index is excluded, its
+heading remains when included descendants still require the section structure.
 """
 
 from __future__ import annotations
 
 import subprocess
 import sys
+import tomllib
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Never
 
 import frontmatter
 
 INDEX = "index.md"
+SKIP: set[Path] = set()
+
+# Non-fragment files in the content tree. Tooling lives under the hidden
+# .agents directory and is already skipped by children().
+MACHINERY = {"README.md"}
 
 
-def fail(msg: str) -> None:
+@dataclass(frozen=True)
+class BuildConfig:
+    allowed_tags: frozenset[str]
+    exclude_tags: frozenset[str]
+
+
+@dataclass(frozen=True)
+class FragmentMeta:
+    title: str | None
+    order: int | None
+    tags: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class SelectionRecord:
+    path: Path
+    tags: tuple[str, ...]
+    excluded_by: tuple[str, ...]
+
+    @property
+    def included(self) -> bool:
+        return not self.excluded_by
+
+
+def fail(msg: str) -> Never:
     raise SystemExit(f"assemble: {msg}")
 
 
-def load(md: Path) -> tuple[str | None, int | None, str]:
-    """Return (title, order, body) for a fragment, validating frontmatter."""
+def require_exact_keys(
+    value: object,
+    expected: set[str],
+    *,
+    location: str,
+) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        fail(f"{location}: expected a table")
+    actual = set(value)
+    if actual != expected:
+        fail(f"{location}: expected keys {sorted(expected)}, found {sorted(actual)}")
+    return value
+
+
+def require_tag_list(value: object, *, location: str) -> tuple[str, ...]:
+    if not isinstance(value, list):
+        fail(f"{location}: expected a list of tags")
+    if any(not isinstance(tag, str) or not tag or tag.strip() != tag for tag in value):
+        fail(f"{location}: tags must be non-empty strings without outer whitespace")
+    tags = tuple(value)
+    if len(set(tags)) != len(tags):
+        fail(f"{location}: duplicate tags are not allowed")
+    return tags
+
+
+def load_config(path: Path) -> BuildConfig:
+    if not path.is_file():
+        fail(f"missing build config: {path}")
+    try:
+        with path.open("rb") as handle:
+            raw = tomllib.load(handle)
+    except tomllib.TOMLDecodeError as exc:
+        fail(f"{path}: invalid TOML ({exc})")
+
+    top = require_exact_keys(
+        raw,
+        {"selection", "taxonomy"},
+        location=str(path),
+    )
+    selection = require_exact_keys(
+        top["selection"],
+        {"exclude_tags"},
+        location=f"{path} [selection]",
+    )
+    taxonomy = require_exact_keys(
+        top["taxonomy"],
+        {"allowed_tags"},
+        location=f"{path} [taxonomy]",
+    )
+
+    allowed = require_tag_list(
+        taxonomy["allowed_tags"],
+        location=f"{path} taxonomy.allowed_tags",
+    )
+    if not allowed:
+        fail(f"{path} taxonomy.allowed_tags: at least one tag is required")
+    excluded = require_tag_list(
+        selection["exclude_tags"],
+        location=f"{path} selection.exclude_tags",
+    )
+    unknown_exclusions = sorted(set(excluded) - set(allowed))
+    if unknown_exclusions:
+        fail(f"{path} selection.exclude_tags: unknown tags {unknown_exclusions}")
+
+    return BuildConfig(
+        allowed_tags=frozenset(allowed),
+        exclude_tags=frozenset(excluded),
+    )
+
+
+def load_fragment(
+    md: Path,
+    config: BuildConfig,
+    *,
+    require_title_order: bool,
+) -> FragmentMeta:
     try:
         post = frontmatter.load(md)
-    except Exception as exc:  # malformed YAML -> fail loud, naming the file
+    except Exception as exc:  # python-frontmatter exposes parser-specific errors
         fail(f"{md}: invalid frontmatter ({exc})")
-    return post.get("title"), post.get("order"), post.content
+
+    title = post.metadata["title"] if "title" in post.metadata else None
+    order = post.metadata["order"] if "order" in post.metadata else None
+    raw_tags = post.metadata["tags"] if "tags" in post.metadata else []
+    tags = require_tag_list(raw_tags, location=f"{md} tags")
+
+    unknown_tags = sorted(set(tags) - config.allowed_tags)
+    if unknown_tags:
+        fail(f"{md}: unknown tags {unknown_tags}")
+
+    if require_title_order:
+        if not isinstance(title, str) or not title:
+            fail(f"{md}: missing or non-string `title` frontmatter")
+        if type(order) is not int:
+            fail(f"{md}: missing or non-integer `order` frontmatter")
+
+    return FragmentMeta(title=title, order=order, tags=tags)
 
 
-def require_meta(md: Path) -> tuple[str, int]:
-    title, order, _ = load(md)
-    if not title or not isinstance(title, str):
-        fail(f"{md}: missing or non-string `title` frontmatter")
-    if not isinstance(order, int):
-        fail(f"{md}: missing or non-integer `order` frontmatter")
-    return title, order
+def fragment_meta(
+    md: Path,
+    config: BuildConfig,
+    cache: dict[Path, FragmentMeta],
+    *,
+    require_title_order: bool,
+) -> FragmentMeta:
+    if md not in cache:
+        cache[md] = load_fragment(
+            md,
+            config,
+            require_title_order=require_title_order,
+        )
+    return cache[md]
 
 
 def include_block(md: Path) -> str:
     return f"```{{.include}}\n{md.resolve()}\n```\n\n"
 
 
-SKIP: set[Path] = set()
-
-# Non-fragment files in the content tree (tooling lives under .agents/, already skipped
-# as a dotdir; only the module README sits alongside the fragments).
-MACHINERY = {"README.md"}
-
-
-def children(d: Path) -> list[Path]:
-    """Section children: subdirectories and non-index .md fragments."""
-    out: list[Path] = []
-    for entry in d.iterdir():
-        if entry.resolve() in SKIP or entry.name in MACHINERY or entry.name.startswith("."):
+def children(directory: Path) -> list[Path]:
+    """Return section children: subdirectories and non-index Markdown files."""
+    result: list[Path] = []
+    for entry in directory.iterdir():
+        if entry.resolve() in SKIP:
+            continue
+        if entry.name.startswith(".") or entry.name in MACHINERY:
             continue
         if entry.is_dir():
-            out.append(entry)
-        elif entry.suffix == ".md" and entry.name != INDEX:
-            out.append(entry)
+            result.append(entry)
+        elif entry.is_file() and entry.suffix == ".md" and entry.name != INDEX:
+            result.append(entry)
         elif entry.is_file() and entry.suffix != ".md":
             fail(f"{entry}: unexpected non-markdown file in tree")
-    return out
+    return result
 
 
-def order_of(entry: Path) -> int:
-    idx = entry / INDEX if entry.is_dir() else entry
-    if entry.is_dir() and not idx.exists():
+def order_of(
+    entry: Path,
+    config: BuildConfig,
+    cache: dict[Path, FragmentMeta],
+) -> int:
+    index = entry / INDEX if entry.is_dir() else entry
+    if entry.is_dir() and not index.exists():
         fail(f"{entry}: directory has no {INDEX}")
-    return require_meta(idx)[1]
+    meta = fragment_meta(
+        index,
+        config,
+        cache,
+        require_title_order=True,
+    )
+    assert meta.order is not None
+    return meta.order
 
 
-def emit_dir(d: Path, level: int, is_root: bool) -> str:
-    parts: list[str] = []
-    index = d / INDEX
+def record_selection(
+    md: Path,
+    meta: FragmentMeta,
+    config: BuildConfig,
+    records: list[SelectionRecord],
+) -> bool:
+    excluded_by = tuple(sorted(set(meta.tags) & config.exclude_tags))
+    records.append(
+        SelectionRecord(
+            path=md,
+            tags=meta.tags,
+            excluded_by=excluded_by,
+        )
+    )
+    return not excluded_by
 
-    if is_root:
-        if not index.exists():
-            fail(f"{d}: root requires an {INDEX} preamble")
-        parts.append(include_block(index))  # preamble, no heading
-    else:
-        if not index.exists():
-            fail(f"{d}: directory has no {INDEX}")
-        title, _ = require_meta(index)
-        parts.append(f"{'#' * level} {title}\n\n")
-        parts.append(include_block(index))
 
-    for child in sorted(children(d), key=order_of):
+def emit_dir(
+    directory: Path,
+    level: int,
+    is_root: bool,
+    config: BuildConfig,
+    cache: dict[Path, FragmentMeta],
+    records: list[SelectionRecord],
+) -> str:
+    index = directory / INDEX
+    if not index.exists():
+        kind = "root requires an" if is_root else "directory has no"
+        fail(f"{directory}: {kind} {INDEX}")
+
+    index_meta = fragment_meta(
+        index,
+        config,
+        cache,
+        require_title_order=not is_root,
+    )
+    index_included = record_selection(index, index_meta, config, records)
+
+    child_parts: list[str] = []
+    ordered_children = sorted(
+        children(directory),
+        key=lambda entry: order_of(entry, config, cache),
+    )
+    for child in ordered_children:
         if child.is_dir():
-            parts.append(emit_dir(child, level + 1, is_root=False))
-        else:
-            title, _ = require_meta(child)
-            parts.append(f"{'#' * (level + 1)} {title}\n\n")
-            parts.append(include_block(child))
+            child_outline = emit_dir(
+                child,
+                level + 1,
+                False,
+                config,
+                cache,
+                records,
+            )
+            if child_outline:
+                child_parts.append(child_outline)
+            continue
 
-    return "".join(parts)
+        child_meta = fragment_meta(
+            child,
+            config,
+            cache,
+            require_title_order=True,
+        )
+        if not record_selection(child, child_meta, config, records):
+            continue
+        assert child_meta.title is not None
+        child_parts.append(f"{'#' * (level + 1)} {child_meta.title}\n\n")
+        child_parts.append(include_block(child))
+
+    index_part = include_block(index) if index_included else ""
+    descendants = "".join(child_parts)
+    if is_root:
+        return index_part + descendants
+    if not index_part and not descendants:
+        return ""
+
+    assert index_meta.title is not None
+    heading = f"{'#' * level} {index_meta.title}\n\n"
+    return heading + index_part + descendants
+
+
+def print_report(
+    root: Path,
+    config_path: Path,
+    records: list[SelectionRecord],
+    out: Path,
+) -> None:
+    print(f"fragment selection config: {config_path}")
+    for record in records:
+        path = record.path.relative_to(root).as_posix()
+        tags = ", ".join(record.tags) if record.tags else "untagged"
+        if record.included:
+            print(f"INCLUDED {path} tags=[{tags}]")
+        else:
+            matched = ", ".join(record.excluded_by)
+            print(f"EXCLUDED {path} tags=[{tags}] matched=[{matched}]")
+
+    included = sum(record.included for record in records)
+    excluded = len(records) - included
+    untagged = sum(not record.tags for record in records)
+    print(
+        f"fragments: {len(records)} discovered, {included} included, "
+        f"{excluded} excluded, {untagged} untagged"
+    )
+    print(f"assembled -> {out}")
 
 
 def main() -> None:
-    if len(sys.argv) != 3:
-        fail("usage: assemble.py <tree-root> <output-file>")
+    if len(sys.argv) != 4:
+        fail("usage: assemble.py <tree-root> <output-file> <config-file>")
+
     root = Path(sys.argv[1]).resolve()
     out = Path(sys.argv[2]).resolve()
-    SKIP.add(out)  # never treat the generated artifact as a source fragment
+    config_path = Path(sys.argv[3]).resolve()
+    SKIP.add(out)
+
+    config = load_config(config_path)
     filt = Path(__file__).resolve().parent / "filters" / "include-files.lua"
     if not filt.exists():
         fail(f"missing required filter: {filt}")
 
-    outline = emit_dir(root, level=0, is_root=True)
+    cache: dict[Path, FragmentMeta] = {}
+    records: list[SelectionRecord] = []
+    outline = emit_dir(
+        root,
+        level=0,
+        is_root=True,
+        config=config,
+        cache=cache,
+        records=records,
+    )
     outline_file = root / ".outline.tmp.md"
     outline_file.write_text(outline, encoding="utf-8")
 
@@ -130,19 +357,24 @@ def main() -> None:
             [
                 "pandoc",
                 str(outline_file),
-                "--lua-filter", str(filt),
-                "-M", "include-auto",
-                "-f", "markdown",
-                "-t", "gfm",
+                "--lua-filter",
+                str(filt),
+                "-M",
+                "include-auto",
+                "-f",
+                "markdown",
+                "-t",
+                "gfm",
                 "--wrap=preserve",
-                "-o", str(out),
+                "-o",
+                str(out),
             ],
             check=True,
         )
     finally:
         outline_file.unlink()
 
-    print(f"assembled -> {out}")
+    print_report(root, config_path, records, out)
 
 
 if __name__ == "__main__":
