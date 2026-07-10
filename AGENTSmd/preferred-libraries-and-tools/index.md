@@ -1,8 +1,13 @@
 ---
 order: 110
 tags:
-- role-preference
-- stability-timeless
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- stability-policy-contingent
+- stability-tool-contingent
+- stability-environment-contingent
 title: Preferred Libraries and Tools
 ---
 

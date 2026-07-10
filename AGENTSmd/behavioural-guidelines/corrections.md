@@ -1,8 +1,13 @@
 ---
 order: 20
 tags:
-- role-remediation
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- purpose-remediation
 - stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: Corrections
 ---
 

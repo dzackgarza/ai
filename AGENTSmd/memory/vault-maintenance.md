@@ -1,5 +1,16 @@
 ---
 order: 25
+tags:
+- purpose-context
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- purpose-remediation
+- stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
+- stability-environment-contingent
 title: Vault Status and Maintenance
 ---
 

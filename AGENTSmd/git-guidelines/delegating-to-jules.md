@@ -1,5 +1,12 @@
 ---
 order: 10
+tags:
+- purpose-preference
+- purpose-procedure
+- purpose-reference
+- stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: Delegating to Jules
 ---
 

@@ -1,5 +1,17 @@
 ---
 order: 70
+tags:
+- purpose-context
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- purpose-remediation
+- stability-timeless
+- stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
+- stability-environment-contingent
 title: Hard Rules
 ---
 

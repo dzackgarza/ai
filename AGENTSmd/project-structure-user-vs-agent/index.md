@@ -1,9 +1,14 @@
 ---
 order: 120
 tags:
-- role-context
-- role-preference
-- stability-timeless
+- purpose-context
+- purpose-preference
+- purpose-policy
+- purpose-reference
+- purpose-remediation
+- stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: 'Project Structure: User vs. Agent'
 ---
 

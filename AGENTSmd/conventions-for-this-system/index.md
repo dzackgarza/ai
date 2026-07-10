@@ -1,9 +1,15 @@
 ---
 order: 20
 tags:
-- role-context
-- role-preference
+- purpose-context
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-reference
 - stability-timeless
+- stability-policy-contingent
+- stability-tool-contingent
+- stability-environment-contingent
 title: Conventions for This System
 ---
 

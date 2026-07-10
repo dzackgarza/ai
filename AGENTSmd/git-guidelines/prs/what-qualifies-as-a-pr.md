@@ -1,5 +1,14 @@
 ---
 order: 20
+tags:
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- purpose-remediation
+- stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: What Qualifies as a PR
 ---
 

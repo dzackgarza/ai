@@ -1,8 +1,14 @@
 ---
 order: 40
 tags:
-- role-remediation
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- purpose-remediation
+- stability-timeless
 - stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: Goal Integrity and Anti-Laundering
 ---
 

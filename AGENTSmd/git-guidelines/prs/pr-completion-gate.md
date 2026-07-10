@@ -1,5 +1,13 @@
 ---
 order: 25
+tags:
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- purpose-remediation
+- stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: PR Completion Gate
 ---
 

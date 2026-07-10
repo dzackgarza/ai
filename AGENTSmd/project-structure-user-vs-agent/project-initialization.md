@@ -1,5 +1,14 @@
 ---
 order: 5
+tags:
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- purpose-remediation
+- stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: Project Initialization
 ---
 

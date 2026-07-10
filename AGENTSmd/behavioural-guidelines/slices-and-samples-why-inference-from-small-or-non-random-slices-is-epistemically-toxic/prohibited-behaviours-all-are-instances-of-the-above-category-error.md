@@ -1,8 +1,13 @@
 ---
 order: 10
 tags:
-- role-remediation
+- purpose-policy
+- purpose-reference
+- purpose-remediation
+- stability-timeless
 - stability-model-contingent
+- stability-policy-contingent
+- stability-tool-contingent
 title: Prohibited Behaviours (All Are Instances of the Above Category Error)
 ---
 

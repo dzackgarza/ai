@@ -1,8 +1,11 @@
 ---
 order: 10
 tags:
-- role-context
+- purpose-context
+- purpose-remediation
 - stability-timeless
+- stability-model-contingent
+- stability-environment-contingent
 title: Lattices
 ---
 

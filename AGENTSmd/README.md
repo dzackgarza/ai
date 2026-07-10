@@ -45,26 +45,34 @@ Every fragment and every `index.md` (except the root preamble) must declare:
 title: Hard Rules
 order: 30
 tags:
-  - role-remediation
+  - purpose-remediation
+  - purpose-procedure
   - stability-model-contingent
 ---
 ```
 
 `title` supplies the rendered heading, and `order` is the integer sibling sort key.
-The optional `tags` list classifies a fragment on two independent axes:
+The `tags` list classifies a fragment on two independent, multi-label axes:
 
-- Role: `role-context` communicates project or machine facts an agent cannot infer;
-  `role-preference` communicates durable local style, tool, or ownership choices;
-  `role-remediation` communicates guardrails or workflows introduced in response to
-  observed agent mistakes.
-- Stability: `stability-timeless` is independent of current model capability;
-  `stability-model-contingent` may become unnecessary as models improve.
+- Purpose: `purpose-context` supplies facts or definitions the agent would not otherwise
+  have; `purpose-preference` records local style or tool choices; `purpose-policy` states
+  required invariants; `purpose-procedure` prescribes a workflow or decision gate;
+  `purpose-reference` routes to skills, tools, commands, or other canonical material;
+  `purpose-remediation` counters recurring agent mistakes or misaligned priors; and
+  `purpose-structure` marks heading-only fragments.
+- Stability: `stability-timeless` marks durable principles or domain facts;
+  `stability-model-contingent` marks guidance that may become unnecessary as models
+  improve; `stability-policy-contingent` depends on current local workflow doctrine;
+  `stability-tool-contingent` depends on named tools, commands, or APIs;
+  `stability-environment-contingent` depends on current machine or repository facts; and
+  `stability-corpus-contingent` depends only on the fragment tree's organization.
 
-A fragment may carry multiple role tags, but at most one stability tag.
-Classification is incremental: an untagged fragment remains included and is reported as
-untagged rather than being forced into an ambiguous category.
-The allowed taxonomy and active exclusions live in `.agents/build.toml`.
-Adding a tag to `selection.exclude_tags` omits matching fragment bodies.
+Tags are intentionally non-exclusive. A mixed fragment can carry several purpose and
+stability tags—for example, a timeless correctness principle can share a fragment with
+model-contingent remediation and tool-contingent routing.
+Every current fragment is classified. The allowed taxonomy and active exclusions live in
+`.agents/build.toml`. Adding a tag to `selection.exclude_tags` omits every whole fragment
+carrying that tag.
 If a directory's `index.md` is excluded, the compiler retains its structural heading
 when included descendants still need it.
 

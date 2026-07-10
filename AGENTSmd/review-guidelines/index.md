@@ -1,8 +1,14 @@
 ---
 order: 65
 tags:
-- role-remediation
+- purpose-context
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-remediation
+- stability-timeless
 - stability-model-contingent
+- stability-policy-contingent
 title: Review Guidelines
 ---
 

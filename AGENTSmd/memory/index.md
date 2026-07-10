@@ -1,9 +1,14 @@
 ---
 order: 90
 tags:
-- role-context
-- role-preference
-- stability-timeless
+- purpose-context
+- purpose-preference
+- purpose-policy
+- purpose-procedure
+- purpose-reference
+- stability-policy-contingent
+- stability-tool-contingent
+- stability-environment-contingent
 title: Memory
 ---
 

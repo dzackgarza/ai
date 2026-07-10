@@ -6,9 +6,17 @@ exclude_tags = []
 
 [taxonomy]
 allowed_tags = [
-  "role-context",
-  "role-preference",
-  "role-remediation",
-  "stability-timeless",
-  "stability-model-contingent",
+    "purpose-context",
+    "purpose-preference",
+    "purpose-policy",
+    "purpose-procedure",
+    "purpose-reference",
+    "purpose-remediation",
+    "purpose-structure",
+    "stability-timeless",
+    "stability-model-contingent",
+    "stability-policy-contingent",
+    "stability-tool-contingent",
+    "stability-environment-contingent",
+    "stability-corpus-contingent",
 ]

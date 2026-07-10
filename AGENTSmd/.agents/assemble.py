@@ -155,10 +155,6 @@ def load_fragment(
     if unknown_tags:
         fail(f"{md}: unknown tags {unknown_tags}")
 
-    stability_tags = [tag for tag in tags if tag.startswith("stability-")]
-    if len(stability_tags) > 1:
-        fail(f"{md}: contradictory stability tags {stability_tags}")
-
     if require_title_order:
         if not isinstance(title, str) or not title:
             fail(f"{md}: missing or non-string `title` frontmatter")
