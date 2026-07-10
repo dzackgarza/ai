@@ -18,13 +18,18 @@ tags:
 title: Task Framing and User Value
 ---
 
-Before an assessment, review, status report, or delegation follow-up, load the skill
-that owns the requested judgment:
+For a substantive assessment, review, status synthesis, or delegation follow-up, load the
+single skill that owns the requested judgment:
 
 - `reviewing-subagent-work` for agent-produced artifacts
 - `reviewing-llm-code` and `anti-slop` for code or QC review
 - `epistemic-integrity` for source coverage, receipts, hashes, and negative findings
 - `response-preparation` before reporting the result
+
+Do not load this stack for a direct factual answer, a self-contained document edit, or an
+obvious reversible course correction.
+Loading one judgment skill does not activate the others unless their distinct evidence or
+artifact is actually in scope.
 
 The judgment-bearing question is what the user needs to trust, keep, reject, revise, or
 do next.

@@ -11,6 +11,7 @@ tags:
 - failure-proxy-evidence
 - failure-tool-bypass
 - failure-proof-gaming
+- failure-process-overproduction
 - retest-model-reasoning
 - retest-model-self-evaluation
 - retest-model-alignment
@@ -20,9 +21,18 @@ tags:
 title: Dealing With Bugs / Handling Bugs
 ---
 
-When a bug or failure appears, do not patch first.
+Route failures by the requested object and proof burden:
 
-Load:
+- **Diagnosis only:** inspect the real failure and report the supported cause. Do not
+  implement a fix merely because one becomes apparent.
+- **Trivial non-behavioral correction:** typos, documentation, metadata, and simple
+  configuration mistakes need the smallest direct verification, not a synthetic red-test
+  lifecycle.
+- **Behavioral regression or uncertain implementation failure:** reproduce the observed
+  failure faithfully before changing implementation, then prove the fix against that
+  boundary.
+
+For behavioral regressions and uncertain implementation failures, load as applicable:
 
 - `reality-grounded-debugging` for the observed-failure protocol, synthesis gate, and
   faithful red proof
@@ -32,12 +42,16 @@ Load:
 - `known-solution-first` as well when the symptom is owned by an external tool,
   compiler, API, package, provider, or library
 
-The required first substantive artifact is a committed red test or reproducer that
-fails because of the real observed bug.
+The required first substantive artifact for a reproducible product regression is a red
+test or reproducer that fails because of the real observed bug.
+Commit the red proof separately when it is a durable regression artifact and hooks permit
+the repository's documented red/green workflow.
+Do not manufacture tests, commits, or bypasses for documentation, metadata, data-labeling,
+external-environment failures, or corrections whose proof is a direct inspection.
 Mocks, simulations, stubs, and tests that merely assert the absence of a proposed fix
 do not prove the bug.
 
-Only after the red proof exists should implementation change begin.
+Only after the required proof exists should behavioral implementation change begin.
 
 Debug by the scientific method, not by guess-and-check:
 

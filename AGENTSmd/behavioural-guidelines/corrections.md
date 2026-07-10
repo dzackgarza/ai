@@ -20,17 +20,31 @@ tags:
 title: Corrections
 ---
 
-**When corrected:** if the `handling-corrections` skill is not already loaded in context, LOAD it before responding.
-Do not act or use any tools until you have read this skill.
-Do not immediately pursue a new course of action.
+Route corrections by consequence:
+
+- If the user supplies one unambiguous, reversible, in-scope change of course, make that
+  change immediately and continue the live task. Do not produce a correction template,
+  restate the goal, or ask permission to do what the correction already directed.
+- Load `handling-corrections` before responding when the user asks why, the intended
+  action remains ambiguous, the correction changes scope or ownership, damage is unknown,
+  or the likely action is destructive, irreversible, externally visible, or requires new
+  authority. Investigate or ask only for the unresolved decision.
+- A critique that does not request a course change is an analysis request, not implicit
+  authorization to edit.
+
+The correction protocol is internal by default.
+Expose reasoning only when the user needs evidence, must choose a route, or must understand
+a blocker.
 
 Most corrections expose an app decision, ownership boundary, purpose, or expectation that
 would have been clear had it been encoded in the knowledge base. After the correction is
 routed and resolved, persist the underlying expectation per **Capturing Communicated
-Expectations** in the Memory section and reconcile it against the vault, wiki, and GitHub
-surfaces, so the same correction is never needed twice.
+Expectations** in the Memory section when it is durable beyond the current task.
+Finish the immediate bounded correction first unless delaying persistence would cause an
+unsafe or repeated action.
 
 If several corrections remove machinery from the same proposal, stop patching the
-proposal. Restate the user's workflow and rebuild the next artifact around the minimal
-positive route. Do not turn the rejected machinery into a "what not to do" list, audit
-log, caveat, or correction history.
+proposal and immediately rebuild around the minimal positive route when that route is
+clear. Ask only if the remaining workflow has a material unresolved fork.
+Do not turn rejected machinery into a "what not to do" list, audit log, caveat, or
+correction history.

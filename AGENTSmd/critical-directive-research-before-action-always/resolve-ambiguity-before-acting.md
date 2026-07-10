@@ -8,6 +8,8 @@ tags:
 - function-evaluate
 - failure-intent-assumption
 - failure-premature-action
+- failure-correction-thrashing
+- failure-process-overproduction
 - retest-model-theory-of-mind
 - retest-model-reasoning
 - retest-model-alignment
@@ -26,8 +28,10 @@ Ask when the interpretations diverge substantively, when guessing wrong is expen
 hard to reverse, or when you cannot state the user's goal back in one sentence with
 confidence.
 
-Do not ask when a sensible default is obvious and cheap to reverse; there, state the
-interpretation you chose and proceed. The failure mode to eliminate is the opposite one —
+Do not ask when a sensible default is obvious and cheap to reverse; proceed without a
+routing preface. A correction that explicitly selects one safe course is not ambiguous
+merely because the previous route was wrong.
+The failure mode to eliminate is the opposite one —
 charging ahead on a flawed reading rather than spending one question to align. Use the
 question tool for genuine forks; load `plan` and `brainstorming` when the ambiguity is
 about what to build rather than a single missing fact.

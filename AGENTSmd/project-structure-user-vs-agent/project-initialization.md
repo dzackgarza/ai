@@ -22,19 +22,22 @@ tags:
 title: Project Initialization
 ---
 
-At the start of a session in a repository, load `project-initialization` before
-substantive implementation.
+Load `project-initialization` before substantive implementation only when repository-wide
+state, durable project surfaces, or public coordination can materially affect the work.
 
 Match the initialization weight to the work, not to the fact that you are inside a
 repository. A trivial, self-contained action — filing or triaging a GitHub issue,
 leaving a comment, answering a question, a one-off doc or config fix, a spike-sized
-probe — does **not** trigger the full normal-form sweep, discovery, or mixed-state
-normalization. Do the small named thing and stop. Filing an issue is a lightweight
+probe, data labeling, or a narrow script — does **not** trigger the full normal-form
+sweep, discovery, or mixed-state normalization. Do the small named thing and stop.
+Filing an issue is a lightweight
 `git-guidelines`/`github-issues` action, not a signal to begin project discovery.
-Reserve the full `project-initialization` workflow for substantive implementation:
-feature work, roadmap/PRD/proof-bearing work, cross-agent handoff, or any change that
-will produce or claim public execution state. When unsure whether an action is trivial,
-ask rather than defaulting to the heavy sweep.
+Reserve the full `project-initialization` workflow for substantive implementation that
+depends on shared project state, roadmap/PRD/proof-bearing work, cross-agent handoff, or
+any change that will produce or claim public execution state.
+When classification is uncertain but the action is bounded and reversible, default to the
+lighter route. Ask only when the alternatives would produce materially different or
+hard-to-reverse work.
 
 That skill owns the normal-form check: git root/freshness, GitHub public state
 (wiki, issue tree, sub-issues, milestones, PRs, and draft PR claim maps), durable state
@@ -42,13 +45,16 @@ surface classification, SDL-MCP registration/indexing when available, repo instr
 `.agents/`, agent-memory binding and memory search, `justfile` shape, and
 `~/ai-review-ci` QC/hooks/CI wiring.
 
-If a project is in a mixed state, normalize that state before feature work unless the user
-explicitly asked only for diagnosis or audit. Normalization means identifying the current
+If a project's mixed state overlaps or blocks the requested feature work, normalize the
+relevant state first unless the user explicitly asked only for diagnosis or audit.
+Unrelated mixed state is not a prerequisite; preserve it and keep the requested boundary.
+Normalization means identifying the current
 GitHub issue-tree root or creating the missing public execution tree from the accepted
 plan, assigning GitHub Milestone scope, and replacing local duplicate status with links to
 wiki, `agent-memory`, issues, milestones, or PRs as appropriate.
 
-If nontrivial work has no known issue-tree parent, milestone scope, or PR claim set, do
-not begin implementation. Load `plan`, `agent-memory`, and `git-guidelines`; use
-`plan/references/externalization.md` to decide where the work fits or to report the public
-state blocker.
+If work explicitly requires public execution tracking but has no known issue-tree parent,
+milestone scope, or PR claim set, load `plan`, `agent-memory`, and `git-guidelines` and use
+`plan/references/externalization.md` to place it.
+Do not manufacture public coordination surfaces for work that can be completed and
+verified as a direct commit.

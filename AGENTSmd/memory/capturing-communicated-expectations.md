@@ -10,6 +10,7 @@ tags:
 - function-allocate
 - failure-state-misplacement
 - failure-context-loss
+- failure-process-overproduction
 - retest-model-alignment
 - retest-model-memory
 - retest-policy-change
@@ -17,13 +18,15 @@ tags:
 title: Capturing Communicated Expectations
 ---
 
-Whenever the user communicates an app decision, ownership boundary, purpose, goal,
-constraint, scope rule, naming convention, or any other durable expectation in chat,
-treat that message as a durable-knowledge event, not a one-off instruction.
+Treat a communicated expectation as durable knowledge only when it clearly governs future
+sessions or workers: an app decision, stable ownership boundary, durable purpose,
+long-lived constraint, or recurring naming convention.
+A task-local instruction or obvious course correction is not automatically a memory
+event.
 
-Before continuing the requested work, check whether the expectation is already encoded in
-the repo's knowledge base — project memory, plan records, the wiki, or the owning GitHub
-issue/milestone. If it is not already present, persist it immediately:
+Complete the immediate bounded action first unless the missing knowledge would cause an
+unsafe or immediately repeated mistake. Then check whether the durable expectation is
+already encoded in its owning knowledge surface. If not, persist it:
 
 - Capture the expectation as the appropriate typed `agent-memory` record (`decision` for a
   chosen direction, `context` for app purpose or boundary, `advice` for a working
@@ -31,17 +34,16 @@ issue/milestone. If it is not already present, persist it immediately:
 - Record it in the user's own terms: what was decided or expected, what it governs, and why,
   so a future agent reads the rule without needing the user to restate it.
 
-Then reconcile it against the existing durable surfaces. If the vault, wiki, or GitHub
-issue tree already says something that diverges from what the user just communicated, the
-new statement is authoritative: update the stale surface so every durable record agrees.
+Reconcile only the surfaces that actually own or publish the fact. If the vault, wiki, or
+GitHub issue tree says something divergent, the new statement is authoritative: update
+the stale owning surface rather than copying the same fact everywhere.
 If the expectation changes public project direction, user stories, proof burdens, roadmaps,
 or cross-agent handoff state, promote it to the owning GitHub issue, milestone, PR, or wiki
 page as well as memory (see the **Promote** rule above).
 
-The objective is a self-sufficient knowledge base: the user should never have to correct or
-re-explain the same app philosophy twice. Every communicated expectation that survives the
-conversation must end the turn encoded somewhere durable and consistent across all
-surfaces, not left to live only in chat.
+The objective is a self-sufficient knowledge base without making memory maintenance a
+prerequisite for direct work. A durable expectation should end the turn in its canonical
+surface; ephemeral instructions should not be promoted.
 
 Capturing a freshly communicated durable expectation is itself a task instruction that
 requires durable storage, so it satisfies the mutation precondition below — you do not need

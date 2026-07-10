@@ -1,8 +1,9 @@
 ---
 name: project-initialization
 description: >-
-  Use at the start of work in any repository, after cloning or switching projects,
-  or when a project appears partially set up. Establishes the normal project form:
+  Use before substantive implementation that depends on repository-wide state, after
+  cloning or switching projects for such work, or when requested work needs missing
+  project surfaces. Establishes the normal project form:
   git/remote freshness, GitHub public state, durable surface ownership, SDL-MCP
   registration/indexing, .agents, agent-memory, justfile, ai-review-ci QC/hooks/CI,
   and task-relevant memory lookup before implementation.
@@ -11,7 +12,8 @@ description: >-
 # Project Initialization
 
 This skill defines the normal form for projects on this machine. Use it before
-substantive project work so agents do not build on half-initialized repositories,
+substantive work that depends on shared project state so agents do not build on
+half-initialized repositories,
 stale branches, missing memory, or ad hoc QC.
 
 The goal is not checklist theater. The goal is to make the project safe to work
@@ -19,17 +21,21 @@ in, then continue with the user's task.
 
 ## Trigger
 
-Use this skill:
+Use this skill when repository-wide state can materially affect the requested work:
 
-- at the start of a session in a repository;
-- after cloning, creating, or switching to a project/worktree;
-- when `.agents/`, memory, `justfile`, hooks, CI, or QC surfaces are missing or
-  inconsistent;
-- before implementing work in a repo whose state has not been established in the
-  current session.
+- before substantive feature or architectural implementation in an unfamiliar project;
+- after cloning, creating, or switching to a project/worktree for such work;
+- when requested work depends on `.agents/`, memory, `justfile`, hooks, CI, or QC
+  surfaces that are missing or inconsistent;
+- before work that will create or claim cross-session, multi-agent, public execution, or
+  review state.
 
-Skip only for trivial one-command answers outside a project, or when the user
-explicitly asks you not to inspect or normalize project state.
+Do not use this skill for direct answers, read-only inspection, data labeling, narrow
+research, one-off documentation or configuration edits, bounded scripts, direct commits,
+or throwaway probes whose result does not depend on repository-wide state.
+Repository presence alone is not a trigger.
+If the work is bounded and reversible, default to the lighter route; ask only when the
+classification changes the requested result or an irreversible action.
 
 ## Safety Rules
 
@@ -281,8 +287,9 @@ that state before debugging product behavior.
 
 ## Mixed-State Normalization
 
-When a project is partly initialized, normalize before feature work unless the
-user explicitly requested only an audit or diagnosis.
+When a project is partly initialized, normalize only the state that overlaps or blocks
+the requested feature work. Preserve unrelated mixed state and continue within the
+requested boundary unless the user asks for broader normalization.
 
 Prefer this order:
 
@@ -303,7 +310,8 @@ rewrite.
 
 ## Initialization Stamp
 
-Before moving into implementation, record a compact status:
+Before moving into implementation that actually required this skill, record a compact
+status:
 
 ```markdown
 Project initialization:

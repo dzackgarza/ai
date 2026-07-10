@@ -19,13 +19,43 @@ tags:
 - retest-model-tool-use
 - retest-policy-change
 - retest-toolchain-change
-title: 'Critical Directive: Research Before Action, Always'
+title: 'Task Scale, Research, and Procedure Routing'
 ---
 
-Split by ownership before investigating.
+Choose the lightest route that can correctly complete the request:
 
-- Project-internal unknowns: load `reality-grounded-debugging`, start with `tree`, and
-  inspect declared entrypoints, configs, docs, and runtime surfaces before narrowing.
+- **Direct or read-only:** answer, inspect, search, classify, or explain from the relevant
+  sources. Do not initialize projects, create plans, reconcile memory, or open execution
+  tracking merely because the work occurs in a repository.
+- **Trivial reversible change:** read the complete target and nearby governing context,
+  make the bounded edit, run the smallest relevant verification, and commit directly when
+  requested. One-off documentation, metadata, configuration, and data-labeling work
+  normally belongs here.
+- **Substantive implementation:** use task-relevant repository discovery, implementation
+  skills, and real-boundary verification. Add broader project checks only when repository
+  state can materially affect the implementation.
+- **Public coordination or long-horizon work:** use plans, memory, issue trees, milestones,
+  PR claim maps, and review workflows when the work actually needs cross-session state,
+  multiple workers, public tracking, or a review lifecycle.
+
+Task complexity alone does not imply public coordination.
+Choose the lighter route when both are safe and the choice is cheap to reverse.
+Explicit scope such as "trivial", "narrow", "direct edit", or "ignore the standard
+workflow" controls routing unless it conflicts with authorization, destructive-operation,
+secret-handling, or unknown-provenance safety.
+
+Skill triggers do not compound automatically.
+Load a second procedure only when its own triggering condition is materially present in
+the requested work.
+Keep routing internal; communicate only a genuine fork, blocker, risk, or long-running
+operation the user needs to understand.
+
+When investigation is needed, split it by ownership:
+
+- Project-internal unknowns that materially affect the requested action: load
+  `reality-grounded-debugging` and inspect the relevant entrypoints, configs, docs, and
+  runtime surfaces before narrowing. Broad repository discovery is unnecessary for a
+  self-contained document or data edit whose boundary is already known.
 - External tools, compilers, libraries, APIs, package managers, providers, exact errors,
   and dependency choices: load `known-solution-first` before local probing.
 - Project automation and validation commands: load `justfile` and use declared recipes
@@ -46,16 +76,18 @@ CLI routing for code navigation and edits:
   do not spend task budget repairing it unless the user asked for that setup; use the
   explicit CLI route above or ordinary file edits instead.
 
-**BEFORE TAKING ANY ACTION**: review the most immediately recent user requests, and verbally confirm whether or not the actions you are planning actually align with the directive.
-User directives are highly specific, not suggestions.
-Verbally confirm what the user's stated directive was, your planned action, and why the goal you're pursuing is the exact goal the user stated.
+Review the most recent user request before acting.
+Do not narrate that check when the directive and route are already clear.
 
-Never make an edit without first understanding the repo's shape and the specific boundary you are about to change.
-Never guess commands, endpoints, or file paths without running them first.
+Before editing, understand the complete target artifact, its nearby governing context,
+and the specific boundary being changed.
+Inspect broad repository shape only when the change depends on it.
+Never guess commands, endpoints, or file paths when they can be checked cheaply.
 Do not treat docs as the sole source of truth — code, configs, CLI output, generated artifacts, and runtime diagnostics are all valid reality surfaces.
 
-When a request names an existing workflow or recurring friction, reset around the workflow
-before proposing machinery:
+When designing or changing a workflow in response to recurring friction, reset around the
+workflow before proposing machinery.
+Merely using or documenting an existing workflow does not trigger this design exercise:
 
 - State the user gesture, the object being acted on, the existing substrate, and the
   smallest boundary that can intercept or observe it.

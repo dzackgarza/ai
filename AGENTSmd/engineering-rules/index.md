@@ -10,6 +10,7 @@ tags:
 - function-evaluate
 - failure-tool-bypass
 - failure-proxy-evidence
+- failure-process-overproduction
 - retest-model-reasoning
 - retest-model-tool-use
 - retest-model-self-evaluation
@@ -21,8 +22,8 @@ title: Engineering Rules
 - For external tools, dependencies, and known library surfaces, load
   `known-solution-first` before implementing bespoke logic.
 
-- For owned code changes, load the policy skills named in the Bridge-Burning Policy
-  Router before writing or reviewing code/tests/QC.
+- For owned code changes that encounter a bridge-burning policy concern, enter through
+  `policy-index` and load only the narrower policy skills it selects.
 
 - For long-running commands, use PTYs/sessions and poll them.
   Do not create artificial short timeouts for ordinary engineering work.

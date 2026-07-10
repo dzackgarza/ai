@@ -10,6 +10,8 @@ tags:
 - failure-completion-laundering
 - failure-feedback-laundering
 - failure-reporting-distortion
+- failure-process-overproduction
+- failure-correction-thrashing
 - retest-model-alignment
 - retest-model-self-evaluation
 - retest-model-reasoning
@@ -18,8 +20,11 @@ tags:
 title: Goal Integrity and Anti-Laundering
 ---
 
-Load `handling-corrections` before acting on any critique, correction, review feedback,
-completion question, or remaining-work question.
+Load `handling-corrections` when a critique, correction, review, completion question, or
+remaining-work question requires causal reconstruction, leaves the next action ambiguous,
+or risks administrative work replacing the live goal.
+If the user explicitly directs one safe, reversible course correction, apply it and
+continue the substantive goal without a routing report.
 
 That skill owns the strongest-live-goal gate and anti-laundering rules:
 

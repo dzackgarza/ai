@@ -37,3 +37,6 @@ work; scoping those units is a planning step, not a triage step. See
 
 Simple doc changes, trivial fixes, and one-off edits usually should stay as direct
 commits unless the user asks for PR workflow or the work needs public issue-tree tracking.
+Complexity alone does not require a PR: substantive but bounded maintenance can remain a
+direct commit when ownership, verification, and rollback are local and no review handoff
+is needed.

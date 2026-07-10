@@ -10,6 +10,7 @@ tags:
 - function-evaluate
 - failure-premature-action
 - failure-tool-bypass
+- failure-process-overproduction
 - retest-model-reasoning
 - retest-model-tool-use
 - retest-policy-change
@@ -36,6 +37,12 @@ far more time building, debugging, or guessing than the search would have cost.
   already.
 
 Source-diving, greenfield implementation, and from-first-principles reasoning are the
-expensive fallback, not the first move, whenever the question is owned by an external
-project. Load `known-solution-first` whenever the uncertainty concerns an external
-surface.
+expensive fallback, not the first move, whenever an implementation or diagnostic question
+is owned by an external project. Load `known-solution-first` when that external contract
+materially controls the requested action.
+
+This is not a fixed research or acquisition funnel. For open-ended source discovery,
+hard-to-find artifacts, or an explicit request to move beyond standard workflows, treat
+local metadata and familiar services as leads rather than boundaries. Diversify search
+strategies when the normal path has low expected yield instead of completing the usual
+workflow for its own sake.

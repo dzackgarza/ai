@@ -12,6 +12,7 @@ tags:
 - failure-proof-gaming
 - failure-proxy-evidence
 - failure-destructive-state-change
+- failure-process-overproduction
 - retest-model-alignment
 - retest-model-self-evaluation
 - retest-model-tool-use
@@ -20,9 +21,12 @@ tags:
 title: Bridge-Burning Policy Router
 ---
 
-Before writing, reviewing, or fixing code/tests/QC, load:
+Use `policy-index` as the entry point when code, tests, or QC encounters a bridge-burning
+policy concern. It decides which detailed policy is relevant.
+Do not preload the entire policy suite for ordinary implementation.
 
-- `policy-index` to identify which policy skill owns the rule.
+Load the narrower owner only when its trigger is present:
+
 - `anti-slop` for bridge-burning policies and anti-laundering doctrine.
 - `bespoke-software-policy` for single-user, pre-launch, no-fallback constraints.
 - `reviewing-llm-code/references/bridge-burning-red-flags.md` for the canonical red-flag inventory.
@@ -32,7 +36,9 @@ Before writing, reviewing, or fixing code/tests/QC, load:
 - `fixing-slop` when an artifact is being renamed, deleted, quarantined, or “made honest.”
 - `pr-feedback-triage` when acting on review comments or automated review feedback.
 
-A test line is admissible only if it increases the epistemic status of a repository-owned proof burden. If an assertion would still pass on a plausibly broken app, it is banned.
+When tests are in scope, a test line is admissible only if it increases the epistemic
+status of a repository-owned proof burden. If an assertion would still pass on a
+plausibly broken app, it is banned.
 Runtime defaults, fallbacks, optional critical dependencies, mocks/fakes/stubs, smoke
 tests in proof paths, helper-level proof for boundary obligations, stringly errors,
 boolean mode flags, compatibility shims, and deletion without burden transfer are hard

@@ -42,9 +42,10 @@ Every project should converge toward one organized state model:
   delete or promote only that owned scratch. Pre-existing, concurrent, or provenance-unknown
   files are not scratch; preserve them and report any conflict.
 
-All nontrivial work must route through the GitHub execution model before implementation
-or public handoff. Nontrivial work includes roadmap, PRD, feature, cross-agent,
-long-running, review-track, or proof-bearing work. The route is:
+Work that requires public coordination or handoff must route through the GitHub execution
+model. This includes roadmap or PRD execution, multi-agent or long-running handoffs,
+review-track work, and proof-bearing work whose claims need public tracking.
+Implementation complexity by itself does not create that requirement. The route is:
 
 1. Use `project-initialization` to inspect existing wiki, issue tree, milestones, PRs,
    draft PRs, and memory binding.
@@ -56,10 +57,13 @@ long-running, review-track, or proof-bearing work. The route is:
    milestone scope, and PR claim set are known, unless the user explicitly requested a
    diagnosis-only or audit-only pass.
 
-Trivial direct commits are allowed only when the outcome, scope, proof, and rollback are
-obvious from the diff itself and no public coordination surface is needed.
+Direct commits are appropriate when the requested outcome has a bounded owner, can be
+verified locally, and needs no public coordination surface. This includes trivial edits
+and can include substantive but self-contained maintenance.
 
-Mixed-state repos must be migrated into this model before feature work. Classify each
+Mixed-state repositories must be migrated only when the mixed state overlaps the requested
+work or prevents a safe handoff. Do not turn unrelated normalization into a prerequisite
+for a bounded task. When migration is in scope, classify each
 local note, plan, TODO, scratchpad, wiki page, issue, PR, and memory record by durable
 owner. Preserve durable narrative in the wiki, private restart state in `agent-memory`,
 and active execution state in GitHub issues, milestones, and PRs. Replace duplicate local
@@ -71,7 +75,7 @@ Do not keep the same durable fact authoritative in more than one place.
 When a repo is mixed, classify each local note, plan, TODO, scratchpad, and process doc by
 its durable owner, then migrate or link it instead of letting local residue accumulate.
 
-Small observed errors or inefficiencies in repos this system owns should become either an
-immediate fix or a GitHub issue on the owning repo.
-Do not let repeated surprises, user corrections, tool friction, false greens, or app
-paper cuts remain only in chat, local notes, or memory.
+Small observed errors or inefficiencies should become an immediate fix or GitHub issue
+when they belong to the current coherent work unit or the user requested tracking.
+Do not interrupt a bounded task to create unrelated administrative work; report a real
+blocking defect instead.

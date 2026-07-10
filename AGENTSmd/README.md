@@ -109,6 +109,32 @@ for reporting distortion, completion laundering, and proxy evidence. Those causa
 remain even if parts of each fragment encode policies a future model would still need to
 know.
 
+### Routing and progressive disclosure
+
+Tags record why guidance exists; they do not make every tagged procedure always active.
+Each behavioral fragment and routed skill should make its positive trigger and important
+non-triggers explicit.
+
+Route work at the smallest sufficient scale:
+
+| Work shape | Appropriate context |
+| --- | --- |
+| Direct answer, read-only inspection, classification, or analysis | Relevant sources only |
+| Trivial reversible document, metadata, configuration, or data edit | Complete target plus nearby governing context and the smallest verification |
+| Substantive implementation dependent on repository state | Task-relevant project discovery, implementation skills, and real-boundary verification |
+| Cross-session, multi-agent, public, or review-track work | Project initialization, memory, plans, issues, milestones, PRs, or review procedures as required |
+
+The mere presence of a repository, correction, bug, commit, or system-local tool does not
+activate the heaviest corresponding workflow. A procedure should progressively disclose
+context only when the requested object depends on that local system contract.
+Loading one skill does not recursively activate adjacent skills unless their own triggers
+are independently present.
+
+Explicit user scope controls the route when safe: requests described as narrow, trivial,
+direct, or outside the standard workflow should remain so. Authorization,
+unknown-provenance preservation, secrets, destructive actions, and irreversible external
+state remain hard boundaries.
+
 Every current fragment is classified. The allowed taxonomy and active exclusions live in
 `.agents/build.toml`. Adding a tag to `selection.exclude_tags` omits every whole fragment
 carrying that tag.
