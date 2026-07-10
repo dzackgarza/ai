@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["python-frontmatter>=1.1"]
+# dependencies = ["PyYAML>=6", "python-frontmatter>=1.1"]
 # ///
 
 """Assemble the AGENTSmd fragment tree into a single AGENTS.md.
@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Any, Never
 
 import frontmatter
+from yaml import YAMLError
 
 INDEX = "index.md"
 SKIP: set[Path] = set()
@@ -142,7 +143,7 @@ def load_fragment(
 ) -> FragmentMeta:
     try:
         post = frontmatter.load(md)
-    except Exception as exc:  # python-frontmatter exposes parser-specific errors
+    except YAMLError as exc:
         fail(f"{md}: invalid frontmatter ({exc})")
 
     title = post.metadata["title"] if "title" in post.metadata else None
@@ -153,6 +154,10 @@ def load_fragment(
     unknown_tags = sorted(set(tags) - config.allowed_tags)
     if unknown_tags:
         fail(f"{md}: unknown tags {unknown_tags}")
+
+    stability_tags = [tag for tag in tags if tag.startswith("stability-")]
+    if len(stability_tags) > 1:
+        fail(f"{md}: contradictory stability tags {stability_tags}")
 
     if require_title_order:
         if not isinstance(title, str) or not title:

@@ -60,7 +60,7 @@ The optional `tags` list classifies a fragment on two independent axes:
 - Stability: `stability-timeless` is independent of current model capability;
   `stability-model-contingent` may become unnecessary as models improve.
 
-A fragment may carry multiple role tags.
+A fragment may carry multiple role tags, but at most one stability tag.
 Classification is incremental: an untagged fragment remains included and is reported as
 untagged rather than being forced into an ambiguous category.
 The allowed taxonomy and active exclusions live in `.agents/build.toml`.
