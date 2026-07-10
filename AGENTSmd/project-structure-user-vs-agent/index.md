@@ -1,5 +1,9 @@
 ---
 order: 120
+tags:
+- role-context
+- role-preference
+- stability-timeless
 title: 'Project Structure: User vs. Agent'
 ---
 
