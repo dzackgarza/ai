@@ -71,7 +71,26 @@ print(f\"\n{i['body']}\")"
 
 ## 2. Creating Issues
 
-**With gh:**
+### `itree`-governed repositories
+
+Create every work unit beneath an explicit grouping parent:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new owner/repo "Login redirect ignores ?next= parameter" \
+  --under owner/repo#<grouping-issue> \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo owner/repo --add-label "bug,backend" --add-assignee "username"
+```
+
+Omitting `--under` creates nothing. The command prints the existing work units and valid
+grouping targets plus exact placement commands, then exits nonzero. Use that output to
+choose a parent; never treat omission as default-root creation.
+
+### Explicitly non-`itree`-governed repositories
+
+**With `gh`:**
+
 ```bash
 gh issue create \
   --title "Login redirect ignores ?next= parameter" \
@@ -80,7 +99,8 @@ gh issue create \
   --assignee "username"
 ```
 
-**Without gh:**
+**Without `gh`:**
+
 ```bash
 curl -s -X POST \
   -H "Authorization: token $GITHUB_TOKEN" \
@@ -124,6 +144,21 @@ Use native sub-issues for tree edges when the repository's GitHub surface suppor
 Do not use labels, title numbering, or dependencies to simulate ordinary parent/child
 order.
 
+For an `itree`-governed repository, create beneath a grouping parent and route later
+placement changes through `itree`:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new owner/repo "<child story or implementation node>" \
+  --under owner/repo#42 \
+  --body-file issue.md
+uvx --from git+https://github.com/dzackgarza/itree itree attach owner/repo#42 owner/repo#43
+uvx --from git+https://github.com/dzackgarza/itree itree move owner/repo#43 --under owner/repo#42
+uvx --from git+https://github.com/dzackgarza/itree itree detach owner/repo#43
+```
+
+For an explicitly non-`itree`-governed repository, use the raw GitHub mechanics:
+
 ```bash
 # Create a new child issue under a parent.
 gh issue create --title "<child story or implementation node>" --body-file issue.md --parent 42
@@ -140,6 +175,19 @@ gh issue edit 43 --remove-parent
 
 Use dependencies for blockers, not roadmap traversal order.
 
+For an `itree`-governed repository, create the issue under its grouping parent first,
+then add the dependency to the returned issue reference:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new owner/repo "<blocked work>" \
+  --under owner/repo#<grouping-issue> \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo owner/repo --add-blocked-by 41
+```
+
+For an explicitly non-`itree`-governed repository, raw creation remains available:
+
 ```bash
 gh issue create --title "<blocked work>" --body-file issue.md --blocked-by 41
 gh issue edit 42 --add-blocked-by 41 --add-blocking 44
@@ -150,6 +198,29 @@ gh issue edit 42 --remove-blocked-by 41 --remove-blocking 44
 
 Milestones are delivery/progress buckets over issues and PRs. They do not replace the
 issue tree.
+
+In an `itree`-governed repository, create a GitHub Milestone and matching ledger beneath
+an explicit grouping parent:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree milestone owner/repo "<milestone>" \
+  --under owner/repo#<grouping-issue> \
+  --body-file milestone.md \
+  --issues owner/repo#42 owner/repo#43
+```
+
+Omitting `--under` creates nothing, prints placement guidance, and exits nonzero. The
+named parent must be an open grouping issue.
+
+Each `--issues` work unit moves beneath the new ledger in argument order and receives the
+new milestone assignment. This is one preflighted orchestration command, not a GitHub
+transaction. After any partial or indeterminate failure, preserve the reported
+confirmed/untouched/indeterminate outcomes and reread live GitHub and `itree` state before
+recovery.
+
+The following raw edit changes the assignment on an existing issue. It does not create a
+milestone or ledger and must not substitute for the governed command above:
 
 ```bash
 gh issue edit 42 --milestone "<milestone>"
@@ -200,11 +271,13 @@ gh issue list --label "wontfix" --json number --jq '.[].number' | \
 
 ## Quick Reference
 
-| Action | gh | curl endpoint |
+| Action | Command | Direct API endpoint |
 | --- | --- | --- |
 | List issues | `gh issue list` | `GET /repos/{o}/{r}/issues` |
 | View issue | `gh issue view N` | `GET /repos/{o}/{r}/issues/N` |
-| Create issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
+| Create governed work unit | `itree new ... --under ...` | Owned by `itree` |
+| Create governed milestone and ledger | `itree milestone ... --under ...` | Owned by `itree` |
+| Create explicitly non-governed issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
 | Add labels | `gh issue edit N --add-label ...` | `POST /repos/{o}/{r}/issues/N/labels` |
 | Assign | `gh issue edit N --add-assignee ...` | `POST /repos/{o}/{r}/issues/N/assignees` |
 | Add sub-issue | `gh issue edit PARENT --add-sub-issue CHILD` | Use GitHub CLI native sub-issue support |

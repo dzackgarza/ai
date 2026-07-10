@@ -293,7 +293,46 @@ alternatives, or manually maintained histories of PR-body edits as progress.
 > template are in the **Jules skill → PR Contract** section.
 > That section is the authoritative source for Jules-initiated PRs.
 
-For nontrivial non-Jules PRs, use the plan-to-issue-tree sequence first:
+For nontrivial non-Jules PRs, use the plan-to-issue-tree sequence first.
+
+For an `itree`-governed repository:
+
+```bash
+# Create the GitHub Milestone and matching ledger under an existing grouping parent.
+# Existing work units supplied with --issues move beneath the ledger in argument order
+# and receive the same GitHub Milestone assignment.
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree milestone <OWNER>/<REPO> "<milestone>" \
+  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
+  --body-file .pr/ISSUE_ROOT.md \
+  --issues <OWNER>/<REPO>#<EXISTING_WORK_UNIT> ...
+gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+
+# Create each additional story or work unit under an explicit grouping issue.
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <OWNER>/<REPO> "<story-shaped outcome>" \
+  --under <OWNER>/<REPO>#<MILESTONE_LEDGER_NUMBER> \
+  --body-file .pr/ISSUE_<id>.md
+gh issue edit <NEW_ISSUE_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+
+# Encode blockers as dependencies, not as roadmap order.
+gh issue edit <ISSUE_NUMBER> --repo <OWNER>/<REPO> --add-blocked-by <BLOCKER_ISSUE_NUMBER>
+
+# Verify tree placement and milestone scope before drafting the PR claim map.
+uvx --from git+https://github.com/dzackgarza/itree itree tree <OWNER>/<REPO>
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <OWNER>/<REPO>
+gh issue view <MILESTONE_LEDGER_NUMBER> --repo <OWNER>/<REPO> --json title,body,url,milestone
+```
+
+Omitting `--under` from `itree new` or `itree milestone` is non-mutating placement
+guidance, never default-root creation. `itree milestone` is preflighted one-command
+orchestration, not a GitHub transaction. If a remote write fails, preserve its
+confirmed-complete, confirmed-untouched, and indeterminate-current-operation report and
+reread live GitHub and `itree` state before any recovery action. Do not compensate,
+silently reuse partial objects, or print partial state as success.
+
+Only for a repository explicitly outside `itree` governance, use the raw GitHub
+sequence:
 
 ```bash
 # Create or select the GitHub Milestone object for this delivery slice.
@@ -708,7 +747,9 @@ whether the tests are tautological.
 
 ## Minimal shell workflow
 
-A practical sequence:
+A practical sequence for an `itree`-governed repository follows. For a repository
+explicitly outside `itree` governance, use the raw GitHub sequence in the Required
+workflow above instead.
 
 ```bash
 # 0. externalize the finalized plan into a GitHub issue tree and milestone scope
@@ -716,14 +757,25 @@ mkdir -p .pr
 $EDITOR .pr/ISSUE_ROOT.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/ISSUE_W1.md
-# Create the milestone if it does not already exist.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
-gh issue create --title "<story-shaped outcome>" --body-file .pr/ISSUE_ROOT.md --label enhancement --milestone "<milestone>"
-gh issue create --title "<foundation>" --body-file .pr/ISSUE_F1.md --label enhancement --milestone "<milestone>" --parent <ISSUE_ROOT_NUMBER>
-gh issue create --title "<workstream>" --body-file .pr/ISSUE_W1.md --label enhancement --milestone "<milestone>" --parent <ISSUE_ROOT_NUMBER>
-# Attach existing issues as sub-issues when needed, and encode blockers separately.
-gh issue edit <ISSUE_ROOT_NUMBER> --add-sub-issue <CHILD_ISSUE_NUMBER>
-gh issue edit <ISSUE_W1_NUMBER> --add-blocked-by <ISSUE_F1_NUMBER>
+
+# For an itree-governed repository, create the milestone ledger under an explicit parent.
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree milestone <OWNER>/<REPO> "<milestone>" \
+  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
+  --body-file .pr/ISSUE_ROOT.md
+gh issue edit <ISSUE_ROOT_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <OWNER>/<REPO> "<foundation>" \
+  --under <OWNER>/<REPO>#<ISSUE_ROOT_NUMBER> \
+  --body-file .pr/ISSUE_F1.md
+gh issue edit <ISSUE_F1_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <OWNER>/<REPO> "<workstream>" \
+  --under <OWNER>/<REPO>#<ISSUE_ROOT_NUMBER> \
+  --body-file .pr/ISSUE_W1.md
+gh issue edit <ISSUE_W1_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+gh issue edit <ISSUE_W1_NUMBER> --repo <OWNER>/<REPO> --add-blocked-by <ISSUE_F1_NUMBER>
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <OWNER>/<REPO>
 
 # 1. create tracked PR claim map from the selected issue set before implementation
 $EDITOR .pr/PR_BODY.md   # include Closes only for full claims; use Refs for parents/partials/deferred work

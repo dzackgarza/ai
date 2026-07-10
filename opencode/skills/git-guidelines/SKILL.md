@@ -577,10 +577,59 @@ the durable lesson, but the actionable project gap belongs on GitHub.
 
 ### Filing Issues
 
-**All issues must be labeled immediately upon creation.**
+**All issues must be labeled immediately after creation.**
 
-Use
-`gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"`
+Classify the target repository before creating public execution state:
+
+- If the repository has an `itree` root, or its doctrine assigns execution state to
+  `itree`, use the `itree` creation routes below. Absence of a root is not permission to
+  bypass governance; initialize or repair the tree first.
+- Use raw `gh` or GitHub API creation only when the repository is explicitly outside
+  `itree` governance.
+
+For an `itree`-governed repository, create a work unit beneath an explicit grouping
+parent:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <owner>/<repo> "<title>" \
+  --under <owner>/<repo>#<grouping-issue> \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo <owner>/<repo> --add-label "<label>"
+```
+
+`itree new` without `--under` is a non-mutating placement inquiry. It creates nothing,
+prints the existing work units and grouping targets plus exact placement commands, and
+exits nonzero. Never reinterpret omission as default-root creation.
+
+Create a new GitHub Milestone and its matching ledger through one governed command:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree milestone <owner>/<repo> "<milestone>" \
+  --under <owner>/<repo>#<grouping-issue> \
+  --body-file milestone.md \
+  --issues <owner>/<repo>#<work-unit> ...
+```
+
+As with `itree new`, omitting `--under` creates nothing, prints placement guidance, and
+exits nonzero. The named parent must be an open grouping issue.
+
+Every `--issues` work unit is placed beneath the new ledger in argument order and
+assigned the new GitHub Milestone. The flag never means metadata-only assignment.
+
+These multi-write commands are preflighted orchestration, not cross-resource
+transactions. After mutation begins, stop at the first failed GitHub operation. Preserve
+the command's confirmed-complete, confirmed-untouched, and indeterminate-current-operation
+outcomes, then reread live GitHub and `itree` state before recovery. Never infer remote
+state from a lost response, compensate automatically, or present partial state as
+success.
+
+For an explicitly non-`itree`-governed repository, use:
+
+```bash
+gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"
+```
 
 For roadmap, feature, PRD, or cross-agent planning issues, first load
 `plan/references/externalization.md`. Create story-shaped issue nodes, use native
@@ -615,7 +664,8 @@ into a second live tracker.
 
 **Minimal Issue Template:**
 
-Create a local `.md` file for the body and pass it to `gh issue create --body-file`:
+Create a local `.md` file for the body and pass it to the applicable creation command's
+`--body-file` option:
 
 ```markdown
 # Description

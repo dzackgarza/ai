@@ -222,17 +222,30 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`.
 
 ## 7. Complete Workflow Example
 
+This example assumes the repository is governed by `itree`. For a repository explicitly
+outside `itree` governance, use the raw creation route in `issues.md` instead.
+The `itree milestone` parent must be an open grouping issue; omitting `--under` creates
+nothing and prints placement guidance. The command is preflighted orchestration, not a
+cross-resource transaction. After any partial or indeterminate failure, preserve its
+operation report and reread live GitHub and `itree` state before recovery; do not
+compensate automatically or treat partial state as success.
+
 ```bash
 # 1. Start from clean main
 git checkout main && git pull origin main
 
 # 2. Branch
 git checkout -b fix/login-redirect-bug
-# 3. Externalize the finalized plan into a GitHub issue tree and milestone scope.
+# 3. Externalize the finalized plan into a GitHub issue tree and milestone scope beneath
+#    an explicit open grouping parent.
 #    Create or update .pr/PR_BODY.md as the issue-linked claim map before implementation
 #    defines its own success criteria. Include Closes only for full claims and Refs for
 #    parents, partial claims, and deferred work.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree milestone <OWNER>/<REPO> "<milestone>" \
+  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
+  --body "<issue-tree scope>"
+gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
 git add .pr/PR_BODY.md
 git commit -m "Add PR tracking contract"
 git push -u origin HEAD
