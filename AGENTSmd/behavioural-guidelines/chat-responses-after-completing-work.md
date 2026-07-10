@@ -1,15 +1,20 @@
 ---
 order: 10
 tags:
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-reporting-distortion
+- failure-completion-laundering
+- failure-proxy-evidence
+- retest-model-self-evaluation
+- retest-model-alignment
+- retest-policy-change
+- retest-toolchain-change
 title: Chat Responses After Completing Work
 ---
 

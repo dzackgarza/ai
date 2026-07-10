@@ -45,51 +45,69 @@ Every fragment and every `index.md` (except the root preamble) must declare:
 title: Hard Rules
 order: 30
 tags:
-  - purpose-remediation
-  - purpose-procedure
-  - stability-model-contingent
+  - source-system-contract
+  - source-observed-model-failure
+  - function-constrain
+  - failure-tool-bypass
+  - retest-model-alignment
+  - retest-policy-change
 ---
 ```
 
 `title` supplies the rendered heading, and `order` is the integer sibling sort key.
-The `tags` list classifies a fragment on two independent, multi-label axes:
+The `tags` list uses four independent, multi-label axes:
 
-- Purpose: `purpose-context` supplies facts or definitions the agent would not otherwise
-  have; `purpose-preference` records local style or tool choices; `purpose-policy` states
-  required invariants; `purpose-procedure` prescribes a workflow or decision gate;
-  `purpose-reference` routes to skills, tools, commands, or other canonical material;
-  `purpose-remediation` counters recurring agent mistakes or misaligned priors; and
-  `purpose-structure` marks heading-only fragments.
-- Stability: `stability-model-independent` marks information that even an arbitrarily
-  capable agent still needs explicitly because it comes from the user, domain, local
-  environment, or chosen system policy. `stability-model-contingent` marks prompting that
-  exists to compensate for current model limitations, misaligned priors, or recurring
-  failure modes and may become unnecessary as models improve.
-  `stability-policy-contingent` depends on current local workflow doctrine;
-  `stability-tool-contingent` depends on named tools, commands, or APIs;
-  `stability-environment-contingent` depends on current machine or repository facts; and
-  `stability-corpus-contingent` depends only on the fragment tree's organization.
+- Source records why the fragment exists. `source-owner-context` and
+  `source-domain-context` supply otherwise unavailable facts; `source-owner-preference`
+  records a chosen style or tool preference; `source-system-contract` records local
+  architecture, ownership, or policy; `source-observed-model-failure` marks reflexive
+  guidance authored in response to model behavior; and `source-document-structure` marks
+  organization-only fragments.
+- Function records what the fragment does: `function-orient`, `function-define`,
+  `function-constrain`, `function-procedure`, `function-route`, `function-allocate`,
+  `function-evaluate`, or `function-structure`.
+- Failure records the behavior targeted by reflexive guidance:
+  `failure-intent-assumption`, `failure-correction-thrashing`,
+  `failure-reporting-distortion`, `failure-completion-laundering`,
+  `failure-epistemic-overreach`, `failure-goal-substitution`, `failure-scope-drift`,
+  `failure-premature-action`, `failure-proxy-evidence`,
+  `failure-destructive-state-change`, `failure-process-overproduction`,
+  `failure-tool-bypass`, `failure-proof-gaming`, `failure-state-misplacement`,
+  `failure-feedback-laundering`, and `failure-context-loss`.
+- Retest records what change would justify reevaluating the fragment:
+  `retest-model-reasoning`, `retest-model-theory-of-mind`,
+  `retest-model-alignment`, `retest-model-tool-use`,
+  `retest-model-self-evaluation`, `retest-model-memory`, `retest-policy-change`,
+  `retest-toolchain-change`, `retest-environment-change`, or
+  `retest-corpus-change`.
 
-`stability-model-independent` does not mean “philosophically true forever.” It means the
-information still has to be communicated to a more capable model. A preferred tool can be
-model-independent while remaining tool-contingent. Conversely, “not found” does not imply
-“does not exist” is a true epistemic principle, but an explicit reminder of that principle
-is model-contingent when it exists to remediate bounded searches and weak inference.
+These axes answer different questions. A fragment can encode a real system contract and
+still have been authored reflexively because models repeatedly violated that contract.
+Likewise, a retest tag is a hypothesis about when to rerun controlled comparisons, not a
+claim that the guidance will eventually become unnecessary.
 
 ### How to classify fragments
 
-- Read the complete fragment and compare it with related fragments before assigning tags.
-  Never classify from its title, frontmatter, filename, a snippet, or a worker summary.
-- First run the AGI counterfactual: would an arbitrarily capable agent still need this
-  supplied explicitly? User intent, domain conventions, local paths, tool preferences,
-  and chosen ownership boundaries are model-independent. Reminders about object
-  permanence, theory of mind, bounded search, goal preservation, or predictable reasoning
-  failures are model-contingent.
-- Then assign every purpose tag represented by the fragment's complete content.
-- Tags apply to the whole fragment and are intentionally non-exclusive. A fragment mixing
-  owner context with model remediation carries both model-independent and model-contingent
-  tags. If those parts later need independent inclusion or exclusion, split the fragment
-  rather than pretending the metadata is sentence-level.
+- Read the complete fragment and compare it with related fragments. Never classify from a
+  title, filename, frontmatter, snippet, or worker summary.
+- Identify causal source before communicative function. Ask why this text was added, not
+  merely whether some sentence in it remains true or expresses a local policy.
+- Apply `source-observed-model-failure` whenever the fragment is reflexive to observed or
+  clearly named model behavior, then name the targeted `failure-*` families. Every
+  `failure-*` tag requires `source-observed-model-failure`.
+- Add `retest-*` tags for the capability, policy, toolchain, environment, or corpus change
+  that could alter the fragment's value. Do not use philosophical truth as a proxy for
+  prompt necessity.
+- Tags apply to the whole fragment and are intentionally non-exclusive. If independently
+  testable concerns are too entangled for useful exclusion, split the fragment rather
+  than pretending the metadata is sentence-level.
+
+For example, `corrections.md` is both a system contract and a reflexive response to intent
+assumption, correction thrashing, process overproduction, and context loss.
+`chat-responses-after-completing-work.md` combines an owner preference with remediation
+for reporting distortion, completion laundering, and proxy evidence. Those causal labels
+remain even if parts of each fragment encode policies a future model would still need to
+know.
 
 Every current fragment is classified. The allowed taxonomy and active exclusions live in
 `.agents/build.toml`. Adding a tag to `selection.exclude_tags` omits every whole fragment

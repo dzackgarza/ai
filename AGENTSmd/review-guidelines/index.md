@@ -1,15 +1,27 @@
 ---
 order: 65
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-define
+- function-constrain
+- function-procedure
+- function-evaluate
+- failure-completion-laundering
+- failure-reporting-distortion
+- failure-goal-substitution
+- failure-proxy-evidence
+- failure-proof-gaming
+- failure-feedback-laundering
+- failure-scope-drift
+- retest-model-reasoning
+- retest-model-theory-of-mind
+- retest-model-alignment
+- retest-model-self-evaluation
+- retest-policy-change
+- retest-toolchain-change
 title: Review Guidelines
 ---
 

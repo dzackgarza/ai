@@ -1,16 +1,24 @@
 ---
 order: 10
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- function-evaluate
+- failure-process-overproduction
+- failure-state-misplacement
+- failure-scope-drift
+- failure-premature-action
+- retest-model-reasoning
+- retest-model-alignment
+- retest-model-memory
+- retest-policy-change
+- retest-toolchain-change
 title: Live User Feedback
 ---
 

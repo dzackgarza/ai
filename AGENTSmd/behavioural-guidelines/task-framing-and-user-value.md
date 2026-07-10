@@ -1,13 +1,20 @@
 ---
 order: 60
 tags:
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-goal-substitution
+- failure-proxy-evidence
+- failure-process-overproduction
+- failure-completion-laundering
+- retest-model-reasoning
+- retest-model-self-evaluation
+- retest-model-alignment
+- retest-policy-change
+- retest-toolchain-change
 title: Task Framing and User Value
 ---
 

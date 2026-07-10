@@ -1,15 +1,19 @@
 ---
 order: 70
 tags:
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-system-contract
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-proxy-evidence
+- failure-completion-laundering
+- retest-model-self-evaluation
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Visual Verification
 ---
 

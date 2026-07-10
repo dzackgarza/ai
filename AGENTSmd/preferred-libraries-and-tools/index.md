@@ -1,14 +1,16 @@
 ---
 order: 110
 tags:
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- stability-model-independent
-- stability-policy-contingent
-- stability-tool-contingent
-- stability-environment-contingent
+- source-owner-preference
+- source-system-contract
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 title: Preferred Libraries and Tools
 ---
 

@@ -1,15 +1,20 @@
 ---
 order: 20
 tags:
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-process-overproduction
+- failure-scope-drift
+- retest-model-reasoning
+- retest-model-alignment
+- retest-policy-change
+- retest-toolchain-change
 title: What Qualifies as a PR
 ---
 

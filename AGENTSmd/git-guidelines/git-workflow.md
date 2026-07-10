@@ -1,16 +1,21 @@
 ---
 order: 20
 tags:
-- purpose-context
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
-- stability-environment-contingent
+- source-owner-context
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- failure-destructive-state-change
+- failure-scope-drift
+- retest-model-reasoning
+- retest-model-alignment
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 title: Git Workflow
 ---
 

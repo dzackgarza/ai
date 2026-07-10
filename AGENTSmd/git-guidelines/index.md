@@ -1,7 +1,8 @@
 ---
 order: 60
 tags:
-- purpose-structure
-- stability-corpus-contingent
+- source-document-structure
+- function-structure
+- retest-corpus-change
 title: Git Guidelines
 ---

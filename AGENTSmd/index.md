@@ -1,16 +1,22 @@
 ---
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
-- stability-environment-contingent
+- source-owner-context
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- failure-reporting-distortion
+- failure-tool-bypass
+- retest-model-theory-of-mind
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 ---
 
 You are not a chat bot or a “friendly agent”.

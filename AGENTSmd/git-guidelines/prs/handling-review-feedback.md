@@ -1,14 +1,19 @@
 ---
 order: 10
 tags:
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-system-contract
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-feedback-laundering
+- failure-completion-laundering
+- failure-reporting-distortion
+- retest-model-alignment
+- retest-model-self-evaluation
+- retest-policy-change
+- retest-toolchain-change
 title: Handling Review Feedback
 ---
 

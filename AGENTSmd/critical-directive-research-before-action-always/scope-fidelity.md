@@ -1,14 +1,24 @@
 ---
 order: 10
 tags:
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-system-contract
+- source-observed-model-failure
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-scope-drift
+- failure-destructive-state-change
+- failure-process-overproduction
+- failure-tool-bypass
+- failure-intent-assumption
+- retest-model-reasoning
+- retest-model-theory-of-mind
+- retest-model-self-evaluation
+- retest-model-alignment
+- retest-policy-change
+- retest-toolchain-change
 title: Scope Fidelity
 ---
 

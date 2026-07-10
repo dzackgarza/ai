@@ -1,13 +1,15 @@
 ---
 order: 10
 tags:
-- purpose-preference
-- purpose-procedure
-- purpose-reference
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-preference
+- source-system-contract
+- function-procedure
+- function-route
+- function-evaluate
+- retest-model-reasoning
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Delegating to Jules
 ---
 

@@ -1,15 +1,22 @@
 ---
 order: 120
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-context
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-define
+- function-constrain
+- function-route
+- function-allocate
+- failure-state-misplacement
+- failure-tool-bypass
+- failure-proof-gaming
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: 'Project Structure: User vs. Agent'
 ---
 

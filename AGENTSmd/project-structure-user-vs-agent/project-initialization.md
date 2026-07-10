@@ -1,15 +1,24 @@
 ---
 order: 5
 tags:
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- function-evaluate
+- failure-process-overproduction
+- failure-premature-action
+- failure-state-misplacement
+- failure-scope-drift
+- retest-model-reasoning
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Project Initialization
 ---
 

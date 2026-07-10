@@ -1,12 +1,13 @@
 ---
 order: 20
 tags:
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- stability-model-independent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-system-contract
+- function-define
+- function-procedure
+- function-route
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Skill Routing Matrix
 ---
 

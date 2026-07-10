@@ -1,16 +1,26 @@
 ---
 order: 7
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-context
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- function-evaluate
+- failure-state-misplacement
+- failure-destructive-state-change
+- failure-context-loss
+- failure-process-overproduction
+- retest-model-reasoning
+- retest-model-alignment
+- retest-model-memory
+- retest-policy-change
+- retest-toolchain-change
 title: Durable State Surfaces
 ---
 

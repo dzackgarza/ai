@@ -1,12 +1,14 @@
 ---
 order: 30
 tags:
-- purpose-preference
-- purpose-procedure
-- purpose-reference
-- stability-model-independent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-preference
+- source-system-contract
+- function-constrain
+- function-procedure
+- function-route
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Monitoring PR Activity
 ---
 

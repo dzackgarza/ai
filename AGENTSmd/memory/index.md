@@ -1,15 +1,19 @@
 ---
 order: 90
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- stability-model-independent
-- stability-policy-contingent
-- stability-tool-contingent
-- stability-environment-contingent
+- source-owner-context
+- source-owner-preference
+- source-system-contract
+- function-orient
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- retest-model-memory
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 title: Memory
 ---
 

@@ -1,12 +1,17 @@
 ---
 order: 10
 tags:
-- purpose-policy
-- purpose-reference
-- purpose-remediation
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-observed-model-failure
+- function-constrain
+- function-route
+- function-evaluate
+- failure-epistemic-overreach
+- failure-proxy-evidence
+- retest-model-reasoning
+- retest-model-self-evaluation
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Prohibited Behaviours (All Are Instances of the Above Category Error)
 ---
 

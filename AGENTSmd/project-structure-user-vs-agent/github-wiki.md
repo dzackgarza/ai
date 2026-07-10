@@ -1,16 +1,25 @@
 ---
 order: 8
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-owner-context
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- function-evaluate
+- failure-state-misplacement
+- failure-process-overproduction
+- failure-proxy-evidence
+- retest-model-reasoning
+- retest-model-self-evaluation
+- retest-model-alignment
+- retest-policy-change
+- retest-toolchain-change
 title: GitHub Wiki
 ---
 

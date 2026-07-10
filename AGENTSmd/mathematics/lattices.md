@@ -1,9 +1,11 @@
 ---
 order: 10
 tags:
-- purpose-context
-- stability-model-independent
-- stability-environment-contingent
+- source-owner-context
+- source-domain-context
+- function-orient
+- function-define
+- retest-environment-change
 title: Lattices
 ---
 

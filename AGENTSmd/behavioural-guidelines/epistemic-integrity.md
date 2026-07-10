@@ -1,13 +1,18 @@
 ---
 order: 30
 tags:
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-epistemic-overreach
+- failure-proxy-evidence
+- retest-model-reasoning
+- retest-model-self-evaluation
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Epistemic Integrity
 ---
 

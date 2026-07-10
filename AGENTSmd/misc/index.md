@@ -1,17 +1,25 @@
 ---
 order: 100
 tags:
-- purpose-context
-- purpose-preference
-- purpose-policy
-- purpose-procedure
-- purpose-reference
-- purpose-remediation
-- stability-model-independent
-- stability-model-contingent
-- stability-policy-contingent
-- stability-tool-contingent
-- stability-environment-contingent
+- source-owner-context
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-constrain
+- function-procedure
+- function-route
+- failure-completion-laundering
+- failure-tool-bypass
+- failure-proof-gaming
+- failure-state-misplacement
+- retest-model-alignment
+- retest-model-self-evaluation
+- retest-model-memory
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 title: Misc
 ---
 
