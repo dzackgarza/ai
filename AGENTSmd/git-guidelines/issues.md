@@ -20,9 +20,11 @@ unless it is truly atomic. Load `plan/references/externalization.md` through `pl
 create or update the story-shaped issue tree, sub-issue edges, blocker dependencies,
 GitHub Milestone scope, and linked PR claim map.
 
-To manage the issue tree and discover traversal order programmatically, use the `itree` tool from `dzackgarza/itree` via `uvx`.
-- `uvx --from git+https://github.com/dzackgarza/itree itree next OWNER/REPO` to find the next open task and its enclosing work unit.
+To manage the issue tree and discover traversal order programmatically, use the `itree` tool from `dzackgarza/itree` via `uvx`. Run `uvx --from git+https://github.com/dzackgarza/itree itree help model` for the full organization model; a work unit is always a leaf (checklist and proof live in its body, never in child issues).
+- `uvx --from git+https://github.com/dzackgarza/itree itree next OWNER/REPO` to find the next open work unit — the single next task, not a task enclosed within one.
 - `uvx --from git+https://github.com/dzackgarza/itree itree doctor OWNER/REPO` to verify the tree structure.
+- `uvx --from git+https://github.com/dzackgarza/itree itree new OWNER/REPO "Title" --under OWNER/REPO#PARENT` to file a new work unit under a grouping issue (omit `--under` to be shown where it fits).
+- `uvx --from git+https://github.com/dzackgarza/itree itree absorb OWNER/REPO#SOURCE --into OWNER/REPO#UNIT` to merge sub-PR content into a work unit verbatim.
 - `uvx --from git+https://github.com/dzackgarza/itree itree attach OWNER/REPO#PARENT OWNER/REPO#CHILD` to attach a child issue.
 - `uvx --from git+https://github.com/dzackgarza/itree itree move OWNER/REPO#CHILD --under OWNER/REPO#PARENT` to reparent or reorder.
 

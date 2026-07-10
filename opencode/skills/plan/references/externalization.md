@@ -41,10 +41,13 @@ The common requirement is that each node says what condition must become true an
 why it matters.
 
 Proof obligations normally belong inside the story/feature issue body as the
-definition of done for that node. Split a proof obligation into a child issue only
-when it is large enough to track, review, or implement independently. Tests,
-checks, review, screenshots, logs, and artifacts are evidence for obligations; they
-are not the obligations themselves.
+definition of done for that node. A work unit is always a leaf: never split its
+proof obligations, sub-tasks, or checklist into child issues (that is the `itree`
+E015 finding). If a piece is genuinely large enough to track, review, and ship as
+its own PR, it is a *separate work unit* filed under a grouping issue — a sibling
+in the tree, never a child of the work unit. Tests, checks, review, screenshots,
+logs, and artifacts are evidence for obligations; they are not the obligations
+themselves.
 
 PRs are not tree leaves. A PR is an implementation transaction against a selected
 issue set. It may claim one issue, several sibling issues, a vertical slice, or an
