@@ -1,11 +1,13 @@
 ---
 order: 10
 tags:
+- purpose-context
 - purpose-preference
 - purpose-policy
 - purpose-procedure
 - purpose-reference
 - purpose-remediation
+- stability-model-independent
 - stability-model-contingent
 - stability-policy-contingent
 - stability-tool-contingent

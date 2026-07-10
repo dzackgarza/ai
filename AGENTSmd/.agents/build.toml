@@ -13,7 +13,7 @@ allowed_tags = [
     "purpose-reference",
     "purpose-remediation",
     "purpose-structure",
-    "stability-timeless",
+    "stability-model-independent",
     "stability-model-contingent",
     "stability-policy-contingent",
     "stability-tool-contingent",

@@ -6,9 +6,10 @@ tags:
 - purpose-policy
 - purpose-procedure
 - purpose-remediation
-- stability-timeless
+- stability-model-independent
 - stability-model-contingent
 - stability-policy-contingent
+- stability-tool-contingent
 title: Review Guidelines
 ---
 

@@ -4,6 +4,7 @@ tags:
 - purpose-preference
 - purpose-procedure
 - purpose-reference
+- stability-model-independent
 - stability-policy-contingent
 - stability-tool-contingent
 title: Monitoring PR Activity

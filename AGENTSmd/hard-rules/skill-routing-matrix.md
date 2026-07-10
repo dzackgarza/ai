@@ -4,8 +4,7 @@ tags:
 - purpose-policy
 - purpose-procedure
 - purpose-reference
-- purpose-remediation
-- stability-model-contingent
+- stability-model-independent
 - stability-policy-contingent
 - stability-tool-contingent
 title: Skill Routing Matrix

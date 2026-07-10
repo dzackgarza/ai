@@ -6,6 +6,7 @@ tags:
 - purpose-policy
 - purpose-procedure
 - purpose-reference
+- stability-model-independent
 - stability-policy-contingent
 - stability-tool-contingent
 - stability-environment-contingent

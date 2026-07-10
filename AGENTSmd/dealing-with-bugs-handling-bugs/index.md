@@ -5,7 +5,7 @@ tags:
 - purpose-procedure
 - purpose-reference
 - purpose-remediation
-- stability-timeless
+- stability-model-independent
 - stability-model-contingent
 - stability-policy-contingent
 - stability-tool-contingent

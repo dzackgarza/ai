@@ -60,16 +60,37 @@ The `tags` list classifies a fragment on two independent, multi-label axes:
   `purpose-reference` routes to skills, tools, commands, or other canonical material;
   `purpose-remediation` counters recurring agent mistakes or misaligned priors; and
   `purpose-structure` marks heading-only fragments.
-- Stability: `stability-timeless` marks durable principles or domain facts;
-  `stability-model-contingent` marks guidance that may become unnecessary as models
-  improve; `stability-policy-contingent` depends on current local workflow doctrine;
+- Stability: `stability-model-independent` marks information that even an arbitrarily
+  capable agent still needs explicitly because it comes from the user, domain, local
+  environment, or chosen system policy. `stability-model-contingent` marks prompting that
+  exists to compensate for current model limitations, misaligned priors, or recurring
+  failure modes and may become unnecessary as models improve.
+  `stability-policy-contingent` depends on current local workflow doctrine;
   `stability-tool-contingent` depends on named tools, commands, or APIs;
   `stability-environment-contingent` depends on current machine or repository facts; and
   `stability-corpus-contingent` depends only on the fragment tree's organization.
 
-Tags are intentionally non-exclusive. A mixed fragment can carry several purpose and
-stability tags—for example, a timeless correctness principle can share a fragment with
-model-contingent remediation and tool-contingent routing.
+`stability-model-independent` does not mean “philosophically true forever.” It means the
+information still has to be communicated to a more capable model. A preferred tool can be
+model-independent while remaining tool-contingent. Conversely, “not found” does not imply
+“does not exist” is a true epistemic principle, but an explicit reminder of that principle
+is model-contingent when it exists to remediate bounded searches and weak inference.
+
+### How to classify fragments
+
+- Read the complete fragment and compare it with related fragments before assigning tags.
+  Never classify from its title, frontmatter, filename, a snippet, or a worker summary.
+- First run the AGI counterfactual: would an arbitrarily capable agent still need this
+  supplied explicitly? User intent, domain conventions, local paths, tool preferences,
+  and chosen ownership boundaries are model-independent. Reminders about object
+  permanence, theory of mind, bounded search, goal preservation, or predictable reasoning
+  failures are model-contingent.
+- Then assign every purpose tag represented by the fragment's complete content.
+- Tags apply to the whole fragment and are intentionally non-exclusive. A fragment mixing
+  owner context with model remediation carries both model-independent and model-contingent
+  tags. If those parts later need independent inclusion or exclusion, split the fragment
+  rather than pretending the metadata is sentence-level.
+
 Every current fragment is classified. The allowed taxonomy and active exclusions live in
 `.agents/build.toml`. Adding a tag to `selection.exclude_tags` omits every whole fragment
 carrying that tag.
