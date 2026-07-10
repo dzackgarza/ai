@@ -1,5 +1,8 @@
 ---
 order: 50
+tags:
+- role-remediation
+- stability-model-contingent
 title: 'Slices and Samples: Why Inference From Small or Non-Random Slices Is Epistemically
   Toxic'
 ---

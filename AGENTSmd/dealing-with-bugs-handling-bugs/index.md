@@ -1,5 +1,8 @@
 ---
 order: 40
+tags:
+- role-remediation
+- stability-model-contingent
 title: Dealing With Bugs / Handling Bugs
 ---
 

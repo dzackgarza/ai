@@ -1,0 +1,14 @@
+# AGENTSmd fragment selection.
+# The normal build includes every fragment. Add tags to exclude for controlled variants.
+
+[selection]
+exclude_tags = []
+
+[taxonomy]
+allowed_tags = [
+  "role-context",
+  "role-preference",
+  "role-remediation",
+  "stability-timeless",
+  "stability-model-contingent",
+]

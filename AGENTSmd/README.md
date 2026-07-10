@@ -42,14 +42,37 @@ Every fragment and every `index.md` (except the root preamble) must declare:
 
 ```yaml
 ---
-title: Hard Rules        # the rendered section heading
-order: 30                # integer; sibling sort key (gaps of 10 leave room)
+title: Hard Rules
+order: 30
+tags:
+  - role-remediation
+  - stability-model-contingent
 ---
 ```
 
-Anything else you add to the frontmatter is preserved and ignored by the build — it is
-the metadata surface for future tooling. Missing `title`/`order`, malformed YAML, or a
-directory without an `index.md` is a hard error: the build fails loudly and names the file.
+`title` supplies the rendered heading, and `order` is the integer sibling sort key.
+The optional `tags` list classifies a fragment on two independent axes:
+
+- Role: `role-context` communicates project or machine facts an agent cannot infer;
+  `role-preference` communicates durable local style, tool, or ownership choices;
+  `role-remediation` communicates guardrails or workflows introduced in response to
+  observed agent mistakes.
+- Stability: `stability-timeless` is independent of current model capability;
+  `stability-model-contingent` may become unnecessary as models improve.
+
+A fragment may carry multiple role tags, but at most one stability tag.
+Classification is incremental: an untagged fragment remains included and is reported as
+untagged rather than being forced into an ambiguous category.
+The allowed taxonomy and active exclusions live in `.agents/build.toml`.
+Adding a tag to `selection.exclude_tags` omits matching fragment bodies.
+If a directory's `index.md` is excluded, the compiler retains its structural heading
+when included descendants still need it.
+
+Every build prints one inclusion or exclusion line per discovered fragment, followed by
+totals.
+Unknown tags, malformed tag lists, invalid config, missing `title`/`order`, malformed
+frontmatter, and directories without an `index.md` are hard errors.
+Other frontmatter keys remain available for future tooling.
 
 ## How it is built
 

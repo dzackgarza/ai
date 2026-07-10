@@ -1,5 +1,8 @@
 ---
 order: 10
+tags:
+- role-remediation
+- stability-model-contingent
 title: Bridge-Burning Policy Router
 ---
 
