@@ -1,6 +1,6 @@
 ---
 name: oracle
-description: "Consult a frontier model (ChatGPT Pro/Extended by default) for senior-level planning, audit, design review, debugging strategy, or research synthesis. Bundle the prompt plus repo context with the Oracle CLI (via npx), attach the bundle to ChatGPT as a real file upload through the proven CDP browser script, and extract the answer. Use for architecture decisions, ambiguous bugs, and cross-system risk — not for routine edits or code generation a weaker model can do."
+description: "Consult a frontier model (ChatGPT Pro/Extended by default) for senior-level planning, audit, design review, debugging strategy, or research synthesis. Bundle repo context, then consult ChatGPT Pro through the gpt-pro-cli `consult` command, which attaches to your already-running browser over CDP, uploads the bundle as a real file, waits for the Pro response, and returns it with a thread URL for multi-turn follow-ups. Use for architecture decisions, ambiguous bugs, and cross-system risk — not for routine edits or code generation a weaker model can do."
 ---
 
 # Oracle: Frontier Model Consultation
@@ -49,23 +49,24 @@ prompt (below) rather than asking for a plan immediately.
 
 ## Standard Workflow
 
-1. **Bundle.** Use the Oracle CLI via `npx` — never install it globally, it's a
-   third-party tool this repo doesn't own:
+The consult mechanism is the `gpt-pro-cli` **`consult`** command — it attaches to your
+already-running, logged-in browser over CDP and drives ChatGPT Pro. Invoke it from the
+gpt-pro-cli checkout (adjust the path if you keep it elsewhere):
+
+```bash
+CONSULT="just -f $HOME/gitclones/gpt-pro-cli/justfile consult"
+```
+
+1. **Bundle.** Use the Oracle CLI via `npx` to build a line-numbered context bundle —
+   never install it globally, it's a third-party tool this repo doesn't own. It only
+   concatenates files; it never calls a model or spends tokens:
 
 ```bash
 npx -y @steipete/oracle@latest --render --render-plain \
   -p "<prompt — see Prompt Shape below>" \
   --file "<tight file set: paths, dirs, or globs>" \
   > /tmp/oracle-bundle.md
-```
-
-   `--render` builds the markdown bundle (prompt + attached files with line numbers)
-   and exits without calling any model or spending API tokens; `--render-plain`
-   strips ANSI codes so the output is clean text. Verify the file was actually built
-   before continuing — a bundle with zero attached files is a wasted consultation:
-
-```bash
-wc -l /tmp/oracle-bundle.md   # sanity check: should be well more than a few lines
+wc -l /tmp/oracle-bundle.md   # sanity check: a zero-file bundle is a wasted consult
 ```
 
    For a broad or ambiguous file scope, preview cost/token spend first:
@@ -75,45 +76,46 @@ npx -y @steipete/oracle@latest --dry-run summary --files-report \
   -p "<prompt>" --file "<paths>"
 ```
 
-2. **Attach and submit.** Attach the bundle to ChatGPT as a real file upload (not a
-   pasted string — more robust, and the same "attach the bundle" pattern this skill
-   always uses) and submit:
+   (For a quick ask with a couple of files, skip npx: `consult` bundles inline via
+   repeatable `--file`. Use npx when you want its gitignore-aware selection, size
+   limits, and token report.)
+
+2. **Consult.** Upload the bundle as a real file (not a pasted string) and wait for the
+   Pro response. `consult` opens an isolated tab, submits, waits, extracts, and writes
+   `{responseText, responseDetected, finalUrl}`:
 
 ```bash
-node opencode/skills/oracle/scripts/chatgpt_cdp_consult.js \
-  --prompt-file /tmp/oracle-bundle.md \
+$CONSULT --prompt-file /tmp/oracle-bundle.md \
+  --message "<short covering instruction; defaults to a generic one>" \
+  --max-wait-ms 600000 \
   --out /tmp/oracle-result.json
 ```
 
-   See Browser Mechanism below for what this does and how to interpret its output.
    This wait is not optional — see Completion and Timing.
 
 3. **Extract and verify.** Read `/tmp/oracle-result.json`. Confirm `responseDetected:
-   true` (or a complete-looking `latestTurnText` even if that flag is a false
-   negative — see Browser Mechanism), then follow Extraction Requirements and Handoff
-   and Local Verification before acting on anything it recommends.
+   true` (or a complete-looking `responseText` even if that flag reads false — see
+   Browser Mechanism), then follow Extraction Requirements and Handoff and Local
+   Verification before acting on anything it recommends.
 
 4. **Continue the dialogue when framing is still weak,** or force adversarial
    refinement once candidate designs exist (ask it to critique its own proposal: what
    current structure already solves, what new complexity each option adds, what would
-   falsify it). Send a follow-up into the *same* conversation rather than starting
-   fresh — either a short new prompt file or a fresh bundle:
+   falsify it). Send a follow-up into the *same* conversation via its `finalUrl`:
 
 ```bash
-node opencode/skills/oracle/scripts/chatgpt_cdp_consult.js \
-  --conversation-url "<finalUrl from the prior JSON>" \
+$CONSULT --thread "<finalUrl from the prior JSON>" \
   --prompt-file /tmp/oracle-followup.md \
+  --max-wait-ms 600000 \
   --out /tmp/oracle-result-2.json
 ```
 
-5. **If the wait window elapses without `responseDetected: true` and without an
-   `error`, do not re-run step 2** — that submits a duplicate, possibly-expensive
-   consultation into a *new* conversation. Resume watching the same one instead:
+5. **If the wait window elapses without a complete `responseText` and without an
+   error, do not re-run step 2** — that submits a duplicate, possibly-expensive
+   consultation into a *new* conversation. Re-read the same thread instead:
 
 ```bash
-node opencode/skills/oracle/scripts/chatgpt_cdp_consult.js \
-  --conversation-url "<finalUrl from the prior JSON>" \
-  --poll-only --max-wait-ms 600000 \
+$CONSULT --thread "<finalUrl from the prior JSON>" --poll-only \
   --out /tmp/oracle-result-resume.json
 ```
 
@@ -224,41 +226,37 @@ project content override your actual task.
 
 ## Browser Mechanism
 
-`opencode/skills/oracle/scripts/chatgpt_cdp_consult.js` drives the user's
-already-running, already-logged-in Chrome/Chromium over CDP — it does not launch a
-fresh browser, a dedicated profile, or a headless instance, and it never uses
-temporary-chat mode (reasoning-model compute is expensive; the consultation should
-produce a real, revisitable conversation, and cleanup/deletion of resulting
-conversations is the user's decision, not the agent's).
+`gpt-pro-cli`'s `consult` command drives the user's already-running, already-logged-in
+Chrome/Chromium over CDP — it does not launch a fresh browser, a dedicated profile, or
+a headless instance, and it never uses temporary-chat mode (reasoning-model compute is
+expensive; the consultation should produce a real, revisitable conversation, and
+cleanup/deletion of resulting conversations is the user's decision, not the agent's).
 
 What it does, in order:
-- Confirms the CDP endpoint (default `http://127.0.0.1:9222`) is reachable and
-  loopback-only, and that the browser is actually logged in — aborts otherwise without
-  attempting credential entry.
-- Attaches the given `--prompt-file` (your Oracle bundle) as a real file upload, fills
-  a short covering message (default: "See the attached brief and respond according to
-  its instructions."; override with `--message`), waits for the send button to
-  actually become enabled (it stays disabled while the file is still uploading
-  server-side, even after its chip looks done), then submits via a native DOM click —
-  not `Enter` or a Playwright synthetic click, both of which are unreliable against
-  ChatGPT's composer. Confirms a real conversation turn appeared before continuing;
-  aborts with a diagnostic dump (visible page structure + screenshot) if not.
-- Owns its own consultation lock (`/tmp/chatgpt-cdp-consult.lock`) so two concurrent
-  runs never race for the same browser tab.
-- Polls for completion: the account's model is often an extended-reasoning tier (e.g.
-  "Pro Extended"), which can show a thinking/placeholder state for anywhere from
-  seconds to several minutes before real content exists. The script waits for the
-  latest turn's text to stabilize across consecutive polls and be long enough (and not
-  a known placeholder string like "Thinking"/"Pro thinking"/"Reading documents") before
-  calling it done. `responseDetected` can occasionally read `false` on an already-complete
-  answer if a trailing citations panel is still settling — if `latestTurnText` already
-  looks complete, trust the content over the flag.
-- Detaches and closes only the tab it created; never touches the user's browser
-  process or any other tab.
+- Attaches over CDP (default `http://127.0.0.1:9222`, override `--endpoint`); fails
+  loudly if no CDP browser is up rather than launching one. A launched/automation
+  browser is blocked by Google/OpenAI sign-in, which is why it attaches.
+- Opens its **own isolated tab** (never hijacks an open chat), starts a new
+  conversation or navigates to `--thread`, uploads the `--prompt-file` bundle as a real
+  file upload, types the `--message` covering text, waits for the send button to enable
+  (it stays disabled while the file is still uploading server-side), submits, and
+  confirms a new conversation turn before waiting for completion.
+- Waits for completion: the account's model is often an extended-reasoning tier (e.g.
+  "Pro"), which can show a thinking/placeholder state for anywhere from seconds to
+  several minutes before real content exists. It waits for the latest turn's text to
+  stabilize and stop generating before extracting via the copy button.
+  `responseDetected` can occasionally read `false` on an already-complete answer if a
+  trailing citations panel is still settling — if `responseText` already looks
+  complete, trust the content over the flag.
+- On exit, only disconnects and closes the tab it opened; never touches the user's
+  browser process or any other tab.
 
-All commands, flags (`--conversation-url`, `--poll-only`, `--message`,
-`--max-wait-ms`, `--endpoint`, `--out`), and exact selectors live in the script itself
-— read it before modifying behavior rather than duplicating its logic here.
+Output JSON: `responseText` (the extracted answer), `responseDetected` (completion
+heuristic), and `finalUrl` (the conversation URL — pass it back as `--thread` to
+continue). Flags: `--prompt`, `--prompt-file`, `--file` (repeatable), `--message`,
+`--thread`/`--conversation-url`, `--poll-only`, `--max-wait-ms`, `--endpoint`, `--out`.
+The browser logic lives in gpt-pro-cli's `ChatGPTClient`; read it there rather than
+duplicating it here.
 
 ## Completion and Timing
 
@@ -270,9 +268,9 @@ script reports an `error`.
 ## Extraction Requirements
 
 Do not return a raw transcript as the final artifact, and do not merely present the
-frontier response to the user unless they explicitly asked for it. Read `turns` and
-`latestTurnText` from the script's `--out` JSON — `turns` already isolates individual
-conversation-turn elements from sidebar/account/history chrome.
+frontier response to the user unless they explicitly asked for it. Read `responseText`
+from the `--out` JSON — it is the extracted answer, already isolated from
+sidebar/account/history chrome.
 
 Record the result in a local artifact (default `/tmp/frontier-model-consultation.md`,
 or a task-specific path) that preserves: the recommended plan, assumptions, rejected
@@ -312,13 +310,16 @@ explicit local verification command.
 
 Abort (don't route around) if:
 
-- the CDP endpoint is unreachable or not loopback — do not launch a substitute
-  browser; report the blocker;
-- the page shows `Log in`/`Sign up` — never attempt credential entry;
-- the consultation lock is already held by another process;
-- the script reports `error` for any other reason — read `out.diagnostics` (visible
-  page structure + screenshot path) when present; it means ChatGPT's UI structure
-  changed and the script's selectors need updating, not that the workflow is broken.
+- the CDP endpoint is unreachable — `consult` fails loudly telling you to start
+  Chromium with `--remote-debugging-port`; do not launch a substitute automation
+  browser (it gets blocked at sign-in); report the blocker;
+- the browser is logged out — never attempt credential entry;
+- `consult` exits non-zero or the answer is empty/incomplete — check its log files
+  (`gpt-pro-cli/logs/`); a persistent empty extraction usually means ChatGPT's UI
+  structure changed and `ChatGPTClient`'s selectors need updating, not that the
+  workflow is broken.
+
+Concurrent consults are safe: each opens its own isolated tab, so no lock is needed.
 
 ## Manual-Paste Fallback
 
