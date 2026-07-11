@@ -206,7 +206,7 @@ The governed milestone-and-ledger route is released. Use the canonical
 [released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
 
 The following raw edit changes an existing issue's assignment to an existing GitHub
-Milestone. It does not create a milestone or ledger and must not substitute for the future
+Milestone. It does not create a milestone or ledger and must not substitute for the released
 governed command above:
 
 ```bash
