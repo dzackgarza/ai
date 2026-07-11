@@ -591,6 +591,7 @@ For a governed repository without a root, create the traversal root before filin
 
 ```bash
 uvx --from git+https://github.com/dzackgarza/itree itree init <owner>/<repo> "<root title>"
+gh issue edit <new-root-issue-number> --repo <owner>/<repo> --add-label "<label>"
 uvx --from git+https://github.com/dzackgarza/itree itree doctor <owner>/<repo>
 ```
 

@@ -450,9 +450,8 @@ To manage the issue tree and discover traversal order programmatically, use the 
 - `uvx --from git+https://github.com/dzackgarza/itree itree move OWNER/REPO#CHILD --under OWNER/REPO#PARENT` to reparent or reorder.
 - `uvx --from git+https://github.com/dzackgarza/itree itree detach OWNER/REPO#PARENT OWNER/REPO#CHILD` to detach a child from its current parent.
 
-For governed milestone-and-ledger creation, use the canonical released route in
-`opencode/skills/git-guidelines/SKILL.md`; do not replace it with a manual governed
-sequence.
+For governed milestone-and-ledger creation, load `git-guidelines` and use its canonical
+released route; do not replace it with a manual governed sequence.
 
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.
 
