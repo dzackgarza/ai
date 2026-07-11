@@ -166,6 +166,7 @@ uvx --from git+https://github.com/dzackgarza/itree \
   itree new owner/repo "<child story or implementation node>" \
   --under owner/repo#42 \
   --body-file issue.md
+gh issue edit <new-issue-number> --repo owner/repo --add-label "<label>"
 uvx --from git+https://github.com/dzackgarza/itree itree attach owner/repo#42 owner/repo#43
 uvx --from git+https://github.com/dzackgarza/itree itree move owner/repo#43 --under owner/repo#42
 uvx --from git+https://github.com/dzackgarza/itree itree detach owner/repo#42 owner/repo#43
@@ -197,6 +198,7 @@ uvx --from git+https://github.com/dzackgarza/itree \
   itree new owner/repo "<blocked work>" \
   --under owner/repo#<grouping-issue> \
   --body-file issue.md
+gh issue edit <new-issue-number> --repo owner/repo --add-label "<label>"
 gh issue edit <new-issue-number> --repo owner/repo --add-blocked-by 41
 ```
 
