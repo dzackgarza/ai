@@ -444,10 +444,17 @@ GitHub Milestone scope, and linked PR claim map.
 To manage the issue tree and discover traversal order programmatically, use the `itree` tool from `dzackgarza/itree` via `uvx`. Run `uvx --from git+https://github.com/dzackgarza/itree itree help model` for the full organization model; a work unit is always a leaf (checklist and proof live in its body, never in child issues).
 - `uvx --from git+https://github.com/dzackgarza/itree itree next OWNER/REPO` to find the next open work unit — the single next task, not a task enclosed within one.
 - `uvx --from git+https://github.com/dzackgarza/itree itree doctor OWNER/REPO` to verify the tree structure.
-- `uvx --from git+https://github.com/dzackgarza/itree itree new OWNER/REPO "Title" --under OWNER/REPO#PARENT` to file a new work unit under a grouping issue (omit `--under` to be shown where it fits).
+- `uvx --from git+https://github.com/dzackgarza/itree itree new OWNER/REPO "Title" --under OWNER/REPO#PARENT` to file a new work unit under a grouping issue (omit `--under` to receive non-mutating placement guidance).
 - `uvx --from git+https://github.com/dzackgarza/itree itree absorb OWNER/REPO#SOURCE --into OWNER/REPO#UNIT` to merge sub-PR content into a work unit verbatim.
 - `uvx --from git+https://github.com/dzackgarza/itree itree attach OWNER/REPO#PARENT OWNER/REPO#CHILD` to attach a child issue.
 - `uvx --from git+https://github.com/dzackgarza/itree itree move OWNER/REPO#CHILD --under OWNER/REPO#PARENT` to reparent or reorder.
+- `uvx --from git+https://github.com/dzackgarza/itree itree detach OWNER/REPO#PARENT OWNER/REPO#CHILD` to detach a child from its current parent.
+
+`itree milestone` is not yet in the published CLI. It is the future contract of
+`dzackgarza/itree#22`: do not invoke or claim its milestone-and-ledger behavior until a
+released immutable command commit is recorded and the released `itree milestone --help`
+surface plus the required real GitHub boundary proof have been reread. Until then, do not
+create a governed milestone-and-ledger pair through an invented manual substitute.
 
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.
 

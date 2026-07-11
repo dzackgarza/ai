@@ -602,28 +602,32 @@ gh issue edit <new-issue-number> --repo <owner>/<repo> --add-label "<label>"
 prints the existing work units and grouping targets plus exact placement commands, and
 exits nonzero. Never reinterpret omission as default-root creation.
 
-Create a new GitHub Milestone and its matching ledger through one governed command:
+`itree milestone` is the future contract of `dzackgarza/itree#22`; it is not currently
+available in the published CLI. Do not run or claim the following milestone-and-ledger
+workflow until a released immutable command commit is recorded and the released CLI/help
+surface and real GitHub boundary proof have been reread:
 
 ```bash
 uvx --from git+https://github.com/dzackgarza/itree \
   itree milestone <owner>/<repo> "<milestone>" \
   --under <owner>/<repo>#<grouping-issue> \
-  --body-file milestone.md \
+  --body-file .pr/MILESTONE_LEDGER.md \
   --issues <owner>/<repo>#<work-unit> ...
 ```
 
-As with `itree new`, omitting `--under` creates nothing, prints placement guidance, and
-exits nonzero. The named parent must be an open grouping issue.
+After that release proof, omitting `--under` creates nothing, prints placement guidance,
+and exits nonzero. The named parent must be an open grouping issue.
 
-Every `--issues` work unit is placed beneath the new ledger in argument order and
-assigned the new GitHub Milestone. The flag never means metadata-only assignment.
+After that release proof, every `--issues` work unit is placed beneath the new ledger in
+argument order and assigned the new GitHub Milestone. The flag never means metadata-only
+assignment.
 
-These multi-write commands are preflighted orchestration, not cross-resource
-transactions. After mutation begins, stop at the first failed GitHub operation. Preserve
-the command's confirmed-complete, confirmed-untouched, and indeterminate-current-operation
-outcomes, then reread live GitHub and `itree` state before recovery. Never infer remote
-state from a lost response, compensate automatically, or present partial state as
-success.
+After that release proof, this multi-write command is preflighted orchestration, not a
+cross-resource transaction. After mutation begins, stop at the first failed GitHub
+operation. Preserve the command's confirmed-complete, confirmed-untouched, and
+indeterminate-current-operation outcomes, then reread live GitHub and `itree` state before
+recovery. Never infer remote state from a lost response, compensate automatically, or
+present partial state as success.
 
 For an explicitly non-`itree`-governed repository, use:
 

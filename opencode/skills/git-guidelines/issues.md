@@ -154,7 +154,7 @@ uvx --from git+https://github.com/dzackgarza/itree \
   --body-file issue.md
 uvx --from git+https://github.com/dzackgarza/itree itree attach owner/repo#42 owner/repo#43
 uvx --from git+https://github.com/dzackgarza/itree itree move owner/repo#43 --under owner/repo#42
-uvx --from git+https://github.com/dzackgarza/itree itree detach owner/repo#43
+uvx --from git+https://github.com/dzackgarza/itree itree detach owner/repo#42 owner/repo#43
 ```
 
 For an explicitly non-`itree`-governed repository, use the raw GitHub mechanics:
@@ -199,28 +199,31 @@ gh issue edit 42 --remove-blocked-by 41 --remove-blocking 44
 Milestones are delivery/progress buckets over issues and PRs. They do not replace the
 issue tree.
 
-In an `itree`-governed repository, create a GitHub Milestone and matching ledger beneath
-an explicit grouping parent:
+`itree milestone` is not currently in the published CLI. It is the future contract of
+`dzackgarza/itree#22`; do not invoke or claim this milestone-and-ledger behavior until a
+released immutable command commit is recorded and the released CLI/help surface plus real
+GitHub boundary proof have been reread:
 
 ```bash
 uvx --from git+https://github.com/dzackgarza/itree \
   itree milestone owner/repo "<milestone>" \
   --under owner/repo#<grouping-issue> \
-  --body-file milestone.md \
+  --body-file .pr/MILESTONE_LEDGER.md \
   --issues owner/repo#42 owner/repo#43
 ```
 
-Omitting `--under` creates nothing, prints placement guidance, and exits nonzero. The
-named parent must be an open grouping issue.
+After that release proof, omitting `--under` creates nothing, prints placement guidance,
+and exits nonzero. The named parent must be an open grouping issue.
 
-Each `--issues` work unit moves beneath the new ledger in argument order and receives the
-new milestone assignment. This is one preflighted orchestration command, not a GitHub
-transaction. After any partial or indeterminate failure, preserve the reported
-confirmed/untouched/indeterminate outcomes and reread live GitHub and `itree` state before
-recovery.
+After that release proof, each `--issues` work unit moves beneath the new ledger in
+argument order and receives the new milestone assignment. This is one preflighted
+orchestration command, not a GitHub transaction. After any partial or indeterminate
+failure, preserve the reported confirmed/untouched/indeterminate outcomes and reread live
+GitHub and `itree` state before recovery.
 
-The following raw edit changes the assignment on an existing issue. It does not create a
-milestone or ledger and must not substitute for the governed command above:
+The following raw edit changes an existing issue's assignment to an existing GitHub
+Milestone. It does not create a milestone or ledger and must not substitute for the future
+governed command above:
 
 ```bash
 gh issue edit 42 --milestone "<milestone>"
@@ -276,7 +279,7 @@ gh issue list --label "wontfix" --json number --jq '.[].number' | \
 | List issues | `gh issue list` | `GET /repos/{o}/{r}/issues` |
 | View issue | `gh issue view N` | `GET /repos/{o}/{r}/issues/N` |
 | Create governed work unit | `itree new ... --under ...` | Owned by `itree` |
-| Create governed milestone and ledger | `itree milestone ... --under ...` | Owned by `itree` |
+| Create future governed milestone and ledger | `itree milestone ... --under ...` after recorded #22 release proof | Owned by `itree` |
 | Create explicitly non-governed issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
 | Add labels | `gh issue edit N --add-label ...` | `POST /repos/{o}/{r}/issues/N/labels` |
 | Assign | `gh issue edit N --add-assignee ...` | `POST /repos/{o}/{r}/issues/N/assignees` |

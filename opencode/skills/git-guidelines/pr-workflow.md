@@ -223,12 +223,16 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`.
 ## 7. Complete Workflow Example
 
 This example assumes the repository is governed by `itree`. For a repository explicitly
-outside `itree` governance, use the raw creation route in `issues.md` instead.
-The `itree milestone` parent must be an open grouping issue; omitting `--under` creates
-nothing and prints placement guidance. The command is preflighted orchestration, not a
-cross-resource transaction. After any partial or indeterminate failure, preserve its
-operation report and reread live GitHub and `itree` state before recovery; do not
-compensate automatically or treat partial state as success.
+outside `itree` governance, use the raw creation route in `issues.md` instead. `itree
+milestone` is a future `dzackgarza/itree#22` command, not a current published command.
+Run the milestone-and-ledger portion below only after recording an immutable released
+command commit and rereading the released CLI/help surface plus real GitHub boundary proof.
+Before that proof, stop rather than inventing a manual governed substitute. After that
+proof, the parent must be an open grouping issue; omitting `--under` creates nothing and
+prints placement guidance. The command is preflighted orchestration, not a cross-resource
+transaction. After any partial or indeterminate failure, preserve its operation report and
+reread live GitHub and `itree` state before recovery; do not compensate automatically or
+treat partial state as success.
 
 ```bash
 # 1. Start from clean main
@@ -241,10 +245,12 @@ git checkout -b fix/login-redirect-bug
 #    Create or update .pr/PR_BODY.md as the issue-linked claim map before implementation
 #    defines its own success criteria. Include Closes only for full claims and Refs for
 #    parents, partial claims, and deferred work.
+mkdir -p .pr
+$EDITOR .pr/MILESTONE_LEDGER.md
 uvx --from git+https://github.com/dzackgarza/itree \
   itree milestone <OWNER>/<REPO> "<milestone>" \
   --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
-  --body "<issue-tree scope>"
+  --body-file .pr/MILESTONE_LEDGER.md
 gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
 git add .pr/PR_BODY.md
 git commit -m "Add PR tracking contract"
