@@ -15,15 +15,10 @@ in issue bodies) is not reconstructable from the CLI commands below.
 ## Setup
 
 ```bash
-if command -v gh &>/dev/null && gh auth status &>/dev/null; then
-  AUTH="gh"
-else
-  AUTH="git"
-  if [ -z "$GITHUB_TOKEN" ]; then
-    if [ -f ~/.hermes/.env ] && grep -q "^GITHUB_TOKEN=" ~/.hermes/.env; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.hermes/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
-    fi
-  fi
+gh auth status
+if [ -z "${GITHUB_TOKEN:-}" ]; then
+  printf '%s\n' 'GITHUB_TOKEN must be configured before using the curl examples below.' >&2
+  exit 1
 fi
 
 REMOTE_URL=$(git remote get-url origin)
@@ -207,8 +202,8 @@ gh issue edit 42 --remove-blocked-by 41 --remove-blocking 44
 Milestones are delivery/progress buckets over issues and PRs. They do not replace the
 issue tree.
 
-The governed milestone-and-ledger route is unavailable until the canonical
-[future milestone-and-ledger gate](SKILL.md#future-milestone-and-ledger-gate) is met.
+The governed milestone-and-ledger route is released. Use the canonical
+[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
 
 The following raw edit changes an existing issue's assignment to an existing GitHub
 Milestone. It does not create a milestone or ledger and must not substitute for the future
@@ -268,7 +263,7 @@ gh issue list --label "wontfix" --json number --jq '.[].number' | \
 | List issues | `gh issue list` | `GET /repos/{o}/{r}/issues` |
 | View issue | `gh issue view N` | `GET /repos/{o}/{r}/issues/N` |
 | Create governed work unit | `itree new ... --under ...` | Owned by `itree` |
-| Create future governed milestone and ledger | [Future milestone-and-ledger gate](SKILL.md#future-milestone-and-ledger-gate) | Owned by `itree` |
+| Create governed milestone and ledger | [Released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route) | Owned by `itree` |
 | Create explicitly non-governed issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
 | Add labels | `gh issue edit N --add-label ...` | `POST /repos/{o}/{r}/issues/N/labels` |
 | Assign | `gh issue edit N --add-assignee ...` | `POST /repos/{o}/{r}/issues/N/assignees` |

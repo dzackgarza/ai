@@ -230,8 +230,8 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`.
 
 This example assumes the repository is governed by `itree` and has an existing open
 grouping parent. For a repository explicitly outside `itree` governance, use the raw
-creation route in `issues.md` instead. Milestone-and-ledger creation remains behind the
-canonical [future milestone-and-ledger gate](SKILL.md#future-milestone-and-ledger-gate).
+creation route in `issues.md` instead. For milestone-and-ledger creation, use the canonical
+[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
 
 ```bash
 # 1. Start from clean main

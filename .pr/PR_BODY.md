@@ -2,8 +2,8 @@
 
 Repositories governed by an `itree` issue tree use the published `itree new` command with
 an explicit parent when creating work units. Although `dzackgarza/itree#22` is closed and
-its implementation PR is merged, the `itree milestone` route is not presented as current
-behavior before an immutable release and its real GitHub boundary proof are available.
+its implementation PR is merged, the released `itree milestone` route is pinned to
+`v0.1.0` for governed milestone-and-ledger creation.
 
 ## Scope
 
@@ -14,7 +14,7 @@ behavior before an immutable release and its real GitHub boundary proof are avai
 
 ## GitHub tracking
 
-- Target work unit: Refs #36.
+- Target work unit: Closes #36.
 - Milestone: `Agent Orchestration & Evaluation Research`.
 - References only:
   - Refs #18
@@ -32,9 +32,12 @@ behavior before an immutable release and its real GitHub boundary proof are avai
     boundary.
   - Ledger body files and returned-ledger placeholders use
     `MILESTONE_LEDGER.md` and `MILESTONE_LEDGER_NUMBER` consistently.
-- [ ] **#36 future milestone-and-ledger behavior**
-  - Evidence required: an immutable release containing the #22 command, a reread of that
-    release's `itree milestone --help`, and real GitHub-boundary proof.
-  - Current evidence: #22 closed and #23 merged at `8044d0b`; the releases endpoint
-    returns no immutable release, and #22's recorded live GitHub-boundary proof remains
-    unchecked. This PR remains draft and references #36 rather than closing it.
+- [x] **#36 released milestone-and-ledger behavior**
+  - Evidence: [v0.1.0](https://github.com/dzackgarza/itree/releases/tag/v0.1.0) is an
+    annotated release tag resolving to `777ef91d9c290a819847db36e878ee6a35b9e528`; its
+    [release workflow](https://github.com/dzackgarza/itree/actions/runs/29152942172)
+    succeeded and attached the source archive and wheel.
+  - Released boundary proof: `uvx --from git+https://github.com/dzackgarza/itree@v0.1.0
+    itree milestone --help` succeeded, and `uvx --from
+    git+https://github.com/dzackgarza/itree@v0.1.0 itree doctor dzackgarza/itree --json`
+    returned `status: ok` with zero errors and warnings against live GitHub.

@@ -619,19 +619,29 @@ gh issue edit <new-issue-number> --repo <owner>/<repo> --add-label "<label>"
 prints the existing work units and grouping targets plus exact placement commands, and
 exits nonzero. Never reinterpret omission as default-root creation.
 
-### Future milestone-and-ledger gate
+### Released milestone-and-ledger route
 
-`itree milestone` is the future contract of `dzackgarza/itree#22`; it is not currently
-available in an immutable published release. Do not invoke it, treat any documented syntax
-as executable, or claim milestone-and-ledger behavior until all three conditions hold:
+`itree milestone` is released in [v0.1.0](https://github.com/dzackgarza/itree/releases/tag/v0.1.0).
+The annotated tag resolves to commit `777ef91d9c290a819847db36e878ee6a35b9e528`; the
+[release workflow](https://github.com/dzackgarza/itree/actions/runs/29152942172) completed
+successfully with the source archive and wheel attached. The released
+`itree milestone --help` surface and `itree doctor dzackgarza/itree --json` live GitHub
+boundary were reread from that tag.
 
-- an immutable release records the command commit;
-- the released `itree milestone --help` surface has been reread; and
-- real GitHub-boundary proof has been reread.
+Pin the release when creating a governed milestone and ledger:
 
-Before that evidence exists, stop rather than creating a manual governed substitute. The
-released help and recorded live proof, not this guidance, become the command contract after
-the gate opens.
+```bash
+uvx --from git+https://github.com/dzackgarza/itree@v0.1.0 \
+  itree milestone <owner>/<repo> "<milestone>" \
+  --under <owner>/<repo>#<grouping-issue> \
+  --body-file .pr/MILESTONE_LEDGER.md \
+  --issues <owner>/<repo>#<work-unit> ...
+```
+
+The released command performs one complete preflight before ordered remote writes. Omitting
+`--under` creates nothing and prints placement guidance. A rejected or indeterminate write
+stops the untouched suffix without rollback; reread live GitHub and `itree` state before
+recovery. Do not replace the command with a manual governed sequence.
 
 For an explicitly non-`itree`-governed repository, use:
 

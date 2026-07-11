@@ -302,9 +302,9 @@ continuing. Use raw GitHub creation only for a repository explicitly outside `it
 governance. Follow the current [initialization and repair route](SKILL.md#filing-issues)
 for the exact `init`, `doctor`, `doctor --explain`, and `triage` commands.
 
-For an `itree`-governed repository, `itree new` is current. The milestone-and-ledger route
-is unavailable until the canonical [future milestone-and-ledger gate](SKILL.md#future-milestone-and-ledger-gate)
-is met. Before then, stop rather than inventing a manual governed substitute.
+For an `itree`-governed repository, `itree new` and the canonical
+[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route) are
+current. Do not replace the released milestone command with a manual governed substitute.
 
 Only for a repository explicitly outside `itree` governance, use the raw GitHub
 sequence:
@@ -723,8 +723,9 @@ whether the tests are tautological.
 ## Minimal shell workflow
 
 This current governed workflow assumes an existing open grouping parent. For milestone and
-ledger creation, first meet the canonical [future milestone-and-ledger gate](SKILL.md#future-milestone-and-ledger-gate).
-For a repository explicitly outside `itree` governance, use the raw GitHub sequence in the
+ledger creation, use the canonical
+[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route). For a
+repository explicitly outside `itree` governance, use the raw GitHub sequence in the
 Required workflow above instead.
 
 ```bash
