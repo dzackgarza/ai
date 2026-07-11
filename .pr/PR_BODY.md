@@ -1,9 +1,9 @@
 ## Intended result
 
 Repositories governed by an `itree` issue tree use the published `itree new` command with
-an explicit parent when creating work units. The future `itree milestone` route is not
-presented as current behavior before `dzackgarza/itree#22` ships an immutable release and
-its real GitHub boundary proof is available.
+an explicit parent when creating work units. Although `dzackgarza/itree#22` is closed and
+its implementation PR is merged, the `itree milestone` route is not presented as current
+behavior before an immutable release and its real GitHub boundary proof are available.
 
 ## Scope
 
@@ -33,14 +33,8 @@ its real GitHub boundary proof is available.
   - Ledger body files and returned-ledger placeholders use
     `MILESTONE_LEDGER.md` and `MILESTONE_LEDGER_NUMBER` consistently.
 - [ ] **#36 future milestone-and-ledger behavior**
-  - `dzackgarza/itree#22` must ship a released immutable command commit.
-  - Record that commit, reread released `itree milestone --help`, and prove the real
-    GitHub boundary before marking this behavior complete or closing #36.
-
-## Evidence
-
-- The published CLI help currently exposes `new`, `attach`, `move`, and `detach`; it does
-  not expose `milestone`.
-- #22 defines the future milestone command and its live-boundary proof obligations; its
-  implementation PR #23 remains draft with an empty checkpoint commit.
-- This PR remains draft and references #36 rather than closing it.
+  - Evidence required: an immutable release containing the #22 command, a reread of that
+    release's `itree milestone --help`, and real GitHub-boundary proof.
+  - Current evidence: #22 closed and #23 merged at `8044d0b`; the releases endpoint
+    returns no immutable release, and #22's recorded live GitHub-boundary proof remains
+    unchecked. This PR remains draft and references #36 rather than closing it.

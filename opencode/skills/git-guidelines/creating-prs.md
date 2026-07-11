@@ -751,9 +751,11 @@ whether the tests are tautological.
 
 ## Minimal shell workflow
 
-A practical sequence for an `itree`-governed repository follows. For a repository
-explicitly outside `itree` governance, use the raw GitHub sequence in the Required
-workflow above instead.
+A future-state sequence for an `itree`-governed repository follows. Do not run or claim
+this milestone-and-ledger workflow until an immutable #22 release is recorded and the
+released CLI/help surface plus real GitHub boundary proof have been reread. For a repository
+explicitly outside `itree` governance, use the raw GitHub sequence in the Required workflow
+above instead.
 
 ```bash
 # 0. externalize the finalized plan into a GitHub issue tree and milestone scope
@@ -762,8 +764,7 @@ $EDITOR .pr/MILESTONE_LEDGER.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/ISSUE_W1.md
 
-# After the recorded #22 release proof, create the milestone ledger under an explicit
-# parent. Before then, stop rather than inventing a manual governed substitute.
+# Create the milestone ledger under an explicit parent.
 uvx --from git+https://github.com/dzackgarza/itree \
   itree milestone <OWNER>/<REPO> "<milestone>" \
   --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
