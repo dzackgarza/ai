@@ -14,22 +14,28 @@ in issue bodies) is not reconstructable from the CLI commands below.
 
 ## Setup
 
-```bash
-if command -v gh &>/dev/null && gh auth status &>/dev/null; then
-  AUTH="gh"
-else
-  AUTH="git"
-  if [ -z "$GITHUB_TOKEN" ]; then
-    if [ -f ~/.hermes/.env ] && grep -q "^GITHUB_TOKEN=" ~/.hermes/.env; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.hermes/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
-    fi
-  fi
-fi
+Derive the repository reference before choosing an invocation route:
 
+```bash
 REMOTE_URL=$(git remote get-url origin)
 OWNER_REPO=$(echo "$REMOTE_URL" | sed -E 's|.*github\.com[:/]||; s|\.git$||')
 OWNER=$(echo "$OWNER_REPO" | cut -d/ -f1)
 REPO=$(echo "$OWNER_REPO" | cut -d/ -f2)
+```
+
+Before using a `gh` example, require an authenticated `gh` session:
+
+```bash
+gh auth status || exit 1
+```
+
+Before using a curl example, require its token:
+
+```bash
+if [ -z "${GITHUB_TOKEN:-}" ]; then
+  printf '%s\n' 'GITHUB_TOKEN must be configured before using the curl examples below.' >&2
+  exit 1
+fi
 ```
 
 * * *
@@ -71,7 +77,34 @@ print(f\"\n{i['body']}\")"
 
 ## 2. Creating Issues
 
-**With gh:**
+Before choosing a creation command, classify the target repository. If it has an `itree`
+root or assigns execution state to `itree`, use the governed route below. If it is not
+explicitly non-governed but has no root, initialize or repair its tree before creating
+public execution state. Use raw GitHub creation only for a repository explicitly outside
+`itree` governance. Follow the current
+[initialization and repair route](SKILL.md#filing-issues) for the exact `init`, `doctor`,
+`doctor --explain`, and `triage` commands.
+
+### `itree`-governed repositories
+
+Create every work unit beneath an explicit grouping parent:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new owner/repo "Login redirect ignores ?next= parameter" \
+  --under owner/repo#<grouping-issue> \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo owner/repo --add-label "bug,backend" --add-assignee "username"
+```
+
+Omitting `--under` creates nothing. The command prints the existing work units and valid
+grouping targets plus exact placement commands, then exits nonzero. Use that output to
+choose a parent; never treat omission as default-root creation.
+
+### Explicitly non-`itree`-governed repositories
+
+**With `gh`:**
+
 ```bash
 gh issue create \
   --title "Login redirect ignores ?next= parameter" \
@@ -80,7 +113,8 @@ gh issue create \
   --assignee "username"
 ```
 
-**Without gh:**
+**Without `gh`:**
+
 ```bash
 curl -s -X POST \
   -H "Authorization: token $GITHUB_TOKEN" \
@@ -124,6 +158,22 @@ Use native sub-issues for tree edges when the repository's GitHub surface suppor
 Do not use labels, title numbering, or dependencies to simulate ordinary parent/child
 order.
 
+For an `itree`-governed repository, create beneath a grouping parent and route later
+placement changes through `itree`:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new owner/repo "<child story or implementation node>" \
+  --under owner/repo#42 \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo owner/repo --add-label "<label>"
+uvx --from git+https://github.com/dzackgarza/itree itree attach owner/repo#42 owner/repo#43
+uvx --from git+https://github.com/dzackgarza/itree itree move owner/repo#43 --under owner/repo#42
+uvx --from git+https://github.com/dzackgarza/itree itree detach owner/repo#42 owner/repo#43
+```
+
+For an explicitly non-`itree`-governed repository, use the raw GitHub mechanics:
+
 ```bash
 # Create a new child issue under a parent.
 gh issue create --title "<child story or implementation node>" --body-file issue.md --parent 42
@@ -140,6 +190,20 @@ gh issue edit 43 --remove-parent
 
 Use dependencies for blockers, not roadmap traversal order.
 
+For an `itree`-governed repository, create the issue under its grouping parent first,
+then add the dependency to the returned issue reference:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new owner/repo "<blocked work>" \
+  --under owner/repo#<grouping-issue> \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo owner/repo --add-label "<label>"
+gh issue edit <new-issue-number> --repo owner/repo --add-blocked-by 41
+```
+
+For an explicitly non-`itree`-governed repository, raw creation remains available:
+
 ```bash
 gh issue create --title "<blocked work>" --body-file issue.md --blocked-by 41
 gh issue edit 42 --add-blocked-by 41 --add-blocking 44
@@ -150,6 +214,13 @@ gh issue edit 42 --remove-blocked-by 41 --remove-blocking 44
 
 Milestones are delivery/progress buckets over issues and PRs. They do not replace the
 issue tree.
+
+The governed milestone-and-ledger route is released. Use the canonical
+[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
+
+The following raw edit changes an existing issue's assignment to an existing GitHub
+Milestone. It does not create a milestone or ledger and must not substitute for the released
+governed command above:
 
 ```bash
 gh issue edit 42 --milestone "<milestone>"
@@ -200,11 +271,13 @@ gh issue list --label "wontfix" --json number --jq '.[].number' | \
 
 ## Quick Reference
 
-| Action | gh | curl endpoint |
+| Action | Command | Direct API endpoint |
 | --- | --- | --- |
 | List issues | `gh issue list` | `GET /repos/{o}/{r}/issues` |
 | View issue | `gh issue view N` | `GET /repos/{o}/{r}/issues/N` |
-| Create issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
+| Create governed work unit | `itree new ... --under ...` | Owned by `itree` |
+| Create governed milestone and ledger | [Released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route) | Owned by `itree` |
+| Create explicitly non-governed issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
 | Add labels | `gh issue edit N --add-label ...` | `POST /repos/{o}/{r}/issues/N/labels` |
 | Assign | `gh issue edit N --add-assignee ...` | `POST /repos/{o}/{r}/issues/N/assignees` |
 | Add sub-issue | `gh issue edit PARENT --add-sub-issue CHILD` | Use GitHub CLI native sub-issue support |

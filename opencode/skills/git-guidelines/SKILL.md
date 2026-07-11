@@ -577,10 +577,79 @@ the durable lesson, but the actionable project gap belongs on GitHub.
 
 ### Filing Issues
 
-**All issues must be labeled immediately upon creation.**
+**All issues must be labeled immediately after creation.**
 
-Use
-`gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"`
+Classify the target repository before creating public execution state:
+
+- If the repository has an `itree` root, or its doctrine assigns execution state to
+  `itree`, use the `itree` creation routes below. Absence of a root is not permission to
+  bypass governance; initialize or repair the tree first.
+- Use raw `gh` or GitHub API creation only when the repository is explicitly outside
+  `itree` governance.
+
+For a governed repository without a root, create the traversal root before filing work:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree itree init <owner>/<repo> "<root title>"
+gh issue edit <new-root-issue-number> --repo <owner>/<repo> --add-label "<label>"
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <owner>/<repo>
+```
+
+When `doctor` reports a diagnostic, read its exact route before mutating state:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <owner>/<repo> --explain <CODE>
+```
+
+When that route identifies an orphan, use `itree triage <owner>/<repo>` to surface one
+candidate and its supported absorb, attach, or close choices. Rerun triage after each
+decision until no orphan remains, then rerun `itree doctor`.
+
+For an `itree`-governed repository, create a work unit beneath an explicit grouping
+parent:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <owner>/<repo> "<title>" \
+  --under <owner>/<repo>#<grouping-issue> \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo <owner>/<repo> --add-label "<label>"
+```
+
+`itree new` without `--under` is a non-mutating placement inquiry. It creates nothing,
+prints the existing work units and grouping targets plus exact placement commands, and
+exits nonzero. Never reinterpret omission as default-root creation.
+
+### Released milestone-and-ledger route
+
+`itree milestone` is released in [v0.1.0](https://github.com/dzackgarza/itree/releases/tag/v0.1.0).
+The annotated tag resolves to commit `777ef91d9c290a819847db36e878ee6a35b9e528`; the
+[release workflow](https://github.com/dzackgarza/itree/actions/runs/29152942172) completed
+successfully with the source archive and wheel attached. The released
+`itree milestone --help` surface and `itree doctor dzackgarza/itree --json` live GitHub
+boundary were reread from that tag.
+
+Pin the release when creating a governed milestone and ledger:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree@v0.1.0 \
+  itree milestone <owner>/<repo> "<milestone>" \
+  --under <owner>/<repo>#<grouping-issue> \
+  --body-file .pr/MILESTONE_LEDGER.md \
+  --issues <owner>/<repo>#<work-unit> ...
+gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <owner>/<repo> --add-label "<label>"
+```
+
+The released command performs one complete preflight before ordered remote writes. Omitting
+`--under` creates nothing and prints placement guidance. A rejected or indeterminate write
+stops the untouched suffix without rollback; reread live GitHub and `itree` state before
+recovery. Do not replace the command with a manual governed sequence.
+
+For an explicitly non-`itree`-governed repository, use:
+
+```bash
+gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"
+```
 
 For roadmap, feature, PRD, or cross-agent planning issues, first load
 `plan/references/externalization.md`. Create story-shaped issue nodes, use native
@@ -615,7 +684,8 @@ into a second live tracker.
 
 **Minimal Issue Template:**
 
-Create a local `.md` file for the body and pass it to `gh issue create --body-file`:
+Create a local `.md` file for the body and pass it to the applicable creation command's
+`--body-file` option:
 
 ```markdown
 # Description

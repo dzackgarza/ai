@@ -38,6 +38,9 @@ git push -u origin HEAD
 # Externalize the finalized plan into a GitHub issue tree and milestone scope first.
 # Prepare .pr/PR_BODY.md as a claim map for the selected issue set or subtree.
 # See creating-prs.md for the admission gate and issue-linked claim-map format.
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 gh pr create \
   --title "feat: add JWT-based user authentication" \
   --body-file .pr/PR_BODY.md \
@@ -54,6 +57,9 @@ Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base d
 **Without gh:**
 ```bash
 BRANCH=$(git branch --show-current)
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 
 jq -n \
   --arg title "feat: add JWT-based user authentication" \
@@ -222,17 +228,24 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`.
 
 ## 7. Complete Workflow Example
 
+This example assumes the repository is governed by `itree` and has an existing open
+grouping parent. For a repository explicitly outside `itree` governance, use the raw
+creation route in `issues.md` instead. For milestone-and-ledger creation, use the canonical
+[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
+
 ```bash
 # 1. Start from clean main
 git checkout main && git pull origin main
 
 # 2. Branch
 git checkout -b fix/login-redirect-bug
-# 3. Externalize the finalized plan into a GitHub issue tree and milestone scope.
-#    Create or update .pr/PR_BODY.md as the issue-linked claim map before implementation
+# 3. Externalize the finalized plan into the existing issue tree beneath an explicit open
+#    grouping parent. Create .pr/PR_BODY.md as the issue-linked claim map before implementation
 #    defines its own success criteria. Include Closes only for full claims and Refs for
 #    parents, partial claims, and deferred work.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 git add .pr/PR_BODY.md
 git commit -m "Add PR tracking contract"
 git push -u origin HEAD
