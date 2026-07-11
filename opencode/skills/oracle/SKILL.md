@@ -76,9 +76,9 @@ npx -y @steipete/oracle@latest --dry-run summary --files-report \
   -p "<prompt>" --file "<paths>"
 ```
 
-   (For a quick ask with a couple of files, skip npx: `consult` bundles inline via
-   repeatable `--file`. Use npx when you want its gitignore-aware selection, size
-   limits, and token report.)
+   (For a quick ask, write the prompt to a small file and pass `--prompt-file` plus any
+   `--file` context directly, skipping npx. Use npx when you want its gitignore-aware
+   selection, size limits, and token report.)
 
 2. **Consult.** Upload the bundle as a real file (not a pasted string) and wait for the
    Pro response. `consult` opens an isolated tab, submits, waits, extracts, and writes
@@ -86,12 +86,15 @@ npx -y @steipete/oracle@latest --dry-run summary --files-report \
 
 ```bash
 $CONSULT --prompt-file /tmp/oracle-bundle.md \
-  --message "<short covering instruction; defaults to a generic one>" \
   --max-wait-ms 600000 \
   --out /tmp/oracle-result.json
 ```
 
-   This wait is not optional — see Completion and Timing.
+   Pass the prompt **only** via `--prompt-file` (a single-token path). The `just consult`
+   recipe forwards arguments unquoted, so free text with spaces or shell metacharacters
+   (parentheses, quotes) must live in the bundle file — never inline as `--prompt` or
+   `--message`. A generic covering message is typed automatically; put the real
+   instructions in the bundle. This wait is not optional — see Completion and Timing.
 
 3. **Extract and verify.** Read `/tmp/oracle-result.json`. Confirm `responseDetected:
    true` (or a complete-looking `responseText` even if that flag reads false — see
