@@ -295,6 +295,12 @@ alternatives, or manually maintained histories of PR-body edits as progress.
 
 For nontrivial non-Jules PRs, use the plan-to-issue-tree sequence first.
 
+Classify the target repository before creating public execution state. If it has an
+`itree` root or assigns execution state to `itree`, use the governed route below. If it is
+not explicitly non-governed but has no root, initialize or repair its tree before
+continuing. Use raw GitHub creation only for a repository explicitly outside `itree`
+governance.
+
 For an `itree`-governed repository, `itree new` is current. `itree milestone` remains the
 future contract of `dzackgarza/itree#22`; do not run or claim the following
 milestone-and-ledger workflow until a released immutable command commit is recorded and

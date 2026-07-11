@@ -71,6 +71,12 @@ print(f\"\n{i['body']}\")"
 
 ## 2. Creating Issues
 
+Before choosing a creation command, classify the target repository. If it has an `itree`
+root or assigns execution state to `itree`, use the governed route below. If it is not
+explicitly non-governed but has no root, initialize or repair its tree before creating
+public execution state. Use raw GitHub creation only for a repository explicitly outside
+`itree` governance.
+
 ### `itree`-governed repositories
 
 Create every work unit beneath an explicit grouping parent:
