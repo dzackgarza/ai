@@ -14,17 +14,28 @@ in issue bodies) is not reconstructable from the CLI commands below.
 
 ## Setup
 
-```bash
-gh auth status || exit 1
-if [ -z "${GITHUB_TOKEN:-}" ]; then
-  printf '%s\n' 'GITHUB_TOKEN must be configured before using the curl examples below.' >&2
-  exit 1
-fi
+Derive the repository reference before choosing an invocation route:
 
+```bash
 REMOTE_URL=$(git remote get-url origin)
 OWNER_REPO=$(echo "$REMOTE_URL" | sed -E 's|.*github\.com[:/]||; s|\.git$||')
 OWNER=$(echo "$OWNER_REPO" | cut -d/ -f1)
 REPO=$(echo "$OWNER_REPO" | cut -d/ -f2)
+```
+
+Before using a `gh` example, require an authenticated `gh` session:
+
+```bash
+gh auth status || exit 1
+```
+
+Before using a curl example, require its token:
+
+```bash
+if [ -z "${GITHUB_TOKEN:-}" ]; then
+  printf '%s\n' 'GITHUB_TOKEN must be configured before using the curl examples below.' >&2
+  exit 1
+fi
 ```
 
 * * *
