@@ -52,10 +52,8 @@ To manage the issue tree and discover traversal order programmatically, use the 
 - `uvx --from git+https://github.com/dzackgarza/itree itree move OWNER/REPO#CHILD --under OWNER/REPO#PARENT` to reparent or reorder.
 - `uvx --from git+https://github.com/dzackgarza/itree itree detach OWNER/REPO#PARENT OWNER/REPO#CHILD` to detach a child from its current parent.
 
-`itree milestone` is not yet in the published CLI. It is the future contract of
-`dzackgarza/itree#22`: do not invoke or claim its milestone-and-ledger behavior until a
-released immutable command commit is recorded and the released `itree milestone --help`
-surface plus the required real GitHub boundary proof have been reread. Until then, do not
-create a governed milestone-and-ledger pair through an invented manual substitute.
+The milestone-and-ledger route is unavailable until the canonical future milestone-and-ledger
+gate in `opencode/skills/git-guidelines/SKILL.md` is met. Until then, do not create a
+governed milestone-and-ledger pair through an invented manual substitute.
 
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.

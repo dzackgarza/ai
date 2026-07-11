@@ -299,47 +299,12 @@ Classify the target repository before creating public execution state. If it has
 `itree` root or assigns execution state to `itree`, use the governed route below. If it is
 not explicitly non-governed but has no root, initialize or repair its tree before
 continuing. Use raw GitHub creation only for a repository explicitly outside `itree`
-governance.
+governance. Follow the current [initialization and repair route](SKILL.md#filing-issues)
+for the exact `init`, `doctor`, `doctor --explain`, and `triage` commands.
 
-For an `itree`-governed repository, `itree new` is current. `itree milestone` remains the
-future contract of `dzackgarza/itree#22`; do not run or claim the following
-milestone-and-ledger workflow until a released immutable command commit is recorded and
-the released CLI/help surface plus real GitHub boundary proof have been reread:
-
-```bash
-# Create the GitHub Milestone and matching ledger under an existing grouping parent.
-# Existing work units supplied with --issues move beneath the ledger in argument order
-# and receive the same GitHub Milestone assignment.
-uvx --from git+https://github.com/dzackgarza/itree \
-  itree milestone <OWNER>/<REPO> "<milestone>" \
-  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
-  --body-file .pr/MILESTONE_LEDGER.md \
-  --issues <OWNER>/<REPO>#<EXISTING_WORK_UNIT> ...
-gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
-
-# Create each additional story or work unit under an explicit grouping issue.
-uvx --from git+https://github.com/dzackgarza/itree \
-  itree new <OWNER>/<REPO> "<story-shaped outcome>" \
-  --under <OWNER>/<REPO>#<MILESTONE_LEDGER_NUMBER> \
-  --body-file .pr/ISSUE_<id>.md
-gh issue edit <NEW_ISSUE_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
-
-# Encode blockers as dependencies, not as roadmap order.
-gh issue edit <ISSUE_NUMBER> --repo <OWNER>/<REPO> --add-blocked-by <BLOCKER_ISSUE_NUMBER>
-
-# Verify tree placement and milestone scope before drafting the PR claim map.
-uvx --from git+https://github.com/dzackgarza/itree itree tree <OWNER>/<REPO>
-uvx --from git+https://github.com/dzackgarza/itree itree doctor <OWNER>/<REPO>
-gh issue view <MILESTONE_LEDGER_NUMBER> --repo <OWNER>/<REPO> --json title,body,url,milestone
-```
-
-Omitting `--under` from current `itree new` is non-mutating placement guidance, never
-default-root creation. After the recorded #22 release proof, the same rule applies to
-`itree milestone`, which is preflighted one-command orchestration rather than a GitHub
-transaction. If a remote write fails, preserve its confirmed-complete,
-confirmed-untouched, and indeterminate-current-operation report and reread live GitHub and
-`itree` state before any recovery action. Do not compensate, silently reuse partial
-objects, or print partial state as success.
+For an `itree`-governed repository, `itree new` is current. The milestone-and-ledger route
+is unavailable until the canonical [future milestone-and-ledger gate](SKILL.md#future-milestone-and-ledger-gate)
+is met. Before then, stop rather than inventing a manual governed substitute.
 
 Only for a repository explicitly outside `itree` governance, use the raw GitHub
 sequence:
@@ -757,33 +722,26 @@ whether the tests are tautological.
 
 ## Minimal shell workflow
 
-A future-state sequence for an `itree`-governed repository follows. Do not run or claim
-this milestone-and-ledger workflow until an immutable #22 release is recorded and the
-released CLI/help surface plus real GitHub boundary proof have been reread. For a repository
-explicitly outside `itree` governance, use the raw GitHub sequence in the Required workflow
-above instead.
+This current governed workflow assumes an existing open grouping parent. For milestone and
+ledger creation, first meet the canonical [future milestone-and-ledger gate](SKILL.md#future-milestone-and-ledger-gate).
+For a repository explicitly outside `itree` governance, use the raw GitHub sequence in the
+Required workflow above instead.
 
 ```bash
-# 0. externalize the finalized plan into a GitHub issue tree and milestone scope
+# 0. externalize the finalized plan into an existing issue tree
 mkdir -p .pr
-$EDITOR .pr/MILESTONE_LEDGER.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/ISSUE_W1.md
 
-# Create the milestone ledger under an explicit parent.
-uvx --from git+https://github.com/dzackgarza/itree \
-  itree milestone <OWNER>/<REPO> "<milestone>" \
-  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
-  --body-file .pr/MILESTONE_LEDGER.md
-gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+# Create each work unit under the existing grouping parent.
 uvx --from git+https://github.com/dzackgarza/itree \
   itree new <OWNER>/<REPO> "<foundation>" \
-  --under <OWNER>/<REPO>#<MILESTONE_LEDGER_NUMBER> \
+  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
   --body-file .pr/ISSUE_F1.md
 gh issue edit <ISSUE_F1_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
 uvx --from git+https://github.com/dzackgarza/itree \
   itree new <OWNER>/<REPO> "<workstream>" \
-  --under <OWNER>/<REPO>#<MILESTONE_LEDGER_NUMBER> \
+  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
   --body-file .pr/ISSUE_W1.md
 gh issue edit <ISSUE_W1_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
 gh issue edit <ISSUE_W1_NUMBER> --repo <OWNER>/<REPO> --add-blocked-by <ISSUE_F1_NUMBER>

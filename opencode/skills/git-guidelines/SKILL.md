@@ -587,6 +587,23 @@ Classify the target repository before creating public execution state:
 - Use raw `gh` or GitHub API creation only when the repository is explicitly outside
   `itree` governance.
 
+For a governed repository without a root, create the traversal root before filing work:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree itree init <owner>/<repo> "<root title>"
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <owner>/<repo>
+```
+
+When `doctor` reports a diagnostic, read its exact route before mutating state:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <owner>/<repo> --explain <CODE>
+```
+
+When that route identifies an orphan, use `itree triage <owner>/<repo>` to surface one
+candidate and its supported absorb, attach, or close choices. Rerun triage after each
+decision until no orphan remains, then rerun `itree doctor`.
+
 For an `itree`-governed repository, create a work unit beneath an explicit grouping
 parent:
 
@@ -602,32 +619,19 @@ gh issue edit <new-issue-number> --repo <owner>/<repo> --add-label "<label>"
 prints the existing work units and grouping targets plus exact placement commands, and
 exits nonzero. Never reinterpret omission as default-root creation.
 
+### Future milestone-and-ledger gate
+
 `itree milestone` is the future contract of `dzackgarza/itree#22`; it is not currently
-available in the published CLI. Do not run or claim the following milestone-and-ledger
-workflow until a released immutable command commit is recorded and the released CLI/help
-surface and real GitHub boundary proof have been reread:
+available in an immutable published release. Do not invoke it, treat any documented syntax
+as executable, or claim milestone-and-ledger behavior until all three conditions hold:
 
-```bash
-uvx --from git+https://github.com/dzackgarza/itree \
-  itree milestone <owner>/<repo> "<milestone>" \
-  --under <owner>/<repo>#<grouping-issue> \
-  --body-file .pr/MILESTONE_LEDGER.md \
-  --issues <owner>/<repo>#<work-unit> ...
-```
+- an immutable release records the command commit;
+- the released `itree milestone --help` surface has been reread; and
+- real GitHub-boundary proof has been reread.
 
-After that release proof, omitting `--under` creates nothing, prints placement guidance,
-and exits nonzero. The named parent must be an open grouping issue.
-
-After that release proof, every `--issues` work unit is placed beneath the new ledger in
-argument order and assigned the new GitHub Milestone. The flag never means metadata-only
-assignment.
-
-After that release proof, this multi-write command is preflighted orchestration, not a
-cross-resource transaction. After mutation begins, stop at the first failed GitHub
-operation. Preserve the command's confirmed-complete, confirmed-untouched, and
-indeterminate-current-operation outcomes, then reread live GitHub and `itree` state before
-recovery. Never infer remote state from a lost response, compensate automatically, or
-present partial state as success.
+Before that evidence exists, stop rather than creating a manual governed substitute. The
+released help and recorded live proof, not this guidance, become the command contract after
+the gate opens.
 
 For an explicitly non-`itree`-governed repository, use:
 
