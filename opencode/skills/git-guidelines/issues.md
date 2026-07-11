@@ -15,7 +15,7 @@ in issue bodies) is not reconstructable from the CLI commands below.
 ## Setup
 
 ```bash
-gh auth status
+gh auth status || exit 1
 if [ -z "${GITHUB_TOKEN:-}" ]; then
   printf '%s\n' 'GITHUB_TOKEN must be configured before using the curl examples below.' >&2
   exit 1
