@@ -637,6 +637,7 @@ uvx --from git+https://github.com/dzackgarza/itree@v0.1.0 \
   --under <owner>/<repo>#<grouping-issue> \
   --body-file .pr/MILESTONE_LEDGER.md \
   --issues <owner>/<repo>#<work-unit> ...
+gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <owner>/<repo> --add-label "<label>"
 ```
 
 The released command performs one complete preflight before ordered remote writes. Omitting
