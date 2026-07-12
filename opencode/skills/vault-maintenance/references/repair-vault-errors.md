@@ -1,13 +1,13 @@
 # Repair Vault Errors
 
-Repair only after inspecting the dirty paths and the failing validation output.
+Repair only after a concrete recovery trigger and after inspecting the paths involved in the failing operation.
 
-1. Classify each dirty path:
+1. Classify each affected path:
 
    - intended memory or plan content from the interrupted operation;
    - generated index, DAG, metadata, or symlink state that should be regenerated;
    - malformed or partial content that must be corrected before commit;
-   - unrelated local debris that must be surfaced as a blocker before proceeding.
+   - unrelated local changes to preserve and exclude from recovery. They block recovery only when the failure or repair must change those exact paths.
 
 2. Fix malformed memory files in their authored Markdown form.
    Preserve frontmatter fields, vault-relative links, and project/global scope directories.
@@ -25,4 +25,4 @@ Repair only after inspecting the dirty paths and the failing validation output.
    Examples include a broken signing agent, invalid vault Git config, or an interrupted index.
    Keep the repair in the vault; do not route around the failure with a different storage location.
 
-If the right repair is unclear, stop with the dirty path list, the inspected diff summary, and the exact failing command.
+If the right repair is unclear, stop with the affected paths, the inspected diff summary, and the exact failing command. Do not treat unrelated worktree state as a reason to block normal memory work.
