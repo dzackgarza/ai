@@ -28,6 +28,11 @@ Route failures by the requested object and proof burden:
 - **Trivial non-behavioral correction:** typos, documentation, metadata, and simple
   configuration mistakes need the smallest direct verification, not a synthetic red-test
   lifecycle.
+- **Agent-guidance source change:** an AGENTS file, prompt, SKILL, directive, or policy
+  prose edit is verified by source semantics and its diff, not by testing interactive
+  model behavior. That behavior is human-owned: models can change and behave differently
+  when evaluated. Use behavioral proof only for a user-scoped bounded automation contract
+  with a real observable boundary.
 - **Behavioral regression or uncertain implementation failure:** reproduce the observed
   failure faithfully before changing implementation, then prove the fix against that
   boundary.

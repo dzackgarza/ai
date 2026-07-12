@@ -31,6 +31,12 @@ Choose the lightest route that can correctly complete the request:
   make the bounded edit, run the smallest relevant verification, and commit directly when
   requested. One-off documentation, metadata, configuration, and data-labeling work
   normally belongs here.
+- **Agent-guidance source change:** edit an AGENTS file, prompt, SKILL, directive, or
+  policy prose as a source change: read the governing source and inspect the semantic
+  diff. Its intended influence on future agents is not a testable behavior claim. Do not
+  create an eval, test, plan, issue, PR, worktree, or public tracking solely for that aim.
+  Automated behavioral proof is appropriate only for a user-scoped bounded automation
+  contract with a real observable boundary.
 - **Substantive implementation:** use task-relevant repository discovery, implementation
   skills, and real-boundary verification. Add broader project checks only when repository
   state can materially affect the implementation.

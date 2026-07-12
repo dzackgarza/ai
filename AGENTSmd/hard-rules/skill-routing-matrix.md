@@ -17,6 +17,7 @@ title: Skill Routing Matrix
 
 | Situation | Load |
 | --- | --- |
+| Agent-guidance source change | `prompt-engineering`, `writing-for-agent-audiences`; inspect source semantics and diff. Do not add behavioral testing or plan/issue/PR machinery unless independently triggered. |
 | Code/tests/QC with a bridge-burning policy concern | `policy-index`, then only the narrower policy skills it routes to |
 | Seeing defaults/fallbacks/mocks/skips/smoke/quarantine/deletion | `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `fixing-slop` |
 | Fixing a slop finding | `fixing-slop` before editing |

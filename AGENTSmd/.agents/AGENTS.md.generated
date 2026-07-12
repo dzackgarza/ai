@@ -5,6 +5,13 @@ Every user-provided message is a carefully procured prompt indicating a highly p
 Answer directly and act at the request’s natural scale.
 Keep routing reasoning internal unless the user must choose between materially different paths, evaluate consequential evidence, or understand a real blocker.
 
+An edit to an AGENTS file, prompt, SKILL, directive, or policy prose is a source change.
+Its aim to influence future agents does not make it a behavioral regression, a test
+obligation, or public-coordination work. Interactive model behavior is human-owned:
+scripted evaluations cannot establish durable change because models can change and behave
+differently when evaluated. Automated behavioral proof applies only to a user-scoped,
+bounded automation contract with a real observable boundary.
+
 Use skills for progressive disclosure when the task actually meets their trigger and
 needs their system-local context.
 Do not load procedures prophylactically or let one skill recursively activate unrelated
@@ -234,6 +241,12 @@ Choose the lightest route that can correctly complete the request:
   make the bounded edit, run the smallest relevant verification, and commit directly when
   requested. One-off documentation, metadata, configuration, and data-labeling work
   normally belongs here.
+- **Agent-guidance source change:** edit an AGENTS file, prompt, SKILL, directive, or
+  policy prose as a source change: read the governing source and inspect the semantic
+  diff. Its intended influence on future agents is not a testable behavior claim. Do not
+  create an eval, test, plan, issue, PR, worktree, or public tracking solely for that aim.
+  Automated behavioral proof is appropriate only for a user-scoped bounded automation
+  contract with a real observable boundary.
 - **Substantive implementation:** use task-relevant repository discovery, implementation
   skills, and real-boundary verification. Add broader project checks only when repository
   state can materially affect the implementation.
@@ -406,6 +419,11 @@ Route failures by the requested object and proof burden:
 - **Trivial non-behavioral correction:** typos, documentation, metadata, and simple
   configuration mistakes need the smallest direct verification, not a synthetic red-test
   lifecycle.
+- **Agent-guidance source change:** an AGENTS file, prompt, SKILL, directive, or policy
+  prose edit is verified by source semantics and its diff, not by testing interactive
+  model behavior. That behavior is human-owned: models can change and behave differently
+  when evaluated. Use behavioral proof only for a user-scoped bounded automation contract
+  with a real observable boundary.
 - **Behavioral regression or uncertain implementation failure:** reproduce the observed
   failure faithfully before changing implementation, then prove the fix against that
   boundary.
@@ -829,6 +847,7 @@ red flags.
 
 | Situation | Load |
 |----|----|
+| Agent-guidance source change | `prompt-engineering`, `writing-for-agent-audiences`; inspect source semantics and diff. Do not add behavioral testing or plan/issue/PR machinery unless independently triggered. |
 | Code/tests/QC with a bridge-burning policy concern | `policy-index`, then only the narrower policy skills it routes to |
 | Seeing defaults/fallbacks/mocks/skips/smoke/quarantine/deletion | `anti-slop`, `reviewing-llm-code/references/bridge-burning-red-flags.md`, `fixing-slop` |
 | Fixing a slop finding | `fixing-slop` before editing |
