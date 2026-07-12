@@ -422,10 +422,17 @@ For behavioral regressions and uncertain implementation failures, load as applic
 
 The required first substantive artifact for a reproducible product regression is a red
 test or reproducer that fails because of the real observed bug.
-Commit the red proof separately when it is a durable regression artifact and hooks permit
-the repository’s documented red/green workflow.
-Do not manufacture tests, commits, or bypasses for documentation, metadata, data-labeling,
-external-environment failures, or corrections whose proof is a direct inspection.
+Commit a durable red proof separately. When the repository’s ordinary hook rejects an
+intentionally failing red proof, use its sanctioned route rather than bypassing the hook:
+
+``` bash
+ai-review-ci red-commit --issue <owning-issue> -m "<message>"
+```
+
+This exception is only for the separately committed, faithful red proof of an actual
+behavioral regression. It does not apply to documentation, prompts, metadata,
+data-labeling, external-environment failures, or corrections whose proof is direct
+inspection. Do not manufacture tests, commits, or bypasses for those changes.
 Mocks, simulations, stubs, and tests that merely assert the absence of a proposed fix
 do not prove the bug.
 
