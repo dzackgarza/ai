@@ -1,26 +1,30 @@
 ---
 name: vault-maintenance
-description: Use when an agent-memory vault has staged or unstaged changes, commit failures, validation failures, or suspected vault corruption.
+description: Use when an agent-memory command has a commit or validation failure, the vault is malformed, or the user explicitly requests vault recovery. Do not trigger on unrelated dirty paths.
 ---
 
 # Vault Maintenance
 
-The vault should be committed at all times.
-Any staged or unstaged vault change outside the currently executing recovery is an ephemeral error state, not ordinary work to preserve on a long-lived branch.
+Use this workflow only after:
 
-Before normal `agent-memory add`, `update`, `delete`, `search`, or `plan` work resumes, read the relevant reference workflow:
+- an `agent-memory` command reports a commit failure;
+- `agent-memory doctor` or `agent-memory plan validate` reports a vault problem; or
+- the user explicitly requests vault repair.
+
+A dirty vault worktree alone is not a recovery condition. Normal `agent-memory` CRUD is path-scoped: preserve unrelated changes and continue normal memory work.
+
+During actual recovery, read the relevant reference workflow:
 
 - [Check Vault State](references/check-vault-state.md)
 - [Repair Vault Errors](references/repair-vault-errors.md)
 - [Commit Vault Work](references/commit-vault-work.md)
 
-## Default Disposition
+## Recovery Disposition
 
-Uncommitted vault state must become one of:
+The observed failure must become one of:
 
 - a validated vault commit;
 - a corrected vault commit after repair;
-- a surfaced blocker with the exact dirty paths and failed validation command.
+- a surfaced blocker when it affects the paths recovery must change.
 
-Do not stash, discard, reset, or silently ignore vault changes.
-Do not continue normal memory work while the vault is dirty unless the active operation itself is the recovery.
+Do not stash, discard, reset, or silently ignore changes involved in the actual failure. Do not treat unrelated dirty paths as a blocker.
