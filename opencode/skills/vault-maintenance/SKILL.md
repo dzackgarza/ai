@@ -11,6 +11,10 @@ Use this workflow only after:
 - `agent-memory doctor` or `agent-memory plan validate` reports a vault problem; or
 - the user explicitly requests vault repair.
 
+## Dispatch
+
+Do not merely report or ignore a recovery trigger: dispatch one dedicated vault-maintenance subagent. It owns inspection, repair, validation, commit, and push of the affected vault paths. Continue unrelated parent work instead of treating that recovery as a blocker.
+
 A dirty vault worktree alone is not a recovery condition. Normal `agent-memory` CRUD is path-scoped: preserve unrelated changes and continue normal memory work.
 
 During actual recovery, read the relevant reference workflow:
@@ -21,10 +25,10 @@ During actual recovery, read the relevant reference workflow:
 
 ## Recovery Disposition
 
-The observed failure must become one of:
+The delegated subagent must leave the observed failure as one of:
 
-- a validated vault commit;
-- a corrected vault commit after repair;
-- a surfaced blocker when it affects the paths recovery must change.
+- a validated, pushed vault commit;
+- a corrected, validated, pushed vault commit after repair; or
+- an escalated exact-path conflict after identifying the competing authored changes.
 
 Do not stash, discard, reset, or silently ignore changes involved in the actual failure. Do not treat unrelated dirty paths as a blocker.

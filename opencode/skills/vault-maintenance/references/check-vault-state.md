@@ -1,6 +1,6 @@
 # Check Vault State
 
-Use this only after a concrete recovery trigger: an `agent-memory` commit or validation failure, or an explicit vault-repair request. A dirty worktree alone does not trigger recovery.
+Use this only after a concrete recovery trigger: an `agent-memory` commit or validation failure, or an explicit vault-repair request. A dirty worktree alone does not trigger recovery. The detecting agent dispatches a dedicated vault-maintenance subagent; that subagent owns this workflow and pushes the completed repair.
 
 1. Identify the vault path from the current repository:
 
@@ -30,4 +30,4 @@ Use this only after a concrete recovery trigger: an `agent-memory` commit or val
    agent-memory plan validate
    ```
 
-Report the affected paths and failing command if these commands cannot run. Preserve unrelated paths; they do not block normal memory work.
+Report the affected paths and failing command to the parent after inspection. Preserve unrelated paths; they do not block normal memory work.
