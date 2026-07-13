@@ -9,8 +9,37 @@ metadata:
 # Webhook Subscriptions
 
 Create dynamic webhook subscriptions so external services (GitHub, GitLab, Stripe,
-CI/CD, IoT sensors, monitoring tools) can trigger Hermes agent runs by POSTing events to
-a URL.
+CI/CD, IoT sensors, monitoring tools) can trigger **new Hermes agent runs** by POSTing
+events to a URL.
+
+## Boundary Contract
+
+`hermes webhook subscribe` creates a route in the Hermes gateway. It does not create a
+GitHub webhook, subscribe another harness, or wake a running Codex, Claude Code, OpenCode,
+or Kilo session. The webhook source must be configured separately to send events to the
+route, and each accepted event starts Hermes-owned work.
+
+Use this skill only when Hermes is the intended event consumer. For a different active
+harness, use that harness's documented inbound-session surface. In particular:
+
+- Claude Code can receive external events in a running session through its Channels
+  feature, after a channel MCP server and public ingress have been configured.
+- Codex CLI has no supported inbound channel for delivering arbitrary external events into
+  a running session. Its lifecycle hooks observe Codex; they do not make Codex listen for
+  GitHub callbacks.
+
+Do not report a route as active PR monitoring until all of the following are proven:
+
+1. The target repository has a GitHub webhook or GitHub App installation subscribed to the
+   required events.
+2. GitHub can reach the public HTTPS endpoint. `localhost` is not a GitHub delivery URL;
+   use a managed ingress or a tunnel when the listener is local.
+3. A real GitHub delivery passes signature validation and reaches the intended route.
+4. The intended Hermes run starts and its configured delivery is observed.
+
+If any part is absent, describe the route only as a local Hermes subscription. Do not say
+that a PR is being watched, that a callback will wake the current agent, or that review
+feedback will be triaged later.
 
 ## Setup (Required First)
 
