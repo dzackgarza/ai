@@ -87,12 +87,20 @@ Clone to a temp directory for safe review:
 terminal(command="REVIEW=$(mktemp -d) && git clone https://github.com/user/repo.git $REVIEW && cd $REVIEW && gh pr checkout 42 && codex review --base origin/main", pty=true)
 ```
 
-### PR Feedback Loop
+### PR Feedback Loop (2026-07-13)
 
-Codex has no native inbound callback session. After requesting review or CI, wait 60–120
-seconds, then re-check the PR through GitHub with `gh pr checks` and the repository’s
-review-feedback scan. Repeat this wait-and-check loop while feedback is pending. Do not
-claim that Codex is listening for a callback.
+As of 2026-07-13, Codex has no native inbound session-wakeup capability. Do not use `at`
+or `task-sched` expecting either to resume a Codex session.
+
+For a short known wait, sleep 60–120 seconds and re-check the PR through GitHub with `gh
+pr checks` and the repository’s review-feedback scan.
+
+For a longer external wait, use a one-off script in a PTY: have it check the PR at a
+reasonable interval, exit immediately when new relevant information arrives, and set a
+finite long-horizon timeout. Codex can go idle while its PTY process runs and resumes when
+that process exits. This is a task-local substitute for a scheduled wakeup, not a
+persistent timer: terminate it when the PR loop ends, and do not claim Codex is listening
+for a callback.
 
 ## Parallel Issue Fixing with Worktrees
 

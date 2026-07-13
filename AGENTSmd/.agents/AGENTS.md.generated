@@ -1072,7 +1072,8 @@ Prefer tool-routing skills over memorized commands:
   `visual-regression-testing`
 - Mathematical research tooling: `lattices`, `sagemath`, `lean4`, `arxiv`,
   `literature-review`
-- Scheduled tasks or reminders: `scheduling-tasks-and-subagents`
+- Persistent recurring tasks: `scheduling-tasks-and-subagents`
+- Harness-specific waits or wakeups: `codex` or `claude-code`, as applicable
 - Delegated paid-model work: ask before using `gemini`, `codex`, `claude`, `qwen`, or
   `jules`; load the matching delegation skill first
 
