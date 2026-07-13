@@ -629,13 +629,20 @@ If any step is blocked, report that blocker as incomplete required work.
 
 ### Monitoring PR Activity
 
-A completed local CLI session is not a PR monitor. Do not say it is listening,
-waiting for feedback, or will resume automatically.
+Use the loop owned by the active harness:
 
-GitHub remains the PR’s source of truth. When a task is explicitly resumed, inspect the
-current reviews, comments, checks, and commits through the repository’s normal GitHub
-surface before acting. A separate local service, event log, or another harness does not
-supply a generic wake-up path for that session.
+- **Claude Code:** use its native Channels capability to deliver a verified GitHub event
+  into the active Claude Code session. Keep that session and its Channel listener running;
+  confirm an actual delivery reaches the session before relying on it.
+- **Codex:** wait 60–120 seconds after requesting review or CI, then re-check the PR through
+  GitHub. Use `gh pr checks` and the repository’s review-feedback scan; repeat the
+  wait-and-check loop while the review is pending. Codex must not claim it is listening
+  for a callback.
+- **Other harnesses:** use their documented native event mechanism when one exists.
+  Otherwise, re-check GitHub explicitly.
+
+GitHub remains the PR’s source of truth. Every returned event or re-check begins with the
+current reviews, comments, checks, and commits before triage.
 
 # Review Guidelines
 

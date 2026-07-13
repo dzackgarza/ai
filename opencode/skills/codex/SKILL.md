@@ -87,6 +87,13 @@ Clone to a temp directory for safe review:
 terminal(command="REVIEW=$(mktemp -d) && git clone https://github.com/user/repo.git $REVIEW && cd $REVIEW && gh pr checkout 42 && codex review --base origin/main", pty=true)
 ```
 
+### PR Feedback Loop
+
+Codex has no native inbound callback session. After requesting review or CI, wait 60–120
+seconds, then re-check the PR through GitHub with `gh pr checks` and the repository’s
+review-feedback scan. Repeat this wait-and-check loop while feedback is pending. Do not
+claim that Codex is listening for a callback.
+
 ## Parallel Issue Fixing with Worktrees
 
 ```

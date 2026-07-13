@@ -526,6 +526,14 @@ Use the keyword “ultrathink” in your prompt for maximum reasoning effort on 
 turn. This triggers the deepest thinking mode regardless of the current `/effort`
 setting.
 
+## PR Feedback Loop
+
+When a Claude Code session owns a PR loop, use Claude Code Channels: its native mechanism
+for delivering an external event into the active session. Keep the session and Channel
+listener running, connect the listener to the repository’s GitHub events, and verify a
+real delivery reaches Claude before treating the loop as event-driven. Re-read the current
+PR reviews, comments, checks, and commits before triage.
+
 ## PR Review Pattern
 
 ### Quick Review (Print Mode)
