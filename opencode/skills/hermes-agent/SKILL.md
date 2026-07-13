@@ -47,8 +47,8 @@ What makes Hermes different:
 - **Profiles** — run multiple independent Hermes instances with isolated configs,
   sessions, skills, and memory.
 
-- **Extensible** — plugins, MCP servers, custom tools, webhook triggers, cron
-  scheduling, and the full Python ecosystem.
+- **Extensible** — plugins, MCP servers, custom tools, cron scheduling, and the
+  full Python ecosystem.
 
 People use Hermes for software development, research, system administration, data
 analysis, content creation, home automation, and anything else that benefits from an AI
@@ -181,7 +181,7 @@ hermes gateway setup        Configure platforms
 
 Supported platforms: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix,
 Mattermost, Home Assistant, DingTalk, Feishu, WeCom, BlueBubbles (iMessage), Weixin
-(WeChat), API Server, Webhooks.
+(WeChat), and API Server.
 Open WebUI connects via the API Server adapter.
 
 Platform docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/
@@ -210,14 +210,6 @@ hermes cron remove ID       Delete a job
 hermes cron status          Scheduler status
 ```
 
-### Webhooks
-
-```
-hermes webhook subscribe N  Create route at /webhooks/<name>
-hermes webhook list         List subscriptions
-hermes webhook remove NAME  Remove a subscription
-hermes webhook test NAME    Send a test POST
-```
 
 ### Profiles
 
