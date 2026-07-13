@@ -193,6 +193,13 @@ Re-check CI status using the commands from Section 4 above.
 
 ## 6. Merging
 
+Before merge, require all mandatory checks to pass and every review finding to have a
+visible disposition. Route only findings that affect the current PR's claim, acceptance or
+proof obligations, required checks, user-visible correctness, hard policy, or PR-caused
+regressions through another remediation cycle. A true localized low-risk maintainability
+finding may instead follow `pr-feedback-triage`'s `Backlogged as minor technical debt`
+route, with a linked batched debt issue and evidence that the PR remains complete.
+
 **With gh:**
 ```bash
 # Squash merge + delete branch

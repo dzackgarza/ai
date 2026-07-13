@@ -130,9 +130,19 @@ any move that makes checks pass by weakening the problem instead of solving it.
 
 ## When Acting on Review Feedback
 
-A positive disposition requires a commit.
+An accepted current-PR disposition requires a commit.
 
 Do not resolve an accepted review comment until the code/proof remediation is committed and the reply cites the commit.
+
+Factual truth alone does not make a finding current-PR work. Before launching the full
+A/B/C remediation cycle, require it to affect the PR's claim, acceptance/proof burden,
+required checks, user-visible correctness, safety/data integrity, hard policy, or a
+regression introduced or worsened by the PR. A localized, low-risk maintainability concern
+outside those obligations may be dispositioned `Backlogged as minor technical debt` only
+when batching is more proportionate and the PR remains complete without it. Link the
+batched GitHub debt issue in an evidence-backed thread reply and resolve without role C or
+a remediation commit. The issue records work that is not part of the current PR; it never
+satisfies or defers work the PR actually owes.
 
 Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed. A thread cannot be resolved on intent or future work.
 

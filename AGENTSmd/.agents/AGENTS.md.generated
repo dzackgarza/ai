@@ -577,6 +577,21 @@ Reviewer comments require explicit disposition and substantive action.
 Do not acknowledge, resolve, hide, or dismiss feedback without either fixing it or
 leaving a visible evidence-backed disposition note.
 
+Before starting an A/B/C remediation cycle, assess current-PR necessity separately from
+factual truth. A true finding requires current-PR remediation when it affects the PR’s
+claimed behavior, acceptance criteria, proof obligations, required checks, user-visible
+correctness, security, safety, data integrity, fail-loud/type/QC integrity, or a regression
+introduced or worsened by the PR.
+
+Use `Backlogged as minor technical debt` only when all of those conditions are absent,
+the concern is localized low-risk maintainability debt, batching it is more proportionate
+than another commit/push/re-review cycle, and the PR remains semantically complete and
+truthful without the change. Append it to an existing work-family debt issue or create one
+through the repository’s issue route; reply on the review thread with the evidence, issue
+link, and why the current PR remains complete, then resolve it without role C or a
+remediation commit. Never use this route to defer a current acceptance criterion or proof
+gap.
+
 ### What Qualifies as a PR
 
 Load `git-guidelines` before opening, updating, reviewing, or merging PRs.
@@ -741,9 +756,19 @@ any move that makes checks pass by weakening the problem instead of solving it.
 
 ### When Acting on Review Feedback
 
-A positive disposition requires a commit.
+An accepted current-PR disposition requires a commit.
 
 Do not resolve an accepted review comment until the code/proof remediation is committed and the reply cites the commit.
+
+Factual truth alone does not make a finding current-PR work. Before launching the full
+A/B/C remediation cycle, require it to affect the PR’s claim, acceptance/proof burden,
+required checks, user-visible correctness, safety/data integrity, hard policy, or a
+regression introduced or worsened by the PR. A localized, low-risk maintainability concern
+outside those obligations may be dispositioned `Backlogged as minor technical debt` only
+when batching is more proportionate and the PR remains complete without it. Link the
+batched GitHub debt issue in an evidence-backed thread reply and resolve without role C or
+a remediation commit. The issue records work that is not part of the current PR; it never
+satisfies or defers work the PR actually owes.
 
 Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed. A thread cannot be resolved on intent or future work.
 
@@ -995,8 +1020,10 @@ throwaway spike does not require a project vault merely because it occurs in a r
 
 When establishing or using project memory, run the agent-memory doctor check:
 `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor`.
-If doctor reports issues that block the requested memory operation, run the
-**vault-maintenance workflow** with `agent-memory` or report the blocker.
+If doctor reports a vault issue relevant to the requested memory operation, dispatch a
+dedicated vault-maintenance subagent. It owns inspection, repair, validation, commit, and
+push of affected vault paths; the parent continues unrelated work rather than treating
+that maintenance as a blocker. A dirty vault worktree alone is not a dispatch trigger.
 Vault defects unrelated to the requested object do not block direct work.
 
 The vault-maintenance workflow includes reconciling harness plan captures into real

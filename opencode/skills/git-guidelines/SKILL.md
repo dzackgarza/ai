@@ -322,8 +322,10 @@ comments in place when new commits land. Open threads stay listed until "Resolve
 Conversation" is clicked. Every item requires disposition — there is no such thing as
 an already-handled item that still appears.
 
-**All checks, warnings, and notices must be resolved before the PR can be accepted.**
-This includes low-severity notices from automated tools.
+**All required checks must pass, and every warning, notice, and review item must receive a
+visible disposition before the PR can be accepted.** A true minor-debt finding may be
+backlogged under the current-PR remediation gate below; it need not manufacture another
+code cycle merely to make the thread disappear.
 
 **Loop until the check clears:**
 ```bash
@@ -399,7 +401,21 @@ If any answer is scanner status, check status, process compliance, or a claim th
 will re-review later, stop.
 That is not judgment.
 
-### Positive disposition requires committed remediation
+### Accepted current-PR disposition requires committed remediation
+
+First decide whether a true finding is current-PR work. It requires the full remediation
+cycle when it affects the PR's claimed behavior, acceptance criteria, proof obligations,
+required checks, user-visible correctness, security, safety, data integrity,
+fail-loud/type/QC integrity, or a regression introduced or worsened by the PR.
+
+Disposition a finding `Backlogged as minor technical debt` only when every substantive
+condition above is absent, the concern is localized low-risk maintainability debt, batching
+it is more proportionate than another commit/push/re-review cycle, and the current PR
+remains complete and truthful without it. Append it to an existing work-family debt issue
+or create one through the owning repository's issue route. Reply on the thread with the
+evidence, issue link, and why the PR remains complete, then resolve it without remediation
+or a commit. This is not `accepted pending fix`; it cannot defer a current acceptance
+criterion or proof gap.
 
 Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review
 thread unless the remediation is already committed.
