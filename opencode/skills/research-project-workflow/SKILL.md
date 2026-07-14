@@ -28,7 +28,7 @@ Skills referenced by the research repo’s `AGENTS.md` (research-state-machine,
 research-project-workflow, research-orchestration, research-proof-auditing,
 research-code-style, research-repo-structure, research-math-boundary,
 research-software-wiring, research-source-acquisition, vinberg-algorithm,
-category-spec-*, git-guidelines, etc.)
+category-spec-*, [[git-guidelines/SKILL|git-guidelines]], etc.)
 live under `.agents/skills/*/` as plain markdown files.
 They are NOT registered Hermes skills — `skill_view(name)` will not find them.
 To load one, read it as a file: `.agents/skills/<name>/SKILL.md`. Likewise, their

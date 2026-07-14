@@ -49,7 +49,7 @@ Type: class_definition
 class LatexBibliography(BaseModel, frozen=True):
 ```
 
-## 3. Structural Queries (AST-Grep)
+## 3. Structural Queries ([[ast-grep/SKILL|AST-Grep]])
 
 Use for finding consistent patterns across many source files.
 

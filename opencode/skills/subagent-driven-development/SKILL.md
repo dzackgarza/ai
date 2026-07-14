@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [delegation, subagent, implementation, workflow, parallel]
-    related_skills: [plan, requesting-code-review, test-driven-development]
+    related_skills: [plan, [[requesting-code-review/SKILL|requesting-code-review]], [[test-driven-development/SKILL|test-driven-development]]]
 ---
 # Subagent-Driven Development
 
@@ -20,13 +20,13 @@ two-stage review.
 high quality, fast iteration.
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 ## When to Use
 
 Use this skill when:
 
-- You have an implementation plan (from plan skill or user requirements)
+- You have an implementation plan (from [[plan/SKILL|plan]] skill or user requirements)
 
 - Tasks are mostly independent
 
@@ -314,7 +314,7 @@ git add -A && git commit -m "feat: complete [feature name] implementation"
 
 ### With plan
 
-This skill EXECUTES plans created by the plan skill:
+This skill EXECUTES plans created by the [[plan/SKILL|plan]] skill:
 
 1. User requirements → plan → implementation plan
 
@@ -332,7 +332,7 @@ Every subagent prompt template must inherit these policies:
 | External errors/tools | [[known-solution-first/SKILL|known-solution-first]] | Public contracts before local probing. |
 | Debugging | [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] | Stderr preservation, surface classification before mutation. |
 
-### With test-driven-development
+### With [[test-driven-development/SKILL|test-driven-development]]
 
 Implementer subagents should follow TDD:
 
@@ -352,16 +352,16 @@ Include TDD instructions in every implementer context.
 Use `uv run pytest tests/` for red/green isolation, but completion proof must be
 `just test` (global QC gate).
 
-### With requesting-code-review
+### With [[requesting-code-review/SKILL|requesting-code-review]]
 
 The two-stage review process IS the code review.
-For final integration review, use the requesting-code-review skill's review dimensions.
+For final integration review, use the [[requesting-code-review/SKILL|requesting-code-review]] skill's review dimensions.
 
-### With systematic-debugging
+### With [[systematic-debugging/SKILL|systematic-debugging]]
 
 If a subagent encounters bugs during implementation:
 
-1. Follow systematic-debugging process
+1. Follow [[systematic-debugging/SKILL|systematic-debugging]] process
 
 2. Find root cause before fixing
 

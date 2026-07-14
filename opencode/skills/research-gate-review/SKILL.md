@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [review, gate-protocol, code-review, mathematical-review, bug-hunting]
-    related_skills: [research-proof-auditing, research-state-machine, requesting-code-review, llm-failure-modes]
+    related_skills: [research-proof-auditing, research-state-machine, [[requesting-code-review/SKILL|requesting-code-review]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
 ---
 # Research Gate Review
 

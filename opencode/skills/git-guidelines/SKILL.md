@@ -548,12 +548,12 @@ gh api repos/<owner>/<repo>/issues/<N>/comments
 
 ### Jules Review Delegation
 
-If the user asks to use Jules for review, load:
-- [jules](file:///home/dzack/ai/opencode/skills/jules/SKILL.md)
+If the user asks to use [[jules/SKILL|Jules]] for review, load:
+- [[jules/SKILL|jules]]
 - [jules/references/anti-slop-report-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md)
-- [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md)
-- [anti-slop](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md)
-- [reviewing-subagent-work](file:///home/dzack/ai/opencode/skills/reviewing-subagent-work/SKILL.md)
+- [[reviewing-llm-code/SKILL|reviewing-llm-code]]
+- [[anti-slop/SKILL|anti-slop]]
+- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]]
 - [[test-guidelines/SKILL|test-guidelines]] if tests/QC/proof surfaces are in scope
 - [[pr-feedback-triage/SKILL|pr-feedback-triage]] if existing review comments are being evaluated
 

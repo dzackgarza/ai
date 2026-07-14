@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [Coding-Agent, Codex, OpenAI, Code-Review, Refactoring]
-    related_skills: [claude-code, hermes-agent]
+    related_skills: [[[claude-code/SKILL|claude-code]], [[hermes-agent/SKILL|hermes-agent]]]
 ---
 # Codex CLI
 

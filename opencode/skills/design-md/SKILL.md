@@ -7,11 +7,11 @@ license: MIT
 metadata:
   hermes:
     tags: [design, design-system, tokens, ui, accessibility, wcag, tailwind, dtcg, google]
-    related_skills: [popular-web-designs, design, excalidraw, architecture-diagram]
+    related_skills: [[[popular-web-designs/SKILL|popular-web-designs]], design, excalidraw, [[architecture-diagram/SKILL|architecture-diagram]]]
 ---
 # DESIGN.md Skill
 
-DESIGN.md is Google’s open spec (Apache-2.0, `google-labs-code/design.md`) for
+[[design/SKILL|DESIGN]].md is Google’s open spec (Apache-2.0, `google-labs-code/design.md`) for
 describing a visual identity to coding agents.
 One file combines:
 

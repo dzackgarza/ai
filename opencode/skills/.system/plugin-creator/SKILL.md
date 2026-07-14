@@ -88,7 +88,7 @@ See `references/installing-and-updating.md` for the expected cachebuster and rei
 - Fills the manifest with the validated schema shape that the ingestion path accepts.
 - Creates or updates `~/.agents/plugins/marketplace.json` when `--with-marketplace` is set.
   - If the marketplace file does not exist yet, seed a personal marketplace root before adding the first plugin entry.
-- `<plugin-name>` is normalized using skill-creator naming rules:
+- `<plugin-name>` is normalized using [[.system/skill-creator/SKILL|skill-creator]] naming rules:
   - `My Plugin` → `my-plugin`
   - `My--Plugin` → `my-plugin`
   - underscores, spaces, and punctuation are converted to `-`

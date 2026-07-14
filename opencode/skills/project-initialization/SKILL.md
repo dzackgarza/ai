@@ -5,7 +5,7 @@ description: >-
   cloning or switching projects for such work, or when requested work needs missing
   project surfaces. Establishes the normal project form:
   git/remote freshness, GitHub public state, durable surface ownership, SDL-MCP
-  registration/indexing, .agents, agent-memory, justfile, ai-review-ci QC/hooks/CI,
+  registration/indexing, .agents, [[agent-memory/SKILL|agent-memory]], justfile, ai-review-ci QC/hooks/CI,
   and task-relevant memory lookup before implementation.
 ---
 
@@ -209,7 +209,7 @@ when it is missing.
   - Codex memories and memory extensions are routed into the vault, while
     `~/.codex/sessions/` and `~/.codex/archived_sessions/` remain normal Codex
     runtime directories outside the vault.
-  - Durable Codex ExecPlan Markdown files resolve to the agent-memory project
+  - Durable Codex ExecPlan Markdown files resolve to the [[agent-memory/SKILL|agent-memory]] project
     plan directory through `PLANS.md`/`AGENTS.md` guidance or a compatibility
     pointer/symlink.
   - Antigravity/`agy` brain artifacts, when used for the project, preserve their

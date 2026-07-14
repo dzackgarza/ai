@@ -513,7 +513,7 @@ For best results:
 - Install Dataview plugin for queries like
   `TABLE tags FROM "entities" WHERE contains(tags, "company")`
 
-If using the Obsidian skill alongside this one, set `OBSIDIAN_VAULT_PATH` to the same
+If using the [[obsidian/SKILL|Obsidian]] skill alongside this one, set `OBSIDIAN_VAULT_PATH` to the same
 directory as the wiki path.
 
 ### Obsidian Headless (servers and headless machines)

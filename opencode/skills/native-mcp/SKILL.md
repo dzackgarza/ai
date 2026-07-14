@@ -80,7 +80,7 @@ You can then use the tools naturally -- just ask the agent to get the current ti
 
 For the local multi-harness setup, do not hand-edit each harness MCP config.
 The canonical configuration source is `~/ai/mcp/mcp-servers.yml`; propagation is handled
-by `~/ai/mcp/sync_mcp_configs.py` through the home justfile recipe:
+by `~/ai/mcp/sync_mcp_configs.py` through the home [[justfile/SKILL|justfile]] recipe:
 
 ```bash
 just --justfile ~/ai/home-justfile install-mcps

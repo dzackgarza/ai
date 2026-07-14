@@ -33,14 +33,14 @@ Rule of thumb:
 
 - **Process + taste, one-off artifact** → design
 
-- **Match a known brand’s look** → popular-web-designs (and let design drive the
+- **Match a known brand’s look** → [[popular-web-designs/SKILL|popular-web-designs]] (and let design drive the
   process)
 
-- **Author the tokens spec itself** → design-md
+- **Author the tokens spec itself** → [[design-md/SKILL|design-md]]
 
 - **Start from a curated aesthetic seed** → typeui-* subskill (fetch, study, adapt)
 
-- **Make something bold and memorable** → anthropic-frontend-design (creative direction)
+- **Make something bold and memorable** → [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] (creative direction)
   \+ design (process)
 
 These compose: use [[popular-web-designs/SKILL|popular-web-designs]] for the visual vocabulary, `design` for how to
@@ -728,7 +728,7 @@ adding them.
 
 When copy is necessary but not final, mark it as draft or placeholder.
 
-## Anti-Slop Rules
+## [[anti-slop/SKILL|Anti-Slop]] Rules
 
 Avoid common AI design sludge:
 

@@ -7,7 +7,7 @@ metadata:
 # Handling Corrections
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 ## Correction Decision Gate
 
@@ -95,7 +95,7 @@ If you notice that corrections are accreting on one artifact — each one answer
 caveat, label, or note — stop patching. That accretion is itself the signal that the
 artifact's frame is contaminated and that an in-context repair will keep reseeding the
 problem. Route to the **Contaminated Artifacts Cannot Be Repaired In Place** protocol in
-[fixing-slop](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md): a fresh agent
+[[fixing-slop/SKILL|fixing-slop]]: a fresh agent
 extracts the real requirements, a separate fresh agent rebuilds greenfield. You, holding
 the correction history, are the wrong context to do that repair.
 

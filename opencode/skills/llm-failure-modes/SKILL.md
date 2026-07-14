@@ -142,11 +142,11 @@ Load the relevant section for your context:
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
   All implementation work influenced by this skill is subject to the
-  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)
+  [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]]
   in `policy-index/SKILL.md` as non-negotiable hard constraints — no runtime defaults,
   fallbacks, mocks, or optional critical dependencies.
 
-- **reviewing-llm-code pattern catalog** →
+- **[[reviewing-llm-code/SKILL|reviewing-llm-code]] pattern catalog** →
   [../reviewing-llm-code/references/pattern-catalog.md](../reviewing-llm-code/references/pattern-catalog.md)
   is the canonical catalog for concrete code, test, QC, and documentation patterns that
   instantiate these failure modes.

@@ -305,6 +305,6 @@ Check that the description:
   a delegation. Covers review loops, checkpointing, verifying B/C-tier output, git
   checkpoint atomic work.
 
-- → **creating-skills/anthropic-best-practices** — Load alongside when choosing subagent
+- → **[[creating-skills/SKILL|creating-skills]]/anthropic-best-practices** — Load alongside when choosing subagent
   description length and structure.
   Covers description field guidelines, 1024-char max constraint.

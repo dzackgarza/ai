@@ -11,8 +11,8 @@ description: >
   Do NOT trigger for: server health checks, HTTP health endpoints, Kubernetes
   liveness/readiness probes, database health, or application uptime. Also do not
   trigger when the user specifically requests only one dimension — use the
-  corresponding focused skill instead (brooks-review / brooks-audit /
-  brooks-debt / brooks-test).
+  corresponding focused skill instead ([[brooks-review/SKILL|brooks-review]] / [[brooks-audit/SKILL|brooks-audit]] /
+  [[brooks-debt/SKILL|brooks-debt]] / [[brooks-test/SKILL|brooks-test]]).
 ---
 
 # Brooks-Lint — Health Dashboard

@@ -1,6 +1,6 @@
 ---
 name: vault-maintenance
-description: Use when an agent-memory vault has staged or unstaged changes, commit failures, validation failures, or suspected vault corruption.
+description: Use when an [[agent-memory/SKILL|agent-memory]] vault has staged or unstaged changes, commit failures, validation failures, or suspected vault corruption.
 ---
 
 # Vault Maintenance

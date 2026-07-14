@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [GitHub, Repository, Git, DevOps, Release]
-    related_skills: [git-guidelines]
+    related_skills: [[[git-guidelines/SKILL|git-guidelines]]]
 ---
 
 > **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].

@@ -231,7 +231,7 @@ def test_weyl_group_order_e8(generator):
 
 ## Non-Negotiable Constraints
 
-All mathematical tests must strictly adhere to the [Test Guidelines](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) and the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md`. Under these rules:
+All mathematical tests must strictly adhere to the [[test-guidelines/SKILL|Test Guidelines]] and the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md`. Under these rules:
 - **No Mocks or Simulations:** Tests must operate on real mathematical objects and structures. MagicMock and other testing stubs are strictly prohibited.
 - **No Masking:** Never skip or xfail tests to bypass failing invariants.
 - **Bridge-Burning Red Flags:** Mathematical tests must not contain any red flags that silence validators or weaken mathematical proof obligations. For a comprehensive catalog of testing-specific and general red flags, see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/runtime-control-flow.md).

@@ -249,7 +249,7 @@ cp -r /tmp/skill-name-extract/* ~/ai/opencode/skills/skill-name/
 ### 5. Verify
 
 For skill validation and quality checks, see
-[creating-skills/SKILL.md](../creating-skills/SKILL.md), which includes a validation
+[[creating-skills/SKILL|creating-skills/SKILL.md]], which includes a validation
 script and workflow.
 
 ## Name Matching

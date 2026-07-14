@@ -5,7 +5,7 @@ description: Use when writing, reviewing, or refactoring code, looking for style
 # Code Patterns and Style
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, hidden partial success, and other validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, hidden partial success, and other validation-evasion pathways.
 
 This is the canonical entry point for code pattern and style guidance. Load it for the
 cross-language rules, then load the language subskill when one exists.
@@ -67,7 +67,7 @@ Read only the relevant reference:
 - `references/comments.md` — when comments are useful and when they are residue.
 - `references/classes.md` — cohesion, SRP, DIP, and class boundaries.
 - `references/objects-and-data.md` — object/data-structure tradeoffs and Law of Demeter.
-- `references/error-handling.md` — legacy clean-code error-handling guidance, subordinate
+- `references/error-handling.md` — legacy [[clean-code/SKILL|clean-code]] error-handling guidance, subordinate
   to fail-loud policy and language subskills.
 - `references/tests.md` — readability of tests, subordinate to [[test-guidelines/SKILL|test-guidelines]].
 - `references/smells-and-heuristics.md` — detailed smell catalog for review sweeps.

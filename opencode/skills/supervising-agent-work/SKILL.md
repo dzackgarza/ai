@@ -100,7 +100,7 @@ When reading the pane:
 ## Independent Review Layer
 
 The observer is the independent reviewer. Do not duplicate the worker's automated
-quality-control loop and call that supervision.
+[[quality-control/SKILL|quality-control]] loop and call that supervision.
 
 Worker layer:
 

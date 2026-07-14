@@ -1,6 +1,6 @@
 ---
 name: python-project-structure
-description: Use when legacy prompts request python-project-structure or older guidance names this skill; redirects Python module-layout work to code-patterns-python.
+description: Use when legacy prompts request python-project-structure or older guidance names this skill; redirects Python module-layout work to [[code-patterns/python/SKILL|code-patterns-python]].
 ---
 # Python Project Structure Redirect
 

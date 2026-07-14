@@ -94,7 +94,7 @@ it’s doing the thing.
 
 > Do not mechanically run through checklists without genuine consideration.
 > That is checklist theater — the exact failure mode described in
-> addressing-shallow-work.
+> [[addressing-shallow-work/SKILL|addressing-shallow-work]].
 
 This fails because: the agent cannot recognize “checklist theater” in itself.
 The warning is addressed to a capacity the agent lacks.

@@ -5,7 +5,7 @@ description: Use when writing, reviewing, or refactoring Python code, looking fo
 # Python Code Patterns
 
 > [!IMPORTANT]
-> All Python code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints: no runtime fallback defaults, no optional critical dependencies, no mock proof, no swallowed errors, no hidden partial success, no broad type escapes.
+> All Python code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints: no runtime fallback defaults, no optional critical dependencies, no mock proof, no swallowed errors, no hidden partial success, no broad type escapes.
 
 Load after [[code-patterns/SKILL|code-patterns]] for Python-specific rules.
 

@@ -1,6 +1,6 @@
 ---
 name: python-patterns
-description: Use when legacy prompts request python-patterns or older guidance names this skill; redirects Python code style and implementation work to code-patterns-python.
+description: Use when legacy prompts request python-patterns or older guidance names this skill; redirects Python code style and implementation work to [[code-patterns/python/SKILL|code-patterns-python]].
 ---
 # Python Patterns Redirect
 

@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [testing, tdd, development, quality, red-green-refactor]
-    related_skills: [systematic-debugging, plan, subagent-driven-development]
+    related_skills: [[[systematic-debugging/SKILL|systematic-debugging]], plan, [[subagent-driven-development/SKILL|subagent-driven-development]]]
 ---
 # Test-Driven Development (TDD)
 
@@ -326,7 +326,7 @@ If you catch yourself doing any of these, delete the code and restart with TDD:
 
 - “This is different because …”
 
-- Violating any of the non-negotiable [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) (e.g. including mocks/fakes in proof paths, using runtime defaults, writing fallback paths, using boolean mode flags in owned APIs).
+- Violating any of the non-negotiable [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] (e.g. including mocks/fakes in proof paths, using runtime defaults, writing fallback paths, using boolean mode flags in owned APIs).
 
 **All of these mean: Delete code.
 Start over with TDD.**
@@ -409,7 +409,7 @@ delegate_task(
 )
 ```
 
-### With systematic-debugging
+### With [[systematic-debugging/SKILL|systematic-debugging]]
 
 Bug found? Write failing test reproducing it.
 Follow TDD cycle. The test proves the fix and prevents regression.
@@ -432,17 +432,17 @@ Never fix bugs without a test.
 
 ## Cross-References
 
-- **llm-failure-modes/testing-failures** → Load alongside during test writing or test
+- **[[llm-failure-modes/SKILL|llm-failure-modes]]/testing-failures** → Load alongside during test writing or test
   review. Catalogs failure patterns agents produce in test code: content-free
   verification, tautological testing, mock-first evasion, tolerance substitution,
   instrumental deception, and the 7-tactic test-cheat escalation ladder.
 
-- **llm-failure-modes/field-observations** → Load alongside during review of test suites
+- **[[llm-failure-modes/SKILL|llm-failure-modes]]/field-observations** → Load alongside during review of test suites
   or CI configuration.
   Catalogs field-observed testing failures: checker removal, test expectation
   modification, and plausible fixture injection.
 
-- **policy-index → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md). For the catalog of assertion constraints, see the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/test-proof-rules.md).
+- **[[policy-index/SKILL|policy-index]] → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md). For the catalog of assertion constraints, see the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/test-proof-rules.md).
 
 ## Final Rule
 

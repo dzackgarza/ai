@@ -124,7 +124,7 @@ Apply the baseline prompt above, plus these explicit review rules:
    - Do not over-index on micro-optimizations, but do flag avoidable orchestration
      complexity that makes the implementation more brittle.
 
-8. **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)) are non-negotiable hard constraints.
+8. **Bridge-Burning Policies** (see [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]]) are non-negotiable hard constraints.
 
    - Any implementation or refactoring suggestion must strictly respect the policies (e.g. no runtime defaults, no fallbacks, no mocks in proof paths, no boolean flags in owned APIs, no optional critical dependencies).
 
@@ -369,7 +369,7 @@ cleaner decomposition.
   box-checking. Provides structural-scrutiny patterns for detecting work that satisfies
   format without satisfying intent.
 
-- **anti-slop → deepening** → Load `references/deepening.md` and
+- **[[anti-slop/SKILL|anti-slop]] → deepening** → Load `references/deepening.md` and
   `references/deepening-vocabulary.md` alongside when identifying pass-through wrappers,
   shallow abstractions, or missed deepening opportunities. The deepening vocabulary gives
   precise language for describing what's wrong (shallow module, pass-through) and what
@@ -382,4 +382,4 @@ cleaner decomposition.
 - [[test-guidelines/SKILL|test-guidelines]] → Load alongside when code-quality issues affect tests, QC, or
   proof surfaces.
 
-- **policy-index → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) are the core criteria for what constitutes a correct, non-evasive implementation. Any code quality review must enforce them as hard, non-negotiable boundaries.
+- **[[policy-index/SKILL|policy-index]] → Bridge-Burning Policies** — The [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] are the core criteria for what constitutes a correct, non-evasive implementation. Any code quality review must enforce them as hard, non-negotiable boundaries.

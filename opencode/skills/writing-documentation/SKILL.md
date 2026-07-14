@@ -11,7 +11,7 @@ debug, or extend the thing being documented.
 This skill is the source of truth for documentation workflow and quality criteria across
 all documentation types. The general workflow, style rules, and OSOT policy below apply to
 every document; the **Writing READMEs** section at the end carries the README-specific
-acceptance contract and anti-slop patterns.
+acceptance contract and [[anti-slop/SKILL|anti-slop]] patterns.
 
 ## Required References
 
@@ -337,10 +337,10 @@ Reject or rewrite a README when:
 - it exposes agent-control machinery, correction history, private ontology, or
   invented institutional structure as if it were product documentation.
 
-### Anti-Slop Rejection Patterns
+### [[anti-slop/SKILL|Anti-Slop]] Rejection Patterns
 
 > [!IMPORTANT]
-> Any code, CLI examples, installation steps, or configuration options documented under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Documented configuration options must represent a complete, fatal configuration regime rather than documenting default values or fallbacks in runtime logic.
+> Any code, CLI examples, installation steps, or configuration options documented under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Documented configuration options must represent a complete, fatal configuration regime rather than documenting default values or fallbacks in runtime logic.
 
 Write READMEs that are honest, specific, and short.
 Every sentence must earn its place.

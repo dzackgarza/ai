@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [debugging, python, pdb, debugpy, breakpoints, dap, post-mortem]
-    related_skills: [systematic-debugging, node-inspect-debugger, debugging-hermes-tui-commands]
+    related_skills: [[[systematic-debugging/SKILL|systematic-debugging]], [[node-inspect-debugger/SKILL|node-inspect-debugger]], [[debugging-hermes-tui-commands/SKILL|debugging-hermes-tui-commands]]]
 ---
 # Python Debugger (pdb + debugpy)
 

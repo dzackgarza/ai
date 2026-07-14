@@ -65,7 +65,7 @@ Look for, as applicable:
 
 - `AGENTS.md`, nested `AGENTS.md`, or `AGENTS.override.md` files.
 
-- Existing `.agents/skills/*` skills, especially model-selection, testing,
+- Existing `.agents/skills/*` skills, especially [[model-selection/SKILL|model-selection]], testing,
   orchestration, maintenance, or logging skills.
 
 - Existing progress logs, runbooks, issue trackers, backlog documents, or planning
@@ -426,9 +426,9 @@ Scientific integrity requires that each trial begins from equivalent conditions.
 
 Run single live trials with the subskill explicitly invoked.
 Prefer weaker, cheaper, or lighter subagents during development unless a local
-model-selection skill says otherwise.
+[[model-selection/SKILL|model-selection]] skill says otherwise.
 Examples include small Codex configurations, free or low-cost OpenRouter models through
-opencode, local/workhorse models, or whatever model-selection guidance the repo already
+opencode, local/workhorse models, or whatever [[model-selection/SKILL|model-selection]] guidance the repo already
 defines. The point is to find behavioral weaknesses before promotion, not to hide them
 with the strongest available model.
 

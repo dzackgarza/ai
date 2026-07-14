@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [PDF, Documents, Research, Arxiv, Text-Extraction, OCR]
-    related_skills: [reading-pdfs, powerpoint]
+    related_skills: [[[reading-pdfs/SKILL|reading-pdfs]], powerpoint]
 ---
 
 # PDF & Document Extraction

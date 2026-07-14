@@ -5,7 +5,7 @@ description: Use when consuming, replying to, resolving, or acting on PR review 
 # PR Feedback Triage
 
 Before acting on PR comments or review feedback, consult the central policy index:
-[policy-index](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md)
+[[policy-index/SKILL|policy-index]]
 
 
 When consuming review feedback from other agents (automated or human), do not treat review comments as automatic chores to be done or automatic blockers. A review comment is a claim to be evaluated, not an order.
@@ -252,7 +252,7 @@ approved remediation spec(s), original task/PR contract, relevant source files,
 and global policies. Split remediation only when context size, ownership
 boundaries, parallelism, or contamination risk justifies it.
 
-The subagent receives the *Remediation Spec*, the *Original task/PR contract*, *relevant source files*, and *global skills/policies* (anti-slop, fixing-slop, test-guidelines, bridge-burning-red-flags, banned-test-shapes, runtime-control-flow-red-flags, quality-control, known-solution-first).
+The subagent receives the *Remediation Spec*, the *Original task/PR contract*, *relevant source files*, and *global skills/policies* ([[anti-slop/SKILL|anti-slop]], [[fixing-slop/SKILL|fixing-slop]], [[test-guidelines/SKILL|test-guidelines]], bridge-burning-red-flags, banned-test-shapes, runtime-control-flow-red-flags, [[quality-control/SKILL|quality-control]], [[known-solution-first/SKILL|known-solution-first]]).
 The subagent must **NOT** receive the exact reviewer wording, suggested patch text, thread-resolution status, the worker’s preferred fix, or “just address this comment” framing.
 
 #### Subagent Prompt Template
@@ -473,7 +473,7 @@ Excluding a TypeScript config/helper file from typechecking, using `expect as an
 They are not "edge cases" in the enterprise-hardening sense. A small generation-token, abort-controller, mounted-state, or request-sequencing fix is aligned when it prevents old async work from overwriting newer user-visible state. The acceptance condition is: small blast radius, no new abstraction stack, preserves observable intended behavior, and prevents a high-probability UI correctness failure.
 
 ### 6. Micro-optimizations are rejected by default
-"Use this faster API," "make this async," "cache this," or "avoid this loop" is not enough. Incorporate only when the change improves objective correctness, removes complexity, fixes a measured/reproduced user-visible problem, or is essentially zero-risk and semantics-preserving. Otherwise, it is generic code-review slop. The anti-slop guidance already says enterprise-grade edge-case handling is wrong for bespoke software and the correct default is happy path plus loud failure.
+"Use this faster API," "make this async," "cache this," or "avoid this loop" is not enough. Incorporate only when the change improves objective correctness, removes complexity, fixes a measured/reproduced user-visible problem, or is essentially zero-risk and semantics-preserving. Otherwise, it is generic code-review slop. The [[anti-slop/SKILL|anti-slop]] guidance already says enterprise-grade edge-case handling is wrong for bespoke software and the correct default is happy path plus loud failure.
 
 ### 7. Security/sandbox comments require semantic-contract classification
 For private, single-user editor-like software, "workspace escape," "path traversal," and "symlink escape" may be generic security framing that conflicts with intended workflows. Do not ask "could this leave a sandbox?" Ask instead: "does the app own a containment invariant, or does it own editor file identity?" If the user expects symlinked notes to be edited correctly, anti-symlink hardening is misaligned unless the app explicitly owns a security boundary.

@@ -112,7 +112,7 @@ references. Context engineering in the prompt is essential.
 **No Jules PR should be accepted without deep review.
 Automated reviews are insufficient.**
 
-### Jules as Asynchronous Anti-Slop Report Scout
+### Jules as Asynchronous [[anti-slop/SKILL|Anti-Slop]] Report Scout
 
 Use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md) when:
 - the user asks Jules to review LLM/agent-produced work,
@@ -122,7 +122,7 @@ Use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/
 
 Do not use this workflow for ordinary bug fixing or feature implementation.
 For implementation, use the PR Contract workflow.
-For anti-slop review, Jules’ deliverable is a JSON report file, not code.
+For [[anti-slop/SKILL|anti-slop]] review, Jules’ deliverable is a JSON report file, not code.
 
 * * *
 
@@ -234,10 +234,10 @@ jules new "Add documentation comments to: $FILES. Include function descriptions,
 jules new "Fix all linting errors in the codebase. Run the linter, identify issues, and fix them while maintaining code functionality."
 ```
 
-### Review PR (Anti-Slop Review)
+### Review PR ([[anti-slop/SKILL|Anti-Slop]] Review)
 
 - For normal review, use [git-guidelines/code-review.md](file:///home/dzack/ai/opencode/skills/git-guidelines/code-review.md);
-- For anti-slop review, use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md).
+- For [[anti-slop/SKILL|anti-slop]] review, use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md).
 
 ## Workflow
 
@@ -361,7 +361,7 @@ cycle, including automated reviewer tracking and feedback piping.
 
 ### Feedback Resolution Principles
 
-Do not treat feedback resolution as a purely mechanical thread-clearing process. Feedback must be understood, accepted or rejected, and made legible to the human maintainer with a visible disposition and evidence (see [git-guidelines](file:///home/dzack/ai/opencode/skills/git-guidelines/SKILL.md) review feedback rule).
+Do not treat feedback resolution as a purely mechanical thread-clearing process. Feedback must be understood, accepted or rejected, and made legible to the human maintainer with a visible disposition and evidence (see [[git-guidelines/SKILL|git-guidelines]] review feedback rule).
 
 ### Matching Jules Sessions to PRs
 
@@ -398,11 +398,11 @@ Workflow:
 ### Sending Review Feedback to Jules
 
 > [!WARNING]
-> **Do not confuse this with anti-slop report review**
+> **Do not confuse this with [[anti-slop/SKILL|anti-slop]] report review**
 >
 > The feedback loop below is for an existing Jules PR being iterated through review.
 >
-> For anti-slop review, do not pipe findings back to Jules for immediate fixing. Jules writes a report. Later PRs address findings from that report after independent triage.
+> For [[anti-slop/SKILL|anti-slop]] review, do not pipe findings back to Jules for immediate fixing. Jules writes a report. Later PRs address findings from that report after independent triage.
 
 Use the `extract_unresolved_issues` module from the [[git-guidelines/SKILL|git-guidelines]] skill to pipe
 unresolved PR review issues back to Jules:
@@ -439,7 +439,7 @@ For the full end-to-end workflow using `improved-jules-cli`:
 
 6. **Send Feedback** — Pipe issues to Jules (see above).
 
-7. **Repeat** steps 3-6 using the following rule: Use Jules for candidate anti-slop report generation only. Do not pipe review comments back to Jules for blind fixing unless a stronger controller has already triaged each comment and written policy-compatible instructions.
+7. **Repeat** steps 3-6 using the following rule: Use Jules for candidate [[anti-slop/SKILL|anti-slop]] report generation only. Do not pipe review comments back to Jules for blind fixing unless a stronger controller has already triaged each comment and written policy-compatible instructions.
 
 8. **Surface** — Present PR link:
    `uvx git+https://github.com/dzackgarza/improved-jules-cli pr SESSION_ID`

@@ -6,10 +6,10 @@ author: Hermes Agent
 license: MIT
 metadata:
   hermes:
-    tags: [skills, authoring, hermes-agent, conventions, skill-md]
-    related_skills: [plan, requesting-code-review]
+    tags: [skills, authoring, [[hermes-agent/SKILL|hermes-agent]], conventions, skill-md]
+    related_skills: [plan, [[requesting-code-review/SKILL|requesting-code-review]]]
 ---
-# Authoring Hermes-Agent Skills (in-repo)
+# Authoring [[hermes-agent/SKILL|Hermes-Agent]] Skills (in-repo)
 
 ## Overview
 
@@ -27,7 +27,7 @@ There are two places a SKILL.md can live:
 
 - User asks you to add a skill “in this branch / repo / commit”
 
-- You’re committing a reusable workflow that should ship with hermes-agent
+- You’re committing a reusable workflow that should ship with [[hermes-agent/SKILL|hermes-agent]]
 
 - You’re editing an existing skill under `/home/bb/hermes-agent/skills/` (use `patch`
   for small edits, `write_file` for rewrites; `skill_manage` still works for patch on

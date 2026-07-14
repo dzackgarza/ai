@@ -154,7 +154,7 @@ Reject if:
   generic wrappers, no-op UI, debug debris, boilerplate, or local patches with no real
   abstraction. Provides the Dependency Inversion Rule and structural analysis frame.
   Reviewing subagent work MUST check compliance with the
-  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)
+  [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]]
   in `policy-index/SKILL.md` — these are non-negotiable hard constraints. Any subagent
   output containing runtime defaults, fallbacks, mocks, or optional critical
   dependencies MUST be rejected.

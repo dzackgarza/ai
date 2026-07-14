@@ -9,7 +9,7 @@ description: >
   "are our layers correct?", "where should this code live?".
   Also triggers for onboarding requests: "explain this codebase to a new developer"
   or "give me a codebase tour" (use onboarding mode).
-  Do NOT trigger for: PR-level code review (use brooks-review) or line-level refactoring
+  Do NOT trigger for: PR-level code review (use [[brooks-review/SKILL|brooks-review]]) or line-level refactoring
   questions — this skill analyzes structural/module-level concerns, not individual functions.
 ---
 

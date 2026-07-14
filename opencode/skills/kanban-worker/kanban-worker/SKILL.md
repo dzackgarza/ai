@@ -6,7 +6,7 @@ platforms: [linux, macos, windows]
 metadata:
   hermes:
     tags: [kanban, multi-agent, collaboration, workflow, pitfalls]
-    related_skills: [kanban-orchestrator]
+    related_skills: [[[kanban-orchestrator/kanban-orchestrator/SKILL|kanban-orchestrator]]]
 ---
 
 # Kanban Worker — Pitfalls and Examples

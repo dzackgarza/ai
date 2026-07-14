@@ -6,7 +6,7 @@ platforms: [linux, macos, windows]
 metadata:
   hermes:
     tags: [kanban, multi-agent, orchestration, routing]
-    related_skills: [kanban-worker]
+    related_skills: [[[kanban-worker/kanban-worker/SKILL|kanban-worker]]]
 ---
 
 # Kanban Orchestrator — Decomposition Playbook

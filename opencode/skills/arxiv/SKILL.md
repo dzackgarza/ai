@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [Research, Arxiv, Papers, Academic, Science, API]
-    related_skills: [ocr-and-documents]
+    related_skills: [[[ocr-and-documents/SKILL|ocr-and-documents]]]
 ---
 # arXiv Research
 

@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [code-review, security, verification, quality, pre-commit, auto-fix]
-    related_skills: [subagent-driven-development, plan, test-driven-development, git-guidelines, llm-failure-modes]
+    related_skills: [[[subagent-driven-development/SKILL|subagent-driven-development]], plan, [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
 ---
 # Pre-Commit Code Verification
 
@@ -26,12 +26,12 @@ Fresh context finds what you miss.
 
 - After completing a task with 2+ file edits in a git repo
 
-- After each task in subagent-driven-development (the two-stage review)
+- After each task in [[subagent-driven-development/SKILL|subagent-driven-development]] (the two-stage review)
 
 **Skip for:** documentation-only changes, pure config tweaks, or when user says “skip
 verification”.
 
-**This skill vs git-guidelines (code-review.md):** This skill verifies YOUR changes before
+**This skill vs [[git-guidelines/SKILL|git-guidelines]] (code-review.md):** This skill verifies YOUR changes before
 committing. [[git-guidelines/SKILL|git-guidelines]] (see `code-review.md`) reviews OTHER people's PRs on GitHub
 with inline comments.
 
@@ -209,7 +209,7 @@ Suggestions (non-blocking): [list]
 
 **Maximum 2 fix-and-reverify cycles.**
 
-If the reviewer finds issues, do not send its raw findings directly to the fixer. The controller must first translate each accepted finding into a first-principles remediation spec (following the spec template in [pr-feedback-triage](file:///home/dzack/ai/opencode/skills/pr-feedback-triage/SKILL.md)) and strip the reviewer's suggested patch wording.
+If the reviewer finds issues, do not send its raw findings directly to the fixer. The controller must first translate each accepted finding into a first-principles remediation spec (following the spec template in [[pr-feedback-triage/SKILL|pr-feedback-triage]]) and strip the reviewer's suggested patch wording.
 
 Spawn a THIRD agent context — not you (the implementer), not the reviewer. It implements the remediation spec:
 

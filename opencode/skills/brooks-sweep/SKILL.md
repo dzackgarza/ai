@@ -10,7 +10,7 @@ description: >
   a single command that both diagnoses and remediates quality problems.
   Do NOT trigger for: read-only audits or health reports where the user only wants
   findings without code changes; single-dimension reviews (use the focused skill
-  instead: brooks-review / brooks-audit / brooks-debt / brooks-test); server health
+  instead: [[brooks-review/SKILL|brooks-review]] / [[brooks-audit/SKILL|brooks-audit]] / [[brooks-debt/SKILL|brooks-debt]] / [[brooks-test/SKILL|brooks-test]]); server health
   checks, HTTP /health endpoints, Kubernetes probes, or application uptime.
 ---
 
