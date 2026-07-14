@@ -1,4 +1,16 @@
+# AI harness installation and repository quality-control recipes.
+#
+# The docs-and-configs profile delegates formatting and link validation to ai-review-ci.
 set fallback := true
+
+# ai-review-ci contract variables consumed by doctor and workflow installers.
+ai_review_ci_schema_version := "1"
+ai_review_ci_profile := "docs-and-configs"
+ai_review_ci_ref := "main"
+ai_review_ci_release_channel := "main"
+ai_review_ci_workflow_template_version := "1"
+ai_review_ci_local_delegation := "global-justfile"
+ai_review_ci_default_branch := "main"
 set script-interpreter := ['uv', 'run', '--script']
 qc-type := "python"
 
@@ -44,10 +56,21 @@ cc_safety_net_home := home / ".cc-safety-net"
 default:
     @just --list
 
+# Validate repository Markdown entrypoints.
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
 
+# Reformat Markdown and structured configuration before commit.
+test-commit:
+    @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-commit
+
+# Validate documentation links before push.
+test-push: test
+    @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-push
+
+# Run local Markdown checks and documentation-link validation in CI.
 test-ci: test
+    @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-ci
 
 # Install all symlinks and environment variables
 install:
@@ -185,6 +208,7 @@ reset-sandbox:
     fi
     {{ repo }}/scripts/scaffold-sandbox.sh
 
+# Run a named OpenCode microagent with additional arguments.
 run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
