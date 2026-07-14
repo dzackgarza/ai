@@ -180,7 +180,7 @@ identity than the specific font face.
 | `framer.md` | Framer | Bold black and blue, motion-first, design-forward |
 | `intercom.md` | Intercom | Friendly blue palette, conversational UI patterns |
 | `miro.md` | Miro | Bright yellow accent, infinite canvas aesthetic |
-| `notion.md` | [[notion/notion/SKILL|Notion]] | Warm minimalism, serif headings, soft surfaces |
+| `notion.md` | Notion | Warm minimalism, serif headings, soft surfaces |
 | `pinterest.md` | Pinterest | Red accent, masonry grid, image-first layout |
 | `webflow.md` | Webflow | Blue-accented, polished marketing site aesthetic |
 
@@ -212,13 +212,13 @@ Match the design to the content:
 
 - **Developer tools / dashboards:** Linear, Vercel, Supabase, Raycast, Sentry
 
-- **Documentation / content sites:** Mintlify, [[notion/notion/SKILL|Notion]], Sanity, MongoDB
+- **Documentation / content sites:** Mintlify, Notion, Sanity, MongoDB
 
 - **Marketing / landing pages:** Stripe, Framer, Apple, SpaceX
 
 - **Dark mode UIs:** Linear, Cursor, ElevenLabs, Warp, Superhuman
 
-- **Light / clean UIs:** Vercel, Stripe, [[notion/notion/SKILL|Notion]], Cal.com, Replicate
+- **Light / clean UIs:** Vercel, Stripe, Notion, Cal.com, Replicate
 
 - **Playful / friendly:** PostHog, Figma, Lovable, Zapier, Miro
 

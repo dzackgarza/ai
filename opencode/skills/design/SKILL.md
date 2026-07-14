@@ -12,7 +12,7 @@ produce variants, define a visual system, and verify a rendered artifact.
 
 **Before starting, check for companion skills.** If the user wants a known brand’s look,
 load [[popular-web-designs/SKILL|popular-web-designs]] alongside this one for ready-to-paste design systems (Stripe,
-Linear, Vercel, [[notion/notion/SKILL|Notion]], etc.). If the deliverable is a formal DESIGN.md token spec file
+Linear, Vercel, Notion, etc.). If the deliverable is a formal DESIGN.md token spec file
 rather than a rendered artifact, use [[design-md/SKILL|design-md]] instead.
 Full decision table below.
 
@@ -24,7 +24,7 @@ Load the right one (or combine them):
 | Skill | What it gives you | Use when the user wants … |
 | --- | --- | --- |
 | **design** (this one) | Design *process and taste* — how to scope a brief, gather context, produce variants, verify a rendered HTML artifact, avoid AI-design slop | a from-scratch designed artifact (landing page, prototype, deck, component lab, motion study) with no specific brand or token system dictated |
-| [[popular-web-designs/SKILL|popular-web-designs]] | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, [[notion/notion/SKILL|Notion]], Airbnb | “make it look like Stripe / Linear / Vercel”, a page styled after a known brand, or a visual starting point pulled from a real product |
+| [[popular-web-designs/SKILL|popular-web-designs]] | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, Notion, Airbnb | “make it look like Stripe / Linear / Vercel”, a page styled after a known brand, or a visual starting point pulled from a real product |
 | [[design-md/SKILL|design-md]] | Google’s DESIGN.md spec format — author/validate/diff/export design-token files, WCAG contrast checking, Tailwind/DTCG export | a formal, persistent, machine-readable design-system *spec file* (tokens + rationale) that lives in a repo and gets consumed by agents over time |
 | **typeui-* subskills** (under this skill) | Curated aesthetic style packs from the TypeUI registry — token-level design system definitions for specific visual languages (Application, Neumorphism, Ant, etc.) | a greenfield design seeded by a specific aesthetic mood — “a dashboard with glass-like panels”, “a tactile shadow-based interface”, “an enterprise CRUD app” — without copying a known brand |
 | [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] (under this skill) | Creative direction methodology from Anthropic — how to commit to a bold aesthetic tone, pick distinctive fonts, avoid generic AI visuals, and make an interface memorable | a frontend that needs to be striking and distinctive — landing page, portfolio, creative tool, or any artifact where generic aesthetics are unacceptable |
