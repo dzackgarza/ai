@@ -1,0 +1,803 @@
+---
+name: subagent-orchestration
+description: Use when managing multiple agents, delegating tasks to subagent contexts,
+  or coordinating multi-step review-driven workflows.
+---
+# Subagent Delegation
+
+This skill provides the unified framework for managing, tracking, and coordinating a
+team of autonomous subagents to execute complex plans with high fidelity.
+
+## Subagent Naming Rule
+
+Do not hardcode or name-drop specific subagent slugs in delegation guidance.
+[[opencode/SKILL|OpenCode]] provides a live list of available subagents and descriptions at runtime.
+
+Always select by capability class from the live list (for example: implementation,
+research, spec-review, quality-review, audit) rather than assuming fixed names.
+
+## Reference Skills
+
+- [[prompt-engineering/SKILL|prompt-engineering]] — REQUIRED: Use for all subagent instruction design.
+
+- [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] — REQUIRED: Use for task calibration and delegation
+  decisions.
+
+- [[opencode-cli/SKILL|opencode-cli]] — Use for [[opencode/SKILL|OpenCode]] manager command forms when session inspection is
+  part of delegation review.
+
+- [[reading-transcripts/SKILL|reading-transcripts]] — Use when transcript review crosses harnesses; for [[opencode/SKILL|OpenCode]]
+  it delegates to `ocm transcript`.
+
+* * *
+
+## 0. When to Use Subagent Delegation
+
+Subagents are a **context management and token optimization tool** — not a convenience
+for trivial tasks. Use judiciously.
+
+**For detailed difficulty calibration, see [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] skill.**
+That skill provides the multi-factor model for deciding when subagent delegation is
+worth the overhead.
+
+### ✅ Use Subagents For:
+
+| Scenario | Example | Why |
+| --- | --- | --- |
+| **Coordinator/Orchestrator Role** | Main agent is planning a multi-component feature; delegates implementation of individual components | Keeps main agent focused on architecture, integration, and review |
+| **Heavy Token Exploration** | “Find all log files mentioning error X in the past week, extract relevant lines, summarize patterns” | Subagent burns tokens exploring; main agent reviews concise findings |
+| **Tangential Tasks** | Main task: fix authentication bug. Tangential: “check if similar issues exist in other auth-related files” | Prevents context pollution in main task |
+| **Open-Ended → Narrowed** | “Explore the codebase to find where rate limiting is implemented, then list the top 3 candidate files” | Subagent does broad exploration; main agent gets targeted answer |
+| **Parallelizable Work** | “Fix linting errors in these 5 unrelated modules” | Dispatch 2-3 subagents for independent modules; review sequentially |
+| **Review/Audit Work** | “Review this PR for security issues” or “Audit session XYZ for task-drift” | Fresh context catches what main agent might miss |
+
+**Token Economics:**
+
+```
+Main agent context: 100K tokens (precious, long-running)
+├── Task A: 30K tokens (exploration)
+├── Task B: 25K tokens (log parsing)
+└── Task C: 20K tokens (tangential research)
+
+Without subagents: Main context = 175K tokens (polluted, expensive)
+With subagents:    Main context = 100K + review summaries (~5K)
+                   Subagent contexts: 75K (isolated, disposable)
+```
+
+### ❌ Do NOT Use Subagents For:
+
+| Task | Why Not | Do Instead |
+| --- | --- | --- |
+| Fetch a single website | Startup cost > task cost | Use `web_fetch` directly |
+| Run a program/command | No token savings, adds latency | Use `run_shell_command` directly |
+| Read a known file path | Trivial, no exploration needed | Use `read_file` directly |
+| Simple search (grep) | Overhead exceeds value | Use `grep_search` directly |
+| Trivial tasks (low token, low complexity) | Subagent startup = system prompt + instructions + orientation + your prompt | Do it yourself |
+| Tasks requiring main agent’s full context | Subagent won’t have the context | Keep in main thread |
+
+**Subagent Startup Costs:**
+
+- System prompt (~5-10K tokens)
+
+- Subagent instructions/skills (~5-10K tokens)
+
+- Your detailed prompt (~2-5K tokens)
+
+- Self-orientation/exploration (~10-50K tokens for complex tasks)
+
+- **Total overhead: 20-75K tokens before doing useful work**
+
+**Break-even**: Subagent is worth it when task would burn >100K tokens in main context
+OR severely pollute working context.
+
+### Decision Factors (Non-Exhaustive)
+
+Task difficulty is a **weighted combination of multiple factors** — no single metric
+suffices. See [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] for the full model.
+
+**Key factors:**
+
+- **Atomic step count**: Number of discrete tool calls (batched operations like glob
+  count as 1)
+
+- **Token estimate**: Total tokens consumed (input + output)
+
+- **Reasoning complexity**: How much inference/logic per operation
+
+- **P(success) per step**: Probability each step produces correct output
+
+- **P(success) for sequence**: Compound probability for multi-step tasks
+
+- **Context pollution**: How much irrelevant info enters working context
+
+- **Verification cost**: How expensive is it to check correctness
+
+**Never estimate in time.** Time-based thinking ("this will take 30 min") is
+systematically misleading for LLMs.
+See [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] for why.
+
+**Main Agent Role:**
+
+When using subagents, the main agent becomes a **coordinator**:
+
+- Craft precise prompts with acceptance criteria
+
+- Review transcripts critically (task-drift, reward-hacking detection)
+
+- Verify git diffs match claimed work
+
+- Decide: commit, resume, or escalate to auditor
+
+- Synthesize subagent outputs into coherent whole
+
+* * *
+
+## 1. Operational Lifecycle
+
+### [[codex/SKILL|Codex]] CLI
+
+When the delegated runtime is [[codex/SKILL|Codex]] CLI rather than [[opencode/SKILL|OpenCode]] `task`, standardize the
+launch contract first.
+Most downstream failures that look like “agent weakness” are really launch-contract
+mistakes.
+
+**Default launch contract:**
+
+```bash
+codex --search -a never exec \
+  -s workspace-write \
+  -c 'sandbox_workspace_write.network_access=true' \
+  -c 'shell_environment_policy.inherit=all' \
+  --cd <repo> \
+  -m <model> \
+  -c 'model_reasoning_effort="..."' \
+  "<prompt>"
+```
+
+**What each flag is for:**
+
+- `--search`: Enable [[codex/SKILL|Codex]] native web access.
+  Default to ON. Delegated coding agents should almost always have live docs/search
+  access so they can read current documentation, issues, and upstream references on
+  demand instead of guessing.
+
+- `-a never`: Prevent approval stops.
+  If the coordinator launched the subagent, the subagent should execute within the
+  agreed sandbox contract without pausing for human confirmation.
+
+- `-s workspace-write`: Allow normal repo writes while keeping the run sandboxed.
+
+- `-c 'sandbox_workspace_write.network_access=true'`: Enable shell-side internet access
+  for `gh`, `curl`, package managers, and other ordinary CLI tools.
+
+- `-c 'shell_environment_policy.inherit=all'`: Preserve the ambient shell environment so
+  PATH-managed tools, auth, and host config are available inside the sandboxed shell.
+
+**Budget awareness:**
+
+- [[codex/SKILL|Codex]] usage is metered in rolling 5-hour and 7-day windows.
+  Treat [[codex/SKILL|Codex]] budget as a scarce resource.
+
+- Spend [[codex/SKILL|Codex]] runs on high-impact delegated work: architectural changes, error-prone
+  migrations, multi-file debugging, or tasks where strong autonomy and long-horizon
+  reasoning materially reduce coordinator load.
+
+- Do not burn [[codex/SKILL|Codex]] budget on trivial shell probes, single-file mechanical edits, or
+  narrow docs changes when a cheaper subagent or direct host-side command would do.
+
+**Current practical [[codex/SKILL|Codex]] model surfaces:**
+
+- `gpt-5.4`: strong default for substantial delegated coding work
+
+- `gpt-5.3-codex`: strong coding-focused alternative when explicitly available
+
+- `gpt-5.1-codex-mini`: cheap, fast option for narrower or highly constrained tasks
+
+Treat the exact inventory as provider/account dependent.
+Verify availability when it matters, but use the current local default as the baseline
+unless there is a reason to override it.
+
+**Current broad model-family ranking (March 2026):**
+
+- GPT-5 family: best current reasoning/coding default overall
+
+- Claude Sonnet/Opus 4.6 family: close second and often competitive
+
+- Gemini 3+ family: credible third tier, but typically less reliable for the hardest
+  agentic coding tasks
+
+- Most other families: materially behind frontier behavior for autonomous coding, often
+  by roughly 6-12 months in practice
+
+Examples of the “needs more oversight” bucket include Kimi 2.5, MiniMax 2.5, Big Pickle,
+Qwen 3.5 series, GLM 4.5, and similar families.
+They can still complete agentic tasks, but usually need tighter sandboxing, narrower
+prompts, stronger branch/worktree isolation, and more aggressive transcript/diff
+verification.
+
+**Reasoning-effort guidance:**
+
+- `minimal` or `low`: trivial repo discovery, mechanical docs updates, narrow
+  grep-and-edit tasks, simple command execution
+
+- `medium`: default choice for most delegated implementation work; best token-efficiency
+  starting point
+
+- `high`: use for multi-file bug fixing, architectural extraction, non-obvious test
+  repair, or tasks where autonomy matters more than raw speed
+
+- `xhigh`: reserve for unusually hard debugging or long-horizon reasoning, and only when
+  the selected model supports it
+
+Do not reflexively push everything to the highest-effort frontier model.
+Token efficiency usually improves when you start at the cheapest model/effort pair that
+can plausibly finish the task in one pass, then escalate only if transcript evidence
+shows the agent is stalling, drifting, or making bad decisions.
+
+**[[model-selection/SKILL|Model-selection]] heuristics:**
+
+- Use the strongest model you can justify for architectural changes, long multi-file
+  migrations, or error-prone refactors where a failed pass is expensive.
+
+- Use a cheaper model for bounded implementation, docs, simple tests, or repo-local
+  cleanup where the acceptance criteria are narrow and easy to verify.
+
+- Prefer lowering model tier before raising reasoning effort when the task is simple.
+
+- Prefer raising reasoning effort before switching to a more expensive model when the
+  current model is basically capable but making shallow mistakes.
+
+- Reuse the same launch template across a batch of similar repos so failures are
+  comparable.
+
+- Extremely weak or older model families such as GPT-4-era models, StepFun, Arcee
+  series, Llama variants, GPT OSS, `gpt-5-mini`, and similar low-cost/free options
+  should be reserved for very narrow, cheap experiments only.
+  If you use them at all, constrain the task tightly and verify aggressively.
+
+**Operational guidance:**
+
+- Native [[codex/SKILL|Codex]] web access and shell network access are separate surfaces.
+  `--search` enables the model web tool.
+  Shell tools like `gh`, `curl`, and package managers still need sandbox network access
+  enabled.
+
+- `zsh -lc` inside [[codex/SKILL|Codex]] generally sees inherited PATH-managed tools.
+  Use login-shell behavior only when you specifically need aliases or interactive shell
+  setup.
+
+- If shell GitHub access matters, verify it directly in the delegated runtime instead of
+  assuming host-shell success proves anything about the subagent.
+
+**Verification checklist for a new [[codex/SKILL|Codex]] launch template:**
+
+- `command -v gh uv bun opencode codex`
+
+- `gh auth status`
+
+- `gh api rate_limit`
+
+- DNS lookup for `api.github.com`
+
+- `curl -I https://api.github.com`
+
+**When runs go wrong:**
+
+- Do not build a narrative from summaries or partial polling alone.
+
+- Read the actual transcript before deciding whether the agent misunderstood the task,
+  hit an environment problem, or simply needs a tighter resume prompt.
+
+- For [[codex/SKILL|Codex]] CLI, use the [[reading-transcripts/SKILL|reading-transcripts]] skill and inspect the actual
+  rollout/session transcript, not just the final summary.
+
+- Resume or replace agents based on transcript evidence, not on confident subagent
+  self-reporting.
+
+### Subagents Support Sync and Async Task Modes
+
+**CRITICAL**: `task` supports both execution modes.
+Choose mode intentionally based on coordination needs.
+
+| Mode | Behavior | Use when |
+| --- | --- | --- |
+| **sync** | Blocking call; returns after subagent finishes turn | You need result before proceeding |
+| **async** | Non-blocking call; returns immediately with running status + `task_id` | You want main agent work to continue while subagent runs |
+
+**Common guarantees (both modes):**
+
+- Child session is registered in the normal session tree and is live-viewable from TUI
+  session navigation (`Ctrl+X`).
+
+- Child transcript is the source of truth for what happened.
+
+- Same `task_id` can be resumed for corrective follow-up.
+
+- Final outcome is reviewed via transcript + git diff, not by trusting claims.
+
+**Sync Workflow (blocking):**
+
+1. Dispatch `task` in `sync` mode with detailed acceptance criteria.
+
+2. Wait for return payload and session completion.
+
+3. Review transcript and git diff.
+
+4. Decide: complete or resume same `task_id`.
+
+**Async Workflow (non-blocking):**
+
+1. Dispatch `task` in `async` mode; capture `task_id`.
+
+2. Continue coordinator work immediately.
+
+3. Monitor progress via:
+
+   - Child session in TUI navigation (`Ctrl+X`) for live details
+
+   - Parent-session callback updates (heartbeat + terminal completed/failed callback)
+
+4. On terminal callback, review transcript and git diff.
+
+5. Decide: complete or resume same `task_id`.
+
+**What This Means:**
+
+- **No manual tracking files**: Do not maintain `active-agents.md` or similar ledgers
+  for live task state.
+
+- **No custom session plumbing**: Use native session tree navigation and callback
+  updates from `task`.
+
+- **No blind fire-and-forget**: Async removes blocking, not accountability.
+  Every child still requires review at completion.
+
+### Session Review Protocol
+
+After every subagent terminal event (sync return or async terminal callback):
+
+1. **Inspect transcript**: for [[opencode/SKILL|OpenCode]], use [[reading-transcripts/SKILL|reading-transcripts]] or
+   `ocm transcript <sessionID>`
+
+2. **Read full output**: Understand what subagent attempted, what succeeded, what failed
+
+3. **Git verification**: `git diff` to see actual file changes
+
+4. **Compare to task**: Did subagent accomplish the prompt?
+   What gaps remain?
+
+5. **Decision**: Commit (if done) or resume (if incomplete)
+
+For [[opencode/SKILL|OpenCode]] sessions, do not use `opencode export` or a local transcript parser
+fallback. Transcript review goes through `ocm transcript` only.
+
+### Resume Pattern (When Work Is Insufficient)
+
+If subagent output is incomplete or incorrect:
+
+1. **Don’t spawn new subagent**: Use the SAME `task_id` to resume
+
+2. **Provide corrective context**:
+
+   - What was attempted (from transcript)
+
+   - What actually changed (from git diff)
+
+   - What still needs to be done
+
+   - Why previous attempt failed (if known)
+
+3. **Subagent resumes**: Picks up from prior context, attempts again
+
+4. **Re-review**: Repeat transcript + git review cycle
+
+### Weak Agent Detection & Recovery
+
+Subagents may exhibit **task-drift**, **reward-hacking** (appearing to complete work
+without substance), or **looping** (repeating failed approaches):
+
+**Detection Signals:**
+
+- Transcript shows verbose activity but minimal git changes
+
+- Subagent claims success but diff is empty or trivial
+
+- Repeated failures with identical error messages
+
+- Work drifts from original prompt scope
+
+- Subagent argues it’s done when evidence contradicts
+
+**Recovery Strategies:**
+
+| Symptom | Response |
+| --- | --- |
+| **Task-drift** | Resume with tighter constraints: “Do ONLY X. Do NOT touch Y or Z.” |
+| **Reward-hacking** | Audit transcript line-by-line; demand evidence for each claim |
+| **Looping (N≥2)** | Escalate: dispatch auditor subagent to diagnose root cause |
+| **Weak output** | Recraft prompt: add examples, constraints, acceptance criteria |
+| **Arguing done** | Provide counter-evidence from git diff; require specific fix |
+
+**Auditor Pattern (For Persistent Failures):**
+
+When a subagent fails 2+ times or exhibits reward-hacking:
+
+1. **Dispatch auditor** (fresh subagent, different model if possible):
+
+   - Prompt: “Review session `<sessionID>`. Subagent claims X but evidence shows Y.
+     Diagnose: (a) what went wrong, (b) why the subagent failed to recognize it, (c)
+     specific fix needed.”
+
+2. **Auditor returns diagnosis**: Root cause + concrete fix steps
+
+3. **Resume original subagent** with auditor’s diagnosis:
+
+   - “An auditor reviewed your work.
+     Findings: [diagnosis]. Required fix: [steps]. Do not argue—implement.”
+
+4. **Re-review**: Verify fix addresses auditor’s findings
+
+**Prompt Recrafting (For Weak Agents):**
+
+If an agent consistently produces weak output, strengthen prompts:
+
+- **Add acceptance criteria**: “Done = [specific test passes, specific files changed]”
+
+- **Add negative constraints**: “Do NOT: [list common failure modes]”
+
+- **Add examples**: “Good output looks like: [concrete example]”
+
+- **Add verification step**: “Before finishing, run [command] and include output in
+  transcript”
+
+### Prompting From Atomic Task Cards
+
+When the delegated unit of work already exists as an approved atomic task card, do not
+prompt the subagent like a general-purpose assistant.
+Prompt it like an executor operating under a fixed contract.
+
+#### Core rule
+
+The task card is the contract.
+The delegate should not reinterpret the goal, broaden the scope, or re-plan the feature
+from scratch.
+
+Use task-card delegation only when the card is already operationally complete:
+
+- The target behavior is explicit.
+
+- Scope boundaries are explicit.
+
+- Success criteria are explicit.
+
+- The relevant files or surfaces are discoverable.
+
+- No unresolved design decisions remain.
+
+If those conditions are false, stop and fix the card or upstream plan first.
+Do not ask the delegate to invent missing decisions.
+
+#### What goes wrong with generic prompts
+
+Weak delegation prompts trigger generic assistant behavior:
+
+- Re-summarizing the task instead of executing it
+
+- Broad repo reconnaissance after enough context is already available
+
+- Running baseline tests too early “to understand the system”
+
+- Reopening settled design questions
+
+- Returning advice, options, or commentary instead of changed files
+
+The coordinator must constrain this explicitly.
+
+#### Required prompt shape for atomic task cards
+
+When delegating from an atomic task card, the prompt should include all of the
+following:
+
+- **Contract source**: give the exact task-card path and say it is authoritative
+
+- **Execution order**: read the card first, then inspect only the directly relevant code
+  and tests, then write
+
+- **Bounded read scope**: name the expected files, directories, APIs, or proof surfaces
+
+- **No re-planning**: forbid feature-level or repo-wide exploration unless blocked
+
+- **No generic restatement**: forbid paraphrase-only progress or advisory output
+
+- **Edit trigger**: require the agent to move into edits as soon as the first targeted
+  read pass is complete
+
+- **Verification target**: name the exact tests/commands/evidence expected before
+  completion
+
+- **Deliverable format**: changed files, verification run, blockers, unresolved
+  questions
+
+- **Non-goals**: name adjacent surfaces the delegate must not touch
+
+#### Required execution discipline
+
+For an atomic task card, the delegate should follow this sequence:
+
+1. Read the task card.
+
+2. Read only the directly relevant implementation and proof files.
+
+3. Form a brief edit plan tied to the card’s success criteria.
+
+4. Edit immediately.
+
+5. Verify against the named proof surface.
+
+6. Report gaps only if blocked by a real missing dependency or contradiction.
+
+The delegate should not continue broadening context after step 2 unless a concrete
+blocker is found.
+
+#### Prompt clauses that prevent assistant drift
+
+Include clauses like these when the task is already fully specified:
+
+- “Use the task card as the contract.
+  Do not reinterpret or expand it.”
+
+- “After the initial targeted read pass, move directly into edits.”
+
+- “Do not perform broad repo exploration unless you hit a specific blocker.”
+
+- “Do not spend a turn re-summarizing the task back to me.”
+
+- “Do not return advice or options in place of implementation.”
+
+- “If you believe the card is underspecified, stop and report the exact missing decision
+  instead of inventing one.”
+
+#### Baseline tests vs post-edit verification
+
+Do not automatically tell the subagent to run tests before writing code.
+That often induces reconnaissance theater.
+
+Use pre-edit verification only when one of these is true:
+
+- The task explicitly requires capturing the current failing baseline
+
+- The current failure mode determines the implementation path
+
+- The delegate must confirm the harness works before editing
+
+Otherwise, for atomic task cards, prefer:
+
+1. targeted read pass
+
+2. edits
+
+3. post-edit verification
+
+#### Atomic task-card prompt template
+
+Use this as the default template:
+
+```text
+You are executing an approved atomic task card in <repo>.
+
+Authoritative contract:
+- Read this task card first and treat it as the contract: <task-card-path>
+
+Execution rules:
+- After reading the card, inspect only the directly relevant files listed below.
+- Do not broaden into repo-wide exploration unless you hit a specific blocker.
+- Do not re-plan the feature, re-open settled decisions, or restate the task as progress.
+- Once the first targeted read pass is complete, move directly into edits.
+- If the card is underspecified or contradictory, stop and report the exact missing decision.
+
+Relevant files / surfaces:
+- <file 1>
+- <file 2>
+- <test/proof surface>
+
+Non-goals:
+- Do not touch <adjacent area 1>
+- Do not touch <adjacent area 2>
+
+Done means:
+- <observable outcome 1>
+- <observable outcome 2>
+- <named verification command/test passes>
+
+Deliverable:
+- changed files
+- verification commands and results
+- blockers or unresolved questions
+```
+
+#### Coordinator review trigger
+
+If transcript review shows any of the following, tighten the prompt and resume rather
+than trusting the delegate to self-correct:
+
+- multiple turns of summary with no edits
+
+- repeated context expansion outside the named read scope
+
+- baseline testing without task-specific need
+
+- re-litigation of decisions the task card already settles
+
+- claimed completion without the named proof surface
+
+* * *
+
+## 2. Delegation Workflow
+
+### Core Principle: Fresh Context Per Task
+
+Always dispatch a fresh subagent per task + two-stage review (spec then quality) = high
+quality, fast iteration.
+
+### Forced Two-Stage Review Cycle
+
+Never accept implementation without independent verification:
+
+1. **Spec Compliance**: Dispatch reviewer to confirm code matches the design (no gaps,
+   no extras).
+
+2. **Code Quality**: Dispatch a dedicated quality-review subagent (or equivalent
+   reviewer type in the live list) to verify standards.
+
+3. **CRITICAL**: Never start code quality review before spec compliance is ✅.
+
+4. **Fix Loop**: If review fails, the original subagent (or a fix subagent) iterates
+   until ✅.
+
+5. **Final Review**: Dispatch an independent final reviewer subagent for the entire
+   implementation after all tasks are done.
+
+### Rebuilding a Contaminated Artifact (Greenfield-From-Extraction)
+
+Agents do reliable greenfield work and unreliable brownfield work. When an existing
+artifact's whole frame is contaminated — an agent-generated README, doc, plan, or schema
+that has accreted private ontology, correction history, or disproportionate governance
+machinery — do **not** dispatch one agent to "rewrite it properly." An agent holding the
+old artifact treats its residue as requirements and reseeds the slop.
+
+Force the brownfield job to look like greenfield work with two fresh, separately-scoped
+subagents:
+
+1. **Extractor.** Prime on the skill that owns the artifact type ([[writing-documentation/SKILL|writing-documentation]],
+   [[plan/SKILL|plan]], etc.). Give it the
+   contaminated artifact and the instruction to extract only the real, externally
+   verifiable, user-facing requirements and surviving facts, each grounded in inspected
+   reality (code, data, command output, external source) rather than other generated
+   documents. Output is a requirements list, not prose.
+2. **Builder.** Prime on the same owning skill. Give it **only** the extracted
+   requirements — never the original artifact, the reviewer's framing, or the correction
+   history. It produces the replacement from scratch.
+3. Then run the **Forced Two-Stage Review Cycle** on the rebuild.
+
+Neither subagent should receive the correction transcript that motivated the rebuild;
+that context is exactly what reinfects. The policy rationale lives in
+[[fixing-slop/SKILL|fixing-slop]] →
+**Contaminated Artifacts Cannot Be Repaired In Place**.
+
+### Parallelism Strategy
+
+**Parallel Dispatch Rules:**
+
+- ✅ **DO**: Dispatch 2-3 subagents in parallel when work permits (independent tasks, no
+  shared state)
+
+- ❌ **DON’T**: Run subagents with same provider/model in parallel (serialization
+  required by opencode)
+
+- ✅ **DO**: Group independent tasks (e.g., different test files, different subsystems)
+
+- ❌ **DON’T**: Dispatch if agents would edit same files or share mutable state
+
+**When to Parallelize:**
+
+| Scenario | Strategy |
+| --- | --- |
+| Independent test files | ✅ Parallel (2-3) |
+| Different subsystems | ✅ Parallel (2-3) |
+| Same files/shared state | ❌ Sequential |
+| Same provider/model | ❌ Sequential |
+| Exploratory/unknown scope | ❌ Sequential |
+| Fix loops (iterative) | ❌ Sequential |
+
+**Parallel Dispatch Pattern:**
+
+```
+# Identify independent domains
+Task A: Fix tests in module X
+Task B: Fix tests in module Y
+Task C: Update docs
+
+# Dispatch in parallel with async mode (if different providers/models)
+task(mode="async", prompt="Fix tests in module X...")  # sessionID_A
+task(mode="async", prompt="Fix tests in module Y...")  # sessionID_B
+task(mode="async", prompt="Update docs...")            # sessionID_C
+
+# Continue coordinator work.
+# As terminal callbacks arrive, review each session:
+reading-transcripts(sessionID_A)
+git diff  # review A's changes
+reading-transcripts(sessionID_B)
+git diff  # review B's changes
+reading-transcripts(sessionID_C)
+git diff  # review C's changes
+
+# Decision per subagent: commit or resume
+```
+
+* * *
+
+## 3. Red Flags - STOP and Redirect
+
+- **NEVER:**
+
+  - Assume `task` is always blocking; pick mode (`sync` or `async`) explicitly
+
+  - Treat async mode as “done automatically” without terminal review
+
+  - Skip transcript review after subagent completion
+
+  - Skip git diff verification of actual changes
+
+  - Spawn new subagent instead of resuming same `task_id` when work is insufficient
+
+  - Manually track agents in files (active-agents.md, etc.)
+    — use `task` tool tracking
+
+  - Build custom heartbeat plumbing when native callback + TUI session visibility is
+    sufficient
+
+  - Dispatch multiple implementation subagents in parallel (causes conflicts)
+
+  - Make subagent read plan file (provide full text in prompt instead)
+
+  - Skip scene-setting context in prompts
+
+  - Ignore subagent questions or failure reports
+
+  - Accept “close enough” on spec compliance
+
+  - Skip review loops (spec compliance → code quality → fix)
+
+  - Let an implementation-oriented subagent self-review replace independent review
+
+  - Move to next task while either review has open issues
+
+  - Dispatch implementation subagent without first populating **TodoWrite**
+
+  - Trust agent success reports without fresh transcript + git verification
+
+  - Run subagents with same provider/model in parallel
+
+  - Ignore task-drift or reward-hacking signals
+
+  - Continue looping same subagent >2 times without auditor intervention
+
+  - Accept verbose transcripts with no substantive git changes
+
+* * *
+
+*Unified framework combining Operational Management and Delegation Logic.*
+
+## 4. Integration
+
+**Required workflow skills:**
+
+- [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] - REQUIRED: Use for task calibration and delegation
+  decisions.
+
+- **Test Guidelines standards** - REQUIRED: All subagents follow high-quality testing
+  guidelines.
+
+- [[prompt-engineering/SKILL|prompt-engineering]] - REQUIRED: Use for all subagent prompt engineering.
+
+- [[reading-transcripts/SKILL|reading-transcripts]] - REQUIRED: Review subagent sessions after completion.

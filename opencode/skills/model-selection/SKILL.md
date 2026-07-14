@@ -237,7 +237,7 @@ Don’t guess — run `llmfit` to verify a local model will actually work for ag
 
 ## Related Skills
 
-- → [[creating-subagents/SKILL|creating-subagents]] — Load alongside when creating subagent descriptions that
+- → [[subagent-delegation/authoring/SKILL|creating-subagents]] — Load alongside when creating subagent descriptions that
   reference model tiers.
   Covers the Use when/Pass/Ask format for agent-facing delegation instructions.
 

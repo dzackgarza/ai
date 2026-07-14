@@ -470,7 +470,7 @@ contaminating worker guidance with orchestrator concerns.
   supports repeated one-shot loops or long-horizon continuation.
   Covers progress logs, self-correcting state machines.
 
-- → [[creating-subagents/SKILL|creating-subagents]] — REQUIRED: Load alongside when writing subagent descriptions
+- → [[subagent-delegation/authoring/SKILL|creating-subagents]] — REQUIRED: Load alongside when writing subagent descriptions
   or agent definitions.
 
 - → [[prompt-engineering/SKILL|prompt-engineering]] — Load alongside when writing broader prompt contracts and

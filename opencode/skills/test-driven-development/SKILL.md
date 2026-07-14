@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [testing, tdd, development, quality, red-green-refactor]
-    related_skills: [[[systematic-debugging/SKILL|systematic-debugging]], plan, [[subagent-driven-development/SKILL|subagent-driven-development]]]
+    related_skills: [[[systematic-debugging/SKILL|systematic-debugging]], plan, [[subagent-delegation/implementation/SKILL|subagent-driven-development]]]
 ---
 # Test-Driven Development (TDD)
 

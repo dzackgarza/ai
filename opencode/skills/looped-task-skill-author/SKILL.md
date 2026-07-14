@@ -55,7 +55,7 @@ Required companion skills:
 
 - [[creating-skills/SKILL|creating-skills]] for what belongs in a `SKILL.md`.
 
-- [[creating-subagents/SKILL|creating-subagents]] when the loop depends on repo-local agents or subagent
+- [[subagent-delegation/authoring/SKILL|creating-subagents]] when the loop depends on repo-local agents or subagent
   descriptions.
 
 - [[prompt-engineering/SKILL|prompt-engineering]] when editing system prompts or agent definitions adjacent to the

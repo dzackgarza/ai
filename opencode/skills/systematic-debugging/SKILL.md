@@ -14,7 +14,7 @@ metadata:
     related_skills:
     - [[test-driven-development/SKILL|test-driven-development]]
     - plan
-    - [[subagent-driven-development/SKILL|subagent-driven-development]]
+    - [[subagent-delegation/implementation/SKILL|subagent-driven-development]]
 ---
 
 # Systematic Debugging

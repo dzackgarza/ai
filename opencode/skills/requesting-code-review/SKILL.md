@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [code-review, security, verification, quality, pre-commit, auto-fix]
-    related_skills: [[[subagent-driven-development/SKILL|subagent-driven-development]], plan, [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
+    related_skills: [[[subagent-delegation/implementation/SKILL|subagent-driven-development]], plan, [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
 ---
 # Pre-Commit Code Verification
 
@@ -26,7 +26,7 @@ Fresh context finds what you miss.
 
 - After completing a task with 2+ file edits in a git repo
 
-- After each task in [[subagent-driven-development/SKILL|subagent-driven-development]] (the two-stage review)
+- After each task in [[subagent-delegation/implementation/SKILL|subagent-driven-development]] (the two-stage review)
 
 **Skip for:** documentation-only changes, pure config tweaks, or when user says “skip
 verification”.
