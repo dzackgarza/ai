@@ -56,9 +56,10 @@ cc_safety_net_home := home / ".cc-safety-net"
 default:
     @just --list
 
-# Validate repository Markdown entrypoints.
+# Validate repository Markdown entrypoints and installed-skill WikiLinks.
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
+    @just --justfile {{ justfile() }} check-skill-wikilinks
 
 # Reformat Markdown and structured configuration before commit.
 test-commit:
