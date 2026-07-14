@@ -233,7 +233,7 @@ serve:
 The CLI (`opx` or `npx <project>` or `uvx <project>`) owns the granular subcommands: `opx assemble`, `opx sync`, `opx check-hygiene`, `opx preview`, `opx preview-open`, `opx generate-macros`, `opx list-posts`. These are discoverable through `--help` and grouped by concern.
 They don't pollute `just --list` because they are not the project's entry points.
 
-This follows the `writing-scripts-and-cli-interfaces` skill: a CLI provides progressive disclosure, named subcommands, typed arguments, and help text.
+This follows the [[writing-scripts-and-cli-interfaces/SKILL|writing-scripts-and-cli-interfaces]] skill: a CLI provides progressive disclosure, named subcommands, typed arguments, and help text.
 A justfile provides compositions of those subcommands with project-local defaults.
 The justfile is the **surface**; the CLI is the **depth**.
 
@@ -264,14 +264,14 @@ Projects also need recipes that serve agents, not users or developers: QC guardr
 
 This is documented in the `Project Structure: User vs. Agent` section of `AGENTS.md`.
 
-Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on `uv sync`), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See `reality-grounded-debugging` for command-output discipline and surface-upgrade requirements.
+Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on `uv sync`), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] for command-output discipline and surface-upgrade requirements.
 
 ### Large justfiles are a smell
 
 A justfile that grows beyond ~30 lines of recipe bodies is usually reinventing something that already exists:
 
 - Reusable QC recipes (type-checking, linting, test-running, coverage) are in `~/ai-review-ci/`. Import them instead of rewriting them.
-  See the `quality-control` skill.
+  See the [[quality-control/SKILL|quality-control]] skill.
 - Repo-specific build logic belongs in the build tool's config (`vite.config.ts`, `pyproject.toml`, `Cargo.toml`), not in a justfile recipe.
 - Granular utility subcommands belong in a proper CLI tool (see **Progressive disclosure via CLI** above), not as recipes.
 

@@ -219,7 +219,7 @@ Preserve that separation:
   attachment path, not in Git LFS.
 
 - When Zotero already has a PDF, prefer resolving the local attachment path via the
-  `zotero-api` skill before downloading a duplicate.
+  [[zotero-api/SKILL|zotero-api]] skill before downloading a duplicate.
 
 - When attaching existing MinerU output back to Zotero, verify against the running
   Zotero local API and Better BibTeX key; do not infer matches from filenames alone.
@@ -239,7 +239,7 @@ Preserve that separation:
 - Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant
   Zotero attachment path, not in Git LFS.
 - When Zotero already has a PDF, prefer resolving the local attachment path via
-  the `zotero-api` skill before downloading a duplicate.
+  the [[zotero-api/SKILL|zotero-api]] skill before downloading a duplicate.
 - When attaching existing MinerU output back to Zotero, verify against the
   running Zotero local API and Better BibTeX key; do not infer matches from
   filenames alone.

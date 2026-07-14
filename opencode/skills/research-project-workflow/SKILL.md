@@ -8,13 +8,13 @@ description: Use when reconciling research repo planning state, legacy root
 # Research Project Workflow
 
 This skill is the workflow authority for reconciling research repo planning with
-`agent-memory`. Active planning state belongs in `agent-memory`; Nimbalyst/root
+[[agent-memory/SKILL|agent-memory]]. Active planning state belongs in [[agent-memory/SKILL|agent-memory]]; Nimbalyst/root
 `plans/` files are legacy or projection artifacts unless the user explicitly asks to
 inspect or migrate them.
 
 ## Canonical source
 
-The source of truth for active planning state is `agent-memory` project `plan`
+The source of truth for active planning state is [[agent-memory/SKILL|agent-memory]] project [[plan/SKILL|plan]]
 records. Use this skill plus `references/project-workflow.md` only to interpret,
 audit, migrate, or project legacy tracker artifacts.
 
@@ -38,7 +38,7 @@ reference files live under `.agents/skills/<name>/references/<file>.md`.
 
 Every new session must:
 
-1. Retrieve the active goal, phase, queue, and residue records from `agent-memory`,
+1. Retrieve the active goal, phase, queue, and residue records from [[agent-memory/SKILL|agent-memory]],
    then read root `AGENTS.md`.
 
 2. Load the matching local skills from `.agents/skills/` by reading their SKILL.md files
@@ -52,7 +52,7 @@ Every new session must:
 4. If legacy `plans/` artifacts are relevant, read `plans/AGENTS.md` to interpret
    their structure before migration or audit.
 
-5. Use `agent-memory` to load relevant project memory and planning records.
+5. Use [[agent-memory/SKILL|agent-memory]] to load relevant project memory and planning records.
 
 ## Task execution posture
 
@@ -65,7 +65,7 @@ A question signals a blocking ambiguity, not a polite default.
 
 ## The needs-agent-review protocol
 
-**Load `research-gate-review` BEFORE touching any card in `needs-agent-review` status**
+**Load [[research-gate-review/SKILL|research-gate-review]] BEFORE touching any card in `needs-agent-review` status**
 — it contains anti-boxchecking rules, bug-pattern references, subagent dispatch
 mechanics, and review-log writing discipline that operationalize the abstract 6-gate
 protocol. Do not apply the gates inline in your own session; delegate to fresh-context
@@ -94,7 +94,7 @@ Document in a `## Review Log` section in the card body.
 
 ## Core policy
 
-- `agent-memory` is the active planning workspace.
+- [[agent-memory/SKILL|agent-memory]] is the active planning workspace.
 
 - Root `plans/` and Nimbalyst artifacts are legacy or generated/projection surfaces.
   Do not create or update them as canonical planning state.
@@ -102,25 +102,25 @@ Document in a `## Review Log` section in the card body.
 - When interpreting legacy tracker files, use only registered standard tracker types
   from `.nimbalyst/trackers/*.yaml`.
 
-- Represent feature/plan/phase/task hierarchy as `agent-memory` planning records.
+- Represent feature/plan/phase/task hierarchy as [[agent-memory/SKILL|agent-memory]] planning records.
   Tags are secondary grouping aids.
 
 - There is no separate backlog; active cards are the outstanding work set.
 
-- Completed feature trees should be recorded as completed in `agent-memory`; move
+- Completed feature trees should be recorded as completed in [[agent-memory/SKILL|agent-memory]]; move
   legacy tracker files only when explicitly migrating or cleaning those artifacts.
 
 - Execute according to the DAG. Unmet declared dependencies mean a card remains
   `unstarted`; `blocked` is reserved for ready leaves stopped by a prerequisite that is
   not currently satisfiable through the DAG.
 
-- Work top-down through feature/spec, plan, phase, and task gates in `agent-memory`.
+- Work top-down through feature/spec, plan, phase, and task gates in [[agent-memory/SKILL|agent-memory]].
   Do not create lower-layer cards before the owning layer is approved.
 
 - Plans are human + LLM collaborative artifacts and must be approved before
   decomposition or execution.
 
-- Executable work belongs in `agent-memory` planning records, not chat-only plans or
+- Executable work belongs in [[agent-memory/SKILL|agent-memory]] planning records, not chat-only plans or
   inline markers.
 
 - Decision cards are feature-level blockers only; do not leave unresolved decision

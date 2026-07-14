@@ -36,9 +36,9 @@ regressions, and exports to Tailwind or W3C DTCG JSON.
 
 - User wants contrast / WCAG accessibility validation on their color palette
 
-For purely visual inspiration or layout examples, use `popular-web-designs` instead.
+For purely visual inspiration or layout examples, use [[popular-web-designs/SKILL|popular-web-designs]] instead.
 For *process and taste* when designing a one-off HTML artifact from scratch (prototype,
-deck, landing page, component lab), use `design`. This skill is for the *formal spec
+deck, landing page, component lab), use [[design/SKILL|design]]. This skill is for the *formal spec
 file* itself.
 
 ## File anatomy

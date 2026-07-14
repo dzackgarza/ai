@@ -47,7 +47,7 @@ Once you’ve read the paper, produce a structured markdown summary covering:
 
 - **Potential applications and relevance** to the current project
 
-Load `agent-memory` and store the summary as a typed durable memory.
+Load [[agent-memory/SKILL|agent-memory]] and store the summary as a typed durable memory.
 Use a descriptive key like `papers/{tag}` where `{tag}` is a short slug derived from
 the paper’s topic (e.g. `papers/conditional-memory`,
 `papers/lattice-embeddings`).

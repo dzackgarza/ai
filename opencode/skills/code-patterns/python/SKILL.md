@@ -7,7 +7,7 @@ description: Use when writing, reviewing, or refactoring Python code, looking fo
 > [!IMPORTANT]
 > All Python code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints: no runtime fallback defaults, no optional critical dependencies, no mock proof, no swallowed errors, no hidden partial success, no broad type escapes.
 
-Load after `code-patterns` for Python-specific rules.
+Load after [[code-patterns/SKILL|code-patterns]] for Python-specific rules.
 
 ## Non-Negotiables
 
@@ -27,7 +27,7 @@ Load after `code-patterns` for Python-specific rules.
 - Use Pydantic models for structured data and external contracts. Do not introduce
   dataclasses or `NamedTuple` for new data containers unless the project already owns that
   representation and the local boundary requires it.
-- Use `uv`, `pyproject.toml`, and the project `justfile`; do not use pip, poetry,
+- Use `uv`, `pyproject.toml`, and the project [[justfile/SKILL|justfile]]; do not use pip, poetry,
   pip-tools, ad hoc requirements files, or direct test/lint commands when a recipe exists.
 - Fail fast with assertions for invariants. Do not add speculative `try`/`except` blocks,
   broad catches, or missing-tool guards for failures that have not been observed.

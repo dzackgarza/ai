@@ -5,7 +5,7 @@ description: "Run a Brooks-Lint codebase health dashboard across all four dimens
 
 # source-command-brooks-health
 
-Use this skill when the user asks to run the migrated source command `brooks-health`.
+Use this skill when the user asks to run the migrated source command [[brooks-health/SKILL|brooks-health]].
 
 ## Command Template
 

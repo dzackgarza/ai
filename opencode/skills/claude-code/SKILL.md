@@ -320,7 +320,7 @@ mode only).
 | --- | --- |
 | `--dangerously-skip-permissions` | Auto-approve ALL tool use (file writes, bash, network, etc.) |
 | `--allow-dangerously-skip-permissions` | Enable bypass as an *option* without enabling it by default |
-| `--permission-mode <mode>` | `default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions` |
+| `--permission-mode <mode>` | `default`, `acceptEdits`, [[plan/SKILL|plan]], `auto`, `dontAsk`, `bypassPermissions` |
 | `--allowedTools <tools...>` | Whitelist specific tools (comma or space-separated) |
 | `--disallowedTools <tools...>` | Blacklist specific tools |
 | `--tools <tools...>` | Override built-in tool set (`""` = none, `"default"` = all, or tool names) |

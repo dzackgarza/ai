@@ -224,7 +224,7 @@ pivots do not become memories.
 
 ### Maintain accepted-remediation memories
 
-These memories are durable, not write-once. Per the `agent-memory` workflow, **search
+These memories are durable, not write-once. Per the [[agent-memory/SKILL|agent-memory]] workflow, **search
 first and prefer `update` over a duplicate**:
 
 - When the scan above surfaces an existing remediation memory for this class, `update`

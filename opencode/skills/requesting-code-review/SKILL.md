@@ -32,7 +32,7 @@ Fresh context finds what you miss.
 verification”.
 
 **This skill vs git-guidelines (code-review.md):** This skill verifies YOUR changes before
-committing. `git-guidelines` (see `code-review.md`) reviews OTHER people's PRs on GitHub
+committing. [[git-guidelines/SKILL|git-guidelines]] (see `code-review.md`) reviews OTHER people's PRs on GitHub
 with inline comments.
 
 ## Step 1 — Get the diff
@@ -86,7 +86,7 @@ Run the global QC gate to establish the baseline:
 just test
 ```
 
-If no `justfile` exists in the project, the project is too immature for QC gating;
+If no [[justfile/SKILL|justfile]] exists in the project, the project is too immature for QC gating;
 skip this step and proceed to Step 4.
 
 **Baseline comparison:** Stash your changes, run `just test`, note the result, pop

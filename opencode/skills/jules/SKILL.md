@@ -38,7 +38,7 @@ Treat Jules output adversarially when reviewing.
 
 ### Validation Requirements
 
-- **ALWAYS** load `test-guidelines` skill when reviewing Jules output
+- **ALWAYS** load [[test-guidelines/SKILL|test-guidelines]] skill when reviewing Jules output
 
 - Check that tests verify correctness, not just coverage
 
@@ -247,7 +247,7 @@ jules new "Fix all linting errors in the codebase. Run the linter, identify issu
 
 3. **Pull**: `jules remote pull --session <id>`
 
-4. **Validate**: Load `test-guidelines`, review adversarially
+4. **Validate**: Load [[test-guidelines/SKILL|test-guidelines]], review adversarially
 
 5. **Apply**: `jules remote pull --session <id> --apply` (only after validation)
 
@@ -404,7 +404,7 @@ Workflow:
 >
 > For anti-slop review, do not pipe findings back to Jules for immediate fixing. Jules writes a report. Later PRs address findings from that report after independent triage.
 
-Use the `extract_unresolved_issues` module from the `git-guidelines` skill to pipe
+Use the `extract_unresolved_issues` module from the [[git-guidelines/SKILL|git-guidelines]] skill to pipe
 unresolved PR review issues back to Jules:
 
 ```bash
@@ -434,7 +434,7 @@ For the full end-to-end workflow using `improved-jules-cli`:
 
 4. **Wait for Reviews** — wait for configured review bots and CI checks to finish.
 
-5. **Check Issues** — Use `extract_unresolved_issues` from `git-guidelines` skill (see
+5. **Check Issues** — Use `extract_unresolved_issues` from [[git-guidelines/SKILL|git-guidelines]] skill (see
    above).
 
 6. **Send Feedback** — Pipe issues to Jules (see above).

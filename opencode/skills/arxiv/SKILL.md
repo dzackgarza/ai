@@ -155,7 +155,7 @@ web_extract(urls=["https://arxiv.org/abs/2402.03300"])
 web_extract(urls=["https://arxiv.org/pdf/2402.03300"])
 ```
 
-For local PDF processing, see the `ocr-and-documents` skill.
+For local PDF processing, see the [[ocr-and-documents/SKILL|ocr-and-documents]] skill.
 
 ## Common Categories
 
@@ -226,7 +226,7 @@ curl -s "https://api.semanticscholar.org/graph/v1/paper/search?query=GRPO+reinfo
 ## Mathematics Literature Routing
 
 For mathematics papers, arXiv is only one source.
-Use it together with the `literature-review` skill’s multi-source search and Zotero/PDF
+Use it together with the [[literature-review/SKILL|literature-review]] skill’s multi-source search and Zotero/PDF
 workflows:
 
 - arXiv for preprints and TeX/PDF identifiers,
@@ -300,7 +300,7 @@ curl -s "https://api.semanticscholar.org/graph/v1/author/search?query=Yann+LeCun
 
 - HTML (when available): `https://arxiv.org/html/{id}`
 
-- For local PDF processing, see the `ocr-and-documents` skill
+- For local PDF processing, see the [[ocr-and-documents/SKILL|ocr-and-documents]] skill
 
 ## ID Versioning
 

@@ -19,10 +19,10 @@ until the proof obligations have been defined and locked in.
 
 Load these before acting:
 
-- `test-guidelines` for testing epistemology, banned test shapes, no mocks, and proof
+- [[test-guidelines/SKILL|test-guidelines]] for testing epistemology, banned test shapes, no mocks, and proof
   standards.
-- `test-driven-development` for the red-green audit trail.
-- `subagent-delegation` for constructing and reviewing subagent work.
+- [[test-driven-development/SKILL|test-driven-development]] for the red-green audit trail.
+- [[subagent-delegation/SKILL|subagent-delegation]] for constructing and reviewing subagent work.
 - Domain skills for the repository language or framework.
 
 ## Missing-Test Workflow
@@ -61,7 +61,7 @@ Required procedure:
 
 - Ask the same test-writing subagent for a verdict when that session is available.
 - If it is not available, spawn a fresh neutral subagent primed on all project policies,
-  `test-writing`, and `test-guidelines`.
+  `test-writing`, and [[test-guidelines/SKILL|test-guidelines]].
 - Give the neutral subagent the test, observed behavior, relevant product/domain facts,
   and command output. Do not frame the prompt as "the test is wrong" or "please fix the
   test."

@@ -9,11 +9,11 @@ files, creating notes, appending content, and adding wikilinks.
 
 For mathematical vault stewardship, inbox intake, source-backed semantic parsing,
 provenance-sensitive incorporation, or note-taxonomy decisions, load
-`mathematical-obsidian-vault-steward` as the canonical behavioral policy.
+[[mathematical-obsidian-vault-steward/SKILL|mathematical-obsidian-vault-steward]] as the canonical behavioral policy.
 
 For extracting, transforming, and integrating mathematical knowledge from raw source
 material (chat logs, transcripts, handwritten notes, theorem sketches, failed proof
-attempts) into durable structured notes, load `knowledge-extraction`. This skill covers
+attempts) into durable structured notes, load [[knowledge-extraction/SKILL|knowledge-extraction]]. This skill covers
 what to preserve, how to classify claims, how to build dependency graphs and proof-gap
 ledgers, and how to reconcile new material with existing vault notes.
 

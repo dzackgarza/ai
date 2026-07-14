@@ -4,7 +4,7 @@ description: Use when legacy prompts request python-project-structure or older g
 ---
 # Python Project Structure Redirect
 
-Canonical guidance moved to `code-patterns-python`.
+Canonical guidance moved to [[code-patterns/python/SKILL|code-patterns-python]].
 
-Load `code-patterns` first, then load `code-patterns-python` for Python module cohesion,
+Load [[code-patterns/SKILL|code-patterns]] first, then load [[code-patterns/python/SKILL|code-patterns-python]] for Python module cohesion,
 flat package structure, public interfaces, imports, and test-layout rules.

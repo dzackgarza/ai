@@ -5,7 +5,7 @@ description: "Run a Brooks-Lint test quality review"
 
 # source-command-brooks-test
 
-Use this skill when the user asks to run the migrated source command `brooks-test`.
+Use this skill when the user asks to run the migrated source command [[brooks-test/SKILL|brooks-test]].
 
 ## Command Template
 

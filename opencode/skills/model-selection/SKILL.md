@@ -237,16 +237,16 @@ Don’t guess — run `llmfit` to verify a local model will actually work for ag
 
 ## Related Skills
 
-- → **creating-subagents** — Load alongside when creating subagent descriptions that
+- → [[creating-subagents/SKILL|creating-subagents]] — Load alongside when creating subagent descriptions that
   reference model tiers.
   Covers the Use when/Pass/Ask format for agent-facing delegation instructions.
 
-- → **prompt-engineering** — Load alongside when writing prompts that depend on model
+- → [[prompt-engineering/SKILL|prompt-engineering]] — Load alongside when writing prompts that depend on model
   capabilities. Covers effective prompt construction, priming context.
 
-- → **subagent-delegation** — Load alongside when selecting models for delegated tasks.
+- → [[subagent-delegation/SKILL|subagent-delegation]] — Load alongside when selecting models for delegated tasks.
   Covers subagent lifecycle, review cycles, verifying output.
 
-- → **test-guidelines** — Load alongside when writing tests that verify model output
+- → [[test-guidelines/SKILL|test-guidelines]] — Load alongside when writing tests that verify model output
   meets expected quality.
   Covers test patterns for model-dependent behavior.

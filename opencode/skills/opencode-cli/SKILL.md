@@ -82,7 +82,7 @@ and rebuild when you actually need generated config changes.
 - If a workflow depends on repo-local config or env, start a repo-local
   `command opencode serve` inside that repo’s `direnv`.
 
-- `opencode` is not stale.
+- [[opencode/SKILL|opencode]] is not stale.
   Config is reread on each invocation, so do not blame cache or restart loops.
 
 ## Basic Inspection Commands

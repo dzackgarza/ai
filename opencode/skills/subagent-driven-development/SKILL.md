@@ -326,11 +326,11 @@ Every subagent prompt template must inherit these policies:
 
 | Policy | Skill | Behavior |
 | --- | --- | --- |
-| Testing epistemology (no mocks, substantive assertions) | `test-guidelines` | Reject mock-based tests, content-free assertions, and masking. |
-| Final verification (global QC gate) | `quality-control` | `just test` runs the full global QC pipeline. |
-| Tooling (uv-only, PEP 723, ephemeral by default) | `tool-provisioning-and-environment-hygiene` | No pip, no pipx, no global installs. |
-| External errors/tools | `known-solution-first` | Public contracts before local probing. |
-| Debugging | `reality-grounded-debugging` | Stderr preservation, surface classification before mutation. |
+| Testing epistemology (no mocks, substantive assertions) | [[test-guidelines/SKILL|test-guidelines]] | Reject mock-based tests, content-free assertions, and masking. |
+| Final verification (global QC gate) | [[quality-control/SKILL|quality-control]] | `just test` runs the full global QC pipeline. |
+| Tooling (uv-only, PEP 723, ephemeral by default) | [[tool-provisioning-and-environment-hygiene/SKILL|tool-provisioning-and-environment-hygiene]] | No pip, no pipx, no global installs. |
+| External errors/tools | [[known-solution-first/SKILL|known-solution-first]] | Public contracts before local probing. |
+| Debugging | [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] | Stderr preservation, surface classification before mutation. |
 
 ### With test-driven-development
 

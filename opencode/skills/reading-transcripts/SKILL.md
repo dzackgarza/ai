@@ -17,7 +17,7 @@ JSONL/database formats in order to answer user questions about past work.
 
 - Use this skill for transcript discovery and parsing across supported harnesses.
 
-- Use `opencode-cli` for OpenCode manager command forms and repo-local server setup.
+- Use [[opencode-cli/SKILL|opencode-cli]] for OpenCode manager command forms and repo-local server setup.
 
 - Use `opencode-plugin-development` when transcript evidence is part of plugin proof or
   audit work.
@@ -69,7 +69,7 @@ script:
 python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness <type> <identifier>
 ```
 
-Supported harnesses: `claude`, `opencode`, `codex`, `kilocode`, `gemini`, `qwen`, `amp`
+Supported harnesses: `claude`, [[opencode/SKILL|opencode]], [[codex/SKILL|codex]], `kilocode`, `gemini`, `qwen`, `amp`
 
 The parser script automatically extracts user prompts, assistant text, thinking blocks,
 tool calls, and truncated tool results, outputting them in a clean, chronological

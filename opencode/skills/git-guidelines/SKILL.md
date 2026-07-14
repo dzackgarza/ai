@@ -18,8 +18,8 @@ Reference docs within this skill:
 - `repo-management.md` — clone, create, fork, settings, releases, workflows
 - `scripts/extract_unresolved_issues/` — PR review scanning tool (see PR Review Workflow below)
 
-The former separate skills `github-auth`, `github-pr-workflow`, `github-code-review`,
-`github-issues`, and `github-repo-management` have been consolidated here.
+The former separate skills [[github-auth/SKILL|github-auth]], [[github-pr-workflow/SKILL|github-pr-workflow]], [[github-code-review/SKILL|github-code-review]],
+[[github-issues/SKILL|github-issues]], and [[github-repo-management/SKILL|github-repo-management]] have been consolidated here.
 Each old location remains as a redirect stub.
 
 ## The Edit Workflow (Mandatory)
@@ -264,7 +264,7 @@ auditable.
 | Current state, outstanding gaps, future work | Repo artifacts (e.g. LEDGER.md) |
 
 Completed work history belongs in commits, never in repo docs.
-**See: `agent-memory`** for the full decision test.
+**See: [[agent-memory/SKILL|agent-memory]]** for the full decision test.
 
 ## PR Review Workflow
 
@@ -278,7 +278,7 @@ A PR-scoped task is not complete until:
 - the automated review loop has been explicitly triggered (`gh pr comment <PR_NUMBER>
   --body '@codex review'`, or the repo's documented equivalent);
 - returned review and check feedback has been scanned with `extract_unresolved_issues`
-  and routed through `pr-feedback-triage`, or a real blocker has been reported.
+  and routed through [[pr-feedback-triage/SKILL|pr-feedback-triage]], or a real blocker has been reported.
 
 Do not write a completion report while any of those remain undone. Report the missing
 PR-state or review-loop step as incomplete required work.
@@ -554,8 +554,8 @@ If the user asks to use Jules for review, load:
 - [reviewing-llm-code](file:///home/dzack/ai/opencode/skills/reviewing-llm-code/SKILL.md)
 - [anti-slop](file:///home/dzack/ai/opencode/skills/anti-slop/SKILL.md)
 - [reviewing-subagent-work](file:///home/dzack/ai/opencode/skills/reviewing-subagent-work/SKILL.md)
-- `test-guidelines` if tests/QC/proof surfaces are in scope
-- `pr-feedback-triage` if existing review comments are being evaluated
+- [[test-guidelines/SKILL|test-guidelines]] if tests/QC/proof surfaces are in scope
+- [[pr-feedback-triage/SKILL|pr-feedback-triage]] if existing review comments are being evaluated
 
 ## Issue Workflow
 

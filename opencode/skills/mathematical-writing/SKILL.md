@@ -281,22 +281,22 @@ writing.
 
 ## Cross-References
 
-- **lean4** → Load alongside when formalizing definitions or theorems in Lean.
+- [[lean4/skills/lean4/SKILL|lean4]] → Load alongside when formalizing definitions or theorems in Lean.
   Covers editing .lean files, debugging type errors, searching mathlib for existing
   lemmas.
 
-- **lattices** → Load alongside when the mathematical content involves quadratic forms,
+- [[lattices/SKILL|lattices]] → Load alongside when the mathematical content involves quadratic forms,
   root systems, or lattice-theoretic objects.
   Provides notation conventions and domain constraints.
 
-- **sagemath** → Load alongside when writing SageMath code for computation or
+- [[sagemath/SKILL|sagemath]] → Load alongside when writing SageMath code for computation or
   verification alongside prose.
   Covers Sage-specific patterns and integration.
 
-- **theorem-proving-and-counterexamples** → Load alongside when the writing target is a
+- [[theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]] → Load alongside when the writing target is a
   formal proof or when counterexample search is needed.
   Covers broader formalization strategies across multiple provers.
 
-- **mathematical-testing** → Load alongside when developing SageMath implementations
+- [[mathematical-testing/SKILL|mathematical-testing]] → Load alongside when developing SageMath implementations
   that need correctness verification.
   Covers writing failing test suites before implementation.

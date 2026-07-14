@@ -377,6 +377,25 @@ broken-symlinks:
 # Check markdown files for broken local file references.
 #
 # Usage: just check-markdown [path ...]
+# Audit WikiLinks between installed skills in the assembled skill tree.
+# Lychee is the resolver. A temporary dereferenced vault is required because Lychee
+# intentionally ignores symlinks while indexing WikiLink targets.
+# Usage: just check-skill-wikilinks
+check-skill-wikilinks:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    vault="$(mktemp -d)"
+    trap 'rm -rf "$vault"' EXIT
+    rsync -aL --delete --exclude '.git' "{{ skills_dir }}/" "$vault/skills/"
+
+    mapfile -d '' skill_files < <(find "$vault/skills" -type f -name SKILL.md -print0)
+    ((${#skill_files[@]} > 0))
+    lychee --offline --no-progress --include-wikilinks \
+        --base-url "$vault/skills" --fallback-extensions md \
+        --include '/SKILL' "${skill_files[@]}"
+
+# Usage: just check-markdown [path ...]
 check-markdown *args:
     #!/usr/bin/env bash
     set -euo pipefail

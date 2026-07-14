@@ -55,7 +55,7 @@ No fix is allowed that violates the [Bridge-Burning Policies](file:///home/dzack
 
 Use this for any bug, failed test, build failure, performance anomaly, flaky behavior, unexpected runtime state, failed fix, or problem with multiple unknowns.
 
-Load `test-driven-development` before fixing a user-reported bug.
+Load [[test-driven-development/SKILL|test-driven-development]] before fixing a user-reported bug.
 If project rules require a committed red test before any fix, that rule controls.
 This skill governs the root-cause investigation after the failure is observable.
 
@@ -133,7 +133,7 @@ If a later observation contradicts an earlier claim, return to the contradiction
 ### External-Owner Gate (Preliminary)
 
 If the failure involves an external tool, compiler, library, framework, API, package
-manager, provider, or exact error message, load `known-solution-first` and resolve the
+manager, provider, or exact error message, load [[known-solution-first/SKILL|known-solution-first]] and resolve the
 public contract **before** populating the hypothesis ledger from local probing.
 
 Capture the minimal symptom, exact error, and version first (one command, not full
@@ -489,7 +489,7 @@ If any blank cannot be filled with command output, artifact paths, API responses
 
 A debugging task is not complete until the report includes the original failure command and raw output, the root cause at the owned boundary, the smallest reproducer or fixture, the surface added or used, the targeted verification result, and the global verification result.
 
-Load `reality-grounded-debugging` alongside for full command-output discipline, canonical-isolation standards, pipeline debugging rules, API/data debugging rules, and stop rules.
+Load [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] alongside for full command-output discipline, canonical-isolation standards, pipeline debugging rules, API/data debugging rules, and stop rules.
 
 ## Bias Countermeasures
 

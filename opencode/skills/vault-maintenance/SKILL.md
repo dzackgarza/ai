@@ -8,7 +8,7 @@ description: Use when an agent-memory vault has staged or unstaged changes, comm
 The vault should be committed at all times.
 Any staged or unstaged vault change outside the currently executing recovery is an ephemeral error state, not ordinary work to preserve on a long-lived branch.
 
-Before normal `agent-memory add`, `update`, `delete`, `search`, or `plan` work resumes, read the relevant reference workflow:
+Before normal `agent-memory add`, `update`, `delete`, `search`, or [[plan/SKILL|plan]] work resumes, read the relevant reference workflow:
 
 - [Check Vault State](references/check-vault-state.md)
 - [Repair Vault Errors](references/repair-vault-errors.md)

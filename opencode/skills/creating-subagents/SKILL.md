@@ -12,11 +12,11 @@ description: "Use when creating new subagents or updating subagent descriptions 
 | **Subagent** | **Agents** (delegation context) | Tell agents how to dispatch subagents with proper context | Delegation instructions: “Use when X. Pass Y. Ask 'Z'.” |
 
 **Critical:** Subagent descriptions are **agent-facing prompts**, not user
-documentation. They follow **prompt engineering practices** (see `prompt-engineering`
-skill) and **skill description lessons** (see `creating-skills` skill for description
+documentation. They follow **prompt engineering practices** (see [[prompt-engineering/SKILL|prompt-engineering]]
+skill) and **skill description lessons** (see [[creating-skills/SKILL|creating-skills]] skill for description
 writing principles).
 
-Also load `writing-for-agent-audiences` before editing subagent prompts or runtime agent
+Also load [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] before editing subagent prompts or runtime agent
 definitions. Keep the description/prompt centered on the work the agent must do, the
 inputs it needs, and the artifact it must produce.
 Harness notes, prior test postmortems, model-run trivia, and evaluator complaints belong
@@ -58,7 +58,7 @@ Create a subagent when the task has these characteristics:
 
 ## Model Tier Matching
 
-**See `model-selection` skill for complete guidance.** Quick reference:
+**See [[model-selection/SKILL|model-selection]] skill for complete guidance.** Quick reference:
 
 | Tier | Turn Budget | Best For Subagent Tasks | Trust Level |
 | --- | --- | --- | --- |
@@ -276,32 +276,32 @@ Check that the description:
 
 ## Related Skills
 
-- → **prompt-engineering** — REQUIRED: Load alongside when writing subagent
+- → [[prompt-engineering/SKILL|prompt-engineering]] — REQUIRED: Load alongside when writing subagent
   descriptions. Subagent descriptions ARE prompts that prime delegating agents.
   Covers concrete examples, variable placeholders, priming context.
   Description format with “Ask '[pattern]'” and `[placeholders]`.
 
-- → **creating-skills** — REQUIRED: Load alongside when writing `Use when` trigger
+- → [[creating-skills/SKILL|creating-skills]] — REQUIRED: Load alongside when writing `Use when` trigger
   patterns for subagent descriptions.
   Covers description writing for tool selection, scenario-based framing.
   Adapt TDD approach: watch agents fail to delegate properly, write descriptions that
   prevent those failures.
 
-- → **writing-for-agent-audiences** — REQUIRED: Load alongside when the audience is an
+- → [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] — REQUIRED: Load alongside when the audience is an
   agent evaluating a delegation instruction.
   Covers agent-facing audience control, evaluator-observation distillation; excludes
   harness trivia unless it is the object of the task.
 
-- → **model-selection** — REQUIRED: Load alongside when selecting which model tier to
+- → [[model-selection/SKILL|model-selection]] — REQUIRED: Load alongside when selecting which model tier to
   delegate to. Covers model tier capabilities, task-to-tier matching, optimizing for
   token efficiency.
 
-- → **difficulty-and-time-estimation** — REQUIRED: Load alongside when deciding whether
+- → [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] — REQUIRED: Load alongside when deciding whether
   subagent delegation is justified.
   Covers multi-factor difficulty model (atomic steps, token burn, context pollution,
   success probability), avoiding time-based thinking.
 
-- → **subagent-delegation** — Load alongside when managing the operational lifecycle of
+- → [[subagent-delegation/SKILL|subagent-delegation]] — Load alongside when managing the operational lifecycle of
   a delegation. Covers review loops, checkpointing, verifying B/C-tier output, git
   checkpoint atomic work.
 

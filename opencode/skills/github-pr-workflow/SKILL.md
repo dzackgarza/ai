@@ -10,6 +10,6 @@ metadata:
     related_skills: [git-guidelines]
 ---
 
-> **REDIRECT**: This skill has been consolidated into `git-guidelines`.
-> Load `git-guidelines` and reference `pr-workflow.md`:
+> **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
+> Load [[git-guidelines/SKILL|git-guidelines]] and reference `pr-workflow.md`:
 > [git-guidelines/pr-workflow.md](file:///home/dzack/ai/opencode/skills/git-guidelines/pr-workflow.md)

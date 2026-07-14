@@ -5,9 +5,9 @@ description: Use when extracting durable mathematical knowledge from chat logs, 
 # Knowledge Extraction
 
 For the vault mechanics of where extracted content lands (reading, writing, linking,
-searching notes), load `obsidian`. For vault-level stewardship policy — inbox intake,
+searching notes), load [[obsidian/SKILL|obsidian]]. For vault-level stewardship policy — inbox intake,
 provenance tracking, note taxonomy, and mathematical-vault conventions — load
-`mathematical-obsidian-vault-steward`.
+[[mathematical-obsidian-vault-steward/SKILL|mathematical-obsidian-vault-steward]].
 
 ## Core policy
 

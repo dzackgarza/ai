@@ -108,7 +108,7 @@ Vague name, tests mock not real code.
   Split it)
 
 - Real code, not mocks. No exceptions.
-  See `test-guidelines` for the no-mock policy.
+  See [[test-guidelines/SKILL|test-guidelines]] for the no-mock policy.
 
 - Name describes behavior, not implementation
 
@@ -347,7 +347,7 @@ Before marking work complete:
 
 - [ ] Output pristine (no errors, warnings)
 
-- [ ] Tests use real code, no mocks. See `test-guidelines`.
+- [ ] Tests use real code, no mocks. See [[test-guidelines/SKILL|test-guidelines]].
 
 - [ ] Edge cases and errors covered
 
@@ -360,7 +360,7 @@ You skipped TDD. Start over.
 | --- | --- |
 | Don't know how to test | Write the wished-for API. Write the assertion first. Ask the user. |
 | Test too complicated | Design too complicated. Simplify the interface. |
-| Must mock everything | Code too coupled. The missing artifact is a boundary fixture or debug surface, not a mock. See `test-guidelines` no-mock policy. |
+| Must mock everything | Code too coupled. The missing artifact is a boundary fixture or debug surface, not a mock. See [[test-guidelines/SKILL|test-guidelines]] no-mock policy. |
 | Test setup huge | Extract helpers. Still complex? Simplify the design. |
 
 ## Hermes Agent Integration

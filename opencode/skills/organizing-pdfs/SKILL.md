@@ -13,13 +13,13 @@ This is a semantic workflow. Filenames, hashes, and search hits are leads, not p
 
 ## Load These Skills
 
-- `reading-pdfs` before extracting or inspecting PDF contents.
-- `zotero` or `zotero-api` before reading or writing Zotero state.
-- `zotero-pdf-extraction-attachments` when verifying Zotero parent/child attachment state.
-- `epistemic-integrity` before reporting missing sources, no-identifier findings, or any
+- [[reading-pdfs/SKILL|reading-pdfs]] before extracting or inspecting PDF contents.
+- [[zotero/SKILL|zotero]] or [[zotero-api/SKILL|zotero-api]] before reading or writing Zotero state.
+- [[zotero-pdf-extraction-attachments/SKILL|zotero-pdf-extraction-attachments]] when verifying Zotero parent/child attachment state.
+- [[epistemic-integrity/SKILL|epistemic-integrity]] before reporting missing sources, no-identifier findings, or any
   conclusion based on partial PDF reads.
-- `git-guidelines` before deleting or trashing local files; use recoverable trash.
-- `response-preparation` before final reports.
+- [[git-guidelines/SKILL|git-guidelines]] before deleting or trashing local files; use recoverable trash.
+- [[response-preparation/SKILL|response-preparation]] before final reports.
 
 ## Core Rule
 

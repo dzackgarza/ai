@@ -15,7 +15,7 @@ should track the selected issue set or subtree they claim.
 
 If the plan has just been finalized but the GitHub issue tree, milestone scope, or draft
 PR claim map does not exist, stop implementation and run the plan-to-issue-tree-to-PR
-conversion workflow from `plan` and `git-guidelines/creating-prs.md` first. Do not use a
+conversion workflow from [[plan/SKILL|plan]] and `git-guidelines/creating-prs.md` first. Do not use a
 local scratchpad plan as the authoritative tracker for actual work once the plan is final.
 
 ## Execution Modes
@@ -199,7 +199,7 @@ Available agents to resume:
 
 - `plan-agent` - Created the implementation plan
 
-- `oracle` - Researched best practices
+- [[oracle/SKILL|oracle]] - Researched best practices
 
 - `debug-agent` - Investigated issues
 

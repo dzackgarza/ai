@@ -39,7 +39,7 @@ open it in a browser.
 
 - Floor plans, narrative journeys, educational / textbook-style visuals
 
-- Hand-drawn whiteboard sketches (consider `excalidraw`)
+- Hand-drawn whiteboard sketches (consider [[excalidraw/SKILL|excalidraw]])
 
 - Animated explainers (consider an animation skill)
 

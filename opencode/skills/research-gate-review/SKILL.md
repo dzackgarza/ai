@@ -432,10 +432,10 @@ the object,” it’s a software name, not a mathematical name.
 - `.agents/skills/research-proof-auditing/references/proof-auditing.md`: evidence
   sufficiency for mathematical claims
 
-- `requesting-code-review`: pre-commit code verification (complementary — runs before
+- [[requesting-code-review/SKILL|requesting-code-review]]: pre-commit code verification (complementary — runs before
   commit, not after)
 
-- `llm-failure-modes`: common LLM cognitive failures that can corrupt review processes —
+- [[llm-failure-modes/SKILL|llm-failure-modes]]: common LLM cognitive failures that can corrupt review processes —
   overconfidence, confabulation, premature victory declaration, tool output blindness
 
 - `references/batch-review-patterns.md`: concrete batch pipeline, context templates, and

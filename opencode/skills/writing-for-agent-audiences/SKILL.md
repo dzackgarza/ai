@@ -74,7 +74,7 @@ tend to...”.
 > Use MinerU for PDF extraction.
 
 **When Meta-Commentary is Appropriate:** If a skill is explicitly about agent behavior,
-failure modes, or introspection (e.g., an `llm-failure-modes` skill or an
+failure modes, or introspection (e.g., an [[llm-failure-modes/SKILL|llm-failure-modes]] skill or an
 `agent-orchestration` skill), then discussing LLM behavior, tendencies, and failure
 patterns is completely appropriate and necessary for the task context.
 
@@ -463,17 +463,17 @@ contaminating worker guidance with orchestrator concerns.
 
 ## Related Skills
 
-- → **creating-skills** — REQUIRED: Load alongside when writing or editing `SKILL.md`
+- → [[creating-skills/SKILL|creating-skills]] — REQUIRED: Load alongside when writing or editing `SKILL.md`
   files. Covers what belongs in a skill, description writing guidelines.
 
-- → **looped-task-skill-author** — REQUIRED: Load alongside when the agent-facing prose
+- → [[looped-task-skill-author/SKILL|looped-task-skill-author]] — REQUIRED: Load alongside when the agent-facing prose
   supports repeated one-shot loops or long-horizon continuation.
   Covers progress logs, self-correcting state machines.
 
-- → **creating-subagents** — REQUIRED: Load alongside when writing subagent descriptions
+- → [[creating-subagents/SKILL|creating-subagents]] — REQUIRED: Load alongside when writing subagent descriptions
   or agent definitions.
 
-- → **prompt-engineering** — Load alongside when writing broader prompt contracts and
+- → [[prompt-engineering/SKILL|prompt-engineering]] — Load alongside when writing broader prompt contracts and
   reference-skill sections.
   Covers concrete examples, variable placeholders, priming context.
 

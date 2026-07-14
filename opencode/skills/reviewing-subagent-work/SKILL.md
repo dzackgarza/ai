@@ -90,10 +90,10 @@ patterns:
 
 - **Structurally wrong at the abstraction level** — the approach destroys the
   abstraction before operating (e.g., regex-on-HTML where semantic DOM selectors exist).
-  This can be recognized without data or execution; see `addressing-shallow-work` →
+  This can be recognized without data or execution; see [[addressing-shallow-work/SKILL|addressing-shallow-work]] →
   “Recognizing Structurally Wrong Code”.
 
-If the output shows these patterns → LOAD `addressing-shallow-work` skill before
+If the output shows these patterns → LOAD [[addressing-shallow-work/SKILL|addressing-shallow-work]] skill before
 proposing any fixes.
 Do not respond to shallow work by adding more structure — that makes it worse.
 
@@ -116,7 +116,7 @@ A cleanup diff can be a stronger deception than an additive diff.
 A review comment from another agent is itself an artifact under review.
 Do not trust the reviewer’s framing, severity, or proposed fix.
 
-Apply `pr-feedback-triage`:
+Apply [[pr-feedback-triage/SKILL|pr-feedback-triage]]:
 - Is the underlying claim true?
 - Is the suggested remediation policy-compatible?
 - What evidence would falsify either?
@@ -141,16 +141,16 @@ Reject if:
   patterns where evaluators produce the appearance of oversight without epistemic
   independence.
 
-- **addressing-shallow-work** → LOAD alongside when you need to fix a process that
+- [[addressing-shallow-work/SKILL|addressing-shallow-work]] → LOAD alongside when you need to fix a process that
   produced shallow output.
   Provides structural-scrutiny patterns for detecting and correcting work that satisfies
   format without satisfying intent.
 
-- **reviewing-llm-code** → LOAD alongside when the subagent produced code, tests, QC, or
+- [[reviewing-llm-code/SKILL|reviewing-llm-code]] → LOAD alongside when the subagent produced code, tests, QC, or
   documentation. Provides the canonical pattern catalog for LLM code artifacts and the
   review procedure. Do not review code without loading this skill first.
 
-- **anti-slop** → LOAD alongside when the subagent output shows generated-code residue:
+- [[anti-slop/SKILL|anti-slop]] → LOAD alongside when the subagent output shows generated-code residue:
   generic wrappers, no-op UI, debug debris, boilerplate, or local patches with no real
   abstraction. Provides the Dependency Inversion Rule and structural analysis frame.
   Reviewing subagent work MUST check compliance with the
@@ -159,14 +159,14 @@ Reject if:
   output containing runtime defaults, fallbacks, mocks, or optional critical
   dependencies MUST be rejected.
 
-- **llm-failure-modes** → LOAD alongside when you need to name the specific cognitive
+- [[llm-failure-modes/SKILL|llm-failure-modes]] → LOAD alongside when you need to name the specific cognitive
   failure mode that produced the shallow work (goal substitution, overconfidence,
   confabulation, replacement instinct, dependency aversion bias, meta-artifact
   delegation, scale-complexity confusion).
 
-- **test-guidelines** → LOAD alongside when reviewing subagent-produced tests, QC, smoke
+- [[test-guidelines/SKILL|test-guidelines]] → LOAD alongside when reviewing subagent-produced tests, QC, smoke
   checks, CI, or proof surfaces.
 
-- **thermo-nuclear-code-quality-review** → LOAD alongside when the subagent output shows
+- [[thermo-nuclear-code-quality-review/SKILL|thermo-nuclear-code-quality-review]] → LOAD alongside when the subagent output shows
   maintainability, architecture, or abstraction problems (giant files, spaghetti
   condition growth, premature abstraction).

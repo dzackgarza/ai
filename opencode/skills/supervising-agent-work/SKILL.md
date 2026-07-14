@@ -50,15 +50,15 @@ an incompleteness signal with progress context, not a success signal.
 
 ## Reference Skills
 
-- `reading-transcripts`: load before fetching historical or live agent transcripts.
-- `anti-slop`, `reviewing-llm-code`, or `reviewing-subagent-work`: load when judging
+- [[reading-transcripts/SKILL|reading-transcripts]]: load before fetching historical or live agent transcripts.
+- [[anti-slop/SKILL|anti-slop]], [[reviewing-llm-code/SKILL|reviewing-llm-code]], or [[reviewing-subagent-work/SKILL|reviewing-subagent-work]]: load when judging
   drift, reward hacking, or agent-produced work.
-- `llm-failure-modes`: load when the review depends on recognizing gaming,
+- [[llm-failure-modes/SKILL|llm-failure-modes]]: load when the review depends on recognizing gaming,
   self-certification, jargon capture, goal narrowing, or other adversarial agent
   behavior.
-- `ssh-workstation-and-tmux`: load when the target session is remote or the user asks
+- [[ssh-workstation-and-tmux/SKILL|ssh-workstation-and-tmux]]: load when the target session is remote or the user asks
   about workstation tmux sessions.
-- `scheduling-tasks-and-subagents`: load only when the user asks for external scheduled
+- [[scheduling-tasks-and-subagents/SKILL|scheduling-tasks-and-subagents]]: load only when the user asks for external scheduled
   wakeups. For Codex self-supervision, prefer the PTY sleep timer below.
 
 ## Observe The Session
@@ -74,7 +74,7 @@ tmux capture-pane -pt <session>:<window> -S -200
 Use the target exactly as named by the user, such as `main:0`. Increase the capture
 history when needed, but do not treat a pane tail as a full transcript. If the visible
 pane references prior decisions, queued prompts, hidden scrollback, or a separate
-session identifier, fetch the transcript through `reading-transcripts`.
+session identifier, fetch the transcript through [[reading-transcripts/SKILL|reading-transcripts]].
 
 When reading the pane:
 

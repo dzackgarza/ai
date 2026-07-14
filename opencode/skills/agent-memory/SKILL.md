@@ -77,7 +77,7 @@ Use repo-local files only as temporary scratchpads while working through in-the-
 investigation. Before handoff, delete the scratchpad or promote its durable content:
 
 - reusable agent behavior, corrections, traps, and decisions -> typed memories;
-- plans, phase state, queues, and residue ledgers -> `plan` records;
+- plans, phase state, queues, and residue ledgers -> [[plan/SKILL|plan]] records;
 - durable product/project doctrine, architecture rationale, and readable roadmap/proof
   projections -> wiki;
 - active public user stories, roadmap nodes, feature contracts, proof burdens,

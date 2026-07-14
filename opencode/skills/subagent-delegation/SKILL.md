@@ -17,15 +17,15 @@ research, spec-review, quality-review, audit) rather than assuming fixed names.
 
 ## Reference Skills
 
-- **prompt-engineering** — REQUIRED: Use for all subagent instruction design.
+- [[prompt-engineering/SKILL|prompt-engineering]] — REQUIRED: Use for all subagent instruction design.
 
-- **difficulty-and-time-estimation** — REQUIRED: Use for task calibration and delegation
+- [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] — REQUIRED: Use for task calibration and delegation
   decisions.
 
-- **opencode-cli** — Use for OpenCode manager command forms when session inspection is
+- [[opencode-cli/SKILL|opencode-cli]] — Use for OpenCode manager command forms when session inspection is
   part of delegation review.
 
-- **reading-transcripts** — Use when transcript review crosses harnesses; for OpenCode
+- [[reading-transcripts/SKILL|reading-transcripts]] — Use when transcript review crosses harnesses; for OpenCode
   it delegates to `ocm transcript`.
 
 * * *
@@ -35,7 +35,7 @@ research, spec-review, quality-review, audit) rather than assuming fixed names.
 Subagents are a **context management and token optimization tool** — not a convenience
 for trivial tasks. Use judiciously.
 
-**For detailed difficulty calibration, see `difficulty-and-time-estimation` skill.**
+**For detailed difficulty calibration, see [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] skill.**
 That skill provides the multi-factor model for deciding when subagent delegation is
 worth the overhead.
 
@@ -92,7 +92,7 @@ OR severely pollute working context.
 ### Decision Factors (Non-Exhaustive)
 
 Task difficulty is a **weighted combination of multiple factors** — no single metric
-suffices. See `difficulty-and-time-estimation` for the full model.
+suffices. See [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] for the full model.
 
 **Key factors:**
 
@@ -113,7 +113,7 @@ suffices. See `difficulty-and-time-estimation` for the full model.
 
 **Never estimate in time.** Time-based thinking ("this will take 30 min") is
 systematically misleading for LLMs.
-See `difficulty-and-time-estimation` for why.
+See [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] for why.
 
 **Main Agent Role:**
 
@@ -287,7 +287,7 @@ shows the agent is stalling, drifting, or making bad decisions.
 - Read the actual transcript before deciding whether the agent misunderstood the task,
   hit an environment problem, or simply needs a tighter resume prompt.
 
-- For Codex CLI, use the `reading-transcripts` skill and inspect the actual
+- For Codex CLI, use the [[reading-transcripts/SKILL|reading-transcripts]] skill and inspect the actual
   rollout/session transcript, not just the final summary.
 
 - Resume or replace agents based on transcript evidence, not on confident subagent
@@ -355,7 +355,7 @@ Choose mode intentionally based on coordination needs.
 
 After every subagent terminal event (sync return or async terminal callback):
 
-1. **Inspect transcript**: for OpenCode, use `reading-transcripts` or
+1. **Inspect transcript**: for OpenCode, use [[reading-transcripts/SKILL|reading-transcripts]] or
    `ocm transcript <sessionID>`
 
 2. **Read full output**: Understand what subagent attempted, what succeeded, what failed
@@ -667,8 +667,8 @@ old artifact treats its residue as requirements and reseeds the slop.
 Force the brownfield job to look like greenfield work with two fresh, separately-scoped
 subagents:
 
-1. **Extractor.** Prime on the skill that owns the artifact type (`writing-documentation`,
-   `plan`, etc.). Give it the
+1. **Extractor.** Prime on the skill that owns the artifact type ([[writing-documentation/SKILL|writing-documentation]],
+   [[plan/SKILL|plan]], etc.). Give it the
    contaminated artifact and the instruction to extract only the real, externally
    verifiable, user-facing requirements and surviving facts, each grounded in inspected
    reality (code, data, command output, external source) rather than other generated
@@ -791,12 +791,12 @@ git diff  # review C's changes
 
 **Required workflow skills:**
 
-- **difficulty-and-time-estimation** - REQUIRED: Use for task calibration and delegation
+- [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] - REQUIRED: Use for task calibration and delegation
   decisions.
 
 - **Test Guidelines standards** - REQUIRED: All subagents follow high-quality testing
   guidelines.
 
-- **prompt-engineering** - REQUIRED: Use for all subagent prompt engineering.
+- [[prompt-engineering/SKILL|prompt-engineering]] - REQUIRED: Use for all subagent prompt engineering.
 
-- **reading-transcripts** - REQUIRED: Review subagent sessions after completion.
+- [[reading-transcripts/SKILL|reading-transcripts]] - REQUIRED: Review subagent sessions after completion.

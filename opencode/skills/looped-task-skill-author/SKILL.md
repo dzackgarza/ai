@@ -51,14 +51,14 @@ compatible with the loop philosophy.
 
 Required companion skills:
 
-- `writing-for-agent-audiences` for audience control and concise agent-facing prose.
+- [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] for audience control and concise agent-facing prose.
 
-- `creating-skills` for what belongs in a `SKILL.md`.
+- [[creating-skills/SKILL|creating-skills]] for what belongs in a `SKILL.md`.
 
-- `creating-subagents` when the loop depends on repo-local agents or subagent
+- [[creating-subagents/SKILL|creating-subagents]] when the loop depends on repo-local agents or subagent
   descriptions.
 
-- `prompt-engineering` when editing system prompts or agent definitions adjacent to the
+- [[prompt-engineering/SKILL|prompt-engineering]] when editing system prompts or agent definitions adjacent to the
   skill.
 
 Look for, as applicable:

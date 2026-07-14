@@ -25,7 +25,7 @@ possible?”, or “compare A vs B”.
 
 - The answer is knowable from docs or reading code — just do research, don’t build
 
-- The work is production path — use the `plan` skill instead
+- The work is production path — use the [[plan/SKILL|plan]] skill instead
 
 - The idea is already validated — jump straight to implementation
 

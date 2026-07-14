@@ -5,7 +5,7 @@ description: "Run a Brooks-Lint PR code review"
 
 # source-command-brooks-review
 
-Use this skill when the user asks to run the migrated source command `brooks-review`.
+Use this skill when the user asks to run the migrated source command [[brooks-review/SKILL|brooks-review]].
 
 ## Command Template
 

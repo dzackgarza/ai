@@ -13,18 +13,18 @@ cross-language rules, then load the language subskill when one exists.
 ## Routing
 
 - Python code, Python packages, Pydantic models, uv scripts, or Python module layout:
-  load `code-patterns-python`.
-- CLI or script interface design: also load `writing-scripts-and-cli-interfaces`.
-- JSON or YAML config edits: also load `config-file-editing`.
-- Tests or proof surfaces: `test-guidelines` owns admissible proof; this skill only owns
+  load [[code-patterns/python/SKILL|code-patterns-python]].
+- CLI or script interface design: also load [[writing-scripts-and-cli-interfaces/SKILL|writing-scripts-and-cli-interfaces]].
+- JSON or YAML config edits: also load [[config-file-editing/SKILL|config-file-editing]].
+- Tests or proof surfaces: [[test-guidelines/SKILL|test-guidelines]] owns admissible proof; this skill only owns
   readability and maintainability of test code.
-- External library, framework, compiler, or package behavior: load `known-solution-first`
+- External library, framework, compiler, or package behavior: load [[known-solution-first/SKILL|known-solution-first]]
   before applying local style rules.
 
 ## Authority Order
 
 1. User directive and local `AGENTS.md` instructions.
-2. `policy-index`, `anti-slop`, `bespoke-software-policy`, and `test-guidelines` for
+2. [[policy-index/SKILL|policy-index]], [[anti-slop/SKILL|anti-slop]], [[bespoke-software-policy/SKILL|bespoke-software-policy]], and [[test-guidelines/SKILL|test-guidelines]] for
    hard bridge-burning constraints.
 3. Language subskill for language-specific rules.
 4. This skill's cross-language style guidance.
@@ -69,5 +69,5 @@ Read only the relevant reference:
 - `references/objects-and-data.md` — object/data-structure tradeoffs and Law of Demeter.
 - `references/error-handling.md` — legacy clean-code error-handling guidance, subordinate
   to fail-loud policy and language subskills.
-- `references/tests.md` — readability of tests, subordinate to `test-guidelines`.
+- `references/tests.md` — readability of tests, subordinate to [[test-guidelines/SKILL|test-guidelines]].
 - `references/smells-and-heuristics.md` — detailed smell catalog for review sweeps.

@@ -237,7 +237,7 @@ debugger can pause it on a breakpoint at any `sb(...)`.
 
 ### Debugging `_SlashWorker` / PTY child processes
 
-Those are Python, not Node — use the `python-debugpy` skill for them.
+Those are Python, not Node — use the [[python-debugpy/SKILL|python-debugpy]] skill for them.
 Only Node portions (Ink UI, tui_gateway client, tsx-run tests under `ui-tui/`) use this
 skill.
 

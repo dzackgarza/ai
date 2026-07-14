@@ -4,7 +4,7 @@ description: Use when legacy prompts request clean-code or older guidance names 
 ---
 # Clean Code Redirect
 
-Canonical guidance moved to `code-patterns`.
+Canonical guidance moved to [[code-patterns/SKILL|code-patterns]].
 
-Load `code-patterns` for cross-language style rules, then load the relevant language
-subskill such as `code-patterns-python` for Python work.
+Load [[code-patterns/SKILL|code-patterns]] for cross-language style rules, then load the relevant language
+subskill such as [[code-patterns/python/SKILL|code-patterns-python]] for Python work.

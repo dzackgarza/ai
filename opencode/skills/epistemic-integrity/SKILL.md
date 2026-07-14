@@ -97,7 +97,7 @@ After a targeted miss, broaden before concluding:
 
 ## Transcript and Agent-Output Work
 
-For prior conversations and subagent work, load `reading-transcripts` for the parser and
+For prior conversations and subagent work, load [[reading-transcripts/SKILL|reading-transcripts]] for the parser and
 location rules.
 Treat summaries, task cards, hashes, and file existence as receipts, not semantic proof.
 

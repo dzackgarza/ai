@@ -21,7 +21,7 @@ description: Use when you need to query Zotero data, find references, export cit
 
 - **Pagination limit:** `curl` queries are strictly limited to 100 results per request.
   You must loop using `&start=N` to fetch all data.
-  Do NOT use the `zotero` python skill for local cache reads, as that script is
+  Do NOT use the [[zotero/SKILL|zotero]] python skill for local cache reads, as that script is
   hardcoded to the official authenticated web API.
 
 - **Read-Only:** You cannot attach new files or modify metadata via this local API.

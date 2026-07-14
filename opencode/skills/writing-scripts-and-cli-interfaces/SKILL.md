@@ -7,7 +7,7 @@ description: Use when creating shell scripts, Python CLI tools, or command-line 
 ## Default Stack
 
 **Project-owned:** Cyclopts + Pydantic v2 (for CLI presentation and input contracts).
-**Global QC (see `quality-control`):** basedpyright, Ruff, pytest, coverage, etc.
+**Global QC (see [[quality-control/SKILL|quality-control]]):** basedpyright, Ruff, pytest, coverage, etc.
 
 Use Cyclopts for CLI presentation.
 Use Pydantic as the actual spec.
@@ -26,7 +26,7 @@ build, plugin, and domain-test dependencies.
 Any Python script created by an agent that imports non-stdlib packages must be
 self-contained with PEP 723 inline script metadata and run through `uv`. No separate
 install step. No implicit environment assumption. No `pip install` prelude.
-See `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts
+See [[tool-provisioning-and-environment-hygiene/SKILL|tool-provisioning-and-environment-hygiene]] under "Self-Contained Python Scripts
 with uv" for the full hierarchy and forbidden pathways.
 
 ### Canonical Template

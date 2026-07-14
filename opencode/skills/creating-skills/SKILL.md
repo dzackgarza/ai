@@ -335,17 +335,17 @@ When to do X vs Y:
 
 **REQUIRED: Load these skills before writing:**
 
-- **writing-for-agent-audiences** — How to write effective agent-facing documentation
+- [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] — How to write effective agent-facing documentation
 
-- **writing-clearly-and-concisely** — Concise prose techniques
+- [[obra-the-elements-of-style/SKILL|writing-clearly-and-concisely]] — Concise prose techniques
 
-- **looped-task-skill-author** — Required for repeated one-shot loops, persistent state,
+- [[looped-task-skill-author/SKILL|looped-task-skill-author]] — Required for repeated one-shot loops, persistent state,
   or continuation workflows
 
-- **creating-subagents** — Required when the skill interacts with subagent or
+- [[creating-subagents/SKILL|creating-subagents]] — Required when the skill interacts with subagent or
   runtime-agent definitions
 
-- **prompt-engineering** — Required for system prompts, agent definitions, or prompt
+- [[prompt-engineering/SKILL|prompt-engineering]] — Required for system prompts, agent definitions, or prompt
   contracts adjacent to the skill
 
 ## Testing Skills

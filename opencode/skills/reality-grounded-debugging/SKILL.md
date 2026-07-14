@@ -66,7 +66,7 @@ Only after the red proof is committed should implementation change begin, and th
 change should be a separate commit.
 
 For dependency-owned symptoms such as compiler errors, provider/API failures, package
-version mismatches, or external-library behavior, load `known-solution-first` while
+version mismatches, or external-library behavior, load [[known-solution-first/SKILL|known-solution-first]] while
 building the reproducer.
 Establish the public contract or known upstream failure before treating local code as
 the explanation.
@@ -85,7 +85,7 @@ When entering an unfamiliar repo, API, CLI, data format, or pipeline:
 directory, configs, entrypoints, and invocation chain. For external
 tools/compilers/libraries/APIs, "actual shape" means the public contract — docs, release
 notes, issues, known working examples — not the local cache or wrapper. Load
-`known-solution-first` for the latter case.
+[[known-solution-first/SKILL|known-solution-first]] for the latter case.
 
 Correct first moves for project-internal unknowns:
 
@@ -219,14 +219,14 @@ A debugging task is not complete until the report includes:
 
 Load alongside:
 
-- `systematic-debugging` — hypothesis ledger, falsification, formal reasoning
-- `known-solution-first` — external-tool/API/compiler problems: search public contract
+- [[systematic-debugging/SKILL|systematic-debugging]] — hypothesis ledger, falsification, formal reasoning
+- [[known-solution-first/SKILL|known-solution-first]] — external-tool/API/compiler problems: search public contract
   before local reverse-engineering. Required when the unknown is owned by an external
   project.
-- `llm-failure-modes` — cognitive failure modes (premature solution, thrashing,
+- [[llm-failure-modes/SKILL|llm-failure-modes]] — cognitive failure modes (premature solution, thrashing,
   prior-shaped inspection, tool output blindness, local-artifact laundering)
-- `anti-slop` — implementation-quality analysis, patch accretion, myopic fixes
+- [[anti-slop/SKILL|anti-slop]] — implementation-quality analysis, patch accretion, myopic fixes
 - **policy-index → Bridge-Burning Policies** — Any debugging activity must respect the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` as non-negotiable architectural constraints.
-- `test-guidelines` — substantive assertions, owned-surface discipline
-- `quality-control` — global QC as single source of truth, no-bypass policy
-- `justfile` — recipe list as project API, source-of-truth commands
+- [[test-guidelines/SKILL|test-guidelines]] — substantive assertions, owned-surface discipline
+- [[quality-control/SKILL|quality-control]] — global QC as single source of truth, no-bypass policy
+- [[justfile/SKILL|justfile]] — recipe list as project API, source-of-truth commands

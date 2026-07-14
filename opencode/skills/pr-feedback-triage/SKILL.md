@@ -41,7 +41,7 @@ denial, required outputs, verification questions, commit-before-closure, and
 re-entry on new review rounds.
 It must **not** become an orchestrator-controlled checkpoint where A approves,
 overrides, summarizes, or substitutes for B's disposition or C's remediation. That
-would reintroduce the self-gate forbidden by `goalcraft` and the canonical
+would reintroduce the self-gate forbidden by [[goalcraft/SKILL|goalcraft]] and the canonical
 `qc-triage` protocol. If no orchestration primitive is available, run the same
 role-isolated stages by hand.
 
@@ -282,7 +282,7 @@ Required output:
 ```
 
 ### Phase 5: Controller Verification Gate
-Before committing subagent remediation, the controller must review the subagent output under `reviewing-subagent-work`, `fixing-slop`, `test-guidelines`, and the red-flag catalogs.
+Before committing subagent remediation, the controller must review the subagent output under [[reviewing-subagent-work/SKILL|reviewing-subagent-work]], [[fixing-slop/SKILL|fixing-slop]], [[test-guidelines/SKILL|test-guidelines]], and the red-flag catalogs.
 
 A green test/CI/build result is **not** verification. “test-ci green,” “build passes,” or “the gate ran” is a precondition, not a pass — the threat model explicitly includes weak tests that prove the patch rather than the behavior. Verification is comparing the **declared remediation against the actual implementation** and confirming they align with the spec, by hand, per question below.
 
@@ -458,7 +458,7 @@ A finding being a likely duplicate does **not** authorize the orchestrator to se
 ## Global Principles
 
 ### 1. Global policy outranks local self-justification
-Local repo docs can narrow or explain what a local artifact is for, but they cannot make mocks, skips, `as any`, fallback defaults, or proof laundering acceptable. The global `quality-control` skill declares an authority hierarchy where `quality-control`, `test-guidelines`, `tool-provisioning`, `known-solution-first`, and `reality-grounded-debugging` outrank domain skills. Domain skills may narrow but not weaken these global policies. For example, `test-guidelines` is explicit that mocks, stubs, fakes, simulated environments, skips, and masking are forbidden with no exceptions.
+Local repo docs can narrow or explain what a local artifact is for, but they cannot make mocks, skips, `as any`, fallback defaults, or proof laundering acceptable. The global [[quality-control/SKILL|quality-control]] skill declares an authority hierarchy where [[quality-control/SKILL|quality-control]], [[test-guidelines/SKILL|test-guidelines]], `tool-provisioning`, [[known-solution-first/SKILL|known-solution-first]], and [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] outrank domain skills. Domain skills may narrow but not weaken these global policies. For example, [[test-guidelines/SKILL|test-guidelines]] is explicit that mocks, stubs, fakes, simulated environments, skips, and masking are forbidden with no exceptions.
 
 ### 2. Reviewer comments are claims, not commands
 This cuts both directions. Do not blindly accept paranoid sandboxing, graceful fallback, enterprise compatibility, or micro-optimization advice. Also, do not reflexively reject comments because they came from a generic reviewer. Typechecking exclusions, `as any`, swallowed errors, stale-state races, and missing console-error gates are real correctness issues even when surfaced by a generic bot.
@@ -495,18 +495,18 @@ A finding that an output or contract field is optional/nullable is accepted unle
 When routing PR review workflows, follow these rules:
 
 - **User asks to review a PR**:
-  Load `git-guidelines` (see `code-review.md`) + the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page + `reviewing-llm-code` + `test-guidelines`.
-  If the PR is agent-produced, also load `reviewing-subagent-work`.
+  Load [[git-guidelines/SKILL|git-guidelines]] (see `code-review.md`) + the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page + [[reviewing-llm-code/SKILL|reviewing-llm-code]] + [[test-guidelines/SKILL|test-guidelines]].
+  If the PR is agent-produced, also load [[reviewing-subagent-work/SKILL|reviewing-subagent-work]].
 
 - **User asks to address, resolve, reply to, or classify PR review comments**:
-  Load `git-guidelines` + `pr-feedback-triage` + `quality-control` + `test-guidelines`.
-  Also load `anti-slop`/`reviewing-llm-code` for code-quality claims.
-  Load `known-solution-first` for external tool/compiler/library claims.
-  Load `reality-grounded-debugging` for CI/check failures or opaque logs.
+  Load [[git-guidelines/SKILL|git-guidelines]] + `pr-feedback-triage` + [[quality-control/SKILL|quality-control]] + [[test-guidelines/SKILL|test-guidelines]].
+  Also load [[anti-slop/SKILL|anti-slop]]/[[reviewing-llm-code/SKILL|reviewing-llm-code]] for code-quality claims.
+  Load [[known-solution-first/SKILL|known-solution-first]] for external tool/compiler/library claims.
+  Load [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] for CI/check failures or opaque logs.
 
 - **User asks whether automated review feedback aligns with policy**:
-  Load `pr-feedback-triage` first, not `git-guidelines` (see `pr-workflow.md`).
-  Use `git-guidelines` only for mechanics/API commands.
+  Load `pr-feedback-triage` first, not [[git-guidelines/SKILL|git-guidelines]] (see `pr-workflow.md`).
+  Use [[git-guidelines/SKILL|git-guidelines]] only for mechanics/API commands.
 
 - **User asks an implementer agent to fix review comments**:
   The controller must triage comments first.

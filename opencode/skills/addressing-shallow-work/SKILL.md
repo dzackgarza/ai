@@ -171,18 +171,18 @@ Signs that an approach destroys the abstraction before operating:
   expectations (it runs, it produces output, it tokenizes effort).
   Also catalogs Checklist Theater and Paraphrase-as-Review patterns.
 
-- **llm-failure-modes** → Load alongside when investigating why an agent cannot
+- [[llm-failure-modes/SKILL|llm-failure-modes]] → Load alongside when investigating why an agent cannot
   recognize that an approach is structurally wrong.
   The inability to recognize structural wrongness without empirical verification is an
   epistemic failure mode distinct from “didn’t test enough.”
   Also catalogs compliance-shaped output and reward hacking.
 
-- **reviewing-subagent-work** → Load alongside when conducting a Synthesis Gate review.
+- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] → Load alongside when conducting a Synthesis Gate review.
   The Synthesis Gate extends this skill’s structural-scrutiny approach to subagent
   output: before inspecting specific implementations, check whether the approach
   survives structural scrutiny.
 
-- **prompt-engineering** → Load alongside when writing instructions that must prevent
+- [[prompt-engineering/SKILL|prompt-engineering]] → Load alongside when writing instructions that must prevent
   shallow work proactively.
   Constraint-based instruction forces thinking rather than pattern completion.
 

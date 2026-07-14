@@ -104,13 +104,13 @@ python3 scripts/lit_search.py details "DOI:10.1016/j.foodchem.2023.136000"
 For mathematics literature work, use `references/math-paper-retrieval.md` as the
 workflow:
 
-- search metadata with this skill and `arxiv`,
+- search metadata with this skill and [[arxiv/SKILL|arxiv]],
 
 - resolve DOI/arXiv/Zotero identity before downloading,
 
 - store PDFs through `~/pdfs` and extract through `~/pdf-extraction`,
 
-- use `reading-pdfs` for local paper reading.
+- use [[reading-pdfs/SKILL|reading-pdfs]] for local paper reading.
 
 ## Output Format
 

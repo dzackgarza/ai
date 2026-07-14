@@ -131,14 +131,14 @@ Load the relevant section for your context:
 
 ### Cross-References
 
-- **addressing-shallow-work** → Load alongside when investigating failure modes that
+- [[addressing-shallow-work/SKILL|addressing-shallow-work]] → Load alongside when investigating failure modes that
   produce structurally wrong code.
   The inability to recognize when an approach is structurally incapable of correctness —
   even without empirical verification — is a failure mode distinct from “didn’t test
   enough.” The regex-on-HTML example (flattening a semantic tree into bytes before
   searching) illustrates fluency masking structural wrongness.
 
-- **anti-slop** → Load alongside when the failure mode produces surface-level quality
+- [[anti-slop/SKILL|anti-slop]] → Load alongside when the failure mode produces surface-level quality
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
   All implementation work influenced by this skill is subject to the
@@ -154,7 +154,7 @@ Load the relevant section for your context:
   developer-controlled assertions, fallback laundering, no-op behavior, QC appeasement
   code, and recipe bypasses.
 
-- **reviewing-subagent-work** → Load alongside when designing review processes that must
+- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] → Load alongside when designing review processes that must
   detect the failures cataloged in this skill.
   The Synthesis Gate forces content-level evaluation; structural-wrongness recognition
   is its prerequisite gate.

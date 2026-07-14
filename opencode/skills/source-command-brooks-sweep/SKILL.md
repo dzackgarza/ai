@@ -5,7 +5,7 @@ description: "Run all Brooks-Lint analyses in one pass, auto-fix safe findings, 
 
 # source-command-brooks-sweep
 
-Use this skill when the user asks to run the migrated source command `brooks-sweep`.
+Use this skill when the user asks to run the migrated source command [[brooks-sweep/SKILL|brooks-sweep]].
 
 ## Command Template
 
