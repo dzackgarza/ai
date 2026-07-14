@@ -31,4 +31,15 @@ Use skills for progressive disclosure when the task actually meets their trigger
 needs their system-local context.
 Do not load procedures prophylactically or let one skill recursively activate unrelated
 project, memory, review, or proof workflows.
-Skills live in `~/ai/opencode/skills`; use semtools, `npx probe`, and `rg` to search them.
+Treat `~/ai/opencode/skills` as the assembled `skills` Obsidian vault, not a fixed directory hierarchy. It includes installed symlinked skill subtrees; canonical skill names and Wikilinks survive moves.
+
+For skill consumption, resolve a canonical frontmatter name or Wikilink target in the vault, then read the returned logical path:
+
+```bash
+go run github.com/dzackgarza/notesmd-cli@main search-content 'name: <skill-name>' --vault skills --format json
+go run github.com/dzackgarza/notesmd-cli@main print <logical-path> --vault skills
+```
+
+For a broader content search, run `go run github.com/dzackgarza/notesmd-cli@main search-content '<query>' --vault skills --format json`. A returned logical path is the access handle. Read the entrypoint fully, then follow only its explicit Wikilinks for progressive disclosure.
+
+Never construct or probe `.../skills/<name>/SKILL.md`, and never describe a workflow as missing because a guessed path did not exist. Use semtools, `npx probe`, or `rg` only for source maintenance or audits that vault search cannot answer.
