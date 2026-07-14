@@ -18,8 +18,8 @@ session.
 | Need | Use | Why |
 | --- | --- | --- |
 | Active session; wait 1–2 minutes, then act | Normal shell command with `sleep` | The session owns the wait; no persistent state |
-| Codex waits for an external PR/CI event | The Codex PTY-loop pattern | Read the [[codex/SKILL|codex]] skill; it exits a one-off PTY process when new information arrives |
-| Claude Code receives an external PR/CI event | Claude Code Channels | Read the [[claude-code/SKILL|claude-code]] skill; Channels provide native delivery into an active session |
+| [[codex/SKILL|Codex]] waits for an external PR/CI event | The [[codex/SKILL|Codex]] PTY-loop pattern | Read the [[codex/SKILL|codex]] skill; it exits a one-off PTY process when new information arrives |
+| [[claude-code/SKILL|Claude Code]] receives an external PR/CI event | [[claude-code/SKILL|Claude Code]] Channels | Read the [[claude-code/SKILL|claude-code]] skill; Channels provide native delivery into an active session |
 | One independent command at a later time | `at` | Use only when its command has an independent result or verified delivery target |
 | Recurring work that should outlive this session | `task-sched` | Creates a persistent systemd timer with its own lifecycle |
 
@@ -52,8 +52,8 @@ another scheduled-process result.
 
 ## Harness Routes
 
-- For an active Codex wait or PR loop, read [[codex/SKILL|codex]].
-- For an active Claude Code wait or PR loop, read [[claude-code/SKILL|claude-code]].
+- For an active [[codex/SKILL|Codex]] wait or PR loop, read [[codex/SKILL|codex]].
+- For an active [[claude-code/SKILL|Claude Code]] wait or PR loop, read [[claude-code/SKILL|claude-code]].
 - Do not infer a generic delivery path from another harness, a session ID, scheduler logs,
   or the existence of a timer.
 

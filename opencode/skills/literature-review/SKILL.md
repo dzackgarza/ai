@@ -14,7 +14,7 @@ CR, PM).
   OpenAlex (OA), Crossref (CR), and PubMed (PM).
 
 - **Mathematics Paper Discovery**: For mathematics, combine general metadata sources
-  with arXiv, zbMATH/OpenAlex/Semantic Scholar, DOI lookup, Zotero, and the local PDF
+  with [[arxiv/SKILL|arXiv]], zbMATH/OpenAlex/Semantic Scholar, DOI lookup, [[zotero/SKILL|Zotero]], and the local PDF
   workflow.
 
 - **Web Research Extraction**: For high-rate web-informed research, prefer a

@@ -49,7 +49,7 @@ If unset, defaults to `~/wiki`.
 WIKI="${WIKI_PATH:-$HOME/wiki}"
 ```
 
-The wiki is just a directory of markdown files — open it in Obsidian, VS Code, or any
+The wiki is just a directory of markdown files — open it in [[obsidian/SKILL|Obsidian]], VS Code, or any
 editor. No database, no special tooling required.
 
 ## Architecture: Three Layers
@@ -492,9 +492,9 @@ When content is fully superseded or the domain scope changes:
 
 5. Log the archive action
 
-### Obsidian Integration
+### [[obsidian/SKILL|Obsidian]] Integration
 
-The wiki directory works as an Obsidian vault out of the box:
+The wiki directory works as an [[obsidian/SKILL|Obsidian]] vault out of the box:
 
 - `[[wikilinks]]` render as clickable links
 
@@ -506,9 +506,9 @@ The wiki directory works as an Obsidian vault out of the box:
 
 For best results:
 
-- Set Obsidian’s attachment folder to `raw/assets/`
+- Set [[obsidian/SKILL|Obsidian]]’s attachment folder to `raw/assets/`
 
-- Enable “Wikilinks” in Obsidian settings (usually on by default)
+- Enable “Wikilinks” in [[obsidian/SKILL|Obsidian]] settings (usually on by default)
 
 - Install Dataview plugin for queries like
   `TABLE tags FROM "entities" WHERE contains(tags, "company")`
@@ -516,11 +516,11 @@ For best results:
 If using the [[obsidian/SKILL|Obsidian]] skill alongside this one, set `OBSIDIAN_VAULT_PATH` to the same
 directory as the wiki path.
 
-### Obsidian Headless (servers and headless machines)
+### [[obsidian/SKILL|Obsidian]] Headless (servers and headless machines)
 
 On machines without a display, use `obsidian-headless` instead of the desktop app.
-It syncs vaults via Obsidian Sync without a GUI — perfect for agents running on servers
-that write to the wiki while Obsidian desktop reads it on another device.
+It syncs vaults via [[obsidian/SKILL|Obsidian]] Sync without a GUI — perfect for agents running on servers
+that write to the wiki while [[obsidian/SKILL|Obsidian]] desktop reads it on another device.
 
 **Setup:**
 ```bash
@@ -570,7 +570,7 @@ sudo loginctl enable-linger $USER
 ```
 
 This lets the agent write to `~/wiki` on a server while you browse the same vault in
-Obsidian on your laptop/phone — changes appear within seconds.
+[[obsidian/SKILL|Obsidian]] on your laptop/phone — changes appear within seconds.
 
 ## Pitfalls
 
@@ -611,7 +611,7 @@ Obsidian on your laptop/phone — changes appear within seconds.
 
 [llm-wiki-compiler](https://github.com/atomicmemory/llm-wiki-compiler) is a Node.js CLI
 that compiles sources into a concept wiki with the same Karpathy inspiration.
-It’s Obsidian-compatible, so users who want a scheduled/CLI-driven compile pipeline can
+It’s [[obsidian/SKILL|Obsidian]]-compatible, so users who want a scheduled/CLI-driven compile pipeline can
 point it at the same vault this skill maintains.
 Trade-offs: it owns page generation (replaces the agent’s judgment on page creation) and
 is tuned for small corpora.

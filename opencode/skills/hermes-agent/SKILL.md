@@ -17,7 +17,7 @@ metadata:
 
 Hermes Agent is an open-source AI agent framework by Nous Research that runs in your
 terminal, messaging platforms, and IDEs.
-It belongs to the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw
+It belongs to the same category as [[claude-code/SKILL|Claude Code]] (Anthropic), [[codex/SKILL|Codex]] (OpenAI), and OpenClaw
 — autonomous coding and task-execution agents that use tool calling to interact with
 your system.
 Hermes works with any LLM provider (OpenRouter, Anthropic, OpenAI, DeepSeek,
@@ -408,7 +408,7 @@ Set via `hermes model` or `hermes setup`.
 | OpenRouter | API key | `OPENROUTER_API_KEY` |
 | Anthropic | API key | `ANTHROPIC_API_KEY` |
 | Nous Portal | OAuth | `hermes auth` |
-| OpenAI Codex | OAuth | `hermes auth` |
+| OpenAI [[codex/SKILL|Codex]] | OAuth | `hermes auth` |
 | GitHub Copilot | Token | `COPILOT_GITHUB_TOKEN` |
 | Google Gemini | API key | `GOOGLE_API_KEY` or `GEMINI_API_KEY` |
 | DeepSeek | API key | `DEEPSEEK_API_KEY` |
@@ -422,8 +422,8 @@ Set via `hermes model` or `hermes setup`.
 | Xiaomi MiMo | API key | `XIAOMI_API_KEY` |
 | Kilo Code | API key | `KILOCODE_API_KEY` |
 | AI Gateway (Vercel) | API key | `AI_GATEWAY_API_KEY` |
-| OpenCode Zen | API key | `OPENCODE_ZEN_API_KEY` |
-| OpenCode Go | API key | `OPENCODE_GO_API_KEY` |
+| [[opencode/SKILL|OpenCode]] Zen | API key | `OPENCODE_ZEN_API_KEY` |
+| [[opencode/SKILL|OpenCode]] Go | API key | `OPENCODE_GO_API_KEY` |
 | Qwen OAuth | OAuth | `hermes login --provider qwen-oauth` |
 | Custom endpoint | Config | `model.base_url` + `model.api_key` in config.yaml |
 | GitHub Copilot ACP | External | `COPILOT_CLI_PATH` or Copilot CLI |

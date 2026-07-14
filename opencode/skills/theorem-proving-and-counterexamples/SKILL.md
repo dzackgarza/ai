@@ -11,7 +11,7 @@ Proving (ATP), model finding, and specialized algebraic computation.
 
 | Tool | Domain / Strength | Use Case |
 | :--- | :--- | :--- |
-| **Lean 4 / Mathlib** | Formalization of Modern Math | Analysis, topology, PFR conjecture, Liquid Tensor. |
+| **[[lean4/skills/lean4/SKILL|Lean 4]] / Mathlib** | Formalization of Modern Math | Analysis, topology, PFR conjecture, Liquid Tensor. |
 | **Coq (Rocq)** | Foundational Proofs / CS | Four Color Theorem, Feit-Thompson (Odd Order). |
 | **Isabelle/HOL** | Math & Verification | Kepler Conjecture (Flyspeck), Prime Number Theorem. |
 | **Prover9 / Mace4** | FOL / Equational | Human-readable proofs, finite models, lattices. |
@@ -30,7 +30,7 @@ Proving (ATP), model finding, and specialized algebraic computation.
 
 3. **Execute**:
 
-   - `lake build` (Lean 4)
+   - `lake build` ([[lean4/skills/lean4/SKILL|Lean 4]])
 
    - `prover9 -f problem.in`
 
@@ -43,7 +43,7 @@ Proving (ATP), model finding, and specialized algebraic computation.
 
 ## Reference Materials
 
-- **[itp_systems.md](references/itp_systems.md)**: Lean 4, Coq, and Isabelle/HOL (Modern
+- **[itp_systems.md](references/itp_systems.md)**: [[lean4/skills/lean4/SKILL|Lean 4]], Coq, and Isabelle/HOL (Modern
   math formalization).
 
 - **[prover9_mace4.md](references/prover9_mace4.md)**: FOL syntax and equational

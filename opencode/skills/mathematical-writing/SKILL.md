@@ -109,7 +109,7 @@ machines can navigate.
 
 - **Never** as a substitute for a proof — verification complements deduction.
 
-### When to provide Lean 4 formalization
+### When to provide [[lean4/skills/lean4/SKILL|Lean 4]] formalization
 
 - When the user explicitly asks for formalization.
 
@@ -189,7 +189,7 @@ Clear statement with all given information and constraints.
 
 ### Formalization (when requested)
 
-Provide both mathematical prose and corresponding Lean 4 code.
+Provide both mathematical prose and corresponding [[lean4/skills/lean4/SKILL|Lean 4]] code.
 Match structure line-for-line.
 See `references/formalization-patterns.md` for paired examples.
 Load these patterns into context as one-shot demonstrations of the exact style expected.
@@ -240,7 +240,7 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 ## One-Shot Training via Examples
 
 The `references/formalization-patterns.md` file contains explicit paired examples
-(mathematical prose + Lean 4 + SageMath verification) that serve as in-context
+(mathematical prose + [[lean4/skills/lean4/SKILL|Lean 4]] + [[sagemath/SKILL|SageMath]] verification) that serve as in-context
 demonstrations. Load these into context when producing mathematical output.
 The patterns demonstrate:
 
@@ -270,7 +270,7 @@ writing.
 - `references/proof-structure.md` — Proof environment formatting, variable tracking,
   justification style, case analysis, common pitfalls
 
-- `references/formalization-patterns.md` — Lean 4 and SageMath templates for induction,
+- `references/formalization-patterns.md` — [[lean4/skills/lean4/SKILL|Lean 4]] and [[sagemath/SKILL|SageMath]] templates for induction,
   contradiction, existence, definitions, theorems
 
 - `references/exposition-style.md` — Pedagogical writing style, problem presentation,
@@ -289,7 +289,7 @@ writing.
   root systems, or lattice-theoretic objects.
   Provides notation conventions and domain constraints.
 
-- [[sagemath/SKILL|sagemath]] → Load alongside when writing SageMath code for computation or
+- [[sagemath/SKILL|sagemath]] → Load alongside when writing [[sagemath/SKILL|SageMath]] code for computation or
   verification alongside prose.
   Covers Sage-specific patterns and integration.
 
@@ -297,6 +297,6 @@ writing.
   formal proof or when counterexample search is needed.
   Covers broader formalization strategies across multiple provers.
 
-- [[mathematical-testing/SKILL|mathematical-testing]] → Load alongside when developing SageMath implementations
+- [[mathematical-testing/SKILL|mathematical-testing]] → Load alongside when developing [[sagemath/SKILL|SageMath]] implementations
   that need correctness verification.
   Covers writing failing test suites before implementation.

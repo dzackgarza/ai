@@ -61,7 +61,7 @@ Adjust to whatever the user actually has — ask if you’re unsure.
 | --- | --- | --- |
 | `researcher` | Reads sources, gathers facts, writes findings | `scratch` |
 | `analyst` | Synthesizes, ranks, de-dupes. Consumes multiple `researcher` outputs | `scratch` |
-| `writer` | Drafts prose in the user’s voice | `scratch` or `dir:` into their Obsidian vault |
+| `writer` | Drafts prose in the user’s voice | `scratch` or `dir:` into their [[obsidian/SKILL|Obsidian]] vault |
 | `reviewer` | Reads output, leaves findings, gates approval | `scratch` |
 | `backend-eng` | Writes server-side code | `worktree` |
 | `frontend-eng` | Writes client-side code | `worktree` |

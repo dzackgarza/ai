@@ -27,7 +27,7 @@ requirement. "Lightweight" tools that produce garbage on math are not acceptable
 | --- | --- | --- |
 | **1** | **Mistral OCR** (via [[reading-pdfs/SKILL|reading-pdfs]] skill) | **Default** — API-based, handles tables, math, scanned docs, multi-column. Check [[reading-pdfs/SKILL|reading-pdfs]] skill. |
 | **2** | **marker-pdf** | High-quality local fallback when Mistral API is unavailable. Handles math, equations, OCR, complex layouts. ~5GB install (negligible for a research system). |
-| **3** | **Managed recipes** (`~/pdf-extraction` justfile) | Docling / MinerU with managed environments. When neither Mistral API nor marker-pdf are suitable. |
+| **3** | **Managed recipes** (`~/pdf-extraction` [[justfile/SKILL|justfile]]) | Docling / MinerU with managed environments. When neither Mistral API nor marker-pdf are suitable. |
 | **4** | **pymupdf** | **Garbage on math.** Only for trivial text-only PDFs where nothing else is available and equations are not needed. |
 
 * * *
@@ -108,7 +108,7 @@ extract equations or LaTeX.
   pipeline. Use marker-pdf or the managed recipes instead.
 
 - **Installing extraction tools manually** — use `uvx` for one-shot tools or the
-  `~/pdf-extraction` justfile for managed extraction.
+  `~/pdf-extraction` [[justfile/SKILL|justfile]] for managed extraction.
 
 * * *
 

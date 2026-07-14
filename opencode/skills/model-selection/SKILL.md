@@ -38,7 +38,7 @@ capability.
 | Claude Sonnet 4.6 | 1874 |
 | GPT 5.2 | 1829 |
 | Claude Opus 4.5 | 1815 |
-| GPT 5.3 Codex | 1812 |
+| GPT 5.3 [[codex/SKILL|Codex]] | 1812 |
 
 **Turn capacity:** 300-500+ turns
 
@@ -49,7 +49,7 @@ capability.
 | Model | APEX ELO |
 | --- | --- |
 | Claude 4.5 Sonnet | ~1800 |
-| GPT 5.1 Codex | ~1790 |
+| GPT 5.1 [[codex/SKILL|Codex]] | ~1790 |
 | Gemini 3 Pro Preview | ~1780 |
 | Claude 4 Opus | ~1770 |
 | DeepSeek V3.2 | ~1760 |

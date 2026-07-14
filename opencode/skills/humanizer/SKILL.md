@@ -724,7 +724,7 @@ Provide:
 
 **Draft rewrite:**
 > AI coding assistants speed up some tasks.
-> In a 2024 study by Google, developers using Codex completed simple functions 55%
+> In a 2024 study by Google, developers using [[codex/SKILL|Codex]] completed simple functions 55%
 > faster than a control group, but showed no improvement on debugging or architectural
 > decisions.
 > 

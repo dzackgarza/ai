@@ -343,7 +343,7 @@ the target repo’s local `AGENTS.md` contains the canonical review guidance fro
 the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
 The [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page is the durable source of truth.
-The repo-local `AGENTS.md` copy is a required distribution copy because Codex and other
+The repo-local `AGENTS.md` copy is a required distribution copy because [[codex/SKILL|Codex]] and other
 review agents read the target repo’s local guidance.
 Do not replace it with a link, summary, or paraphrase.
 
@@ -546,7 +546,7 @@ gh issue view <N> --repo <owner>/<repo> --json state,title,url
 gh api repos/<owner>/<repo>/issues/<N>/comments
 ```
 
-### Jules Review Delegation
+### [[jules/SKILL|Jules]] Review Delegation
 
 If the user asks to use [[jules/SKILL|Jules]] for review, load:
 - [[jules/SKILL|jules]]

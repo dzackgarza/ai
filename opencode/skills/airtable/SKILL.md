@@ -1,6 +1,6 @@
 ---
 name: airtable
-description: Airtable REST API via curl. Records CRUD, filters, upserts.
+description: [[airtable/SKILL|Airtable]] REST API via curl. Records CRUD, filters, upserts.
 version: 1.1.0
 author: community
 license: MIT
@@ -12,9 +12,9 @@ metadata:
     tags: [Airtable, Productivity, Database, API]
     homepage: https://airtable.com/developers/web/api/introduction
 ---
-# Airtable — Bases, Tables & Records
+# [[airtable/SKILL|Airtable]] — Bases, Tables & Records
 
-Work with Airtable’s REST API directly via `curl` using the `terminal` tool.
+Work with [[airtable/SKILL|Airtable]]’s REST API directly via `curl` using the `terminal` tool.
 No MCP server, no OAuth flow, no Python SDK — just `curl` and a personal access token.
 
 ## Prerequisites
@@ -82,11 +82,11 @@ JSON.
 | Date | `"Due": "2026-04-01"` |
 | DateTime (UTC) | `"At": "2026-04-01T14:30:00.000Z"` |
 | URL / Email / Phone | `"Link": "https://…"` |
-| Attachment | `"Files": [{"url": "https://…"}]` (Airtable fetches + rehosts) |
+| Attachment | `"Files": [{"url": "https://…"}]` ([[airtable/SKILL|Airtable]] fetches + rehosts) |
 | Linked record | `"Owner": ["recXXXXXXXXXXXXXX"]` (array of record IDs) |
 | User | `"AssignedTo": {"id": "usrXXXXXXXXXXXXXX"}` |
 
-Pass `"typecast": true` at the top level of a create/update body to let Airtable
+Pass `"typecast": true` at the top level of a create/update body to let [[airtable/SKILL|Airtable]]
 auto-coerce values (e.g. create a new select option on the fly, convert `"42"` → `42`).
 
 ## Common Queries
@@ -123,7 +123,7 @@ curl -s "https://api.airtable.com/v0/$BASE_ID/$TABLE/$RECORD_ID" \
 
 ### Filter records (filterByFormula)
 
-Airtable formulas must be URL-encoded.
+[[airtable/SKILL|Airtable]] formulas must be URL-encoded.
 Let Python stdlib do it — never hand-encode:
 ```bash
 FORMULA="{Status}='Todo'"
@@ -311,10 +311,10 @@ done
 - **Pretty-print with `python3 -m json.tool`** (always present) rather than `jq`
   (optional). Only reach for `jq` when you need filtering/projection.
 
-- **Pagination is per-page, not global.** Airtable’s 100-record cap is a hard limit;
+- **Pagination is per-page, not global.** [[airtable/SKILL|Airtable]]’s 100-record cap is a hard limit;
   there is no way to bump it.
   Loop with `offset` until the field is absent.
 
-- **Read the `errors` array** on non-2xx responses — Airtable returns structured error
+- **Read the `errors` array** on non-2xx responses — [[airtable/SKILL|Airtable]] returns structured error
   codes like `AUTHENTICATION_REQUIRED`, `INVALID_PERMISSIONS`, `MODEL_ID_NOT_FOUND`,
   `INVALID_MULTIPLE_CHOICE_OPTIONS` that tell you exactly what’s wrong.

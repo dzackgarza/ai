@@ -1,6 +1,6 @@
 ---
 name: calibre-metadata-sidecar-audit
-description: Use when adversarially reviewing Calibre metadata proof sidecars, downgrading unsupported Zotero metadata claims, checking ISBN/DOI identity proof, or deciding whether a sidecar should remain approved or become needs_review.
+description: Use when adversarially reviewing Calibre metadata proof sidecars, downgrading unsupported [[zotero/SKILL|Zotero]] metadata claims, checking ISBN/DOI identity proof, or deciding whether a sidecar should remain approved or become needs_review.
 ---
 
 # Calibre Metadata Sidecar Audit
@@ -25,10 +25,10 @@ The auditor may only:
 
 - leave `approved` unchanged when the identity proof is clean;
 - downgrade to `needs_review`;
-- remove unsupported Zotero fields by adding them to `review.dropped_fields`;
+- remove unsupported [[zotero/SKILL|Zotero]] fields by adding them to `review.dropped_fields`;
 - record short concrete conflicts in `review.conflicts`.
 
-The auditor must not import into Zotero, attach files, rewrite the whole metadata
+The auditor must not import into [[zotero/SKILL|Zotero]], attach files, rewrite the whole metadata
 candidate for style, or add explanatory essays.
 
 ## Required Checks
@@ -43,7 +43,7 @@ Inspect only what is needed to test the proof:
 - Do canonical title and creator agree with the PDF?
 - Are edition, volume, set ISBN, format, publisher, date, and editor/author roles free
   of visible conflict?
-- Are all Zotero fields either supported by the canonical record or listed in
+- Are all [[zotero/SKILL|Zotero]] fields either supported by the canonical record or listed in
   `field_overrides` with concise PDF evidence?
 
 Do not record this checklist in the sidecar. It is the audit procedure, not output.
@@ -68,7 +68,7 @@ Keep conflicts short and exception-only. Do not list every attack attempted.
 
 ## Dropped Fields
 
-If the identity proof supports the item but not a specific Zotero field, do not reject
+If the identity proof supports the item but not a specific [[zotero/SKILL|Zotero]] field, do not reject
 the whole sidecar automatically. Remove or mark the unsupported field:
 
 ```json
@@ -88,7 +88,7 @@ Keep or set `approved` only when:
 
 - the PDF hash and path identify the audited PDF;
 - the visible PDF identifier resolves to the canonical record cited;
-- the canonical record supports the Zotero candidate;
+- the canonical record supports the [[zotero/SKILL|Zotero]] candidate;
 - PDF front matter does not contradict the candidate;
 - unsupported non-identity fields are dropped rather than silently retained.
 

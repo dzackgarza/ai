@@ -296,7 +296,7 @@ find . -name "*.bib"
 ### Step 1.2: Search for Related Work
 
 **Load the [[arxiv/SKILL|arxiv]] skill** for structured paper discovery: `skill_view("arxiv")`. It
-provides arXiv REST API search, Semantic Scholar citation graphs, author profiles, and
+provides [[arxiv/SKILL|arXiv]] REST API search, Semantic Scholar citation graphs, author profiles, and
 BibTeX generation.
 
 Use `web_search` for broad discovery, `web_extract` for fetching specific papers:
@@ -2065,7 +2065,7 @@ Anonymization Checklist:
 ```
 
 **Common mistakes**: Git commit messages visible in supplementary code, watermarked
-figures from institutional tools, acknowledgments left in from a previous draft, arXiv
+figures from institutional tools, acknowledgments left in from a previous draft, [[arxiv/SKILL|arXiv]]
 preprint posted before anonymity period.
 
 ### Step 7.3: Formatting Verification
@@ -2220,22 +2220,22 @@ Camera-Ready Checklist:
 - [ ] Upload supplementary materials (code, data, appendix) to venue portal
 ```
 
-### Step 7.9: arXiv & Preprint Strategy
+### Step 7.9: [[arxiv/SKILL|arXiv]] & Preprint Strategy
 
-Posting to arXiv is standard practice in ML but has important timing and anonymity
+Posting to [[arxiv/SKILL|arXiv]] is standard practice in ML but has important timing and anonymity
 considerations.
 
 **Timing decision tree:**
 
 | Situation | Recommendation |
 | --- | --- |
-| Submitting to double-blind venue (NeurIPS, ICML, ACL) | Post to arXiv **after** submission deadline, not before. Posting before can technically violate anonymity policies, though enforcement varies. |
-| Submitting to ICLR | ICLR explicitly allows arXiv posting before submission. But don’t put author names in the submission itself. |
-| Paper already on arXiv, submitting to new venue | Acceptable at most venues. Do NOT update arXiv version during review with changes that reference reviews. |
-| Workshop paper | arXiv is fine at any time — workshops are typically not double-blind. |
+| Submitting to double-blind venue (NeurIPS, ICML, ACL) | Post to [[arxiv/SKILL|arXiv]] **after** submission deadline, not before. Posting before can technically violate anonymity policies, though enforcement varies. |
+| Submitting to ICLR | ICLR explicitly allows [[arxiv/SKILL|arXiv]] posting before submission. But don’t put author names in the submission itself. |
+| Paper already on [[arxiv/SKILL|arXiv]], submitting to new venue | Acceptable at most venues. Do NOT update [[arxiv/SKILL|arXiv]] version during review with changes that reference reviews. |
+| Workshop paper | [[arxiv/SKILL|arXiv]] is fine at any time — workshops are typically not double-blind. |
 | Want to establish priority | Post immediately if scooping is a concern — but accept the anonymity tradeoff. |
 
-**arXiv category selection** (ML/AI papers):
+**[[arxiv/SKILL|arXiv]] category selection** (ML/AI papers):
 
 | Category | Code | Best For |
 | --- | --- | --- |
@@ -2394,7 +2394,7 @@ An accessible summary significantly increases impact:
 - **Project page**: HTML page with abstract, figures, demo, code link, BibTeX. Use
   GitHub Pages.
 
-**Timing**: Post within 1-2 days of paper appearing on proceedings or arXiv
+**Timing**: Post within 1-2 days of paper appearing on proceedings or [[arxiv/SKILL|arXiv]]
 camera-ready.
 
 * * *
@@ -2412,7 +2412,7 @@ same pipeline but with different constraints and expectations.
 | **Review standard** | Lower bar for completeness | Must be complete, thorough |
 | **Review process** | Usually single-blind or light review | Double-blind, rigorous |
 | **What’s valued** | Interesting ideas, preliminary results, position pieces | Complete empirical story with strong baselines |
-| **arXiv** | Post anytime | Timing matters (see arXiv strategy) |
+| **[[arxiv/SKILL|arXiv]]** | Post anytime | Timing matters (see [[arxiv/SKILL|arXiv]] strategy) |
 | **Contribution bar** | Novel direction, interesting negative result, work-in-progress | Significant advance with strong evidence |
 
 **When to target a workshop:**
@@ -2544,11 +2544,11 @@ Compose this skill with other Hermes skills for specific phases:
 
 | Skill | When to Use | How to Load |
 | --- | --- | --- |
-| [[arxiv/SKILL|arxiv]] | Phase 1 (Literature Review): searching arXiv, generating BibTeX, finding related papers via Semantic Scholar | `skill_view("arxiv")` |
+| [[arxiv/SKILL|arxiv]] | Phase 1 (Literature Review): searching [[arxiv/SKILL|arXiv]], generating BibTeX, finding related papers via Semantic Scholar | `skill_view("arxiv")` |
 | [[subagent-driven-development/SKILL|subagent-driven-development]] | Phase 5 (Drafting): parallel section writing with 2-stage review (spec compliance then quality) | `skill_view("subagent-driven-development")` |
 | [[plan/SKILL|plan]] | Phase 0 (Setup): creating structured plans before execution. Writes to `.hermes/plans/` | `skill_view("plan")` |
 | **qmd** | Phase 1 (Literature): searching local knowledge bases (notes, transcripts, docs) via hybrid BM25+vector search | Install: `skill_manage("install", "qmd")` |
-| **diagramming** | Phase 4-5: creating Excalidraw-based figures and architecture diagrams | `skill_view("diagramming")` |
+| **diagramming** | Phase 4-5: creating [[excalidraw/SKILL|Excalidraw]]-based figures and architecture diagrams | `skill_view("diagramming")` |
 | **data-science** | Phase 4 (Analysis): Jupyter live kernel for interactive analysis and visualization | `skill_view("data-science")` |
 
 **This skill supersedes `ml-paper-writing`** — it contains all of ml-paper-writing’s
@@ -2567,7 +2567,7 @@ content plus the full experiment/analysis pipeline and autoreason methodology.
 | **`delegate_task`** | **Parallel section drafting** — spawn isolated subagents for each section. Also for concurrent citation verification. |
 | **`todo`** | Primary state tracker across sessions. Update after every phase transition. |
 | **`memory`** | Persist key decisions across sessions: contribution framing, venue choice, reviewer feedback. |
-| **`cronjob`** | Schedule experiment monitoring, deadline countdowns, automated arXiv checks. |
+| **`cronjob`** | Schedule experiment monitoring, deadline countdowns, automated [[arxiv/SKILL|arXiv]] checks. |
 | **`clarify`** | Ask the user targeted questions when blocked (venue choice, contribution framing). |
 | **`send_message`** | Notify user when experiments complete or drafts are ready, even if user isn’t in chat. |
 

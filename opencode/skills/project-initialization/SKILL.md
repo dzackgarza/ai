@@ -5,7 +5,7 @@ description: >-
   cloning or switching projects for such work, or when requested work needs missing
   project surfaces. Establishes the normal project form:
   git/remote freshness, GitHub public state, durable surface ownership, SDL-MCP
-  registration/indexing, .agents, [[agent-memory/SKILL|agent-memory]], justfile, ai-review-ci QC/hooks/CI,
+  registration/indexing, .agents, [[agent-memory/SKILL|agent-memory]], [[justfile/SKILL|justfile]], ai-review-ci QC/hooks/CI,
   and task-relevant memory lookup before implementation.
 ---
 
@@ -204,12 +204,12 @@ when it is missing.
   binding without a vault-side project directory is not initialized.
 - Confirm native harness routes are in place according to
   `opencode/skills/agent-memory/references/harness-state-hijacking-research.md`:
-  - Claude Code auto memory writes into the vault-owned Claude project
+  - [[claude-code/SKILL|Claude Code]] auto memory writes into the vault-owned Claude project
     directory, and Claude plans use `plansDirectory` pointed at the vault.
-  - Codex memories and memory extensions are routed into the vault, while
-    `~/.codex/sessions/` and `~/.codex/archived_sessions/` remain normal Codex
+  - [[codex/SKILL|Codex]] memories and memory extensions are routed into the vault, while
+    `~/.codex/sessions/` and `~/.codex/archived_sessions/` remain normal [[codex/SKILL|Codex]]
     runtime directories outside the vault.
-  - Durable Codex ExecPlan Markdown files resolve to the [[agent-memory/SKILL|agent-memory]] project
+  - Durable [[codex/SKILL|Codex]] ExecPlan Markdown files resolve to the [[agent-memory/SKILL|agent-memory]] project
     plan directory through `PLANS.md`/`AGENTS.md` guidance or a compatibility
     pointer/symlink.
   - Antigravity/`agy` brain artifacts, when used for the project, preserve their
@@ -236,7 +236,7 @@ The top-level [[justfile/SKILL|justfile]] is the project API.
 - If a global-QC project has no usable [[justfile/SKILL|justfile]], install or adapt the
   appropriate `~/ai-review-ci` scaffold instead of hand-writing copied snippets.
 
-For central justfile delegation, preserve the caller repository root with `-d .`
+For central [[justfile/SKILL|justfile]] delegation, preserve the caller repository root with `-d .`
 so the shared QC scans the target project, not `~/ai-review-ci`.
 
 ### Global QC And Review CI

@@ -10,7 +10,7 @@ team of autonomous subagents to execute complex plans with high fidelity.
 ## Subagent Naming Rule
 
 Do not hardcode or name-drop specific subagent slugs in delegation guidance.
-OpenCode provides a live list of available subagents and descriptions at runtime.
+[[opencode/SKILL|OpenCode]] provides a live list of available subagents and descriptions at runtime.
 
 Always select by capability class from the live list (for example: implementation,
 research, spec-review, quality-review, audit) rather than assuming fixed names.
@@ -22,10 +22,10 @@ research, spec-review, quality-review, audit) rather than assuming fixed names.
 - [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] — REQUIRED: Use for task calibration and delegation
   decisions.
 
-- [[opencode-cli/SKILL|opencode-cli]] — Use for OpenCode manager command forms when session inspection is
+- [[opencode-cli/SKILL|opencode-cli]] — Use for [[opencode/SKILL|OpenCode]] manager command forms when session inspection is
   part of delegation review.
 
-- [[reading-transcripts/SKILL|reading-transcripts]] — Use when transcript review crosses harnesses; for OpenCode
+- [[reading-transcripts/SKILL|reading-transcripts]] — Use when transcript review crosses harnesses; for [[opencode/SKILL|OpenCode]]
   it delegates to `ocm transcript`.
 
 * * *
@@ -133,9 +133,9 @@ When using subagents, the main agent becomes a **coordinator**:
 
 ## 1. Operational Lifecycle
 
-### Codex CLI
+### [[codex/SKILL|Codex]] CLI
 
-When the delegated runtime is Codex CLI rather than OpenCode `task`, standardize the
+When the delegated runtime is [[codex/SKILL|Codex]] CLI rather than [[opencode/SKILL|OpenCode]] `task`, standardize the
 launch contract first.
 Most downstream failures that look like “agent weakness” are really launch-contract
 mistakes.
@@ -155,7 +155,7 @@ codex --search -a never exec \
 
 **What each flag is for:**
 
-- `--search`: Enable Codex native web access.
+- `--search`: Enable [[codex/SKILL|Codex]] native web access.
   Default to ON. Delegated coding agents should almost always have live docs/search
   access so they can read current documentation, issues, and upstream references on
   demand instead of guessing.
@@ -174,17 +174,17 @@ codex --search -a never exec \
 
 **Budget awareness:**
 
-- Codex usage is metered in rolling 5-hour and 7-day windows.
-  Treat Codex budget as a scarce resource.
+- [[codex/SKILL|Codex]] usage is metered in rolling 5-hour and 7-day windows.
+  Treat [[codex/SKILL|Codex]] budget as a scarce resource.
 
-- Spend Codex runs on high-impact delegated work: architectural changes, error-prone
+- Spend [[codex/SKILL|Codex]] runs on high-impact delegated work: architectural changes, error-prone
   migrations, multi-file debugging, or tasks where strong autonomy and long-horizon
   reasoning materially reduce coordinator load.
 
-- Do not burn Codex budget on trivial shell probes, single-file mechanical edits, or
+- Do not burn [[codex/SKILL|Codex]] budget on trivial shell probes, single-file mechanical edits, or
   narrow docs changes when a cheaper subagent or direct host-side command would do.
 
-**Current practical Codex model surfaces:**
+**Current practical [[codex/SKILL|Codex]] model surfaces:**
 
 - `gpt-5.4`: strong default for substantial delegated coding work
 
@@ -256,19 +256,19 @@ shows the agent is stalling, drifting, or making bad decisions.
 
 **Operational guidance:**
 
-- Native Codex web access and shell network access are separate surfaces.
+- Native [[codex/SKILL|Codex]] web access and shell network access are separate surfaces.
   `--search` enables the model web tool.
   Shell tools like `gh`, `curl`, and package managers still need sandbox network access
   enabled.
 
-- `zsh -lc` inside Codex generally sees inherited PATH-managed tools.
+- `zsh -lc` inside [[codex/SKILL|Codex]] generally sees inherited PATH-managed tools.
   Use login-shell behavior only when you specifically need aliases or interactive shell
   setup.
 
 - If shell GitHub access matters, verify it directly in the delegated runtime instead of
   assuming host-shell success proves anything about the subagent.
 
-**Verification checklist for a new Codex launch template:**
+**Verification checklist for a new [[codex/SKILL|Codex]] launch template:**
 
 - `command -v gh uv bun opencode codex`
 
@@ -287,7 +287,7 @@ shows the agent is stalling, drifting, or making bad decisions.
 - Read the actual transcript before deciding whether the agent misunderstood the task,
   hit an environment problem, or simply needs a tighter resume prompt.
 
-- For Codex CLI, use the [[reading-transcripts/SKILL|reading-transcripts]] skill and inspect the actual
+- For [[codex/SKILL|Codex]] CLI, use the [[reading-transcripts/SKILL|reading-transcripts]] skill and inspect the actual
   rollout/session transcript, not just the final summary.
 
 - Resume or replace agents based on transcript evidence, not on confident subagent
@@ -355,7 +355,7 @@ Choose mode intentionally based on coordination needs.
 
 After every subagent terminal event (sync return or async terminal callback):
 
-1. **Inspect transcript**: for OpenCode, use [[reading-transcripts/SKILL|reading-transcripts]] or
+1. **Inspect transcript**: for [[opencode/SKILL|OpenCode]], use [[reading-transcripts/SKILL|reading-transcripts]] or
    `ocm transcript <sessionID>`
 
 2. **Read full output**: Understand what subagent attempted, what succeeded, what failed
@@ -367,7 +367,7 @@ After every subagent terminal event (sync return or async terminal callback):
 
 5. **Decision**: Commit (if done) or resume (if incomplete)
 
-For OpenCode sessions, do not use `opencode export` or a local transcript parser
+For [[opencode/SKILL|OpenCode]] sessions, do not use `opencode export` or a local transcript parser
 fallback. Transcript review goes through `ocm transcript` only.
 
 ### Resume Pattern (When Work Is Insufficient)

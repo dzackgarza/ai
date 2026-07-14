@@ -1,6 +1,6 @@
 ---
 name: supervising-agent-work
-description: Use when asked to supervise, monitor, steer, audit, or periodically check another live agent running in tmux, especially when the task involves reading a pane, reviewing another agent's recent work, sending corrective messages, or using Codex PTY sleep timers for repeated supervision ticks.
+description: Use when asked to supervise, monitor, steer, audit, or periodically check another live agent running in tmux, especially when the task involves reading a pane, reviewing another agent's recent work, sending corrective messages, or using [[codex/SKILL|Codex]] PTY sleep timers for repeated supervision ticks.
 ---
 # Supervising Agent Work
 
@@ -59,7 +59,7 @@ an incompleteness signal with progress context, not a success signal.
 - [[ssh-workstation-and-tmux/SKILL|ssh-workstation-and-tmux]]: load when the target session is remote or the user asks
   about workstation tmux sessions.
 - [[scheduling-tasks-and-subagents/SKILL|scheduling-tasks-and-subagents]]: load only when the user asks for external scheduled
-  wakeups. For Codex self-supervision, prefer the PTY sleep timer below.
+  wakeups. For [[codex/SKILL|Codex]] self-supervision, prefer the PTY sleep timer below.
 
 ## Observe The Session
 
@@ -122,9 +122,9 @@ worker-layer evidence blocks observer completion. Passing the worker layer is ne
 sufficient for the observer goal. The observer goal is complete only when all applicable
 worker-layer obligations and the independent observer review both pass.
 
-## Periodic Codex Supervision Timer
+## Periodic [[codex/SKILL|Codex]] Supervision Timer
 
-When the user wants repeated supervision from this Codex session, use a long-running PTY
+When the user wants repeated supervision from this [[codex/SKILL|Codex]] session, use a long-running PTY
 sleep as the timer:
 
 ```bash
@@ -349,10 +349,10 @@ Use these as direct replacements for common supervision mistakes:
   - Do not: Assume text sitting in the TUI input line was received, or use `Tab` as a
     generic submit key.
 
-- **Codex supervision timer**
-  - Do: Use a Codex PTY sleep marker for repeated checks from the current Codex
+- **[[codex/SKILL|Codex]] supervision timer**
+  - Do: Use a [[codex/SKILL|Codex]] PTY sleep marker for repeated checks from the current [[codex/SKILL|Codex]]
     session.
-  - Do not: Switch to `at`, `opx`, or an OpenCode wakeup unless the user asked for
+  - Do not: Switch to `at`, `opx`, or an [[opencode/SKILL|OpenCode]] wakeup unless the user asked for
     external persistence.
 
 - **Positive completion evidence**

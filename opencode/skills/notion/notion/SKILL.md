@@ -1,6 +1,6 @@
 ---
 name: notion
-description: "Notion API via curl: pages, databases, blocks, search."
+description: "[[notion/notion/SKILL|Notion]] API via curl: pages, databases, blocks, search."
 version: 1.0.0
 author: community
 license: MIT
@@ -13,9 +13,9 @@ prerequisites:
   env_vars: [NOTION_API_KEY]
 ---
 
-# Notion API
+# [[notion/notion/SKILL|Notion]] API
 
-Use the Notion API via curl to create, read, update pages, databases (data sources), and blocks. No extra tools needed — just curl and a Notion API key.
+Use the [[notion/notion/SKILL|Notion]] API via curl to create, read, update pages, databases (data sources), and blocks. No extra tools needed — just curl and a [[notion/notion/SKILL|Notion]] API key.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ Use the Notion API via curl to create, read, update pages, databases (data sourc
    ```
    NOTION_API_KEY=ntn_your_key_here
    ```
-4. **Important:** Share target pages/databases with your integration in Notion (click "..." → "Connect to" → your integration name)
+4. **Important:** Share target pages/databases with your integration in [[notion/notion/SKILL|Notion]] (click "..." → "Connect to" → your integration name)
 
 ## API Basics
 

@@ -1,6 +1,6 @@
 ---
 name: looped-task-skill-author
-description: Use when authoring or refining repo-local Codex skills for repeated one-shot agent loops that advance long-horizon or open-ended tasks through progress logs, self-correcting state machines, transcript-based manual testing, and cautious promotion to cron/Hermes-style orchestration. Do not use for ordinary one-off scripts or batch automation.
+description: Use when authoring or refining repo-local [[codex/SKILL|Codex]] skills for repeated one-shot agent loops that advance long-horizon or open-ended tasks through progress logs, self-correcting state machines, transcript-based manual testing, and cautious promotion to cron/Hermes-style orchestration. Do not use for ordinary one-off scripts or batch automation.
 ---
 # Looped task skill authoring
 
@@ -427,7 +427,7 @@ Scientific integrity requires that each trial begins from equivalent conditions.
 Run single live trials with the subskill explicitly invoked.
 Prefer weaker, cheaper, or lighter subagents during development unless a local
 [[model-selection/SKILL|model-selection]] skill says otherwise.
-Examples include small Codex configurations, free or low-cost OpenRouter models through
+Examples include small [[codex/SKILL|Codex]] configurations, free or low-cost OpenRouter models through
 opencode, local/workhorse models, or whatever [[model-selection/SKILL|model-selection]] guidance the repo already
 defines. The point is to find behavioral weaknesses before promotion, not to hide them
 with the strongest available model.

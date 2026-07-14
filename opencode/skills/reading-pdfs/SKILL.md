@@ -30,9 +30,9 @@ collection at `~/pdfs/`.
 ```
 
 **Always save the original PDF alongside the extracted markdown.** Name them `paper.pdf`
-and `paper.md` for arXiv papers.
+and `paper.md` for [[arxiv/SKILL|arXiv]] papers.
 
-For arXiv papers:
+For [[arxiv/SKILL|arXiv]] papers:
 
 - Download URL: `https://arxiv.org/pdf/{arxiv_id}.pdf`
 
@@ -179,7 +179,7 @@ paper = get_arxiv_paper("0704.0001")
 print(paper[:1000])  # First 1000 chars
 ```
 
-## Local Extraction (justfile recipes)
+## Local Extraction ([[justfile/SKILL|justfile]] recipes)
 
 For extracting PDFs locally without the Mistral API, use the managed recipes in
 `~/pdf-extraction`. These handle environment setup automatically via `uv sync`.
@@ -208,21 +208,21 @@ The recipe should own that mode; do not run private one-off extraction scripts.
 After extraction, verify the expected output files and keep the run log with the
 artifacts.
 
-## Zotero and MinerU Artifacts
+## [[zotero/SKILL|Zotero]] and MinerU Artifacts
 
 MinerU markdown/JSON are external research artifacts, not repository source.
 Preserve that separation:
 
-- Original PDFs belong under `~/pdfs` or Zotero storage, not in agent/code repos.
+- Original PDFs belong under `~/pdfs` or [[zotero/SKILL|Zotero]] storage, not in agent/code repos.
 
-- Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant Zotero
+- Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant [[zotero/SKILL|Zotero]]
   attachment path, not in Git LFS.
 
-- When Zotero already has a PDF, prefer resolving the local attachment path via the
+- When [[zotero/SKILL|Zotero]] already has a PDF, prefer resolving the local attachment path via the
   [[zotero-api/SKILL|zotero-api]] skill before downloading a duplicate.
 
-- When attaching existing MinerU output back to Zotero, verify against the running
-  Zotero local API and Better BibTeX key; do not infer matches from filenames alone.
+- When attaching existing MinerU output back to [[zotero/SKILL|Zotero]], verify against the running
+  [[zotero/SKILL|Zotero]] local API and Better BibTeX key; do not infer matches from filenames alone.
 
 When only structured extraction data is needed, prefer a recipe that emits the
 minimal MinerU JSON artifacts (`middle.json` and `content_list.json`) without
@@ -230,18 +230,18 @@ generating extra rendered PDFs or Markdown. The recipe should own that mode;
 do not run private one-off extraction scripts. After extraction, verify the
 expected output files and keep the run log with the artifacts.
 
-## Zotero and MinerU Artifacts
+## [[zotero/SKILL|Zotero]] and MinerU Artifacts
 
 MinerU markdown/JSON are external research artifacts, not repository source.
 Preserve that separation:
 
-- Original PDFs belong under `~/pdfs` or Zotero storage, not in agent/code repos.
+- Original PDFs belong under `~/pdfs` or [[zotero/SKILL|Zotero]] storage, not in agent/code repos.
 - Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant
-  Zotero attachment path, not in Git LFS.
-- When Zotero already has a PDF, prefer resolving the local attachment path via
+  [[zotero/SKILL|Zotero]] attachment path, not in Git LFS.
+- When [[zotero/SKILL|Zotero]] already has a PDF, prefer resolving the local attachment path via
   the [[zotero-api/SKILL|zotero-api]] skill before downloading a duplicate.
-- When attaching existing MinerU output back to Zotero, verify against the
-  running Zotero local API and Better BibTeX key; do not infer matches from
+- When attaching existing MinerU output back to [[zotero/SKILL|Zotero]], verify against the
+  running [[zotero/SKILL|Zotero]] local API and Better BibTeX key; do not infer matches from
   filenames alone.
 
 ## Notes

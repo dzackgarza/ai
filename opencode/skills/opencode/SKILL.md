@@ -1,23 +1,23 @@
 ---
 name: opencode
-description: "Delegate coding to OpenCode CLI (features, PR review)."
+description: "Delegate coding to [[opencode/SKILL|OpenCode]] CLI (features, PR review)."
 version: 1.2.0
 author: Hermes Agent
 license: MIT
 metadata:
   hermes:
-    tags: [Coding-Agent, OpenCode, Autonomous, Refactoring, Code-Review]
+    tags: [Coding-Agent, [[opencode/SKILL|OpenCode]], Autonomous, Refactoring, Code-Review]
     related_skills: [[[claude-code/SKILL|claude-code]], codex, [[hermes-agent/SKILL|hermes-agent]]]
 ---
-# OpenCode CLI
+# [[opencode/SKILL|OpenCode]] CLI
 
 Use [OpenCode](https://opencode.ai) as an autonomous coding worker orchestrated by
 Hermes terminal/process tools.
-OpenCode is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
+[[opencode/SKILL|OpenCode]] is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
 
 ## When to Use
 
-- User explicitly asks to use OpenCode
+- User explicitly asks to use [[opencode/SKILL|OpenCode]]
 
 - You want an external coding agent to implement/refactor/review code
 
@@ -27,7 +27,7 @@ OpenCode is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
 
 ## Prerequisites
 
-- OpenCode installed: `npm i -g opencode-ai@latest` or
+- [[opencode/SKILL|OpenCode]] installed: `npm i -g opencode-ai@latest` or
   `brew install anomalyco/tap/opencode`
 
 - Auth configured: `opencode auth login` or set provider env vars (OPENROUTER_API_KEY,
@@ -41,7 +41,7 @@ OpenCode is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
 
 ## Binary Resolution (Important)
 
-Shell environments may resolve different OpenCode binaries.
+Shell environments may resolve different [[opencode/SKILL|OpenCode]] binaries.
 If behavior differs between your terminal and Hermes, check:
 
 ```
@@ -105,7 +105,7 @@ process(action="write", session_id="<id>", data="\x03")
 process(action="kill", session_id="<id>")
 ```
 
-**Important:** Do NOT use `/exit` — it is not a valid OpenCode command and will open an
+**Important:** Do NOT use `/exit` — it is not a valid [[opencode/SKILL|OpenCode]] command and will open an
 agent selector dialog instead.
 Use Ctrl+C (`\x03`) or `process(action="kill")` to exit.
 
@@ -120,11 +120,11 @@ Use Ctrl+C (`\x03`) or `process(action="kill")` to exit.
 | `Ctrl+X M` | Switch model |
 | `Ctrl+X N` | New session |
 | `Ctrl+X E` | Open editor |
-| `Ctrl+C` | Exit OpenCode |
+| `Ctrl+C` | Exit [[opencode/SKILL|OpenCode]] |
 
 ### Resuming Sessions
 
-After exiting, OpenCode prints a session ID. Resume with:
+After exiting, [[opencode/SKILL|OpenCode]] prints a session ID. Resume with:
 
 ```
 terminal(command="opencode -c", workdir="~/project", background=true, pty=true)  # Continue last session
@@ -136,9 +136,9 @@ terminal(command="opencode -s ses_abc123", workdir="~/project", background=true,
 | Flag | Use |
 | --- | --- |
 | `run 'prompt'` | One-shot execution and exit |
-| `--continue` / `-c` | Continue the last OpenCode session |
+| `--continue` / `-c` | Continue the last [[opencode/SKILL|OpenCode]] session |
 | `--session <id>` / `-s` | Continue a specific session |
-| `--agent <name>` | Choose OpenCode agent (build or plan) |
+| `--agent <name>` | Choose [[opencode/SKILL|OpenCode]] agent (build or plan) |
 | `--model provider/model` | Force specific model |
 | `--format json` | Machine-readable output/events |
 | `--file <path>` / `-f` | Attach file(s) to the message |
@@ -161,7 +161,7 @@ terminal(command="opencode -s ses_abc123", workdir="~/project", background=true,
 
 4. Monitor long tasks with `process(action="poll"|"log")`.
 
-5. If OpenCode asks for input, respond via `process(action="submit", ...)`.
+5. If [[opencode/SKILL|OpenCode]] asks for input, respond via `process(action="submit", ...)`.
 
 6. Exit with `process(action="write", data="\x03")` or `process(action="kill")`.
 
@@ -169,7 +169,7 @@ terminal(command="opencode -s ses_abc123", workdir="~/project", background=true,
 
 ## PR Review Workflow
 
-OpenCode has a built-in PR command:
+[[opencode/SKILL|OpenCode]] has a built-in PR command:
 
 ```
 terminal(command="opencode pr 42", workdir="~/project", pty=true)
@@ -214,13 +214,13 @@ terminal(command="opencode stats --days 7 --models anthropic/claude-sonnet-4")
 - `/exit` is NOT a valid command — it opens an agent selector.
   Use Ctrl+C to exit the TUI.
 
-- PATH mismatch can select the wrong OpenCode binary/model config.
+- PATH mismatch can select the wrong [[opencode/SKILL|OpenCode]] binary/model config.
 
-- If OpenCode appears stuck, inspect logs before killing:
+- If [[opencode/SKILL|OpenCode]] appears stuck, inspect logs before killing:
 
   - `process(action="log", session_id="<id>")`
 
-- Avoid sharing one working directory across parallel OpenCode sessions.
+- Avoid sharing one working directory across parallel [[opencode/SKILL|OpenCode]] sessions.
 
 - Enter may need to be pressed twice to submit in the TUI (once to finalize text, once
   to send).
@@ -247,7 +247,7 @@ Success criteria:
 
 2. Use interactive background mode only when iteration is needed.
 
-3. Always scope OpenCode sessions to a single repo/workdir.
+3. Always scope [[opencode/SKILL|OpenCode]] sessions to a single repo/workdir.
 
 4. For long tasks, provide progress updates from `process` logs.
 

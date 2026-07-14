@@ -1,20 +1,20 @@
 ---
 name: jules
-description: Use when delegating a coding task to Jules — bug fixes, tests, docs, features, or code reviews on a GitHub repo.
+description: Use when delegating a coding task to [[jules/SKILL|Jules]] — bug fixes, tests, docs, features, or code reviews on a GitHub repo.
 license: Apache-2.0
 metadata:
 author: sanjay3290
 version: '1.1'
 ---
-# Jules Task Delegation
+# [[jules/SKILL|Jules]] Task Delegation
 
-Delegate coding tasks to Google’s Jules AI agent on GitHub repositories.
+Delegate coding tasks to Google’s [[jules/SKILL|Jules]] AI agent on GitHub repositories.
 
 ## IMPORTANT: Quality Caveats
 
-**Jules is a weak agent with significant failure modes.** All work must be heavily
+**[[jules/SKILL|Jules]] is a weak agent with significant failure modes.** All work must be heavily
 validated, gated, and reviewed before approval.
-Treat Jules output adversarially when reviewing.
+Treat [[jules/SKILL|Jules]] output adversarially when reviewing.
 
 ### Common Failure Patterns
 
@@ -38,7 +38,7 @@ Treat Jules output adversarially when reviewing.
 
 ### Validation Requirements
 
-- **ALWAYS** load [[test-guidelines/SKILL|test-guidelines]] skill when reviewing Jules output
+- **ALWAYS** load [[test-guidelines/SKILL|test-guidelines]] skill when reviewing [[jules/SKILL|Jules]] output
 
 - Check that tests verify correctness, not just coverage
 
@@ -46,25 +46,25 @@ Treat Jules output adversarially when reviewing.
 
 - Look for shortcuts, workarounds, and incomplete solutions
 
-- Reprompt Jules to continue when gaps are found
+- Reprompt [[jules/SKILL|Jules]] to continue when gaps are found
 
 ### Automated Review Limitations
 
-Automated GitHub reviewers are given **only the PR diff and Jules’ own description of
+Automated GitHub reviewers are given **only the PR diff and [[jules/SKILL|Jules]]’ own description of
 it**. They have no access to the original task, the original expectations, or any
-blockers Jules encountered along the way.
+blockers [[jules/SKILL|Jules]] encountered along the way.
 
 Reviewers are trained to find bugs, logical errors, and **inconsistencies between what
-Jules reports and what the code actually does**. This is a useful check — but it only
-operates within Jules’ own framing.
+[[jules/SKILL|Jules]] reports and what the code actually does**. This is a useful check — but it only
+operates within [[jules/SKILL|Jules]]’ own framing.
 The one thing reviewers cannot do is compare the original task requirements against what
-was delivered, because the only source of “expectations” available to them is Jules’ own
+was delivered, because the only source of “expectations” available to them is [[jules/SKILL|Jules]]’ own
 PR title, body, and commit messages.
-Jules controls all of that, and Jules is incentivized to make its work appear aligned
+[[jules/SKILL|Jules]] controls all of that, and [[jules/SKILL|Jules]] is incentivized to make its work appear aligned
 with expectations — downplaying or omitting blockers, fallback decisions, or abandoned
 goals entirely.
 
-**Concrete example:** Jules hits a blocker and decides it cannot implement the requested
+**Concrete example:** [[jules/SKILL|Jules]] hits a blocker and decides it cannot implement the requested
 feature. Instead of reporting failure, it implements scaffolding and reframes the PR as
 “laying the groundwork for future implementation.”
 The PR description presents this as forward progress.
@@ -75,11 +75,11 @@ nothing in the review pipeline had any way to know that.
 
 **Clearing automated review is not sufficient.** You must independently compare the
 original task against actual PR contents, using your own copy of the original task
-description — not Jules’ framing — as the benchmark for completeness.
+description — not [[jules/SKILL|Jules]]’ framing — as the benchmark for completeness.
 
-### When to Use Jules
+### When to Use [[jules/SKILL|Jules]]
 
-Jules has a restricted Linux environment with no access to online docs or external
+[[jules/SKILL|Jules]] has a restricted Linux environment with no access to online docs or external
 references. Context engineering in the prompt is essential.
 
 **Best for:**
@@ -109,20 +109,20 @@ references. Context engineering in the prompt is essential.
 | Model | Watered-down Gemini 3 (Mar 2026) |
 | Quality | Good for 50-90%, rarely complete |
 
-**No Jules PR should be accepted without deep review.
+**No [[jules/SKILL|Jules]] PR should be accepted without deep review.
 Automated reviews are insufficient.**
 
-### Jules as Asynchronous [[anti-slop/SKILL|Anti-Slop]] Report Scout
+### [[jules/SKILL|Jules]] as Asynchronous [[anti-slop/SKILL|Anti-Slop]] Report Scout
 
 Use [jules-anti-slop-report-review](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md) when:
-- the user asks Jules to review LLM/agent-produced work,
-- a PR has already been produced by Jules, Codex, Claude, Qwen, DeepSeek, etc.,
+- the user asks [[jules/SKILL|Jules]] to review LLM/agent-produced work,
+- a PR has already been produced by [[jules/SKILL|Jules]], [[codex/SKILL|Codex]], Claude, Qwen, DeepSeek, etc.,
 - the user wants a cheap second-pass slop audit,
 - the task is to produce findings, not implement fixes.
 
 Do not use this workflow for ordinary bug fixing or feature implementation.
 For implementation, use the PR Contract workflow.
-For [[anti-slop/SKILL|anti-slop]] review, Jules’ deliverable is a JSON report file, not code.
+For [[anti-slop/SKILL|anti-slop]] review, [[jules/SKILL|Jules]]’ deliverable is a JSON report file, not code.
 
 * * *
 
@@ -142,7 +142,7 @@ Or route through the existing `improved-jules-cli` flow:
 uvx git+https://github.com/dzackgarza/improved-jules-cli --help
 ```
 
-*(Note: Avoid global installations. If Jules truly cannot run ephemerally, document the exception and require explicit user approval. Do not run `npm install -g`.)*
+*(Note: Avoid global installations. If [[jules/SKILL|Jules]] truly cannot run ephemerally, document the exception and require explicit user approval. Do not run `npm install -g`.)*
 
 ### 2. Check Auth
 
@@ -251,11 +251,11 @@ jules new "Fix all linting errors in the codebase. Run the linter, identify issu
 
 5. **Apply**: `jules remote pull --session <id> --apply` (only after validation)
 
-6. **Reprompt**: If gaps found, reprompt Jules to continue
+6. **Reprompt**: If gaps found, reprompt [[jules/SKILL|Jules]] to continue
 
 ## Git Integration (Apply + Commit)
 
-After Jules completes and you’ve validated the work:
+After [[jules/SKILL|Jules]] completes and you’ve validated the work:
 
 ```bash
 SESSION_ID=""
@@ -300,7 +300,7 @@ done
 
 ## AGENTS.md Template
 
-Create in repo root to improve Jules results:
+Create in repo root to improve [[jules/SKILL|Jules]] results:
 
 ```markdown
 # AGENTS.md
@@ -344,30 +344,30 @@ Create in repo root to improve Jules results:
 
 ## Notes
 
-- **No CLI reply** → Use web UI for Jules questions
+- **No CLI reply** → Use web UI for [[jules/SKILL|Jules]] questions
 
 - **No CLI cancel** → Use web UI to cancel
 
 - **GitHub only** → GitLab/Bitbucket not supported
 
-- **AGENTS.md** → Jules reads from repo root for context
+- **AGENTS.md** → [[jules/SKILL|Jules]] reads from repo root for context
 
 - **ALWAYS validate before applying changes**
 
 ## PR Review & Feedback Loop
 
-This section covers the detailed workflow for managing Jules PRs through the review
+This section covers the detailed workflow for managing [[jules/SKILL|Jules]] PRs through the review
 cycle, including automated reviewer tracking and feedback piping.
 
 ### Feedback Resolution Principles
 
 Do not treat feedback resolution as a purely mechanical thread-clearing process. Feedback must be understood, accepted or rejected, and made legible to the human maintainer with a visible disposition and evidence (see [[git-guidelines/SKILL|git-guidelines]] review feedback rule).
 
-### Matching Jules Sessions to PRs
+### Matching [[jules/SKILL|Jules]] Sessions to PRs
 
-To see which PRs Jules created in its last run:
+To see which PRs [[jules/SKILL|Jules]] created in its last run:
 
-1. Get Jules sessions: `jules remote list --session`
+1. Get [[jules/SKILL|Jules]] sessions: `jules remote list --session`
 
 2. Get recent PRs: `gh search prs dzackgarza -L 20`
 
@@ -395,17 +395,17 @@ Workflow:
 
 3. Qodo strikes through resolved issues automatically
 
-### Sending Review Feedback to Jules
+### Sending Review Feedback to [[jules/SKILL|Jules]]
 
 > [!WARNING]
 > **Do not confuse this with [[anti-slop/SKILL|anti-slop]] report review**
 >
-> The feedback loop below is for an existing Jules PR being iterated through review.
+> The feedback loop below is for an existing [[jules/SKILL|Jules]] PR being iterated through review.
 >
-> For [[anti-slop/SKILL|anti-slop]] review, do not pipe findings back to Jules for immediate fixing. Jules writes a report. Later PRs address findings from that report after independent triage.
+> For [[anti-slop/SKILL|anti-slop]] review, do not pipe findings back to [[jules/SKILL|Jules]] for immediate fixing. [[jules/SKILL|Jules]] writes a report. Later PRs address findings from that report after independent triage.
 
 Use the `extract_unresolved_issues` module from the [[git-guidelines/SKILL|git-guidelines]] skill to pipe
-unresolved PR review issues back to Jules:
+unresolved PR review issues back to [[jules/SKILL|Jules]]:
 
 ```bash
 # Send unresolved issues summary
@@ -437,9 +437,9 @@ For the full end-to-end workflow using `improved-jules-cli`:
 5. **Check Issues** — Use `extract_unresolved_issues` from [[git-guidelines/SKILL|git-guidelines]] skill (see
    above).
 
-6. **Send Feedback** — Pipe issues to Jules (see above).
+6. **Send Feedback** — Pipe issues to [[jules/SKILL|Jules]] (see above).
 
-7. **Repeat** steps 3-6 using the following rule: Use Jules for candidate [[anti-slop/SKILL|anti-slop]] report generation only. Do not pipe review comments back to Jules for blind fixing unless a stronger controller has already triaged each comment and written policy-compatible instructions.
+7. **Repeat** steps 3-6 using the following rule: Use [[jules/SKILL|Jules]] for candidate [[anti-slop/SKILL|anti-slop]] report generation only. Do not pipe review comments back to [[jules/SKILL|Jules]] for blind fixing unless a stronger controller has already triaged each comment and written policy-compatible instructions.
 
 8. **Surface** — Present PR link:
    `uvx git+https://github.com/dzackgarza/improved-jules-cli pr SESSION_ID`
@@ -452,9 +452,9 @@ For the full end-to-end workflow using `improved-jules-cli`:
 
 * * *
 
-## PR Contract (Mandatory for Jules-Initiated PRs)
+## PR Contract (Mandatory for [[jules/SKILL|Jules]]-Initiated PRs)
 
-For any PR initiated by Jules, a contract must be written **before** implementation
+For any PR initiated by [[jules/SKILL|Jules]], a contract must be written **before** implementation
 begins, committed to the branch, and used as the authoritative source of truth for the
 PR body. For nontrivial work, the contract must also point at the GitHub issue or issue
 tree that owns the tracked work. Do not let the code define the task after the fact.
@@ -463,7 +463,7 @@ tree that owns the tracked work. Do not let the code define the task after the f
 
 Automated GitHub reviewers have **no access to the original task** — only to the PR
 title, body, and commit messages.
-Jules controls all of that and is incentivized to make its work appear aligned with
+[[jules/SKILL|Jules]] controls all of that and is incentivized to make its work appear aligned with
 expectations, even when it is not.
 A contract written before implementation is the only reliable anchor for post-hoc
 comparison.

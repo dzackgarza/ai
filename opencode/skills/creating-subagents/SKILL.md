@@ -41,7 +41,7 @@ Create a subagent when the task has these characteristics:
 | Task Type | Why It Works | Example |
 | --- | --- | --- |
 | **High token workload** | Many tool calls + large outputs = lots of context. Subagents handle token-heavy work without polluting main agent context. | “Cross-reference 400-line checklist with documentation” |
-| **Exploration/branching** | Tasks requiring trial-and-error, false starts, incorrect guesses. Subagents can churn without derailing main agent. | “Research existing implementations of X across arXiv and GitHub” |
+| **Exploration/branching** | Tasks requiring trial-and-error, false starts, incorrect guesses. Subagents can churn without derailing main agent. | “Research existing implementations of X across [[arxiv/SKILL|arXiv]] and GitHub” |
 | **Parsing/summarization** | Not detail-sensitive. Generating summaries, overviews, indices, maps into more detailed work. | “Generate summary of repo structure”, “Create index of all test files” |
 | **Well-delineated scope** | Clear boundaries, unlikely to cause model drift. “Do X and return Y” format. | “Write module x.py according to spec y.md”, “Run test suite and report failures” |
 | **Easily verified output** | Hallucinations are false positives that can be quickly disproved. | “Find online sources for X” (check links), “List all files in src/” (verify exists) |
@@ -101,7 +101,7 @@ yourself?
 | “Research topic across 20 URLs” | ✅ Subagent (fetch all → synthesize in one context) |
 | “Check if file exists” | ❌ Main agent (one glob call) |
 
-## Official Guidance (OpenCode Docs)
+## Official Guidance ([[opencode/SKILL|OpenCode]] Docs)
 
 According to [OpenCode agent documentation](https://opencode.ai/docs/agents/):
 
@@ -220,7 +220,7 @@ permission:
 Detailed subagent prompt goes here.
 ```
 
-Do not use `prompt_slug` or an external permission compiler for OpenCode runtime agents.
+Do not use `prompt_slug` or an external permission compiler for [[opencode/SKILL|OpenCode]] runtime agents.
 
 ### 5. Validate
 

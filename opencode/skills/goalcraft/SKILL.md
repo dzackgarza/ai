@@ -166,13 +166,13 @@ When an impossibility off-ramp is needed, write it as a non-success state: the o
 
 For hard or repeated failures, route the worker to [[hard-problem-decomposition/SKILL|hard-problem-decomposition]] so failure becomes smaller real work rather than a scope change. Any reusable operational lesson discovered while working should be saved through [[agent-memory/SKILL|agent-memory]]; unresolved external work belongs in the project's issue tracker or documented backlog surface, not in the goal as a disguised completion condition.
 
-### Keep The Objective Usable By Codex
+### Keep The Objective Usable By [[codex/SKILL|Codex]]
 
 Hard limit: the objective text after `/goal ` must be less than 4,000 characters. Working target: draft to 3,400 characters or fewer. Treat 3,800 characters or more as a failed draft even if it is technically below the hard limit.
 
 Include exact commands only when they are already known from the repo or user. Avoid hidden flags in slash text. `/goal --tokens 50K ...` is literal objective text in the TUI, not parsed syntax. If a token budget is requested, present it separately from the objective text unless the target surface supports a separate budget field.
 
-For complex or ambiguous work, recommend a planning/interview pass before setting the goal. For very large work, include subagent/orchestration guidance only when the current Codex environment supports subagents and the work can be split into bounded, reviewable lanes.
+For complex or ambiguous work, recommend a planning/interview pass before setting the goal. For very large work, include subagent/orchestration guidance only when the current [[codex/SKILL|Codex]] environment supports subagents and the work can be split into bounded, reviewable lanes.
 
 ### Choose The Output Shape
 
@@ -184,7 +184,7 @@ Full shape only for narrow work where the first draft is comfortably under 3,400
 
 Put only the ready-to-paste `/goal ...` command in a temporary file or pipe it to this skill's bundled validator: resolve `scripts/validate_goal_length.py` relative to the directory containing this `SKILL.md`, then run it with `--target-chars 3400 --strict-target`.
 
-The validator belongs to Goalcraft, not to the user's working project. Do not search the user's repository for `scripts/validate_goal_length.py`. The script strips a leading `/goal ` and counts the actual objective Codex validates.
+The validator belongs to Goalcraft, not to the user's working project. Do not search the user's repository for `scripts/validate_goal_length.py`. The script strips a leading `/goal ` and counts the actual objective [[codex/SKILL|Codex]] validates.
 
 If over 3,999 characters, compress and revalidate. If 3,800 to 3,999 characters, compress and revalidate. If 3,400 to 3,799 characters, accept only when removing more text would lose important safety or verification detail; otherwise compress and revalidate. Do not return a final goal until the validator passes.
 

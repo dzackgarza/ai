@@ -552,7 +552,7 @@ Save as JSON:
 ]
 ```
 
-The queries must be realistic and something a Claude Code or Claude.ai user would
+The queries must be realistic and something a [[claude-code/SKILL|Claude Code]] or Claude.ai user would
 actually type. Not abstract requests, but requests that are concrete and specific and
 have a good amount of detail.
 For instance, file paths, personal context about the user’s job or situation, column
@@ -716,7 +716,7 @@ You can still organize results into iteration directories on the filesystem if y
 one.
 
 **Description optimization**: This section requires the `claude` CLI tool (specifically
-`claude -p`) which is only available in Claude Code.
+`claude -p`) which is only available in [[claude-code/SKILL|Claude Code]].
 Skip it if you’re on Claude.ai.
 
 **Blind comparison**: Requires subagents.
@@ -759,7 +759,7 @@ If you’re in Cowork, the main things to know are:
 
 - For whatever reason, the Cowork setup seems to disincline Claude from generating the
   eval viewer after running the tests, so just to reiterate: whether you’re in Cowork or
-  in Claude Code, after running tests, you should always generate the eval viewer for
+  in [[claude-code/SKILL|Claude Code]], after running tests, you should always generate the eval viewer for
   the human to look at examples before revising the skill yourself and trying to make
   corrections, using `generate_review.py` (not writing your own boutique html code).
   Sorry in advance but I’m gonna go all caps here: GENERATE THE EVAL VIEWER *BEFORE*

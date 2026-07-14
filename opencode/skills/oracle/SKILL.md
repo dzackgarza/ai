@@ -3,7 +3,7 @@ name: oracle
 description: "Consult a frontier model (ChatGPT Pro/Extended by default) for senior-level planning, audit, design review, debugging strategy, or research synthesis. Bundle repo context, then consult ChatGPT Pro through the gpt-pro-cli `consult` command, which attaches to your already-running browser over CDP, uploads the bundle as a real file, waits for the Pro response, and returns it with a thread URL for multi-turn follow-ups. Use for architecture decisions, ambiguous bugs, and cross-system risk — not for routine edits or code generation a weaker model can do."
 ---
 
-# Oracle: Frontier Model Consultation
+# [[oracle/SKILL|Oracle]]: Frontier Model Consultation
 
 ## Purpose
 
@@ -57,7 +57,7 @@ gpt-pro-cli checkout (adjust the path if you keep it elsewhere):
 CONSULT="just -f $HOME/gitclones/gpt-pro-cli/justfile consult"
 ```
 
-1. **Bundle.** Use the Oracle CLI via `npx` to build a line-numbered context bundle —
+1. **Bundle.** Use the [[oracle/SKILL|Oracle]] CLI via `npx` to build a line-numbered context bundle —
    never install it globally, it's a third-party tool this repo doesn't own. It only
    concatenates files; it never calls a model or spends tokens:
 
@@ -184,7 +184,7 @@ Please provide:
 ## Attaching Files (`--file`)
 
 `--file` accepts files, directories, and globs (pass multiple times as needed) and is
-local-filesystem context only — Oracle does not fetch from GitHub or any remote
+local-filesystem context only — [[oracle/SKILL|Oracle]] does not fetch from GitHub or any remote
 connector. Clone/fetch first if the context only exists remotely.
 
 ```bash

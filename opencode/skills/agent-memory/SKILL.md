@@ -295,7 +295,7 @@ Why does it matter?
 
 - `references/opencode-memory-design-notes.md` records durable design ideas salvaged
   from older Claude-local assistant and hook systems.
-  Use it when designing or reviewing OpenCode memory/todo tooling; do not reintroduce
+  Use it when designing or reviewing [[opencode/SKILL|OpenCode]] memory/todo tooling; do not reintroduce
   the retired hook/session implementations.
 
 ## Transforming Notes into Memory

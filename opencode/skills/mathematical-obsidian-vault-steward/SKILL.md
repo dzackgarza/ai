@@ -1,10 +1,10 @@
 ---
 name: mathematical-obsidian-vault-steward
-description: "Use when stewarding a mathematical Obsidian vault: ingesting raw notes, chats, images, PDFs, snippets, or research artifacts; integrating source-backed mathematical content into durable notes; deciding note granularity; preserving provenance; auditing fake cards; or refactoring vault structure without degrading mathematical meaning."
+description: "Use when stewarding a mathematical [[obsidian/SKILL|Obsidian]] vault: ingesting raw notes, chats, images, PDFs, snippets, or research artifacts; integrating source-backed mathematical content into durable notes; deciding note granularity; preserving provenance; auditing fake cards; or refactoring vault structure without degrading mathematical meaning."
 ---
-# Mathematical Obsidian Vault Steward
+# Mathematical [[obsidian/SKILL|Obsidian]] Vault Steward
 
-Steward a mathematical Obsidian vault without mistaking structure for knowledge.
+Steward a mathematical [[obsidian/SKILL|Obsidian]] vault without mistaking structure for knowledge.
 Preserve mathematical meaning, source provenance, and retrieval value.
 Prefer integration over proliferation.
 
@@ -159,7 +159,7 @@ Prefer integration over proliferation.
 
 ## Vault Model
 
-- Obsidian is a linked knowledge environment, not a flat markdown folder.
+- [[obsidian/SKILL|Obsidian]] is a linked knowledge environment, not a flat markdown folder.
 
 - A durable note should have a stable referent and future retrieval value.
 
@@ -369,7 +369,7 @@ Load the reference files for role-specific work:
 - After durable incorporation is complete and audited, move the source to
   `INBOX/.incorporated/` while keeping the original filename.
 
-- Do not rename or move an inbox source solely to avoid duplicate basenames in Obsidian.
+- Do not rename or move an inbox source solely to avoid duplicate basenames in [[obsidian/SKILL|Obsidian]].
 
 - Moving a source through `.annotated` or `.incorporated` is a lifecycle decision, not a
   semantic rewrite; preserve basename, provenance metadata, and reviewability.
@@ -446,7 +446,7 @@ Use this adversarial check:
   `calculation`, `computation`, `fact`, `question`, `conjecture`, `problem`, `notation`,
   and `remark`.
 
-- Use Obsidian callouts for every formal mathematical unit except `remark`. Remarks
+- Use [[obsidian/SKILL|Obsidian]] callouts for every formal mathematical unit except `remark`. Remarks
   should usually be ordinary top-level prose in papers and notes, not `> [!remark]`
   boxes.
 
@@ -585,7 +585,7 @@ Use this adversarial check:
 
 ## Tooling Rules
 
-- Prefer Obsidian-aware tools over blind filesystem editing for note reads, moves,
+- Prefer [[obsidian/SKILL|Obsidian]]-aware tools over blind filesystem editing for note reads, moves,
   renames, links, backlinks, tags, and properties.
 
 - Use semantic/document tools as intermediate extractors, not truth oracles.
@@ -593,7 +593,7 @@ Use this adversarial check:
 - Use filesystem operations mainly for attachments, hashes, backups, and unsupported
   operations.
 
-- Do not use raw `mv`/bulk text rewriting when link-aware tools can preserve Obsidian
+- Do not use raw `mv`/bulk text rewriting when link-aware tools can preserve [[obsidian/SKILL|Obsidian]]
   semantics.
 
 ## Git and Bulk-Edit Safety
@@ -854,7 +854,7 @@ For high-risk ambiguities, produce a precise review packet:
 | Silent semantic drift | “Cleans up” notation or wording and changes meaning | Preserve notation or record the translation explicitly |
 | Software-status leakage | Uses labels like “open issue” or “framework” instead of mathematical types | Normalize to conjecture, question, construction, remark, theorem, etc. |
 | Dirty-source deletion | Deletes images/PDFs/chats after extraction | Keep originals until audit and retirement criteria pass |
-| Tool-blind editing | Breaks links/properties with plain file edits | Prefer Obsidian-aware tools and controlled scripts |
+| Tool-blind editing | Breaks links/properties with plain file edits | Prefer [[obsidian/SKILL|Obsidian]]-aware tools and controlled scripts |
 | Regex cascade corruption | Uses repeated broad regexes to fix earlier broad regexes | Revert, inspect, narrow scope, and re-run safely |
 
 ## Re-Derivation Principles

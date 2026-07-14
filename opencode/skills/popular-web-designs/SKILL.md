@@ -132,7 +132,7 @@ identity than the specific font face.
 | `minimax.md` | Minimax | Bold dark interface with neon accents |
 | `mistral.ai.md` | Mistral AI | French-engineered minimalism, purple-toned |
 | `ollama.md` | Ollama | Terminal-first, monochrome simplicity |
-| `opencode.ai.md` | OpenCode AI | Developer-centric dark theme, full monospace |
+| `opencode.ai.md` | [[opencode/SKILL|OpenCode]] AI | Developer-centric dark theme, full monospace |
 | `replicate.md` | Replicate | Clean white canvas, code-forward |
 | `runwayml.md` | RunwayML | Cinematic dark UI, media-rich layout |
 | `together.ai.md` | Together AI | Technical, blueprint-style design |
@@ -173,14 +173,14 @@ identity than the specific font face.
 
 | Template | Site | Style |
 | --- | --- | --- |
-| `airtable.md` | Airtable | Colorful, friendly, structured data aesthetic |
+| `airtable.md` | [[airtable/SKILL|Airtable]] | Colorful, friendly, structured data aesthetic |
 | `cal.md` | Cal.com | Clean neutral UI, developer-oriented simplicity |
 | `clay.md` | Clay | Organic shapes, soft gradients, art-directed layout |
 | `figma.md` | Figma | Vibrant multi-color, playful yet professional |
 | `framer.md` | Framer | Bold black and blue, motion-first, design-forward |
 | `intercom.md` | Intercom | Friendly blue palette, conversational UI patterns |
 | `miro.md` | Miro | Bright yellow accent, infinite canvas aesthetic |
-| `notion.md` | Notion | Warm minimalism, serif headings, soft surfaces |
+| `notion.md` | [[notion/notion/SKILL|Notion]] | Warm minimalism, serif headings, soft surfaces |
 | `pinterest.md` | Pinterest | Red accent, masonry grid, image-first layout |
 | `webflow.md` | Webflow | Blue-accented, polished marketing site aesthetic |
 
@@ -212,13 +212,13 @@ Match the design to the content:
 
 - **Developer tools / dashboards:** Linear, Vercel, Supabase, Raycast, Sentry
 
-- **Documentation / content sites:** Mintlify, Notion, Sanity, MongoDB
+- **Documentation / content sites:** Mintlify, [[notion/notion/SKILL|Notion]], Sanity, MongoDB
 
 - **Marketing / landing pages:** Stripe, Framer, Apple, SpaceX
 
 - **Dark mode UIs:** Linear, Cursor, ElevenLabs, Warp, Superhuman
 
-- **Light / clean UIs:** Vercel, Stripe, Notion, Cal.com, Replicate
+- **Light / clean UIs:** Vercel, Stripe, [[notion/notion/SKILL|Notion]], Cal.com, Replicate
 
 - **Playful / friendly:** PostHog, Figma, Lovable, Zapier, Miro
 
@@ -226,4 +226,4 @@ Match the design to the content:
 
 - **Data-dense / dashboards:** Sentry, Kraken, Cohere, ClickHouse
 
-- **Monospace / terminal aesthetic:** Ollama, OpenCode, x.ai, VoltAgent
+- **Monospace / terminal aesthetic:** Ollama, [[opencode/SKILL|OpenCode]], x.ai, VoltAgent

@@ -397,7 +397,7 @@ python tests/visual/scripts/compare-image.py \
 kill "$AGS_PID"
 ```
 
-## Visual Oracle Layers
+## Visual [[oracle/SKILL|Oracle]] Layers
 
 Raw pixel diffs are brittle.
 Use layered oracles:
@@ -499,7 +499,7 @@ visual tests.
 Do not block development on Tier 3 if CI cannot provide Wayland, but require it before
 claiming the GUI is correct.
 
-## Required justfile Recipes
+## Required [[justfile/SKILL|justfile]] Recipes
 
 Every AGS project must expose these recipes:
 

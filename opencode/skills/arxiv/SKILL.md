@@ -1,6 +1,6 @@
 ---
 name: arxiv
-description: "Search arXiv papers by keyword, author, category, or ID."
+description: "Search [[arxiv/SKILL|arXiv]] papers by keyword, author, category, or ID."
 version: 1.0.0
 author: Hermes Agent
 license: MIT
@@ -9,9 +9,9 @@ metadata:
     tags: [Research, Arxiv, Papers, Academic, Science, API]
     related_skills: [[[ocr-and-documents/SKILL|ocr-and-documents]]]
 ---
-# arXiv Research
+# [[arxiv/SKILL|arXiv]] Research
 
-Search and retrieve academic papers from arXiv via their free REST API. No API key, no
+Search and retrieve academic papers from [[arxiv/SKILL|arXiv]] via their free REST API. No API key, no
 dependencies — just curl.
 
 ## Quick Reference
@@ -191,7 +191,7 @@ No dependencies — uses only Python stdlib.
 
 ## Semantic Scholar (Citations, Related Papers, Author Profiles)
 
-arXiv doesn’t provide citation data or recommendations.
+[[arxiv/SKILL|arXiv]] doesn’t provide citation data or recommendations.
 Use the **Semantic Scholar API** for that — free, no key needed for basic use (1
 req/sec), returns JSON.
 
@@ -217,7 +217,7 @@ curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:2402.03300/citatio
 curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:2402.03300/references?fields=title,authors,year,citationCount&limit=10" | python3 -m json.tool
 ```
 
-### Search papers (alternative to arXiv search, returns JSON)
+### Search papers (alternative to [[arxiv/SKILL|arXiv]] search, returns JSON)
 
 ```bash
 curl -s "https://api.semanticscholar.org/graph/v1/paper/search?query=GRPO+reinforcement+learning&limit=5&fields=title,authors,year,citationCount,externalIds" | python3 -m json.tool
@@ -225,15 +225,15 @@ curl -s "https://api.semanticscholar.org/graph/v1/paper/search?query=GRPO+reinfo
 
 ## Mathematics Literature Routing
 
-For mathematics papers, arXiv is only one source.
+For mathematics papers, [[arxiv/SKILL|arXiv]] is only one source.
 Use it together with the [[literature-review/SKILL|literature-review]] skill’s multi-source search and Zotero/PDF
 workflows:
 
-- arXiv for preprints and TeX/PDF identifiers,
+- [[arxiv/SKILL|arXiv]] for preprints and TeX/PDF identifiers,
 
 - Semantic Scholar/OpenAlex/Crossref for citation and DOI metadata,
 
-- Zotero for local library identity and attachments,
+- [[zotero/SKILL|Zotero]] for local library identity and attachments,
 
 - `~/pdfs` and `~/pdf-extraction` for stored PDFs and extraction artifacts.
 
@@ -258,7 +258,7 @@ curl -s "https://api.semanticscholar.org/graph/v1/author/search?query=Yann+LeCun
 
 `title`, `authors`, `year`, `abstract`, `citationCount`, `referenceCount`,
 `influentialCitationCount`, `isOpenAccess`, `openAccessPdf`, `fieldsOfStudy`,
-`publicationVenue`, `externalIds` (contains arXiv ID, DOI, etc.)
+`publicationVenue`, `externalIds` (contains [[arxiv/SKILL|arXiv]] ID, DOI, etc.)
 
 * * *
 
@@ -285,16 +285,16 @@ curl -s "https://api.semanticscholar.org/graph/v1/author/search?query=Yann+LeCun
 
 | API | Rate | Auth |
 | --- | --- | --- |
-| arXiv | ~1 req / 3 seconds | None needed |
+| [[arxiv/SKILL|arXiv]] | ~1 req / 3 seconds | None needed |
 | Semantic Scholar | 1 req / second | None (100/sec with API key) |
 
 ## Notes
 
-- arXiv returns Atom XML — use the helper script or parsing snippet for clean output
+- [[arxiv/SKILL|arXiv]] returns Atom XML — use the helper script or parsing snippet for clean output
 
 - Semantic Scholar returns JSON — pipe through `python3 -m json.tool` for readability
 
-- arXiv IDs: old format (`hep-th/0601001`) vs new (`2402.03300`)
+- [[arxiv/SKILL|arXiv]] IDs: old format (`hep-th/0601001`) vs new (`2402.03300`)
 
 - PDF: `https://arxiv.org/pdf/{id}` — Abstract: `https://arxiv.org/abs/{id}`
 

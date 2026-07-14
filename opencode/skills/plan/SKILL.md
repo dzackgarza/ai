@@ -100,7 +100,7 @@ to produce the plan.
 - **Workstream / organizational.** Takes real requirements, feedback, or a heterogeneous
   item set and coalesces it into *typed workstreams*: a count, a shared remediation shape,
   and shared acceptance ("15 items are book sections to migrate to an ambient book with a
-  real Zotero book-section sub-item"). It defers per-item judgment to execution. Resolving
+  real [[zotero/SKILL|Zotero]] book-section sub-item"). It defers per-item judgment to execution. Resolving
   every item's disposition inside the plan is doing the implementer's research, and a plan
   that never forces you to read the gathered feedback has failed at this tier.
 - **Implementation-adjacent.** A scoring rubric for one coherent piece of work: endpoint,

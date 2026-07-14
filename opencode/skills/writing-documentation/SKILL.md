@@ -176,7 +176,7 @@ find deeper docs.
 Before rewriting a README, use the README section of `reference/doc-types.md` as the
 canonical structural source, `reference/strunk-white-principles.md` for prose quality, and
 inspect the repository's public surfaces first: package metadata, CLI help, examples,
-docs, justfile or task runner, configuration schema, and the existing README. Rewrite only
+docs, [[justfile/SKILL|justfile]] or task runner, configuration schema, and the existing README. Rewrite only
 after identifying the consumer path and the canonical sources that should be linked rather
 than duplicated.
 ### README Purpose
@@ -641,7 +641,7 @@ Tables are good when you have structured data to aggregate:
 
 | Provider | Strategy | How to set up |
 | --- | --- | --- |
-| Claude Code | OAuth credential | Run `claude login` |
+| [[claude-code/SKILL|Claude Code]] | OAuth credential | Run `claude login` |
 | Cursor | SQLite database | Have Cursor installed |
 
 Tables are bad when they're just badge walls or feature lists with no real data.
