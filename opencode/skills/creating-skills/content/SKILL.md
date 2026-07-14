@@ -337,9 +337,9 @@ When to do X vs Y:
 
 **REQUIRED: Load these skills before writing:**
 
-- [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] — How to write effective agent-facing documentation
+- [[writing/agent-audiences/SKILL|writing-for-agent-audiences]] — How to write effective agent-facing documentation
 
-- [[obra-the-elements-of-style/SKILL|writing-clearly-and-concisely]] — Concise prose techniques
+- [[writing/clarity/SKILL|writing-clearly-and-concisely]] — Concise prose techniques
 
 - [[looped-task-skill-author/SKILL|looped-task-skill-author]] — Required for repeated one-shot loops, persistent state,
   or continuation workflows

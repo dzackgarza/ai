@@ -67,7 +67,7 @@ state, a filename match, or a stale report.
    - Write a small trash log when many files are moved.
 
 6. Find identifiers only where plausible.
-   - Look for DOI, ISBN, [[arxiv/SKILL|arXiv]] ID, MR/Zbl, or repository handles for real works.
+   - Look for DOI, ISBN, [[research-discovery/search/SKILL|arXiv]] ID, MR/Zbl, or repository handles for real works.
    - Do not waste identifier-search time on obvious handwritten notes, homework,
      private drafts, exams, or local handouts.
    - For negative findings, state what was searched and what remains unknown.
@@ -80,7 +80,7 @@ state, a filename match, or a stale report.
    - After verified attachment, trash the local PDF.
 
 8. Find source/provenance for no-identifier works.
-   - Accept direct PDFs, author pages, repository records, [[arxiv/SKILL|arXiv]] records, DOI landing
+   - Accept direct PDFs, author pages, repository records, [[research-discovery/search/SKILL|arXiv]] records, DOI landing
      pages, institutional repository pages, or strong bibliographic pages.
    - Correct wrong provenance immediately; do not let a plausible source for a different
      work drive [[zotero/SKILL|Zotero]] metadata.

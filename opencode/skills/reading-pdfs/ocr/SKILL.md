@@ -31,9 +31,9 @@ collection at `~/pdfs/`.
 ```
 
 **Always save the original PDF alongside the extracted markdown.** Name them `paper.pdf`
-and `paper.md` for [[arxiv/SKILL|arXiv]] papers.
+and `paper.md` for [[research-discovery/search/SKILL|arXiv]] papers.
 
-For [[arxiv/SKILL|arXiv]] papers:
+For [[research-discovery/search/SKILL|arXiv]] papers:
 
 - Download URL: `https://arxiv.org/pdf/{arxiv_id}.pdf`
 

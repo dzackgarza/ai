@@ -16,7 +16,7 @@ documentation. They follow **prompt engineering practices** (see [[prompt-engine
 skill) and **skill description lessons** (see [[creating-skills/SKILL|creating-skills]] skill for description
 writing principles).
 
-Also load [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] before editing subagent prompts or runtime agent
+Also load [[writing/agent-audiences/SKILL|writing-for-agent-audiences]] before editing subagent prompts or runtime agent
 definitions. Keep the description/prompt centered on the work the agent must do, the
 inputs it needs, and the artifact it must produce.
 Harness notes, prior test postmortems, model-run trivia, and evaluator complaints belong
@@ -41,7 +41,7 @@ Create a subagent when the task has these characteristics:
 | Task Type | Why It Works | Example |
 | --- | --- | --- |
 | **High token workload** | Many tool calls + large outputs = lots of context. Subagents handle token-heavy work without polluting main agent context. | “Cross-reference 400-line checklist with documentation” |
-| **Exploration/branching** | Tasks requiring trial-and-error, false starts, incorrect guesses. Subagents can churn without derailing main agent. | “Research existing implementations of X across [[arxiv/SKILL|arXiv]] and GitHub” |
+| **Exploration/branching** | Tasks requiring trial-and-error, false starts, incorrect guesses. Subagents can churn without derailing main agent. | “Research existing implementations of X across [[research-discovery/search/SKILL|arXiv]] and GitHub” |
 | **Parsing/summarization** | Not detail-sensitive. Generating summaries, overviews, indices, maps into more detailed work. | “Generate summary of repo structure”, “Create index of all test files” |
 | **Well-delineated scope** | Clear boundaries, unlikely to cause model drift. “Do X and return Y” format. | “Write module x.py according to spec y.md”, “Run test suite and report failures” |
 | **Easily verified output** | Hallucinations are false positives that can be quickly disproved. | “Find online sources for X” (check links), “List all files in src/” (verify exists) |
@@ -287,7 +287,7 @@ Check that the description:
   Adapt TDD approach: watch agents fail to delegate properly, write descriptions that
   prevent those failures.
 
-- → [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] — REQUIRED: Load alongside when the audience is an
+- → [[writing/agent-audiences/SKILL|writing-for-agent-audiences]] — REQUIRED: Load alongside when the audience is an
   agent evaluating a delegation instruction.
   Covers agent-facing audience control, evaluator-observation distillation; excludes
   harness trivia unless it is the object of the task.

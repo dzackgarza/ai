@@ -51,7 +51,7 @@ compatible with the loop philosophy.
 
 Required companion skills:
 
-- [[writing-for-agent-audiences/SKILL|writing-for-agent-audiences]] for audience control and concise agent-facing prose.
+- [[writing/agent-audiences/SKILL|writing-for-agent-audiences]] for audience control and concise agent-facing prose.
 
 - [[creating-skills/SKILL|creating-skills]] for what belongs in a `SKILL.md`.
 

@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [delegation, subagent, implementation, workflow, parallel]
-    related_skills: [plan, [[requesting-code-review/SKILL|requesting-code-review]], [[test-driven-development/SKILL|test-driven-development]]]
+    related_skills: [plan, [[git-guidelines/request-review/SKILL|requesting-code-review]], [[test-driven-development/SKILL|test-driven-development]]]
 ---
 # Subagent-Driven Development
 
@@ -352,10 +352,10 @@ Include TDD instructions in every implementer context.
 Use `uv run pytest tests/` for red/green isolation, but completion proof must be
 `just test` (global QC gate).
 
-### With [[requesting-code-review/SKILL|requesting-code-review]]
+### With [[git-guidelines/request-review/SKILL|requesting-code-review]]
 
 The two-stage review process IS the code review.
-For final integration review, use the [[requesting-code-review/SKILL|requesting-code-review]] skill's review dimensions.
+For final integration review, use the [[git-guidelines/request-review/SKILL|requesting-code-review]] skill's review dimensions.
 
 ### With [[systematic-debugging/SKILL|systematic-debugging]]
 

@@ -5,7 +5,7 @@ license: MIT
 metadata:
   hermes:
     tags: [planning, plan-mode, implementation, workflow]
-    related_skills: [[[subagent-delegation/implementation/SKILL|subagent-driven-development]], [[requesting-code-review/SKILL|requesting-code-review]], [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]]]
+    related_skills: [[[subagent-delegation/implementation/SKILL|subagent-driven-development]], [[git-guidelines/request-review/SKILL|requesting-code-review]], [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]]]
 ---
 # Plan
 

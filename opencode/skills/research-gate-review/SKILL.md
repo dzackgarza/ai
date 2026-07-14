@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [review, gate-protocol, code-review, mathematical-review, bug-hunting]
-    related_skills: [research-proof-auditing, research-state-machine, [[requesting-code-review/SKILL|requesting-code-review]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
+    related_skills: [research-proof-auditing, research-state-machine, [[git-guidelines/request-review/SKILL|requesting-code-review]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
 ---
 # Research Gate Review
 
@@ -432,7 +432,7 @@ the object,” it’s a software name, not a mathematical name.
 - `.agents/skills/research-proof-auditing/references/proof-auditing.md`: evidence
   sufficiency for mathematical claims
 
-- [[requesting-code-review/SKILL|requesting-code-review]]: pre-commit code verification (complementary — runs before
+- [[git-guidelines/request-review/SKILL|requesting-code-review]]: pre-commit code verification (complementary — runs before
   commit, not after)
 
 - [[llm-failure-modes/SKILL|llm-failure-modes]]: common LLM cognitive failures that can corrupt review processes —

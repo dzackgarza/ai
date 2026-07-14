@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [skills, authoring, [[hermes-agent/SKILL|hermes-agent]], conventions, skill-md]
-    related_skills: [plan, [[requesting-code-review/SKILL|requesting-code-review]]]
+    related_skills: [plan, [[git-guidelines/request-review/SKILL|requesting-code-review]]]
 ---
 # Authoring [[hermes-agent/SKILL|Hermes-Agent]] Skills (in-repo)
 
