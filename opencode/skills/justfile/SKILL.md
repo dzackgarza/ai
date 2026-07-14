@@ -1,5 +1,5 @@
 ---
-name: [[justfile/SKILL|justfile]]
+name: justfile
 description: Use when working with just command runner, defining recipes, or managing project automation tasks
 ---
 
