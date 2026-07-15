@@ -1,13 +1,22 @@
 ---
 name: debugging-hermes-tui-commands
-description: "Debug Hermes TUI slash commands: Python, gateway, Ink UI."
-version: 1.0.0
-author: Hermes Agent
+description: 'Debug Hermes TUI slash commands: Python, gateway, Ink UI.'
 license: MIT
 metadata:
   hermes:
-    tags: [debugging, hermes-agent, tui, slash-commands, typescript, python]
-    related_skills: [python-debugpy, node-inspect-debugger, systematic-debugging]
+    tags:
+    - debugging
+    - '[[hermes-agent/SKILL|hermes-agent]]'
+    - tui
+    - slash-commands
+    - typescript
+    - python
+    related_skills:
+    - '[[python-debugpy/SKILL|python-debugpy]]'
+    - '[[node-inspect-debugger/SKILL|node-inspect-debugger]]'
+    - '[[systematic-debugging/SKILL|systematic-debugging]]'
+  version: 1.0.0
+  author: Hermes Agent
 ---
 # Debugging Hermes TUI Slash Commands
 
@@ -152,11 +161,11 @@ If a command exists in the TUI but doesn’t show in autocomplete:
 
 When surface-level inspection doesn’t reveal the bug:
 
-- **Python side hangs or misbehaves:** use the `python-debugpy` skill to break inside
+- **Python side hangs or misbehaves:** use the [[python-debugpy/SKILL|python-debugpy]] skill to break inside
   `_SlashWorker.exec` or the command handler.
   `remote-pdb` set at the handler entry is the fastest path.
 
-- **Ink side not reacting:** use the `node-inspect-debugger` skill to break in
+- **Ink side not reacting:** use the [[node-inspect-debugger/SKILL|node-inspect-debugger]] skill to break in
   `app.tsx`’s slash dispatch or the local command branch.
   `sb('dist/app.js', <line>)` after `npm run build`.
 

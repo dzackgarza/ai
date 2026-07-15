@@ -21,10 +21,10 @@ Do not design instructions for a cooperative worker. Model the worker as a cleve
 **The reader is presumed ignorant of the adversarial failure model until these skills have changed your design.** Cross-references are not citations or routing labels. They are prerequisite cognitive updates. If the Goal would look essentially the same without these skills, the design has failed.
 
 **Internalize the Adversary**:
-- `llm-failure-modes`: Learn the attack patterns: **goal substitution**, **verification theater**, **checklist theater**, **self-certification**, **progress theater**, **meta-artifact delegation**, and **wrapper slop**.
-- `addressing-shallow-work`: Learn how process targets (inventories, gates) become substitute wins.
-- `anti-slop`: Learn to detect success-shaped filler used to bypass real work.
-- `writing-for-agent-audiences`, `prompt-engineering`, `agent-memory`: Learn to design memory surfaces that resist narrative drift.
+- [[llm-failure-modes/SKILL|llm-failure-modes]]: Learn the attack patterns: **goal substitution**, **verification theater**, **checklist theater**, **self-certification**, **progress theater**, **meta-artifact delegation**, and **wrapper slop**.
+- [[addressing-shallow-work/SKILL|addressing-shallow-work]]: Learn how process targets (inventories, gates) become substitute wins.
+- [[anti-slop/SKILL|anti-slop]]: Learn to detect success-shaped filler used to bypass real work.
+- [[writing/writing-for-agent-audiences/SKILL|writing-for-agent-audiences]], [[prompt-engineering/SKILL|prompt-engineering]], [[agent-memory/SKILL|agent-memory]]: Learn to design memory surfaces that resist narrative drift.
 
 Before proposing any concrete `/goal`, read [references/success-criteria-contracts.md](references/success-criteria-contracts.md) and use it to audit the proposed stopping criteria. This is mandatory even for simple goals.
 
@@ -73,16 +73,16 @@ Wire the payoff landscape for future workers. Pre-retrieval skills belong in the
 
 ### Reference Skills By State (Worker-Side)
 Name exact skill slugs and triggers:
-- `DECOMPOSE`: load `hard-problem-decomposition`.
-- `REVIEW`: load `reviewing-subagent-work` (agent artifacts) and `jerry-behaviour` (evaluator bias); load `research-gate-review` (substantive code/research gates).
-- **Orchestration**: load `subagent-delegation`.
-- **Drift/Slop/Reward-hacking**: load `llm-failure-modes` and `anti-slop` before accepting artifacts or summaries.
-- **Progress/Response**: load `hierarchical-task-framing` and `response-preparation`.
+- `DECOMPOSE`: load [[hard-problem-decomposition/SKILL|hard-problem-decomposition]].
+- `REVIEW`: load [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] (agent artifacts) and `jerry-behaviour` (evaluator bias); load [[research-gate-review/SKILL|research-gate-review]] (substantive code/research gates).
+- **Orchestration**: load [[subagent-delegation/SKILL|subagent-delegation]].
+- **Drift/Slop/Reward-hacking**: load [[llm-failure-modes/SKILL|llm-failure-modes]] and [[anti-slop/SKILL|anti-slop]] before accepting artifacts or summaries.
+- **Progress/Response**: load [[hierarchical-task-framing/SKILL|hierarchical-task-framing]] and [[response-preparation/SKILL|response-preparation]].
 
 ## Goal Engineering
 
 ### Sliding Context Protocol
-For long-horizon work, the `/goal` text is the stable bootloader. It retrieves state from `agent-memory`, loads always-on skills, and reconciles state with artifacts. Future workers load only the active phase record. This keeps focus narrow while preserving the full destination outside the context window.
+For long-horizon work, the `/goal` text is the stable bootloader. It retrieves state from [[agent-memory/SKILL|agent-memory]], loads always-on skills, and reconciles state with artifacts. Future workers load only the active phase record. This keeps focus narrow while preserving the full destination outside the context window.
 
 ### State Machine
 Use states as decision modes: `RECONCILE` (artifacts vs state), `FOCUS` (current sliver), `CHECK` (world-state evidence), `REVIEW` (independent judgment), `ADVANCE` (evidence-backed update), `DECOMPOSE` (residue reduction).
@@ -116,11 +116,11 @@ The output goal must reflect the audit: every success criterion needs the exact 
 
 Use a simple goal only when the request completion witness, boundaries, and verification fit under the target without vague compression.
 
-Use a workflow-backed goal when completion needs phased context, repeated loops, independent review, orchestration, recursive decomposition, or compaction resilience. Before writing the final `/goal`, create or update the contract, state, phase, and residue/queue records needed for progressive disclosure in `agent-memory`. The `/goal` should name the full destination, agent-memory keys, retrieval rule, phase-loading rule, always-load skill rule, state-specific skill rule, and completion witness. Skills needed before any state decision must be named in the `/goal` text itself; phase-specific skills can be named in the progressive records.
+Use a workflow-backed goal when completion needs phased context, repeated loops, independent review, orchestration, recursive decomposition, or compaction resilience. Before writing the final `/goal`, create or update the contract, state, phase, and residue/queue records needed for progressive disclosure in [[agent-memory/SKILL|agent-memory]]. The `/goal` should name the full destination, [[agent-memory/SKILL|agent-memory]] keys, retrieval rule, phase-loading rule, always-load skill rule, state-specific skill rule, and completion witness. Skills needed before any state decision must be named in the `/goal` text itself; phase-specific skills can be named in the progressive records.
 
-Workflow docs must cross-reference concrete existing skills by slug and trigger, not generic categories. At minimum: bugs, failing checks, unexpected behavior, integration failures, and unclear causality route to `systematic-debugging`; failed attempts, hard residue, pressure to defer, and blocked/off-ramp claims route to `hard-problem-decomposition`; adversarial test design routes to `test-guidelines`; orchestration routes to `subagent-delegation`; agent-work review routes to `reviewing-subagent-work` plus `jerry-behaviour`; substantive code/research gates route to `research-gate-review`; drift or reward-hacking suspicion routes to `llm-failure-modes`; slop suspicion routes to `anti-slop`; progress/completion reporting routes to `hierarchical-task-framing` or `response-preparation` when those reports are part of the workflow.
+Workflow docs must cross-reference concrete existing skills by slug and trigger, not generic categories. At minimum: bugs, failing checks, unexpected behavior, integration failures, and unclear causality route to [[systematic-debugging/SKILL|systematic-debugging]]; failed attempts, hard residue, pressure to defer, and blocked/off-ramp claims route to [[hard-problem-decomposition/SKILL|hard-problem-decomposition]]; adversarial test design routes to [[test-guidelines/SKILL|test-guidelines]]; orchestration routes to [[subagent-delegation/SKILL|subagent-delegation]]; agent-work review routes to [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] plus `jerry-behaviour`; substantive code/research gates route to [[research-gate-review/SKILL|research-gate-review]]; drift or reward-hacking suspicion routes to [[llm-failure-modes/SKILL|llm-failure-modes]]; slop suspicion routes to [[anti-slop/SKILL|anti-slop]]; progress/completion reporting routes to [[hierarchical-task-framing/SKILL|hierarchical-task-framing]] or [[response-preparation/SKILL|response-preparation]] when those reports are part of the workflow.
 
-Workflow-backed goals must use `agent-memory` for contract, state, phase, and residue-ledger records. Use `agent-memory search` before creating, `agent-memory retrieve` when resuming, and `agent-memory update` or `agent-memory add` rather than loose Markdown files. Do not create ad hoc `notes.md`, `progress.md`, repo-local planning files, or chat-transcript-dependent state.
+Workflow-backed goals must use [[agent-memory/SKILL|agent-memory]] for contract, state, phase, and residue-ledger records. Use `agent-memory search` before creating, `agent-memory retrieve` when resuming, and `agent-memory update` or `agent-memory add` rather than loose Markdown files. Do not create ad hoc `notes.md`, `progress.md`, repo-local planning files, or chat-transcript-dependent state.
 
 ### Recursive Decomposition
 A failed one-shot attempt is residue. `DECOMPOSE` is a work state: split residue into observable subpieces, attempt one piece, integrate results, subtract from parent residue. **Blocker claims** are an adversary's preferred exit move; accept them only after direct evidence reduces the residue to the smallest externally owned leaf.
@@ -155,7 +155,7 @@ hack the goal. These tests should reject special-cased witnesses, output-shape-o
 success, forbidden-method success, milestone substitution, deferral-as-success, and
 off-ramp abuse. Failure messages should tell the worker to stop, audit for
 reward-hacking, reload the goal contract, and realign to the intended object-level
-behavior before continuing. Load `test-guidelines` before writing concrete test files
+behavior before continuing. Load [[test-guidelines/SKILL|test-guidelines]] before writing concrete test files
 or test acceptance criteria.
 
 A failed attempt enters recursive decomposition, not reporting. The worker preserves the original objective, decomposes the failed residue into smaller pieces, attempts one smaller piece, integrates any solved piece into the actual artifact or evidence trail, subtracts it from the residue, and recurses only on what remains. If this can branch or outlive the current context window, the workflow must put the decomposition state in the state doc as a compact residue ledger: active leaf, parent chain, open frontier, and closure evidence for solved or irrelevant siblings. The worker must never rely on memory to wind back up the tree.
@@ -164,15 +164,15 @@ A residual hard core may be named only after the attainable subpieces around it 
 
 When an impossibility off-ramp is needed, write it as a non-success state: the original objective remains unmet, the exact hard core is named, completed or irrelevant surrounding work is evidenced, and the external condition needed for progress is explicit. Require a durable audit trail of aligned attempts: source citations, root-cause observations, decomposition residues, commits or diffs, test or reproducer output, review findings, and the reason each attempt failed. A goal must not let partial progress, a report, a TODO, a status change, a vague blocker, or an unsupported self-report satisfy completion.
 
-For hard or repeated failures, route the worker to `hard-problem-decomposition` so failure becomes smaller real work rather than a scope change. Any reusable operational lesson discovered while working should be saved through `agent-memory`; unresolved external work belongs in the project's issue tracker or documented backlog surface, not in the goal as a disguised completion condition.
+For hard or repeated failures, route the worker to [[hard-problem-decomposition/SKILL|hard-problem-decomposition]] so failure becomes smaller real work rather than a scope change. Any reusable operational lesson discovered while working should be saved through [[agent-memory/SKILL|agent-memory]]; unresolved external work belongs in the project's issue tracker or documented backlog surface, not in the goal as a disguised completion condition.
 
-### Keep The Objective Usable By Codex
+### Keep The Objective Usable By [[codex/SKILL|Codex]]
 
 Hard limit: the objective text after `/goal ` must be less than 4,000 characters. Working target: draft to 3,400 characters or fewer. Treat 3,800 characters or more as a failed draft even if it is technically below the hard limit.
 
 Include exact commands only when they are already known from the repo or user. Avoid hidden flags in slash text. `/goal --tokens 50K ...` is literal objective text in the TUI, not parsed syntax. If a token budget is requested, present it separately from the objective text unless the target surface supports a separate budget field.
 
-For complex or ambiguous work, recommend a planning/interview pass before setting the goal. For very large work, include subagent/orchestration guidance only when the current Codex environment supports subagents and the work can be split into bounded, reviewable lanes.
+For complex or ambiguous work, recommend a planning/interview pass before setting the goal. For very large work, include subagent/orchestration guidance only when the current [[codex/SKILL|Codex]] environment supports subagents and the work can be split into bounded, reviewable lanes.
 
 ### Choose The Output Shape
 
@@ -184,7 +184,7 @@ Full shape only for narrow work where the first draft is comfortably under 3,400
 
 Put only the ready-to-paste `/goal ...` command in a temporary file or pipe it to this skill's bundled validator: resolve `scripts/validate_goal_length.py` relative to the directory containing this `SKILL.md`, then run it with `--target-chars 3400 --strict-target`.
 
-The validator belongs to Goalcraft, not to the user's working project. Do not search the user's repository for `scripts/validate_goal_length.py`. The script strips a leading `/goal ` and counts the actual objective Codex validates.
+The validator belongs to Goalcraft, not to the user's working project. Do not search the user's repository for `scripts/validate_goal_length.py`. The script strips a leading `/goal ` and counts the actual objective [[codex/SKILL|Codex]] validates.
 
 If over 3,999 characters, compress and revalidate. If 3,800 to 3,999 characters, compress and revalidate. If 3,400 to 3,799 characters, accept only when removing more text would lose important safety or verification detail; otherwise compress and revalidate. Do not return a final goal until the validator passes.
 
@@ -229,7 +229,7 @@ Use the compact shape by default:
 
 Workflow: this goal text is the stable bootloader. At every continuation, load <pre-retrieval skills>, retrieve <state-key/path>, load the contract's always-on skills, read <contract-key/path> when advancing/reviewing/completing, reconcile state with artifacts, load only the active phase doc, load the skills named by that phase/state, and work the current sliver until its evidence/review condition passes.
 
-State surface: use <agent-memory keys>. Resume with <agent-memory retrieve command>. Update state through `agent-memory`, not loose files or chat transcript.
+State surface: use <[[agent-memory/SKILL|agent-memory]] keys>. Resume with <[[agent-memory/SKILL|agent-memory]] retrieve command>. Update state through [[agent-memory/SKILL|agent-memory]], not loose files or chat transcript.
 
 Preserve: <scope boundaries and non-regressions>.
 
@@ -247,7 +247,7 @@ Stop: <approval/destructive/access boundaries>.
 - The goal should be adversarially complete: every success criterion names the exact
   boundary where success/failure is observed and bans the nearest weaker substitutes.
 - Workflow-backed goals should reveal the current phase and active residue path without repeatedly flooding the worker with the whole task.
-- Workflow-backed goals should use `agent-memory` for searchable planning state; loose files and transcript memory are not durable state.
+- Workflow-backed goals should use [[agent-memory/SKILL|agent-memory]] for searchable planning state; loose files and transcript memory are not durable state.
 - Workflow docs should contain explicit Reference Skills sections; "review", "debug", "detect drift", or "handle slop" without exact skill slugs is too vague.
 - Large routine queues should keep their required unit method; scale alone does not justify a weaker method.
 - A failed attempt should trigger recursive decomposition; any smaller piece that can be solved must be completed and removed from the residue before blocker or follow-up language is available.

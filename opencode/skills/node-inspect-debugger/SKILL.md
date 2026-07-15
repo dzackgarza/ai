@@ -1,13 +1,22 @@
 ---
 name: node-inspect-debugger
-description: "Debug Node.js via --inspect + Chrome DevTools Protocol CLI."
-version: 1.0.0
-author: Hermes Agent
+description: Debug Node.js via --inspect + Chrome DevTools Protocol CLI.
 license: MIT
 metadata:
   hermes:
-    tags: [debugging, nodejs, node-inspect, cdp, breakpoints, ui-tui]
-    related_skills: [systematic-debugging, python-debugpy, debugging-hermes-tui-commands]
+    tags:
+    - debugging
+    - nodejs
+    - node-inspect
+    - cdp
+    - breakpoints
+    - ui-tui
+    related_skills:
+    - '[[systematic-debugging/SKILL|systematic-debugging]]'
+    - '[[python-debugpy/SKILL|python-debugpy]]'
+    - '[[debugging-hermes-tui-commands/SKILL|debugging-hermes-tui-commands]]'
+  version: 1.0.0
+  author: Hermes Agent
 ---
 # Node.js Inspect Debugger
 
@@ -237,7 +246,7 @@ debugger can pause it on a breakpoint at any `sb(...)`.
 
 ### Debugging `_SlashWorker` / PTY child processes
 
-Those are Python, not Node — use the `python-debugpy` skill for them.
+Those are Python, not Node — use the [[python-debugpy/SKILL|python-debugpy]] skill for them.
 Only Node portions (Ink UI, tui_gateway client, tsx-run tests under `ui-tui/`) use this
 skill.
 

@@ -4,7 +4,7 @@ Consolidated from the former `github-code-review` skill.
 
 > This skill is for *performing* code reviews and generating review feedback.
 > For consuming, triaging, or acting on existing review comments, use
-> `pr-feedback-triage` instead.
+> [[pr-feedback-triage/SKILL|pr-feedback-triage]] instead.
 
 ## 1. Reviewing Local Changes (Pre-Push)
 
@@ -147,11 +147,11 @@ gh pr review 123 --comment --body "Some suggestions, nothing blocking."
 All code evaluation rules, anti-slop guidelines, and validation-evasion auditing are
 delegated to canonical policy skills:
 
-- **Code Review Policy & Bridge-Burning**: `reviewing-llm-code` and its red-flag catalogs
-- **PR Guidance & Triage**: `pr-feedback-triage`
-- **Proof & Test Obligations**: `test-guidelines`
+- **Code Review Policy & Bridge-Burning**: [[reviewing-llm-code/SKILL|reviewing-llm-code]] and its red-flag catalogs
+- **PR Guidance & Triage**: [[pr-feedback-triage/SKILL|pr-feedback-triage]]
+- **Proof & Test Obligations**: [[test-guidelines/SKILL|test-guidelines]]
 
-Always consult `policy-index` to find the canonical skill for any code review, testing,
+Always consult [[policy-index/SKILL|policy-index]] to find the canonical skill for any code review, testing,
 or remediation question.
 
 * * *

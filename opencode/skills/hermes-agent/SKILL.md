@@ -1,23 +1,34 @@
 ---
 name: hermes-agent
-description: "Configure, extend, or contribute to Hermes Agent."
-version: 2.2.0
-author: Hermes Agent + Teknium
+description: Configure, extend, or contribute to Hermes Agent.
 license: MIT
 metadata:
   hermes:
-    tags: [hermes, setup, configuration, multi-agent, spawning, cli, gateway, development]
+    tags:
+    - hermes
+    - setup
+    - configuration
+    - multi-agent
+    - spawning
+    - cli
+    - gateway
+    - development
     homepage: https://github.com/NousResearch/hermes-agent
-    related_skills: [claude-code, codex, opencode]
+    related_skills:
+    - '[[claude-code/SKILL|claude-code]]'
+    - codex
+    - opencode
+  version: 2.2.0
+  author: Hermes Agent + Teknium
 ---
 # Hermes Agent
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 Hermes Agent is an open-source AI agent framework by Nous Research that runs in your
 terminal, messaging platforms, and IDEs.
-It belongs to the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw
+It belongs to the same category as [[claude-code/SKILL|Claude Code]] (Anthropic), [[codex/SKILL|Codex]] (OpenAI), and OpenClaw
 — autonomous coding and task-execution agents that use tool calling to interact with
 your system.
 Hermes works with any LLM provider (OpenRouter, Anthropic, OpenAI, DeepSeek,
@@ -47,8 +58,8 @@ What makes Hermes different:
 - **Profiles** — run multiple independent Hermes instances with isolated configs,
   sessions, skills, and memory.
 
-- **Extensible** — plugins, MCP servers, custom tools, webhook triggers, cron
-  scheduling, and the full Python ecosystem.
+- **Extensible** — plugins, MCP servers, custom tools, cron scheduling, and the
+  full Python ecosystem.
 
 People use Hermes for software development, research, system administration, data
 analysis, content creation, home automation, and anything else that benefits from an AI
@@ -181,7 +192,7 @@ hermes gateway setup        Configure platforms
 
 Supported platforms: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix,
 Mattermost, Home Assistant, DingTalk, Feishu, WeCom, BlueBubbles (iMessage), Weixin
-(WeChat), API Server, Webhooks.
+(WeChat), and API Server.
 Open WebUI connects via the API Server adapter.
 
 Platform docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/
@@ -210,14 +221,6 @@ hermes cron remove ID       Delete a job
 hermes cron status          Scheduler status
 ```
 
-### Webhooks
-
-```
-hermes webhook subscribe N  Create route at /webhooks/<name>
-hermes webhook list         List subscriptions
-hermes webhook remove NAME  Remove a subscription
-hermes webhook test NAME    Send a test POST
-```
 
 ### Profiles
 
@@ -416,7 +419,7 @@ Set via `hermes model` or `hermes setup`.
 | OpenRouter | API key | `OPENROUTER_API_KEY` |
 | Anthropic | API key | `ANTHROPIC_API_KEY` |
 | Nous Portal | OAuth | `hermes auth` |
-| OpenAI Codex | OAuth | `hermes auth` |
+| OpenAI [[codex/SKILL|Codex]] | OAuth | `hermes auth` |
 | GitHub Copilot | Token | `COPILOT_GITHUB_TOKEN` |
 | Google Gemini | API key | `GOOGLE_API_KEY` or `GEMINI_API_KEY` |
 | DeepSeek | API key | `DEEPSEEK_API_KEY` |
@@ -430,8 +433,8 @@ Set via `hermes model` or `hermes setup`.
 | Xiaomi MiMo | API key | `XIAOMI_API_KEY` |
 | Kilo Code | API key | `KILOCODE_API_KEY` |
 | AI Gateway (Vercel) | API key | `AI_GATEWAY_API_KEY` |
-| OpenCode Zen | API key | `OPENCODE_ZEN_API_KEY` |
-| OpenCode Go | API key | `OPENCODE_GO_API_KEY` |
+| [[opencode/SKILL|OpenCode]] Zen | API key | `OPENCODE_ZEN_API_KEY` |
+| [[opencode/SKILL|OpenCode]] Go | API key | `OPENCODE_GO_API_KEY` |
 | Qwen OAuth | OAuth | `hermes login --provider qwen-oauth` |
 | Custom endpoint | Config | `model.base_url` + `model.api_key` in config.yaml |
 | GitHub Copilot ACP | External | `COPILOT_CLI_PATH` or Copilot CLI |

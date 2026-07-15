@@ -208,16 +208,16 @@ Task difficulty is a **weighted combination of multiple factors** — no single 
 
 **Reference this skill from:**
 
-- `subagent-delegation` — When deciding whether to delegate
+- [[subagent-delegation/SKILL|subagent-delegation]] — When deciding whether to delegate
 
-- `model-selection` — When matching task difficulty to model tier
+- [[model-selection/SKILL|model-selection]] — When matching task difficulty to model tier
 
-- `systematic-debugging` — When estimating debugging complexity
+- [[systematic-debugging/SKILL|systematic-debugging]] — When estimating debugging complexity
 
 **Related skills:**
 
-- `model-selection` — Matches task difficulty to model capabilities
+- [[model-selection/SKILL|model-selection]] — Matches task difficulty to model capabilities
 
-- `subagent-delegation` — Orchestrates delegated work
+- [[subagent-delegation/SKILL|subagent-delegation]] — Orchestrates delegated work
 
-- `prompt-engineering` — Crafts prompts appropriate to task complexity
+- [[prompt-engineering/SKILL|prompt-engineering]] — Crafts prompts appropriate to task complexity

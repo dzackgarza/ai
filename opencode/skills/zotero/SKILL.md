@@ -1,11 +1,23 @@
 ---
 name: zotero
-description: Manage Zotero reference libraries via the Web API. Search, list, add items by DOI/ISBN/PMID (with duplicate detection), delete/trash items, update metadata and tags, export in BibTeX/RIS/CSL-JSON, batch-add from files, check PDF attachments, cross-reference citations, find missing DOIs via CrossRef, and fetch open-access PDFs. Supports --json output for scripting. Use when the user asks about academic references, citation management, literature libraries, PDFs for papers, bibliography export, or Zotero specifically.
-metadata: {"clawdbot":{"emoji":"📚","requires":{"env":["ZOTERO_API_KEY","ZOTERO_USER_ID"]},"primaryEnv":"ZOTERO_API_KEY"}}
+description: Manage [[zotero/SKILL|Zotero]] reference libraries via the Web API. Search, list, add items
+  by DOI/ISBN/PMID (with duplicate detection), delete/trash items, update metadata and tags, export in
+  BibTeX/RIS/CSL-JSON, batch-add from files, check PDF attachments, cross-reference citations, find missing
+  DOIs via CrossRef, and fetch open-access PDFs. Supports --json output for scripting. Use when the user
+  asks about academic references, citation management, literature libraries, PDFs for papers, bibliography
+  export, or [[zotero/SKILL|Zotero]] specifically.
+metadata:
+  clawdbot:
+    emoji: 📚
+    requires:
+      env:
+      - ZOTERO_API_KEY
+      - ZOTERO_USER_ID
+    primaryEnv: ZOTERO_API_KEY
 ---
-# Zotero Skill
+# [[zotero/SKILL|Zotero]] Skill
 
-Interact with Zotero personal or group libraries via the REST API v3.
+Interact with [[zotero/SKILL|Zotero]] personal or group libraries via the REST API v3.
 
 ## Setup
 
@@ -81,13 +93,13 @@ python3 scripts/zotero.py <command> [options]
 
 ### Audit Attachment Completeness
 
-When answering whether Zotero items have PDFs, markdown extractions, or other
+When answering whether [[zotero/SKILL|Zotero]] items have PDFs, markdown extractions, or other
 attachments, define the item universe before counting.
 
 - Do not treat a collection query as a library-wide result unless the user
   explicitly scoped the question to that collection.
-- If the user says "all Zotero items", "the library", or points at an item visible
-  in the Zotero UI, query all top-level parent items, then inspect each parent's
+- If the user says "all [[zotero/SKILL|Zotero]] items", "the library", or points at an item visible
+  in the [[zotero/SKILL|Zotero]] UI, query all top-level parent items, then inspect each parent's
   children for attachment content types.
 - Use pagination for both parent item queries and attachment queries. A single
   `limit=500` or collection response is not evidence of full coverage.
@@ -100,7 +112,7 @@ attachments, define the item universe before counting.
   parent items with PDF children in the library".
 
 Use this method for library-wide markdown coverage against the workstation-local
-Zotero API:
+[[zotero/SKILL|Zotero]] API:
 
 1. Fetch all items with pagination from `http://127.0.0.1:23119/api/users/0/items`.
 2. Keep only top-level parent items: `data.itemType != "attachment"`.
@@ -211,8 +223,8 @@ python3 zotero.py fetch-pdfs --sources unpaywall,semanticscholar
 ```
 
 Tries three legal OA sources in order: Unpaywall → Semantic Scholar → DOI content
-negotiation. By default creates linked URL attachments (no Zotero storage quota needed).
-Use `--upload` for full S3 upload to Zotero storage.
+negotiation. By default creates linked URL attachments (no [[zotero/SKILL|Zotero]] storage quota needed).
+Use `--upload` for full S3 upload to [[zotero/SKILL|Zotero]] storage.
 Use `--download-dir` to also save PDFs locally.
 
 **Sources:** `unpaywall`, `semanticscholar`, `doi` (default: all three)
@@ -233,7 +245,7 @@ python3 zotero.py --json get ITEMKEY | jq '.title'
 
 - Write operations require an API key with write permissions
 
-- If Zotero translation server is down (503), DOI lookups fall back to CrossRef
+- If [[zotero/SKILL|Zotero]] translation server is down (503), DOI lookups fall back to CrossRef
 
 - **Input validation:** DOIs must be `10.xxxx/...` format.
   Item keys are 8-char alphanumeric (e.g., `VNPN6FHT`). ISBNs must be valid checksums.

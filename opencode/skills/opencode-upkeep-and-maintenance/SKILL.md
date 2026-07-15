@@ -1,8 +1,8 @@
 ---
 name: opencode-upkeep-and-maintenance
-description: Use when the OpenCode sidebar does not reflect the current git working tree state or shows stale snapshots.
+description: Use when the [[opencode/SKILL|OpenCode]] sidebar does not reflect the current git working tree state or shows stale snapshots.
 ---
-# OpenCode Upkeep and Maintenance
+# [[opencode/SKILL|OpenCode]] Upkeep and Maintenance
 
 ## Core Policy
 
@@ -10,7 +10,7 @@ description: Use when the OpenCode sidebar does not reflect the current git work
   (deletion or refresh) without explicit user approval.
 
 - **Rollback Invariant:** Modifying snapshots makes it impossible to walk back
-  individual steps using native OpenCode features.
+  individual steps using native [[opencode/SKILL|OpenCode]] features.
   Agents MUST verify the user understands this consequence and that no further backwards
   steps are intended for the session.
 
@@ -148,7 +148,7 @@ environment.
    done
    ```
 
-## Reference: OpenCode API
+## Reference: [[opencode/SKILL|OpenCode]] API
 
 - `GET /session`: Active sessions (filtered).
 
@@ -157,7 +157,7 @@ environment.
 - Query parameters: `?directory=...`, `?roots=true`, `?search=...`, `?limit=...`,
   `?start=<timestamp>`.
 
-## Reference: OpenCode Database Schema
+## Reference: [[opencode/SKILL|OpenCode]] Database Schema
 
 Use for manual inspection or when developing maintenance scripts.
 
@@ -179,7 +179,7 @@ Use for manual inspection or when developing maintenance scripts.
   (step-start/step-finish), not direct git tracking.
   `oc-refresh-diff` resets these anchors to the current HEAD.
 
-- **Cache Persistence:** OpenCode caches plugin artifacts in `~/.cache/opencode`. Stale
+- **Cache Persistence:** [[opencode/SKILL|OpenCode]] caches plugin artifacts in `~/.cache/opencode`. Stale
   `node_modules` or `bun.lock` here can break new plugin deployments.
 
 - **Snapshot Leaks:** Failed snapshots or `git gc` attempts can leak multi-gigabyte

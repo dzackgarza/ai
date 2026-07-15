@@ -124,7 +124,7 @@ Apply the baseline prompt above, plus these explicit review rules:
    - Do not over-index on micro-optimizations, but do flag avoidable orchestration
      complexity that makes the implementation more brittle.
 
-8. **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)) are non-negotiable hard constraints.
+8. **Bridge-Burning Policies** (see [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]]) are non-negotiable hard constraints.
 
    - Any implementation or refactoring suggestion must strictly respect the policies (e.g. no runtime defaults, no fallbacks, no mocks in proof paths, no boolean flags in owned APIs, no optional critical dependencies).
 
@@ -352,34 +352,34 @@ cleaner decomposition.
 
 ## Cross-References
 
-- **reviewing-llm-code** → Load alongside when reviewing LLM-produced code for
+- [[reviewing-llm-code/SKILL|reviewing-llm-code]] → Load alongside when reviewing LLM-produced code for
   code-quality issues.
   Provides the canonical pattern catalog for LLM-generated code artifacts and the review
   procedure.
 
-- **anti-slop** → Load alongside when code shows generated-code residue: generic
+- [[anti-slop/SKILL|anti-slop]] → Load alongside when code shows generated-code residue: generic
   wrappers, no-op UI, debug debris, boilerplate, or bespoke reinvention of standard
   patterns. Provides the Dependency Inversion Rule and structural analysis frame.
 
-- **llm-failure-modes** → Load alongside when code-quality problems stem from cognitive
+- [[llm-failure-modes/SKILL|llm-failure-modes]] → Load alongside when code-quality problems stem from cognitive
   failure modes: scope explosion, specification drift, reimplementation impulse,
   dependency aversion bias, meta-artifact delegation, scale-complexity confusion.
 
-- **addressing-shallow-work** → Load alongside when code output is shallow or
+- [[addressing-shallow-work/SKILL|addressing-shallow-work]] → Load alongside when code output is shallow or
   box-checking. Provides structural-scrutiny patterns for detecting work that satisfies
   format without satisfying intent.
 
-- **anti-slop → deepening** → Load `references/deepening.md` and
+- **[[anti-slop/SKILL|anti-slop]] → deepening** → Load `references/deepening.md` and
   `references/deepening-vocabulary.md` alongside when identifying pass-through wrappers,
   shallow abstractions, or missed deepening opportunities. The deepening vocabulary gives
   precise language for describing what's wrong (shallow module, pass-through) and what
   should replace it (deep module, concentrated leverage, seam discipline).
 
-- **reviewing-subagent-work** → Load alongside when reviewing code produced by a
+- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] → Load alongside when reviewing code produced by a
   subagent. Provides the Synthesis Gate for verifying that code actually achieves the
   stated goal.
 
-- **test-guidelines** → Load alongside when code-quality issues affect tests, QC, or
+- [[test-guidelines/SKILL|test-guidelines]] → Load alongside when code-quality issues affect tests, QC, or
   proof surfaces.
 
-- **policy-index → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) are the core criteria for what constitutes a correct, non-evasive implementation. Any code quality review must enforce them as hard, non-negotiable boundaries.
+- **[[policy-index/SKILL|policy-index]] → Bridge-Burning Policies** — The [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] are the core criteria for what constitutes a correct, non-evasive implementation. Any code quality review must enforce them as hard, non-negotiable boundaries.

@@ -1,6 +1,6 @@
 ---
 name: vault-maintenance
-description: Use when an agent-memory command has a commit or validation failure, the vault is malformed, or the user explicitly requests vault recovery. Do not trigger on unrelated dirty paths.
+description: Use when an [[agent-memory/SKILL|agent-memory]] command has a commit or validation failure, the vault is malformed, or the user explicitly requests vault recovery. Do not trigger on unrelated dirty paths.
 ---
 
 # Vault Maintenance
@@ -19,9 +19,9 @@ A dirty vault worktree alone is not a recovery condition. Normal `agent-memory` 
 
 During actual recovery, read the relevant reference workflow:
 
-- [Check Vault State](references/check-vault-state.md)
-- [Repair Vault Errors](references/repair-vault-errors.md)
-- [Commit Vault Work](references/commit-vault-work.md)
+- [[vault-maintenance/references/check-vault-state|Check Vault State]]
+- [[vault-maintenance/references/repair-vault-errors|Repair Vault Errors]]
+- [[vault-maintenance/references/commit-vault-work|Commit Vault Work]]
 
 ## Recovery Disposition
 

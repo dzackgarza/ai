@@ -1,6 +1,6 @@
 ---
 name: typeui-application
-description: "Use when building application dashboards, developer tools, or admin panels — purple-themed, top-bar nav, card-based layouts, glass-like panels. Load alongside `design` skill for process and verification."
+description: "Use when building application dashboards, developer tools, or admin panels — purple-themed, top-bar nav, card-based layouts, glass-like panels. Load alongside [[design/SKILL|design]] skill for process and verification."
 ---
 # TypeUI Application Design
 
@@ -23,7 +23,7 @@ This downloads the full design system as `SKILL.md` to `.agents/skills/design-sy
 
 ## How to Use This Subskill
 
-1. **Load the parent `design` skill** for process, scoping, and verification.
+1. **Load the parent [[design/SKILL|design]] skill** for process, scoping, and verification.
 
 2. **Fetch the Application system** with `npx typeui.sh pull application`.
 
@@ -39,7 +39,7 @@ This downloads the full design system as `SKILL.md` to `.agents/skills/design-sy
    primary color, adjust the spacing scale, swap the typeface — but keep the structural
    decisions (no sidebar, card-based content, glass panels) that make the system work.
 
-6. **Verify** the final artifact using the `design` skill’s verification checklist.
+6. **Verify** the final artifact using the [[design/SKILL|design]] skill’s verification checklist.
 
 ## What This System Teaches
 
@@ -67,8 +67,8 @@ Study this system for:
 | Subskill | Registry command | Best for |
 | --- | --- | --- |
 | `typeui-application` (this) | `npx typeui.sh pull application` | Application dashboards, dev tools, admin panels |
-| `typeui-neumorphism` | `npx typeui.sh pull neumorphism` | Dashboards, creative tools, indie products with tactile aesthetics |
-| `typeui-ant` | `npx typeui.sh pull ant` | Enterprise apps, CRUD interfaces, data-dense productivity tools |
+| [[design/typeui-neumorphism/SKILL|typeui-neumorphism]] | `npx typeui.sh pull neumorphism` | Dashboards, creative tools, indie products with tactile aesthetics |
+| [[design/typeui-ant/SKILL|typeui-ant]] | `npx typeui.sh pull ant` | Enterprise apps, CRUD interfaces, data-dense productivity tools |
 
 ## Policy
 
@@ -78,6 +78,6 @@ Study this system for:
 - Never paste the full fetched skill into generated code as a preamble.
   Study it first, then design from understanding.
 
-- When combining with `popular-web-designs` or `design-md`, prioritize the parent
-  `design` skill’s process for scoping and verification — the TypeUI seed is the visual
+- When combining with [[popular-web-designs/SKILL|popular-web-designs]] or [[design-md/SKILL|design-md]], prioritize the parent
+  [[design/SKILL|design]] skill’s process for scoping and verification — the TypeUI seed is the visual
   starting point, not the design methodology.

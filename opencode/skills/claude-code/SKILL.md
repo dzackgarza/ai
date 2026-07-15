@@ -1,19 +1,29 @@
 ---
 name: claude-code
-description: "Delegate coding to Claude Code CLI (features, PRs)."
-version: 2.2.0
-author: Hermes Agent + Teknium
+description: Delegate coding to [[claude-code/SKILL|Claude Code]] CLI (features, PRs).
 license: MIT
 metadata:
   hermes:
-    tags: [Coding-Agent, Claude, Anthropic, Code-Review, Refactoring, PTY, Automation]
-    related_skills: [codex, hermes-agent, opencode]
+    tags:
+    - Coding-Agent
+    - Claude
+    - Anthropic
+    - Code-Review
+    - Refactoring
+    - PTY
+    - Automation
+    related_skills:
+    - codex
+    - '[[hermes-agent/SKILL|hermes-agent]]'
+    - opencode
+  version: 2.2.0
+  author: Hermes Agent + Teknium
 ---
-# Claude Code — Hermes Orchestration Guide
+# [[claude-code/SKILL|Claude Code]] — Hermes Orchestration Guide
 
 Delegate coding tasks to [Claude Code](https://code.claude.com/docs/en/cli-reference)
 (Anthropic’s autonomous coding agent CLI) via the Hermes terminal.
-Claude Code v2.x can read files, write code, run shell commands, spawn subagents, and
+[[claude-code/SKILL|Claude Code]] v2.x can read files, write code, run shell commands, spawn subagents, and
 manage git workflows autonomously.
 
 ## Prerequisites
@@ -38,7 +48,7 @@ manage git workflows autonomously.
 
 ## Two Orchestration Modes
 
-Hermes interacts with Claude Code in two fundamentally different ways.
+Hermes interacts with [[claude-code/SKILL|Claude Code]] in two fundamentally different ways.
 Choose based on the task.
 
 ### Mode 1: Print Mode (`-p`) — Non-Interactive (PREFERRED for most tasks)
@@ -105,7 +115,7 @@ terminal(command="tmux send-keys -t claude-work '/exit' Enter")
 
 ## PTY Dialog Handling (CRITICAL for Interactive Mode)
 
-Claude Code presents up to two confirmation dialogs on first launch.
+[[claude-code/SKILL|Claude Code]] presents up to two confirmation dialogs on first launch.
 You MUST handle these via tmux send-keys:
 
 ### Dialog 1: Workspace Trust (first visit to a directory)
@@ -164,11 +174,11 @@ appear again. Only the permissions dialog recurs each time you use
 | `claude mcp remove <name>` | Remove an MCP server |
 | `claude agents` | List configured agents |
 | `claude doctor` | Run health checks on installation and auto-updater |
-| `claude update` / `claude upgrade` | Update Claude Code to latest version |
+| `claude update` / `claude upgrade` | Update [[claude-code/SKILL|Claude Code]] to latest version |
 | `claude remote-control` | Start server to control Claude from claude.ai or mobile app |
 | `claude install [target]` | Install native build (stable, latest, or specific version) |
 | `claude setup-token` | Set up long-lived auth token (requires subscription) |
-| `claude plugin` / `claude plugins` | Manage Claude Code plugins |
+| `claude plugin` / `claude plugins` | Manage [[claude-code/SKILL|Claude Code]] plugins |
 | `claude auto-mode` | Inspect auto mode classifier configuration |
 
 ## Print Mode Deep Dive
@@ -320,7 +330,7 @@ mode only).
 | --- | --- |
 | `--dangerously-skip-permissions` | Auto-approve ALL tool use (file writes, bash, network, etc.) |
 | `--allow-dangerously-skip-permissions` | Enable bypass as an *option* without enabling it by default |
-| `--permission-mode <mode>` | `default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions` |
+| `--permission-mode <mode>` | `default`, `acceptEdits`, [[plan/SKILL|plan]], `auto`, `dontAsk`, `bypassPermissions` |
 | `--allowedTools <tools...>` | Whitelist specific tools (comma or space-separated) |
 | `--disallowedTools <tools...>` | Blacklist specific tools |
 | `--tools <tools...>` | Override built-in tool set (`""` = none, `"default"` = all, or tool names) |
@@ -526,6 +536,16 @@ Use the keyword “ultrathink” in your prompt for maximum reasoning effort on 
 turn. This triggers the deepest thinking mode regardless of the current `/effort`
 setting.
 
+## PR Feedback Loop (2026-07-13)
+
+As of 2026-07-13, use [[claude-code/SKILL|Claude Code]] Channels for external PR and CI events. Channels are the
+native path for delivering an event into an active [[claude-code/SKILL|Claude Code]] session; do not substitute
+`at`, `task-sched`, or a generic local scheduler.
+
+Keep the session and Channel listener running, connect the listener to the repository’s
+GitHub events, and verify a real delivery reaches Claude before treating the loop as
+event-driven. Re-read the current PR reviews, comments, checks, and commits before triage.
+
 ## PR Review Pattern
 
 ### Quick Review (Print Mode)
@@ -578,7 +598,7 @@ terminal(command="sleep 30 && for s in task1 task2 task3; do echo '=== '$s' ==='
 
 ## CLAUDE.md — Project Context File
 
-Claude Code auto-loads `CLAUDE.md` from the project root.
+[[claude-code/SKILL|Claude Code]] auto-loads `CLAUDE.md` from the project root.
 Use it to persist project context:
 
 ```markdown
@@ -840,7 +860,7 @@ Key thresholds:
 
 ## Pitfalls & Gotchas
 
-1. **Interactive mode REQUIRES tmux** — Claude Code is a full TUI app.
+1. **Interactive mode REQUIRES tmux** — [[claude-code/SKILL|Claude Code]] is a full TUI app.
    Using `pty=true` alone in Hermes terminal works but tmux gives you `capture-pane` for
    monitoring and `send-keys` for input, which is essential for orchestration.
 

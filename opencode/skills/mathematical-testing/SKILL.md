@@ -17,7 +17,7 @@ and block all project progress until implementations recover known mathematical 
    authoritative sources (textbooks, papers, mathematical encyclopedias) that establish
    concrete, testable mathematical facts relevant to the task.
    Prioritize peer-reviewed literature, established textbooks (Bourbaki, Humphreys,
-   Carter, etc.), mathematical encyclopedias, SageMath documentation, and arXiv papers.
+   Carter, etc.), mathematical encyclopedias, [[sagemath/SKILL|SageMath]] documentation, and [[research-discovery/arxiv/SKILL|arXiv]] papers.
 
 2. **Extract Testable Assertions**: Convert abstract mathematical theorems into
    specific, executable test cases with exact expected values, relationships, and
@@ -231,7 +231,7 @@ def test_weyl_group_order_e8(generator):
 
 ## Non-Negotiable Constraints
 
-All mathematical tests must strictly adhere to the [Test Guidelines](file:///home/dzack/ai/opencode/skills/test-guidelines/SKILL.md) and the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md`. Under these rules:
+All mathematical tests must strictly adhere to the [[test-guidelines/SKILL|Test Guidelines]] and the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md`. Under these rules:
 - **No Mocks or Simulations:** Tests must operate on real mathematical objects and structures. MagicMock and other testing stubs are strictly prohibited.
 - **No Masking:** Never skip or xfail tests to bypass failing invariants.
 - **Bridge-Burning Red Flags:** Mathematical tests must not contain any red flags that silence validators or weaken mathematical proof obligations. For a comprehensive catalog of testing-specific and general red flags, see the [Bridge-Burning Red Flags Reference Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/runtime-control-flow.md).

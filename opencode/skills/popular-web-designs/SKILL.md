@@ -1,11 +1,19 @@
 ---
 name: popular-web-designs
 description: 54 real design systems (Stripe, Linear, Vercel) as HTML/CSS.
-version: 1.0.0
-author: Hermes Agent + Teknium (design systems sourced from VoltAgent/awesome-design-md)
 license: MIT
-tags: [design, css, html, ui, web-development, design-systems, templates]
-triggers:
+metadata:
+  version: 1.0.0
+  author: Hermes Agent + Teknium (design systems sourced from VoltAgent/awesome-design-md)
+  tags:
+  - design
+  - css
+  - html
+  - ui
+  - web-development
+  - design-systems
+  - templates
+  triggers:
   - build a page that looks like
   - make it look like stripe
   - design like linear
@@ -25,11 +33,11 @@ prompts with exact CSS values.
 
 ## Related design skills
 
-- → **`design`** — Load alongside when scoping a design brief, producing variants, or
+- → **[[design/SKILL|design]]** — Load alongside when scoping a design brief, producing variants, or
   verifying a rendered HTML artifact.
   Covers design process and taste, avoiding AI-design slop.
 
-- → **`design-md`** — Load alongside when the deliverable is a formal DESIGN.md token
+- → **[[design-md/SKILL|design-md]]** — Load alongside when the deliverable is a formal DESIGN.md token
   spec file, not a rendered artifact.
 
 ## How to Use
@@ -132,7 +140,7 @@ identity than the specific font face.
 | `minimax.md` | Minimax | Bold dark interface with neon accents |
 | `mistral.ai.md` | Mistral AI | French-engineered minimalism, purple-toned |
 | `ollama.md` | Ollama | Terminal-first, monochrome simplicity |
-| `opencode.ai.md` | OpenCode AI | Developer-centric dark theme, full monospace |
+| `opencode.ai.md` | [[opencode/SKILL|OpenCode]] AI | Developer-centric dark theme, full monospace |
 | `replicate.md` | Replicate | Clean white canvas, code-forward |
 | `runwayml.md` | RunwayML | Cinematic dark UI, media-rich layout |
 | `together.ai.md` | Together AI | Technical, blueprint-style design |
@@ -173,7 +181,7 @@ identity than the specific font face.
 
 | Template | Site | Style |
 | --- | --- | --- |
-| `airtable.md` | Airtable | Colorful, friendly, structured data aesthetic |
+| `airtable.md` | [[airtable/SKILL|Airtable]] | Colorful, friendly, structured data aesthetic |
 | `cal.md` | Cal.com | Clean neutral UI, developer-oriented simplicity |
 | `clay.md` | Clay | Organic shapes, soft gradients, art-directed layout |
 | `figma.md` | Figma | Vibrant multi-color, playful yet professional |
@@ -226,4 +234,4 @@ Match the design to the content:
 
 - **Data-dense / dashboards:** Sentry, Kraken, Cohere, ClickHouse
 
-- **Monospace / terminal aesthetic:** Ollama, OpenCode, x.ai, VoltAgent
+- **Monospace / terminal aesthetic:** Ollama, [[opencode/SKILL|OpenCode]], x.ai, VoltAgent

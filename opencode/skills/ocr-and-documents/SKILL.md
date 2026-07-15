@@ -1,13 +1,22 @@
 ---
 name: ocr-and-documents
-description: "Extract text from PDFs/scans — redirects to high-quality extraction (Mistral OCR, marker-pdf), away from pymupdf garbage."
-version: 3.1.0
-author: Hermes Agent
+description: Extract text from PDFs/scans — redirects to high-quality extraction (Mistral OCR, marker-pdf),
+  away from pymupdf garbage.
 license: MIT
 metadata:
   hermes:
-    tags: [PDF, Documents, Research, Arxiv, Text-Extraction, OCR]
-    related_skills: [reading-pdfs, powerpoint]
+    tags:
+    - PDF
+    - Documents
+    - Research
+    - Arxiv
+    - Text-Extraction
+    - OCR
+    related_skills:
+    - '[[reading-pdfs/SKILL|reading-pdfs]]'
+    - powerpoint
+  version: 3.1.0
+  author: Hermes Agent
 ---
 
 # PDF & Document Extraction
@@ -25,9 +34,9 @@ requirement. "Lightweight" tools that produce garbage on math are not acceptable
 
 | Priority | Tool | When to use |
 | --- | --- | --- |
-| **1** | **Mistral OCR** (via `reading-pdfs` skill) | **Default** — API-based, handles tables, math, scanned docs, multi-column. Check `reading-pdfs` skill. |
+| **1** | **Mistral OCR** (via [[reading-pdfs/SKILL|reading-pdfs]] skill) | **Default** — API-based, handles tables, math, scanned docs, multi-column. Check [[reading-pdfs/SKILL|reading-pdfs]] skill. |
 | **2** | **marker-pdf** | High-quality local fallback when Mistral API is unavailable. Handles math, equations, OCR, complex layouts. ~5GB install (negligible for a research system). |
-| **3** | **Managed recipes** (`~/pdf-extraction` justfile) | Docling / MinerU with managed environments. When neither Mistral API nor marker-pdf are suitable. |
+| **3** | **Managed recipes** (`~/pdf-extraction` [[justfile/SKILL|justfile]]) | Docling / MinerU with managed environments. When neither Mistral API nor marker-pdf are suitable. |
 | **4** | **pymupdf** | **Garbage on math.** Only for trivial text-only PDFs where nothing else is available and equations are not needed. |
 
 * * *
@@ -36,7 +45,7 @@ requirement. "Lightweight" tools that produce garbage on math are not acceptable
 
 ### 1. Try Mistral OCR first
 
-Load the `reading-pdfs` skill and follow its extraction workflow. This uses the Mistral
+Load the [[reading-pdfs/SKILL|reading-pdfs]] skill and follow its extraction workflow. This uses the Mistral
 API with local caching under `~/pdfs/`.
 
 ```bash
@@ -108,7 +117,7 @@ extract equations or LaTeX.
   pipeline. Use marker-pdf or the managed recipes instead.
 
 - **Installing extraction tools manually** — use `uvx` for one-shot tools or the
-  `~/pdf-extraction` justfile for managed extraction.
+  `~/pdf-extraction` [[justfile/SKILL|justfile]] for managed extraction.
 
 * * *
 

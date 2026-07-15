@@ -1,13 +1,13 @@
 ---
 name: calibre-metadata-sidecar
-description: Use when creating compact metadata proof sidecars for Calibre book PDFs, resolving ISBN/DOI/title-author metadata, or preparing a Calibre book for possible Zotero import without generating evidence sprawl.
+description: Use when creating compact metadata proof sidecars for Calibre book PDFs, resolving ISBN/DOI/title-author metadata, or preparing a Calibre book for possible [[zotero/SKILL|Zotero]] import without generating evidence sprawl.
 ---
 
 # Calibre Metadata Sidecar
 
 Create one compact metadata proof sidecar for one Calibre book PDF. This skill is for
 books already living in a Calibre-style library path, not for attaching artifacts to
-Zotero.
+[[zotero/SKILL|Zotero]].
 
 ## Artifact Model
 
@@ -15,7 +15,7 @@ Hard cap for one book:
 
 - the original Calibre PDF;
 - one compact JSON proof sidecar beside the PDF or in the book's `auto/` directory;
-- a Zotero item only if a later workflow explicitly imports it.
+- a [[zotero/SKILL|Zotero]] item only if a later workflow explicitly imports it.
 
 Do not create screenshots, source-cache files, extracted HTML pages, prose reports,
 checklists, agent transcripts, or multiple evidence files. If the metadata cannot be
@@ -40,9 +40,9 @@ workflow says otherwise.
 - Visible PDF identifiers and canonical records are the authority.
 - Do not approve from filename, Calibre folder name, or plausible title/author match
   alone.
-- Do not import into Zotero as part of this skill unless the user explicitly asked for
+- Do not import into [[zotero/SKILL|Zotero]] as part of this skill unless the user explicitly asked for
   import after approval.
-- Do not include unverified Zotero fields just because they are plausible.
+- Do not include unverified [[zotero/SKILL|Zotero]] fields just because they are plausible.
 - Do not add field-level proof unless a field comes from somewhere other than the exact
   identifier record.
 
@@ -56,7 +56,7 @@ Approve when:
 - the identifier resolves to a canonical library, publisher, DOI, or equivalent record;
 - the canonical title and creator agree with the PDF title/copyright pages;
 - publisher/date/edition/format do not visibly conflict;
-- the Zotero candidate is copied from the canonical record with only mechanical
+- the [[zotero/SKILL|Zotero]] candidate is copied from the canonical record with only mechanical
   normalization.
 
 Write one `approved` sidecar.

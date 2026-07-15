@@ -17,7 +17,7 @@ JSONL/database formats in order to answer user questions about past work.
 
 - Use this skill for transcript discovery and parsing across supported harnesses.
 
-- Use `opencode-cli` for OpenCode manager command forms and repo-local server setup.
+- Use [[opencode-cli/SKILL|opencode-cli]] for [[opencode/SKILL|OpenCode]] manager command forms and repo-local server setup.
 
 - Use `opencode-plugin-development` when transcript evidence is part of plugin proof or
   audit work.
@@ -38,7 +38,7 @@ uvx git+https://github.com/dzackgarza/opencode-manager.git \
 
 Other harnesses still use the local parser scripts in this skill.
 
-OpenCode transcripts always go through `ocm transcript`. If that surface is
+[[opencode/SKILL|OpenCode]] transcripts always go through `ocm transcript`. If that surface is
 insufficient, file an issue instead of adding `opencode export`, `OPENCODE_BIN`, or a
 local fallback parser.
 
@@ -69,7 +69,7 @@ script:
 python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness <type> <identifier>
 ```
 
-Supported harnesses: `claude`, `opencode`, `codex`, `kilocode`, `gemini`, `qwen`, `amp`
+Supported harnesses: `claude`, [[opencode/SKILL|opencode]], [[codex/SKILL|codex]], `kilocode`, `gemini`, `qwen`, `amp`
 
 The parser script automatically extracts user prompts, assistant text, thinking blocks,
 tool calls, and truncated tool results, outputting them in a clean, chronological
@@ -77,7 +77,7 @@ format.
 
 ## Verifying Subagents
 
-When an agent (especially in OpenCode or Claude Code) launches a subagent, the subagent
+When an agent (especially in [[opencode/SKILL|OpenCode]] or [[claude-code/SKILL|Claude Code]]) launches a subagent, the subagent
 runs in its own entirely separate session.
 The main agent **only sees the final summary** returned by the subagent.
 
@@ -177,10 +177,10 @@ These directories serve as the 100% provable source of truth.
 
 | Harness | Storage Architecture | Raw Path |
 | --- | --- | --- |
-| **Claude Code** | Flat JSONL per project | `~/.claude/projects/<slugified-project-name>/*.jsonl` |
+| **[[claude-code/SKILL|Claude Code]]** | Flat JSONL per project | `~/.claude/projects/<slugified-project-name>/*.jsonl` |
 | **Qwen Code** | Flat JSONL per project | `~/.qwen/projects/<slugified-project-name>/chats/*.jsonl` |
-| **Codex CLI** | Hierarchical Date JSONL | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl` |
+| **[[codex/SKILL|Codex]] CLI** | Hierarchical Date JSONL | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl` |
 | **Gemini CLI** | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json` |
 | **Kilocode** | Flat JSON Array per task | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json` |
-| **OpenCode** | OpenCode session transcript | Delegated via `uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session_id>`. |
+| **[[opencode/SKILL|OpenCode]]** | [[opencode/SKILL|OpenCode]] session transcript | Delegated via `uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session_id>`. |
 | **Amp CLI** | Abstracted Cloud/Local | Hidden *(Exported via CLI `amp threads markdown`)* |

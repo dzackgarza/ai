@@ -1,13 +1,26 @@
 ---
 name: spike
-description: "Throwaway experiments to validate an idea before build."
-version: 1.0.0
-author: Hermes Agent (adapted from gsd-build/get-shit-done)
+description: Throwaway experiments to validate an idea before build.
 license: MIT
 metadata:
   hermes:
-    tags: [spike, prototype, experiment, feasibility, throwaway, exploration, research, planning, mvp, proof-of-concept]
-    related_skills: [sketch, subagent-driven-development, plan]
+    tags:
+    - spike
+    - prototype
+    - experiment
+    - feasibility
+    - throwaway
+    - exploration
+    - research
+    - planning
+    - mvp
+    - proof-of-concept
+    related_skills:
+    - sketch
+    - '[[subagent-delegation/subagent-driven-development/SKILL|subagent-driven-development]]'
+    - plan
+  version: 1.0.0
+  author: Hermes Agent (adapted from gsd-build/get-shit-done)
 ---
 # Spike
 
@@ -25,7 +38,7 @@ possible?”, or “compare A vs B”.
 
 - The answer is knowable from docs or reading code — just do research, don’t build
 
-- The work is production path — use the `plan` skill instead
+- The work is production path — use the [[plan/SKILL|plan]] skill instead
 
 - The idea is already validated — jump straight to implementation
 

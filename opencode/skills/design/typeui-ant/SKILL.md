@@ -1,6 +1,6 @@
 ---
 name: typeui-ant
-description: "Use when building enterprise applications, CRUD interfaces, productivity tools, or data-dense dashboards — structured, clarity-first, blue primary, Plus Jakarta Sans typography. Load alongside `design` skill for process and verification."
+description: "Use when building enterprise applications, CRUD interfaces, productivity tools, or data-dense dashboards — structured, clarity-first, blue primary, Plus Jakarta Sans typography. Load alongside [[design/SKILL|design]] skill for process and verification."
 ---
 # TypeUI Ant Design
 
@@ -23,7 +23,7 @@ This downloads the full design system as `SKILL.md` to `.agents/skills/design-sy
 
 ## How to Use This Subskill
 
-1. **Load the parent `design` skill** for process, scoping, and verification.
+1. **Load the parent [[design/SKILL|design]] skill** for process, scoping, and verification.
 
 2. **Fetch the Ant system** with `npx typeui.sh pull ant`.
 
@@ -41,7 +41,7 @@ This downloads the full design system as `SKILL.md` to `.agents/skills/design-sy
    decisions (complete state definitions for every component, explicit anti-patterns,
    data-density optimizations) that prevent enterprise UI degradation.
 
-6. **Verify** the final artifact using the `design` skill’s verification checklist, with
+6. **Verify** the final artifact using the [[design/SKILL|design]] skill’s verification checklist, with
    extra attention to the six anti-patterns defined in the Ant system — they catch the
    most common enterprise UI failures.
 
@@ -77,8 +77,8 @@ Study this system for:
 
 | Subskill | Registry command | Best for |
 | --- | --- | --- |
-| `typeui-application` | `npx typeui.sh pull application` | Application dashboards, dev tools, admin panels |
-| `typeui-neumorphism` | `npx typeui.sh pull neumorphism` | Dashboards, creative tools, indie products with tactile aesthetics |
+| [[design/typeui-application/SKILL|typeui-application]] | `npx typeui.sh pull application` | Application dashboards, dev tools, admin panels |
+| [[design/typeui-neumorphism/SKILL|typeui-neumorphism]] | `npx typeui.sh pull neumorphism` | Dashboards, creative tools, indie products with tactile aesthetics |
 | `typeui-ant` (this) | `npx typeui.sh pull ant` | Enterprise apps, CRUD interfaces, data-dense productivity tools |
 
 ## Policy
@@ -92,6 +92,6 @@ Study this system for:
 - Enterprise CRUD interfaces are especially prone to accessibility degradation.
   Verify every state defined in the Ant system against WCAG AA after generation.
 
-- When combining with `popular-web-designs` or `design-md`, prioritize the parent
-  `design` skill’s process for scoping and verification — the TypeUI seed is the visual
+- When combining with [[popular-web-designs/SKILL|popular-web-designs]] or [[design-md/SKILL|design-md]], prioritize the parent
+  [[design/SKILL|design]] skill’s process for scoping and verification — the TypeUI seed is the visual
   starting point, not the design methodology.

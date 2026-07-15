@@ -1,10 +1,17 @@
 ---
 name: huggingface-hub
-description: "HuggingFace hf CLI: search/download/upload models, datasets."
-version: 1.0.0
-author: Hugging Face
+description: 'HuggingFace hf CLI: search/download/upload models, datasets.'
 license: MIT
-tags: [huggingface, hf, models, datasets, hub, mlops]
+metadata:
+  version: 1.0.0
+  author: Hugging Face
+  tags:
+  - huggingface
+  - hf
+  - models
+  - datasets
+  - hub
+  - mlops
 ---
 # Hugging Face CLI (`hf`) Reference Guide
 
@@ -124,7 +131,7 @@ Treat Hugging Face Spaces MCP integrations as volatile:
 * Treat working-space lists as stale quickly.
   Re-run discovery and a live smoke call before reporting that a Space is available.
 
-For MCP-specific tool-surface design, use the `native-mcp` skill and its
+For MCP-specific tool-surface design, use the [[native-mcp/SKILL|native-mcp]] skill and its
 `references/tool-interface-design.md` note.
 
 ### Spaces MCP Caution
@@ -147,7 +154,7 @@ Treat Hugging Face Spaces MCP integrations as volatile:
 *   Treat working-space lists as stale quickly. Re-run discovery and a live
     smoke call before reporting that a Space is available.
 
-For MCP-specific tool-surface design, use the `native-mcp` skill and its
+For MCP-specific tool-surface design, use the [[native-mcp/SKILL|native-mcp]] skill and its
 `references/tool-interface-design.md` note.
 
 ### Storage & Automation

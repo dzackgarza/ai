@@ -2,9 +2,7 @@
 
 Consolidated from the former `github-issues` skill.
 
-Issue *filing rules and templates* are in SKILL.md (Issue Workflow section).
-This reference covers the CLI mechanics for viewing, creating, managing, and triaging
-issues. It is mechanics only.
+Issue filing policy and templates are owned by [[git-guidelines/github-issues/SKILL#Filing issues|GitHub Issues]].\nThis reference owns only the CLI mechanics for viewing, creating, managing, and triaging issues.
 
 For planning-tree issues — roadmap, phase, feature, story, proof obligation, or
 implementation node — load and read `plan/references/externalization.md` before
@@ -82,7 +80,7 @@ root or assigns execution state to `itree`, use the governed route below. If it 
 explicitly non-governed but has no root, initialize or repair its tree before creating
 public execution state. Use raw GitHub creation only for a repository explicitly outside
 `itree` governance. Follow the current
-[initialization and repair route](SKILL.md#filing-issues) for the exact `init`, `doctor`,
+[[git-guidelines/github-issues/SKILL#filing-issues|initialization and repair route]] for the exact `init`, `doctor`,
 `doctor --explain`, and `triage` commands.
 
 ### `itree`-governed repositories
@@ -216,7 +214,7 @@ Milestones are delivery/progress buckets over issues and PRs. They do not replac
 issue tree.
 
 The governed milestone-and-ledger route is released. Use the canonical
-[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
+[[git-guidelines/github-issues/SKILL#released-milestone-and-ledger-route|released milestone-and-ledger route]].
 
 The following raw edit changes an existing issue's assignment to an existing GitHub
 Milestone. It does not create a milestone or ledger and must not substitute for the released
@@ -276,7 +274,7 @@ gh issue list --label "wontfix" --json number --jq '.[].number' | \
 | List issues | `gh issue list` | `GET /repos/{o}/{r}/issues` |
 | View issue | `gh issue view N` | `GET /repos/{o}/{r}/issues/N` |
 | Create governed work unit | `itree new ... --under ...` | Owned by `itree` |
-| Create governed milestone and ledger | [Released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route) | Owned by `itree` |
+| Create governed milestone and ledger | [[git-guidelines/github-issues/SKILL#Released milestone-and-ledger route|Released milestone-and-ledger route]] | Owned by `itree` |
 | Create explicitly non-governed issue | `gh issue create ...` | `POST /repos/{o}/{r}/issues` |
 | Add labels | `gh issue edit N --add-label ...` | `POST /repos/{o}/{r}/issues/N/labels` |
 | Assign | `gh issue edit N --add-assignee ...` | `POST /repos/{o}/{r}/issues/N/assignees` |

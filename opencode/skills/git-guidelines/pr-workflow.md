@@ -14,7 +14,7 @@ Naming: `feat/description`, `fix/description`, `refactor/description`, `docs/des
 
 ## 2. Making Commits
 
-Use the standard edit workflow (see SKILL.md → Edit Workflow), then:
+Use [[git-guidelines/git-operational-policy/SKILL#The Edit Workflow (Mandatory)|the standard edit workflow]], then:
 
 ```bash
 git add src/auth.py src/models/user.py tests/test_auth.py
@@ -179,7 +179,7 @@ Re-check CI status using the commands from Section 4 above.
 
 > CI failures and PR review comments are different.
 > CI failures can be fixed mechanically after root-cause diagnosis.
-> Review comments must first be routed to `pr-feedback-triage`.
+> Review comments must first be routed to [[pr-feedback-triage/SKILL|pr-feedback-triage]].
 > Do not auto-fix review comments merely because they are unresolved.
 
 ### Auto-Fix Loop Pattern
@@ -238,7 +238,7 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`.
 This example assumes the repository is governed by `itree` and has an existing open
 grouping parent. For a repository explicitly outside `itree` governance, use the raw
 creation route in `issues.md` instead. For milestone-and-ledger creation, use the canonical
-[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
+[[git-guidelines/github-issues/SKILL#released-milestone-and-ledger-route|released milestone-and-ledger route]].
 
 ```bash
 # 1. Start from clean main

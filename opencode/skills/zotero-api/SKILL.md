@@ -1,12 +1,12 @@
 ---
 name: zotero-api
-description: Use when you need to query Zotero data, find references, export citations, search for papers, or fetch PDFs using the local Zotero Web API cache.
+description: Use when you need to query [[zotero/SKILL|Zotero]] data, find references, export citations, search for papers, or fetch PDFs using the local [[zotero/SKILL|Zotero]] Web API cache.
 ---
-# Zotero API (Local Cache)
+# [[zotero/SKILL|Zotero]] API (Local Cache)
 
 ## Environment Traps
 
-- **Local Proxy:** This machine runs a local cache of the Zotero v3 API at
+- **Local Proxy:** This machine runs a local cache of the [[zotero/SKILL|Zotero]] v3 API at
   `https://zotero.dzackgarza.com`.
 
 - **Target User:** The primary library is `users/1049732`.
@@ -21,7 +21,7 @@ description: Use when you need to query Zotero data, find references, export cit
 
 - **Pagination limit:** `curl` queries are strictly limited to 100 results per request.
   You must loop using `&start=N` to fetch all data.
-  Do NOT use the `zotero` python skill for local cache reads, as that script is
+  Do NOT use the [[zotero/SKILL|zotero]] python skill for local cache reads, as that script is
   hardcoded to the official authenticated web API.
 
 - **Read-Only:** You cannot attach new files or modify metadata via this local API.
@@ -33,34 +33,34 @@ Use these exact `curl` and `jq` pipelines.
 
 ### Local Better BibTeX and Fulltext Attachments
 
-For workflows that need to attach existing extraction output back to Zotero, use
-Zotero’s local client APIs, not the read-only cache:
+For workflows that need to attach existing extraction output back to [[zotero/SKILL|Zotero]], use
+[[zotero/SKILL|Zotero]]’s local client APIs, not the read-only cache:
 
-- Better BibTeX JSON-RPC and local Zotero endpoints run at `http://localhost:23119` when
-  Zotero is open and local API permissions are enabled.
+- Better BibTeX JSON-RPC and local [[zotero/SKILL|Zotero]] endpoints run at `http://localhost:23119` when
+  [[zotero/SKILL|Zotero]] is open and local API permissions are enabled.
 
 - The relevant write path is the local `fulltext-attach` endpoint.
 
 - This is separate from `https://zotero.dzackgarza.com`, which is read-only and cannot
   attach files.
 
-Before using the local write path, verify Zotero is running, Better BibTeX is enabled,
+Before using the local write path, verify [[zotero/SKILL|Zotero]] is running, Better BibTeX is enabled,
 and the item key or Better BibTeX citation key resolves to the intended attachment.
 Do not upload extraction artifacts based only on normalized titles or years.
 
 ### Local Better BibTeX and Fulltext Attachments
 
-For workflows that need to attach existing extraction output back to Zotero, use
-Zotero's local client APIs, not the read-only cache:
+For workflows that need to attach existing extraction output back to [[zotero/SKILL|Zotero]], use
+[[zotero/SKILL|Zotero]]'s local client APIs, not the read-only cache:
 
-- Better BibTeX JSON-RPC and local Zotero endpoints run at
-  `http://localhost:23119` when Zotero is open and local API permissions are
+- Better BibTeX JSON-RPC and local [[zotero/SKILL|Zotero]] endpoints run at
+  `http://localhost:23119` when [[zotero/SKILL|Zotero]] is open and local API permissions are
   enabled.
 - The relevant write path is the local `fulltext-attach` endpoint.
 - This is separate from `https://zotero.dzackgarza.com`, which is read-only and
   cannot attach files.
 
-Before using the local write path, verify Zotero is running, Better BibTeX is
+Before using the local write path, verify [[zotero/SKILL|Zotero]] is running, Better BibTeX is
 enabled, and the item key or Better BibTeX citation key resolves to the intended
 attachment. Do not upload extraction artifacts based only on normalized titles
 or years.
@@ -83,7 +83,7 @@ curl -s "https://zotero.dzackgarza.com/api/users/1049732/items/<ITEM_KEY>/childr
 
 ### 1. Reading Papers and Finding File Locations
 
-The Zotero database stores files locally.
+The [[zotero/SKILL|Zotero]] database stores files locally.
 You can find the exact path to a PDF or Markdown file by inspecting its `enclosure`
 link.
 
@@ -100,7 +100,7 @@ the paper’s contents.
 
 ### 2. Searching and Filtering (Fulltext vs Metadata)
 
-Zotero supports powerful search via the `q` parameter.
+[[zotero/SKILL|Zotero]] supports powerful search via the `q` parameter.
 
 - **Metadata only (Default):** `q=<term>` searches only titles, creators, and years.
 

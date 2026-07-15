@@ -1,12 +1,18 @@
 ---
 name: lavish
-description: Turn complex or visual agent responses into rich, reviewable HTML artifacts the user can annotate and send feedback on, using the lavish-axi CLI. Use when about to give a plan, comparison, diagram, table, code diff, report, or anything easier to grasp visually than as prose.
-argument-hint: <what the artifact should show>
-author: Kun Chen (kunchenguid)
+description: Turn complex or visual agent responses into rich, reviewable HTML artifacts the user can
+  annotate and send feedback on, using the lavish-axi CLI. Use when about to give a plan, comparison,
+  diagram, table, code diff, report, or anything easier to grasp visually than as prose.
 metadata:
   hermes:
-    tags: [html, review, artifacts, visualization]
+    tags:
+    - html
+    - review
+    - artifacts
+    - visualization
     category: productivity
+  argument-hint: <what the artifact should show>
+  author: Kun Chen (kunchenguid)
 ---
 
 # Lavish Editor
@@ -54,7 +60,7 @@ For flows, architecture, state, or sequence diagrams, do not hand-build boxes-an
 - `diagram` - Map relationships, flows, state, and architecture
 - `table` - Turn dense records into scan-friendly review surfaces
 - `comparison` - Show options, tradeoffs, and current vs target behavior
-- `plan` - Explain a product or technical plan before implementation
+- [[plan/SKILL|plan]] - Explain a product or technical plan before implementation
 - `code` - Render source code, code files, patches, PR diffs, and before/after code inside Lavish artifacts
 - `input` - Must be used when the agent needs to collect user input on decisions, choices, preferences, triage, scope, or other structured feedback from within the artifact
 - `slides` - Create a deliberate presentation when slides are requested

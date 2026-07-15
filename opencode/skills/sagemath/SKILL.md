@@ -1,13 +1,13 @@
 ---
 name: sagemath
-description: Use when working with SageMath for mathematical computations, algebraic geometry, or number theory
+description: Use when working with [[sagemath/SKILL|SageMath]] for mathematical computations, algebraic geometry, or number theory
 ---
-# SageMath
+# [[sagemath/SKILL|SageMath]]
 
 ## Overview
 
 Work with canonical mathematical objects, not manual constructions.
-SageMath provides rich algebraic structures—use them.
+[[sagemath/SKILL|SageMath]] provides rich algebraic structures—use them.
 
 ## Forbidden Patterns
 
@@ -44,7 +44,7 @@ Canonical objects encode structure, enable verification, and make code self-docu
 
 ### 1. NO Manual Matrix Construction
 
-**NEVER** create matrices like `matrix([[1,2],[3,4]])`. Always use SageMath’s built-in
+**NEVER** create matrices like `matrix([[1,2],[3,4]])`. Always use [[sagemath/SKILL|SageMath]]’s built-in
 objects:
 
 ```sage

@@ -11,12 +11,12 @@ This skill covers design process and taste: how to scope a brief, gather context
 produce variants, define a visual system, and verify a rendered artifact.
 
 **Before starting, check for companion skills.** If the user wants a known brand’s look,
-load `popular-web-designs` alongside this one for ready-to-paste design systems (Stripe,
+load [[popular-web-designs/SKILL|popular-web-designs]] alongside this one for ready-to-paste design systems (Stripe,
 Linear, Vercel, Notion, etc.). If the deliverable is a formal DESIGN.md token spec file
-rather than a rendered artifact, use `design-md` instead.
+rather than a rendered artifact, use [[design-md/SKILL|design-md]] instead.
 Full decision table below.
 
-## When To Use This Skill vs `popular-web-designs` vs `design-md`
+## When To Use This Skill vs [[popular-web-designs/SKILL|popular-web-designs]] vs [[design-md/SKILL|design-md]]
 
 Three design-related skills are available.
 Load the right one (or combine them):
@@ -24,30 +24,30 @@ Load the right one (or combine them):
 | Skill | What it gives you | Use when the user wants … |
 | --- | --- | --- |
 | **design** (this one) | Design *process and taste* — how to scope a brief, gather context, produce variants, verify a rendered HTML artifact, avoid AI-design slop | a from-scratch designed artifact (landing page, prototype, deck, component lab, motion study) with no specific brand or token system dictated |
-| **popular-web-designs** | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, Notion, Airbnb | “make it look like Stripe / Linear / Vercel”, a page styled after a known brand, or a visual starting point pulled from a real product |
-| **design-md** | Google’s DESIGN.md spec format — author/validate/diff/export design-token files, WCAG contrast checking, Tailwind/DTCG export | a formal, persistent, machine-readable design-system *spec file* (tokens + rationale) that lives in a repo and gets consumed by agents over time |
+| [[popular-web-designs/SKILL|popular-web-designs]] | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, Notion, Airbnb | “make it look like Stripe / Linear / Vercel”, a page styled after a known brand, or a visual starting point pulled from a real product |
+| [[design-md/SKILL|design-md]] | Google’s DESIGN.md spec format — author/validate/diff/export design-token files, WCAG contrast checking, Tailwind/DTCG export | a formal, persistent, machine-readable design-system *spec file* (tokens + rationale) that lives in a repo and gets consumed by agents over time |
 | **typeui-* subskills** (under this skill) | Curated aesthetic style packs from the TypeUI registry — token-level design system definitions for specific visual languages (Application, Neumorphism, Ant, etc.) | a greenfield design seeded by a specific aesthetic mood — “a dashboard with glass-like panels”, “a tactile shadow-based interface”, “an enterprise CRUD app” — without copying a known brand |
-| **anthropic-frontend-design** (under this skill) | Creative direction methodology from Anthropic — how to commit to a bold aesthetic tone, pick distinctive fonts, avoid generic AI visuals, and make an interface memorable | a frontend that needs to be striking and distinctive — landing page, portfolio, creative tool, or any artifact where generic aesthetics are unacceptable |
+| [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] (under this skill) | Creative direction methodology from Anthropic — how to commit to a bold aesthetic tone, pick distinctive fonts, avoid generic AI visuals, and make an interface memorable | a frontend that needs to be striking and distinctive — landing page, portfolio, creative tool, or any artifact where generic aesthetics are unacceptable |
 
 Rule of thumb:
 
 - **Process + taste, one-off artifact** → design
 
-- **Match a known brand’s look** → popular-web-designs (and let design drive the
+- **Match a known brand’s look** → [[popular-web-designs/SKILL|popular-web-designs]] (and let design drive the
   process)
 
-- **Author the tokens spec itself** → design-md
+- **Author the tokens spec itself** → [[design-md/SKILL|design-md]]
 
 - **Start from a curated aesthetic seed** → typeui-* subskill (fetch, study, adapt)
 
-- **Make something bold and memorable** → anthropic-frontend-design (creative direction)
+- **Make something bold and memorable** → [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] (creative direction)
   \+ design (process)
 
-These compose: use `popular-web-designs` for the visual vocabulary, `design` for how to
-turn a brief into a thoughtful local HTML file, `design-md` when the output is the token
+These compose: use [[popular-web-designs/SKILL|popular-web-designs]] for the visual vocabulary, `design` for how to
+turn a brief into a thoughtful local HTML file, [[design-md/SKILL|design-md]] when the output is the token
 file rather than a rendered artifact, `typeui-*` subskills when you need a cohesive
 aesthetic starting point that is not tied to an existing brand, and
-`anthropic-frontend-design` when the user wants a frontend that makes a statement.
+[[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] when the user wants a frontend that makes a statement.
 
 ## TypeUI Design Subskills
 
@@ -60,9 +60,9 @@ Three subskills are installed under this skill:
 
 | Subskill | Registry command | Best for |
 | --- | --- | --- |
-| `typeui-application` | `npx typeui.sh pull application` | Application dashboards, dev tools, admin panels (purple-themed, top-bar nav, glass panels) |
-| `typeui-neumorphism` | `npx typeui.sh pull neumorphism` | Dashboards, creative tools, indie products (soft-shadow extruded aesthetic, Space Mono) |
-| `typeui-ant` | `npx typeui.sh pull ant` | Enterprise apps, CRUD interfaces, productivity tools (blue primary, Plus Jakarta Sans, data-dense) |
+| [[design/typeui-application/SKILL|typeui-application]] | `npx typeui.sh pull application` | Application dashboards, dev tools, admin panels (purple-themed, top-bar nav, glass panels) |
+| [[design/typeui-neumorphism/SKILL|typeui-neumorphism]] | `npx typeui.sh pull neumorphism` | Dashboards, creative tools, indie products (soft-shadow extruded aesthetic, Space Mono) |
+| [[design/typeui-ant/SKILL|typeui-ant]] | `npx typeui.sh pull ant` | Enterprise apps, CRUD interfaces, productivity tools (blue primary, Plus Jakarta Sans, data-dense) |
 
 **How to use any TypeUI subskill:**
 
@@ -97,7 +97,7 @@ Three subskills are installed under this skill:
 
 ## Anthropic Frontend Design Subskill
 
-The `anthropic-frontend-design` subskill
+The [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] subskill
 (https://github.com/anthropics/skills/tree/main/skills/frontend-design) provides a
 complementary methodology to this skill’s process-focused approach.
 Where `design` covers *how to scope, build, and verify*, the Anthropic skill covers
@@ -108,7 +108,7 @@ unforgettable interface choices, and avoiding generic AI aesthetics.
 
 1. Load this `design` skill for process and verification.
 
-2. Load `anthropic-frontend-design` for creative direction.
+2. Load [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] for creative direction.
 
 3. Apply the Anthropic rules to choose the tone and aesthetic direction.
 
@@ -128,7 +128,7 @@ unforgettable interface choices, and avoiding generic AI aesthetics.
 - Clean, restrained production interfaces (SaaS dashboards, admin panels, documentation
   sites) — the `design` skill alone is the right fit
 
-- When the user explicitly asks for a specific brand look — use `popular-web-designs`
+- When the user explicitly asks for a specific brand look — use [[popular-web-designs/SKILL|popular-web-designs]]
   instead
 
 ## Core Identity
@@ -190,7 +190,7 @@ Use this skill for:
 
 Do not use this skill for pure DESIGN.md token authoring unless the user specifically
 asks for a DESIGN.md file.
-Use `design-md` for that.
+Use [[design-md/SKILL|design-md]] for that.
 
 ## Design Principle: Start From Context, Not Vibes
 
@@ -728,7 +728,7 @@ adding them.
 
 When copy is necessary but not final, mark it as draft or placeholder.
 
-## Anti-Slop Rules
+## [[anti-slop/SKILL|Anti-Slop]] Rules
 
 Avoid common AI design sludge:
 

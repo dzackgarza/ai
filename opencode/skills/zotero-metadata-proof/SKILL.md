@@ -1,22 +1,22 @@
 ---
 name: zotero-metadata-proof
-description: Use when identifying Zotero metadata for a PDF, deciding whether to import a PDF as a Zotero item, resolving ISBN/DOI/title-author metadata, or producing proof that a PDF corresponds to a Zotero candidate record.
+description: Use when identifying [[zotero/SKILL|Zotero]] metadata for a PDF, deciding whether to import a PDF as a [[zotero/SKILL|Zotero]] item, resolving ISBN/DOI/title-author metadata, or producing proof that a PDF corresponds to a [[zotero/SKILL|Zotero]] candidate record.
 ---
 
-# Zotero Metadata Proof
+# [[zotero/SKILL|Zotero]] Metadata Proof
 
-Use this skill to identify Zotero metadata for a PDF under a strict artifact budget.
+Use this skill to identify [[zotero/SKILL|Zotero]] metadata for a PDF under a strict artifact budget.
 The output is not a research dossier; it is one compact proof capsule that supports
-or rejects one Zotero metadata candidate.
+or rejects one [[zotero/SKILL|Zotero]] metadata candidate.
 
 ## Artifact Model
 
 Hard cap for one PDF:
 
 - the original PDF;
-- the Zotero item, only after approval/import;
+- the [[zotero/SKILL|Zotero]] item, only after approval/import;
 - one compact proof capsule, preferably `book.zotero-proof.json` or a
-  Zotero-attached note/file.
+  [[zotero/SKILL|Zotero]]-attached note/file.
 
 Do not create per-source snapshots, screenshots, source-cache files, prose reports,
 checklists, agent transcripts, or review memos. If the match cannot be proven within
@@ -27,7 +27,7 @@ evidence artifacts.
 
 Produce one minimal, auditable claim:
 
-> This PDF corresponds to this Zotero metadata, with enough provenance for a human or
+> This PDF corresponds to this [[zotero/SKILL|Zotero]] metadata, with enough provenance for a human or
 > script to re-check it.
 
 The agent is not the authority. Visible PDF identifiers and canonical records are the
@@ -43,7 +43,7 @@ For normal ISBN/DOI-resolvable books:
 - Resolve the exact identifier through a canonical source.
 - Compare the resolved title, creator, publisher, date, edition, and format against
   the PDF title/copyright pages.
-- Build the Zotero candidate from the canonical record with only mechanical
+- Build the [[zotero/SKILL|Zotero]] candidate from the canonical record with only mechanical
   normalization.
 - If there are no conflicts, write one approved proof capsule and import only if
   import was requested or approved.
@@ -61,7 +61,7 @@ Approve when:
 - the PDF visibly contains a valid ISBN or DOI;
 - the identifier resolves to a canonical record;
 - the canonical title and creator match the PDF;
-- the Zotero candidate is copied from that record;
+- the [[zotero/SKILL|Zotero]] candidate is copied from that record;
 - there are no obvious conflicts such as wrong edition, wrong volume, set ISBN versus
   volume ISBN, chapter DOI versus book DOI, or editor/author mismatch.
 
@@ -146,9 +146,9 @@ screenshots, confidence scores, or unverified fields.
 ## Field Overrides
 
 Use identity-level proof first. Do not write verbose per-field proof when the exact
-identifier record supports the whole Zotero candidate and matches the PDF.
+identifier record supports the whole [[zotero/SKILL|Zotero]] candidate and matches the PDF.
 
-Use `field_overrides` only when a Zotero field comes from a different source than the
+Use `field_overrides` only when a [[zotero/SKILL|Zotero]] field comes from a different source than the
 canonical identifier record, for example:
 
 ```json
@@ -196,7 +196,7 @@ For one PDF:
   and visible DOIs;
 - if an ISBN/DOI is present, validate and resolve that exact identifier;
 - compare the canonical record against the PDF front matter;
-- if clean, build the Zotero candidate and write one approved proof capsule;
+- if clean, build the [[zotero/SKILL|Zotero]] candidate and write one approved proof capsule;
 - if conflicted, write one `needs_review` proof capsule;
 - if no exact ID exists, search by title and creator and apply the same capsule-only
   approval or `needs_review` rule.

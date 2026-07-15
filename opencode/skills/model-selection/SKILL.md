@@ -38,7 +38,7 @@ capability.
 | Claude Sonnet 4.6 | 1874 |
 | GPT 5.2 | 1829 |
 | Claude Opus 4.5 | 1815 |
-| GPT 5.3 Codex | 1812 |
+| GPT 5.3 [[codex/SKILL|Codex]] | 1812 |
 
 **Turn capacity:** 300-500+ turns
 
@@ -49,7 +49,7 @@ capability.
 | Model | APEX ELO |
 | --- | --- |
 | Claude 4.5 Sonnet | ~1800 |
-| GPT 5.1 Codex | ~1790 |
+| GPT 5.1 [[codex/SKILL|Codex]] | ~1790 |
 | Gemini 3 Pro Preview | ~1780 |
 | Claude 4 Opus | ~1770 |
 | DeepSeek V3.2 | ~1760 |
@@ -237,16 +237,16 @@ Don’t guess — run `llmfit` to verify a local model will actually work for ag
 
 ## Related Skills
 
-- → **creating-subagents** — Load alongside when creating subagent descriptions that
+- → [[subagent-delegation/creating-subagents/SKILL|creating-subagents]] — Load alongside when creating subagent descriptions that
   reference model tiers.
   Covers the Use when/Pass/Ask format for agent-facing delegation instructions.
 
-- → **prompt-engineering** — Load alongside when writing prompts that depend on model
+- → [[prompt-engineering/SKILL|prompt-engineering]] — Load alongside when writing prompts that depend on model
   capabilities. Covers effective prompt construction, priming context.
 
-- → **subagent-delegation** — Load alongside when selecting models for delegated tasks.
+- → [[subagent-delegation/SKILL|subagent-delegation]] — Load alongside when selecting models for delegated tasks.
   Covers subagent lifecycle, review cycles, verifying output.
 
-- → **test-guidelines** — Load alongside when writing tests that verify model output
+- → [[test-guidelines/SKILL|test-guidelines]] — Load alongside when writing tests that verify model output
   meets expected quality.
   Covers test patterns for model-dependent behavior.

@@ -1,17 +1,27 @@
 ---
 name: plan
-description: "The canonical planning skill and plan mode: create, write, review, or revise durable implementation plans, source plans, and externalization-ready execution specs through agent-memory. When invoked as plan mode, plan only — no execution this turn."
+description: 'The canonical planning skill and plan mode: create, write, review, or revise durable implementation
+  plans, source plans, and externalization-ready execution specs through [[agent-memory/SKILL|agent-memory]].
+  When invoked as plan mode, plan only — no execution this turn.'
 license: MIT
 metadata:
   hermes:
-    tags: [planning, plan-mode, implementation, workflow]
-    related_skills: [subagent-driven-development, requesting-code-review, test-driven-development, git-guidelines]
+    tags:
+    - planning
+    - plan-mode
+    - implementation
+    - workflow
+    related_skills:
+    - '[[subagent-delegation/subagent-driven-development/SKILL|subagent-driven-development]]'
+    - '[[git-guidelines/requesting-code-review/SKILL|requesting-code-review]]'
+    - '[[test-driven-development/SKILL|test-driven-development]]'
+    - '[[git-guidelines/SKILL|git-guidelines]]'
 ---
 # Plan
 
 > [!IMPORTANT]
 > Plans created under this skill must respect the Bridge-Burning Policies in
-> `policy-index`. Do not plan fallbacks, mocks, optional critical dependencies,
+> [[policy-index/SKILL|policy-index]]. Do not plan fallbacks, mocks, optional critical dependencies,
 > runtime defaults, proof-free smoke checks, or other validation-evasion paths unless a
 > narrower loaded policy explicitly permits them.
 
@@ -100,7 +110,7 @@ to produce the plan.
 - **Workstream / organizational.** Takes real requirements, feedback, or a heterogeneous
   item set and coalesces it into *typed workstreams*: a count, a shared remediation shape,
   and shared acceptance ("15 items are book sections to migrate to an ambient book with a
-  real Zotero book-section sub-item"). It defers per-item judgment to execution. Resolving
+  real [[zotero/SKILL|Zotero]] book-section sub-item"). It defers per-item judgment to execution. Resolving
   every item's disposition inside the plan is doing the implementer's research, and a plan
   that never forces you to read the gathered feedback has failed at this tier.
 - **Implementation-adjacent.** A scoring rubric for one coherent piece of work: endpoint,
@@ -118,7 +128,7 @@ Spend tightness on outcomes, criteria, and invariants, not on mechanism.
 
 **The tree.** Every plan declares its parent plan key (or marks itself root / user-facing).
 A high-tier plan marks each phase too complex to expand inline as one that must spawn its
-own child plan. Store the whole tree as keyed `agent-memory` plan records so parent and
+own child plan. Store the whole tree as keyed [[agent-memory/SKILL|agent-memory]] plan records so parent and
 child links live in one place.
 
 The tree exists to stop the most common drift: an agent descends into a sub-sub-plan and
@@ -142,8 +152,8 @@ becoming local task lists or PR draft plans.
 
 ## Storage and Ownership Lifecycle
 
-File every durable plan as a project-scoped `agent-memory` record with type `plan`.
-Use the `agent-memory` skill for the exact command surface. If `agent-memory` is
+File every durable plan as a project-scoped [[agent-memory/SKILL|agent-memory]] record with type `plan`.
+Use the [[agent-memory/SKILL|agent-memory]] skill for the exact command surface. If [[agent-memory/SKILL|agent-memory]] is
 unavailable, report the blocker instead of creating an untracked substitute.
 
 A repo-local Markdown file may be a review/export artifact, but it is not the durable
@@ -256,14 +266,14 @@ checks before a plan proposes structure:
   internalized — databases, git, pull requests, issues, milestones, ordinary access
   control, citations, hashes — over a bespoke symbolic framework. Plan a custom gate,
   status system, taxonomy, or doctrine only when a standard tool demonstrably fails the
-  specific risk. See `bespoke-software-policy` → **Proportionality: Earned vs. Manufactured
+  specific risk. See [[bespoke-software-policy/SKILL|bespoke-software-policy]] → **Proportionality: Earned vs. Manufactured
   Complexity**.
 - **Do not plan institutions before they exist.** Roles, stewards, owners, councils,
   approval tiers, and separation-of-duty rules are not planning placeholders. Plan them
   when there are real actors to fill them and a real boundary they enforce, not as
   front-loaded structure.
 - **Place state on the surface that owns it.** Ephemeral status, current-MVP plans,
-  roadmaps, and work state belong in `agent-memory` plan records, GitHub issues,
+  roadmaps, and work state belong in [[agent-memory/SKILL|agent-memory]] plan records, GitHub issues,
   milestones, and PRs — never dumped into a README or user-facing doc, which would require
   constant babysitting and staleness review. The plan's own living state stays in the plan
   record, not in the product's documentation.
@@ -499,7 +509,7 @@ Load on demand after the routing gate:
 
 ## Related Skills
 
-- `subagent-driven-development`: executes approved plans task by task.
-- `test-driven-development` and `test-guidelines`: proof design for code changes.
-- `git-guidelines`: checkpoint, commit, PR, and review workflow.
-- `agent-memory`: storage command surface for vault-owned plan records.
+- [[subagent-delegation/subagent-driven-development/SKILL|subagent-driven-development]]: executes approved plans task by task.
+- [[test-driven-development/SKILL|test-driven-development]] and [[test-guidelines/SKILL|test-guidelines]]: proof design for code changes.
+- [[git-guidelines/SKILL|git-guidelines]]: checkpoint, commit, PR, and review workflow.
+- [[agent-memory/SKILL|agent-memory]]: storage command surface for vault-owned plan records.

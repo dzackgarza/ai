@@ -1,17 +1,30 @@
 ---
 name: design-md
 description: Author/validate/export Google's DESIGN.md token spec files.
-version: 1.0.0
-author: Hermes Agent
 license: MIT
 metadata:
   hermes:
-    tags: [design, design-system, tokens, ui, accessibility, wcag, tailwind, dtcg, google]
-    related_skills: [popular-web-designs, design, excalidraw, architecture-diagram]
+    tags:
+    - design
+    - design-system
+    - tokens
+    - ui
+    - accessibility
+    - wcag
+    - tailwind
+    - dtcg
+    - google
+    related_skills:
+    - '[[popular-web-designs/SKILL|popular-web-designs]]'
+    - design
+    - excalidraw
+    - '[[architecture-diagram/SKILL|architecture-diagram]]'
+  version: 1.0.0
+  author: Hermes Agent
 ---
 # DESIGN.md Skill
 
-DESIGN.md is Google’s open spec (Apache-2.0, `google-labs-code/design.md`) for
+[[design/SKILL|DESIGN]].md is Google’s open spec (Apache-2.0, `google-labs-code/design.md`) for
 describing a visual identity to coding agents.
 One file combines:
 
@@ -36,9 +49,9 @@ regressions, and exports to Tailwind or W3C DTCG JSON.
 
 - User wants contrast / WCAG accessibility validation on their color palette
 
-For purely visual inspiration or layout examples, use `popular-web-designs` instead.
+For purely visual inspiration or layout examples, use [[popular-web-designs/SKILL|popular-web-designs]] instead.
 For *process and taste* when designing a one-off HTML artifact from scratch (prototype,
-deck, landing page, component lab), use `design`. This skill is for the *formal spec
+deck, landing page, component lab), use [[design/SKILL|design]]. This skill is for the *formal spec
 file* itself.
 
 ## File anatomy

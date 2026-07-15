@@ -15,22 +15,22 @@ not a pile of planning artifacts.
 This skill governs coding, testing, QC, and PR workflow.
 Before any stage that writes, reviews, tests, builds, or remediates code, load:
 
-- `policy-index`
-- `anti-slop`
+- [[policy-index/SKILL|policy-index]]
+- [[anti-slop/SKILL|anti-slop]]
 - `policy-index/references/red-flags.md`
 - `policy-index/references/runtime-control-flow.md`
-- `test-guidelines`
+- [[test-guidelines/SKILL|test-guidelines]]
 - `policy-index/references/test-proof-rules.md`
 
 Also load stage-specific skills instead of restating them:
 
-- `known-solution-first` before external tool, compiler, library, API, package-manager,
+- [[known-solution-first/SKILL|known-solution-first]] before external tool, compiler, library, API, package-manager,
   provider, or exact-error investigation.
-- `reality-grounded-debugging` and `systematic-debugging` when the request is about an
+- [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] and [[systematic-debugging/SKILL|systematic-debugging]] when the request is about an
   observed failure.
-- `fixing-slop` before fixing a slop finding, deleting/quarantining artifacts, or
+- [[fixing-slop/SKILL|fixing-slop]] before fixing a slop finding, deleting/quarantining artifacts, or
   making a false proof honest.
-- `pr-feedback-triage` and `git-guidelines` when acting on review comments or PRs.
+- [[pr-feedback-triage/SKILL|pr-feedback-triage]] and [[git-guidelines/SKILL|git-guidelines]] when acting on review comments or PRs.
 
 ## Central Invariant
 

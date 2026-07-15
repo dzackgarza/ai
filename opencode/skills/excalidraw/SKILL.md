@@ -1,19 +1,22 @@
 ---
 name: excalidraw
-description: "Hand-drawn Excalidraw JSON diagrams (arch, flow, seq)."
-version: 1.0.0
-author: Hermes Agent
+description: Hand-drawn [[excalidraw/SKILL|Excalidraw]] JSON diagrams (arch, flow, seq).
 license: MIT
-dependencies: []
 metadata:
   hermes:
-    tags: [Excalidraw, Diagrams, Flowcharts, Architecture, Visualization, JSON]
-    related_skills: []
-
+    tags:
+    - Excalidraw
+    - Diagrams
+    - Flowcharts
+    - Architecture
+    - Visualization
+    - JSON
+  version: 1.0.0
+  author: Hermes Agent
 ---
-# Excalidraw Diagram Skill
+# [[excalidraw/SKILL|Excalidraw]] Diagram Skill
 
-Create diagrams by writing standard Excalidraw element JSON and saving as `.excalidraw`
+Create diagrams by writing standard [[excalidraw/SKILL|Excalidraw]] element JSON and saving as `.excalidraw`
 files. These files can be drag-and-dropped onto [excalidraw.com](https://excalidraw.com)
 for viewing and editing.
 No accounts, no API keys, no rendering libraries -- just JSON.
@@ -28,7 +31,7 @@ Files can be opened at excalidraw.com or uploaded for shareable links.
 
 1. **Load this skill** (you already did)
 
-2. **Write the elements JSON** -- an array of Excalidraw element objects
+2. **Write the elements JSON** -- an array of [[excalidraw/SKILL|Excalidraw]] element objects
 
 3. **Save the file** using `write_file` to create a `.excalidraw` file
 
@@ -112,7 +115,7 @@ Canvas background is white.
 **Labeled shape (container binding)** -- create a text element bound to the shape:
 
 > **WARNING:** Do NOT use `"label": { "text": "..." }` on shapes.
-> This is NOT a valid Excalidraw property and will be silently ignored, producing blank
+> This is NOT a valid [[excalidraw/SKILL|Excalidraw]] property and will be silently ignored, producing blank
 > shapes. You MUST use the container binding approach below.
 
 The shape needs `boundElements` listing the text, and the text needs `containerId`
@@ -129,9 +132,9 @@ pointing back:
 
 - Works on rectangle, ellipse, diamond
 
-- Text is auto-centered by Excalidraw when `containerId` is set
+- Text is auto-centered by [[excalidraw/SKILL|Excalidraw]] when `containerId` is set
 
-- The text `x`/`y`/`width`/`height` are approximate -- Excalidraw recalculates them on
+- The text `x`/`y`/`width`/`height` are approximate -- [[excalidraw/SKILL|Excalidraw]] recalculates them on
   load
 
 - `originalText` should match `text`
@@ -242,7 +245,7 @@ Quick reference:
 - **Text contrast is CRITICAL** -- never use light gray on white backgrounds.
   Minimum text color on white: `#757575`
 
-- Do NOT use emoji in text -- they don’t render in Excalidraw’s font
+- Do NOT use emoji in text -- they don’t render in [[excalidraw/SKILL|Excalidraw]]’s font
 
 - For dark mode diagrams, see `references/dark-mode.md`
 

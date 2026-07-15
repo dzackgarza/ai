@@ -50,7 +50,7 @@ No GPU. Throughput ~3-4 pages/min for MinerU.
 
 ## Cron heartbeat pattern
 
-Long-running autonomous OpenCode sessions on the workstation are kept alive by a local
+Long-running autonomous [[opencode/SKILL|OpenCode]] sessions on the workstation are kept alive by a local
 Hermes cron job that pings them every 15 minutes (`no_agent=True`, just a `uvx`
 command). The ping tells the agent to continue work, re-read plans, and keep processing.
 This replaces the old system-crontab approach.

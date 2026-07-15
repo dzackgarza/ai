@@ -49,7 +49,7 @@ Type: class_definition
 class LatexBibliography(BaseModel, frozen=True):
 ```
 
-## 3. Structural Queries (AST-Grep)
+## 3. Structural Queries ([[ast-grep/SKILL|AST-Grep]])
 
 Use for finding consistent patterns across many source files.
 
@@ -70,7 +70,7 @@ Use for finding consistent patterns across many source files.
 
 ## Common Failures (RED FLAGS)
 
-- **`ast-grep` Panics**: If `probe query` fails with syntax or `MultipleNode` errors,
+- **[[ast-grep/SKILL|ast-grep]] Panics**: If `probe query` fails with syntax or `MultipleNode` errors,
   the pattern is too complex.
   **Fallback immediately** to `probe search` + `probe extract`.
 

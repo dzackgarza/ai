@@ -209,25 +209,25 @@ Gaps:
 
 Required when this skill applies:
 
-- `systematic-debugging` — hypothesis ledger, falsification, formal reasoning.
+- [[systematic-debugging/SKILL|systematic-debugging]] — hypothesis ledger, falsification, formal reasoning.
   External-owner problems require upstream search **before** the hypothesis ledger is
   populated from local probing. Record public sources as observations.
 
-- `reality-grounded-debugging` — command-output discipline, surface-classification
+- [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] — command-output discipline, surface-classification
   matrix. "Actual reality" for external tools includes public docs, issues, release
   notes, and examples before local artifact inference.
 
-- `llm-failure-modes` — cognitive failure modes including local-artifact laundering
+- [[llm-failure-modes/SKILL|llm-failure-modes]] — cognitive failure modes including local-artifact laundering
   and reverse-engineering before lookup.
 
-- `reviewing-llm-code` — pattern catalog entry for missing dependency-lookup /
+- [[reviewing-llm-code/SKILL|reviewing-llm-code]] — pattern catalog entry for missing dependency-lookup /
   known-solution checks.
 
 Load alongside:
 
-- `systematic-debugging` for building the hypothesis ledger after public sources are
+- [[systematic-debugging/SKILL|systematic-debugging]] for building the hypothesis ledger after public sources are
   checked.
-- `reality-grounded-debugging` for local integration inspection after the public
+- [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] for local integration inspection after the public
   contract is established.
-- `tool-provisioning-and-environment-hygiene` for provisioning rules when a known
+- [[tool-provisioning-and-environment-hygiene/SKILL|tool-provisioning-and-environment-hygiene]] for provisioning rules when a known
   solution requires installation (ephemeral vs project-managed vs persistent-isolated).

@@ -4,7 +4,7 @@ description: Use when formalizing mathematics, filling sorry placeholders in Lea
 ---
 # Aristotle: Automated Theorem Proving
 
-Aristotle formalizes and proves graduate/research-level mathematics using Lean 4.
+Aristotle formalizes and proves graduate/research-level mathematics using [[lean4/skills/lean4/SKILL|Lean 4]].
 
 ## When to Use
 

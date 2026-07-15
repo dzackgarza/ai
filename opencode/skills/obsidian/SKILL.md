@@ -1,23 +1,23 @@
 ---
 name: obsidian
-description: Use when working with Obsidian vaults -- reading, listing, searching, creating, or editing notes. Also covers Obsidian Flavored Markdown syntax (wikilinks, embeds, callouts, properties, tags, math, diagrams). For vault content syntax, consult references/.
+description: Use when working with [[obsidian/SKILL|Obsidian]] vaults -- reading, listing, searching, creating, or editing notes. Also covers [[obsidian/SKILL|Obsidian]] Flavored Markdown syntax (wikilinks, embeds, callouts, properties, tags, math, diagrams). For vault content syntax, consult references/.
 ---
-# Obsidian Vault
+# [[obsidian/SKILL|Obsidian]] Vault
 
-Filesystem-first Obsidian vault work: reading notes, listing notes, searching note
+Filesystem-first [[obsidian/SKILL|Obsidian]] vault work: reading notes, listing notes, searching note
 files, creating notes, appending content, and adding wikilinks.
 
 For mathematical vault stewardship, inbox intake, source-backed semantic parsing,
 provenance-sensitive incorporation, or note-taxonomy decisions, load
-`mathematical-obsidian-vault-steward` as the canonical behavioral policy.
+[[mathematical-obsidian-vault-steward/SKILL|mathematical-obsidian-vault-steward]] as the canonical behavioral policy.
 
 For extracting, transforming, and integrating mathematical knowledge from raw source
 material (chat logs, transcripts, handwritten notes, theorem sketches, failed proof
-attempts) into durable structured notes, load `knowledge-extraction`. This skill covers
+attempts) into durable structured notes, load [[knowledge-extraction/SKILL|knowledge-extraction]]. This skill covers
 what to preserve, how to classify claims, how to build dependency graphs and proof-gap
 ledgers, and how to reconcile new material with existing vault notes.
 
-This generic Obsidian skill covers vault file mechanics and content syntax.
+This generic [[obsidian/SKILL|Obsidian]] skill covers vault file mechanics and content syntax.
 
 ## Vault path
 
@@ -93,9 +93,9 @@ clearest safe option.
 Use `patch` for focused note changes when the current content gives you stable context.
 Prefer this over shell text rewriting.
 
-## Writing Obsidian Content
+## Writing [[obsidian/SKILL|Obsidian]] Content
 
-When creating or editing note content, use Obsidian Flavored Markdown syntax.
+When creating or editing note content, use [[obsidian/SKILL|Obsidian]] Flavored Markdown syntax.
 The canonical source is `references/obsidian-markdown.md`. Individual features are
 expanded in:
 
@@ -107,7 +107,7 @@ expanded in:
 
 ## Wikilinks
 
-Obsidian links notes with `[[Note Name]]` syntax.
+[[obsidian/SKILL|Obsidian]] links notes with `[[Note Name]]` syntax.
 When creating notes, use these to link related content.
 
 For the full wikilink syntax (display text, heading links, block links), see

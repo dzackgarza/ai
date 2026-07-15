@@ -1,7 +1,7 @@
 ---
 name: systematic-debugging
-description: 'Use when debugging any failure: forces visible hypothesis ledger, falsification,
-  contradiction handling, and proof before fixes.'
+description: 'Use when debugging any failure: forces visible hypothesis ledger, falsification, contradiction
+  handling, and proof before fixes.'
 license: MIT
 metadata:
   hermes:
@@ -12,9 +12,9 @@ metadata:
     - root-cause
     - investigation
     related_skills:
-    - test-driven-development
+    - '[[test-driven-development/SKILL|test-driven-development]]'
     - plan
-    - subagent-driven-development
+    - '[[subagent-delegation/subagent-driven-development/SKILL|subagent-driven-development]]'
 ---
 
 # Systematic Debugging
@@ -49,13 +49,13 @@ If the user has not asked for a durable repo artifact, use a temporary scratchpa
 The ledger must contain enough structure that another agent can inspect the reasoning, find contradictions, and continue without reading private chain-of-thought.
 If a conclusion is not written in the ledger with its evidence and inference path, it is not established.
 
-No fix is allowed that violates the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` — these are hard architectural boundaries.
+No fix is allowed that violates the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md` — these are hard architectural boundaries.
 
 ## When To Use
 
 Use this for any bug, failed test, build failure, performance anomaly, flaky behavior, unexpected runtime state, failed fix, or problem with multiple unknowns.
 
-Load `test-driven-development` before fixing a user-reported bug.
+Load [[test-driven-development/SKILL|test-driven-development]] before fixing a user-reported bug.
 If project rules require a committed red test before any fix, that rule controls.
 This skill governs the root-cause investigation after the failure is observable.
 
@@ -133,7 +133,7 @@ If a later observation contradicts an earlier claim, return to the contradiction
 ### External-Owner Gate (Preliminary)
 
 If the failure involves an external tool, compiler, library, framework, API, package
-manager, provider, or exact error message, load `known-solution-first` and resolve the
+manager, provider, or exact error message, load [[known-solution-first/SKILL|known-solution-first]] and resolve the
 public contract **before** populating the hypothesis ledger from local probing.
 
 Capture the minimal symptom, exact error, and version first (one command, not full
@@ -489,7 +489,7 @@ If any blank cannot be filled with command output, artifact paths, API responses
 
 A debugging task is not complete until the report includes the original failure command and raw output, the root cause at the owned boundary, the smallest reproducer or fixture, the surface added or used, the targeted verification result, and the global verification result.
 
-Load `reality-grounded-debugging` alongside for full command-output discipline, canonical-isolation standards, pipeline debugging rules, API/data debugging rules, and stop rules.
+Load [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] alongside for full command-output discipline, canonical-isolation standards, pipeline debugging rules, API/data debugging rules, and stop rules.
 
 ## Bias Countermeasures
 
@@ -578,7 +578,7 @@ These are process violations:
 - Replacing diagnostics with synthetic fallback output.
 - Editing tests to match current behavior before proving the test was wrong.
 - Treating mocks, probes, or monkey patches as evidence before proving the instrumentation itself observes the real path.
-- Violating any of the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md` (e.g. converting hard failures into graceful fallbacks, introducing runtime defaults, or masking missing dependencies).
+- Violating any of the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md` (e.g. converting hard failures into graceful fallbacks, introducing runtime defaults, or masking missing dependencies).
 - Replacing strict types with broad types to make diagnostics disappear.
 - Declaring root cause from a single compatible observation.
 - Continuing after a contradiction because a nearby workaround appears to pass.

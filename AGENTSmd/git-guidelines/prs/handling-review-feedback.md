@@ -17,24 +17,9 @@ tags:
 title: Handling Review Feedback
 ---
 
-Load `pr-feedback-triage`, `git-guidelines`, and `test-guidelines` before acting on PR
-review feedback.
+Returned PR feedback is owned by [[pr-feedback-triage/SKILL|pr-feedback-triage]].
+Load it before [[git-guidelines/SKILL|GitHub mechanics]] and load [[test-guidelines/SKILL|test-guidelines]] only when proof or tests enter the remediation.
 
-Reviewer comments require explicit disposition and substantive action.
-Do not acknowledge, resolve, hide, or dismiss feedback without either fixing it or
-leaving a visible evidence-backed disposition note.
-
-Before starting an A/B/C remediation cycle, assess current-PR necessity separately from
-factual truth. A true finding requires current-PR remediation when it affects the PR's
-claimed behavior, acceptance criteria, proof obligations, required checks, user-visible
-correctness, security, safety, data integrity, fail-loud/type/QC integrity, or a regression
-introduced or worsened by the PR.
-
-Use `Backlogged as minor technical debt` only when all of those conditions are absent,
-the concern is localized low-risk maintainability debt, batching it is more proportionate
-than another commit/push/re-review cycle, and the PR remains semantically complete and
-truthful without the change. Append it to an existing work-family debt issue or create one
-through the repository's issue route; reply on the review thread with the evidence, issue
-link, and why the current PR remains complete, then resolve it without role C or a
-remediation commit. Never use this route to defer a current acceptance criterion or proof
-gap.
+The canonical skill owns the role firewall, stage routing, reply contract, and convergence gate.
+It also owns the current-PR necessity gate and the evidence-backed minor-debt backlog route.
+Do not restate those procedures here or replace thread-local evidence with a top-level ledger or tracked review-log file.

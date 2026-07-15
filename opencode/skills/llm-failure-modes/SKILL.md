@@ -131,22 +131,22 @@ Load the relevant section for your context:
 
 ### Cross-References
 
-- **addressing-shallow-work** → Load alongside when investigating failure modes that
+- [[addressing-shallow-work/SKILL|addressing-shallow-work]] → Load alongside when investigating failure modes that
   produce structurally wrong code.
   The inability to recognize when an approach is structurally incapable of correctness —
   even without empirical verification — is a failure mode distinct from “didn’t test
   enough.” The regex-on-HTML example (flattening a semantic tree into bytes before
   searching) illustrates fluency masking structural wrongness.
 
-- **anti-slop** → Load alongside when the failure mode produces surface-level quality
+- [[anti-slop/SKILL|anti-slop]] → Load alongside when the failure mode produces surface-level quality
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
   All implementation work influenced by this skill is subject to the
-  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)
+  [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]]
   in `policy-index/SKILL.md` as non-negotiable hard constraints — no runtime defaults,
   fallbacks, mocks, or optional critical dependencies.
 
-- **reviewing-llm-code pattern catalog** →
+- **[[reviewing-llm-code/SKILL|reviewing-llm-code]] pattern catalog** →
   [../reviewing-llm-code/references/pattern-catalog.md](../reviewing-llm-code/references/pattern-catalog.md)
   is the canonical catalog for concrete code, test, QC, and documentation patterns that
   instantiate these failure modes.
@@ -154,7 +154,7 @@ Load the relevant section for your context:
   developer-controlled assertions, fallback laundering, no-op behavior, QC appeasement
   code, and recipe bypasses.
 
-- **reviewing-subagent-work** → Load alongside when designing review processes that must
+- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] → Load alongside when designing review processes that must
   detect the failures cataloged in this skill.
   The Synthesis Gate forces content-level evaluation; structural-wrongness recognition
   is its prerequisite gate.

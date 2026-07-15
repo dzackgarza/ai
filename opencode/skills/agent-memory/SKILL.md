@@ -77,7 +77,7 @@ Use repo-local files only as temporary scratchpads while working through in-the-
 investigation. Before handoff, delete the scratchpad or promote its durable content:
 
 - reusable agent behavior, corrections, traps, and decisions -> typed memories;
-- plans, phase state, queues, and residue ledgers -> `plan` records;
+- plans, phase state, queues, and residue ledgers -> [[plan/SKILL|plan]] records;
 - durable product/project doctrine, architecture rationale, and readable roadmap/proof
   projections -> wiki;
 - active public user stories, roadmap nodes, feature contracts, proof burdens,
@@ -295,7 +295,7 @@ Why does it matter?
 
 - `references/opencode-memory-design-notes.md` records durable design ideas salvaged
   from older Claude-local assistant and hook systems.
-  Use it when designing or reviewing OpenCode memory/todo tooling; do not reintroduce
+  Use it when designing or reviewing [[opencode/SKILL|OpenCode]] memory/todo tooling; do not reintroduce
   the retired hook/session implementations.
 
 ## Transforming Notes into Memory

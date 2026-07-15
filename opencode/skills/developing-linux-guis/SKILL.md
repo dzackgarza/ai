@@ -5,7 +5,7 @@ description: Build GUI applications for Linux desktop environments using AGS. Us
 # Developing Linux GUIs
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 ## Core Policy
 
@@ -397,7 +397,7 @@ python tests/visual/scripts/compare-image.py \
 kill "$AGS_PID"
 ```
 
-## Visual Oracle Layers
+## Visual [[oracle/SKILL|Oracle]] Layers
 
 Raw pixel diffs are brittle.
 Use layered oracles:
@@ -499,7 +499,7 @@ visual tests.
 Do not block development on Tier 3 if CI cannot provide Wayland, but require it before
 claiming the GUI is correct.
 
-## Required justfile Recipes
+## Required [[justfile/SKILL|justfile]] Recipes
 
 Every AGS project must expose these recipes:
 
