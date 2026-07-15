@@ -181,7 +181,7 @@ def fragment_meta(
 
 
 def include_block(md: Path) -> str:
-    return f"```{{.include}}\n{md.resolve()}\n```\n\n"
+    return f"```{{.include format=markdown+wikilinks_title_after_pipe}}\n{md.resolve()}\n```\n\n"
 
 
 def children(directory: Path) -> list[Path]:

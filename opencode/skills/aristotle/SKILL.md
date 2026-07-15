@@ -16,6 +16,14 @@ Aristotle formalizes and proves graduate/research-level mathematics using [[lean
 
 - Find counterexamples to false statements
 
+## Prompt Style
+
+Express prompts in natural language. Describe the formalization goal plainly and let the model leverage its own training to decide how to achieve it — which tactics to use, how to structure the proof, and which Lean constructs fit.
+
+Do **not** pre-specify Lean constructs, tactic sequences, or proof structure in the prompt unless the model is clearly stuck after a failed attempt. Over-constraining the prompt with implementation detail competes with the model's own judgment and typically produces worse results than a clear plain-English description of the mathematical goal.
+
+Only introduce further constraints — specific Lean constructs, tactic hints, intermediate lemmas — as a fallback when the model has demonstrably failed on the natural-language version.
+
 ## Core Workflow
 
 ### 1. Submit a Project
