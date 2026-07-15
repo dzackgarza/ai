@@ -42,6 +42,6 @@ the OpenCode workflow as a thin A/B/C harness adapter.
     symlinks at the upstream PR worktree validates 179 installed skills.
   - Lychee checks 1,291 links (317 unique): 1,050 accepted, 241 excluded, 0 errors.
   - node --check opencode/workflows/pr-feedback-triage.js succeeds.
-- [ ] **Installation dependency before ready-for-review**
-  - Merge upstream #272 and update the installed ~/ai-review-ci checkout so this
-    branch's real pre-push gate exercises the same assembled tree.
+- [x] **Installation dependency before ready-for-review**
+  - Upstream #272 is merged and the installed ~/ai-review-ci checkout is updated to
+    c688812, so this branch's real pre-push gate exercises the assembled tree.
