@@ -408,7 +408,7 @@ check-skill-validity:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    uvx --from git+https://github.com/agentskills/agentskills#subdirectory=skills-ref python - <<'PY'
+    uvx --from skills-ref==0.1.1 python - <<'PY'
     import os
     from pathlib import Path
 
