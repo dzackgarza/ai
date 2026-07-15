@@ -30,8 +30,10 @@ throwaway spike does not require a project vault merely because it occurs in a r
 
 When establishing or using project memory, run the agent-memory doctor check:
 `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor`.
-If doctor reports issues that block the requested memory operation, run the
-**vault-maintenance workflow** with `agent-memory` or report the blocker.
+If doctor reports a vault issue relevant to the requested memory operation, dispatch a
+dedicated vault-maintenance subagent. It owns inspection, repair, validation, commit, and
+push of affected vault paths; the parent continues unrelated work rather than treating
+that maintenance as a blocker. A dirty vault worktree alone is not a dispatch trigger.
 Vault defects unrelated to the requested object do not block direct work.
 
 The vault-maintenance workflow includes reconciling harness plan captures into real

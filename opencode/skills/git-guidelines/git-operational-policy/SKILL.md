@@ -1,28 +1,12 @@
 ---
 name: git-operational-policy
-description: Use when performing any git or GitHub operation — staging, committing,
-  branching, pushing, PRs, code review, issues, auth, repo management, or deleting
-  files. Consolidated entry point for all git skills.
+description: Use before Git or GitHub work for staging, commit, deletion-safety, checkpoint, and push invariants.
 ---
-# Git Guidelines
+# Git Operational Policy
 
-## Structure
-
-This skill is the consolidated entry point for all git and GitHub operations.
-Reference docs within this skill:
-
-- `auth.md` — GitHub authentication (tokens, SSH, gh CLI, API access)
-- `pr-workflow.md` — branch, commit, push, CI monitoring, merge lifecycle
-- `code-review.md` — performing code reviews on local changes and PRs
-- `creating-prs.md` — PR worker guide (contracts, review readiness, feedback handling)
-- `reviewing-prs.md` — field guide for reviewing AI-assisted code
-- `issues.md` — issue management (view, create, manage, triage)
-- `repo-management.md` — clone, create, fork, settings, releases, workflows
-- `scripts/extract_unresolved_issues/` — PR review scanning tool (see PR Review Workflow below)
-
-The former separate skills [[git-guidelines/github-auth/SKILL|github-auth]], [[git-guidelines/github-pr-workflow/SKILL|github-pr-workflow]], [[git-guidelines/github-code-review/SKILL|github-code-review]],
-[[git-guidelines/github-issues/SKILL|github-issues]], and [[git-guidelines/github-repo-management/SKILL|github-repo-management]] have been consolidated here.
-Each old location remains as a redirect stub.
+This is the cross-cutting safety baseline for every route selected by [[git-guidelines/SKILL|the Git router]].
+It owns checkpointing, staging, commit, deletion-safety, and push invariants.
+Authentication, repositories, issues, pull requests, review, and returned feedback belong to their routed leaves.
 
 ## The Edit Workflow (Mandatory)
 
@@ -275,97 +259,10 @@ Load that skill before using GitHub mechanics; it owns collection, policy-routed
 This operational leaf supplies only staging, commit, push, authentication, and API mechanics.
 Do not restate the feedback state machine here, create a top-level disposition ledger, or create a tracked review-log file.
 
-## Issue Workflow
+## Issue work
 
-### Owned Repo Improvement Loop
-
-For repos owned by this system, observed defects should not remain as chat residue or
-private notes.
-If an app, tool, plugin, QC gate, or agent workflow has a small observed error,
-inefficiency, false green, confusing edge case, or recurring paper cut, do one of these
-before handoff:
-
-- fix it in the current coherent work unit and commit the fix;
-- file a GitHub issue on the owning repo with evidence and concrete expected behavior;
-- if ownership or scope is ambiguous, ask the user where to file it.
-
-Do not file speculative bugs. Do not create issues for vague dissatisfaction without an
-observed example. Do not bury observed owned-repo defects only in memory; memory can note
-the durable lesson, but the actionable project gap belongs on GitHub.
-
-### Filing Issues
-
-**All issues must be labeled immediately upon creation.**
-
-Use
-`gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"`
-
-For roadmap, feature, PRD, or cross-agent planning issues, first load
-`plan/references/externalization.md`. Create story-shaped issue nodes, use native
-sub-issues for parent/child tree edges, use dependencies only for blockers, assign the
-GitHub Milestone that owns the delivery slice, and avoid turning a wiki page or issue body
-into a second live tracker.
-
-**Mandatory Issue Rules:**
-
-1. **Deep description**: Explain exactly what is happening or missing.
-
-2. **Proof**: Include relevant logs, outputs, error traces, or code snippets that PROVE
-   the issue exists. Provide as many clear examples as possible.
-
-3. **Concrete Expectations**: Describe new designs, specs, and expected behavior.
-   Include TDD-style pseudocode showing what the expected new behavior looks like.
-   Do not list “benefits”.
-
-4. **Informative Only**: Use plain, technical language.
-   No marketing or selling language.
-
-5. **No Implementation Code**: Do NOT attempt to write the actual code to fix the
-   problem in the issue body.
-   The person filing the issue does NOT decide HOW to fix it; they provide data to more
-   specialized design and triage agents.
-
-6. **No Plans**: Do not include a step-by-step “plan” to fix the issue.
-   That is a separate task.
-   High-level suggestions for phases are permitted.
-
-7. **No Time Estimates**: NEVER include time estimates.
-
-**Minimal Issue Template:**
-
-Create a local `.md` file for the body and pass it to `gh issue create --body-file`:
-
-```markdown
-# Description
-
-<Deep description of the problem or feature>
-
-# Evidence
-
-<Logs, outputs, or code proving the issue exists. Clear examples.>
-
-# Expected Behavior
-
-<Concrete expectations. TDD-style pseudocode.>
-
-# Suggested Phases (Optional)
-
-<High-level suggestions for phases, but no detailed implementation plan.>
-```
-
-### Available Labels
-
-- `bug`: Observed bugs, failures, or incorrect behavior.
-
-- `enhancement`: Feature requests, improvements, or design ideas.
-
-- `documentation`: Improvements or additions to documentation.
-
-**Mandatory**: If an observed owned-repo defect, inefficiency, false green, or recurring
-paper cut cannot be fixed in the current coherent work unit, log it as an issue on the
-owning repo.
-Do not file speculative concerns; frame observed improvement ideas as `enhancement` when
-they are not bugs.
+Route issue creation, triage, governance, and writing rules to [[git-guidelines/github-issues/SKILL|GitHub issues]].
+This operational baseline does not duplicate that procedure.
 
 ## Common Rationalizations
 

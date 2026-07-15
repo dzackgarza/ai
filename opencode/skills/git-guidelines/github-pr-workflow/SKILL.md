@@ -16,6 +16,8 @@ metadata:
   author: Hermes Agent
 ---
 
-> **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
-> Load [[git-guidelines/SKILL|git-guidelines]] and reference `pr-workflow.md`:
-> [git-guidelines/pr-workflow.md](file:///home/dzack/ai/opencode/skills/git-guidelines/pr-workflow.md)
+# GitHub Pull-Request Workflow
+
+Load [[git-guidelines/git-operational-policy/SKILL|the Git operational baseline]].
+Use [[git-guidelines/pr-workflow|the branch-to-merge lifecycle]] and [[git-guidelines/creating-prs|the issue-linked PR claim-map contract]].
+When review feedback returns, hand off to [[pr-feedback-triage/SKILL|pr-feedback-triage]] instead of restating its state machine here.

@@ -14,7 +14,7 @@ Naming: `feat/description`, `fix/description`, `refactor/description`, `docs/des
 
 ## 2. Making Commits
 
-Use the standard edit workflow (see SKILL.md → Edit Workflow), then:
+Use [[git-guidelines/git-operational-policy/SKILL#The Edit Workflow (Mandatory)|the standard edit workflow]], then:
 
 ```bash
 git add src/auth.py src/models/user.py tests/test_auth.py
@@ -38,6 +38,9 @@ git push -u origin HEAD
 # Externalize the finalized plan into a GitHub issue tree and milestone scope first.
 # Prepare .pr/PR_BODY.md as a claim map for the selected issue set or subtree.
 # See creating-prs.md for the admission gate and issue-linked claim-map format.
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 gh pr create \
   --title "feat: add JWT-based user authentication" \
   --body-file .pr/PR_BODY.md \
@@ -54,6 +57,9 @@ Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base d
 **Without gh:**
 ```bash
 BRANCH=$(git branch --show-current)
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 
 jq -n \
   --arg title "feat: add JWT-based user authentication" \
@@ -187,6 +193,13 @@ Re-check CI status using the commands from Section 4 above.
 
 ## 6. Merging
 
+Before merge, require all mandatory checks to pass and every review finding to have a
+visible disposition. Route only findings that affect the current PR's claim, acceptance or
+proof obligations, required checks, user-visible correctness, hard policy, or PR-caused
+regressions through another remediation cycle. A true localized low-risk maintainability
+finding may instead follow `pr-feedback-triage`'s `Backlogged as minor technical debt`
+route, with a linked batched debt issue and evidence that the PR remains complete.
+
 **With gh:**
 ```bash
 # Squash merge + delete branch
@@ -222,17 +235,24 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`.
 
 ## 7. Complete Workflow Example
 
+This example assumes the repository is governed by `itree` and has an existing open
+grouping parent. For a repository explicitly outside `itree` governance, use the raw
+creation route in `issues.md` instead. For milestone-and-ledger creation, use the canonical
+[[git-guidelines/github-issues/SKILL#released-milestone-and-ledger-route|released milestone-and-ledger route]].
+
 ```bash
 # 1. Start from clean main
 git checkout main && git pull origin main
 
 # 2. Branch
 git checkout -b fix/login-redirect-bug
-# 3. Externalize the finalized plan into a GitHub issue tree and milestone scope.
-#    Create or update .pr/PR_BODY.md as the issue-linked claim map before implementation
+# 3. Externalize the finalized plan into the existing issue tree beneath an explicit open
+#    grouping parent. Create .pr/PR_BODY.md as the issue-linked claim map before implementation
 #    defines its own success criteria. Include Closes only for full claims and Refs for
 #    parents, partial claims, and deferred work.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 git add .pr/PR_BODY.md
 git commit -m "Add PR tracking contract"
 git push -u origin HEAD

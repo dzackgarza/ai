@@ -1,26 +1,34 @@
 ---
 name: vault-maintenance
-description: Use when an [[agent-memory/SKILL|agent-memory]] vault has staged or unstaged changes, commit failures, validation failures, or suspected vault corruption.
+description: Use when an [[agent-memory/SKILL|agent-memory]] command has a commit or validation failure, the vault is malformed, or the user explicitly requests vault recovery. Do not trigger on unrelated dirty paths.
 ---
 
 # Vault Maintenance
 
-The vault should be committed at all times.
-Any staged or unstaged vault change outside the currently executing recovery is an ephemeral error state, not ordinary work to preserve on a long-lived branch.
+Use this workflow only after:
 
-Before normal `agent-memory add`, `update`, `delete`, `search`, or [[plan/SKILL|plan]] work resumes, read the relevant reference workflow:
+- an `agent-memory` command reports a commit failure;
+- `agent-memory doctor` or `agent-memory plan validate` reports a vault problem; or
+- the user explicitly requests vault repair.
 
-- [Check Vault State](references/check-vault-state.md)
-- [Repair Vault Errors](references/repair-vault-errors.md)
-- [Commit Vault Work](references/commit-vault-work.md)
+## Dispatch
 
-## Default Disposition
+Do not merely report or ignore a recovery trigger: dispatch one dedicated vault-maintenance subagent. It owns inspection, repair, validation, commit, and push of the affected vault paths. Continue unrelated parent work instead of treating that recovery as a blocker.
 
-Uncommitted vault state must become one of:
+A dirty vault worktree alone is not a recovery condition. Normal `agent-memory` CRUD is path-scoped: preserve unrelated changes and continue normal memory work.
 
-- a validated vault commit;
-- a corrected vault commit after repair;
-- a surfaced blocker with the exact dirty paths and failed validation command.
+During actual recovery, read the relevant reference workflow:
 
-Do not stash, discard, reset, or silently ignore vault changes.
-Do not continue normal memory work while the vault is dirty unless the active operation itself is the recovery.
+- [[vault-maintenance/references/check-vault-state|Check Vault State]]
+- [[vault-maintenance/references/repair-vault-errors|Repair Vault Errors]]
+- [[vault-maintenance/references/commit-vault-work|Commit Vault Work]]
+
+## Recovery Disposition
+
+The delegated subagent must leave the observed failure as one of:
+
+- a validated, pushed vault commit;
+- a corrected, validated, pushed vault commit after repair; or
+- an escalated exact-path conflict after identifying the competing authored changes.
+
+Do not stash, discard, reset, or silently ignore changes involved in the actual failure. Do not treat unrelated dirty paths as a blocker.

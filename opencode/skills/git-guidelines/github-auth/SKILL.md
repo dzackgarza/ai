@@ -17,6 +17,8 @@ metadata:
   author: Hermes Agent
 ---
 
-> **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
-> Load [[git-guidelines/SKILL|git-guidelines]] and reference `auth.md`:
-> [git-guidelines/auth.md](file:///home/dzack/ai/opencode/skills/git-guidelines/auth.md)
+# GitHub Authentication
+
+Load [[git-guidelines/git-operational-policy/SKILL|the Git operational baseline]], then use [[git-guidelines/auth|the authentication mechanics]].
+This leaf owns credentials, SSH, HTTPS, and `gh` login.
+Return to [[git-guidelines/SKILL|the Git router]] for repository, issue, PR, or review work.

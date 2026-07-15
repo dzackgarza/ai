@@ -96,7 +96,7 @@ Watch for code-level laundering: hard-coded consumer names, support for local re
 # When Acting on Review Feedback
 
 Returned feedback is governed by [[pr-feedback-triage/SKILL|pr-feedback-triage]].
-That skill is the single source for collection, policy-routed disposition, remediation, thread-local evidence, resolution, and convergence.
+That skill is the single source for collection, policy-routed disposition, current-PR necessity, minor-debt backlog, remediation, thread-local evidence, resolution, and convergence.
 The finding's own thread or comment surface is the audit trail; do not invent a top-level disposition ledger or tracked review-log file.
 This review guidance owns the completion judgment, not a second feedback-handling state machine.
 

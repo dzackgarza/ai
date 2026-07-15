@@ -293,7 +293,21 @@ alternatives, or manually maintained histories of PR-body edits as progress.
 > template are in the **Jules skill → PR Contract** section.
 > That section is the authoritative source for Jules-initiated PRs.
 
-For nontrivial non-Jules PRs, use the plan-to-issue-tree sequence first:
+For nontrivial non-Jules PRs, use the plan-to-issue-tree sequence first.
+
+Classify the target repository before creating public execution state. If it has an
+`itree` root or assigns execution state to `itree`, use the governed route below. If it is
+not explicitly non-governed but has no root, initialize or repair its tree before
+continuing. Use raw GitHub creation only for a repository explicitly outside `itree`
+governance. Follow the current [[git-guidelines/github-issues/SKILL#Filing issues|initialization and repair route]]
+for the exact `init`, `doctor`, `doctor --explain`, and `triage` commands.
+
+For an `itree`-governed repository, `itree new` and the canonical
+[[git-guidelines/github-issues/SKILL#Released milestone-and-ledger route|released milestone-and-ledger route]] are
+current. Do not replace the released milestone command with a manual governed substitute.
+
+Only for a repository explicitly outside `itree` governance, use the raw GitHub
+sequence:
 
 ```bash
 # Create or select the GitHub Milestone object for this delivery slice.
@@ -594,22 +608,31 @@ whether the tests are tautological.
 
 ## Minimal shell workflow
 
-A practical sequence:
+This current governed workflow assumes an existing open grouping parent. For milestone and
+ledger creation, use the canonical
+[[git-guidelines/github-issues/SKILL#Released milestone-and-ledger route|released milestone-and-ledger route]]. For a
+repository explicitly outside `itree` governance, use the raw GitHub sequence in the
+Required workflow above instead.
 
 ```bash
-# 0. externalize the finalized plan into a GitHub issue tree and milestone scope
+# 0. externalize the finalized plan into an existing issue tree
 mkdir -p .pr
-$EDITOR .pr/ISSUE_ROOT.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/ISSUE_W1.md
-# Create the milestone if it does not already exist.
-gh api repos/<OWNER>/<REPO>/milestones -f title="<milestone>" -f state=open -f description="<issue-tree scope>"
-gh issue create --title "<story-shaped outcome>" --body-file .pr/ISSUE_ROOT.md --label enhancement --milestone "<milestone>"
-gh issue create --title "<foundation>" --body-file .pr/ISSUE_F1.md --label enhancement --milestone "<milestone>" --parent <ISSUE_ROOT_NUMBER>
-gh issue create --title "<workstream>" --body-file .pr/ISSUE_W1.md --label enhancement --milestone "<milestone>" --parent <ISSUE_ROOT_NUMBER>
-# Attach existing issues as sub-issues when needed, and encode blockers separately.
-gh issue edit <ISSUE_ROOT_NUMBER> --add-sub-issue <CHILD_ISSUE_NUMBER>
-gh issue edit <ISSUE_W1_NUMBER> --add-blocked-by <ISSUE_F1_NUMBER>
+
+# Create each work unit under the existing grouping parent.
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <OWNER>/<REPO> "<foundation>" \
+  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
+  --body-file .pr/ISSUE_F1.md
+gh issue edit <ISSUE_F1_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <OWNER>/<REPO> "<workstream>" \
+  --under <OWNER>/<REPO>#<DELIVERY_PARENT> \
+  --body-file .pr/ISSUE_W1.md
+gh issue edit <ISSUE_W1_NUMBER> --repo <OWNER>/<REPO> --add-label enhancement
+gh issue edit <ISSUE_W1_NUMBER> --repo <OWNER>/<REPO> --add-blocked-by <ISSUE_F1_NUMBER>
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <OWNER>/<REPO>
 
 # 1. create tracked PR claim map from the selected issue set before implementation
 $EDITOR .pr/PR_BODY.md   # include Closes only for full claims; use Refs for parents/partials/deferred work

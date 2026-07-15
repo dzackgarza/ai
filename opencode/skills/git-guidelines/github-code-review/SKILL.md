@@ -16,6 +16,8 @@ metadata:
   author: Hermes Agent
 ---
 
-> **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
-> Load [[git-guidelines/SKILL|git-guidelines]] and reference `code-review.md`:
-> [git-guidelines/code-review.md](file:///home/dzack/ai/opencode/skills/git-guidelines/code-review.md)
+# GitHub Code Review
+
+Load [[git-guidelines/git-operational-policy/SKILL|the Git operational baseline]].
+Use [[git-guidelines/code-review|the GitHub review mechanics]] for diffs and inline comments and [[git-guidelines/reviewing-prs|the PR review field guide]] for review judgment.
+Returned feedback on an active PR is a different phase owned by [[pr-feedback-triage/SKILL|pr-feedback-triage]].

@@ -1,6 +1,6 @@
 # Check Vault State
 
-Use this before deciding what kind of recovery is needed.
+Use this only after a concrete recovery trigger: an `agent-memory` commit or validation failure, or an explicit vault-repair request. A dirty worktree alone does not trigger recovery. The detecting agent dispatches a dedicated vault-maintenance subagent; that subagent owns this workflow and pushes the completed repair.
 
 1. Identify the vault path from the current repository:
 
@@ -8,7 +8,7 @@ Use this before deciding what kind of recovery is needed.
    agent-memory inspect paths --scope both --format json
    ```
 
-2. Inspect Git state directly:
+2. Inspect Git state to identify paths involved in the observed failure:
 
    ```bash
    git -C <vault> status --short
@@ -16,7 +16,7 @@ Use this before deciding what kind of recovery is needed.
    git -C <vault> diff --cached --stat
    ```
 
-3. Inspect the touched content, not only filenames:
+3. Inspect the affected content, not only filenames:
 
    ```bash
    git -C <vault> diff
@@ -30,5 +30,4 @@ Use this before deciding what kind of recovery is needed.
    agent-memory plan validate
    ```
 
-Report the exact dirty paths and failing command if these commands cannot run.
-A missing dependency, malformed card, broken index, or commit failure is still a vault recovery task; it is not permission to resume normal memory work.
+Report the affected paths and failing command to the parent after inspection. Preserve unrelated paths; they do not block normal memory work.

@@ -16,6 +16,7 @@ metadata:
   author: Hermes Agent
 ---
 
-> **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
-> Load [[git-guidelines/SKILL|git-guidelines]] and reference `repo-management.md`:
-> [git-guidelines/repo-management.md](file:///home/dzack/ai/opencode/skills/git-guidelines/repo-management.md)
+# GitHub Repository Management
+
+Load [[git-guidelines/git-operational-policy/SKILL|the Git operational baseline]], then use [[git-guidelines/repo-management|the repository-management mechanics]].
+This leaf owns clone, create, fork, remote, repository-setting, release, and workflow operations.

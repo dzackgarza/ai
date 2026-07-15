@@ -21,4 +21,5 @@ Returned PR feedback is owned by [[pr-feedback-triage/SKILL|pr-feedback-triage]]
 Load it before [[git-guidelines/SKILL|GitHub mechanics]] and load [[test-guidelines/SKILL|test-guidelines]] only when proof or tests enter the remediation.
 
 The canonical skill owns the role firewall, stage routing, reply contract, and convergence gate.
+It also owns the current-PR necessity gate and the evidence-backed minor-debt backlog route.
 Do not restate those procedures here or replace thread-local evidence with a top-level ledger or tracked review-log file.

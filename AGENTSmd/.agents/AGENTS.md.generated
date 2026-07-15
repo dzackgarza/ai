@@ -573,10 +573,14 @@ GitHub Milestone scope, and linked PR claim map.
 To manage the issue tree and discover traversal order programmatically, use the `itree` tool from `dzackgarza/itree` via `uvx`. Run `uvx --from git+https://github.com/dzackgarza/itree itree help model` for the full organization model; a work unit is always a leaf (checklist and proof live in its body, never in child issues).
 - `uvx --from git+https://github.com/dzackgarza/itree itree next OWNER/REPO` to find the next open work unit — the single next task, not a task enclosed within one.
 - `uvx --from git+https://github.com/dzackgarza/itree itree doctor OWNER/REPO` to verify the tree structure.
-- `uvx --from git+https://github.com/dzackgarza/itree itree new OWNER/REPO "Title" --under OWNER/REPO#PARENT` to file a new work unit under a grouping issue (omit `--under` to be shown where it fits).
+- `uvx --from git+https://github.com/dzackgarza/itree itree new OWNER/REPO "Title" --under OWNER/REPO#PARENT` to file a new work unit under a grouping issue (omit `--under` to receive non-mutating placement guidance).
 - `uvx --from git+https://github.com/dzackgarza/itree itree absorb OWNER/REPO#SOURCE --into OWNER/REPO#UNIT` to merge sub-PR content into a work unit verbatim.
 - `uvx --from git+https://github.com/dzackgarza/itree itree attach OWNER/REPO#PARENT OWNER/REPO#CHILD` to attach a child issue.
 - `uvx --from git+https://github.com/dzackgarza/itree itree move OWNER/REPO#CHILD --under OWNER/REPO#PARENT` to reparent or reorder.
+- `uvx --from git+https://github.com/dzackgarza/itree itree detach OWNER/REPO#PARENT OWNER/REPO#CHILD` to detach a child from its current parent.
+
+For governed milestone-and-ledger creation, load `git-guidelines` and use its canonical
+released route; do not replace it with a manual governed sequence.
 
 For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.
 
@@ -588,6 +592,7 @@ Returned PR feedback is owned by \[\[pr-feedback-triage/SKILL\|pr-feedback-triag
 Load it before \[\[git-guidelines/SKILL\|GitHub mechanics\]\] and load \[\[test-guidelines/SKILL\|test-guidelines\]\] only when proof or tests enter the remediation.
 
 The canonical skill owns the role firewall, stage routing, reply contract, and convergence gate.
+It also owns the current-PR necessity gate and the evidence-backed minor-debt backlog route.
 Do not restate those procedures here or replace thread-local evidence with a top-level ledger or tracked review-log file.
 
 ### What Qualifies as a PR
@@ -727,7 +732,7 @@ Watch for code-level laundering: hard-coded consumer names, support for local re
 ## When Acting on Review Feedback
 
 Returned feedback is governed by \[\[pr-feedback-triage/SKILL\|pr-feedback-triage\]\].
-That skill is the single source for collection, policy-routed disposition, remediation, thread-local evidence, resolution, and convergence.
+That skill is the single source for collection, policy-routed disposition, current-PR necessity, minor-debt backlog, remediation, thread-local evidence, resolution, and convergence.
 The finding’s own thread or comment surface is the audit trail; do not invent a top-level disposition ledger or tracked review-log file.
 This review guidance owns the completion judgment, not a second feedback-handling state machine.
 
@@ -960,8 +965,10 @@ throwaway spike does not require a project vault merely because it occurs in a r
 
 When establishing or using project memory, run the agent-memory doctor check:
 `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor`.
-If doctor reports issues that block the requested memory operation, run the
-**vault-maintenance workflow** with `agent-memory` or report the blocker.
+If doctor reports a vault issue relevant to the requested memory operation, dispatch a
+dedicated vault-maintenance subagent. It owns inspection, repair, validation, commit, and
+push of affected vault paths; the parent continues unrelated work rather than treating
+that maintenance as a blocker. A dirty vault worktree alone is not a dispatch trigger.
 Vault defects unrelated to the requested object do not block direct work.
 
 The vault-maintenance workflow includes reconciling harness plan captures into real
