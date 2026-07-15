@@ -11,6 +11,12 @@ agent handoffs. Distilled from a completed agent-run program (an open-problem
 counterexample taken through discovery, independent audits, Lean formalization, and a
 mathlib PR handoff: `github.com/j2d9w5xtjn-png/GrothendieckRankP2`).
 
+Before substantive work, read
+[[mathematical-research/references/worked-example|worked-example]] — the concrete
+program these rules come from, kept concrete on purpose: the working register is
+socle classes, power words, and Gröbner normal forms, and every rule below is
+illustrated there with the real mathematics that motivated it.
+
 ## Core invariants (always on)
 
 1. **Every claim is typed, scoped, and caveated.** One machine-readable claim ledger
@@ -43,8 +49,10 @@ mathlib PR handoff: `github.com/j2d9w5xtjn-png/GrothendieckRankP2`).
 
 | You are about to… | Read |
 |---|---|
+| Start substantive work in this skill; calibrate to the research register | [[mathematical-research/references/worked-example|worked-example]] |
 | State, promote, or demote a claim; write a report or results section | [[mathematical-research/references/claim-status|claim-status]] |
 | Launch a search, sweep, or verification run; write an audit script | [[mathematical-research/references/computation|computation]] |
+| Write Macaulay2/Lean/Z3 verification or search code | [[mathematical-research/references/computer-algebra-patterns|computer-algebra-patterns]] |
 | Bank a result; review another agent's push; check a literature theorem | [[mathematical-research/references/adversarial-audit|adversarial-audit]] |
 | End a session; enter a program; write or receive a handoff | [[mathematical-research/references/handoff|handoff]] |
 | Organize the repo; stage manuscripts; formalize; publish | [[mathematical-research/references/program-shape|program-shape]] |

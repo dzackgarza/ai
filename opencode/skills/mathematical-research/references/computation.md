@@ -4,7 +4,8 @@ Owner file for search, certificate, and verification computations in a research
 program. Parent: [[mathematical-research/SKILL|mathematical-research]]. Tool selection
 (which solver/CAS) belongs to [[theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
 [[integer-programming/SKILL|integer-programming]], and [[sagemath/SKILL|sagemath]];
-this file owns the protocol around any of them.
+this file owns the protocol around any of them. Concrete M2/Lean/Z3 idioms:
+[[mathematical-research/references/computer-algebra-patterns|computer-algebra-patterns]].
 
 ## Before launching anything
 

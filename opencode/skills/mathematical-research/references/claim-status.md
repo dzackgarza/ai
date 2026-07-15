@@ -2,6 +2,8 @@
 
 Owner file for separating proved statements, computational results, conjectures, and
 refuted claims across sessions and agents. Parent: [[mathematical-research/SKILL|mathematical-research]].
+Real ledger rows and the traps this vocabulary exists for:
+[[mathematical-research/references/worked-example|worked-example]].
 
 ## The claim ledger
 

@@ -38,7 +38,9 @@ even when the reader ignores instructions.
 2. What this session actually advanced (numbered, each with its claim-ledger id).
 3. Numbered reading order over the bundle.
 4. A one-page self-contained proof sketch of the headline result — the next agent
-   should be able to re-derive it without opening any other file.
+   should be able to re-derive it without opening any other file (the exponent-8
+   page in [[mathematical-research/references/worked-example|worked-example]] is the
+   model).
 5. Current frontier state with exact counts, plus the instruction to rerun the
    read-only auditors before quoting counts (live lanes may have advanced).
 6. **Highest-value next work**, ranked.
