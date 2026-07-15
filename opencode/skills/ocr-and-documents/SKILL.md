@@ -1,13 +1,22 @@
 ---
 name: ocr-and-documents
-description: "Extract text from PDFs/scans — redirects to high-quality extraction (Mistral OCR, marker-pdf), away from pymupdf garbage."
-version: 3.1.0
-author: Hermes Agent
+description: Extract text from PDFs/scans — redirects to high-quality extraction (Mistral OCR, marker-pdf),
+  away from pymupdf garbage.
 license: MIT
 metadata:
   hermes:
-    tags: [PDF, Documents, Research, Arxiv, Text-Extraction, OCR]
-    related_skills: [[[reading-pdfs/SKILL|reading-pdfs]], powerpoint]
+    tags:
+    - PDF
+    - Documents
+    - Research
+    - Arxiv
+    - Text-Extraction
+    - OCR
+    related_skills:
+    - '[[reading-pdfs/SKILL|reading-pdfs]]'
+    - powerpoint
+  version: 3.1.0
+  author: Hermes Agent
 ---
 
 # PDF & Document Extraction

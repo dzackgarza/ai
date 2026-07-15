@@ -1,15 +1,18 @@
 ---
 name: excalidraw
-description: "Hand-drawn [[excalidraw/SKILL|Excalidraw]] JSON diagrams (arch, flow, seq)."
-version: 1.0.0
-author: Hermes Agent
+description: Hand-drawn [[excalidraw/SKILL|Excalidraw]] JSON diagrams (arch, flow, seq).
 license: MIT
-dependencies: []
 metadata:
   hermes:
-    tags: [Excalidraw, Diagrams, Flowcharts, Architecture, Visualization, JSON]
-    related_skills: []
-
+    tags:
+    - Excalidraw
+    - Diagrams
+    - Flowcharts
+    - Architecture
+    - Visualization
+    - JSON
+  version: 1.0.0
+  author: Hermes Agent
 ---
 # [[excalidraw/SKILL|Excalidraw]] Diagram Skill
 

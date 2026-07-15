@@ -24,7 +24,7 @@ Do not design instructions for a cooperative worker. Model the worker as a cleve
 - [[llm-failure-modes/SKILL|llm-failure-modes]]: Learn the attack patterns: **goal substitution**, **verification theater**, **checklist theater**, **self-certification**, **progress theater**, **meta-artifact delegation**, and **wrapper slop**.
 - [[addressing-shallow-work/SKILL|addressing-shallow-work]]: Learn how process targets (inventories, gates) become substitute wins.
 - [[anti-slop/SKILL|anti-slop]]: Learn to detect success-shaped filler used to bypass real work.
-- [[writing/agent-audiences/SKILL|writing-for-agent-audiences]], [[prompt-engineering/SKILL|prompt-engineering]], [[agent-memory/SKILL|agent-memory]]: Learn to design memory surfaces that resist narrative drift.
+- [[writing/writing-for-agent-audiences/SKILL|writing-for-agent-audiences]], [[prompt-engineering/SKILL|prompt-engineering]], [[agent-memory/SKILL|agent-memory]]: Learn to design memory surfaces that resist narrative drift.
 
 Before proposing any concrete `/goal`, read [references/success-criteria-contracts.md](references/success-criteria-contracts.md) and use it to audit the proposed stopping criteria. This is mandatory even for simple goals.
 

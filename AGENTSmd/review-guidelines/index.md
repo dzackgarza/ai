@@ -95,24 +95,10 @@ Watch for code-level laundering: hard-coded consumer names, support for local re
 
 # When Acting on Review Feedback
 
-A positive disposition requires a commit.
-
-Do not resolve an accepted review comment until the code/proof remediation is committed and the reply cites the commit.
-
-Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed.
-A thread cannot be resolved on intent or future work.
-
-Rejected and modified feedback must be collected in a top-level PR comment titled `Review feedback disposition ledger` so resolved threads do not hide the audit trail.
-
-Review comments are not implementation specs.
-The worker must translate accepted feedback into first-principles remediation requirements before assigning implementation.
-
-For each comment:
-- Identify the concern.
-- Identify the proposed fix.
-- Decide whether the concern is true under global + repo policy.
-- Decide whether the proposed fix preserves those policies.
-- If the concern is true but the fix is wrong, apply a policy-compatible remediation.
+Returned feedback is governed by [[pr-feedback-triage/SKILL|pr-feedback-triage]].
+That skill is the single source for collection, policy-routed disposition, remediation, thread-local evidence, resolution, and convergence.
+The finding's own thread or comment surface is the audit trail; do not invent a top-level disposition ledger or tracked review-log file.
+This review guidance owns the completion judgment, not a second feedback-handling state machine.
 
 # Writing the Review
 

@@ -1,10 +1,11 @@
 ---
 name: jules
-description: Use when delegating a coding task to [[jules/SKILL|Jules]] — bug fixes, tests, docs, features, or code reviews on a GitHub repo.
+description: Use when delegating a coding task to [[jules/SKILL|Jules]] — bug fixes, tests, docs, features,
+  or code reviews on a GitHub repo.
 license: Apache-2.0
 metadata:
-author: sanjay3290
-version: '1.1'
+  author: sanjay3290
+  version: '1.1'
 ---
 # [[jules/SKILL|Jules]] Task Delegation
 
@@ -354,101 +355,15 @@ Create in repo root to improve [[jules/SKILL|Jules]] results:
 
 - **ALWAYS validate before applying changes**
 
-## PR Review & Feedback Loop
+## PR Review and Returned Feedback
 
-This section covers the detailed workflow for managing [[jules/SKILL|Jules]] PRs through the review
-cycle, including automated reviewer tracking and feedback piping.
+Jules is not the disposition authority for its own findings or PR.
+When the user asks Jules to produce review findings, load [[jules/references/anti-slop-report-review|the Jules anti-slop review card]]; Jules returns raw findings only.
+Every returned finding then enters [[pr-feedback-triage/SKILL|pr-feedback-triage]] at collection.
 
-### Feedback Resolution Principles
-
-Do not treat feedback resolution as a purely mechanical thread-clearing process. Feedback must be understood, accepted or rejected, and made legible to the human maintainer with a visible disposition and evidence (see [[git-guidelines/SKILL|git-guidelines]] review feedback rule).
-
-### Matching [[jules/SKILL|Jules]] Sessions to PRs
-
-To see which PRs [[jules/SKILL|Jules]] created in its last run:
-
-1. Get [[jules/SKILL|Jules]] sessions: `jules remote list --session`
-
-2. Get recent PRs: `gh search prs dzackgarza -L 20`
-
-3. Compare side-by-side — match by repo and title similarity
-
-**Match criteria:**
-
-- Same repository
-
-- Similar title (session description → PR title)
-
-- Timing (session completed ~PR created)
-
-### Qodo Review Resolution
-
-Qodo automatically re-analyzes the PR when new commits are pushed and strikes through
-issues that are now fixed.
-No manual “resolve” needed — it’s commit-driven.
-
-Workflow:
-
-1. Push a commit that fixes the issue
-
-2. Wait ~30-60 seconds for Qodo to re-scan
-
-3. Qodo strikes through resolved issues automatically
-
-### Sending Review Feedback to [[jules/SKILL|Jules]]
-
-> [!WARNING]
-> **Do not confuse this with [[anti-slop/SKILL|anti-slop]] report review**
->
-> The feedback loop below is for an existing [[jules/SKILL|Jules]] PR being iterated through review.
->
-> For [[anti-slop/SKILL|anti-slop]] review, do not pipe findings back to [[jules/SKILL|Jules]] for immediate fixing. [[jules/SKILL|Jules]] writes a report. Later PRs address findings from that report after independent triage.
-
-Use the `extract_unresolved_issues` module from the [[git-guidelines/SKILL|git-guidelines]] skill to pipe
-unresolved PR review issues back to [[jules/SKILL|Jules]]:
-
-```bash
-# Send unresolved issues summary
-uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues summarize <owner>/<repo>#<PR_NUM> | uvx git+https://github.com/dzackgarza/improved-jules-cli feedback SESSION_ID
-
-# Send issues list
-uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolved_issues -m extract_unresolved_issues issues <owner>/<repo>#<PR_NUM> | uvx git+https://github.com/dzackgarza/improved-jules-cli feedback SESSION_ID
-```
-
-### Detailed Workflow (improved-jules-cli)
-
-For the full end-to-end workflow using `improved-jules-cli`:
-
-1. **Create Issue** — Use the Linear MCP server to create the issue (which automatically syncs to GitHub). Ensure a clear title, specific outcomes, and context files referenced.
-
-2. **Launch**:
-   ```bash
-   uvx git+https://github.com/dzackgarza/improved-jules-cli create ISSUE_URL --context PATH_TO_CONTEXT --prompt-slug sub-agents/jules-pr-body-contract
-   ```
-
-3. **Monitor & Poll**:
-   ```bash
-   uvx git+https://github.com/dzackgarza/improved-jules-cli status SESSION_ID
-   uvx git+https://github.com/dzackgarza/improved-jules-cli watch-callback SESSION_ID "echo done"
-   ```
-
-4. **Wait for Reviews** — wait for configured review bots and CI checks to finish.
-
-5. **Check Issues** — Use `extract_unresolved_issues` from [[git-guidelines/SKILL|git-guidelines]] skill (see
-   above).
-
-6. **Send Feedback** — Pipe issues to [[jules/SKILL|Jules]] (see above).
-
-7. **Repeat** steps 3-6 using the following rule: Use [[jules/SKILL|Jules]] for candidate [[anti-slop/SKILL|anti-slop]] report generation only. Do not pipe review comments back to [[jules/SKILL|Jules]] for blind fixing unless a stronger controller has already triaged each comment and written policy-compatible instructions.
-
-8. **Surface** — Present PR link:
-   `uvx git+https://github.com/dzackgarza/improved-jules-cli pr SESSION_ID`
-
-> TODO: describe exactly how to identify unresolved issues.
-> TODO: describe exactly what counts as unresolved (isMinimized == false/null →
-> unresolved, or non-crossed-out issues) TODO: describe exactly how to “resolve”
-> (identify specific commit that fixed it OR identify new issue that addresses it, link
-> commit as a reply in the conversation, mark conversation as “Resolved” manually)
+When a Jules-authored PR receives feedback, the controller still uses the canonical feedback workflow.
+Never pipe raw reviewer wording back to Jules for blind fixing.
+Jules may act as role C only when it receives the clean first-principles remediation spec, exact policy codes, and mapped style cards required by the canonical skill.
 
 * * *
 
@@ -503,7 +418,6 @@ Companion files:
 ```text
 .pr/
   PR_BODY.md       # the contract — used as PR body source
-  REVIEW_LOG.md    # per-item review tracking
   ACCEPTANCE_CHECKS.md  # optional detailed check list
 ```
 
@@ -689,43 +603,11 @@ body from that file.
 The PR description is not a summary written after the work — it is a tracked interface
 between worker and reviewer.
 
-### Phase 4: Record review feedback in REVIEW_LOG.md
+### Phase 4: Route returned feedback
 
-Every actionable review item must be copied into `.pr/REVIEW_LOG.md` with required
-fields:
-
-```markdown
-## Review item <N>
-
-**Source**: <PR review comment URL or line>
-**Date**: <YYYY-MM-DD>
-**Reviewer concern**: <exact statement>
-**My response**: <what I will do>
-**Commit**: <commit hash when addressed>
-**Status**: open | addressed
-```
-
-This log is the audit trail that proves feedback was handled, not ignored.
-
-### Responding to review moves
-
-**Move A: The reviewer is correct about a code problem.** Strengthen the code, add or
-revise tests first if needed, then update the contract if acceptance criteria changed.
-
-**Move B: The reviewer exposed missing or weak acceptance criteria.** Strengthen
-`.pr/PR_BODY.md`, add or revise tests first if needed, then update code.
-
-**Move C: The reviewer identified that the contract itself is wrong.** Revise
-`.pr/PR_BODY.md` explicitly, commit that revision, then proceed with implementation
-changes.
-
-**Illegal moves:**
-
-- Silently keep the same direction while merely adding a local constraint
-
-- Say “addressed” without changing the contract or the code
-
-- Reinterpret the reviewer’s feedback into something easier and solve that instead
+Load [[pr-feedback-triage/SKILL|pr-feedback-triage]].
+The original thread or comment surface is the audit record; do not create `.pr/REVIEW_LOG.md` or a top-level disposition ledger.
+If the finding is accepted, Jules may receive only the canonical role-C remediation spec, never the raw review text or suggested patch.
 
 ### Review focus section
 

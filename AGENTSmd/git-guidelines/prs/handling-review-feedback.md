@@ -17,9 +17,8 @@ tags:
 title: Handling Review Feedback
 ---
 
-Load `pr-feedback-triage`, `git-guidelines`, and `test-guidelines` before acting on PR
-review feedback.
+Returned PR feedback is owned by [[pr-feedback-triage/SKILL|pr-feedback-triage]].
+Load it before [[git-guidelines/SKILL|GitHub mechanics]] and load [[test-guidelines/SKILL|test-guidelines]] only when proof or tests enter the remediation.
 
-Reviewer comments require explicit disposition and substantive action.
-Do not acknowledge, resolve, hide, or dismiss feedback without either fixing it or
-leaving a visible evidence-backed disposition note.
+The canonical skill owns the role firewall, stage routing, reply contract, and convergence gate.
+Do not restate those procedures here or replace thread-local evidence with a top-level ledger or tracked review-log file.

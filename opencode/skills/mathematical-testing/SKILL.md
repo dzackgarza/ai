@@ -17,7 +17,7 @@ and block all project progress until implementations recover known mathematical 
    authoritative sources (textbooks, papers, mathematical encyclopedias) that establish
    concrete, testable mathematical facts relevant to the task.
    Prioritize peer-reviewed literature, established textbooks (Bourbaki, Humphreys,
-   Carter, etc.), mathematical encyclopedias, [[sagemath/SKILL|SageMath]] documentation, and [[research-discovery/search/SKILL|arXiv]] papers.
+   Carter, etc.), mathematical encyclopedias, [[sagemath/SKILL|SageMath]] documentation, and [[research-discovery/arxiv/SKILL|arXiv]] papers.
 
 2. **Extract Testable Assertions**: Convert abstract mathematical theorems into
    specific, executable test cases with exact expected values, relationships, and

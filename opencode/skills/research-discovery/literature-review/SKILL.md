@@ -1,7 +1,9 @@
 ---
 name: literature-review
-version: 1.2.0
-description: Use when finding academic papers on a topic, looking up specific DOIs, or drafting literature review sections with citations.
+description: Use when finding academic papers on a topic, looking up specific DOIs, or drafting literature
+  review sections with citations.
+metadata:
+  version: 1.2.0
 ---
 # Literature Review
 
@@ -14,7 +16,7 @@ CR, PM).
   OpenAlex (OA), Crossref (CR), and PubMed (PM).
 
 - **Mathematics Paper Discovery**: For mathematics, combine general metadata sources
-  with [[research-discovery/search/SKILL|arXiv]], zbMATH/OpenAlex/Semantic Scholar, DOI lookup, [[zotero/SKILL|Zotero]], and the local PDF
+  with [[research-discovery/arxiv/SKILL|arXiv]], zbMATH/OpenAlex/Semantic Scholar, DOI lookup, [[zotero/SKILL|Zotero]], and the local PDF
   workflow.
 
 - **Web Research Extraction**: For high-rate web-informed research, prefer a
@@ -104,7 +106,7 @@ python3 scripts/lit_search.py details "DOI:10.1016/j.foodchem.2023.136000"
 For mathematics literature work, use `references/math-paper-retrieval.md` as the
 workflow:
 
-- search metadata with this skill and [[research-discovery/search/SKILL|arxiv]],
+- search metadata with this skill and [[research-discovery/arxiv/SKILL|arxiv]],
 
 - resolve DOI/arXiv/Zotero identity before downloading,
 

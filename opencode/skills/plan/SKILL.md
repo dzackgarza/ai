@@ -1,11 +1,21 @@
 ---
 name: plan
-description: "The canonical planning skill and plan mode: create, write, review, or revise durable implementation plans, source plans, and externalization-ready execution specs through [[agent-memory/SKILL|agent-memory]]. When invoked as plan mode, plan only — no execution this turn."
+description: 'The canonical planning skill and plan mode: create, write, review, or revise durable implementation
+  plans, source plans, and externalization-ready execution specs through [[agent-memory/SKILL|agent-memory]].
+  When invoked as plan mode, plan only — no execution this turn.'
 license: MIT
 metadata:
   hermes:
-    tags: [planning, plan-mode, implementation, workflow]
-    related_skills: [[[subagent-delegation/implementation/SKILL|subagent-driven-development]], [[git-guidelines/request-review/SKILL|requesting-code-review]], [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]]]
+    tags:
+    - planning
+    - plan-mode
+    - implementation
+    - workflow
+    related_skills:
+    - '[[subagent-delegation/subagent-driven-development/SKILL|subagent-driven-development]]'
+    - '[[git-guidelines/requesting-code-review/SKILL|requesting-code-review]]'
+    - '[[test-driven-development/SKILL|test-driven-development]]'
+    - '[[git-guidelines/SKILL|git-guidelines]]'
 ---
 # Plan
 
@@ -499,7 +509,7 @@ Load on demand after the routing gate:
 
 ## Related Skills
 
-- [[subagent-delegation/implementation/SKILL|subagent-driven-development]]: executes approved plans task by task.
+- [[subagent-delegation/subagent-driven-development/SKILL|subagent-driven-development]]: executes approved plans task by task.
 - [[test-driven-development/SKILL|test-driven-development]] and [[test-guidelines/SKILL|test-guidelines]]: proof design for code changes.
 - [[git-guidelines/SKILL|git-guidelines]]: checkpoint, commit, PR, and review workflow.
 - [[agent-memory/SKILL|agent-memory]]: storage command surface for vault-owned plan records.

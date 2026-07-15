@@ -1,13 +1,17 @@
 ---
 name: native-mcp
-description: "MCP client: connect servers, register tools (stdio/HTTP)."
-version: 1.0.0
-author: Hermes Agent
+description: 'MCP client: connect servers, register tools (stdio/HTTP).'
 license: MIT
 metadata:
   hermes:
-    tags: [MCP, Tools, Integrations]
-    related_skills: [mcporter]
+    tags:
+    - MCP
+    - Tools
+    - Integrations
+    related_skills:
+    - mcporter
+  version: 1.0.0
+  author: Hermes Agent
 ---
 # Native MCP Client
 

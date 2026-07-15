@@ -1,14 +1,25 @@
 ---
 name: hermes-agent
-description: "Configure, extend, or contribute to Hermes Agent."
-version: 2.2.0
-author: Hermes Agent + Teknium
+description: Configure, extend, or contribute to Hermes Agent.
 license: MIT
 metadata:
   hermes:
-    tags: [hermes, setup, configuration, multi-agent, spawning, cli, gateway, development]
+    tags:
+    - hermes
+    - setup
+    - configuration
+    - multi-agent
+    - spawning
+    - cli
+    - gateway
+    - development
     homepage: https://github.com/NousResearch/hermes-agent
-    related_skills: [[[claude-code/SKILL|claude-code]], codex, opencode]
+    related_skills:
+    - '[[claude-code/SKILL|claude-code]]'
+    - codex
+    - opencode
+  version: 2.2.0
+  author: Hermes Agent + Teknium
 ---
 # Hermes Agent
 

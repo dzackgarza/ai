@@ -50,8 +50,7 @@ No issue is created.
 A later PR may address the Jules report findings.
 
 That PR must:
-1. Load `pr-feedback-triage`, `reviewing-llm-code`, `anti-slop`, and `test-guidelines`
-   as applicable.
+1. Load [[pr-feedback-triage/SKILL|pr-feedback-triage]], [[reviewing-llm-code/SKILL|reviewing-llm-code]], [[anti-slop/SKILL|anti-slop]], and [[test-guidelines/SKILL|test-guidelines]] as applicable.
 2. Triage each finding independently.
 3. Accept, accept-with-modified-remediation, reject, or investigate each finding.
 4. Implement only accepted findings.
@@ -268,8 +267,7 @@ or `*brooks-report*.json` pass `tool-artifacts/check-report.py`.
 
 ## Addressing a Jules Report
 
-This is a separate task. Use `pr-feedback-triage`, `reviewing-llm-code`, `anti-slop`,
-and `test-guidelines`.
+This is a separate task. Use [[pr-feedback-triage/SKILL|pr-feedback-triage]], [[reviewing-llm-code/SKILL|reviewing-llm-code]], [[anti-slop/SKILL|anti-slop]], and [[test-guidelines/SKILL|test-guidelines]].
 
 A remediation PR should:
 1. Reference the Jules report.

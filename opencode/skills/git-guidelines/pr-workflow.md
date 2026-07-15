@@ -173,7 +173,7 @@ Re-check CI status using the commands from Section 4 above.
 
 > CI failures and PR review comments are different.
 > CI failures can be fixed mechanically after root-cause diagnosis.
-> Review comments must first be routed to `pr-feedback-triage`.
+> Review comments must first be routed to [[pr-feedback-triage/SKILL|pr-feedback-triage]].
 > Do not auto-fix review comments merely because they are unresolved.
 
 ### Auto-Fix Loop Pattern

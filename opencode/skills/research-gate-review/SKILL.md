@@ -1,13 +1,23 @@
 ---
 name: research-gate-review
-description: "Apply the 6-gate review kernel substantively — read code, find real bugs, avoid procedural checkboxing."
-version: 1.0.0
-author: session-derived
+description: Apply the 6-gate review kernel substantively — read code, find real bugs, avoid procedural
+  checkboxing.
 license: MIT
 metadata:
   hermes:
-    tags: [review, gate-protocol, code-review, mathematical-review, bug-hunting]
-    related_skills: [research-proof-auditing, research-state-machine, [[git-guidelines/request-review/SKILL|requesting-code-review]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
+    tags:
+    - review
+    - gate-protocol
+    - code-review
+    - mathematical-review
+    - bug-hunting
+    related_skills:
+    - research-proof-auditing
+    - research-state-machine
+    - '[[git-guidelines/requesting-code-review/SKILL|requesting-code-review]]'
+    - '[[llm-failure-modes/SKILL|llm-failure-modes]]'
+  version: 1.0.0
+  author: session-derived
 ---
 # Research Gate Review
 
@@ -432,7 +442,7 @@ the object,” it’s a software name, not a mathematical name.
 - `.agents/skills/research-proof-auditing/references/proof-auditing.md`: evidence
   sufficiency for mathematical claims
 
-- [[git-guidelines/request-review/SKILL|requesting-code-review]]: pre-commit code verification (complementary — runs before
+- [[git-guidelines/requesting-code-review/SKILL|requesting-code-review]]: pre-commit code verification (complementary — runs before
   commit, not after)
 
 - [[llm-failure-modes/SKILL|llm-failure-modes]]: common LLM cognitive failures that can corrupt review processes —

@@ -56,9 +56,10 @@ cc_safety_net_home := home / ".cc-safety-net"
 default:
     @just --list
 
-# Validate repository Markdown entrypoints and installed-skill WikiLinks.
+# Validate repository Markdown entrypoints and the installed skill vault.
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
+    @just --justfile {{ justfile() }} check-skill-validity
     @just --justfile {{ justfile() }} check-skill-wikilinks
 
 # Reformat Markdown and structured configuration before commit.
@@ -399,12 +400,46 @@ broken-symlinks:
         fi
     done | sort
 
-# Check markdown files for broken local file references.
-#
-# Usage: just check-markdown [path ...]
+# Validate every installed skill with the official Agent Skills reference validator.
+# Directory traversal follows symlinked skill subtrees so validity is evaluated in the
+# assembled vault, not only in each source repository.
+# Usage: just check-skill-validity
+check-skill-validity:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    uvx --from git+https://github.com/agentskills/agentskills#subdirectory=skills-ref python - <<'PY'
+    import os
+    from pathlib import Path
+
+    from skills_ref.validator import validate
+
+    root = Path("{{ justfile_directory() }}") / "opencode" / "skills"
+    skill_dirs = []
+    for current, _dirs, files in os.walk(root, followlinks=True):
+        if "SKILL.md" in files:
+            skill_dirs.append(Path(current))
+
+    if not skill_dirs:
+        raise SystemExit(f"no installed skills found under {root}")
+
+    failed = False
+    for skill_dir in sorted(skill_dirs):
+        errors = validate(skill_dir)
+        if not errors:
+            continue
+        failed = True
+        print(f"INVALID {skill_dir}")
+        for error in errors:
+            print(f"  {error}")
+
+    print(f"validated {len(skill_dirs)} installed skills")
+    raise SystemExit(1 if failed else 0)
+    PY
+
 # Audit WikiLinks between installed skills in the assembled skill tree.
-# Lychee is the resolver. A temporary dereferenced vault is required because Lychee
-# intentionally ignores symlinks while indexing WikiLink targets.
+# Lychee is the resolver. Materialize directory-symlink skill subtrees while preserving
+# unrelated file symlinks; dereferencing every symlink makes broken auxiliary links fatal.
 # Usage: just check-skill-wikilinks
 check-skill-wikilinks:
     #!/usr/bin/env bash
@@ -412,7 +447,7 @@ check-skill-wikilinks:
 
     vault="$(mktemp -d)"
     trap 'rm -rf "$vault"' EXIT
-    rsync -aL --delete --exclude '.git' "{{ skills_dir }}/" "$vault/skills/"
+    rsync -aK --delete --exclude '.git' "{{ justfile_directory() }}/opencode/skills/" "$vault/skills/"
 
     mapfile -d '' skill_files < <(find "$vault/skills" -type f -name SKILL.md -print0)
     ((${#skill_files[@]} > 0))

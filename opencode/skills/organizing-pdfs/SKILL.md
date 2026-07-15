@@ -1,6 +1,10 @@
 ---
 name: organizing-pdfs
-description: Use when organizing a directory of PDFs against [[zotero/SKILL|Zotero]] or another reference library: bucketing local PDFs, finding DOI/ISBN/source provenance, creating [[zotero/SKILL|Zotero]] items, attaching PDFs, trashing verified redundant local copies, and leaving a final contents ledger. Trigger on requests to sort PDFs, clean a downloads PDF folder, compare PDFs to [[zotero/SKILL|Zotero]], import PDFs into [[zotero/SKILL|Zotero]], or decide what remaining PDFs are.
+description: 'Use when organizing a directory of PDFs against [[zotero/SKILL|Zotero]] or another reference
+  library: bucketing local PDFs, finding DOI/ISBN/source provenance, creating [[zotero/SKILL|Zotero]]
+  items, attaching PDFs, trashing verified redundant local copies, and leaving a final contents ledger.
+  Trigger on requests to sort PDFs, clean a downloads PDF folder, compare PDFs to [[zotero/SKILL|Zotero]],
+  import PDFs into [[zotero/SKILL|Zotero]], or decide what remaining PDFs are.'
 ---
 
 # Organizing PDFs
@@ -67,7 +71,7 @@ state, a filename match, or a stale report.
    - Write a small trash log when many files are moved.
 
 6. Find identifiers only where plausible.
-   - Look for DOI, ISBN, [[research-discovery/search/SKILL|arXiv]] ID, MR/Zbl, or repository handles for real works.
+   - Look for DOI, ISBN, [[research-discovery/arxiv/SKILL|arXiv]] ID, MR/Zbl, or repository handles for real works.
    - Do not waste identifier-search time on obvious handwritten notes, homework,
      private drafts, exams, or local handouts.
    - For negative findings, state what was searched and what remains unknown.
@@ -80,7 +84,7 @@ state, a filename match, or a stale report.
    - After verified attachment, trash the local PDF.
 
 8. Find source/provenance for no-identifier works.
-   - Accept direct PDFs, author pages, repository records, [[research-discovery/search/SKILL|arXiv]] records, DOI landing
+   - Accept direct PDFs, author pages, repository records, [[research-discovery/arxiv/SKILL|arXiv]] records, DOI landing
      pages, institutional repository pages, or strong bibliographic pages.
    - Correct wrong provenance immediately; do not let a plausible source for a different
      work drive [[zotero/SKILL|Zotero]] metadata.

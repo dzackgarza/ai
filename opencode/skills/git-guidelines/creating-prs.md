@@ -518,127 +518,13 @@ A worker that reads only one of them will miss actionable feedback.
 
 * * *
 
-## Required review-log discipline
+## Returned review feedback
 
-Every actionable review item must be copied into a tracked log file.
+Load [[pr-feedback-triage/SKILL|pr-feedback-triage]] when any review surface returns feedback.
+The original thread or comment is the audit record; do not copy findings into `.pr/REVIEW_LOG.md` or a top-level disposition ledger.
+If feedback changes the PR contract, the canonical convergence stage updates the owning issue, milestone scope, claim map, and readiness state before remediation continues.
 
-Create:
-
-```bash
-$EDITOR .pr/REVIEW_LOG.md
-```
-
-### Required fields for each item
-
-```markdown
-## Review item <N>
-
-- Source: <review / review-comment / issue-comment / CI>
-- URL or identifier: <link or id>
-- Reviewer:
-- File/line:
-- Exact actionable request:
-- Worker interpretation:
-- Planned action:
-- Status: open | addressed | rejected-with-rationale
-- Commit addressing it:
-- Notes:
-```
-
-### Hard rules
-
-1. **No silent ignoring.** Every actionable item must appear in the log.
-
-2. **No bundling multiple requests into vague summaries.** Preserve atomicity.
-
-3. **No “addressed” without a commit.**
-
-4. **No rejection without explicit rationale tied to the PR contract.**
-
-5. **If a review item reveals that the contract is wrong, update the contract first.**
-
-This is necessary because agentic workers often continue from their prior frame and
-treat review feedback as advisory decoration.
-The log must force integration of each item into the task state.
-
-* * *
-
-## Phase 5: Respond to feedback by updating the contract, code, or both
-
-Feedback should be handled through one of only three legal moves.
-
-### Move A: The reviewer found a real defect within the existing contract
-
-Action:
-
-- update code/tests,
-
-- update evidence,
-
-- mark the review item addressed.
-
-### Move B: The reviewer exposed missing or weak acceptance criteria
-
-Action:
-
-- strengthen the contract file,
-
-- add or revise tests first if needed,
-
-- then update code.
-
-### Move C: The reviewer identified that the contract itself is wrong
-
-Action:
-
-- revise the contract file explicitly,
-
-- commit that revision,
-
-- then proceed with implementation changes.
-
-### Illegal move
-
-- silently keep the same implementation direction while merely adding a local
-  constraint,
-
-- say “addressed” without changing the contract or the code appropriately,
-
-- reinterpret the reviewer’s feedback into something easier and solve that instead.
-
-* * *
-
-## Example of proper feedback integration
-
-Reviewer comment:
-
-> This test only checks that a value is returned.
-> It would pass on arbitrary non-empty junk.
-
-Incorrect response pattern:
-
-- add another `isinstance(...)` check,
-
-- reply “done,”
-
-- leave acceptance criteria unchanged.
-
-Required response pattern:
-
-1. add the review item to `.pr/REVIEW_LOG.md`,
-
-2. update the contract file so the acceptance criterion names the exact invariant or
-   exact value to be proven,
-
-3. replace the weak test with a substantive one,
-
-4. commit,
-
-5. cite the commit when marking the item addressed.
-
-* * *
-
-## Phase 6: Keep reviewers anchored to outcome, not process theater
+## Keep reviewers anchored to outcome, not process theater
 
 The PR should make it easy for reviewers to reject process-shaped nonsense.
 
@@ -727,11 +613,10 @@ gh issue edit <ISSUE_W1_NUMBER> --add-blocked-by <ISSUE_F1_NUMBER>
 
 # 1. create tracked PR claim map from the selected issue set before implementation
 $EDITOR .pr/PR_BODY.md   # include Closes only for full claims; use Refs for parents/partials/deferred work
-$EDITOR .pr/REVIEW_LOG.md
 
 # 2. commit contract early
-git add .pr/PR_BODY.md .pr/REVIEW_LOG.md
-git commit -m "Add PR contract and review log"
+git add .pr/PR_BODY.md
+git commit -m "Add PR contract"
 
 # 3. create draft PR from the tracked issue-linked claim map before implementation
 gh pr create --title "<title>" --body-file .pr/PR_BODY.md --milestone "<milestone>" --draft
@@ -751,30 +636,20 @@ gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md --milestone "<milestone>"
 # Only after every claimed item is complete and evidenced:
 gh pr ready <PR_NUMBER>
 
-# 7. after review arrives, read all feedback surfaces
-gh pr view <PR_NUMBER> --comments
-gh pr view <PR_NUMBER> --json title,body,milestone,closingIssuesReferences,isDraft,reviewDecision,latestReviews,reviews,comments,files,statusCheckRollup
-gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/reviews
-gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/comments
-gh api repos/<OWNER>/<REPO>/issues/<PR_NUMBER>/comments
-gh pr checks <PR_NUMBER> --watch
+# 7. route every returned review surface through the canonical skill
+# Load [[pr-feedback-triage/SKILL|pr-feedback-triage]]; it owns collection through convergence.
 
-# 8. if review feedback reopens required claim work, return to draft before continuing
+# 8. if accepted feedback reopens required claim work, return to draft and update the claim map
 gh pr ready <PR_NUMBER> --undo
-
-# Update the issue tree and contract file if needed
 $EDITOR .pr/ISSUE_ROOT.md
 $EDITOR .pr/ISSUE_F1.md
 $EDITOR .pr/PR_BODY.md
-$EDITOR .pr/REVIEW_LOG.md
 
-git add .pr/PR_BODY.md .pr/REVIEW_LOG.md <changed code/tests>
-git commit -m "Address review feedback"
-
-# 9. republish PR body from the tracked contract
+git add .pr/PR_BODY.md <changed code/tests>
+git commit -m "Remediate accepted review feedback"
 gh pr edit <PR_NUMBER> --body-file .pr/PR_BODY.md --milestone "<milestone>"
 
-# 10. after reopened claim work is complete and evidenced, mark ready again
+# 9. after thread-local evidence, proof, and claim work converge, mark ready again
 gh pr ready <PR_NUMBER>
 ```
 
@@ -832,7 +707,7 @@ If the PR does not expose those answers directly, it is not review-ready.
 
 14. Read every review surface with `gh`.
 
-15. Log every actionable review item atomically.
+15. Route every actionable review item through [[pr-feedback-triage/SKILL|pr-feedback-triage]] and keep its audit evidence on the original surface.
 
 16. Do not mark feedback addressed without an identifying commit.
 

@@ -115,8 +115,7 @@ If citing SLSA levels or controls, verify the current upstream SLSA documentatio
 
 Use `PR Finding Triage Reviewer` mode for every PR comment, review thread, automated
 review summary, and check annotation.
-Load `pr-feedback-triage`, `git-guidelines`, `test-guidelines`, and relevant policy
-references.
+Load [[pr-feedback-triage/SKILL|pr-feedback-triage]], [[git-guidelines/SKILL|git-guidelines]], [[test-guidelines/SKILL|test-guidelines]], and relevant policy references.
 
 Classify each finding:
 

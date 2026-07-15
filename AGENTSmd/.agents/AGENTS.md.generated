@@ -584,12 +584,11 @@ For PR review comment surfaces, load `pr-feedback-triage` and `git-guidelines`.
 
 ### Handling Review Feedback
 
-Load `pr-feedback-triage`, `git-guidelines`, and `test-guidelines` before acting on PR
-review feedback.
+Returned PR feedback is owned by \[\[pr-feedback-triage/SKILL\|pr-feedback-triage\]\].
+Load it before \[\[git-guidelines/SKILL\|GitHub mechanics\]\] and load \[\[test-guidelines/SKILL\|test-guidelines\]\] only when proof or tests enter the remediation.
 
-Reviewer comments require explicit disposition and substantive action.
-Do not acknowledge, resolve, hide, or dismiss feedback without either fixing it or
-leaving a visible evidence-backed disposition note.
+The canonical skill owns the role firewall, stage routing, reply contract, and convergence gate.
+Do not restate those procedures here or replace thread-local evidence with a top-level ledger or tracked review-log file.
 
 ### What Qualifies as a PR
 
@@ -727,24 +726,10 @@ Watch for code-level laundering: hard-coded consumer names, support for local re
 
 ## When Acting on Review Feedback
 
-A positive disposition requires a commit.
-
-Do not resolve an accepted review comment until the code/proof remediation is committed and the reply cites the commit.
-
-Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed.
-A thread cannot be resolved on intent or future work.
-
-Rejected and modified feedback must be collected in a top-level PR comment titled `Review feedback disposition ledger` so resolved threads do not hide the audit trail.
-
-Review comments are not implementation specs.
-The worker must translate accepted feedback into first-principles remediation requirements before assigning implementation.
-
-For each comment:
-- Identify the concern.
-- Identify the proposed fix.
-- Decide whether the concern is true under global + repo policy.
-- Decide whether the proposed fix preserves those policies.
-- If the concern is true but the fix is wrong, apply a policy-compatible remediation.
+Returned feedback is governed by \[\[pr-feedback-triage/SKILL\|pr-feedback-triage\]\].
+That skill is the single source for collection, policy-routed disposition, remediation, thread-local evidence, resolution, and convergence.
+The finding’s own thread or comment surface is the audit trail; do not invent a top-level disposition ledger or tracked review-log file.
+This review guidance owns the completion judgment, not a second feedback-handling state machine.
 
 ## Writing the Review
 

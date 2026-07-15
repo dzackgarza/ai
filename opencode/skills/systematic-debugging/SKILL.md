@@ -1,7 +1,7 @@
 ---
 name: systematic-debugging
-description: 'Use when debugging any failure: forces visible hypothesis ledger, falsification,
-  contradiction handling, and proof before fixes.'
+description: 'Use when debugging any failure: forces visible hypothesis ledger, falsification, contradiction
+  handling, and proof before fixes.'
 license: MIT
 metadata:
   hermes:
@@ -12,9 +12,9 @@ metadata:
     - root-cause
     - investigation
     related_skills:
-    - [[test-driven-development/SKILL|test-driven-development]]
+    - '[[test-driven-development/SKILL|test-driven-development]]'
     - plan
-    - [[subagent-delegation/implementation/SKILL|subagent-driven-development]]
+    - '[[subagent-delegation/subagent-driven-development/SKILL|subagent-driven-development]]'
 ---
 
 # Systematic Debugging

@@ -30,7 +30,7 @@ Also load stage-specific skills instead of restating them:
   observed failure.
 - [[fixing-slop/SKILL|fixing-slop]] before fixing a slop finding, deleting/quarantining artifacts, or
   making a false proof honest.
-- [[git-guidelines/feedback/SKILL|pr-feedback-triage]] and [[git-guidelines/SKILL|git-guidelines]] when acting on review comments or PRs.
+- [[pr-feedback-triage/SKILL|pr-feedback-triage]] and [[git-guidelines/SKILL|git-guidelines]] when acting on review comments or PRs.
 
 ## Central Invariant
 
