@@ -8,6 +8,10 @@ snippets certify is in
 
 ## Macaulay2: exact certification over ℤ
 
+Full M2 tool-level idiom catalog (local orderings, syzygy certificates, memory
+engineering, script harness): [[macaulay2/SKILL|macaulay2]]. The research-protocol
+essentials:
+
 Work in `ZZ[...]` and make `% G` (normal form against a strong Gröbner basis over ℤ)
 the proof primitive — it handles mixed characteristic exactly, with no field tricks:
 
