@@ -68,6 +68,9 @@ document repeating the claim, and add those documents to a do-not-cite list.
 - Literature claims: re-derive the specialization you actually use. Published papers
   contain printed errors; when you find one, record it in the caveat and cite the claim
   as `literature_theorem_plus_checked_specialization`, never as bare truth.
+- A theorem may be unconditional while its constant is only bracketed: ledger the
+  existence claim, the open exact value, and each certified bound (`4/15 ≤ Γ < 13`)
+  as separate rows rather than one blurred claim.
 
 ## Failure is not evidence
 

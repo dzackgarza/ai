@@ -90,7 +90,14 @@ assert((2*s % G0) != 0);      -- the decisive coefficient SURVIVES
   `#lint` clean, `#print axioms` on each main theorem showing only
   `propext, Classical.choice, Quot.sound`, no `sorry`; factor the generic layer
   (convolution powers) into its own upstreamable file and keep the counterexample
-  file self-contained.
+  file self-contained. For a public release, the executable audit protocol
+  (`--trust=0`, prohibited-token scan, frozen statement hashes) is owned by
+  [[mathematical-research/references/formal-release|formal-release]].
+- Explicit-constant numerics in the kernel: rational cutoff certificate + tail
+  bound via algebraic sandwiches (`log((1+z)/(1−z)) ≥ 2(z + z³/3)` reduces `log p`
+  bounds to `norm_num`/`linarith` arithmetic); `decide` only on small finite facts,
+  never `native_decide` in a release closure; certificates stated as conditional
+  theorems with explicit obligation hypotheses.
 
 ## Python / Z3: exact finite decision
 
