@@ -24,7 +24,10 @@ Before substantive work, read
 [[mathematical-research/references/worked-example|worked-example]] — the concrete
 program these rules come from, kept concrete on purpose: the working register is
 socle classes, power words, and Gröbner normal forms, and every rule below is
-illustrated there with the real mathematics that motivated it.
+illustrated there with the real mathematics that motivated it. The causal layer —
+the cognitive defects each rule is a prosthetic for, and the audit heatmap they
+imply — is [[mathematical-research/references/epistemic-defects|epistemic-defects]];
+read it before auditing anything, and whenever you are tempted to bend a rule.
 
 ## Core invariants (always on)
 
@@ -59,6 +62,7 @@ illustrated there with the real mathematics that motivated it.
 | You are about to… | Read |
 |---|---|
 | Start substantive work in this skill; calibrate to the research register | [[mathematical-research/references/worked-example|worked-example]] |
+| Audit a finished result; allocate review attention; decide whether a rule applies to a novel situation | [[mathematical-research/references/epistemic-defects|epistemic-defects]] |
 | State, promote, or demote a claim; write a report or results section | [[mathematical-research/references/claim-status|claim-status]] |
 | Launch a search, sweep, or verification run; write an audit script | [[mathematical-research/references/computation|computation]] |
 | Write Macaulay2/Lean/Z3 verification or search code | [[mathematical-research/references/computer-algebra-patterns|computer-algebra-patterns]] |
