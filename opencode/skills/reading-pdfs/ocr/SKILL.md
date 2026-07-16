@@ -56,7 +56,7 @@ Save the following as a standalone script and run with `uv run`:
 ```python
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["mistralai"]
+# dependencies = ["mistralai<2"]
 # ///
 
 import os
