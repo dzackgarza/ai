@@ -238,7 +238,7 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 6. **Trivial documentation nits without reader impact.** A dead link, a stale command path, or a contradicted instruction in a README is a real finding. But a single non-functional comment, a formatting preference, or a line that "explains nothing" — these do not warrant citations, severity labels, or architectural analysis. If the finding spends more words on the citation than the defect, it is noise.
 
-7. **Bespoke-software portability complaints.** "Config file has hardcoded `/home/dzack/` paths" or "`.serena_config.yml` won't work on another machine" — this is single-user, pre-launch, bespoke software. Machine-specific config files are not defects. Do not report hardcoded home-directory paths, absolute local paths, or non-portable tool configs as portability issues. They are intentional.
+7. **Bespoke-software portability complaints.** "Config file has hardcoded `/home/dzack/` paths" or "a local agent-tool config won't work on another machine" — this is single-user, pre-launch, bespoke software. Machine-specific config files are not defects. Do not report hardcoded home-directory paths, absolute local paths, or non-portable tool configs as portability issues. They are intentional.
 
 8. **Version range / dependency freshness complaints.** "pyproject.toml requires Python >=3.14" or "uses an alpha/beta" — this software targets the owner's latest environment. The convention is latest unless pinning is strictly required. Do not suggest broadening version ranges, relaxing constraints, or using older stable releases for hypothetical compatibility.
 

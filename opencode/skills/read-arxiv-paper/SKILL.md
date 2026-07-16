@@ -33,7 +33,7 @@ Every LaTeX source usually has an entrypoint such as `main.tex`. Find it by look
 Read the entrypoint and recurse through all relevant source files (`\input`, `\include`)
 to read the full paper.
 
-### Part 6: Summarize and store via Serena
+### Part 6: Summarize and store in durable memory
 
 Once you’ve read the paper, produce a structured markdown summary covering:
 
@@ -47,10 +47,12 @@ Once you’ve read the paper, produce a structured markdown summary covering:
 
 - **Potential applications and relevance** to the current project
 
-Store the summary using Serena’s `write_memory` tool.
-Use a descriptive memory name like `paper_{tag}` where `{tag}` is a short slug derived
-from the paper’s topic (e.g. `paper_conditional_memory`, `paper_lattice_embeddings`).
-First use `list_memories` to check the name doesn’t collide with an existing memory.
+Load `agent-memory` and store the summary as a typed durable memory.
+Use a descriptive key like `papers/{tag}` where `{tag}` is a short slug derived from
+the paper’s topic (e.g. `papers/conditional-memory`,
+`papers/lattice-embeddings`).
+Search existing memories first to avoid colliding with or duplicating an existing
+paper note.
 
-This makes the summary available in future conversations via Serena’s `read_memory` tool
-without any manual file management.
+This makes the summary available in future conversations through the canonical memory
+database without loose local notes.

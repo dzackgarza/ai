@@ -24,6 +24,56 @@ The fix will be verified through ____ rather than by repeating the original opaq
 
 If any blank cannot be filled with concrete command output, source text, logs, artifact paths, API responses, or test results, do not patch yet. Surface data first.
 
+## Feedback Loop Quality Gate
+
+The first substantive artifact for a bug is a tight, red-capable feedback loop: one
+agent-runnable command, script, test, fixture, trace replay, browser script, or
+measurement harness that has already been run and can catch the user's exact symptom.
+
+Before hypothesizing, make the loop sharper:
+
+- assert the specific symptom rather than no-crash success;
+- isolate unrelated setup, global state, filesystem, network, and time;
+- for flaky bugs, raise the reproduction rate with repetition, stress, pinned seeds or
+  clocks, and narrowed timing windows;
+- if the bug is performance, build a timing/profiling baseline before adding logs.
+
+If no red-capable loop can be built, stop and report what was tried plus the missing
+artifact, environment, trace, log, recording, or instrumentation permission needed. Do not
+continue with code reading as a substitute for the loop.
+
+## Observed Bug Protocol
+
+When the user reports a project-owned bug, do not fix it first.
+First construct a faithful red test or reproducer that fails because of the observed
+bug.
+
+The red proof must record:
+
+- exact command or workflow run
+- actual output, diff, exception, API response, or UI state
+- why the failure is caused by the observed bug rather than by a guessed scenario
+- the real owned boundary exercised by the test
+- the class of missing test/QC surface that allowed the bug through
+
+Mocks, simulations, stubs, and tests that assert on the absence of a proposed fix are
+not bug proof.
+If the test would still fail in a world where the user-reported bug did not exist, the
+test is invalid.
+
+Commit the red test before touching implementation code.
+Only after the red proof is committed should implementation change begin, and the green
+change should be a separate commit.
+
+For dependency-owned symptoms such as compiler errors, provider/API failures, package
+version mismatches, or external-library behavior, load `known-solution-first` while
+building the reproducer.
+Establish the public contract or known upstream failure before treating local code as
+the explanation.
+
+If the existing suite passed while the bug existed, treat that as a process failure:
+identify the missing proof class and add the real boundary test before patching.
+
 ## Reality-First Discovery
 
 When entering an unfamiliar repo, API, CLI, data format, or pipeline:
@@ -158,7 +208,8 @@ A debugging task is not complete until the report includes:
 
 * the original failure command and raw relevant output
 * the root cause at the owned boundary
-* the smallest reproducer or fixture
+* the tight feedback loop command and why it is red-capable for this symptom
+* the smallest reproducer or fixture, minimized until every remaining element is load-bearing
 * the observability/isolation surface added or used
 * the targeted verification result
 * the global verification result

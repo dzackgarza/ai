@@ -125,7 +125,7 @@ version-controlled standards:
 ```markdown
 ## Reference Skills
 - **writing-for-agent-audiences** — Audience control and evaluator-observation distillation.
-- **clean-code** — Code quality standards.
+- **code-patterns** — Code quality and language-specific style standards.
 - **high-quality-tests** — Testing standards.
 - **systematic-debugging** — Bug investigation methodology.
 ```

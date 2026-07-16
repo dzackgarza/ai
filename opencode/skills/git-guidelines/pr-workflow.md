@@ -33,33 +33,23 @@ Commit types: `feat`, `fix`, `refactor`, `docs`, `test`, `ci`, `chore`, `perf`
 git push -u origin HEAD
 ```
 
-Before creating or updating the PR body, build the canonical nested tracker from the plan.
-The body must have one checkbox tree, not separate completed/outstanding/bookkeeping sections.
-
-Required body shape:
-
-```md
-- [ ] <Milestone or goal>
-  - [ ] <Workstream or phase>
-    - [ ] <Task>
-      - [ ] <Subtask or proof obligation>
-```
-
-Rules:
-
-- Open the PR as draft before implementation for planned work.
-- If the PR already exists, normalize its body to the tree before review or merge.
-- Checked means complete.
-- Every checked line must include same-line proof such as `Proof commit: <sha>`.
-- Keep blocked work unchecked with `Blocked: <reason>`.
-- Move evidence, transcripts, and commit tables to appendix sections or comments without checkboxes.
-
 **With gh:**
 ```bash
+# Externalize the finalized plan into a GitHub issue tree and milestone scope first.
+# Prepare .pr/PR_BODY.md as a claim map for the selected issue set or subtree.
+# See creating-prs.md for the admission gate and issue-linked claim-map format.
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 gh pr create \
   --title "feat: add JWT-based user authentication" \
   --body-file .pr/PR_BODY.md \
+  --milestone "<milestone>" \
   --draft
+
+# Later, after every claimed issue/proof item is complete and evidenced:
+gh pr ready <PR_NUMBER>
+gh pr comment <PR_NUMBER> --body '@codex review'
 ```
 
 Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base develop`
@@ -67,17 +57,21 @@ Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base d
 **Without gh:**
 ```bash
 BRANCH=$(git branch --show-current)
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
 
-curl -s -X POST \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/$OWNER/$REPO/pulls \
-  -d "{
-    \"title\": \"feat: add JWT-based user authentication\",
-    \"body\": \"## Summary\nAdds login and register API endpoints.\n\nCloses #42\",
-    \"head\": \"$BRANCH\",
-    \"base\": \"main\"
-  }"
+jq -n \
+  --arg title "feat: add JWT-based user authentication" \
+  --rawfile body .pr/PR_BODY.md \
+  --arg head "$BRANCH" \
+  --arg base "main" \
+  '{title: $title, body: $body, head: $head, base: $base}' \
+  | curl -s -X POST \
+      -H "Authorization: token $GITHUB_TOKEN" \
+      -H "Accept: application/vnd.github.v3+json" \
+      https://api.github.com/repos/$OWNER/$REPO/pulls \
+      -d @-
 ```
 
 ### Extracting Owner/Repo from Git Remote
@@ -185,7 +179,8 @@ Re-check CI status using the commands from Section 4 above.
 
 > CI failures and PR review comments are different.
 > CI failures can be fixed mechanically after root-cause diagnosis.
-> Review comments must first be routed to `pr-feedback-triage`. Do not auto-fix review comments merely because they are unresolved.
+> Review comments must first be routed to `pr-feedback-triage`.
+> Do not auto-fix review comments merely because they are unresolved.
 
 ### Auto-Fix Loop Pattern
 
@@ -197,6 +192,13 @@ Re-check CI status using the commands from Section 4 above.
 6. Repeat if still failing (up to 3 attempts, then ask the user)
 
 ## 6. Merging
+
+Before merge, require all mandatory checks to pass and every review finding to have a
+visible disposition. Route only findings that affect the current PR's claim, acceptance or
+proof obligations, required checks, user-visible correctness, hard policy, or PR-caused
+regressions through another remediation cycle. A true localized low-risk maintainability
+finding may instead follow `pr-feedback-triage`'s `Backlogged as minor technical debt`
+route, with a linked batched debt issue and evidence that the PR remains complete.
 
 **With gh:**
 ```bash
@@ -233,28 +235,49 @@ Merge methods: `"merge"` (merge commit), `"squash"`, `"rebase"`.
 
 ## 7. Complete Workflow Example
 
+This example assumes the repository is governed by `itree` and has an existing open
+grouping parent. For a repository explicitly outside `itree` governance, use the raw
+creation route in `issues.md` instead. For milestone-and-ledger creation, use the canonical
+[released milestone-and-ledger route](SKILL.md#released-milestone-and-ledger-route).
+
 ```bash
 # 1. Start from clean main
 git checkout main && git pull origin main
 
 # 2. Branch
 git checkout -b fix/login-redirect-bug
+# 3. Externalize the finalized plan into the existing issue tree beneath an explicit open
+#    grouping parent. Create .pr/PR_BODY.md as the issue-linked claim map before implementation
+#    defines its own success criteria. Include Closes only for full claims and Refs for
+#    parents, partial claims, and deferred work.
+mkdir -p .pr
+touch .pr/PR_BODY.md
+$EDITOR .pr/PR_BODY.md
+git add .pr/PR_BODY.md
+git commit -m "Add PR tracking contract"
+git push -u origin HEAD
+gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --milestone "<milestone>" --draft
+gh pr view --json title,body,milestone,closingIssuesReferences,isDraft
 
-# 3. (Agent makes code changes)
+# 4. (Agent makes code changes while the draft PR tracks open claim work)
 
-# 4. Commit
+# 5. Commit code changes
 git add src/auth/login.py tests/test_login.py
 git commit -m "fix: correct redirect URL after login"
 
-# 5. Push
+# 6. Push implementation updates
 git push -u origin HEAD
 
-# 6. Create PR
-gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --draft
+# 7. Republish the PR body as claim items are completed; keep deferred work out of checkboxes
+gh pr edit --body-file .pr/PR_BODY.md --milestone "<milestone>"
 
-# 7. Monitor CI
+# 8. Monitor CI while finishing claimed issue/proof work; deferred work stays out of checkboxes
 gh pr checks --watch
 
-# 8. Merge when green
+# 9. Mark ready only after every claimed issue/proof item is complete and evidenced
+gh pr ready <PR_NUMBER>
+gh pr comment <PR_NUMBER> --body '@codex review'
+
+# 10. Merge when green
 gh pr merge --squash --delete-branch
 ```

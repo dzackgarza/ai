@@ -19,13 +19,17 @@ repeatable provider maintenance scripts in `scripts/`.
 From the repo root:
 
 ```bash
-just providers-validate
-just providers-validate google
-just openrouter-sync
-just providers-debug opencode
-just openrouter-probe-endpoints
-just openrouter-probe-tool-calling
+just providers-validate            # all providers, fails (exit 1) on drift
+just providers-validate nvidia     # single provider, fails on drift
+just providers-debug nvidia        # single provider, warn-only (no exit 1)
 ```
+
+`providers-validate` checks directly-queryable providers (any config with
+`options.baseURL`, e.g. NVIDIA NIM, VectorEngine, Antigravity) against their
+own live `/models` endpoint — authoritative over the third-party models.dev
+mirror. Every other provider is checked against models.dev. Either check
+fails the run if a whitelisted model has rotated off the live catalog or a
+live model isn't yet triaged into the whitelist or blacklist.
 
 ## Placement Rules
 

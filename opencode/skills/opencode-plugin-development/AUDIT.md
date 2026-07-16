@@ -69,7 +69,8 @@ patterns, use `opencode-cli/async-injection.md`.
 
 - No committed secrets, tokens, keys, or passwords in tracked files.
 
-- No development debris such as `.serena/`, `__pycache__/`, scratch logs, temp dirs, or
+- No development debris such as local agent-tool state directories, `__pycache__/`,
+  scratch logs, temp dirs, or
   giant debug dumps.
 
 - No package repo commits user-specific absolute runtime paths such as `/home/...`,

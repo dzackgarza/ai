@@ -1,6 +1,6 @@
 ---
 name: response-preparation
-description: Use before writing any completion report, progress update, or status response to the user. 
+description: Use before a substantive or multi-step completion report, progress synthesis, or status response when the user needs information not already visible in the result. Skip direct answers, obvious corrections, and trivial edit acknowledgments.
 ---
 # Response Preparation
 
@@ -68,6 +68,38 @@ If you can complete it, that sentence IS your response (or the seed of it).
 Do not pad it with status, summaries, or template sections.
 The user asked for a task, not a report — only communicate what the task couldn’t
 communicate for itself.
+
+## Frame Fidelity Gate
+
+Before answering, identify the object the user asked you to judge or transform.
+
+Use this sentence internally:
+
+**“The user asked about _____; the tempting adjacent object is _____; my response must
+stay on _____.”**
+
+If the user asked for a case study, postmortem, review, critique, or failure analysis,
+do not answer by summarizing the object-level problem inside the source. The source
+material is evidence. The requested output is the judgment about that evidence.
+
+When the evidence is a correction sequence, the user usually needs the sequence-level
+pattern: what each correction had to remove, which prior assumption survived too long,
+and where the agent should have reset the frame. A final solution summary is not a
+substitute for that analysis.
+
+## Positive Artifact Gate
+
+Do not preserve correction history inside the artifact or answer unless the user asked
+for the history. A final plan, spec, recommendation, or implementation note should state
+what to do, not carry a scar tissue list of rejected alternatives.
+
+If your draft contains "do not" bullets, caveats, or disclaimers that exist only because
+earlier turns were wrong, rewrite the artifact as a positive contract. Keep negative
+rules only when they are durable constraints a future worker must obey.
+
+If a correction stripped the answer down to a simple solution, check that the response
+still contains the concrete boundary the user needs: where action happens, what data
+moves, what owns the result, and how correctness would be observed.
 
 ## Why Not Checklists
 

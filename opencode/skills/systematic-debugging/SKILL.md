@@ -13,7 +13,7 @@ metadata:
     - investigation
     related_skills:
     - test-driven-development
-    - writing-plans
+    - plan
     - subagent-driven-development
 ---
 
@@ -25,6 +25,8 @@ metadata:
 - When To Use
 - Visible Ledger
 - Operating Gates
+  - Tight Feedback Loop
+  - Minimize The Reproducer
 - Formal Reasoning Rules
 - Pattern And Contract Reconciliation
 - Instrumentation Standards
@@ -169,6 +171,47 @@ Do this before diagnosing:
   skipped, run it now.
 
 Do not proceed if the only evidence is a summary, a passing unrelated test, a missing string, a hunch, or a single stale artifact.
+
+### Tight Feedback Loop
+
+Before diagnosing, build one command or script that can catch the user's exact symptom.
+This loop is the primary debugging product; bisection, hypotheses, and instrumentation
+consume it.
+
+A valid loop is:
+
+- **Red-capable**: it exercises the real bug path and asserts the observed symptom, not
+  merely "does not crash" or "exits nonzero".
+- **Agent-runnable**: it can run unattended as a test, curl/HTTP script, CLI fixture,
+  browser script, captured-trace replay, differential runner, fuzz/property loop, or
+  bisect harness. Human-in-the-loop steps are last resort and must be scripted so the
+  human returns structured output.
+- **Deterministic enough**: stable verdict for deterministic bugs; for flakes, raise the
+  reproduction rate with repetition, parallel triggers, stress, pinned clocks/seeds, or
+  narrowed timing windows until the loop is debuggable.
+- **Tight**: narrow enough to rerun frequently, sharp enough to fail only on the target
+  symptom, and isolated from unrelated setup, network, filesystem, or global state.
+
+If no red-capable loop exists, stop. Record what was tried and ask for the missing
+artifact or access: reproducing environment, HAR/log/core dump, screen recording with
+timestamps, captured payload, or permission to add temporary instrumentation. Do not
+continue to hypothesis testing from vibes.
+
+Useful loop shapes, in order of preference when they reach the real bug path: failing
+boundary test; HTTP script against a dev server; CLI fixture with output diff; headless
+browser script asserting DOM, console, or network; captured trace replay; throwaway
+harness through the same source-of-truth code path; property/fuzz loop; bisection or
+differential runner.
+
+### Minimize The Reproducer
+
+After the loop goes red, shrink it before hypothesizing. Remove inputs, callers, config,
+data, and steps one at a time, rerunning the loop after each cut.
+
+The minimized reproducer is ready when every remaining element is load-bearing: removing
+any one of them makes the loop go green or changes the symptom. Wrong-bug reproducers are
+invalid; if the loop catches a nearby failure instead of the user's reported symptom,
+return to the feedback-loop gate.
 
 ### Inspect Real Data Shape
 
@@ -398,6 +441,21 @@ For generated-output or render bugs:
 - Compare generated artifacts against served artifacts before blaming runtime code.
 - Do not edit templates, filters, serializers, or renderers until the boundary that first corrupts output is known.
 
+### Probe Discipline
+
+Every probe must test a specific prediction in the ledger. Change one variable at a
+time. Prefer debugger or REPL inspection when available; use targeted boundary logs only
+when they answer a named hypothesis. Never "log everything and grep."
+
+Temporary instrumentation must carry a unique tag such as `[DEBUG-a4f2]`. The cleanup
+criterion is not "I think I removed it"; the tag must be searchable and absent before
+completion. Untagged debug debris is forbidden because it cannot be reliably removed.
+
+For performance regressions, establish a measurement loop before changing code: timing
+harness, profiler, trace, query plan, flamegraph, or comparable baseline. Logs are usually
+the wrong first instrument for performance. Measure first, bisect or compare second, fix
+third.
+
 ### Debugging Surface Discipline
 
 A local failure is not merely a defect to patch. It is evidence that the repository lacks a sufficient observation/isolation surface. Debugging must leave behind better observability and isolation than it found.
@@ -463,12 +521,15 @@ No implementation fix is allowed until the ledger contains:
 - No unresolved contradiction.
 - A causal chain from facts to root cause.
 - A test or proof surface that will fail for the root cause, not merely for absence of the intended fix.
+- A reproducible end-to-end failure artifact (command/input sequence + environment) before any patch is planned.
 
 The fix must change one causal factor.
 Do not bundle refactors, cleanup, formatting-only changes, test rewrites, dependency changes, and behavior changes unless the ledger proves they are the same causal factor.
 
 For user-reported bugs:
 
+- Capture and preserve an end-to-end reproduction command/action sequence before the fix attempt;
+  do not let a unit test be the first proof of the bug.
 - Create the red test or proof surface before fixing when project policy requires it.
 - The test must fail because the bug exists, not because the proposed fix is absent.
 - A mock proves only the mock unless the ledger proves the mock is observing the same boundary as the real failure.

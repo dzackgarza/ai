@@ -1,30 +1,21 @@
 common:
-  serena:
-    description: Semantic code editing and navigation
-    command: uvx
-    args:
-      - --from
-      - git+https://github.com/oraios/serena
-      - serena
-      - start-mcp-server
-      - --project-from-cwd
-    enabled: true
   sdl-mcp:
-    description: SDL MCP server
-    command: npx
-    args:
-      - sdl-mcp@latest
-      - serve
-      - --stdio
+    description: SDL MCP server (shared HTTP service, systemd --user)
+    type: remote
+    url: http://127.0.0.1:39150/mcp
     enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
-    command: /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/.venv/bin/python
+    command: uv
     args:
-      - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server/server.py
+    - run
+    - --directory
+    - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server
+    - python
+    - server.py
     enabled: true
     exclude_harnesses:
-      - opencode
+    - opencode
     env:
       SEARXNG_INSTANCE_URL: '{env:SEARXNG_INSTANCE_URL}'
 harnesses:

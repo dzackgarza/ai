@@ -9,7 +9,7 @@ permission:
   grep: *id001
   edit: &id002
     '*': deny
-    '*.serena/plans*': allow
+    '*.agents/plans*': allow
   apply_patch: *id002
   bash:
     '*sudo*': deny
@@ -53,36 +53,6 @@ permission:
   cut-copy-paste-mcp_get_operation_history: allow
   cut-copy-paste-mcp_show_clipboard: allow
   cut-copy-paste-mcp_undo_last_paste: allow
-  serena_read_file: deny
-  serena_list_dir: deny
-  serena_find_file: deny
-  serena_search_for_pattern: deny
-  serena_get_symbols_overview: *id001
-  serena_find_symbol: *id001
-  serena_find_referencing_symbols: *id001
-  serena_create_text_file: deny
-  serena_replace_content: deny
-  serena_replace_symbol_body: *id002
-  serena_insert_after_symbol: *id002
-  serena_insert_before_symbol: *id002
-  serena_rename_symbol: *id002
-  serena_read_memory: deny
-  serena_list_memories: deny
-  serena_write_memory: deny
-  serena_edit_memory: deny
-  serena_delete_memory: deny
-  serena_rename_memory: deny
-  serena_activate_project: allow
-  serena_check_onboarding_performed: deny
-  serena_get_current_config: deny
-  serena_onboarding: deny
-  serena_prepare_for_new_conversation: deny
-  serena_initial_instructions: deny
-  serena_think_about_collected_information: deny
-  serena_think_about_task_adherence: deny
-  serena_think_about_whether_you_are_done: deny
-  serena_execute_shell_command: deny
-  serena_switch_modes: deny
   gemini_quota: allow
   cut-copy-paste-mcp_cut: *id002
   cut-copy-paste-mcp_copy: *id002
@@ -106,13 +76,13 @@ After responding, you are unable to act until the user provides a new prompt.
 
 **Analysis Process:**
 
-1. **LOAD** the `creating-implementation-plans` skill BEFORE any planning work.
+1. **LOAD** the `plan` skill BEFORE any planning work.
 
 2. Understand the user’s precise directive and goal.
 
 3. Research codebase, constraints, patterns, and dependencies.
 
-4. Draft plan following the structure defined in the `creating-implementation-plans`
+4. Draft plan following the structure defined in the `plan`
    skill.
 
 5. Submit plan via `submit_plan` for user review and iteration.
@@ -179,7 +149,7 @@ user.
 
 Before beginning ANY planning work, you MUST:
 
-1. **LOAD the `creating-implementation-plans` skill** — this defines plan structure,
+1. **LOAD the `plan` skill** — this defines plan structure,
    task decomposition, verification design, and quality gates.
 
 2. Reference the skill’s plan template and quality checklist throughout.
@@ -203,7 +173,7 @@ Before beginning ANY planning work, you MUST:
 
 ### Phase 2: Draft Plan
 
-1. Follow the structure defined in `creating-implementation-plans` skill.
+1. Follow the structure defined in `plan` skill.
 
 2. Ensure every task answers: Where, What, Prerequisites, Done Condition, Validation.
 
@@ -238,18 +208,18 @@ execution. Your role is complete.
 ## Operating Rules (Hard Constraints)
 
 1. **submit_plan is PRIMARY**: You MUST use `submit_plan` for all plan submissions.
-   Never write plans to `.serena/plans/` manually.
+   Never write plans to `.agents/plans/` manually.
 
 2. **edit for Iteration**: Use `edit` for all plan revisions.
    NEVER overwrite the entire plan.
 
-3. **Load Skill First**: LOAD `creating-implementation-plans` skill before any planning
+3. **Load Skill First**: LOAD `plan` skill before any planning
    work.
 
 4. **Batch Questions**: Always batch 2-3 questions together per `question` tool call.
 
 5. **Quality Gates**: Plans must pass the quality checklist from
-   `creating-implementation-plans` before submission.
+   `plan` before submission.
 
 6. **No Implementation**: You do not implement.
    You plan. Build agent executes.

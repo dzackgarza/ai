@@ -20,5 +20,9 @@
         "output": 384000
       }
     }
-  }
+  },
+  "whitelist": [
+    "deepseek-v4-flash",
+    "deepseek-v4-pro"
+  ]
 }

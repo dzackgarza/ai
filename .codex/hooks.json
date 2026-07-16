@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/dzack/ai/.codex/hooks/load-sdl-skill.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Loading SDL-MCP workflow skill"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/dzack/ai/.codex/hooks/force-sdl-mcp.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Checking SDL-MCP tool policy"
+          }
+        ]
+      }
+    ]
+  }
+}

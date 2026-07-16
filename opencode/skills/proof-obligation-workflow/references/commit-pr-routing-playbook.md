@@ -60,23 +60,34 @@ Use `PR Manager` mode to open a PR with enough context for independent review.
 Include:
 
 ```markdown
-## Summary
-What changed.
+## Intended result
+Externally observable project or user result.
+
+## GitHub tracking
+- Target issue set / subtree:
+- Milestone:
+- Closes on merge:
+- References only:
 
 ## User-facing requirements
 REQ IDs and short descriptions.
 
-## Proof obligations
-AOB/IOB IDs covered.
+## Proof claims
+- Claimed obligations:
+- Partially claimed obligations:
+- Explicitly not claimed:
 
 ## Scope
 Included and excluded MVP or feature scope.
 
+## Implementation plan
+Stacked work, parallel work, and integration point.
+
 ## Architecture
 Chosen route, key dependencies, owned-surface reductions.
 
-## Tests
-Test matrix and important negative tests.
+## Evidence
+Tests, CI, screenshots, logs, artifacts, and review evidence mapped to each obligation.
 
 ## QC
 Local and global QC status.
@@ -84,11 +95,8 @@ Local and global QC status.
 ## Risk
 Threat model, data risks, migration risks, dependency risks.
 
-## Screenshots or demo
-Only if relevant.
-
 ## Deferred work
-Explicit non-MVP items.
+Explicit non-MVP items and linked follow-up issues.
 ```
 
 Gate:

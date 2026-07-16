@@ -74,6 +74,8 @@ install-mcps *ARGS="":
     #!/usr/bin/env bash
     set -euo pipefail
     cd "{{ repo }}"
+    mkdir -p "$HOME/.config/sdl-mcp"
+    ln -snf "{{ repo }}/mcp/sdlmcp.config.json" "$HOME/.config/sdl-mcp/sdlmcp.config.json"
     direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
 
 # =============================================================================

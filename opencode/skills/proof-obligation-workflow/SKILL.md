@@ -139,6 +139,11 @@ as input rather than editing it opportunistically.
 - Treat technical requests from users as hypotheses unless they are stated operational
   constraints.
 - Keep proof obligations implementation-agnostic until architecture is selected.
+- In GitHub-externalized work, proof obligations normally live in the owning story or
+  feature issue body as definition-of-done material. Split a proof obligation into a
+  child issue only when it is independently trackable, reviewable, or implementable.
+  Tests, checks, screenshots, logs, CI runs, and artifacts are evidence for obligations,
+  not obligations themselves.
 - For every nontrivial behavior, ask why local code should exist at all.
 - Delegating behavior to a dependency transfers implementation burden upstream but
   keeps local obligations for integration, versioning, configuration, and user-visible

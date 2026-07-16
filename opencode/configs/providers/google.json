@@ -1,6 +1,8 @@
 {
   "blacklist": [
+    "antigravity-preview-05-2026",
     "aqa",
+    "deep-research-preview-04-2026",
     "gemini-2.0-flash",
     "gemini-2.0-flash-001",
     "gemini-2.0-flash-lite",
@@ -13,26 +15,39 @@
     "gemini-2.5-flash-native-audio-preview-12-2025",
     "gemini-2.5-flash-preview-tts",
     "gemini-2.5-pro-preview-tts",
+    "gemini-3-pro-image",
     "gemini-3-pro-image-preview",
+    "gemini-3.1-flash-image",
     "gemini-3.1-flash-image-preview",
+    "gemini-3.1-flash-lite-image",
+    "gemini-3.1-flash-live-preview",
+    "gemini-3.1-flash-tts-preview",
+    "gemini-3.5-live-translate-preview",
     "gemini-embedding-001",
+    "gemini-embedding-2",
     "gemini-embedding-2-preview",
+    "gemini-omni-flash-preview",
     "gemini-robotics-er-1.5-preview",
-    "gemma-3-1b-it",
-    "gemma-3-4b-it",
+    "gemini-robotics-er-1.6-preview",
     "gemma-3-12b-it",
+    "gemma-3-1b-it",
     "gemma-3-27b-it",
+    "gemma-3-4b-it",
     "gemma-3n-e2b-it",
     "gemma-3n-e4b-it",
+    "gemma-4-26b-a4b-it",
     "imagen-4.0-fast-generate-001",
     "imagen-4.0-generate-001",
     "imagen-4.0-ultra-generate-001",
+    "lyria-3-clip-preview",
+    "lyria-3-pro-preview",
     "nano-banana-pro-preview",
     "veo-2.0-generate-001",
     "veo-3.0-fast-generate-001",
     "veo-3.0-generate-001",
     "veo-3.1-fast-generate-preview",
-    "veo-3.1-generate-preview"
+    "veo-3.1-generate-preview",
+    "veo-3.1-lite-generate-preview"
   ],
   "models": {
     "deep-research-pro-preview-12-2025": {
@@ -152,6 +167,36 @@
     },
     "gemini-pro-latest": {
       "name": "Gemini Pro Latest"
+    },
+    "deep-research-max-preview-04-2026": {
+      "name": "Deep Research Max Preview"
+    },
+    "gemini-3.1-flash-lite": {
+      "name": "Gemini 3.1 Flash Lite"
+    },
+    "gemini-3.5-flash": {
+      "name": "Gemini 3.5 Flash"
+    },
+    "gemma-4-31b-it": {
+      "name": "Gemma 4 31B"
     }
-  }
+  },
+  "whitelist": [
+    "deep-research-max-preview-04-2026",
+    "deep-research-pro-preview-12-2025",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-pro",
+    "gemini-3-flash-preview",
+    "gemini-3-pro-preview",
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-3.1-pro-preview",
+    "gemini-3.1-pro-preview-customtools",
+    "gemini-3.5-flash",
+    "gemini-flash-latest",
+    "gemini-flash-lite-latest",
+    "gemini-pro-latest",
+    "gemma-4-31b-it"
+  ]
 }

@@ -2,7 +2,6 @@
 name: git-guidelines
 description: 'Use when performing any git or GitHub operation — staging, committing, branching, pushing, PRs, code review, issues, auth, repo management, or deleting files. Consolidated entry point for all git skills.'
 ---
-
 # Git Guidelines
 
 ## Structure
@@ -19,7 +18,8 @@ Reference docs within this skill:
 - `repo-management.md` — clone, create, fork, settings, releases, workflows
 - `scripts/extract_unresolved_issues/` — PR review scanning tool (see PR Review Workflow below)
 
-The former separate skills `github-auth`, `github-pr-workflow`, `github-code-review`, `github-issues`, and `github-repo-management` have been consolidated here.
+The former separate skills `github-auth`, `github-pr-workflow`, `github-code-review`,
+`github-issues`, and `github-repo-management` have been consolidated here.
 Each old location remains as a redirect stub.
 
 ## The Edit Workflow (Mandatory)
@@ -30,14 +30,16 @@ Each old location remains as a redirect stub.
 
 2. **Checkpoint commit** the current target-file state before touching it.
    If the target file is clean, `HEAD` is the checkpoint.
-   If the target file already has uncommitted changes, commit those changes first or stop and ask how to proceed.
+   If the target file already has uncommitted changes, commit those changes first or stop
+   and ask how to proceed.
    Staging is not a checkpoint.
 
 3. **Edit** the file
 
 4. **Verify** — run `git diff` immediately after to confirm what changed
 
-5. **Commit** every coherent substantive change before switching tasks, reporting completion, starting a risky follow-up edit, or leaving work to another session.
+5. **Commit** every coherent substantive change before switching tasks, reporting
+   completion, starting a risky follow-up edit, or leaving work to another session.
    Do not leave real work only in the index or working tree.
 
 This applies to **every edit** — one-liners, multi-file changes, everything.
@@ -47,7 +49,8 @@ No exceptions.
 
 You are about to violate the workflow if:
 
-- You are writing an Edit/Write tool call and the target file has uncommitted changes that are not already committed as the pre-edit checkpoint
+- You are writing an Edit/Write tool call and the target file has uncommitted changes
+  that are not already committed as the pre-edit checkpoint
 
 - You are “just fixing a typo” (still requires checkpoint)
 
@@ -70,11 +73,31 @@ Bundling unrelated work is not cleaner history — it is missing provenance.
 `rm` is irreversible.
 Before deleting: “Can this be recovered if I’m wrong?”
 
+## Destructive Git Operations
+
+Never run `git checkout`, `git reset`, `git revert`, `git restore`, `git stash`, or any
+other history/state operation that discards or hides work unless the user literally and
+precisely requested that operation.
+
+If you need to recover an old state:
+
+- inspect the old content with read-only commands such as `git show`
+- apply forward edits that restore the desired content
+- commit the restoration as new history
+
+Do not dump an old git version over a file as a shortcut.
+The audit trail must show the original state, the mistaken edit, and the forward-facing
+repair.
+
+If a safety policy blocks a destructive operation, stop.
+Do not work around the block or pivot to a different state-manipulation command.
+
 ## Commit Messages
 
 Commit messages are the canonical record of completed work.
 The body is mandatory for any nontrivial change.
-Write it for a reader who has the diff but not the context — they can see *what* changed, so tell them *why*, *how you decided*, and *what to expect*.
+Write it for a reader who has the diff but not the context — they can see *what*
+changed, so tell them *why*, *how you decided*, and *what to expect*.
 
 ### Format
 
@@ -102,12 +125,14 @@ EOF
 
 - **Imperative mood** in summary: “Add X”, “Fix Y”, “Remove Z”
 
-- **Body is mandatory** for multi-file changes, refactors, and any change where rationale is not obvious from the diff.
+- **Body is mandatory** for multi-file changes, refactors, and any change where
+  rationale is not obvious from the diff.
 
 - **Why before what.** The diff shows what changed.
   The message explains why.
 
-- **Decisions section**: capture tradeoffs, rejected alternatives, and constraints that shaped the approach.
+- **Decisions section**: capture tradeoffs, rejected alternatives, and constraints that
+  shaped the approach.
   A future reader should understand not just what you chose but what you ruled out.
 
 - **Expected outcome**: state the observable result.
@@ -190,7 +215,8 @@ git add .
 
 **DO** commit proactively.
 User requests to commit or push are a lower bound, not permission gates.
-If you changed tracked files in a way that advances, preserves, repairs, or tests the task, commit it.
+If you changed tracked files in a way that advances, preserves, repairs, or tests the
+task, commit it.
 
 Commit immediately after:
 
@@ -223,8 +249,11 @@ Do not let hours of work accumulate only in the index or working tree.
 
 ## Push Cadence
 
-Push after committing when the user asked for pushed work, when the task depends on GitHub-visible auditability, before claiming completion, and before any handoff after substantive work.
-If push fails, report the exact failure instead of treating a local commit as remotely auditable.
+Push after committing when the user asked for pushed work, when the task depends on
+GitHub-visible auditability, before claiming completion, and before any handoff after
+substantive work.
+If push fails, report the exact failure instead of treating a local commit as remotely
+auditable.
 
 ## Commit Messages vs Memory vs Repo Artifacts
 
@@ -239,39 +268,27 @@ Completed work history belongs in commits, never in repo docs.
 
 ## PR Review Workflow
 
-For nontrivial features: branch + PR → tag `@codex review` → wait 3–5 min for automated reviewers (Codex, Qodo, etc.) to post.
+For nontrivial features: branch + draft PR tracks implementation while work is still
+incomplete. Completion is not local implementation; it includes GitHub PR state.
 
-### Canonical PR tracker tree
+A PR-scoped task is not complete until:
 
-Every PR must converge on the nested task-tree tracker defined by `creating-implementation-plans`. This applies even when the PR already exists and was opened with a scattered or post-hoc body.
+- the branch is pushed and the PR body or claim map is current;
+- the PR is no longer draft (`gh pr ready <PR_NUMBER>`);
+- the automated review loop has been explicitly triggered (`gh pr comment <PR_NUMBER>
+  --body '@codex review'`, or the repo's documented equivalent);
+- returned review and check feedback has been scanned with `extract_unresolved_issues`
+  and routed through `pr-feedback-triage`, or a real blocker has been reported.
 
-Before creating, updating, requesting review on, reviewing, or merging a PR:
-
-- Read the live PR body.
-- If it lacks one nested checklist tree, replace the body with one.
-- Preserve existing useful prose as non-checkbox appendices.
-- Keep all checked and unchecked work under its real parent task.
-- Do not create separate checkbox sections for completed work, outstanding work, bookkeeping, red-map follow-up, feedback, or provenance.
-- Do not put checkboxes in PR comments.
-- Every checked line must include same-line proof, normally `Proof commit: <sha>`.
-
-The required tree shape is:
-
-```md
-- [ ] <Milestone or goal>
-  - [ ] <Workstream or phase>
-    - [ ] <Task>
-      - [ ] <Subtask or proof obligation>
-```
-
-Checked means complete.
-Parent items stay unchecked until every required child is complete.
-Blocked work stays unchecked with `Blocked: <reason>`.
+Do not write a completion report while any of those remain undone. Report the missing
+PR-state or review-loop step as incomplete required work.
 
 ### extract_unresolved_issues: scan all PR feedback first
 
-Before reading any PR comments manually, **scan all feedback surfaces at once** using the bundled CLI tool.
-This is the primary entry point for handling PR feedback — it automatically pulls inline review threads, issue-style comments, and automated check-run errors in a single command.
+Before reading any PR comments manually, **scan all feedback surfaces at once** using
+the bundled CLI tool. This is the primary entry point for handling PR feedback — it
+automatically pulls inline review threads, issue-style comments, and automated check-run
+errors in a single command.
 
 ```bash
 # Summarize all feedback on a PR
@@ -300,11 +317,15 @@ uv run --directory ~/ai/opencode/skills/git-guidelines/scripts/extract_unresolve
     "Accepted in commit 1234abc. Reason: <why this satisfies the review concern>."
 ```
 
-**The output is never stale.** Automated bots (Gemini, kilo-code-bot, and CI checks) update comments in place when new commits land.
-Open threads stay listed until "Resolve Conversation" is clicked.
-Every item requires disposition — there is no such thing as an already-handled item that still appears.
+**The output is never stale.** Automated bots (Gemini, kilo-code-bot, and CI checks) update
+comments in place when new commits land. Open threads stay listed until "Resolve
+Conversation" is clicked. Every item requires disposition — there is no such thing as
+an already-handled item that still appears.
 
-**All checks, warnings, and notices must be resolved before the PR can be accepted.** This includes low-severity notices from automated tools.
+**All required checks must pass, and every warning, notice, and review item must receive a
+visible disposition before the PR can be accepted.** A true minor-debt finding may be
+backlogged under the current-PR remediation gate below; it need not manufacture another
+code cycle merely to make the thread disappear.
 
 **Loop until the check clears:**
 ```bash
@@ -319,37 +340,49 @@ Stop only when `gh pr checks` shows all green and `issues` reports `NOT RESOLVED
 
 ### Publish review guidance before submission
 
-Before opening a PR, updating a PR for review, or tagging automated reviewers, ensure the target repo’s local `AGENTS.md` contains the canonical review guidance from `~/ai/PR_GUIDANCE.md`.
+Before opening a PR, updating a PR for review, or tagging automated reviewers, ensure
+the target repo’s local `AGENTS.md` contains the canonical review guidance from
+the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
-`~/ai/PR_GUIDANCE.md` is the source of truth.
-The repo-local `AGENTS.md` copy is a required distribution copy because Codex and other review agents read the target repo’s local guidance.
+The [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page is the durable source of truth.
+The repo-local `AGENTS.md` copy is a required distribution copy because Codex and other
+review agents read the target repo’s local guidance.
 Do not replace it with a link, summary, or paraphrase.
 
 Required handling:
 
-- If the target repo has no local `AGENTS.md`, create one containing the canonical `# Review Guidelines` section from `~/ai/PR_GUIDANCE.md`.
+- If the target repo has no local `AGENTS.md`, create one containing the canonical
+  `# Review Guidelines` section from the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
-- If local `AGENTS.md` already has a top-level `# Review Guidelines` section, replace that section with the current contents of `~/ai/PR_GUIDANCE.md`.
+- If local `AGENTS.md` already has a top-level `# Review Guidelines` section, replace
+  that section with the current contents of the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
-- If local `AGENTS.md` lacks that section, append the current contents of `~/ai/PR_GUIDANCE.md`.
+- If local `AGENTS.md` lacks that section, append the current contents of
+  the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page.
 
 - Do not create duplicate `# Review Guidelines` sections.
 
-- Verify with `git diff` that the section is present, current, and the only local `AGENTS.md` change unless the user requested other edits.
+- Verify with `git diff` that the section is present, current, and the only local
+  `AGENTS.md` change unless the user requested other edits.
 
-If repo policy or permissions prevent updating local `AGENTS.md`, do not request review yet.
-Report the blocker and the exact repo policy or permission issue.
+If repo policy or permissions prevent updating local `AGENTS.md`, do not request review
+yet. Report the blocker and the exact repo policy or permission issue.
 
 ### Review feedback is a judgment task
 
 Review comments are not administrative obstacles to clear.
-They are claims about the work that must be understood, accepted or rejected, and made legible to the human maintainer.
+They are claims about the work that must be understood, accepted or rejected, and made
+legible to the human maintainer.
 
-Before resolving a thread, reporting a PR as clean, or moving to check polling, you must be able to state:
+Before resolving a thread, reporting a PR as clean, or moving to check polling, you must
+be able to state:
 
-> The reviewer is asking us to change or believe ___. The repo rule or project norm in tension is ___. The purpose of that rule is ___. My disposition is ___ because ___. The user can audit this in ___.
+> The reviewer is asking us to change or believe ___. The repo rule or project norm in
+> tension is ___. The purpose of that rule is ___. My disposition is ___ because ___.
+> The user can audit this in ___.
 
-If you cannot fill those blanks with concrete evidence from the diff, source, repo policy, or review text, you have not handled the feedback.
+If you cannot fill those blanks with concrete evidence from the diff, source, repo
+policy, or review text, you have not handled the feedback.
 Read more, inspect the code, or stop and report the blocker.
 
 Use Socratic pressure to test the disposition:
@@ -364,12 +397,28 @@ Use Socratic pressure to test the disposition:
 
 - If I reject this advice, what concrete source or policy fact defeats it?
 
-If any answer is scanner status, check status, process compliance, or a claim that a bot will re-review later, stop.
+If any answer is scanner status, check status, process compliance, or a claim that a bot
+will re-review later, stop.
 That is not judgment.
 
-### Positive disposition requires committed remediation
+### Accepted current-PR disposition requires committed remediation
 
-Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed.
+First decide whether a true finding is current-PR work. It requires the full remediation
+cycle when it affects the PR's claimed behavior, acceptance criteria, proof obligations,
+required checks, user-visible correctness, security, safety, data integrity,
+fail-loud/type/QC integrity, or a regression introduced or worsened by the PR.
+
+Disposition a finding `Backlogged as minor technical debt` only when every substantive
+condition above is absent, the concern is localized low-risk maintainability debt, batching
+it is more proportionate than another commit/push/re-review cycle, and the current PR
+remains complete and truthful without it. Append it to an existing work-family debt issue
+or create one through the owning repository's issue route. Reply on the thread with the
+evidence, issue link, and why the PR remains complete, then resolve it without remediation
+or a commit. This is not `accepted pending fix`; it cannot defer a current acceptance
+criterion or proof gap.
+
+Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review
+thread unless the remediation is already committed.
 
 Accepted feedback follows this sequence:
 1. classify the claim internally;
@@ -383,7 +432,8 @@ A thread cannot be resolved on intent.
 
 ### Top-level ledger requirement
 
-Before resolving any rejected or modified feedback thread, ensure the disposition appears in a top-level PR comment titled `Review feedback disposition ledger`.
+Before resolving any rejected or modified feedback thread, ensure the disposition appears
+in a top-level PR comment titled `Review feedback disposition ledger`.
 
 ### Split feedback from remediation
 
@@ -392,8 +442,7 @@ Every review item has two separable claims:
 1. The feedback claim: what is allegedly wrong?
 2. The suggested remediation: what change is being proposed?
 
-Classify both.
-A true claim does not make the proposed fix acceptable.
+Classify both. A true claim does not make the proposed fix acceptable.
 A bad proposed fix does not make the underlying claim false.
 
 Disposition options:
@@ -405,7 +454,8 @@ Disposition options:
 ### Interpret policy by purpose
 
 Repo rules exist to protect the work, not to excuse abandoning it.
-When review feedback conflicts with a literal reading of repo guidance, do judicial analysis:
+When review feedback conflicts with a literal reading of repo guidance, do judicial
+analysis:
 
 - Identify the substantive concern raised by the reviewer.
 
@@ -418,14 +468,17 @@ When review feedback conflicts with a literal reading of repo guidance, do judic
 - Leave the reasoning in the thread response or commit message.
 
 Some correct decisions may contradict a literal reading of a repo rule.
-That is allowed only when the decision preserves the rule’s purpose, is source-backed, and leaves a clear audit trail.
-Never use this to bypass hard safety constraints such as secrets handling, destructive git operations, or explicit user refusal.
+That is allowed only when the decision preserves the rule’s purpose, is source-backed,
+and leaves a clear audit trail.
+Never use this to bypass hard safety constraints such as secrets handling, destructive
+git operations, or explicit user refusal.
 
 ### Thread responses are audit notes for users
 
 A review reply is not a conversation with the bot.
 Automated reviewers usually will not return to debate the point.
-Write every reply for the human maintainer who needs to understand exactly why the suggestion was accepted, modified, or rejected.
+Write every reply for the human maintainer who needs to understand exactly why the
+suggestion was accepted, modified, or rejected.
 
 Each substantive reply must include:
 
@@ -433,9 +486,11 @@ Each substantive reply must include:
 
 - Reason: the source evidence, repo policy, and tradeoff that determined the decision.
 
-- Audit anchor: the commit, file, line, command output, or linked issue where the user can verify the disposition.
+- Audit anchor: the commit, file, line, command output, or linked issue where the user
+  can verify the disposition.
 
-- Policy interpretation: when repo guidance is involved, explain how the action follows the spirit of the rule, not merely its literal text.
+- Policy interpretation: when repo guidance is involved, explain how the action follows
+  the spirit of the rule, not merely its literal text.
 
 Visible thread reply must state:
 
@@ -445,8 +500,7 @@ Visible thread reply must state:
 - Code/action taken or explicit non-change:
 - Audit anchor:
 
-A PR thread resolved by deletion must not say only “removed.”
-It must follow the deletion disposition format:
+A PR thread resolved by deletion must not say only “removed.” It must follow the deletion disposition format:
 
 - Deleted artifact:
 - Original burden:
@@ -457,28 +511,37 @@ It must follow the deletion disposition format:
   - remains open in:
 - Verification:
 
-Do not write replies like “fixed”, “done”, “addressed”, “acknowledged”, or “will follow up” unless the surrounding text contains the actual disposition and evidence.
+Do not write replies like “fixed”, “done”, “addressed”, “acknowledged”, or “will follow
+up” unless the surrounding text contains the actual disposition and evidence.
 Do not address the reviewer as if it is waiting to chat.
 
-Never resolve a review thread without first posting a visible human-readable reply on that thread.
-The resolve-tool justification is not an audit trail; it is hidden from the user in the normal PR reading flow.
-Resolving without a visible reply hides feedback and is banned, even if the code was changed correctly.
+Never resolve a review thread without first posting a visible human-readable reply on
+that thread. The resolve-tool justification is not an audit trail; it is hidden from the
+user in the normal PR reading flow.
+Resolving without a visible reply hides feedback and is banned, even if the code was
+changed correctly.
 
 ### Banned PR-review behavior
 
-- Treating `NOT RESOLVED: 0`, green checks, or a clean scanner as proof that review advice was understood.
+- Treating `NOT RESOLVED: 0`, green checks, or a clean scanner as proof that review
+  advice was understood.
 
-- Treating a hook, policy, or tool rejection as a terminal reason to abandon source-backed feedback without interpreting the rule’s purpose.
+- Treating a hook, policy, or tool rejection as a terminal reason to abandon
+  source-backed feedback without interpreting the rule’s purpose.
 
-- Resolving a review comment without a visible thread response that records the disposition, evidence, and policy reasoning.
+- Resolving a review comment without a visible thread response that records the
+  disposition, evidence, and policy reasoning.
 
-- Resolving a thread before the code, commit message, or thread response shows the disposition and reasoning.
+- Resolving a thread before the code, commit message, or thread response shows the
+  disposition and reasoning.
 
-- Polling checks while any review, top-level comment, check annotation, or summary comment has not been substantively dispositioned.
+- Polling checks while any review, top-level comment, check annotation, or summary
+  comment has not been substantively dispositioned.
 
 - Reporting “remaining: none” when only inline threads were scanned.
 
-- Laundering feedback through process language such as “scanner clean”, “thread resolved”, or “bot pending” instead of stating the judgment made.
+- Laundering feedback through process language such as “scanner clean”, “thread
+  resolved”, or “bot pending” instead of stating the judgment made.
 
 ### “Resolve” is overloaded — clear each surface separately
 
@@ -512,18 +575,110 @@ If the user asks to use Jules for review, load:
 
 ## Issue Workflow
 
+### Owned Repo Improvement Loop
+
+For repos owned by this system, observed defects should not remain as chat residue or
+private notes.
+If an app, tool, plugin, QC gate, or agent workflow has a small observed error,
+inefficiency, false green, confusing edge case, or recurring paper cut, do one of these
+before handoff:
+
+- fix it in the current coherent work unit and commit the fix;
+- file a GitHub issue on the owning repo with evidence and concrete expected behavior;
+- if ownership or scope is ambiguous, ask the user where to file it.
+
+Do not file speculative bugs. Do not create issues for vague dissatisfaction without an
+observed example. Do not bury observed owned-repo defects only in memory; memory can note
+the durable lesson, but the actionable project gap belongs on GitHub.
+
 ### Filing Issues
 
-**All issues must be labeled immediately upon creation.**
+**All issues must be labeled immediately after creation.**
 
-Use `gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"`
+Classify the target repository before creating public execution state:
+
+- If the repository has an `itree` root, or its doctrine assigns execution state to
+  `itree`, use the `itree` creation routes below. Absence of a root is not permission to
+  bypass governance; initialize or repair the tree first.
+- Use raw `gh` or GitHub API creation only when the repository is explicitly outside
+  `itree` governance.
+
+For a governed repository without a root, create the traversal root before filing work:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree itree init <owner>/<repo> "<root title>"
+gh issue edit <new-root-issue-number> --repo <owner>/<repo> --add-label "<label>"
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <owner>/<repo>
+```
+
+When `doctor` reports a diagnostic, read its exact route before mutating state:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree itree doctor <owner>/<repo> --explain <CODE>
+```
+
+When that route identifies an orphan, use `itree triage <owner>/<repo>` to surface one
+candidate and its supported absorb, attach, or close choices. Rerun triage after each
+decision until no orphan remains, then rerun `itree doctor`.
+
+For an `itree`-governed repository, create a work unit beneath an explicit grouping
+parent:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree \
+  itree new <owner>/<repo> "<title>" \
+  --under <owner>/<repo>#<grouping-issue> \
+  --body-file issue.md
+gh issue edit <new-issue-number> --repo <owner>/<repo> --add-label "<label>"
+```
+
+`itree new` without `--under` is a non-mutating placement inquiry. It creates nothing,
+prints the existing work units and grouping targets plus exact placement commands, and
+exits nonzero. Never reinterpret omission as default-root creation.
+
+### Released milestone-and-ledger route
+
+`itree milestone` is released in [v0.1.0](https://github.com/dzackgarza/itree/releases/tag/v0.1.0).
+The annotated tag resolves to commit `777ef91d9c290a819847db36e878ee6a35b9e528`; the
+[release workflow](https://github.com/dzackgarza/itree/actions/runs/29152942172) completed
+successfully with the source archive and wheel attached. The released
+`itree milestone --help` surface and `itree doctor dzackgarza/itree --json` live GitHub
+boundary were reread from that tag.
+
+Pin the release when creating a governed milestone and ledger:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/itree@v0.1.0 \
+  itree milestone <owner>/<repo> "<milestone>" \
+  --under <owner>/<repo>#<grouping-issue> \
+  --body-file .pr/MILESTONE_LEDGER.md \
+  --issues <owner>/<repo>#<work-unit> ...
+gh issue edit <MILESTONE_LEDGER_NUMBER> --repo <owner>/<repo> --add-label "<label>"
+```
+
+The released command performs one complete preflight before ordered remote writes. Omitting
+`--under` creates nothing and prints placement guidance. A rejected or indeterminate write
+stops the untouched suffix without rollback; reread live GitHub and `itree` state before
+recovery. Do not replace the command with a manual governed sequence.
+
+For an explicitly non-`itree`-governed repository, use:
+
+```bash
+gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --label "<label>"
+```
+
+For roadmap, feature, PRD, or cross-agent planning issues, first load
+`plan/references/externalization.md`. Create story-shaped issue nodes, use native
+sub-issues for parent/child tree edges, use dependencies only for blockers, assign the
+GitHub Milestone that owns the delivery slice, and avoid turning a wiki page or issue body
+into a second live tracker.
 
 **Mandatory Issue Rules:**
 
 1. **Deep description**: Explain exactly what is happening or missing.
 
-2. **Proof**: Include relevant logs, outputs, error traces, or code snippets that PROVE the issue exists.
-   Provide as many clear examples as possible.
+2. **Proof**: Include relevant logs, outputs, error traces, or code snippets that PROVE
+   the issue exists. Provide as many clear examples as possible.
 
 3. **Concrete Expectations**: Describe new designs, specs, and expected behavior.
    Include TDD-style pseudocode showing what the expected new behavior looks like.
@@ -532,8 +687,10 @@ Use `gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --
 4. **Informative Only**: Use plain, technical language.
    No marketing or selling language.
 
-5. **No Implementation Code**: Do NOT attempt to write the actual code to fix the problem in the issue body.
-   The person filing the issue does NOT decide HOW to fix it; they provide data to more specialized design and triage agents.
+5. **No Implementation Code**: Do NOT attempt to write the actual code to fix the
+   problem in the issue body.
+   The person filing the issue does NOT decide HOW to fix it; they provide data to more
+   specialized design and triage agents.
 
 6. **No Plans**: Do not include a step-by-step “plan” to fix the issue.
    That is a separate task.
@@ -543,7 +700,8 @@ Use `gh issue create --repo <owner>/<repo> --title "..." --body-file issue.md --
 
 **Minimal Issue Template:**
 
-Create a local `.md` file for the body and pass it to `gh issue create --body-file`:
+Create a local `.md` file for the body and pass it to the applicable creation command's
+`--body-file` option:
 
 ```markdown
 # Description
@@ -571,8 +729,11 @@ Create a local `.md` file for the body and pass it to `gh issue create --body-fi
 
 - `documentation`: Improvements or additions to documentation.
 
-**Mandatory**: If a concrete problem is observed but cannot be fixed trivially in the current task, log it as an issue.
-Do not file speculative concerns; frame them as `enhancement` if necessary.
+**Mandatory**: If an observed owned-repo defect, inefficiency, false green, or recurring
+paper cut cannot be fixed in the current coherent work unit, log it as an issue on the
+owning repo.
+Do not file speculative concerns; frame observed improvement ideas as `enhancement` when
+they are not bugs.
 
 ## Common Rationalizations
 

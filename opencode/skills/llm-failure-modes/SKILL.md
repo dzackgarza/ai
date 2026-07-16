@@ -93,8 +93,23 @@ Load the relevant section for your context:
   blindness in review, failure mode inversion, impact miscalibration, replacement
   instinct, reimplementation impulse, dependency aversion bias, meta-artifact
   delegation, scale-complexity confusion, ground-up bias (churn-first workflow),
-  fallback-legacy compulsion (asymmetric risk model).
-  (20 items)
+  fallback-legacy compulsion (asymmetric risk model), availability-first tool reuse,
+  workflow phase collapse, state-channel proliferation, abstraction rebound after
+  simplification.
+  (24 items)
+
+- **Documentation and frame-contamination failures** —
+  [documentation-failures.md](documentation-failures.md) Private-context leakage,
+  naming-as-existence, audience collapse, disclosure substitution, correction-history
+  leakage, control-payload inversion, circular doctrine, and reviewer frame capture.
+  (15 items)
+
+- **Agent cognitive-distortion index** —
+  [references/agent-distortion-index.md](references/agent-distortion-index.md) Compact
+  shorthand (R/T/L/O/C/V codes) for the distortions that produce slop in documents, plans,
+  schemas, and project structure, plus the reviewer-infection failure modes to watch for in
+  your own analysis. Use the codes to label findings; keep report vocabulary neutral.
+  (60 codes + composite clusters)
 
 ### Structural and Behavioral Observations
 

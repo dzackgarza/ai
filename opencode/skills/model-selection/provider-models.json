@@ -1,0 +1,2487 @@
+{
+  "generated_at": "2026-06-27T14:02:04.913071+00:00",
+  "sources": [
+    "/home/dzack/.envrc",
+    "https://models.dev/api.json"
+  ],
+  "providers": {
+    "cloudflare": {
+      "status": "ok",
+      "endpoint": "https://api.cloudflare.com/client/v4/accounts/6669d5b34c0390c4e888c3ca067dd399/ai/models/search",
+      "model_count": 60,
+      "models": [
+        {
+          "id": "@cf/pipecat-ai/smart-turn-v2",
+          "name": "@cf/pipecat-ai/smart-turn-v2",
+          "models_dev_matched": false,
+          "description": "@cf/pipecat-ai/smart-turn-v2"
+        },
+        {
+          "id": "@cf/openai/gpt-oss-120b",
+          "name": "@cf/openai/gpt-oss-120b",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/openai/gpt-oss-120b",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "GPT OSS 120B",
+          "models_dev_family": "gpt-oss",
+          "models_dev_context": 128000,
+          "description": "@cf/openai/gpt-oss-120b"
+        },
+        {
+          "id": "@cf/baai/bge-m3",
+          "name": "@cf/baai/bge-m3",
+          "models_dev_matched": false,
+          "description": "@cf/baai/bge-m3"
+        },
+        {
+          "id": "@cf/huggingface/distilbert-sst-2-int8",
+          "name": "@cf/huggingface/distilbert-sst-2-int8",
+          "models_dev_matched": false,
+          "description": "@cf/huggingface/distilbert-sst-2-int8"
+        },
+        {
+          "id": "@cf/google/gemma-2b-it-lora",
+          "name": "@cf/google/gemma-2b-it-lora",
+          "models_dev_matched": false,
+          "description": "@cf/google/gemma-2b-it-lora"
+        },
+        {
+          "id": "@cf/black-forest-labs/flux-2-klein-9b",
+          "name": "@cf/black-forest-labs/flux-2-klein-9b",
+          "models_dev_matched": false,
+          "description": "@cf/black-forest-labs/flux-2-klein-9b"
+        },
+        {
+          "id": "@cf/meta/llama-3.2-3b-instruct",
+          "name": "@cf/meta/llama-3.2-3b-instruct",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/meta/llama-3.2-3b-instruct",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Llama 3.2 3B Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 80000,
+          "description": "@cf/meta/llama-3.2-3b-instruct"
+        },
+        {
+          "id": "@cf/meta/llama-guard-3-8b",
+          "name": "@cf/meta/llama-guard-3-8b",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/meta/llama-guard-3-8b",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Llama Guard 3 8B",
+          "models_dev_family": "llama",
+          "models_dev_context": 131072,
+          "description": "@cf/meta/llama-guard-3-8b"
+        },
+        {
+          "id": "@cf/qwen/qwen3-embedding-0.6b",
+          "name": "@cf/qwen/qwen3-embedding-0.6b",
+          "models_dev_matched": false,
+          "description": "@cf/qwen/qwen3-embedding-0.6b"
+        },
+        {
+          "id": "@cf/myshell-ai/melotts",
+          "name": "@cf/myshell-ai/melotts",
+          "models_dev_matched": false,
+          "description": "@cf/myshell-ai/melotts"
+        },
+        {
+          "id": "@cf/mistral/mistral-7b-instruct-v0.2-lora",
+          "name": "@cf/mistral/mistral-7b-instruct-v0.2-lora",
+          "models_dev_matched": false,
+          "description": "@cf/mistral/mistral-7b-instruct-v0.2-lora"
+        },
+        {
+          "id": "@cf/deepgram/aura-2-es",
+          "name": "@cf/deepgram/aura-2-es",
+          "models_dev_matched": false,
+          "description": "@cf/deepgram/aura-2-es"
+        },
+        {
+          "id": "@cf/moonshotai/kimi-k2.7-code",
+          "name": "@cf/moonshotai/kimi-k2.7-code",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/moonshotai/kimi-k2.7-code",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Kimi K2.7 Code",
+          "models_dev_family": "kimi-k2",
+          "models_dev_context": 262144,
+          "description": "@cf/moonshotai/kimi-k2.7-code"
+        },
+        {
+          "id": "@cf/openai/whisper",
+          "name": "@cf/openai/whisper",
+          "models_dev_matched": false,
+          "description": "@cf/openai/whisper"
+        },
+        {
+          "id": "@cf/pfnet/plamo-embedding-1b",
+          "name": "@cf/pfnet/plamo-embedding-1b",
+          "models_dev_matched": false,
+          "description": "@cf/pfnet/plamo-embedding-1b"
+        },
+        {
+          "id": "@cf/llava-hf/llava-1.5-7b-hf",
+          "name": "@cf/llava-hf/llava-1.5-7b-hf",
+          "models_dev_matched": false,
+          "description": "@cf/llava-hf/llava-1.5-7b-hf"
+        },
+        {
+          "id": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+          "name": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Deepseek R1 Distill Qwen 32B",
+          "models_dev_family": "deepseek-thinking",
+          "models_dev_context": 80000,
+          "description": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
+        },
+        {
+          "id": "@cf/runwayml/stable-diffusion-v1-5-inpainting",
+          "name": "@cf/runwayml/stable-diffusion-v1-5-inpainting",
+          "models_dev_matched": false,
+          "description": "@cf/runwayml/stable-diffusion-v1-5-inpainting"
+        },
+        {
+          "id": "@cf/deepgram/flux",
+          "name": "@cf/deepgram/flux",
+          "models_dev_matched": false,
+          "description": "@cf/deepgram/flux"
+        },
+        {
+          "id": "@cf/deepgram/nova-3",
+          "name": "@cf/deepgram/nova-3",
+          "models_dev_matched": false,
+          "description": "@cf/deepgram/nova-3"
+        },
+        {
+          "id": "@cf/black-forest-labs/flux-1-schnell",
+          "name": "@cf/black-forest-labs/flux-1-schnell",
+          "models_dev_matched": false,
+          "description": "@cf/black-forest-labs/flux-1-schnell"
+        },
+        {
+          "id": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "name": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/meta/llama-3.1-8b-instruct-fp8",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Llama 3.1 8B Instruct fp8",
+          "models_dev_family": "llama",
+          "models_dev_context": 32000,
+          "description": "@cf/meta/llama-3.1-8b-instruct-fp8"
+        },
+        {
+          "id": "@cf/meta/llama-3.2-1b-instruct",
+          "name": "@cf/meta/llama-3.2-1b-instruct",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/meta/llama-3.2-1b-instruct",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Llama 3.2 1B Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 60000,
+          "description": "@cf/meta/llama-3.2-1b-instruct"
+        },
+        {
+          "id": "@cf/moonshotai/kimi-k2.6",
+          "name": "@cf/moonshotai/kimi-k2.6",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/moonshotai/kimi-k2.6",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Kimi K2.6",
+          "models_dev_family": "kimi-k2",
+          "models_dev_context": 262144,
+          "description": "@cf/moonshotai/kimi-k2.6"
+        },
+        {
+          "id": "@cf/zai-org/glm-4.7-flash",
+          "name": "@cf/zai-org/glm-4.7-flash",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/zai-org/glm-4.7-flash",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "GLM-4.7-Flash",
+          "models_dev_family": "glm-flash",
+          "models_dev_context": 131072,
+          "description": "@cf/zai-org/glm-4.7-flash"
+        },
+        {
+          "id": "@cf/microsoft/resnet-50",
+          "name": "@cf/microsoft/resnet-50",
+          "models_dev_matched": false,
+          "description": "@cf/microsoft/resnet-50"
+        },
+        {
+          "id": "@cf/bytedance/stable-diffusion-xl-lightning",
+          "name": "@cf/bytedance/stable-diffusion-xl-lightning",
+          "models_dev_matched": false,
+          "description": "@cf/bytedance/stable-diffusion-xl-lightning"
+        },
+        {
+          "id": "@cf/meta-llama/llama-2-7b-chat-hf-lora",
+          "name": "@cf/meta-llama/llama-2-7b-chat-hf-lora",
+          "models_dev_matched": false,
+          "description": "@cf/meta-llama/llama-2-7b-chat-hf-lora"
+        },
+        {
+          "id": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+          "name": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Llama 3.3 70B Instruct fp8 Fast",
+          "models_dev_family": "llama",
+          "models_dev_context": 24000,
+          "description": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+        },
+        {
+          "id": "@cf/ibm-granite/granite-4.0-h-micro",
+          "name": "@cf/ibm-granite/granite-4.0-h-micro",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/ibm-granite/granite-4.0-h-micro",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Granite 4.0 H Micro",
+          "models_dev_family": "granite",
+          "models_dev_context": 131000,
+          "description": "@cf/ibm-granite/granite-4.0-h-micro"
+        },
+        {
+          "id": "@cf/lykon/dreamshaper-8-lcm",
+          "name": "@cf/lykon/dreamshaper-8-lcm",
+          "models_dev_matched": false,
+          "description": "@cf/lykon/dreamshaper-8-lcm"
+        },
+        {
+          "id": "@cf/leonardo/phoenix-1.0",
+          "name": "@cf/leonardo/phoenix-1.0",
+          "models_dev_matched": false,
+          "description": "@cf/leonardo/phoenix-1.0"
+        },
+        {
+          "id": "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+          "name": "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+          "models_dev_matched": false,
+          "description": "@cf/stabilityai/stable-diffusion-xl-base-1.0"
+        },
+        {
+          "id": "@cf/meta/m2m100-1.2b",
+          "name": "@cf/meta/m2m100-1.2b",
+          "models_dev_matched": false,
+          "description": "@cf/meta/m2m100-1.2b"
+        },
+        {
+          "id": "@cf/ai4bharat/indictrans2-en-indic-1B",
+          "name": "@cf/ai4bharat/indictrans2-en-indic-1B",
+          "models_dev_matched": false,
+          "description": "@cf/ai4bharat/indictrans2-en-indic-1B"
+        },
+        {
+          "id": "@cf/black-forest-labs/flux-2-klein-4b",
+          "name": "@cf/black-forest-labs/flux-2-klein-4b",
+          "models_dev_matched": false,
+          "description": "@cf/black-forest-labs/flux-2-klein-4b"
+        },
+        {
+          "id": "@cf/baai/bge-small-en-v1.5",
+          "name": "@cf/baai/bge-small-en-v1.5",
+          "models_dev_matched": false,
+          "description": "@cf/baai/bge-small-en-v1.5"
+        },
+        {
+          "id": "@cf/qwen/qwen2.5-coder-32b-instruct",
+          "name": "@cf/qwen/qwen2.5-coder-32b-instruct",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/qwen/qwen2.5-coder-32b-instruct",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Qwen2.5 Coder 32B Instruct",
+          "models_dev_family": "qwen",
+          "models_dev_context": 32768,
+          "description": "@cf/qwen/qwen2.5-coder-32b-instruct"
+        },
+        {
+          "id": "@cf/zai-org/glm-5.2",
+          "name": "@cf/zai-org/glm-5.2",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/zai-org/glm-5.2",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Glm 5.2",
+          "models_dev_family": "glm",
+          "models_dev_context": 262144,
+          "description": "@cf/zai-org/glm-5.2"
+        },
+        {
+          "id": "@cf/nvidia/nemotron-3-120b-a12b",
+          "name": "@cf/nvidia/nemotron-3-120b-a12b",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/nvidia/nemotron-3-120b-a12b",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Nemotron 3 Super 120B",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 256000,
+          "description": "@cf/nvidia/nemotron-3-120b-a12b"
+        },
+        {
+          "id": "@cf/baai/bge-base-en-v1.5",
+          "name": "@cf/baai/bge-base-en-v1.5",
+          "models_dev_matched": false,
+          "description": "@cf/baai/bge-base-en-v1.5"
+        },
+        {
+          "id": "@cf/aisingapore/gemma-sea-lion-v4-27b-it",
+          "name": "@cf/aisingapore/gemma-sea-lion-v4-27b-it",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/aisingapore/gemma-sea-lion-v4-27b-it",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Gemma Sea Lion V4 27B It",
+          "models_dev_family": "gemma",
+          "models_dev_context": 128000,
+          "description": "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
+        },
+        {
+          "id": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "name": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Qwen3 30B A3b fp8",
+          "models_dev_family": "qwen",
+          "models_dev_context": 32768,
+          "description": "@cf/qwen/qwen3-30b-a3b-fp8"
+        },
+        {
+          "id": "@cf/black-forest-labs/flux-2-dev",
+          "name": "@cf/black-forest-labs/flux-2-dev",
+          "models_dev_matched": false,
+          "description": "@cf/black-forest-labs/flux-2-dev"
+        },
+        {
+          "id": "@cf/google/gemma-7b-it-lora",
+          "name": "@cf/google/gemma-7b-it-lora",
+          "models_dev_matched": false,
+          "description": "@cf/google/gemma-7b-it-lora"
+        },
+        {
+          "id": "@cf/google/gemma-4-26b-a4b-it",
+          "name": "@cf/google/gemma-4-26b-a4b-it",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/google/gemma-4-26b-a4b-it",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Gemma 4 26B A4B IT",
+          "models_dev_family": "gemma",
+          "models_dev_context": 256000,
+          "description": "@cf/google/gemma-4-26b-a4b-it"
+        },
+        {
+          "id": "@cf/mistralai/mistral-small-3.1-24b-instruct",
+          "name": "@cf/mistralai/mistral-small-3.1-24b-instruct",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/mistralai/mistral-small-3.1-24b-instruct",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Mistral Small 3.1 24B Instruct",
+          "models_dev_family": "mistral-small",
+          "models_dev_context": 128000,
+          "description": "@cf/mistralai/mistral-small-3.1-24b-instruct"
+        },
+        {
+          "id": "@cf/meta/llama-3.2-11b-vision-instruct",
+          "name": "@cf/meta/llama-3.2-11b-vision-instruct",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/meta/llama-3.2-11b-vision-instruct",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Llama 3.2 11B Vision Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 128000,
+          "description": "@cf/meta/llama-3.2-11b-vision-instruct"
+        },
+        {
+          "id": "@cf/openai/whisper-tiny-en",
+          "name": "@cf/openai/whisper-tiny-en",
+          "models_dev_matched": false,
+          "description": "@cf/openai/whisper-tiny-en"
+        },
+        {
+          "id": "@cf/openai/whisper-large-v3-turbo",
+          "name": "@cf/openai/whisper-large-v3-turbo",
+          "models_dev_matched": false,
+          "description": "@cf/openai/whisper-large-v3-turbo"
+        },
+        {
+          "id": "@cf/deepgram/aura-1",
+          "name": "@cf/deepgram/aura-1",
+          "models_dev_matched": false,
+          "description": "@cf/deepgram/aura-1"
+        },
+        {
+          "id": "@cf/runwayml/stable-diffusion-v1-5-img2img",
+          "name": "@cf/runwayml/stable-diffusion-v1-5-img2img",
+          "models_dev_matched": false,
+          "description": "@cf/runwayml/stable-diffusion-v1-5-img2img"
+        },
+        {
+          "id": "@cf/openai/gpt-oss-20b",
+          "name": "@cf/openai/gpt-oss-20b",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/openai/gpt-oss-20b",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "GPT OSS 20B",
+          "models_dev_family": "gpt-oss",
+          "models_dev_context": 128000,
+          "description": "@cf/openai/gpt-oss-20b"
+        },
+        {
+          "id": "@cf/google/embeddinggemma-300m",
+          "name": "@cf/google/embeddinggemma-300m",
+          "models_dev_matched": false,
+          "description": "@cf/google/embeddinggemma-300m"
+        },
+        {
+          "id": "@cf/baai/bge-reranker-base",
+          "name": "@cf/baai/bge-reranker-base",
+          "models_dev_matched": false,
+          "description": "@cf/baai/bge-reranker-base"
+        },
+        {
+          "id": "@cf/leonardo/lucid-origin",
+          "name": "@cf/leonardo/lucid-origin",
+          "models_dev_matched": false,
+          "description": "@cf/leonardo/lucid-origin"
+        },
+        {
+          "id": "@cf/meta/llama-4-scout-17b-16e-instruct",
+          "name": "@cf/meta/llama-4-scout-17b-16e-instruct",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/meta/llama-4-scout-17b-16e-instruct",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Llama 4 Scout 17B 16E Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 131000,
+          "description": "@cf/meta/llama-4-scout-17b-16e-instruct"
+        },
+        {
+          "id": "@cf/qwen/qwq-32b",
+          "name": "@cf/qwen/qwq-32b",
+          "models_dev_matched": true,
+          "models_dev_id": "@cf/qwen/qwq-32b",
+          "models_dev_provider": "cloudflare-workers-ai",
+          "models_dev_name": "Qwq 32B",
+          "models_dev_family": "qwen",
+          "models_dev_context": 24000,
+          "description": "@cf/qwen/qwq-32b"
+        },
+        {
+          "id": "@cf/baai/bge-large-en-v1.5",
+          "name": "@cf/baai/bge-large-en-v1.5",
+          "models_dev_matched": false,
+          "description": "@cf/baai/bge-large-en-v1.5"
+        },
+        {
+          "id": "@cf/deepgram/aura-2-en",
+          "name": "@cf/deepgram/aura-2-en",
+          "models_dev_matched": false,
+          "description": "@cf/deepgram/aura-2-en"
+        }
+      ]
+    },
+    "mistral": {
+      "status": "ok",
+      "endpoint": "https://api.mistral.ai/v1/models",
+      "model_count": 75,
+      "models": [
+        {
+          "id": "mistral-medium-2505",
+          "name": "mistral-medium-2505",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-medium-2505",
+          "models_dev_provider": "azure-cognitive-services",
+          "models_dev_name": "Mistral Medium 3",
+          "models_dev_family": "mistral-medium",
+          "models_dev_context": 128000,
+          "description": "mistral-medium-2505"
+        },
+        {
+          "id": "mistral-medium-2508",
+          "name": "mistral-medium-2508",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-medium-2508",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Mistral Medium 3.1",
+          "models_dev_family": "mistral-medium",
+          "models_dev_context": 262144,
+          "description": "mistral-medium-2508"
+        },
+        {
+          "id": "open-mistral-nemo",
+          "name": "open-mistral-nemo",
+          "models_dev_matched": true,
+          "models_dev_id": "open-mistral-nemo",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Open Mistral Nemo",
+          "models_dev_family": "mistral-nemo",
+          "models_dev_context": 128000,
+          "description": "open-mistral-nemo"
+        },
+        {
+          "id": "open-mistral-nemo-2407",
+          "name": "open-mistral-nemo",
+          "models_dev_matched": false,
+          "description": "open-mistral-nemo"
+        },
+        {
+          "id": "mistral-tiny-2407",
+          "name": "open-mistral-nemo",
+          "models_dev_matched": false,
+          "description": "open-mistral-nemo"
+        },
+        {
+          "id": "mistral-tiny-latest",
+          "name": "open-mistral-nemo",
+          "models_dev_matched": false,
+          "description": "open-mistral-nemo"
+        },
+        {
+          "id": "codestral-2508",
+          "name": "codestral-2508",
+          "models_dev_matched": true,
+          "models_dev_id": "codestral-2508",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Codestral",
+          "models_dev_family": "mistral",
+          "models_dev_context": 256000,
+          "description": "codestral-2508"
+        },
+        {
+          "id": "codestral-latest",
+          "name": "codestral-2508",
+          "models_dev_matched": true,
+          "models_dev_id": "codestral-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Codestral (latest)",
+          "models_dev_family": "codestral",
+          "models_dev_context": 256000,
+          "description": "codestral-2508"
+        },
+        {
+          "id": "mistral-code-latest",
+          "name": "codestral-2508",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-code-latest",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Mistral Code Latest",
+          "models_dev_family": "",
+          "models_dev_context": 256000,
+          "description": "codestral-2508"
+        },
+        {
+          "id": "mistral-code-fim-latest",
+          "name": "codestral-2508",
+          "models_dev_matched": false,
+          "description": "codestral-2508"
+        },
+        {
+          "id": "devstral-2512",
+          "name": "devstral-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "devstral-2512",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Devstral 2",
+          "models_dev_family": "devstral",
+          "models_dev_context": 262144,
+          "description": "devstral-2512"
+        },
+        {
+          "id": "devstral-medium-latest",
+          "name": "devstral-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "devstral-medium-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Devstral 2 (latest)",
+          "models_dev_family": "devstral",
+          "models_dev_context": 262144,
+          "description": "devstral-2512"
+        },
+        {
+          "id": "devstral-latest",
+          "name": "devstral-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "devstral-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Devstral 2",
+          "models_dev_family": "devstral",
+          "models_dev_context": 262144,
+          "description": "devstral-2512"
+        },
+        {
+          "id": "mistral-code-agent-latest",
+          "name": "devstral-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-code-agent-latest",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Mistral Code Agent Latest",
+          "models_dev_family": "",
+          "models_dev_context": 262144,
+          "description": "devstral-2512"
+        },
+        {
+          "id": "mistral-small-2603",
+          "name": "mistral-small-2603",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-small-2603",
+          "models_dev_provider": "venice",
+          "models_dev_name": "Mistral Small 4",
+          "models_dev_family": "mistral-small",
+          "models_dev_context": 256000,
+          "description": "mistral-small-2603"
+        },
+        {
+          "id": "mistral-small-latest",
+          "name": "mistral-small-2603",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-small-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Mistral Small (latest)",
+          "models_dev_family": "mistral-small",
+          "models_dev_context": 256000,
+          "description": "mistral-small-2603"
+        },
+        {
+          "id": "mistral-vibe-cli-fast",
+          "name": "mistral-small-2603",
+          "models_dev_matched": false,
+          "description": "mistral-small-2603"
+        },
+        {
+          "id": "magistral-small-latest",
+          "name": "mistral-small-2603",
+          "models_dev_matched": false,
+          "description": "mistral-small-2603"
+        },
+        {
+          "id": "magistral-medium-2509",
+          "name": "magistral-medium-2509",
+          "models_dev_matched": false,
+          "description": "magistral-medium-2509"
+        },
+        {
+          "id": "magistral-medium-latest",
+          "name": "magistral-medium-2509",
+          "models_dev_matched": true,
+          "models_dev_id": "magistral-medium-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Magistral Medium (latest)",
+          "models_dev_family": "magistral-medium",
+          "models_dev_context": 128000,
+          "description": "magistral-medium-2509"
+        },
+        {
+          "id": "voxtral-small-2507",
+          "name": "voxtral-small-2507",
+          "models_dev_matched": false,
+          "description": "voxtral-small-2507"
+        },
+        {
+          "id": "voxtral-small-latest",
+          "name": "voxtral-small-2507",
+          "models_dev_matched": false,
+          "description": "voxtral-small-2507"
+        },
+        {
+          "id": "labs-leanstral-2603",
+          "name": "labs-leanstral-2603",
+          "models_dev_matched": false,
+          "description": "labs-leanstral-2603"
+        },
+        {
+          "id": "mistral-large-2512",
+          "name": "mistral-large-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-large-2512",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Mistral Large 3",
+          "models_dev_family": "mistral-large",
+          "models_dev_context": 262144,
+          "description": "mistral-large-2512"
+        },
+        {
+          "id": "mistral-large-latest",
+          "name": "mistral-large-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-large-latest",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Mistral Large (latest)",
+          "models_dev_family": "mistral-large",
+          "models_dev_context": 128000,
+          "description": "mistral-large-2512"
+        },
+        {
+          "id": "mistral-large-2512",
+          "name": "mistral-large-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-large-2512",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Mistral Large 3",
+          "models_dev_family": "mistral-large",
+          "models_dev_context": 262144,
+          "description": "mistral-large-2512"
+        },
+        {
+          "id": "mistral-large-latest",
+          "name": "mistral-large-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-large-latest",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Mistral Large (latest)",
+          "models_dev_family": "mistral-large",
+          "models_dev_context": 128000,
+          "description": "mistral-large-2512"
+        },
+        {
+          "id": "ministral-3b-2512",
+          "name": "ministral-3b-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "ministral-3b-2512",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Ministral 3B",
+          "models_dev_family": "mistral",
+          "models_dev_context": 131072,
+          "description": "ministral-3b-2512"
+        },
+        {
+          "id": "ministral-3b-latest",
+          "name": "ministral-3b-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "ministral-3b-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Ministral 3B (latest)",
+          "models_dev_family": "ministral",
+          "models_dev_context": 128000,
+          "description": "ministral-3b-2512"
+        },
+        {
+          "id": "ministral-8b-2512",
+          "name": "ministral-8b-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "ministral-8b-2512",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Ministral 8B",
+          "models_dev_family": "mistral",
+          "models_dev_context": 262144,
+          "description": "ministral-8b-2512"
+        },
+        {
+          "id": "ministral-8b-latest",
+          "name": "ministral-8b-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "ministral-8b-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Ministral 8B (latest)",
+          "models_dev_family": "ministral",
+          "models_dev_context": 128000,
+          "description": "ministral-8b-2512"
+        },
+        {
+          "id": "ministral-14b-2512",
+          "name": "ministral-14b-2512",
+          "models_dev_matched": true,
+          "models_dev_id": "ministral-14b-2512",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Ministral 14B",
+          "models_dev_family": "mistral",
+          "models_dev_context": 262144,
+          "description": "ministral-14b-2512"
+        },
+        {
+          "id": "ministral-14b-latest",
+          "name": "ministral-14b-2512",
+          "models_dev_matched": false,
+          "description": "ministral-14b-2512"
+        },
+        {
+          "id": "mistral-medium-latest",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-medium-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Mistral Medium (latest)",
+          "models_dev_family": "mistral-medium",
+          "models_dev_context": 262144,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-3-5",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-3.5",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-3",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-2604",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-medium-2604",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Mistral Medium 3.5",
+          "models_dev_family": "mistral-medium",
+          "models_dev_context": 262144,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-vibe-cli-latest",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-vibe-cli-with-tools",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-latest",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-medium-latest",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Mistral Medium (latest)",
+          "models_dev_family": "mistral-medium",
+          "models_dev_context": 262144,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-3-5",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-3.5",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-3",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-medium-2604",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-medium-2604",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Mistral Medium 3.5",
+          "models_dev_family": "mistral-medium",
+          "models_dev_context": 262144,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-vibe-cli-latest",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "mistral-vibe-cli-with-tools",
+          "name": "mistral-medium-latest",
+          "models_dev_matched": false,
+          "description": "mistral-medium-latest"
+        },
+        {
+          "id": "voxtral-mini-2507",
+          "name": "voxtral-mini-2507",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-2507"
+        },
+        {
+          "id": "voxtral-mini-latest",
+          "name": "voxtral-mini-2507",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-2507"
+        },
+        {
+          "id": "magistral-small-2509",
+          "name": "magistral-small-2509",
+          "models_dev_matched": false,
+          "description": "magistral-small-2509"
+        },
+        {
+          "id": "mistral-small-2506",
+          "name": "mistral-small-2506",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-small-2506",
+          "models_dev_provider": "llmgateway",
+          "models_dev_name": "Mistral Small 3.2",
+          "models_dev_family": "mistral-small",
+          "models_dev_context": 128000,
+          "description": "mistral-small-2506"
+        },
+        {
+          "id": "mistral-embed-2312",
+          "name": "mistral-embed-2312",
+          "models_dev_matched": false,
+          "description": "mistral-embed-2312"
+        },
+        {
+          "id": "mistral-embed",
+          "name": "mistral-embed-2312",
+          "models_dev_matched": true,
+          "models_dev_id": "mistral-embed",
+          "models_dev_provider": "mistral",
+          "models_dev_name": "Mistral Embed",
+          "models_dev_family": "mistral-embed",
+          "models_dev_context": 8000,
+          "description": "mistral-embed-2312"
+        },
+        {
+          "id": "codestral-embed",
+          "name": "codestral-embed",
+          "models_dev_matched": false,
+          "description": "codestral-embed"
+        },
+        {
+          "id": "codestral-embed-2505",
+          "name": "codestral-embed",
+          "models_dev_matched": false,
+          "description": "codestral-embed"
+        },
+        {
+          "id": "mistral-moderation-2603",
+          "name": "mistral-moderation-2603",
+          "models_dev_matched": false,
+          "description": "mistral-moderation-2603"
+        },
+        {
+          "id": "mistral-moderation-2411",
+          "name": "mistral-moderation-2411",
+          "models_dev_matched": false,
+          "description": "mistral-moderation-2411"
+        },
+        {
+          "id": "mistral-moderation-latest",
+          "name": "mistral-moderation-2411",
+          "models_dev_matched": false,
+          "description": "mistral-moderation-2411"
+        },
+        {
+          "id": "mistral-ocr-2512",
+          "name": "mistral-ocr-2512",
+          "models_dev_matched": false,
+          "description": "mistral-ocr-2512"
+        },
+        {
+          "id": "mistral-ocr-3-0",
+          "name": "mistral-ocr-2512",
+          "models_dev_matched": false,
+          "description": "mistral-ocr-2512"
+        },
+        {
+          "id": "mistral-ocr-3",
+          "name": "mistral-ocr-2512",
+          "models_dev_matched": false,
+          "description": "mistral-ocr-2512"
+        },
+        {
+          "id": "mistral-ocr-latest",
+          "name": "mistral-ocr-latest",
+          "models_dev_matched": false,
+          "description": "mistral-ocr-latest"
+        },
+        {
+          "id": "mistral-ocr-4-0",
+          "name": "mistral-ocr-latest",
+          "models_dev_matched": false,
+          "description": "mistral-ocr-latest"
+        },
+        {
+          "id": "mistral-ocr-4",
+          "name": "mistral-ocr-latest",
+          "models_dev_matched": false,
+          "description": "mistral-ocr-latest"
+        },
+        {
+          "id": "voxtral-mini-2602",
+          "name": "voxtral-mini-2602",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-2602"
+        },
+        {
+          "id": "voxtral-mini-latest",
+          "name": "voxtral-mini-2602",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-2602"
+        },
+        {
+          "id": "voxtral-mini-transcribe-realtime-2602",
+          "name": "voxtral-mini-transcribe-realtime-2602",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-transcribe-realtime-2602"
+        },
+        {
+          "id": "voxtral-mini-realtime-2602",
+          "name": "voxtral-mini-transcribe-realtime-2602",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-transcribe-realtime-2602"
+        },
+        {
+          "id": "voxtral-mini-realtime-latest",
+          "name": "voxtral-mini-transcribe-realtime-2602",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-transcribe-realtime-2602"
+        },
+        {
+          "id": "voxtral-mini-tts-2603",
+          "name": "voxtral-mini-tts-2603",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-tts-2603"
+        },
+        {
+          "id": "voxtral-mini-tts-latest",
+          "name": "voxtral-mini-tts-2603",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-tts-2603"
+        },
+        {
+          "id": "voxtral-mini-tts-mellon-greek-2606-solutions",
+          "name": "voxtral-mini-tts-mellon-greek-2606-solutions",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-tts-mellon-greek-2606-solutions"
+        },
+        {
+          "id": "voxtral-mini-tts-mellon-greek-2606-solutions",
+          "name": "voxtral-mini-tts-mellon-greek-2606-solutions",
+          "models_dev_matched": false,
+          "description": "voxtral-mini-tts-mellon-greek-2606-solutions"
+        }
+      ]
+    },
+    "nvidia": {
+      "status": "ok",
+      "endpoint": "https://integrate.api.nvidia.com/v1/models",
+      "model_count": 121,
+      "models": [
+        {
+          "id": "01-ai/yi-large",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "abacusai/dracarys-llama-3.1-70b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "adept/fuyu-8b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "ai21labs/jamba-1.5-large-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "aisingapore/sea-lion-7b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "baai/bge-m3",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "baai/bge-m3",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "BGE M3",
+          "models_dev_family": "bge",
+          "models_dev_context": 8192,
+          "description": ""
+        },
+        {
+          "id": "bigcode/starcoder2-15b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "bytedance/seed-oss-36b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "bytedance/seed-oss-36b-instruct",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "ByteDance-Seed/Seed-OSS-36B-Instruct",
+          "models_dev_family": "seed",
+          "models_dev_context": 262000,
+          "description": ""
+        },
+        {
+          "id": "databricks/dbrx-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "deepseek-ai/deepseek-coder-6.7b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "deepseek-ai/deepseek-v4-flash",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "deepseek-ai/deepseek-v4-flash",
+          "models_dev_provider": "siliconflow",
+          "models_dev_name": "DeepSeek V4 Flash",
+          "models_dev_family": "deepseek-flash",
+          "models_dev_context": 1000000,
+          "description": ""
+        },
+        {
+          "id": "deepseek-ai/deepseek-v4-pro",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "deepseek-ai/deepseek-v4-pro",
+          "models_dev_provider": "siliconflow",
+          "models_dev_name": "DeepSeek V4 Pro",
+          "models_dev_family": "deepseek-thinking",
+          "models_dev_context": 1000000,
+          "description": ""
+        },
+        {
+          "id": "google/codegemma-1.1-7b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "google/codegemma-7b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "google/deplot",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "google/diffusiongemma-26b-a4b-it",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "google/gemma-2-2b-it",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-2-2b-it",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Gemma 2 2b It",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "google/gemma-2b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "google/gemma-3-12b-it",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-3-12b-it",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Gemma 3 12B",
+          "models_dev_family": "gemma",
+          "models_dev_context": 131072,
+          "description": ""
+        },
+        {
+          "id": "google/gemma-3-4b-it",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-3-4b-it",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Gemma 3 4B",
+          "models_dev_family": "gemma",
+          "models_dev_context": 131072,
+          "description": ""
+        },
+        {
+          "id": "google/gemma-3n-e2b-it",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-3n-e2b-it",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Gemma 3n E2b It",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "google/gemma-3n-e4b-it",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-3n-e4b-it",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Gemma 3n 4B",
+          "models_dev_family": "gemma",
+          "models_dev_context": 32768,
+          "description": ""
+        },
+        {
+          "id": "google/gemma-4-31b-it",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-4-31b-it",
+          "models_dev_provider": "lilac",
+          "models_dev_name": "Gemma 4 31B IT",
+          "models_dev_family": "gemma",
+          "models_dev_context": 262100,
+          "description": ""
+        },
+        {
+          "id": "google/recurrentgemma-2b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "ibm/granite-3.0-3b-a800m-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "ibm/granite-3.0-8b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "ibm/granite-34b-code-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "ibm/granite-8b-code-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "meta/codellama-70b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-3.1-70b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-3.1-70b-instruct",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Llama 3.1 70b Instruct",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-3.1-8b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-3.1-8b-instruct",
+          "models_dev_provider": "inference",
+          "models_dev_name": "Llama 3.1 8B Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 16000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-3.2-11b-vision-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-3.2-11b-vision-instruct",
+          "models_dev_provider": "inference",
+          "models_dev_name": "Llama 3.2 11B Vision Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 16000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-3.2-1b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-3.2-1b-instruct",
+          "models_dev_provider": "inference",
+          "models_dev_name": "Llama 3.2 1B Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 16000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-3.2-3b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-3.2-3b-instruct",
+          "models_dev_provider": "inference",
+          "models_dev_name": "Llama 3.2 3B Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 16000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-3.2-90b-vision-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-3.2-90b-vision-instruct",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Llama-3.2-90B-Vision-Instruct",
+          "models_dev_family": "llama",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-3.3-70b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-3.3-70b-instruct",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Llama 3.3 70b Instruct",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-4-maverick-17b-128e-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-4-maverick-17b-128e-instruct",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Llama 4 Maverick 17b 128e Instruct",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama-guard-4-12b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "meta/llama-guard-4-12b",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Llama Guard 4 12B",
+          "models_dev_family": "llama",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "meta/llama2-70b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "microsoft/kosmos-2",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "microsoft/phi-3-vision-128k-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "microsoft/phi-3.5-moe-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "microsoft/phi-3.5-moe-instruct",
+          "models_dev_provider": "github-models",
+          "models_dev_name": "Phi-3.5-MoE instruct (128k)",
+          "models_dev_family": "phi",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "microsoft/phi-4-mini-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "microsoft/phi-4-mini-instruct",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Phi 4 Mini Instruct",
+          "models_dev_family": "phi",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "microsoft/phi-4-multimodal-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "microsoft/phi-4-multimodal-instruct",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Phi 4 Multimodal",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "minimaxai/minimax-m2.7",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "minimaxai/minimax-m2.7",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "MiniMax-M2.7",
+          "models_dev_family": "minimax",
+          "models_dev_context": 204800,
+          "description": ""
+        },
+        {
+          "id": "minimaxai/minimax-m3",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "minimaxai/minimax-m3",
+          "models_dev_provider": "lilac",
+          "models_dev_name": "MiniMax M3",
+          "models_dev_family": "minimax-m3",
+          "models_dev_context": 1048576,
+          "description": ""
+        },
+        {
+          "id": "mistralai/codestral-22b-instruct-v0.1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "mistralai/ministral-14b-instruct-2512",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "mistralai/ministral-14b-instruct-2512",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Ministral 3 14B",
+          "models_dev_family": "ministral",
+          "models_dev_context": 262144,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mistral-7b-instruct-v0.3",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mistral-large",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "mistralai/mistral-large",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Mistral Large 2411",
+          "models_dev_family": "mistral-large",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mistral-large-2-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mistral-large-3-675b-instruct-2512",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "mistralai/mistral-large-3-675b-instruct-2512",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Mistral Large 3 675B",
+          "models_dev_family": "mistral-large",
+          "models_dev_context": 262144,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mistral-medium-3.5-128b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mistral-nemotron",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "mistralai/mistral-nemotron",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "mistral-nemotron",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mistral-small-4-119b-2603",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "mistralai/mistral-small-4-119b-2603",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Mistral Small 4 119B",
+          "models_dev_family": "",
+          "models_dev_context": 262144,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mixtral-8x22b-v0.1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "mistralai/mixtral-8x7b-instruct-v0.1",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "mistralai/mixtral-8x7b-instruct-v0.1",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Mixtral 8x7B",
+          "models_dev_family": "mixtral",
+          "models_dev_context": 32768,
+          "description": ""
+        },
+        {
+          "id": "moonshotai/kimi-k2.6",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "moonshotai/kimi-k2.6",
+          "models_dev_provider": "ambient",
+          "models_dev_name": "Kimi K2.6",
+          "models_dev_family": "kimi-k2",
+          "models_dev_context": 262144,
+          "description": ""
+        },
+        {
+          "id": "nv-mistralai/mistral-nemo-12b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/ai-synthetic-video-detector",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/cosmos-reason2-8b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/embed-qa-4",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/gliner-pii",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/gliner-pii",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "gliner-pii",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "nvidia/ising-calibration-1-35b-a3b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemoguard-8b-content-safety",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemoguard-8b-topic-control",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemotron-51b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemotron-70b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemotron-nano-8b-v1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemotron-nano-vl-8b-v1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemotron-safety-guard-8b-v3",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.2-nv-embedqa-1b-v1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.3-nemotron-super-49b-v1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Llama 3.3 Nemotron Super 49B v1.5",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 131072,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-nemotron-embed-1b-v2",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama-nemotron-embed-vl-1b-v2",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/llama-nemotron-embed-vl-1b-v2",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "llama-nemotron-embed-vl-1b-v2",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 32768,
+          "description": ""
+        },
+        {
+          "id": "nvidia/llama3-chatqa-1.5-70b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/mistral-nemo-minitron-8b-8k-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemoretriever-parse",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-3-content-safety",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-content-safety",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "nemotron-3-content-safety",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-3-nano-30b-a3b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-nano-30b-a3b",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Nvidia Nemotron 3 Nano 30B",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 256000,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Nvidia Nemotron 3 Nano Omni",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 256000,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-3-super-120b-a12b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-super-120b-a12b",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Nvidia Nemotron 3 Super 120B",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 262144,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-3-ultra-550b-a55b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-ultra-550b-a55b",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron 3 Ultra 550B A55B",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 262144,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-3.5-content-safety",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-4-340b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-4-340b-reward",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-content-safety-reasoning-4b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-content-safety-reasoning-4b",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "nemotron-content-safety-reasoning-4b",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-mini-4b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-mini-4b-instruct",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "nemotron-mini-4b-instruct",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-nano-12b-v2-vl",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-nano-12b-v2-vl",
+          "models_dev_provider": "vercel",
+          "models_dev_name": "Nvidia Nemotron Nano 12B V2 VL",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 131072,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-nano-3-30b-a3b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nemotron-parse",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/neva-22b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nv-embed-v1",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nv-embed-v1",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "nv-embed-v1",
+          "models_dev_family": "",
+          "models_dev_context": 32768,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nv-embedcode-7b-v1",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nv-embedcode-7b-v1",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "nv-embedcode-7b-v1",
+          "models_dev_family": "",
+          "models_dev_context": 32768,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nv-embedqa-e5-v5",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nv-embedqa-mistral-7b-v2",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nvclip",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/nvidia-nemotron-nano-9b-v2",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nvidia-nemotron-nano-9b-v2",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Nvidia Nemotron Nano 9B v2",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "nvidia/riva-translate-4b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/riva-translate-4b-instruct-v1.1",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "nvidia/vila",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "openai/gpt-oss-120b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "openai/gpt-oss-120b",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "GPT OSS 120B",
+          "models_dev_family": "gpt-oss",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "openai/gpt-oss-20b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "openai/gpt-oss-20b",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "GPT OSS 20B",
+          "models_dev_family": "gpt-oss",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "qwen/qwen3-next-80b-a3b-instruct",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "qwen/qwen3-next-80b-a3b-instruct",
+          "models_dev_provider": "jiekou",
+          "models_dev_name": "Qwen3 Next 80B A3B Instruct",
+          "models_dev_family": "qwen",
+          "models_dev_context": 65536,
+          "description": ""
+        },
+        {
+          "id": "qwen/qwen3.5-122b-a10b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "qwen/qwen3.5-122b-a10b",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Qwen3.5 122B-A10B",
+          "models_dev_family": "qwen",
+          "models_dev_context": 262144,
+          "description": ""
+        },
+        {
+          "id": "qwen/qwen3.5-397b-a17b",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "qwen/qwen3.5-397b-a17b",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Qwen3.5 397B A17B",
+          "models_dev_family": "qwen",
+          "models_dev_context": 258048,
+          "description": ""
+        },
+        {
+          "id": "sarvamai/sarvam-m",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "sarvamai/sarvam-m",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "sarvam-m",
+          "models_dev_family": "",
+          "models_dev_context": 128000,
+          "description": ""
+        },
+        {
+          "id": "snowflake/arctic-embed-l",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "stepfun-ai/step-3.5-flash",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "stepfun-ai/step-3.5-flash",
+          "models_dev_provider": "nano-gpt",
+          "models_dev_name": "Step 3.5 Flash",
+          "models_dev_family": "step",
+          "models_dev_context": 256000,
+          "description": ""
+        },
+        {
+          "id": "stepfun-ai/step-3.7-flash",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "stepfun-ai/step-3.7-flash",
+          "models_dev_provider": "nvidia",
+          "models_dev_name": "Step 3.7 Flash",
+          "models_dev_family": "",
+          "models_dev_context": 256000,
+          "description": ""
+        },
+        {
+          "id": "stockmark/stockmark-2-100b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "upstage/solar-10.7b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "writer/palmyra-creative-122b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "writer/palmyra-fin-70b-32k",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "writer/palmyra-med-70b",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "writer/palmyra-med-70b-32k",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        },
+        {
+          "id": "z-ai/glm-5.1",
+          "name": "",
+          "models_dev_matched": true,
+          "models_dev_id": "z-ai/glm-5.1",
+          "models_dev_provider": "fastrouter",
+          "models_dev_name": "GLM-5.1",
+          "models_dev_family": "glm",
+          "models_dev_context": 200000,
+          "description": ""
+        },
+        {
+          "id": "zyphra/zamba2-7b-instruct",
+          "name": "",
+          "models_dev_matched": false,
+          "description": ""
+        }
+      ]
+    },
+    "ollama": {
+      "status": "ok",
+      "endpoint": "http://localhost:11434/api/tags",
+      "model_count": 7,
+      "models": [
+        {
+          "id": "gemma4:31b-cloud",
+          "name": "gemma4:31b-cloud",
+          "models_dev_matched": false,
+          "description": "gemma4:31b-cloud"
+        },
+        {
+          "id": "qwen3.5:cloud",
+          "name": "qwen3.5:cloud",
+          "models_dev_matched": false,
+          "description": "qwen3.5:cloud"
+        },
+        {
+          "id": "minimax-m2.7:cloud",
+          "name": "minimax-m2.7:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "minimax-m2.7",
+          "models_dev_provider": "aihubmix",
+          "models_dev_name": "MiniMax M2.7",
+          "models_dev_family": "minimax",
+          "models_dev_context": 204800,
+          "description": "minimax-m2.7:cloud"
+        },
+        {
+          "id": "deepseek-v4-pro:cloud",
+          "name": "deepseek-v4-pro:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "deepseek-v4-pro",
+          "models_dev_provider": "wafer.ai",
+          "models_dev_name": "DeepSeek V4 Pro",
+          "models_dev_family": "deepseek-thinking",
+          "models_dev_context": 1000000,
+          "description": "deepseek-v4-pro:cloud"
+        },
+        {
+          "id": "deepseek-v4-flash:cloud",
+          "name": "deepseek-v4-flash:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "deepseek-v4-flash",
+          "models_dev_provider": "wafer.ai",
+          "models_dev_name": "DeepSeek V4 Flash",
+          "models_dev_family": "deepseek-flash",
+          "models_dev_context": 1000000,
+          "description": "deepseek-v4-flash:cloud"
+        },
+        {
+          "id": "glm-5.1:cloud",
+          "name": "glm-5.1:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "glm-5.1",
+          "models_dev_provider": "zhipuai-coding-plan",
+          "models_dev_name": "GLM-5.1",
+          "models_dev_family": "glm",
+          "models_dev_context": 200000,
+          "description": "glm-5.1:cloud"
+        },
+        {
+          "id": "kimi-k2.6:cloud",
+          "name": "kimi-k2.6:cloud",
+          "models_dev_matched": true,
+          "models_dev_id": "kimi-k2.6",
+          "models_dev_provider": "aihubmix",
+          "models_dev_name": "Kimi K2.6",
+          "models_dev_family": "kimi-k2",
+          "models_dev_context": 262144,
+          "description": "kimi-k2.6:cloud"
+        }
+      ]
+    },
+    "openrouter": {
+      "status": "ok",
+      "endpoint": "https://openrouter.ai/api/v1/models",
+      "free_only": true,
+      "model_count": 26,
+      "models": [
+        {
+          "id": "cohere/north-mini-code:free",
+          "name": "Cohere: North Mini Code (free)",
+          "context_length": 256000,
+          "models_dev_matched": true,
+          "models_dev_id": "cohere/north-mini-code:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "North Mini Code (free)",
+          "models_dev_family": "north",
+          "models_dev_context": 256000,
+          "description": "Cohere: North Mini Code (free)"
+        },
+        {
+          "id": "nvidia/nemotron-3.5-content-safety:free",
+          "name": "NVIDIA: Nemotron 3.5 Content Safety (free)",
+          "context_length": 128000,
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3.5-content-safety:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron 3.5 Content Safety (free)",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": "NVIDIA: Nemotron 3.5 Content Safety (free)"
+        },
+        {
+          "id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+          "name": "NVIDIA: Nemotron 3 Ultra (free)",
+          "context_length": 1000000,
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron 3 Ultra (free)",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 1000000,
+          "description": "NVIDIA: Nemotron 3 Ultra (free)"
+        },
+        {
+          "id": "openrouter/owl-alpha",
+          "name": "Owl Alpha",
+          "context_length": 1048756,
+          "models_dev_matched": true,
+          "models_dev_id": "openrouter/owl-alpha",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Owl Alpha",
+          "models_dev_family": "alpha",
+          "models_dev_context": 1048756,
+          "description": "Owl Alpha"
+        },
+        {
+          "id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+          "name": "NVIDIA: Nemotron 3 Nano Omni (free)",
+          "context_length": 256000,
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron 3 Nano Omni (free)",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 256000,
+          "description": "NVIDIA: Nemotron 3 Nano Omni (free)"
+        },
+        {
+          "id": "poolside/laguna-xs.2:free",
+          "name": "Poolside: Laguna XS.2 (free)",
+          "context_length": 262144,
+          "models_dev_matched": true,
+          "models_dev_id": "poolside/laguna-xs.2:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Laguna XS.2 (free)",
+          "models_dev_family": "",
+          "models_dev_context": 262144,
+          "description": "Poolside: Laguna XS.2 (free)"
+        },
+        {
+          "id": "poolside/laguna-m.1:free",
+          "name": "Poolside: Laguna M.1 (free)",
+          "context_length": 262144,
+          "models_dev_matched": true,
+          "models_dev_id": "poolside/laguna-m.1:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Laguna M.1 (free)",
+          "models_dev_family": "",
+          "models_dev_context": 262144,
+          "description": "Poolside: Laguna M.1 (free)"
+        },
+        {
+          "id": "google/gemma-4-26b-a4b-it:free",
+          "name": "Google: Gemma 4 26B A4B  (free)",
+          "context_length": 262144,
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-4-26b-a4b-it:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Gemma 4 26B A4B  (free)",
+          "models_dev_family": "gemma",
+          "models_dev_context": 131072,
+          "description": "Google: Gemma 4 26B A4B  (free)"
+        },
+        {
+          "id": "google/gemma-4-31b-it:free",
+          "name": "Google: Gemma 4 31B (free)",
+          "context_length": 262144,
+          "models_dev_matched": true,
+          "models_dev_id": "google/gemma-4-31b-it:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Gemma 4 31B (free)",
+          "models_dev_family": "gemma",
+          "models_dev_context": 262144,
+          "description": "Google: Gemma 4 31B (free)"
+        },
+        {
+          "id": "google/lyria-3-pro-preview",
+          "name": "Google: Lyria 3 Pro Preview",
+          "context_length": 1048576,
+          "models_dev_matched": true,
+          "models_dev_id": "google/lyria-3-pro-preview",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Lyria 3 Pro Preview",
+          "models_dev_family": "lyria",
+          "models_dev_context": 1048576,
+          "description": "Google: Lyria 3 Pro Preview"
+        },
+        {
+          "id": "google/lyria-3-clip-preview",
+          "name": "Google: Lyria 3 Clip Preview",
+          "context_length": 1048576,
+          "models_dev_matched": true,
+          "models_dev_id": "google/lyria-3-clip-preview",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Lyria 3 Clip Preview",
+          "models_dev_family": "lyria",
+          "models_dev_context": 1048576,
+          "description": "Google: Lyria 3 Clip Preview"
+        },
+        {
+          "id": "nvidia/nemotron-3-super-120b-a12b:free",
+          "name": "NVIDIA: Nemotron 3 Super (free)",
+          "context_length": 1000000,
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-super-120b-a12b:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron 3 Super (free)",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 262144,
+          "description": "NVIDIA: Nemotron 3 Super (free)"
+        },
+        {
+          "id": "openrouter/free",
+          "name": "Free Models Router",
+          "context_length": 200000,
+          "models_dev_matched": true,
+          "models_dev_id": "openrouter/free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Free Models Router",
+          "models_dev_family": "",
+          "models_dev_context": 200000,
+          "description": "Free Models Router"
+        },
+        {
+          "id": "liquid/lfm-2.5-1.2b-thinking:free",
+          "name": "LiquidAI: LFM2.5-1.2B-Thinking (free)",
+          "context_length": 32768,
+          "models_dev_matched": true,
+          "models_dev_id": "liquid/lfm-2.5-1.2b-thinking:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "LFM2.5-1.2B-Thinking (free)",
+          "models_dev_family": "liquid",
+          "models_dev_context": 32768,
+          "description": "LiquidAI: LFM2.5-1.2B-Thinking (free)"
+        },
+        {
+          "id": "liquid/lfm-2.5-1.2b-instruct:free",
+          "name": "LiquidAI: LFM2.5-1.2B-Instruct (free)",
+          "context_length": 32768,
+          "models_dev_matched": true,
+          "models_dev_id": "liquid/lfm-2.5-1.2b-instruct:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "LFM2.5-1.2B-Instruct (free)",
+          "models_dev_family": "liquid",
+          "models_dev_context": 32768,
+          "description": "LiquidAI: LFM2.5-1.2B-Instruct (free)"
+        },
+        {
+          "id": "nvidia/nemotron-3-nano-30b-a3b:free",
+          "name": "NVIDIA: Nemotron 3 Nano 30B A3B (free)",
+          "context_length": 256000,
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-3-nano-30b-a3b:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron 3 Nano 30B A3B (free)",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 256000,
+          "description": "NVIDIA: Nemotron 3 Nano 30B A3B (free)"
+        },
+        {
+          "id": "nvidia/nemotron-nano-12b-v2-vl:free",
+          "name": "NVIDIA: Nemotron Nano 12B 2 VL (free)",
+          "context_length": 128000,
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-nano-12b-v2-vl:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron Nano 12B 2 VL (free)",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": "NVIDIA: Nemotron Nano 12B 2 VL (free)"
+        },
+        {
+          "id": "qwen/qwen3-next-80b-a3b-instruct:free",
+          "name": "Qwen: Qwen3 Next 80B A3B Instruct (free)",
+          "context_length": 262144,
+          "models_dev_matched": true,
+          "models_dev_id": "qwen/qwen3-next-80b-a3b-instruct:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Qwen3 Next 80B A3B Instruct (free)",
+          "models_dev_family": "qwen",
+          "models_dev_context": 262144,
+          "description": "Qwen: Qwen3 Next 80B A3B Instruct (free)"
+        },
+        {
+          "id": "nvidia/nemotron-nano-9b-v2:free",
+          "name": "NVIDIA: Nemotron Nano 9B V2 (free)",
+          "context_length": 128000,
+          "models_dev_matched": true,
+          "models_dev_id": "nvidia/nemotron-nano-9b-v2:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Nemotron Nano 9B V2 (free)",
+          "models_dev_family": "nemotron",
+          "models_dev_context": 128000,
+          "description": "NVIDIA: Nemotron Nano 9B V2 (free)"
+        },
+        {
+          "id": "openai/gpt-oss-120b:free",
+          "name": "OpenAI: gpt-oss-120b (free)",
+          "context_length": 131072,
+          "models_dev_matched": true,
+          "models_dev_id": "openai/gpt-oss-120b:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "gpt-oss-120b (free)",
+          "models_dev_family": "gpt-oss",
+          "models_dev_context": 131072,
+          "description": "OpenAI: gpt-oss-120b (free)"
+        },
+        {
+          "id": "openai/gpt-oss-20b:free",
+          "name": "OpenAI: gpt-oss-20b (free)",
+          "context_length": 131072,
+          "models_dev_matched": true,
+          "models_dev_id": "openai/gpt-oss-20b:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "gpt-oss-20b (free)",
+          "models_dev_family": "gpt-oss",
+          "models_dev_context": 131072,
+          "description": "OpenAI: gpt-oss-20b (free)"
+        },
+        {
+          "id": "qwen/qwen3-coder:free",
+          "name": "Qwen: Qwen3 Coder 480B A35B (free)",
+          "context_length": 1048576,
+          "models_dev_matched": true,
+          "models_dev_id": "qwen/qwen3-coder:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Qwen3 Coder 480B A35B (free)",
+          "models_dev_family": "qwen",
+          "models_dev_context": 262000,
+          "description": "Qwen: Qwen3 Coder 480B A35B (free)"
+        },
+        {
+          "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+          "name": "Venice: Uncensored (free)",
+          "context_length": 32768,
+          "models_dev_matched": true,
+          "models_dev_id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Uncensored (free)",
+          "models_dev_family": "mistral",
+          "models_dev_context": 32768,
+          "description": "Venice: Uncensored (free)"
+        },
+        {
+          "id": "meta-llama/llama-3.3-70b-instruct:free",
+          "name": "Meta: Llama 3.3 70B Instruct (free)",
+          "context_length": 131072,
+          "models_dev_matched": true,
+          "models_dev_id": "meta-llama/llama-3.3-70b-instruct:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Llama 3.3 70B Instruct (free)",
+          "models_dev_family": "llama",
+          "models_dev_context": 65536,
+          "description": "Meta: Llama 3.3 70B Instruct (free)"
+        },
+        {
+          "id": "meta-llama/llama-3.2-3b-instruct:free",
+          "name": "Meta: Llama 3.2 3B Instruct (free)",
+          "context_length": 131072,
+          "models_dev_matched": true,
+          "models_dev_id": "meta-llama/llama-3.2-3b-instruct:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Llama 3.2 3B Instruct (free)",
+          "models_dev_family": "llama",
+          "models_dev_context": 131072,
+          "description": "Meta: Llama 3.2 3B Instruct (free)"
+        },
+        {
+          "id": "nousresearch/hermes-3-llama-3.1-405b:free",
+          "name": "Nous: Hermes 3 405B Instruct (free)",
+          "context_length": 131072,
+          "models_dev_matched": true,
+          "models_dev_id": "nousresearch/hermes-3-llama-3.1-405b:free",
+          "models_dev_provider": "openrouter",
+          "models_dev_name": "Hermes 3 405B Instruct (free)",
+          "models_dev_family": "hermes",
+          "models_dev_context": 131072,
+          "description": "Nous: Hermes 3 405B Instruct (free)"
+        }
+      ]
+    },
+    "tavily": {
+      "status": "unsupported",
+      "reason": "No standard public model-list endpoint tied to this env key.",
+      "model_count": 0,
+      "models": []
+    }
+  },
+  "version": 1
+}

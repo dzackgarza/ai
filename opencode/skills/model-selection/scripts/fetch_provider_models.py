@@ -152,7 +152,7 @@ def fetch_provider_models(
         "cloudflare": bool(
             env.get("CLOUDFLARE_API_KEY") and env.get("CLOUDFLARE_ACCOUNT_ID")
         ),
-        "ollama": bool(env.get("OLLAMA_API_KEY")),
+        "ollama": bool(env.get("OLLAMA_CLOUD_API_KEY")),
         "tavily": bool(env.get("TAVILY_API_KEY")),
     }
 
@@ -172,11 +172,20 @@ def fetch_provider_models(
                         "X-Title": "model-selection-inventory",
                     },
                 )
-                models = [
-                    m
-                    for m in normalize_model_items(provider, payload)
-                    if m["id"].endswith(":free") or "/free" in m["id"]
-                ]
+                # 1. Filter payload to cost=0
+                free_data = []
+                for m in payload.get("data", []):
+                    pricing = m.get("pricing", {})
+                    if str(pricing.get("prompt", "")) == "0" and str(pricing.get("completion", "")) == "0":
+                        free_data.append(m)
+                
+                # 2. Normalize
+                payload["data"] = free_data
+                raw_models = normalize_model_items(provider, payload)
+                
+                # 3. Deduplicate
+                free_suffixed_bases = {m["id"][:-5] for m in raw_models if m["id"].endswith(":free")}
+                models = [m for m in raw_models if m["id"] not in free_suffixed_bases]
                 results[provider] = {
                     "status": "ok",
                     "endpoint": "https://openrouter.ai/api/v1/models",

@@ -89,6 +89,14 @@ test_results/
 # MCP server cache
 .mcp/
 
+# SDL-MCP runtime state
+mcp/*.lbug
+mcp/*.lbug.wal
+mcp/*.lbug.wal.checkpoint.quarantined-*
+mcp/corrupt-backup-*/
+mcp/*.sqlite
+mcp/*.pid
+
 # Claude Code credentials
 .claude/.credentials.json
 .claude-session-key

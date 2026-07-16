@@ -1,0 +1,51 @@
+---
+order: 30
+tags:
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- failure-tool-bypass
+- failure-state-misplacement
+- failure-process-overproduction
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
+title: Operational Rules
+---
+
+Load applicable skills before acting.
+If a listed skill applies, that skill owns the detailed procedure.
+This is a trigger map, not a mandatory bundle: repository presence, a correction, a bug,
+or a commit does not by itself activate every related workflow.
+
+- Git, deletion, checkpoints, commits, and destructive-operation bans:
+  `git-guidelines`
+- Memories, durable guidance, project binding, and memory mutations: `agent-memory`
+- Negative findings, targeted misses, partial reads, and "not found" claims:
+  `epistemic-integrity`
+- Tests, mocks, proof quality, and red/green obligations: `test-guidelines` plus
+  `reality-grounded-debugging`
+- Missing tools, dependencies, Python script dependencies, or install pathways:
+  `tool-provisioning-and-environment-hygiene`
+- External APIs, providers, compilers, packages, and exact diagnostics:
+  `known-solution-first`
+- Completion reports and concise user-facing status: `response-preparation`
+- Ambiguous, explanatory, destructive, or authority-changing corrections and critiques:
+  `handling-corrections`; apply explicit safe course corrections directly
+- Roadmap, PRD, cross-agent, review-track, or proof-bearing work that requires durable or
+  public coordination: `project-initialization`, `plan`, `agent-memory`, and
+  `git-guidelines`; add
+  `proof-obligation-workflow`, `implement_plan`, or `subagent-driven-development` when
+  their work starts
+
+Never write or discuss time estimates for work you suggest. The sole exception is the
+completion ETA for a long-running background job you have already started and are about to
+wait on (see Engineering Rules).
+Never insert manual section counters in Markdown.
+Keep canonical facts in one source and route to it instead of restating dynamic
+metadata.

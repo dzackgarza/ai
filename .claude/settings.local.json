@@ -1,4 +1,5 @@
 {
+  "autoMemoryDirectory": "/home/dzack/.agent-memory-vault/harnesses/claude/projects/-home-dzack-gitclones-ai",
   "permissions": {
     "allow": [
       "Bash(xargs ls:*)",

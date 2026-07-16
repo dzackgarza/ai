@@ -656,6 +656,33 @@ Never accept implementation without independent verification:
 5. **Final Review**: Dispatch an independent final reviewer subagent for the entire
    implementation after all tasks are done.
 
+### Rebuilding a Contaminated Artifact (Greenfield-From-Extraction)
+
+Agents do reliable greenfield work and unreliable brownfield work. When an existing
+artifact's whole frame is contaminated — an agent-generated README, doc, plan, or schema
+that has accreted private ontology, correction history, or disproportionate governance
+machinery — do **not** dispatch one agent to "rewrite it properly." An agent holding the
+old artifact treats its residue as requirements and reseeds the slop.
+
+Force the brownfield job to look like greenfield work with two fresh, separately-scoped
+subagents:
+
+1. **Extractor.** Prime on the skill that owns the artifact type (`writing-documentation`,
+   `plan`, etc.). Give it the
+   contaminated artifact and the instruction to extract only the real, externally
+   verifiable, user-facing requirements and surviving facts, each grounded in inspected
+   reality (code, data, command output, external source) rather than other generated
+   documents. Output is a requirements list, not prose.
+2. **Builder.** Prime on the same owning skill. Give it **only** the extracted
+   requirements — never the original artifact, the reviewer's framing, or the correction
+   history. It produces the replacement from scratch.
+3. Then run the **Forced Two-Stage Review Cycle** on the rebuild.
+
+Neither subagent should receive the correction transcript that motivated the rebuild;
+that context is exactly what reinfects. The policy rationale lives in
+[fixing-slop](file:///home/dzack/ai/opencode/skills/fixing-slop/SKILL.md) →
+**Contaminated Artifacts Cannot Be Repaired In Place**.
+
 ### Parallelism Strategy
 
 **Parallel Dispatch Rules:**

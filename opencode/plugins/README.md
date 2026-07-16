@@ -26,7 +26,7 @@ import-time failures from top-level code are surfaced immediately.
 | **Command Interceptor** | `examples/command-interceptor/index.ts` | Demo | Proof-of-concept: detects keyphrases ("intercept test", “plugin check”) and injects a hidden passphrase the model must echo |
 | **Context Injector** | `context-injector.ts` | Demo | Proof-of-concept: injects additional context when a specific keyphrase appears in the user message |
 | **CoT Trivial Interceptor** | `cot-trivial-test.ts` | Dev (gated) | Mid-stream CoT interceptor: detects “trivial” in reasoning and re-prompts. Requires manual gate removal to activate. |
-| **Write Plan** | `write_plan.ts` | Active | Custom tool `write_plan`: writes a plan document to `.serena/plans/` |
+| **Write Plan** | `write_plan.ts` | Active | Custom tool `write_plan`: writes a plan document to `.agents/plans/` |
 | **Plan Exit** | `plan_exit.ts` | Active | Custom tool `plan_exit`: presents a verification checklist before exiting plan mode |
 | **Sleep** | `sleep.ts` | Active | Custom tools `sleep` / `sleep_until`: real wall-clock waiting with a 60-minute safety cap |
 | **Async Command** | `async-command.ts` | Active | Custom tool `async_command`: fires a background sleep and injects the result via `promptAsync` when done |
@@ -50,7 +50,7 @@ plugins/
 ├── context-injector.ts             # Demo: keyphrase → context injection
 ├── cot-trivial-test.ts             # Dev: mid-stream CoT interceptor (gated)
 │
-├── write_plan.ts                   # Tool: write plan to .serena/plans/
+├── write_plan.ts                   # Tool: write plan to .agents/plans/
 ├── plan_exit.ts                    # Tool: plan exit verification checklist
 ├── sleep.ts                        # Tool: sleep / sleep_until
 ├── async-command.ts                # Tool: fire-and-forget background command

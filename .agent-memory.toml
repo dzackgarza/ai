@@ -1,0 +1,12 @@
+vault = "/home/dzack/.agent-memory-vault"
+project_id = "github.com__dzackgarza__ai"
+project_root_strategy = "git-root"
+global_scopes = [
+    "global/decisions",
+    "global/traps",
+    "global/advice",
+    "global/context",
+    "global/references",
+]
+search_max_results = 10
+search_max_tokens = 4000

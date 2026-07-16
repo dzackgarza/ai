@@ -1,6 +1,6 @@
 ---
 name: agent-memory
-description: "Use when deciding what belongs in agent memory, defining memory policy, or converting historical notes into reusable operational rules."
+description: "Use when deciding what belongs in agent memory, plan records, the central vault, GitHub, or wiki; defining memory policy; or converting historical notes into reusable operational rules."
 ---
 # Agent Memory
 
@@ -45,6 +45,10 @@ Save memories when you discover something worth preserving:
 
 - Architectural decisions and their rationale
 
+- Corrections that should change future agent behavior
+
+- Decisions whose rationale should be available to future agents
+
 - In-progress work that may be resumed later
 
 ### When to Check Memories
@@ -57,100 +61,116 @@ Check memories when starting related work:
 
 - When resuming work after a conversation break
 
-## iWe Setup and Usage
+## Agent Memory Setup and Usage
 
-Memories are managed through `iwe`, a file-based knowledge graph for Markdown notes.
-Each project contains a `.agents/memories/config.toml` after `iwe init`. The actual
-`.md` files are stored in iwe’s internal graph — use `iwe find`, `iwe retrieve`, and
-`iwe tree` to inspect them, never raw file reads.
+`agent-memory` is the only agent-facing interface for durable memories and
+project planning state. Agents do not need to know or call the storage backend
+during normal project work.
 
-### First-time setup in a project
+### Central Vault Policy
 
-```bash
-# Initialize the memory store in the project
-iwe init
-```
+The configured vault is the only durable agent-facing store for memory and plan state.
+Do not create loose repo-local Markdown plans, correction logs, decision ledgers, or
+agent-facing doctrine files as substitutes for typed `agent-memory` records.
 
-### Creating and managing memories
+Use repo-local files only as temporary scratchpads while working through in-the-weeds
+investigation. Before handoff, delete the scratchpad or promote its durable content:
 
-```bash
-# Create a new memory (accepts content via stdin or editor)
-iwe new "Memory Title"
+- reusable agent behavior, corrections, traps, and decisions -> typed memories;
+- plans, phase state, queues, and residue ledgers -> `plan` records;
+- durable product/project doctrine, architecture rationale, and readable roadmap/proof
+  projections -> wiki;
+- active public user stories, roadmap nodes, feature contracts, proof burdens,
+  execution state, bugs, gaps, and handoff contracts -> GitHub issue trees,
+  milestones, or PR claim maps.
 
-# Search across all memories (fuzzy text + YAML field filters)
-iwe find "search term"
+If the same fact appears in multiple surfaces, choose one authoritative owner and replace
+other copies with links or delete them. Memory can point at GitHub or wiki artifacts, but
+it should not duplicate their live status.
 
-# Retrieve a memory with surrounding context
-iwe retrieve -k my-memory
+The project binding is `.agent-memory.toml` at the repository root. Memory files
+live in the configured vault and are managed by `agent-memory`; do not create,
+inspect, edit, or reorganize memory directories by hand.
 
-# Overwrite a memory body
-iwe update -k memory-key -c "new content"
+### Tool Availability
 
-# Update frontmatter fields
-iwe update --filter 'status: draft' --set reviewed=true
-
-# Rename a memory (all links update automatically)
-iwe rename old-key new-key
-
-# Delete a single memory (references cleaned up)
-iwe delete memory-key
-
-# Extract a section into its own memory
-iwe extract memory-key --section "Title"
-
-# Inline a referenced memory back into its parent
-iwe inline memory-key --reference "other-memory"
-
-# Attach a memory via a configured action (e.g., daily notes)
-iwe attach --to today -k memory-key
-```
-
-### Browsing and inspecting
+Use the GitHub `uvx` runner as the canonical no-install invocation:
 
 ```bash
-# View the hierarchy tree from any starting point
-iwe tree
-
-# Count memories matching criteria
-iwe count --filter 'status: draft'
-
-# Analyze the memory store
-iwe stats
-
-# Export the memory graph as DOT for visualization
-iwe export -f dot
-
-# Normalize all memories to consistent formatting
-iwe normalize
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory --help
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor
 ```
 
-Use `iwe --help` and `iwe <subcommand> --help` to discover the full set of commands and
-options.
+Use a bare `agent-memory` command only after a verified setup has placed it on `PATH`.
+If the `uvx` runner exits before showing help because a required runtime dependency is
+missing, treat that as a setup failure. Do not bypass the doctor gate and do not call
+`iwe` directly for normal memory work.
+
+To provision persistent runtime dependencies, use the checkout:
+
+```bash
+cd /home/dzack/gitclones/agent-memory
+just install
+```
+
+### First-time Setup
+
+Initialize the global vault once:
+
+```bash
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory maintain init-global --vault /path/to/vault
+```
+
+Bind a repository to that vault:
+
+```bash
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory init project --vault /path/to/vault
+uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor
+```
+
+### Creating and Managing Memories
+
+Prefer the wrapper commands for normal work. Examples below use the short command for readability after tool availability has been verified; otherwise use the full `uvx` runner prefix above:
+
+```bash
+agent-memory search "search term"
+agent-memory add --scope project --type decision --title "Memory Title" --content "..."
+agent-memory retrieve projects/<project-id>/decisions/<key>
+agent-memory update <key> --title "New Title"
+agent-memory delete <key>
+agent-memory inspect --help
+```
+
+Use the `uvx` runner with `--help`, or a verified installed `agent-memory` command,
+to discover the current command surface before relying on old examples.
 
 ## Memory Interaction Workflow
 
-1. **`iwe find` first** — Before writing a new memory, search existing memories
+1. **Search first** — Before writing a new memory, search existing memories with
+   `agent-memory search`
 
-2. **Prefer `iwe update`** — If relevant memory exists, update it with
-   `iwe update -k key -c "content"` instead of creating a duplicate
+2. **Prefer update** — If relevant memory exists, update it with
+   `agent-memory update` instead of creating a duplicate
 
-3. **Never refactor or remove** — Do not attempt to refactor, reorganize, or remove
-   existing memory content outside of iwe
+3. **Never refactor or remove behind the tool** — Do not attempt to refactor,
+   reorganize, or remove existing memory content outside `agent-memory`
 
-4. **Create via `iwe new`** — If no relevant memory exists, create a new entry via
-   `iwe new "Title"`
+4. **Create via `agent-memory add`** — If no relevant memory exists, create a new
+   typed entry through the wrapper
 
 ## Where Information Lives
 
 | Information | Location | Example |
 | --- | --- | --- |
-| Reusable operational rules | Memory files | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
-| High-level decisions with future relevance | Memory files | “Chose process constraint over declarative rules because …” |
-| Current gaps, TODOs | GitHub issues | Issue tagged `TODO` or `needs-investigation` |
+| Reusable operational rules, traps, and corrections | Typed memories in the vault | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
+| Decisions with future agent relevance | Typed memories in the vault | “Treat generated AGENTS output as derived; edit fragments instead” |
+| Plans, phase state, contracts, queues, and residue ledgers | `agent-memory` plan records in the vault | “Current phase is extraction; active residue is parser boundary proof” |
+| Durable project doctrine, architecture rationale, and readable roadmap/proof projections | GitHub wiki | Feature page linked to stories, proof burdens, issues, and roadmap projections |
+| Active public stories, roadmap nodes, proof burdens, execution state, bugs, gaps, handoffs, and TODOs | GitHub issue trees, milestones, and PR claim maps | Story issue with proof obligations; draft PR linked to milestone and claim set |
 
 Completed work belongs in commits.
-Lessons and decisions needed for future work belong in memory.
-TODOs and gaps belong in GitHub issues, not repo artifacts.
+Lessons, corrections, decisions, and planning state needed for future work belong in the
+vault. TODOs and gaps belong in GitHub issues, not repo artifacts.
 
 ## Decision Test
 
@@ -170,11 +190,22 @@ Before writing a memory entry, answer all four:
 
 All four must pass. If any fails, the entry does not belong in memory.
 
+## Promotion Test
+
+After deciding that a memory is warranted, decide whether memory alone is sufficient.
+Also update GitHub or the wiki when the correction or decision affects:
+
+- public project direction, requirements, user stories, roadmaps, or proof burdens;
+- work that multiple agents, branches, repos, or future PRs must coordinate;
+- observed bugs, inefficiencies, false greens, or follow-up gaps in an owned repo;
+- handoff state that should be auditable without reading the private vault.
+
+Use memory for the reusable lesson and GitHub/wiki for the public project state.
+Do not use memory to hide actionable repo work from the owning repo's issue tracker.
+
 ## Entry Format
 
-Memories are stored as Markdown files with YAML frontmatter.
-The frontmatter `title` is used as the canonical identifier.
-Tags are used for filtering via `iwe find --filter`.
+Memories are stored as typed Markdown records managed by `agent-memory`.
 
 ```yaml
 ---

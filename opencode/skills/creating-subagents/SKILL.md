@@ -1,6 +1,6 @@
 ---
 name: creating-subagents
-description: "Use when creating new subagents or updating subagent descriptions in opencode.json."
+description: "Use when creating new subagents or updating subagent descriptions in opencode/agents markdown files."
 ---
 # Creating Subagents
 
@@ -177,11 +177,13 @@ Before creating a subagent, ask:
 **If NO to most questions:** Do not create a subagent.
 Handle in main agent.
 
-### 2. Read the Subagent Prompt
+### 2. Read or Draft the Subagent Prompt
 
-Read the subagent prompt via `ai-prompts` using its slug.
+Subagent prompts and metadata are manually maintained in `opencode/agents/*.md`.
+Read the existing markdown agent when updating one, or draft the new markdown file directly
+when creating one.
 
-Extract:
+Extract or define:
 
 - **Role**: What does this subagent do?
 
@@ -190,6 +192,8 @@ Extract:
 - **Prompt patterns**: What are example delegation prompts?
 
 - **Constraints**: File restrictions, report-only modes, tool limitations?
+
+- **Permissions**: What explicit `permission` frontmatter does this subagent need?
 
 ### 3. Write the Description
 
@@ -201,21 +205,22 @@ Use when [what the prompt says it does]. Pass [what the prompt expects as input]
 
 ### 4. Add Required Fields
 
-Every subagent needs:
+Every subagent markdown file needs YAML frontmatter and a prompt body:
 
-```json
-{
-  "agent-name": {
-    "description": "Use when X. Pass Y. Ask 'Z'.",
-    "mode": "subagent",
-    "model": "provider/model-name",
-    "permission": {
-      "task": "deny"
-    },
-    "prompt_slug": "sub-agents/example-slug"
-  }
-}
+```markdown
+---
+name: agent-name
+description: Use when X. Pass Y. Ask 'Z'.
+mode: subagent
+model: provider/model-name
+permission:
+  task: deny
+---
+
+Detailed subagent prompt goes here.
 ```
+
+Do not use `prompt_slug` or an external permission compiler for OpenCode runtime agents.
 
 ### 5. Validate
 

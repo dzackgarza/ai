@@ -10,7 +10,7 @@ permission:
   grep: *id001
   edit: &id002
     '*': deny
-    '*.serena/plans*': allow
+    '*.agents/plans*': allow
   apply_patch: *id002
   bash:
     '*sudo*': deny
@@ -53,36 +53,6 @@ permission:
   cut-copy-paste-mcp_get_operation_history: allow
   cut-copy-paste-mcp_show_clipboard: allow
   cut-copy-paste-mcp_undo_last_paste: allow
-  serena_read_file: deny
-  serena_list_dir: deny
-  serena_find_file: deny
-  serena_search_for_pattern: deny
-  serena_get_symbols_overview: *id001
-  serena_find_symbol: *id001
-  serena_find_referencing_symbols: *id001
-  serena_create_text_file: deny
-  serena_replace_content: deny
-  serena_replace_symbol_body: *id002
-  serena_insert_after_symbol: *id002
-  serena_insert_before_symbol: *id002
-  serena_rename_symbol: *id002
-  serena_read_memory: deny
-  serena_list_memories: deny
-  serena_write_memory: deny
-  serena_edit_memory: deny
-  serena_delete_memory: deny
-  serena_rename_memory: deny
-  serena_activate_project: allow
-  serena_check_onboarding_performed: deny
-  serena_get_current_config: deny
-  serena_onboarding: deny
-  serena_prepare_for_new_conversation: deny
-  serena_initial_instructions: deny
-  serena_think_about_collected_information: deny
-  serena_think_about_task_adherence: deny
-  serena_think_about_whether_you_are_done: deny
-  serena_execute_shell_command: deny
-  serena_switch_modes: deny
   gemini_quota: allow
   cut-copy-paste-mcp_cut: *id002
   cut-copy-paste-mcp_copy: *id002
@@ -97,7 +67,7 @@ permission:
 - Although most file edits are banned in plan mode, **`write_plan` is specifically
   allowed and REQUIRED** for writing plans to disk
 
-- **ALWAYS write to `.serena/plans/` using `write_plan`** - never use any other method
+- **ALWAYS write to `.agents/plans/` using `write_plan`** - never use any other method
 
 - **Keep the plan file updated throughout the entire planning process** - write early,
   write often
@@ -142,7 +112,7 @@ text.
 
 **Goal**: Design an implementation approach.
 
-1. **FIRST**: Use `write_plan` to create/update `.serena/plans/USER_SPEC.md` with:
+1. **FIRST**: Use `write_plan` to create/update `.agents/plans/USER_SPEC.md` with:
 
    - Problem statement
 
@@ -154,7 +124,7 @@ text.
 
    - Open risks
 
-2. **Use `write_plan`** to create the implementation plan under `.serena/plans/`
+2. **Use `write_plan`** to create the implementation plan under `.agents/plans/`
 
 3. Decompose into micro-tasks (default: ONE file + its test)
 
@@ -174,7 +144,7 @@ text.
 
 1. Spawn **plan-reviewer** subagent with:
 
-   - `.serena/plans/USER_SPEC.md`
+   - `.agents/plans/USER_SPEC.md`
 
    - The plan file
 
@@ -225,7 +195,7 @@ text.
    that Build can execute without ambiguity.
 
 6. **User Spec First (Mandatory)**: BEFORE writing the implementation plan, you MUST
-   create/update `.serena/plans/USER_SPEC.md` capturing the user’s high-level problem,
+   create/update `.agents/plans/USER_SPEC.md` capturing the user’s high-level problem,
    goals, constraints, and non-goals.
 
 7. **Question Tool ALWAYS**: ALL user questions MUST use the `question` tool.
@@ -241,11 +211,11 @@ text.
 
 10. **No Plan Finalization Without Plan-Logic Review**: BEFORE declaring readiness to
     switch to build, you MUST have the **plan-reviewer** subagent review
-    `.serena/plans/USER_SPEC.md` and the plan file together for logical consistency and
+    `.agents/plans/USER_SPEC.md` and the plan file together for logical consistency and
     spec alignment.
 
 11. **Planning-Only Editing Scope**: In plan mode, edits MUST be limited to
-    `.serena/plans/USER_SPEC.md` and Markdown plan files under `.serena/plans/` - and
+    `.agents/plans/USER_SPEC.md` and Markdown plan files under `.agents/plans/` - and
     MUST use `write_plan`.
 
 12. **Plan Must Be Fixable**: If a reviewer subagent reports violations, you MUST revise

@@ -6,20 +6,8 @@
     "apiKey": "{env:NVIDIA_API_KEY}"
   },
   "models": {
-    "deepseek-ai/deepseek-r1-0528": {
-      "name": "deepseek-r1-0528"
-    },
-    "deepseek-ai/deepseek-v3.2": {
-      "name": "deepseek-v3.2"
-    },
-    "google/gemma-2-27b-it": {
-      "name": "gemma-2-27b-it"
-    },
     "meta/codellama-70b": {
       "name": "codellama-70b"
-    },
-    "meta/llama-3.1-405b-instruct": {
-      "name": "llama-3.1-405b-instruct"
     },
     "meta/llama-3.3-70b-instruct": {
       "name": "llama-3.3-70b-instruct"
@@ -27,29 +15,11 @@
     "meta/llama-4-maverick-17b-128e-instruct": {
       "name": "llama-4-maverick-17b-128e-instruct"
     },
-    "minimaxai/minimax-m2.1": {
-      "name": "minimax-m2.1"
-    },
-    "minimaxai/minimax-m2.5": {
-      "name": "minimax-m2.5"
-    },
-    "mistralai/devstral-2-123b-instruct-2512": {
-      "name": "devstral-2-123b-instruct-2512"
-    },
     "mistralai/mistral-large-3-675b-instruct-2512": {
       "name": "mistral-large-3-675b-instruct-2512"
     },
-    "mistralai/mistral-medium-3-instruct": {
-      "name": "mistral-medium-3-instruct"
-    },
     "mistralai/mistral-nemotron": {
       "name": "mistral-nemotron"
-    },
-    "moonshotai/kimi-k2.5": {
-      "name": "kimi-k2.5"
-    },
-    "nvidia/cosmos-nemotron-34b": {
-      "name": "cosmos-nemotron-34b"
     },
     "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
       "name": "llama-3.1-nemotron-ultra-253b-v1"
@@ -66,39 +36,111 @@
     "openai/gpt-oss-120b": {
       "name": "gpt-oss-120b"
     },
-    "qwen/qwen3-coder-480b-a35b-instruct": {
-      "name": "qwen3-coder-480b-a35b-instruct"
-    },
-    "qwen/qwen3-next-80b-a3b-thinking": {
-      "name": "qwen3-next-80b-a3b-thinking"
-    },
     "stepfun-ai/step-3.5-flash": {
       "name": "step-3.5-flash"
     },
-    "z-ai/glm5": {
-      "name": "glm5"
+    "deepseek-ai/deepseek-v4-flash": {
+      "name": "deepseek-v4-flash"
+    },
+    "deepseek-ai/deepseek-v4-pro": {
+      "name": "deepseek-v4-pro"
+    },
+    "minimaxai/minimax-m2.7": {
+      "name": "minimax-m2.7"
+    },
+    "minimaxai/minimax-m3": {
+      "name": "minimax-m3"
+    },
+    "mistralai/mistral-medium-3.5-128b": {
+      "name": "mistral-medium-3.5-128b"
+    },
+    "moonshotai/kimi-k2.6": {
+      "name": "kimi-k2.6"
+    },
+    "nvidia/nemotron-3-super-120b-a12b": {
+      "name": "nemotron-3-super-120b-a12b"
+    },
+    "nvidia/nemotron-3-ultra-550b-a55b": {
+      "name": "nemotron-3-ultra-550b-a55b"
+    },
+    "qwen/qwen3.5-397b-a17b": {
+      "name": "qwen3.5-397b-a17b"
+    },
+    "google/gemma-4-31b-it": {
+      "name": "gemma-4-31b-it"
     }
   },
+  "whitelist": [
+    "deepseek-ai/deepseek-v4-flash",
+    "deepseek-ai/deepseek-v4-pro",
+    "google/gemma-4-31b-it",
+    "meta/codellama-70b",
+    "meta/llama-3.3-70b-instruct",
+    "meta/llama-4-maverick-17b-128e-instruct",
+    "minimaxai/minimax-m2.7",
+    "minimaxai/minimax-m3",
+    "mistralai/mistral-large-3-675b-instruct-2512",
+    "mistralai/mistral-medium-3.5-128b",
+    "mistralai/mistral-nemotron",
+    "moonshotai/kimi-k2.6",
+    "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "nvidia/nemotron-3-nano-30b-a3b",
+    "nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nemotron-3-ultra-550b-a55b",
+    "nvidia/nemotron-4-340b-instruct",
+    "openai/gpt-oss-120b",
+    "qwen/qwen3.5-397b-a17b",
+    "stepfun-ai/step-3.5-flash"
+  ],
   "blacklist": [
+    "01-ai/yi-large",
+    "abacusai/dracarys-llama-3.1-70b-instruct",
+    "adept/fuyu-8b",
+    "ai21labs/jamba-1.5-large-instruct",
+    "aisingapore/sea-lion-7b-instruct",
+    "baai/bge-m3",
+    "bigcode/starcoder2-15b",
     "black-forest-labs/flux.1-dev",
+    "bytedance/seed-oss-36b-instruct",
+    "databricks/dbrx-instruct",
     "deepseek-ai/deepseek-coder-6.7b-instruct",
     "deepseek-ai/deepseek-r1",
+    "deepseek-ai/deepseek-r1-0528",
     "deepseek-ai/deepseek-v3.1",
     "deepseek-ai/deepseek-v3.1-terminus",
+    "deepseek-ai/deepseek-v3.2",
     "google/codegemma-1.1-7b",
     "google/codegemma-7b",
+    "google/deplot",
+    "google/diffusiongemma-26b-a4b-it",
+    "google/gemma-2-27b-it",
     "google/gemma-2-2b-it",
+    "google/gemma-2b",
     "google/gemma-3-12b-it",
     "google/gemma-3-1b-it",
     "google/gemma-3-27b-it",
+    "google/gemma-3-4b-it",
     "google/gemma-3n-e2b-it",
     "google/gemma-3n-e4b-it",
+    "google/recurrentgemma-2b",
+    "ibm/granite-3.0-3b-a800m-instruct",
+    "ibm/granite-3.0-8b-instruct",
+    "ibm/granite-34b-code-instruct",
+    "ibm/granite-8b-code-instruct",
+    "meta/llama-3.1-405b-instruct",
     "meta/llama-3.1-70b-instruct",
+    "meta/llama-3.1-8b-instruct",
     "meta/llama-3.2-11b-vision-instruct",
     "meta/llama-3.2-1b-instruct",
+    "meta/llama-3.2-3b-instruct",
+    "meta/llama-3.2-90b-vision-instruct",
     "meta/llama-4-scout-17b-16e-instruct",
+    "meta/llama-guard-4-12b",
+    "meta/llama2-70b",
     "meta/llama3-70b-instruct",
     "meta/llama3-8b-instruct",
+    "microsoft/kosmos-2",
     "microsoft/phi-3-medium-128k-instruct",
     "microsoft/phi-3-medium-4k-instruct",
     "microsoft/phi-3-small-128k-instruct",
@@ -107,29 +149,91 @@
     "microsoft/phi-3.5-moe-instruct",
     "microsoft/phi-3.5-vision-instruct",
     "microsoft/phi-4-mini-instruct",
+    "microsoft/phi-4-multimodal-instruct",
     "minimaxai/minimax-m2",
+    "minimaxai/minimax-m2.1",
+    "minimaxai/minimax-m2.5",
     "mistralai/codestral-22b-instruct-v0.1",
+    "mistralai/devstral-2-123b-instruct-2512",
     "mistralai/mamba-codestral-7b-v0.1",
     "mistralai/ministral-14b-instruct-2512",
+    "mistralai/mistral-7b-instruct-v0.3",
+    "mistralai/mistral-large",
     "mistralai/mistral-large-2-instruct",
+    "mistralai/mistral-medium-3-instruct",
     "mistralai/mistral-small-3.1-24b-instruct-2503",
+    "mistralai/mistral-small-4-119b-2603",
+    "mistralai/mixtral-8x22b-v0.1",
+    "mistralai/mixtral-8x7b-instruct-v0.1",
     "moonshotai/kimi-k2-instruct",
     "moonshotai/kimi-k2-instruct-0905",
     "moonshotai/kimi-k2-thinking",
+    "moonshotai/kimi-k2.5",
+    "nv-mistralai/mistral-nemo-12b-instruct",
+    "nvidia/ai-synthetic-video-detector",
+    "nvidia/cosmos-nemotron-34b",
+    "nvidia/cosmos-reason2-8b",
+    "nvidia/embed-qa-4",
+    "nvidia/gliner-pii",
+    "nvidia/ising-calibration-1-35b-a3b",
+    "nvidia/llama-3.1-nemoguard-8b-content-safety",
+    "nvidia/llama-3.1-nemoguard-8b-topic-control",
     "nvidia/llama-3.1-nemotron-51b-instruct",
     "nvidia/llama-3.1-nemotron-70b-instruct",
+    "nvidia/llama-3.1-nemotron-nano-8b-v1",
+    "nvidia/llama-3.1-nemotron-nano-vl-8b-v1",
+    "nvidia/llama-3.1-nemotron-safety-guard-8b-v3",
+    "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1",
+    "nvidia/llama-3.2-nv-embedqa-1b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1",
     "nvidia/llama-embed-nemotron-8b",
+    "nvidia/llama-nemotron-embed-1b-v2",
+    "nvidia/llama-nemotron-embed-vl-1b-v2",
     "nvidia/llama3-chatqa-1.5-70b",
+    "nvidia/mistral-nemo-minitron-8b-8k-instruct",
     "nvidia/nemoretriever-ocr-v1",
+    "nvidia/nemoretriever-parse",
+    "nvidia/nemotron-3-content-safety",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+    "nvidia/nemotron-3.5-content-safety",
+    "nvidia/nemotron-4-340b-reward",
+    "nvidia/nemotron-content-safety-reasoning-4b",
+    "nvidia/nemotron-mini-4b-instruct",
+    "nvidia/nemotron-nano-12b-v2-vl",
+    "nvidia/nemotron-nano-3-30b-a3b",
+    "nvidia/nemotron-parse",
+    "nvidia/neva-22b",
+    "nvidia/nv-embed-v1",
+    "nvidia/nv-embedcode-7b-v1",
+    "nvidia/nv-embedqa-e5-v5",
+    "nvidia/nv-embedqa-mistral-7b-v2",
+    "nvidia/nvclip",
     "nvidia/nvidia-nemotron-nano-9b-v2",
     "nvidia/parakeet-tdt-0.6b-v2",
+    "nvidia/riva-translate-4b-instruct",
+    "nvidia/riva-translate-4b-instruct-v1.1",
+    "nvidia/vila",
+    "openai/gpt-oss-20b",
     "openai/whisper-large-v3",
     "qwen/qwen2.5-coder-32b-instruct",
     "qwen/qwen2.5-coder-7b-instruct",
     "qwen/qwen3-235b-a22b",
+    "qwen/qwen3-coder-480b-a35b-instruct",
     "qwen/qwen3-next-80b-a3b-instruct",
+    "qwen/qwen3-next-80b-a3b-thinking",
+    "qwen/qwen3.5-122b-a10b",
     "qwen/qwq-32b",
-    "z-ai/glm4.7"
+    "sarvamai/sarvam-m",
+    "snowflake/arctic-embed-l",
+    "stepfun-ai/step-3.7-flash",
+    "stockmark/stockmark-2-100b-instruct",
+    "upstage/solar-10.7b-instruct",
+    "writer/palmyra-creative-122b",
+    "writer/palmyra-fin-70b-32k",
+    "writer/palmyra-med-70b",
+    "writer/palmyra-med-70b-32k",
+    "z-ai/glm4.7",
+    "z-ai/glm5",
+    "zyphra/zamba2-7b-instruct"
   ]
 }

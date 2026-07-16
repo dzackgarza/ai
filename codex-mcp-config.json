@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "sdl-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "sdl-mcp",
+        "serve",
+        "--stdio"
+      ],
+      "env": {
+        "SDL_CONFIG": "/home/dzack/ai/mcp/sdlmcp.config.json"
+      }
+    }
+  }
+}

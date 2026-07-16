@@ -82,7 +82,7 @@ Name exact skill slugs and triggers:
 ## Goal Engineering
 
 ### Sliding Context Protocol
-For long-horizon work, the `/goal` text is the stable bootloader. It retrieves state, loads always-on skills, and reconciles state with artifacts. It must point to a canonical state surface (preferably `iwe`). Future workers load only the active phase doc. This keeps focus narrow while preserving the full destination outside the context window.
+For long-horizon work, the `/goal` text is the stable bootloader. It retrieves state from `agent-memory`, loads always-on skills, and reconciles state with artifacts. Future workers load only the active phase record. This keeps focus narrow while preserving the full destination outside the context window.
 
 ### State Machine
 Use states as decision modes: `RECONCILE` (artifacts vs state), `FOCUS` (current sliver), `CHECK` (world-state evidence), `REVIEW` (independent judgment), `ADVANCE` (evidence-backed update), `DECOMPOSE` (residue reduction).
@@ -116,11 +116,11 @@ The output goal must reflect the audit: every success criterion needs the exact 
 
 Use a simple goal only when the request completion witness, boundaries, and verification fit under the target without vague compression.
 
-Use a workflow-backed goal when completion needs phased context, repeated loops, independent review, orchestration, recursive decomposition, or compaction resilience. Before writing the final `/goal`, create or update the contract, state, phase, and residue/queue docs needed for progressive disclosure in the canonical state surface. The `/goal` should name the full destination, state surface, retrieval rule, phase-loading rule, always-load skill rule, state-specific skill rule, and completion witness. Skills needed before any state decision must be named in the `/goal` text itself; phase-specific skills can be named in the progressive docs.
+Use a workflow-backed goal when completion needs phased context, repeated loops, independent review, orchestration, recursive decomposition, or compaction resilience. Before writing the final `/goal`, create or update the contract, state, phase, and residue/queue records needed for progressive disclosure in `agent-memory`. The `/goal` should name the full destination, agent-memory keys, retrieval rule, phase-loading rule, always-load skill rule, state-specific skill rule, and completion witness. Skills needed before any state decision must be named in the `/goal` text itself; phase-specific skills can be named in the progressive records.
 
 Workflow docs must cross-reference concrete existing skills by slug and trigger, not generic categories. At minimum: bugs, failing checks, unexpected behavior, integration failures, and unclear causality route to `systematic-debugging`; failed attempts, hard residue, pressure to defer, and blocked/off-ramp claims route to `hard-problem-decomposition`; adversarial test design routes to `test-guidelines`; orchestration routes to `subagent-delegation`; agent-work review routes to `reviewing-subagent-work` plus `jerry-behaviour`; substantive code/research gates route to `research-gate-review`; drift or reward-hacking suspicion routes to `llm-failure-modes`; slop suspicion routes to `anti-slop`; progress/completion reporting routes to `hierarchical-task-framing` or `response-preparation` when those reports are part of the workflow.
 
-Workflow-backed goals must choose a canonical state surface before drafting. Prefer the active project's `iwe` memory graph for contract, state, phase, and residue-ledger docs when it exists or project docs prescribe it. Use `iwe find` before creating, `iwe retrieve -k <key>` when resuming, and `iwe update` or `iwe new` rather than loose Markdown files. If the project has a different documented goal/planning surface, use that documented surface and name it. Do not create ad hoc `notes.md`, `progress.md`, or chat-transcript-dependent state.
+Workflow-backed goals must use `agent-memory` for contract, state, phase, and residue-ledger records. Use `agent-memory search` before creating, `agent-memory retrieve` when resuming, and `agent-memory update` or `agent-memory add` rather than loose Markdown files. Do not create ad hoc `notes.md`, `progress.md`, repo-local planning files, or chat-transcript-dependent state.
 
 ### Recursive Decomposition
 A failed one-shot attempt is residue. `DECOMPOSE` is a work state: split residue into observable subpieces, attempt one piece, integrate results, subtract from parent residue. **Blocker claims** are an adversary's preferred exit move; accept them only after direct evidence reduces the residue to the smallest externally owned leaf.
@@ -229,7 +229,7 @@ Use the compact shape by default:
 
 Workflow: this goal text is the stable bootloader. At every continuation, load <pre-retrieval skills>, retrieve <state-key/path>, load the contract's always-on skills, read <contract-key/path> when advancing/reviewing/completing, reconcile state with artifacts, load only the active phase doc, load the skills named by that phase/state, and work the current sliver until its evidence/review condition passes.
 
-State surface: use <iwe keys or documented project paths>. Resume with <retrieval command>. Update state through the canonical tool, not loose files or chat transcript.
+State surface: use <agent-memory keys>. Resume with <agent-memory retrieve command>. Update state through `agent-memory`, not loose files or chat transcript.
 
 Preserve: <scope boundaries and non-regressions>.
 
@@ -247,7 +247,7 @@ Stop: <approval/destructive/access boundaries>.
 - The goal should be adversarially complete: every success criterion names the exact
   boundary where success/failure is observed and bans the nearest weaker substitutes.
 - Workflow-backed goals should reveal the current phase and active residue path without repeatedly flooding the worker with the whole task.
-- Workflow-backed goals should use canonical searchable state surfaces, preferably project-local `iwe`; loose files and transcript memory are not durable state.
+- Workflow-backed goals should use `agent-memory` for searchable planning state; loose files and transcript memory are not durable state.
 - Workflow docs should contain explicit Reference Skills sections; "review", "debug", "detect drift", or "handle slop" without exact skill slugs is too vague.
 - Large routine queues should keep their required unit method; scale alone does not justify a weaker method.
 - A failed attempt should trigger recursive decomposition; any smaller piece that can be solved must be completed and removed from the residue before blocker or follow-up language is available.

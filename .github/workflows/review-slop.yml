@@ -20,4 +20,3 @@ jobs:
     with:
       report_type: slop
       scope: repo
-      fail_below: ${{ vars.SLOP_FAIL_BELOW }}

@@ -21,10 +21,9 @@ Before working in this directory, read the following in full:
 
 Located at: `~/ai/skills/opencode-cli/` (same repo, `skills/opencode-cli/`)
 
-## 2. Serena Memories
+## 2. Agent-Memory Records
 
-Run `serena_read_memory` at session start.
-All memories apply here.
+Use the `agent-memory` skill and CLI at session start when project memory applies.
 
 ## 3. Oneshot Plugin Testing
 
@@ -193,7 +192,7 @@ When writing `tool({ description: ... })` in any plugin:
 - NEVER expose internals — file paths, directories, return shapes, implementation
   details. Tools abstract these away on purpose.
   Details are provided JIT via return values (e.g. `write_plan` returns the written path
-  when done; the description doesn’t need to mention `.serena/plans/`). Leaking
+  when done; the description doesn’t need to mention `.agents/plans/`). Leaking
   internals in the description breaks abstraction, pollutes context (reducing the chance
   the tool is used in the right circumstances), and encourages the model to manually
   bypass the tool entirely.

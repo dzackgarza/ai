@@ -11,5 +11,8 @@
     "glm-4.7-flash": {
       "name": "GLM 4.7 Flash (Free)"
     }
-  }
+  },
+  "whitelist": [
+    "glm-4.7-flash"
+  ]
 }

@@ -157,6 +157,22 @@ known library, official recipe, or existing upstream pattern. If a dependency ex
 fits, prefer using it. If you write bespoke code anyway, state what source ruled out the
 known solution.
 
+Stop designing a new subsystem when the user's existing workflow already has a standard
+substrate you can extend. First identify the native interception point, extension point,
+plugin API, protocol hook, file format feature, or official sample that already owns the
+workflow. The known solution may be a mature application component to fork or patch, not
+only a package to import. If you propose a sidecar service, helper daemon, catalog,
+index, status machine, or custom lifecycle before checking the substrate the user is
+already using, you have not completed known-solution-first.
+
+Stop externalizing identity or metadata before checking native carriers. For a file,
+record, protocol, or host application, first check whether the artifact format, official
+API, identifier resolver, metadata field, annotation model, or import mechanism already
+stores or resolves the needed information. Prefer identifier-first paths for citation or
+identity work; prefer artifact-native metadata for provenance that travels with the
+artifact. A sidecar database, log, or promotion workflow is justified only for data the
+native surface cannot safely carry, cross-object queries, coordination, or recovery.
+
 Stop picking tools by scanning what is already installed. Identify the best tool for the
 job from public knowledge (docs, ecosystem, examples).
 Use it ephemerally by default (`uvx`, `npx -y`, `bunx`).

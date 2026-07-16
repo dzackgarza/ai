@@ -1,0 +1,49 @@
+# AGENTSmd fragment selection.
+# The normal build includes every fragment. Add tags to exclude for controlled variants.
+
+[selection]
+exclude_tags = []
+
+[taxonomy]
+allowed_tags = [
+    "source-owner-context",
+    "source-owner-preference",
+    "source-system-contract",
+    "source-domain-context",
+    "source-observed-model-failure",
+    "source-document-structure",
+    "function-orient",
+    "function-define",
+    "function-constrain",
+    "function-procedure",
+    "function-route",
+    "function-allocate",
+    "function-evaluate",
+    "function-structure",
+    "failure-intent-assumption",
+    "failure-correction-thrashing",
+    "failure-reporting-distortion",
+    "failure-completion-laundering",
+    "failure-epistemic-overreach",
+    "failure-goal-substitution",
+    "failure-scope-drift",
+    "failure-premature-action",
+    "failure-proxy-evidence",
+    "failure-destructive-state-change",
+    "failure-process-overproduction",
+    "failure-tool-bypass",
+    "failure-proof-gaming",
+    "failure-state-misplacement",
+    "failure-feedback-laundering",
+    "failure-context-loss",
+    "retest-model-reasoning",
+    "retest-model-theory-of-mind",
+    "retest-model-alignment",
+    "retest-model-tool-use",
+    "retest-model-self-evaluation",
+    "retest-model-memory",
+    "retest-policy-change",
+    "retest-toolchain-change",
+    "retest-environment-change",
+    "retest-corpus-change",
+]

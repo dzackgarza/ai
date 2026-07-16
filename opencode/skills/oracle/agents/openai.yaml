@@ -1,0 +1,8 @@
+interface:
+  display_name: Oracle
+  short_description: Bundle prompts and files with Oracle, submit via the CDP browser
+    script
+  default_prompt: Use $oracle to bundle a prompt plus the right local files (npx @steipete/oracle
+    --render), then attach the bundle to ChatGPT as a real file upload and submit
+    via opencode/skills/oracle/scripts/chatgpt_cdp_consult.js. Extract and verify
+    the response before acting on it.

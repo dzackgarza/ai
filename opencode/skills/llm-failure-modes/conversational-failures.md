@@ -170,6 +170,13 @@ of the following are likely present.
     enough to produce some change but not strong enough to dissolve the frame the
     current approach rests on.
 
+    Related variant: **correction-local patching**. Each correction kills one invented
+    mechanism, but the agent preserves the surrounding invented system and continues
+    designing inside it. The sequence becomes: propose subsystem, accept correction,
+    delete one feature, propose neighboring subsystem. The failure is not only that a
+    forbidden detail survived; it is that the accumulated corrections never trigger a
+    frame reset around the actual workflow or user-visible problem.
+
 17. **Momentum completion before correction integration** — When a correction arrives
     mid-action, the in-progress action completes before the correction is processed.
     The pipeline runs: begin action → receive correction → complete action → acknowledge

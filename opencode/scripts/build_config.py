@@ -3,21 +3,19 @@
 
 from __future__ import annotations
 
+import argparse
 import glob
 import json
 import logging
 import os
-import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "permissions"))
 import jsonschema
 from rich.console import Console
 from rich.logging import RichHandler
-from src.agent_markdown import get_prompt
 
 _console = Console(stderr=True)
 _handler = RichHandler(
@@ -38,6 +36,23 @@ MODELS_DEV_API = "https://models.dev/api.json"
 OPENROUTER_CHAT_COMPLETIONS_API = "https://openrouter.ai/api/v1/chat/completions"
 SCHEMA_USER_AGENT = "opencode-config-builder/1.0"
 IGNORED_PROVIDERS = {"qwen-code"}
+# Providers whose live catalog is a large multi-modal reseller marketplace
+# (TTS/image/video/etc.) rather than a curated text-model list: only the
+# "did our chosen models rot" half of the live check is meaningful for them.
+# Flagging every uncurated model as "unaccounted" would produce hundreds of
+# unactionable findings and teach people to ignore --strict failures.
+NARROW_ALLOWLIST_PROVIDERS = {"vectorengine"}
+# models.dev's own provider registry (not just its per-provider model lists)
+# publishes the real api base URL and auth env var name for providers we
+# don't self-host connection details for locally. That structural metadata
+# (which provider, which base URL) changes far less often than the model
+# list itself, so it's a reasonable source for *where to check live* even
+# though the model list it reports can lag. Some of models.dev's declared
+# env var names don't match this repo's .envrc naming; known aliases here.
+KNOWN_ENV_ALIASES = {
+    "OLLAMA_API_KEY": "OLLAMA_CLOUD_API_KEY",
+}
+GOOGLE_GENERATIVE_LANGUAGE_API = "https://generativelanguage.googleapis.com/v1beta/models"
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -50,19 +65,6 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
         json.dump(data, handle, indent=2)
         handle.write("\n")
 
-
-def _resolve_prompt_slugs(value: Any) -> Any:
-    if isinstance(value, dict):
-        resolved: dict[str, Any] = {}
-        for key, item in value.items():
-            if key == "prompt_slug":
-                resolved["prompt"] = get_prompt(str(item)).text
-                continue
-            resolved[key] = _resolve_prompt_slugs(item)
-        return resolved
-    if isinstance(value, list):
-        return [_resolve_prompt_slugs(item) for item in value]
-    return value
 
 
 def _fetch_json(url: str, timeout: int = 30) -> dict[str, Any]:
@@ -115,7 +117,6 @@ def load_config_sources() -> dict[str, Any]:
         provider_name = provider_path.stem
         config["provider"][provider_name] = _read_json(provider_path)
 
-    config = _resolve_prompt_slugs(config)
 
     if config.get("agent") == {}:
         del config["agent"]
@@ -188,11 +189,28 @@ def fetch_openrouter_api() -> dict[str, Any]:
         raise RuntimeError(f"Failed to fetch OpenRouter API: {exc}") from exc
 
 
-def check_openrouter_model_invocation(model_id: str) -> str | None:
-    """Return a call-time error for unusable OpenRouter models."""
+def _is_upstream_rate_limit(error_body: str) -> bool:
+    """True if an OpenRouter error is a specific free model's upstream
+    inference backend throttling it, not the model being broken.
+
+    Confirmed live against several free models: the literal phrase
+    "rate-limited upstream" appears in error.metadata.raw when the primary
+    backend is saturated (e.g. Venice, OpenInference), with or without a
+    retry_after_seconds hint depending on the backend. When OpenRouter fails
+    over to a BYOK-only backup provider after the free backend is
+    rate-limited (observed for google/gemma-4-31b-it:free -> Google AI
+    Studio), the original rate-limit is preserved in error.metadata.
+    previous_errors instead of the top-level raw field. Matching the
+    substring anywhere in the body catches both shapes without having to
+    enumerate every fallback-chain structure OpenRouter might produce."""
+    return "rate-limited upstream" in error_body
+
+
+def check_openrouter_model_invocation(model_id: str) -> tuple[str | None, bool]:
+    """Return (call-time error or None, is_upstream_rate_limit) for a model."""
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
-        return "OPENROUTER_API_KEY is not set"
+        return "OPENROUTER_API_KEY is not set", False
 
     payload = {
         "model": model_id,
@@ -211,10 +229,11 @@ def check_openrouter_model_invocation(model_id: str) -> str | None:
         )
     except urllib.error.HTTPError as exc:
         error_body = exc.read().decode(errors="replace")
-        return f"HTTP {exc.code}: {_extract_error_message(error_body)}"
+        message = f"HTTP {exc.code}: {_extract_error_message(error_body)}"
+        return message, _is_upstream_rate_limit(error_body)
     except Exception as exc:
-        return f"{type(exc).__name__}: {exc}"
-    return None
+        return f"{type(exc).__name__}: {exc}", False
+    return None, False
 
 
 def is_openrouter_free(model: dict[str, Any]) -> bool:
@@ -239,11 +258,208 @@ def get_models_dev_provider_models(
     return set((provider.get("models") or {}).keys())
 
 
+def get_models_dev_provider_meta(
+    models_dev_data: dict[str, Any], provider_id: str
+) -> dict[str, Any] | None:
+    """Return models.dev's structural metadata (api base URL, npm package,
+    auth env var names) for a provider, distinct from its model list."""
+    provider = models_dev_data.get(provider_id)
+    if not provider:
+        return None
+    return {
+        "npm": provider.get("npm"),
+        "api": provider.get("api"),
+        "env": provider.get("env") or [],
+    }
+
+
+def resolve_first_env(env_names: list[str]) -> str | None:
+    for name in env_names:
+        value = os.environ.get(name) or os.environ.get(
+            KNOWN_ENV_ALIASES.get(name, "")
+        )
+        if value:
+            return value
+    return None
+
+
+def fetch_google_models(api_key: str) -> list[str]:
+    """Fetch the live model list from the Google Generative Language API."""
+    request = urllib.request.Request(
+        f"{GOOGLE_GENERATIVE_LANGUAGE_API}?key={api_key}&pageSize=200",
+        headers={"User-Agent": SCHEMA_USER_AGENT},
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        payload = json.loads(response.read().decode())
+    return [
+        str(m["name"]).removeprefix("models/")
+        for m in payload.get("models", [])
+        if m.get("name")
+    ]
+
+
+def resolve_env_template(value: Any) -> str | None:
+    """Resolve a "{env:VAR}" placeholder to its environment value, if present."""
+    if not isinstance(value, str):
+        return None
+    if value.startswith("{env:") and value.endswith("}"):
+        return os.environ.get(value[len("{env:") : -1])
+    return value
+
+
+def fetch_openai_compatible_models(base_url: str, api_key: str | None) -> list[dict[str, Any]]:
+    """Fetch the live model list from an OpenAI-compatible `/models` endpoint."""
+    headers = {"User-Agent": SCHEMA_USER_AGENT}
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    url = base_url.rstrip("/") + "/models"
+    request = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(request, timeout=15) as response:
+        payload = json.loads(response.read().decode())
+    return payload.get("data", [])
+
+
+def _diff_live_ids(
+    provider_id: str, live_ids: set[str], whitelist: set[str], blacklist: set[str]
+) -> list[str]:
+    """Shared whitelist/blacklist-vs-live-catalog diff, used by every live
+    provider check regardless of API shape."""
+    issues: list[str] = []
+    known = whitelist | blacklist
+
+    missing_whitelist = sorted(whitelist - live_ids)
+    if missing_whitelist:
+        message = (
+            f"{provider_id}: {len(missing_whitelist)} whitelisted model(s) "
+            f"missing from the live catalog (rotated/dead): {missing_whitelist}"
+        )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+
+    unaccounted: list[str] = []
+    if provider_id in NARROW_ALLOWLIST_PROVIDERS:
+        logger.info(
+            "[dim]%s: narrow-allowlist provider, skipping unaccounted-model "
+            "check (%d live models not curated)[/dim]",
+            provider_id,
+            len(live_ids - known),
+            extra={"markup": True},
+        )
+    elif not whitelist:
+        # Empty whitelist means default-allow (e.g. anthropic.json is
+        # blacklist-only): every non-blacklisted live model is expected and
+        # not drift, so there's nothing to triage here.
+        logger.info(
+            "[dim]%s: default-allow (blacklist-only), skipping "
+            "unaccounted-model check[/dim]",
+            provider_id,
+            extra={"markup": True},
+        )
+    else:
+        unaccounted = sorted(live_ids - known)
+        if unaccounted:
+            message = (
+                f"{provider_id}: {len(unaccounted)} live model(s) absent from "
+                f"both whitelist and blacklist (unclassified/new): {unaccounted}"
+            )
+            issues.append(message)
+            logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+
+    if not missing_whitelist and not unaccounted:
+        logger.info(
+            "[green]Validated %s against its live catalog[/green] "
+            "(whitelist=%d blacklist=%d live=%d)",
+            provider_id,
+            len(whitelist),
+            len(blacklist),
+            len(live_ids),
+            extra={"markup": True},
+        )
+    return issues
+
+
+def validate_openai_compatible_provider(
+    provider_id: str,
+    provider_cfg: dict[str, Any],
+    base_url_override: str | None = None,
+    api_key_override: str | None = None,
+) -> list[str]:
+    """Validate a directly-queryable OpenAI-compatible provider against its own
+    live `/models` endpoint, rather than the third-party models.dev mirror.
+
+    This is the authoritative check for providers like NVIDIA NIM or
+    VectorEngine that models.dev may track late or not at all: it catches both
+    whitelisted models that have rotated off the live catalog and new live
+    models that have not yet been triaged into the whitelist or blacklist.
+
+    base_url_override/api_key_override let callers supply connection details
+    for providers that don't self-declare options.baseURL locally (e.g.
+    ollama-cloud, which relies on opencode's own built-in provider registry)
+    but whose base URL and auth env var are known from models.dev's provider
+    metadata.
+    """
+    issues: list[str] = []
+    options = provider_cfg.get("options") or {}
+    base_url = base_url_override or options.get("baseURL")
+    if not base_url:
+        return issues
+
+    api_key = api_key_override
+    if api_key is None and "apiKey" in options:
+        api_key = resolve_env_template(options["apiKey"])
+        if not api_key:
+            logger.warning(
+                "[yellow]%s: apiKey env var unset, skipping live validation[/yellow]",
+                provider_id,
+                extra={"markup": True},
+            )
+            return issues
+
+    try:
+        live_models = fetch_openai_compatible_models(base_url, api_key)
+    except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
+        logger.warning(
+            "[yellow]%s: live model list unreachable (%s), skipping live "
+            "validation[/yellow]",
+            provider_id,
+            exc,
+            extra={"markup": True},
+        )
+        return issues
+
+    live_ids = {str(model.get("id", "")) for model in live_models if model.get("id")}
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+    return _diff_live_ids(provider_id, live_ids, whitelist, blacklist)
+
+
+def validate_google_provider(
+    provider_id: str, provider_cfg: dict[str, Any], api_key: str
+) -> list[str]:
+    """Validate the Google provider against the live Generative Language API
+    (different auth/response shape than the OpenAI-compatible providers)."""
+    try:
+        live_ids = set(fetch_google_models(api_key))
+    except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
+        logger.warning(
+            "[yellow]%s: live model list unreachable (%s), skipping live "
+            "validation[/yellow]",
+            provider_id,
+            exc,
+            extra={"markup": True},
+        )
+        return []
+
+    whitelist = set((provider_cfg.get("models") or {}).keys())
+    blacklist = set(provider_cfg.get("blacklist") or [])
+    return _diff_live_ids(provider_id, live_ids, whitelist, blacklist)
+
+
 def show_provider_partition_diff(
     config: dict[str, Any],
     models_dev_data: dict[str, Any],
     provider_id: str,
-) -> set[str]:
+) -> tuple[set[str], list[str]]:
     provider_cfg = (config.get("provider") or {}).get(provider_id)
     if provider_cfg is None:
         raise RuntimeError(
@@ -264,57 +480,43 @@ def show_provider_partition_diff(
         whitelist = {model.replace(":cloud", "") for model in whitelist}
         blacklist = {model.replace(":cloud", "") for model in blacklist}
 
-    local_models = whitelist | blacklist
     models_dev_models = get_models_dev_provider_models(models_dev_data, provider_id)
     if models_dev_models is None:
         logger.info(
             "[dim]%s: not in models.dev[/dim]", provider_id, extra={"markup": True}
         )
-        return whitelist
+        return whitelist, []
 
-    in_local_not_dev = sorted(local_models - models_dev_models)
-    in_dev_not_local = sorted(models_dev_models - local_models)
-    if in_local_not_dev or in_dev_not_local:
-        logger.warning(
-            "[yellow]%s differs from models.dev "
-            "(local_only=%d, upstream_only=%d)[/yellow]",
-            provider_id,
-            len(in_local_not_dev),
-            len(in_dev_not_local),
-            extra={"markup": True},
-        )
-    else:
-        logger.info(
-            "[green]Validated %s against models.dev[/green] "
-            "(whitelist=%d blacklist=%d)",
-            provider_id,
-            len(whitelist),
-            len(blacklist),
-            extra={"markup": True},
-        )
-    return whitelist
+    # Stale blacklist entries (no longer resolving in models.dev at all) are
+    # dead weight, not drift: the model is already rejected either way, so
+    # there's nothing to act on. Only whitelist entries going dead, or new
+    # live models needing triage, are real issues -- the same rule
+    # _diff_live_ids already applies to every live-endpoint-checked provider.
+    issues = _diff_live_ids(provider_id, models_dev_models, whitelist, blacklist)
+    return whitelist, issues
 
 
-def validate_openrouter(config: dict[str, Any]) -> None:
-    """Validate OpenRouter provider.
+def validate_openrouter(config: dict[str, Any]) -> list[str]:
+    """Validate OpenRouter provider against its live model list.
 
-    Warning-only checks:
+    Checks (each runs independently so one finding cannot hide another):
     1. Whitelisted models missing from the live OpenRouter model list
     2. Whitelisted models that are live but no longer free
     3. Free-suffix whitelist entries whose paid base model still exists
     4. Whitelisted models that fail a minimal chat completion call
     5. Free models present in the blacklist
+    6. Free models live but absent from both whitelist and blacklist (new drift)
 
-    Each warning-only check must run independently so one warning cannot hide
-    another.
+    Returns the list of issue messages found; callers decide whether to treat
+    them as fatal.
     """
+    issues: list[str] = []
     provider_cfg = (config.get("provider") or {}).get("openrouter")
     if provider_cfg is None:
-        logger.warning(
-            "[yellow]OpenRouter provider not found in config[/yellow]",
-            extra={"markup": True},
-        )
-        return
+        message = "OpenRouter provider not found in config"
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+        return issues
 
     whitelist = set((provider_cfg.get("models") or {}).keys())
     blacklist_raw = provider_cfg.get("blacklist", [])
@@ -326,13 +528,12 @@ def validate_openrouter(config: dict[str, Any]) -> None:
     live_ids = set(live_by_id)
     missing_whitelist = sorted(whitelist - live_ids)
     if missing_whitelist:
-        logger.warning(
-            "[yellow]OpenRouter: %d whitelisted model(s) missing from the live "
-            "model list: %s[/yellow]",
-            len(missing_whitelist),
-            missing_whitelist[:15],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(missing_whitelist)} whitelisted model(s) missing "
+            f"from the live model list: {missing_whitelist[:15]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All whitelisted models are present in the live "
@@ -346,13 +547,12 @@ def validate_openrouter(config: dict[str, Any]) -> None:
         if not is_openrouter_free(live_by_id[model_id])
     )
     if paid_whitelist:
-        logger.warning(
-            "[yellow]OpenRouter: %d whitelisted model(s) are priced above zero: "
-            "%s[/yellow]",
-            len(paid_whitelist),
-            paid_whitelist[:15],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(paid_whitelist)} whitelisted model(s) are priced "
+            f"above zero: {paid_whitelist[:15]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All live whitelisted models are priced at zero[/green]",
@@ -367,27 +567,41 @@ def validate_openrouter(config: dict[str, Any]) -> None:
         and not is_openrouter_free(live_by_id[model_id.removesuffix(":free")])
     )
     if missing_free_with_paid_base:
-        logger.warning(
-            "[yellow]OpenRouter: %d missing whitelisted free model(s) have paid "
-            "base models still listed: %s[/yellow]",
-            len(missing_free_with_paid_base),
-            missing_free_with_paid_base[:15],
+        message = (
+            f"OpenRouter: {len(missing_free_with_paid_base)} missing whitelisted "
+            f"free model(s) have paid base models still listed: "
+            f"{missing_free_with_paid_base[:15]}"
+        )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
+
+    invocation_failures: dict[str, str] = {}
+    rate_limited: dict[str, str] = {}
+    for model_id in sorted(whitelist):
+        error, is_rate_limit = check_openrouter_model_invocation(model_id)
+        if error is None:
+            continue
+        (rate_limited if is_rate_limit else invocation_failures)[model_id] = error
+
+    if rate_limited:
+        # Real, reachable, viable free models -- the upstream inference
+        # backend (e.g. Venice) is temporarily saturated for that specific
+        # model. Not evidence of breakage, informational only.
+        logger.info(
+            "[dim]OpenRouter: %d whitelisted model(s) temporarily rate-limited "
+            "upstream (still viable, kept whitelisted): %s[/dim]",
+            len(rate_limited),
+            list(rate_limited.items())[:10],
             extra={"markup": True},
         )
 
-    invocation_failures = {
-        model_id: error
-        for model_id in sorted(whitelist)
-        if (error := check_openrouter_model_invocation(model_id)) is not None
-    }
     if invocation_failures:
-        logger.warning(
-            "[yellow]OpenRouter: %d whitelisted model(s) failed a minimal chat "
-            "completion call: %s[/yellow]",
-            len(invocation_failures),
-            list(invocation_failures.items())[:10],
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(invocation_failures)} whitelisted model(s) failed "
+            f"a minimal chat completion call: {list(invocation_failures.items())[:10]}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All whitelisted models passed a minimal chat "
@@ -398,10 +612,15 @@ def validate_openrouter(config: dict[str, Any]) -> None:
     free_live_ids = {
         str(model.get("id", "")) for model in live_models if is_openrouter_free(model)
     }
+    # Being free does not make blacklisting wrong: notes/openrouter-model-
+    # vetting.md documents deliberate quality exclusions (failed tool-calling,
+    # <35B parameter issues) among exactly these ids. This is expected state,
+    # not drift, so it's informational only and does not fail --strict.
     blacklisted_free = sorted(free_live_ids & blacklist)
     if blacklisted_free:
-        logger.warning(
-            "[yellow]OpenRouter: %d free model(s) blacklisted: %s[/yellow]",
+        logger.info(
+            "[dim]OpenRouter: %d free model(s) deliberately blacklisted: "
+            "%s[/dim]",
             len(blacklisted_free),
             blacklisted_free[:25],
             extra={"markup": True},
@@ -414,26 +633,37 @@ def validate_openrouter(config: dict[str, Any]) -> None:
 
     unaccounted_free = sorted(free_live_ids - whitelist - blacklist)
     if unaccounted_free:
-        logger.warning(
-            "[yellow]OpenRouter: %d free model(s) absent from both whitelist and "
-            "blacklist: %s[/yellow]",
-            len(unaccounted_free),
-            unaccounted_free,
-            extra={"markup": True},
+        message = (
+            f"OpenRouter: {len(unaccounted_free)} free model(s) absent from both "
+            f"whitelist and blacklist: {unaccounted_free}"
         )
+        issues.append(message)
+        logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
     else:
         logger.info(
             "[green]OpenRouter: All live free models are accounted for[/green]",
             extra={"markup": True},
         )
 
+    return issues
 
-def validate_provider_partitions(config: dict[str, Any]) -> None:
+
+def validate_provider_partitions(
+    config: dict[str, Any], only_provider: str | None = None
+) -> list[str]:
     models_dev_data = fetch_models_dev_api()
-    for provider_id in sorted((config.get("provider") or {}).keys()):
+    all_issues: list[str] = []
+    provider_ids = sorted((config.get("provider") or {}).keys())
+    if only_provider is not None:
+        if only_provider not in provider_ids:
+            raise RuntimeError(f"Unknown provider '{only_provider}'")
+        provider_ids = [only_provider]
+
+    for provider_id in provider_ids:
+        provider_cfg = config["provider"][provider_id]
         if provider_id == "openrouter":
             # OpenRouter uses live API validation, not models.dev
-            validate_openrouter(config)
+            all_issues.extend(validate_openrouter(config))
             continue
         if provider_id in IGNORED_PROVIDERS:
             logger.warning(
@@ -443,24 +673,113 @@ def validate_provider_partitions(config: dict[str, Any]) -> None:
                 extra={"markup": True},
             )
             continue
-        show_provider_partition_diff(config, models_dev_data, provider_id)
+        if provider_cfg.get("npm") == "@ai-sdk/openai-compatible" and (
+            provider_cfg.get("options") or {}
+        ).get("baseURL"):
+            # Directly-queryable providers (NVIDIA NIM, VectorEngine, ...) are
+            # validated against their own live catalog, which is authoritative
+            # over the third-party models.dev mirror.
+            all_issues.extend(
+                validate_openai_compatible_provider(provider_id, provider_cfg)
+            )
+            continue
+
+        # Providers that don't self-declare options.baseURL locally (they
+        # rely on opencode's own built-in provider registry) but whose real
+        # base URL and auth env var are published in models.dev's provider
+        # metadata (not its lagging model list). If we hold a working
+        # credential, check live truth instead of the model-list mirror.
+        meta = get_models_dev_provider_meta(models_dev_data, provider_id)
+        if meta:
+            api_key = resolve_first_env(meta.get("env") or [])
+            if meta.get("npm") == "@ai-sdk/openai-compatible" and meta.get("api") and api_key:
+                all_issues.extend(
+                    validate_openai_compatible_provider(
+                        provider_id,
+                        provider_cfg,
+                        base_url_override=meta["api"],
+                        api_key_override=api_key,
+                    )
+                )
+                continue
+            if meta.get("npm") == "@ai-sdk/google" and api_key:
+                all_issues.extend(
+                    validate_google_provider(provider_id, provider_cfg, api_key)
+                )
+                continue
+            logger.info(
+                "[dim]%s: no credential for live validation (needs one of "
+                "%s), falling back to models.dev model-list diff[/dim]",
+                provider_id,
+                meta.get("env"),
+                extra={"markup": True},
+            )
+
+        _, issues = show_provider_partition_diff(config, models_dev_data, provider_id)
+        all_issues.extend(issues)
+
+    return all_issues
 
 
-def build_config() -> Path:
+def build_config(
+    strict: bool = False,
+    validate_only: bool = False,
+    only_provider: str | None = None,
+) -> Path:
     config = load_config_sources()
-    schema = fetch_config_schema(config)
-    remove_model_enum(schema)
-    validate_config_schema(config, schema)
-    _write_json(OUTPUT_PATH, config)
-    logger.info(
-        "[green]Validated and wrote %s[/green]", OUTPUT_PATH, extra={"markup": True}
-    )
-    validate_provider_partitions(config)
+
+    if not validate_only:
+        schema = fetch_config_schema(config)
+        remove_model_enum(schema)
+        validate_config_schema(config, schema)
+        _write_json(OUTPUT_PATH, config)
+        logger.info(
+            "[green]Validated and wrote %s[/green]",
+            OUTPUT_PATH,
+            extra={"markup": True},
+        )
+
+    issues = validate_provider_partitions(config, only_provider=only_provider)
+
+    if issues:
+        logger.warning(
+            "[yellow]%d provider partition issue(s) found[/yellow]",
+            len(issues),
+            extra={"markup": True},
+        )
+        if strict:
+            for issue in issues:
+                logger.error("[red]- %s[/red]", issue, extra={"markup": True})
+            raise SystemExit(1)
+
     return OUTPUT_PATH
 
 
 def main() -> None:
-    build_config()
+    parser = argparse.ArgumentParser(
+        description="Build opencode.json and validate provider model partitions."
+    )
+    parser.add_argument(
+        "--validate-only",
+        action="store_true",
+        help="Skip schema fetch/write; only run provider partition validation.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit non-zero if any provider partition issue is found.",
+    )
+    parser.add_argument(
+        "--provider",
+        default=None,
+        help="Restrict validation to a single provider id.",
+    )
+    args = parser.parse_args()
+    build_config(
+        strict=args.strict,
+        validate_only=args.validate_only,
+        only_provider=args.provider,
+    )
 
 
 if __name__ == "__main__":
