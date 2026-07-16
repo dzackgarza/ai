@@ -11,7 +11,9 @@ agent handoffs. Distilled from a completed agent-run program (an open-problem
 counterexample taken through discovery, independent audits, Lean formalization, and a
 mathlib PR handoff: `github.com/j2d9w5xtjn-png/GrothendieckRankP2`) and from a second,
 Lean-first program (`github.com/rishigajjala/erdos-796-lean`: a model-generated,
-human-verified formal release of the corrected Erdős 796 asymptotic).
+human-verified formal release of the corrected Erdős 796 asymptotic). Dispatch-side
+grounding comes from OpenAI's published Cycle Double Cover campaign prompt
+([[mathematical-research/references/cdc-prompt|cdc-prompt]]).
 
 Before substantive work, read
 [[mathematical-research/references/worked-example|worked-example]] — the concrete
@@ -59,6 +61,7 @@ illustrated there with the real mathematics that motivated it.
 | End a session; enter a program; write or receive a handoff | [[mathematical-research/references/handoff|handoff]] |
 | Organize the repo; stage manuscripts; formalize; publish | [[mathematical-research/references/program-shape|program-shape]] |
 | Release a formalization; audit formal dependencies; freeze statements | [[mathematical-research/references/formal-release|formal-release]] |
+| Dispatch agents at an open problem; write a solver-campaign prompt | [[mathematical-research/references/cdc-prompt|cdc-prompt]] |
 
 ## Route to sibling skills
 
