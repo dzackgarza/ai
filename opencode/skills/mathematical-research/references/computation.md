@@ -106,6 +106,39 @@ Supporting rules:
 - Separate solver-dependent claims (minimality, uniqueness from an UNSAT) from
   unconditional existence claims; see [[mathematical-research/references/claim-status|claim-status]].
 
+## Search-register discipline
+
+For open-ended searches (multiple strategies, unknown route), keep a strategy
+register with these rules:
+
+- **Every failure kills a class, grep-ably.** A dead end is recorded not as
+  "didn't work" but as "any approach relying on [property] hits the same
+  obstacle because [reason]" — the register carries eliminated approach
+  *classes*, not attempts. This is what stops two agents (or the same agent
+  twice) from re-entering the same attractor.
+- **Reformulations are logged separately from results** — a representational
+  insight is reusable even when the strategy that produced it is dead. The
+  register surfaces reformulations; it cannot rank them — deciding which one
+  is load-bearing is a separate deliberate pass.
+- **The residue rule**: after three consecutive failures, before generating
+  anything new, re-read the surviving structure and concrete artifacts across
+  *all* strategies for a partial result from one that can be a component in
+  another. The solution is often in the residue of previous failures.
+- **Ledger-delta stall tripwire**: if the register has not changed in five
+  explorations — no new eliminated classes, constraints, or reformulations —
+  state that explicitly instead of continuing to grind; and run a synthesis
+  pass on a fixed cadence regardless of stuck-ness, because cross-pollination
+  pays before you are stuck.
+- **Process logs are append-only and timestamped, or they are narrative.**
+  A "log" dumped in one commit after the fact witnesses nothing; out-of-order
+  entry numbering betrays reconstruction. Any process metric quoted from such
+  a log ("solved in 5 explorations") is self-report.
+- **Fitted rules need branch-coverage accounting.** For any closed-form rule
+  carrying special-case patches, count how often the *generic* branch
+  actually fires below the verification ceiling before believing the uniform
+  claim — a rule whose generic branch is exercised twice is a curve fit with
+  a table, not a construction.
+
 ## Audit scripts
 
 The auditor is a different artifact from the searcher, and it distrusts everything it

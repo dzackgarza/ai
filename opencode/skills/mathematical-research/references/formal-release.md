@@ -41,6 +41,24 @@ continuously re-verified claim. Three gates:
 CI additionally replays through an external checker (`leanchecker: true`) and
 pins action versions by commit SHA.
 
+Hardening upgrades from the 2026 Erdős-resolution ecosystem:
+
+- **Scope scans to the import closure, not the repo.** A whole-repo token grep
+  lies in both directions: library scaffolding can hold `axiom`s and
+  `native_decide` outside the release theorem's import closure (false fatal),
+  and imports can carry `sorryAx` in (false trust). The scan target is the
+  frozen theorem's transitive closure — or the axiom report, which already is.
+- **Make the scanner comment-aware**: strip block/line comments, string and
+  char literals before matching, so retired-route commentary does not trip the
+  gate; emit a machine-readable committed audit artifact (`source-audit.json`).
+- **Prefer the in-Lean axiom freeze** over regex-scraping printed output:
+  `#guard_msgs in #print axioms <thm>` with the expected axiom list embedded —
+  the elaborator itself fails the build on drift; no text parsing to fool.
+- **Add a statement-correspondence gate.** Hash-freezing the statement does
+  not verify the proof proves *that* statement; the `leanprover/comparator`
+  Challenge/Solution protocol does, with a second independent kernel —
+  [[mathematical-research/references/statement-fidelity|statement-fidelity]].
+
 ## Dependency trust is closure-level
 
 - Pin every dependency to an exact commit in the lakefile and repeat the
@@ -51,6 +69,27 @@ pins action versions by commit SHA.
   Only the axiom report over the transitive closure decides.
 - Say the boundary out loud, as the source audit does: "a theorem-level
   claim, not a blanket claim about every declaration in an upstream package."
+
+## Admitted axioms as honest gap-markers
+
+When a needed input provably exists in the literature but not in Mathlib, a
+**named, cited `axiom`** beats both alternatives — a `sorry` (opaque, shameful,
+un-greppable) and silently strengthened hypotheses (dishonest):
+
+- The docstring carries the verbatim source statement, pinned to edition,
+  page, and equation, plus why the API gap forces the axiom ("Mathlib defines
+  categorical `Tor` but has neither this tensor lemma nor the required
+  additivity API; we record exactly that missing source-level input").
+- It surfaces *by name* in every dependent theorem's `#print axioms` — the
+  dependence is machine-visible forever.
+- Keep a per-axiom provenance ledger distinguishing **verified directly
+  against the primary source** from **cited via a secondary**, including
+  strength distinctions (a textbook's `o(1)` form vs the original's explicit
+  `O(1/log t)` rate) — and make the axiom gate fail on any admitted axiom
+  with no ledger entry.
+- Then say what you have: "0 sorries plus 3 admitted axioms" is a
+  **conditional** result, not an axiom-clean one; the conditionality goes in
+  every claim surface ([[mathematical-research/references/claim-status|claim-status]]).
 
 ## Do not refactor the audited closure
 
@@ -65,7 +104,13 @@ audit.
 A public release repo may squash its history into a clean artifact. Then the
 audit document must carry the process facts history no longer shows: audit
 date, frozen statement hashes, dependency commits, and what the chosen proof
-route deliberately avoids. The process archive (handoff bundles, run ledgers —
+route deliberately avoids. Release-packaging idioms worth copying: a
+**whole-tree `SHA256SUMS`** (source, scripts, CI, manifests — tampering with
+the gates themselves becomes detectable, not only the statement);
+**tag-triggered verification** with the CI-verified commit SHA and run URL
+recorded in the audit document; and when local verification was impossible,
+saying so and designating CI the trust anchor ("the first green Actions run
+is the reproducible public kernel check"). The process archive (handoff bundles, run ledgers —
 [[mathematical-research/references/handoff|handoff]]) is a different artifact
 and lives elsewhere; do not conflate the two, and do not ship the process
 archive as the release.

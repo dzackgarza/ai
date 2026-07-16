@@ -71,6 +71,12 @@ document repeating the claim, and add those documents to a do-not-cite list.
 - A theorem may be unconditional while its constant is only bracketed: ledger the
   existence claim, the open exact value, and each certified bound (`4/15 ≤ Γ < 13`)
   as separate rows rather than one blurred claim.
+- **Claim strength is uniform across surfaces.** The abstract, the README status
+  table, and the paper body must carry the same strength. The observed failure mode
+  is the honesty gradient: an abstract announcing "we solve X for all m" and a
+  README bolding **Solved**, over a body that admits the even case is a
+  finite-verified curve fit with a symbolic proof "remaining open." The weakest
+  surface a reader will quote is the one that must be right.
 
 ## Failure is not evidence
 

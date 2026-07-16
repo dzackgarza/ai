@@ -41,6 +41,14 @@ the result along a genuinely different path:
 - **Compare intermediate invariants, not just verdicts**: dimensions, rank tables,
   Hilbert-type data, case counts. Two implementations that agree on a final boolean but
   were never compared on intermediates share too much undetected error surface.
+- **A port is scale, not independence.** A C port of the Python rule inherits its
+  bugs verbatim; running it 150× faster over more cases widens coverage of a shared
+  error surface. Independence requires a structurally different algorithm (e.g. a
+  combinatorial full-walk check against an algebraic cycle-count of the same object).
+- **Confirm the two artifacts establish the same statement** before counting their
+  agreement. Independent formalizations of one headline result can prove different,
+  nested statements (a weaker and a stronger form) without citing each other —
+  [[mathematical-research/references/statement-fidelity|statement-fidelity]].
 - **Audit the hand-theory layer separately from all code.** Every lemma the
   computation relies on (exhaustiveness of a recursion, soundness of a truncation,
   completeness of an axiom list) gets checked by hand, independent of every script.
@@ -95,6 +103,11 @@ Treat cited papers like agent output: re-derive the specialization actually used
 When a paper's printed claim is stronger than what its proof supports, use only the
 supported statement, record the discrepancy, and ledger the dependency as
 `literature_theorem_plus_checked_specialization`.
+
+An endorsement cited as "personal communication" — including a famous
+mathematician "confirming" the result — is unverifiable self-report until the
+communication is archived or publicly acknowledged. Weight it accordingly, and
+never let it substitute for an audit artifact.
 
 ## Escalation ladder for headline results
 

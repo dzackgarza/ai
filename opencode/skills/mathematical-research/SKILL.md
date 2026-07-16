@@ -13,7 +13,12 @@ mathlib PR handoff: `github.com/j2d9w5xtjn-png/GrothendieckRankP2`) and from a s
 Lean-first program (`github.com/rishigajjala/erdos-796-lean`: a model-generated,
 human-verified formal release of the corrected Erdős 796 asymptotic). Dispatch-side
 grounding comes from OpenAI's published Cycle Double Cover campaign prompt
-([[mathematical-research/references/cdc-prompt|cdc-prompt]]).
+([[mathematical-research/references/cdc-prompt|cdc-prompt]]); statement-fidelity and
+portfolio discipline from the 2026 Erdős-resolution ecosystem — the
+`leanprover/comparator` repos around Alpöge's unit-distance disproof
+(`kim-em/erdos-unit-distance`, `plby/Erdos90`), `davidturturean/erdos-870`/`-696`,
+`nick-kuhn/erdos-619`, the `agenticsnz/unsorry` swarm, and the
+`neelsomani/gpt-erdos` candidate catalog.
 
 Before substantive work, read
 [[mathematical-research/references/worked-example|worked-example]] — the concrete
@@ -61,7 +66,9 @@ illustrated there with the real mathematics that motivated it.
 | End a session; enter a program; write or receive a handoff | [[mathematical-research/references/handoff|handoff]] |
 | Organize the repo; stage manuscripts; formalize; publish | [[mathematical-research/references/program-shape|program-shape]] |
 | Release a formalization; audit formal dependencies; freeze statements | [[mathematical-research/references/formal-release|formal-release]] |
+| Formalize a problem statement; guard against misformalization; resolve a problem negatively | [[mathematical-research/references/statement-fidelity|statement-fidelity]] |
 | Dispatch agents at an open problem; write a solver-campaign prompt | [[mathematical-research/references/cdc-prompt|cdc-prompt]] |
+| Attack many problems at once; run or join a proving swarm; triage candidate LLM solutions | [[mathematical-research/references/portfolio-campaigns|portfolio-campaigns]] |
 
 ## Route to sibling skills
 
@@ -99,3 +106,10 @@ illustrated there with the real mathematics that motivated it.
   solution.
 - Handoff rot: stacked supersession banners over a stale narrative, and byte-copied
   bundle documents drifting into mutually inconsistent versions.
+- A kernel-green proof of a statement that does not mean what the problem says —
+  vacuous by `autoImplicit`, silently trivial via junk-value definitions, or a
+  weaker nested variant of the headline claim.
+- Portfolio "progress" counted from template-generated per-problem prose, or a
+  solve counted after the problem was already publicly solved.
+- An abstract or README announcing "solved" over a body that admits a
+  finite-verified curve fit with the symbolic proof still open.
