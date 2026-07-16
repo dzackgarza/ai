@@ -10,6 +10,6 @@ metadata:
     related_skills: [git-guidelines]
 ---
 
-> **REDIRECT**: This skill has been consolidated into `git-guidelines`.
-> Load `git-guidelines` and reference `pr-workflow.md`:
-> [git-guidelines/pr-workflow.md](file:///home/dzack/ai/opencode/skills/git-guidelines/pr-workflow.md)
+> **REDIRECT**: This skill has been consolidated into `git-guidelines`. Load `git-guidelines` and reference `pr-workflow.md`: [git-guidelines/pr-workflow.md](file:///home/dzack/ai/opencode/skills/git-guidelines/pr-workflow.md)
+>
+> All PR bodies must converge on the nested task-tree tracker required by `creating-implementation-plans` before review or merge.

@@ -2,17 +2,87 @@
 name: creating-implementation-plans
 description: Use when creating implementation plans that will pass review and execute cleanly. Covers plan structure, task decomposition, verification design, and quality gates.
 ---
+
 # Creating Implementation Plans
 
 > [!IMPORTANT]
-> All implementation plans created under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Plans must specify how these constraints are enforced for the target code.
+> All implementation plans created under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> Plans must specify how these constraints are enforced for the target code.
 
-A plan is good when it can be executed by someone who wasn’t in the design conversation,
-produces verifiable results, and doesn’t require mid-execution course corrections.
+A plan is good when it can be executed by someone who wasn’t in the design conversation, produces verifiable results, and doesn’t require mid-execution course corrections.
 
 A plan is not a to-do list.
-It is a **constrained execution specification** that makes success, failure, order, and
-validation explicit.
+It is a **constrained execution specification** that makes success, failure, order, and validation explicit.
+
+## Mandatory Branch And PR Tracking
+
+Any planned repository work that will change code, tests, docs, configuration, or review state must be put on a dedicated branch before implementation starts.
+The plan must be recorded on a draft PR before the first implementation commit.
+
+The PR body is the canonical tracker.
+A local plan file may exist, but it is not enough.
+The PR must show the full work tree so reviewers can see the plan, what is complete, what remains, and the dependency order without reading internal notes.
+
+Required preflight for implementation plans:
+
+- Create or identify the dedicated branch.
+- Commit the plan artifact if the repo keeps one.
+- Push the branch.
+- Open or update a draft PR before implementation starts.
+- Put the complete task tree in the PR body.
+- Link any local plan file from the PR body, but do not make the local file the only tracking surface.
+
+If the current mode forbids mutating actions, the plan must begin with a blocking preflight section stating that implementation cannot start until the branch exists, the branch is pushed, and the draft PR contains the task tree.
+
+### PR Task Tree
+
+Use one nested checklist tree.
+Do not split work into separate sections such as "completed," "outstanding," "bookkeeping," "red-map follow-up," or "Claude tasks."
+Those labels describe provenance, not task structure.
+All related work stays under the same parent.
+
+Correct shape:
+
+```md
+- [ ] <Milestone or goal>
+  - [ ] <Workstream or phase>
+    - [ ] <Task>
+      - [ ] <Subtask or proof obligation>
+```
+
+Rules for the tree:
+
+- Order nodes in execution order.
+- Parent items stay unchecked until every required child is complete.
+- Checked means complete.
+- Every checked line must include same-line proof, normally `Proof commit: <sha>`.
+- Do not put checkboxes in PR comments.
+- Put evidence, transcript notes, or commit tables in appendix sections or comments without checkboxes.
+- If work is blocked, leave it unchecked and append `Blocked:` with the reason.
+- If work is intentionally removed from scope, leave it unchecked until a commit records the scope decision; then check that exact node with the proof commit.
+- Branch setup, planning, and review-surface work belong in the same tree under a planning/preflight parent, not in a separate "bookkeeping" section.
+
+Anti-pattern:
+
+```md
+## Completed
+- [x] Fix p20. Proof commit: abc1234.
+
+## Outstanding
+- [ ] Reconcile WS-C.
+
+## Red-Map Follow-Up
+- [ ] p66 proof-debt.
+```
+
+Correct:
+
+```md
+- [ ] Human-review readiness
+  - [ ] WS-C: reconcile proof-debt to green
+    - [x] Fix p20 generic renderer regression. Proof commit: abc1234.
+    - [ ] Reconcile p66 export discovery proof-debt.
+```
 
 ## Purpose: What Every Plan Must Answer
 
@@ -38,12 +108,10 @@ If a plan does not answer those questions, it is **underspecified**.
 
 ## Planning Workflow
 
-1. **Clarify Requirements**: Identify scope boundaries, constraints, priorities, edge
-   cases, and success criteria.
+1. **Clarify Requirements**: Identify scope boundaries, constraints, priorities, edge cases, and success criteria.
    (Ask targeted questions early).
 
-2. **Thorough Research**: Investigate codebase, patterns, and dependencies *before*
-   drafting tasks.
+2. **Thorough Research**: Investigate codebase, patterns, and dependencies *before* drafting tasks.
 
 3. **Draft Phased Plan**: Create atomic tasks, group into logical sprints.
 
@@ -65,8 +133,7 @@ Begin by identifying:
 
 - The reason the current state is unacceptable
 
-A plan starting with implementation steps without defining the defect is structurally
-weak.
+A plan starting with implementation steps without defining the defect is structurally weak.
 
 ### 2. Constraints must be explicit
 
@@ -128,9 +195,7 @@ Each task must specify:
 
 ### 7. Validation must be externalized
 
-Validate through observable checks: tests, linters, typecheckers, smoke commands (must not be proof-free smoke tests, see Policy 5), proof
-obligations, file inventories, diff checks, reproducible outputs, schema validation,
-link/build checks.
+Validate through observable checks: tests, linters, typecheckers, smoke commands (must not be proof-free smoke tests, see Policy 5), proof obligations, file inventories, diff checks, reproducible outputs, schema validation, link/build checks.
 
 ### 8. Stop rules must exist
 
@@ -177,8 +242,7 @@ For multi-repo/tool/phase work, specify:
 
 ### 12. Verification must happen at the level of use
 
-Validate the system as it will actually be used: CLI invocation, import path, rendered
-document, search result, proof compilation, published artifact, or file layout.
+Validate the system as it will actually be used: CLI invocation, import path, rendered document, search result, proof compilation, published artifact, or file layout.
 
 * * *
 
@@ -190,8 +254,7 @@ Brief summary of the task and high-level approach.
 
 ### 2. Prerequisites
 
-Any dependencies, requirements, tools, libraries, or access needed *before* the plan can
-start.
+Any dependencies, requirements, tools, libraries, or access needed *before* the plan can start.
 
 ### 3. Sprints / Phases
 
@@ -201,8 +264,7 @@ Group tasks into logical sprints that build on one another.
 
 - Each sprint must have a clear demo/verification checklist
 
-Phase boundaries should represent real stabilization points: recovered source, working
-standalone artifact, published interface, rewired dependents, final verification.
+Phase boundaries should represent real stabilization points: recovered source, working standalone artifact, published interface, rewired dependents, final verification.
 
 ### 4. Tasks (Decomposed and Actionable)
 
@@ -230,8 +292,7 @@ Useful only if they influence ordering, staffing, or risk.
 
 ### 5. Testing Strategy
 
-How the overall implementation is proven correct, beyond individual task tests (e.g.,
-integration tests, end-to-end flows).
+How the overall implementation is proven correct, beyond individual task tests (e.g., integration tests, end-to-end flows).
 
 ### 6. Potential Risks & Rollback Plan
 
@@ -285,8 +346,7 @@ A plan is minimally acceptable only if it includes:
 
 ### F. Task Specification
 
-For each nontrivial task: location, description, dependencies, acceptance criteria,
-validation method
+For each nontrivial task: location, description, dependencies, acceptance criteria, validation method
 
 ### G. System-Level Validation
 
@@ -332,13 +392,11 @@ Before a plan is “done,” check against these criteria:
 
 - [ ] No tasks say “investigate” or “figure out” without bounded scope
 
-- [ ] A developer unfamiliar with the project could start implementing without asking
-  questions
+- [ ] A developer unfamiliar with the project could start implementing without asking questions
 
 - [ ] Task order is causally possible (no circular dependencies)
 
-- [ ] Each task answers the 5 questions (where, what, prerequisites, done condition,
-  verification)
+- [ ] Each task answers the 5 questions (where, what, prerequisites, done condition, verification)
 
 ### Design Sensibility
 
@@ -354,8 +412,7 @@ Before a plan is “done,” check against these criteria:
 
 - [ ] Tests prove behavior, not implementation structure
 
-- [ ] Assertions are substantive (`result.status == "approved"`, not
-  `result is not None`)
+- [ ] Assertions are substantive (`result.status == "approved"`, not `result is not None`)
 
 - [ ] Tests cover real user paths, not just easy-to-test paths
 
@@ -419,8 +476,7 @@ Additional requirements:
 
 - Migration order for producers before consumers
 
-Useful validations: CLI `--help`, real install, import smoke tests (must be real boundary tests/diagnostic commands, not proof-free smoke tests per Policy 5), schema validation,
-CI reproduction, end-to-end command execution.
+Useful validations: CLI `--help`, real install, import smoke tests (must be real boundary tests/diagnostic commands, not proof-free smoke tests per Policy 5), schema validation, CI reproduction, end-to-end command execution.
 
 ### Documentation / Knowledge Base / Writing
 
@@ -438,8 +494,7 @@ Additional requirements:
 
 - Build/render/link validation if published
 
-Useful validations: Style/lint/build passes, link checks, section coverage checklist,
-factual/source cross-checks, render preview review.
+Useful validations: Style/lint/build passes, link checks, section coverage checklist, factual/source cross-checks, render preview review.
 
 ### Mathematics / Research
 
@@ -449,8 +504,7 @@ Additional requirements:
 
 - Current known hypotheses and definitions
 
-- What counts as a result: proof, counterexample, computation, literature inventory, or
-  conjectural outline
+- What counts as a result: proof, counterexample, computation, literature inventory, or conjectural outline
 
 - Dependency graph of lemmas/subproblems
 
@@ -458,14 +512,10 @@ Additional requirements:
 
 - Explicit distinction between verified results and speculative directions
 
-Useful validations: Formal proof check, symbolic/algebraic verification, numerical
-sanity checks, citation to exact sources, consistency with hypotheses, reproducible
-computation logs.
+Useful validations: Formal proof check, symbolic/algebraic verification, numerical sanity checks, citation to exact sources, consistency with hypotheses, reproducible computation logs.
 
 **Note:** “Investigate X” is not a task.
-Decompose into concrete outputs: search for exact statements, compute invariant under
-given hypotheses, test candidate lemma on model examples, or compare two formulations
-under explicit assumptions.
+Decompose into concrete outputs: search for exact statements, compute invariant under given hypotheses, test candidate lemma on model examples, or compare two formulations under explicit assumptions.
 
 ### File Reorganization / Migration / Archival
 
@@ -483,39 +533,28 @@ Additional requirements:
 
 - Inventory before and after
 
-Useful validations: Manifest diff, path resolution checks, broken-link/import checks,
-duplicate detection, checksum or content equivalence checks.
+Useful validations: Manifest diff, path resolution checks, broken-link/import checks, duplicate detection, checksum or content equivalence checks.
 
 * * *
 
 ## Planning Heuristics for LLM Agents
 
-1. **Separate diagnosis from implementation** — If current state may be wrong, first
-   inventory and contain.
+1. **Separate diagnosis from implementation** — If current state may be wrong, first inventory and contain.
    Don’t plan forward migration as though current artifacts are trustworthy.
 
-2. **Prefer objective gates over narrative assurances** — Whenever possible, attach
-   commands, proofs, checks, manifests, or explicit comparisons.
+2. **Prefer objective gates over narrative assurances** — Whenever possible, attach commands, proofs, checks, manifests, or explicit comparisons.
 
-3. **Validate the true deployment/use mode early** — If final system is consumed
-   remotely, published, rendered, compiled, or invoked through wrappers, validate that
-   mode before large downstream work.
+3. **Validate the true deployment/use mode early** — If final system is consumed remotely, published, rendered, compiled, or invoked through wrappers, validate that mode before large downstream work.
 
-4. **Preserve canonical behavior before translating** — When porting systems, define
-   source semantics first and preserve through substantive behavioral tests.
+4. **Preserve canonical behavior before translating** — When porting systems, define source semantics first and preserve through substantive behavioral tests.
 
-5. **Re-scope explicitly when targets changed** — If prior work dropped targets, added
-   extras, or changed approved architecture, plan must re-state scope before more
-   implementation.
+5. **Re-scope explicitly when targets changed** — If prior work dropped targets, added extras, or changed approved architecture, plan must re-state scope before more implementation.
 
-6. **Make hidden assumptions visible** — Any assumption whose failure would invalidate
-   later work belongs in prerequisites, dependencies, or stop rules.
+6. **Make hidden assumptions visible** — Any assumption whose failure would invalidate later work belongs in prerequisites, dependencies, or stop rules.
 
-7. **Use phases to control propagation** — Phase boundaries should represent real
-   stabilization points.
+7. **Use phases to control propagation** — Phase boundaries should represent real stabilization points.
 
-8. **Require use-level acceptance, not merely internal correctness** — A component is
-   complete when intended consumers can use it successfully under required constraints.
+8. **Require use-level acceptance, not merely internal correctness** — A component is complete when intended consumers can use it successfully under required constraints.
 
 * * *
 
@@ -523,6 +562,17 @@ duplicate detection, checksum or content equivalence checks.
 
 ```md
 # <Plan Title>
+
+## Branch And PR Tracking
+
+- Branch:
+- Draft PR:
+- PR tracker status:
+- Blocking preflight:
+  - [ ] Dedicated branch exists
+  - [ ] Branch is pushed
+  - [ ] Draft PR exists
+  - [ ] PR body contains the task tree below
 
 ## Goal
 
@@ -583,40 +633,29 @@ Tasks:
 
 - Do not proceed if:
 
-## Execution Progress
+## Task Tree
 
-### Prerequisites
-
-- [ ] <!-- status: pending --> Access requirements met
-- [ ] <!-- status: pending --> Environment configured
-- [ ] <!-- status: pending --> External dependencies resolved
-
-### Phase 0: Containment / Recovery
-
-- [ ] <!-- status: pending --> Task 0.1: [description]
-- [ ] <!-- status: pending --> Task 0.2: [description]
-
-### Phase 1: Core Implementation
-
-- [ ] <!-- status: pending --> Task 1.1: [description]
-- [ ] <!-- status: pending --> Task 1.2: [description]
-
-### Phase N: Integration / Verification
-
-- [ ] <!-- status: pending --> Task N.1: [description]
-- [ ] <!-- status: pending --> Task N.2: [description]
-
-### System-Level Validation
-
-- [ ] <!-- status: pending --> End-to-end checks pass
-- [ ] <!-- status: pending --> Real-use smoke checks pass
-
-### Quality Gates
-
-- [ ] <!-- status: pending --> Completeness verified
-- [ ] <!-- status: pending --> Actionability verified
-- [ ] <!-- status: pending --> Design sensibility verified
-- [ ] <!-- status: pending --> Test quality verified
+- [ ] <Milestone or goal>
+  - [ ] Planning and PR setup
+    - [ ] Dedicated branch exists
+    - [ ] Draft PR contains this task tree
+  - [ ] Phase 0: Containment / Recovery
+    - [ ] Task 0.1: [description]
+    - [ ] Task 0.2: [description]
+  - [ ] Phase 1: Core Implementation
+    - [ ] Task 1.1: [description]
+    - [ ] Task 1.2: [description]
+  - [ ] Phase N: Integration / Verification
+    - [ ] Task N.1: [description]
+    - [ ] Task N.2: [description]
+  - [ ] System-Level Validation
+    - [ ] End-to-end checks pass
+    - [ ] Real-use smoke checks pass
+  - [ ] Quality Gates
+    - [ ] Completeness verified
+    - [ ] Actionability verified
+    - [ ] Design sensibility verified
+    - [ ] Test quality verified
 ```
 
 * * *
@@ -637,59 +676,32 @@ Anything less is usually not a plan but a wish list.
 
 * * *
 
-## Progress Tracking: Execution Checklist
+## Progress Tracking: Task Tree
 
-Every plan must include a task checklist at the end to track progress.
+Every plan must include a nested task tree to track progress.
+The same tree must be copied into the draft PR body before implementation starts.
+The PR body is the canonical progress tracker.
 
-**Status notation:**
+**Status notation for PR tracking:**
 
-- `[ ]` = Incomplete
+- `[ ]` = incomplete, blocked, or intentionally not yet accepted as complete
 
-- `[x]` = Complete
+- `[x]` = complete, with same-line proof such as `Proof commit: <sha>`
 
-- `[/]` = Blocked (explain reason)
-
-- `[-]` = Skipped (explain reason)
+Do not use separate checkbox symbols for blocked or skipped states in the PR tree.
+If blocked, leave the item unchecked and add `Blocked: <reason>`. If skipped or removed from scope, leave the item unchecked until a commit records the scope decision; then check that exact item with the proof commit.
 
 **Format:**
 
 ```md
-## Execution Progress
-
-### Prerequisites
-
-- [ ] Access requirements met
-- [ ] Environment configured
-- [ ] External dependencies resolved
-
-### Phase 0: Containment / Recovery
-
-- [ ] Task 0.1: [description]
-- [/] Task 0.2: [description] — blocked: waiting for dependency X
-
-### Phase 1: Core Implementation
-
-- [x] Task 1.1: [description]
-- [-] Task 1.2: [description] — skipped: no longer needed after refactor
-
-### Phase N: Integration / Verification
-
-- [ ] Task N.1: [description]
-- [ ] Task N.2: [description]
-
-### System-Level Validation
-
-- [ ] End-to-end checks pass
-- [ ] Real-use smoke checks pass
-
-### Quality Gates
-
-- [ ] Completeness verified
-- [ ] Actionability verified
-- [ ] Design sensibility verified
-- [ ] Test quality verified
+- [ ] <Milestone or goal>
+  - [ ] <Workstream or phase>
+    - [x] Completed task. Proof commit: abc1234.
+    - [ ] Blocked task. Blocked: waiting for credentialed access.
+    - [ ] Remaining task.
+  - [ ] <Next workstream or phase>
+    - [ ] Remaining task.
 ```
 
-**Usage:** Check off items as they complete.
-Use `[/]` for blocked (add reason) and `[-]` for skipped (add reason).
-Reference this checklist in responses to indicate current progress.
+**Usage:** Check off items only when they are complete and proof-linked.
+Keep completed, open, blocked, and scoped-out child items under their real parent so the reader can see the plan and remaining work in one place.

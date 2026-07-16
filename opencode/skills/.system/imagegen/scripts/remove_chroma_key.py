@@ -1,10 +1,4 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#   "pillow>=11",
-# ]
-# ///
+#!/usr/bin/env python3
 """Remove a solid chroma-key background from an image.
 
 This helper supports the imagegen skill's built-in-first transparent workflow:
@@ -14,13 +8,15 @@ generate an image on a flat key color, then convert that key color to alpha.
 from __future__ import annotations
 
 import argparse
-import re
-import sys
 from io import BytesIO
 from pathlib import Path
+import re
 from statistics import median
+import sys
+from typing import Tuple
 
-Color = tuple[int, int, int]
+
+Color = Tuple[int, int, int]
 KEY_DOMINANCE_THRESHOLD = 16.0
 ALPHA_NOISE_FLOOR = 8
 
@@ -28,6 +24,23 @@ ALPHA_NOISE_FLOOR = 8
 def _die(message: str, code: int = 1) -> None:
     print(f"Error: {message}", file=sys.stderr)
     raise SystemExit(code)
+
+
+def _dependency_hint(package: str) -> str:
+    return (
+        "Activate the repo-selected environment first, then install it with "
+        f"`uv pip install {package}`. If this repo uses a local virtualenv, start with "
+        "`source .venv/bin/activate`; otherwise use this repo's configured shared fallback "
+        "environment."
+    )
+
+
+def _load_pillow():
+    try:
+        from PIL import Image, ImageFilter
+    except ImportError:
+        _die(f"Pillow is required for chroma-key removal. {_dependency_hint('pillow')}")
+    return Image, ImageFilter
 
 
 def _parse_key_color(raw: str) -> Color:
@@ -82,9 +95,7 @@ def _smoothstep(value: float) -> float:
     return value * value * (3.0 - 2.0 * value)
 
 
-def _soft_alpha(
-    distance: int, transparent_threshold: float, opaque_threshold: float
-) -> int:
+def _soft_alpha(distance: int, transparent_threshold: float, opaque_threshold: float) -> int:
     if distance <= transparent_threshold:
         return 0
     if distance >= opaque_threshold:
@@ -121,9 +132,7 @@ def _spill_channels(key: Color) -> list[int]:
     key_max = max(key)
     if key_max < 128:
         return []
-    return [
-        idx for idx, value in enumerate(key) if value >= key_max - 16 and value >= 128
-    ]
+    return [idx for idx, value in enumerate(key) if value >= key_max - 16 and value >= 128]
 
 
 def _key_channel_dominance(rgb: Color, key: Color) -> float:
@@ -225,6 +234,7 @@ def _contract_alpha(image, pixels: int):
     if pixels == 0:
         return image
 
+    _, ImageFilter = _load_pillow()
     alpha = image.getchannel("A")
     for _ in range(pixels):
         alpha = alpha.filter(ImageFilter.MinFilter(3))
@@ -236,6 +246,7 @@ def _apply_edge_feather(image, radius: float):
     if radius == 0:
         return image
 
+    _, ImageFilter = _load_pillow()
     alpha = image.getchannel("A")
     alpha = alpha.filter(ImageFilter.GaussianBlur(radius=radius))
     image.putalpha(alpha)
@@ -312,6 +323,7 @@ def _sample_border_key(image, mode: str) -> Color:
 
 
 def _remove_chroma_key(args: argparse.Namespace) -> None:
+    Image, _ = _load_pillow()
     src = Path(args.input)
     out = Path(args.out)
 
@@ -346,10 +358,7 @@ def _remove_chroma_key(args: argparse.Namespace) -> None:
     print(f"Transparent pixels: {transparent_after}/{total}")
     print(f"Partially transparent pixels: {partial_after}/{total}")
     if transparent == 0:
-        print(
-            "Warning: no pixels matched the key color before feathering.",
-            file=sys.stderr,
-        )
+        print("Warning: no pixels matched the key color before feathering.", file=sys.stderr)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -416,9 +425,7 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Alias for --spill-cleanup; decontaminate key-color edge spill.",
     )
-    parser.add_argument(
-        "--force", action="store_true", help="Overwrite an existing output file."
-    )
+    parser.add_argument("--force", action="store_true", help="Overwrite an existing output file.")
     return parser
 
 

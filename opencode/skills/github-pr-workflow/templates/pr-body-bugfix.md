@@ -1,40 +1,27 @@
-## Bug Description
+# <Bugfix> PR Tracker
 
-<!-- What was happening?
--->
+The PR body is the canonical tracker.
+Use one nested checklist tree.
+Checked means complete, and every checked line must include same-line proof.
+
+## Task Tree
+
+- [ ] <Milestone or goal>
+  - [ ] Reproduce and prove the bug
+    - [ ] Capture the observed failure as a red test or reproducible command.
+    - [ ] Commit the red proof before implementation.
+  - [ ] Fix the bug
+    - [ ] Implement the narrow fix.
+    - [ ] Verify the same proof now passes.
+  - [ ] Regression protection
+    - [ ] Run affected tests.
+    - [ ] Run system-level validation.
+
+## Evidence Appendices
+
+- Bug description:
+- Root cause:
+- Fix rationale:
+- Risk assessment:
 
 Fixes #
-
-## Root Cause
-
-<!-- What was causing the bug?
--->
-
-## Fix
-
-<!-- What does this PR change to fix it?
--->
-
-
-## How to Verify
-
-<!-- Steps a reviewer can follow to confirm the fix -->
-
-
-
-
-## Test Plan
-
-- [ ] Added regression test for this bug
-
-- [ ] Existing tests still pass
-
-- [ ] Manual verification of the fix
-
-## Risk Assessment
-
-<!-- Could this fix break anything else?
-What's the blast radius?
--->
-
-Low / Medium / High — <!-- explanation -->

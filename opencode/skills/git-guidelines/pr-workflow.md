@@ -33,11 +33,33 @@ Commit types: `feat`, `fix`, `refactor`, `docs`, `test`, `ci`, `chore`, `perf`
 git push -u origin HEAD
 ```
 
+Before creating or updating the PR body, build the canonical nested tracker from the plan.
+The body must have one checkbox tree, not separate completed/outstanding/bookkeeping sections.
+
+Required body shape:
+
+```md
+- [ ] <Milestone or goal>
+  - [ ] <Workstream or phase>
+    - [ ] <Task>
+      - [ ] <Subtask or proof obligation>
+```
+
+Rules:
+
+- Open the PR as draft before implementation for planned work.
+- If the PR already exists, normalize its body to the tree before review or merge.
+- Checked means complete.
+- Every checked line must include same-line proof such as `Proof commit: <sha>`.
+- Keep blocked work unchecked with `Blocked: <reason>`.
+- Move evidence, transcripts, and commit tables to appendix sections or comments without checkboxes.
+
 **With gh:**
 ```bash
 gh pr create \
   --title "feat: add JWT-based user authentication" \
-  --body "## Summary\nAdds login and register API endpoints.\n\nCloses #42"
+  --body-file .pr/PR_BODY.md \
+  --draft
 ```
 
 Options: `--draft`, `--reviewer user1,user2`, `--label "enhancement"`, `--base develop`
@@ -163,8 +185,7 @@ Re-check CI status using the commands from Section 4 above.
 
 > CI failures and PR review comments are different.
 > CI failures can be fixed mechanically after root-cause diagnosis.
-> Review comments must first be routed to `pr-feedback-triage`.
-> Do not auto-fix review comments merely because they are unresolved.
+> Review comments must first be routed to `pr-feedback-triage`. Do not auto-fix review comments merely because they are unresolved.
 
 ### Auto-Fix Loop Pattern
 
@@ -229,7 +250,7 @@ git commit -m "fix: correct redirect URL after login"
 git push -u origin HEAD
 
 # 6. Create PR
-gh pr create --title "fix: correct redirect URL after login" --body "Closes #42"
+gh pr create --title "fix: correct redirect URL after login" --body-file .pr/PR_BODY.md --draft
 
 # 7. Monitor CI
 gh pr checks --watch

@@ -12,17 +12,22 @@ The word `batch` in a user request is not CLI opt-in by itself.
 
 Real API calls require **network access** + `OPENAI_API_KEY`. `--dry-run` does not.
 
-```bash
-export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-uv run "$CODEX_HOME/skills/.system/imagegen/scripts/image_gen.py" --help
+## Quick start (works from any repo)
+Set a stable path to the skill CLI (default `CODEX_HOME` is `~/.codex`):
+
 ```
+export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+export IMAGE_GEN="$CODEX_HOME/skills/.system/imagegen/scripts/image_gen.py"
+```
+
+Install dependencies into that environment with its package manager. In uv-managed environments, `uv pip install ...` remains the preferred path.
 
 ## Quick start
 
 Dry-run (no API call; no network required; does not require the `openai` package):
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --prompt "Test" \
   --out output/imagegen/test.png \
   --dry-run
@@ -35,7 +40,7 @@ Notes:
 Generate (requires `OPENAI_API_KEY` + network):
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --prompt "A cozy alpine cabin at dawn" \
   --size 1024x1024 \
   --out output/imagegen/alpine-cabin.png
@@ -44,14 +49,14 @@ uv run "$IMAGE_GEN" generate \
 Edit:
 
 ```bash
-uv run "$IMAGE_GEN" edit \
+python "$IMAGE_GEN" edit \
   --image input.png \
   --prompt "Replace only the background with a warm sunset" \
   --out output/imagegen/sunset-edit.png
 ```
 
 ## Guardrails
-- Use the bundled CLI directly (`uv run "$IMAGE_GEN" ...`) after activating the correct environment.
+- Use the bundled CLI directly (`python "$IMAGE_GEN" ...`) after activating the correct environment.
 - Do **not** create one-off runners (for example `gen_images.py`) unless the user explicitly asks for a custom wrapper.
 - **Never modify** `scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
 - Do not silently downgrade from CLI `gpt-image-2` or built-in `image_gen` to CLI `gpt-image-1.5`; ask first unless the user already explicitly requested `gpt-image-1.5`, `scripts/image_gen.py`, or CLI fallback.
@@ -96,7 +101,7 @@ Popular `gpt-image-2` sizes:
 Fast draft:
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --prompt "A product thumbnail of a matte ceramic mug on a stone surface" \
   --quality low \
   --size 1024x1024 \
@@ -106,7 +111,7 @@ uv run "$IMAGE_GEN" generate \
 Final 2K landscape:
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --prompt "A polished landing-page hero image of a matte ceramic mug on a stone surface" \
   --quality high \
   --size 2048x1152 \
@@ -116,7 +121,7 @@ uv run "$IMAGE_GEN" generate \
 4K landscape:
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --prompt "A detailed architectural visualization at golden hour" \
   --size 3840x2160 \
   --quality high \
@@ -128,7 +133,7 @@ True transparent fallback request:
 Ask for confirmation before using this command unless the user already explicitly requested `gpt-image-1.5`, `scripts/image_gen.py`, or CLI fallback.
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --model gpt-image-1.5 \
   --prompt "A clean product cutout on a transparent background" \
   --background transparent \
@@ -148,7 +153,7 @@ These are explicit CLI controls. They are not built-in `image_gen` tool argument
 Example:
 
 ```bash
-uv run "$IMAGE_GEN" edit \
+python "$IMAGE_GEN" edit \
   --model gpt-image-1.5 \
   --image input.png \
   --prompt "Change only the background" \
@@ -179,7 +184,7 @@ Mask notes:
 Generate with augmentation fields:
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --prompt "A minimal hero image of a ceramic coffee mug" \
   --use-case "product-mockup" \
   --style "clean product photography" \
@@ -191,7 +196,7 @@ uv run "$IMAGE_GEN" generate \
 Generate + also write a downscaled copy for fast web loading:
 
 ```bash
-uv run "$IMAGE_GEN" generate \
+python "$IMAGE_GEN" generate \
   --prompt "A cozy alpine cabin at dawn" \
   --size 1024x1024 \
   --downscale-max-dim 1024 \
@@ -207,7 +212,7 @@ cat > tmp/imagegen/prompts.jsonl << 'EOF'
 {"prompt":"Gray wolf in profile in a snowy forest","use_case":"photorealistic-natural","composition":"eye-level","constraints":"no logos or trademarks; no watermark","size":"1024x1024"}
 EOF
 
-uv run "$IMAGE_GEN" generate-batch \
+python "$IMAGE_GEN" generate-batch \
   --input tmp/imagegen/prompts.jsonl \
   --out-dir output/imagegen/batch \
   --concurrency 5

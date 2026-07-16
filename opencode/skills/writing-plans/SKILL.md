@@ -9,22 +9,48 @@ metadata:
     tags: [planning, design, implementation, workflow, documentation]
     related_skills: [subagent-driven-development, test-driven-development, requesting-code-review]
 ---
+
 # Writing Implementation Plans
 
 ## Overview
 
-Write comprehensive implementation plans assuming the implementer has zero context for
-the codebase and questionable taste.
-Document everything they need: which files to touch, complete code, testing commands,
-docs to check, how to verify.
+Write comprehensive implementation plans assuming the implementer has zero context for the codebase and questionable taste.
+Document everything they need: which files to touch, complete code, testing commands, docs to check, how to verify.
 Give them bite-sized tasks.
 DRY. YAGNI. TDD. Frequent commits.
 
-Assume the implementer is a skilled developer but knows almost nothing about the toolset
-or problem domain. Assume they don’t know good test design very well.
+Assume the implementer is a skilled developer but knows almost nothing about the toolset or problem domain.
+Assume they don’t know good test design very well.
 
 **Core principle:** A good plan makes implementation obvious.
 If someone has to guess, the plan is incomplete.
+
+## Mandatory Branch And PR Tracker
+
+For repository work, a plan is not ready for implementation until it is on a dedicated branch and pre-recorded in a draft PR. Use `creating-implementation-plans` for the canonical policy.
+
+Minimum required behavior:
+
+- Create or identify the dedicated branch before implementation starts.
+- Commit the plan artifact if the repo keeps one.
+- Push the branch.
+- Open or update a draft PR.
+- Put the plan's nested task tree in the PR body.
+
+The PR body is the canonical progress tracker.
+A local markdown plan is supporting evidence, not the status surface.
+
+The PR body must use one tree:
+
+```md
+- [ ] <Milestone or goal>
+  - [ ] <Workstream or phase>
+    - [ ] <Task>
+      - [ ] <Subtask or proof obligation>
+```
+
+Do not split checkboxes into "completed," "outstanding," "bookkeeping," or provenance sections.
+Checked means complete, and every checked line must include same-line proof such as `Proof commit: <sha>`. Blocked work stays unchecked with `Blocked: <reason>`.
 
 ## When to Use
 
@@ -88,6 +114,10 @@ Every plan MUST start with:
 # [Feature Name] Implementation Plan
 
 > **For Hermes:** Use subagent-driven-development skill to implement this plan task-by-task.
+
+**Branch:** [branch name]
+
+**Draft PR:** [PR URL, or blocking preflight if not yet created]
 
 **Goal:** [One sentence describing what this builds]
 
@@ -242,17 +272,24 @@ git add docs/plans/
 git commit -m "docs: add implementation plan for [feature]"
 ```
 
+### Step 8: Record the Plan on the PR
+
+Before implementation:
+
+- Push the planning branch.
+- Open or update a draft PR.
+- Copy the nested task tree into the PR body.
+- Verify the PR body has one checklist tree and no competing checkbox sections.
+
 ## Principles
 
 ### DRY (Don’t Repeat Yourself)
 
-**Bad:** Copy-paste validation in 3 places **Good:** Extract validation function, use
-everywhere
+**Bad:** Copy-paste validation in 3 places **Good:** Extract validation function, use everywhere
 
 ### YAGNI (You Aren’t Gonna Need It)
 
-**Bad:** Add “flexibility” for future requirements **Good:** Implement only what’s
-needed now
+**Bad:** Add “flexibility” for future requirements **Good:** Implement only what’s needed now
 
 ```python
 # Bad — YAGNI violation
@@ -296,18 +333,15 @@ git commit -m "type: description"
 
 ### Vague Tasks
 
-**Bad:** “Add authentication” **Good:** “Create User model with email and password_hash
-fields”
+**Bad:** “Add authentication” **Good:** “Create User model with email and password_hash fields”
 
 ### Incomplete Code
 
-**Bad:** “Step 1: Add validation function” **Good:** “Step 1: Add validation function”
-followed by the complete function code
+**Bad:** “Step 1: Add validation function” **Good:** “Step 1: Add validation function” followed by the complete function code
 
 ### Missing Verification
 
-**Bad:** “Step 3: Test it works” **Good:** “Step 3: Run `pytest tests/test_auth.py -v`,
-expected: 3 passed”
+**Bad:** “Step 3: Test it works” **Good:** “Step 3: Run `pytest tests/test_auth.py -v`, expected: 3 passed”
 
 ### Missing File Paths
 
@@ -318,8 +352,7 @@ expected: 3 passed”
 After saving the plan, offer the execution approach:
 
 **“Plan complete and saved.
-Ready to execute using subagent-driven-development — I’ll dispatch a fresh subagent per
-task with two-stage review (spec compliance then code quality).
+Ready to execute using subagent-driven-development — I’ll dispatch a fresh subagent per task with two-stage review (spec compliance then code quality).
 Shall I proceed?”**
 
 When executing, use the `subagent-driven-development` skill:
