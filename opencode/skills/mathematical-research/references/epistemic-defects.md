@@ -14,6 +14,13 @@ that *feel like nothing from inside*. Each entry gives the mechanism, what it
 feels like while it is happening (the only detection signal you get), the
 observed wreckage, and the prosthetic rules that exist because of it.
 
+Sibling catalog: [[llm-failure-modes/SKILL|llm-failure-modes]] indexes the
+distortions that produce slop *artifacts* (frame reification, circular
+corroboration, process-as-truth); this file owns the mechanics that erode
+*mathematical correctness*. Its "re-proposal of eliminated hypotheses" and
+"confidence-evidence decoupling" are the observational forms of defects 3
+and 4 below.
+
 ## 1. Doubt is conserved, not destroyed
 
 **Mechanism.** Verification never removes uncertainty; it relocates it to the
