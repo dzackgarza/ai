@@ -83,6 +83,25 @@ Operational playbooks:
 
 - How to audit generated stubs one file at a time
 
+### 6. Register Grounding (expert-domain and tool skills)
+
+Generalized rules alone under-determine register: a reader of abstraction-only
+skills falls back to generic-assistant or programmer priors exactly where the
+domain register matters most.
+
+- For expert-domain skills, anchor the rules with real, load-bearing material
+  from the source domain — actual formulas, actual ledger rows, actual code
+  idioms with provenance — in a worked-example reference that the rules link
+  to.
+
+- Grounding is not a case study: every grounding artifact must instantiate a
+  named rule, and narrative, timeline, and postmortem content stays excluded.
+
+- For tool skills, the only admissible content is what lies beyond training
+  data (field-tested idioms, tricks, organization, footguns), mined from real
+  code — never invented toy examples, never generic usage the model already
+  knows.
+
 ## What Skills Should NOT Be
 
 ### 1. Pasted Manuals
@@ -407,6 +426,9 @@ Success: Agent follows rule under maximum pressure.
 - [ ] Tested with pressure scenarios
 
 - [ ] Addresses specific failure modes observed
+
+- [ ] Expert-domain/tool skills: rules anchored by real worked material, each
+  grounding artifact instantiating a named rule
 
 - [ ] Cross-references other skills where needed, and explicitly references the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] if the skill touches writing, editing, refactoring, building, or testing code
 
