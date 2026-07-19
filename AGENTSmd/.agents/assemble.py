@@ -365,7 +365,7 @@ def main() -> None:
                 "-f",
                 "markdown",
                 "-t",
-                "gfm",
+                "gfm+wikilinks_title_after_pipe",
                 "--wrap=preserve",
                 "-o",
                 str(out),
