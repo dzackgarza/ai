@@ -1,55 +1,77 @@
 ---
 name: agent-memory
-description: "Use when deciding what belongs in agent memory, plan records, the central vault, GitHub, or wiki; defining memory policy; or converting historical notes into reusable operational rules."
+description: "Use when deciding what belongs in agent memory, preserving significant experiences or reflections, managing plan records and the central vault, defining memory policy, or converting historical material without erasing its evidential value."
 ---
 # Agent Memory
 
+## What Memory Is
+
+Memory is the durable substrate of experience and continuing interpretation, not a
+technical ledger of instructions for a future agent.
+
+A valuable memory may preserve:
+
+- an episode: what happened, in what context, and in what sequence;
+- consequences and salience: what failed, what changed, and why it mattered;
+- causal cues visible at the time;
+- contemporaneous reflections, hypotheses, and counterfactuals, labeled as such;
+- later reinterpretations that supplement rather than rewrite the original episode;
+- stable facts, decisions, or working guidance when those really are known.
+
+Do not assume that an incident yields a complete prevention rule. One episode can suggest
+causes or interventions without establishing them. A proposed lesson such as “avoid X next
+time” is a time-localized hypothesis, not proof that X caused the incident or that the
+intervention prevents the whole failure class.
+
+Keep these layers distinguishable when each carries durable value:
+
+1. **Experience/evidence** — what occurred and the observable sequence.
+2. **Reflection/interpretation** — what seemed causally important, including uncertainty
+   and alternative explanations.
+3. **Policy/intervention** — a proposed future action, explicitly provisional until
+   experience supports it.
+
+A policy may link to a memory, but it must not replace the experience that made the policy
+seem plausible. If the policy later fails, the preserved episode must still support a new
+interpretation.
+
 ## Requirements
 
-Every memory entry must satisfy ALL of:
+Every memory entry must be:
 
-- **Actionable** — contains a concrete behavior, command, or decision rule
+- **Durable** — likely useful in future sessions, whether for recognition,
+  reconsideration, resumption, or action.
+- **Non-duplicative** — not merely a copy of git history, public execution state, or an
+  existing memory.
+- **Specific** — preserves the concrete facts, context, sequence, causal cues, or decision
+  needed to understand it later.
+- **Epistemically labeled** — distinguishes observation, contemporaneous interpretation,
+  later analysis, and proposed intervention where they differ.
+- **Revisable** — later understanding can supplement or challenge the interpretation
+  without rewriting the original experience to make the new theory look inevitable.
 
-- **Durable** — likely useful in future sessions (not session-specific)
-
-- **Non-duplicative** — not already covered by git history, system context, or common
-  SOTA agent knowledge
-
-- **Specific** — includes clear trigger and verification, not vague guidance
-
-- **Makes a future agent faster, more correct, or less likely to repeat a mistake**
+A memory does **not** need to contain a command, decision rule, remediation, or observable
+success condition. Requiring actionability would systematically discard experiences whose
+future value is recognition and reinterpretation.
 
 ### When to Save Memories
 
-**Save immediately** when any of these occur:
+Preserve an experience while its sequence, consequences, causal cues, and
+contemporaneous reflections are still available when:
 
-- You make an incorrect choice or misstep
+- a surprising or consequential failure occurred;
+- several corrections revealed a pattern that cannot be understood from the final rule
+  alone;
+- the cause remains uncertain or several explanations remain plausible;
+- a proposed remedy has not been validated;
+- future recognition of a similar situation may matter even if no instruction is known;
+- later reinterpretation would require details that a compressed lesson would erase.
 
-- You are surprised by anything
+Also preserve stable findings, decisions, rationale, environment knowledge, and resumption
+context when they outlive the current session.
 
-- New information contradicts your priors
-
-- Functionality is uncovered through investigation
-
-- A solution required new insight or research
-
-- You discover something worth preserving that took effort to find
-
-Save memories when you discover something worth preserving:
-
-- Research findings that took effort to uncover
-
-- Non-obvious patterns or gotchas in the codebase
-
-- Solutions to tricky problems
-
-- Architectural decisions and their rationale
-
-- Corrections that should change future agent behavior
-
-- Decisions whose rationale should be available to future agents
-
-- In-progress work that may be resumed later
+Do not create a memory merely because a command succeeded or a task finished. Preserve
+what a future agent would otherwise be unable to reconstruct from the owning source.
 
 ### When to Check Memories
 
@@ -76,7 +98,11 @@ agent-facing doctrine files as substitutes for typed `agent-memory` records.
 Use repo-local files only as temporary scratchpads while working through in-the-weeds
 investigation. Before handoff, delete the scratchpad or promote its durable content:
 
-- reusable agent behavior, corrections, traps, and decisions -> typed memories;
+- significant experiences, causal sequences, contemporaneous reflections, and unresolved
+  interpretations -> `reference` or `context` memories;
+- reusable working guidance and proposed interventions -> `advice` or `trap` memories,
+  linked to the experience that grounds them when that experience matters;
+- stable decisions and rationale -> `decision` memories;
 - plans, phase state, queues, and residue ledgers -> [[plan/SKILL|plan]] records;
 - durable product/project doctrine, architecture rationale, and readable roadmap/proof
   projections -> wiki;
@@ -162,33 +188,37 @@ to discover the current command surface before relying on old examples.
 
 | Information | Location | Example |
 | --- | --- | --- |
-| Reusable operational rules, traps, and corrections | Typed memories in the vault | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
-| Decisions with future agent relevance | Typed memories in the vault | “Treat generated AGENTS output as derived; edit fragments instead” |
-| Plans, phase state, contracts, queues, and residue ledgers | `agent-memory` plan records in the vault | “Current phase is extraction; active residue is parser boundary proof” |
+| Significant experiences and their consequences | `reference` or `context` memories | Correction sequence preserving what happened, what seemed causally important, and what remains uncertain |
+| Later interpretations and provisional lessons | Linked memories or additive sections in the experience record | “At the time, rushing and missing directions appeared relevant; leaving earlier might help” |
+| Reusable operational guidance and proposed interventions | `advice` or `trap` memories | “Avoid unescaped `%` in crontab; build time strings in recipe/script” |
+| Decisions with future agent relevance | `decision` memories | “Treat generated AGENTS output as derived; edit fragments instead” |
+| Plans, phase state, contracts, queues, and residue ledgers | `agent-memory` plan records | “Current phase is extraction; active residue is parser boundary proof” |
 | Durable project doctrine, architecture rationale, and readable roadmap/proof projections | GitHub wiki | Feature page linked to stories, proof burdens, issues, and roadmap projections |
 | Active public stories, roadmap nodes, proof burdens, execution state, bugs, gaps, handoffs, and TODOs | GitHub issue trees, milestones, and PR claim maps | Story issue with proof obligations; draft PR linked to milestone and claim set |
 
-Completed work belongs in commits.
-Lessons, corrections, decisions, and planning state needed for future work belong in the
-vault. TODOs and gaps belong in GitHub issues, not repo artifacts.
+Completed work belongs in commits. The experience of doing the work belongs in memory
+only when its sequence, consequences, interpretation, or emotional/epistemic salience has
+future value beyond the diff. TODOs and gaps belong in GitHub issues, not repo artifacts.
 
 ## Decision Test
 
-Before writing a memory entry, answer all four:
+Before writing a memory, ask:
 
-1. **Will a future agent execute better with this?** If no → do not store.
+1. **What would be lost if this fades?** A sequence, consequence, causal cue, reflection,
+   stable fact, rationale, or resumption context must be identifiable.
+2. **Can the owning source reconstruct it?** If git, an issue, a paper, or current docs
+   already preserve the same meaning, link or rely on that source instead of duplicating
+   it.
+3. **Does the value depend on the episode, not only a rule?** If later reinterpretation
+   would need what happened and in what order, preserve the experience before extracting
+   advice.
+4. **What is known versus suspected?** Label direct observation, contemporary inference,
+   later analysis, and proposed intervention separately.
+5. **Is this live execution state?** TODOs and public work status belong in GitHub; plans
+   belong in plan records; neither should be disguised as memory.
 
-2. **Is it persistent/derived from stable system properties?** If no → do not store.
-   ("Session" here means a single agent invocation; stable means the info holds across
-   invocations, not that it never changes.)
-
-3. **Did you have to look it up, search docs, search the web, or arrive at through trial
-   and error?** If no → likely already known or obvious.
-   If yes → good candidate to record.
-
-4. **Is it primarily “what changed” (changelog)?** If yes → commit message, not memory.
-
-All four must pass. If any fails, the entry does not belong in memory.
+A memory is warranted when future recognition or understanding would materially degrade
+without it. It need not prescribe what the future agent should do.
 
 ## Promotion Test
 
@@ -215,29 +245,22 @@ tags: [tag1, tag2]
 ---
 ```
 
-Memory entries should answer these questions:
+Memory entries should make their own epistemic role clear. Depending on the record, include:
 
-1. **What is this?** — A clear, descriptive title or name
+- **Experience:** what happened, context, sequence, consequences, and salient details.
+- **Reflection:** what seemed important at the time and why.
+- **Later analysis:** revised interpretations, alternative explanations, and evidence
+  boundaries.
+- **Proposed intervention:** what might help, with uncertainty and validation status.
+- **Stable fact or decision:** the fact, source, rationale, and scope.
+- **Resumption state:** what a future session needs to continue.
 
-2. **When does this apply?** — The trigger condition or context
+Do not force every memory to contain all of these. In particular, do not invent an action
+or verification test for an experience whose durable value is recognition and
+reinterpretation.
 
-3. **What should be done?** — The actionable guidance
-
-4. **How do you verify it worked?** — Observable success condition
-
-Include any of these that are relevant:
-
-- Command/Pattern: Exact command or code snippet
-
-- Context: Goal, background, constraints
-
-- Details: Key files, related symbols, code snippets
-
-- Next steps: What to do next, open questions
-
-Write summaries that answer: What is this memory about?
-What is the key problem or topic?
-Why does it matter?
+Write titles and summaries that tell a future agent whether the record is an episode,
+reflection, hypothesis, decision, reference, or working rule.
 
 ## Use Cases
 
@@ -281,15 +304,22 @@ Why does it matter?
 
 ## Things to Avoid in Memories
 
-- **Changelogs** — “2026-02-26 Session Findings”, “what we did today”
+- **Git-history duplication** — a bare list of commits or file changes with no experience,
+  consequence, or interpretation beyond what git preserves.
+- **Status mirrors** — live TODOs, current issue state, or manually copied project status.
+- **Contentless summaries** — accomplishments without salient detail or future
+  interpretive value.
+- **Premature normative compression** — replacing a consequential episode with only the
+  rule currently believed to prevent recurrence.
+- **Retrospective certainty** — rewriting tentative contemporary impressions as if the
+  final causal account was known during the event.
+- **Universal prevention claims from one incident** — preserve likely contributing
+  factors and possible counterfactuals without claiming complete control of the failure
+  class.
 
-- **Decision logs** — “PR #123 decided to rename module” (belongs in commit)
-
-- **Timelines** — “Spent 2h debugging issue X”
-
-- **Git history duplicates** — “Commit abc changed parser logic”
-
-- **Contentless summaries** — Accomplishments without reusable guidance
+Chronology is not automatically noise. Preserve sequence when cause and effect,
+correction assimilation, escalation, or changing interpretation depends on it. Omit dates
+and step-by-step narration only when they add no meaning beyond the owning source.
 
 ## Related Design Notes
 
@@ -298,40 +328,43 @@ Why does it matter?
   Use it when designing or reviewing [[opencode/SKILL|OpenCode]] memory/todo tooling; do not reintroduce
   the retired hook/session implementations.
 
-## Transforming Notes into Memory
+## Transforming Historical Material into Memory
 
-### Guidelines
+### Preserve before interpreting
 
-- **Write for resumption:** Memories exist to resume work later.
-  Capture all key points needed to continue without losing context — decisions made,
-  reasons why, current state, and next steps.
+When the value lies in an incident or experience, preserve enough of the episode to make
+future reinterpretation possible:
 
-- **Write self-contained notes:** Include full context so the reader needs no prior
-  knowledge to understand and act on the content
+- the context and sequence;
+- observed consequences;
+- causal cues noticed at the time;
+- contemporaneous reactions or lessons;
+- later analysis and alternative explanations;
+- what remains unknown;
+- proposed interventions, clearly separated from the memory itself.
 
-- **Keep summaries decisive:** Reading the summary should tell you if you need the
-  details
+Do not rewrite the episode into a morality tale that makes the current policy look
+inevitable. Add later interpretations rather than silently replacing earlier ones.
 
-- **Be practical:** Save what’s actually useful, not everything
+When the source is merely noisy documentation of a stable technical fact, concise
+extraction remains appropriate. The distinction is whether compression would remove
+causal or experiential information needed to understand future similarities.
 
-### Pattern
+### Examples
 
-Strip the timeline. Extract the trigger condition.
-Write the rule. Add how to verify it worked.
-
-| Narrative (wrong) | Policy (correct) |
+| Source material | Durable form |
 | --- | --- |
-| “On Feb 25 we changed parser behavior and tried many fixes.” | “If stdout has no JSON and stderr contains rate-limit marker, classify as RATE_LIMIT and send ntfy error notification.” |
-| “We edited cron commands several times.” | “Avoid `%` date formatting directly in crontab commands; place time construction in recipe/script.” |
-| “Spent 2h debugging the auth token refresh.” | “Auth tokens expire after 3600s. Refresh proactively at 3000s, not on 401 response.” |
-| “The test suite was flaky on CI.” | “Rate limiter tests require Redis mock on CI. Real Redis connections cause intermittent timeouts.” |
+| A crash preceded by phone use, speeding, a missed light, rushing, and absent directions | Preserve the episode and consequences; note that distraction, speed, and rushing seemed relevant; record “leave earlier / avoid phone use” only as provisional counterfactuals |
+| A correction sequence where each objection caused more schema machinery | Preserve the sequence and the consequences of each assimilation; link any proposed frame-reset rule as a separate hypothesis |
+| API stderr has a documented rate-limit marker and no JSON | Stable technical fact: classify that response as `RATE_LIMIT`, with the source and exact boundary |
+| Several cron edits revealed `%` expansion semantics | Stable technical lesson plus the observed failure if it would help recognize related quoting problems |
+| “Spent two hours debugging” with no consequential sequence or insight | Omit the duration; preserve only the facts, surprises, or interpretations that matter |
 
-## Quality Bar Examples
+### Epistemic continuity test
 
-| Candidate | Verdict | Why |
-| --- | --- | --- |
-| “Commit abc changed parser logic” | Reject | Git tracks this |
-| “If API returns rate-limit in stderr with no JSON, classify as RATE_LIMIT” | Accept | Reusable failure-handling rule |
-| “Spent 2h debugging issue X” | Reject | Timeline, not policy |
-| “Topic mismatch is common; verify exact topic string before concluding delivery failure” | Accept | Reusable verification guardrail |
-| “PR #123 decided to rename module” | Reject | Decision log, belongs in commit |
+Before saving, ask:
+
+> If the proposed lesson proves wrong, does this memory still contain enough experience
+> and analysis to understand the incident and formulate a different lesson?
+
+If no, the record has been compressed too far.

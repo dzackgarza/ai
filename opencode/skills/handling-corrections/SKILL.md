@@ -135,6 +135,75 @@ For explanation-only turns, answer from evidence and do not infer authorization 
 If the same message explicitly requests a concrete safe fix, the explicit-pivot rule
 applies after the explanation.
 
+## Mandatory Independent Audit After Observable App-Error Contradiction
+
+The corrected agent has no jurisdiction to rate its own app-error failure as local,
+ordinary, reversible, serious, or worth auditing. Those are conclusions produced by the
+judgment under review.
+
+Make the routing decision from the transcript and runtime record. Define two observable
+facts:
+
+**External failure fact**
+
+- The user supplies a concrete app gesture and an observed wrong result; or
+- a captured execution of the real user-facing boundary contradicts the claimed or
+  expected result.
+
+**Prior frame commitment**
+
+Before that failure fact or correction appeared, the record shows at least one of:
+
+- the agent changed product code to fix that same gesture;
+- the agent assigned the cause or ownership to a subsystem, exonerated another subsystem,
+  or wrote an unqualified claim such as “fixed,” “working,” “complete,” “the root cause,”
+  or “the whole bug”;
+- the agent used component checks, mocks, local artifacts, database writes, or other
+  proxies as evidence for the app-level behavior without a recorded execution of the
+  exact real path; or
+- an earlier correction or failed remedy already occurred for the same user gesture.
+
+The routing rule is mechanical:
+
+> If an external failure fact and a prior frame commitment both appear in the record,
+> stop app edits and causal claims and dispatch a fresh, report-only audit.
+
+An explicit admission that the exact real path was never exercised after the agent called
+component checks “verification” also fires the rule directly. The corrected agent may not
+waive a fired trigger by redescribing the work as investigation, the correction as the
+first one under a narrower issue, the previous claim as provisional, or the next patch as
+small and reversible.
+
+This threshold keeps ordinary corrections in-stream without asking the corrected agent to
+judge seriousness. A correction made before any product edit, causal assignment,
+app-level validation claim, or earlier remedy does not contain both facts. Once the agent
+has committed to a frame and external reality contradicts it, the cost threshold has been
+met by the record itself.
+
+When the rule fires, quarantine the current causal frame. Quarantine does not negate every
+prior fact; it prevents the failed frame from selecting its own repair and certifying
+itself.
+
+Give a fresh subagent the original objective, concrete user gesture, observed result,
+faithful reproducer, raw logs/tool output, relevant artifacts and diffs, and the correction
+sequence. Do not provide the primary agent's retrospective explanation or proposed next
+fix before the auditor forms an independent account. The auditor must inspect the real
+boundary, reconstruct how evidence was selected or excluded, test competing explanations,
+bound the affected claims, and decide whether the frame can be repaired or must be
+discarded. Route the review through [[reviewing-subagent-work/SKILL|reviewing-subagent-work]]
+and [[llm-failure-modes/SKILL|llm-failure-modes]].
+
+The audit must satisfy this synthesis gate:
+
+> The current work proves ___ about the original app error based on ___. The prior frame
+> is valid or invalid because ___. The unresolved alternatives and required falsification
+> are ___.
+
+The primary agent may reject an audit finding only with new evidence from the real
+boundary that falsifies it. It may not use its own explanation, confidence, or component
+checks as counterevidence. If no independent auditor can inspect the boundary, report that
+oversight is unavailable and do not claim the remediation is definitive.
+
 ## What NOT to produce
 
 Do not write “You’re right”, “I understand now”, “That makes sense”, or any validation
@@ -190,69 +259,63 @@ item; report the blocker.
 
 ## Correction Memory Rule
 
-### Scan for an accepted remediation when needed
+### Recall before prescribing
 
-Search memory for an accepted remediation when the correction appears durable or
-recurrent and the current task depends on prior project or system decisions:
+When a correction appears related to a prior incident, search memory for the experience,
+not only an accepted remediation:
 
 ```text
-agent-memory search "<the misbehavior, boundary, or expectation the correction names>"
+agent-memory search "<the incident, causal cue, consequence, boundary, or expectation>"
 ```
 
-If a prior correction memory records the accepted remediation, apply it instead of
-re-deriving one. Do not interrupt an explicit safe pivot with memory search, and do not
-create a routing report merely to cite the memory.
+A prior policy is one fallible interpretation of prior experience. Recover the episode,
+its consequences, uncertainty, and later analysis before assuming that repeating the old
+rule fits the new situation. Do not interrupt an explicit safe pivot with memory search.
 
-### Persist durable corrections at the owning scope
+### Preserve durable corrections at the owning scope
 
-Add a typed memory after remediation only when the correction establishes knowledge that
-should govern future sessions or workers. Task-local directions and obvious one-off
-pivots do not become memories.
+A correction may have durable value even before a complete remedy is known. Preserve the
+layers that actually exist:
 
-- Durable corrections about cross-repo agent behavior belong at **global scope**
-  (`--scope global`), typically as `--type trap` or `--type advice`. Corrections about one
-  repository's code, data, or workflow stay at `--scope project`. One-off directions do
-  not belong in either scope.
-- The core method is not hand-writing a local notebook: write the lesson to the vault so
-  learning is retained as collective state across every repo the agent touches.
-- Record, at minimum: the misbehavior or expectation in the user's terms, the root-cause
-  boundary, the **accepted remediation** (the fix or rule that resolves this class), and
-  the specific anti-laundering rule that prevented skipping or relabeling. For bug-fix
-  corrections also record the reproducer command/action.
-- This is deliberate `沉淀` (deposited learning): the system state should get better after
-  each correction, not just this repo's.
+- the experience: what happened, sequence, consequences, and salient causal cues;
+- contemporaneous reflection: what seemed relevant or might have helped;
+- later analysis: revised interpretations and alternatives;
+- intervention: any proposed working rule, labeled provisional until supported.
 
-### Maintain accepted-remediation memories
+Cross-repo behavioral experiences normally belong at global scope; repo-specific
+experiences stay project-bound. Use `reference` or `context` for the episode and
+interpretation, `decision` for a settled choice, and `advice` or `trap` for proposed
+working guidance. Link them when the episode is needed to understand or revise the rule.
 
-These memories are durable, not write-once. Per the [[agent-memory/SKILL|agent-memory]] workflow, **search
-first and prefer `update` over a duplicate**:
+Do not require an “accepted remediation” before preserving a consequential experience.
+Do not claim to know how to prevent an entire failure class from one incident. Durable
+capture is successful when later agents can recognize and reinterpret the event even if
+the proposed intervention fails.
 
-- When the scan above surfaces an existing remediation memory for this class, `update`
-  it — sharpen the rule, add the new instance, or correct a remediation that turned out
-  wrong. Do not create a second near-identical memory.
-- When a later correction proves an accepted remediation was incomplete or mistaken, the
-  newest correction is authoritative: update the memory so it records the now-accepted
-  remediation, and reconcile any divergent wiki or GitHub surface (see below).
-- A remediation memory that no longer reflects how the class is actually resolved is a
-  defect — fix it the same turn you discover the divergence.
+### Preserve history; revise interpretations additively
 
-Most corrections are not bug fixes — they are the user re-stating an app decision,
-ownership boundary, purpose, goal, or expectation that the agent misunderstood because it
-was never encoded. Every such correction would have been unnecessary had the expectation
-lived in the knowledge base. So for any correction that exposes a previously-unencoded or
-divergently-encoded expectation:
+Search first and prefer updating an existing record when it is genuinely the same episode
+or proposition. Do not overwrite an episode to make the newest causal theory look
+inevitable.
 
-- Persist the underlying durable expectation as the appropriate typed memory after the
-  immediate bounded action (`decision`, `context`, `advice`, or `trap`), recorded in the
-  user's own terms — what was
-  decided or expected, what it governs, and why.
-- Reconcile only the durable surfaces that own or publish the expectation. If an owning
-  memory, wiki page, or GitHub issue says something divergent, update it. Promote public
-  direction to the owning issue, milestone, PR, or wiki page without copying the same fact
-  into unrelated surfaces.
-- The test is whether a future session needs the expectation to act correctly. If so,
-  encode it in its owning surface before the turn ends; do not fan it out to unrelated
-  surfaces.
+- Correct false factual claims in the record while preserving what was actually believed
+  or observed at the time when that distinction matters.
+- Add later interpretation with its evidence and date/context rather than silently
+  replacing contemporaneous reflection.
+- Revise or retire failed remediation advice without deleting the experience that led to
+  it.
+- Do not create a second near-identical memory merely because the preferred intervention
+  changed.
+
+Most corrections also expose app decisions, ownership boundaries, purposes, goals, or
+expectations. Persist those stable facts in their owning memory and reconcile divergent
+wiki or GitHub surfaces. That fact-oriented capture does not replace an experience record
+when the correction sequence itself has durable causal value.
+
+The continuity test is:
+
+> If the current lesson proves wrong, does the durable record still contain enough of the
+> incident and analysis to formulate a different lesson?
 
 Do not let durable capture replace or delay the object-level correction.
 

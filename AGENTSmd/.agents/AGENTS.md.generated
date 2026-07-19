@@ -909,21 +909,30 @@ Memories are typed plain-Markdown files in a vault, addressed by key (e.g. `pro
 - **project** — knowledge bound to a single repository via `.agent-memory.toml`.
 
 Memory **types** are `decision`, `trap`, `advice`, `context`, `reference`, and `plan`.
+The types classify records; they do not define memory as a policy ledger. `reference` and
+`context` may preserve significant experiences, their consequences, causal sequence,
+contemporaneous reflections, later interpretations, uncertainty, and alternative
+explanations. `advice` and `trap` hold proposed working guidance; they must not replace the
+experience that grounds them when that experience remains valuable.
 Use `plan` records for every plan, contract, phase state, queue, residue ledger, and
 other planning state that must survive context windows.
 Plans belong in the central vault through `agent-memory`, not as loose repo-local
 Markdown.
 
-**Store:** Stable operational guidance, environment quirks, cross-session execution
-context, technical findings, corrections that should change future behavior, and
-decisions that outlive a single task.
+**Store:** Significant experiences that would lose meaning if reduced to a rule; stable
+operational knowledge; environment quirks; cross-session execution context; technical
+findings; decisions and rationale; contemporaneous lessons; and later interpretations.
+Separate observation, interpretation, and proposed intervention. A memory need not
+instruct a future agent.
 
 **Promote:** If a decision changes public project direction, user stories, proof burdens,
 roadmaps, or cross-agent handoff state, update the owning GitHub issue, milestone, PR, or
 wiki page as well as any needed memory.
 
-**Do not store:** Audit trails, changelogs, work summaries, or live TODO lists.
-Those belong in git or GitHub issues.
+**Do not store:** Git-history duplicates, live status mirrors, contentless work summaries,
+or live TODO lists. Those belong in git or GitHub issues. Chronology is not itself an
+audit trail: preserve sequence when it carries cause-and-effect, consequences, changing
+interpretation, or details needed to recognize a related future incident.
 
 **Setup:** use the `uvx` runner for normal invocation and project binding:
 `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory init project --vault <vault>`.
@@ -945,11 +954,16 @@ project/global memories, and creating or updating `plan` records. Use a bare
 `agent-memory` command only after verified setup has placed it on `PATH`.
 Prefer `inspect` and `search` before broad filesystem scans of memory vaults.
 
-Store stable operational guidance, environment quirks, cross-session execution context,
-technical findings, durable corrections, durable decisions, and all plan state that must
-survive a context window.
-Do not store changelogs or audit trails; those belong in git. Do not store live TODOs;
-those belong in GitHub issues when they outlive the immediate task.
+Store significant experiences whose sequence, consequences, causal cues, or uncertainty
+would be lost if compressed into a rule; stable operational knowledge; environment quirks;
+cross-session context; technical findings; decisions and rationale; contemporaneous
+reflections; and later reinterpretations. Distinguish what happened, what seemed causally
+important, and what might help in the future. Proposed interventions are fallible products
+of memory, not memory’s definition.
+
+Do not store git-history duplicates, live status mirrors, contentless work summaries, or
+live TODOs. Those belong in git or GitHub issues. Preserve chronology when the order of
+events is itself evidence.
 
 ## Capturing Communicated Expectations
 
@@ -968,6 +982,13 @@ already encoded in its owning knowledge surface. If not, persist it:
   constraint, `trap` for a correction that must change future behavior).
 - Record it in the user’s own terms: what was decided or expected, what it governs, and why,
   so a future agent reads the rule without needing the user to restate it.
+
+Capturing expectations is one memory use, not the definition of memory. When a correction
+or incident is valuable because of its sequence, consequences, causal cues, or unresolved
+interpretation, preserve that experience separately as `reference` or `context`. Do not
+compress it into only the expectation or remediation currently believed to follow from
+it. Record contemporaneous lessons and future interventions as provisional unless their
+effect has been established.
 
 Reconcile only the surfaces that actually own or publish the fact. If the vault, wiki, or
 GitHub issue tree says something divergent, the new statement is authoritative: update

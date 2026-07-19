@@ -34,6 +34,13 @@ already encoded in its owning knowledge surface. If not, persist it:
 - Record it in the user's own terms: what was decided or expected, what it governs, and why,
   so a future agent reads the rule without needing the user to restate it.
 
+Capturing expectations is one memory use, not the definition of memory. When a correction
+or incident is valuable because of its sequence, consequences, causal cues, or unresolved
+interpretation, preserve that experience separately as `reference` or `context`. Do not
+compress it into only the expectation or remediation currently believed to follow from
+it. Record contemporaneous lessons and future interventions as provisional unless their
+effect has been established.
+
 Reconcile only the surfaces that actually own or publish the fact. If the vault, wiki, or
 GitHub issue tree says something divergent, the new statement is authoritative: update
 the stale owning surface rather than copying the same fact everywhere.

@@ -1,6 +1,6 @@
 ---
 name: plugin-creator
-description: Create and scaffold plugin directories for [[codex/SKILL|Codex]] with a required `.codex-plugin/plugin.json`, optional plugin folders/files, valid manifest defaults, and personal-marketplace entries by default. Use when [[codex/SKILL|Codex]] needs to create a new personal plugin, add optional plugin structure, generate or update marketplace entries for plugin ordering and availability metadata, or update an existing local plugin during development with the CLI-driven cachebuster and reinstall flow.
+description: Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, valid manifest defaults, and personal-marketplace entries by default. Use when Codex needs to create a new personal plugin, add optional plugin structure, generate or update marketplace entries for plugin ordering and availability metadata, or update an existing local plugin during development with the CLI-driven cachebuster and reinstall flow.
 ---
 
 # Plugin Creator
@@ -20,7 +20,7 @@ python3 scripts/create_basic_plugin.py <plugin-name>
 2. Edit `<plugin-path>/.codex-plugin/plugin.json` when the request gives specific metadata.
    The scaffold starts with valid defaults and must not contain `[TODO: ...]` placeholders.
 
-3. Generate or update the personal marketplace entry when the plugin should appear in [[codex/SKILL|Codex]] UI ordering:
+3. Generate or update the personal marketplace entry when the plugin should appear in Codex UI ordering:
 
 ```bash
 # Personal marketplace entries default to `~/.agents/plugins/marketplace.json`.
@@ -88,7 +88,7 @@ See `references/installing-and-updating.md` for the expected cachebuster and rei
 - Fills the manifest with the validated schema shape that the ingestion path accepts.
 - Creates or updates `~/.agents/plugins/marketplace.json` when `--with-marketplace` is set.
   - If the marketplace file does not exist yet, seed a personal marketplace root before adding the first plugin entry.
-- `<plugin-name>` is normalized using [[.system/skill-creator/SKILL|skill-creator]] naming rules:
+- `<plugin-name>` is normalized using skill-creator naming rules:
   - `My Plugin` → `my-plugin`
   - `My--Plugin` → `my-plugin`
   - underscores, spaces, and punctuation are converted to `-`
@@ -117,7 +117,7 @@ See `references/installing-and-updating.md` for the expected cachebuster and rei
   explicit path it works for repo/team marketplaces too.
 - In either location, the generated source path remains `./plugins/<plugin-name>`.
 - Marketplace root metadata supports top-level `name` plus optional `interface.displayName`.
-- Treat plugin order in `plugins[]` as render order in [[codex/SKILL|Codex]]. Append new entries unless a user explicitly asks to reorder the list.
+- Treat plugin order in `plugins[]` as render order in Codex. Append new entries unless a user explicitly asks to reorder the list.
 - `displayName` belongs inside the marketplace `interface` object, not individual `plugins[]` entries.
 - Each generated marketplace entry must include all of:
   - `policy.installation`
@@ -194,7 +194,7 @@ See `references/installing-and-updating.md` for the expected cachebuster and rei
 - Keep marketplace `source.path` relative to the selected marketplace root as `./plugins/<plugin-name>`.
 - Only use `--marketplace-name` when creating a new marketplace file whose name should not be
   `personal` because that name is already taken or installed elsewhere.
-- If [[codex/SKILL|Codex]] would need approval to write the marketplace file, ask for that approval before
+- If Codex would need approval to write the marketplace file, ask for that approval before
   proceeding. If the user prefers to run the write themselves, provide the exact scaffold command
   and then continue from validation or subsequent plugin edits instead of leaving the workflow
   vague.
@@ -208,14 +208,14 @@ See `references/installing-and-updating.md` for the expected cachebuster and rei
   before giving reinstall instructions. Use `codex plugin marketplace add <path-to-marketplace-root>`
   when that explicit marketplace has not been configured yet.
 - When the workflow created or updated a marketplace-backed plugin, end the final user-facing
-  response with a short [[codex/SKILL|Codex]] app handoff. Say `To view this in the Codex app:` and write
+  response with a short Codex app handoff. Say `To view this in the Codex app:` and write
   `View <normalized plugin name>` and `Share <normalized plugin name>` as Markdown links, not raw
   URLs or code spans.
 - The View deeplink uses `codex://plugins/<normalized plugin name>?marketplacePath=<absolute marketplace.json path>`.
   The Share deeplink uses the same URL with `&mode=share`.
 - Replace the placeholders with the real normalized plugin name and absolute `marketplace.json`
   path from the scaffolded plugin. URL-encode the path segment and query value when needed.
-- Do not add `pluginName` or `hostId` query parameters to these deeplinks. [[codex/SKILL|Codex]] derives both after
+- Do not add `pluginName` or `hostId` query parameters to these deeplinks. Codex derives both after
   the user clicks the link.
 - Do not emit the `View <normalized plugin name>` or `Share <normalized plugin name>` links when no marketplace entry was
   created or updated.

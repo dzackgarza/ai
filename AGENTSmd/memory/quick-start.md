@@ -12,6 +12,11 @@ tags:
 - retest-policy-change
 - retest-toolchain-change
 - retest-environment-change
+- failure-context-loss
+- failure-proxy-evidence
+- failure-state-misplacement
+- retest-model-self-evaluation
+- source-observed-model-failure
 title: Quick Start
 ---
 
@@ -28,8 +33,13 @@ project/global memories, and creating or updating `plan` records. Use a bare
 `agent-memory` command only after verified setup has placed it on `PATH`.
 Prefer `inspect` and `search` before broad filesystem scans of memory vaults.
 
-Store stable operational guidance, environment quirks, cross-session execution context,
-technical findings, durable corrections, durable decisions, and all plan state that must
-survive a context window.
-Do not store changelogs or audit trails; those belong in git. Do not store live TODOs;
-those belong in GitHub issues when they outlive the immediate task.
+Store significant experiences whose sequence, consequences, causal cues, or uncertainty
+would be lost if compressed into a rule; stable operational knowledge; environment quirks;
+cross-session context; technical findings; decisions and rationale; contemporaneous
+reflections; and later reinterpretations. Distinguish what happened, what seemed causally
+important, and what might help in the future. Proposed interventions are fallible products
+of memory, not memory's definition.
+
+Do not store git-history duplicates, live status mirrors, contentless work summaries, or
+live TODOs. Those belong in git or GitHub issues. Preserve chronology when the order of
+events is itself evidence.
