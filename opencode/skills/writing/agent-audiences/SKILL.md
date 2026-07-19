@@ -1,6 +1,6 @@
 ---
 name: writing-for-agent-audiences
-description: Use when writing or editing prose intended to be consumed by AI agents — prompts, instructions, SKILL.md bodies, system prompts, subagent task descriptions, or any agent-facing documentation.
+description: Use when creating, editing, reviewing, or evaluating any prose consumed by AI agents. Mandatory for every edit to a SKILL.md or linked skill resource, and for prompts, instructions, system prompts, subagent tasks, or other agent-facing documentation.
 ---
 # Writing Documentation for LLMs
 
@@ -78,6 +78,10 @@ failure modes, or introspection (e.g., an [[llm-failure-modes/SKILL|llm-failure-
 `agent-orchestration` skill), then discussing LLM behavior, tendencies, and failure
 patterns is completely appropriate and necessary for the task context.
 
+Skill-authoring guidance is explicitly meta. Preserve load-bearing audience psychology
+when compressing it would recreate a subjective escape hatch. A slogan such as “use
+objective triggers” is not a substitute for the causal model that makes the rule usable.
+
 ### Theory-of-Mind Gap: Don’t Write Instructions the Agent Can’t Act On
 
 The most dangerous skill-writing mistake is writing instructions that assume the agent
@@ -113,11 +117,12 @@ requiring self-awareness.
 The agent can follow the instruction mechanically.
 The structural constraint does the work that the meta-warning cannot.
 
-**The principle:** when you know an agent has a failure mode, do not explain the failure
-mode to the agent. Instead, write the instruction so that the failure mode is
-structurally impossible.
-The theory-of-mind gap is something to account for in how you write instructions, not
-something to explain to the agent.
+**Object-level worker skills:** do not rely on explaining a failure to the affected
+worker; make the failure structurally impossible.
+
+**Skill-writing and behavioral-control skills:** teach why the worker cannot safely
+interpret the gate, then remove that faculty's jurisdiction. Read
+[[writing/agent-audiences/references/behavioral-control-design|Behavioral Control Design for Self-Exonerating Agents]] before writing downstream behavioral controls.
 
 ### Test across models
 
@@ -148,6 +153,10 @@ Keep run numbers, transcript postmortems, scoring rubrics, wrapper output format
 evaluator complaints out of object-level skills unless those mechanics are themselves
 the task.
 
+Generalization is not genericization. In authoring, review, and orchestration skills,
+preserve causal models and analogies that explain why an apparently reasonable rule is
+gameable. Endpoint wording without that explanation cannot guide the next design.
+
 ### Mine Correction Sequences for Reset Gates
 
 A long correction sequence is stronger evidence than a single bad answer. Do not distill
@@ -164,6 +173,10 @@ after repeated mechanism-removal corrections, or ask for the missing workflow fa
 Do not paste the case study, quote the transcript, or preserve the domain topic unless
 the skill is about that domain. The skill should receive the generalized operational
 constraint that would have prevented the correction sequence.
+
+In behavioral and authoring skills, preserve the theory of mind behind the gate. The
+writer must understand how targets rebase history, exonerate their current selves, and
+convert contradictions into small procedural omissions.
 
 * * *
 

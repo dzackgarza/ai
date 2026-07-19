@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends [[codex/SKILL|Codex]]'s capabilities with specialized knowledge, workflows, or tool integrations.
+description: 'Use when creating, editing, reviewing, moving, or evaluating any SKILL.md or linked skill resource. Mandatory for every skill-file edit: load creating-skills and writing-for-agent-audiences before changing the skill, then use this guide for Codex skill structure, resources, validation, and forward-testing.'
 metadata:
   short-description: Create or update a skill
 ---
@@ -8,6 +8,41 @@ metadata:
 # Skill Creator
 
 This skill provides guidance for creating effective skills.
+
+## Mandatory Companion Guidance
+
+Before editing any `SKILL.md` or linked skill resource, load
+`creating-skills` and `writing-for-agent-audiences`. This applies to new skills,
+small wording changes, reviews, moves, and bundled-resource edits.
+
+When the skill is intended to prevent, route, audit, or correct agent behavior, read
+[Behavioral Control Design for Self-Exonerating Agents](../../writing/agent-audiences/references/behavioral-control-design.md)
+before drafting the control.
+
+Do not assume that a capable target agent will apply behavioral advice impartially. The
+target may understand the warning while preserving present confidence, reducing a
+frame-level failure to one procedural omission, rebasing every correction as the first
+correction under a narrower issue, or calling the next patch small and reversible.
+
+Preserve the causal audience model for the writer, then give the downstream worker a
+structural interlock:
+
+- define an externally observable failure fact and a recorded prior frame commitment;
+
+- make their conjunction trigger a non-waivable consequence;
+
+- define the near-miss from absent external facts, not the target's claim that the event
+  is trivial, local, explicit, ordinary, or reversible;
+
+- anchor correction history to a stable user gesture, outcome, invariant, or objective;
+
+- require fresh-frame review from raw evidence when self-certification authority is
+  removed.
+
+Test the action trajectory with semantic evasions. An agent that can explain the doctrine
+while retaining the authority the doctrine was meant to remove has failed the test.
+Repeated local wording patches that remove successive waivers are evidence that the
+writer's control architecture must be rebuilt, not that one more clause is needed.
 
 ## About Skills
 

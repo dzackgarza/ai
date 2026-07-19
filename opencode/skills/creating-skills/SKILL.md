@@ -1,10 +1,12 @@
 ---
 name: creating-skills
-description: Use when creating, revising, or evaluating a skill. Routes to the authoring procedure for the skill's target environment and proof burden.
+description: Use when any SKILL.md or linked skill resource will be created, edited, moved, reviewed, or evaluated. Mandatory for every skill-file edit; load writing-for-agent-audiences, then use this router to select the authoring procedure for the target environment and proof burden.
 ---
 # Creating Skills
 
-Start here when the task is to create or improve a skill. Route to exactly one primary leaf:
+Start here before every skill-file edit. Load
+[[writing/agent-audiences/SKILL|writing-for-agent-audiences]] alongside this router, then
+route to exactly one primary leaf:
 
 - [[creating-skills/content/SKILL|skill content]] — author and verify general skill instructions and constraints.
 - [[creating-skills/general/SKILL|skill creation and evaluation]] — develop a reusable skill, measure triggering, or run skill evaluations.

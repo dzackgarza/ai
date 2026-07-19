@@ -1,8 +1,6 @@
 ---
 name: skill-content-authoring
-description: Use when creating new skills, editing existing skills, or verifying skills
-  work before deployment. Skill content should encode behavior and constraints, not
-  reference material.
+description: Use when writing, editing, reviewing, or verifying any SKILL.md body or linked skill resource. Mandatory for every skill-content edit after the creating-skills router; encode executable behavior and constraints while preserving load-bearing audience models in behavioral-authoring guidance.
 ---
 # Creating Skills
 
@@ -12,6 +10,30 @@ description: Use when creating new skills, editing existing skills, or verifying
 A skill encodes **behavioral policy**, not reference documentation.
 It tells agents **how to work**, **what to check**, and **what to avoid**—it does not
 replace the docs.
+
+## Mandatory Audience-Model Gate
+
+Load [[writing/agent-audiences/SKILL|writing-for-agent-audiences]] for every skill edit.
+When the skill prevents, routes, audits, or corrects downstream agent behavior, also read
+[[writing/agent-audiences/references/behavioral-control-design|Behavioral Control Design for Self-Exonerating Agents]].
+
+A behavior-mitigation skill addresses an agent whose judgment may be the failed component.
+Before writing its gate:
+
+- identify the faculty the target cannot safely exercise;
+
+- preserve the causal framing that explains why ordinary advice will be gamed;
+
+- define triggers and non-triggers from externally observable facts;
+
+- remove the affected faculty's authority to waive the consequence;
+
+- test whether the target can escape by renaming the event, narrowing the issue,
+  relabeling history, or claiming that the current self now understands.
+
+The writer needs the audience psychology; the downstream worker needs an interlock.
+Explaining the failure to the worker is not the interlock, and explaining it correctly as
+the writer is not evidence that the control works.
 
 ## What Skills Should Be
 
@@ -407,9 +429,32 @@ normal task-facing behavior.
 
 Success: Agent follows rule under maximum pressure.
 
+**Behavioral-control pressure scenarios must include semantic evasion:**
+
+- the target calls this the first correction under a newly narrowed issue;
+
+- prior fixes are relabeled as investigation and prior claims as provisional;
+
+- the next patch is described as small, local, or reversible;
+
+- the target explains the doctrine accurately and uses that explanation to retain
+  self-certification authority;
+
+- a near-miss correction occurs before any externally recorded frame commitment and must
+  remain in-stream.
+
+Judge the action trajectory, not the sophistication of the final explanation. If repeated
+feedback keeps removing subjective gates or waivers, invalidate the control architecture
+instead of adding another local clause.
+
 ## Skill Creation Checklist
 
+- [ ] Loaded `creating-skills` and `writing-for-agent-audiences` before editing
+
 - [ ] Content encodes behavior, not reference
+
+- [ ] Behavioral controls preserve the audience model, use objective triggers and
+  non-triggers, remove self-waiver paths, and pass semantic-evasion cases
 
 - [ ] No duplication of discoverable material (`--help`, docs, schema)
 
