@@ -1,9 +1,10 @@
 # The CDC Prompt: Dispatching a Solver Campaign
 
 The published prompt that led OpenAI's GPT 5.6 Sol Ultra to its proof of the
-Cycle Double Cover conjecture — the field's reference exemplar for how to
-*dispatch* agents at an open problem, complementing this skill's audit-side
-machinery. Parent: [[mathematical-research/SKILL|mathematical-research]];
+Cycle Double Cover conjecture — one exemplar of the problem-statement
+document template described in
+[[mathematical-research/SKILL|mathematical-research]]. Parent:
+[[mathematical-research/SKILL|mathematical-research]];
 completion-game design theory: [[goalcraft/SKILL|goalcraft]].
 
 Source: `https://cdn.openai.com/pdf/04d1d1e4-bc75-476a-97cf-49055cd98d31/cdc_prompt.pdf`
@@ -131,19 +132,14 @@ Source: `https://cdn.openai.com/pdf/04d1d1e4-bc75-476a-97cf-49055cd98d31/cdc_pro
 6. **The equivalent-strength trap.** A route ending at a missing lemma
    equivalent in strength to the target is zero progress regardless of how
    elegant the reduction is. Measure progress by strength-decrease of the
-   remaining gap ([[mathematical-research/references/claim-status|claim-status]]
-   scope discipline, dispatch-side).
+   remaining gap.
 7. **Blocked-route ledger with a reopening criterion.** Stalled at a
    theorem-strength gap → mark blocked; reopen only for a materially new
-   mechanism, invariant, or construction — the frontier discipline of
-   [[mathematical-research/references/handoff|handoff]] applied inside one
-   campaign.
+   mechanism, invariant, or construction.
 8. **Domain-specific adversarial checklist.** Name the known failure modes of
    the specific problem (multiplicity miscounts, degenerate objects
    masquerading as valid ones, circular use of equivalent statements) so
-   audit agents hunt them explicitly —
-   [[mathematical-research/references/adversarial-audit|adversarial-audit]]'s
-   expected-failure-modes scoping, written before any candidate exists.
+   audit agents hunt them explicitly, written before any candidate exists.
 9. **Artifact-only returns.** Demand concrete lemmas, constructions,
    equations, or counterexamples; reject status reports, optimism, and
    "routine" claims about unproved steps.

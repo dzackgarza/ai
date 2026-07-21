@@ -1,6 +1,6 @@
 ---
 name: organizing-pdfs
-description: Use when organizing a directory of PDFs against [[zotero/SKILL|Zotero]] or another reference library: bucketing local PDFs, finding DOI/ISBN/source provenance, creating [[zotero/SKILL|Zotero]] items, attaching PDFs, trashing verified redundant local copies, and leaving a final contents ledger. Trigger on requests to sort PDFs, clean a downloads PDF folder, compare PDFs to [[zotero/SKILL|Zotero]], import PDFs into [[zotero/SKILL|Zotero]], or decide what remaining PDFs are.
+description: "Use when organizing a directory of PDFs against [[zotero/SKILL|Zotero]] or another reference library: bucketing local PDFs, finding DOI/ISBN/source provenance, creating [[zotero/SKILL|Zotero]] items, attaching PDFs, trashing verified redundant local copies, and leaving a final contents ledger. Trigger on requests to sort PDFs, clean a downloads PDF folder, compare PDFs to [[zotero/SKILL|Zotero]], import PDFs into [[zotero/SKILL|Zotero]], or decide what remaining PDFs are."
 ---
 
 # Organizing PDFs
@@ -14,7 +14,7 @@ This is a semantic workflow. Filenames, hashes, and search hits are leads, not p
 ## Load These Skills
 
 - [[reading-pdfs/SKILL|reading-pdfs]] before extracting or inspecting PDF contents.
-- [[zotero/SKILL|zotero]] or [[zotero-api/SKILL|zotero-api]] before reading or writing [[zotero/SKILL|Zotero]] state.
+- [[zotero/SKILL|zotero]] before reading or writing [[zotero/SKILL|Zotero]] state.
 - [[zotero-pdf-extraction-attachments/SKILL|zotero-pdf-extraction-attachments]] when verifying [[zotero/SKILL|Zotero]] parent/child attachment state.
 - [[epistemic-integrity/SKILL|epistemic-integrity]] before reporting missing sources, no-identifier findings, or any
   conclusion based on partial PDF reads.

@@ -74,6 +74,59 @@ read it before auditing anything, and whenever you are tempted to bend a rule.
 | Dispatch agents at an open problem; write a solver-campaign prompt | [[mathematical-research/references/cdc-prompt|cdc-prompt]] |
 | Attack many problems at once; run or join a proving swarm; triage candidate LLM solutions | [[mathematical-research/references/portfolio-campaigns|portfolio-campaigns]] |
 
+## Problem-statement documents vs. ongoing-research workflow
+
+Two different things share this skill. Confusing them produces a diluted
+submission document or a workflow that reads like a problem statement.
+
+**Problem-statement documents** are standalone mathematical artifacts
+meant to be **submitted to a long-horizon remote worker** (GPT Pro, a
+frontier-model campaign, etc.). They are almost purely mathematical:
+definitions, the exact completion contract, domain-specific dos and
+do-nots, the adversarial checklist for *this* problem. Their entire job
+is to tell the remote worker *what counts as solving this problem* and
+*what does not*. Exemplars (read the verbatim prompt sections only when
+authoring a new submission):
+[[mathematical-research/references/cdc-prompt|cdc-prompt]]
+(Cycle Double Cover conjecture),
+[[mathematical-research/references/jacobian-prompt|jacobian-prompt]]
+(Jacobian Conjecture). These are sibling artifacts for different
+problems; they share the template structure described here, not a
+parent-child relationship.
+
+A problem-statement document contains:
+the object definitions with edge cases resolved; the exact completion
+contract stated twice (prose + formal); an explicit insufficiency catalog
+naming what does not count as progress; a domain-specific adversarial
+checklist of the known failure modes of *this* problem; a termination
+contract; and contamination hygiene. It does **not** contain claim
+ledgers, handoff bundles, run logs, audit protocols, supersession notes,
+or any session state. It is read by a fresh remote worker with no prior
+context and no access to the local workflow.
+
+**Ongoing-research workflow** is the local orchestration layer for
+multi-session work on a hard problem. The problem statement remains the
+organizing touchstone — everything traces back to it — but the workflow
+adds rules and artifacts the submission document does not carry: a typed
+claim ledger ([[mathematical-research/references/claim-status|claim-status]]),
+run logs and computation discipline
+([[mathematical-research/references/computation|computation]]),
+audit artifacts
+([[mathematical-research/references/adversarial-audit|adversarial-audit]]),
+handoff bundles
+([[mathematical-research/references/handoff|handoff]]),
+supersession notes, and git-repo provenance. See the route table above
+for the right reference per phase.
+
+**Do not let the workflow layer contaminate a submission document.**
+When authoring a problem statement for a remote worker, read only the
+verbatim prompt sections of the exemplars and the distilled
+problem-statement rules they embody. Do not pull in claim-ledger
+taxonomy, handoff structure, audit-protocol rules, or computation
+discipline — those are local-workflow concerns and will dilute the
+mathematical content the remote worker needs. A submission document
+full of procedural rules is a defective submission document.
+
 ## Route to sibling skills
 
 - Proof prose, LaTeX, notation discipline —

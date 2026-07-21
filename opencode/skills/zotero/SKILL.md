@@ -1,249 +1,305 @@
 ---
 name: zotero
-description: Manage [[zotero/SKILL|Zotero]] reference libraries via the Web API. Search, list, add items by DOI/ISBN/PMID (with duplicate detection), delete/trash items, update metadata and tags, export in BibTeX/RIS/CSL-JSON, batch-add from files, check PDF attachments, cross-reference citations, find missing DOIs via CrossRef, and fetch open-access PDFs. Supports --json output for scripting. Use when the user asks about academic references, citation management, literature libraries, PDFs for papers, bibliography export, or [[zotero/SKILL|Zotero]] specifically.
-metadata: {"clawdbot":{"emoji":"📚","requires":{"env":["ZOTERO_API_KEY","ZOTERO_USER_ID"]},"primaryEnv":"ZOTERO_API_KEY"}}
+description: Use when interacting with the live Zotero library on this workstation — searching, reading, adding, merging, updating, tagging, trashing, or attaching items via the running Zotero desktop's local API. Also use when the user asks about academic references, citation management, PDF attachments, or Zotero specifically. The canonical transport is the running Zotero desktop at http://127.0.0.1:23119; cloud Web API and translation server are NOT used here.
 ---
+
 # [[zotero/SKILL|Zotero]] Skill
 
-Interact with [[zotero/SKILL|Zotero]] personal or group libraries via the REST API v3.
+Interact with the **live Zotero library on this workstation** through the running Zotero
+desktop's own local API. There is no exported mirror, shard store, or proof ledger —
+live Zotero is the only source of truth.
 
-## Setup
+## Transport (the only sanctioned surface)
 
-Requires two environment variables:
+- **Read base:** `http://127.0.0.1:23119/api/users/0/...`
+- **Write:** `POST http://127.0.0.1:23119/write` (local write-API addon)
+- **File attach:** `POST http://127.0.0.1:23119/attach`
+- **Health probe:** `GET http://127.0.0.1:23119/version`
 
-```
-ZOTERO_API_KEY   — Create at https://www.zotero.org/settings/keys/new
-ZOTERO_USER_ID   — Found on the same page (numeric, not username)
-```
+Precondition: the Zotero desktop app is running with the local write-API addon loaded.
+Verify with `zotero.health()` — the returned `capabilities` list names every write op
+the addon currently exposes. If the desktop is down or the addon is not loaded, that is
+the blocker to report — not a missing env var, not a missing server, not a missing key.
 
-For group libraries, set `ZOTERO_GROUP_ID` instead of `ZOTERO_USER_ID`.
+## NOT used (do not confuse with the above)
 
-Optional env var for CrossRef/Unpaywall polite pool (improves DOI lookup success rate):
+- **Cloud Web API** (`api.zotero.org`, `ZOTERO_API_KEY`, `ZOTERO_USER_ID`) — not used
+  here. A dead or unset cloud key is never a blocker on this workstation.
+- **Standalone translation server** (`:1969`) — not used here. A dead `:1969` is never a
+  blocker.
+- Any external read-only proxy to the cloud library is stale; route everything through
+  the running desktop's local API instead.
 
-```
-CROSSREF_EMAIL   — Your email (optional; uses fallback if unset)
-```
+If a guide, script, or memory record tells you to set `ZOTERO_API_KEY` /
+`ZOTERO_USER_ID` or to call `api.zotero.org` for this library, that source is out of date.
 
-If credentials are missing, tell the user what’s needed and link them to the key
-creation page.
+## The I/O boundary: `lib/zotero.py`
 
-## CLI Script
+The canonical client on this workstation lives in the `zotero-library` repo at
+`lib/zotero.py`. Every read and every write in that repo goes through this module —
+so the same client the loop writes through is the client tests read through, and no
+second source of truth can drift from live state.
 
-All operations use `scripts/zotero.py` (Python 3, zero external dependencies).
+Payload shapes are the ones the live API actually accepts, not guessed:
+`import_by_identifier`, `update_item_fields`, `trash_item`, `merge_items`,
+`add_item_tags` / `remove_item_tags`, `attach_file`, `run_javascript`.
 
-```bash
-python3 scripts/zotero.py <command> [options]
-```
+A non-2xx HTTP status or a `success != true` body is a **hard error**. There is no retry,
+no fallback, no silent success.
 
-### Commands
+### Public surface (read)
 
-| Command | Description | Example |
+| Function | Returns | Notes |
 | --- | --- | --- |
-| `items` | List top-level items | `zotero.py items --limit 50` |
-| `search` | Search by query | `zotero.py search "cognitive load"` |
-| `get` | Full item details + attachments | `zotero.py get ITEMKEY` |
-| `collections` | List all collections | `zotero.py collections` |
-| `tags` | List all tags | `zotero.py tags` |
-| `children` | List attachments/notes for item | `zotero.py children ITEMKEY` |
-| `add-doi` | Add item by DOI (dedup enabled) | `zotero.py add-doi 10.1234/example` |
-| `add-isbn` | Add item by ISBN (dedup enabled) | `zotero.py add-isbn 978-0-123456-78-9` |
-| `add-pmid` | Add item by PubMed ID | `zotero.py add-pmid 12345678` |
-| `delete` | Move items to trash (recoverable by default) | `zotero.py delete KEY1 KEY2 --yes` |
-| `update` | Modify item metadata/tags | `zotero.py update KEY --add-tags "new"` |
-| `export` | Export as BibTeX/RIS/CSL-JSON | `zotero.py export --format bibtex` |
-| `batch-add` | Add multiple items from file | `zotero.py batch-add dois.txt --type doi` |
-| `check-pdfs` | Report which items have/lack PDFs | `zotero.py check-pdfs` |
-| `crossref` | Match citations vs library | `zotero.py crossref bibliography.txt` |
-| `find-dois` | Find & add missing DOIs via CrossRef | `zotero.py find-dois --limit 10` |
-| `fetch-pdfs` | Fetch open-access PDFs for items | `zotero.py fetch-pdfs --dry-run` |
+| `health()` | `{version, healthy, capabilities}` | Probe the write-API addon; raises if down. **Call first.** |
+| `get_item(key)` | full item envelope `{key, data, meta, links, ...}` | |
+| `get_data(key)` | just the `data` object | shape canonical/stamp/identity consume |
+| `get_children(key)` | ALL child items, paginated | a heavily annotated item can exceed one page; truncation silently misreports "no extraction child" |
+| `iter_top(page=100)` | all top-level items, paginated | |
+| `biblio(items)` | items excluding attachment/note/annotation | |
+| `biblio_top()` | top-level bibliographic items only | |
+| `collections()` | all collections, paginated | |
+| `collection_top(key, page=100)` | top-level items in a collection, paginated | |
+| `saved_search_keys(name)` | item keys matching a live saved search | executes Zotero's OWN search engine via `run_javascript`; read-only, never edits the search |
+| `duplicate_sets()` | Zotero's OWN duplicate sets | leverages `Zotero.Duplicates` rather than reimplementing matching |
 
-### Global Flags
+### Public surface (write — every one is a `POST /write`)
 
-- `--json` — JSON output instead of human-readable (works with items, search, get)
+| Function | Payload | Notes |
+| --- | --- | --- |
+| `import_by_identifier(identifier)` | `{identifier}` | the only provenance-bearing ingestion surface; callers MUST inspect `details.item_count` (a multi-volume identifier can create several items) and `item_key` before trusting the result |
+| `update_item_fields(key, fields)` | `{item_key, fields:{...}}` | |
+| `set_extra(key, extra)` | via `update_item_fields` | writes the `extra` field |
+| `trash_item(key)` | `{item_key}` | recoverable |
+| `merge_items(source, target)` | `{source_key, target_key}` | **target survives as master**; children move to target; redirect relation established by the API |
+| `add_item_tags(key, tags)` | `{item_key, tags:[...]}` | |
+| `remove_item_tags(key, tags)` | `{item_key, tags:[...]}` | |
+| `attach_file(key, file_path, title)` | `POST /attach` | file must be under `/tmp` or `/var/tmp` |
+| `run_javascript(code)` | `{operation:"run_javascript", code}` | run JS inside Zotero; for when no named op fits |
 
-### Common Options
+## Identity rule
 
-- `--limit N` — Max items to return (default 25)
+When reporting an item to the user, include its **Zotero key + Better BibTeX citation
+key + creator/author + title** whenever Zotero has those fields. A bare Zotero key is
+only an implementation handle, not a useful item identity.
 
-- `--sort FIELD` — Sort by dateModified, title, creator, date
+## Saved searches own publication status
 
-- `--direction asc|desc` — Sort direction
+`Published`, `Unpublished`, and `Publication status unknown` are live Zotero saved
+searches — the trustable live views. Treat saved searches as **read-only implementation
+scaffolding**: do not create, delete, rename, edit criteria for, or otherwise modify
+them or the `_status-rule:*` helper searches. Start triage from
+`Publication status unknown`; correct an item if the evidence supports a Zotero write,
+or append a blocker note to the item's ledger, then move on.
 
-- `--collection KEY` — Filter by or add to collection
+## Audit Attachment Completeness
 
-- `--type TYPE` — Filter by item type (journalArticle, book, conferencePaper, etc.)
-
-- `--tags "tag1,tag2"` — Add tags when creating items
-
-- `--force` — Skip duplicate detection on add commands
-
-## Workflows
-
-### Audit Attachment Completeness
-
-When answering whether [[zotero/SKILL|Zotero]] items have PDFs, markdown extractions, or other
+When answering whether Zotero items have PDFs, markdown extractions, or other
 attachments, define the item universe before counting.
 
-- Do not treat a collection query as a library-wide result unless the user
-  explicitly scoped the question to that collection.
-- If the user says "all [[zotero/SKILL|Zotero]] items", "the library", or points at an item visible
-  in the [[zotero/SKILL|Zotero]] UI, query all top-level parent items, then inspect each parent's
-  children for attachment content types.
-- Use pagination for both parent item queries and attachment queries. A single
-  `limit=500` or collection response is not evidence of full coverage.
-- Count markdown extraction coverage parent-by-parent: parent item has at least
-  one PDF child and at least one child attachment with
-  `data.contentType == "text/markdown"`.
-- If any item is cited as a counterexample, query that exact title/key and its
-  children before making or defending an aggregate claim.
+- Do not treat a collection query as a library-wide result unless the user explicitly
+  scoped the question to that collection.
+- For "all Zotero items" or "the library": query all top-level parent items
+  (`iter_top()`), then inspect each parent's children (`get_children(key)`) for
+  attachment content types.
+- Count markdown extraction coverage parent-by-parent: parent has at least one PDF
+  child and at least one child attachment with `data.contentType == "text/markdown"`.
+- If any item is cited as a counterexample, fetch that exact key and its children
+  before making or defending an aggregate claim.
 - Report the exact scope used in the conclusion, e.g. "collection X" versus "all
   parent items with PDF children in the library".
 
-Use this method for library-wide markdown coverage against the workstation-local
-[[zotero/SKILL|Zotero]] API:
+The observed failure mode: a single `limit=500` collection response is not evidence of
+full coverage. A full-library parent/child walk can find parents with PDF children and
+no markdown child that a collection-scoped query missed entirely.
 
-1. Fetch all items with pagination from `http://127.0.0.1:23119/api/users/0/items`.
-2. Keep only top-level parent items: `data.itemType != "attachment"`.
-3. For each parent key, fetch all children with pagination from
-   `/api/users/0/items/{KEY}/children`.
-4. Count a parent as needing extraction when it has at least one child attachment
-   with `data.contentType == "application/pdf"` and no child attachment with
-   `data.contentType == "text/markdown"`.
-5. For a named counterexample, search the exact title with `/items?q=...`, inspect
-   each matching parent and its children, and check whether the parent belongs to
-   the collection being discussed before using it to confirm or refute the aggregate
-   result.
+## `pdf:extraction-skip`
 
-The observed failure mode: querying only
-`/collections/JEJSXB2N/items?limit=500` produced 433/433 markdown coverage for that
-collection, but a full-library parent/child walk found 465 parent items with PDF
-children and 26 of those had no markdown child. The counterexample title
-`Introduction to the Minimal Model Problem` had a PDF-only parent outside
-`JEJSXB2N`, so the collection-scoped result was not a library-wide result.
+Live Zotero tag. Removes an item from extraction candidates. Use for reference corpora
+or other PDFs that should remain attached but should not get Mistral/MinerU extraction
+artifacts. Candidate reports and the automated loop must ignore PDF-bearing items with
+this tag.
 
-### Add a paper by DOI
+## Workflows
 
-```bash
-python3 zotero.py add-doi "10.1093/jamia/ocaa037" --tags "review"
-# Warns if already in library. Use --force to override.
+### Health check first
+
+```python
+from lib.zotero import health
+h = health()
+# h["version"], h["healthy"], h["capabilities"]
 ```
 
-Duplicate detection: translates DOI to metadata, searches library by first author,
-compares DOI fields.
+If `health()` raises, the desktop or addon is down. Report that blocker — do not
+attempt cloud fallback, do not set env vars.
 
-### Bulk add from a file
+### Add a paper by identifier (DOI / ISBN / PMID / arXiv)
 
-```bash
-# One identifier per line, # for comments
-python3 zotero.py batch-add dois.txt --type doi --tags "imported"
+```python
+from lib.zotero import import_by_identifier
+r = import_by_identifier("10.1093/jamia/ocaa037")
+# INSPECT r["details"]["item_count"] and r["item_key"] — a multi-volume
+# identifier can create several items.
 ```
 
-Skips duplicates. Reports summary: added/skipped/failed.
+This is the only provenance-bearing ingestion surface. Deduplicate against existing
+items first (`duplicate_sets()` or a title/identifier search), then import.
 
-### Export bibliography
+### Update metadata / tags
 
-```bash
-python3 zotero.py export --format bibtex --output refs.bib
-python3 zotero.py export --format csljson --collection COLLKEY
+```python
+from lib.zotero import update_item_fields, add_item_tags, remove_item_tags, set_extra
+update_item_fields("ABCD1234", {"title": "Corrected Title", "date": "2024"})
+add_item_tags("ABCD1234", ["review"])
+set_extra("ABCD1234", "Citation Key: milneSG3\n...")
 ```
 
-### Update tags/metadata
+### Merge duplicates (target survives)
 
-```bash
-python3 zotero.py update ITEMKEY --add-tags "important" --remove-tags "unread"
-python3 zotero.py update ITEMKEY --title "Corrected Title" --date "2024"
-python3 zotero.py update ITEMKEY --doi "10.1234/example"
-python3 zotero.py update ITEMKEY --url "https://example.com/paper"
-python3 zotero.py update ITEMKEY --add-collection COLLKEY
+```python
+from lib.zotero import merge_items
+merge_items(source_key="AAAA1111", target_key="BBBB2222")  # BBBB2222 survives
 ```
 
-### Delete items
+Used to collapse a malformed original onto a fresh add-by-identifier item so the
+survivor carries canonical provenance.
 
-```bash
-python3 zotero.py delete KEY1 KEY2 --yes           # Trash (recoverable, default)
-python3 zotero.py delete KEY1 --permanent --yes    # Permanent delete
+### Attach a file (PDF / markdown extraction)
+
+```python
+from lib.zotero import attach_file
+attach_file("ABCD1234", "/tmp/paper.md", "Extracted markdown")
+# file_path MUST be under /tmp or /var/tmp
 ```
 
-### Cross-reference citations
+### Trash
 
-```bash
-python3 zotero.py crossref my-paper.txt
+```python
+from lib.zotero import trash_item
+trash_item("ABCD1234")  # recoverable
 ```
 
-Extracts `Author (Year)` patterns from text and matches against library.
+### Resolve a saved search's live membership
 
-### Find missing DOIs
-
-```bash
-# Dry run (default) — show matches without writing anything
-python3 zotero.py find-dois --limit 20
-
-# Actually write DOIs to Zotero
-python3 zotero.py find-dois --apply
-
-# Filter by collection
-python3 zotero.py find-dois --collection COLLKEY --apply
+```python
+from lib.zotero import saved_search_keys
+keys = saved_search_keys("Publication status unknown")
 ```
 
-Scans journalArticle and conferencePaper items missing DOIs, queries CrossRef, and
-matches by title similarity (>85%), exact year, and first author last name.
-Dry run by default — use `--apply` to write.
-Only patches the DOI field; never touches other metadata.
-1s delay between CrossRef requests (polite pool with mailto).
+Executes Zotero's OWN saved-search engine via `run_javascript`, so it always reflects
+the exact live membership the user sees in the UI. Read-only — never edits the search.
 
-### Fetch open-access PDFs
+## When no named operation fits: `run_javascript`
+
+For ad-hoc work inside Zotero (resolving saved searches, running `Zotero.Duplicates`,
+inspecting live state), `run_javascript(code)` runs JS inside Zotero and returns its
+result. Prefer a named op when one exists; reach for `run_javascript` only when the
+named surface does not cover the need.
+
+## Anti-patterns
+
+| Pattern | Why bad | Do instead |
+| --- | --- | --- |
+| Set `ZOTERO_API_KEY` / `ZOTERO_USER_ID` for this library | cloud Web API is not used here | call the running desktop's local API |
+| Call `api.zotero.org` | cloud is not the transport here | `http://127.0.0.1:23119/api/users/0/...` |
+| Fall back to translation server `:1969` | not used here; a dead `:1969` is never a blocker | use `import_by_identifier` on the local addon |
+| Treat a collection `limit=500` as library-wide | silent coverage gaps | full parent/child walk with `iter_top()` + `get_children()` |
+| Trust a stale report/cache over live state | live Zotero is the only source of truth | reread through `lib/zotero.py` |
+| Report items by bare Zotero key | not a useful identity | key + Better BibTeX citekey + creator + title |
+| Modify or rename `Published` / `Unpublished` / `Publication status unknown` saved searches | read-only scaffolding | start triage from them, never edit them |
+| Retry / fallback / silent success on non-2xx | a hard error in `lib/zotero.py` | surface the error, do not mask it |
+
+## PDF extraction policy (for items in this library)
+
+The live Zotero library is the source of truth for what counts as extracted — not a
+checked box, not a script's intended state, not a stale report. The canonical loop
+lives in the `zotero-library` repo (`EXTRACTION_LOOP.md`).
+
+### Provider order
+
+- **MinerU precise API is primary.** Its precise API returns the more valuable artifact
+  set: `full.md`, `content_list.json`, and middle JSON (`middle.json` or MinerU's
+  `layout.json` middle-result spelling).
+- **Mistral OCR is fallback.** The Mistral path uploads the PDF through the files API
+  and OCRs the signed URL, so large PDFs do not go through a base64 request body.
+- **Order reverses for PDFs over 200 pages.** MinerU's precise API rejects those
+  one-shot, so Mistral runs first and MinerU is chunked into ≤200-page pieces as the
+  fallback.
+- A provider failure on one item does **not** crash the run: the loop retries with
+  bounded backoff (rate limits: 15/20/25s; network: 2/5/10s; empty extraction: 5/15s),
+  then falls through to the next provider in order, then records the failure and skips
+  to the next candidate.
+
+### Sanctioned surface
 
 ```bash
-# Dry run — show which PDFs are available and from where
-python3 zotero.py fetch-pdfs --dry-run --limit 10
-
-# Fetch and attach as linked URLs (no storage quota used)
-python3 zotero.py fetch-pdfs --limit 20
-
-# Also save PDFs locally
-python3 zotero.py fetch-pdfs --download-dir ./pdfs
-
-# Upload to Zotero storage instead of linked URL
-python3 zotero.py fetch-pdfs --upload --limit 10
-
-# Only try specific sources
-python3 zotero.py fetch-pdfs --sources unpaywall,semanticscholar
+just extraction-loop --search "Publication status unknown" --max-items 5
+just extraction-candidates --checklist --limit 25
+just attach-extraction ABCD1234 /tmp/ABCD1234_extracted.md
 ```
 
-Tries three legal OA sources in order: Unpaywall → Semantic Scholar → DOI content
-negotiation. By default creates linked URL attachments (no [[zotero/SKILL|Zotero]] storage quota needed).
-Use `--upload` for full S3 upload to [[zotero/SKILL|Zotero]] storage.
-Use `--download-dir` to also save PDFs locally.
+Do not run private extraction scripts against library items. Use the loop. The loop
+owns provider order, page-count routing, artifact staging, attach order, retries, and
+the blocker ledger.
 
-**Sources:** `unpaywall`, `semanticscholar`, `doi` (default: all three)
+### Artifact staging + attach order
 
-**Rate limits:** 1s between Unpaywall/Semantic Scholar requests, 2s between DOI
-requests.
+1. MinerU stages `/tmp/<KEY>_content_list.json` and `/tmp/<KEY>_middle.json` first,
+   then `/tmp/<KEY>_extracted.md`. Mistral fallback stages only
+   `/tmp/<KEY>_extracted.md`.
+2. Attach JSON artifacts first and the Markdown sentinel **last**. This keeps a partial
+   MinerU attach retryable: an item does not leave the live candidate view until its
+   Markdown child is attached.
 
-### Scripting with JSON
+### Completion criterion
 
-```bash
-python3 zotero.py --json items --limit 100 | jq '.items[].DOI'
-python3 zotero.py --json get ITEMKEY | jq '.title'
-```
+An item is extracted when **live Zotero shows a `*_extracted.md` child attachment** for
+it. A checked checklist box, a successful provider call, or a staged `/tmp` file is not
+completion. Reread live Zotero to confirm.
 
-## Notes
+### Opt-out tag: `pdf:extraction-skip`
 
-- Zero dependencies — Python 3 stdlib only (urllib, json, argparse)
+Live Zotero tag. Removes an item from extraction candidates. Use for reference corpora
+or other PDFs that should remain attached but should not get MinerU/Mistral extraction
+artifacts. The loop and `extraction-candidates` must ignore PDF-bearing items with this
+tag.
 
-- Write operations require an API key with write permissions
+### Candidate selection
 
-- If [[zotero/SKILL|Zotero]] translation server is down (503), DOI lookups fall back to CrossRef
+The loop selects the first top-level item with a PDF child, no `*_extracted.md` child,
+and no `pdf:extraction-skip` tag. If an item has multiple PDF children, it uses the
+bibliographic-looking PDF and rejects an ambiguous choice before calling a provider.
 
-- **Input validation:** DOIs must be `10.xxxx/...` format.
-  Item keys are 8-char alphanumeric (e.g., `VNPN6FHT`). ISBNs must be valid checksums.
+### Failure handling
 
-- `check-pdfs` fetches all items; for large libraries (500+), this may be slow
+If both providers are exhausted for an item, append a blocker entry to
+`work/<KEY>/notes.md` (provider, PDF path, failure, next attempt) and skip to the next
+candidate for the rest of this run — do not retry that item again or halt the loop.
+Re-run the loop after fixing the blocker to pick the item back up.
 
-- `fetch-pdfs` also processes all items — use `--collection` to scope for large
-  libraries
+### Credentials
 
-- Rate limits are generous; batch-add includes 1s delay between items
+`MISTRAL_API_KEY` and `MINERU_API_TOKEN` live in the machine environment managed
+outside this repo. Do not put API keys in commands, docs, or committed files.
 
-- For common errors and troubleshooting, see
-  [references/troubleshooting.md](references/troubleshooting.md)
+### Manual one-off
+
+For a manual loop: `just extraction-candidates --checklist`, extract one PDF, stage
+the Markdown under `/tmp` or `/var/tmp`, then
+`just attach-extraction <KEY> /tmp/<KEY>_extracted.md`. Do not bypass the loop for
+library items; it owns the trust model.
+
+## Scope boundary
+
+This skill covers **reading and mutating the live Zotero library on this workstation**
+through the running desktop's local API, including the PDF extraction loop for library
+items. It does not own: ad-hoc extraction of non-library PDFs (see
+[[reading-pdfs/SKILL|reading-pdfs]]), organizing loose PDF folders (see
+[[organizing-pdfs/SKILL|organizing-pdfs]]), or the citation-cleanup loop and its
+policy rules (those live in the `zotero-library` repo's `AGENTS.md` and `policy/`).
+
+The repo also owns a PDF **acquisition** ladder (trust-tiered cascade from arXiv →
+OA → Numdam → libgen → Sci-Hub → fuzzy → human, with a `just check-lead` agreement gate
+before any download and an append-only `work/<KEY>/pdf.md` ledger with a closed
+outcome vocabulary). That lives in the `zotero-library` repo's `PDF_ACQUISITION.md`,
+not in this skill.

@@ -420,6 +420,22 @@
         "gemma-4-31b-it"
       ]
     },
+    "inkling": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Thinking Machines Tinker",
+      "options": {
+        "baseURL": "https://tinker.thinkingmachines.dev/services/tinker-prod/oai/api/v1",
+        "apiKey": "{env:TINKER_API_KEY}"
+      },
+      "models": {
+        "thinkingmachines/Inkling": {
+          "name": "Inkling"
+        }
+      },
+      "whitelist": [
+        "thinkingmachines/Inkling"
+      ]
+    },
     "kilo": {
       "blacklist": [
         "ai21/jamba-large-1.7",
