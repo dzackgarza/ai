@@ -10,6 +10,45 @@ decks, motion studies, component explorations, or visual option boards.
 This skill covers design process and taste: how to scope a brief, gather context,
 produce variants, define a visual system, and verify a rendered artifact.
 
+## Visual Verification (Mandatory)
+
+Any work that implies something renders or looks correct — web pages, HTML, CSS or
+styling changes, dashboards, slide decks, or any GUI application whatsoever — is not done
+until you have generated actual visual snapshots of the rendered output and viewed them
+yourself.
+
+Never call such work "fixed", "working", "ready", "good", or "done" on the basis of code
+that looks right, a passing build, a clean diff, or a server that starts. Rendered output
+is the only evidence that a visual change is correct; the diff, the logs, and the absence
+of errors are receipts, not proof.
+
+Before reporting any work that implies a visual surface is correct:
+
+- Render the real artifact — screenshot the page or app, export the deck, capture the
+  GUI — automating capture with Playwright or the framework's own snapshot tooling where
+  possible.
+- Open and inspect the images for actual correctness: layout, overflow, alignment,
+  spacing, color, typography, component state, and broken or missing assets. Confirming a
+  file was produced is not inspection.
+- Fix every defect you observe and re-capture until the snapshots are correct.
+
+Generating a screenshot file is a receipt; the evidence is your inspection of it. This is
+correctness inspection of rendered output, which is distinct from golden or
+visual-regression comparison against a stored baseline.
+
+Use your vision. You can see images, so look at the rendered artifact directly rather
+than reasoning about it through proxies. Do not substitute measuring box dimensions,
+element sizes, gaps, margins, computed styles, or DOM structure for actually viewing the
+screenshot — those engineering-brained proxies are an error-prone stand-in for the thing
+you are perfectly capable of just looking at. Inspect the image first and reason from
+what you see; reserve measurement for confirming a specific value after your eyes have
+already located the problem. Never fix a visual you have not looked at.
+
+Load [[responsive-design/SKILL|responsive-design]] for multi-viewport checks and
+[[test-guidelines/SKILL|test-guidelines]] for the mandatory GUI screenshot-suite
+obligation. [[visual-regression-testing/SKILL|visual-regression-testing]] covers golden
+comparison and does not by itself satisfy this rule.
+
 **Before starting, check for companion skills.** If the user wants a known brand’s look,
 load [[popular-web-designs/SKILL|popular-web-designs]] alongside this one for ready-to-paste design systems (Stripe,
 Linear, Vercel, Notion, etc.). If the deliverable is a formal DESIGN.md token spec file

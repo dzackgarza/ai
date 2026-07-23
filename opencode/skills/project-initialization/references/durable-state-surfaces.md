@@ -1,28 +1,4 @@
----
-order: 7
-tags:
-- source-owner-context
-- source-owner-preference
-- source-system-contract
-- source-observed-model-failure
-- function-orient
-- function-define
-- function-constrain
-- function-procedure
-- function-route
-- function-allocate
-- function-evaluate
-- failure-state-misplacement
-- failure-destructive-state-change
-- failure-context-loss
-- failure-process-overproduction
-- retest-model-reasoning
-- retest-model-alignment
-- retest-model-memory
-- retest-policy-change
-- retest-toolchain-change
-title: Durable State Surfaces
----
+# Durable State Surfaces
 
 Every project should converge toward one organized state model:
 

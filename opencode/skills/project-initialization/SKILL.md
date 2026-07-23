@@ -78,8 +78,9 @@ If the confirmed remote is GitHub-backed, establish the public execution graph b
 treating local docs, plans, or transcripts as authoritative.
 
 - Determine `<owner>/<repo>` from the remote.
-- Check the wiki state. Use the GitHub Wiki section of the active `AGENTS.md`
-  guidance for the exact wiki probes and first-page bootstrap behavior.
+- Check the wiki state. Use `references/github-wiki.md` for the exact wiki probes,
+  first-page bootstrap behavior, and what belongs on the wiki versus GitHub execution
+  surfaces.
 - Inspect task-relevant open issue trees, sub-issues, dependencies, milestones, PRs,
   and draft PR claim maps. Search by the repo name, user-provided feature names,
   active branch, failing gate, and touched module when those terms exist.
@@ -142,7 +143,7 @@ Load the repository's own instructions before editing.
   inventing a workflow. Planning state belongs in [[agent-memory/SKILL|agent-memory]], not loose
   repo-local planning files.
 - If instructions conflict, direct user instructions win; then prefer the most
-  local repo instructions over broader AGENTSmd/global skill guidance.
+  local repo instructions over broader AGENTS.md/global skill guidance.
 
 ### Durable Surface Convergence
 
@@ -327,3 +328,13 @@ Project initialization:
 ```
 
 Keep the stamp short. If everything is normal, one paragraph is enough.
+
+## Reference Files
+
+- `references/github-wiki.md`: wiki probes, first-page bootstrap, and what belongs on
+  the wiki (user-story-first doctrine, proof burdens, roadmaps) versus GitHub execution
+  surfaces.
+- `references/durable-state-surfaces.md`: the one-owner state model (vault, GitHub
+  execution surfaces, wiki, `.agents/`, scratch) and the mixed-state migration rules.
+- `references/agents-directory.md`: the `.agents/` directory contract and the private
+  agent-facing justfile pattern.

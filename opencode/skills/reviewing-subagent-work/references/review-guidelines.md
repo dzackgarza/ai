@@ -1,29 +1,4 @@
----
-order: 65
-tags:
-- source-owner-preference
-- source-system-contract
-- source-observed-model-failure
-- function-orient
-- function-define
-- function-constrain
-- function-procedure
-- function-evaluate
-- failure-completion-laundering
-- failure-reporting-distortion
-- failure-goal-substitution
-- failure-proxy-evidence
-- failure-proof-gaming
-- failure-feedback-laundering
-- failure-scope-drift
-- retest-model-reasoning
-- retest-model-theory-of-mind
-- retest-model-alignment
-- retest-model-self-evaluation
-- retest-policy-change
-- retest-toolchain-change
-title: Review Guidelines
----
+# Review Guidelines
 
 These are additional requirements for reviewing agent work.
 They do not replace the reviewer’s normal role, repo-specific standards, or technical judgment.
@@ -33,7 +8,7 @@ The task is not merely to review a PR. The task is to decide whether a completio
 The standard is full, correct, provable completion against the original requirements and repo guidelines.
 Anything less is incomplete work that must not be treated as a win.
 
-# Failure Model
+## Failure Model
 
 Agents systematically produce impressive non-completion.
 Common patterns are: polished summaries that imply finished work, caveats that quietly narrow the goal, reclassification without proof, delegated discovery presented as resolution, process language that substitutes for evidence, merged PRs treated as completion, passing checks treated as semantic proof, and artifacts that look substantial while leaving required work unowned.
@@ -42,7 +17,7 @@ Treat the agent’s summary, PR description, closing comment, issue closure, “
 They may be diagnostic pointers, but they are not evidence that the work is complete.
 The evidence is the original issue or task, the code diff, tests, source/runtime facts, review comments, and produced artifacts.
 
-# Decisive Invariants
+## Decisive Invariants
 
 Preserve the original success condition.
 Read the original issue or task before accepting any restatement of it.
@@ -82,7 +57,7 @@ The submitting repo must prove its own claimed behavior and do the blocker foren
 Do not require a receiving or downstream repo to classify another project’s internal uncertainty unless the original issue explicitly made that part of acceptance.
 When an external issue is created, it should be written for that receiving repo, not for a reader who already knows the submitting repo’s context.
 
-# Evidence Expectations
+## Evidence Expectations
 
 Review tests as evidence, not as decoration.
 Valid tests exercise the real production path or semantic requirement.
@@ -93,7 +68,7 @@ For stubs work, the evidence should be source-backed: the upstream surface exist
 
 Watch for code-level laundering: hard-coded consumer names, support for local research abstractions as if they were external API, fake stubs, broad Any/object escapes, line suppressions, diagnostic filtering, deletion of required data, broad type widening, and any move that makes checks pass by weakening the problem instead of solving it.
 
-# When Acting on Review Feedback
+## When Acting on Review Feedback
 
 A positive disposition requires a commit.
 
@@ -114,7 +89,7 @@ For each comment:
 - Decide whether the proposed fix preserves those policies.
 - If the concern is true but the fix is wrong, apply a policy-compatible remediation.
 
-# Writing the Review
+## Writing the Review
 
 Write nuanced feedback for an intelligent reader.
 Do not force a machine-readable template, a mandatory table, or a simplistic pass/fail label when prose communicates the situation better.

@@ -219,9 +219,9 @@ run-microagent *args:
 #   1. build-config — compile opencode.json from skeleton + provider fragments
 #   2. build-agents — validate tracked manual agent markdown
 #
-# AGENTS.md is NOT built here. It is assembled from the AGENTSmd/ fragment tree via
-# `just -f AGENTSmd/.agents/justfile assemble`; the repo-root AGENTS.md (and the
-# opencode/AGENTS.md symlink) point at that generated artifact.
+# AGENTS.md is NOT built here. It is a hand-authored routing layer at the repo root;
+# detailed procedure lives in opencode/skills/. The opencode/AGENTS.md symlink points
+# at it.
 build: build-config build-agents
 
 # Build only the compiled OpenCode config pipeline.

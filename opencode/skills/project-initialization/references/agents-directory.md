@@ -1,25 +1,4 @@
----
-order: 10
-tags:
-- source-owner-context
-- source-owner-preference
-- source-system-contract
-- source-observed-model-failure
-- function-orient
-- function-define
-- function-constrain
-- function-procedure
-- function-route
-- function-allocate
-- failure-state-misplacement
-- failure-tool-bypass
-- failure-proof-gaming
-- retest-model-alignment
-- retest-model-tool-use
-- retest-policy-change
-- retest-toolchain-change
-title: .agents Directory
----
+# The .agents Directory
 
 Every project root contains a `.agents/` directory. This is the canonical location for
 agent-facing project artifacts that are not durable memory or durable documentation:
@@ -40,3 +19,29 @@ a pointer.
 Nothing in `.agents/` is user-facing. The top-level `justfile` may route through agent
 recipes to enforce mandatory measures, but those recipes are `[private]` and invisible to
 `just --list`.
+
+## .agents/justfile
+
+The agent-facing justfile holds recipes for:
+
+- `[private]` hygiene checks (dead code, duplication, complexity, slop)
+- `[private]` anti-gaming measures (bypass detection, checker integrity)
+- `[private]` debug surfaces (isolated reproducers, artifact dumps, fixture runners)
+- `[private]` hook scripts (pre-commit, pre-push)
+
+The top-level `justfile` composes user-facing workflows from these private recipes where needed:
+
+```justfile
+# Top-level justfile — user-facing surface
+build:
+    @project-cli build
+
+test:
+    @project-cli test
+    @just -f .agents/justfile _test-agent
+
+serve:
+    @project-cli serve
+```
+
+Agent-facing recipes are never exposed to the user. They exist to prevent agents from bypassing mandatory checks, hacking proof loops, or mutating global state without isolation.

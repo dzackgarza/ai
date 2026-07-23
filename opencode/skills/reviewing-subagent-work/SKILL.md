@@ -4,6 +4,12 @@ description: Use when reviewing or evaluating work produced by another LLM/agent
 ---
 # Reviewing Subagent Work
 
+Before reviewing a PR, completion claim, or any agent-produced deliverable, load
+`references/review-guidelines.md` — the canonical failure model (impressive
+non-completion, goal substitution, completion laundering), the decisive invariants for
+judging completion claims, evidence expectations for tests, and how to write the
+review.
+
 When reviewing work produced by another LLM or agent, produce this statement BEFORE
 concluding your review:
 
