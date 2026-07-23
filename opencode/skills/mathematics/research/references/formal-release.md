@@ -1,7 +1,7 @@
 # Formal Release Engineering
 
 Owner file for turning a banked result into a public, machine-audited formal
-release. Parent: [[mathematical-research/SKILL|mathematical-research]]. Second
+release. Parent: [[mathematics/research/SKILL|mathematical-research]]. Second
 grounding source: `github.com/rishigajjala/erdos-796-lean` — a model-generated,
 human-verified Lean proof of the corrected second-order form of Erdős
 Problem 796, released with an executable audit.
@@ -57,7 +57,7 @@ Hardening upgrades from the 2026 Erdős-resolution ecosystem:
 - **Add a statement-correspondence gate.** Hash-freezing the statement does
   not verify the proof proves *that* statement; the `leanprover/comparator`
   Challenge/Solution protocol does, with a second independent kernel —
-  [[mathematical-research/references/statement-fidelity|statement-fidelity]].
+  [[mathematics/research/references/statement-fidelity|statement-fidelity]].
 
 ## Dependency trust is closure-level
 
@@ -89,7 +89,7 @@ un-greppable) and silently strengthened hypotheses (dishonest):
   with no ledger entry.
 - Then say what you have: "0 sorries plus 3 admitted axioms" is a
   **conditional** result, not an axiom-clean one; the conditionality goes in
-  every claim surface ([[mathematical-research/references/claim-status|claim-status]]).
+  every claim surface ([[mathematics/research/references/claim-status|claim-status]]).
 
 ## Do not refactor the audited closure
 
@@ -111,7 +111,7 @@ the gates themselves becomes detectable, not only the statement);
 recorded in the audit document; and when local verification was impossible,
 saying so and designating CI the trust anchor ("the first green Actions run
 is the reproducible public kernel check"). The process archive (handoff bundles, run ledgers —
-[[mathematical-research/references/handoff|handoff]]) is a different artifact
+[[mathematics/research/references/handoff|handoff]]) is a different artifact
 and lives elsewhere; do not conflate the two, and do not ship the process
 archive as the release.
 
@@ -135,7 +135,7 @@ archive as the release.
 - A theorem may be unconditional while its constant is only bracketed: define
   the constant, prove the theorem about it, and certify bounds
   (`4/15 ≤ Γ < 13`) as separate claims with their own ledger rows
-  ([[mathematical-research/references/claim-status|claim-status]]).
+  ([[mathematics/research/references/claim-status|claim-status]]).
 
 ## Disclosure and provenance
 

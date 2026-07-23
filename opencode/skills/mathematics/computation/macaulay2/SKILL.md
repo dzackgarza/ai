@@ -8,8 +8,8 @@ description: Use when writing, debugging, or reviewing Macaulay2 (M2) code — G
 Field-tested M2 idioms from a completed verification-heavy research program
 (`github.com/j2d9w5xtjn-png/GrothendieckRankP2`, `m2/` and archived compute scripts).
 Only non-obvious material; basic M2 is assumed. Protocol context (when to compute,
-what a result may claim): [[mathematical-research/references/computer-algebra-patterns|computer-algebra-patterns]]
-and [[mathematical-research/references/computation|computation]].
+what a result may claim): [[mathematics/research/references/computer-algebra-patterns|computer-algebra-patterns]]
+and [[mathematics/research/references/computation|computation]].
 
 ## Proof primitives
 
@@ -135,8 +135,8 @@ and [[mathematical-research/references/computation|computation]].
 ## Routing
 
 Tool choice among CAS/SMT/ITP:
-[[theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]].
+[[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]].
 Run-ledger, cluster, and failure-classification protocol:
-[[mathematical-research/references/computation|computation]]. The worked
+[[mathematics/research/references/computation|computation]]. The worked
 mathematics these idioms certified:
-[[mathematical-research/references/worked-example|worked-example]].
+[[mathematics/research/references/worked-example|worked-example]].

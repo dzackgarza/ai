@@ -1,13 +1,13 @@
 # Independent Audit
 
 Owner file for banking a mathematical result produced by any agent (including
-yourself). Parent: [[mathematical-research/SKILL|mathematical-research]]. Related:
+yourself). Parent: [[mathematics/research/SKILL|mathematical-research]]. Related:
 [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] for general agent output,
-[[research-gate-review/SKILL|research-gate-review]] for gate protocol; this file owns
+[[mathematics/research/research-gate-review/SKILL|research-gate-review]] for gate protocol; this file owns
 what "independently verified" means for a mathematical claim. A concrete three-way
 certification (Gröbner normal form, explicit finite model, Lean witness module, all
 pinning one socle nonvanishing):
-[[mathematical-research/references/worked-example|worked-example]].
+[[mathematics/research/references/worked-example|worked-example]].
 
 ## The pairing rule
 
@@ -24,7 +24,7 @@ result, open its log and check that the terminal verdict lines actually exist fo
 every case the theorem names — every ring, every coefficient, every row. Reports run
 ahead of their evidence; the ledger status belongs to what the logs contain, not to
 what the prose asserts. Likewise verify the gates passed in that same log
-([[mathematical-research/references/computation|computation]]): a claim whose
+([[mathematics/research/references/computation|computation]]): a claim whose
 well-formedness gates never ran is void regardless of its verdict lines.
 
 ## Independent means independent
@@ -48,7 +48,7 @@ the result along a genuinely different path:
 - **Confirm the two artifacts establish the same statement** before counting their
   agreement. Independent formalizations of one headline result can prove different,
   nested statements (a weaker and a stronger form) without citing each other —
-  [[mathematical-research/references/statement-fidelity|statement-fidelity]].
+  [[mathematics/research/references/statement-fidelity|statement-fidelity]].
 - **Audit the hand-theory layer separately from all code.** Every lemma the
   computation relies on (exhaustiveness of a recursion, soundness of a truncation,
   completeness of an axiom list) gets checked by hand, independent of every script.
@@ -80,7 +80,7 @@ stop-the-line event, whichever side is wrong. A new positive result must also ex
 - **Confirmed with corrections**: verdict survives but stated reasons or side claims
   are wrong — record the false explanation explicitly so it cannot propagate.
 - **Rejected**: include the minimal reproducer of the failure, and route the false
-  claim through [[mathematical-research/references/claim-status|claim-status]]
+  claim through [[mathematics/research/references/claim-status|claim-status]]
   demotion (erratum + do-not-cite).
 
 Handling a prior agent's false claim takes all three mechanisms, never silent
@@ -120,7 +120,7 @@ trust base in order, updating the ledger status at each step:
    dies).
 4. External CAS/prover confirmation on independent infrastructure.
 5. Formalization (Lean/mathlib route via [[lean4/skills/lean4/SKILL|lean4]] or
-   [[aristotle/SKILL|aristotle]]) with axiom audit (`#print axioms`) — the terminal
+   [[lean4/skills/aristotle/SKILL|aristotle]]) with axiom audit (`#print axioms`) — the terminal
    status `formalized`.
 
 Do not announce externally before at least step 3.

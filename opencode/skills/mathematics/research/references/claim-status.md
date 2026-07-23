@@ -1,9 +1,9 @@
 # Claim Status and Ledgers
 
 Owner file for separating proved statements, computational results, conjectures, and
-refuted claims across sessions and agents. Parent: [[mathematical-research/SKILL|mathematical-research]].
+refuted claims across sessions and agents. Parent: [[mathematics/research/SKILL|mathematical-research]].
 Real ledger rows and the traps this vocabulary exists for:
-[[mathematical-research/references/worked-example|worked-example]].
+[[mathematics/research/references/worked-example|worked-example]].
 
 ## The claim ledger
 
@@ -34,7 +34,7 @@ C16	A rank-four counterexample was found	false	no scope	all audits	No SAT candid
 | `conditional_bounded_computational_theorem` | As above, but under named structural reductions; caveat says "review reduction hypotheses before reuse". |
 | `solver_conditional` | Rests on an unreplayed solver verdict (e.g. an UNSAT with no independently checkable certificate). |
 | `proved` | Hand proof exists; not yet independently audited. |
-| `proved_independently_audited` | Hand proof plus an adversarial audit artifact ([[mathematical-research/references/adversarial-audit|adversarial-audit]]). |
+| `proved_independently_audited` | Hand proof plus an adversarial audit artifact ([[mathematics/research/references/adversarial-audit|adversarial-audit]]). |
 | `literature_theorem_plus_checked_specialization` | Cited theorem whose used specialization was independently re-checked. |
 | `formalized` | Machine-checked (Lean etc.); axiom set audited. |
 | `false` | Refuted. Row is kept; erratum issued. |
@@ -91,7 +91,7 @@ ledger row. Negative-finding prose additionally follows [[epistemic-integrity/SK
 
 Symmetrically, a positive hit (a SAT model, a candidate object) is not yet a result:
 it triggers the verification protocol of
-[[mathematical-research/references/computation|computation]] — independent
+[[mathematics/research/references/computation|computation]] — independent
 re-validation outside the solver — before it may be stated as anything but a
 candidate.
 
@@ -129,7 +129,7 @@ manuscripts, and docstrings:
 - **Named gap**: an explicit "remaining proof boundary" section listing the exact
   unproved identities. When a paper and its formalization disagree about whether a
   step is proved, the stricter judgment governs staging
-  ([[mathematical-research/references/program-shape|program-shape]]).
+  ([[mathematics/research/references/program-shape|program-shape]]).
 
 ## Result report anatomy
 

@@ -240,7 +240,7 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 ## One-Shot Training via Examples
 
 The `references/formalization-patterns.md` file contains explicit paired examples
-(mathematical prose + [[lean4/skills/lean4/SKILL|Lean 4]] + [[sagemath/SKILL|SageMath]] verification) that serve as in-context
+(mathematical prose + [[lean4/skills/lean4/SKILL|Lean 4]] + [[mathematics/computation/sagemath/SKILL|SageMath]] verification) that serve as in-context
 demonstrations. Load these into context when producing mathematical output.
 The patterns demonstrate:
 
@@ -270,7 +270,7 @@ writing.
 - `references/proof-structure.md` — Proof environment formatting, variable tracking,
   justification style, case analysis, common pitfalls
 
-- `references/formalization-patterns.md` — [[lean4/skills/lean4/SKILL|Lean 4]] and [[sagemath/SKILL|SageMath]] templates for induction,
+- `references/formalization-patterns.md` — [[lean4/skills/lean4/SKILL|Lean 4]] and [[mathematics/computation/sagemath/SKILL|SageMath]] templates for induction,
   contradiction, existence, definitions, theorems
 
 - `references/exposition-style.md` — Pedagogical writing style, problem presentation,
@@ -279,24 +279,29 @@ writing.
 - `references/typesetting-conventions.md` — LaTeX environments, alignment,
   cross-references, YAML headers, tables, figures
 
+## Subskills
+
+- [[mathematics/writing/latex-compile-qa/SKILL|latex-compile-qa]] → Load when compiling
+  a LaTeX project or running build QA: compile errors, missing refs, broken citations.
+
 ## Cross-References
 
 - [[lean4/skills/lean4/SKILL|lean4]] → Load alongside when formalizing definitions or theorems in Lean.
   Covers editing .lean files, debugging type errors, searching mathlib for existing
   lemmas.
 
-- [[lattices/SKILL|lattices]] → Load alongside when the mathematical content involves quadratic forms,
+- [[mathematics/lattices/SKILL|lattices]] → Load alongside when the mathematical content involves quadratic forms,
   root systems, or lattice-theoretic objects.
   Provides notation conventions and domain constraints.
 
-- [[sagemath/SKILL|sagemath]] → Load alongside when writing [[sagemath/SKILL|SageMath]] code for computation or
+- [[mathematics/computation/sagemath/SKILL|sagemath]] → Load alongside when writing [[mathematics/computation/sagemath/SKILL|SageMath]] code for computation or
   verification alongside prose.
   Covers Sage-specific patterns and integration.
 
-- [[theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]] → Load alongside when the writing target is a
+- [[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]] → Load alongside when the writing target is a
   formal proof or when counterexample search is needed.
   Covers broader formalization strategies across multiple provers.
 
-- [[mathematical-testing/SKILL|mathematical-testing]] → Load alongside when developing [[sagemath/SKILL|SageMath]] implementations
+- [[mathematics/research/mathematical-testing/SKILL|mathematical-testing]] → Load alongside when developing [[mathematics/computation/sagemath/SKILL|SageMath]] implementations
   that need correctness verification.
   Covers writing failing test suites before implementation.

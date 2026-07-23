@@ -1,15 +1,15 @@
 # Computer Algebra Patterns: Macaulay2, Lean, Z3
 
 Concrete idioms lifted from the source program's verification code. Parent:
-[[mathematical-research/SKILL|mathematical-research]]; protocol context in
-[[mathematical-research/references/computation|computation]]; the mathematics these
+[[mathematics/research/SKILL|mathematical-research]]; protocol context in
+[[mathematics/research/references/computation|computation]]; the mathematics these
 snippets certify is in
-[[mathematical-research/references/worked-example|worked-example]].
+[[mathematics/research/references/worked-example|worked-example]].
 
 ## Macaulay2: exact certification over ℤ
 
 Full M2 tool-level idiom catalog (local orderings, syzygy certificates, memory
-engineering, script harness): [[macaulay2/SKILL|macaulay2]]. The research-protocol
+engineering, script harness): [[mathematics/computation/macaulay2/SKILL|macaulay2]]. The research-protocol
 essentials:
 
 Work in `ZZ[...]` and make `% G` (normal form against a strong Gröbner basis over ℤ)
@@ -92,7 +92,7 @@ assert((2*s % G0) != 0);      -- the decisive coefficient SURVIVES
   (convolution powers) into its own upstreamable file and keep the counterexample
   file self-contained. For a public release, the executable audit protocol
   (`--trust=0`, prohibited-token scan, frozen statement hashes) is owned by
-  [[mathematical-research/references/formal-release|formal-release]].
+  [[mathematics/research/references/formal-release|formal-release]].
 - Explicit-constant numerics in the kernel: rational cutoff certificate + tail
   bound via algebraic sandwiches (`log((1+z)/(1−z)) ≥ 2(z + z³/3)` reduces `log p`
   bounds to `norm_num`/`linarith` arithmetic); `decide` only on small finite facts,
@@ -127,7 +127,7 @@ assert((2*s % G0) != 0);      -- the decisive coefficient SURVIVES
 - Emit the full provenance banner stack (command, per-source SHA-256, solver
   version, gate PASSes, per-case verdicts, `PROCESS_RESOURCE`, `DONE`) so the
   stdlib-only log auditor of
-  [[mathematical-research/references/computation|computation]] has something to
+  [[mathematics/research/references/computation|computation]] has something to
   verify.
 
 ## Choosing the substrate
@@ -135,6 +135,6 @@ assert((2*s % G0) != 0);      -- the decisive coefficient SURVIVES
 SMT decides existence over one exact finite ring; Gröbner over ℤ certifies
 identities over every base of a given shape; an explicit finite model certifies
 nondegeneracy; Lean freezes the banked result. Route selection details:
-[[theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
-[[integer-programming/SKILL|integer-programming]], [[sagemath/SKILL|sagemath]],
+[[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
+[[mathematics/computation/integer-programming/SKILL|integer-programming]], [[mathematics/computation/sagemath/SKILL|sagemath]],
 [[lean4/skills/lean4/SKILL|lean4]].

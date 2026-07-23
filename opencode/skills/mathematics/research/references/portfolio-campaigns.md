@@ -2,9 +2,9 @@
 
 Owner file for research programs that attack **many problems at once** — a
 portfolio sweep over a problem catalog, or a distributed swarm of untrusted
-prover agents. Parent: [[mathematical-research/SKILL|mathematical-research]].
+prover agents. Parent: [[mathematics/research/SKILL|mathematical-research]].
 Single-campaign dispatch is
-[[mathematical-research/references/cdc-prompt|cdc-prompt]]; this file owns the
+[[mathematics/research/references/cdc-prompt|cdc-prompt]]; this file owns the
 scale pathologies. Grounded in `neelsomani/gpt-erdos` (677 triaged candidate
 solutions), `przchojecki/agentic-erdos` (632-problem portfolio),
 `agenticsnz/unsorry` (verifier-gated swarm, ~9k commits, red-teamed), and the
@@ -93,7 +93,7 @@ From a red-teamed autonomous-merge system (9/9 attack PRs blocked):
   workflows, and verification tooling carry mandatory human code-owner
   review even under autonomous merge.
 - **Statement immutability and defeq binding** stop restate-the-goal attacks
-  — [[mathematical-research/references/statement-fidelity|statement-fidelity]].
+  — [[mathematics/research/references/statement-fidelity|statement-fidelity]].
 - **The DoS surface of a verifier-gated system is verifier capacity, not
   correctness.** Duplicate junk proofs waste compute, never soundness — so
   meter *admission* (a governor dispatching from a queue as capacity allows),
@@ -104,7 +104,7 @@ From a red-teamed autonomous-merge system (9/9 attack PRs blocked):
   goals with proved subtrees so they cannot be buried, and keep "evidence
   against the statement" and "my infrastructure flaked" as separate signals
   — the portfolio-scheduler form of "failure is not evidence"
-  ([[mathematical-research/references/claim-status|claim-status]]).
+  ([[mathematics/research/references/claim-status|claim-status]]).
 - **Failure reshapes the queue**: a goal that resists its proof budget is
   split into claimable sub-lemmas rather than retried or abandoned — the
   queue continuously reshapes toward what the swarm can actually prove.
@@ -137,4 +137,4 @@ case of a Knuth problem:
 - A failure report must **name the approach class it kills** and why ("any
   approach relying on [property] hits the same obstacle because [reason]") —
   register discipline in
-  [[mathematical-research/references/computation|computation]].
+  [[mathematics/research/references/computation|computation]].

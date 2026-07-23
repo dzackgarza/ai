@@ -1,9 +1,9 @@
 # KSBA Compactification of the Coble Heegner Divisor in $F_{\mathrm{En},2}$
 
 A one-shot mathematical problem statement for a long-horizon remote worker, after the
-template of [[mathematical-research/references/cdc-prompt|cdc-prompt]] and
-[[mathematical-research/references/jacobian-prompt|jacobian-prompt]] (verbatim prompt
-sections only). Parent: [[mathematical-research/SKILL|mathematical-research]].
+template of [[mathematics/research/references/cdc-prompt|cdc-prompt]] and
+[[mathematics/research/references/jacobian-prompt|jacobian-prompt]] (verbatim prompt
+sections only). Parent: [[mathematics/research/SKILL|mathematical-research]].
 
 ## Verbatim prompt
 

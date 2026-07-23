@@ -5,7 +5,7 @@ references is a postdiction of a specific accident — scar tissue. Scar tissue
 only marks where a wound was; the *defect* that caused it will express itself
 again in a form no existing rule covers. When you meet a situation the rules
 don't name, identify which defect below is operating and derive the guard.
-Parent: [[mathematical-research/SKILL|mathematical-research]]. The wreckage
+Parent: [[mathematics/research/SKILL|mathematical-research]]. The wreckage
 cited is real, from the programs this skill is distilled from.
 
 Rigor is not a temperament. It is a prosthetic system for a specific set of
@@ -38,7 +38,7 @@ and none closes; kernel-green vacuous theorems via `autoImplicit`; trusted
 caught only when someone thought to audit the statement *itself* — which
 found two, before any prover time.
 
-**Prosthetic:** [[mathematical-research/references/statement-fidelity|statement-fidelity]]
+**Prosthetic:** [[mathematics/research/references/statement-fidelity|statement-fidelity]]
 in its entirety; the audit heatmap below. The rule of thumb: **your audit
 budget belongs precisely where the strongest checker has no purchase.**
 
@@ -86,9 +86,9 @@ consistency sweeps re-run "many times over" — none of which would be needed
 if source tags persisted.
 
 **Prosthetic:** the typed ledger as prosthetic source memory
-([[mathematical-research/references/claim-status|claim-status]]); citing row
+([[mathematics/research/references/claim-status|claim-status]]); citing row
 ids instead of restating claims; the consistency sweep in
-[[mathematical-research/references/adversarial-audit|adversarial-audit]].
+[[mathematics/research/references/adversarial-audit|adversarial-audit]].
 Before building on any "established" fact, re-read its row — not your memory
 of its row.
 
@@ -107,7 +107,7 @@ flat assertoric prose; reports whose verbs strengthened between drafts while
 the evidence was unchanged.
 
 **Prosthetic:** the status taxonomy and promotion rules of
-[[mathematical-research/references/claim-status|claim-status]]; the epistemic
+[[mathematics/research/references/claim-status|claim-status]]; the epistemic
 register table — sentence forms keyed to ledger status, so mood cannot
 smuggle a promotion.
 
@@ -129,10 +129,10 @@ atop a body that proves the odd case and curve-fits the even; every
 "complete/closed" that restatement eroded to a bounded case list.
 
 **Prosthetic:** statement freeze *before* the endgame
-([[mathematical-research/references/formal-release|formal-release]]); the
+([[mathematics/research/references/formal-release|formal-release]]); the
 CDC prompt's pre-refuted substitute outcomes, enumerated before any work
 exists — because afterward, sunk cost makes every substitute look like the
-goal ([[mathematical-research/references/cdc-prompt|cdc-prompt]]).
+goal ([[mathematics/research/references/cdc-prompt|cdc-prompt]]).
 
 ## 6. Compression is lossy in one direction
 
@@ -153,7 +153,7 @@ all m," a README bolding **Solved**, a body admitting the symbolic proof
 **Prosthetic:** claim strength pinned at the evidence and propagated **by
 reference** (ledger ids), never by paraphrase; cross-surface uniformity
 checks; the rule that the weakest surface a reader will quote is the one
-that must be right ([[mathematical-research/references/claim-status|claim-status]]).
+that must be right ([[mathematics/research/references/claim-status|claim-status]]).
 
 ## 7. The agreement-feeling does not track error correlation
 
@@ -173,8 +173,8 @@ verbatim at 150× speed; two formalizations counted as mutual confirmation
 while proving different nested statements.
 
 **Prosthetic:** the independence-axes requirement and intermediate-invariant
-comparison ([[mathematical-research/references/adversarial-audit|adversarial-audit]]);
-blind-to-leader rounds ([[mathematical-research/references/cdc-prompt|cdc-prompt]]).
+comparison ([[mathematics/research/references/adversarial-audit|adversarial-audit]]);
+blind-to-leader rounds ([[mathematics/research/references/cdc-prompt|cdc-prompt]]).
 
 ## 8. Self-evaluation is a rerun of the producer
 
@@ -193,7 +193,7 @@ on UNSAT sweeps that had never once been shown able to find a planted witness.
 
 **Prosthetic:** the pairing rule (producer never audits own result); refute
 framing rather than confirm framing; planted-solution and ablation controls
-([[mathematical-research/references/computation|computation]]) — external
+([[mathematics/research/references/computation|computation]]) — external
 sampling of the region your own generator can't reach.
 
 ## 9. Names carry borrowed meaning
@@ -215,7 +215,7 @@ telling the auditor nothing while the payload hides in structure fields.
 **Prosthetic:** audit definitions denotationally — evaluate them on
 degenerate inputs (empty, disconnected, zero, `n = 1`) instead of reading
 their names; unfold witness structures; the triviality probes of
-[[mathematical-research/references/statement-fidelity|statement-fidelity]].
+[[mathematics/research/references/statement-fidelity|statement-fidelity]].
 
 ## 10. Stating creates believing
 
@@ -234,7 +234,7 @@ process logs quoted as measured metrics.
 
 **Prosthetic:** open-the-log-before-citing (core invariant 4); artifact-only
 returns; terminal verdict banners; append-only process capture
-([[mathematical-research/references/computation|computation]]).
+([[mathematics/research/references/computation|computation]]).
 
 ## 11. The moment of success is the moment of least scrutiny
 
@@ -253,7 +253,7 @@ unarchivable personal communication, load-bearing in the README.
 **Prosthetic:** a positive hit is a *candidate* triggering the verification
 protocol, never a result (core invariant 2, second half); the announcement
 gate at escalation step 3
-([[mathematical-research/references/adversarial-audit|adversarial-audit]]).
+([[mathematics/research/references/adversarial-audit|adversarial-audit]]).
 
 ## 12. Launched processes exit the belief system
 
@@ -270,7 +270,7 @@ in the run's own metadata.
 
 **Prosthetic:** theory-retires-compute with mandatory re-scoping after every
 proof (core invariant 8); run ledgers that make standing processes visible
-enough to re-evaluate ([[mathematical-research/references/computation|computation]]).
+enough to re-evaluate ([[mathematics/research/references/computation|computation]]).
 
 ## 13. Fluency is mistaken for generality
 
@@ -289,7 +289,7 @@ passing case exercised the patches, not the rule.
 
 **Prosthetic:** branch-coverage accounting for fitted rules; the
 discovery-vs-verification demotion; scope columns that state the verified
-regime and nothing more ([[mathematical-research/references/claim-status|claim-status]]).
+regime and nothing more ([[mathematics/research/references/claim-status|claim-status]]).
 
 ## The audit heatmap
 

@@ -65,7 +65,7 @@ A question signals a blocking ambiguity, not a polite default.
 
 ## The needs-agent-review protocol
 
-**Load [[research-gate-review/SKILL|research-gate-review]] BEFORE touching any card in `needs-agent-review` status**
+**Load [[mathematics/research/research-gate-review/SKILL|research-gate-review]] BEFORE touching any card in `needs-agent-review` status**
 — it contains anti-boxchecking rules, bug-pattern references, subagent dispatch
 mechanics, and review-log writing discipline that operationalize the abstract 6-gate
 protocol. Do not apply the gates inline in your own session; delegate to fresh-context

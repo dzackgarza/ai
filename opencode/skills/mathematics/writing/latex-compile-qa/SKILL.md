@@ -60,9 +60,9 @@ Runs all passes (xelatex + bibtex + makeindex) until stable.
 
 ### Quick Start
 
-- `python .codex/skills/latex-compile-qa/scripts/run.py --help`
+- `python .codex/skills/mathematics/writing/latex-compile-qa/scripts/run.py --help`
 
-- `python .codex/skills/latex-compile-qa/scripts/run.py --workspace <workspace_dir>`
+- `python .codex/skills/mathematics/writing/latex-compile-qa/scripts/run.py --workspace <workspace_dir>`
 
 ### All Options
 
@@ -72,7 +72,7 @@ Runs all passes (xelatex + bibtex + makeindex) until stable.
 
 - Compile + produce report:
 
-  - `python .codex/skills/latex-compile-qa/scripts/run.py --workspace <ws>`
+  - `python .codex/skills/mathematics/writing/latex-compile-qa/scripts/run.py --workspace <ws>`
 
 ### Notes
 

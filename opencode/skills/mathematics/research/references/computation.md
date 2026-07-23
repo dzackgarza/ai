@@ -1,11 +1,11 @@
 # Computational Experiments
 
 Owner file for search, certificate, and verification computations in a research
-program. Parent: [[mathematical-research/SKILL|mathematical-research]]. Tool selection
-(which solver/CAS) belongs to [[theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
-[[integer-programming/SKILL|integer-programming]], and [[sagemath/SKILL|sagemath]];
+program. Parent: [[mathematics/research/SKILL|mathematical-research]]. Tool selection
+(which solver/CAS) belongs to [[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
+[[mathematics/computation/integer-programming/SKILL|integer-programming]], and [[mathematics/computation/sagemath/SKILL|sagemath]];
 this file owns the protocol around any of them. Concrete M2/Lean/Z3 idioms:
-[[mathematical-research/references/computer-algebra-patterns|computer-algebra-patterns]].
+[[mathematics/research/references/computer-algebra-patterns|computer-algebra-patterns]].
 
 ## Before launching anything
 
@@ -52,7 +52,7 @@ A claim built on code is void unless the code passed its gates in the same log:
 Record control runs in the run ledger with their own classification
 (`encoding_control`, `cross_tactic_check`). Banking a result additionally requires a
 cross-implementation audit —
-[[mathematical-research/references/adversarial-audit|adversarial-audit]].
+[[mathematics/research/references/adversarial-audit|adversarial-audit]].
 
 ## Run ledger
 
@@ -104,7 +104,7 @@ Supporting rules:
   claiming anything: the phenomenon may live in exactly the terms the simplification
   discards (torsion carries, inhomogeneous corrections, constant terms).
 - Separate solver-dependent claims (minimality, uniqueness from an UNSAT) from
-  unconditional existence claims; see [[mathematical-research/references/claim-status|claim-status]].
+  unconditional existence claims; see [[mathematics/research/references/claim-status|claim-status]].
 
 ## Search-register discipline
 
@@ -164,7 +164,7 @@ audits:
   case stratum is an observed failure: the copies drift apart.
 
 Record each auditor's invocation and expected banner in `BUILD_AND_VERIFY.md`
-([[mathematical-research/references/handoff|handoff]]) so any future agent can replay
+([[mathematics/research/references/handoff|handoff]]) so any future agent can replay
 the program's entire evidence base in minutes.
 
 ## Naming and what gets committed

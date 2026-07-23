@@ -3,9 +3,9 @@
 Owner file for the one soundness gap a proof kernel cannot close: **the kernel
 verifies the proof against the formal statement, never that the formal statement
 means what the informal problem says.** Every other gate in
-[[mathematical-research/references/formal-release|formal-release]] assumes the
+[[mathematics/research/references/formal-release|formal-release]] assumes the
 statement is right; this file owns making that assumption earn its keep.
-Parent: [[mathematical-research/SKILL|mathematical-research]]. Grounded in the
+Parent: [[mathematics/research/SKILL|mathematical-research]]. Grounded in the
 2026 Erdős-resolution ecosystem: the `leanprover/comparator` protocol
 (`kim-em/erdos-unit-distance`, `frenzymath/Anderson-Conjecture`,
 `nick-kuhn/erdos-619`) and the `agenticsnz/unsorry` red-team findings.
@@ -129,7 +129,7 @@ A negation flips the statement discipline:
   bridge in the other direction proves nothing about the benchmark statement.
 - Ledger the result under the *original* problem with the flip named in the
   scope ("resolved negatively; the site statement's quantifier order is …")
-  — see [[mathematical-research/references/claim-status|claim-status]].
+  — see [[mathematics/research/references/claim-status|claim-status]].
 
 ## Pin the informal source
 

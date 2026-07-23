@@ -1,7 +1,7 @@
 # Worked Example: the Rank-Four Counterexample
 
 The concrete program every rule in
-[[mathematical-research/SKILL|mathematical-research]] was distilled from. Read it to
+[[mathematics/research/SKILL|mathematical-research]] was distilled from. Read it to
 calibrate register: the working objects are Hopf algebras over Artin local rings,
 socle classes, and power words — not "functions" and "test cases." Source:
 `github.com/j2d9w5xtjn-png/GrothendieckRankP2`.
@@ -14,7 +14,7 @@ order; so rank $4 = 2^2$ with a noncommutative group law is the first open case.
 Attribution required primary-source care: the printed 1970 SGA 3 statement and the
 annotated re-edition carry different commutativity hypotheses — the program verified
 which question it was answering before claiming to answer it
-([[mathematical-research/references/program-shape|program-shape]]).
+([[mathematics/research/references/program-shape|program-shape]]).
 
 ## The object
 
@@ -44,17 +44,17 @@ $$[4]^\#(U)=2b\,UV\neq0,\qquad [8]^\#=\iota\varepsilon,
 So $G=\operatorname{Spec}A$ has order four, is killed by eight, and is not killed by
 four. Everything reduces to one exact statement: **$2b\neq0$ in $R$** — the socle
 class survives. That single nonvanishing was certified three independent ways
-([[mathematical-research/references/adversarial-audit|adversarial-audit]]): an M2
+([[mathematics/research/references/adversarial-audit|adversarial-audit]]): an M2
 strong Gröbner basis over $\mathbf Z$ leaving $2s$ in nonzero normal form, an
 explicit 512-element model $\mathbf Z/4\times\mathbf Z/4\times(\mathbf Z/2)^5$ of the
 regular representation, and Lean's `two_b_ne_zero` through that witness module
-([[mathematical-research/references/computer-algebra-patterns|computer-algebra-patterns]]).
+([[mathematics/research/references/computer-algebra-patterns|computer-algebra-patterns]]).
 
 The phenomenon is a mixed-characteristic carry: mod 2 the obstruction dies (the
 equal-characteristic control run shows all nine target coordinates become members of
 the ideal; in mixed characteristic exactly two survive). This is the concrete
 instance behind the rule "the phenomenon may live in the terms your simplification
-discards" ([[mathematical-research/references/computation|computation]]).
+discards" ([[mathematics/research/references/computation|computation]]).
 
 ## The wall that preceded it
 
@@ -69,7 +69,7 @@ The exponent-8 theorem ("every rank-four group scheme over any base is killed by
 fits on one page — trace/determinant identities $c_2=2\chi-1-\delta$,
 $q(\chi)=\chi^2-2c_2=2(1+\delta)$, then $ac=-4a$ forces $2D=qD=0$, hence
 $[8]^\#=q^3=e$. That page is what a
-[[mathematical-research/references/handoff|handoff]] "one-page proof sketch of the
+[[mathematics/research/references/handoff|handoff]] "one-page proof sketch of the
 headline result" looks like: re-derivable without opening any other file.
 
 ## The discovery chronology (what actually worked)
@@ -90,7 +90,7 @@ headline result" looks like: re-derivable without opening any other file.
    Gorenstein base with Hilbert function $(1,4,4,1)$.
 4. The found object was re-verified by exact arithmetic in the explicit 1024-element
    ring; the 632-dimensional chart was demoted to history
-   ([[mathematical-research/references/computation|computation]], truth sources).
+   ([[mathematics/research/references/computation|computation]], truth sources).
 5. Simplification was then its own research phase: length $10\to9$, then a
    human-scale presentation from the affine group, each round re-audited, the
    length-10 model archived (not deleted) for its extra subgroup/deformation
@@ -99,7 +99,7 @@ headline result" looks like: re-derivable without opening any other file.
 ## Real ledger rows
 
 From the frozen `CLAIM_LEDGER.tsv`, showing the status vocabulary doing real work
-([[mathematical-research/references/claim-status|claim-status]]):
+([[mathematics/research/references/claim-status|claim-status]]):
 
 | id | claim | status | caveat |
 |---|---|---|---|

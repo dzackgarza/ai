@@ -1,7 +1,7 @@
 # Session Freeze and Handoff
 
 Owner file for ending a research session and transferring state to the next agent
-(or to yourself after a context reset). Parent: [[mathematical-research/SKILL|mathematical-research]].
+(or to yourself after a context reset). Parent: [[mathematics/research/SKILL|mathematical-research]].
 
 ## When to freeze
 
@@ -18,9 +18,9 @@ is mandatory, because hashes become the only provenance. Root files:
 | file | job |
 |---|---|
 | `START_HERE.md` | The single authoritative entry point (structure below). |
-| `CLAIM_LEDGER.tsv` | Canonical claim statuses ([[mathematical-research/references/claim-status|claim-status]]). |
+| `CLAIM_LEDGER.tsv` | Canonical claim statuses ([[mathematics/research/references/claim-status|claim-status]]). |
 | `SUPERSESSION_AND_ERRATA.md` | Names each stale or false statement in earlier documents, by file. |
-| `RUNS.tsv` | Run ledger ([[mathematical-research/references/computation|computation]]). |
+| `RUNS.tsv` | Run ledger ([[mathematics/research/references/computation|computation]]). |
 | `BUILD_AND_VERIFY.md` | Exact auditor commands with exact expected PASS lines. |
 | `ENVIRONMENT.md` | Hosts, versions, images, compute policy for reproduction. |
 | `EXCLUDED_FILES.md` | What was deliberately left out, grouped by reason (stale/unsafe, non-evidence, hygiene). Curation is explicit, never silent. |
@@ -39,7 +39,7 @@ even when the reader ignores instructions.
 3. Numbered reading order over the bundle.
 4. A one-page self-contained proof sketch of the headline result — the next agent
    should be able to re-derive it without opening any other file (the exponent-8
-   page in [[mathematical-research/references/worked-example|worked-example]] is the
+   page in [[mathematics/research/references/worked-example|worked-example]] is the
    model).
 5. Current frontier state with exact counts, plus the instruction to rerun the
    read-only auditors before quoting counts (live lanes may have advanced).
@@ -69,7 +69,7 @@ long handoff serves resumption; the short one survives context loss.
   copies of the same files. Every canonical artifact lives in exactly one place in a
   bundle; indexes point to it.
 - **Per-stratum forks** of near-identical auditors/parsers that then drift —
-  parameterize instead ([[mathematical-research/references/computation|computation]]).
+  parameterize instead ([[mathematics/research/references/computation|computation]]).
 - **Prose counts**: frontier counts quoted in narrative documents go stale and
   propagate ("158/190" survived into two shipped bundles). Counts live in
   auditor-regenerable ledgers; prose points at the auditor.

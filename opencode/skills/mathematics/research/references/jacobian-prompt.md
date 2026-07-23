@@ -2,8 +2,8 @@
 
 A problem-statement document for the Jacobian Conjecture, sharing the
 template structure described in
-[[mathematical-research/SKILL|mathematical-research]]. Parent:
-[[mathematical-research/SKILL|mathematical-research]];
+[[mathematics/research/SKILL|mathematical-research]]. Parent:
+[[mathematics/research/SKILL|mathematical-research]];
 completion-game design theory: [[goalcraft/SKILL|goalcraft]].
 
 Source: `https://aaronlou.com/jacobian_counterexample_prompt.pdf`.

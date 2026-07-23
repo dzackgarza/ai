@@ -13,7 +13,7 @@ mathlib PR handoff: `github.com/j2d9w5xtjn-png/GrothendieckRankP2`) and from a s
 Lean-first program (`github.com/rishigajjala/erdos-796-lean`: a model-generated,
 human-verified formal release of the corrected Erdős 796 asymptotic). Dispatch-side
 grounding comes from OpenAI's published Cycle Double Cover campaign prompt
-([[mathematical-research/references/cdc-prompt|cdc-prompt]]); statement-fidelity and
+([[mathematics/research/references/cdc-prompt|cdc-prompt]]); statement-fidelity and
 portfolio discipline from the 2026 Erdős-resolution ecosystem — the
 `leanprover/comparator` repos around Alpöge's unit-distance disproof
 (`kim-em/erdos-unit-distance`, `plby/Erdos90`), `davidturturean/erdos-870`/`-696`,
@@ -21,12 +21,12 @@ portfolio discipline from the 2026 Erdős-resolution ecosystem — the
 `neelsomani/gpt-erdos` candidate catalog.
 
 Before substantive work, read
-[[mathematical-research/references/worked-example|worked-example]] — the concrete
+[[mathematics/research/references/worked-example|worked-example]] — the concrete
 program these rules come from, kept concrete on purpose: the working register is
 socle classes, power words, and Gröbner normal forms, and every rule below is
 illustrated there with the real mathematics that motivated it. The causal layer —
 the cognitive defects each rule is a prosthetic for, and the audit heatmap they
-imply — is [[mathematical-research/references/epistemic-defects|epistemic-defects]];
+imply — is [[mathematics/research/references/epistemic-defects|epistemic-defects]];
 read it before auditing anything, and whenever you are tempted to bend a rule.
 
 ## Core invariants (always on)
@@ -34,20 +34,20 @@ read it before auditing anything, and whenever you are tempted to bend a rule.
 1. **Every claim is typed, scoped, and caveated.** One machine-readable claim ledger
    is canonical; prose defers to it. Proved, computed-within-bounds,
    solver-conditional, conjectured, open, and false are distinct statuses that never
-   blur — see [[mathematical-research/references/claim-status|claim-status]].
+   blur — see [[mathematics/research/references/claim-status|claim-status]].
 2. **Computational failure is never mathematical evidence.** Timeout, OOM, crash,
    missing output, nonzero exit: all inconclusive, always. Symmetrically, a positive
    hit is a candidate for re-validation, not a result.
 3. **No banking without an audit.** A result enters the ledger as trusted only when a
    separate audit artifact exists — an independent re-derivation by a different
    agent, not a rerun — see
-   [[mathematical-research/references/adversarial-audit|adversarial-audit]].
+   [[mathematics/research/references/adversarial-audit|adversarial-audit]].
 4. **A theorem in a report is not evidence.** Before citing or extending any claimed
    result, open its log and find the terminal verdict lines for every case it names.
 5. **Never claim more than the tool gives.** A solver verdict over one finite
    structure, an exact certificate over a parametric family, and a hand proof
    license different quantifiers — see
-   [[mathematical-research/references/claim-status|claim-status]].
+   [[mathematics/research/references/claim-status|claim-status]].
 6. **Discovery is not verification.** Whatever found the object, the citable truth
    source is the smallest exact, self-contained check of it.
 7. **Supersede loudly.** Stale documents are named in dated supersession notes and
@@ -61,18 +61,18 @@ read it before auditing anything, and whenever you are tempted to bend a rule.
 
 | You are about to… | Read |
 |---|---|
-| Start substantive work in this skill; calibrate to the research register | [[mathematical-research/references/worked-example|worked-example]] |
-| Audit a finished result; allocate review attention; decide whether a rule applies to a novel situation | [[mathematical-research/references/epistemic-defects|epistemic-defects]] |
-| State, promote, or demote a claim; write a report or results section | [[mathematical-research/references/claim-status|claim-status]] |
-| Launch a search, sweep, or verification run; write an audit script | [[mathematical-research/references/computation|computation]] |
-| Write Macaulay2/Lean/Z3 verification or search code | [[mathematical-research/references/computer-algebra-patterns|computer-algebra-patterns]] |
-| Bank a result; review another agent's push; check a literature theorem | [[mathematical-research/references/adversarial-audit|adversarial-audit]] |
-| End a session; enter a program; write or receive a handoff | [[mathematical-research/references/handoff|handoff]] |
-| Organize the repo; stage manuscripts; formalize; publish | [[mathematical-research/references/program-shape|program-shape]] |
-| Release a formalization; audit formal dependencies; freeze statements | [[mathematical-research/references/formal-release|formal-release]] |
-| Formalize a problem statement; guard against misformalization; resolve a problem negatively | [[mathematical-research/references/statement-fidelity|statement-fidelity]] |
-| Dispatch agents at an open problem; write a solver-campaign prompt | [[mathematical-research/references/cdc-prompt|cdc-prompt]] |
-| Attack many problems at once; run or join a proving swarm; triage candidate LLM solutions | [[mathematical-research/references/portfolio-campaigns|portfolio-campaigns]] |
+| Start substantive work in this skill; calibrate to the research register | [[mathematics/research/references/worked-example|worked-example]] |
+| Audit a finished result; allocate review attention; decide whether a rule applies to a novel situation | [[mathematics/research/references/epistemic-defects|epistemic-defects]] |
+| State, promote, or demote a claim; write a report or results section | [[mathematics/research/references/claim-status|claim-status]] |
+| Launch a search, sweep, or verification run; write an audit script | [[mathematics/research/references/computation|computation]] |
+| Write Macaulay2/Lean/Z3 verification or search code | [[mathematics/research/references/computer-algebra-patterns|computer-algebra-patterns]] |
+| Bank a result; review another agent's push; check a literature theorem | [[mathematics/research/references/adversarial-audit|adversarial-audit]] |
+| End a session; enter a program; write or receive a handoff | [[mathematics/research/references/handoff|handoff]] |
+| Organize the repo; stage manuscripts; formalize; publish | [[mathematics/research/references/program-shape|program-shape]] |
+| Release a formalization; audit formal dependencies; freeze statements | [[mathematics/research/references/formal-release|formal-release]] |
+| Formalize a problem statement; guard against misformalization; resolve a problem negatively | [[mathematics/research/references/statement-fidelity|statement-fidelity]] |
+| Dispatch agents at an open problem; write a solver-campaign prompt | [[mathematics/research/references/cdc-prompt|cdc-prompt]] |
+| Attack many problems at once; run or join a proving swarm; triage candidate LLM solutions | [[mathematics/research/references/portfolio-campaigns|portfolio-campaigns]] |
 
 ## Problem-statement documents vs. ongoing-research workflow
 
@@ -87,9 +87,9 @@ do-nots, the adversarial checklist for *this* problem. Their entire job
 is to tell the remote worker *what counts as solving this problem* and
 *what does not*. Exemplars (read the verbatim prompt sections only when
 authoring a new submission):
-[[mathematical-research/references/cdc-prompt|cdc-prompt]]
+[[mathematics/research/references/cdc-prompt|cdc-prompt]]
 (Cycle Double Cover conjecture),
-[[mathematical-research/references/jacobian-prompt|jacobian-prompt]]
+[[mathematics/research/references/jacobian-prompt|jacobian-prompt]]
 (Jacobian Conjecture). These are sibling artifacts for different
 problems; they share the template structure described here, not a
 parent-child relationship.
@@ -108,13 +108,13 @@ context and no access to the local workflow.
 multi-session work on a hard problem. The problem statement remains the
 organizing touchstone — everything traces back to it — but the workflow
 adds rules and artifacts the submission document does not carry: a typed
-claim ledger ([[mathematical-research/references/claim-status|claim-status]]),
+claim ledger ([[mathematics/research/references/claim-status|claim-status]]),
 run logs and computation discipline
-([[mathematical-research/references/computation|computation]]),
+([[mathematics/research/references/computation|computation]]),
 audit artifacts
-([[mathematical-research/references/adversarial-audit|adversarial-audit]]),
+([[mathematics/research/references/adversarial-audit|adversarial-audit]]),
 handoff bundles
-([[mathematical-research/references/handoff|handoff]]),
+([[mathematics/research/references/handoff|handoff]]),
 supersession notes, and git-repo provenance. See the route table above
 for the right reference per phase.
 
@@ -127,20 +127,27 @@ discipline — those are local-workflow concerns and will dilute the
 mathematical content the remote worker needs. A submission document
 full of procedural rules is a defective submission document.
 
+## Route to subskills
+
+- Mining transcripts, notes, and noisy sources into research state —
+  [[mathematics/research/knowledge-extraction/SKILL|knowledge-extraction]]
+- Failing test suites that enforce mathematical correctness before implementation —
+  [[mathematics/research/mathematical-testing/SKILL|mathematical-testing]]
+- Substantive 6-gate review of research code —
+  [[mathematics/research/research-gate-review/SKILL|research-gate-review]]
+
 ## Route to sibling skills
 
 - Proof prose, LaTeX, notation discipline —
-  [[mathematical-writing/SKILL|mathematical-writing]]
+  [[mathematics/writing/SKILL|mathematical-writing]]
 - Solver and CAS selection (SAT/SMT/ITP/CAS) —
-  [[theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
-  [[integer-programming/SKILL|integer-programming]], [[sagemath/SKILL|sagemath]],
-  [[lattices/SKILL|lattices]]
+  [[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
+  [[mathematics/computation/integer-programming/SKILL|integer-programming]], [[mathematics/computation/sagemath/SKILL|sagemath]],
+  [[mathematics/lattices/SKILL|lattices]]
 - Lean formalization — [[lean4/skills/lean4/SKILL|lean4]],
-  [[aristotle/SKILL|aristotle]]
+  [[lean4/skills/aristotle/SKILL|aristotle]]
 - Negative findings and coverage claims —
   [[epistemic-integrity/SKILL|epistemic-integrity]]
-- Mining transcripts and notes into research state —
-  [[knowledge-extraction/SKILL|knowledge-extraction]]
 - Literature search and paper writing —
   [[research-discovery/SKILL|research-discovery]],
   [[research-writing/SKILL|research-writing]]
