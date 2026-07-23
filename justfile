@@ -27,7 +27,7 @@ dotfiles_dir := repo / "dotfiles"
 
 # Core assets
 
-agents_md := opencode_dir / "AGENTS.md"
+agents_md := repo / "AGENTS.md"
 skills_dir := opencode_dir / "skills"
 
 # Tool configs
@@ -219,9 +219,8 @@ run-microagent *args:
 #   1. build-config — compile opencode.json from skeleton + provider fragments
 #   2. build-agents — validate tracked manual agent markdown
 #
-# AGENTS.md is NOT built here. It is a hand-authored routing layer at the repo root;
-# detailed procedure lives in opencode/skills/. The opencode/AGENTS.md symlink points
-# at it.
+# AGENTS.md is NOT built here. It is a hand-authored routing layer tracked directly
+# at the repo root; detailed procedure lives in opencode/skills/.
 build: build-config build-agents
 
 # Build only the compiled OpenCode config pipeline.
