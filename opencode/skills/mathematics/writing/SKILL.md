@@ -1,6 +1,6 @@
 ---
 name: dzack-mathematical-writing
-description: Use when producing mathematical content, proofs, problem solutions, LaTeX documents, or formalization targets. Triggers on any mathematical notation, proof structure, typesetting, or verification code.
+description: Use when producing mathematical content, proofs, problem solutions, LaTeX documents, or formalization targets. Triggers on any mathematical notation, proof structure, typesetting, or verification code. Proofs default to Lamport-style structured proofs in every medium (chat, prose, docstrings, LaTeX).
 ---
 # Dzack Mathematical Writing
 
@@ -98,6 +98,25 @@ theorem statements, proofs, and commentary.
 These markers are not decorative — they create a parseable structure that humans and
 machines can navigate.
 
+### 9. Structured proofs are the default presentation
+
+**Failure mode:** Agents present multi-step arguments as prose paragraphs, where
+skipped cases, unbound variables, and hand-waving hide. Prose is also unskimmable:
+the reader cannot see the outline without reading every word.
+
+**Philosophy:** Lamport's hierarchical structured-proof format (*How to Write a
+Proof*, 1993) is the default for proofs and multi-step mathematical arguments in
+**every medium** — chat conversation, prose documents, comments and docstrings,
+document structure, and LaTeX. Theorem, proof sketch, explicit `Assume:`/`Prove:`,
+numbered steps `<1>1, <1>2, …` each with its own proof, ending in a proved Q.E.D.
+step. Steps are cited by name, never as "the above". Depth follows the paper's rule:
+expand until the lowest-level statements are obvious, then one more level; in chat,
+show the top level and expand on demand. Prose paragraphs are for leaf
+justifications and explicitly requested expositions only.
+Load `references/structured-proofs.md` before writing any proof; it carries the full
+format, numbering/citation scheme, worked examples, calibration table, and
+anti-patterns.
+
 ## Decision Procedures
 
 ### When to include verification code
@@ -177,15 +196,28 @@ Clear statement with all given information and constraints.
 
 ### Proof
 
-```markdown
-*Theorem.* Statement.
+Structured (Lamport) format — see `references/structured-proofs.md` for the full
+scheme and worked examples:
 
-*Proof.*
-1. Let [variable] ∈ [type].
-2. ⇒ [deduction] [Justification]
-3. ...
-∎
+```markdown
+*Theorem.* Statement (all variables bound, all types explicit).
+
+**Proof sketch.** One-paragraph road map (omit only when the top level is
+self-explanatory).
+
+- **Assume:** 1. [hypothesis]  2. [hypothesis]
+- **Prove:** [exact goal]
+
+- **<1>1.** [assertion]
+  - Proof: [leaf justification, or a nested <2>-level proof]
+- **<1>2.** [assertion]
+  - Proof: By <1>1 and [named lemma/assumption <0>:1].
+- **<1>3.** Q.E.D.
+  - Proof: [how <1>1–<1>2 combine; case exhaustiveness if cases were used]. ∎
 ```
+
+In chat, present the `<1>` level and expand steps on request. Do not present a
+multi-step proof as a prose paragraph.
 
 ### Formalization (when requested)
 
@@ -195,6 +227,14 @@ See `references/formalization-patterns.md` for paired examples.
 Load these patterns into context as one-shot demonstrations of the exact style expected.
 
 ## Validation Checklist
+
+- [ ] Multi-step proofs use the structured format: `Assume:`/`Prove:`, numbered
+  `<1>n` steps, each step with its own proof, Q.E.D. step proved
+
+- [ ] Steps, assumptions, and parts cited by name (`<2>3`, `<1>:2`), never "the
+  above" or "what we showed"
+
+- [ ] No case dismissed as "similar to the previous one"
 
 - [ ] All variables bound with explicit quantifiers or type declarations
 
@@ -224,6 +264,8 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 
 | Pattern | Why Bad | Do Instead |
 | --- | --- | --- |
+| Multi-step proof as a prose paragraph | Hides skipped cases and gaps; unskimmable | Structured proof (`Assume:`/`Prove:`, named steps, proved Q.E.D.) |
+| “Similar to the previous case” | Canonical banned move; the general step is being dodged | Prove the shared step once before the split, cite it in each case |
 | “Clearly, ...” or “Obviously, ...” | Hides reasoning; often wrong; reward-hacking | State explicit justification or lemma |
 | Unbound variables | Ambiguous scope; formalization fails | Add ∀ or ∃ quantifier, or type declaration |
 | Multi-operation steps | Hard to verify; hard to formalize; errors hide | Split into one operation per numbered step |
@@ -263,6 +305,11 @@ Use them to push the model into the correct token space for rigorous mathematica
 writing.
 
 ## References
+
+- `references/structured-proofs.md` — Lamport structured-proof format: anatomy,
+  step constructs (Choose/Let/Assume-Prove/Case/equality chains), numbering and
+  citation scheme, depth discipline, worked examples, per-context calibration.
+  **Load before writing any proof.**
 
 - `references/notation-and-symbols.md` — Number systems, function notation, algebraic
   structures, quantifier conventions, delimiter macros

@@ -138,7 +138,7 @@ full of procedural rules is a defective submission document.
 
 ## Route to sibling skills
 
-- Proof prose, LaTeX, notation discipline —
+- Proof presentation (Lamport structured proofs), prose, LaTeX, notation discipline —
   [[mathematics/writing/SKILL|mathematical-writing]]
 - Solver and CAS selection (SAT/SMT/ITP/CAS) —
   [[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],

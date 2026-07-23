@@ -2,6 +2,13 @@
 
 Dzack-specific conventions for proof presentation.
 
+The overall shape of a multi-step proof is owned by the Lamport structured-proof
+format in `structured-proofs.md` (`Assume:`/`Prove:`, hierarchical `<1>n` steps,
+proved Q.E.D.). The rules in this file — one operation per step, `[By ...]`
+justifications, citation and case-analysis discipline — apply to the steps and leaf
+proofs **inside** that structure. A flat numbered list is only acceptable as the
+single-level body of a leaf proof.
+
 ## Environment Format
 
 Use italic environment names, no numbering.

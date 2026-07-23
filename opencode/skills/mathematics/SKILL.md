@@ -21,7 +21,7 @@ only when its distinct trigger is materially present.
 
 ## Writing
 
-- [[mathematics/writing/SKILL|writing]] — rigorous mathematical prose, proofs, notation, LaTeX, and formalization targets. Sub-routes to LaTeX compile QA.
+- [[mathematics/writing/SKILL|writing]] — rigorous mathematical prose, notation, LaTeX, and formalization targets; proofs default to Lamport-style structured proofs in every medium. Sub-routes to LaTeX compile QA.
 
 ## Domain knowledge
 
