@@ -6,13 +6,11 @@ common:
     enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
-    command: uv
+    command: uvx
     args:
-    - run
-    - --directory
-    - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server
-    - python
-    - server.py
+    - --from
+    - git+https://github.com/dzackgarza/opencode-plugin-improved-webtools#subdirectory=mcp-server
+    - improved-webtools-mcp
     enabled: true
     exclude_harnesses:
     - opencode

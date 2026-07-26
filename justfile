@@ -49,6 +49,10 @@ test:
 
 test-ci: test
 
+test-commit: build test
+
+test-push: test-commit
+
 # Install all symlinks and environment variables
 install:
     #!/usr/bin/env bash
