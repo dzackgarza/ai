@@ -47,6 +47,48 @@ Load a skill when the task actually meets its trigger; do not load procedures
 prophylactically or let one skill recursively activate unrelated project, memory,
 review, or proof workflows. Skill triggers do not compound automatically.
 
+## Routing Applicability Gate
+
+Apply routes to the work the user assigned, not to words, artifacts, or environment
+context that merely appear nearby. Before loading a route, identify:
+
+```text
+Requested object: <the artifact, system, or question the user wants changed or answered>
+Requested operation: <create, edit, file, inspect, diagnose, verify, implement, etc.>
+Required evidence: <what must be known to perform that operation correctly>
+```
+
+A situational route applies only when its situation is part of one of those three
+fields. Apply this gate before the routing table. Do not load a route and use its
+workflow to decide whether the route was relevant.
+
+The following facts do not expand the task:
+
+- **Current working directory:** The repository where the session started is ambient
+  context until the user makes that repository an object of the task. Its instructions
+  govern applicable work; they do not authorize repository inspection, initialization,
+  indexing, or analysis.
+- **Artifact vocabulary:** Creating a GitHub issue is a GitHub write, not automatically
+  public planning. Load planning or project-initialization routes only when the user
+  requested a roadmap, PRD, issue tree, implementation plan, coordination structure, or
+  another artifact named by that route.
+- **Conditional wording:** Phrases such as "if compatible", "consider", or "prefer X"
+  constrain how to state a proposal unless the user asked to investigate or adjudicate
+  the condition. Preserve uncertainty in the artifact; do not invent a verification
+  task.
+- **Supplied research:** Treat a user-provided report as source material to transform
+  when synthesis is requested. Do not independently verify, extend, or reproduce its
+  research unless the user requests validation or the requested operation cannot be
+  completed safely without it.
+- **Incidental technical references:** A library, API, compiler, or tool mentioned in
+  source material does not trigger external-tool research. That route applies only when
+  the assigned work requires choosing, using, debugging, or verifying it.
+
+Load the smallest set of directly applicable routes and stop once the requested artifact
+can be produced correctly and safely. A loaded skill's references are progressive
+disclosure for that route, not new task triggers. If a route would add an object,
+investigation, proof burden, or external write the user did not request, do not load it.
+
 ## Situational Routing
 
 When the situation in the left column is present, load the right column before acting.
@@ -65,7 +107,7 @@ When the situation in the left column is present, load the right column before a
 | External tools, libraries, APIs, compilers, package managers, exact diagnostics, dependency choices | `known-solution-first` |
 | Any interaction with a test file | `test-guidelines` |
 | Plans, or plan feedback that must survive the turn | `plan`, `agent-memory` |
-| Roadmap, PRD, cross-agent, review-track, or proof-bearing work needing public coordination | `project-initialization`, `plan`, `agent-memory`, `git-guidelines`, then `plan/references/externalization.md` |
+| User requests a roadmap, PRD, cross-agent plan, review track, issue tree, or proof-bearing coordination structure | `project-initialization`, `plan`, `agent-memory`, `git-guidelines`, then `plan/references/externalization.md` |
 | Substantive implementation depending on repository-wide state | `project-initialization`, then only the owners it routes to |
 | Choosing formats, runners, stacks, storage, secrets/env handling, CLI tools, or provisioning | `system-conventions`, `tool-provisioning-and-environment-hygiene` |
 | Editing any JSON or YAML file | `config-file-editing` — never raw-edit config files |
@@ -135,6 +177,11 @@ trivial reversible change → substantive implementation → public coordination
 scope words ("trivial", "direct edit") control routing unless they conflict with safety.
 Complexity alone does not imply public coordination; when both routes are safe and cheap
 to reverse, take the lighter one.
+
+Task scale follows the requested operation, not the amount or sophistication of supplied
+material. A long research report can still require only a bounded synthesis. Do not
+promote synthesis into source verification, compatibility research, repository analysis,
+or project planning unless the user assigned that work.
 
 Split investigation by ownership: project-internal unknowns → `reality-grounded-debugging`
 and the relevant entrypoints/configs/runtime surfaces; anything owned by an external
