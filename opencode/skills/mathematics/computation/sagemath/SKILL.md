@@ -42,6 +42,11 @@ Canonical objects encode structure, enable verification, and make code self-docu
 
 ## Core Rules
 
+> [!IMPORTANT]
+> Code and test examples must satisfy the non-negotiable
+> [[policy-index/SKILL|bridge-burning policies]], especially the canonical proof and
+> assertion rules.
+
 ### 1. NO Manual Matrix Construction
 
 **NEVER** create matrices like `matrix([[1,2],[3,4]])`. Always use [[mathematics/computation/sagemath/SKILL|SageMath]]’s built-in
@@ -95,3 +100,25 @@ Every assertion must be mathematically verifiable with clear documentation:
 - Code is runnable in sage blocks
 
 - Result includes citation to mathematical fact
+
+### 4. Compare Mathematical Objects, Not Enumeration Order
+
+Never assert equality of ordered collections when the mathematical guarantee is
+order-independent. In particular, do not sort two lists and assert that the resulting
+lists are equal:
+
+```sage
+# ❌ BAD: Couples the assertion to a non-canonical ordering choice
+assert sorted(actual_roots) == sorted(expected_roots)
+
+# ✅ GOOD: Tests equality of the underlying mathematical sets
+assert set(actual_roots) == set(expected_roots)
+```
+
+Use multiset equality instead when multiplicities are mathematically significant.
+Assert sequence equality only when a canonical ordering or normal form is itself part of
+the mathematics or the documented public contract, and state that canonicality in the
+assertion's explanation.
+
+Tests and examples must survive changes to enumeration and sorting algorithms whenever
+those choices do not alter the underlying mathematical object.
