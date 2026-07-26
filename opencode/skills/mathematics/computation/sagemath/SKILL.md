@@ -21,7 +21,7 @@ v = vector([1, 2, 3])
 # ✅ GOOD: Use canonical objects from algebraic structures
 R = RootSystem(['A', 2])
 L = R.weight_lattice()
-alpha = L.simple_roots()
+α = L.simple_roots()
 ```
 
 **Never test against hardcoded values:**
@@ -33,7 +33,7 @@ if gram[0][1] == -1:
     ...
 
 # ✅ GOOD: Test mathematical properties
-assert alpha[1].inner_product(alpha[2]) == -1
+assert α[1].inner_product(α[2]) == -1
 assert M.is_positive_definite()
 ```
 
@@ -148,3 +148,28 @@ Use `R.<x, y> = ...` whenever the generators are known when the parent is constr
 This keeps the mathematical declaration atomic and makes the intended Sage structure
 immediately legible. The angle-bracket form is Sage preparser syntax for Sage input,
 not ordinary Python syntax.
+
+### 6. Make the Code Read Like Mathematics
+
+Choose notation that makes the Sage source resemble the mathematical argument. Sage
+supports Unicode identifiers; use standard mathematical symbols when the surrounding
+mathematics gives them a clear meaning:
+
+```sage
+# ❌ BAD: Transliteration obscures the notation used in the mathematics
+alpha1 = L.simple_root(1)
+phi = Hom(A, B)(data)
+
+# ✅ GOOD: The source uses the mathematical symbols directly
+α_1 = L.simple_root(1)
+φ = Hom(A, B)(data)
+```
+
+Prefer `α_1`, `φ`, `Δ`, or `W_I` to `alpha1`, `phi`, `delta`, or similarly transliterated
+names when those symbols are the established notation. Keep indices visible with
+underscores. Apply the same principle to expressions, object names, and the order of
+computations: a mathematician should be able to compare the code directly with the
+corresponding definition or proof.
+
+Do not introduce symbolic names whose meaning is not established by the surrounding
+mathematics. Mathematical readability, not Unicode decoration, is the criterion.
