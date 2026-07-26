@@ -173,3 +173,29 @@ corresponding definition or proof.
 
 Do not introduce symbolic names whose meaning is not established by the surrounding
 mathematics. Mathematical readability, not Unicode decoration, is the criterion.
+
+### 7. Write Notebooks as Mathematical Narratives
+
+Heavily prefer narrative notebooks using `jupyterlab_myst` syntax. Code cells should
+primarily establish computations and named mathematical objects; adjacent Markdown cells
+should explain, list, and present those results in prose:
+
+```sage
+name = "Me"
+array = vector(ZZ, 2, [1, 1])
+```
+
+```markdown
+Hello, {eval}`name`! Your array is: {eval}`array`.
+The sum is: {eval}`array.sum()`.
+```
+
+Use `{eval}` interpolation to place computed values inside the mathematical explanation.
+Do not make the reader reconstruct the argument from a sequence of code cells and raw
+outputs. Introduce the question in prose, perform the computation in a focused code cell,
+and interpret the result in the next Markdown cell.
+
+For exploratory notebooks, prefer more, shorter cells over monolithic computations.
+Call `show(...)` frequently after constructing or transforming an object so the reader
+can see its mathematical form, representation, and intermediate shape. Each cell should
+advance one legible step of the exploration.
