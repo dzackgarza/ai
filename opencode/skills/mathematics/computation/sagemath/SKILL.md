@@ -122,3 +122,29 @@ assertion's explanation.
 
 Tests and examples must survive changes to enumeration and sorting algorithms whenever
 those choices do not alter the underlying mathematical object.
+
+### 5. Bind Generators with Sage Syntax
+
+In Sage input, bind a parent and its named generators in the defining assignment:
+
+```sage
+# ✅ GOOD: Idiomatic Sage generator binding
+R.<x, y> = PolynomialRing(QQ, 2)
+```
+
+Do not construct the parent and then name or unpack its generators separately:
+
+```sage
+# ❌ BAD: Repeats generator names and separates them from the parent definition
+R = PolynomialRing(QQ, 2, names=("x", "y"))
+x, y = R.gens()
+
+# ❌ BAD: Spells out the preparser expansion
+R = PolynomialRing(QQ, 2, names=("x", "y"))
+x, y = R._first_ngens(2)
+```
+
+Use `R.<x, y> = ...` whenever the generators are known when the parent is constructed.
+This keeps the mathematical declaration atomic and makes the intended Sage structure
+immediately legible. The angle-bracket form is Sage preparser syntax for Sage input,
+not ordinary Python syntax.
