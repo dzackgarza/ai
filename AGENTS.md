@@ -105,6 +105,7 @@ When the situation in the left column is present, load the right column before a
 | Fixing a slop finding, or any rename/delete/"make honest" remediation | `fixing-slop` |
 | Behavioral regression or uncertain implementation failure | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
 | External tools, libraries, APIs, compilers, package managers, exact diagnostics, dependency choices | `known-solution-first` |
+| Jupyter Assistant API calls or notebook operations exposed by it | `known-solution-first`; use the live-discovered `japi` launcher from `dzackgarza/jupyter-mcp-server`, not hand-written `curl` calls |
 | Any interaction with a test file | `test-guidelines` |
 | Plans, or plan feedback that must survive the turn | `plan`, `agent-memory` |
 | User requests a roadmap, PRD, cross-agent plan, review track, issue tree, or proof-bearing coordination structure | `project-initialization`, `plan`, `agent-memory`, `git-guidelines`, then `plan/references/externalization.md` |
