@@ -561,7 +561,9 @@ Config: `~/ai/opencode/opencode.json`
 | --- | --- | --- |
 | `opencode-antigravity-auth@latest` | Antigravity provider auth (Gemini, Claude via Google) | https://github.com/NoeFabris/opencode-antigravity-auth |
 | `opencode-anthropic-auth@latest` | Anthropic OAuth authentication | https://github.com/anomalyco/opencode-anthropic-auth |
-| `opencode-openai-codex-auth` | OpenAI Codex auth (GPT-5.x Codex models) | https://github.com/numman-ali/opencode-openai-codex-auth |
+| `oc-codex-multi-auth` | OpenAI Codex auth, multi-account rotation, health checks (installed; supersedes `opencode-openai-codex-auth`) | https://github.com/ndycode/oc-codex-multi-auth |
+| `opencode-openai-codex-auth` | OpenAI Codex auth, single-account (original; stale since Feb 2026) | https://github.com/numman-ali/opencode-openai-codex-auth |
+| `@cortexkit/opencode-openai-auth` | OpenAI Codex auth, multi-account fallback, WebSocket transport | https://github.com/cortexKit/openai-auth |
 | `@rama_nigg/open-cursor@latest` | Cursor ACP provider (requires Cursor CLI) | https://github.com/Nomadcxx/opencode-cursor |
 
 ### Utility Plugins
