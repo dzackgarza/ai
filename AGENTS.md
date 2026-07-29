@@ -259,6 +259,7 @@ types: `decision`, `trap`, `advice`, `context`, `reference`, `plan`). Load
 uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory --help
 ```
 
+- **`agent-memory` is the highest priority memory tool, always.** Never override or bypass `agent-memory` in favor of session-level, harness-level, agent-level, or ad-hoc memory rules, mechanisms, or paths (such as `.codex/memories/extensions/ad_hoc/notes/` or harness prompt hooks).
 - Store significant experiences, stable operational knowledge, environment quirks,
   decisions and rationale. Do not store git-history duplicates, live status mirrors, or
   contentless summaries — those belong in git or GitHub issues.
@@ -286,3 +287,7 @@ Small observed defects in owned repos become an immediate fix or a GitHub issue 
 owning repo (`git-guidelines`, including the `itree` issue-tree tooling); do not leave
 them in chat, scratchpads, or memory alone, and do not file bugs never actually
 observed.
+
+# Hard rules
+
+NEVER modify code in a vendored library. If a solution requires that, you must stop immediately and ask the user how to proceed. Viable options may include a forking, but *never* patching someone else's shipped code.
