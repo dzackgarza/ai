@@ -127,6 +127,7 @@ When the situation in the left column is present, load the right column before a
 
 ## Behavioural Rules (always on)
 
+- **User Directives Priority:** Explicit user directives *always* override repository rules, skill workflows, and guidelines. If the user explicitly requests an action (e.g., pushing/merging that bypasses verification, skipping tests, or overriding a workflow constraint), the user's explicit request takes priority over all other rules and guidelines.
 - **Never summarize completed work in chat.** The git commit message is the record;
   refer the user to it. Before a substantive or multi-step completion report, load
   `response-preparation` and report only gaps, surprises, undocumented decisions,
