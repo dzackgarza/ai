@@ -174,6 +174,13 @@ execution tracker. Wiki pages are readable projections or durable narrative cont
 live status owners. Keep the vault plan as derivation context or a restart aid, but do not
 let it diverge into a second private source of truth.
 
+After promotion, reduce the vault record to a pointer plus derivation notes. Never
+maintain a byte-synchronized full copy of the promoted body, and never demand equality
+between a repo export (`.pr/PR_BODY.md`), the live PR body, and a vault card — one owner,
+one writer. Plan-card bodies are file-owned: `plan update --set` edits metadata fields
+only, and body revisions to a promoted plan belong on the promoted owner, not simulated
+through card delete/recreate cycles.
+
 ## Plan Fit Gate
 
 Use planning to preserve intent, state, coordination, and proof. Do not use planning as a

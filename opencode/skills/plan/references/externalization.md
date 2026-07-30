@@ -102,6 +102,20 @@ session opens its PR when implementation starts, scoped by pr-scoping against th
 live backlog. Fragmentation is prevented by that skill's default — one session-scale
 PR — not by pre-scoped draft-PR ceremony that freezes a planner's guess.
 
+## Converge Before You Externalize
+
+Externalization is a one-way door taken once. Until the semantic target has converged —
+one internal draft states the intended product transformation and has been reviewed
+against [[pr-scoping/SKILL|pr-scoping]] — create no branch, no PR, no issue edits, and no
+vault-synchronized copies. A correction to an unconverged draft is a prose edit; once a
+wrong scope has been committed, pushed, PR-bodied, and mirrored, the same correction
+becomes a distributed-state migration (commits, PR-body replacement, vault repair,
+revalidation) on every round. Draft → converge → externalize once.
+
+After promotion, keep exactly one authored copy. If the PR body is the claim map, any
+repo export or vault card is a pointer to it — never a synchronized duplicate whose
+byte-equality must be maintained by additional commits.
+
 ## Source Plan Requirements
 
 Before creating GitHub objects, the source plan must fix:

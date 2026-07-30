@@ -65,6 +65,14 @@ You are about to violate the workflow if:
 Each coherent change gets its own checkpoint commit.
 Bundling unrelated work is not cleaner history — it is missing provenance.
 
+## Commit Execution Path
+
+Run commits and pushes in a native, unbounded shell. Never route them through bounded
+runtime executors (MCP runtime steps, timeout-capped wrappers): a timeout that kills a
+commit hook mid-run leaves partial state and manufactures false failures. After one hook
+has been killed by a bounded runner, switch permanently to the proven native path for
+the rest of the session — do not retry the bounded route and then recover from it again.
+
 ## Safe Deletion
 
 | DO | DON’T |

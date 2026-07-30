@@ -101,6 +101,7 @@ When the situation in the left column is present, load the right column before a
 | Negative finding, failed search, document/transcript/log summary, or any conclusion from a partial read | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Reviewing agent/LLM output or judging a completion claim | `reviewing-subagent-work` (and its `references/review-guidelines.md`), `reviewing-llm-code`, `anti-slop` |
 | Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `test-guidelines` |
+| Scoping a PR, deciding whether/how many PRs, or auditing a plan's PR boundaries | `pr-scoping` |
 | Code/tests/QC touching fallbacks, mocks, smoke tests, defaults, deletion, quarantine, or bespoke policy | `policy-index`, then only the narrower skills it selects |
 | Fixing a slop finding, or any rename/delete/"make honest" remediation | `fixing-slop` |
 | Behavioral regression or uncertain implementation failure | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
@@ -139,6 +140,12 @@ When the situation in the left column is present, load the right column before a
   load `handling-corrections`. A critique that does not request a course change is an
   analysis request, not authorization to edit. After resolving, persist durable
   expectations per the Memory section.
+- **Externalize once, after convergence.** Converge scope and interpretation in one
+  local draft before creating coordinated external state — branch, PR, issue edits,
+  synchronized vault copies. Pre-promotion corrections are prose edits to that draft.
+  When coordination edits (commits, PR-body syncs, vault migrations, revalidations)
+  start outnumbering content decisions, interpretation has not converged: stop the
+  machinery and reconverge at the draft level.
 - **Coverage honesty:** whole-artifact claims require complete relevant coverage. If
   only a slice was inspected, report the exact slice and gaps; never characterize the
   whole. Do not state nonexistence when evidence only supports "not found in inspected

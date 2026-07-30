@@ -99,6 +99,13 @@ problem. Route to the **Contaminated Artifacts Cannot Be Repaired In Place** pro
 extracts the real requirements, a separate fresh agent rebuilds greenfield. You, holding
 the correction history, are the wrong context to do that repair.
 
+That routing applies to durable artifacts whose contamination accreted across sessions.
+A draft still converging in the authoring session is not contaminated — it is
+unfinished. Correct it in place with a direct rewrite from the real requirements, one
+writer, one pass, and do not run coordination machinery per correction round (commits,
+PR-body syncs, vault migrations, fresh-context pipelines) on an artifact that has not
+been promoted to external state yet.
+
 This is `T7 Correction-to-Content Transduction` and `L8 Correction Fossilization` in
 [llm-failure-modes/references/agent-distortion-index.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/references/agent-distortion-index.md).
 
