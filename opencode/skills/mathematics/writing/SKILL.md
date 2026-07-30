@@ -1,6 +1,6 @@
 ---
 name: dzack-mathematical-writing
-description: Use when producing mathematical content, proofs, problem solutions, LaTeX documents, or formalization targets. Triggers on any mathematical notation, proof structure, typesetting, or verification code. Proofs default to Lamport-style structured proofs in every medium (chat, prose, docstrings, LaTeX).
+description: Use when producing mathematical content, proofs, problem solutions, multi-section reports/notes/specs, LaTeX documents, or formalization targets. Triggers on any mathematical notation, proof structure, typesetting, verification code, or document-scale exposition for an expert reader. Proofs default to Lamport-style structured proofs in every medium (chat, prose, docstrings, LaTeX).
 ---
 # Dzack Mathematical Writing
 
@@ -321,7 +321,14 @@ writing.
   contradiction, existence, definitions, theorems
 
 - `references/exposition-style.md` — Pedagogical writing style, problem presentation,
-  solution structure
+  solution structure (single problem-solution scale)
+
+- `references/report-architecture.md` — Document-scale architecture for expert-audience
+  reports, notes, specs, and surveys: theorem-driven (not status-driven) organization,
+  statement taxonomy, closed definitions, the negative-statement gate, notation
+  compression, risk-proportional proof detail, reproducible computations, strategies as
+  conditional theorems, citation granularity. **Load before writing or revising any
+  multi-section mathematical document.**
 
 - `references/typesetting-conventions.md` — LaTeX environments, alignment,
   cross-references, YAML headers, tables, figures
