@@ -96,8 +96,8 @@ Turn Summary:
 
 - Completed: [Restate the explicit user directive that led to this work]
 
-  - Validated by:
-    [State what *proves* that the above directive was carried out correctly]
+  - Proven by:
+    [What proves complete achievement of the above task. Only objective evidence is admissible here: test results, grep/diff/line-count output, build status, rendered-output inspection, a committed diff, or an explicit user confirmation. A narration of actions taken ("I updated X", "I removed Y") is NOT proof — it restates "Completed" and proves nothing. Running a tool is not proof; the tool's confirming output is proof. If no objective validator exists for this task (prose edits, judgment calls, framing decisions), state "No objective validator — user inspection required" and stop. Do not invent activity logs as a substitute.]
 
 - Failures:
 
