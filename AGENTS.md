@@ -89,6 +89,12 @@ can be produced correctly and safely. A loaded skill's references are progressiv
 disclosure for that route, not new task triggers. If a route would add an object,
 investigation, proof burden, or external write the user did not request, do not load it.
 
+Skill loading is itself the overhead being governed. Route once, up front, from the
+table — one or two rows for a bounded request — then work. Reaching for a fourth skill
+on one request, or loading a skill because a loaded skill mentioned it, is routing
+recursion, not diligence: stop, re-derive the requested operation, and keep only the
+loads that operation requires.
+
 ## Situational Routing
 
 When the situation in the left column is present, load the right column before acting.
