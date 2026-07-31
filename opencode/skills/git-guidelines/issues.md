@@ -2,7 +2,8 @@
 
 Consolidated from the former `github-issues` skill.
 
-Issue *filing rules and templates* are in SKILL.md (Issue Workflow section).
+Issue *filing rules and templates* are in the Issue Workflow section of
+[[git-guidelines/operations/SKILL|operations]].
 This reference covers the CLI mechanics for viewing, creating, managing, and triaging
 issues. It is mechanics only.
 
