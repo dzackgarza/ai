@@ -1,12 +1,12 @@
 ---
 name: response-preparation
-description: Use before a substantive or multi-step completion report, progress synthesis, or status response when the user needs information not already visible in the result. Skip direct answers, obvious corrections, and trivial edit acknowledgments.
+description: Use when preparing any end-of-turn response after substantive or multi-step work, or any completion, progress, status, handoff, or remaining-work synthesis. Continue safe live work instead of reporting it; when a response is due, emit gaps and exceptions. Skip direct answers, obvious corrections, and trivial edit acknowledgments.
 ---
 # Response Preparation
 
 ## Why This Skill Exists
 
-Forces theory-of-mind reasoning about what the user needs to hear vs what the you are
+Forces theory-of-mind reasoning about what the user needs to hear vs what you are
 about to reflexively produce.
 Models treat response templates ("Items NOT completed", “Gaps”, “Next actions”) as boxes
 to fill. The result is mechanically correct but informationally useless:
@@ -27,9 +27,44 @@ to fill. The result is mechanically correct but informationally useless:
 The common mechanism: the model fills the response template by scanning its most recent
 actions, not by asking **why the user would want each piece of information**.
 
-## Label-Content Coherence (MUST run first)
+## Success Is the Expected Outcome
 
-Before anything else, re-read every labeled section of your draft response.
+Treat successful execution as the expected outcome of a turn. It has no reporting value
+by itself. The commit, diff, test artifact, or requested deliverable already records it.
+
+A response after substantive work is an exception report, not a retrospective. Completed
+steps, verification transcripts, baseline counts, and explanations of why a finished fix
+was correct are inadmissible unless omitting one would make a gap, blocker, surprise,
+divergence, or required decision unintelligible. When such context is necessary, use the
+shortest clause that makes the exception clear.
+
+## Continue Before Reporting
+
+Before drafting, determine whether safe in-scope work remains on the strongest live goal
+and whether user input is actually required. If work remains and you can proceed, continue
+working. A progress report is not continuation; it yields control and makes unfinished
+work depend on another user prompt.
+
+End the work phase only when the requested goal is complete, a concrete blocker requires
+new authority or information, the user explicitly requested a status response, or the
+assigned operation is an active wait or monitor. A local fix, green test, baseline match,
+checkpoint, or newly explained defect is not an end condition while mandatory work
+remains.
+
+## Preserve the Live Queue
+
+Prose does not preserve an obligation. Do not demote discovered work into a final
+"not touched" paragraph, compressed subordinate clause, or optional "next steps" list.
+Resolve it, continue it, place it in its canonical durable owner when another artifact
+owns it, or report the exact blocker that prevents action.
+
+"Pre-existing" describes provenance, not disposition. "Back to baseline" describes a
+comparison, not completion. Never make the user mine a retrospective, reconstruct the
+work graph, and re-issue work that remained executable.
+
+## Label-Content Coherence
+
+After deciding that a response is due, re-read every labeled section of your draft response.
 For each label ("Remaining", “Not completed”, “Open items”, “Next actions”, etc.):
 
 **Does the content actually mean what the label says?**
@@ -53,21 +88,27 @@ You must read your own output and ask: **“Does this content mean what this lab
 it means?”** If the answer is no, delete the section entirely.
 An absent section is better than an incoherent one.
 
-## Synthesis Gate
+## Gap-First Synthesis Gate
 
-After verifying label-content coherence, produce this single statement before writing
-your response:
+Before writing, ask internally:
 
-**“The user needs to know _____ because they cannot already see it.”**
+**“Can I continue the strongest live goal without user input?”**
 
-If you cannot complete that sentence with something concrete, you have nothing to say.
-Do not write a response.
-The git commit is sufficient.
+If yes, continue the work and do not draft a response yet. Do not redefine the strongest
+live goal around the most recent local fix.
 
-If you can complete it, that sentence IS your response (or the seed of it).
-Do not pad it with status, summaries, or template sections.
-The user asked for a task, not a report — only communicate what the task couldn’t
-communicate for itself.
+When a response is due, complete this statement:
+
+**“The user needs to know _____ because it changes _____.”**
+
+The first blank should normally name a gap, blocker, surprise, divergence, or decision.
+The second should name the affected action, expectation, proof burden, or required user
+choice. If the only completion is a description of what you did, delete it. If the task
+is complete and no exception exists, point to the commit or result in one line.
+
+Every remaining sentence must support that statement. Do not pad it with status,
+summaries, verification output, or template sections. The user assigned work, not a
+request for evidence that activity occurred.
 
 ## Frame Fidelity Gate
 
@@ -111,29 +152,31 @@ needs to know, or you can’t. There is no template to fill.
 
 ## Failure Severity
 
-Not all response failures are equal.
-Severity depends on the degree of incoherence, not on how easily the failure matches a
-known pattern:
+Judge response failures by the work they displace, not by whether the prose is accurate.
 
-**Semantic inversion** (label contradicts content) is the most critical failure.
-The output is not just unhelpful — it is self-contradictory.
-Example: “Remaining: [description of completed work].” The reader must notice that the
-label and content disagree, then guess which one is wrong.
-This is worse than omitting the section entirely.
+**Execution displacement** is most severe. The agent stops to narrate a local success
+while safe mandatory work remains, turning an executable obligation into a future user
+prompt.
 
-**Noise injection** (resolved items listed as open, summaries of visible work) wastes
-the reader’s attention but is at least internally consistent.
-The content isn’t wrong, it’s just useless.
+**Queue destruction** follows. Open work is buried in prose without a durable owner,
+priority, dependency, or continuation boundary, so later turns must rediscover it or lose
+it.
 
-**Scoping errors** ("Not completed: none" when the global task has open items) are the
-least severe — the content is locally true, just at the wrong scope.
+**Semantic inversion** occurs when a label contradicts its content, such as completed
+work under “Remaining.” The reader must detect the contradiction and guess which part is
+wrong.
 
-When self-correcting, address semantic inversions first.
-Do not fixate on a scoping error while a semantic inversion sits unexamined — that is
-table-lookup reasoning (the scoping error matches a known pattern; the inversion
-requires judgment to see).
+**Noise injection** includes visible-work summaries, raw verification output, resolved
+items listed as open, and causal defenses of completed work. Accurate noise still spends
+the attention needed to find live gaps.
 
-## What Good Responses Contain
+**Scoping errors** declare a local subtask complete while the strongest live goal remains
+open. A baseline match or “pre-existing” classification often performs this substitution.
+
+Correct the trajectory before polishing the report: resume executable work, restore the
+live queue to its durable owner, then remove retrospective prose.
+
+## What Responses May Contain
 
 Only items the user needs and can’t already see:
 
@@ -146,3 +189,23 @@ Only items the user needs and can’t already see:
 - Divergences between what was asked and what was done
 
 - Remaining mandatory work in the overall task
+
+## Content to Delete
+
+Unless the user explicitly requested it or it is essential to an exception, delete:
+
+- chronological “what changed and why” narration;
+
+- successful verification commands, raw output, and example matrices or objects;
+
+- baseline or test-count recaps used as closure;
+
+- explanations that defend why the completed approach is now correct;
+
+- file-by-file inventories of successful edits;
+
+- “not touched” residue presented after the agent could have continued working.
+
+Do not reward a discover-fix-explain episode with a report merely because it forms a
+coherent story. Coherence is not a completion boundary. Keep working against the original
+goal, and let commits and artifacts retain the history.

@@ -102,7 +102,7 @@ When the situation in the left column is present, load the right column before a
 | Situation | Load |
 |----|----|
 | Any git or GitHub operation — staging, commits, deletion, branches, PRs, issues | `git-guidelines` |
-| Substantive completion report, progress update, or status synthesis | `response-preparation` |
+| Any end-of-turn response after substantive or multi-step work; any completion, progress, status, handoff, or remaining-work synthesis | `response-preparation` |
 | Correction that needs causal explanation, changes scope/authority, or implies destructive action | `handling-corrections` |
 | Negative finding, failed search, document/transcript/log summary, or any conclusion from a partial read | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Reviewing agent/LLM output or judging a completion claim | `reviewing-subagent-work` (and its `references/review-guidelines.md`), `reviewing-llm-code`, `anti-slop` |
@@ -135,11 +135,14 @@ When the situation in the left column is present, load the right column before a
 ## Behavioural Rules (always on)
 
 - **User Directives Priority:** Explicit user directives *always* override repository rules, skill workflows, and guidelines. If the user explicitly requests an action (e.g., pushing/merging that bypasses verification, skipping tests, or overriding a workflow constraint), the user's explicit request takes priority over all other rules and guidelines.
-- **Never summarize completed work in chat.** The git commit message is the record;
-  refer the user to it. Before a substantive or multi-step completion report, load
-  `response-preparation` and report only gaps, surprises, undocumented decisions,
-  incomplete required work, and next actions. Do not create a PR or review loop merely
-  to make a direct-commit task satisfy reporting.
+- **Success is expected, not reportable.** Completed work, verification, baselines, and
+  causal narration belong in commits and artifacts. Load `response-preparation` before
+  every substantive end-of-turn response; report only gaps, blockers, surprises,
+  decisions, or incomplete mandatory work that change what happens next. If none exist,
+  point to the commit or result in one line.
+- **Do not stop to report progress.** If safe in-scope work remains and no user decision
+  is required, continue. Never turn live obligations into a prose handoff or make the
+  user re-issue them.
 - **Corrections:** one unambiguous, reversible, in-scope change of course → apply it
   immediately and continue; no correction template, no restating the goal, no asking
   permission. Anything ambiguous, scope-changing, destructive, or "why did you..." →
