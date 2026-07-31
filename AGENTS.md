@@ -102,7 +102,7 @@ When the situation in the left column is present, load the right column before a
 | Situation | Load |
 |----|----|
 | Any git or GitHub operation — staging, commits, deletion, branches, PRs, issues | `git-guidelines` |
-| Any end-of-turn response after substantive or multi-step work; any completion, progress, status, handoff, or remaining-work synthesis | `response-preparation` |
+| Substantive completion report, progress or status update, handoff, or remaining-work synthesis | `response-preparation` |
 | Correction that needs causal explanation, changes scope/authority, or implies destructive action | `handling-corrections` |
 | Negative finding, failed search, document/transcript/log summary, or any conclusion from a partial read | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Reviewing agent/LLM output or judging a completion claim | `reviewing-subagent-work` (and its `references/review-guidelines.md`), `reviewing-llm-code`, `anti-slop` |
@@ -135,14 +135,12 @@ When the situation in the left column is present, load the right column before a
 ## Behavioural Rules (always on)
 
 - **User Directives Priority:** Explicit user directives *always* override repository rules, skill workflows, and guidelines. If the user explicitly requests an action (e.g., pushing/merging that bypasses verification, skipping tests, or overriding a workflow constraint), the user's explicit request takes priority over all other rules and guidelines.
-- **Success is expected, not reportable.** Completed work, verification, baselines, and
-  causal narration belong in commits and artifacts. Load `response-preparation` before
-  every substantive end-of-turn response; report only gaps, blockers, surprises,
-  decisions, or incomplete mandatory work that change what happens next. If none exist,
-  point to the commit or result in one line.
-- **Do not stop to report progress.** If safe in-scope work remains and no user decision
-  is required, continue. Never turn live obligations into a prose handoff or make the
-  user re-issue them.
+- **Success is expected.** In completion, progress, and status responses, keep routine
+  accomplishments brief and focus on gaps, blockers, surprises, decisions, and
+  incomplete required work. Load `response-preparation` before writing one.
+- **Do not substitute reporting for assigned work.** If safe in-scope work on the
+  active request remains, continue unless the user asked for status or input is required.
+  Do not recast that work as optional next steps.
 - **Corrections:** one unambiguous, reversible, in-scope change of course → apply it
   immediately and continue; no correction template, no restating the goal, no asking
   permission. Anything ambiguous, scope-changing, destructive, or "why did you..." →
