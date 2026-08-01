@@ -13,6 +13,7 @@ correct downstream agent behavior.
 - [Common Footguns](#common-footguns)
 - [Independent Review Must Be Frame-Independent](#independent-review-must-be-frame-independent)
 - [The Writer Can Reproduce the Same Failure](#the-writer-can-reproduce-the-same-failure)
+- [Treat Control Changes as Experiments](#treat-control-changes-as-experiments)
 - [Preserve Causal Knowledge Without Fossilizing the Incident](#preserve-causal-knowledge-without-fossilizing-the-incident)
 - [Adversarial Evaluation](#adversarial-evaluation)
 
@@ -229,6 +230,28 @@ it around:
 
 Repeated local skill patches are evidence about the writer's frame, not merely defects in
 individual sentences.
+
+## Treat Control Changes as Experiments
+
+A transcript establishes that an observed trajectory occurred. One transcript rarely
+establishes a unique causal mechanism, a complete failure class, or a final control
+design. Do not convert one persuasive postmortem into a universal prohibition and
+declare the routing problem solved.
+
+Use a single case to justify the narrowest reversible experiment that addresses the
+observed ambiguity. Preserve competing explanations and state the intervention's
+prediction in the commit or evaluation artifact:
+
+- observed trajectory: what the agent actually did;
+- current hypothesis: why that behavior appeared necessary from inside its task model;
+- intervention: the smallest gate or distinction being changed;
+- expected signal: what a fresh agent should do differently;
+- retained uncertainty: what this case does not establish.
+
+Test the revised control on fresh tasks and models, including nearby cases where the
+new gate should not fire. Treat later failures as evidence about both the target agent
+and the control writer's theory. Refine, replace, or remove the intervention when new
+evidence defeats it.
 
 ## Preserve Causal Knowledge Without Fossilizing the Incident
 

@@ -62,6 +62,16 @@ A situational route applies only when its situation is part of one of those thre
 fields. Apply this gate before the routing table. Do not load a route and use its
 workflow to decide whether the route was relevant.
 
+Bound `Required evidence` to the strength of judgment the user requested. Do not
+silently strengthen a current-state or gap synthesis into independent certification of
+the whole project, then treat every concern introduced by that stronger standard as
+required evidence.
+
+Initial routing may use the request, supplied material, and already-observed state. If
+task-native inspection later exposes a concrete new situation, route that situation
+then. A skill that might become useful under a hypothetical deeper investigation does
+not apply yet.
+
 The following facts do not expand the task:
 
 - **Current working directory:** The repository where the session started is ambient
@@ -83,17 +93,24 @@ The following facts do not expand the task:
 - **Incidental technical references:** A library, API, compiler, or tool mentioned in
   source material does not trigger external-tool research. That route applies only when
   the assigned work requires choosing, using, debugging, or verifying it.
+- **Status synthesis versus certification:** A request for current status, remaining
+  work, or publishability gaps initially calls for reconstructing state from native
+  surfaces such as code and repository state, plans, issues and PRs, CI, releases, and
+  deployments. It does not by itself place every prior artifact or completed item under
+  adversarial agent/LLM review. That review route requires a concrete deliverable or
+  claim whose correctness the user asked to adjudicate, or an observed contradiction
+  that makes the claim itself part of the task.
 
 Load the smallest set of directly applicable routes and stop once the requested artifact
 can be produced correctly and safely. A loaded skill's references are progressive
 disclosure for that route, not new task triggers. If a route would add an object,
 investigation, proof burden, or external write the user did not request, do not load it.
 
-Skill loading is itself the overhead being governed. Route once, up front, from the
-table — one or two rows for a bounded request — then work. Reaching for a fourth skill
-on one request, or loading a skill because a loaded skill mentioned it, is routing
-recursion, not diligence: stop, re-derive the requested operation, and keep only the
-loads that operation requires.
+Skill loading is itself the overhead being governed. Start a bounded request with one
+or two directly applicable rows, then work. A later route requires a newly observed
+concrete trigger; a concern or reference introduced by an already-loaded skill is not
+such a trigger. Reaching for a fourth skill without new task evidence means the initial
+route has expanded its own proof burden: stop and return to the requested operation.
 
 ## Situational Routing
 
@@ -105,7 +122,8 @@ When the situation in the left column is present, load the right column before a
 | Substantive completion report, progress or status update, handoff, or remaining-work synthesis | `response-preparation` |
 | Correction that needs causal explanation, changes scope/authority, or implies destructive action | `handling-corrections` |
 | Negative finding, failed search, document/transcript/log summary, or any conclusion from a partial read | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
-| Reviewing agent/LLM output or judging a completion claim | `reviewing-subagent-work` (and its `references/review-guidelines.md`), `reviewing-llm-code`, `anti-slop` |
+| Reviewing a concrete agent-produced deliverable or adjudicating a specific completion claim whose correctness is under review | `reviewing-subagent-work` and its `references/review-guidelines.md` |
+| Reviewing LLM-produced code, tests, QC, or documentation for LLM-specific implementation-quality patterns | `reviewing-llm-code`, `anti-slop` |
 | Acting on PR review feedback | `pr-feedback-triage`, `git-guidelines`, `test-guidelines` |
 | Scoping a PR, deciding whether/how many PRs, or auditing a plan's PR boundaries | `pr-scoping` |
 | Code/tests/QC touching fallbacks, mocks, smoke tests, defaults, deletion, quarantine, or bespoke policy | `policy-index`, then only the narrower skills it selects |
