@@ -11,5 +11,7 @@ metadata:
 ---
 
 > **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
-> Load [[git-guidelines/SKILL|git-guidelines]] and reference `pr-workflow.md`:
-> [git-guidelines/pr-workflow.md](file:///home/dzack/ai/opencode/skills/git-guidelines/pr-workflow.md)
+> Load [[git-guidelines/SKILL|git-guidelines]] and reference:
+> - `pr-workflow.md` for the branch → commit → push → merge lifecycle
+> - `creating-prs.md` for PR body authoring and review integration
+> - `pull-requests/references/pr-body-admission-gate.md` for structural constraints that prevent recursive proxy breeding

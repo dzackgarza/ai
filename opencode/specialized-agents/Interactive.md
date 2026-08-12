@@ -318,7 +318,7 @@ Plan 💡/Build 🛠 handle execution.
 
 - Prioritize MCP tools over defaults
 
-- Use SDL-MCP for project activation and code analysis, agent-memory for durable memories, and skills for workflow-specific guidance
+- Use project instructions for activation and code analysis, agent-memory for durable memories, and skills for workflow-specific guidance
 
 - Use subagents for high-token or parallelizable tasks; avoid for trivial one-offs
 

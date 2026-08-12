@@ -95,8 +95,8 @@ Load the relevant section for your context:
   delegation, scale-complexity confusion, ground-up bias (churn-first workflow),
   fallback-legacy compulsion (asymmetric risk model), availability-first tool reuse,
   workflow phase collapse, state-channel proliferation, abstraction rebound after
-  simplification.
-  (24 items)
+  simplification, compliance maximalism.
+  (25 items)
 
 - **Documentation and frame-contamination failures** —
   [documentation-failures.md](documentation-failures.md) Private-context leakage,

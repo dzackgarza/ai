@@ -10,18 +10,40 @@
     "morph",
     "openai"
   ],
-  "instructions": ["/home/dzack/.config/opencode/AGENTS.caveman.md"],
+  "instructions": [
+    "/home/dzack/.config/opencode/AGENTS.caveman.md"
+  ],
   "formatter": {
     "ruff-check": {
-      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "check",
+        "--fix",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "ruff-format": {
-      "command": ["uvx", "ruff", "format", "$FILE"],
-      "extensions": [".py"]
+      "command": [
+        "uvx",
+        "ruff",
+        "format",
+        "$FILE"
+      ],
+      "extensions": [
+        ".py"
+      ]
     },
     "prettier": {
-      "command": ["npx", "prettier", "--write", "$FILE"],
+      "command": [
+        "npx",
+        "prettier",
+        "--write",
+        "$FILE"
+      ],
       "extensions": [
         ".js",
         ".ts",
@@ -35,24 +57,39 @@
       ]
     },
     "just": {
-      "command": ["just", "--unstable", "--fmt", "--justfile", "$FILE"],
-      "extensions": ["justfile"]
+      "command": [
+        "just",
+        "--unstable",
+        "--fmt",
+        "--justfile",
+        "$FILE"
+      ],
+      "extensions": [
+        "justfile"
+      ]
     }
   },
   "lsp": {
     "texlab": {
-      "command": ["texlab"],
-      "extensions": [".tex", ".sty", ".cls", ".bib"]
+      "command": [
+        "texlab"
+      ],
+      "extensions": [
+        ".tex",
+        ".sty",
+        ".cls",
+        ".bib"
+      ]
     }
   },
   "mcp": {
-    "sdl-mcp": {
-      "type": "remote",
-      "url": "http://127.0.0.1:39150/mcp"
+    "lean-lsp": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "lean-lsp-mcp"
+      ]
     }
-  },
-  "permission": {
-    "question": "allow"
   },
   "default_agent": "Interactive",
   "compaction": {
@@ -398,7 +435,9 @@
           "name": "Inkling"
         }
       },
-      "whitelist": ["thinkingmachines/Inkling"]
+      "whitelist": [
+        "thinkingmachines/Inkling"
+      ]
     },
     "kilo": {
       "blacklist": [
@@ -1076,17 +1115,13 @@
         "devstral-2:123b",
         "devstral-small-2:24b",
         "gemini-3-flash-preview",
-        "gemma3:12b",
-        "gemma3:27b",
-        "gemma3:4b",
-        "glm-4.6",
-        "glm-4.7",
+        "gemma4:31b",
         "glm-5.1",
         "gpt-oss:20b",
-        "kimi-k2-thinking",
-        "kimi-k2:1t",
-        "minimax-m2",
-        "minimax-m2.1",
+        "kimi-k2.5",
+        "kimi-k2.6",
+        "minimax-m2.5",
+        "minimax-m2.7",
         "ministral-3:14b",
         "ministral-3:3b",
         "ministral-3:8b",
@@ -1105,20 +1140,11 @@
         "glm-5": {
           "name": "GLM 5"
         },
-        "minimax-m2.5": {
-          "name": "MiniMax M2.5"
-        },
-        "kimi-k2.5": {
-          "name": "Kimi K2.5"
-        },
         "deepseek-v4-flash": {
           "name": "DeepSeek V4 Flash"
         },
         "deepseek-v4-pro": {
           "name": "DeepSeek V4 Pro"
-        },
-        "gemma4:31b": {
-          "name": "Gemma 4 31B"
         },
         "glm-5.2": {
           "name": "GLM 5.2"
@@ -1126,14 +1152,8 @@
         "gpt-oss:120b": {
           "name": "GPT-OSS 120B"
         },
-        "kimi-k2.6": {
-          "name": "Kimi K2.6"
-        },
         "kimi-k2.7-code": {
           "name": "Kimi K2.7 Code"
-        },
-        "minimax-m2.7": {
-          "name": "MiniMax M2.7"
         },
         "minimax-m3": {
           "name": "MiniMax M3"
@@ -1143,20 +1163,19 @@
         },
         "nemotron-3-ultra": {
           "name": "Nemotron 3 Ultra"
+        },
+        "kimi-k3": {
+          "name": "Kimi K3"
         }
       },
       "whitelist": [
         "deepseek-v4-flash",
         "deepseek-v4-pro",
-        "gemma4:31b",
         "glm-5",
         "glm-5.2",
         "gpt-oss:120b",
-        "kimi-k2.5",
-        "kimi-k2.6",
         "kimi-k2.7-code",
-        "minimax-m2.5",
-        "minimax-m2.7",
+        "kimi-k3",
         "minimax-m3",
         "mistral-large-3:675b",
         "nemotron-3-ultra"
@@ -2041,7 +2060,10 @@
           }
         }
       },
-      "whitelist": ["deepseek-v4-flash", "deepseek-v4-pro"]
+      "whitelist": [
+        "deepseek-v4-flash",
+        "deepseek-v4-pro"
+      ]
     },
     "z-ai": {
       "blacklist": [
@@ -2057,7 +2079,9 @@
           "name": "GLM 4.7 Flash (Free)"
         }
       },
-      "whitelist": ["glm-4.7-flash"]
+      "whitelist": [
+        "glm-4.7-flash"
+      ]
     }
   }
 }

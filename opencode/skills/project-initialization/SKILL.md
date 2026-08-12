@@ -4,8 +4,8 @@ description: >-
   Use before substantive implementation that depends on repository-wide state, after
   cloning or switching projects for such work, or when requested work needs missing
   project surfaces. Establishes the normal project form:
-  git/remote freshness, GitHub public state, durable surface ownership, SDL-MCP
-  registration/indexing, .agents, [[agent-memory/SKILL|agent-memory]], [[justfile/SKILL|justfile]], ai-review-ci QC/hooks/CI,
+  git/remote freshness, GitHub public state, durable surface ownership, .agents,
+  [[agent-memory/SKILL|agent-memory]], [[justfile/SKILL|justfile]], ai-review-ci QC/hooks/CI,
   and task-relevant memory lookup before implementation.
 ---
 
@@ -112,26 +112,6 @@ Do not create GitHub issues, milestones, PRs, or wiki edits merely because they 
 missing. Create or update them only when the user requested public tracking or the task
 requires it; otherwise record the missing public surface as an initialization finding and
 continue with the requested scope.
-
-### SDL-MCP
-
-If the client exposes SDL-MCP, or repo instructions require it, make the repository
-available to SDL before broad code exploration or edits.
-
-- Check `repo.status` for the repository id you expect to use.
-- If `repo.status` reports that the repository is not registered, run
-  `repo.register` with the confirmed git root and a stable repo id, then run
-  `index.refresh` in `full` mode.
-- If `repo.status` reports stale or missing indexed state and the task depends on
-  current code, run `index.refresh` in `incremental` mode. Do not refresh by habit.
-- If refresh runs asynchronously, poll `repo.status` until the index is ready before
-  relying on graph-backed retrieval.
-- Once registered/current, start task context with `sdl.context` using `precise` or
-  `broad` mode according to the task.
-
-If SDL-MCP is unavailable, record that in the initialization stamp and use the
-repository's documented fallback path. In repos that ship `SDL.md`, treat it as the
-fallback workflow when the client cannot load the SDL-MCP skill.
 
 ### Project Instructions
 
@@ -297,8 +277,7 @@ Prefer this order:
 1. Stabilize git state and freshness.
 2. Inspect GitHub public state when the remote is GitHub-backed.
 3. Classify local docs, plans, TODOs, and scratchpads by durable owner.
-4. Register or refresh SDL-MCP context if available/required.
-5. Load repo instructions and task-relevant memories.
+4. Load repo instructions and task-relevant memories.
 6. Initialize or repair `.agents/` and memory binding.
 7. Normalize [[justfile/SKILL|justfile]] public/private surfaces.
 8. Delegate QC to `~/ai-review-ci` and install hooks/workflows where appropriate.
@@ -318,7 +297,6 @@ status:
 Project initialization:
 - Git: <root, branch, dirty/freshness/remote status>
 - GitHub: <wiki state, relevant issues/milestones/PRs, canonical tracker or gap>
-- SDL-MCP: <registered/current/unavailable/not applicable>
 - Instructions: <README/AGENTS/memory surfaces checked>
 - Memory: <initialized? relevant memories searched?>
 - Durable state: <local docs/plans classified? migrations or pointers needed?>

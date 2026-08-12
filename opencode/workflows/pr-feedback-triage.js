@@ -15,11 +15,14 @@ export const meta = {
 // A cannot leak a verdict into remediation or self-dispose. The detailed
 // procedure lives in the pr-feedback-triage skill; agents load it by role.
 
-const repo = args && args.repo
-const pr = args && args.pr
+// Some callers deliver args JSON-encoded rather than as an object; accept both
+// so the run does not die at line 1 over a transport detail.
+const input = typeof args === 'string' ? JSON.parse(args) : args
+const repo = input && input.repo
+const pr = input && input.pr
 if (!repo || !pr) throw new Error('pr-feedback-triage workflow needs args {repo, pr}')
 
-const SKILL = '~/ai/opencode/skills/pr-feedback-triage'
+const SKILL = '~/ai/opencode/skills/git-guidelines/feedback'
 const HARNESS = SKILL + '/scripts/triage_state.py'
 const MAX_ROUNDS = 8
 

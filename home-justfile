@@ -3,6 +3,14 @@
 
 repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 
+# Sync centralized MCP config with ~/.envrc loaded through direnv.
+# Usage: just --justfile ~/ai/home-justfile install-mcps [--dry-run] [--harness codex]
+install-mcps *ARGS="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ repo }}"
+    direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
+
 # Show available recipes
 # Usage: just
 default:
@@ -63,20 +71,6 @@ clean:
     fi
 
     df -h
-
-# =============================================================================
-# MCP Sync
-# =============================================================================
-
-# Sync centralized MCP config with ~/.envrc loaded through direnv.
-# Usage: just --justfile ~/ai/home-justfile install-mcps [--dry-run] [--harness codex]
-install-mcps *ARGS="":
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd "{{ repo }}"
-    mkdir -p "$HOME/.config/sdl-mcp"
-    ln -snf "{{ repo }}/mcp/sdlmcp.config.json" "$HOME/.config/sdl-mcp/sdlmcp.config.json"
-    direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
 
 # =============================================================================
 # LLM Usage Limits

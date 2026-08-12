@@ -117,16 +117,12 @@ mappings:
   nvidia/moonshotai/kimi-k2-thinking: kimi-k2.5
   nvidia/moonshotai/kimi-k2-instruct: kimi-k2
   nvidia/moonshotai/kimi-k2-instruct-0905: kimi-k2
-  ollama-cloud/kimi-k2.5: kimi-k2.5
-  ollama-cloud/kimi-k2-thinking: kimi-k2.5
-  ollama-cloud/kimi-k2:1t: kimi-k2
+  ollama-cloud/kimi-k3: kimi-k3
 
   # MiniMax
   nvidia/minimaxai/minimax-m2: minimax-m2
   nvidia/minimaxai/minimax-m2.1: minimax-m2.1
   nvidia/minimaxai/minimax-m2.5-q4_k_xl: minimax-m2.5-q4_k_xl
-  ollama-cloud/minimax-m2: minimax-m2
-  ollama-cloud/minimax-m2.1: minimax-m2.1
   ollama-cloud/minimax-m2.5: minimax-m2.5
   opencode/minimax-m2.5-free: minimax-m2.5
   ollama/minimax-m2.5:cloud: minimax-m2.5
@@ -137,8 +133,6 @@ mappings:
   nvidia/z-ai/glm-4.7-q4_k_xl: glm-4.7-q4_k_xl
   nvidia/z-ai/glm-4.7-flash: glm-4.7-flash
   ollama-cloud/glm-5: glm-5
-  ollama-cloud/glm-4.7: glm-4.7
-  ollama-cloud/glm-4.6: glm-4.6
   openrouter-free/z-ai/glm-4.5-air:free: glm-4.5-air
 
   # Mistral
@@ -191,7 +185,6 @@ mappings:
   nvidia/google/codegemma-1.1-7b: codegemma
   nvidia/google/codegemma-7b: codegemma
   openrouter-free/google/gemma-3-27b-it:free: gemma-3-27b
-  ollama-cloud/gemma3:27b: gemma-3-27b
 
   # Grok
   github-copilot/grok-code-fast-1: grok-code-fast-1

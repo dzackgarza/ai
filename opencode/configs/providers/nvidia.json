@@ -12,12 +12,6 @@
     "meta/llama-3.3-70b-instruct": {
       "name": "llama-3.3-70b-instruct"
     },
-    "meta/llama-4-maverick-17b-128e-instruct": {
-      "name": "llama-4-maverick-17b-128e-instruct"
-    },
-    "mistralai/mistral-large-3-675b-instruct-2512": {
-      "name": "mistral-large-3-675b-instruct-2512"
-    },
     "mistralai/mistral-nemotron": {
       "name": "mistral-nemotron"
     },
@@ -36,17 +30,11 @@
     "openai/gpt-oss-120b": {
       "name": "gpt-oss-120b"
     },
-    "stepfun-ai/step-3.5-flash": {
-      "name": "step-3.5-flash"
-    },
     "deepseek-ai/deepseek-v4-flash": {
       "name": "deepseek-v4-flash"
     },
     "deepseek-ai/deepseek-v4-pro": {
       "name": "deepseek-v4-pro"
-    },
-    "minimaxai/minimax-m2.7": {
-      "name": "minimax-m2.7"
     },
     "minimaxai/minimax-m3": {
       "name": "minimax-m3"
@@ -63,11 +51,11 @@
     "nvidia/nemotron-3-ultra-550b-a55b": {
       "name": "nemotron-3-ultra-550b-a55b"
     },
-    "qwen/qwen3.5-397b-a17b": {
-      "name": "qwen3.5-397b-a17b"
-    },
     "google/gemma-4-31b-it": {
       "name": "gemma-4-31b-it"
+    },
+    "z-ai/glm-5.2": {
+      "name": "glm-5.2"
     }
   },
   "whitelist": [
@@ -76,10 +64,7 @@
     "google/gemma-4-31b-it",
     "meta/codellama-70b",
     "meta/llama-3.3-70b-instruct",
-    "meta/llama-4-maverick-17b-128e-instruct",
-    "minimaxai/minimax-m2.7",
     "minimaxai/minimax-m3",
-    "mistralai/mistral-large-3-675b-instruct-2512",
     "mistralai/mistral-medium-3.5-128b",
     "mistralai/mistral-nemotron",
     "moonshotai/kimi-k2.6",
@@ -90,8 +75,7 @@
     "nvidia/nemotron-3-ultra-550b-a55b",
     "nvidia/nemotron-4-340b-instruct",
     "openai/gpt-oss-120b",
-    "qwen/qwen3.5-397b-a17b",
-    "stepfun-ai/step-3.5-flash"
+    "z-ai/glm-5.2"
   ],
   "blacklist": [
     "01-ai/yi-large",

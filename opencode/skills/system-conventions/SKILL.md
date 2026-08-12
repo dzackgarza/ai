@@ -93,7 +93,8 @@ Problem → canonical system convention.
 | PDF parsing | **reading-pdfs** ([[reading-pdfs/SKILL|reading-pdfs]] skill). Use Mistral OCR API as primary extraction; MinerU for local structured extraction. Never hand-rolled PDF scraping. |
 | Finding papers | **Local Zotero search first** ([[zotero/SKILL|zotero]] skill), which has markdown extractions — cite by BibTeX key. arxiv ([[arxiv/SKILL|arxiv]] skill) second, cite by URL. |
 | APIs | **OpenAPI spec.** Always describe APIs with an OpenAPI specification. |
-| Greenfield is never greenfield | **Find 3–5 strong, vetted reference implementations first** ([[known-solution-first/SKILL|known-solution-first]] skill). Borrow liberally — not as dependencies, but as a way to understand patterns in code that has already solved the problems. Never implement from scratch without first finding prior art. |
+| Compliance, provenance, governance, release-identity machinery | **Minimal mechanism only.** Load [[policy-index/SKILL\|policy-index]] (`POLICY.NO_COMPLIANCE_MAXIMALISM`) before adding any hash, provenance manifest, release-identity chain, certification ledger, or programme-completion record. Calibrate to a single-maintainer personal research tool unless the user explicitly specifies a larger operational model. The diagnostic catalog is [[llm-failure-modes/coding-failures\|llm-failure-modes #25]]. |
+| Greenfield is never greenfield | **Find 3–5 strong, vetted reference implementations first** ([[known-solution-first/SKILL\|known-solution-first]] skill). Borrow liberally — not as dependencies, but as a way to understand patterns in code that has already solved the problems. Never implement from scratch without first finding prior art. |
 
 ## CLI Tool Routing
 
