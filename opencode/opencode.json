@@ -135,6 +135,180 @@
         "tab_jump_flash_lite_preview"
       ]
     },
+    "cloudflare-workers-ai": {
+      "name": "Cloudflare Workers AI",
+      "models": {
+        "@cf/meta/llama-3.3-70b-instruct-fp8-fast": {
+          "name": "llama-3.3-70b-instruct-fp8-fast"
+        },
+        "@cf/moonshotai/kimi-k2.6": {
+          "name": "kimi-k2.6"
+        },
+        "@cf/moonshotai/kimi-k2.7-code": {
+          "name": "kimi-k2.7-code"
+        },
+        "@cf/nvidia/nemotron-3-120b-a12b": {
+          "name": "nemotron-3-120b-a12b"
+        },
+        "@cf/openai/gpt-oss-120b": {
+          "name": "gpt-oss-120b"
+        },
+        "@cf/zai-org/glm-5.2": {
+          "name": "glm-5.2"
+        }
+      },
+      "whitelist": [
+        "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+        "@cf/moonshotai/kimi-k2.6",
+        "@cf/moonshotai/kimi-k2.7-code",
+        "@cf/nvidia/nemotron-3-120b-a12b",
+        "@cf/openai/gpt-oss-120b",
+        "@cf/zai-org/glm-5.2"
+      ],
+      "blacklist": [
+        "@cf/aisingapore/gemma-sea-lion-v4-27b-it",
+        "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+        "@cf/google/gemma-4-26b-a4b-it",
+        "@cf/ibm-granite/granite-4.0-h-micro",
+        "@cf/meta/llama-3.1-8b-instruct-fp8",
+        "@cf/meta/llama-3.2-11b-vision-instruct",
+        "@cf/meta/llama-3.2-1b-instruct",
+        "@cf/meta/llama-3.2-3b-instruct",
+        "@cf/meta/llama-4-scout-17b-16e-instruct",
+        "@cf/meta/llama-guard-3-8b",
+        "@cf/mistralai/mistral-small-3.1-24b-instruct",
+        "@cf/openai/gpt-oss-20b",
+        "@cf/qwen/qwen2.5-coder-32b-instruct",
+        "@cf/qwen/qwen3-30b-a3b-fp8",
+        "@cf/qwen/qwq-32b",
+        "@cf/zai-org/glm-4.7-flash"
+      ]
+    },
+    "cohere": {
+      "name": "Cohere",
+      "models": {
+        "command-a-plus-05-2026": {
+          "name": "command-a-plus-05-2026"
+        },
+        "command-a-reasoning-08-2025": {
+          "name": "command-a-reasoning-08-2025"
+        },
+        "north-mini-code-1-0": {
+          "name": "north-mini-code-1-0"
+        }
+      },
+      "whitelist": [
+        "command-a-plus-05-2026",
+        "command-a-reasoning-08-2025",
+        "north-mini-code-1-0"
+      ],
+      "blacklist": [
+        "c4ai-aya-expanse-32b",
+        "c4ai-aya-expanse-8b",
+        "c4ai-aya-vision-32b",
+        "c4ai-aya-vision-8b",
+        "command-a-03-2025",
+        "command-a-translate-08-2025",
+        "command-a-vision-07-2025",
+        "command-r-08-2024",
+        "command-r-plus-08-2024",
+        "command-r7b-12-2024",
+        "command-r7b-arabic-02-2025"
+      ]
+    },
+    "github-copilot": {
+      "name": "GitHub Copilot",
+      "models": {
+        "claude-fable-5": {
+          "name": "claude-fable-5"
+        },
+        "claude-haiku-4.5": {
+          "name": "claude-haiku-4.5"
+        },
+        "claude-opus-4.8": {
+          "name": "claude-opus-4.8"
+        },
+        "claude-opus-4.8-fast": {
+          "name": "claude-opus-4.8-fast"
+        },
+        "claude-opus-5": {
+          "name": "claude-opus-5"
+        },
+        "claude-sonnet-5": {
+          "name": "claude-sonnet-5"
+        },
+        "gemini-3.1-pro-preview": {
+          "name": "gemini-3.1-pro-preview"
+        },
+        "gemini-3.5-flash": {
+          "name": "gemini-3.5-flash"
+        },
+        "gemini-3.6-flash": {
+          "name": "gemini-3.6-flash"
+        },
+        "gpt-5.3-codex": {
+          "name": "gpt-5.3-codex"
+        },
+        "gpt-5.5": {
+          "name": "gpt-5.5"
+        },
+        "gpt-5.6-luna": {
+          "name": "gpt-5.6-luna"
+        },
+        "gpt-5.6-sol": {
+          "name": "gpt-5.6-sol"
+        },
+        "gpt-5.6-terra": {
+          "name": "gpt-5.6-terra"
+        },
+        "grok-4.5": {
+          "name": "grok-4.5"
+        },
+        "kimi-k2.7-code": {
+          "name": "kimi-k2.7-code"
+        },
+        "kimi-k3": {
+          "name": "kimi-k3"
+        }
+      },
+      "whitelist": [
+        "claude-fable-5",
+        "claude-haiku-4.5",
+        "claude-opus-4.8",
+        "claude-opus-4.8-fast",
+        "claude-opus-5",
+        "claude-sonnet-5",
+        "gemini-3.1-pro-preview",
+        "gemini-3.5-flash",
+        "gemini-3.6-flash",
+        "gpt-5.3-codex",
+        "gpt-5.5",
+        "gpt-5.6-luna",
+        "gpt-5.6-sol",
+        "gpt-5.6-terra",
+        "grok-4.5",
+        "kimi-k2.7-code",
+        "kimi-k3"
+      ],
+      "blacklist": [
+        "claude-opus-4.5",
+        "claude-opus-4.6",
+        "claude-opus-4.6-fast",
+        "claude-opus-4.7",
+        "claude-opus-4.7-fast",
+        "claude-sonnet-4",
+        "claude-sonnet-4.5",
+        "claude-sonnet-4.6",
+        "gpt-4.1",
+        "gpt-5-mini",
+        "gpt-5.2",
+        "gpt-5.2-codex",
+        "gpt-5.4",
+        "gpt-5.4-mini",
+        "gpt-5.4-nano",
+        "mai-code-1-flash-picker"
+      ]
+    },
     "google": {
       "blacklist": [
         "antigravity-preview-05-2026",
@@ -1143,6 +1317,69 @@
         "minimax-m3",
         "mistral-large-3:675b",
         "nemotron-3-ultra"
+      ]
+    },
+    "opencode-go": {
+      "name": "OpenCode Go",
+      "models": {
+        "deepseek-v4-flash": {
+          "name": "deepseek-v4-flash"
+        },
+        "deepseek-v4-pro": {
+          "name": "deepseek-v4-pro"
+        },
+        "glm-5.2": {
+          "name": "glm-5.2"
+        },
+        "gpt-5.6-luna": {
+          "name": "gpt-5.6-luna"
+        },
+        "grok-4.5": {
+          "name": "grok-4.5"
+        },
+        "hy3": {
+          "name": "hy3"
+        },
+        "kimi-k2.7-code": {
+          "name": "kimi-k2.7-code"
+        },
+        "kimi-k3": {
+          "name": "kimi-k3"
+        },
+        "minimax-m3": {
+          "name": "minimax-m3"
+        },
+        "qwen3.8-max": {
+          "name": "qwen3.8-max"
+        }
+      },
+      "whitelist": [
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "glm-5.2",
+        "gpt-5.6-luna",
+        "grok-4.5",
+        "hy3",
+        "kimi-k2.7-code",
+        "kimi-k3",
+        "minimax-m3",
+        "qwen3.8-max"
+      ],
+      "blacklist": [
+        "glm-5",
+        "glm-5.1",
+        "kimi-k2.5",
+        "kimi-k2.6",
+        "mimo-v2-omni",
+        "mimo-v2-pro",
+        "mimo-v2.5",
+        "mimo-v2.5-pro",
+        "minimax-m2.5",
+        "minimax-m2.7",
+        "qwen3.5-plus",
+        "qwen3.6-plus",
+        "qwen3.7-max",
+        "qwen3.7-plus"
       ]
     },
     "opencode": {
