@@ -1,6 +1,6 @@
 # Disposition Pre-Filter
 
-Role B runs this gate on EVERY finding **before** choosing a four-way disposition
+Role B runs this gate on EVERY finding **before** choosing a five-way disposition
 (Phase 2.5). It converts the Global Principles and Triage Rubric into a forced
 first move, so a disposition is reached from policy, not from argument-from-priors.
 
@@ -18,8 +18,11 @@ nothing; the app lying to the user.
 - Finding implicates a slop pattern, OR a real correctness/proof issue (stale-state
   race, swallowed error, type/proof-surface gap, unbounded hang) → **in scope**,
   continue to Gate 2.
-- Finding is a generic bug / perf / style preference with no slop pattern and no
-  real correctness/proof implication → **Reject (out of scope)**; cite Principle #6.
+- Finding is only a generic bug / perf / style preference, with no supported defect or
+  maintainability debt → **Reject (out of scope)**; cite Principle #6.
+- Finding identifies factually supported localized maintainability, readability,
+  naming, or duplication debt without a substantive current-PR implication → continue
+  to Gate 3 for possible batched backlog disposition.
 
 Do not reject a real correctness/proof issue merely because a generic bot raised it
 (Principle #2).
@@ -52,7 +55,31 @@ every consumer must tolerate.
   the optional weakens the interface for everyone → accept (require + fix the data,
   or model true-absence as its own type). Do not defend the optional from priors.
 
-## Gate 3 — Remediation-suggestion policy check
+## Gate 3 — Current-PR remediation necessity
+
+Factual truth and current-PR remediation are separate decisions. A true finding enters
+the A/B/C remediation cycle when it affects any of:
+
+- the PR's claimed behavior, issue acceptance criteria, or proof obligations;
+- a required check or hard fail-loud, type, proof, or QC-integrity policy;
+- user-visible correctness, security, safety, or data integrity; or
+- a regression introduced or worsened by this PR.
+
+When none apply, use **Backlogged as minor technical debt** only if the concern is
+localized low-risk maintainability debt, batching it with the same work family is more
+proportionate than another commit/push/re-review cycle, and the PR remains semantically
+complete and truthful without the change.
+
+The disposition subagent must append the finding to an existing work-family GitHub debt
+issue or create one through the repository's issue route. Its thread reply records the
+factual evidence, the failed-to-trigger current-PR criteria, the issue link, and why the PR
+remains complete; then it resolves the thread without role C or a remediation commit.
+Missing evidence or a missing issue link means the finding is not eligible for this route.
+
+This is not `accepted pending fix`. An issue cannot satisfy, defer, or hide work the
+current PR actually owes.
+
+## Gate 4 — Remediation-suggestion policy check
 
 Even when the CLAIM is true, if the reviewer's SUGGESTED fix would add a fallback,
 default, mock, in-code constant, defensive catch, or cast, the disposition is
@@ -63,10 +90,11 @@ remediation restores fail-loud / config-driven / proof.
 
 The disposition reply includes exactly one line:
 
-`Pre-filter: <the gate rule that fired> | in-scope, no short-circuit`
+`Pre-filter: <the gate rule that fired> | <current-PR remediation / backlogged minor debt>`
 
 Examples: `Pre-filter: Gate 2 micro-opt without logged perf issue -> reject` /
-`Pre-filter: in-scope, no short-circuit -> four-way below`.
+`Pre-filter: Gate 3 current-PR obligations absent -> backlogged minor debt` /
+`Pre-filter: in-scope, current-PR remediation required -> five-way below`.
 
 ## Worked Examples
 
@@ -79,3 +107,6 @@ Examples: `Pre-filter: Gate 2 micro-opt without logged perf issue -> reject` /
 - `icon: z.string().optional()` defended as "a genuinely-optional UI field" →
   Optional-Field Axiom → that is not a sufficient justification; require + fix
   unless irreducible absence is shown.
+- A private helper has a true but localized naming/duplication concern, while the PR's
+  behavior, proof, checks, and policies remain intact → Gate 3 → append it to the
+  matching work-family debt issue, link that issue on the thread, and resolve without C.

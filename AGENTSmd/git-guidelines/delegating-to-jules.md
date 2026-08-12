@@ -1,5 +1,15 @@
 ---
 order: 10
+tags:
+- source-owner-preference
+- source-system-contract
+- function-procedure
+- function-route
+- function-evaluate
+- retest-model-reasoning
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Delegating to Jules
 ---
 

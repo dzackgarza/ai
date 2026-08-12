@@ -1,5 +1,14 @@
 ---
 order: 30
+tags:
+- source-owner-preference
+- source-system-contract
+- function-constrain
+- function-procedure
+- function-route
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Monitoring PR Activity
 ---
 

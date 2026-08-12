@@ -1,10 +1,27 @@
 ---
 order: 30
+tags:
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- failure-tool-bypass
+- failure-state-misplacement
+- failure-process-overproduction
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Operational Rules
 ---
 
 Load applicable skills before acting.
 If a listed skill applies, that skill owns the detailed procedure.
+This is a trigger map, not a mandatory bundle: repository presence, a correction, a bug,
+or a commit does not by itself activate every related workflow.
 
 - Git, deletion, checkpoints, commits, and destructive-operation bans:
   `git-guidelines`
@@ -18,10 +35,11 @@ If a listed skill applies, that skill owns the detailed procedure.
 - External APIs, providers, compilers, packages, and exact diagnostics:
   `known-solution-first`
 - Completion reports and concise user-facing status: `response-preparation`
-- Corrections, critiques, remaining-work questions, and anti-laundering:
-  `handling-corrections`
-- Nontrivial roadmap, PRD, feature, cross-agent, review-track, or proof-bearing work:
-  `project-initialization`, `plan`, `agent-memory`, and `git-guidelines`; add
+- Ambiguous, explanatory, destructive, or authority-changing corrections and critiques:
+  `handling-corrections`; apply explicit safe course corrections directly
+- Roadmap, PRD, cross-agent, review-track, or proof-bearing work that requires durable or
+  public coordination: `project-initialization`, `plan`, `agent-memory`, and
+  `git-guidelines`; add
   `proof-obligation-workflow`, `implement_plan`, or `subagent-driven-development` when
   their work starts
 

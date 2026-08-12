@@ -1,35 +1,30 @@
-## Summary
+# <Feature> PR Tracker
 
-<!-- 1-3 bullet points describing what this PR does -->
+The PR body is the canonical tracker.
+Use one nested checklist tree.
+Checked means complete, and every checked line must include same-line proof.
 
+## Task Tree
 
-## Motivation
+- [ ] <Milestone or goal>
+  - [ ] Planning and PR setup
+    - [ ] Dedicated branch exists
+    - [ ] Draft PR contains this task tree
+  - [ ] <Workstream or phase>
+    - [ ] <Task>
+      - [ ] <Subtask or proof obligation>
 
-<!-- Why is this change needed?
-Link to issue if applicable -->
+## Evidence Appendices
 
-Closes #
-
-## Changes
-
-<!-- Detailed list of changes made -->
-
-
-## Test Plan
-
-<!-- How was this tested?
-Checklist of verification steps -->
-
-- [ ] Unit tests pass (`pytest`)
-
-- [ ] Manual testing of new functionality
-
-- [ ] No regressions in existing behavior
+- Motivation:
+- Scope:
+- Validation:
+- Review focus:
 
 ## Screenshots / Examples
 
 <!-- If UI changes or new output, show before/after -->
 
-## Notes for Reviewers
+## Linked Issues
 
-<!-- Anything reviewers should pay special attention to -->
+Closes #

@@ -1,5 +1,24 @@
 ---
 order: 10
+tags:
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- function-evaluate
+- failure-process-overproduction
+- failure-state-misplacement
+- failure-scope-drift
+- failure-premature-action
+- retest-model-reasoning
+- retest-model-alignment
+- retest-model-memory
+- retest-policy-change
+- retest-toolchain-change
 title: Live User Feedback
 ---
 

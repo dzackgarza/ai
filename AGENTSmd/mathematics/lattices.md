@@ -1,5 +1,11 @@
 ---
 order: 10
+tags:
+- source-owner-context
+- source-domain-context
+- function-orient
+- function-define
+- retest-environment-change
 title: Lattices
 ---
 

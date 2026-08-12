@@ -1,5 +1,18 @@
 ---
 order: 30
+tags:
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-epistemic-overreach
+- failure-proxy-evidence
+- retest-model-reasoning
+- retest-model-self-evaluation
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Epistemic Integrity
 ---
 

@@ -1,5 +1,17 @@
 ---
 order: 20
+tags:
+- source-owner-context
+- source-owner-preference
+- source-system-contract
+- function-orient
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 title: Conventions for This System
 ---
 

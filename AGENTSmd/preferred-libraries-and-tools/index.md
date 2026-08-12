@@ -1,5 +1,16 @@
 ---
 order: 110
+tags:
+- source-owner-preference
+- source-system-contract
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 title: Preferred Libraries and Tools
 ---
 

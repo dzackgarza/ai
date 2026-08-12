@@ -10,6 +10,6 @@ metadata:
     related_skills: [git-guidelines]
 ---
 
-> **REDIRECT**: This skill has been consolidated into `git-guidelines`.
-> Load `git-guidelines` and reference `code-review.md`:
-> [git-guidelines/code-review.md](file:///home/dzack/ai/opencode/skills/git-guidelines/code-review.md)
+> **REDIRECT**: This skill has been consolidated into `git-guidelines`. Load `git-guidelines` and reference `code-review.md`: [git-guidelines/code-review.md](file:///home/dzack/ai/opencode/skills/git-guidelines/code-review.md)
+>
+> Treat a PR body without the canonical nested task-tree tracker as not review-ready.

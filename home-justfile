@@ -76,6 +76,46 @@ install-mcps *ARGS="":
     cd "{{ repo }}"
     mkdir -p "$HOME/.config/sdl-mcp"
     ln -snf "{{ repo }}/mcp/sdlmcp.config.json" "$HOME/.config/sdl-mcp/sdlmcp.config.json"
+    if [[ " {{ ARGS }} " != *" --dry-run "* ]]; then
+      npx_bin="$(command -v npx || true)"
+      if [[ -z "$npx_bin" ]]; then
+        echo "npx is required to install sdl-mcp.service" >&2
+        exit 1
+      fi
+
+      service_dir="$HOME/.config/systemd/user"
+      service_path="$service_dir/sdl-mcp.service"
+      npx_dir="$(dirname "$npx_bin")"
+      service_tmp="$(mktemp)"
+      mkdir -p "$service_dir"
+      {
+        printf '%s\n' '[Unit]'
+        printf '%s\n' 'Description=SDL MCP HTTP server'
+        printf '%s\n' 'After=network.target'
+        printf '%s\n' ''
+        printf '%s\n' '[Service]'
+        printf '%s\n' 'Type=simple'
+        printf '%s\n' 'WorkingDirectory={{ repo }}'
+        printf '%s\n' 'Environment=SDL_CONFIG={{ repo }}/mcp/sdlmcp.config.json'
+        printf '%s\n' "Environment=PATH=$npx_dir:$HOME/.local/bin:$HOME/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        printf '%s\n' "ExecStart=$npx_bin -y sdl-mcp serve --http --host 127.0.0.1 --port 39150"
+        printf '%s\n' 'Restart=on-failure'
+        printf '%s\n' 'RestartSec=5'
+        printf '%s\n' ''
+        printf '%s\n' '[Install]'
+        printf '%s\n' 'WantedBy=default.target'
+      } > "$service_tmp"
+      install -m 0644 "$service_tmp" "$service_path"
+      rm -f "$service_tmp"
+      user_runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+      export XDG_RUNTIME_DIR="$user_runtime_dir"
+      if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" && -S "$user_runtime_dir/bus" ]]; then
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=$user_runtime_dir/bus"
+      fi
+      systemctl --user daemon-reload
+      systemctl --user enable --now sdl-mcp.service
+      systemctl --user restart sdl-mcp.service
+    fi
     direnv exec "$HOME" python3 mcp/sync_mcp_configs.py {{ ARGS }}
 
 # =============================================================================

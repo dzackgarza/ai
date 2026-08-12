@@ -7,7 +7,7 @@ default:
 # The repo-root AGENTS.md is a symlink to this generated file.
 assemble:
 	@if [ -e "{{justfile_directory()}}/AGENTS.md.generated" ]; then chmod u+w "{{justfile_directory()}}/AGENTS.md.generated"; fi
-	@{{justfile_directory()}}/assemble.py "{{root}}" "{{justfile_directory()}}/AGENTS.md.generated"
+	@{{justfile_directory()}}/assemble.py "{{root}}" "{{justfile_directory()}}/AGENTS.md.generated" "{{justfile_directory()}}/build.toml"
 	@chmod a-w "{{justfile_directory()}}/AGENTS.md.generated"
 
 # Flowmark the editable source fragments (semantic line breaks for human editing).

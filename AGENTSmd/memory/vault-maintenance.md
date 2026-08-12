@@ -1,20 +1,40 @@
 ---
 order: 25
+tags:
+- source-owner-context
+- source-system-contract
+- source-observed-model-failure
+- function-orient
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- failure-state-misplacement
+- failure-context-loss
+- failure-tool-bypass
+- failure-process-overproduction
+- retest-model-memory
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
+- retest-environment-change
 title: Vault Status and Maintenance
 ---
 
-Before real work on any project — including spikes and small or throwaway projects —
-the agent-memory vault must be initialized for that project. There is no size threshold
-below which a project skips having a vault-side project folder; a spike still captures
-plans and decisions, and those need somewhere durable to live. If the current project
-has no `.agent-memory.toml` binding or no vault-side project directory, initialize it
-per `agent-memory` before proceeding.
+Initialize and validate the project vault when the task will use durable project memory,
+cross-session plans, long-running queues, or project initialization.
+A direct answer, bounded edit, data-labeling task, one-off configuration change, or
+throwaway spike does not require a project vault merely because it occurs in a repository.
 
-As part of establishing a project, run the agent-memory doctor check:
+When establishing or using project memory, run the agent-memory doctor check:
 `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor`.
-If doctor reports issues, do not hand-patch them inline in the middle of the user's task.
-Dispatch a subagent to run the **vault-maintenance workflow** (load `agent-memory`), then
-continue the user's work once the vault is healthy.
+If doctor reports a vault issue relevant to the requested memory operation, dispatch a
+dedicated vault-maintenance subagent. It owns inspection, repair, validation, commit, and
+push of affected vault paths; the parent continues unrelated work rather than treating
+that maintenance as a blocker. A dirty vault worktree alone is not a dispatch trigger.
+Vault defects unrelated to the requested object do not block direct work.
 
 The vault-maintenance workflow includes reconciling harness plan captures into real
 agent-memory plans:

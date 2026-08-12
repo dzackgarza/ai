@@ -1,5 +1,19 @@
 ---
 order: 70
+tags:
+- source-system-contract
+- source-observed-model-failure
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-proxy-evidence
+- failure-completion-laundering
+- retest-model-self-evaluation
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: Visual Verification
 ---
 

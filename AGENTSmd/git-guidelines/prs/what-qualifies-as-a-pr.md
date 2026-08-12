@@ -1,5 +1,20 @@
 ---
 order: 20
+tags:
+- source-owner-preference
+- source-system-contract
+- source-observed-model-failure
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-evaluate
+- failure-process-overproduction
+- failure-scope-drift
+- retest-model-reasoning
+- retest-model-alignment
+- retest-policy-change
+- retest-toolchain-change
 title: What Qualifies as a PR
 ---
 
@@ -22,3 +37,6 @@ work; scoping those units is a planning step, not a triage step. See
 
 Simple doc changes, trivial fixes, and one-off edits usually should stay as direct
 commits unless the user asks for PR workflow or the work needs public issue-tree tracking.
+Complexity alone does not require a PR: substantive but bounded maintenance can remain a
+direct commit when ownership, verification, and rollback are local and no review handoff
+is needed.

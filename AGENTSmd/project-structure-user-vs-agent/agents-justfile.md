@@ -1,5 +1,20 @@
 ---
 order: 20
+tags:
+- source-owner-context
+- source-system-contract
+- source-observed-model-failure
+- function-define
+- function-constrain
+- function-procedure
+- function-route
+- function-allocate
+- failure-tool-bypass
+- failure-proof-gaming
+- retest-model-alignment
+- retest-model-tool-use
+- retest-policy-change
+- retest-toolchain-change
 title: .agents/justfile
 ---
 

@@ -1,11 +1,11 @@
 export const meta = {
   name: 'pr-feedback-triage',
-  description: 'Convergent A/B/C PR review-feedback triage: collect -> pre-filtered disposition -> first-principles remediation -> by-hand verify+commit -> three-stamp close, looping until the review window converges.',
+  description: 'Convergent PR review-feedback triage: collect -> pre-filtered disposition + current-PR spend gate -> A/B/C only for substantive findings -> linked debt backlog for minor findings -> loop until convergence.',
   whenToUse: 'After automated/human review feedback lands on a PR and you want the firewall-enforced triage loop run deterministically instead of hand-driving subagents. Pass args {repo, pr}.',
   phases: [
     { title: 'Collect', detail: 'run the triage harness; get worklist + convergence' },
-    { title: 'Disposition', detail: 'role B: pre-filter + four-way, one disposition per finding' },
-    { title: 'Remediate', detail: 'role C: first-principles spec per accepted finding' },
+    { title: 'Disposition', detail: 'role B: pre-filter + five-way spend gate, one disposition per finding' },
+    { title: 'Remediate', detail: 'role C: first-principles spec per accepted current-PR finding' },
     { title: 'Verify', detail: 'by-hand declared-vs-actual, commit, three-stamp close' },
   ],
 }
@@ -36,13 +36,14 @@ const COLLECT_SCHEMA = {
 const DISPOSITION_SCHEMA = {
   type: 'object', required: ['dispositions'], additionalProperties: false,
   properties: { dispositions: { type: 'array', items: {
-    type: 'object', required: ['key', 'verdict', 'accept'], additionalProperties: true,
+    type: 'object', required: ['key', 'verdict', 'action'], additionalProperties: true,
     properties: {
       key: { type: 'string' },
-      verdict: { type: 'string' },                 // accepted / accepted-modified / rejected / outdated / duplicate / investigate
+      verdict: { type: 'string' },                 // accepted / accepted-modified / backlogged-minor-debt / rejected / outdated / duplicate / investigate
       preFilter: { type: 'string' },               // recorded Pre-filter: line
-      accept: { type: 'boolean' },                 // true => needs remediation
+      action: { type: 'string', enum: ['remediate', 'backlog', 'none', 'investigate'] },
       rootConcern: { type: 'string' },             // first-principles concern (NO reviewer wording)
+      debtIssue: { type: 'string' },               // required by prompt when action=backlog
     } } } },
 }
 const REMEDIATION_SCHEMA = {
@@ -74,17 +75,21 @@ while (round < MAX_ROUNDS) {
   if (!toDispose.length) { summary.push(`round ${round}: nothing new to dispose`); break }
 
   // Role B — one disposition subagent over the round's findings. Runs the
-  // mandatory pre-filter BEFORE the four-way and records the Pre-filter line.
+  // mandatory pre-filter and current-PR spend gate BEFORE the five-way.
   phase('Disposition')
   const disp = await agent(
-    `You are role B (independent disposition) for ${repo} PR #${pr}. Load ${SKILL}/SKILL.md and ${SKILL}/references/disposition-prefilter.md.\n` +
-    `For EACH of these findings (by stable key), read the actual code at HEAD, run the disposition pre-filter FIRST (record the Pre-filter: line), then assign the four-way disposition. Post the stamp to the thread; resolve rejected/outdated/duplicate; leave accepts open.\n` +
+    `You are role B (independent disposition) for ${repo} PR #${pr}. Load ${SKILL}/SKILL.md, ${SKILL}/references/disposition-prefilter.md, and ~/ai/opencode/skills/git-guidelines/SKILL.md.\n` +
+    `For EACH finding (by stable key), read the actual code at HEAD, run the disposition pre-filter and current-PR spend gate FIRST, record the Pre-filter line, then assign the five-way disposition. Resolve rejected/outdated/duplicate. Leave remediate/investigate findings open. For Backlogged as minor technical debt, append to an existing work-family GitHub debt issue or create one through the repository's issue route, post the thread disposition with every Gate 3 criterion and the issue link, then resolve it without role C.\n` +
     `You ONLY dispose — never propose a fix. Findings: ${JSON.stringify(toDispose)}\n` +
-    `Return {dispositions[]} with, per finding: key, verdict, preFilter, accept (true if it needs remediation), rootConcern (first-principles, NO reviewer wording).`,
+    `Return {dispositions[]} with, per finding: key, verdict, preFilter, action (remediate/backlog/none/investigate), rootConcern (first-principles, NO reviewer wording), and debtIssue (required URL when action=backlog).`,
     { schema: DISPOSITION_SCHEMA, phase: 'Disposition', label: `disposition r${round}` })
 
-  const accepts = ((disp && disp.dispositions) || []).filter(d => d.accept && d.rootConcern)
-  if (!accepts.length) { summary.push(`round ${round}: ${toDispose.length} findings, 0 accepts`); continue }
+  const dispositions = (disp && disp.dispositions) || []
+  const invalidBacklogs = dispositions.filter(d => d.action === 'backlog' && !d.debtIssue)
+  if (invalidBacklogs.length) throw new Error(`backlogged findings need GitHub issue links: ${invalidBacklogs.map(d => d.key).join(', ')}`)
+  const accepts = dispositions.filter(d => d.action === 'remediate' && d.rootConcern)
+  const backlogged = dispositions.filter(d => d.action === 'backlog').length
+  if (!accepts.length) { summary.push(`round ${round}: ${toDispose.length} findings, 0 accepts, ${backlogged} backlogged`); continue }
 
   // Role C + verify — pipeline each accept independently: remediate from the
   // first-principles rootConcern (A passes the concern, never reviewer wording),
@@ -110,9 +115,10 @@ while (round < MAX_ROUNDS) {
 
   const closed = results.filter(r => r && r.closed).length
   const blocked = results.filter(r => r && !r.verified).map(r => r && r.key)
-  summary.push(`round ${round}: ${accepts.length} accepts, ${closed} closed${blocked.length ? ', blocked: ' + blocked.join(',') : ''}`)
+  summary.push(`round ${round}: ${accepts.length} accepts, ${backlogged} backlogged, ${closed} closed${blocked.length ? ', blocked: ' + blocked.join(',') : ''}`)
   // Loop: re-collect. The push above triggers a fresh review round; convergence
-  // is reached when a collect round returns converged or 0 accepts.
+  // is reached when a collect round returns converged or no finding requires
+  // current-PR remediation. Backlogged debt is already linked and closed by B.
 }
 
 return { repo, pr, rounds: round, summary }

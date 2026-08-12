@@ -1,6 +1,6 @@
 ---
 name: response-preparation
-description: Use before writing any completion report, progress update, or status response to the user. 
+description: Use before a substantive or multi-step completion report, progress synthesis, or status response when the user needs information not already visible in the result. Skip direct answers, obvious corrections, and trivial edit acknowledgments.
 ---
 # Response Preparation
 

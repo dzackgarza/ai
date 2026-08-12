@@ -1,28 +1,35 @@
 ---
 name: handling-corrections
-description: Use when the user corrects an error, challenges an action, or asks "why did you do that" — covers anti-thrashing protocol, debris cleanup, and "why" question handling.
+description: Use when a correction requires causal explanation, leaves the intended action ambiguous, changes scope or authority, exposes unknown damage, or implies a destructive or irreversible pivot. Explicit safe course corrections should be applied directly.
 metadata:
-  creation_context: Created to prevent agents from treating user corrections as social repair prompts or implicit authorization to make guessed fixes. It forces correction handling to stop, reconstruct the reasoning error, identify damaged artifacts, inspect evidence when needed, and only then fix or answer. It specifically targets acknowledgment tokens, correction-to-action collapse, reflexive revert or overcorrection, debris preservation, and honest-label laundering.
+  creation_context: Created to prevent agents from treating user corrections as social repair prompts or implicit authorization to make guessed fixes. Revised after transcripts showed that unconditional stops and visible routing records delayed explicit safe pivots. It now distinguishes direct correction, explanation or ambiguity, and consequential state changes while preserving anti-thrashing, provenance, and anti-laundering boundaries.
 ---
 # Handling Corrections
 
 > [!IMPORTANT]
 > All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
-## When the user corrects any action
+## Correction Decision Gate
 
-Stop. Do not pivot immediately.
-Do not acknowledge.
-Do not fix.
-Do not infer the action the user wants.
+Classify the correction before choosing a response:
 
-The next assistant turn is a correction-routing turn. It is not an implementation turn,
-a repair turn, or a social-repair turn.
+- **Explicit pivot:** the user names one unambiguous, reversible, in-scope action. Apply
+  it immediately and continue the live task. Do not narrate this protocol or ask for
+  permission already given.
+- **Explanation or ambiguity:** the user asks why, disputes the reasoning, or leaves more
+  than one materially different action possible. Investigate enough to answer or expose
+  the real fork. Do not guess the desired implementation.
+- **High-consequence pivot:** the likely response is destructive, irreversible,
+  externally visible, touches unknown-provenance work, or needs new authority. Stop and
+  obtain the missing decision after presenting only the evidence the user needs.
+
+A correction is not inherently a stop signal. Stop only when action would require an
+unsupported inference or cross a consequential boundary.
 
 ## Strongest-Live-Goal Gate
 
-Before acting on any critique, correction, review, completion question, or remaining-work
-question, state the strongest live goal in concrete terms:
+Before acting on a critique, correction, review, completion question, or remaining-work
+question, identify the strongest live goal internally:
 
 ```text
 The strongest live goal is <substantive user objective>. The action I am about to take
@@ -33,8 +40,9 @@ If the planned action only changes representation, status, labels, PR metadata, 
 linkage, comments, docs, report wording, or visibility of feedback, it does not satisfy
 a goal whose object is code, proof, data, implementation, research, or semantic review.
 
-Representational corrections can be necessary to stop a false claim, but report them as
-representation only:
+Representational corrections can be necessary to stop a false claim. Explain the
+distinction only when the user could otherwise mistake administration for substantive
+completion:
 
 ```text
 I corrected the false representation; the original work remains incomplete.
@@ -48,7 +56,7 @@ Do not stop as if the administrative artifact completed the task.
 
 A correction changes the current route, not the whole operating regime.
 
-Before proposing a new route, name:
+Before proposing a new route, determine internally:
 
 - the original substantive objective that remains live;
 - the valid constraints that still protect it;
@@ -94,10 +102,9 @@ the correction history, are the wrong context to do that repair.
 This is `T7 Correction-to-Content Transduction` and `L8 Correction Fossilization` in
 [llm-failure-modes/references/agent-distortion-index.md](file:///home/dzack/ai/opencode/skills/llm-failure-modes/references/agent-distortion-index.md).
 
-## Correction-Routing Turn
+## Correction Routing
 
-On the next assistant turn after any correction, challenge, or "why" question, produce
-only this visible routing record:
+For an ambiguous or high-consequence correction, determine this record internally:
 
 ```text
 Trigger: <quote or paraphrase the correction in one sentence>
@@ -110,13 +117,11 @@ Next action: <answer-only, investigate-only, or wait-for-user; never "fix now">
 Stop point: <where this turn stops>
 ```
 
-If any field is unknown, say `unknown` and set `Next action` to `investigate-only`.
-Then perform only the investigation needed to fill the field. Do not edit, delete,
-rename, revert, commit, close, resolve, or relabel anything in the same turn.
-
-If all fields are known, still do not act immediately. State the proposed action in
-`Next action` and stop for user confirmation unless the user asked only for an
-evidence-backed explanation.
+Do not print the labeled record by default.
+Surface only the unresolved evidence, consequential damage, blocker, or decision the user
+must see. If an internal field is unknown, investigate before changing consequential
+state. If all fields are known and the user already directed a safe action, act instead of
+requesting redundant confirmation.
 
 For bug-fix corrections, this is an additional hard stop:
 
@@ -126,8 +131,9 @@ For bug-fix corrections, this is an additional hard stop:
 - If reproduction is unknown, set `Next action` to `investigate-only` and include the
   exact command/input sequence and environment needed to reproduce.
 
-For explanation-only turns, answer the question from evidence and stop. Do not append
-a fix.
+For explanation-only turns, answer from evidence and do not infer authorization to fix.
+If the same message explicitly requests a concrete safe fix, the explicit-pivot rule
+applies after the explanation.
 
 ## What NOT to produce
 
@@ -138,7 +144,7 @@ that substitute for substantive work.
 Acknowledgment tokens produce social repair without fixing the problem.
 
 Do not write “Using `handling-corrections`”, “loading correction guidance”, or similar
-compliance announcements. The routing record is the compliance surface.
+compliance announcements. Correct routing is the compliance surface.
 
 Do not pivot immediately to a fix while leaving debris from the mistake.
 Check what was damaged first.
@@ -184,32 +190,29 @@ item; report the blocker.
 
 ## Correction Memory Rule
 
-### Scan for an accepted remediation before routing
+### Scan for an accepted remediation when needed
 
-A correction is rarely the first of its kind. Before filling the routing record, search
-memory for prior corrections of the same class and their accepted remediations:
+Search memory for an accepted remediation when the correction appears durable or
+recurrent and the current task depends on prior project or system decisions:
 
 ```text
 agent-memory search "<the misbehavior, boundary, or expectation the correction names>"
 ```
 
-If a prior correction memory already records the accepted remediation for this class,
-apply that remediation instead of re-deriving one, and cite the memory key in the routing
-record's `Evidence needed` field. Re-deriving a fix the project has already settled is the
-same waste the correction is meant to prevent — the point of the memory is that the same
-correction never has to be worked twice. If the scan returns nothing, note that the class
-is new; it becomes a fresh memory once the remediation is validated (below).
+If a prior correction memory records the accepted remediation, apply it instead of
+re-deriving one. Do not interrupt an explicit safe pivot with memory search, and do not
+create a routing report merely to cite the memory.
 
-### Persist the correction — global by default
+### Persist durable corrections at the owning scope
 
-For every verified correction, add a typed memory once the remediation is validated.
+Add a typed memory after remediation only when the correction establishes knowledge that
+should govern future sessions or workers. Task-local directions and obvious one-off
+pivots do not become memories.
 
-- Most corrections are about agent behavior, not one repo's code — how to work, what
-  boundary to respect, what to never do again. Those are **cross-repo operational
-  knowledge**, so they default to **global scope** (`--scope global`), typically
-  `--type trap` (a correction that must change future behavior) or `--type advice`. A
-  correction whose fact is genuinely local to one repository's code or data is the
-  exception that stays `--scope project`.
+- Durable corrections about cross-repo agent behavior belong at **global scope**
+  (`--scope global`), typically as `--type trap` or `--type advice`. Corrections about one
+  repository's code, data, or workflow stay at `--scope project`. One-off directions do
+  not belong in either scope.
 - The core method is not hand-writing a local notebook: write the lesson to the vault so
   learning is retained as collective state across every repo the agent touches.
 - Record, at minimum: the misbehavior or expectation in the user's terms, the root-cause
@@ -239,18 +242,19 @@ was never encoded. Every such correction would have been unnecessary had the exp
 lived in the knowledge base. So for any correction that exposes a previously-unencoded or
 divergently-encoded expectation:
 
-- Persist the underlying expectation immediately as the appropriate typed memory
-  (`decision`, `context`, `advice`, or `trap`), recorded in the user's own terms — what was
+- Persist the underlying durable expectation as the appropriate typed memory after the
+  immediate bounded action (`decision`, `context`, `advice`, or `trap`), recorded in the
+  user's own terms — what was
   decided or expected, what it governs, and why.
-- Reconcile it against the durable surfaces. If memory, the wiki, or the GitHub issue tree
-  already says something divergent, the correction is authoritative: update the stale
-  surface so every record agrees. Promote public-direction expectations to the owning
-  issue, milestone, PR, or wiki page.
-- The test is whether the same correction could recur. If it could, the expectation is not
-  yet adequately encoded — encode it before reporting the correction handled.
+- Reconcile only the durable surfaces that own or publish the expectation. If an owning
+  memory, wiki page, or GitHub issue says something divergent, update it. Promote public
+  direction to the owning issue, milestone, PR, or wiki page without copying the same fact
+  into unrelated surfaces.
+- The test is whether a future session needs the expectation to act correctly. If so,
+  encode it in its owning surface before the turn ends; do not fan it out to unrelated
+  surfaces.
 
-This obligation is not satisfied by acknowledging the correction or by the fix alone; it is
-satisfied only when the expectation is durably captured and consistent across surfaces.
+Do not let durable capture replace or delay the object-level correction.
 
 ## When the user asks “why”
 
@@ -258,14 +262,13 @@ Every “why” question is a research task, not a conversation opener.
 
 - Look it up: read transcripts, search docs, find real evidence
 
-- Use the correction-routing record before the answer unless the answer can be given
-  directly from evidence already present in the current turn
+- Use the internal correction-routing questions when evidence or intent is unresolved
 
 - Do **not** answer with supplication, invented feelings, or promises about future
   behavior
 
-- Do **not** immediately act on your own answer — wait for the user to confirm before
-  proceeding
+- Do **not** infer a fix from your own answer. Act only when the user also requested a
+  concrete safe action; otherwise answer and wait.
 
 ## The question-then-action trap
 
@@ -276,17 +279,18 @@ Answering a question and then immediately acting on your own answer is a violati
 | “Why does this function have param x?” | “You’re right, it’s not needed, removing it.” [deletes] | “x is used for Y. It may no longer be needed.” [waits] |
 | “Why did you edit that file?” | Explain + immediately restore it | Explain root cause, assess damage, wait for direction |
 | “Why are you normalizing this body?” | “You’re right, removing normalization.” [edits] | Routing record -> inspect why normalization exists -> answer -> wait |
-| “That is bad metadata. Delete it.” | Load skill -> delete immediately | Routing record -> verify damaged item and proposed deletion -> wait |
+| “That is bad metadata. Delete it.” | Delete an ambiguously identified item | Verify the target; delete only if the identified action is authorized and recoverable |
 
-The user’s response to your answer may change the intended action entirely.
-**Do not act until the question is resolved.**
+The user's response may change the intended action entirely.
+Do not act when the question leaves the desired change unresolved. If the user supplied
+the answer and the action together, do not create an artificial pause.
 
 ## Common rationalizations
 
 | Rationalization | Reality |
 | --- | --- |
-| “The fix is obvious, no need to pause” | The fix is never obvious to someone who just made the mistake |
+| “The fix is obvious, no need to inspect consequence” | Obvious intent does not waive checks required by destructive, irreversible, or unknown-provenance state |
 | “Reverting is the safe undo” | `git restore` and `git checkout` are destructive in noisy repos |
-| “I should fix it right now while I understand it” | Understanding is not authorization. Get the user’s sign-off. |
+| “I should fix it right now while I understand it” | Act only on the user's explicit safe direction; understanding alone is not authorization. |
 | “I'll rename it so the label is honest” | The correction was about the artifact's **existence**, not its labeling. Renaming fraudulent code so it honestly describes its own fraudulence is **honest-label laundering**: consuming the critique while leaving the defect intact. See `anti-slop/references/code-patterns.md` → **Honest-Label Laundering**. |
 | “I'll add a note explaining the problem so the reader is warned” | Documenting that X is wrong is not fixing X. A disclaimer inside the artifact embeds the correction history into the product and adds a new defect. Remove X. See **Do Not Write the Correction Into the Corrected Artifact** above. |
