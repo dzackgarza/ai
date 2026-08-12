@@ -368,6 +368,11 @@ ai-review-ci red-commit --issue <owning-issue> -m "<message>"
   `stash`/history rewrites) unless literally requested. `git-guidelines`
   owns deletion safety and the Read → Checkpoint Commit → Edit → Verify
   workflow, which applies to every edit.
+- **NEVER run `rm`. Not once. Not for a single temp file.** Agents wipe
+  entire systems every day through bad path expansion (`$HOME` misbound,
+  unset variables, cwd surprises), and `rm` is unrecoverable. Every
+  deletion goes through `trash <path>` (or `gio trash`). If trash is
+  unavailable, stop and tell the user — never fall back to `rm`.
 - Never store or inline secrets in shell commands; secrets live in
   `~/.envrc` via direnv (`system-conventions` owns the model).
 - Use `bun` and `uv`, never `npm` or `pip` — package management, installs,
