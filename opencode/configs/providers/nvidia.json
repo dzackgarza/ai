@@ -30,17 +30,8 @@
     "openai/gpt-oss-120b": {
       "name": "gpt-oss-120b"
     },
-    "deepseek-ai/deepseek-v4-flash": {
-      "name": "deepseek-v4-flash"
-    },
-    "deepseek-ai/deepseek-v4-pro": {
-      "name": "deepseek-v4-pro"
-    },
     "minimaxai/minimax-m3": {
       "name": "minimax-m3"
-    },
-    "mistralai/mistral-medium-3.5-128b": {
-      "name": "mistral-medium-3.5-128b"
     },
     "moonshotai/kimi-k2.6": {
       "name": "kimi-k2.6"
@@ -56,16 +47,23 @@
     },
     "z-ai/glm-5.2": {
       "name": "glm-5.2"
+    },
+    "deepseek-ai/deepseek-v4-flash-0731": {
+      "name": "deepseek-v4-flash-0731"
+    },
+    "nvidia/nemotron-3.5-lightning-30b-a3b": {
+      "name": "nemotron-3.5-lightning-30b-a3b"
+    },
+    "thinkingmachines/inkling": {
+      "name": "inkling"
     }
   },
   "whitelist": [
-    "deepseek-ai/deepseek-v4-flash",
-    "deepseek-ai/deepseek-v4-pro",
+    "deepseek-ai/deepseek-v4-flash-0731",
     "google/gemma-4-31b-it",
     "meta/codellama-70b",
     "meta/llama-3.3-70b-instruct",
     "minimaxai/minimax-m3",
-    "mistralai/mistral-medium-3.5-128b",
     "mistralai/mistral-nemotron",
     "moonshotai/kimi-k2.6",
     "nvidia/llama-3.1-nemotron-ultra-253b-v1",
@@ -73,8 +71,10 @@
     "nvidia/nemotron-3-nano-30b-a3b",
     "nvidia/nemotron-3-super-120b-a12b",
     "nvidia/nemotron-3-ultra-550b-a55b",
+    "nvidia/nemotron-3.5-lightning-30b-a3b",
     "nvidia/nemotron-4-340b-instruct",
     "openai/gpt-oss-120b",
+    "thinkingmachines/inkling",
     "z-ai/glm-5.2"
   ],
   "blacklist": [
@@ -124,6 +124,7 @@
     "meta/llama2-70b",
     "meta/llama3-70b-instruct",
     "meta/llama3-8b-instruct",
+    "meta/muse-glimmer-30b",
     "microsoft/kosmos-2",
     "microsoft/phi-3-medium-128k-instruct",
     "microsoft/phi-3-medium-4k-instruct",
@@ -160,6 +161,7 @@
     "nvidia/embed-qa-4",
     "nvidia/gliner-pii",
     "nvidia/ising-calibration-1-35b-a3b",
+    "nvidia/ising-calibration-1.5-31b",
     "nvidia/llama-3.1-nemoguard-8b-content-safety",
     "nvidia/llama-3.1-nemoguard-8b-topic-control",
     "nvidia/llama-3.1-nemotron-51b-instruct",
@@ -178,6 +180,7 @@
     "nvidia/nemoretriever-ocr-v1",
     "nvidia/nemoretriever-parse",
     "nvidia/nemotron-3-content-safety",
+    "nvidia/nemotron-3-embed-1b",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
     "nvidia/nemotron-3.5-content-safety",
     "nvidia/nemotron-4-340b-reward",
@@ -196,9 +199,11 @@
     "nvidia/parakeet-tdt-0.6b-v2",
     "nvidia/riva-translate-4b-instruct",
     "nvidia/riva-translate-4b-instruct-v1.1",
+    "nvidia/riva-translate-4b-instruct-v2",
     "nvidia/vila",
     "openai/gpt-oss-20b",
     "openai/whisper-large-v3",
+    "poolside/laguna-xs-2.1",
     "qwen/qwen2.5-coder-32b-instruct",
     "qwen/qwen2.5-coder-7b-instruct",
     "qwen/qwen3-235b-a22b",

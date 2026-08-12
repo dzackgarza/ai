@@ -29,6 +29,8 @@
     "gemini-omni-flash-preview",
     "gemini-robotics-er-1.5-preview",
     "gemini-robotics-er-1.6-preview",
+    "gemini-robotics-er-2-preview",
+    "gemini-robotics-er-2-streaming-preview",
     "gemma-3-12b-it",
     "gemma-3-1b-it",
     "gemma-3-27b-it",
@@ -115,17 +117,6 @@
         }
       }
     },
-    "gemini-3-pro-preview": {
-      "name": "Gemini 3 Pro Preview",
-      "variants": {
-        "low": {
-          "thinkingLevel": "low"
-        },
-        "high": {
-          "thinkingLevel": "high"
-        }
-      }
-    },
     "gemini-3.1-flash-lite-preview": {
       "name": "Gemini 3.1 Flash Lite Preview",
       "variants": {
@@ -179,6 +170,12 @@
     },
     "gemma-4-31b-it": {
       "name": "Gemma 4 31B"
+    },
+    "gemini-3.5-flash-lite": {
+      "name": "gemini-3.5-flash-lite"
+    },
+    "gemini-3.6-flash": {
+      "name": "gemini-3.6-flash"
     }
   },
   "whitelist": [
@@ -188,12 +185,13 @@
     "gemini-2.5-flash-lite",
     "gemini-2.5-pro",
     "gemini-3-flash-preview",
-    "gemini-3-pro-preview",
     "gemini-3.1-flash-lite",
     "gemini-3.1-flash-lite-preview",
     "gemini-3.1-pro-preview",
     "gemini-3.1-pro-preview-customtools",
     "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
     "gemini-flash-latest",
     "gemini-flash-lite-latest",
     "gemini-pro-latest",

@@ -126,94 +126,8 @@
       "options": {
         "baseURL": "http://localhost:3000/v1"
       },
-      "models": {
-        "gemini-2.5-flash": {
-          "name": "Gemini 2.5 Flash (CLI)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "claude-opus-4-6-thinking": {
-          "name": "Claude Opus 4.6 Thinking (Antigravity)",
-          "limit": {
-            "context": 1000000,
-            "output": 64000
-          }
-        },
-        "gemini-2.5-flash-lite": {
-          "name": "Gemini 2.5 Flash Lite (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "gemini-3.1-pro-low": {
-          "name": "Gemini 3.1 Pro Low (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          }
-        },
-        "gemini-pro-agent": {
-          "name": "Gemini Pro Agent (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          }
-        },
-        "gpt-oss-120b-medium": {
-          "name": "GPT-OSS 120B Medium (Antigravity)",
-          "limit": {
-            "context": 131072,
-            "output": 65536
-          }
-        },
-        "claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6 (Antigravity)"
-        },
-        "gemini-2.5-flash-thinking": {
-          "name": "Gemini 2.5 Flash Thinking (Antigravity)"
-        },
-        "gemini-2.5-pro": {
-          "name": "Gemini 2.5 Pro (Antigravity)"
-        },
-        "gemini-3-flash": {
-          "name": "Gemini 3 Flash (Antigravity)"
-        },
-        "gemini-3-flash-agent": {
-          "name": "Gemini 3 Flash Agent (Antigravity)"
-        },
-        "gemini-3.1-flash-lite": {
-          "name": "Gemini 3.1 Flash Lite (Antigravity)"
-        },
-        "gemini-3.1-pro-high": {
-          "name": "Gemini 3.1 Pro High (Antigravity)"
-        },
-        "gemini-3.5-flash-extra-low": {
-          "name": "Gemini 3.5 Flash Extra Low (Antigravity)"
-        },
-        "gemini-3.5-flash-low": {
-          "name": "Gemini 3.5 Flash Low (Antigravity)"
-        }
-      },
-      "whitelist": [
-        "claude-opus-4-6-thinking",
-        "claude-sonnet-4-6",
-        "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
-        "gemini-2.5-flash-thinking",
-        "gemini-2.5-pro",
-        "gemini-3-flash",
-        "gemini-3-flash-agent",
-        "gemini-3.1-flash-lite",
-        "gemini-3.1-pro-high",
-        "gemini-3.1-pro-low",
-        "gemini-3.5-flash-extra-low",
-        "gemini-3.5-flash-low",
-        "gemini-pro-agent",
-        "gpt-oss-120b-medium"
-      ],
+      "models": {},
+      "whitelist": [],
       "blacklist": [
         "antigravity-gemini-2.5-flash",
         "gemini-3.1-flash-image",
@@ -252,6 +166,8 @@
         "gemini-omni-flash-preview",
         "gemini-robotics-er-1.5-preview",
         "gemini-robotics-er-1.6-preview",
+        "gemini-robotics-er-2-preview",
+        "gemini-robotics-er-2-streaming-preview",
         "gemma-3-12b-it",
         "gemma-3-1b-it",
         "gemma-3-27b-it",
@@ -338,17 +254,6 @@
             }
           }
         },
-        "gemini-3-pro-preview": {
-          "name": "Gemini 3 Pro Preview",
-          "variants": {
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
-          }
-        },
         "gemini-3.1-flash-lite-preview": {
           "name": "Gemini 3.1 Flash Lite Preview",
           "variants": {
@@ -402,6 +307,12 @@
         },
         "gemma-4-31b-it": {
           "name": "Gemma 4 31B"
+        },
+        "gemini-3.5-flash-lite": {
+          "name": "gemini-3.5-flash-lite"
+        },
+        "gemini-3.6-flash": {
+          "name": "gemini-3.6-flash"
         }
       },
       "whitelist": [
@@ -411,12 +322,13 @@
         "gemini-2.5-flash-lite",
         "gemini-2.5-pro",
         "gemini-3-flash-preview",
-        "gemini-3-pro-preview",
         "gemini-3.1-flash-lite",
         "gemini-3.1-flash-lite-preview",
         "gemini-3.1-pro-preview",
         "gemini-3.1-pro-preview-customtools",
         "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.6-flash",
         "gemini-flash-latest",
         "gemini-flash-lite-latest",
         "gemini-pro-latest",
@@ -430,14 +342,8 @@
         "baseURL": "https://tinker.thinkingmachines.dev/services/tinker-prod/oai/api/v1",
         "apiKey": "{env:TINKER_API_KEY}"
       },
-      "models": {
-        "thinkingmachines/Inkling": {
-          "name": "Inkling"
-        }
-      },
-      "whitelist": [
-        "thinkingmachines/Inkling"
-      ]
+      "models": {},
+      "whitelist": []
     },
     "kilo": {
       "blacklist": [
@@ -445,6 +351,8 @@
         "aion-labs/aion-1.0",
         "aion-labs/aion-1.0-mini",
         "aion-labs/aion-2.0",
+        "aion-labs/aion-3.0",
+        "aion-labs/aion-3.0-mini",
         "aion-labs/aion-rp-llama-3.1-8b",
         "alfredpros/codellama-7b-instruct-solidity",
         "alibaba/tongyi-deepresearch-30b-a3b",
@@ -467,6 +375,7 @@
         "anthropic/claude-3.5-sonnet",
         "anthropic/claude-3.7-sonnet",
         "anthropic/claude-3.7-sonnet:thinking",
+        "anthropic/claude-fable-5",
         "anthropic/claude-haiku-4.5",
         "anthropic/claude-opus-4",
         "anthropic/claude-opus-4.1",
@@ -475,9 +384,14 @@
         "anthropic/claude-opus-4.6-fast",
         "anthropic/claude-opus-4.7",
         "anthropic/claude-opus-4.7-fast",
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.8-fast",
+        "anthropic/claude-opus-5",
+        "anthropic/claude-opus-5-fast",
         "anthropic/claude-sonnet-4",
         "anthropic/claude-sonnet-4.5",
         "anthropic/claude-sonnet-4.6",
+        "anthropic/claude-sonnet-5",
         "arcee-ai/coder-large",
         "arcee-ai/maestro-reasoning",
         "arcee-ai/spotlight",
@@ -494,13 +408,16 @@
         "baidu/qianfan-ocr-fast",
         "bytedance-seed/seed-1.6",
         "bytedance-seed/seed-1.6-flash",
+        "bytedance-seed/seed-2.0-code",
         "bytedance-seed/seed-2.0-lite",
         "bytedance-seed/seed-2.0-mini",
         "bytedance/ui-tars-1.5-7b",
+        "cognitivecomputations/dolphin-mistral-24b-venice-edition",
         "cohere/command-a",
         "cohere/command-r-08-2024",
         "cohere/command-r-plus-08-2024",
         "cohere/command-r7b-12-2024",
+        "cohere/north-mini-code:free",
         "corethink:free",
         "deepcogito/cogito-v2.1-671b",
         "deepseek/deepseek-chat",
@@ -515,7 +432,10 @@
         "deepseek/deepseek-v3.2-exp",
         "deepseek/deepseek-v3.2-speciale",
         "deepseek/deepseek-v4-flash",
+        "deepseek/deepseek-v4-flash-0731",
+        "deepseek/deepseek-v4-flash:discounted",
         "deepseek/deepseek-v4-pro",
+        "deepseek/deepseek-v4-pro:discounted",
         "eleutherai/llemma_7b",
         "essentialai/rnj-1-instruct",
         "giga-potato",
@@ -530,14 +450,19 @@
         "google/gemini-2.5-pro-preview",
         "google/gemini-2.5-pro-preview-05-06",
         "google/gemini-3-flash-preview",
+        "google/gemini-3-pro-image",
         "google/gemini-3-pro-image-preview",
         "google/gemini-3-pro-preview",
+        "google/gemini-3.1-flash-image",
         "google/gemini-3.1-flash-image-preview",
         "google/gemini-3.1-flash-lite",
+        "google/gemini-3.1-flash-lite-image",
         "google/gemini-3.1-flash-lite-preview",
         "google/gemini-3.1-pro-preview",
         "google/gemini-3.1-pro-preview-customtools",
         "google/gemini-3.5-flash",
+        "google/gemini-3.5-flash-lite",
+        "google/gemini-3.6-flash",
         "google/gemma-2-27b-it",
         "google/gemma-2-9b-it",
         "google/gemma-3-12b-it",
@@ -556,21 +481,28 @@
         "inception/mercury-coder",
         "inclusionai/ling-2.6-1t",
         "inclusionai/ling-2.6-flash",
+        "inclusionai/ling-3.0-flash",
+        "inclusionai/ling-3.0-tiny:free",
         "inclusionai/ring-2.6-1t",
         "inflection/inflection-3-pi",
         "inflection/inflection-3-productivity",
         "kilo-auto/balanced",
+        "kilo-auto/efficient",
         "kilo-auto/frontier",
         "kilo-auto/small",
         "kilo/auto",
         "kilo/auto-free",
         "kilo/auto-small",
+        "kwaipilot/kat-coder-air-v2.5",
         "kwaipilot/kat-coder-pro",
         "kwaipilot/kat-coder-pro-v2",
+        "kwaipilot/kat-coder-pro-v2.5",
         "liquid/lfm-2-24b-a2b",
         "liquid/lfm-2.2-6b",
+        "liquid/lfm-2.5-2.6b:free",
         "liquid/lfm2-8b-a1b",
         "mancer/weaver",
+        "meituan/longcat-2.0",
         "meituan/longcat-flash-chat",
         "meta-llama/llama-3-70b-instruct",
         "meta-llama/llama-3-8b-instruct",
@@ -586,6 +518,9 @@
         "meta-llama/llama-4-scout",
         "meta-llama/llama-guard-3-8b",
         "meta-llama/llama-guard-4-12b",
+        "meta/muse-glimmer-30b",
+        "meta/muse-spark-1.1",
+        "meta/muse-spark-1.2",
         "microsoft/phi-4",
         "microsoft/phi-4-mini-instruct",
         "microsoft/wizardlm-2-8x22b",
@@ -597,6 +532,7 @@
         "minimax/minimax-m2.5",
         "minimax/minimax-m2.5:free",
         "minimax/minimax-m2.7",
+        "minimax/minimax-m3",
         "mistralai/codestral-2508",
         "mistralai/devstral-2512",
         "mistralai/devstral-medium",
@@ -628,10 +564,14 @@
         "moonshotai/kimi-k2-thinking",
         "moonshotai/kimi-k2.5",
         "moonshotai/kimi-k2.6",
+        "moonshotai/kimi-k2.7-code",
+        "moonshotai/kimi-k3",
         "morph-warp-grep-v2",
         "morph/morph-v3-fast",
         "morph/morph-v3-large",
         "nex-agi/deepseek-v3.1-nex-n1",
+        "nex-agi/nex-n2-mini",
+        "nex-agi/nex-n2-pro",
         "nousresearch/hermes-2-pro-llama-3-8b",
         "nousresearch/hermes-3-llama-3.1-405b",
         "nousresearch/hermes-3-llama-3.1-70b",
@@ -642,6 +582,10 @@
         "nvidia/nemotron-3-nano-30b-a3b",
         "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
         "nvidia/nemotron-3-super-120b-a12b",
+        "nvidia/nemotron-3-ultra-550b-a55b",
+        "nvidia/nemotron-3.5-content-safety:free",
+        "nvidia/nemotron-3.5-lightning",
+        "nvidia/nemotron-3.5-lightning:free",
         "nvidia/nemotron-nano-12b-v2-vl",
         "nvidia/nemotron-nano-9b-v2",
         "openai/gpt-3.5-turbo",
@@ -692,6 +636,12 @@
         "openai/gpt-5.4-pro",
         "openai/gpt-5.5",
         "openai/gpt-5.5-pro",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-luna-pro",
+        "openai/gpt-5.6-sol",
+        "openai/gpt-5.6-sol-pro",
+        "openai/gpt-5.6-terra",
+        "openai/gpt-5.6-terra-pro",
         "openai/gpt-audio",
         "openai/gpt-audio-mini",
         "openai/gpt-chat-latest",
@@ -709,7 +659,9 @@
         "openai/o4-mini-deep-research",
         "openai/o4-mini-high",
         "openrouter/auto",
+        "openrouter/auto-beta",
         "openrouter/bodybuilder",
+        "openrouter/fusion",
         "openrouter/healer-alpha",
         "openrouter/hunter-alpha",
         "openrouter/owl-alpha",
@@ -720,6 +672,8 @@
         "perplexity/sonar-pro",
         "perplexity/sonar-pro-search",
         "perplexity/sonar-reasoning-pro",
+        "poolside/laguna-s-2.1",
+        "poolside/laguna-xs-2.1",
         "prime-intellect/intellect-3",
         "qwen/qwen-2.5-72b-instruct",
         "qwen/qwen-2.5-7b-instruct",
@@ -773,12 +727,17 @@
         "qwen/qwen3.6-flash",
         "qwen/qwen3.6-max-preview",
         "qwen/qwen3.6-plus",
+        "qwen/qwen3.7-flash",
         "qwen/qwen3.7-max",
+        "qwen/qwen3.7-plus",
+        "qwen/qwen3.8-max",
         "qwen/qwq-32b",
         "rekaai/reka-edge",
         "rekaai/reka-flash-3",
         "relace/relace-apply-3",
         "relace/relace-search",
+        "sakana/fugu-ultra",
+        "sakana/sakana-namazu",
         "sao10k/l3-euryale-70b",
         "sao10k/l3-lunaris-8b",
         "sao10k/l3.1-70b-hanami-x1",
@@ -786,19 +745,29 @@
         "sao10k/l3.3-euryale-70b",
         "stealth/claude-opus-4.6",
         "stealth/claude-opus-4.7",
+        "stealth/claude-opus-4.8",
         "stealth/claude-sonnet-4.6",
+        "stealth/gpt-5.6-sol",
+        "stealth/qwen3.6-plus",
         "stepfun/step-3.5-flash",
         "stepfun/step-3.5-flash:free",
+        "stepfun/step-3.7-flash",
+        "stepfun/step-3.7-flash:free",
         "switchpoint/router",
         "tencent/hunyuan-a13b-instruct",
+        "tencent/hy3",
         "tencent/hy3-preview",
+        "tencent/hy3:free",
         "thedrummer/cydonia-24b-v4.1",
         "thedrummer/rocinante-12b",
         "thedrummer/skyfall-36b-v2",
         "thedrummer/unslopnemo-12b",
+        "thinkingmachines/inkling",
+        "thinkingmachines/inkling-small",
         "tngtech/deepseek-r1t2-chimera",
         "undi95/remm-slerp-l2-13b",
         "upstage/solar-pro-3",
+        "upstage/solar-pro4",
         "writer/palmyra-x5",
         "x-ai/grok-3",
         "x-ai/grok-3-beta",
@@ -812,6 +781,7 @@
         "x-ai/grok-4.20-multi-agent",
         "x-ai/grok-4.20-multi-agent-beta",
         "x-ai/grok-4.3",
+        "x-ai/grok-4.5",
         "x-ai/grok-build-0.1",
         "x-ai/grok-code-fast-1",
         "x-ai/grok-code-fast-1:optimized:free",
@@ -833,15 +803,19 @@
         "z-ai/glm-5",
         "z-ai/glm-5-turbo",
         "z-ai/glm-5.1",
+        "z-ai/glm-5.2",
         "z-ai/glm-5v-turbo",
+        "~anthropic/claude-fable-latest",
         "~anthropic/claude-haiku-latest",
         "~anthropic/claude-opus-latest",
         "~anthropic/claude-sonnet-latest",
+        "~deepseek/deepseek-v4-flash-latest",
         "~google/gemini-flash-latest",
         "~google/gemini-pro-latest",
         "~moonshotai/kimi-latest",
         "~openai/gpt-latest",
-        "~openai/gpt-mini-latest"
+        "~openai/gpt-mini-latest",
+        "~x-ai/grok-latest"
       ],
       "models": {
         "kilo-auto/free": {
@@ -853,19 +827,23 @@
         "openrouter/free": {
           "name": "Free"
         },
-        "poolside/laguna-m.1:free": {
-          "name": "Laguna M.1 (Free)"
+        "nvidia/nemotron-3-ultra-550b-a55b:free": {
+          "name": "nemotron-3-ultra-550b-a55b:free"
         },
-        "poolside/laguna-xs.2:free": {
-          "name": "Laguna XS.2 (Free)"
+        "poolside/laguna-s-2.1:free": {
+          "name": "laguna-s-2.1:free"
+        },
+        "poolside/laguna-xs-2.1:free": {
+          "name": "laguna-xs-2.1:free"
         }
       },
       "whitelist": [
         "kilo-auto/free",
         "nvidia/nemotron-3-super-120b-a12b:free",
+        "nvidia/nemotron-3-ultra-550b-a55b:free",
         "openrouter/free",
-        "poolside/laguna-m.1:free",
-        "poolside/laguna-xs.2:free"
+        "poolside/laguna-s-2.1:free",
+        "poolside/laguna-xs-2.1:free"
       ]
     },
     "nvidia": {
@@ -881,12 +859,6 @@
         },
         "meta/llama-3.3-70b-instruct": {
           "name": "llama-3.3-70b-instruct"
-        },
-        "meta/llama-4-maverick-17b-128e-instruct": {
-          "name": "llama-4-maverick-17b-128e-instruct"
-        },
-        "mistralai/mistral-large-3-675b-instruct-2512": {
-          "name": "mistral-large-3-675b-instruct-2512"
         },
         "mistralai/mistral-nemotron": {
           "name": "mistral-nemotron"
@@ -906,23 +878,8 @@
         "openai/gpt-oss-120b": {
           "name": "gpt-oss-120b"
         },
-        "stepfun-ai/step-3.5-flash": {
-          "name": "step-3.5-flash"
-        },
-        "deepseek-ai/deepseek-v4-flash": {
-          "name": "deepseek-v4-flash"
-        },
-        "deepseek-ai/deepseek-v4-pro": {
-          "name": "deepseek-v4-pro"
-        },
-        "minimaxai/minimax-m2.7": {
-          "name": "minimax-m2.7"
-        },
         "minimaxai/minimax-m3": {
           "name": "minimax-m3"
-        },
-        "mistralai/mistral-medium-3.5-128b": {
-          "name": "mistral-medium-3.5-128b"
         },
         "moonshotai/kimi-k2.6": {
           "name": "kimi-k2.6"
@@ -933,24 +890,28 @@
         "nvidia/nemotron-3-ultra-550b-a55b": {
           "name": "nemotron-3-ultra-550b-a55b"
         },
-        "qwen/qwen3.5-397b-a17b": {
-          "name": "qwen3.5-397b-a17b"
-        },
         "google/gemma-4-31b-it": {
           "name": "gemma-4-31b-it"
+        },
+        "z-ai/glm-5.2": {
+          "name": "glm-5.2"
+        },
+        "deepseek-ai/deepseek-v4-flash-0731": {
+          "name": "deepseek-v4-flash-0731"
+        },
+        "nvidia/nemotron-3.5-lightning-30b-a3b": {
+          "name": "nemotron-3.5-lightning-30b-a3b"
+        },
+        "thinkingmachines/inkling": {
+          "name": "inkling"
         }
       },
       "whitelist": [
-        "deepseek-ai/deepseek-v4-flash",
-        "deepseek-ai/deepseek-v4-pro",
+        "deepseek-ai/deepseek-v4-flash-0731",
         "google/gemma-4-31b-it",
         "meta/codellama-70b",
         "meta/llama-3.3-70b-instruct",
-        "meta/llama-4-maverick-17b-128e-instruct",
-        "minimaxai/minimax-m2.7",
         "minimaxai/minimax-m3",
-        "mistralai/mistral-large-3-675b-instruct-2512",
-        "mistralai/mistral-medium-3.5-128b",
         "mistralai/mistral-nemotron",
         "moonshotai/kimi-k2.6",
         "nvidia/llama-3.1-nemotron-ultra-253b-v1",
@@ -958,10 +919,11 @@
         "nvidia/nemotron-3-nano-30b-a3b",
         "nvidia/nemotron-3-super-120b-a12b",
         "nvidia/nemotron-3-ultra-550b-a55b",
+        "nvidia/nemotron-3.5-lightning-30b-a3b",
         "nvidia/nemotron-4-340b-instruct",
         "openai/gpt-oss-120b",
-        "qwen/qwen3.5-397b-a17b",
-        "stepfun-ai/step-3.5-flash"
+        "thinkingmachines/inkling",
+        "z-ai/glm-5.2"
       ],
       "blacklist": [
         "01-ai/yi-large",
@@ -1010,6 +972,7 @@
         "meta/llama2-70b",
         "meta/llama3-70b-instruct",
         "meta/llama3-8b-instruct",
+        "meta/muse-glimmer-30b",
         "microsoft/kosmos-2",
         "microsoft/phi-3-medium-128k-instruct",
         "microsoft/phi-3-medium-4k-instruct",
@@ -1046,6 +1009,7 @@
         "nvidia/embed-qa-4",
         "nvidia/gliner-pii",
         "nvidia/ising-calibration-1-35b-a3b",
+        "nvidia/ising-calibration-1.5-31b",
         "nvidia/llama-3.1-nemoguard-8b-content-safety",
         "nvidia/llama-3.1-nemoguard-8b-topic-control",
         "nvidia/llama-3.1-nemotron-51b-instruct",
@@ -1064,6 +1028,7 @@
         "nvidia/nemoretriever-ocr-v1",
         "nvidia/nemoretriever-parse",
         "nvidia/nemotron-3-content-safety",
+        "nvidia/nemotron-3-embed-1b",
         "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
         "nvidia/nemotron-3.5-content-safety",
         "nvidia/nemotron-4-340b-reward",
@@ -1082,9 +1047,11 @@
         "nvidia/parakeet-tdt-0.6b-v2",
         "nvidia/riva-translate-4b-instruct",
         "nvidia/riva-translate-4b-instruct-v1.1",
+        "nvidia/riva-translate-4b-instruct-v2",
         "nvidia/vila",
         "openai/gpt-oss-20b",
         "openai/whisper-large-v3",
+        "poolside/laguna-xs-2.1",
         "qwen/qwen2.5-coder-32b-instruct",
         "qwen/qwen2.5-coder-7b-instruct",
         "qwen/qwen3-235b-a22b",
@@ -1112,6 +1079,7 @@
         "cogito-2.1:671b",
         "deepseek-v3.1:671b",
         "deepseek-v3.2",
+        "deepseek-v4-flash:preview",
         "devstral-2:123b",
         "devstral-small-2:24b",
         "gemini-3-flash-preview",
@@ -1137,12 +1105,6 @@
         "rnj-1:8b"
       ],
       "models": {
-        "glm-5": {
-          "name": "GLM 5"
-        },
-        "deepseek-v4-flash": {
-          "name": "DeepSeek V4 Flash"
-        },
         "deepseek-v4-pro": {
           "name": "DeepSeek V4 Pro"
         },
@@ -1166,12 +1128,14 @@
         },
         "kimi-k3": {
           "name": "Kimi K3"
+        },
+        "deepseek-v4-flash:0731": {
+          "name": "deepseek-v4-flash:0731"
         }
       },
       "whitelist": [
-        "deepseek-v4-flash",
+        "deepseek-v4-flash:0731",
         "deepseek-v4-pro",
-        "glm-5",
         "glm-5.2",
         "gpt-oss:120b",
         "kimi-k2.7-code",
@@ -1191,6 +1155,7 @@
         "claude-opus-4-6",
         "claude-opus-4-7",
         "claude-opus-4-8",
+        "claude-opus-5",
         "claude-sonnet-4",
         "claude-sonnet-4-5",
         "claude-sonnet-4-6",
@@ -1201,6 +1166,8 @@
         "gemini-3-pro",
         "gemini-3.1-pro",
         "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.6-flash",
         "glm-4.6",
         "glm-4.7",
         "glm-4.7-free",
@@ -1225,6 +1192,10 @@
         "gpt-5.4-pro",
         "gpt-5.5",
         "gpt-5.5-pro",
+        "gpt-5.6-luna",
+        "gpt-5.6-sol",
+        "gpt-5.6-terra",
+        "grok-4.5",
         "grok-build-0.1",
         "grok-code",
         "hy3-preview-free",
@@ -1234,7 +1205,9 @@
         "kimi-k2.5-free",
         "kimi-k2.6",
         "kimi-k2.7-code",
+        "kimi-k3",
         "ling-2.6-flash-free",
+        "ling-3.0-tiny-free",
         "mimo-v2-flash-free",
         "mimo-v2.5-free",
         "minimax-m2.1",
@@ -1274,64 +1247,68 @@
         },
         "nemotron-3-ultra-free": {
           "name": "Nemotron 3 Ultra (Free)"
+        },
+        "hy3-free": {
+          "name": "hy3-free"
+        },
+        "laguna-s-2.1-free": {
+          "name": "laguna-s-2.1-free"
+        },
+        "ling-3.0-flash-free": {
+          "name": "ling-3.0-flash-free"
+        },
+        "longcat-2.0-free": {
+          "name": "longcat-2.0-free"
+        },
+        "nemotron-3.5-lightning-free": {
+          "name": "nemotron-3.5-lightning-free"
         }
       },
       "whitelist": [
         "big-pickle",
         "deepseek-v4-flash-free",
+        "hy3-free",
+        "laguna-s-2.1-free",
+        "ling-3.0-flash-free",
+        "longcat-2.0-free",
         "mimo-v2-omni-free",
         "mimo-v2-pro-free",
         "minimax-m2.5-free",
         "minimax-m3-free",
         "nemotron-3-super-free",
-        "nemotron-3-ultra-free"
+        "nemotron-3-ultra-free",
+        "nemotron-3.5-lightning-free"
       ]
     },
     "openrouter": {
       "name": "OpenRouter",
       "models": {
-        "openai/gpt-oss-120b:free": {
-          "name": "Openai/Gpt-Oss-120B (Free)"
-        },
-        "meta-llama/llama-3.3-70b-instruct:free": {
-          "name": "Llama 3.3 70B Instruct (free)"
-        },
         "openrouter/free": {
           "name": "Free Models Router"
         },
-        "poolside/laguna-m.1:free": {
-          "name": "Laguna M.1"
-        },
-        "poolside/laguna-xs.2:free": {
-          "name": "Laguna XS.2"
-        },
-        "google/gemma-4-31b-it:free": {
-          "name": "Gemma 4 31B (free)"
-        },
         "nvidia/nemotron-3-super-120b-a12b:free": {
           "name": "Nemotron 3 Super (free)"
-        },
-        "qwen/qwen3-coder:free": {
-          "name": "Qwen3 Coder (free)"
         },
         "cohere/north-mini-code:free": {
           "name": "Cohere North Mini Code (free)"
         },
         "nvidia/nemotron-3-ultra-550b-a55b:free": {
           "name": "Nemotron 3 Ultra 550B (free)"
+        },
+        "poolside/laguna-s-2.1:free": {
+          "name": "laguna-s-2.1:free"
+        },
+        "poolside/laguna-xs-2.1:free": {
+          "name": "laguna-xs-2.1:free"
         }
       },
       "whitelist": [
         "cohere/north-mini-code:free",
-        "google/gemma-4-31b-it:free",
-        "meta-llama/llama-3.3-70b-instruct:free",
         "nvidia/nemotron-3-super-120b-a12b:free",
         "nvidia/nemotron-3-ultra-550b-a55b:free",
-        "openai/gpt-oss-120b:free",
         "openrouter/free",
-        "poolside/laguna-m.1:free",
-        "poolside/laguna-xs.2:free",
-        "qwen/qwen3-coder:free"
+        "poolside/laguna-s-2.1:free",
+        "poolside/laguna-xs-2.1:free"
       ],
       "blacklist": [
         "01-ai/yi-1.5-34b-chat",
@@ -1411,7 +1388,6 @@
         "arcee-ai/coder-large",
         "arcee-ai/maestro-reasoning",
         "arcee-ai/spotlight",
-        "arcee-ai/trinity-large-preview",
         "arcee-ai/trinity-large-preview",
         "arcee-ai/trinity-large-thinking",
         "arcee-ai/trinity-mini",
@@ -1538,6 +1514,7 @@
         "google/gemma-4-26b-a4b-it",
         "google/gemma-4-26b-a4b-it:free",
         "google/gemma-4-31b-it",
+        "google/gemma-4-31b-it:free",
         "google/gemma-7b-it",
         "google/lyria-3-clip-preview",
         "google/lyria-3-pro-preview",
@@ -1554,6 +1531,7 @@
         "inception/mercury-coder",
         "inclusionai/ling-2.6-1t",
         "inclusionai/ling-2.6-flash",
+        "inclusionai/ling-3.0-tiny:free",
         "inclusionai/ring-2.6-1t",
         "inclusionai/ring-2.6-1t:free",
         "infermatic/mn-inferor-12b",
@@ -1575,6 +1553,7 @@
         "liquid/lfm-2.2-6b",
         "liquid/lfm-2.5-1.2b-instruct:free",
         "liquid/lfm-2.5-1.2b-thinking:free",
+        "liquid/lfm-2.5-2.6b:free",
         "liquid/lfm-3b",
         "liquid/lfm-40b",
         "liquid/lfm-7b",
@@ -1723,6 +1702,7 @@
         "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
         "nvidia/nemotron-3-super-120b-a12b",
         "nvidia/nemotron-3.5-content-safety:free",
+        "nvidia/nemotron-3.5-lightning:free",
         "nvidia/nemotron-4-340b-instruct",
         "nvidia/nemotron-nano-12b-v2-vl",
         "nvidia/nemotron-nano-12b-v2-vl:free",

@@ -20,7 +20,8 @@ syntactically valid JSON tool calls matching the OpenCode schemas.
 
 - `openrouter/arcee-ai/trinity-mini:free`
 
-- `openrouter/meta-llama/llama-3.3-70b-instruct:free`
+- `openrouter/meta-llama/llama-3.3-70b-instruct:free` *(rotated off the free
+  tier 2026-08; paid base model still listed — removed from whitelist)*
 
 - `openrouter/minimax/minimax-m2.5:free`
 
@@ -28,7 +29,8 @@ syntactically valid JSON tool calls matching the OpenCode schemas.
 
 - `openrouter/mistralai/mistral-small-3.2-24b-instruct`
 
-- `openrouter/openai/gpt-oss-120b:free`
+- `openrouter/openai/gpt-oss-120b:free` *(rotated off the free tier 2026-08;
+  paid base model still listed — removed from whitelist)*
 
 - `openrouter/openrouter/elephant-alpha`
 
@@ -36,7 +38,16 @@ syntactically valid JSON tool calls matching the OpenCode schemas.
 
 - `openrouter/openrouter/owl-alpha`
 
-- `openrouter/poolside/laguna-xs.2:free`
+- `openrouter/poolside/laguna-xs.2:free` *(dead 2026-08; succeeded by the
+  laguna 2.1 line below)*
+
+- `openrouter/poolside/laguna-s-2.1:free` *(provisional 2026-08: successor of
+  the approved laguna line; passed a live chat call, strict tool-call vetting
+  still pending)*
+
+- `openrouter/poolside/laguna-xs-2.1:free` *(provisional 2026-08: successor of
+  the approved laguna line; passed a live chat call, strict tool-call vetting
+  still pending)*
 
 - `openrouter/z-ai/glm-4.5-air:free`
 
@@ -174,3 +185,21 @@ via OpenRouter.
 *Note: OpenRouter’s free tier rotates frequently.
 To validate a new free model, run it through `test_models2.py` which forces a strict
 JSON schema validation for tool-calling capabilities.*
+
+* * *
+
+## 2026-08-12 Catalog Sweep
+
+Whitelist removals (rotated/dead upstream): `meta-llama/llama-3.3-70b-instruct:free`,
+`openai/gpt-oss-120b:free`, `qwen/qwen3-coder:free`, `poolside/laguna-m.1:free`,
+`poolside/laguna-xs.2:free`.
+
+Moved whitelist → blacklist: `google/gemma-4-31b-it:free` (live but every chat
+call returns HTTP 400 "Provider returned error").
+
+New free models blacklisted per the <35B parameter rule:
+`inclusionai/ling-3.0-tiny:free`, `liquid/lfm-2.5-2.6b:free`,
+`nvidia/nemotron-3.5-lightning:free` (30B-A3B).
+
+Provisional whitelist additions (laguna 2.1 line, chat-verified, tool-call
+vetting pending): `poolside/laguna-s-2.1:free`, `poolside/laguna-xs-2.1:free`.

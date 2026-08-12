@@ -3,6 +3,7 @@
     "cogito-2.1:671b",
     "deepseek-v3.1:671b",
     "deepseek-v3.2",
+    "deepseek-v4-flash:preview",
     "devstral-2:123b",
     "devstral-small-2:24b",
     "gemini-3-flash-preview",
@@ -28,12 +29,6 @@
     "rnj-1:8b"
   ],
   "models": {
-    "glm-5": {
-      "name": "GLM 5"
-    },
-    "deepseek-v4-flash": {
-      "name": "DeepSeek V4 Flash"
-    },
     "deepseek-v4-pro": {
       "name": "DeepSeek V4 Pro"
     },
@@ -57,12 +52,14 @@
     },
     "kimi-k3": {
       "name": "Kimi K3"
+    },
+    "deepseek-v4-flash:0731": {
+      "name": "deepseek-v4-flash:0731"
     }
   },
   "whitelist": [
-    "deepseek-v4-flash",
+    "deepseek-v4-flash:0731",
     "deepseek-v4-pro",
-    "glm-5",
     "glm-5.2",
     "gpt-oss:120b",
     "kimi-k2.7-code",
