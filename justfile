@@ -32,7 +32,6 @@ skills_dir := opencode_dir / "skills"
 
 # Tool configs
 
-cc_safety_net := opencode_dir / "configs" / "cc-safety-net.json"
 tmux_conf := dotfiles_dir / "tmux.conf"
 tmux_powerline_config := dotfiles_dir / "tmux-powerline" / "config.sh"
 tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.sh"
@@ -48,7 +47,6 @@ kilo_home := home / ".config/kilo"
 agents_home := home / ".agents"
 kilocode_home := home / ".kilocode"
 opencode_root := home / ".opencode"
-cc_safety_net_home := home / ".cc-safety-net"
 
 # Show available recipes
 
@@ -81,7 +79,6 @@ install:
     # Assertion of existence
     echo "Verifying repository targets..."
     for target in "{{ agents_md }}" "{{ skills_dir }}" \
-                  "{{ cc_safety_net }}" \
                   "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
                   "{{ tmux_powerline_theme }}"; do
         if [ ! -e "$target" ]; then
@@ -93,8 +90,7 @@ install:
 
     mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" \
              "{{ qoder_home }}" "{{ opencode_home }}" "{{ kilo_home }}" \
-             "{{ agents_home }}" "{{ kilocode_home }}" "{{ opencode_root }}" \
-             "{{ cc_safety_net_home }}"
+             "{{ agents_home }}" "{{ kilocode_home }}" "{{ opencode_root }}"
 
     ln -snf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
     ln -snf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
@@ -104,7 +100,6 @@ install:
     ln -snf "{{ agents_md }}" "{{ gemini_home }}/AGENTS.md"
     ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
-    ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
 
     # tmux config symlinks
     ln -snf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
@@ -156,7 +151,6 @@ install:
     printf "%-30s -> %s\n" "~/.gemini/GEMINI.md" "$(readlink {{ gemini_home }}/GEMINI.md)"
     printf "%-30s -> %s\n" "~/.gemini/AGENTS.md" "$(readlink {{ gemini_home }}/AGENTS.md)"
     printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
-    printf "%-30s -> %s\n" "~/.cc-safety-net/config.json" "$(readlink {{ cc_safety_net_home }}/config.json)"
     echo ""
     echo "System prompts (actual):"
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
