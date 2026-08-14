@@ -41,6 +41,15 @@ def parse_codex_jsonl(file_path):
                             print(block.get("text", "").strip())
                     print("-" * 60)
                     
+                elif item_type == "agent_message":
+                    author = payload.get("author", "?")
+                    recipient = payload.get("recipient", "?")
+                    print(f"\n[AGENT MESSAGE {author} -> {recipient}]")
+                    for block in payload.get("content", []):
+                        if block.get("type") in ("input_text", "text", "output_text"):
+                            print(block.get("text", "").strip())
+                    print("-" * 60)
+
                 elif item_type == "reasoning":
                     text = payload.get('text', '').strip()
                     if text:
