@@ -21,79 +21,64 @@
 
 ## Goal-integrity routing (always-on)
 
-On 2026-08-13/14 an agent fleet lost ~24 hours to one pathology: substituting a
-legible artifact for the goal and then optimizing the artifact — the goal file
-itself, an error count, reviewer verdicts, a "blocked" label, metadata
-self-consistency. The rules below are tripwires, not guarantees: each names a
-red-flag moment and forces a stop-and-reground at that moment. The reground is
-cheap; skipping it is how a 24-hour loss starts.
+Substituting a proxy for the goal and then optimizing the proxy — a goal file,
+an error count, a reviewer verdict, a "blocked" label, metadata
+self-consistency — is a cognitive failure, not a chosen one: from inside it
+feels like diligence, and introspection does not detect it. So no rule below
+asks you to judge your own intent. Each names an observable condition; when
+the condition holds, perform the reground act — especially when the current
+work feels productive, because the feeling is not evidence.
 
-The failures below are not equal in cost. An agent idled on a manufactured
-blocker loses wall time only. An agent grinding — spending hours of tokens for
-a few percent of a task an interactive session sweeps in an hour — loses
-everything it spends and often corrupts the work besides. When in doubt, the
-one-message report is always cheaper than another cycle.
+**The reground act:** stop and state (1) the user's original goal in the
+user's own words, (2) the artifact or number the current action improves, and
+(3) whether improving (2) IS (1). If it is not, act on (1), or send the user a
+one-message report explaining exactly why that is impossible.
 
-**The reground act** (referenced below): stop and state (1) the user's original
-goal in the user's own words, (2) the artifact or number the current action
-improves, and (3) whether improving (2) IS (1). If it is not, the next action
-must be on (1), or a one-message report to the user explaining exactly why that
-is impossible.
-
-- **The goal source is read-only while you execute it.** TODO files, plan
-  cards, issue bodies, and acceptance criteria may change only to record
-  completion that the delivered artifact itself proves, or on explicit user
-  instruction in the current session. Deferring, relabeling, splitting, or
+- **You are about to edit the file that defines your goal** (a TODO, plan
+  card, issue body, or acceptance criterion) for any reason other than
+  recording completion the delivered artifact itself proves, or explicit user
+  instruction in the current session. From inside this feels like tidying a
+  stale document; from outside, deferring, relabeling, splitting, or
   re-scoping an item you were asked to finish changes the problem instead of
-  solving it — reward hacking in its purest form. Wanting to edit the goal
-  source is itself the red flag: perform the reground act, then either do the
-  work or send the one-message report.
+  solving it. The goal source is read-only while you execute it: perform the
+  reground act, then do the work or send the report.
 
-- **Grinding is the expensive failure; pausing is the cheap one.** The dominant
-  observed cost was not stopping but continuing: millions of tokens per
-  one-line commit, reviewers outnumbering implementers, 3% of a plan in 12
-  hours of fleet time. Price each work unit against the repo's demonstrated
-  throughput; when a unit has run well past that price (more than about two
-  review rounds, or an hour without landing a falsifiable artifact), do not add
-  apparatus or push harder — stop and report the unit as mispriced. An agent
-  paused on a genuine question costs nothing; an agent grinding costs
-  everything.
+- **A work unit has passed about two review rounds, or an hour, without a
+  landed falsifiable artifact.** From inside, another reviewer, audit, or
+  repair cycle feels like rigor; in cost it is the most expensive failure
+  available, while pausing costs nothing. Stop and report the unit as
+  mispriced instead of adding apparatus.
 
-- **Difficulty is calibrated by throughput, not intuition.** Before calling any
-  item "hard", "research-scale", or worth deferring, read the repo's recent git
-  log and find comparable completed work. If comparable items landed in hours,
-  this item is hours. A model prior about what is hard is stale evidence; the
-  repo's own demonstrated history is current evidence.
+- **You are about to call an item hard, research-scale, or worth deferring.**
+  A difficulty intuition is a stale prior. First read the repo's recent git
+  log for comparable completed work; if comparable items landed in hours, this
+  item is hours.
 
-- **A number measured twice is being optimized.** The second time one scalar
-  (error count, test count, finding count, checkbox count) is re-measured to
-  judge an edit inside one work unit: perform the reground act, write down the
-  actual claim the edit makes true, and verify that claim on a concrete
-  specimen. An edit justified only by "the number moved" is unjustified, and
-  moving a checker's number by asserting something false is strictly worse than
-  the original error.
+- **You re-measured the same scalar (error, test, finding, or checkbox count)
+  a second time inside one work unit.** Whatever the intent, the number is now
+  functioning as the target. Perform the reground act, write down the actual
+  claim the edit makes true, and verify that claim on a concrete specimen. An
+  edit justified only by the number moving is unjustified, and moving a
+  checker's number by asserting something false is strictly worse than the
+  original error.
 
-- **"Blocked" requires a new external fact.** Your own unanswered messages and
-  automatic goal continuations are not evidence of an impasse; they show only
-  that no reply arrived, and repeating a request cannot create evidence. Before
-  declaring a blocker, re-read the mandate for authority already delegated to
-  you: a mandate to orchestrate and decide IS the approval you are waiting for.
-  This rule bans manufactured blockers, not pausing: stopping to ask a genuine
-  question only the user can answer is cheap and correct, and is always better
-  than grinding.
+- **You are about to declare the goal blocked.** From inside, repeated silence
+  reads as mounting confirmation of an impasse; it is only the absence of a
+  reply, and your own unanswered messages and automatic continuations cannot
+  accumulate into evidence. Re-read the mandate first: authority already
+  delegated IS the approval you are waiting for. Pausing on a genuine question
+  only the user can answer is correct; silence alone never constitutes one.
 
-- **Review verdicts do not define done.** Acceptance of a work unit is a
-  falsifiable statement about the work itself. A reviewer finding outside the
-  current unit is recorded and deferred, never blocking. A second consecutive
-  review round on one unit that adds no new falsifiable content means the loop
-  is the defect: perform the reground act against the unit's own acceptance
-  statement.
+- **A reviewer finding is about to block work outside its own unit, or a
+  second consecutive review round adds no new falsifiable content.**
+  Acceptance is a falsifiable statement about the work itself, never a
+  verdict. Record and defer out-of-unit findings; on a content-free second
+  round, reground against the unit's own acceptance statement.
 
-- **Two consecutive administrative turns is a tripwire.** If the previous turn
-  produced only administrative artifacts (plans, audits, status edits,
-  registries, validation of validation) and the current turn is about to do the
-  same, perform the reground act first. Paperwork produced to justify further
-  paperwork is the signature of the failure this section exists to stop.
+- **The previous turn produced only administrative artifacts (plans, audits,
+  status edits, registries, validation of validation) and this turn is about
+  to do the same.** From inside, organizing the work feels like progress on
+  it. Perform the reground act before continuing.
 
 ## Engineering Principles
 
