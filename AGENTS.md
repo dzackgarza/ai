@@ -28,6 +28,12 @@ self-consistency. The rules below are tripwires, not guarantees: each names a
 red-flag moment and forces a stop-and-reground at that moment. The reground is
 cheap; skipping it is how a 24-hour loss starts.
 
+The failures below are not equal in cost. An agent idled on a manufactured
+blocker loses wall time only. An agent grinding — spending hours of tokens for
+a few percent of a task an interactive session sweeps in an hour — loses
+everything it spends and often corrupts the work besides. When in doubt, the
+one-message report is always cheaper than another cycle.
+
 **The reground act** (referenced below): stop and state (1) the user's original
 goal in the user's own words, (2) the artifact or number the current action
 improves, and (3) whether improving (2) IS (1). If it is not, the next action
@@ -42,6 +48,16 @@ is impossible.
   solving it — reward hacking in its purest form. Wanting to edit the goal
   source is itself the red flag: perform the reground act, then either do the
   work or send the one-message report.
+
+- **Grinding is the expensive failure; pausing is the cheap one.** The dominant
+  observed cost was not stopping but continuing: millions of tokens per
+  one-line commit, reviewers outnumbering implementers, 3% of a plan in 12
+  hours of fleet time. Price each work unit against the repo's demonstrated
+  throughput; when a unit has run well past that price (more than about two
+  review rounds, or an hour without landing a falsifiable artifact), do not add
+  apparatus or push harder — stop and report the unit as mispriced. An agent
+  paused on a genuine question costs nothing; an agent grinding costs
+  everything.
 
 - **Difficulty is calibrated by throughput, not intuition.** Before calling any
   item "hard", "research-scale", or worth deferring, read the repo's recent git
@@ -62,6 +78,9 @@ is impossible.
   that no reply arrived, and repeating a request cannot create evidence. Before
   declaring a blocker, re-read the mandate for authority already delegated to
   you: a mandate to orchestrate and decide IS the approval you are waiting for.
+  This rule bans manufactured blockers, not pausing: stopping to ask a genuine
+  question only the user can answer is cheap and correct, and is always better
+  than grinding.
 
 - **Review verdicts do not define done.** Acceptance of a work unit is a
   falsifiable statement about the work itself. A reviewer finding outside the
