@@ -37,7 +37,7 @@ def parse_codex_jsonl(file_path):
                     print(f"\n[{role}]")
                     for block in payload.get("content", []):
                         btype = block.get("type")
-                        if btype == "input_text" or btype == "text":
+                        if btype in ("input_text", "text", "output_text"):
                             print(block.get("text", "").strip())
                     print("-" * 60)
                     
@@ -50,7 +50,7 @@ def parse_codex_jsonl(file_path):
                 elif item_type in ["function_call", "custom_tool_call"]:
                     print(f"\n[ASSISTANT]")
                     tool_name = payload.get("name", "unknown")
-                    inputs = payload.get("arguments", {})
+                    inputs = payload.get("arguments") or payload.get("input", {})
                     if isinstance(inputs, str):
                         try:
                             inputs = json.loads(inputs)
