@@ -1,23 +1,22 @@
 common:
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
-    command: uv
-    args:
-      - run
-      - --directory
-      - /home/dzack/opencode-plugins/opencode-plugin-improved-webtools/mcp-server
-      - python
-      - server.py
-    enabled: true
-    exclude_harnesses:
-      - opencode
-    env:
-      SEARXNG_INSTANCE_URL: "{env:SEARXNG_INSTANCE_URL}"
-  lean-lsp:
-    description: Lean theorem prover LSP MCP server (diagnostics, goals, hover, mathlib search via LeanSearch/Loogle/Lean Hammer)
     command: uvx
     args:
-      - lean-lsp-mcp
+    - --from
+    - git+https://github.com/dzackgarza/improved-webtools#subdirectory=mcp-server
+    - improved-webtools-mcp
+    enabled: true
+    exclude_harnesses:
+    - opencode
+    env:
+      SEARXNG_INSTANCE_URL: '{env:SEARXNG_INSTANCE_URL}'
+  lean-lsp:
+    description: Lean theorem prover LSP MCP server (diagnostics, goals, hover, mathlib
+      search via LeanSearch/Loogle/Lean Hammer)
+    command: uvx
+    args:
+    - lean-lsp-mcp
     enabled: true
 harnesses:
   opencode:

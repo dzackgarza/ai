@@ -156,6 +156,10 @@ install:
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
     [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
 
+# Sync MCP server definitions into each configured harness.
+sync-mcp-configs *args:
+    @cd {{ repo }} && uv run --script mcp/sync_mcp_configs.py {{ args }}
+
 # Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:
     #!/usr/bin/env python3
