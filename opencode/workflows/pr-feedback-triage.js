@@ -89,27 +89,33 @@ while (round < MAX_ROUNDS) {
   const accepts = ((disp && disp.dispositions) || []).filter(d => d.accept && d.rootConcern)
   if (!accepts.length) { summary.push(`round ${round}: ${toDispose.length} findings, 0 accepts`); continue }
 
-  // Role C + verify — pipeline each accept independently: remediate from the
-  // first-principles rootConcern (A passes the concern, never reviewer wording),
-  // then a separate verify+commit+close stage. Pipeline = no barrier; a finding
-  // verifies as soon as its remediation lands.
+  // Role C + verify — STRICTLY SEQUENTIAL. Every remediation edits the same
+  // working tree and every verify commits and pushes in it, so concurrent
+  // per-finding agents interleave unrelated edits into one dirty tree and
+  // race each other's commits. One finding at a time: remediate from the
+  // first-principles rootConcern (A passes the concern, never reviewer
+  // wording), verify+commit+close, then the next finding starts from the
+  // clean committed state.
   phase('Remediate')
-  const results = await pipeline(accepts,
-    a => agent(
+  const results = []
+  for (const a of accepts) {
+    const rem = await agent(
       `You are role C (independent remediation) for ${repo} PR #${pr}. Load ${SKILL}/SKILL.md, anti-slop, fixing-slop, bespoke-software-policy, test-guidelines. Do NOT git commit.\n` +
       `Implement this from first principles (you were NOT given reviewer wording):\n${a.rootConcern}\n` +
       `Fail loud; no fallbacks/defaults/mocks; tests prove user-facing behavior. If it cannot be met cleanly, STOP and report blocked.\n` +
       `Return {key:'${a.key}', blocked, blocker, changedFiles[], proof}.`,
-      { schema: REMEDIATION_SCHEMA, phase: 'Remediate', label: `remediate ${a.key}` }),
-    (rem, a) => {
-      if (!rem || rem.blocked) return { key: a.key, verified: false, closed: false, note: rem ? rem.blocker : 'remediation null' }
-      return agent(
-        `You are role A's verification gate for ${repo} PR #${pr}, finding ${a.key}. Load ${SKILL}/SKILL.md.\n` +
-        `Phase-5 verify by hand: compare the declared remediation (${JSON.stringify(rem)}) against the ACTUAL code, answering each Phase-5 question; confirm the spec is honored and no banned patterns. Run lint/test/build.\n` +
-        `If it passes: commit (co-author Claude Opus 4.8), push, and post the three-stamp closure (Disposition -> Remediation -> Verification with the commit hash) to the thread and resolve it. If it fails: report verified:false with the gap; do NOT commit.\n` +
-        `Return {key:'${a.key}', verified, closed, commit, note}.`,
-        { schema: VERIFY_SCHEMA, phase: 'Verify', label: `verify ${a.key}` })
-    })
+      { schema: REMEDIATION_SCHEMA, phase: 'Remediate', label: `remediate ${a.key}` })
+    if (!rem || rem.blocked) {
+      results.push({ key: a.key, verified: false, closed: false, note: rem ? rem.blocker : 'remediation null' })
+      continue
+    }
+    results.push(await agent(
+      `You are role A's verification gate for ${repo} PR #${pr}, finding ${a.key}. Load ${SKILL}/SKILL.md.\n` +
+      `Phase-5 verify by hand: compare the declared remediation (${JSON.stringify(rem)}) against the ACTUAL code, answering each Phase-5 question; confirm the spec is honored and no banned patterns. Run lint/test/build.\n` +
+      `If it passes: commit (co-author Claude Opus 4.8), push, and post the three-stamp closure (Disposition -> Remediation -> Verification with the commit hash) to the thread and resolve it. If it fails: report verified:false with the gap; do NOT commit.\n` +
+      `Return {key:'${a.key}', verified, closed, commit, note}.`,
+      { schema: VERIFY_SCHEMA, phase: 'Verify', label: `verify ${a.key}` }))
+  }
 
   const closed = results.filter(r => r && r.closed).length
   const blocked = results.filter(r => r && !r.verified).map(r => r && r.key)
