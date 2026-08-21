@@ -100,11 +100,15 @@ request.
 
 Instances, all visible in the draft itself:
 
-- The user says "drop X"; the next version of the plan says "do not do X".
+- The user says "drop X"; the next version of the plan says "do not do X",
+  "explicitly avoid X", or "this implementation deliberately omits X".
 - A commit message or PR description listing what the change avoided, did
   not touch, or deliberately left out.
 - A doc line, comment, or docstring stating that some approach is not used
   here.
+- A comment describing what the code used to do, or what it no longer does.
+- A fallback, shim, or compatibility branch guarding a state that never
+  shipped — migration code for a feature that is not committed yet.
 - A test asserting a past bug is absent (the `reflexive correction` bullet
   above is this failure inside test files).
 - Prose defending a simplification, or explaining why an omitted feature was
@@ -115,6 +119,7 @@ Instances, all visible in the draft itself:
   types" — which carries the type name forward again.
 - The code deleted, but the deleted symbol still named in a config key,
   fixture, heading, or TODO.
+- "Yes, I will do X" as the whole reply, with X absent from the work.
 - "Do not write code, I am asking a question" answered with a note about not
   writing code, then code.
 
