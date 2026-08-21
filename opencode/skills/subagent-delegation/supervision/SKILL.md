@@ -58,8 +58,6 @@ an incompleteness signal with progress context, not a success signal.
   behavior.
 - [[ssh-workstation-and-tmux/SKILL|ssh-workstation-and-tmux]]: load when the target session is remote or the user asks
   about workstation tmux sessions.
-- scheduling-tasks-and-subagents: load only when the user asks for external scheduled
-  wakeups. For [[codex/SKILL|Codex]] self-supervision, prefer the PTY sleep timer below.
 
 ## Observe The Session
 

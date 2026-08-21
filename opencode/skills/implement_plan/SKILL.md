@@ -199,7 +199,7 @@ Available agents to resume:
 
 - `plan-agent` - Created the implementation plan
 
-- oracle - Researched best practices
+- `oracle` - Researched best practices
 
 - `debug-agent` - Investigated issues
 

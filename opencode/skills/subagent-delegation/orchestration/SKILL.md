@@ -234,7 +234,7 @@ Token efficiency usually improves when you start at the cheapest model/effort pa
 can plausibly finish the task in one pass, then escalate only if transcript evidence
 shows the agent is stalling, drifting, or making bad decisions.
 
-**Model-selection heuristics:**
+**Model heuristics:**
 
 - Use the strongest model you can justify for architectural changes, long multi-file
   migrations, or error-prone refactors where a failed pass is expensive.

@@ -300,7 +300,6 @@ When the situation in the left column is present, load the right column before a
 | Missing tools, Python script dependencies, install choices | `tool-provisioning-and-environment-hygiene` |
 | Memory reads/writes, durable expectations, plan records, vault issues | `agent-memory`; `vault-maintenance` for vault defects |
 | Visual/GUI/web work about to be called done | `design` (its Visual Verification section is mandatory), `responsive-design`, `test-guidelines` |
-| Delegating to Jules / paid models | `jules` (ask first for `gemini`, `codex`, `claude`, `qwen`) |
 | Repeated failure, pressure to pivot/defer/report-blocked | `hard-problem-decomposition` |
 | Pressure to add compliance, provenance, governance, certification, or release-identity machinery disproportionate to a personal research tool | `policy-index` (`POLICY.NO_COMPLIANCE_MAXIMALISM` is the doing-time rule), `system-conventions`; `llm-failure-modes` (coding-failures #25 is the diagnostic catalog) |
 | Shallow, box-checking agent work | `addressing-shallow-work` |

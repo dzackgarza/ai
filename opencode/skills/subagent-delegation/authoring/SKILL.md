@@ -58,7 +58,7 @@ Create a subagent when the task has these characteristics:
 
 ## Model Tier Matching
 
-**See model-selection skill for complete guidance.** Quick reference:
+Quick reference:
 
 | Tier | Turn Budget | Best For Subagent Tasks | Trust Level |
 | --- | --- | --- | --- |
@@ -291,10 +291,6 @@ Check that the description:
   agent evaluating a delegation instruction.
   Covers agent-facing audience control, evaluator-observation distillation; excludes
   harness trivia unless it is the object of the task.
-
-- → model-selection — REQUIRED: Load alongside when selecting which model tier to
-  delegate to. Covers model tier capabilities, task-to-tier matching, optimizing for
-  token efficiency.
 
 - → [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] — REQUIRED: Load alongside when deciding whether
   subagent delegation is justified.

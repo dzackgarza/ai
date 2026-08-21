@@ -559,8 +559,6 @@ gh api repos/<owner>/<repo>/issues/<N>/comments
 ### Jules Review Delegation
 
 If the user asks to use Jules for review, load:
-- jules
-- [jules/references/anti-slop-report-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md)
 - [[reviewing-llm-code/SKILL|reviewing-llm-code]]
 - [[anti-slop/SKILL|anti-slop]]
 - [[reviewing-subagent-work/SKILL|reviewing-subagent-work]]

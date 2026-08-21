@@ -294,8 +294,7 @@ library items; it owns the trust model.
 This skill covers **reading and mutating the live Zotero library on this workstation**
 through the running desktop's local API, including the PDF extraction loop for library
 items. It does not own: ad-hoc extraction of non-library PDFs (see
-[[reading-pdfs/SKILL|reading-pdfs]]), organizing loose PDF folders (see
-organizing-pdfs), or the citation-cleanup loop and its
+[[reading-pdfs/SKILL|reading-pdfs]]), or the citation-cleanup loop and its
 policy rules (those live in the `zotero-library` repo's `AGENTS.md` and `policy/`).
 
 The repo also owns a PDF **acquisition** ladder (trust-tiered cascade from arXiv →
