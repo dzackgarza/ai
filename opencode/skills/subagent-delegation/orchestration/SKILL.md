@@ -11,7 +11,7 @@ team of autonomous subagents to execute complex plans with high fidelity.
 ## Subagent Naming Rule
 
 Do not hardcode or name-drop specific subagent slugs in delegation guidance.
-[[opencode/SKILL|OpenCode]] provides a live list of available subagents and descriptions at runtime.
+OpenCode provides a live list of available subagents and descriptions at runtime.
 
 Always select by capability class from the live list (for example: implementation,
 research, spec-review, quality-review, audit) rather than assuming fixed names.
@@ -23,10 +23,10 @@ research, spec-review, quality-review, audit) rather than assuming fixed names.
 - [[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]] — REQUIRED: Use for task calibration and delegation
   decisions.
 
-- [[opencode-cli/SKILL|opencode-cli]] — Use for [[opencode/SKILL|OpenCode]] manager command forms when session inspection is
+- [[opencode-cli/SKILL|opencode-cli]] — Use for OpenCode manager command forms when session inspection is
   part of delegation review.
 
-- [[reading-transcripts/SKILL|reading-transcripts]] — Use when transcript review crosses harnesses; for [[opencode/SKILL|OpenCode]]
+- [[reading-transcripts/SKILL|reading-transcripts]] — Use when transcript review crosses harnesses; for OpenCode
   it delegates to `ocm transcript`.
 
 * * *
@@ -136,7 +136,7 @@ When using subagents, the main agent becomes a **coordinator**:
 
 ### [[codex/SKILL|Codex]] CLI
 
-When the delegated runtime is [[codex/SKILL|Codex]] CLI rather than [[opencode/SKILL|OpenCode]] `task`, standardize the
+When the delegated runtime is [[codex/SKILL|Codex]] CLI rather than OpenCode `task`, standardize the
 launch contract first.
 Most downstream failures that look like “agent weakness” are really launch-contract
 mistakes.
@@ -234,7 +234,7 @@ Token efficiency usually improves when you start at the cheapest model/effort pa
 can plausibly finish the task in one pass, then escalate only if transcript evidence
 shows the agent is stalling, drifting, or making bad decisions.
 
-**[[model-selection/SKILL|Model-selection]] heuristics:**
+**Model-selection heuristics:**
 
 - Use the strongest model you can justify for architectural changes, long multi-file
   migrations, or error-prone refactors where a failed pass is expensive.
@@ -356,7 +356,7 @@ Choose mode intentionally based on coordination needs.
 
 After every subagent terminal event (sync return or async terminal callback):
 
-1. **Inspect transcript**: for [[opencode/SKILL|OpenCode]], use [[reading-transcripts/SKILL|reading-transcripts]] or
+1. **Inspect transcript**: for OpenCode, use [[reading-transcripts/SKILL|reading-transcripts]] or
    `ocm transcript <sessionID>`
 
 2. **Read full output**: Understand what subagent attempted, what succeeded, what failed
@@ -368,7 +368,7 @@ After every subagent terminal event (sync return or async terminal callback):
 
 5. **Decision**: Commit (if done) or resume (if incomplete)
 
-For [[opencode/SKILL|OpenCode]] sessions, do not use `opencode export` or a local transcript parser
+For OpenCode sessions, do not use `opencode export` or a local transcript parser
 fallback. Transcript review goes through `ocm transcript` only.
 
 ### Resume Pattern (When Work Is Insufficient)

@@ -93,6 +93,6 @@
 | Silent semantic drift | “Cleans up” notation or wording and changes meaning | Preserve notation or record the translation explicitly |
 | Software-status leakage | Uses labels like “open issue” or “framework” instead of mathematical types | Normalize to conjecture, question, construction, remark, theorem, etc. |
 | Dirty-source deletion | Deletes images/PDFs/chats after extraction | Keep originals until audit and retirement criteria pass |
-| Tool-blind editing | Breaks links/properties with plain file edits | Prefer [[obsidian/SKILL|Obsidian]]-aware tools and controlled scripts |
+| Tool-blind editing | Breaks links/properties with plain file edits | Prefer Obsidian-aware tools and controlled scripts |
 | Regex cascade corruption | Uses repeated broad regexes to fix earlier broad regexes | Revert, inspect, narrow scope, and re-run safely |
 

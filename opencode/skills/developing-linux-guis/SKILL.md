@@ -397,7 +397,7 @@ python tests/visual/scripts/compare-image.py \
 kill "$AGS_PID"
 ```
 
-## Visual [[oracle/SKILL|Oracle]] Layers
+## Visual Oracle Layers
 
 Raw pixel diffs are brittle.
 Use layered oracles:

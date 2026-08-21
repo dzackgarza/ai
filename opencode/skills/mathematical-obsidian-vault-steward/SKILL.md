@@ -1,10 +1,10 @@
 ---
 name: mathematical-obsidian-vault-steward
-description: "Use when stewarding a mathematical [[obsidian/SKILL|Obsidian]] vault: ingesting raw notes, chats, images, PDFs, snippets, or research artifacts; integrating source-backed mathematical content into durable notes; deciding note granularity; preserving provenance; auditing fake cards; or refactoring vault structure without degrading mathematical meaning."
+description: "Use when stewarding a mathematical Obsidian vault: ingesting raw notes, chats, images, PDFs, snippets, or research artifacts; integrating source-backed mathematical content into durable notes; deciding note granularity; preserving provenance; auditing fake cards; or refactoring vault structure without degrading mathematical meaning."
 ---
-# Mathematical [[obsidian/SKILL|Obsidian]] Vault Steward
+# Mathematical Obsidian Vault Steward
 
-Steward a mathematical [[obsidian/SKILL|Obsidian]] vault without mistaking structure for knowledge.
+Steward a mathematical Obsidian vault without mistaking structure for knowledge.
 Preserve mathematical meaning, source provenance, and retrieval value.
 Prefer integration over proliferation.
 
@@ -53,7 +53,7 @@ Prefer integration over proliferation.
 
 ## Vault Model
 
-- [[obsidian/SKILL|Obsidian]] is a linked knowledge environment, not a flat markdown folder.
+- Obsidian is a linked knowledge environment, not a flat markdown folder.
 
 - A durable note should have a stable referent and future retrieval value.
 
@@ -160,7 +160,7 @@ Use this adversarial check:
 
 ## Tooling Rules
 
-- Prefer [[obsidian/SKILL|Obsidian]]-aware tools over blind filesystem editing for note reads, moves,
+- Prefer Obsidian-aware tools over blind filesystem editing for note reads, moves,
   renames, links, backlinks, tags, and properties.
 
 - Use semantic/document tools as intermediate extractors, not truth oracles.
@@ -168,7 +168,7 @@ Use this adversarial check:
 - Use filesystem operations mainly for attachments, hashes, backups, and unsupported
   operations.
 
-- Do not use raw `mv`/bulk text rewriting when link-aware tools can preserve [[obsidian/SKILL|Obsidian]]
+- Do not use raw `mv`/bulk text rewriting when link-aware tools can preserve Obsidian
   semantics.
 
 ## Git and Bulk-Edit Safety

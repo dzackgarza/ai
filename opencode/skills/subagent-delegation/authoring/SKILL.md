@@ -58,7 +58,7 @@ Create a subagent when the task has these characteristics:
 
 ## Model Tier Matching
 
-**See [[model-selection/SKILL|model-selection]] skill for complete guidance.** Quick reference:
+**See model-selection skill for complete guidance.** Quick reference:
 
 | Tier | Turn Budget | Best For Subagent Tasks | Trust Level |
 | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ yourself?
 | “Research topic across 20 URLs” | ✅ Subagent (fetch all → synthesize in one context) |
 | “Check if file exists” | ❌ Main agent (one glob call) |
 
-## Official Guidance ([[opencode/SKILL|OpenCode]] Docs)
+## Official Guidance (OpenCode Docs)
 
 According to [OpenCode agent documentation](https://opencode.ai/docs/agents/):
 
@@ -220,7 +220,7 @@ permission:
 Detailed subagent prompt goes here.
 ```
 
-Do not use `prompt_slug` or an external permission compiler for [[opencode/SKILL|OpenCode]] runtime agents.
+Do not use `prompt_slug` or an external permission compiler for OpenCode runtime agents.
 
 ### 5. Validate
 
@@ -292,7 +292,7 @@ Check that the description:
   Covers agent-facing audience control, evaluator-observation distillation; excludes
   harness trivia unless it is the object of the task.
 
-- → [[model-selection/SKILL|model-selection]] — REQUIRED: Load alongside when selecting which model tier to
+- → model-selection — REQUIRED: Load alongside when selecting which model tier to
   delegate to. Covers model tier capabilities, task-to-tier matching, optimizing for
   token efficiency.
 

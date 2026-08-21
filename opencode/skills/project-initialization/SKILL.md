@@ -185,7 +185,7 @@ when it is missing.
   binding without a vault-side project directory is not initialized.
 - Confirm native harness routes are in place according to
   `opencode/skills/agent-memory/references/harness-state-hijacking-research.md`:
-  - [[claude-code/SKILL|Claude Code]] auto memory writes into the vault-owned Claude project
+  - Claude Code auto memory writes into the vault-owned Claude project
     directory, and Claude plans use `plansDirectory` pointed at the vault.
   - [[codex/SKILL|Codex]] memories and memory extensions are routed into the vault, while
     `~/.codex/sessions/` and `~/.codex/archived_sessions/` remain normal [[codex/SKILL|Codex]]

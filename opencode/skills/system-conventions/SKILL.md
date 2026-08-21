@@ -121,12 +121,12 @@ Prefer tool-routing skills over memorized commands:
   [[writing/agent-audiences/SKILL|writing-for-agent-audiences]], and the project justfile
 - Frontend and GUI work: [[design/SKILL|design]], [[responsive-design/SKILL|responsive-design]],
   [[developing-linux-guis/SKILL|developing-linux-guis]],
-  [[visual-regression-testing/SKILL|visual-regression-testing]]
+  visual-regression-testing
 - Mathematical research tooling: [[mathematics/SKILL|mathematics]] (lattices, sagemath,
   and computation subskills), [[lean4/SKILL|lean4]], [[arxiv/SKILL|arxiv]],
   [[research-discovery/SKILL|research-discovery]]
-- Persistent recurring tasks: [[scheduling-tasks-and-subagents/SKILL|scheduling-tasks-and-subagents]]
-- Harness-specific waits or wakeups: [[codex/SKILL|codex]] or [[claude-code/SKILL|claude-code]],
+- Persistent recurring tasks: scheduling-tasks-and-subagents
+- Harness-specific waits or wakeups: [[codex/SKILL|codex]] or claude-code,
   as applicable
 - Delegated paid-model work: ask before using `gemini`, `codex`, `claude`, `qwen`, or
   `jules`; load the matching delegation skill first

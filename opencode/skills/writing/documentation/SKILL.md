@@ -641,7 +641,7 @@ Tables are good when you have structured data to aggregate:
 
 | Provider | Strategy | How to set up |
 | --- | --- | --- |
-| [[claude-code/SKILL|Claude Code]] | OAuth credential | Run `claude login` |
+| Claude Code | OAuth credential | Run `claude login` |
 | Cursor | SQLite database | Have Cursor installed |
 
 Tables are bad when they're just badge walls or feature lists with no real data.

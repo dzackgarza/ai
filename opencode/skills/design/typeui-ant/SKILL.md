@@ -92,6 +92,6 @@ Study this system for:
 - Enterprise CRUD interfaces are especially prone to accessibility degradation.
   Verify every state defined in the Ant system against WCAG AA after generation.
 
-- When combining with [[popular-web-designs/SKILL|popular-web-designs]] or [[design-md/SKILL|design-md]], prioritize the parent
+- When combining with popular-web-designs or design-md, prioritize the parent
   [[design/SKILL|design]] skill’s process for scoping and verification — the TypeUI seed is the visual
   starting point, not the design methodology.

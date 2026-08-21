@@ -88,6 +88,6 @@ Study this system for:
   boundaries). Always verify WCAG AA contrast for focus indicators and fallback border
   treatments for high-contrast mode.
 
-- When combining with [[popular-web-designs/SKILL|popular-web-designs]] or [[design-md/SKILL|design-md]], prioritize the parent
+- When combining with popular-web-designs or design-md, prioritize the parent
   [[design/SKILL|design]] skill’s process for scoping and verification — the TypeUI seed is the visual
   starting point, not the design methodology.

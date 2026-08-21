@@ -11,7 +11,7 @@ See `mathematical-unit-library.md` for the canonical callout vocabulary.
   `calculation`, `computation`, `fact`, `question`, `conjecture`, `problem`, `notation`,
   and `remark`.
 
-- Use [[obsidian/SKILL|Obsidian]] callouts for every formal mathematical unit except `remark`. Remarks
+- Use Obsidian callouts for every formal mathematical unit except `remark`. Remarks
   should usually be ordinary top-level prose in papers and notes, not `> [!remark]`
   boxes.
 

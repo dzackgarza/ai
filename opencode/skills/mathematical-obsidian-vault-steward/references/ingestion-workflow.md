@@ -163,7 +163,7 @@
 - After durable incorporation is complete and audited, move the source to
   `INBOX/.incorporated/` while keeping the original filename.
 
-- Do not rename or move an inbox source solely to avoid duplicate basenames in [[obsidian/SKILL|Obsidian]].
+- Do not rename or move an inbox source solely to avoid duplicate basenames in Obsidian.
 
 - Moving a source through `.annotated` or `.incorporated` is a lifecycle decision, not a
   semantic rewrite; preserve basename, provenance metadata, and reviewability.

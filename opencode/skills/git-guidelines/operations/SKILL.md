@@ -556,10 +556,10 @@ gh issue view <N> --repo <owner>/<repo> --json state,title,url
 gh api repos/<owner>/<repo>/issues/<N>/comments
 ```
 
-### [[jules/SKILL|Jules]] Review Delegation
+### Jules Review Delegation
 
-If the user asks to use [[jules/SKILL|Jules]] for review, load:
-- [[jules/SKILL|jules]]
+If the user asks to use Jules for review, load:
+- jules
 - [jules/references/anti-slop-report-review.md](file:///home/dzack/ai/opencode/skills/jules/references/anti-slop-report-review.md)
 - [[reviewing-llm-code/SKILL|reviewing-llm-code]]
 - [[anti-slop/SKILL|anti-slop]]

@@ -46,16 +46,16 @@ already located the problem. Never fix a visual you have not looked at.
 
 Load [[responsive-design/SKILL|responsive-design]] for multi-viewport checks and
 [[test-guidelines/SKILL|test-guidelines]] for the mandatory GUI screenshot-suite
-obligation. [[visual-regression-testing/SKILL|visual-regression-testing]] covers golden
+obligation. visual-regression-testing covers golden
 comparison and does not by itself satisfy this rule.
 
 **Before starting, check for companion skills.** If the user wants a known brand’s look,
-load [[popular-web-designs/SKILL|popular-web-designs]] alongside this one for ready-to-paste design systems (Stripe,
+load popular-web-designs alongside this one for ready-to-paste design systems (Stripe,
 Linear, Vercel, Notion, etc.). If the deliverable is a formal DESIGN.md token spec file
-rather than a rendered artifact, use [[design-md/SKILL|design-md]] instead.
+rather than a rendered artifact, use design-md instead.
 Full decision table below.
 
-## When To Use This Skill vs [[popular-web-designs/SKILL|popular-web-designs]] vs [[design-md/SKILL|design-md]]
+## When To Use This Skill vs popular-web-designs vs design-md
 
 Three design-related skills are available.
 Load the right one (or combine them):
@@ -63,8 +63,8 @@ Load the right one (or combine them):
 | Skill | What it gives you | Use when the user wants … |
 | --- | --- | --- |
 | **design** (this one) | Design *process and taste* — how to scope a brief, gather context, produce variants, verify a rendered HTML artifact, avoid AI-design slop | a from-scratch designed artifact (landing page, prototype, deck, component lab, motion study) with no specific brand or token system dictated |
-| [[popular-web-designs/SKILL|popular-web-designs]] | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, Notion, Airbnb | “make it look like Stripe / Linear / Vercel”, a page styled after a known brand, or a visual starting point pulled from a real product |
-| [[design-md/SKILL|design-md]] | Google’s DESIGN.md spec format — author/validate/diff/export design-token files, WCAG contrast checking, Tailwind/DTCG export | a formal, persistent, machine-readable design-system *spec file* (tokens + rationale) that lives in a repo and gets consumed by agents over time |
+| popular-web-designs | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, Notion, Airbnb | “make it look like Stripe / Linear / Vercel”, a page styled after a known brand, or a visual starting point pulled from a real product |
+| design-md | Google’s DESIGN.md spec format — author/validate/diff/export design-token files, WCAG contrast checking, Tailwind/DTCG export | a formal, persistent, machine-readable design-system *spec file* (tokens + rationale) that lives in a repo and gets consumed by agents over time |
 | **typeui-* subskills** (under this skill) | Curated aesthetic style packs from the TypeUI registry — token-level design system definitions for specific visual languages (Application, Neumorphism, Ant, etc.) | a greenfield design seeded by a specific aesthetic mood — “a dashboard with glass-like panels”, “a tactile shadow-based interface”, “an enterprise CRUD app” — without copying a known brand |
 | [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] (under this skill) | Creative direction methodology from Anthropic — how to commit to a bold aesthetic tone, pick distinctive fonts, avoid generic AI visuals, and make an interface memorable | a frontend that needs to be striking and distinctive — landing page, portfolio, creative tool, or any artifact where generic aesthetics are unacceptable |
 
@@ -72,18 +72,18 @@ Rule of thumb:
 
 - **Process + taste, one-off artifact** → design
 
-- **Match a known brand’s look** → [[popular-web-designs/SKILL|popular-web-designs]] (and let design drive the
+- **Match a known brand’s look** → popular-web-designs (and let design drive the
   process)
 
-- **Author the tokens spec itself** → [[design-md/SKILL|design-md]]
+- **Author the tokens spec itself** → design-md
 
 - **Start from a curated aesthetic seed** → typeui-* subskill (fetch, study, adapt)
 
 - **Make something bold and memorable** → [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] (creative direction)
   \+ design (process)
 
-These compose: use [[popular-web-designs/SKILL|popular-web-designs]] for the visual vocabulary, `design` for how to
-turn a brief into a thoughtful local HTML file, [[design-md/SKILL|design-md]] when the output is the token
+These compose: use popular-web-designs for the visual vocabulary, `design` for how to
+turn a brief into a thoughtful local HTML file, design-md when the output is the token
 file rather than a rendered artifact, `typeui-*` subskills when you need a cohesive
 aesthetic starting point that is not tied to an existing brand, and
 [[design/anthropic-frontend-design/SKILL|anthropic-frontend-design]] when the user wants a frontend that makes a statement.
@@ -167,7 +167,7 @@ unforgettable interface choices, and avoiding generic AI aesthetics.
 - Clean, restrained production interfaces (SaaS dashboards, admin panels, documentation
   sites) — the `design` skill alone is the right fit
 
-- When the user explicitly asks for a specific brand look — use [[popular-web-designs/SKILL|popular-web-designs]]
+- When the user explicitly asks for a specific brand look — use popular-web-designs
   instead
 
 ## Core Identity
@@ -229,7 +229,7 @@ Use this skill for:
 
 Do not use this skill for pure DESIGN.md token authoring unless the user specifically
 asks for a DESIGN.md file.
-Use [[design-md/SKILL|design-md]] for that.
+Use design-md for that.
 
 ## Design Principle: Start From Context, Not Vibes
 

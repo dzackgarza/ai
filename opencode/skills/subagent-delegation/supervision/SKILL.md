@@ -58,7 +58,7 @@ an incompleteness signal with progress context, not a success signal.
   behavior.
 - [[ssh-workstation-and-tmux/SKILL|ssh-workstation-and-tmux]]: load when the target session is remote or the user asks
   about workstation tmux sessions.
-- [[scheduling-tasks-and-subagents/SKILL|scheduling-tasks-and-subagents]]: load only when the user asks for external scheduled
+- scheduling-tasks-and-subagents: load only when the user asks for external scheduled
   wakeups. For [[codex/SKILL|Codex]] self-supervision, prefer the PTY sleep timer below.
 
 ## Observe The Session
@@ -352,7 +352,7 @@ Use these as direct replacements for common supervision mistakes:
 - **[[codex/SKILL|Codex]] supervision timer**
   - Do: Use a [[codex/SKILL|Codex]] PTY sleep marker for repeated checks from the current [[codex/SKILL|Codex]]
     session.
-  - Do not: Switch to `at`, `opx`, or an [[opencode/SKILL|OpenCode]] wakeup unless the user asked for
+  - Do not: Switch to `at`, `opx`, or an OpenCode wakeup unless the user asked for
     external persistence.
 
 - **Positive completion evidence**
