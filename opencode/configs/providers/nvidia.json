@@ -45,9 +45,6 @@
     "google/gemma-4-31b-it": {
       "name": "gemma-4-31b-it"
     },
-    "z-ai/glm-5.2": {
-      "name": "glm-5.2"
-    },
     "deepseek-ai/deepseek-v4-flash-0731": {
       "name": "deepseek-v4-flash-0731"
     },
@@ -56,6 +53,9 @@
     },
     "thinkingmachines/inkling": {
       "name": "inkling"
+    },
+    "moonshotai/kimi-k3": {
+      "name": "Kimi K3"
     }
   },
   "whitelist": [
@@ -66,6 +66,7 @@
     "minimaxai/minimax-m3",
     "mistralai/mistral-nemotron",
     "moonshotai/kimi-k2.6",
+    "moonshotai/kimi-k3",
     "nvidia/llama-3.1-nemotron-ultra-253b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "nvidia/nemotron-3-nano-30b-a3b",
@@ -74,8 +75,7 @@
     "nvidia/nemotron-3.5-lightning-30b-a3b",
     "nvidia/nemotron-4-340b-instruct",
     "openai/gpt-oss-120b",
-    "thinkingmachines/inkling",
-    "z-ai/glm-5.2"
+    "thinkingmachines/inkling"
   ],
   "blacklist": [
     "01-ai/yi-large",

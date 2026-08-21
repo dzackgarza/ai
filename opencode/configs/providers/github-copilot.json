@@ -10,9 +10,6 @@
     "claude-opus-4.8": {
       "name": "claude-opus-4.8"
     },
-    "claude-opus-4.8-fast": {
-      "name": "claude-opus-4.8-fast"
-    },
     "claude-opus-5": {
       "name": "claude-opus-5"
     },
@@ -51,24 +48,31 @@
     },
     "kimi-k3": {
       "name": "kimi-k3"
+    },
+    "gemini-3.7-flash": {
+      "name": "Gemini 3.7 Flash"
+    },
+    "grok-4.6": {
+      "name": "Grok 4.6"
     }
   },
   "whitelist": [
     "claude-fable-5",
     "claude-haiku-4.5",
     "claude-opus-4.8",
-    "claude-opus-4.8-fast",
     "claude-opus-5",
     "claude-sonnet-5",
     "gemini-3.1-pro-preview",
     "gemini-3.5-flash",
     "gemini-3.6-flash",
+    "gemini-3.7-flash",
     "gpt-5.3-codex",
     "gpt-5.5",
     "gpt-5.6-luna",
     "gpt-5.6-sol",
     "gpt-5.6-terra",
     "grok-4.5",
+    "grok-4.6",
     "kimi-k2.7-code",
     "kimi-k3"
   ],
@@ -88,6 +92,7 @@
     "gpt-5.4",
     "gpt-5.4-mini",
     "gpt-5.4-nano",
-    "mai-code-1-flash-picker"
+    "mai-code-1-flash-picker",
+    "mai-code-1.1-flash"
   ]
 }

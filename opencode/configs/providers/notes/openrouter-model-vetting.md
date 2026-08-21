@@ -203,3 +203,30 @@ New free models blacklisted per the <35B parameter rule:
 
 Provisional whitelist additions (laguna 2.1 line, chat-verified, tool-call
 vetting pending): `poolside/laguna-s-2.1:free`, `poolside/laguna-xs-2.1:free`.
+
+* * *
+
+## 2026-08-21 Catalog Sweep
+
+Whitelist addition: `stealth/ox-alpha` ("Ox Alpha", 1M context, multimodal,
+zero-cost promotional window). Free but has no `:free` suffix, like the
+already-approved `openrouter/elephant-alpha` and `openrouter/owl-alpha`
+stealth entries. Re-check pricing when the promotional window closes;
+rule 4 (blanket-blacklist anything not ending in `:free`) exists to stop
+accidental token charges, and this entry is a deliberate exception to it.
+
+New free models blacklisted after strict tool-call vetting:
+
+- `dots-studio/dots-3-note-preview:free` — 280B total / 16B active MoE, so it
+  clears the <35B bar, and a plain chat call returns text normally. Any request
+  carrying a `tools` array returns HTTP 400 `{"code":400,"msg":"bad request"}`.
+  The same payload against `nvidia/nemotron-3-ultra-550b-a55b:free` returns a
+  well-formed `read_file` call, so the payload is sound and the model is the
+  cause. Belongs to the "API Explicitly Denies Tool Use" roster; usable for
+  pure text work through `opencode run` without tool permissions.
+
+- `z-ai/glm-5.2:free` — every call over ~5 minutes of retries returned upstream
+  429 `"z-ai/glm-5.2:free is temporarily rate-limited upstream"` from the shared
+  Decart pool. Not a defect in the model: no successful chat call means it never
+  reached even the provisional bar the laguna 2.1 line passed. Retry when the
+  shared pool has capacity, or after adding a BYOK z.ai key.

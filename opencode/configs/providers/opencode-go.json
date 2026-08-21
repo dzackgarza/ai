@@ -33,18 +33,26 @@
     },
     "ox-alpha-free": {
       "name": "Ox Alpha Free (Unlimited)"
+    },
+    "glm-5.3": {
+      "name": "glm-5.3"
+    },
+    "muse-spark-1.2-contributor": {
+      "name": "muse-spark-1.2-contributor"
     }
   },
   "whitelist": [
     "deepseek-v4-flash",
     "deepseek-v4-pro",
     "glm-5.2",
+    "glm-5.3",
     "gpt-5.6-luna",
     "grok-4.5",
     "hy3",
     "kimi-k2.7-code",
     "kimi-k3",
     "minimax-m3",
+    "muse-spark-1.2-contributor",
     "ox-alpha-free",
     "qwen3.8-max"
   ],
