@@ -42,26 +42,47 @@ This leads to catastrophic miscalibration:
 
 ## Scale Is Not Complexity
 
-Scale is iterations, tokens, files, and hours. Complexity is compounding:
-whether step N depends on state that step 3 built. The two are independent.
+Difficulty is a property of the loop body, not the loop. The item count does
+not enter the difficulty at all.
 
-A trivial loop stays trivial at any length. Counting to 100,000 is
-straightforward, not difficult. A task that needs 24 hours of work is not
-complex if the loop is trivial — the scale of a solution says nothing about
-its complexity.
+Before calling any large task hard, write down two things:
 
-The failure has a signature: the model sees a big number, reads it as
-"difficult", and then produces plans, delegates, or substitutes a smaller
-goal instead of doing the work. The correct response to a long trivial loop
-is to enter the loop and proceed step by step.
+1. **The loop body** — the one operation, performed once, on one item.
+   For "extract every exercise from this textbook" it is: read one page,
+   write the exercises on it to a file.
+2. **The dependency** — does item k+1 need the output of item k?
 
-Decide which the task actually has:
+Then read the verdict off:
 
-- **Scale only** — many steps, no carried state. Enter the loop or script it.
-  Do not defer it, re-scope it, or call it research-scale.
-- **Compounding** — an error at step 3 corrupts step 20, or each step needs
-  state that earlier steps built. This is what makes work hard, and it is
-  uncorrelated with step count.
+| Loop body | Items depend on each other | Verdict |
+| --- | --- | --- |
+| Trivial | No | **Easy.** Do it, or script it. Length is irrelevant. |
+| Trivial | Yes | As hard as the dependency, never as long as the list. |
+| Hard | No | One hard problem, solved once, then repeated. |
+| Hard | Yes | Genuinely hard. Only this row earns a plan. |
+
+The textbook is row one. The loop body is read a page, write what you found —
+an operation a child can perform. Six hundred repetitions of an operation a
+child can perform is not a research problem; it is an afternoon. Start at
+page one.
+
+**Independent failures do not compound.** If page 340 extracts badly, fix page
+340. Nothing before it is invalidated and nothing after it is affected.
+Degrading sequence probability applies to dependent chains, where step 20
+consumes step 3's output and one early error voids everything downstream.
+Never apply a degrading-sequence estimate to a list of independent items.
+
+**Tells that you are pricing length as difficulty.** Any one of these means
+the calibration already failed:
+
+- "Substantial", "large-scale", or "research-scale" attached to a task whose
+  loop body you have not yet written down.
+- A plan, a delegation, or a subagent fleet proposed before one item is done.
+- "I will start with a representative sample." That is goal substitution.
+- An estimate in hours or days offered as evidence of difficulty.
+
+Do one item first. One item tells you the real difficulty. The count never
+will.
 
 `llm-failure-modes` coding-failures #18 is the diagnostic entry.
 
@@ -135,11 +156,27 @@ Task difficulty is a **weighted combination of multiple factors** — no single 
 
 - P(success) per step: Medium (~0.8 for refactoring)
 
-- P(success) for sequence: Degrades with each edit
+- P(success) for sequence: the 200 reads are independent and do not compound; only the shared interface design is a real dependency
 
 - Context pollution: **Severe** (200 files pollutes main context)
 
 - **Verdict**: Subagent (isolate pollution, fresh context for repetitive work)
+
+**Task D: “Extract every exercise from this 600-page textbook”**
+
+- Loop body: read one page, write the exercises on it to a file
+
+- Items depend on each other: no — page 41 needs nothing from page 40
+
+- Atomic steps: 600 reads + 600 writes, all independent
+
+- Reasoning complexity per step: **Low** (recognise an exercise, copy it)
+
+- Failure mode: local — a bad page is re-done alone, nothing else is touched
+
+- **Verdict**: Easy. Long, not hard. Start at page 1, or write the extraction
+  loop once and run it. Do not plan it, do not sample it, do not call it
+  research-scale.
 
 **Task C: “Debug why the login flow fails intermittently”**
 

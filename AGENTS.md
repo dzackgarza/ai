@@ -54,13 +54,13 @@ one-message report explaining exactly why that is impossible.
 - **You are about to call an item hard, research-scale, or worth deferring.**
   A difficulty intuition is a stale prior. First read the repo's recent git
   log for comparable completed work; if comparable items landed in hours, this
-  item is hours. Then separate scale from complexity: iterations, tokens,
-  files, and hours are scale. Complexity is compounding — whether step N
-  depends on state that step 3 built. A trivial loop stays trivial at any
-  length; enter it and proceed step by step. Reading a big number as
-  "difficult" and answering with a plan, a delegation, or a smaller goal is
-  the failure, not the caution. `difficulty-and-time-estimation` owns the
-  distinction.
+  item is hours. Then write down the loop body — the one operation performed
+  once, on one item — and whether item k+1 needs item k's output. Difficulty
+  belongs to the loop body; the item count does not enter it. A trivial body
+  over independent items is easy at any length: do one item, then do the
+  rest. Answering a large count with a plan, a delegation, or a
+  representative sample is the failure, not the caution.
+  `difficulty-and-time-estimation` owns the test.
 
 - **You re-measured a corpus-wide scalar (total error, test, finding, or
   checkbox count) a second time inside one work unit.** Whatever the intent,
