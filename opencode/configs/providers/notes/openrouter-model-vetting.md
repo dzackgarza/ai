@@ -230,3 +230,9 @@ New free models blacklisted after strict tool-call vetting:
   Decart pool. Not a defect in the model: no successful chat call means it never
   reached even the provisional bar the laguna 2.1 line passed. Retry when the
   shared pool has capacity, or after adding a BYOK z.ai key.
+
+Moved whitelist → blacklist: `nvidia/nemotron-3-super-120b-a12b:free` — still
+listed in the catalog, but every call returns HTTP 404 "Provider returned
+error". Paid base `nvidia/nemotron-3-super-120b-a12b` still resolves. Same
+"Dead Endpoints" shape as the llama-3.3-70b and gpt-oss-120b free tiers. The
+`:free` route on kilo is a separate gateway and still passes.

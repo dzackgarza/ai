@@ -4,9 +4,6 @@
     "openrouter/free": {
       "name": "Free Models Router"
     },
-    "nvidia/nemotron-3-super-120b-a12b:free": {
-      "name": "Nemotron 3 Super (free)"
-    },
     "cohere/north-mini-code:free": {
       "name": "Cohere North Mini Code (free)"
     },
@@ -25,7 +22,6 @@
   },
   "whitelist": [
     "cohere/north-mini-code:free",
-    "nvidia/nemotron-3-super-120b-a12b:free",
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "openrouter/free",
     "poolside/laguna-s-2.1:free",
@@ -424,6 +420,7 @@
     "nvidia/nemotron-3-nano-omni-30b-a3b",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
     "nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nemotron-3-super-120b-a12b:free",
     "nvidia/nemotron-3.5-content-safety:free",
     "nvidia/nemotron-3.5-lightning:free",
     "nvidia/nemotron-4-340b-instruct",
