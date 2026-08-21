@@ -18,6 +18,9 @@
     },
     "poolside/laguna-xs-2.1:free": {
       "name": "laguna-xs-2.1:free"
+    },
+    "stealth/ox-alpha": {
+      "name": "Ox Alpha (Stealth, free)"
     }
   },
   "whitelist": [
@@ -26,7 +29,8 @@
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "openrouter/free",
     "poolside/laguna-s-2.1:free",
-    "poolside/laguna-xs-2.1:free"
+    "poolside/laguna-xs-2.1:free",
+    "stealth/ox-alpha"
   ],
   "blacklist": [
     "01-ai/yi-1.5-34b-chat",

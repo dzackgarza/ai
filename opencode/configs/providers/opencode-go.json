@@ -30,6 +30,9 @@
     },
     "qwen3.8-max": {
       "name": "qwen3.8-max"
+    },
+    "ox-alpha-free": {
+      "name": "Ox Alpha Free (Unlimited)"
     }
   },
   "whitelist": [
@@ -42,6 +45,7 @@
     "kimi-k2.7-code",
     "kimi-k3",
     "minimax-m3",
+    "ox-alpha-free",
     "qwen3.8-max"
   ],
   "blacklist": [

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://opencode.ai/config.json",
   "blacklist": [
     "claude-3-5-haiku",
     "claude-fable-5",
@@ -115,6 +116,9 @@
     },
     "nemotron-3.5-lightning-free": {
       "name": "nemotron-3.5-lightning-free"
+    },
+    "x-preview-f-free": {
+      "name": "Ox Alpha Free (Unlimited)"
     }
   },
   "whitelist": [
@@ -130,6 +134,7 @@
     "minimax-m3-free",
     "nemotron-3-super-free",
     "nemotron-3-ultra-free",
-    "nemotron-3.5-lightning-free"
+    "nemotron-3.5-lightning-free",
+    "x-preview-f-free"
   ]
 }
