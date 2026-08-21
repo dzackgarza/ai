@@ -40,6 +40,31 @@ This leads to catastrophic miscalibration:
 
 - **Risk of failure** (probability each step succeeds)
 
+## Scale Is Not Complexity
+
+Scale is iterations, tokens, files, and hours. Complexity is compounding:
+whether step N depends on state that step 3 built. The two are independent.
+
+A trivial loop stays trivial at any length. Counting to 100,000 is
+straightforward, not difficult. A task that needs 24 hours of work is not
+complex if the loop is trivial — the scale of a solution says nothing about
+its complexity.
+
+The failure has a signature: the model sees a big number, reads it as
+"difficult", and then produces plans, delegates, or substitutes a smaller
+goal instead of doing the work. The correct response to a long trivial loop
+is to enter the loop and proceed step by step.
+
+Decide which the task actually has:
+
+- **Scale only** — many steps, no carried state. Enter the loop or script it.
+  Do not defer it, re-scope it, or call it research-scale.
+- **Compounding** — an error at step 3 corrupts step 20, or each step needs
+  state that earlier steps built. This is what makes work hard, and it is
+  uncorrelated with step count.
+
+`llm-failure-modes` coding-failures #18 is the diagnostic entry.
+
 ### Fast Recalibration Cues
 
 Use these cues when a task feels larger than it is:
@@ -70,7 +95,7 @@ Task difficulty is a **weighted combination of multiple factors** — no single 
 
 | Factor | What It Measures | Why It Matters |
 | --- | --- | --- |
-| **Atomic step count** | Number of discrete tool calls/operations | Each step adds latency and failure surface |
+| **Atomic step count** | Number of discrete tool calls/operations | Measures scale, not difficulty; a long chain of independent steps stays easy |
 | **Batchability** | Can steps be parallelized or batched? | Batched operations (glob, multi-read) cost 1 turn |
 | **Token estimate** | Total tokens consumed (input + output) | Context pollution, cost, and drift risk |
 | **Reasoning complexity per step** | How much inference/logic per operation | High-reasoning steps have higher failure rates |
