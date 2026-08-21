@@ -383,9 +383,13 @@ def validate_openai_compatible_provider(
     provider_cfg: dict[str, Any],
     base_url_override: str | None = None,
     api_key_override: str | None = None,
-) -> list[str]:
+) -> list[str] | None:
     """Validate a directly-queryable OpenAI-compatible provider against its own
     live `/models` endpoint, rather than the third-party models.dev mirror.
+
+    Returns None when the live catalog could not be read at all, so the caller
+    can fall back to the models.dev diff. A lagging mirror is weaker evidence
+    than the live endpoint but far stronger than leaving a provider unchecked.
 
     This is the authoritative check for providers like NVIDIA NIM or
     VectorEngine that models.dev may track late or not at all: it catches both
@@ -409,23 +413,24 @@ def validate_openai_compatible_provider(
         api_key = resolve_env_template(options["apiKey"])
         if not api_key:
             logger.warning(
-                "[yellow]%s: apiKey env var unset, skipping live validation[/yellow]",
+                "[yellow]%s: apiKey env var unset, falling back to models.dev"
+                "[/yellow]",
                 provider_id,
                 extra={"markup": True},
             )
-            return issues
+            return None
 
     try:
         live_models = fetch_openai_compatible_models(base_url, api_key)
     except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
         logger.warning(
-            "[yellow]%s: live model list unreachable (%s), skipping live "
-            "validation[/yellow]",
+            "[yellow]%s: live model list unreachable (%s), falling back to "
+            "models.dev[/yellow]",
             provider_id,
             exc,
             extra={"markup": True},
         )
-        return issues
+        return None
 
     live_ids = {str(model.get("id", "")) for model in live_models if model.get("id")}
     whitelist = set((provider_cfg.get("models") or {}).keys())
@@ -435,20 +440,23 @@ def validate_openai_compatible_provider(
 
 def validate_google_provider(
     provider_id: str, provider_cfg: dict[str, Any], api_key: str
-) -> list[str]:
+) -> list[str] | None:
     """Validate the Google provider against the live Generative Language API
-    (different auth/response shape than the OpenAI-compatible providers)."""
+    (different auth/response shape than the OpenAI-compatible providers).
+
+    Returns None when the live catalog could not be read, so the caller falls
+    back to the models.dev diff instead of leaving the provider unchecked."""
     try:
         live_ids = set(fetch_google_models(api_key))
     except Exception as exc:  # noqa: BLE001 - live endpoints fail in many ways
         logger.warning(
-            "[yellow]%s: live model list unreachable (%s), skipping live "
-            "validation[/yellow]",
+            "[yellow]%s: live model list unreachable (%s), falling back to "
+            "models.dev[/yellow]",
             provider_id,
             exc,
             extra={"markup": True},
         )
-        return []
+        return None
 
     whitelist = set((provider_cfg.get("models") or {}).keys())
     blacklist = set(provider_cfg.get("blacklist") or [])
@@ -679,10 +687,12 @@ def validate_provider_partitions(
             # Directly-queryable providers (NVIDIA NIM, VectorEngine, ...) are
             # validated against their own live catalog, which is authoritative
             # over the third-party models.dev mirror.
-            all_issues.extend(
-                validate_openai_compatible_provider(provider_id, provider_cfg)
+            live_issues = validate_openai_compatible_provider(
+                provider_id, provider_cfg
             )
-            continue
+            if live_issues is not None:
+                all_issues.extend(live_issues)
+                continue
 
         # Providers that don't self-declare options.baseURL locally (they
         # rely on opencode's own built-in provider registry) but whose real
@@ -693,27 +703,30 @@ def validate_provider_partitions(
         if meta:
             api_key = resolve_first_env(meta.get("env") or [])
             if meta.get("npm") == "@ai-sdk/openai-compatible" and meta.get("api") and api_key:
-                all_issues.extend(
-                    validate_openai_compatible_provider(
-                        provider_id,
-                        provider_cfg,
-                        base_url_override=meta["api"],
-                        api_key_override=api_key,
-                    )
+                live_issues = validate_openai_compatible_provider(
+                    provider_id,
+                    provider_cfg,
+                    base_url_override=meta["api"],
+                    api_key_override=api_key,
                 )
-                continue
-            if meta.get("npm") == "@ai-sdk/google" and api_key:
-                all_issues.extend(
-                    validate_google_provider(provider_id, provider_cfg, api_key)
+                if live_issues is not None:
+                    all_issues.extend(live_issues)
+                    continue
+            elif meta.get("npm") == "@ai-sdk/google" and api_key:
+                live_issues = validate_google_provider(
+                    provider_id, provider_cfg, api_key
                 )
-                continue
-            logger.info(
-                "[dim]%s: no credential for live validation (needs one of "
-                "%s), falling back to models.dev model-list diff[/dim]",
-                provider_id,
-                meta.get("env"),
-                extra={"markup": True},
-            )
+                if live_issues is not None:
+                    all_issues.extend(live_issues)
+                    continue
+            if not api_key:
+                logger.info(
+                    "[dim]%s: no credential for live validation (needs one of "
+                    "%s), falling back to models.dev model-list diff[/dim]",
+                    provider_id,
+                    meta.get("env"),
+                    extra={"markup": True},
+                )
 
         _, issues = show_provider_partition_diff(config, models_dev_data, provider_id)
         all_issues.extend(issues)

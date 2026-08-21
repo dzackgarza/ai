@@ -144,9 +144,12 @@
     }
   },
   "mcp": {
-    "sdl-mcp": {
-      "type": "remote",
-      "url": "http://127.0.0.1:39150/mcp"
+    "lean-lsp": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "lean-lsp-mcp"
+      ]
     }
   },
   "default_agent": "Interactive",

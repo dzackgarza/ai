@@ -23,6 +23,8 @@ The main failure to prevent is this:
 
 This guide therefore imposes one hard rule:
 
+> **Before writing any PR body**, read the [[pr-body-admission-gate.md|PR Body Admission Gate]] reference to understand the structural constraints that prevent PR bodies from becoming self-fulfilling process generators. The admission gate codifies seven anti-patterns derived from a post-mortem of a recursive proxy-breeding failure.
+
 > **Jules-initiated PRs:** For any PR initiated by Jules, a contract must be written
 > before implementation, committed to the branch, and used as the source of truth for
 > the PR body. Do not let the code define the task after the fact.
@@ -140,8 +142,21 @@ Stop and repair the source plan when any of these are true:
 Use an issue-linked claim map as the centralized live tracking surface for the current
 branch. The issue tree owns the broader decomposition. The GitHub Milestone owns the
 delivery grouping. The PR body owns this branch's selected issue set or subtree,
-implementation plan, proof claims, evidence, and explicit non-claims. If a checkbox
-appears in the PR body, completing it is required before the PR can leave draft.
+implementation plan (sequencing and integration order, not architectural choices),
+proof obligations (story-level requirements for evidence), proposed evidence, and
+explicit non-claims. If a checkbox appears in the PR body, completing it is required
+before the PR can leave draft.
+
+**Structure:** Follow the three-layer model from [[pr-body-admission-gate.md]]:
+1. **User stories** (product behavior only—no implementation architecture)
+2. **Evidence hypotheses** (bounded proxies that can be challenged by reviewers)
+3. **Current judgment** (just-in-time status by inspecting HEAD)
+
+**Automatic validation:** Use GitHub's closing keywords (`Closes #N`) so GitHub creates Development links automatically. Verify with:
+```bash
+gh pr view <PR_NUMBER> --json closingIssuesReferences
+```
+If GitHub didn't parse it, the link doesn't exist. No manual "I close #N" claims—only what GitHub recognizes counts.
 
 Minimum body shape:
 
@@ -163,9 +178,12 @@ Minimum body shape:
   - Refs #<parent, deferred, partial, or excluded issue not closed by this PR>
 
 ## Implementation plan
-<what is stacked, what is parallel, and what integrates last>
+<what is stacked, what is parallel, and what integrates last — sequencing only, not
+architectural choices (no class/library/tool commitments; those belong in commits)>
 
 ## Claim map
+(Layer 2/3 surface: proof obligations are the story-level requirements; evidence is
+proposed as a hypothesis a reviewer can override, not a deliverable the PR must produce)
 - [ ] **<#issue or story node> - <claim this PR makes>**
   - Proof obligations claimed: <named obligations>
   - Partial / not claimed: <obligations this PR does not satisfy>

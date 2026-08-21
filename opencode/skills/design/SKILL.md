@@ -10,126 +10,43 @@ decks, motion studies, component explorations, or visual option boards.
 This skill covers design process and taste: how to scope a brief, gather context,
 produce variants, define a visual system, and verify a rendered artifact.
 
-**Before starting, check for companion skills.** If the user wants a known brand’s look,
-load `popular-web-designs` alongside this one for ready-to-paste design systems (Stripe,
-Linear, Vercel, Notion, etc.). If the deliverable is a formal DESIGN.md token spec file
-rather than a rendered artifact, use `design-md` instead.
-Full decision table below.
+## Visual Verification (Mandatory)
 
-## When To Use This Skill vs `popular-web-designs` vs `design-md`
+Any work that implies something renders or looks correct — web pages, HTML, CSS or
+styling changes, dashboards, slide decks, or any GUI application whatsoever — is not done
+until you have generated actual visual snapshots of the rendered output and viewed them
+yourself.
 
-Three design-related skills are available.
-Load the right one (or combine them):
+Never call such work "fixed", "working", "ready", "good", or "done" on the basis of code
+that looks right, a passing build, a clean diff, or a server that starts. Rendered output
+is the only evidence that a visual change is correct; the diff, the logs, and the absence
+of errors are receipts, not proof.
 
-| Skill | What it gives you | Use when the user wants … |
-| --- | --- | --- |
-| **design** (this one) | Design *process and taste* — how to scope a brief, gather context, produce variants, verify a rendered HTML artifact, avoid AI-design slop | a from-scratch designed artifact (landing page, prototype, deck, component lab, motion study) with no specific brand or token system dictated |
-| **popular-web-designs** | 54 ready-to-paste design systems — exact colors, typography, components, CSS values for sites like Stripe, Linear, Vercel, Notion, Airbnb | “make it look like Stripe / Linear / Vercel”, a page styled after a known brand, or a visual starting point pulled from a real product |
-| **design-md** | Google’s DESIGN.md spec format — author/validate/diff/export design-token files, WCAG contrast checking, Tailwind/DTCG export | a formal, persistent, machine-readable design-system *spec file* (tokens + rationale) that lives in a repo and gets consumed by agents over time |
-| **typeui-* subskills** (under this skill) | Curated aesthetic style packs from the TypeUI registry — token-level design system definitions for specific visual languages (Application, Neumorphism, Ant, etc.) | a greenfield design seeded by a specific aesthetic mood — “a dashboard with glass-like panels”, “a tactile shadow-based interface”, “an enterprise CRUD app” — without copying a known brand |
-| **anthropic-frontend-design** (under this skill) | Creative direction methodology from Anthropic — how to commit to a bold aesthetic tone, pick distinctive fonts, avoid generic AI visuals, and make an interface memorable | a frontend that needs to be striking and distinctive — landing page, portfolio, creative tool, or any artifact where generic aesthetics are unacceptable |
+Before reporting any work that implies a visual surface is correct:
 
-Rule of thumb:
+- Render the real artifact — screenshot the page or app, export the deck, capture the
+  GUI — automating capture with Playwright or the framework's own snapshot tooling where
+  possible.
+- Open and inspect the images for actual correctness: layout, overflow, alignment,
+  spacing, color, typography, component state, and broken or missing assets. Confirming a
+  file was produced is not inspection.
+- Fix every defect you observe and re-capture until the snapshots are correct.
 
-- **Process + taste, one-off artifact** → design
+Generating a screenshot file is a receipt; the evidence is your inspection of it. This is
+correctness inspection of rendered output, which is distinct from golden or
+visual-regression comparison against a stored baseline.
 
-- **Match a known brand’s look** → popular-web-designs (and let design drive the
-  process)
+Use your vision. You can see images, so look at the rendered artifact directly rather
+than reasoning about it through proxies. Do not substitute measuring box dimensions,
+element sizes, gaps, margins, computed styles, or DOM structure for actually viewing the
+screenshot — those engineering-brained proxies are an error-prone stand-in for the thing
+you are perfectly capable of just looking at. Inspect the image first and reason from
+what you see; reserve measurement for confirming a specific value after your eyes have
+already located the problem. Never fix a visual you have not looked at.
 
-- **Author the tokens spec itself** → design-md
-
-- **Start from a curated aesthetic seed** → typeui-* subskill (fetch, study, adapt)
-
-- **Make something bold and memorable** → anthropic-frontend-design (creative direction)
-  \+ design (process)
-
-These compose: use `popular-web-designs` for the visual vocabulary, `design` for how to
-turn a brief into a thoughtful local HTML file, `design-md` when the output is the token
-file rather than a rendered artifact, `typeui-*` subskills when you need a cohesive
-aesthetic starting point that is not tied to an existing brand, and
-`anthropic-frontend-design` when the user wants a frontend that makes a statement.
-
-## TypeUI Design Subskills
-
-The TypeUI registry (https://www.typeui.sh/design-skills) publishes handcrafted SKILL.md
-files encoding complete visual design systems — color palettes, typography scales,
-spacing grids, 40+ component families with full state definitions, and accessibility
-rules — each organized around a specific aesthetic language.
-
-Three subskills are installed under this skill:
-
-| Subskill | Registry command | Best for |
-| --- | --- | --- |
-| `typeui-application` | `npx typeui.sh pull application` | Application dashboards, dev tools, admin panels (purple-themed, top-bar nav, glass panels) |
-| `typeui-neumorphism` | `npx typeui.sh pull neumorphism` | Dashboards, creative tools, indie products (soft-shadow extruded aesthetic, Space Mono) |
-| `typeui-ant` | `npx typeui.sh pull ant` | Enterprise apps, CRUD interfaces, productivity tools (blue primary, Plus Jakarta Sans, data-dense) |
-
-**How to use any TypeUI subskill:**
-
-1. Load this `design` skill for process and verification.
-
-2. Load the relevant `typeui-*` subskill to get the pull command and study notes.
-
-3. Fetch the actual design system on demand: `npx typeui.sh pull <name>`.
-
-4. **Study before designing** — read the fetched skill to extract its design principles:
-   why was this color chosen, how does spacing create rhythm, what accessibility
-   tradeoffs were made.
-   Do not blindly follow the tokens.
-
-5. **Seed, don’t clone** — adapt the tokens to your needs.
-   Change colors, swap typefaces, adjust spacing.
-   Preserve the structural cohesion choices (state completeness, shadow system,
-   single-font discipline, anti-pattern enforcement) more than the specific values.
-
-6. Verify using this skill’s verification checklist.
-
-**Policy for TypeUI use:**
-
-- Fetch fresh each time — the registry may update its content.
-
-- These are design *seeds*, not design *templates*. The value is in understanding *why*
-  the system coheres, not in copying its hex values.
-
-- Review every TypeUI skill you pull for general design ideas — each is an example of
-  how to construct a cohesive visual language from first principles.
-  Extract those principles and apply them to your own designs.
-
-## Anthropic Frontend Design Subskill
-
-The `anthropic-frontend-design` subskill
-(https://github.com/anthropics/skills/tree/main/skills/frontend-design) provides a
-complementary methodology to this skill’s process-focused approach.
-Where `design` covers *how to scope, build, and verify*, the Anthropic skill covers
-*creative direction and aesthetic differentiation* — committing to a bold tone, making
-unforgettable interface choices, and avoiding generic AI aesthetics.
-
-**How to use:**
-
-1. Load this `design` skill for process and verification.
-
-2. Load `anthropic-frontend-design` for creative direction.
-
-3. Apply the Anthropic rules to choose the tone and aesthetic direction.
-
-4. Use this skill’s typography, color, layout, responsive, and verification sections to
-   execute the direction correctly.
-
-**When to use:**
-
-- The user says “make it stunning”, “make it memorable”, or “I want something different”
-
-- Landing pages, portfolios, creative tools, art-direction-driven interfaces
-
-- Any generation where the default clean/restrained aesthetic would be a misfire
-
-**When NOT to use:**
-
-- Clean, restrained production interfaces (SaaS dashboards, admin panels, documentation
-  sites) — the `design` skill alone is the right fit
-
-- When the user explicitly asks for a specific brand look — use `popular-web-designs`
-  instead
+Load [[responsive-design/SKILL|responsive-design]] for multi-viewport checks and
+[[test-guidelines/SKILL|test-guidelines]] for the mandatory GUI screenshot-suite
+obligation.
 
 ## Core Identity
 
@@ -188,9 +105,6 @@ Use this skill for:
 
 - redesigns based on screenshots, repos, brand docs, or UI kits
 
-Do not use this skill for pure DESIGN.md token authoring unless the user specifically
-asks for a DESIGN.md file.
-Use `design-md` for that.
 
 ## Design Principle: Start From Context, Not Vibes
 
@@ -728,7 +642,7 @@ adding them.
 
 When copy is necessary but not final, mark it as draft or placeholder.
 
-## Anti-Slop Rules
+## [[anti-slop/SKILL|Anti-Slop]] Rules
 
 Avoid common AI design sludge:
 

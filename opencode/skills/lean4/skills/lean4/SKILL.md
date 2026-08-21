@@ -1,11 +1,11 @@
 ---
 name: lean4
-description: "Use when editing .lean files, debugging Lean 4 builds (type mismatch, sorry, failed to synthesize instance, axiom warnings, lake build errors), searching mathlib for lemmas, formalizing mathematics in Lean, or learning Lean 4 concepts. Also trigger when the user asks for help with Lean 4, mathlib, or lakefile. Do NOT trigger for Coq/Rocq, Agda, Isabelle, HOL4, Mizar, Idris, Megalodon, or other non-Lean theorem provers."
+description: "Use when editing .lean files, debugging [[lean4/skills/lean4/SKILL|Lean 4]] builds (type mismatch, sorry, failed to synthesize instance, axiom warnings, lake build errors), searching mathlib for lemmas, formalizing mathematics in Lean, or learning [[lean4/skills/lean4/SKILL|Lean 4]] concepts. Also trigger when the user asks for help with [[lean4/skills/lean4/SKILL|Lean 4]], mathlib, or lakefile. Do NOT trigger for Coq/Rocq, Agda, Isabelle, HOL4, Mizar, Idris, Megalodon, or other non-Lean theorem provers."
 ---
-# Lean 4 Theorem Proving
+# [[lean4/skills/lean4/SKILL|Lean 4]] Theorem Proving
 
-Use this skill whenever you’re editing Lean 4 proofs, debugging Lean builds, formalizing
-mathematics in Lean, or learning Lean 4 concepts.
+Use this skill whenever you’re editing [[lean4/skills/lean4/SKILL|Lean 4]] proofs, debugging Lean builds, formalizing
+mathematics in Lean, or learning [[lean4/skills/lean4/SKILL|Lean 4]] concepts.
 It prioritizes LSP-based inspection and mathlib search, with scripted primitives for
 sorry analysis, axiom checking, and error parsing.
 
@@ -184,6 +184,8 @@ lean_code_actions(file, line)                   # Resolve "Try this" suggestions
 `lean_run_code` is for isolated scratch experiments, not a substitute for live
 proof-state inspection via `lean_goal`/`lean_multi_attempt`/`lean_diagnostic_messages`.
 Prefer live-file tools when the question depends on actual file context.
+
+**Note:** You should consistently reference `loogle` for type-pattern searches. If `loogle` is not available in your environment or fails to execute, you should install it (see [https://github.com/nomeata/loogle](https://github.com/nomeata/loogle) for instructions).
 
 ## Capabilities
 
@@ -423,6 +425,23 @@ ${LEAN4_PYTHON_BIN:-python3} "$LEAN4_SCRIPTS/sorry_analyzer.py" . --report-only
 - Do **not** symlink another worktree’s `.lake/build`; use Lake cache/artifact
   mechanisms instead.
 
+## Warnings and Pitfalls
+
+Lean is a flexible piece of software. It is possible to add new axioms to the system (including false ones) with the `axiom` command, or to skip proofs with the `sorry` tactic. There are also other ways that the system can be abused. The bottom line is that after `#print axioms my_proof` the system should return `[propext, Classical.choice, Quot.sound]` (or some subset of these axioms). User-defined axioms, or `sorryAx` (indicating a proof which was omitted) indicate that your proof is incomplete.
+
+**Does your work prove what you claim it proves?** 
+This is an important point, and more complex than it seems.
+
+It is possible for users to confuse the statement of a result and its proof. It is easy in Lean to define and name the statement that 2+2=5; this does not constitute a proof that 2+2=5!
+
+It is very easy to define a complicated-looking statement and call it `TheRiemannHypothesis` which, despite the name, is not actually a statement of the Riemann Hypothesis. A proof of this statement is then, of course, not a proof of the actual Riemann Hypothesis.
+
+Lean's syntax is incredibly flexible. It is possible to override Lean's standard definitions of the naturals or of basic operations on them and then claim that you have proved a statement which looks like Fermat's Last Theorem, but which is nothing of the kind.
+
+Lean's mathematics library Mathlib provides statements of several famous mathematical theorems and conjectures such as Fermat's Last Theorem and the Riemann Hypothesis. These statements have been checked by Mathlib's maintainer team to be correct translations into Lean's language of the corresponding mathematical statements.
+
+If you are claiming to have proved a theorem which is not stated in Mathlib then a necessary part of the verification process is that a Lean expert is able to confirm that the statement of what you have proved corresponds to the mathematical claim which you are making, and that you have proved the statement as well as stating it.
+
 ## References
 
 **Cycle Engine:** [cycle-engine](references/cycle-engine.md) — shared prove/autoprove
@@ -442,7 +461,7 @@ conflicts — grep `## Sub-` for patterns),
 [compiler-guided-repair](references/compiler-guided-repair.md) (escalation-only repair —
 not first-pass)
 
-**Tactics:** [tactics-reference](references/tactics-reference.md) (tactic lookup — grep
+**Tactics:** [official-tactics](references/official-tactics.md) (comprehensive Mathlib4 tactics index), [tactics-reference](references/tactics-reference.md) (tactic lookup — grep
 `^### TacticName`), [grind-tactic](references/grind-tactic.md) (SMT-style automation —
 when simp can’t close), [simp-reference](references/simp-reference.md) (simp hygiene +
 custom simprocs), [tactic-patterns](references/tactic-patterns.md),
@@ -463,7 +482,7 @@ axiom-eliminator), [proof-golfing-patterns](references/proof-golfing-patterns.md
 [measure-theory](references/measure-theory.md) (28K),
 [axiom-elimination](references/axiom-elimination.md)
 
-**Style:** [mathlib-style](references/mathlib-style.md),
+**Style:** [official-style-guide](references/official-style-guide.md) (comprehensive rules from Mathlib), [mathlib-style](references/mathlib-style.md) (quick reference and agent checks),
 [verso-docs](references/verso-docs.md) (Verso doc comment roles and fixups)
 
 **Custom Syntax:** [lean4-custom-syntax](references/lean4-custom-syntax.md) (read when

@@ -1,33 +1,33 @@
 ---
 name: zotero-pdf-extraction-attachments
-description: Use when auditing, extracting, attaching, or verifying PDF-to-markdown/MinerU artifacts for Zotero items, especially when checking whether PDFs have markdown children or attaching existing extraction output back to Zotero.
+description: Use when auditing, extracting, attaching, or verifying PDF-to-markdown/MinerU artifacts for [[zotero/SKILL|Zotero]] items, especially when checking whether PDFs have markdown children or attaching existing extraction output back to [[zotero/SKILL|Zotero]].
 ---
 
-# Zotero PDF Extraction Attachments
+# [[zotero/SKILL|Zotero]] PDF Extraction Attachments
 
-Use this skill for Zotero items whose PDF attachments need markdown extraction
-artifacts, or whose existing extraction artifacts need to be attached back to Zotero.
+Use this skill for [[zotero/SKILL|Zotero]] items whose PDF attachments need markdown extraction
+artifacts, or whose existing extraction artifacts need to be attached back to [[zotero/SKILL|Zotero]].
 
 ## Core Policy
 
 - Define the item universe before counting or claiming coverage.
-- Treat Zotero parent items, PDF attachments, and markdown extraction attachments as
+- Treat [[zotero/SKILL|Zotero]] parent items, PDF attachments, and markdown extraction attachments as
   distinct records. Never count attachment totals as parent-item completion.
 - Do not treat a collection query as library-wide evidence unless the user explicitly
   named that collection.
-- Use the running Zotero local API/client for attachment evidence and writes. The
+- Use the running [[zotero/SKILL|Zotero]] local API/client for attachment evidence and writes. The
   read-only cache/proxy can help inspect metadata, but it cannot prove writes or attach
   files.
-- Do not infer a Zotero parent from normalized titles, years, or filenames alone. Use
+- Do not infer a [[zotero/SKILL|Zotero]] parent from normalized titles, years, or filenames alone. Use
   exact item keys, child attachment keys, or a verified Better BibTeX key.
-- Do not download or re-extract a PDF until you have checked whether Zotero already has
+- Do not download or re-extract a PDF until you have checked whether [[zotero/SKILL|Zotero]] already has
   a local PDF child and whether a markdown child already exists.
 
 ## Coverage Audit
 
 For library-wide markdown extraction coverage:
 
-- Fetch all items with pagination from the local Zotero API, not just one collection.
+- Fetch all items with pagination from the local [[zotero/SKILL|Zotero]] API, not just one collection.
 - Keep only parent items: `data.itemType != "attachment"`.
 - For each parent key, fetch children with pagination from `/items/{KEY}/children`.
 - Count a parent as needing extraction only when it has at least one PDF child
@@ -42,7 +42,7 @@ outside the collection with no markdown child.
 
 ## Counterexample Handling
 
-If the user names an item they can see in Zotero:
+If the user names an item they can see in [[zotero/SKILL|Zotero]]:
 
 - Search the exact title or key.
 - Inspect every matching parent item.
@@ -54,7 +54,7 @@ If the user names an item they can see in Zotero:
 
 ## Extraction Workflow
 
-When a Zotero parent has a PDF child but no markdown child:
+When a [[zotero/SKILL|Zotero]] parent has a PDF child but no markdown child:
 
 - Resolve the PDF attachment's local file path from the child attachment record.
 - Use the managed PDF extraction workflow for the repository or system; do not create
@@ -67,25 +67,25 @@ When a Zotero parent has a PDF child but no markdown child:
 
 ## Attachment Workflow
 
-Before attaching extracted markdown or MinerU JSON back to Zotero:
+Before attaching extracted markdown or MinerU JSON back to [[zotero/SKILL|Zotero]]:
 
-- Verify Zotero is running and the local attachment/write API is reachable.
-- Verify the parent item key resolves to the intended Zotero item.
+- Verify [[zotero/SKILL|Zotero]] is running and the local attachment/write API is reachable.
+- Verify the parent item key resolves to the intended [[zotero/SKILL|Zotero]] item.
 - Verify the extraction file exists and is non-empty.
 - Stage files only through the supported local-client attachment path; do not write
-  directly into Zotero storage or mutate Zotero SQLite.
+  directly into [[zotero/SKILL|Zotero]] storage or mutate [[zotero/SKILL|Zotero]] SQLite.
 - After every attach or relink, re-query the parent item's children and verify the new
   child attachment content type, title, and attachment key.
 
 ## Completion Evidence
 
 Do not claim an item is extracted or attached from filenames, queue entries, command
-success, or aggregate attachment counts. A Zotero PDF item is markdown-extracted only
+success, or aggregate attachment counts. A [[zotero/SKILL|Zotero]] PDF item is markdown-extracted only
 when its parent item has:
 
 - at least one PDF child attachment;
 - at least one `text/markdown` child attachment;
-- child records verified through the local Zotero API after any write.
+- child records verified through the local [[zotero/SKILL|Zotero]] API after any write.
 
 For full MinerU completion, require the project-specific JSON sidecar standard in
 addition to markdown; do not silently upgrade "has markdown" into "fully extracted".

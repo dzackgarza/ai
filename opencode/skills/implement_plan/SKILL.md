@@ -6,7 +6,7 @@ user-invocable: false
 # Implement Plan
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 You are tasked with implementing an approved technical plan. For nontrivial work that
 came from interactive planning, the finalized plan should already be externalized into a
@@ -15,7 +15,7 @@ should track the selected issue set or subtree they claim.
 
 If the plan has just been finalized but the GitHub issue tree, milestone scope, or draft
 PR claim map does not exist, stop implementation and run the plan-to-issue-tree-to-PR
-conversion workflow from `plan` and `git-guidelines/creating-prs.md` first. Do not use a
+conversion workflow from [[plan/SKILL|plan]] and `git-guidelines/creating-prs.md` first. Do not use a
 local scratchpad plan as the authoritative tracker for actual work once the plan is final.
 
 ## Execution Modes

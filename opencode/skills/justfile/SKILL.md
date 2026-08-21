@@ -5,12 +5,12 @@ description: Use when working with just command runner, defining recipes, or man
 
 # Justfile
 
-## Using a project's justfile (agent usage)
+## Using a project's [[justfile/SKILL|justfile]] (agent usage)
 
 `just` is the project-management API for every repository on this system. When working in
 any repo:
 
-- **Always look for an existing justfile first** and use its recipes. Run `just --list` to
+- **Always look for an existing [[justfile/SKILL|justfile]] first** and use its recipes. Run `just --list` to
   discover the available workflows before doing anything by hand.
 - **Never bypass it.** Do not run tests, type-checking, builds, publishing, or other
   workflows manually (`cargo test`, `npm run build`, `python -m pytest`, `make`, raw
@@ -22,11 +22,11 @@ There are no exceptions: one place to look, one command to run.
 
 ## Required baseline form
 
-Every justfile this system owns starts from the same shape. These are not stylistic
-preferences — they are the conventions most often missed when a justfile accretes from
+Every [[justfile/SKILL|justfile]] this system owns starts from the same shape. These are not stylistic
+preferences — they are the conventions most often missed when a [[justfile/SKILL|justfile]] accretes from
 one-shot prompts. Apply them before adding any project-specific recipe.
 
-1. **A header comment block** stating what the justfile is, where the real source of
+1. **A header comment block** stating what the [[justfile/SKILL|justfile]] is, where the real source of
    truth lives, and what each surface delegates to. The reader should learn the project's
    automation model from the top of the file, not by reverse-engineering recipe bodies.
 2. **A `default` recipe that lists recipes**, so a bare `just` is always a safe,
@@ -39,7 +39,7 @@ one-shot prompts. Apply them before adding any project-specific recipe.
 3. **A doc comment on every public recipe** (see *Self-documenting `just --list`* below).
    A public recipe with no comment is an undocumented entry point.
 4. **QC delegated upstream**, not reimplemented: `test`/`test-ci` route to
-   `~/ai-review-ci` (see *Single `test` recipe under global QC*). A justfile that hand-rolls
+   `~/ai-review-ci` (see *Single `test` recipe under global QC*). A [[justfile/SKILL|justfile]] that hand-rolls
    `lint`, `typecheck`, `coverage`, etc. is duplicating the global QC system.
 5. **Implementation steps marked `[private]`** (see *Public vs private discipline*). The
    public surface is the designed interface; everything else is hidden.
@@ -95,7 +95,7 @@ Rules, all verified against `just` behavior:
   between them. A blank line orphans the comment and the recipe shows up undocumented.
 - Write the comment for the *user* of the recipe: what it does and any required argument,
   not how it is implemented. One line, imperative.
-- Use the plain `#`-comment idiom, **not** the `[doc('...')]` attribute. Every justfile in
+- Use the plain `#`-comment idiom, **not** the `[doc('...')]` attribute. Every [[justfile/SKILL|justfile]] in
   this ecosystem uses the comment form; `[doc()]` is heavier and used nowhere — stay
   consistent.
 - `[private]` recipes are hidden from `--list`, so they do not need a user-facing doc
@@ -116,11 +116,11 @@ regardless of language, framework, or build tooling. `just run` always starts th
 There are no exceptions. A Rust project does not route `cargo run` directly as the user
 interface. A Node project does not expose `npm run dev` as the canonical entry point.
 These are underlying implementations. The user never needs to know them. They run `just
-run`. The justfile calls `cargo` or `npm` internally.
+run`. The [[justfile/SKILL|justfile]] calls `cargo` or `npm` internally.
 
 Routing workflows directly through language-specific build tools — `cargo run`, `npm run
 build`, `python -m pytest`, `make` — spreads sources of truth across disparate tooling and
-forces the user to do archaeology before interacting with the project. The justfile
+forces the user to do archaeology before interacting with the project. The [[justfile/SKILL|justfile]]
 centralizes the project interface into one place, one command.
 
 ### The recipe list is the project's architecture
@@ -167,14 +167,14 @@ Agents asked "add a `build` recipe" add `build`. Agents asked "add a way to sync
 No agent ever asks "does this conflict with the existing surface?"
 or "should this be folded into an existing recipe?"
 
-The result is a justfile whose public surface is the complete history of one-shot prompts rather than a designed interface.
+The result is a [[justfile/SKILL|justfile]] whose public surface is the complete history of one-shot prompts rather than a designed interface.
 The fix is not to avoid adding recipes — it's to **stop and read the existing surface** before adding another one.
 If the new behavior is a sub-step of an existing recipe, it should be `[private]` or inlined.
 
 ### Single `test` recipe under global QC
 
 For projects governed by `~/ai-review-ci`, the public QC surface is exactly `test`
-and `test-ci`, both delegating to the global QC justfile. No public `lint`, `fmt`,
+and `test-ci`, both delegating to the global QC [[justfile/SKILL|justfile]]. No public `lint`, `fmt`,
 `typecheck`, `coverage`, `check`, `test-unit`, `test-integration`, or other generic QC
 recipes exist at the project level.
 
@@ -192,7 +192,7 @@ variables — it does not get a third public recipe.
 
 All sub-tasks — unit tests, integration tests, visual regression, snapshot generation,
 linting, type-checking, hygiene checks — are `[private]` recipes that `test` composes,
-or they are owned by the global QC system. The justfile is not a test-discovery
+or they are owned by the global QC system. The [[justfile/SKILL|justfile]] is not a test-discovery
 interface. If a developer needs to run a subset locally, they run the CLI tool directly
 (`npx vitest --run tests/unit`), not a public just recipe.
 
@@ -213,7 +213,7 @@ Everything else — `assemble`, `sync`, `check-hygiene`, `generate-macros`, `pre
 
 ### Progressive disclosure via CLI, not recipe proliferation
 
-When a project has many granular operations, the justfile should expose a thin layer over a proper CLI tool, not expose each operation as a recipe:
+When a project has many granular operations, the [[justfile/SKILL|justfile]] should expose a thin layer over a proper CLI tool, not expose each operation as a recipe:
 
 ```just
 # Thin justfile over a CLI
@@ -233,9 +233,9 @@ serve:
 The CLI (`opx` or `npx <project>` or `uvx <project>`) owns the granular subcommands: `opx assemble`, `opx sync`, `opx check-hygiene`, `opx preview`, `opx preview-open`, `opx generate-macros`, `opx list-posts`. These are discoverable through `--help` and grouped by concern.
 They don't pollute `just --list` because they are not the project's entry points.
 
-This follows the `writing-scripts-and-cli-interfaces` skill: a CLI provides progressive disclosure, named subcommands, typed arguments, and help text.
-A justfile provides compositions of those subcommands with project-local defaults.
-The justfile is the **surface**; the CLI is the **depth**.
+This follows the [[writing-scripts-and-cli-interfaces/SKILL|writing-scripts-and-cli-interfaces]] skill: a CLI provides progressive disclosure, named subcommands, typed arguments, and help text.
+A [[justfile/SKILL|justfile]] provides compositions of those subcommands with project-local defaults.
+The [[justfile/SKILL|justfile]] is the **surface**; the CLI is the **depth**.
 
 ### Audience awareness
 
@@ -250,7 +250,7 @@ Recipes that don't fit one of these three categories are suspect.
 
 ### Agent-facing recipes (`.agents/justfile`)
 
-Projects also need recipes that serve agents, not users or developers: QC guardrails, hygiene checks, debugging surfaces, anti-gaming measures, and hook scripts. These must never appear in `just --list` or the top-level justfile.
+Projects also need recipes that serve agents, not users or developers: QC guardrails, hygiene checks, debugging surfaces, anti-gaming measures, and hook scripts. These must never appear in `just --list` or the top-level [[justfile/SKILL|justfile]].
 
 - Agent-facing recipes live in `.agents/justfile`, a separate file at the project root.
 - **All agent-facing recipes are `[private]`**, invisible to `just --list`.
@@ -264,19 +264,19 @@ Projects also need recipes that serve agents, not users or developers: QC guardr
 
 This is documented in the `Project Structure: User vs. Agent` section of `AGENTS.md`.
 
-Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on `uv sync`), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See `reality-grounded-debugging` for command-output discipline and surface-upgrade requirements.
+Every just recipe that runs a diagnostic, build, or test command should preserve stdout, stderr, and exit code. If a recipe requires suppressing output (e.g. `>/dev/null` on `uv sync`), make the suppression explicit and document what diagnostic channel is being dropped and why. Recipes that silence their own failures prevent agents from discovering missing debugging surfaces. See [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] for command-output discipline and surface-upgrade requirements.
 
 ### Large justfiles are a smell
 
-A justfile that grows beyond ~30 lines of recipe bodies is usually reinventing something that already exists:
+A [[justfile/SKILL|justfile]] that grows beyond ~30 lines of recipe bodies is usually reinventing something that already exists:
 
 - Reusable QC recipes (type-checking, linting, test-running, coverage) are in `~/ai-review-ci/`. Import them instead of rewriting them.
-  See the `quality-control` skill.
-- Repo-specific build logic belongs in the build tool's config (`vite.config.ts`, `pyproject.toml`, `Cargo.toml`), not in a justfile recipe.
+  See the [[quality-control/SKILL|quality-control]] skill.
+- Repo-specific build logic belongs in the build tool's config (`vite.config.ts`, `pyproject.toml`, `Cargo.toml`), not in a [[justfile/SKILL|justfile]] recipe.
 - Granular utility subcommands belong in a proper CLI tool (see **Progressive disclosure via CLI** above), not as recipes.
 
-A justfile that has recipes for type-checking, linting, individual test suites, code generation, asset compilation, snapshot management, and deployment — all with 5-10 line bodies — is a justfile that should be replaced by a thin wrapper over a CLI and global QC imports.
-The justfile's job is **composition and defaults**, not implementation.
+A [[justfile/SKILL|justfile]] that has recipes for type-checking, linting, individual test suites, code generation, asset compilation, snapshot management, and deployment — all with 5-10 line bodies — is a [[justfile/SKILL|justfile]] that should be replaced by a thin wrapper over a CLI and global QC imports.
+The [[justfile/SKILL|justfile]]'s job is **composition and defaults**, not implementation.
 
 ### Recipe naming as API design
 
@@ -290,7 +290,7 @@ The justfile's job is **composition and defaults**, not implementation.
 ## What justfiles are — and are not
 
 `just` is a **command runner**, not a build system.
-A justfile is the single canonical place for all repo-specific automation: build steps, test runners, install procedures, code generation, deployment, environment setup.
+A [[justfile/SKILL|justfile]] is the single canonical place for all repo-specific automation: build steps, test runners, install procedures, code generation, deployment, environment setup.
 The goal is **one place to look, one command to run** — no scattered shell scripts, no ad-hoc one-liners in CI configs, no “how do I run the tests again?”
 questions.
 
@@ -307,7 +307,7 @@ questions.
 - `just` parses the entire recipe body before execution — this matters for embedded code (see below)
 
 **The anti-pattern to avoid:** creating `scripts/do-thing.sh`, `scripts/setup.py`, `scripts/update-config.js` etc.
-alongside a justfile.
+alongside a [[justfile/SKILL|justfile]].
 Recipes can directly contain any language via shebangs.
 Scripts proliferate when this isn’t known; they fragment automation, lose discoverability, and accumulate without ownership.
 
@@ -397,7 +397,7 @@ Internal recipes:
 
 - Can be any language
 
-- Are version-controlled alongside the justfile
+- Are version-controlled alongside the [[justfile/SKILL|justfile]]
 
 - Replace the need for `scripts/` directories entirely
 
@@ -451,7 +451,7 @@ run *files:
   ./process {{files}}
 ```
 
-`{{justfile_directory()}}` — directory containing the justfile (stable, use instead of `$PWD`) `{{justfile()}}` — absolute path to the justfile itself
+`{{justfile_directory()}}` — directory containing the [[justfile/SKILL|justfile]] (stable, use instead of `$PWD`) `{{justfile()}}` — absolute path to the [[justfile/SKILL|justfile]] itself
 
 * * *
 

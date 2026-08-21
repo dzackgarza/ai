@@ -1,256 +1,81 @@
 ---
 name: reading-pdfs
-description: Use when reading a PDF — converts to markdown via Mistral OCR with local caching.
-metadata:
-  author: dzack
-  version: "0.1.0"
+description: Use when a user needs to read, search, summarize, or extract information from a PDF. The first step is always to check whether the PDF belongs to a live Zotero library item; the answer routes the rest of the workflow.
 ---
-# Reading PDFs with Mistral OCR
+# Reading PDFs
 
-## Overview
+Start here for any PDF request. **Step 1 is always: is this PDF in Zotero?** Do not
+skip it and do not assume the answer — run the check.
 
-Use Mistral OCR API as the first attempt for converting PDFs to markdown.
-It has some amount of free usage on the free tier.
+## Step 1 — Check Zotero first
 
-**Important:** Before extracting any PDF, check if it already exists in the local
-collection at `~/pdfs/`.
+The live Zotero library on this workstation is reached through the running Zotero
+desktop's local API (`http://127.0.0.1:23119`). Every read and every write to the
+library goes through the [[zotero/SKILL|zotero]] skill's `lib/zotero.py` client. Do
+not call cloud APIs, the translation server, or any external proxy.
 
-## PDF Storage Structure
-
-```
-~/pdfs/
-├── arxiv/
-│   └── {arxiv_key}/
-│       ├── paper.pdf        # Original PDF
-│       └── paper.md         # Extracted markdown
-├── other/
-    └── {filename}/
-        ├── content.pdf
-        └── content.md
-```
-
-**Always save the original PDF alongside the extracted markdown.** Name them `paper.pdf`
-and `paper.md` for arXiv papers.
-
-For arXiv papers:
-
-- Download URL: `https://arxiv.org/pdf/{arxiv_id}.pdf`
-
-- Store as: `~/pdfs/arxiv/{arxiv_id}/paper.md`
-
-## Workflow
-
-1. **Check if already extracted** - Look for `~/pdfs/arxiv/{arxiv_key}/paper.md`
-
-2. **If not exists** - Download PDF, extract with OCR, save to appropriate location
-
-3. **Return the markdown content**
-
-## Using Mistral OCR
-
-### Basic OCR Extraction (PEP 723 Script)
-
-Save the following as a standalone script and run with `uv run`:
+Probe health, then resolve the PDF against the library:
 
 ```python
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["mistralai"]
-# ///
+from lib.zotero import health, iter_top, get_children
 
-import os
-import sys
-from mistralai import Mistral
-
-
-def extract_pdf_to_markdown(pdf_path: str) -> str:
-    """Extract PDF to markdown using Mistral OCR."""
-    api_key = os.environ.get("MISTRAL_API_KEY")
-    client = Mistral(api_key=api_key)
-
-    with open(pdf_path, "rb") as f:
-        uploaded = client.files.upload(
-            file={"file_name": os.path.basename(pdf_path), "content": f.read()},
-            purpose="ocr"
-        )
-
-    signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=1)
-
-    response = client.ocr.process(
-        document={"document_url": signed_url.url},
-        model="mistral-ocr-latest"
-    )
-
-    return "\n\n".join(page.markdown for page in response.pages)
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: uv run extract_ocr.py <pdf_path>", file=sys.stderr)
-        sys.exit(1)
-    markdown = extract_pdf_to_markdown(sys.argv[1])
-    print(markdown)
+health()  # raises if the desktop/addon is down — that is the blocker to report
+# Walk top-level items and their children to find a PDF child whose
+# data.contentType == "application/pdf" and whose attachment path resolves to
+# this PDF (or whose bytes match, if you have the file in hand).
 ```
 
-### Utility Function (Excerpt)
+For a paper you already have in hand (file path, title, DOI, or arXiv id), match it
+against library items by identifier or title, then confirm the PDF child. The
+[[zotero/SKILL|zotero]] skill owns the full surface; load it for the read + any
+follow-up writes.
 
-**Excerpt only — do not save/run directly.**
-This snippet shows the logic. To run it, embed in a PEP 723 script (see the full
-script template above) or include in an existing uv-managed project with `mistralai`
-declared as a dependency.
+If the PDF is **already attached to a Zotero library item**, go to Step 2A.
+If the PDF is **not** in the library, go to Step 2B.
 
-```python
-import os
-from mistralai import Mistral
+## Step 2A — In Zotero: use the extraction loop
 
-
-def extract_pdf_to_markdown(pdf_path: str) -> str:
-    """Extract PDF to markdown using Mistral OCR."""
-    api_key = os.environ.get("MISTRAL_API_KEY")
-    client = Mistral(api_key=api_key)
-
-    with open(pdf_path, "rb") as f:
-        uploaded = client.files.upload(
-            file={"file_name": os.path.basename(pdf_path), "content": f.read()},
-            purpose="ocr"
-        )
-
-    signed_url = client.files.get_signed_url(file_id=uploaded.id, expiry=1)
-
-    response = client.ocr.process(
-        document={"document_url": signed_url.url},
-        model="mistral-ocr-latest"
-    )
-
-    return "\n\n".join(page.markdown for page in response.pages)
-```
-
-### Downloading and Extracting an ArXiv Paper
-
-```python
-import os
-import urllib.request
-
-def get_arxiv_paper(arxiv_id: str, base_dir: str = os.path.expanduser("~/pdfs/arxiv")) -> str:
-    """
-    Download arXiv paper and extract to markdown if not already cached.
-
-    Args:
-        arxiv_id: e.g., "0704.0001"
-        base_dir: Base directory for PDF storage
-
-    Returns:
-        Path to extracted markdown file
-    """
-    # Check if already extracted
-    paper_dir = os.path.join(base_dir, arxiv_id)
-    paper_md = os.path.join(paper_dir, "paper.md")
-
-    if os.path.exists(paper_md):
-        with open(paper_md, "r") as f:
-            return f.read()
-
-    # Create directory
-    os.makedirs(paper_dir, exist_ok=True)
-
-    # Download PDF
-    pdf_path = os.path.join(paper_dir, "paper.pdf")
-    if not os.path.exists(pdf_path):
-        url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
-        urllib.request.urlretrieve(url, pdf_path)
-
-    # Extract to markdown using the script above
-    # Save as scripts/extract_ocr.py with PEP 723 metadata, then:
-    # uv run scripts/extract_ocr.py {pdf_path}
-    markdown = extract_pdf_to_markdown(pdf_path)
-
-    # Save markdown
-    with open(paper_md, "w") as f:
-        f.write(markdown)
-
-    return markdown
-```
-
-## Example Usage
-
-```python
-# Get a paper (downloads and caches if not exists)
-paper = get_arxiv_paper("0704.0001")
-print(paper[:1000])  # First 1000 chars
-```
-
-## Local Extraction (justfile recipes)
-
-For extracting PDFs locally without the Mistral API, use the managed recipes in
-`~/pdf-extraction`. These handle environment setup automatically via `uv sync`.
+Do not run ad-hoc OCR against library items. The [[zotero/SKILL|zotero]] skill's
+extraction loop owns provider order (MinerU primary, Mistral fallback, reversed for
+>200pp), page-count routing, artifact staging (`/tmp/<KEY>_content_list.json`,
+`/tmp/<KEY>_middle.json`, `/tmp/<KEY>_extracted.md`), attach order (JSON first,
+markdown sentinel last), retries, and the blocker ledger.
 
 ```bash
-# From any directory
-just -f ~/pdf-extraction/justfile -d ~/pdf-extraction <recipe>
+just extraction-loop --search "Publication status unknown" --max-items 5
+just extraction-candidates --checklist --limit 25
+just attach-extraction ABCD1234 /tmp/ABCD1234_extracted.md
 ```
 
-| Recipe | Purpose |
-| --- | --- |
-| `sample-pdf` | Regenerate the smoke-test PDF |
-| `docling` | Extract with Docling |
-| `mineru` | Extract with MinerU |
-| `smoke` | Run both extraction checks |
+Completion = a live Zotero `*_extracted.md` child attachment for the item, not a
+checked box or a successful provider call. If the item already has a `*_extracted.md`
+child, read that — do not re-extract.
 
-Outputs appear under `~/pdf-extraction/artifacts/` and `~/pdf-extraction/outputs/`.
+If the library item has no PDF yet, that is an **acquisition** problem owned by the
+`zotero-library` repo's `PDF_ACQUISITION.md` (`just find-pdf`, `just check-lead`,
+`work/<KEY>/pdf.md` ledger), not by this skill. Load the [[zotero/SKILL|zotero]] skill
+and follow that ladder.
 
-**Do not** create a separate venv or install ad hoc — let the recipes manage the
-environment.
+## Step 2B — Not in Zotero: ad-hoc extraction
 
-When only structured extraction data is needed, prefer a recipe that emits the minimal
-MinerU JSON artifacts (`middle.json` and `content_list.json`) without generating extra
-rendered PDFs or Markdown.
-The recipe should own that mode; do not run private one-off extraction scripts.
-After extraction, verify the expected output files and keep the run log with the
-artifacts.
+For a loose / non-library PDF (e.g. under `~/pdfs/`), select one leaf procedure:
 
-## Zotero and MinerU Artifacts
+- [[reading-pdfs/ocr/SKILL|OCR reading]] — turn a loose PDF into cached Markdown with
+  MinerU (primary) or Mistral OCR (fallback).
+- [[reading-pdfs/extraction/SKILL|structured extraction]] — extract text, tables,
+  figures, captions, or a higher-fidelity artifact for a paper or report.
 
-MinerU markdown/JSON are external research artifacts, not repository source.
-Preserve that separation:
+Do not load both leaves unless the request requires both outputs. Read the selected
+leaf before conversion or extraction.
 
-- Original PDFs belong under `~/pdfs` or Zotero storage, not in agent/code repos.
+## Why the check is mandatory
 
-- Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant Zotero
-  attachment path, not in Git LFS.
+Skipping the check produces two real failure modes:
 
-- When Zotero already has a PDF, prefer resolving the local attachment path via the
-  `zotero-api` skill before downloading a duplicate.
+1. Re-extracting a library item ad-hoc, bypassing the loop's attach order and
+   completion criterion — the item's extraction state in Zotero then disagrees with
+   what the agent did, and the loop re-enters it forever.
+2. Downloading or OCRing a duplicate of a PDF Zotero already has, wasting provider
+   quota and storage.
 
-- When attaching existing MinerU output back to Zotero, verify against the running
-  Zotero local API and Better BibTeX key; do not infer matches from filenames alone.
-
-When only structured extraction data is needed, prefer a recipe that emits the
-minimal MinerU JSON artifacts (`middle.json` and `content_list.json`) without
-generating extra rendered PDFs or Markdown. The recipe should own that mode;
-do not run private one-off extraction scripts. After extraction, verify the
-expected output files and keep the run log with the artifacts.
-
-## Zotero and MinerU Artifacts
-
-MinerU markdown/JSON are external research artifacts, not repository source.
-Preserve that separation:
-
-- Original PDFs belong under `~/pdfs` or Zotero storage, not in agent/code repos.
-- Extraction artifacts belong under `~/pdf-extraction` outputs or the relevant
-  Zotero attachment path, not in Git LFS.
-- When Zotero already has a PDF, prefer resolving the local attachment path via
-  the `zotero-api` skill before downloading a duplicate.
-- When attaching existing MinerU output back to Zotero, verify against the
-  running Zotero local API and Better BibTeX key; do not infer matches from
-  filenames alone.
-
-## Notes
-
-- The OCR handles complex documents including tables, math equations, and multi-column
-  layouts
-
-- Free tier has some OCR usage included (check dashboard for limits)
-
-- The API returns `pages_processed` in usage info
-
-- For very large documents, consider processing in batches
+The check is cheap (one local API walk) and the only authoritative routing signal.

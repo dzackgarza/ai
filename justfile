@@ -1,4 +1,16 @@
+# AI harness installation and repository quality-control recipes.
+#
+# The docs-and-configs profile delegates formatting and link validation to ai-review-ci.
 set fallback := true
+
+# ai-review-ci contract variables consumed by doctor and workflow installers.
+ai_review_ci_schema_version := "1"
+ai_review_ci_profile := "docs-and-configs"
+ai_review_ci_ref := "main"
+ai_review_ci_release_channel := "main"
+ai_review_ci_workflow_template_version := "1"
+ai_review_ci_local_delegation := "global-justfile"
+ai_review_ci_default_branch := "main"
 set script-interpreter := ['uv', 'run', '--script']
 qc-type := "python"
 
@@ -15,12 +27,11 @@ dotfiles_dir := repo / "dotfiles"
 
 # Core assets
 
-agents_md := opencode_dir / "AGENTS.md"
+agents_md := repo / "AGENTS.md"
 skills_dir := opencode_dir / "skills"
 
 # Tool configs
 
-cc_safety_net := opencode_dir / "configs" / "cc-safety-net.json"
 tmux_conf := dotfiles_dir / "tmux.conf"
 tmux_powerline_config := dotfiles_dir / "tmux-powerline" / "config.sh"
 tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.sh"
@@ -36,7 +47,6 @@ kilo_home := home / ".config/kilo"
 agents_home := home / ".agents"
 kilocode_home := home / ".kilocode"
 opencode_root := home / ".opencode"
-cc_safety_net_home := home / ".cc-safety-net"
 
 # Show available recipes
 
@@ -44,14 +54,22 @@ cc_safety_net_home := home / ".cc-safety-net"
 default:
     @just --list
 
+# Validate repository Markdown entrypoints and installed-skill WikiLinks.
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
+    @just --justfile {{ justfile() }} check-skill-wikilinks
 
+# Reformat Markdown and structured configuration before commit.
+test-commit: build
+    @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-commit
+
+# Validate documentation links before push.
+test-push: test
+    @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-push
+
+# Run local Markdown checks and documentation-link validation in CI.
 test-ci: test
-
-test-commit: build test
-
-test-push: test-commit
+    @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-ci
 
 # Install all symlinks and environment variables
 install:
@@ -61,7 +79,6 @@ install:
     # Assertion of existence
     echo "Verifying repository targets..."
     for target in "{{ agents_md }}" "{{ skills_dir }}" \
-                  "{{ cc_safety_net }}" \
                   "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
                   "{{ tmux_powerline_theme }}"; do
         if [ ! -e "$target" ]; then
@@ -73,8 +90,7 @@ install:
 
     mkdir -p "{{ claude_home }}" "{{ codex_home }}" "{{ gemini_home }}" \
              "{{ qoder_home }}" "{{ opencode_home }}" "{{ kilo_home }}" \
-             "{{ agents_home }}" "{{ kilocode_home }}" "{{ opencode_root }}" \
-             "{{ cc_safety_net_home }}"
+             "{{ agents_home }}" "{{ kilocode_home }}" "{{ opencode_root }}"
 
     ln -snf "{{ agents_md }}" "{{ claude_home }}/CLAUDE.md"
     ln -snf "{{ agents_md }}" "{{ codex_home }}/AGENTS.md"
@@ -84,7 +100,6 @@ install:
     ln -snf "{{ agents_md }}" "{{ gemini_home }}/AGENTS.md"
     ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
-    ln -snf "{{ cc_safety_net }}" "{{ cc_safety_net_home }}/config.json"
 
     # tmux config symlinks
     ln -snf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
@@ -136,11 +151,14 @@ install:
     printf "%-30s -> %s\n" "~/.gemini/GEMINI.md" "$(readlink {{ gemini_home }}/GEMINI.md)"
     printf "%-30s -> %s\n" "~/.gemini/AGENTS.md" "$(readlink {{ gemini_home }}/AGENTS.md)"
     printf "%-30s -> %s\n" "~/.config/opencode" "$(readlink {{ opencode_home }})"
-    printf "%-30s -> %s\n" "~/.cc-safety-net/config.json" "$(readlink {{ cc_safety_net_home }}/config.json)"
     echo ""
     echo "System prompts (actual):"
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
     [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
+
+# Sync MCP server definitions into each configured harness.
+sync-mcp-configs *args:
+    @cd {{ repo }} && uv run --script mcp/sync_mcp_configs.py {{ args }}
 
 # Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:
@@ -189,6 +207,7 @@ reset-sandbox:
     fi
     {{ repo }}/scripts/scaffold-sandbox.sh
 
+# Run a named OpenCode microagent with additional arguments.
 run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
@@ -198,9 +217,8 @@ run-microagent *args:
 #   1. build-config — compile opencode.json from skeleton + provider fragments
 #   2. build-agents — validate tracked manual agent markdown
 #
-# AGENTS.md is NOT built here. It is assembled from the AGENTSmd/ fragment tree via
-# `just -f AGENTSmd/.agents/justfile assemble`; the repo-root AGENTS.md (and the
-# opencode/AGENTS.md symlink) point at that generated artifact.
+# AGENTS.md is NOT built here. It is a hand-authored routing layer tracked directly
+# at the repo root; detailed procedure lives in opencode/skills/.
 build: build-config build-agents
 
 # Build only the compiled OpenCode config pipeline.
@@ -380,6 +398,25 @@ broken-symlinks:
 
 # Check markdown files for broken local file references.
 #
+# Usage: just check-markdown [path ...]
+# Audit WikiLinks between installed skills in the assembled skill tree.
+# Lychee is the resolver. A temporary dereferenced vault is required because Lychee
+# intentionally ignores symlinks while indexing WikiLink targets.
+# Usage: just check-skill-wikilinks
+check-skill-wikilinks:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    vault="$(mktemp -d)"
+    trap 'rm -rf "$vault"' EXIT
+    rsync -aL --delete --exclude '.git' "{{ skills_dir }}/" "$vault/skills/"
+
+    mapfile -d '' skill_files < <(find "$vault/skills" -type f -name SKILL.md -print0)
+    ((${#skill_files[@]} > 0))
+    lychee --offline --no-progress --include-wikilinks \
+        --base-url "$vault/skills" --fallback-extensions md \
+        --include '/SKILL' "${skill_files[@]}"
+
 # Usage: just check-markdown [path ...]
 check-markdown *args:
     #!/usr/bin/env bash

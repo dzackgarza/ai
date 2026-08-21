@@ -18,7 +18,7 @@ The relationship is often inverted:
 
 - **More procedural gates** = more ways to produce solution-shaped filler
 
-To prevent this inversion, developers must adhere to the **Bridge-Burning Policies** (defined in [policy-index/SKILL.md](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)). Instead of creating new review steps or templates to check, these policies impose blanket constraints that make bad states (such as mocks, runtime defaults, fallbacks, and helper-level proofs) impossible to represent in the codebase.
+To prevent this inversion, developers must adhere to the **Bridge-Burning Policies** (defined in [[policy-index/SKILL#policy-registry|policy-index/SKILL.md]]). Instead of creating new review steps or templates to check, these policies impose blanket constraints that make bad states (such as mocks, runtime defaults, fallbacks, and helper-level proofs) impossible to represent in the codebase.
 
 ### Why This Happens
 
@@ -171,24 +171,24 @@ Signs that an approach destroys the abstraction before operating:
   expectations (it runs, it produces output, it tokenizes effort).
   Also catalogs Checklist Theater and Paraphrase-as-Review patterns.
 
-- **llm-failure-modes** → Load alongside when investigating why an agent cannot
+- [[llm-failure-modes/SKILL|llm-failure-modes]] → Load alongside when investigating why an agent cannot
   recognize that an approach is structurally wrong.
   The inability to recognize structural wrongness without empirical verification is an
   epistemic failure mode distinct from “didn’t test enough.”
   Also catalogs compliance-shaped output and reward hacking.
 
-- **reviewing-subagent-work** → Load alongside when conducting a Synthesis Gate review.
+- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] → Load alongside when conducting a Synthesis Gate review.
   The Synthesis Gate extends this skill’s structural-scrutiny approach to subagent
   output: before inspecting specific implementations, check whether the approach
   survives structural scrutiny.
 
-- **prompt-engineering** → Load alongside when writing instructions that must prevent
+- [[prompt-engineering/SKILL|prompt-engineering]] → Load alongside when writing instructions that must prevent
   shallow work proactively.
   Constraint-based instruction forces thinking rather than pattern completion.
 
-- **policy-index → Bridge-Burning Policies** — The [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) are the ultimate expression of making bad states impossible rather than using checklists or procedural gates. Refer to them as hard boundaries.
+- **[[policy-index/SKILL|policy-index]] → Bridge-Burning Policies** — The [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] are the ultimate expression of making bad states impossible rather than using checklists or procedural gates. Refer to them as hard boundaries.
 
-- **anti-slop → deepening** → "Shallow work" in this skill's sense maps directly onto
+- **[[anti-slop/SKILL|anti-slop]] → deepening** → "Shallow work" in this skill's sense maps directly onto
   "shallow modules" in the deepening vocabulary (`anti-slop/references/deepening-vocabulary.md`).
   A shallow module is one whose interface is nearly as complex as its implementation — it
   provides no leverage and no locality. The deletion test from deepening is a concrete

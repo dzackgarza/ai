@@ -39,10 +39,10 @@ accuracy.
 ### 2. Acquisition & Installation
 
 - **Ephemeral CLI first**: Prefer `npx -y`, `uvx`, or `bunx` for CLI invocations over
-  global installs. See `known-solution-first` for the external-tool discovery protocol:
+  global installs. See [[known-solution-first/SKILL|known-solution-first]] for the external-tool discovery protocol:
   start with public contracts (docs, release notes, issues) before probing CLIs.
 
-- **Installation Locations**: Most agent CLIs (Smithery, LobeHub, Claude Code, Codex,
+- **Installation Locations**: Most agent CLIs (Smithery, LobeHub, Claude Code, [[codex/SKILL|Codex]],
   etc.) install skills to paths that are **symlinked** to the canonical OpenCode skills
   directory:
 
@@ -154,7 +154,7 @@ npx -y @smithery/cli skill add <namespace>/<name> -a opencode --global
 
 The `--global` flag installs to `~/.agents/skills/` (symlinked to
 `~/ai/opencode/skills/`), which is the canonical OpenCode skills path.
-Available agent targets: `claude-code`, `cursor`, `codex`, `windsurf`, `opencode`,
+Available agent targets: claude-code, `cursor`, [[codex/SKILL|codex]], `windsurf`, opencode,
 `github-copilot`, and 30+ others.
 Run `npx -y @smithery/cli skill agents` to list them.
 
@@ -249,7 +249,7 @@ cp -r /tmp/skill-name-extract/* ~/ai/opencode/skills/skill-name/
 ### 5. Verify
 
 For skill validation and quality checks, see
-[creating-skills/SKILL.md](../creating-skills/SKILL.md), which includes a validation
+[[creating-skills/SKILL|creating-skills/SKILL.md]], which includes a validation
 script and workflow.
 
 ## Name Matching

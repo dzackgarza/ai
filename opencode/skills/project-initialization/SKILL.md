@@ -4,8 +4,8 @@ description: >-
   Use before substantive implementation that depends on repository-wide state, after
   cloning or switching projects for such work, or when requested work needs missing
   project surfaces. Establishes the normal project form:
-  git/remote freshness, GitHub public state, durable surface ownership, SDL-MCP
-  registration/indexing, .agents, agent-memory, justfile, ai-review-ci QC/hooks/CI,
+  git/remote freshness, GitHub public state, durable surface ownership, .agents,
+  [[agent-memory/SKILL|agent-memory]], [[justfile/SKILL|justfile]], ai-review-ci QC/hooks/CI,
   and task-relevant memory lookup before implementation.
 ---
 
@@ -25,7 +25,7 @@ Use this skill when repository-wide state can materially affect the requested wo
 
 - before substantive feature or architectural implementation in an unfamiliar project;
 - after cloning, creating, or switching to a project/worktree for such work;
-- when requested work depends on `.agents/`, memory, `justfile`, hooks, CI, or QC
+- when requested work depends on `.agents/`, memory, [[justfile/SKILL|justfile]], hooks, CI, or QC
   surfaces that are missing or inconsistent;
 - before work that will create or claim cross-session, multi-agent, public execution, or
   review state.
@@ -40,12 +40,12 @@ classification changes the requested result or an irreversible action.
 ## Safety Rules
 
 - Preserve user work. Do not overwrite dirty files, untracked artifacts, existing
-  hooks, existing workflow files, or an existing `justfile` without inspecting the
+  hooks, existing workflow files, or an existing [[justfile/SKILL|justfile]] without inspecting the
   current contents and explaining the migration.
 - If git state is dirty, conflicted, diverged, or behind remote, load
-  `git-guidelines` and resolve that state before feature work.
+  [[git-guidelines/SKILL|git-guidelines]] and resolve that state before feature work.
 - Normalize by using the owning tool or scaffold, not by copying snippets from
-  memory. Use `agent-memory` for memory setup, `justfile` for recipe design, and
+  memory. Use [[agent-memory/SKILL|agent-memory]] for memory setup, [[justfile/SKILL|justfile]] for recipe design, and
   `~/ai-review-ci` for QC scaffolds/hooks/review workflows.
 - If a project is intentionally tiny or non-code, record why a normal-form item is
   not applicable instead of forcing irrelevant infrastructure.
@@ -70,7 +70,7 @@ Establish the repository boundary and freshness.
   skip freshness claims. Do not describe it as synced.
 
 Do not pull, rebase, stash, discard, or initialize a repository in an ambiguous
-directory without applying `git-guidelines`.
+directory without applying [[git-guidelines/SKILL|git-guidelines]].
 
 ### GitHub Public State
 
@@ -78,8 +78,9 @@ If the confirmed remote is GitHub-backed, establish the public execution graph b
 treating local docs, plans, or transcripts as authoritative.
 
 - Determine `<owner>/<repo>` from the remote.
-- Check the wiki state. Use the GitHub Wiki section of the active `AGENTS.md`
-  guidance for the exact wiki probes and first-page bootstrap behavior.
+- Check the wiki state. Use `references/github-wiki.md` for the exact wiki probes,
+  first-page bootstrap behavior, and what belongs on the wiki versus GitHub execution
+  surfaces.
 - Inspect task-relevant open issue trees, sub-issues, dependencies, milestones, PRs,
   and draft PR claim maps. Search by the repo name, user-provided feature names,
   active branch, failing gate, and touched module when those terms exist.
@@ -98,7 +99,7 @@ treating local docs, plans, or transcripts as authoritative.
   the failure this gate exists to prevent.
 - For long-horizon, cross-repo, or review-track work, externalize finalized plans into
   a GitHub issue tree, GitHub Milestone scope, and draft PR claim map. Load and read
-  `plan/references/externalization.md` and use `plan` and `git-guidelines` first; do not
+  `plan/references/externalization.md` and use [[plan/SKILL|plan]] and [[git-guidelines/SKILL|git-guidelines]] first; do not
   create or restructure tree nodes before reading it. Once public artifacts exist, they
   become the tracker; local plans may explain derivation but must not stay authoritative.
 - When an observed failure class repeats, causes false green, blocks convergence, or
@@ -112,44 +113,24 @@ missing. Create or update them only when the user requested public tracking or t
 requires it; otherwise record the missing public surface as an initialization finding and
 continue with the requested scope.
 
-### SDL-MCP
-
-If the client exposes SDL-MCP, or repo instructions require it, make the repository
-available to SDL before broad code exploration or edits.
-
-- Check `repo.status` for the repository id you expect to use.
-- If `repo.status` reports that the repository is not registered, run
-  `repo.register` with the confirmed git root and a stable repo id, then run
-  `index.refresh` in `full` mode.
-- If `repo.status` reports stale or missing indexed state and the task depends on
-  current code, run `index.refresh` in `incremental` mode. Do not refresh by habit.
-- If refresh runs asynchronously, poll `repo.status` until the index is ready before
-  relying on graph-backed retrieval.
-- Once registered/current, start task context with `sdl.context` using `precise` or
-  `broad` mode according to the task.
-
-If SDL-MCP is unavailable, record that in the initialization stamp and use the
-repository's documented fallback path. In repos that ship `SDL.md`, treat it as the
-fallback workflow when the client cannot load the SDL-MCP skill.
-
 ### Project Instructions
 
 Load the repository's own instructions before editing.
 
 - Read top-level `README*`, `AGENTS.md`, and nearby nested `AGENTS.md` files that
   govern the task path.
-- If the repo has design docs or an `agent-memory` pointer, inspect them before
-  inventing a workflow. Planning state belongs in `agent-memory`, not loose
+- If the repo has design docs or an [[agent-memory/SKILL|agent-memory]] pointer, inspect them before
+  inventing a workflow. Planning state belongs in [[agent-memory/SKILL|agent-memory]], not loose
   repo-local planning files.
 - If instructions conflict, direct user instructions win; then prefer the most
-  local repo instructions over broader AGENTSmd/global skill guidance.
+  local repo instructions over broader AGENTS.md/global skill guidance.
 
 ### Durable Surface Convergence
 
 When repo-local docs, scratchpads, plans, TODO files, or agent process notes already
 exist, classify each one by durable owner before relying on it:
 
-- plan, phase state, queue, or residue ledger -> `agent-memory` plan record;
+- plan, phase state, queue, or residue ledger -> [[agent-memory/SKILL|agent-memory]] plan record;
 - correction, trap, reusable decision, or durable agent behavior -> typed memory;
 - durable project narrative, feature doctrine, architecture rationale, and readable
   roadmap/proof projections -> wiki;
@@ -175,7 +156,7 @@ Expected contents, when applicable:
 - small scripts used by those private recipes;
 - no loose durable process docs that should be typed project memories instead.
 
-Project memory binding is not a `.agents/` child. `agent-memory` owns the binding
+Project memory binding is not a `.agents/` child. [[agent-memory/SKILL|agent-memory]] owns the binding
 through `.agent-memory.toml` at the repository root. Do not create or maintain
 memory directories by hand.
 
@@ -188,13 +169,13 @@ Project memory and planning state are part of initialization, not an
 afterthought. The goal is to confirm the normal structure exists and repair it
 when it is missing.
 
-- Load `agent-memory` for the current command surface.
+- Load [[agent-memory/SKILL|agent-memory]] for the current command surface.
 - Use the GitHub `uvx` runner to check memory tooling unless a verified setup has
-  already placed `agent-memory` on `PATH`:
+  already placed [[agent-memory/SKILL|agent-memory]] on `PATH`:
   `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory --help`,
   then `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor`.
   If either exits before showing help because a required runtime dependency is
-  missing, treat that as setup failure and use the `agent-memory` skill plus the
+  missing, treat that as setup failure and use the [[agent-memory/SKILL|agent-memory]] skill plus the
   `/home/dzack/gitclones/agent-memory` checkout to provision dependencies.
 - Confirm the repository has a root `.agent-memory.toml` binding. If it is
   missing and the project should keep memory/planning state, run
@@ -206,10 +187,10 @@ when it is missing.
   `opencode/skills/agent-memory/references/harness-state-hijacking-research.md`:
   - Claude Code auto memory writes into the vault-owned Claude project
     directory, and Claude plans use `plansDirectory` pointed at the vault.
-  - Codex memories and memory extensions are routed into the vault, while
-    `~/.codex/sessions/` and `~/.codex/archived_sessions/` remain normal Codex
+  - [[codex/SKILL|Codex]] memories and memory extensions are routed into the vault, while
+    `~/.codex/sessions/` and `~/.codex/archived_sessions/` remain normal [[codex/SKILL|Codex]]
     runtime directories outside the vault.
-  - Durable Codex ExecPlan Markdown files resolve to the agent-memory project
+  - Durable [[codex/SKILL|Codex]] ExecPlan Markdown files resolve to the [[agent-memory/SKILL|agent-memory]] project
     plan directory through `PLANS.md`/`AGENTS.md` guidance or a compatibility
     pointer/symlink.
   - Antigravity/`agy` brain artifacts, when used for the project, preserve their
@@ -224,19 +205,19 @@ when it is missing.
 
 ### Justfile
 
-The top-level `justfile` is the project API.
+The top-level [[justfile/SKILL|justfile]] is the project API.
 
-- Load the `justfile` skill before creating or changing recipes.
+- Load the [[justfile/SKILL|justfile]] skill before creating or changing recipes.
 - Run `just --list` to understand the public surface.
 - Public recipes should be small and user-facing: usually `build`, `test`,
   `test-ci` under global QC, `serve`, `run`, `setup`, or `clean` when genuinely
   useful.
 - Internal diagnostics, slop checks, hook helpers, and anti-gaming surfaces belong
   in `.agents/justfile` as `[private]` recipes.
-- If a global-QC project has no usable `justfile`, install or adapt the
+- If a global-QC project has no usable [[justfile/SKILL|justfile]], install or adapt the
   appropriate `~/ai-review-ci` scaffold instead of hand-writing copied snippets.
 
-For central justfile delegation, preserve the caller repository root with `-d .`
+For central [[justfile/SKILL|justfile]] delegation, preserve the caller repository root with `-d .`
 so the shared QC scans the target project, not `~/ai-review-ci`.
 
 ### Global QC And Review CI
@@ -246,7 +227,7 @@ should stay thin.
 
 Normal global-QC shape:
 
-- top-level `justfile` delegates public `test` and `test-ci` to the relevant
+- top-level [[justfile/SKILL|justfile]] delegates public `test` and `test-ci` to the relevant
   `~/ai-review-ci/justfiles/<language>.just` with caller-root semantics;
 - target repos do not copy generic QC configs, tool pins, hook scripts, or
   replacement lint/type/test stacks;
@@ -282,7 +263,7 @@ that state before debugging product behavior.
 
 - Do not invent missing secrets, remotes, service URLs, or local config.
 - Hard-fail required env/auth/config inputs when the project requires them.
-- Use `tool-provisioning-and-environment-hygiene` for missing tools or install
+- Use [[tool-provisioning-and-environment-hygiene/SKILL|tool-provisioning-and-environment-hygiene]] for missing tools or install
   pathways.
 
 ## Mixed-State Normalization
@@ -296,10 +277,9 @@ Prefer this order:
 1. Stabilize git state and freshness.
 2. Inspect GitHub public state when the remote is GitHub-backed.
 3. Classify local docs, plans, TODOs, and scratchpads by durable owner.
-4. Register or refresh SDL-MCP context if available/required.
-5. Load repo instructions and task-relevant memories.
+4. Load repo instructions and task-relevant memories.
 6. Initialize or repair `.agents/` and memory binding.
-7. Normalize `justfile` public/private surfaces.
+7. Normalize [[justfile/SKILL|justfile]] public/private surfaces.
 8. Delegate QC to `~/ai-review-ci` and install hooks/workflows where appropriate.
 9. Run the smallest proof that the normalized surface works.
 10. Continue the user's original task.
@@ -317,7 +297,6 @@ status:
 Project initialization:
 - Git: <root, branch, dirty/freshness/remote status>
 - GitHub: <wiki state, relevant issues/milestones/PRs, canonical tracker or gap>
-- SDL-MCP: <registered/current/unavailable/not applicable>
 - Instructions: <README/AGENTS/memory surfaces checked>
 - Memory: <initialized? relevant memories searched?>
 - Durable state: <local docs/plans classified? migrations or pointers needed?>
@@ -327,3 +306,13 @@ Project initialization:
 ```
 
 Keep the stamp short. If everything is normal, one paragraph is enough.
+
+## Reference Files
+
+- `references/github-wiki.md`: wiki probes, first-page bootstrap, and what belongs on
+  the wiki (user-story-first doctrine, proof burdens, roadmaps) versus GitHub execution
+  surfaces.
+- `references/durable-state-surfaces.md`: the one-owner state model (vault, GitHub
+  execution surfaces, wiki, `.agents/`, scratch) and the mixed-state migration rules.
+- `references/agents-directory.md`: the `.agents/` directory contract and the private
+  agent-facing justfile pattern.

@@ -13,7 +13,7 @@ A failed one-shot attempt is raw evidence, not a diagnosis. The hard part is not
 
 If no smaller piece has been attempted and either solved, integrated, or split into a strictly smaller failed leaf with evidence, no hard core has been isolated.
 
-If decomposition may span context or branch, the active path must be externalized in `agent-memory` before going deeper. Do not trust the chat transcript or the worker's memory to remember where the leaf came from.
+If decomposition may span context or branch, the active path must be externalized in [[agent-memory/SKILL|agent-memory]] before going deeper. Do not trust the chat transcript or the worker's memory to remember where the leaf came from.
 
 ## Residue Gate
 

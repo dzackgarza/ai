@@ -7,7 +7,7 @@ description: Use when creating shell scripts, Python CLI tools, or command-line 
 ## Default Stack
 
 **Project-owned:** Cyclopts + Pydantic v2 (for CLI presentation and input contracts).
-**Global QC (see `quality-control`):** basedpyright, Ruff, pytest, coverage, etc.
+**Global QC (see [[quality-control/SKILL|quality-control]]):** basedpyright, Ruff, pytest, coverage, etc.
 
 Use Cyclopts for CLI presentation.
 Use Pydantic as the actual spec.
@@ -26,7 +26,7 @@ build, plugin, and domain-test dependencies.
 Any Python script created by an agent that imports non-stdlib packages must be
 self-contained with PEP 723 inline script metadata and run through `uv`. No separate
 install step. No implicit environment assumption. No `pip install` prelude.
-See `tool-provisioning-and-environment-hygiene` under "Self-Contained Python Scripts
+See [[tool-provisioning-and-environment-hygiene/SKILL|tool-provisioning-and-environment-hygiene]] under "Self-Contained Python Scripts
 with uv" for the full hierarchy and forbidden pathways.
 
 ### Canonical Template
@@ -72,7 +72,7 @@ chmod +x my_script.py
 ## Mandatory Requirements
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 Every CLI must have:
 
@@ -82,7 +82,7 @@ Every CLI must have:
 
 3. **Progressive disclosure** — flat CLIs banned after trivial size; use subcommands
 
-4. **Documented defaults** — every default value explained in config files and CLI help text (NOT runtime fallback defaults — those are prohibited by [Bridge-Burning Policy 1](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry))
+4. **Documented defaults** — every default value explained in config files and CLI help text (NOT runtime fallback defaults — those are prohibited by [[policy-index/SKILL#policy-registry|Bridge-Burning Policy 1]])
 
 5. **Centralized config** — knobs/levers in YAML config files, not ad-hoc env vars
 

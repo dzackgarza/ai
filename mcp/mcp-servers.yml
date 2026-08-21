@@ -1,21 +1,23 @@
 common:
-  sdl-mcp:
-    description: SDL MCP server (shared HTTP service, systemd --user)
-    type: remote
-    url: http://127.0.0.1:39150/mcp
-    enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
     command: uvx
     args:
     - --from
-    - git+https://github.com/dzackgarza/opencode-plugin-improved-webtools#subdirectory=mcp-server
+    - git+https://github.com/dzackgarza/improved-webtools#subdirectory=mcp-server
     - improved-webtools-mcp
     enabled: true
     exclude_harnesses:
     - opencode
     env:
       SEARXNG_INSTANCE_URL: '{env:SEARXNG_INSTANCE_URL}'
+  lean-lsp:
+    description: Lean theorem prover LSP MCP server (diagnostics, goals, hover, mathlib
+      search via LeanSearch/Loogle/Lean Hammer)
+    command: uvx
+    args:
+    - lean-lsp-mcp
+    enabled: true
 harnesses:
   opencode:
     enabled: true

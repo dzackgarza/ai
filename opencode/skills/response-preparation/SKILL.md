@@ -1,12 +1,12 @@
 ---
 name: response-preparation
-description: Use before a substantive or multi-step completion report, progress synthesis, or status response when the user needs information not already visible in the result. Skip direct answers, obvious corrections, and trivial edit acknowledgments.
+description: Use when preparing a substantive completion report, progress or status update, handoff, or remaining-work synthesis. Skip direct answers, obvious corrections, and trivial edit acknowledgments.
 ---
 # Response Preparation
 
 ## Why This Skill Exists
 
-Forces theory-of-mind reasoning about what the user needs to hear vs what the you are
+Forces theory-of-mind reasoning about what the user needs to hear vs what you are
 about to reflexively produce.
 Models treat response templates ("Items NOT completed", “Gaps”, “Next actions”) as boxes
 to fill. The result is mechanically correct but informationally useless:
@@ -27,9 +27,31 @@ to fill. The result is mechanically correct but informationally useless:
 The common mechanism: the model fills the response template by scanning its most recent
 actions, not by asking **why the user would want each piece of information**.
 
-## Label-Content Coherence (MUST run first)
+## Success Is the Expected Outcome
 
-Before anything else, re-read every labeled section of your draft response.
+Treat successful execution as expected. State the result concisely, then give most of the
+response to gaps, blockers, surprises, decisions, and incomplete required work. Include
+verification or causal explanation when the user requested it, when it substantiates the
+result, or when it changes what happens next.
+
+## Continue Before Reporting
+
+If the user assigned ongoing execution and safe in-scope work on that request remains,
+continue unless the user asked for status or input is required. Do not use a progress
+report as a substitute for that work.
+
+This rule does not authorize newly discovered work outside the request or require every
+substantive turn to continue until a broader project queue is empty.
+
+## Preserve In-Scope Obligations
+
+When a response is due, name unfinished work that remains part of the active request.
+Do not relabel it as optional merely because a local subtask succeeded. Newly discovered
+work outside that scope is a finding, not automatic authorization to act.
+
+## Label-Content Coherence
+
+After deciding that a response is due, re-read every labeled section of your draft response.
 For each label ("Remaining", “Not completed”, “Open items”, “Next actions”, etc.):
 
 **Does the content actually mean what the label says?**
@@ -53,21 +75,18 @@ You must read your own output and ask: **“Does this content mean what this lab
 it means?”** If the answer is no, delete the section entirely.
 An absent section is better than an incoherent one.
 
-## Synthesis Gate
+## Gap-First Synthesis Gate
 
-After verifying label-content coherence, produce this single statement before writing
-your response:
+After verifying label-content coherence, complete this statement:
 
-**“The user needs to know _____ because they cannot already see it.”**
+**“The user needs to know _____ because it changes _____.”**
 
-If you cannot complete that sentence with something concrete, you have nothing to say.
-Do not write a response.
-The git commit is sufficient.
+The first blank should normally name a gap, blocker, surprise, divergence, or decision.
+The second should name the affected action, expectation, proof burden, or required user
+choice. If no such item exists, give the result and relevant evidence concisely.
 
-If you can complete it, that sentence IS your response (or the seed of it).
-Do not pad it with status, summaries, or template sections.
-The user asked for a task, not a report — only communicate what the task couldn’t
-communicate for itself.
+Do not let a chronological account of completed work dominate information that changes
+what happens next.
 
 ## Frame Fidelity Gate
 

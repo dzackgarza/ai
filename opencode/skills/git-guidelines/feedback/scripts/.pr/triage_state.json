@@ -1,0 +1,121 @@
+{
+ "repo": "dzackgarza/agent-memory",
+ "pr": 72,
+ "counts": {
+  "CLOSED": 9,
+  "NEW": 2
+ },
+ "converged": false,
+ "records": [
+  {
+   "key": "ct:9665f08bb122c7ea",
+   "thread_id": "PRRT_kwDOS8w8Zc6QWIOt",
+   "path": "src/agent_memory/operations.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:a470b97ed0ed5565",
+   "thread_id": "PRRT_kwDOS8w8Zc6QWIO0",
+   "path": "src/agent_memory/operations.py",
+   "line": 847,
+   "resolved": true,
+   "outdated": false,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:96e57a969d1c8fb2",
+   "thread_id": "PRRT_kwDOS8w8Zc6QWlnE",
+   "path": "src/agent_memory/operations.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:9c20440b0aead392",
+   "thread_id": "PRRT_kwDOS8w8Zc6QWlnK",
+   "path": "src/agent_memory/operations.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:1d9764a591c1a598",
+   "thread_id": "PRRT_kwDOS8w8Zc6QWuKM",
+   "path": "src/agent_memory/operations.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:485962808ec83a88",
+   "thread_id": "PRRT_kwDOS8w8Zc6QW2L0",
+   "path": "src/agent_memory/operations.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:f8ac02f0752d9885",
+   "thread_id": "PRRT_kwDOS8w8Zc6QW_t_",
+   "path": "src/agent_memory/operations.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:513d780e71904202",
+   "thread_id": "PRRT_kwDOS8w8Zc6QXNsv",
+   "path": "src/agent_memory/operations.py",
+   "line": null,
+   "resolved": true,
+   "outdated": true,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:c91f3039eef37993",
+   "thread_id": "PRRT_kwDOS8w8Zc6QXNsy",
+   "path": "src/agent_memory/cli.py",
+   "line": 855,
+   "resolved": true,
+   "outdated": false,
+   "state": "CLOSED",
+   "disp": null
+  },
+  {
+   "key": "ct:3ad437ca46644ac9",
+   "thread_id": "PRRT_kwDOS8w8Zc6QXXYC",
+   "path": "src/agent_memory/operations.py",
+   "line": 867,
+   "resolved": false,
+   "outdated": false,
+   "state": "NEW",
+   "disp": null
+  },
+  {
+   "key": "ct:4bf201c0b8dc2bd8",
+   "thread_id": "PRRT_kwDOS8w8Zc6QXXq4",
+   "path": "src/agent_memory/operations.py",
+   "line": 3274,
+   "resolved": false,
+   "outdated": false,
+   "state": "NEW",
+   "disp": null
+  }
+ ]
+}
