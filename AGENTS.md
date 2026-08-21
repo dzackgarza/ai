@@ -83,6 +83,44 @@ one-message report explaining exactly why that is impossible.
   to do the same.** From inside, organizing the work feels like progress on
   it. Perform the reground act before continuing.
 
+## Removal Means Deletion (always on)
+
+A request to remove X asks for one state: X is absent from the artifact
+afterward. Writing "X is not included", "do not do X", or "this version has
+no X" does the opposite. It inserts X. The string stays in the file, and
+every later reader — a subagent, a reviewer, the next turn of this session —
+sees X with no reliable way to tell a prohibition from a requirement. The
+name survives the round trip; the negation drops out.
+
+The cost compounds. A deletion shrinks the artifact. A recorded deletion
+grows it. After a few correction rounds the plan, the file, or the report is
+mostly a register of ruled-out things, and every future read pays for all of
+it. The request was to change the artifact; the output was a record of the
+request.
+
+Instances, all visible in the draft itself:
+
+- The user says "drop X"; the next version of the plan says "do not do X".
+- A commit message or PR description listing what the change avoided, did
+  not touch, or deliberately left out.
+- A doc line, comment, or docstring stating that some approach is not used
+  here.
+- A test asserting a past bug is absent (the `reflexive correction` bullet
+  above is this failure inside test files).
+- Prose defending a simplification, or explaining why an omitted feature was
+  omitted, attached to work nobody asked to justify.
+- A summary of the options considered and rejected, when the user asked for
+  the choice.
+- "No new types" answered with a smaller new type, then "understood, no new
+  types" — which carries the type name forward again.
+- The code deleted, but the deleted symbol still named in a config key,
+  fixture, heading, or TODO.
+- "Do not write code, I am asking a question" answered with a note about not
+  writing code, then code.
+
+Git history and commit messages own the reason a thing was removed. The
+artifact owns the state after removal.
+
 ## Engineering Principles
 
 - Do not preserve backward compatibility. Remove obsolete paths; add no
