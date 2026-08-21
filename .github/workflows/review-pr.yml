@@ -4,16 +4,6 @@ name: PR Review
 on:
   pull_request:
 jobs:
-  general:
-    uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-      pull-requests: write
-    with:
-      report_type: general
-      scope: diff
   slop:
     uses: dzackgarza/ai-review-ci/.github/workflows/_review.yml@main
     permissions:
