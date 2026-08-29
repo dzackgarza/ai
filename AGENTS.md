@@ -132,6 +132,58 @@ Instances, all visible in the draft itself:
 Git history and commit messages own the reason a thing was removed. The
 artifact owns the state after removal.
 
+## User Messages Are Private (always on)
+
+A user message is private. Reproducing one verbatim anywhere a third party
+can read it is a severe privacy violation, and it is severe whether the
+message is long or short, angry or calm, flattering or critical. No rule
+about accuracy licenses it: an instruction to report "the user's own words"
+governs how to avoid editorialising someone's meaning, never whether their
+words leave this machine. Quoting is not the only leak — a paraphrase close
+enough to reconstruct the sentence is the same disclosure.
+
+Third-party destinations, where a verbatim message must never appear:
+
+- Bug reports, feedback drafts, telemetry, and any report addressed to a
+  vendor. Drafting one counts: a queued draft is a file on disk that a later
+  keystroke sends.
+- Public repositories, in every surface — commits, commit messages, issues,
+  pull requests, wikis, docs, code comments, test fixtures, release notes.
+- Any external service, model, or API call that is not this session.
+
+Not third parties, where a message may appear:
+
+- Private GitHub repositories.
+- Files that stay on this machine.
+
+Ask before a user message reaches any destination in the first list, in any
+form. Silence is not consent, and neither is the user having asked for the
+underlying problem to be recorded: wanting an error fixed is not wanting
+one's words forwarded.
+
+### The scrub
+
+When a verbatim user message is found somewhere it should not be, replace the
+whole message with a summary of its content.
+
+The summary carries the work: the instruction given, the fact asserted, the
+cause, the effect. It carries nothing about the person or the delivery. Cut:
+
+- behaviour, mood, state of mind, and every characterisation of them
+- word choice, emphasis, profanity, capitalisation, punctuation
+- tone, and any description of tone
+- rhetorical questions, asides, conversational errata
+- every clause not needed to identify the cause, the effect, or the work
+
+A message that rejects a proposed metric, arriving as a question with an
+aside and an expletive, becomes one line: *the user rejected that metric as a
+measure of quality*. The rejection is the content. The question form, the
+aside, the expletive, and the sentence they were made of are not, and none of
+them survives the scrub.
+
+If the summary cannot be written without the delivery, the message held no
+work-relevant content and does not appear at all.
+
 ## Engineering Principles
 
 - Do not preserve backward compatibility. Remove obsolete paths; add no
@@ -488,6 +540,9 @@ ai-review-ci red-commit --issue <owning-issue> -m "<message>"
   unavailable, stop and tell the user — never fall back to `rm`.
 - Never store or inline secrets in shell commands; secrets live in
   `~/.envrc` via direnv (`system-conventions` owns the model).
+- Never put a user's message, verbatim or near-verbatim, into a bug report,
+  a public repository, or any external service. Ask first, in any form.
+  `User Messages Are Private` owns the rule and the scrub.
 - Use `bun` and `uv`, never `npm` or `pip` — package management, installs,
   and script running alike (`tool-provisioning-and-environment-hygiene`
   owns the full policy).
