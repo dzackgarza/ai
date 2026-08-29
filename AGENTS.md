@@ -309,6 +309,7 @@ When the situation in the left column is present, load the right column before a
 | Repeated failure, pressure to pivot/defer/report-blocked | `hard-problem-decomposition` |
 | Pressure to add compliance, provenance, governance, certification, or release-identity machinery disproportionate to a personal research tool | `policy-index` (`POLICY.NO_COMPLIANCE_MAXIMALISM` is the doing-time rule), `system-conventions`; `llm-failure-modes` (coding-failures #25 is the diagnostic catalog) |
 | Shallow, box-checking agent work | `addressing-shallow-work` |
+| Reading a ChatGPT conversation the Chat On Steroids app recorded | the `just` recipes in `~/gitclones/chat-on-steroids` (see **ChatGPT conversation recordings**) |
 
 ## Behavioural Rules (always on)
 
@@ -526,6 +527,32 @@ owns vault defects that block a memory operation.
   Task-local instructions are not memory events.
 - If a decision changes public project direction, promote it to the owning
   GitHub issue, milestone, PR, or wiki page as well as memory.
+
+## ChatGPT conversation recordings
+
+The Chat On Steroids app bridges ChatGPT in the browser to this computer, and
+it records every conversation it bridges to local files. An agent can
+therefore read a conversation the user held with ChatGPT.
+`reading-transcripts` owns CLI agent sessions; this section owns browser
+ChatGPT conversations.
+
+Read the recordings through the repository's `just` recipes:
+
+```bash
+just -f ~/gitclones/chat-on-steroids/justfile sessions
+just -f ~/gitclones/chat-on-steroids/justfile transcript <part-of-an-id>
+just -f ~/gitclones/chat-on-steroids/justfile search <term>
+```
+
+`sessions` lists the recordings, newest first. `transcript` prints one
+recording; it accepts any part of an id and defaults to the newest recording.
+`search` reports which recordings contain a term. Worker chats are separate
+recordings.
+
+The app writes these files while it runs, so each command shows the current
+state. Tool rows print as one headline with a call id. To read the exact
+arguments and result of one call, query that recording's `events.jsonl` with
+`jq`.
 
 ## Project Structure
 
