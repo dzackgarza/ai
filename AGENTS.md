@@ -309,7 +309,7 @@ When the situation in the left column is present, load the right column before a
 | Repeated failure, pressure to pivot/defer/report-blocked | `hard-problem-decomposition` |
 | Pressure to add compliance, provenance, governance, certification, or release-identity machinery disproportionate to a personal research tool | `policy-index` (`POLICY.NO_COMPLIANCE_MAXIMALISM` is the doing-time rule), `system-conventions`; `llm-failure-modes` (coding-failures #25 is the diagnostic catalog) |
 | Shallow, box-checking agent work | `addressing-shallow-work` |
-| Reading a ChatGPT conversation the Chat On Steroids app recorded | the `just` recipes in `~/gitclones/chat-on-steroids` (see **ChatGPT conversation recordings**) |
+| Reading a ChatGPT conversation the Chat On Steroids app recorded | the `just` recipes in `/home/dzack/gitclones/chat-on-steroids` (see **ChatGPT conversation recordings**) |
 
 ## Behavioural Rules (always on)
 
@@ -539,9 +539,9 @@ ChatGPT conversations.
 Read the recordings through the repository's `just` recipes:
 
 ```bash
-just -f ~/gitclones/chat-on-steroids/justfile sessions
-just -f ~/gitclones/chat-on-steroids/justfile transcript <part-of-an-id>
-just -f ~/gitclones/chat-on-steroids/justfile search <term>
+just -f /home/dzack/gitclones/chat-on-steroids/justfile sessions
+just -f /home/dzack/gitclones/chat-on-steroids/justfile transcript <part-of-an-id>
+just -f /home/dzack/gitclones/chat-on-steroids/justfile search <term>
 ```
 
 `sessions` lists the recordings, newest first. `transcript` prints one
