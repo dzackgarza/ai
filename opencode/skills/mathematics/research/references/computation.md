@@ -1,9 +1,9 @@
 # Computational Experiments
 
 Owner file for search, certificate, and verification computations in a research
-program. Parent: [[mathematics/research/SKILL|mathematical-research]]. Tool selection
-(which solver/CAS) belongs to [[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
-[[mathematics/computation/integer-programming/SKILL|integer-programming]], and [[mathematics/computation/sagemath/SKILL|sagemath]];
+program. Parent: [[mathematics/research/research|mathematical-research]]. Tool selection
+(which solver/CAS) belongs to [[lean4/skills/theorem-proving-and-counterexamples/theorem-proving-and-counterexamples|theorem-proving-and-counterexamples]],
+[[mathematics/computation/integer-programming/integer-programming|integer-programming]], and [[mathematics/computation/sagemath/sagemath|sagemath]];
 this file owns the protocol around any of them. Concrete M2/Lean/Z3 idioms:
 [[mathematics/research/references/computer-algebra-patterns|computer-algebra-patterns]].
 

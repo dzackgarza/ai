@@ -1,6 +1,6 @@
 ---
 name: chrome-devtools-mcp
-description: Use when debugging, inspecting, or automating a Chrome/Chromium browser from the terminal with ChromeDevTools chrome-devtools-mcp, especially when the user asks for npx usage, browser snapshots, screenshots, Lighthouse audits, page navigation, or agent-generated browser scripts. Prefer this skill over global install advice whenever the task can run through ephemeral npx.
+description: Control and inspect Chrome browser via Chrome DevTools MCP.
 ---
 # Chrome DevTools MCP CLI
 

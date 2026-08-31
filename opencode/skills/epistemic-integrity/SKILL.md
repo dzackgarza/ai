@@ -1,6 +1,6 @@
 ---
 name: epistemic-integrity
-description: Use when reporting negative findings, analyzing documents/transcripts/logs, summarizing source material, or reasoning from partial search/read evidence.
+description: Report negative findings and reason accurately from partial evidence.
 ---
 # Epistemic Integrity
 

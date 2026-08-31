@@ -1,9 +1,9 @@
 # Independent Audit
 
 Owner file for banking a mathematical result produced by any agent (including
-yourself). Parent: [[mathematics/research/SKILL|mathematical-research]]. Related:
+yourself). Parent: [[mathematics/research/research|mathematical-research]]. Related:
 [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] for general agent output,
-[[mathematics/research/research-gate-review/SKILL|research-gate-review]] for gate protocol; this file owns
+[[mathematics/research/research-gate-review/research-gate-review|research-gate-review]] for gate protocol; this file owns
 what "independently verified" means for a mathematical claim. A concrete three-way
 certification (Gröbner normal form, explicit finite model, Lean witness module, all
 pinning one socle nonvanishing):
@@ -119,8 +119,8 @@ trust base in order, updating the ledger status at each step:
 3. Third implementation, different again (this is where remaining shared-error surface
    dies).
 4. External CAS/prover confirmation on independent infrastructure.
-5. Formalization (Lean/mathlib route via [[lean4/skills/lean4/SKILL|lean4]] or
-   [[lean4/skills/aristotle/SKILL|aristotle]]) with axiom audit (`#print axioms`) — the terminal
+5. Formalization (Lean/mathlib route via [[lean4/skills/lean4/lean4|lean4]] or
+   [[lean4/skills/aristotle/aristotle|aristotle]]) with axiom audit (`#print axioms`) — the terminal
    status `formalized`.
 
 Do not announce externally before at least step 3.

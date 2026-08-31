@@ -1,16 +1,6 @@
 ---
 name: requirements-freeze-extraction
-description: >
-  Use when a repository has accumulated features, rewrites, framework pivots,
-  duplicated ownership, abandoned branches, incoherent architecture, or
-  implementation residue that makes it unclear what the product actually is.
-  Use when the user asks about freezing, requirements extraction, accretion
-  creep, architectural reset, product specification, rewrite readiness, or
-  preventing future scope creep. Use when a proposed feature would add behavior
-  before the repo has a clear normative requirements document. Use when the repo
-  has no durable document answering: what is this product, what does it own,
-  what does it not own, what user-facing outcomes are required, and what old
-  implementation choices are non-binding.
+description: Extract fixed requirements from chats or legacy repos before redesign.
 ---
 
 # Requirements Authority Freeze Skill

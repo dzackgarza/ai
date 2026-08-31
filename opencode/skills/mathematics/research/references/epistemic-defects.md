@@ -5,7 +5,7 @@ references is a postdiction of a specific accident — scar tissue. Scar tissue
 only marks where a wound was; the *defect* that caused it will express itself
 again in a form no existing rule covers. When you meet a situation the rules
 don't name, identify which defect below is operating and derive the guard.
-Parent: [[mathematics/research/SKILL|mathematical-research]]. The wreckage
+Parent: [[mathematics/research/research|mathematical-research]]. The wreckage
 cited is real, from the programs this skill is distilled from.
 
 Rigor is not a temperament. It is a prosthetic system for a specific set of

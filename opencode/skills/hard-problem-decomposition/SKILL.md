@@ -1,6 +1,6 @@
 ---
 name: hard-problem-decomposition
-description: Use when a hard task, repeated failure, unclear causality, or long-running goal creates pressure to pivot, defer, narrow scope, report blocked, or treat a failed one-shot attempt as an external blocker before recursive decomposition has reduced the residue.
+description: Decompose hard tasks, repeated failures, or long-running goals.
 ---
 
 # Hard Problem Decomposition

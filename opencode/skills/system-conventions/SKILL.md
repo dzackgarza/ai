@@ -1,6 +1,6 @@
 ---
 name: system-conventions
-description: Use when choosing a config format, task runner, UI stack, package manager, or storage location; provisioning tools or dependencies; handling secrets or environment variables; selecting CLI tools for search, rename, or codemods; running long-lived commands; or migrating documentation between surfaces. Canonical problem-to-convention map for this system.
+description: Conventions for config formats, task runners, stacks, and package managers.
 ---
 # System Conventions
 
@@ -117,8 +117,8 @@ Prefer tool-routing skills over memorized commands:
 - Python scripts, `uv`, missing dependencies, install choices:
   [[tool-provisioning-and-environment-hygiene/SKILL|tool-provisioning-and-environment-hygiene]]
 - PDFs: [[reading-pdfs/SKILL|reading-pdfs]]
-- Markdown formatting and prose rewrites: [[writing/clarity/SKILL|writing-clearly-and-concisely]],
-  [[writing/agent-audiences/SKILL|writing-for-agent-audiences]], and the project justfile
+- Markdown formatting and prose rewrites: [[writing/clarity/clarity|writing-clearly-and-concisely]],
+  [[writing/agent-audiences/agent-audiences|writing-for-agent-audiences]], and the project justfile
 - Frontend and GUI work: [[design/SKILL|design]], [[responsive-design/SKILL|responsive-design]],
   [[developing-linux-guis/SKILL|developing-linux-guis]]
 - Mathematical research tooling: [[mathematics/SKILL|mathematics]] (lattices, sagemath,

@@ -1,6 +1,6 @@
 ---
 name: developing-linux-guis
-description: Build GUI applications for Linux desktop environments using AGS. Use when creating desktop applications, system tray tools, bars, or native Linux UI components.
+description: Build native Linux GUI applications with AGS.
 ---
 # Developing Linux GUIs
 

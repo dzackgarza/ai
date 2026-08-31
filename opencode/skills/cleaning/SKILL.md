@@ -1,6 +1,6 @@
 ---
 name: cleaning
-description: Use when removing debris, dead code, unused files, or reorganizing any repository — code, docs, configs, notebooks, experiments, or mixed content.
+description: Remove debris, dead code, and unused files safely via worktrees.
 ---
 # Cleaning
 

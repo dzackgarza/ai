@@ -1,6 +1,6 @@
 ---
 name: looped-task-skill-author
-description: Use when authoring or refining repo-local [[codex/SKILL|Codex]] skills for repeated one-shot agent loops that advance long-horizon or open-ended tasks through progress logs, self-correcting state machines, transcript-based manual testing, and cautious promotion to cron/Hermes-style orchestration. Do not use for ordinary one-off scripts or batch automation.
+description: Author and refine Codex skills for repeated tasks.
 ---
 # Looped task skill authoring
 
@@ -51,11 +51,11 @@ compatible with the loop philosophy.
 
 Required companion skills:
 
-- [[writing/agent-audiences/SKILL|writing-for-agent-audiences]] for audience control and concise agent-facing prose.
+- [[writing/agent-audiences/agent-audiences|writing-for-agent-audiences]] for audience control and concise agent-facing prose.
 
 - [[creating-skills/SKILL|creating-skills]] for what belongs in a `SKILL.md`.
 
-- [[subagent-delegation/authoring/SKILL|creating-subagents]] when the loop depends on repo-local agents or subagent
+- [[subagent-delegation/authoring/authoring|creating-subagents]] when the loop depends on repo-local agents or subagent
   descriptions.
 
 - [[prompt-engineering/SKILL|prompt-engineering]] when editing system prompts or agent definitions adjacent to the

@@ -2,7 +2,7 @@
 
 Owner file for research programs that attack **many problems at once** — a
 portfolio sweep over a problem catalog, or a distributed swarm of untrusted
-prover agents. Parent: [[mathematics/research/SKILL|mathematical-research]].
+prover agents. Parent: [[mathematics/research/research|mathematical-research]].
 Single-campaign dispatch is
 [[mathematics/research/references/cdc-prompt|cdc-prompt]]; this file owns the
 scale pathologies. Grounded in `neelsomani/gpt-erdos` (677 triaged candidate

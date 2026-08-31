@@ -3,7 +3,7 @@
 A one-shot mathematical problem statement for a long-horizon remote worker, after the
 template of [[mathematics/research/references/cdc-prompt|cdc-prompt]] and
 [[mathematics/research/references/jacobian-prompt|jacobian-prompt]] (verbatim prompt
-sections only). Parent: [[mathematics/research/SKILL|mathematical-research]].
+sections only). Parent: [[mathematics/research/research|mathematical-research]].
 
 ## Verbatim prompt
 

@@ -1,11 +1,6 @@
 ---
 name: goalcraft
-description: >-
-  Goalcraft is adversarial completion-game design. It models the worker as a
-  clever adversary seeking a completion signal while minimizing real work.
-  Use to design a minimum viable adversarial envelope—the smallest set of
-  constraints, evidence gates, and state surfaces that makes non-completion
-  harder to launder than completion.
+description: Adversarial task framing and completion-game design.
 ---
 
 # Goalcraft
@@ -24,7 +19,7 @@ Do not design instructions for a cooperative worker. Model the worker as a cleve
 - [[llm-failure-modes/SKILL|llm-failure-modes]]: Learn the attack patterns: **goal substitution**, **verification theater**, **checklist theater**, **self-certification**, **progress theater**, **meta-artifact delegation**, and **wrapper slop**.
 - [[addressing-shallow-work/SKILL|addressing-shallow-work]]: Learn how process targets (inventories, gates) become substitute wins.
 - [[anti-slop/SKILL|anti-slop]]: Learn to detect success-shaped filler used to bypass real work.
-- [[writing/agent-audiences/SKILL|writing-for-agent-audiences]], [[prompt-engineering/SKILL|prompt-engineering]], [[agent-memory/SKILL|agent-memory]]: Learn to design memory surfaces that resist narrative drift.
+- [[writing/agent-audiences/agent-audiences|writing-for-agent-audiences]], [[prompt-engineering/SKILL|prompt-engineering]], [[agent-memory/SKILL|agent-memory]]: Learn to design memory surfaces that resist narrative drift.
 
 Before proposing any concrete `/goal`, read [references/success-criteria-contracts.md](references/success-criteria-contracts.md) and use it to audit the proposed stopping criteria. This is mandatory even for simple goals.
 
@@ -74,7 +69,7 @@ Wire the payoff landscape for future workers. Pre-retrieval skills belong in the
 ### Reference Skills By State (Worker-Side)
 Name exact skill slugs and triggers:
 - `DECOMPOSE`: load [[hard-problem-decomposition/SKILL|hard-problem-decomposition]].
-- `REVIEW`: load [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] (agent artifacts) and `jerry-behaviour` (evaluator bias); load [[mathematics/research/research-gate-review/SKILL|research-gate-review]] (substantive code/research gates).
+- `REVIEW`: load [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] (agent artifacts) and `jerry-behaviour` (evaluator bias); load [[mathematics/research/research-gate-review/research-gate-review|research-gate-review]] (substantive code/research gates).
 - **Orchestration**: load [[subagent-delegation/SKILL|subagent-delegation]].
 - **Drift/Slop/Reward-hacking**: load [[llm-failure-modes/SKILL|llm-failure-modes]] and [[anti-slop/SKILL|anti-slop]] before accepting artifacts or summaries.
 - **Progress/Response**: load [[hierarchical-task-framing/SKILL|hierarchical-task-framing]] and [[response-preparation/SKILL|response-preparation]].
@@ -118,7 +113,7 @@ Use a simple goal only when the request completion witness, boundaries, and veri
 
 Use a workflow-backed goal when completion needs phased context, repeated loops, independent review, orchestration, recursive decomposition, or compaction resilience. Before writing the final `/goal`, create or update the contract, state, phase, and residue/queue records needed for progressive disclosure in [[agent-memory/SKILL|agent-memory]]. The `/goal` should name the full destination, [[agent-memory/SKILL|agent-memory]] keys, retrieval rule, phase-loading rule, always-load skill rule, state-specific skill rule, and completion witness. Skills needed before any state decision must be named in the `/goal` text itself; phase-specific skills can be named in the progressive records.
 
-Workflow docs must cross-reference concrete existing skills by slug and trigger, not generic categories. At minimum: bugs, failing checks, unexpected behavior, integration failures, and unclear causality route to [[systematic-debugging/SKILL|systematic-debugging]]; failed attempts, hard residue, pressure to defer, and blocked/off-ramp claims route to [[hard-problem-decomposition/SKILL|hard-problem-decomposition]]; adversarial test design routes to [[test-guidelines/SKILL|test-guidelines]]; orchestration routes to [[subagent-delegation/SKILL|subagent-delegation]]; agent-work review routes to [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] plus `jerry-behaviour`; substantive code/research gates route to [[mathematics/research/research-gate-review/SKILL|research-gate-review]]; drift or reward-hacking suspicion routes to [[llm-failure-modes/SKILL|llm-failure-modes]]; slop suspicion routes to [[anti-slop/SKILL|anti-slop]]; progress/completion reporting routes to [[hierarchical-task-framing/SKILL|hierarchical-task-framing]] or [[response-preparation/SKILL|response-preparation]] when those reports are part of the workflow.
+Workflow docs must cross-reference concrete existing skills by slug and trigger, not generic categories. At minimum: bugs, failing checks, unexpected behavior, integration failures, and unclear causality route to [[systematic-debugging/SKILL|systematic-debugging]]; failed attempts, hard residue, pressure to defer, and blocked/off-ramp claims route to [[hard-problem-decomposition/SKILL|hard-problem-decomposition]]; adversarial test design routes to [[test-guidelines/SKILL|test-guidelines]]; orchestration routes to [[subagent-delegation/SKILL|subagent-delegation]]; agent-work review routes to [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] plus `jerry-behaviour`; substantive code/research gates route to [[mathematics/research/research-gate-review/research-gate-review|research-gate-review]]; drift or reward-hacking suspicion routes to [[llm-failure-modes/SKILL|llm-failure-modes]]; slop suspicion routes to [[anti-slop/SKILL|anti-slop]]; progress/completion reporting routes to [[hierarchical-task-framing/SKILL|hierarchical-task-framing]] or [[response-preparation/SKILL|response-preparation]] when those reports are part of the workflow.
 
 Workflow-backed goals must use [[agent-memory/SKILL|agent-memory]] for contract, state, phase, and residue-ledger records. Use `agent-memory search` before creating, `agent-memory retrieve` when resuming, and `agent-memory update` or `agent-memory add` rather than loose Markdown files. Do not create ad hoc `notes.md`, `progress.md`, repo-local planning files, or chat-transcript-dependent state.
 

@@ -1,6 +1,6 @@
 ---
 name: hierarchical-task-framing
-description: Use when completing a sub-task, reporting progress, or any time you are about to describe what was done. Prevents drift from meta-goals into artifact fixation.
+description: Frame sub-tasks and progress against overarching project goals.
 ---
 # Hierarchical Task Framing
 

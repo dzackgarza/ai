@@ -1,7 +1,7 @@
 # Computer Algebra Patterns: Macaulay2, Lean, Z3
 
 Concrete idioms lifted from the source program's verification code. Parent:
-[[mathematics/research/SKILL|mathematical-research]]; protocol context in
+[[mathematics/research/research|mathematical-research]]; protocol context in
 [[mathematics/research/references/computation|computation]]; the mathematics these
 snippets certify is in
 [[mathematics/research/references/worked-example|worked-example]].
@@ -9,7 +9,7 @@ snippets certify is in
 ## Macaulay2: exact certification over ℤ
 
 Full M2 tool-level idiom catalog (local orderings, syzygy certificates, memory
-engineering, script harness): [[mathematics/computation/macaulay2/SKILL|macaulay2]]. The research-protocol
+engineering, script harness): [[mathematics/computation/macaulay2/macaulay2|macaulay2]]. The research-protocol
 essentials:
 
 Work in `ZZ[...]` and make `% G` (normal form against a strong Gröbner basis over ℤ)
@@ -135,6 +135,6 @@ assert((2*s % G0) != 0);      -- the decisive coefficient SURVIVES
 SMT decides existence over one exact finite ring; Gröbner over ℤ certifies
 identities over every base of a given shape; an explicit finite model certifies
 nondegeneracy; Lean freezes the banked result. Route selection details:
-[[lean4/skills/theorem-proving-and-counterexamples/SKILL|theorem-proving-and-counterexamples]],
-[[mathematics/computation/integer-programming/SKILL|integer-programming]], [[mathematics/computation/sagemath/SKILL|sagemath]],
-[[lean4/skills/lean4/SKILL|lean4]].
+[[lean4/skills/theorem-proving-and-counterexamples/theorem-proving-and-counterexamples|theorem-proving-and-counterexamples]],
+[[mathematics/computation/integer-programming/integer-programming|integer-programming]], [[mathematics/computation/sagemath/sagemath|sagemath]],
+[[lean4/skills/lean4/lean4|lean4]].

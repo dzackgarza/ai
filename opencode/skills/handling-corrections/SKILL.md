@@ -1,8 +1,13 @@
 ---
 name: handling-corrections
-description: Use when a correction requires causal explanation, leaves the intended action ambiguous, changes scope or authority, exposes unknown damage, or implies a destructive or irreversible pivot. Explicit safe course corrections should be applied directly.
+description: Handle scope changes, damage discovery, and course corrections.
 metadata:
-  creation_context: Created to prevent agents from treating user corrections as social repair prompts or implicit authorization to make guessed fixes. Revised after transcripts showed that unconditional stops and visible routing records delayed explicit safe pivots. It now distinguishes direct correction, explanation or ambiguity, and consequential state changes while preserving anti-thrashing, provenance, and anti-laundering boundaries.
+  creation_context: Created to prevent agents from treating user corrections as social
+    repair prompts or implicit authorization to make guessed fixes. Revised after
+    transcripts showed that unconditional stops and visible routing records delayed
+    explicit safe pivots. It now distinguishes direct correction, explanation or ambiguity,
+    and consequential state changes while preserving anti-thrashing, provenance, and
+    anti-laundering boundaries.
 ---
 # Handling Corrections
 

@@ -1,7 +1,7 @@
 # Formal Release Engineering
 
 Owner file for turning a banked result into a public, machine-audited formal
-release. Parent: [[mathematics/research/SKILL|mathematical-research]]. Second
+release. Parent: [[mathematics/research/research|mathematical-research]]. Second
 grounding source: `github.com/rishigajjala/erdos-796-lean` — a model-generated,
 human-verified Lean proof of the corrected second-order form of Erdős
 Problem 796, released with an executable audit.

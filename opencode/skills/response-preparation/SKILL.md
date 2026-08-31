@@ -1,6 +1,6 @@
 ---
 name: response-preparation
-description: Use when preparing a substantive completion report, progress or status update, handoff, or remaining-work synthesis. Skip direct answers, obvious corrections, and trivial edit acknowledgments.
+description: Prepare substantive completion reports, status updates, and handoffs.
 ---
 # Response Preparation
 

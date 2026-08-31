@@ -1,9 +1,9 @@
 ---
 name: llm-failure-modes
-description: Use when reasoning through a complex or high-stakes problem to check for common LLM cognitive failures.
+description: Catalog of common LLM cognitive failure modes.
 metadata:
   author: dzack
-  version: '0.3.0'
+  version: 0.3.0
 ---
 # LLM Failure Modes
 

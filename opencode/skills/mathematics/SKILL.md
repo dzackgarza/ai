@@ -1,6 +1,6 @@
 ---
 name: mathematics
-description: Use when doing mathematical work — symbolic or algebraic computation (SageMath, Macaulay2, CoxIter, integer programming/CSP, Z3), lattices and quadratic forms, agent-driven research programs (claim banking, adversarial audits, counterexample searches, handoffs), extracting mathematical knowledge from transcripts or notes, testing mathematical algorithms, gate-reviewing research code, or producing mathematical prose, proofs, LaTeX, or formalization targets.
+description: Mathematical computation, research programs, proofs, LaTeX, and CAS tools.
 ---
 # Mathematics
 
@@ -9,23 +9,23 @@ only when its distinct trigger is materially present.
 
 ## Computation
 
-- [[mathematics/computation/sagemath/SKILL|sagemath]] — SageMath computations: algebraic geometry, number theory, general CAS work.
-- [[mathematics/computation/macaulay2/SKILL|macaulay2]] — Macaulay2 code: Groebner-based verification, syzygy/membership certificates, batch `M2 --script` runs.
-- [[mathematics/computation/coxiter/SKILL|coxiter]] — invariants of hyperbolic Coxeter groups via CoxIter.
-- [[mathematics/computation/integer-programming/SKILL|integer-programming]] — integer programming and constraint satisfaction, especially in pure-mathematics contexts.
-- [[mathematics/computation/programming-z3/SKILL|programming-z3]] — Z3Py workflows: theories, solver APIs, tactics, optimization.
+- [[mathematics/computation/sagemath/sagemath|sagemath]] — SageMath computations: algebraic geometry, number theory, general CAS work.
+- [[mathematics/computation/macaulay2/macaulay2|macaulay2]] — Macaulay2 code: Groebner-based verification, syzygy/membership certificates, batch `M2 --script` runs.
+- [[mathematics/computation/coxiter/coxiter|coxiter]] — invariants of hyperbolic Coxeter groups via CoxIter.
+- [[mathematics/computation/integer-programming/integer-programming|integer-programming]] — integer programming and constraint satisfaction, especially in pure-mathematics contexts.
+- [[mathematics/computation/programming-z3/programming-z3|programming-z3]] — Z3Py workflows: theories, solver APIs, tactics, optimization.
 
 ## Research discipline
 
-- [[mathematics/research/SKILL|research]] — multi-session, multi-agent research programs: typed claim ledgers, computation discipline, adversarial audits, handoffs, formal releases. Sub-routes to knowledge extraction, mathematical testing, and gate review.
+- [[mathematics/research/research|research]] — multi-session, multi-agent research programs: typed claim ledgers, computation discipline, adversarial audits, handoffs, formal releases. Sub-routes to knowledge extraction, mathematical testing, and gate review.
 
 ## Writing
 
-- [[mathematics/writing/SKILL|writing]] — rigorous mathematical prose, notation, LaTeX, and formalization targets; proofs default to Lamport-style structured proofs in every medium. Sub-routes to LaTeX compile QA.
+- [[mathematics/writing/writing|writing]] — rigorous mathematical prose, notation, LaTeX, and formalization targets; proofs default to Lamport-style structured proofs in every medium. Sub-routes to LaTeX compile QA.
 
 ## Domain knowledge
 
-- [[mathematics/lattices/SKILL|lattices]] — lattices, quadratic forms, and discrete subgroups: conventions and domain constraints.
+- [[mathematics/lattices/lattices|lattices]] — lattices, quadratic forms, and discrete subgroups: conventions and domain constraints.
 
 ## Out of tree
 

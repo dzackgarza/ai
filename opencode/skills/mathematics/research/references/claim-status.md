@@ -1,7 +1,7 @@
 # Claim Status and Ledgers
 
 Owner file for separating proved statements, computational results, conjectures, and
-refuted claims across sessions and agents. Parent: [[mathematics/research/SKILL|mathematical-research]].
+refuted claims across sessions and agents. Parent: [[mathematics/research/research|mathematical-research]].
 Real ledger rows and the traps this vocabulary exists for:
 [[mathematics/research/references/worked-example|worked-example]].
 

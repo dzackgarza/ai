@@ -1,6 +1,6 @@
 ---
 name: reading-pdfs
-description: Use when a user needs to read, search, summarize, or extract information from a PDF. The first step is always to check whether the PDF belongs to a live Zotero library item; the answer routes the rest of the workflow.
+description: Read, search, and extract structured text/data from PDF documents.
 ---
 # Reading PDFs
 
@@ -60,9 +60,9 @@ and follow that ladder.
 
 For a loose / non-library PDF (e.g. under `~/pdfs/`), select one leaf procedure:
 
-- [[reading-pdfs/ocr/SKILL|OCR reading]] — turn a loose PDF into cached Markdown with
+- [[reading-pdfs/ocr/ocr|OCR reading]] — turn a loose PDF into cached Markdown with
   MinerU (primary) or Mistral OCR (fallback).
-- [[reading-pdfs/extraction/SKILL|structured extraction]] — extract text, tables,
+- [[reading-pdfs/extraction/extraction|structured extraction]] — extract text, tables,
   figures, captions, or a higher-fidelity artifact for a paper or report.
 
 Do not load both leaves unless the request requires both outputs. Read the selected

@@ -1,6 +1,6 @@
 ---
 name: addressing-shallow-work
-description: Use when agent work is shallow, superficial, or box-checking. Covers the structure-intelligence inversion and how to force synthesis over compliance.
+description: Patterns to detect and overcome shallow, box-checking agent output.
 ---
 # Addressing Shallow Work
 

@@ -1,6 +1,6 @@
 ---
 name: reviewing-subagent-work
-description: Use when reviewing or evaluating work produced by another LLM/agent. Forces task-value reasoning and routes to detailed failure-mode knowledge.
+description: Review and evaluate deliverables produced by subagents.
 ---
 # Reviewing Subagent Work
 
@@ -122,7 +122,7 @@ A cleanup diff can be a stronger deception than an additive diff.
 A review comment from another agent is itself an artifact under review.
 Do not trust the reviewer’s framing, severity, or proposed fix.
 
-Apply [[git-guidelines/feedback/SKILL|pr-feedback-triage]]:
+Apply [[git-guidelines/feedback/feedback|pr-feedback-triage]]:
 - Is the underlying claim true?
 - Is the suggested remediation policy-compatible?
 - What evidence would falsify either?

@@ -5,7 +5,7 @@ verifies the proof against the formal statement, never that the formal statement
 means what the informal problem says.** Every other gate in
 [[mathematics/research/references/formal-release|formal-release]] assumes the
 statement is right; this file owns making that assumption earn its keep.
-Parent: [[mathematics/research/SKILL|mathematical-research]]. Grounded in the
+Parent: [[mathematics/research/research|mathematical-research]]. Grounded in the
 2026 Erdős-resolution ecosystem: the `leanprover/comparator` protocol
 (`kim-em/erdos-unit-distance`, `frenzymath/Anderson-Conjecture`,
 `nick-kuhn/erdos-619`) and the `agenticsnz/unsorry` red-team findings.

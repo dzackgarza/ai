@@ -1,7 +1,7 @@
 # Session Freeze and Handoff
 
 Owner file for ending a research session and transferring state to the next agent
-(or to yourself after a context reset). Parent: [[mathematics/research/SKILL|mathematical-research]].
+(or to yourself after a context reset). Parent: [[mathematics/research/research|mathematical-research]].
 
 ## When to freeze
 

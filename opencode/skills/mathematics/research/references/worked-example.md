@@ -1,7 +1,7 @@
 # Worked Example: the Rank-Four Counterexample
 
 The concrete program every rule in
-[[mathematics/research/SKILL|mathematical-research]] was distilled from. Read it to
+[[mathematics/research/research|mathematical-research]] was distilled from. Read it to
 calibrate register: the working objects are Hopf algebras over Artin local rings,
 socle classes, and power words — not "functions" and "test cases." Source:
 `github.com/j2d9w5xtjn-png/GrothendieckRankP2`.

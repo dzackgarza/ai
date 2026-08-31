@@ -2,7 +2,7 @@
 
 Owner file for how a research program is laid out on disk, how manuscripts move
 through stages, and how a finished result exits the program. Parent:
-[[mathematics/research/SKILL|mathematical-research]].
+[[mathematics/research/research|mathematical-research]].
 
 ## Repository layout
 
@@ -88,10 +88,10 @@ README states its epistemic status and citation rules:
   and staging demotion — supersession is recorded in prose and README, files are not
   overwritten.
 - Writing standards for the mathematics itself:
-  [[mathematics/writing/SKILL|mathematical-writing]]; epistemic register per claim
+  [[mathematics/writing/writing|mathematical-writing]]; epistemic register per claim
   status: [[mathematics/research/references/claim-status|claim-status]]; paper
   mechanics: [[research-writing/SKILL|research-writing]]; compile QA:
-  [[mathematics/writing/latex-compile-qa/SKILL|latex-compile-qa]].
+  [[mathematics/writing/latex-compile-qa/latex-compile-qa|latex-compile-qa]].
 
 ## Endgame pipeline
 
@@ -101,7 +101,7 @@ A banked headline result exits through, in order:
 2. **Formalize**: Lean project pinned to a toolchain; build warning-free with the
    standard linter set; `#lint` clean; `#print axioms` on every main theorem showing
    only the standard axioms; no `sorry`. Route through
-   [[lean4/skills/lean4/SKILL|lean4]] / [[lean4/skills/aristotle/SKILL|aristotle]]. Release
+   [[lean4/skills/lean4/lean4|lean4]] / [[lean4/skills/aristotle/aristotle|aristotle]]. Release
    engineering — statement freezes, executable audits, dependency trust —
    is owned by [[mathematics/research/references/formal-release|formal-release]].
 3. **Upstream/publish** with a dedicated handoff document that includes: exact scope
