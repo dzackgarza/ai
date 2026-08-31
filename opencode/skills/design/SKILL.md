@@ -1,6 +1,9 @@
 ---
 name: design
-description: 'Design visual artifacts: UI layouts, slides, diagrams, and typography.'
+description: 'Use when designing visual artifacts: landing pages, prototypes, slide
+  decks, motion studies, design systems, component explorations, dashboards, or any
+  screen-based UI. Covers design process, aesthetic direction, typography, color,
+  responsive layout, motion, and verification of rendered artifacts.'
 ---
 # Design Skill
 

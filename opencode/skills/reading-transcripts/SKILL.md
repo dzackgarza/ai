@@ -1,6 +1,8 @@
 ---
 name: reading-transcripts
-description: Search and parse conversation logs and past session histories.
+description: Use when asked about previous conversations, previous sessions, transcript
+  logs, past interactions, or when needing to parse session histories across any supported
+  CLI agent.
 ---
 # reading-transcripts
 

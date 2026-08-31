@@ -1,6 +1,10 @@
 ---
 name: mathematical-obsidian-vault-steward
-description: Organize and curate mathematical notes, claims, and vault structures.
+description: 'Use when stewarding a mathematical Obsidian vault: ingesting raw notes,
+  chats, images, PDFs, snippets, or research artifacts; integrating source-backed
+  mathematical content into durable notes; deciding note granularity; preserving provenance;
+  auditing fake cards; or refactoring vault structure without degrading mathematical
+  meaning.'
 ---
 # Mathematical Obsidian Vault Steward
 

@@ -1,6 +1,7 @@
 ---
 name: ntfy
-description: "Use when sending, receiving, or automating ntfy notifications via HTTP or CLI."
+description: Use when sending, receiving, or automating ntfy notifications via HTTP
+  or CLI.
 ---
 # ntfy
 

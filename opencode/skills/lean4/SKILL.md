@@ -1,6 +1,9 @@
 ---
 name: lean4
-description: Lean 4 formalization, proof search, Aristotle ATP, and solver integration.
+description: Use when working with theorem proving, formal mathematics, or computational
+  counterexamples. Covers local Lean 4 development (proofs, mathlib, lake), cloud-based
+  ATP via Aristotle (for offloading difficult proofs), and alternative theorem proving
+  software/solvers (Coq, Isabelle, Z3, Prover9, GAP, PySAT).
 ---
 # Theorem Proving and Formalization (Lean 4 & Beyond)
 

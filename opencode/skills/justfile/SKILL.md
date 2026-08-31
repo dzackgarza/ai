@@ -1,6 +1,7 @@
 ---
 name: justfile
-description: Use when working with just command runner, defining recipes, or managing project automation tasks
+description: Use when working with just command runner, defining recipes, or managing
+  project automation tasks
 ---
 
 # Justfile

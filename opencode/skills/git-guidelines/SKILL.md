@@ -1,6 +1,7 @@
 ---
 name: git-guidelines
-description: 'Git operations: commits, branches, PRs, and review workflows.'
+description: Use for any Git or GitHub operation. Routes to the smallest procedure
+  for the requested repository action.
 ---
 # Git and GitHub Work
 

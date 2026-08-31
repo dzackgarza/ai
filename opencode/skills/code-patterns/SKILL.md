@@ -1,6 +1,7 @@
 ---
 name: code-patterns
-description: General and language-specific code patterns and idioms.
+description: Use when writing, reviewing, or refactoring code. Routes to general,
+  language-specific, or legacy-compatible guidance.
 ---
 # Code Patterns
 

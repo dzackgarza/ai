@@ -1,6 +1,10 @@
 ---
 name: goalcraft
-description: Adversarial task framing and completion-game design.
+description: "Goalcraft is adversarial completion-game design. It models the worker\
+  \ as a clever adversary seeking a completion signal while minimizing real work.\
+  \ Use to design a minimum viable adversarial envelope\u2014the smallest set of constraints,\
+  \ evidence gates, and state surfaces that makes non-completion harder to launder\
+  \ than completion."
 ---
 
 # Goalcraft

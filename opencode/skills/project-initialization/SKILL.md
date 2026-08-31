@@ -1,6 +1,11 @@
 ---
 name: project-initialization
-description: Initialize and configure new project repositories, tooling, and CI.
+description: 'Use before substantive implementation that depends on repository-wide
+  state, after cloning or switching projects for such work, or when requested work
+  needs missing project surfaces. Establishes the normal project form: git/remote
+  freshness, GitHub public state, durable surface ownership, .agents, [[agent-memory/SKILL|agent-memory]],
+  [[justfile/SKILL|justfile]], ai-review-ci QC/hooks/CI, and task-relevant memory
+  lookup before implementation.'
 ---
 
 # Project Initialization

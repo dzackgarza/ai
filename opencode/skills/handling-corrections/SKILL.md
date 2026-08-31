@@ -1,6 +1,9 @@
 ---
 name: handling-corrections
-description: Handle scope changes, damage discovery, and course corrections.
+description: Use when a correction requires causal explanation, leaves the intended
+  action ambiguous, changes scope or authority, exposes unknown damage, or implies
+  a destructive or irreversible pivot. Explicit safe course corrections should be
+  applied directly.
 metadata:
   creation_context: Created to prevent agents from treating user corrections as social
     repair prompts or implicit authorization to make guessed fixes. Revised after

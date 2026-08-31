@@ -1,6 +1,7 @@
 ---
 name: difficulty-and-time-estimation
-description: Calibrate task complexity and token cost estimation.
+description: Use when calibrating task complexity, estimating token costs, or deciding
+  whether to delegate to a subagent.
 ---
 
 # Difficulty and Time Estimation

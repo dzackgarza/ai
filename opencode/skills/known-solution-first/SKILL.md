@@ -1,6 +1,11 @@
 ---
 name: known-solution-first
-description: Search public documentation and upstream issues before reverse-engineering.
+description: Use when facing unfamiliar external tools, library/API usage, compiler/build
+  failures, package errors, provider errors, exact diagnostics, dependency version
+  mismatches, install/build failures, migration warnings, deprecation warnings, or
+  any problem whose meaning is owned by an external project rather than local code.
+  Also use before implementing nontrivial code where a known library, official recipe,
+  or existing pattern might already solve the task.
 ---
 
 # Known-Solution-First Debugging

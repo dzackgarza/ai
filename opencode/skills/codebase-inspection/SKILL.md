@@ -1,15 +1,23 @@
 ---
 name: codebase-inspection
-description: "Inspect codebases w/ pygount: LOC, languages, ratios."
+description: 'Inspect codebases w/ pygount: LOC, languages, ratios.'
 version: 1.0.0
 author: Hermes Agent
 license: MIT
 metadata:
   hermes:
-    tags: [LOC, Code Analysis, pygount, Codebase, Metrics, Repository]
-    related_skills: [[[git-guidelines/SKILL|git-guidelines]]]
+    tags:
+    - LOC
+    - Code Analysis
+    - pygount
+    - Codebase
+    - Metrics
+    - Repository
+    related_skills:
+    - - - git-guidelines/SKILL|git-guidelines
 prerequisites:
-  commands: [pygount]
+  commands:
+  - pygount
 ---
 # Codebase Inspection with pygount
 

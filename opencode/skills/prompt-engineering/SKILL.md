@@ -1,6 +1,7 @@
 ---
 name: prompt-engineering
-description: Author and optimize prompts and subagent system instructions.
+description: Use when writing or refactoring system prompts, subagent instructions,
+  or task definitions to ensure rigorous, tool-centric agent behavior.
 ---
 # Prompt Engineering
 

@@ -1,6 +1,9 @@
 ---
 name: creating-skills
-description: Create, edit, validate, and evaluate agent skills.
+description: Use when any SKILL.md or linked skill resource will be created, edited,
+  moved, reviewed, or evaluated. Mandatory for every skill-file edit; load writing-for-agent-audiences,
+  then use this router to select the authoring procedure for the target environment
+  and proof burden.
 ---
 # Creating Skills
 

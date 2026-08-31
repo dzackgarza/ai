@@ -1,6 +1,7 @@
 ---
 name: research-writing
-description: Write formal papers, research syntheses, and project plans.
+description: Use when synthesizing research or writing a research paper. Routes by
+  artifact and research workflow.
 ---
 # Research Writing
 

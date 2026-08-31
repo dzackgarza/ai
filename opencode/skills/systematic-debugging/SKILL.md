@@ -1,6 +1,7 @@
 ---
 name: systematic-debugging
-description: Hypothesis-driven debugging with visible ledgers and falsification.
+description: 'Use when debugging any failure: forces visible hypothesis ledger, falsification,
+  contradiction handling, and proof before fixes.'
 license: MIT
 metadata:
   hermes:

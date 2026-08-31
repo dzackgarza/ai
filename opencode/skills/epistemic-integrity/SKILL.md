@@ -1,6 +1,7 @@
 ---
 name: epistemic-integrity
-description: Report negative findings and reason accurately from partial evidence.
+description: Use when reporting negative findings, analyzing documents/transcripts/logs,
+  summarizing source material, or reasoning from partial search/read evidence.
 ---
 # Epistemic Integrity
 

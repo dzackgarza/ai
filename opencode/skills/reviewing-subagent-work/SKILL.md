@@ -1,6 +1,7 @@
 ---
 name: reviewing-subagent-work
-description: Review and evaluate deliverables produced by subagents.
+description: Use when reviewing or evaluating work produced by another LLM/agent.
+  Forces task-value reasoning and routes to detailed failure-mode knowledge.
 ---
 # Reviewing Subagent Work
 

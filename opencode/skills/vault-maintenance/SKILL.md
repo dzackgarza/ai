@@ -1,6 +1,8 @@
 ---
 name: vault-maintenance
-description: Repair and maintain agent memory vaults and schemas.
+description: Use when an [[agent-memory/SKILL|agent-memory]] command has a commit
+  or validation failure, the vault is malformed, or the user explicitly requests vault
+  recovery. Do not trigger on unrelated dirty paths.
 ---
 
 # Vault Maintenance

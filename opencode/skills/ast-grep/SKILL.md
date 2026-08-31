@@ -1,6 +1,8 @@
 ---
 name: ast-grep
-description: Structural code search and AST pattern matching.
+description: Use when searching codebases using Abstract Syntax Tree (AST) patterns,
+  finding specific code structures, or performing complex code queries beyond simple
+  text search
 ---
 # ast-grep Code Search
 

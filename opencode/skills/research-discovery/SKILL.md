@@ -1,6 +1,7 @@
 ---
 name: research-discovery
-description: Literature search, arXiv discovery, and paper reading.
+description: Use when finding or reading research literature. Routes to search, paper
+  reading, or literature-review procedures.
 ---
 # Research Discovery
 

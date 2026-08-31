@@ -1,6 +1,11 @@
 ---
 name: mathematics
-description: Mathematical computation, research programs, proofs, LaTeX, and CAS tools.
+description: "Use when doing mathematical work \u2014 symbolic or algebraic computation\
+  \ (SageMath, Macaulay2, CoxIter, integer programming/CSP, Z3), lattices and quadratic\
+  \ forms, agent-driven research programs (claim banking, adversarial audits, counterexample\
+  \ searches, handoffs), extracting mathematical knowledge from transcripts or notes,\
+  \ testing mathematical algorithms, gate-reviewing research code, or producing mathematical\
+  \ prose, proofs, LaTeX, or formalization targets."
 ---
 # Mathematics
 

@@ -1,6 +1,7 @@
 ---
 name: subagent-delegation
-description: Delegate, orchestrate, and supervise subagent workloads.
+description: Use when subagent work is needed. Routes from the requested subagent
+  lifecycle stage to the smallest governing procedure.
 ---
 # Subagent Work
 

@@ -1,6 +1,9 @@
 ---
 name: plan
-description: Create, review, or revise technical plans and execution specifications.
+description: "The canonical planning skill and plan mode: create, write, review, or\
+  \ revise durable implementation plans, source plans, and externalization-ready execution\
+  \ specs through [[agent-memory/SKILL|agent-memory]]. When invoked as plan mode,\
+  \ plan only \u2014 no execution this turn."
 license: MIT
 metadata:
   hermes:

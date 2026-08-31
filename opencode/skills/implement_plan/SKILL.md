@@ -1,6 +1,7 @@
 ---
 name: implement_plan
-description: Implement approved technical plans with verification after required external tracking exists
+description: Implement approved technical plans with verification after required external
+  tracking exists
 user-invocable: false
 ---
 # Implement Plan

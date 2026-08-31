@@ -1,6 +1,10 @@
 ---
 name: looped-task-skill-author
-description: Author and refine Codex skills for repeated tasks.
+description: Use when authoring or refining repo-local [[codex/SKILL|Codex]] skills
+  for repeated one-shot agent loops that advance long-horizon or open-ended tasks
+  through progress logs, self-correcting state machines, transcript-based manual testing,
+  and cautious promotion to cron/Hermes-style orchestration. Do not use for ordinary
+  one-off scripts or batch automation.
 ---
 # Looped task skill authoring
 
