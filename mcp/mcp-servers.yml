@@ -26,6 +26,18 @@ common:
     args:
     - blender-mcp
     enabled: true
+  blender-b:
+    description: A second Blender on port 9877, so two agents can work on different
+      .blend files at once. One addon serves one Blender process holding one file,
+      and every command is funnelled onto its single main thread, so isolation has
+      to come from a separate instance rather than a separate connection. Set the
+      port in the addon's sidebar panel before starting the server there.
+    command: uvx
+    args:
+    - blender-mcp
+    enabled: true
+    env:
+      BLENDER_PORT: '9877'
   unreal:
     description: Unreal Editor MCP server, embedded in the running editor by the ModelContextProtocol
       and AllToolsets plugins (Unreal Engine 5.8+). HTTP/SSE only; the editor must

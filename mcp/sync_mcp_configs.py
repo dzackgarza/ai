@@ -45,6 +45,8 @@ class HarnessFormat:
     local_type: str | None = None
     command_as_list: bool = False
     args_key: str | None = "args"
+    # opencode's McpLocalConfig calls this "environment"; everyone else says "env".
+    env_key: str = "env"
     include_enabled: bool = False
     json_path: str = "mcp"
     is_toml: bool = False
@@ -56,6 +58,7 @@ HARNESS_FORMATS = {
         name="opencode",
         remote_type="remote",
         local_type="local",
+        env_key="environment",
         command_as_list=True,
         args_key=None,
     ),
@@ -161,7 +164,7 @@ def build_server_config(config: dict, server_type: str, fmt: HarnessFormat) -> d
                 result[fmt.args_key] = args
 
         if env:
-            result["env"] = env
+            result[fmt.env_key] = env
         if cwd:
             result["cwd"] = cwd
 
