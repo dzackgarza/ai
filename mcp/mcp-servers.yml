@@ -18,6 +18,14 @@ common:
     args:
     - lean-lsp-mcp
     enabled: true
+  blender:
+    description: Blender integration via the ahujasid/blender-mcp server (scene inspection,
+      object creation, Python execution inside a running Blender; needs the bundled
+      addon listening on port 9876)
+    command: uvx
+    args:
+    - blender-mcp
+    enabled: true
 harnesses:
   opencode:
     enabled: true
