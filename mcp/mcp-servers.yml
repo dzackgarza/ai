@@ -26,6 +26,19 @@ common:
     args:
     - blender-mcp
     enabled: true
+  unreal:
+    description: Unreal Editor MCP server, embedded in the running editor by the ModelContextProtocol
+      and AllToolsets plugins (Unreal Engine 5.8+). HTTP/SSE only; the editor must
+      be running for this endpoint to answer.
+    type: remote
+    url: http://127.0.0.1:8123/mcp
+    enabled: true
+  node_repl:
+    description: Node REPL that the ChatGPT desktop app injects into the Codex config
+      and keeps pinned to its own build. Listed here so the sync keeps whatever the
+      app last wrote instead of deleting the section it owns.
+    preserve: true
+    enabled: true
 harnesses:
   opencode:
     enabled: true

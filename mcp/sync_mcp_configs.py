@@ -181,6 +181,9 @@ def build_mcp_config_for_harness(
         if not server_config.get("enabled", True):
             continue
 
+        if server_config.get("preserve", False):
+            continue
+
         if harness_name in server_config.get("exclude_harnesses", []):
             continue
 
@@ -190,6 +193,30 @@ def build_mcp_config_for_harness(
         except ValueError as exc:
             raise ValueError(f"{harness_name}.{name}: {exc}") from exc
 
+    return mcp_servers
+
+
+def preserved_server_names(yaml_config: dict) -> set[str]:
+    """Names of servers written by an external tool, which this sync must not clobber.
+
+    The sync replaces a harness's whole MCP section, so a server some other program
+    injects (and keeps up to date) would be deleted on every run. Listing it with
+    `preserve: true` keeps whatever that program last wrote.
+    """
+    return {
+        name
+        for name, server_config in yaml_config.get("common", {}).items()
+        if server_config.get("preserve", False)
+    }
+
+
+def carry_over_preserved(
+    mcp_servers: dict, existing: dict, preserve: set[str]
+) -> dict:
+    """Re-add externally owned servers from the harness's current config."""
+    for name in preserve:
+        if name in existing:
+            mcp_servers[name] = existing[name]
     return mcp_servers
 
 
@@ -228,8 +255,25 @@ def set_nested_value(config: dict, json_path: str, value: Any) -> None:
     current[keys[-1]] = value
 
 
+def get_nested_value(config: dict, json_path: str) -> dict:
+    """Read the current MCP section, mirroring set_nested_value's path handling."""
+    if json_path in config:
+        current = config[json_path]
+    else:
+        current = config
+        for key in json_path.split("."):
+            if not isinstance(current, dict) or key not in current:
+                return {}
+            current = current[key]
+    return current if isinstance(current, dict) else {}
+
+
 def sync_json_harness(
-    config_path: Path, mcp_servers: dict, json_path: str, dry_run: bool = False
+    config_path: Path,
+    mcp_servers: dict,
+    json_path: str,
+    dry_run: bool = False,
+    preserve: set[str] | None = None,
 ) -> bool:
     """Sync MCP configuration to a JSON harness (preserves all other config)."""
     if config_path.exists():
@@ -237,6 +281,11 @@ def sync_json_harness(
             config = json.load(f)
     else:
         config = {}
+
+    if preserve:
+        mcp_servers = carry_over_preserved(
+            dict(mcp_servers), get_nested_value(config, json_path), preserve
+        )
 
     set_nested_value(config, json_path, mcp_servers)
 
@@ -256,7 +305,11 @@ def sync_json_harness(
 
 
 def sync_toml_harness(
-    config_path: Path, mcp_servers: dict, toml_key: str, dry_run: bool = False
+    config_path: Path,
+    mcp_servers: dict,
+    toml_key: str,
+    dry_run: bool = False,
+    preserve: set[str] | None = None,
 ) -> bool:
     """Sync MCP configuration to a TOML harness."""
     if not config_path.exists():
@@ -265,6 +318,11 @@ def sync_toml_harness(
 
     with open(config_path) as f:
         config = tomlkit.parse(f.read())
+
+    if preserve:
+        mcp_servers = carry_over_preserved(
+            dict(mcp_servers), config.get(toml_key, {}), preserve
+        )
 
     mcp_section = tomlkit.table()
     for name, server_config in mcp_servers.items():
@@ -302,6 +360,7 @@ def main():
         sys.exit(1)
 
     yaml_config = load_yaml_config(config_path)
+    preserve = preserved_server_names(yaml_config)
     print(f"Loaded MCP configuration from {config_path}\n")
 
     for name, harness_config in yaml_config.get("harnesses", {}).items():
@@ -335,18 +394,20 @@ def main():
 
         if fmt.is_toml:
             success = sync_toml_harness(
-                config_file_path, mcp_servers, json_path, args.dry_run
+                config_file_path, mcp_servers, json_path, args.dry_run, preserve
             )
         else:
             success = sync_json_harness(
-                config_file_path, mcp_servers, json_path, args.dry_run
+                config_file_path, mcp_servers, json_path, args.dry_run, preserve
             )
 
             # Special case for OpenCode skeleton
             if name == "opencode":
                 skeleton = config_file_path.parent / "configs" / "config_skeleton.json"
                 if skeleton.exists():
-                    sync_json_harness(skeleton, mcp_servers, json_path, args.dry_run)
+                    sync_json_harness(
+                        skeleton, mcp_servers, json_path, args.dry_run, preserve
+                    )
 
         if not success:
             print(f"  ✗ Failed to sync {name}")
