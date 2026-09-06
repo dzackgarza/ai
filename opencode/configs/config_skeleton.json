@@ -150,6 +150,41 @@
         "uvx",
         "lean-lsp-mcp"
       ]
+    },
+    "blender": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "blender-mcp"
+      ]
+    },
+    "blender-b": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "blender-mcp"
+      ],
+      "environment": {
+        "BLENDER_PORT": "9877"
+      }
+    },
+    "unreal": {
+      "type": "remote",
+      "url": "http://127.0.0.1:8123/mcp"
+    },
+    "aseprite": {
+      "type": "local",
+      "command": [
+        "uv",
+        "--directory",
+        "/home/dzack/gitclones/aseprite-mcp",
+        "run",
+        "-m",
+        "aseprite_mcp"
+      ],
+      "environment": {
+        "ASEPRITE_PATH": "/home/dzack/gitclones/aseprite/build/bin/aseprite"
+      }
     }
   },
   "default_agent": "Interactive",

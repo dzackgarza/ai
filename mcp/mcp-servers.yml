@@ -51,6 +51,20 @@ common:
       app last wrote instead of deleting the section it owns.
     preserve: true
     enabled: true
+  aseprite:
+    description: 'Aseprite pixel-art control (diivi/aseprite-mcp): 104 tools for canvas,
+      drawing, layers, animation, palettes, export, plus a raw Lua escape hatch. Drives
+      the Aseprite binary in batch mode.'
+    command: uv
+    args:
+    - --directory
+    - /home/dzack/gitclones/aseprite-mcp
+    - run
+    - -m
+    - aseprite_mcp
+    enabled: true
+    env:
+      ASEPRITE_PATH: /home/dzack/gitclones/aseprite/build/bin/aseprite
 harnesses:
   opencode:
     enabled: true

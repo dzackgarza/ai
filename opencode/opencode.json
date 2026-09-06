@@ -89,6 +89,41 @@
         "uvx",
         "lean-lsp-mcp"
       ]
+    },
+    "blender": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "blender-mcp"
+      ]
+    },
+    "blender-b": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "blender-mcp"
+      ],
+      "environment": {
+        "BLENDER_PORT": "9877"
+      }
+    },
+    "unreal": {
+      "type": "remote",
+      "url": "http://127.0.0.1:8123/mcp"
+    },
+    "aseprite": {
+      "type": "local",
+      "command": [
+        "uv",
+        "--directory",
+        "/home/dzack/gitclones/aseprite-mcp",
+        "run",
+        "-m",
+        "aseprite_mcp"
+      ],
+      "environment": {
+        "ASEPRITE_PATH": "/home/dzack/gitclones/aseprite/build/bin/aseprite"
+      }
     }
   },
   "default_agent": "Interactive",
@@ -134,6 +169,62 @@
         "tab_flash_lite_preview",
         "tab_jump_flash_lite_preview"
       ]
+    },
+    "bai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "BAI",
+      "options": {
+        "baseURL": "https://api.b.ai/v1",
+        "apiKey": "{env:BAI_API_KEY}"
+      },
+      "blacklist": [
+        "minimax-m3",
+        "minimax-m2.7",
+        "glm-5.1",
+        "glm-5.2",
+        "gpt-5.6-sol",
+        "gpt-5.6-terra",
+        "gpt-5.6-luna",
+        "gpt-5.5",
+        "gpt-5.5-instant",
+        "gpt-5.4",
+        "gpt-5.2",
+        "gpt-5.4-pro",
+        "gpt-5.4-mini",
+        "gpt-5-mini",
+        "gpt-5.4-nano",
+        "gpt-5-nano",
+        "claude-opus-5",
+        "claude-fable-5",
+        "claude-opus-4.8",
+        "claude-opus-4.7",
+        "claude-opus-4.6",
+        "claude-opus-4.5",
+        "claude-sonnet-5",
+        "claude-sonnet-4.6",
+        "claude-sonnet-4.5",
+        "claude-haiku-4.5",
+        "gemini-3.1-pro",
+        "gemini-3-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.6-flash",
+        "glm-5.3",
+        "kimi-k2.6",
+        "kimi-k3",
+        "qwen3.8-max",
+        "deepseek-v4-pro",
+        "deepseek-v4-flash-vision-exp",
+        "gemini-3.5-flash",
+        "qwen3.8-27b",
+        "mimo-v2.5-pro"
+      ],
+      "models": {
+        "deepseek-v4-flash": {},
+        "hy3": {},
+        "mimo-v2.5": {},
+        "glm-5.3-flash": {},
+        "qwen3.8-flash": {}
+      }
     },
     "cloudflare-workers-ai": {
       "name": "Cloudflare Workers AI",
@@ -2316,6 +2407,90 @@
         "~openai/gpt-latest",
         "~openai/gpt-mini-latest"
       ]
+    },
+    "tokenharbor": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Token Harbor",
+      "options": {
+        "baseURL": "https://tokenharbor.ai/v1",
+        "apiKey": "{env:TOKENHARBOUR_API_KEY}"
+      },
+      "blacklist": [
+        "claude-opus-5",
+        "claude-sonnet-5",
+        "claude-fable-5",
+        "gpt-5.6-sol",
+        "gpt-5.6-terra",
+        "gpt-5.6-luna",
+        "th-orchestra",
+        "gemini-3.7-flash",
+        "grok-4.6",
+        "kimi-k3",
+        "deepseek-v4-pro",
+        "deepseek-v4-flash",
+        "qwen3.8-max",
+        "qwen3.8-27b",
+        "glm-5.3",
+        "glm-5.3-flash",
+        "mimo-v2.5-pro",
+        "mimo-v2.5"
+      ],
+      "models": {
+        "th-orchestra": {
+          "name": "TH Orchestra"
+        },
+        "claude-opus-5": {
+          "name": "Claude Opus 5"
+        },
+        "claude-sonnet-5": {
+          "name": "Claude Sonnet 5"
+        },
+        "claude-fable-5": {
+          "name": "Claude Fable 5"
+        },
+        "gpt-5.6-sol": {
+          "name": "GPT-5.6 Sol"
+        },
+        "gpt-5.6-terra": {
+          "name": "GPT-5.6 Terra"
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT-5.6 Luna"
+        },
+        "gemini-3.7-flash": {
+          "name": "Gemini 3.7 Flash"
+        },
+        "grok-4.6": {
+          "name": "Grok 4.6"
+        },
+        "kimi-k3": {
+          "name": "Kimi K3"
+        },
+        "deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro"
+        },
+        "deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash"
+        },
+        "qwen3.8-max": {
+          "name": "Qwen3.8 Max"
+        },
+        "qwen3.8-27b": {
+          "name": "Qwen3.8 27B"
+        },
+        "glm-5.3": {
+          "name": "GLM-5.3"
+        },
+        "glm-5.3-flash": {
+          "name": "GLM 5.3 Flash"
+        },
+        "mimo-v2.5-pro": {
+          "name": "MiMo V2.5 Pro"
+        },
+        "mimo-v2.5": {
+          "name": "MiMo V2.5"
+        }
+      }
     },
     "vectorengine": {
       "npm": "@ai-sdk/openai-compatible",
