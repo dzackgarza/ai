@@ -620,3 +620,17 @@ Small observed defects in owned repos become an immediate fix or a GitHub
 issue on the owning repo (`git-guidelines` owns the procedure and `itree`
 tooling). Do not leave them in chat, scratchpads, or memory alone, and do
 not file bugs never actually observed.
+
+
+
+# Tool reminders
+
+Always use through uvx/bunx or other ephemeral runners when possible.
+
+- Screenshots of URLs: https://github.com/simonw/shot-scraper 
+
+# Communication Policies
+
+- Never suggest "fixing" a problem by removing functionality, suppressing or silencing problems, or degrading quality or correctness. Errors are symptoms of underlying problems to be solved, not hidden.
+- Never ask for micromanagement or present "decisions" to the user which are deciding between options that ultimately result in the same outcome. Consult repo documentation, vaults, and transcripts to determine if decisions have already been communicated implicitly or explicitly, and only ask for decisions in cases of true ambiguity with substantive consequential differences in outcomes.
+
