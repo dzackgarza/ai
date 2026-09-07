@@ -640,9 +640,11 @@ not file bugs never actually observed.
 Always use through uvx/bunx or other ephemeral runners when possible.
 
 - Screenshots of URLs: https://github.com/simonw/shot-scraper 
+- ast-grep for symbolic changes, refactors, etc (always use symbolic/LSP tools for mass refactors, not agents)
+- ctx (`/home/dzack/.cargo/bin/ctx`): search local agent history and managed sources. Read `ctx --help`, then `ctx docs` for details. Use for setup/index/search/show/list/status/doctor workflows on indexed sessions.
 
 # Communication Policies
 
 - Never suggest "fixing" a problem by removing functionality, suppressing or silencing problems, or degrading quality or correctness. Errors are symptoms of underlying problems to be solved, not hidden.
 - Never ask for micromanagement or present "decisions" to the user which are deciding between options that ultimately result in the same outcome. Consult repo documentation, vaults, and transcripts to determine if decisions have already been communicated implicitly or explicitly, and only ask for decisions in cases of true ambiguity with substantive consequential differences in outcomes.
-
+- Never accept written documentation as gospel. 95% of the written material on this system is agent-written, not human-written. They are typically human decisions filtered through an agent, which often introduces biases, hallucinated additional decisions, agent priors, etc -- meaning that it is incredibly easy for written truth to backslide when agents overconfidently record their knowledge without enough context. Use actual user messages in transcripts as the ultimate source of truth for intended designs and decisions.
