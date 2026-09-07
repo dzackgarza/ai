@@ -641,7 +641,11 @@ Always use through uvx/bunx or other ephemeral runners when possible.
 
 - Screenshots of URLs: https://github.com/simonw/shot-scraper 
 - ast-grep for symbolic changes, refactors, etc (always use symbolic/LSP tools for mass refactors, not agents)
-- ctx (`/home/dzack/.cargo/bin/ctx`): search local agent history and managed sources. Read `ctx --help`, then `ctx docs` for details. Use for setup/index/search/show/list/status/doctor workflows on indexed sessions.
+- ctx (`/home/dzack/.cargo/bin/ctx`): search local agent history and managed sources. Use it before manual transcript search when the task needs prior agent sessions, prior decisions, earlier errors, or cross-agent work history.
+  - Progressive disclosure: read `ctx --help`, then `ctx docs`, then the relevant topic such as `ctx docs show search`, `ctx docs show agent-usage`, or `ctx docs show providers`.
+  - Health and setup: use `ctx status`, `ctx doctor`, `ctx sources --all`, and `ctx index watch`. Use `ctx setup` only when storage is absent or damaged.
+  - Provider filters: use `ctx search --provider claude <query>`, `ctx search --provider opencode <query>`, and `ctx search --provider-key chatgpt --source-id chat-on-steroids <query>`.
+  - ChatGPT history is imported from `/home/dzack/.config/chat-on-steroids/ctx-exports/chatgpt-history.jsonl` through plugin manifest `/home/dzack/.ctx/plugins/chatgpt/ctx-history-plugin.json`. Regenerate that JSONL from the Chat On Steroids session store before reimporting if newly recorded chats are missing.
 
 # Communication Policies
 
