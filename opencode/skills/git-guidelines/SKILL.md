@@ -202,9 +202,22 @@ git add .
 
 ## Hard Constraints
 
+### Docs-only commits
+
+For docs-only or prose-only changes, inspect the complete staged diff and commit
+with `git commit --no-verify`. Authored mathematical statements, solutions, proofs,
+and their content audit entries are prose for this purpose. Review their content
+directly; do not trigger builds, test suites, broad formatting, or regenerated
+queues merely to commit them. Preserve the required per-item commit audit trail.
+
+Code, executable configuration, and mixed code/prose commits retain their normal
+verification gates. Judge the actual change, not the file extension: executable
+code embedded in Markdown is still code. Explicit user-authorized exemptions
+take precedence over generic hook requirements; do not ask for authorization again.
+
 | Rule | Forbidden command |
 | --- | --- |
-| Never skip hooks | `--no-verify` |
+| Keep hooks for code and mixed commits unless explicitly exempted | `--no-verify` outside an authorized exemption |
 | Never bypass signing | `--no-gpg-sign` |
 | Never amend published commits | `--amend` on pushed commits |
 | Never force push main/master | `git push --force origin main` |
