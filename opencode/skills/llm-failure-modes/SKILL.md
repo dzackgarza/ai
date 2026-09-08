@@ -44,6 +44,15 @@ Load the relevant section for your context:
 
 ### Reasoning and Epistemic Failures
 
+- **Coverage and semantic drift in sustained work** —
+  [coverage-and-semantic-drift.md](coverage-and-semantic-drift.md)
+  Worked lessons on filtered worklists becoming task scope, predicates being mistaken
+  for constructions, missing mixed boundary cases, compilation being promoted into
+  semantic authority, corrections that invalidate a method, and defect propagation.
+  Read before accepting exhaustive source coverage, a source-to-implementation match,
+  or a reusable mathematical definition; also when assessing substantive progress
+  through time. Includes decision-boundary policies and transfer exercises.
+
 - **Formal cognitive failures** — [cognitive-failures.md](cognitive-failures.md)
   Constraint hallucination, citation without comprehension, internal incoherence,
   confabulation, sunk cost continuation, frame-suppressed self-contradiction,
