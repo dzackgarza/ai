@@ -21,15 +21,9 @@ derived from observations of thousands of AI-generated text instances.
 The result tends toward the most statistically likely completion, which is how the
 telltale patterns below get baked in.
 
-**Scope and currency.** This catalogue is strongest on content patterns — promotional
-language, weasel attributions, significance inflation, superficial `-ing` analysis. Its
-punctuation and formatting sections (em dashes, boldface, title case, emoji) describe the
-2025 generation of tells; they are surface features that change how text looks rather
-than what a reader learns, and editing to evade them improves nothing on its own. For the
-patterns that currently cost a reader something — copy that announces its own quality,
-completeness, or effort; agreement in place of work; process recounted in place of result
-— use [[writing/technical-copy/technical-copy|technical copy]], which is the live
-catalogue for this system's own artifacts.
+Every pattern here is one that changes what a reader takes from the text. For copy this
+system itself ships — reports, commit bodies, docstrings, UI and error strings — use
+[[writing/technical-copy/technical-copy|technical copy]].
 
 ## When to use this skill
 
@@ -75,7 +69,7 @@ For file edits, show a diff or the changed section — don’t silently overwrit
 
 When given text to humanize:
 
-1. **Identify AI patterns** — scan for the 29 patterns listed below.
+1. **Identify AI patterns** — scan for the 23 patterns listed below.
 
 2. **Rewrite problematic sections** — replace AI-isms with natural alternatives.
 
@@ -405,87 +399,9 @@ Rewrite these when active voice makes the sentence clearer and more direct.
 > You do not need a configuration file.
 > The system preserves the results automatically.
 
-## STYLE PATTERNS
-
-### 14. Em Dash Overuse
-
-**Problem:** LLMs use em dashes (—) more than humans, mimicking “punchy” sales writing.
-In practice, most of these can be rewritten more cleanly with commas, periods, or
-parentheses.
-
-**Before:**
-> The term is primarily promoted by Dutch institutions—not by the people themselves.
-> You don’t say “Netherlands, Europe” as an address—yet this mislabeling continues—even
-> in official documents.
-
-**After:**
-> The term is primarily promoted by Dutch institutions, not by the people themselves.
-> You don’t say “Netherlands, Europe” as an address, yet this mislabeling continues in
-> official documents.
-
-### 15. Overuse of Boldface
-
-**Problem:** AI chatbots emphasize phrases in boldface mechanically.
-
-**Before:**
-> It blends **OKRs (Objectives and Key Results)**, **KPIs (Key Performance
-> Indicators)**, and visual strategy tools such as the **Business Model Canvas (BMC)**
-> and **Balanced Scorecard (BSC)**.
-
-**After:**
-> It blends OKRs, KPIs, and visual strategy tools like the Business Model Canvas and
-> Balanced Scorecard.
-
-### 16. Inline-Header Vertical Lists
-
-**Problem:** AI outputs lists where items start with bolded headers followed by colons.
-
-**Before:**
->
-> - **User Experience:** The user experience has been significantly improved with a new
->   interface.
->
-> - **Performance:** Performance has been enhanced through optimized algorithms.
->
-> - **Security:** Security has been strengthened with end-to-end encryption.
-
-**After:**
-> The update improves the interface, speeds up load times through optimized algorithms,
-> and adds end-to-end encryption.
-
-### 17. Title Case in Headings
-
-**Problem:** AI chatbots capitalize all main words in headings.
-
-**Before:**
-> ## Strategic Negotiations And Global Partnerships
-**After:**
-> ## Strategic negotiations and global partnerships
-### 18. Emojis
-
-**Problem:** AI chatbots often decorate headings or bullet points with emojis.
-
-**Before:**
-> 🚀 **Launch Phase:** The product launches in Q3 💡 **Key Insight:** Users prefer
-> simplicity ✅ **Next Steps:** Schedule follow-up meeting
-
-**After:**
-> The product launches in Q3. User research showed a preference for simplicity.
-> Next step: schedule a follow-up meeting.
-
-### 19. Curly Quotation Marks
-
-**Problem:** ChatGPT uses curly quotes ("...") instead of straight quotes ("...").
-
-**Before:**
-> He said “the project is on track” but others disagreed.
-
-**After:**
-> He said “the project is on track” but others disagreed.
-
 ## COMMUNICATION PATTERNS
 
-### 20. Collaborative Communication Artifacts
+### 14. Collaborative Communication Artifacts
 
 **Words to watch:** I hope this helps, Of course!, Certainly!, You’re absolutely right!,
 Would you like …, let me know, here is a …
@@ -500,7 +416,7 @@ Would you like …, let me know, here is a …
 > The French Revolution began in 1789 when financial crisis and food shortages led to
 > widespread unrest.
 
-### 21. Knowledge-Cutoff Disclaimers
+### 15. Knowledge-Cutoff Disclaimers
 
 **Words to watch:** as of [date], Up to my last training update, While specific details
 are limited/scarce …, based on available information …
@@ -514,7 +430,7 @@ are limited/scarce …, based on available information …
 **After:**
 > The company was founded in 1994, according to its registration documents.
 
-### 22. Sycophantic/Servile Tone
+### 16. Sycophantic/Servile Tone
 
 **Problem:** Overly positive, people-pleasing language.
 
@@ -527,7 +443,7 @@ are limited/scarce …, based on available information …
 
 ## FILLER AND HEDGING
 
-### 23. Filler Phrases
+### 17. Filler Phrases
 
 **Before → After:**
 
@@ -543,7 +459,7 @@ are limited/scarce …, based on available information …
 
 - “It is important to note that the data shows” → “The data shows”
 
-### 24. Excessive Hedging
+### 18. Excessive Hedging
 
 **Problem:** Over-qualifying statements.
 
@@ -554,7 +470,7 @@ are limited/scarce …, based on available information …
 **After:**
 > The policy may affect outcomes.
 
-### 25. Generic Positive Conclusions
+### 19. Generic Positive Conclusions
 
 **Problem:** Vague upbeat endings.
 
@@ -566,7 +482,7 @@ are limited/scarce …, based on available information …
 **After:**
 > The company plans to open two more locations next year.
 
-### 26. Hyphenated Word Pair Overuse
+### 20. Hyphenated Word Pair Overuse
 
 **Words to watch:** third-party, cross-functional, client-facing, data-driven,
 decision-making, well-known, high-quality, real-time, long-term, end-to-end
@@ -585,7 +501,7 @@ Less common or technical compound modifiers are fine to hyphenate.
 > facing tools. Their decision making process was known for being thorough and detail
 > oriented.
 
-### 27. Persuasive Authority Tropes
+### 21. Persuasive Authority Tropes
 
 **Phrases to watch:** The real question is, at its core, in reality, what really
 matters, fundamentally, the deeper issue, the heart of the matter
@@ -602,7 +518,7 @@ with extra ceremony.
 > The question is whether teams can adapt.
 > That mostly depends on whether the organization is ready to change its habits.
 
-### 28. Signposting and Announcements
+### 22. Signposting and Announcements
 
 **Phrases to watch:** Let’s dive in, let’s explore, let’s break this down, here’s what
 you need to know, now let’s look at, without further ado
@@ -618,7 +534,7 @@ This meta-commentary slows the writing down and gives it a tutorial-script feel.
 > Next.js caches data at multiple layers, including request memoization, the data cache,
 > and the router cache.
 
-### 29. Fragmented Headers
+### 23. Fragmented Headers
 
 **Signs to watch:** A heading followed by a one-line paragraph that simply restates the
 heading before the real content begins.
@@ -810,8 +726,6 @@ Provide:
 
 - Removed false ranges ("from X to Y, from A to B")
 
-- Removed em dashes, emojis, boldface headers, and curly quotes
-
 - Removed copula avoidance ("serves as", “functions as”, “stands as”) in favor of
   "is"/"are"
 
@@ -840,8 +754,9 @@ AI-generated text on Wikipedia.
 Original author: Siqi Chen ([@blader](https://github.com/blader)). Original repo:
 https://github.com/blader/humanizer (version 2.5.1). Ported to Hermes Agent with
 Hermes-native tool references (`read_file`, `patch`, `write_file`) and guidance for when
-to load the skill; the 29 patterns, personality/soul section, and full worked example
-are preserved verbatim from the source.
+to load the skill. The personality/soul section and worked example are from the source;
+the pattern list here is a subset of the source's, restricted to patterns that change a
+reader's understanding of the text.
 Original MIT license preserved in the `LICENSE` file alongside this `SKILL.md`.
 
 Key insight from Wikipedia: “LLMs use statistical algorithms to guess what should come

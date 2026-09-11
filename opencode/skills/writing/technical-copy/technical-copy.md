@@ -4,17 +4,13 @@ description: Use when writing any copy this system ships or shows — status rep
 ---
 # Technical Copy
 
-The punctuation and formatting tells catalogued in
-[[writing/humanization/humanization|humanization]] — em dashes, boldface, title case,
-emoji, rule of three — date from 2025 and are surface features: they change how copy
-looks, not what a reader learns from it. Detector-driven editing of that list improves
-nothing here.
+This leaf covers copy this system ships or shows. Every pattern below was corrected
+repeatedly in these artifacts, and each one costs the reader something: copy that
+announces itself instead of informing, agrees instead of working, recounts the process
+instead of stating the result, or states a conclusion the artifact does not support.
 
-The tells that matter now are content-level, and they are the subject of this leaf: copy
-that announces itself instead of informing, agrees instead of working, recounts the
-process instead of stating the result, or states a conclusion the artifact does not
-support. Every pattern below was corrected repeatedly in this system's own artifacts,
-and each one costs the reader something real.
+For prose voice in general — promotional language, weasel attribution, significance
+inflation, sycophantic tone — see [[writing/humanization/humanization|humanization]].
 
 Each section is the situation, the authority that treats it, and the house rule.
 
