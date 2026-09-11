@@ -110,8 +110,10 @@ next day.
 
 ## Self-announcing copy
 
-**Pattern.** Copy that asserts its own properties instead of carrying content. It is the
-largest single class of correction here, and it appears in every artifact type:
+**Pattern.** Copy that asserts its own properties instead of carrying content. Measured
+over the session store it is rare in agent output — roughly 0.2% of substantive assistant
+turns — but it concentrates in exactly the artifacts that are published, where each
+instance is seen by everyone and costs the most. The forms:
 
 - **Effort and quality claims.** A report announcing a comprehensive audit, a thorough
   review, a deep dive; a name that advertises itself rather than describing what it is —

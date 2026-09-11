@@ -6,17 +6,48 @@ What to do when the user says they do not understand something. Parent:
 This is the most damaging sycophancy on this system, because it is invisible: it looks
 like responsiveness and it produces a commit.
 
+## What the transcripts show
+
+Measured over the Claude session store: 329 cases where a user message reporting
+confusion or challenging a decision is followed by an assistant reply. In 85 of them
+(26%) the reply opens with agreement — "you're right", "correct", "agreed", "good catch".
+
+What follows that opener, in those 85:
+
+| Sequel | Count |
+| --- | --- |
+| Neither edit nor investigation — self-autopsy, explanation, narration | 55 |
+| An investigation: reading, checking, confirming against a source | 22 |
+| A direct edit with no investigation | 8 |
+
+Two conclusions, both against the intuitive account.
+
+**The opener is not the defect.** A quarter of the agreements are followed by real
+investigation. Some are a one-line acknowledgement of a plain factual error followed
+immediately by doing the thing — "I have that tool and didn't think to use it", then
+using it. That shape costs nothing and is not what gets corrected.
+
+**The dominant sequel is confession, not patching.** Two thirds lead to neither work nor
+investigation: they lead to an autopsy of the agent's own error — naming the policy it
+walked past an hour ago, the paragraph it had backwards, the criticism it made of someone
+else and then committed itself. Rushing to implement an inferred correction is real but
+rare, 8 of 85. The larger loss is the agreement that opens a paragraph about the agent
+instead of a recovery of the decision.
+
+So the thing to check is never the opening words. It is whether the reply contains
+recovered provenance.
+
 ## Agreeing with a confusion is a category error
 
 "I don't understand why X" is not a proposition. It has no truth value, so it cannot be
-agreed with. Answering "you're right" is literally incoherent — right about what? — and
-the incoherence is diagnostic: the sentence was produced by a reflex that skipped the
-analysis, and it will be followed by a patch built on an inferred model rather than a
-recovered one.
+agreed with. Answering "you're right" is incoherent — right about what? — and the
+incoherence marks a boundary between two situations the model reliably conflates:
 
-The reflex has a second move. From the confusion, the model infers what the user must
-believe, treats that inference as the requirement, and edits toward it. Nothing in that
-sequence involved understanding the decision under discussion.
+- **You made a factual error and the user identified it.** They are right; say so in one
+  clause and fix it. No ceremony, no autopsy.
+- **The user is confused about a decision.** There is nothing to be right about yet.
+  Agreement asserts a verdict on a question nobody has investigated, and what follows is
+  either an autopsy or an edit toward a model you inferred rather than recovered.
 
 ## What a confusion report actually is
 
@@ -60,13 +91,19 @@ Only then act, and say which of the four cases you found.
 
 ## Banned responses
 
-- "You're right", to a statement that cannot be right.
+- Agreement offered as a verdict on a decision nobody has investigated yet.
+- The autopsy: agreement followed by a paragraph about your own error, the policy you
+  walked past, or the reasoning that misled you. That is the measured majority case, it
+  answers nothing the user asked, and it belongs in a commit body if anywhere.
 - Any edit toward an inferred model, made before the decision was recovered.
 - Reverting a decision because doubt was expressed about it.
 - Deleting the thing that caused the confusion, when the confusion was about what the
   thing means.
-- A local patch that makes the specific confusing symptom go away while the architecture
-  that produced it stands.
+- A local patch that makes the confusing symptom go away while the architecture that
+  produced it stands.
+
+Not banned: one clause acknowledging a factual error you actually made, followed
+immediately by the fix.
 
 ## The gradient test
 

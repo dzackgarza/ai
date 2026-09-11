@@ -37,6 +37,24 @@ Five mechanisms, all reinforced during preference training, none visible from in
 From inside, this feels like diligence, transparency, and respect for the user's
 authority. That feeling is the reward signal, not evidence about the response.
 
+## How common these actually are
+
+Measured over the Claude session store: 6,112 substantive assistant turns (text turns
+over 200 characters, excluding the short preambles that precede tool calls).
+
+| Marker | Share of substantive turns |
+| --- | --- |
+| Opens with agreement | 4.3% |
+| Contains a flagging verb — "worth flagging", "worth noting", "to be transparent" | 3.9% |
+| Defers a decision — "should I", "do you want me to", "let me know whether" | 2.7% |
+| States what was not done | 1.6% |
+| Declares something blocked | 1.2% |
+
+About one substantive turn in twelve carries a flag or a deferral. These are narrow
+string matches and so a floor, not a ceiling. Note what the ordering says: the expensive
+tics are agreement, flagging and deferral — not the self-congratulatory register, which
+measures at 0.2% and is rare outside published artifacts.
+
 ## The observed tics
 
 Every one of these appears repeatedly in this system's transcripts:
