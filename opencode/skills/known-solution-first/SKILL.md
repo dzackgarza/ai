@@ -66,14 +66,13 @@ public lookup.
 
 The highest-precision trigger this skill has, and the one it currently misses. The
 words: *standard*, *idiomatic*, *conventional*, *prior art*, *reference implementation*,
-*best practice*, *the usual way*, *how do people do this*, *well-trodden*, *is there
-seriously not a standard way to …*.
+*best practice*, *the usual way*, *well-trodden*, and any question about how the field
+normally solves this.
 
-Measured over the Claude session store: 88 user turns invoking one of these. **Six were
-followed by any external lookup.** Sixty-six used local tools only — reading the
-repository and editing it — and sixteen produced text alone. The instruction is read as a
-complaint about a local defect and answered with the patch that would have been written
-anyway.
+Measured over the session store: 88 user turns invoking one of these. **Six were followed
+by any external lookup.** Sixty-six used local tools only — reading the repository and
+editing it — and sixteen produced text alone. The instruction is read as a complaint
+about a local defect and answered with the patch that would have been written anyway.
 
 **What the word actually asks.** It is a statement about distribution, not about a bug:
 *your solution is outside what practitioners of this field do; go find what they do.* It

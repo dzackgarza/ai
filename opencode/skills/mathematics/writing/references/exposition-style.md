@@ -229,11 +229,11 @@ A problem statement must include:
 ## Assertion of Importance in Place of Mathematics
 
 The characteristic failure of agent-written mathematical prose is a sentence that says a
-hypothesis, step, or distinction *matters* rather than saying what it does. A worked
-specimen, and everything wrong with one clause:
+hypothesis, step, or distinction *matters* rather than saying what it does. A constructed
+specimen in that shape, and everything wrong with one clause:
 
-> The rank condition is stated for a *complete intersection* presentation, and that
-> hypothesis is not decorative.
+> The finiteness condition is stated for a *flat* presentation, and that hypothesis is
+> not decorative.
 
 - **"not decorative"** is a negative parallelism: it asserts by denying a property nobody
   claimed. No one proposed that the hypothesis was decoration, so the sentence resolves
@@ -256,15 +256,17 @@ specimen, and everything wrong with one clause:
      converse fails", "no such X exists" — each has a proof. "Not decorative" negates
      nothing about any object; it is commentary on the author's own exposition, which
      standard prose reserves for remarks that do real work.
-- **"The rank condition"** takes a definite article with no referent. Which condition, on
-  what object? The phrase points at something that existed only in the writer's context.
+- **"The finiteness condition"** takes a definite article with no referent. Which
+  condition, on what object? The phrase points at something that existed only in the
+  writer's context.
 - **"is stated for"** is passive and sourceless. A theorem in a cited paper, a definition
   in this repository, and the writer's own inference are three different epistemic
   objects, and this phrasing conceals which one is in play.
-- **"complete intersection presentation"** welds a real term to a vague one. *Complete
-  intersection* is standard; a presentation is a generators-and-relations datum; the
-  compound is not a term of art and has no fixed meaning. The intended content is
-  presumably that the relations form a regular sequence — which is shorter and true.
+- **"flat presentation"** welds a real term to a vague one. *Flat* is standard; a
+  presentation is a generators-and-relations datum; the compound is not a term of art and
+  has no fixed meaning. Whatever property was meant — that the relations form a regular
+  sequence, that the module is flat, that the resolution is finite — naming it is shorter
+  and true.
 
 **The repair is always the same: state the mathematics the emphasis was gesturing at.**
 Name the hypothesis exactly, name the step of the argument that consumes it, and give
