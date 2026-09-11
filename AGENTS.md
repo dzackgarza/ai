@@ -275,6 +275,42 @@ Load a skill only when the task meets its trigger. No prophylactic loads; no
 recursive activation of unrelated project, memory, review, or proof
 workflows. Skill triggers do not compound.
 
+## Verbatim Triggers (always on, exempt from every gate below)
+
+These fire on **literal strings**, not on your reading of the situation. The routing
+table below requires you to classify your own circumstances; that classification is
+exactly the faculty that fails, and the record shows it failing. Measured over the
+session store: 88 user turns invoking a standard produced 6 external lookups, though the
+route for it has existed the whole time.
+
+So: if the string appears, the action is mandatory before the next edit, and the
+Routing Applicability Gate does not apply. Do not decide whether the word was "really"
+about the assigned work. Do not count these against any limit on how many skills to load.
+
+### In the user's message
+
+| If it contains | Then, before editing anything |
+| --- | --- |
+| standard, idiomatic, conventional, best practice, prior art, reference implementation, the usual way, how do people/others/teams do | Search outside the repository. Deliver the surveyed solution space with a citation. A named example is a pointer into that space, never the instruction. `known-solution-first` |
+| I'm confused, I don't understand, makes no sense, this seems wrong | Recover the decision and its provenance first. Agreement is not an answer and a confusion has no truth value. `handling-corrections/references/confusion-reports.md` |
+| do you understand, you understand … right, did you not understand | Load the domain skill for the work in front of you and its mental-model reference. The gap is domain knowledge, not a general faculty. |
+| word salad, incoherent, incomprehensible, rambling, no idea what you mean, buried the lede, I'm not reading that | Repair your encoding at the same technical level. Never explain fundamentals, define terms, or restate what they just read. `technical-copy` |
+| narrating, process narration, why are you stopping, why are you telling me, why are you reporting | Stop writing and finish the work. `response-preparation/references/process-narration.md` |
+| why are you X instead of Y | Do Y. Now. The sentence is not a question. |
+| slop | `technical-copy`, and for mathematical prose `mathematics/writing/references/exposition-style.md` |
+
+### In your own draft, before you send it
+
+| If you are about to write | Then |
+| --- | --- |
+| worth flagging, worth noting, to be transparent, I should note, one thing to flag | Delete it, or write it to its durable home. If it names work, do the work. |
+| blocker, blocked on, cannot proceed | Only a missing credential, a human-only action, or an upstream defect you cannot route around qualifies. Everything else is work. |
+| should I, do you want me to, which would you prefer, let me know whether | The plan, the repository documents, and the transcripts answer it. Read them and proceed. |
+| you're right — following a confusion report | Recover the provenance first. A one-clause acknowledgement of a plain factual error is fine; a verdict on an uninvestigated decision is not. |
+| understood, I've learned, I'll remember | Banned. Write the file instead. |
+| not decorative, not merely, isn't just, crucially, essential, far from trivial | State the checkable claim, or delete the sentence. |
+| a count inside a sentence | Put it in a table, and compute it rather than typing it. |
+
 ## Routing Applicability Gate
 
 Apply routes to the assigned work, not to words, artifacts, or environment
@@ -288,7 +324,9 @@ Required evidence: <what must be known to do that operation correctly>
 
 A situational route applies only when its situation appears in one of those
 three fields. Apply this gate before the routing table; never load a route
-to decide whether it was relevant.
+to decide whether it was relevant. This gate does not govern the Verbatim
+Triggers above: those fire on the literal string and are never weighed
+against the assigned work, the smallest-set rule, or any load limit.
 
 Bound `Required evidence` to the strength of judgment the user requested. Do
 not silently escalate a status or gap synthesis into certification of the
