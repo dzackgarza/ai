@@ -62,6 +62,41 @@ minimal exact-error/docs search and found nothing applicable. Without both the n
 boundary and the external-knowledge check, "integration issue" is an excuse to avoid
 public lookup.
 
+## When the User Invokes a Standard
+
+The highest-precision trigger this skill has, and the one it currently misses. The
+words: *standard*, *idiomatic*, *conventional*, *prior art*, *reference implementation*,
+*best practice*, *the usual way*, *how do people do this*, *well-trodden*, *is there
+seriously not a standard way to …*.
+
+Measured over the Claude session store: 88 user turns invoking one of these. **Six were
+followed by any external lookup.** Sixty-six used local tools only — reading the
+repository and editing it — and sixteen produced text alone. The instruction is read as a
+complaint about a local defect and answered with the patch that would have been written
+anyway.
+
+**What the word actually asks.** It is a statement about distribution, not about a bug:
+*your solution is outside what practitioners of this field do; go find what they do.* It
+carries three consequences.
+
+- **The local repository cannot answer it.** By construction the answer lives outside the
+  work: in a library's documentation, a mature project's source, a domain's canonical
+  text, a specification. Reading more of your own code is not evidence about what is
+  standard, and neither is reasoning from priors — the priors are what produced the
+  non-standard thing.
+- **The deliverable is a citation, then a change.** Name the standard, name where it is
+  documented or who implements it, then say what the local code does differently. A patch
+  with no cited source has not answered the question, however plausible it looks.
+- **The user has usually already checked.** A user who says a feature is completely
+  standard in 2026 software, or names the library that should have been used, is
+  reporting a fact about the world. Treating it as an opinion to be weighed against your
+  own reading of the repo inverts the epistemics.
+
+**The act.** Search before editing: the tool's own documentation, then a mature project
+that solves the same problem, then the field's reference. Return with the standard named
+and sourced. If the search genuinely finds no standard, that is a finding worth one
+sentence — but it is the outcome of a search, not a substitute for one.
+
 ## The Gate
 
 Before reverse-engineering, answer:
