@@ -202,7 +202,23 @@ work-relevant content and does not appear at all.
 - Do not preserve backward compatibility. Remove obsolete paths; add no
   compatibility layers, fallbacks, or migrations.
 - Choose the simplest implementation that fully meets current requirements.
-  No speculative abstractions, configuration, or indirection.
+  No speculative abstractions, configuration, or indirection. **Simplest is
+  not narrowest, and this line does not license special-casing.** One
+  mechanism that covers the general case is simpler than a special case plus
+  the migration it will require; "current requirements" means the ones you
+  surveyed, so a solution scoped without surveying is minimal against a
+  guess. The test for building the general form is not "might this be needed
+  some day" — that is the speculation this rule bans — but "is the general
+  form understood, and is it not much harder?" If it is not understood, go
+  and find it. `bespoke-software-policy` (**The Cost Model Is Not the
+  Monorepo's**) carries why the narrow default is imported from a codebase
+  whose costs this machine does not have.
+- **A dependency does not justify itself; hand-rolling does.** Asking whether
+  a library or standard pattern "earns its keep" is the shared-trunk question
+  and it inverts this system's policy before any analysis starts. Hand-rolled
+  code is the liability here, because the scarce resource is attention and
+  the dominant cost is re-entry — reopening a closed decision after its
+  context has evaporated.
 - Grow the system in layers: start from the smallest end-to-end version, add
   each capability on top of a working product. Never trade a working product
   for unfinished complexity.

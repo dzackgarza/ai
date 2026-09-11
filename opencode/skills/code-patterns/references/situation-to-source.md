@@ -102,6 +102,12 @@ citation reads as diligence and is in fact the evidence against the decision —
 that the general form was known and declined. The debt falls due on the next feature, and
 is paid by whoever asks for it.
 
+The cost model behind this is in
+[[bespoke-software-policy/SKILL|bespoke-software-policy]]: the narrow default is imported
+from shared-trunk codebases whose costs — downstream consumers, supply chain, review
+bandwidth — do not exist here, while the cost that dominates here, reopening a decision
+after its context has evaporated, does not appear in that calculus at all.
+
 When the general form is understood and the marginal cost over the special case is small,
 build the general form. When it is genuinely large, that is a real decision and belongs
 in the plan with the cost stated, not in a status note as a thing not done. The test:
