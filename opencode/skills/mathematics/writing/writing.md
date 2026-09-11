@@ -95,8 +95,8 @@ theorem statements, proofs, and commentary.
 **Philosophy:** Mathematical documents use sociological conventions (`*Theorem.*`,
 `*Lemma.*`, `*Corollary.*`, `*Proposition.*`, `*Proof.*`, `*Remark.*`, `*Definition.*`,
 `*Example.*`) to signal the role of each block.
-These markers are not decorative — they create a parseable structure that humans and
-machines can navigate.
+The markers create a parseable structure that humans and machines can navigate: a reader
+can skim for the statements, and a tool can extract them.
 
 ### 9. Structured proofs are the default presentation
 
@@ -324,6 +324,9 @@ writing.
   solution structure (single problem-solution scale). Opens with the standard opinionated
   literature — Halmos, Serre, Knuth, Mermin on displayed equations, Higham, Krantz, Su —
   and closes with the anti-patterns observed here that no human writer produces
+
+- `references/writing-advice-corpus.md` — practitioner advice pages, where the specific
+  out-of-distribution rules live, plus aggregators and search patterns for extending it
 
 - `references/report-architecture.md` — Document-scale architecture for expert-audience
   reports, notes, specs, and surveys: theorem-driven (not status-driven) organization,

@@ -36,6 +36,12 @@ conventions.
 - **The AMS Author Handbook and the SIAM Style Manual** — the house-style authorities when
   a convention is actually in dispute.
 
+Beyond these, working mathematicians maintain advice pages carrying far more specific
+guidance — when to number an equation, how to name a lemma, which phrases are dead.
+[writing-advice-corpus.md](writing-advice-corpus.md) collects them (Tao, Conrad, Pak,
+Vakil, Margalit, Reiter, Tsitsiklis, the Princeton Companion essays) along with the
+aggregators for finding the rest.
+
 The anti-patterns recorded at the end of this file are the ones observed here that these
 sources do not name explicitly, usually because no human writer produces them.
 
