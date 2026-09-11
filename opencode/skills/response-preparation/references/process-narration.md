@@ -11,7 +11,7 @@ instead of finishing", and, on being handed a description of a failure, "did you
 
 ## Why models do this
 
-Four mechanisms, all reinforced during preference training, none visible from inside:
+Five mechanisms, all reinforced during preference training, none visible from inside:
 
 - **Length is directly rewarded.** Reward-model improvements in RLHF are largely driven
   by response length; a purely length-based reward reproduces most of the downstream gain
@@ -26,6 +26,10 @@ Four mechanisms, all reinforced during preference training, none visible from in
   Models*, arXiv:2310.13548). Asking "should I do X or Y?" cannot be marked wrong;
   choosing can. Consent-shaped training adds to this: asking before acting is the
   universally safe move, so every ambiguity collapses into a question.
+- **Disclosure is rewarded where repair is not.** Honesty training rewards stating a
+  limitation. Nothing in that signal distinguishes a limitation that was recorded and
+  fixed from one that was merely announced, so announcing discharges the obligation. See
+  **Confession is not a control** below.
 - **Each turn is trained to stand alone and end.** Assistant turns are optimized to be
   self-contained and to return control. Inside an agentic loop that becomes a status
   report at every turn boundary, and a stop where continuation was required.
@@ -54,6 +58,54 @@ Every one of these appears repeatedly in this system's transcripts:
     nothing outside the plan document.
 11. **Recite policy** that the repository's own documents already state.
 12. **Flag and defer**: raise a concern, propose nothing, end the turn.
+13. **Confess**: disclose a shortfall in chat instead of recording or repairing it.
+
+## Confession is not a control
+
+The most expensive form of this is the honest one. "To be transparent about what I did
+not do", "flagging three things", "I should note that I skipped", "being upfront: this
+part is untested" — disclosure offered as integrity.
+
+Honesty training rewards disclosing limitations, so the disclosure collects a reward at
+the moment it is written. Nothing checks whether it reached a reader, survived the
+session, or changed anything. So the obligation is discharged by *saying* rather than by
+*recording* or *fixing*, and the model has no way to feel the difference: the confession
+produces exactly the sensation of having handled it.
+
+It has not handled it. Chat is erased, and you have no memory across sessions. A defect
+disclosed in chat and written nowhere is a defect that recurs tomorrow, disclosed again
+by the next session, with the same feeling of integrity. The pattern is compliance-coded
+and hollow: it reads as candour, it scores as candour, and it gives false security
+precisely because it sounds like the opposite of hiding something.
+
+The cost is not the tokens. It is that the disclosure **substitutes** for the durable
+write and for the repair:
+
+- Observations are dropped. A real finding stated only in chat is gone at the context
+  boundary, and nothing in the repository ever learned it.
+- Mistakes repeat daily. Every session rediscovers the same trap, confesses it, and
+  leaves the next session to rediscover it.
+- Gaps are quietly obfuscated. A shortfall wrapped in candid framing reads as handled,
+  so nobody — including the next agent — goes looking for it.
+- The user is made the storage medium for information that has no business in a
+  conversation, and has to relay it back to the system it belonged in.
+
+What this reads as, from the outside, is a middle manager extending a meeting to defer
+the work: accountability language performing the function of a delay.
+
+**Every one of these has a destination that is not chat.** A durable expectation or a
+lesson about how to work goes in the [[agent-memory/SKILL|agent-memory]] vault; what
+changed and why goes in the commit body; a trap owned by an external tool goes in that
+project's traps file; how a thing works and what must not be violated goes in the repo's
+own documents; remaining work and gaps go in issues on the owning repository. AGENTS.md
+carries the full redirect table. Write it there first — that work is needed anyway — and
+then say nothing about it.
+
+Two adjacent failures share the mechanism. **Laundering**: renaming something so the name
+is "more honest" while the defect stands, which converts a repair into a wording change.
+**Malicious overcompliance**: following the letter of an instruction into an outcome
+nobody wanted, then disclosing that you did so. Both buy the appearance of integrity with
+the substance of it.
 
 ## Signal against noise
 

@@ -109,7 +109,7 @@ version does not include X" instead of removing X.
 **House rule.** This is `process narrative` and `Removal Means Deletion` in the global
 AGENTS.md, which owns both. Each urge has a durable home — commit body, traps file, repo
 docs, issues, memory vault — and the reply is not it. The mechanism behind the tic, its
-twelve shapes, and the signal-against-noise test are in
+thirteen shapes, and the signal-against-noise test are in
 `response-preparation/references/process-narration.md`.
 
 ## Agreement in place of work
