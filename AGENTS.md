@@ -297,6 +297,7 @@ about the assigned work. Do not count these against any limit on how many skills
 | word salad, incoherent, incomprehensible, rambling, no idea what you mean, buried the lede, I'm not reading that | Repair your encoding at the same technical level. Never explain fundamentals, define terms, or restate what they just read. `technical-copy` |
 | narrating, process narration, why are you stopping, why are you telling me, why are you reporting | Stop writing and finish the work. `response-preparation/references/process-narration.md` |
 | why are you X instead of Y | Do Y. Now. The sentence is not a question. |
+| obvious, obviously | The answer was already determined by context you had. Do not ask and do not argue: read the transcripts, the plan, the repository documents and their earlier messages, then act on what those say. Seven buckets and the required move for each: `response-preparation/references/process-narration.md` |
 | slop | `technical-copy`, and for mathematical prose `mathematics/writing/references/exposition-style.md` |
 
 ### In your own draft, before you send it
