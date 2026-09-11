@@ -132,6 +132,10 @@ instance is seen by everyone and costs the most. The forms:
   today's numbers hard-coded into the prose.
 - **Announcing internal state.** A user-facing message narrating a condition that should
   be impossible, or exposing an internal decision, instead of raising a real error.
+- **Asserted importance in mathematical prose.** A hypothesis called crucial, essential,
+  or not decorative, in place of the step that consumes it and the object that fails
+  without it. Unfalsifiable as written, and identical whether or not it was checked.
+  `mathematics/writing/references/exposition-style.md` carries the worked specimen.
 
 **House rule.** Copy earns its place by conveying content the reader does not have. An
 assertion about the work — its size, rigor, completeness, honesty, or novelty — is not

@@ -182,3 +182,43 @@ A problem statement must include:
 | Inconsistent variable reuse | Confusion; “x” means two different things | Use distinct names; subscript if needed |
 | Missing verification | Errors go undetected | Always verify, at least for a test case |
 | Prose-only proofs (no math mode) | Hard to read; ambiguous precedence | Use LaTeX math for all mathematical expressions |
+
+## Assertion of Importance in Place of Mathematics
+
+The characteristic failure of agent-written mathematical prose is a sentence that says a
+hypothesis, step, or distinction *matters* rather than saying what it does. A worked
+specimen, and everything wrong with one clause:
+
+> The rank condition is stated for a *complete intersection* presentation, and that
+> hypothesis is not decorative.
+
+- **"not decorative"** makes a precise, checkable claim — the conclusion is false without
+  the hypothesis — and then declines to make it. The sentence is unfalsifiable as
+  written, and it reads identically whether or not the writer ever checked. Emphasis is
+  standing in for content. Its relatives: "crucially", "importantly", "it is worth
+  stressing that", "this is not a technicality", "genuinely necessary".
+- **"The rank condition"** takes a definite article with no referent. Which condition, on
+  what object? The phrase points at something that existed only in the writer's context.
+- **"is stated for"** is passive and sourceless. A theorem in a cited paper, a definition
+  in this repository, and the writer's own inference are three different epistemic
+  objects, and this phrasing conceals which one is in play.
+- **"complete intersection presentation"** welds a real term to a vague one. *Complete
+  intersection* is standard; a presentation is a generators-and-relations datum; the
+  compound is not a term of art and has no fixed meaning. The intended content is
+  presumably that the relations form a regular sequence — which is shorter and true.
+
+**The repair is always the same: state the mathematics the emphasis was gesturing at.**
+Name the hypothesis exactly, name the step of the argument that consumes it, and give
+what fails without it — the counterexample, or the point where the proof breaks.
+
+| Instead of | Write |
+| --- | --- |
+| "that hypothesis is not decorative" | the step that uses it, and the object satisfying everything else where the conclusion fails |
+| "this is a crucial distinction" | the two statements, and one object separating them |
+| "the general case is subtle" | which hypothesis fails in general, with a witness |
+| "this condition is essential" | the counterexample when it is dropped |
+| "as is well known" | the citation |
+
+An emphasis word is admissible only when the sentence it modifies already carries the
+checkable claim. If deleting the emphasis loses no information, it was never carrying
+any; if deleting it loses the whole point, the point was never stated.
