@@ -6,6 +6,10 @@ description: Use when preparing a substantive completion report, progress or sta
 ---
 # Response Preparation
 
+This skill decides what belongs in a response. For how the sentences are written —
+clause-stacked prose, a buried point, counts strung into a sentence instead of a table —
+see [[writing/technical-copy/technical-copy|technical copy]].
+
 ## Why This Skill Exists
 
 Forces theory-of-mind reasoning about what the user needs to hear vs what you are
