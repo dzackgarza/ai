@@ -345,6 +345,8 @@ When the situation in the left column is present, load the right column before a
 | Any git or GitHub operation — staging, commits, deletion, branches, PRs, issues | `git-guidelines` |
 | Substantive completion report, progress or status update, handoff, or remaining-work synthesis | `response-preparation` |
 | Correction that needs causal explanation, changes scope/authority, or implies destructive action | `handling-corrections` |
+| User questions comprehension ("do you understand X", "you understand X, right", "I don't understand why you...", "you seem confused", "did you not understand"), or repeats an instruction already given | `understanding-challenges` |
+| About to introduce a technical noun the user did not use, propose an architecture, or report a count/metric | `understanding-challenges` (Preemptive Checks) |
 | Negative finding, failed search, document/transcript/log summary, or any conclusion from a partial read | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Reviewing a concrete agent-produced deliverable or adjudicating a specific completion claim whose correctness is under review | `reviewing-subagent-work` and its `references/review-guidelines.md` |
 | Reviewing LLM-produced code, tests, QC, or documentation for LLM-specific implementation-quality patterns | `reviewing-llm-code`, `anti-slop` |
@@ -393,6 +395,14 @@ When the situation in the left column is present, load the right column before a
   you..." → load `handling-corrections`. A critique that requests no course
   change is an analysis request, not authorization to edit. Afterwards,
   persist durable expectations per the Memory section.
+- **A question about what you understand is a defect report.** The asker
+  already knows the answer; the interrogative marks a proposition your output
+  denies. "Understood", "you're right", and any claim to have learned
+  something are banned answers: a model carries nothing across sessions, so
+  only a file does. Name the proposition in the user's own precision, cite the
+  `file:line` in your work that contradicts it, and write it into the document
+  that owns it. `understanding-challenges` owns the interlock and the catalog
+  of what such questions have actually meant.
 - **Externalize once, after convergence.** Converge scope and interpretation
   in one local draft before creating coordinated external state (branch, PR,
   issue edits, synchronized vault copies). Pre-promotion corrections are

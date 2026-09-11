@@ -27,6 +27,11 @@ Classify the correction before choosing a response:
 - **Explanation or ambiguity:** the user asks why, disputes the reasoning, or leaves more
   than one materially different action possible. Investigate enough to answer or expose
   the real fork. Do not guess the desired implementation.
+- **Comprehension challenge:** the user asks what you understand, reports not
+  understanding your output, says you seem confused, or repeats an instruction already
+  given. Load [[understanding-challenges/SKILL|understanding-challenges]] and run its
+  interlock first; it names the proposition and the durable write-down that discharges
+  the correction. Return here only for scope, authority, or destructive consequences.
 - **High-consequence pivot:** the likely response is destructive, irreversible,
   externally visible, touches unknown-provenance work, or needs new authority. Stop and
   obtain the missing decision after presenting only the evidence the user needs.
