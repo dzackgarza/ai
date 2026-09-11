@@ -10,6 +10,12 @@ This skill decides what belongs in a response. For how the sentences are written
 clause-stacked prose, a buried point, counts strung into a sentence instead of a table —
 see [[writing/technical-copy/technical-copy|technical copy]].
 
+**Read [references/process-narration.md](references/process-narration.md) first.** It
+covers the failure that produces most corrections here: stopping work to describe it,
+manufacturing blockers and decisions, flagging without acting, and reporting what could
+have been checked. It gives the mechanism that drives it, the twelve observed shapes, and
+the four things that are actually signal.
+
 ## Why This Skill Exists
 
 Forces theory-of-mind reasoning about what the user needs to hear vs what you are
