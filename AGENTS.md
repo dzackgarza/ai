@@ -357,7 +357,7 @@ When the situation in the left column is present, load the right column before a
 | Fixing a slop finding, or any rename/delete/"make honest" remediation | `fixing-slop` |
 | Behavioral regression or uncertain implementation failure | `reality-grounded-debugging`, `systematic-debugging`; add `known-solution-first` for external tools/errors |
 | External tools, libraries, APIs, compilers, package managers, exact diagnostics, dependency choices | `known-solution-first` |
-| User calls something standard, idiomatic, conventional, best practice, prior art, or asks how people normally do it | `known-solution-first` (**When the User Invokes a Standard**) — the deliverable is a cited external standard, never a local patch; the repository cannot answer the question |
+| User calls something standard, idiomatic, conventional, best practice, prior art, or asks how people normally do it — including "standard idioms, like X", where X is an example rather than an instruction | `known-solution-first` (**When the User Invokes a Standard**) — deliver the surveyed solution space with a cited choice, never a local patch and never the named example adopted unexamined |
 | Jupyter Assistant API calls or notebook operations exposed by it | `known-solution-first`; use the live-discovered `japi` launcher from `dzackgarza/jupyter-mcp-server`, not hand-written `curl` calls |
 | Any interaction with a test file | `test-guidelines` |
 | Plans, or plan feedback that must survive the turn | `plan`, `agent-memory` |
