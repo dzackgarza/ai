@@ -367,7 +367,7 @@ When the situation in the left column is present, load the right column before a
 | Mathematical work of any kind (computation, research, writing, lattices) | `mathematics` (note: a "lattice" here is a bilinear-form lattice, never cryptographic) |
 | Code that represents a mathematical object — naming a class, choosing a return type, writing a construction, categories/functors/kernels | `mathematics/objects-in-code`, and its `references/categorical-architecture.md` for functor-based kernels |
 | Theorem proving, formalization, counterexample search | `lean4` (its **Before Formalizing Anything** section is mandatory) |
-| Game work: engine code, level content, interaction systems, animation, art direction, Blender-to-engine pipeline | `game-development` |
+| Game work: engine code, level content, interaction systems, animation, art direction, Blender-to-engine pipeline; deciding which discipline can change a thing without an engineer | `game-development` (its **How production is organized** section first) |
 | Writing or editing any SKILL.md | `creating-skills`, `writing-for-agent-audiences` |
 | Markdown/prose rewrites | `writing-for-agent-audiences`, `writing-clearly-and-concisely` |
 | Writing any copy this system ships or shows — report, handoff, commit body, PR/issue text, docstring, README or site description, UI string, error or fallback message, or a summary of numbers | `technical-copy` |
