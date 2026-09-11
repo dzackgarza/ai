@@ -1,21 +1,26 @@
 ---
 name: game-development
-description: Use when working on a game — engine code, level content, interaction systems, animation, art direction, or the Blender-to-engine asset pipeline. Teaches the standard patterns a practitioner expects (interactable objects, activation volumes, data-driven animation, placeholder art) and the pipeline boundary between what artists author and what code consumes.
+description: Use when working on a game — engine code, level content, interaction systems, animation, art direction, or the Blender-to-engine asset pipeline. Teaches the general design principles as they land in game work — ownership of behavior, modelling the real phenomenon, concern seams at the author boundary, purpose before polish, audience — with the standard patterns a practitioner expects as the worked instances.
 ---
 # Game Development
 
 > [!IMPORTANT]
 > All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
-Game problems here are well-trodden problems. The failure mode is inventing an ad hoc
-mechanism where the industry pattern exists, which costs a round trip to have the
-standard pattern explained back to you. Read
+Game work here goes wrong at the level of general design principles, not game trivia.
+Each section below names the principle first and shows how it lands in this domain;
+`code-patterns/references/first-principles.md` states the principles themselves and
+their instances in other domains. Read
 [[known-solution-first/SKILL|known-solution-first]] before designing any system in this
-skill's scope.
+skill's scope — game problems are well-trodden problems, and inventing where a standard
+pattern exists costs the invention plus the time to have the standard explained back to
+you.
 
-## Interaction Is an Object-Owned Pattern
+## Ownership: Behavior Belongs to the Object That Has It
 
-The standard interactable pattern, which any practitioner expects to find:
+*Principle: behavior belongs with what it governs; adding an instance must not require
+editing a central file.* In this domain that is the interactable pattern, which any
+practitioner expects to find:
 
 - The object owns its own interaction data and responses. A chest knows how it opens; a
   portal knows where it leads. The player controller does not hold a table of what
@@ -30,9 +35,11 @@ Centralized `if` chains over object names, per-object special cases in the playe
 controller, and interaction logic that must be edited to add a chest are all the
 non-pattern.
 
-## Activation Regions Are Three-Dimensional
+## Model the Phenomenon, Not a Cheap Stand-In
 
-Whether the player can interact with an object is an intersection of geometries: a
+*Principle: a proxy that is easier to compute is a different claim, and it diverges
+exactly where the real thing is interesting.* Whether the player can interact with an
+object is an intersection of geometries: a
 sphere (or box) around the player against the spherical hull — or bounding volume — of
 the object. It is not a distance check between two origins, and it is not a
 two-dimensional radius on the ground plane.
@@ -43,10 +50,11 @@ players most expect to reach. When a geometric condition is described precisely,
 implement that geometry. Simulating it with a cheaper proxy is a refusal to implement
 the specification.
 
-## The Artist Boundary
+## Separate Concerns Where the Author Changes
 
-Assume an artist arrives tomorrow and changes everything visual. Every design must
-survive that.
+*Principle: a concern seam belongs where a different person, tool, or lifecycle takes
+over, and the design must serve whoever changes it next.* Assume an artist arrives
+tomorrow and changes everything visual. Every design must survive that.
 
 - **Animations live in the authoring tool** (Blender), exported as reusable clips or
   actions. The engine references them by name or asset; it does not hard-code one
@@ -63,10 +71,11 @@ survive that.
   adding tiling layers, collision, and empty objects for placement — and then using the
   result as the level.
 
-## Placeholder Art Is a Method, Not a Shortcut
+## Purpose Before Polish: Placeholder Art Is a Method
 
-Using existing sprite rips, asset packs, or borrowed tiles during development is
-deliberate:
+*Principle: derive the work from the artifact's purpose at its current stage; effort
+aimed at a later stage is wasted.* Using existing sprite rips, asset packs, or borrowed
+tiles during development is deliberate:
 
 - It gives the project real game feel early, which keeps momentum.
 - It reveals what art is actually needed. Commissioning art up front costs a great deal
@@ -79,9 +88,11 @@ A 2D-to-3D route is reasonable for the same reason: extensive tile sets exist fo
 games, and a 2D tile can be extrapolated into usable 3D textures. Prefer grabbing an
 asset pack over modelling everything from primitives when the goal is to see the game.
 
-## Art Direction Is Audience and Maturity, Not Palette
+## Audience: Art Direction Is Maturity and Reader, Not Palette
 
-When several reference works are supplied, the point is their **common thread** —
+*Principle: material supplied together is supplied for what it shares; read the set, not
+each item.* When several reference works are supplied, the point is their **common
+thread** —
 world topology, shapes, foliage, paths, structures, how the player navigates the space
 — not any one work's surface style. Reading the set as a list of unrelated styles
 misses what was being communicated.

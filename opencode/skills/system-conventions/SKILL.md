@@ -167,6 +167,9 @@ message bodies because they trigger shell escaping hazards.
 
 ### Migration Means Everything Arrives
 
+*Principle: one fact, one owner. A migration exists to move ownership, and it is not
+finished while two owners exist.*
+
 A migration moves the content of a source into a destination. It is not an opportunity
 to curate, and its decision criterion is never quality, activity, or completeness.
 

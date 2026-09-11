@@ -641,6 +641,8 @@ quality, fast iteration.
 
 ### A New Subagent Knows Nothing
 
+*Principle: design for whoever acts next, who holds none of your context.*
+
 Fresh context means *empty* context. A just-started subagent does not know the plan,
 the architecture, the vocabulary, the policies, the acceptance criteria, or which of
 several plausible readings of its task is the intended one. Everything it needs must be

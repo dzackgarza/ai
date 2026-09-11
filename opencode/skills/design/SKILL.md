@@ -647,6 +647,10 @@ When copy is necessary but not final, mark it as draft or placeholder.
 
 ## Interface Conventions
 
+*Principles: the standard pattern already exists; derive from purpose and audience; the
+representation is not the thing. `code-patterns/references/first-principles.md` states
+them generally.*
+
 An application interface is judged against the conventions its users already have.
 Inventing a control where a platform convention exists reads as a defect to anyone who
 uses similar software, however reasonable the invention looked while building it.

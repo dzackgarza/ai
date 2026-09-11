@@ -6,15 +6,22 @@ description: Use when writing, reviewing, or reviewing tests for code that repre
 
 The recurring defect in mathematical code here is not a bug. It is a wrong mental
 model of what the object *is*, which then produces code that is locally plausible and
-mathematically incoherent. This leaf teaches the model. Each section states the
-correct notion, then the coding habit that follows from it.
+mathematically incoherent. This leaf teaches the model.
+
+Each section is one general design principle as it lands in mathematics; the principles
+themselves, with their instances in other domains, are in
+`code-patterns/references/first-principles.md`. The mapping is exact — the
+representation is not the thing, the level where the statement is true, compose before
+you construct, behavior belongs with what it governs, one fact one owner, the standard
+pattern already exists — which is why recognizing one of these here should transfer,
+and why recognizing it only here means it was not learned.
 
 Related: [[mathematics/objects-in-code/references/categorical-architecture|categorical architecture]] for
 kernels built on functors and dynamic inheritance;
 [[mathematics/research/mathematical-testing/mathematical-testing|mathematical testing]] for what a
 test of such an object may assert.
 
-## 1. An Object Is Not Its Presentation
+## 1. The Representation Is Not the Thing
 
 A module is not a matrix. A morphism is not its matrix. A group is not a
 presentation. A lattice is not a Gram matrix. Presentations are coordinates chosen for
@@ -59,7 +66,7 @@ is meant, it localizes the compromise to one line, and it is greppable when the 
 object arrives. The same rule governs `Any` generally — when ambiguity is genuine,
 create the type that means what you intend and alias it once.
 
-## 3. Write at the Generality That Survives
+## 3. Write at the Level Where the Statement Is True
 
 House style runs toward formulations that keep working when a hypothesis is dropped:
 finiteness, freeness, projectivity, commutativity, rings to semirings, groups to
@@ -80,7 +87,7 @@ Before committing a mathematical function or assertion, name the hypothesis your
 argument uses, drop it, and see what fails. If the answer is "everything", the
 formulation is timid and belongs at higher generality.
 
-## 4. Constructions Come From Universal Properties
+## 4. Compose Before You Construct: Universal Properties
 
 Universal objects are unique up to unique isomorphism, so there is exactly one
 construction to implement, and constructing it twice returns the same object.
@@ -125,7 +132,7 @@ two different functors to sets that do not agree — and when two paths to the s
 target exist, something must say whether they are equal. An implicit assumption that
 every such diamond commutes is a mathematical assertion made by omission.
 
-## 7. Methods Belong to Objects
+## 7. Behavior Belongs With What It Governs
 
 `A.localization(f)`, not `Localization(A, f)`. A construction performed on an object
 is a method of that object: it dispatches on the object's actual category, it is
@@ -137,7 +144,7 @@ Declare a catalogue of available objects once, in the place that owns it. Do not
 declare it in one file and assert its contents in another — the assertion then tests
 that two hand-written lists agree, which is a statement about typing, not mathematics.
 
-## 8. The Vocabulary Is the Model
+## 8. The Standard Vocabulary Is the Standard Model
 
 If you need a noun that is not standard mathematics — a "carrier", a "receiver", a
 "role", a "retained composite" — the design is wrong. The noun exists because the

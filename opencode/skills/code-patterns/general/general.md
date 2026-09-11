@@ -38,6 +38,12 @@ Do not negotiate this locally.
 
 ## Core Rules
 
+- Settle design questions from first principles before reaching for domain detail: one
+  fact one owner, behavior with what it governs, concern seams where the audience
+  changes, the representation is never the thing, the level where the statement is true,
+  interfaces that state obligations, composition before construction, purpose before
+  design, the standard pattern before invention, and whoever changes it next.
+  `references/first-principles.md` teaches each one across domains.
 - Read the surrounding code first. Match the repo's established module boundaries,
   naming, and validation patterns unless they violate a loaded hard policy.
 - Preserve the smallest useful interface. Do not add managers, processors, adapters,
@@ -64,6 +70,8 @@ Do not negotiate this locally.
 
 Read only the relevant reference:
 
+- `references/first-principles.md` — the cross-domain design principles above, each
+  taught with instances from code, mathematics, games, and documents.
 - `references/names.md` — naming and intention-revealing symbols.
 - `references/functions.md` — function size, arguments, side effects, command/query split.
 - `references/comments.md` — when comments are useful and when they are residue.

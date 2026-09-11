@@ -18,6 +18,11 @@ Route to exactly one primary subskill based on the requested tool or workflow:
 
 ## Before Formalizing Anything
 
+*Principles: the standard solution already exists; the representation is not the thing
+(a theorem is not a definition, and a typechecking definition is not a correct one);
+scope follows the dependency graph, not the statement.
+`code-patterns/references/first-principles.md` states them generally.*
+
 These are the mistakes that cost the most on a formalization task, in the order they
 usually occur.
 
@@ -42,6 +47,11 @@ definition that is subtly wrong makes every downstream theorem vacuous or false,
 will typecheck. Every definition traces to a cited source — mathlib, the paper, a
 textbook — or it is flagged as unverified. This is the highest-risk artifact in the
 task, not the proofs.
+
+Substituting a theorem for a definition is the sharpest form of this error. A
+characterization that is provably equivalent under the paper's hypotheses is not the
+definition, and installing it as one silently imports those hypotheses into everything
+downstream — including the statements where they are exactly what is in question.
 
 **Estimate against the dependency graph, not the statement.** A result whose statement
 is one line can sit on a large graph of unformalized prerequisites. Look at the actual

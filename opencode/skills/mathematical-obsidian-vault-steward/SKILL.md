@@ -134,6 +134,9 @@ Use this adversarial check:
 
 ## A Study Vault Is Authored Literature
 
+*Principles: derive from purpose and reader; the representation is not the thing —
+here, page count is not size and metadata is not content.*
+
 A mathematical reference vault is a written text broken into pages for navigation,
 cross-referencing, citation, and reuse. It is not a database of cards, and its pages
 are not records. The Stacks Project is the model: a pedagogical work whose tags exist
