@@ -371,7 +371,7 @@ When the situation in the left column is present, load the right column before a
 | Writing or editing any SKILL.md | `creating-skills`, `writing-for-agent-audiences` |
 | Markdown/prose rewrites | `writing-for-agent-audiences`, `writing-clearly-and-concisely` |
 | Writing any copy this system ships or shows — report, handoff, commit body, PR/issue text, docstring, README or site description, UI string, error or fallback message, or a summary of numbers | `technical-copy` |
-| Prose you wrote was called word salad, incomprehensible, buried, or slop; a number was reported as a sentence; a docstring disagrees with its code | `technical-copy` |
+| Prose you wrote was called word salad, incomprehensible, buried, bragging, advertising, or slop; a number was reported as a sentence; a name or label asserts quality, novelty, or honesty; a docstring disagrees with its code | `technical-copy` |
 | PDFs (read, extract, convert) | `reading-pdfs` |
 | Missing tools, Python script dependencies, install choices | `tool-provisioning-and-environment-hygiene` |
 | Memory reads/writes, durable expectations, plan records, vault issues | `agent-memory`; `vault-maintenance` for vault defects |

@@ -4,10 +4,17 @@ description: Use when writing any copy this system ships or shows — status rep
 ---
 # Technical Copy
 
-Generic AI writing tells — em dashes, boldface, title case, emoji, rule of three — are
-owned by [[writing/humanization/humanization|humanization]]. This leaf covers a different
-set: the copy patterns corrected repeatedly in this system's own artifacts, which are
-failures of technical writing rather than of voice.
+The punctuation and formatting tells catalogued in
+[[writing/humanization/humanization|humanization]] — em dashes, boldface, title case,
+emoji, rule of three — date from 2025 and are surface features: they change how copy
+looks, not what a reader learns from it. Detector-driven editing of that list improves
+nothing here.
+
+The tells that matter now are content-level, and they are the subject of this leaf: copy
+that announces itself instead of informing, agrees instead of working, recounts the
+process instead of stating the result, or states a conclusion the artifact does not
+support. Every pattern below was corrected repeatedly in this system's own artifacts,
+and each one costs the reader something real.
 
 Each section is the situation, the authority that treats it, and the house rule.
 
@@ -61,6 +68,40 @@ libraries — which is unreadable, unscannable, and impossible to compare.
 **House rule.** Numbers go in a table. The metric must be one the audience values, and it
 is computed at build time or served as data, never typed into prose where it is wrong the
 next day.
+
+## Self-announcing copy
+
+**Pattern.** Copy that asserts its own properties instead of carrying content. It is the
+largest single class of correction here, and it appears in every artifact type:
+
+- **Effort and quality claims.** A report announcing a comprehensive audit, a thorough
+  review, a deep dive; a name that advertises itself rather than describing what it is —
+  enhanced, improved, advanced, unified, robust, production-ready, `_v2`, `_final`.
+- **Completion and compliance claims.** Banners and status theatre; "all checks passed";
+  layers of stated completions wrapped in guards against their own failure, until the
+  actual decision needed from the reader is unfindable.
+- **Self-attestation.** A record asserting its own independence, correctness, or
+  honesty. Nothing inside a record can attest who wrote it, so the sentence claiming it
+  conveys nothing and displaces the evidence that would.
+- **Honesty labels.** Renaming a thing so the name is "more honest" while the defect
+  stands. The label is the whole change; that is laundering.
+- **Bragging metrics.** File counts, line counts, package counts presented as
+  achievement. Zero content reaches a technical audience through those numbers.
+- **Advertising copy.** Profile and project descriptions written as promotion, with
+  today's numbers hard-coded into the prose.
+- **Announcing internal state.** A user-facing message narrating a condition that should
+  be impossible, or exposing an internal decision, instead of raising a real error.
+
+**House rule.** Copy earns its place by conveying content the reader does not have. An
+assertion about the work — its size, rigor, completeness, honesty, or novelty — is not
+content; the artifact either demonstrates the property or does not have it. Names
+describe what a thing is, never how good or how new it is. Numbers, when genuinely
+wanted, go in a table and are computed, never written into prose.
+
+**The mirror failure.** This is not a rule against saying things. A real decision,
+discovery, or course change that is muttered mid-task and never surfaced is the same
+defect from the other side: the reader again does not get what they need. Announce
+decisions; do not announce yourself.
 
 ## Copy that describes the work instead of the result
 

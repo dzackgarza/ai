@@ -21,6 +21,16 @@ derived from observations of thousands of AI-generated text instances.
 The result tends toward the most statistically likely completion, which is how the
 telltale patterns below get baked in.
 
+**Scope and currency.** This catalogue is strongest on content patterns — promotional
+language, weasel attributions, significance inflation, superficial `-ing` analysis. Its
+punctuation and formatting sections (em dashes, boldface, title case, emoji) describe the
+2025 generation of tells; they are surface features that change how text looks rather
+than what a reader learns, and editing to evade them improves nothing on its own. For the
+patterns that currently cost a reader something — copy that announces its own quality,
+completeness, or effort; agreement in place of work; process recounted in place of result
+— use [[writing/technical-copy/technical-copy|technical copy]], which is the live
+catalogue for this system's own artifacts.
+
 ## When to use this skill
 
 Load this skill whenever the user asks to:
