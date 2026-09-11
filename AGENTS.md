@@ -313,6 +313,7 @@ about the assigned work. Do not count these against any limit on how many skills
 | word salad, incoherent, incomprehensible, rambling, buried the lede, or any statement that the text is unreadable or too long to read | Repair your encoding at the same technical level. Never explain fundamentals, define terms, or restate what they just read. `technical-copy` |
 | narrating, process narration, why are you stopping, why are you telling me, why are you reporting | Stop writing and finish the work. `response-preparation/references/process-narration.md` |
 | why are you X instead of Y | Do Y. Now. The sentence is not a question. |
+| what do you mean, what does that mean, since when, what is a <term you used> | You stated something incoherent, backwards, or alarming in routine cadence — or used a noun the project does not have. Do not restate it: find which of the seven shapes it is and repair the claim. `response-preparation/references/coherence-check.md` |
 | obvious, obviously | The answer was already determined by context you had. Do not ask and do not argue: read the transcripts, the plan, the repository documents and their earlier messages, then act on what those say. Seven buckets and the required move for each: `response-preparation/references/process-narration.md` |
 | slop | `technical-copy`, and for mathematical prose `mathematics/writing/references/exposition-style.md` |
 

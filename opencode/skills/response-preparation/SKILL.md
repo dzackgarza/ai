@@ -10,6 +10,10 @@ This skill decides what belongs in a response. For how the sentences are written
 clause-stacked prose, a buried point, counts strung into a sentence instead of a table —
 see [[writing/technical-copy/technical-copy|technical copy]].
 
+**Read [references/coherence-check.md](references/coherence-check.md) before sending any
+report** — the five questions that catch a statement which is wrong, alarming, or
+silently reclassifies the work while reading as routine status.
+
 **Read [references/process-narration.md](references/process-narration.md) first.** It
 covers the failure that produces most corrections here: stopping work to describe it,
 manufacturing blockers and decisions, flagging without acting, and reporting what could
